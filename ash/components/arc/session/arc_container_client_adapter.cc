@@ -131,11 +131,7 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
 
   // The interface is only for ARCVM.
   void TrimVmMemory(TrimVmMemoryCallback callback, int) override {
-    NOTREACHED_IN_MIGRATION();
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), /*success=*/true,
-                       /*failure_reason=*/"ARC container is not supported."));
+    NOTREACHED();
   }
 
   // ash::SessionManagerClient::Observer overrides:

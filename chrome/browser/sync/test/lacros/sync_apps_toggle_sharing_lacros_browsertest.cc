@@ -8,8 +8,8 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_constants.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_sync_mojo_service.h"
 #include "components/sync/test/fake_sync_user_settings_client_ash.h"
@@ -21,7 +21,7 @@ namespace {
 
 class DatatypeSyncActiveStateChecker : public SingleClientStatusChangeChecker {
  public:
-  DatatypeSyncActiveStateChecker(syncer::ModelType type,
+  DatatypeSyncActiveStateChecker(syncer::DataType type,
                                  bool expected_state,
                                  syncer::SyncServiceImpl* sync_service)
       : SingleClientStatusChangeChecker(sync_service),
@@ -30,13 +30,13 @@ class DatatypeSyncActiveStateChecker : public SingleClientStatusChangeChecker {
   ~DatatypeSyncActiveStateChecker() override = default;
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for " << syncer::ModelTypeToDebugString(type_)
+    *os << "Waiting for " << syncer::DataTypeToDebugString(type_)
         << " sync active state to become: " << expected_state_;
     return service()->GetActiveDataTypes().Has(type_) == expected_state_;
   }
 
  private:
-  const syncer::ModelType type_;
+  const syncer::DataType type_;
   const bool expected_state_;
 };
 

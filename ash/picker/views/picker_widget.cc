@@ -5,9 +5,13 @@
 #include "ash/picker/views/picker_widget.h"
 
 #include "ash/bubble/bubble_event_filter.h"
+#include "ash/picker/views/picker_positioning.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_view.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -25,12 +29,14 @@ namespace {
 constexpr int kPickerViewMaxHeight = 356;
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
-PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
-  return anchor_bounds.bottom() + kPickerViewMaxHeight <=
-                 display::Screen::GetScreen()
-                     ->GetDisplayMatching(anchor_bounds)
-                     .work_area()
-                     .bottom()
+PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
+                               PickerPositionType position_type) {
+  return position_type == PickerPositionType::kCentered ||
+                 anchor_bounds.bottom() + kPickerViewMaxHeight <=
+                     display::Screen::GetScreen()
+                         ->GetDisplayMatching(anchor_bounds)
+                         .work_area()
+                         .bottom()
              ? PickerLayoutType::kMainResultsBelowSearchField
              : PickerLayoutType::kMainResultsAboveSearchField;
 }
@@ -38,14 +44,19 @@ PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
 views::Widget::InitParams CreateInitParams(
     PickerViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
+    PickerPositionType position_type,
     const base::TimeTicks trigger_event_timestamp) {
-  const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(
-      delegate, anchor_bounds, layout_type, trigger_event_timestamp);
+      delegate, anchor_bounds, GetLayoutType(anchor_bounds, position_type),
+      position_type, trigger_event_timestamp);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_BUBBLE);
+  params.parent = Shell::GetContainer(
+      Shell::GetRootWindowForDisplayId(
+          display::Screen::GetScreen()->GetDisplayMatching(anchor_bounds).id()),
+      kShellWindowId_FloatContainer);
   params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -62,8 +73,18 @@ views::UniqueWidgetPtr PickerWidget::Create(
     PickerViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(
-      new PickerWidget(delegate, anchor_bounds, trigger_event_timestamp));
+  return base::WrapUnique(new PickerWidget(delegate, anchor_bounds,
+                                           PickerPositionType::kNearAnchor,
+                                           trigger_event_timestamp));
+}
+
+views::UniqueWidgetPtr PickerWidget::CreateCentered(
+    PickerViewDelegate* delegate,
+    const gfx::Rect& anchor_bounds,
+    base::TimeTicks trigger_event_timestamp) {
+  return base::WrapUnique(new PickerWidget(delegate, anchor_bounds,
+                                           PickerPositionType::kCentered,
+                                           trigger_event_timestamp));
 }
 
 void PickerWidget::OnNativeBlur() {
@@ -75,9 +96,12 @@ void PickerWidget::OnNativeBlur() {
 
 PickerWidget::PickerWidget(PickerViewDelegate* delegate,
                            const gfx::Rect& anchor_bounds,
+                           PickerPositionType position_type,
                            base::TimeTicks trigger_event_timestamp)
-    : views::Widget(
-          CreateInitParams(delegate, anchor_bounds, trigger_event_timestamp)),
+    : views::Widget(CreateInitParams(delegate,
+                                     anchor_bounds,
+                                     position_type,
+                                     trigger_event_timestamp)),
       bubble_event_filter_(/*widget=*/this) {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_HIDE);

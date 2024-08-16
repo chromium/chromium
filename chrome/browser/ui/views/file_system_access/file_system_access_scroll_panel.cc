@@ -6,8 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/file_system_access/file_system_access_ui_helpers.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/image_view.h"

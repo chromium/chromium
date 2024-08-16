@@ -28,6 +28,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
@@ -45,7 +46,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
@@ -67,6 +67,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -388,6 +392,8 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!MayHaveProxies()) {
     bool use_proxy = false;
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // There are a few internal WebUIs that use WebView tag that are allowlisted
     // for webRequest.
     // TODO(crbug.com/40288053): Remove the scheme check once we're sure
@@ -411,6 +417,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
         use_proxy = IsAvailableToWebViewEmbedderFrame(frame);
       }
     }
+#endif
 
     // Create a proxy URLLoader even when there is no CRX
     // installed with webRequest permissions. This allows the extension
@@ -479,10 +486,16 @@ bool WebRequestAPI::MaybeProxyAuthRequest(
     bool is_main_frame,
     AuthRequestCallback callback,
     WebViewGuest* web_view_guest) {
-  if (!MayHaveProxies() &&
-      (!web_view_guest || !IsAvailableToWebViewEmbedderFrame(
-                              web_view_guest->GetGuestMainFrame()))) {
-    return false;
+  if (!MayHaveProxies()) {
+    bool needed_for_webview = false;
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+    needed_for_webview =
+        web_view_guest &&
+        IsAvailableToWebViewEmbedderFrame(web_view_guest->GetGuestMainFrame());
+#endif
+    if (!needed_for_webview) {
+      return false;
+    }
   }
 
   content::GlobalRequestID proxied_request_id = request_id;
@@ -585,6 +598,7 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
 
 bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
     content::RenderFrameHost* render_frame_host) const {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   if (!render_frame_host || !WebViewGuest::IsGuest(render_frame_host)) {
     return false;
   }
@@ -608,6 +622,9 @@ bool WebRequestAPI::IsAvailableToWebViewEmbedderFrame(
           CheckAliasStatus::ALLOWED, util::GetBrowserContextId(browser_context),
           BrowserFrameContextData(embedder_frame));
   return availability.is_available();
+#else
+  return false;
+#endif
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {

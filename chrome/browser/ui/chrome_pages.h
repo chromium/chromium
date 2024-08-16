@@ -138,9 +138,9 @@ void ShowPrivacySandboxSettings(Browser* browser);
 void ShowPrivacySandboxAdMeasurementSettings(Browser* browser);
 void ShowAddresses(Browser* browser);
 void ShowPaymentMethods(Browser* browser);
-void ShowAllSitesSettingsFilteredByFpsOwner(
+void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
-    const std::string& fps_owner_host_name);
+    const std::string& rws_owner_host_name);
 
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);

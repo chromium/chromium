@@ -117,6 +117,18 @@ export function isEspeak(voice: SpeechSynthesisVoice|undefined) {
   return voice && voice.name.includes(ESPEAK_STRING_IDENTIFIER);
 }
 
+export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
+    SpeechSynthesisVoice {
+  const naturalVoice = voices.find(v => isNatural(v));
+  if (naturalVoice) {
+    return naturalVoice;
+  }
+
+  const defaultVoice =
+      voices.find(({default: isDefaultVoice}) => isDefaultVoice);
+  return defaultVoice ? defaultVoice : voices[0];
+}
+
 export function createInitialListOfEnabledLanguages(
     browserOrPageBaseLang: string, storedLanguagesPref: string[],
     availableLangs: string[], langOfDefaultVoice: string|undefined): string[] {
@@ -414,8 +426,8 @@ export const AVAILABLE_GOOGLE_TTS_LOCALES = new Set([
 ]);
 
 export function areVoicesEqual(
-    voice1: SpeechSynthesisVoice|null,
-    voice2: SpeechSynthesisVoice|null): boolean {
+    voice1: SpeechSynthesisVoice|undefined,
+    voice2: SpeechSynthesisVoice|undefined): boolean {
   if (!voice1 || !voice2) {
     return false;
   }

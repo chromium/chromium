@@ -41,6 +41,7 @@ dictionary MediaTrackCapabilities {
     boolean              torch;
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] sequence<boolean> backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] sequence<boolean> backgroundSegmentationMask;
     [RuntimeEnabled=MediaCaptureCameraControls] sequence<boolean> eyeGazeCorrection;
     [RuntimeEnabled=MediaCaptureCameraControls] sequence<boolean> faceFraming;
     // Screen Capture API

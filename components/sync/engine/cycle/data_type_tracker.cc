@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
@@ -40,8 +40,8 @@ constexpr base::TimeDelta kDepletedQuotaNudgeDelayForExtensionTypes =
 constexpr base::TimeDelta kRefillIntervalForExtensionTypes = base::Seconds(100);
 constexpr int kInitialTokensForExtensionTypes = 100;
 
-base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
-  switch (model_type) {
+base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
+  switch (data_type) {
     case AUTOFILL:
     case USER_EVENTS:
       // Accompany types rely on nudges from other types, and hence have long
@@ -114,8 +114,8 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
   }
 }
 
-bool CanGetCommitsFromExtensions(ModelType model_type) {
-  switch (model_type) {
+bool CanGetCommitsFromExtensions(DataType data_type) {
+  switch (data_type) {
     // For these types, extensions can trigger unlimited commits via a js API.
     case BOOKMARKS:                  // chrome.bookmarks API.
     case EXTENSION_SETTINGS:         // chrome.storage.sync API.
@@ -189,7 +189,7 @@ WaitInterval::WaitInterval(BlockingMode mode, base::TimeDelta length)
 
 WaitInterval::~WaitInterval() = default;
 
-DataTypeTracker::DataTypeTracker(ModelType type)
+DataTypeTracker::DataTypeTracker(DataType type)
     : type_(type),
       local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)),
       quota_(
@@ -225,8 +225,12 @@ void DataTypeTracker::RecordSuccessfulCommitMessage() {
     quota_->ConsumeToken();
     if (!quota_->HasTokensAvailable()) {
       base::UmaHistogramEnumeration(
+          "Sync.DataTypeCommitMessageHasDepletedQuota",
+          DataTypeHistogramValue(type_));
+      // Legacy equivalent, before the metric was renamed.
+      base::UmaHistogramEnumeration(
           "Sync.ModelTypeCommitMessageHasDepletedQuota",
-          ModelTypeHistogramValue(type_));
+          DataTypeHistogramValue(type_));
     }
   }
 }
@@ -378,8 +382,11 @@ void DataTypeTracker::UpdateLocalChangeNudgeDelay(base::TimeDelta delay) {
 base::TimeDelta DataTypeTracker::GetLocalChangeNudgeDelay(
     bool is_single_client) const {
   if (quota_ && !quota_->HasTokensAvailable()) {
+    base::UmaHistogramEnumeration("Sync.DataTypeCommitWithDepletedQuota",
+                                  DataTypeHistogramValue(type_));
+    // Legacy equivalent, before the metric was renamed.
     base::UmaHistogramEnumeration("Sync.ModelTypeCommitWithDepletedQuota",
-                                  ModelTypeHistogramValue(type_));
+                                  DataTypeHistogramValue(type_));
     return depleted_quota_nudge_delay_;
   }
   base::TimeDelta result = local_change_nudge_delay_;

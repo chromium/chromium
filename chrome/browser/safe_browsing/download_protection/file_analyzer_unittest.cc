@@ -36,9 +36,7 @@ using ::testing::StrEq;
 
 class FileAnalyzerTest : public testing::Test {
  public:
-  FileAnalyzerTest() {
-    scoped_feature_list_.InitAndEnableFeature(kSevenZipEvaluationEnabled);
-  }
+  FileAnalyzerTest() = default;
   void DoneCallback(base::OnceCallback<void()> quit_callback,
                     FileAnalyzer::Results result) {
     result_ = result;
@@ -60,7 +58,6 @@ class FileAnalyzerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 };

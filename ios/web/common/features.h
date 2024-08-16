@@ -96,6 +96,9 @@ BASE_DECLARE_FEATURE(kDisableRaccoon);
 // Feature flag adds bugfix numbers to the iOS User-Agent header for Chrome
 BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
 
+// Enables logging JavaScript errors.
+BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
+
 }  // namespace features
 }  // namespace web
 

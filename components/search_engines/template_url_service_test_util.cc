@@ -86,7 +86,7 @@ void TemplateURLServiceUnitTestBase::SetUp() {
 std::unique_ptr<TemplateURLService>
 TemplateURLServiceUnitTestBase::CreateService() {
   return std::make_unique<TemplateURLService>(
-      &pref_service_, search_engine_choice_service_.get(),
+      pref_service_, *search_engine_choice_service_,
       std::make_unique<SearchTermsData>(), nullptr /* KeywordWebDataService */,
       nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -122,7 +122,7 @@ LoadedTemplateURLServiceUnitTestBase::CreateService() {
   keyword_data_service_->Init(base::DoNothing());
 
   auto template_url_service = std::make_unique<TemplateURLService>(
-      &pref_service(), &search_engine_choice_service(),
+      pref_service(), search_engine_choice_service(),
       std::make_unique<SearchTermsData>(), keyword_data_service_,
       nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

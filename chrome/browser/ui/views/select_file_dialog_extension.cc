@@ -47,6 +47,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -202,7 +203,8 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
   ~SystemFilesAppDialogDelegate() override = default;
 
   void SetModal(bool modal) {
-    set_dialog_modal_type(modal ? ui::MODAL_TYPE_WINDOW : ui::MODAL_TYPE_NONE);
+    set_dialog_modal_type(modal ? ui::mojom::ModalType::kWindow
+                                : ui::mojom::ModalType::kNone);
   }
 
   FrameKind GetWebDialogFrameKind() const override {
@@ -607,7 +609,7 @@ void SelectFileDialogExtension::NotifyListener(
       listener_->MultiFilesSelected(selection_files);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

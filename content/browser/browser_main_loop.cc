@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/browser_main_loop.h"
 
 #include <stddef.h>
@@ -183,7 +178,7 @@
 #include "content/browser/android/launcher_thread.h"
 #include "content/browser/android/scoped_surface_request_manager.h"
 #include "content/browser/android/tracing_controller_android.h"
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup_android.h"
 #include "content/browser/screen_orientation/screen_orientation_delegate_android.h"
 #include "media/base/android/media_drm_bridge_client.h"
 #include "ui/android/screen_android.h"
@@ -296,9 +291,9 @@ static void SetUpGLibLogHandler() {
   // Register GLib-handled assertions to go through our logging system.
   const char* const kLogDomains[] = {nullptr, "Gtk", "Gdk", "GLib",
                                      "GLib-GObject"};
-  for (size_t i = 0; i < std::size(kLogDomains); i++) {
+  for (const auto* domain : kLogDomains) {
     g_log_set_handler(
-        kLogDomains[i],
+        domain,
         static_cast<GLogLevelFlags>(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL |
                                     G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL |
                                     G_LOG_LEVEL_WARNING),

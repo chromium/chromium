@@ -693,11 +693,13 @@ void UserEducationInternalsPageHandlerImpl::GetWhatsNewModules(
   if (const auto* registry = GetWhatsNewRegistry()) {
     auto* storage_service = registry->storage_service();
     for (auto& module : registry->modules()) {
-      info_list.emplace_back(WhatsNewModuleDemoPageInfo::New(
-          RemovePrefixAndCamelCase(module.GetFeatureName(), ""),
-          module.GetFeatureName(), module.browser_command() != std::nullopt,
-          module.IsFeatureEnabled(),
-          storage_service->GetModuleQueuePosition(module.GetFeatureName())));
+      if (module.HasFeature()) {
+        info_list.emplace_back(WhatsNewModuleDemoPageInfo::New(
+            RemovePrefixAndCamelCase(module.GetFeatureName(), ""),
+            module.GetFeatureName(), module.browser_command() != std::nullopt,
+            module.IsFeatureEnabled(),
+            storage_service->GetModuleQueuePosition(module.GetFeatureName())));
+      }
     }
   }
   return std::move(callback).Run(std::move(info_list));

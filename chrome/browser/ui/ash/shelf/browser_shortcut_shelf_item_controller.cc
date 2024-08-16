@@ -11,13 +11,13 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/window_animations.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -336,7 +336,7 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
     // If there is only one suitable browser, we can either activate it, or
     // bounce it (if it is already active).
     if (items[0]->window()->IsActive()) {
-      ash_util::BounceWindow(items[0]->window()->GetNativeWindow());
+      ash::BounceWindow(items[0]->window()->GetNativeWindow());
       return ash::SHELF_ACTION_NONE;
     }
     browser = items[0];

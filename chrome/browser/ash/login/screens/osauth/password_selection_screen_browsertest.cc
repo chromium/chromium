@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
@@ -62,7 +61,6 @@ AuthFactorsConfiguration GetFakeAuthFactorConfiguration(
 class PasswordSelectionScreenTest : public OobeBaseTest {
  public:
   PasswordSelectionScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kLocalPasswordForConsumers);
   }
   ~PasswordSelectionScreenTest() override = default;
 
@@ -169,7 +167,6 @@ class PasswordSelectionScreenTest : public OobeBaseTest {
     }
   }
 
-  base::test::ScopedFeatureList feature_list_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   PasswordSelectionScreen::ScreenExitCallback original_callback_;

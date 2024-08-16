@@ -612,10 +612,13 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 
 ScrollOffset GetScrollOffsetToExpose(
     const ScrollableArea& scroll_area,
-    const PhysicalRect& expose_rect,
+    const PhysicalRect& local_expose_rect,
     const PhysicalBoxStrut& expose_scroll_margin,
     const mojom::blink::ScrollAlignment& align_x,
     const mojom::blink::ScrollAlignment& align_y) {
+  // Represent the rect in the container's scroll-origin coordinate.
+  PhysicalRect scroll_origin_to_expose_rect = local_expose_rect;
+  scroll_origin_to_expose_rect.Move(scroll_area.LocalToScrollOriginOffset());
   // Prevent degenerate cases by giving the visible rect a minimum non-0 size.
   PhysicalRect non_zero_visible_rect = scroll_area.VisibleScrollSnapportRect();
   ScrollOffset current_scroll_offset = scroll_area.GetScrollOffset();
@@ -628,12 +631,11 @@ ScrollOffset GetScrollOffsetToExpose(
     non_zero_visible_rect.SetHeight(minimum_layout_unit);
   }
 
-  // The expose_rect includes the scroll-margin of the element that is being
-  // exposed.
-  // We want to exclude the margin for deciding whether it's already visible,
-  // but include it when calculating the scroll offset that we need to scroll
-  // to in order to achieve the desired alignment.
-  PhysicalRect expose_rect_no_margin = expose_rect;
+  // The scroll_origin_to_expose_rect includes the scroll-margin of the element
+  // that is being exposed. We want to exclude the margin for deciding whether
+  // it's already visible, but include it when calculating the scroll offset
+  // that we need to scroll to in order to achieve the desired alignment.
+  PhysicalRect expose_rect_no_margin = scroll_origin_to_expose_rect;
   expose_rect_no_margin.Contract(expose_scroll_margin);
 
   // Determine the appropriate X behavior.
@@ -663,10 +665,12 @@ ScrollOffset GetScrollOffsetToExpose(
     // Closest edge is the right in two cases:
     // (1) exposeRect to the right of and smaller than nonZeroVisibleRect
     // (2) exposeRect to the left of and larger than nonZeroVisibleRect
-    if ((expose_rect.Right() > non_zero_visible_rect.Right() &&
-         expose_rect.Width() < non_zero_visible_rect.Width()) ||
-        (expose_rect.Right() < non_zero_visible_rect.Right() &&
-         expose_rect.Width() > non_zero_visible_rect.Width())) {
+    if ((scroll_origin_to_expose_rect.Right() > non_zero_visible_rect.Right() &&
+         scroll_origin_to_expose_rect.Width() <
+             non_zero_visible_rect.Width()) ||
+        (scroll_origin_to_expose_rect.Right() < non_zero_visible_rect.Right() &&
+         scroll_origin_to_expose_rect.Width() >
+             non_zero_visible_rect.Width())) {
       scroll_x = mojom::blink::ScrollAlignment::Behavior::kRight;
     }
   }
@@ -695,16 +699,21 @@ ScrollOffset GetScrollOffsetToExpose(
     // Closest edge is the bottom in two cases:
     // (1) exposeRect below and smaller than nonZeroVisibleRect
     // (2) exposeRect above and larger than nonZeroVisibleRect
-    if ((expose_rect.Bottom() > non_zero_visible_rect.Bottom() &&
-         expose_rect.Height() < non_zero_visible_rect.Height()) ||
-        (expose_rect.Bottom() < non_zero_visible_rect.Bottom() &&
-         expose_rect.Height() > non_zero_visible_rect.Height())) {
+    if ((scroll_origin_to_expose_rect.Bottom() >
+             non_zero_visible_rect.Bottom() &&
+         scroll_origin_to_expose_rect.Height() <
+             non_zero_visible_rect.Height()) ||
+        (scroll_origin_to_expose_rect.Bottom() <
+             non_zero_visible_rect.Bottom() &&
+         scroll_origin_to_expose_rect.Height() >
+             non_zero_visible_rect.Height())) {
       scroll_y = mojom::blink::ScrollAlignment::Behavior::kBottom;
     }
   }
 
-  // We would like calculate the ScrollPosition to move |expose_rect| inside
-  // the scroll_snapport, which is based on the scroll_origin of the scroller.
+  // We would like calculate the ScrollPosition to move
+  // |scroll_origin_to_expose_rect| inside the scroll_snapport, which is based
+  // on the scroll_origin of the scroller.
   non_zero_visible_rect.Move(
       -PhysicalOffset::FromVector2dFRound(current_scroll_offset));
 
@@ -713,14 +722,17 @@ ScrollOffset GetScrollOffsetToExpose(
   if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
     x = current_scroll_offset.x();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kRight) {
-    x = (expose_rect.Right() - non_zero_visible_rect.Right()).ToFloat();
+    x = (scroll_origin_to_expose_rect.Right() - non_zero_visible_rect.Right())
+            .ToFloat();
   } else if (scroll_x == mojom::blink::ScrollAlignment::Behavior::kCenter) {
-    x = ((expose_rect.X() + expose_rect.Right() -
+    x = ((scroll_origin_to_expose_rect.X() +
+          scroll_origin_to_expose_rect.Right() -
           (non_zero_visible_rect.X() + non_zero_visible_rect.Right())) /
          2)
             .ToFloat();
   } else {
-    x = (expose_rect.X() - non_zero_visible_rect.X()).ToFloat();
+    x = (scroll_origin_to_expose_rect.X() - non_zero_visible_rect.X())
+            .ToFloat();
   }
 
   // Given the Y behavior, compute the Y coordinate.
@@ -728,14 +740,17 @@ ScrollOffset GetScrollOffsetToExpose(
   if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kNoScroll) {
     y = current_scroll_offset.y();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kBottom) {
-    y = (expose_rect.Bottom() - non_zero_visible_rect.Bottom()).ToFloat();
+    y = (scroll_origin_to_expose_rect.Bottom() - non_zero_visible_rect.Bottom())
+            .ToFloat();
   } else if (scroll_y == mojom::blink::ScrollAlignment::Behavior::kCenter) {
-    y = ((expose_rect.Y() + expose_rect.Bottom() -
+    y = ((scroll_origin_to_expose_rect.Y() +
+          scroll_origin_to_expose_rect.Bottom() -
           (non_zero_visible_rect.Y() + non_zero_visible_rect.Bottom())) /
          2)
             .ToFloat();
   } else {
-    y = (expose_rect.Y() - non_zero_visible_rect.Y()).ToFloat();
+    y = (scroll_origin_to_expose_rect.Y() - non_zero_visible_rect.Y())
+            .ToFloat();
   }
 
   return ScrollOffset(x, y);

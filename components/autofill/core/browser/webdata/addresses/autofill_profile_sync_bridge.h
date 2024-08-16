@@ -16,12 +16,12 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 class MetadataChangeList;
 class ModelError;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace autofill {
@@ -32,23 +32,23 @@ class AutofillSyncMetadataTable;
 class AutofillWebDataService;
 enum class AutofillProfileSyncChangeOrigin;
 
-// Sync bridge implementation for AUTOFILL_PROFILE model type. Takes care of
+// Sync bridge implementation for AUTOFILL_PROFILE data type. Takes care of
 // propagating local autofill profiles to other clients as well as incorporating
 // profiles coming from other clients; and most notably resolving conflicts and
 // merging duplicates.
 //
-// This is achieved by implementing the interface ModelTypeSyncBridge, which
-// ClientTagBasedModelTypeProcessor will use to interact, ultimately, with the
+// This is achieved by implementing the interface DataTypeSyncBridge, which
+// ClientTagBasedDataTypeProcessor will use to interact, ultimately, with the
 // sync server. See
-// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
+// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-datatypesyncbridge
 // for details.
 class AutofillProfileSyncBridge
     : public base::SupportsUserData::Data,
       public AutofillWebDataServiceObserverOnDBSequence,
-      public syncer::ModelTypeSyncBridge {
+      public syncer::DataTypeSyncBridge {
  public:
   AutofillProfileSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       const std::string& app_locale,
       AutofillWebDataBackend* backend);
 
@@ -66,10 +66,10 @@ class AutofillProfileSyncBridge
       AutofillWebDataService* web_data_service);
 
   // Retrieves the bridge from |web_data_service| which owns it.
-  static syncer::ModelTypeSyncBridge* FromWebDataService(
+  static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  // syncer::ModelTypeSyncBridge implementation.
+  // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

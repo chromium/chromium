@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1595,7 +1596,7 @@ TEST_P(QuicNetworkTransactionTest, LargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   std::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data).substr(offset, len)));
   }
 
   mock_quic_data.AddRead(
@@ -1656,7 +1657,7 @@ TEST_P(QuicNetworkTransactionTest, TooLargeResponseHeaders) {
     mock_quic_data.AddRead(
         ASYNC, ConstructServerDataPacket(
                    packet_number++, stream_id, false,
-                   std::string_view(response_data.data() + offset, len)));
+                   std::string_view(response_data).substr(offset, len)));
   }
 
   mock_quic_data.AddRead(
@@ -5753,7 +5754,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUpload) {
   CreateSession();
   request_.method = "POST";
   ChunkedUploadDataStream upload_data(0);
-  upload_data.AppendData("1", 1, true);
+  upload_data.AppendData(base::byte_span_from_cstring("1"), true);
 
   request_.upload_data_stream = &upload_data;
 
@@ -5811,7 +5812,7 @@ TEST_P(QuicNetworkTransactionTest, QuicUploadWriteError) {
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   base::RunLoop().RunUntilIdle();
-  upload_data.AppendData("1", 1, true);
+  upload_data.AppendData(base::byte_span_from_cstring("1"), true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(OK, callback.WaitForResult());
@@ -6055,7 +6056,7 @@ TEST_P(QuicNetworkTransactionTest, QuicForceHolBlocking) {
   CreateSession();
   request_.method = "POST";
   ChunkedUploadDataStream upload_data(0);
-  upload_data.AppendData("1", 1, true);
+  upload_data.AppendData(base::byte_span_from_cstring("1"), true);
 
   request_.upload_data_stream = &upload_data;
 

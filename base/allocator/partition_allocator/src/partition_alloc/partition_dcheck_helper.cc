@@ -9,6 +9,7 @@
 #include "partition_alloc/partition_bucket.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
+#include "partition_alloc/partition_superpage_extent_entry.h"
 
 namespace partition_alloc::internal {
 
@@ -26,14 +27,6 @@ void DCheckIsValidShiftFromSlotStart(internal::SlotSpanMetadata* slot_span,
   PA_DCHECK(shift_from_slot_start <= root->GetSlotUsableSize(slot_span));
 }
 
-void DCheckIsWithInSuperPagePayload(uintptr_t address) {
-  uintptr_t super_page = address & kSuperPageBaseMask;
-  auto* extent = PartitionSuperPageToExtent(super_page);
-  PA_DCHECK(IsWithinSuperPagePayload(address,
-                                     IsManagedByNormalBuckets(address) &&
-                                         extent->root->IsQuarantineAllowed()));
-}
-
 void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
                                 uintptr_t object_addr) {
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
@@ -42,14 +35,16 @@ void DCheckIsValidObjectAddress(internal::SlotSpanMetadata* slot_span,
 }
 
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
-    const PartitionSuperPageExtentEntry* entry,
+    WritablePartitionSuperPageExtentEntry* entry,
     const PartitionRoot* root,
     size_t number_of_nonempty_slot_spans) {
-  uintptr_t super_page = base::bits::AlignDown(
-      reinterpret_cast<uintptr_t>(entry), kSuperPageAlignment);
+  ReadOnlyPartitionSuperPageExtentEntry* readonly_entry =
+      entry->ToReadOnly(root);
+  uintptr_t entry_address = reinterpret_cast<uintptr_t>(readonly_entry);
+  uintptr_t super_page =
+      base::bits::AlignDown(entry_address, kSuperPageAlignment);
   size_t number_of_partition_pages_in_superpage_payload =
-      SuperPagePayloadSize(super_page, root->IsQuarantineAllowed()) /
-      PartitionPageSize();
+      SuperPagePayloadSize(super_page) / PartitionPageSize();
   PA_DCHECK(number_of_partition_pages_in_superpage_payload >
             number_of_nonempty_slot_spans);
 }

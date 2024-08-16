@@ -14,7 +14,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"

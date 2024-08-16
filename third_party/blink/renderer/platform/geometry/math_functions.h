@@ -191,7 +191,7 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       return std::fmod(a, b);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

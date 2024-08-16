@@ -37,6 +37,7 @@
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_change_dispatcher.h"
@@ -718,8 +719,9 @@ void GaiaCookieManagerService::OnListAccountsSuccess(const std::string& data) {
     signed_out_accounts_.clear();
     signin_client_->GetPrefs()->ClearPref(
         prefs::kGaiaCookieLastListAccountsData);
-    GoogleServiceAuthError error(
-        GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE);
+    GoogleServiceAuthError error =
+        GoogleServiceAuthError::FromUnexpectedServiceResponse(
+            "Error parsing ListAccounts response");
     OnListAccountsFailure(error);
     return;
   }

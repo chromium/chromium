@@ -35,6 +35,9 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -53,6 +56,10 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -595,7 +602,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_id : kAcceleratorLayouts) {
-    const std::optional<AcceleratorLayoutDetails> layout =
+    std::optional<AcceleratorLayoutDetails> layout =
         GetAcceleratorLayout(layout_id);
     if (!layout) {
       LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;
@@ -604,6 +611,13 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
     if (ShouldExcludeItem(*layout)) {
       continue;
     }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (layout_id == AcceleratorAction::kTogglePicker &&
+        features::IsModifierSplitEnabled()) {
+      layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     layout_infos_.push_back(LayoutInfoToMojom(*layout));
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;
@@ -1196,8 +1210,14 @@ void AcceleratorConfigurationProvider::InitializeNonConfigurableAccelerators(
           accessibility_accelerator_to_id_.InsertNew(
               std::make_pair(accelerator, action_id));
         } else {
-          non_configurable_accelerator_to_id_.InsertNew(
-              std::make_pair(accelerator, action_id));
+          auto* action_ids =
+              non_configurable_accelerator_to_id_.Find(accelerator);
+          if (!action_ids) {
+            non_configurable_accelerator_to_id_.InsertNew(std::make_pair(
+                accelerator, std::vector<AcceleratorActionId>{action_id}));
+          } else {
+            action_ids->push_back(action_id);
+          }
         }
         id_to_non_configurable_accelerators_[action_id].push_back(accelerator);
       }
@@ -1423,15 +1443,17 @@ AcceleratorConfigurationProvider::FindNonConfigurableIdFromAccelerator(
     const ui::Accelerator& accelerator) {
   std::vector<uint32_t> ids;
   // Check browser/text non-configurable accelerators first.
-  uint32_t* non_configurable_conflict_id =
+  auto* non_configurable_conflict_ids =
       non_configurable_accelerator_to_id_.Find(accelerator);
 
-  if (non_configurable_conflict_id) {
-    ids.push_back(*non_configurable_conflict_id);
+  if (non_configurable_conflict_ids) {
+    for (const auto id : *non_configurable_conflict_ids) {
+      ids.push_back(id);
+    }
   }
 
   // Then check accessibility accelerators.
-  non_configurable_conflict_id =
+  uint32_t* non_configurable_conflict_id =
       accessibility_accelerator_to_id_.Find(accelerator);
 
   if (non_configurable_conflict_id) {

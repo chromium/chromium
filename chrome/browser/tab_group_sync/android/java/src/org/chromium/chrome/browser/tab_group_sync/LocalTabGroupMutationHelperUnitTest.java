@@ -202,7 +202,7 @@ public class LocalTabGroupMutationHelperUnitTest {
                 createOneSavedTabGroup(LOCAL_TAB_GROUP_ID_1, new Integer[] {null, null});
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabModel).closeMultipleTabs(argThat(tabs -> tabs.size() == 1), eq(false));
+        verify(mTabModel).closeTabs(argThat(params -> params.tabs.size() == 1));
     }
 
     @Test
@@ -225,7 +225,7 @@ public class LocalTabGroupMutationHelperUnitTest {
                         anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false));
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
-        inOrder.verify(mTabModel).closeMultipleTabs(argThat(tabs -> tabs.size() == 1), eq(false));
+        inOrder.verify(mTabModel).closeTabs(argThat(params -> params.tabs.size() == 1));
         inOrder.verify(mTabGroupModelFilter).setTabGroupCollapsed(ROOT_ID_1, true);
     }
 
@@ -248,7 +248,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupModelFilter, never())
                 .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
-        verify(mTabModel, never()).closeMultipleTabs(anyList(), eq(false));
+        verify(mTabModel, never()).closeTabs(any());
         verify(mTabCreationDelegate, times(1))
                 .navigateToUrl(any(), eq(TAB_URL_2), eq(TAB_TITLE_1), eq(false));
     }
@@ -329,7 +329,7 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testCloseTabGroup() {
         mTabModel.addTab(TAB_ID_1);
         mLocalMutationHelper.closeTabGroup(LOCAL_TAB_GROUP_ID_1, ClosingSource.CLOSED_BY_USER);
-        verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
+        verify(mTabModel).closeTabs(any());
         verify(mTabGroupSyncService).removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1));
 
         EventDetails eventDetails = mEventDetailsCaptor.getValue();

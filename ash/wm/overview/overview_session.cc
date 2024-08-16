@@ -104,7 +104,7 @@ aura::Window* GetWindowForSelection(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // A self-deleting window state observer that runs the given callback when its
@@ -684,8 +684,6 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
           ->IsDividerAnimating()) {
     return;
   }
-
-  item->item_widget()->GetFocusManager()->ClearFocus();
 
   window_drag_controller_ = std::make_unique<OverviewWindowDragController>(
       this, item, is_touch_dragging, event_source_item);
@@ -1312,8 +1310,10 @@ void OverviewSession::OnDisplayAdded(const display::Display& display) {
 void OverviewSession::OnDisplayMetricsChanged(const display::Display& display,
                                               uint32_t metrics) {
   // End the current drag if the display changes.
-  if (window_drag_controller_ && window_drag_controller_->item())
+  if (window_drag_controller_ && window_drag_controller_->item()) {
     ResetDraggedWindowGesture();
+  }
+
   auto* overview_grid =
       GetGridWithRootWindow(Shell::GetRootWindowForDisplayId(display.id()));
   overview_grid->OnDisplayMetricsChanged(metrics);
@@ -1600,6 +1600,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 
   for (aura::Window* window : {window1, window2}) {
     CHECK(window);
+    if (GetOverviewItemForWindow(window)) {
+      base::debug::DumpWithoutCrashing();
+      continue;
+    }
+
     overview_grid->AddItemInMruOrder(window, /*reposition=*/false,
                                      /*animate=*/true, /*restack=*/true,
                                      /*use_spawn_animation=*/true);
@@ -1607,6 +1612,11 @@ void OverviewSession::OnSnapGroupRemoving(SnapGroup* snap_group,
 }
 
 void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (window_drag_controller_ && window_drag_controller_->item()) {
+    // End the current drag on tablet state changes.
+    ResetDraggedWindowGesture();
+  }
+
   if (display::IsTabletStateChanging(state)) {
     // Do nothing if the tablet state is still in the process of transition.
     return;

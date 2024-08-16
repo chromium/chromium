@@ -1188,8 +1188,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                        UkmReportsPriorInteraction) {
   // Record a prior interaction for site B in the DIPS database.
   content::WebContents* web_contents = GetActiveWebContents();
-  DIPSService* dips_service =
-      DIPSService::Get(web_contents->GetBrowserContext());
+  DIPSServiceImpl* dips_service =
+      DIPSServiceImpl::Get(web_contents->GetBrowserContext());
   ASSERT_TRUE(dips_service != nullptr);
   base::test::TestFuture<void> record_interaction;
   GURL site_b_url = embedded_https_test_server_.GetURL(kSiteB, "/");

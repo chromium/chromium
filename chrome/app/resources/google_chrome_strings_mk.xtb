@@ -115,6 +115,7 @@
 <translation id="2559253115192232574">Подоцна, сајтот што го посетувате може да побара од Chrome да ги види вашите интереси за да ги персонализира рекламите што ги гледате. Chrome може да сподели до 3 интереси.</translation>
 <translation id="2563121210305478421">Да се рестартира Chrome?</translation>
 <translation id="2569974318947988067">Chrome ќе се обиде да ги надгради навигациите на HTTPS</translation>
+<translation id="2571392474191184472">Вашата организација управува со Chrome</translation>
 <translation id="2574930892358684005">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. За да прелистувате одделно, Chrome може да создаде одделен профил за вас.</translation>
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -215,6 +216,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Google Chrome бара Windows 10 или понова верзија.</translation>
 <translation id="3835168907083856002">Ова ќе создаде нов профил на Chrome за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
+ уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
 <translation id="3865754807470779944">Инсталирана е верзијата <ph name="PRODUCT_VERSION" /> на Chrome</translation>
 <translation id="3873044882194371212">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
@@ -425,6 +428,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6938166777909186039">За да добивате идни ажурирања на Google Chrome, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.1.</translation>
 <translation id="6943584222992551122">Податоците од прелистување на ова лице ќе се избришат од уредов. За да ги вратите податоците, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Дојдовно правило за Google Chrome Beta за овозможување mDNS-сообраќај.</translation>
+<translation id="6979589607440534284">Дознајте зошто Chrome блокира некои датотеки, се отвора во нова картичка</translation>
 <translation id="7011190694940573312">Инсталацијата не успеа бидејќи оваа верзија на оперативниот систем не е поддржана.</translation>
 <translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирањето запре.</translation>
@@ -447,6 +451,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7177959540995930968">Може да дознаете повеќе за овие функции во поставките за Chrome.</translation>
 <translation id="7193885263065350793">Вашата организација го затвора Chrome кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Се пријавувате со управувана сметка и на нејзиниот администратор му давате контрола врз вашиот профил на Google Chrome. Вашите податоци на Chrome, како апликации, обележувачи, историја, лозинки и други поставки, трајно ќе се поврзат со <ph name="USER_NAME" />. Ќе може да ги избришете податоците преку Информациска табла на сметките на Google, но нема да може да ги поврзувате со друга сметка. Изборно може да направите и нов профил за постоечките податоци од Chrome за да бидат одделни. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> управува со Chrome</translation>
 <translation id="7295052994004373688">Овој јазик се користи за приказ на корисничкиот интерфејс на Google Chrome</translation>
 <translation id="7296210096911315575">Важни информации за користење и безбедност</translation>
 <translation id="7302361266603927550">Некои од вашите податоци од Chrome сѐ уште не се зачувани во вашата сметка на Google. Почекајте неколку минути пред да се одјавите. Ако се одјавите сега, податоциве ќе се избришат.</translation>
@@ -580,6 +585,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8989968390305463310">Вашата историја на прелистувањето влијае на рекламите што ги гледате и на интересите како што е проценето подолу. За да ја заштитите приватноста, Chrome автоматски ги брише вашите интереси секој месец. Интересите може да се освежуваат освен ако не ги отстраните.</translation>
 <translation id="8999117580775242387">Кога не е достапна HTTPS, Chrome ќе користи небезбедна врска без да ве предупреди</translation>
 <translation id="8999208279178790196">{0,plural, =0{Достапно е ажурирање за Chrome}=1{Достапно е ажурирање за Chrome}one{Достапно е ажурирање за Chrome веќе # ден}other{Достапно е ажурирање за Chrome веќе # дена}}</translation>
+<translation id="9014771989710951291">Повеќе организации управуваат со Chrome</translation>
 <translation id="9024318700713112071">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="9053892488859122171">Системот ChromeOS Flex</translation>
 <translation id="9090566250983691233">Дознајте зошто Chrome блокира некои датотеки</translation>

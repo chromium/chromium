@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <optional>
@@ -79,8 +84,6 @@ struct AutofillFieldCase {
   FormControlType form_control_type;
   const char* const id_attribute;
   const char* const initial_value;
-  const char* const autocomplete_attribute;  // The autocomplete attribute of
-                                             // the element.
   bool should_be_autofilled;   // Whether the filed should be autofilled.
   const char* const autofill_value;  // The value being used to fill the field.
   const char* const expected_value;  // The expected value after Autofill
@@ -474,64 +477,37 @@ class FormAutofillTest : public test::AutofillRendererTest {
                              size_t number_of_field_cases,
                              mojom::ActionPersistence action_persistence,
                              GetValueFunction get_value_function) {
-    if (url_override)
+    if (url_override) {
       LoadHTMLWithUrlOverride(html, url_override);
-    else
+    } else {
       LoadHTML(html);
-
-    std::vector<FormData> forms = UpdateFormCache().updated_forms;
-    ASSERT_EQ(1U, forms.size());
-
-    // Get the input element we want to find.
-    WebInputElement input_element = GetInputElementById("firstname");
-
-    // Find the form that contains the input element.
-    FormData form = FindForm(input_element);
-    if (!unowned) {
-      EXPECT_EQ(u"TestForm", form.name());
-      EXPECT_EQ(GURL("http://abc.com"), form.action());
     }
 
+    // Find the form to fill.
+    WebInputElement input_element = GetInputElementById("firstname");
+    FormData form = FindForm(input_element);
     const std::vector<FormFieldData>& fields = form.fields();
     ASSERT_EQ(number_of_field_cases, fields.size());
 
-    FormFieldData expected;
-    // Verify field's initial value.
+    // Verify the initial state of the form and setup filling data.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
       SCOPED_TRACE(base::StringPrintf("Verify initial value for field %s",
                                       field_cases[i].id_attribute));
-      expected.set_form_control_type(field_cases[i].form_control_type);
-      expected.set_max_length(
-          (expected.form_control_type() == FormControlType::kInputText ||
-           expected.form_control_type() == FormControlType::kTextArea)
-              ? FormFieldData::kDefaultMaxLength
-              : 0);
-      expected.set_id_attribute(ASCIIToUTF16(field_cases[i].id_attribute));
-      expected.set_name(expected.id_attribute());
-      expected.set_value(ASCIIToUTF16(field_cases[i].initial_value));
-      if (expected.form_control_type() == FormControlType::kInputText ||
-          expected.form_control_type() == FormControlType::kInputMonth) {
-        expected.set_label(ASCIIToUTF16(field_cases[i].initial_value));
-      } else {
-        expected.set_label({});
-      }
-      expected.set_autocomplete_attribute(
-          field_cases[i].autocomplete_attribute);
-      EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[i]);
-      // Fill the form_data for the field.
+      EXPECT_EQ(field_cases[i].form_control_type,
+                fields[i].form_control_type());
+      EXPECT_EQ(base::UTF8ToUTF16(field_cases[i].id_attribute),
+                fields[i].id_attribute());
+      EXPECT_EQ(base::UTF8ToUTF16(field_cases[i].initial_value),
+                fields[i].value());
       test_api(form).field(i).set_value(
           ASCIIToUTF16(field_cases[i].autofill_value));
-      // Set the is_autofilled property for the field.
-      test_api(form).field(i).set_is_autofilled(
-          field_cases[i].should_be_autofilled);
+      test_api(form).field(i).set_is_autofilled(true);
     }
 
-    // Autofill the form using the given fill form function.
+    // Fill and validate.
     ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
     ApplyFieldsAction(input_element.GetDocument(), form.fields(),
                       action_persistence);
-
-    // Validate Autofill or Preview results.
     for (size_t i = 0; i < number_of_field_cases; ++i) {
       ValidateFilledField(field_cases[i], get_value_function,
                           action_persistence);
@@ -544,29 +520,9 @@ class FormAutofillTest : public test::AutofillRendererTest {
                            mojom::ActionPersistence action_persistence) {
     SCOPED_TRACE(base::StringPrintf("Verify autofilled value for field %s",
                                     field_case.id_attribute));
-    WebString value;
     WebFormControlElement element =
         GetFormControlElementById(field_case.id_attribute);
-    if ((element.FormControlType() ==
-         blink::mojom::FormControlType::kSelectOne) ||
-        (element.FormControlType() ==
-         blink::mojom::FormControlType::kTextArea)) {
-      value = get_value_function(element);
-    } else {
-      ASSERT_TRUE(element.FormControlType() ==
-                      blink::mojom::FormControlType::kInputText ||
-                  element.FormControlType() ==
-                      blink::mojom::FormControlType::kInputMonth);
-      value = get_value_function(element);
-    }
-
-    const WebString expected_value =
-        WebString::FromASCII(field_case.expected_value);
-    if (expected_value.IsEmpty())
-      EXPECT_TRUE(value.IsEmpty());
-    else
-      EXPECT_EQ(expected_value.Utf8(), value.Utf8());
-
+    EXPECT_EQ(field_case.expected_value, get_value_function(element).Utf8());
     EXPECT_EQ(field_case.should_be_autofilled,
               action_persistence == mojom::ActionPersistence::kFill
                   ? element.IsAutofilled()
@@ -579,58 +535,50 @@ class FormAutofillTest : public test::AutofillRendererTest {
         // autocomplete_attribute, should_be_autofilled, autofill_value,
         // expected_value.
         // Regular empty fields (firstname & lastname) should be autofilled.
-        {FormControlType::kInputText, "firstname", "", "", true,
-         "filled firstname", "filled firstname"},
-        {FormControlType::kInputText, "lastname", "", "", true,
-         "filled lastname", "filled lastname"},
-        // hidden fields should not be extracted to form_data.
-        // Non empty fields should not be autofilled.
-        {FormControlType::kInputText, "notempty", "Hi", "", false,
-         "filled notempty", "Hi"},
-        {FormControlType::kInputText, "noautocomplete", "", "off", true,
+        {FormControlType::kInputText, "firstname", "", true, "filled firstname",
+         "filled firstname"},
+        {FormControlType::kInputText, "lastname", "", true, "filled lastname",
+         "filled lastname"},
+        {FormControlType::kInputText, "notempty", "Hi", true, "filled notempty",
+         "filled notempty"},
+        {FormControlType::kInputText, "noautocomplete", "", true,
          "filled noautocomplete", "filled noautocomplete"},
         // Disabled fields should not be autofilled.
-        {FormControlType::kInputText, "notenabled", "", "", false,
+        {FormControlType::kInputText, "notenabled", "", false,
          "filled notenabled", ""},
         // Readonly fields should not be autofilled.
-        {FormControlType::kInputText, "readonly", "", "", false,
-         "filled readonly", ""},
+        {FormControlType::kInputText, "readonly", "", false, "filled readonly",
+         ""},
         // Fields with "visibility: hidden" should not be autofilled.
-        {FormControlType::kInputText, "invisible", "", "", false,
+        {FormControlType::kInputText, "invisible", "", false,
          "filled invisible", ""},
         // Fields with "display:none" should not be autofilled.
-        {FormControlType::kInputText, "displaynone", "", "", false,
+        {FormControlType::kInputText, "displaynone", "", false,
          "filled displaynone", ""},
         // Regular <input type=month> should be autofilled.
-        {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
-         "2017-11"},
-        // Non-empty <input type=month> should not be autofilled.
-        {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
-         "2017-11", "2011-12"},
+        {FormControlType::kInputMonth, "month", "", true, "2017-11", "2017-11"},
+        {FormControlType::kInputMonth, "month-nonempty", "2011-12", true,
+         "2017-11", "2017-11"},
         // Regular select fields should be autofilled.
-        {FormControlType::kSelectOne, "select", "", "", true, "TX", "TX"},
+        {FormControlType::kSelectOne, "select", "", true, "TX", "TX"},
         // Select fields should be autofilled even if they already have a
         // non-empty value.
-        {FormControlType::kSelectOne, "select-nonempty", "CA", "", true, "TX",
+        {FormControlType::kSelectOne, "select-nonempty", "CA", true, "TX",
          "TX"},
-        // Select fields should not be autofilled if no new value is passed from
-        // autofill profile. The existing value should not be overriden.
-        {FormControlType::kSelectOne, "select-unchanged", "CA", "", false, "CA",
+        {FormControlType::kSelectOne, "select-unchanged", "CA", true, "CA",
          "CA"},
-        // Select fields that are not focusable should always be filled.
-        {FormControlType::kSelectOne, "select-displaynone", "CA", "", true,
-         "CA", "CA"},
+        // Select fields that are not focusable should be filled.
+        {FormControlType::kSelectOne, "select-displaynone", "CA", true, "TX",
+         "TX"},
         // Regular textarea elements should be autofilled.
-        {FormControlType::kTextArea, "textarea", "", "", true,
+        {FormControlType::kTextArea, "textarea", "", true,
          "some multi-\nline value", "some multi-\nline value"},
-        // Non-empty textarea elements should not be autofilled.
-        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", "",
-         false, "some multi-\nline value", "Go\naway!"},
+        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", true,
+         "some multi-\nline value", "some multi-\nline value"},
     };
     TestFormFillFunctions(html, unowned, url_override, field_cases,
                           std::size(field_cases),
                           mojom::ActionPersistence::kFill, &GetValueWrapper);
-    // Verify preview selection.
     WebInputElement firstname = GetInputElementById("firstname");
     EXPECT_EQ(16u, firstname.SelectionStart());
     EXPECT_EQ(16u, firstname.SelectionEnd());
@@ -640,53 +588,47 @@ class FormAutofillTest : public test::AutofillRendererTest {
                        const char* url_override) {
     static const AutofillFieldCase field_cases[] = {
         // Normal empty fields should be previewed.
-        {FormControlType::kInputText, "firstname", "", "", true,
+        {FormControlType::kInputText, "firstname", "", true,
          "suggested firstname", "suggested firstname"},
-        {FormControlType::kInputText, "lastname", "", "", true,
+        {FormControlType::kInputText, "lastname", "", true,
          "suggested lastname", "suggested lastname"},
-        // Hidden fields should not be extracted to form_data.
-        // Non empty fields should not be previewed.
-        {FormControlType::kInputText, "notempty", "Hi", "", false,
-         "suggested notempty", ""},
-        {FormControlType::kInputText, "noautocomplete", "", "off", true,
+        {FormControlType::kInputText, "notempty", "Hi", true,
+         "suggested notempty", "suggested notempty"},
+        {FormControlType::kInputText, "noautocomplete", "", true,
          "filled noautocomplete", "filled noautocomplete"},
         // Disabled fields should not be previewed.
-        {FormControlType::kInputText, "notenabled", "", "", false,
+        {FormControlType::kInputText, "notenabled", "", false,
          "suggested notenabled", ""},
         // Readonly fields should not be previewed.
-        {FormControlType::kInputText, "readonly", "", "", false,
+        {FormControlType::kInputText, "readonly", "", false,
          "suggested readonly", ""},
         // Fields with "visibility: hidden" should not be previewed.
-        {FormControlType::kInputText, "invisible", "", "", false,
+        {FormControlType::kInputText, "invisible", "", false,
          "suggested invisible", ""},
         // Fields with "display:none" should not previewed.
-        {FormControlType::kInputText, "displaynone", "", "", false,
+        {FormControlType::kInputText, "displaynone", "", false,
          "suggested displaynone", ""},
         // Regular <input type=month> should be previewed.
-        {FormControlType::kInputMonth, "month", "", "", true, "2017-11",
-         "2017-11"},
-        // Non-empty <input type=month> should not be previewed.
-        {FormControlType::kInputMonth, "month-nonempty", "2011-12", "", false,
-         "2017-11", ""},
+        {FormControlType::kInputMonth, "month", "", true, "2017-11", "2017-11"},
+        {FormControlType::kInputMonth, "month-nonempty", "2011-12", true,
+         "2017-11", "2017-11"},
         // Regular select fields should be previewed.
-        {FormControlType::kSelectOne, "select", "", "", true, "TX", "TX"},
+        {FormControlType::kSelectOne, "select", "", true, "TX", "TX"},
         // Select fields should be previewed even if they already have a
         // non-empty value.
-        {FormControlType::kSelectOne, "select-nonempty", "CA", "", true, "TX",
+        {FormControlType::kSelectOne, "select-nonempty", "CA", true, "TX",
          "TX"},
-        // Select fields should not be previewed if no suggestion is passed from
-        // autofill profile.
-        {FormControlType::kSelectOne, "select-unchanged", "CA", "", false, "",
-         ""},
+        // Select fields should be previewed even if no suggestion is passed.
+        {FormControlType::kSelectOne, "select-unchanged", "CA", true, "", ""},
         // Select fields that are not focusable should always be filled.
-        {FormControlType::kSelectOne, "select-displaynone", "CA", "", true,
-         "CA", "CA"},
+        {FormControlType::kSelectOne, "select-displaynone", "CA", true, "CA",
+         "CA"},
         // Normal textarea elements should be previewed.
-        {FormControlType::kTextArea, "textarea", "", "", true,
+        {FormControlType::kTextArea, "textarea", "", true,
          "suggested multi-\nline value", "suggested multi-\nline value"},
         // Nonempty textarea elements should not be previewed.
-        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", "",
-         false, "suggested multi-\nline value", ""},
+        {FormControlType::kTextArea, "textarea-nonempty", "Go\naway!", true,
+         "suggested multi-\nline value", "suggested multi-\nline value"},
     };
     TestFormFillFunctions(
         html, unowned, url_override, field_cases, std::size(field_cases),
@@ -1443,110 +1385,6 @@ class FormAutofillTest : public test::AutofillRendererTest {
     expected.set_is_user_edited(false);
     expected.set_max_length(0);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[5]);
-  }
-
-  // Similar to TestFillFormAndModifyValues().
-  // TODO(crbug.com/41483772): Remove implicit assumptions about `html` from
-  // this function.
-  void TestFillFormWithPlaceholderValues(const char* html,
-                                         const char* placeholder_firstname,
-                                         const char* placeholder_lastname,
-                                         const char* placeholder_email) {
-    LoadHTML(html);
-
-    std::vector<FormData> forms = UpdateFormCache().updated_forms;
-    ASSERT_EQ(1U, forms.size());
-
-    // Get the input element we want to find.
-    WebInputElement input_element = GetInputElementById("firstname");
-    WebFormElement form_element = input_element.Form();
-    std::vector<WebFormControlElement> control_elements =
-        GetOwnedAutofillableFormControls(input_element.GetDocument(),
-                                         form_element);
-
-    ASSERT_EQ(3U, control_elements.size());
-    // We now modify the values.
-    // These will be ignored, because it's (case insensitively) equal to the
-    // placeholder.
-    control_elements[0].SetValue(WebString::FromUTF16(
-        std::u16string(1, base::i18n::kLeftToRightMark) + u"first name"));
-    control_elements[1].SetValue(WebString::FromUTF16(u"LAST NAME"));
-    // This will be considered.
-    control_elements[2].SetValue(WebString::FromUTF16(u"john@smith.com"));
-    // Find the form that contains the input element.
-    FormData form = FindForm(input_element);
-    EXPECT_EQ(u"TestForm", form.name());
-    EXPECT_EQ(GURL("http://abc.com"), form.action());
-
-    const std::vector<FormFieldData>& fields = form.fields();
-    ASSERT_EQ(3U, fields.size());
-
-    // Preview the form and verify that the cursor position has been updated.
-    test_api(form).field(0).set_value(u"Wyatt");
-    test_api(form).field(1).set_value(u"Earpagus");
-    test_api(form).field(2).set_value(u"susan@smith.com");
-    test_api(form).field(0).set_is_autofilled(true);
-    test_api(form).field(1).set_is_autofilled(true);
-    test_api(form).field(2).set_is_autofilled(false);
-    ExecuteJavaScriptForTests("document.getElementById('firstname').focus();");
-    ApplyFieldsAction(input_element.GetDocument(), form.fields(),
-                      mojom::ActionPersistence::kPreview);
-
-    // Fill the form.
-    ApplyFieldsAction(input_element.GetDocument(), form.fields(),
-                      mojom::ActionPersistence::kFill);
-
-    // Find the newly-filled form that contains the input element.
-    FormData form2 = FindForm(input_element);
-    EXPECT_EQ(u"TestForm", form2.name());
-    EXPECT_EQ(GURL("http://abc.com"), form2.action());
-
-    const std::vector<FormFieldData>& fields2 = form2.fields();
-    ASSERT_EQ(3U, fields2.size());
-
-    FormFieldData expected;
-    expected.set_form_control_type(FormControlType::kInputText);
-    expected.set_max_length(FormFieldData::kDefaultMaxLength);
-
-    expected.set_id_attribute(u"firstname");
-    expected.set_name(expected.id_attribute());
-    expected.set_value(u"Wyatt");
-    if (placeholder_firstname) {
-      expected.set_label(ASCIIToUTF16(placeholder_firstname));
-      expected.set_placeholder(ASCIIToUTF16(placeholder_firstname));
-    } else {
-      expected.set_label({});
-      expected.set_placeholder({});
-    }
-    expected.set_is_autofilled(true);
-    EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[0]);
-
-    expected.set_id_attribute(u"lastname");
-    expected.set_name(expected.id_attribute());
-    expected.set_value(u"Earpagus");
-    if (placeholder_lastname) {
-      expected.set_label(ASCIIToUTF16(placeholder_lastname));
-      expected.set_placeholder(ASCIIToUTF16(placeholder_lastname));
-    } else {
-      expected.set_label({});
-      expected.set_placeholder({});
-    }
-    expected.set_is_autofilled(true);
-    EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[1]);
-
-    // The email field is not filled, because there is a value in it.
-    expected.set_id_attribute(u"email");
-    expected.set_name(expected.id_attribute());
-    expected.set_value(u"john@smith.com");
-    if (placeholder_email) {
-      expected.set_label(ASCIIToUTF16(placeholder_email));
-      expected.set_placeholder(ASCIIToUTF16(placeholder_email));
-    } else {
-      expected.set_label({});
-      expected.set_placeholder({});
-    }
-    expected.set_is_autofilled(false);
-    EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields2[2]);
   }
 
   // Similar to TestFillFormAndModifyValues().
@@ -3095,7 +2933,7 @@ TEST_F(FormAutofillTest, FillFormForUnownedNonASCIIForm) {
   TestFillForm(html.c_str(), true, nullptr);
 }
 
-TEST_F(FormAutofillTest, PreviewForm) {
+TEST_F(FormAutofillTest, PreviewFormX) {
   TestPreviewForm(kFormHtml, false, nullptr);
 }
 
@@ -4525,17 +4363,6 @@ TEST_F(FormAutofillTest, FillFormNonEmptyFieldsWithPlaceholderValues) {
            <input type=submit value=Send>
          </form>)",
       false, nullptr, nullptr, "First Name", "Last Name", "Email");
-}
-
-TEST_F(FormAutofillTest, FillFormWithPlaceholderValues) {
-  TestFillFormWithPlaceholderValues(
-      R"(<form name=TestForm action='http://abc.com'>
-           <input id=firstname placeholder='First Name' value='First Name'>
-           <input id=lastname placeholder='Last Name'>
-           <input id=email placeholder=Email value=Email>
-           <input type=submit value=Send>
-         </form>)",
-      "First Name", "Last Name", "Email");
 }
 
 TEST_F(FormAutofillTest, FillFormNonEmptyFieldForUnownedForm) {

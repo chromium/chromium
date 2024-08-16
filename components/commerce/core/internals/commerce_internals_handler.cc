@@ -250,11 +250,13 @@ void CommerceInternalsHandler::GetProductSpecificationsDetails(
     product_specifications->update_time =
         base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(spec.update_time()));
     product_specifications->name = spec.name();
-    std::vector<GURL> urls;
-    for (const GURL& url : spec.urls()) {
-      urls.push_back(url);
+    auto& url_infos = product_specifications->url_infos;
+    for (const UrlInfo& url_info : spec.url_infos()) {
+      auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
+      url_info_ptr->url = url_info.url;
+      url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+      url_infos.push_back(std::move(url_info_ptr));
     }
-    product_specifications->urls = std::move(urls);
     product_specifications_list.push_back(std::move(product_specifications));
   }
   std::move(callback).Run(std::move(product_specifications_list));
@@ -271,6 +273,10 @@ void CommerceInternalsHandler::ResetProductSpecifications() {
   shopping_service_->pref_service_->SetTime(
       commerce::kProductSpecificationsEntryPointLastDismissedTime,
       base::Time::Now());
+  shopping_service_->pref_service_->SetInteger(
+      commerce::kProductSpecificationsAcceptedDisclosureVersion,
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kUnknown));
   product_specifications_service->GetAllProductSpecifications(base::BindOnce(
       &CommerceInternalsHandler::DeleteAllProductSpecificationSets,
       weak_ptr_factory_.GetWeakPtr()));

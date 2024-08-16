@@ -11,10 +11,10 @@
 #include "base/test/task_environment.h"
 #include "components/sharing_message/features.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_sync_bridge.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +80,9 @@ class SharingMessageBridgeTest : public testing::Test {
   }
 
   SharingMessageBridgeImpl* bridge() { return bridge_.get(); }
-  syncer::MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  syncer::MockDataTypeLocalChangeProcessor* processor() {
+    return &mock_processor_;
+  }
 
   std::unique_ptr<SharingMessageSpecifics> CreateSpecifics(
       const std::string& payload) const {
@@ -95,7 +97,7 @@ class SharingMessageBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<SharingMessageBridgeImpl> bridge_;
 };
 
@@ -160,7 +162,7 @@ TEST_F(SharingMessageBridgeTest, ShouldInvokeCallbackOnSuccess) {
 
   // Check that GetDataForCommit() doesn't return anything after successful
   // commit.
-  base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
+  base::MockCallback<syncer::DataTypeSyncBridge::DataCallback> data_callback;
   std::unique_ptr<DataBatch> data_batch =
       bridge()->GetDataForCommit({storage_key});
   ASSERT_THAT(data_batch, NotNull());
@@ -299,7 +301,7 @@ TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
   bridge()->SendSharingMessage(CreateSpecifics(payload1), callback.Get());
   bridge()->SendSharingMessage(CreateSpecifics(payload2), callback.Get());
 
-  base::MockCallback<syncer::ModelTypeSyncBridge::DataCallback> data_callback;
+  base::MockCallback<syncer::DataTypeSyncBridge::DataCallback> data_callback;
   std::unique_ptr<DataBatch> data_batch = bridge()->GetAllDataForDebugging();
   ASSERT_THAT(data_batch, NotNull());
   std::unordered_map<std::string, std::string> storage_key_to_payload =
@@ -307,7 +309,7 @@ TEST_F(SharingMessageBridgeTest, ShouldReturnUnsyncedData) {
   EXPECT_THAT(storage_key_to_payload,
               UnorderedElementsAre(Pair(_, payload1), Pair(_, payload2)));
 
-  syncer::ModelTypeSyncBridge::StorageKeyList storage_key_list;
+  syncer::DataTypeSyncBridge::StorageKeyList storage_key_list;
   for (const auto& sk_to_payload : storage_key_to_payload) {
     storage_key_list.push_back(sk_to_payload.first);
   }

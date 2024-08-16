@@ -25,8 +25,9 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::span<const uint8_t> stream(data, size);
-  safe_browsing::dmg::MemoryReadStream input(stream);
+  // SAFETY: libfuzzer guarantees a valid pointer and size pair.
+  safe_browsing::dmg::MemoryReadStream input(
+      UNSAFE_BUFFERS(base::span(data, size)));
   safe_browsing::dmg::UDIFParser udif_parser(&input);
 
   if (!udif_parser.Parse())

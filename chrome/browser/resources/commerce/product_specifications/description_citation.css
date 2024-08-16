@@ -10,11 +10,17 @@
 cr-button {
     --cr-button-background-color: var(--color-product-specifications-citation-background);
     border-radius: 8px;
+    font-size: 11px;
     height: 16px;
     margin-inline-end: 1px;
-    margin-inline-start: 1px;
+    margin-inline-start: 4px;
     min-width: 16px;
     padding: 0px;
     text-align: center;
     width: 16px;
+}
+
+cr-tooltip {
+    --paper-tooltip-duration-in: 0ms;
+    --paper-tooltip-duration-out: 0ms;
 }

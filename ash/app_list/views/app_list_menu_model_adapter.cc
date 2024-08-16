@@ -109,7 +109,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
       }
       break;
     case APP_LIST_APP_TYPE_LAST:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -179,8 +179,7 @@ void AppListMenuModelAdapter::MaybeRecordAppLaunched(int command_id) {
         case AppListLaunchedFrom::kLaunchedFromShelf:
         case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
         case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
   }

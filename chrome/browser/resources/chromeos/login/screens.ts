@@ -12,14 +12,12 @@ import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
 import './screens/common/assistant_optin.js';
-import './screens/common/autolaunch.js';
 import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
 import './screens/common/device_disabled.js';
 import './screens/common/display_size.js';
 import './screens/common/drive_pinning.js';
-import './screens/common/enable_kiosk.js';
 import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
 import './screens/common/gaia_info.js';
@@ -109,7 +107,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     tag: 'apply-online-password-element',
     id: 'apply-online-password',
   },
-  {tag: 'autolaunch-element', id: 'autolaunch'},
   {
     tag: 'categories-selection-element',
     id: 'categories-selection',
@@ -134,7 +131,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
     id: 'drive-pinning',
     condition: 'isDrivePinningEnabled',
   },
-  {tag: 'enable-kiosk-element', id: 'kiosk-enable'},
   {
     tag: 'enter-old-password-element',
     id: 'enter-old-password',

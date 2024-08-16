@@ -97,14 +97,14 @@ class PasswordStoreSync {
  public:
   class MetadataStore : public syncer::SyncMetadataStore {
    public:
-    // Reads and returns all the stored sync metadata for |model_type|. This is
+    // Reads and returns all the stored sync metadata for |data_type|. This is
     // currently used only for passwords.
     virtual std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
-        syncer::ModelType model_type) = 0;
+        syncer::DataType data_type) = 0;
 
-    // Deletes all the stored sync metadata for |model_type|. This is currently
+    // Deletes all the stored sync metadata for |data_type|. This is currently
     // used only for passwords.
-    virtual void DeleteAllSyncMetadata(syncer::ModelType model_type) = 0;
+    virtual void DeleteAllSyncMetadata(syncer::DataType data_type) = 0;
 
     // Registers a callback that will be invoked whenever all pending (unsynced)
     // deletions are gone. If they were committed to the server (or, rarely, the

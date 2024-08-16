@@ -5,8 +5,8 @@
 // import {flush} from
 // '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertArrayEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createAndSetVoices, createSpeechSynthesisVoice, emitEvent, setVoices, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -15,7 +15,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 
 // TODO: b/40927698 - Add more tests.
 suite('PrefsTest', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let speechSynthesis: FakeSpeechSynthesis;
 
@@ -33,10 +33,133 @@ suite('PrefsTest', () => {
     app.synth = speechSynthesis;
   });
 
+
   suite('on restore settings from prefs', () => {
     setup(() => {
       // We are not testing the toolbar for this suite.
       app.$.toolbar.restoreSettingsFromPrefs = () => {};
+    });
+
+    suite('with no initial voices', () => {
+      setup(() => {
+        chrome.readingMode.isAutoVoiceSwitchingEnabled = false;
+        chrome.readingMode.baseLanguageForSpeech = 'en';
+
+        // Set synthesis to have no available voices
+        setVoices(app, speechSynthesis, []);
+        app.resetVoiceForTesting();
+      });
+
+      test('with no settings, voice selected in onVoicesChanged', () => {
+        chrome.readingMode.getStoredVoice = () => '';
+
+        // When there's no voices available, there shouldn't be a speech
+        // synthesis voice selected.
+        app.restoreSettingsFromPrefs();
+        assertFalse(!!app.getSpeechSynthesisVoice());
+
+        // Update the speech synthesis engine with voices.
+        setVoices(
+            app, speechSynthesis,
+            [createSpeechSynthesisVoice({lang: 'en', name: 'Yu'})]);
+        app.onVoicesChanged();
+
+        // Once voices are available, settings should be restored.
+        assertTrue(!!app.getSpeechSynthesisVoice());
+      });
+
+      test(
+          'with no settings, dfferent language voice selected in onVoicesChanged',
+          () => {
+            chrome.readingMode.getStoredVoice = () => '';
+
+            // When there's no voices available, there shouldn't be a speech
+            // synthesis voice selected.
+            app.restoreSettingsFromPrefs();
+            assertFalse(!!app.getSpeechSynthesisVoice());
+
+            // Update the speech synthesis engine with voices.
+            setVoices(
+                app, speechSynthesis,
+                [createSpeechSynthesisVoice({lang: 'es', name: 'Kristi'})]);
+            app.onVoicesChanged();
+
+            // Once voices are available, settings should be restored.
+            assertTrue(!!app.getSpeechSynthesisVoice());
+          });
+
+      test(
+          'with no initial voices and previously selected voice, correct voice selected after onVoicesChanged',
+          () => {
+            chrome.readingMode.getStoredVoice = () => 'Kristi';
+
+            // When there's no voices available, there shouldn't be a speech
+            // synthesis voice selected.
+            app.restoreSettingsFromPrefs();
+            assertFalse(!!app.getSpeechSynthesisVoice());
+
+            // Update the speech synthesis engine with voices.
+            setVoices(app, speechSynthesis, [
+              createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
+              createSpeechSynthesisVoice({lang: 'en-uk', name: 'Kristi'}),
+            ]);
+            app.onVoicesChanged();
+
+            // Once voices are available, settings should be restored.
+            const selectedVoice = app.getSpeechSynthesisVoice();
+            assertTrue(!!selectedVoice);
+            assertEquals('Kristi', selectedVoice.name);
+          });
+
+      test(
+          'onVoicesChanged after settings restored, settings aren\'t updated',
+          () => {
+            chrome.readingMode.getStoredVoice = () => 'Shari';
+
+            // When there's no voices available, there shouldn't be a speech
+            // synthesis voice selected.
+            app.restoreSettingsFromPrefs();
+            assertFalse(!!app.getSpeechSynthesisVoice());
+            assertTrue(app.shouldAttemptLanguageSettingsRestore);
+
+            const futureSelectedVoice =
+                createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
+
+            // Update the speech synthesis engine with voices.
+            setVoices(app, speechSynthesis, [
+              createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
+              createSpeechSynthesisVoice({lang: 'en', name: 'Shari'}),
+              futureSelectedVoice,
+            ]);
+            app.onVoicesChanged();
+            assertFalse(app.shouldAttemptLanguageSettingsRestore);
+
+            // Once voices are available, settings should be restored.
+            let selectedVoice = app.getSpeechSynthesisVoice();
+            assertTrue(!!selectedVoice);
+            assertEquals('Shari', selectedVoice.name);
+
+            emitEvent(
+                app, ToolbarEvent.VOICE,
+                {detail: {selectedVoice: futureSelectedVoice}});
+            selectedVoice = app.getSpeechSynthesisVoice();
+            assertTrue(!!selectedVoice);
+            assertEquals('Kristi', selectedVoice.name);
+
+            // We have to update the stored voice so onVoicesChanged recognizes
+            // a user chosen voice.
+            chrome.readingMode.getStoredVoice = () => 'Kristi';
+
+            app.onVoicesChanged();
+            assertFalse(app.shouldAttemptLanguageSettingsRestore);
+
+            // After onVoicesChanged, the most recently selected voice should
+            // be used.
+            selectedVoice = app.getSpeechSynthesisVoice();
+            assertTrue(!!selectedVoice);
+            assertEquals('Kristi', selectedVoice.name);
+          });
     });
 
     suite('populates enabled languages', () => {

@@ -113,8 +113,7 @@ bool PointOnWindowEdge(aura::Window* window,
     case HTBOTTOM:
       return ContainsX(window, p.x()) && p.y() == window->bounds().height();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -549,7 +548,7 @@ aura::Window* MultiWindowResizeController::FindWindowTouching(
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return nullptr;

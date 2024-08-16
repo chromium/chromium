@@ -24,8 +24,7 @@ struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
       case ui::DIALOG_BUTTON_CANCEL:
         return ui::mojom::DialogButton::CANCEL;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return ui::mojom::DialogButton::NONE;
+        NOTREACHED();
     }
   }
 
@@ -42,47 +41,7 @@ struct EnumTraits<ui::mojom::DialogButton, ui::DialogButton> {
         *out = ui::DIALOG_BUTTON_CANCEL;
         return true;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
-    }
-  }
-};
-
-template <>
-struct EnumTraits<ui::mojom::ModalType, ui::ModalType> {
-  static ui::mojom::ModalType ToMojom(ui::ModalType modal_type) {
-    switch (modal_type) {
-      case ui::MODAL_TYPE_NONE:
-        return ui::mojom::ModalType::NONE;
-      case ui::MODAL_TYPE_WINDOW:
-        return ui::mojom::ModalType::WINDOW;
-      case ui::MODAL_TYPE_CHILD:
-        return ui::mojom::ModalType::CHILD;
-      case ui::MODAL_TYPE_SYSTEM:
-        return ui::mojom::ModalType::SYSTEM;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        return ui::mojom::ModalType::NONE;
-    }
-  }
-
-  static bool FromMojom(ui::mojom::ModalType modal_type, ui::ModalType* out) {
-    switch (modal_type) {
-      case ui::mojom::ModalType::NONE:
-        *out = ui::MODAL_TYPE_NONE;
-        return true;
-      case ui::mojom::ModalType::WINDOW:
-        *out = ui::MODAL_TYPE_WINDOW;
-        return true;
-      case ui::mojom::ModalType::CHILD:
-        *out = ui::MODAL_TYPE_CHILD;
-        return true;
-      case ui::mojom::ModalType::SYSTEM:
-        *out = ui::MODAL_TYPE_SYSTEM;
-        return true;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
   }
 };
@@ -114,8 +73,7 @@ struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
       case ui::MENU_SOURCE_ADJUST_SELECTION_RESET:
         return ui::mojom::MenuSourceType::ADJUST_SELECTION_RESET;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ui::mojom::MenuSourceType::NONE;
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::MenuSourceType modal_type,
@@ -155,8 +113,7 @@ struct EnumTraits<ui::mojom::MenuSourceType, ui::MenuSourceType> {
         *out = ui::MENU_SOURCE_ADJUST_SELECTION_RESET;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -178,9 +135,9 @@ struct EnumTraits<ui::mojom::WindowShowState, ui::WindowShowState> {
       case ui::SHOW_STATE_NORMAL:
         return ui::mojom::WindowShowState::SHOW_STATE_NORMAL;
       case ui::SHOW_STATE_END:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::WindowShowState window_show_state,
@@ -205,7 +162,7 @@ struct EnumTraits<ui::mojom::WindowShowState, ui::WindowShowState> {
         *out = ui::SHOW_STATE_NORMAL;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

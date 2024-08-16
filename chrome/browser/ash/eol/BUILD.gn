@@ -1,0 +1,90 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("eol") {
+  sources = [
+    "eol_incentive_util.cc",
+    "eol_incentive_util.h",
+    "eol_notification.cc",
+    "eol_notification.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/extended_updates",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//components/prefs",
+    "//components/user_manager",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center/public/cpp",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "eol_notification_unittest.cc" ]
+
+  deps = [
+    ":eol",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/ash/extended_updates/test:test_support",
+    "//chrome/browser/notifications",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/message_center/public/cpp",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "eol_notification_browsertest.cc" ]
+
+  deps = [
+    ":eol",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/notifications",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/dbus/update_engine",
+    "//components/session_manager/core",
+    "//components/user_manager",
+    "//content/test:test_support",
+  ]
+}

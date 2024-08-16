@@ -3,24 +3,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import subprocess
-import sys
 import unittest
-
-import mock
+from unittest import mock
 
 import merge_lib as merger
 
 
 class MergeLibTest(unittest.TestCase):
 
-  # pylint: disable=super-with-arguments
   def __init__(self, *args, **kwargs):
-    super(MergeLibTest, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self.maxDiff = None
-
-  # pylint: enable=super-with-arguments
 
   @mock.patch.object(subprocess, 'check_output')
   def test_validate_and_convert_profraw(self, mock_cmd):

@@ -14,9 +14,9 @@
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/test/data_type_test_util.h"
 #include "components/sync/test/fake_sync_scheduler.h"
 #include "components/sync/test/mock_connection_manager.h"
-#include "components/sync/test/model_type_test_util.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,31 +66,31 @@ ClientToServerMessage DefaultGetUpdatesRequest() {
 
 // Builds a ClientToServerResponse with some data type ids, including
 // invalid ones.  GetTypesToMigrate() should return only the valid
-// model types.
+// data types.
 TEST(SyncerProtoUtil, GetTypesToMigrate) {
   sync_pb::ClientToServerResponse response;
   response.add_migrated_data_type_id(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   response.add_migrated_data_type_id(
-      GetSpecificsFieldNumberFromModelType(HISTORY_DELETE_DIRECTIVES));
+      GetSpecificsFieldNumberFromDataType(HISTORY_DELETE_DIRECTIVES));
   response.add_migrated_data_type_id(-1);
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
+  EXPECT_EQ(DataTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
             GetTypesToMigrate(response));
 }
 
 // Builds a ClientToServerResponse_Error with some error data type
 // ids, including invalid ones.  ConvertErrorPBToSyncProtocolError() should
-// return a SyncProtocolError with only the valid model types.
+// return a SyncProtocolError with only the valid data types.
 TEST(SyncerProtoUtil, ConvertErrorPBToSyncProtocolError) {
   sync_pb::ClientToServerResponse_Error error_pb;
   error_pb.set_error_type(sync_pb::SyncEnums::THROTTLED);
   error_pb.add_error_data_type_ids(
-      GetSpecificsFieldNumberFromModelType(BOOKMARKS));
+      GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   error_pb.add_error_data_type_ids(
-      GetSpecificsFieldNumberFromModelType(HISTORY_DELETE_DIRECTIVES));
+      GetSpecificsFieldNumberFromDataType(HISTORY_DELETE_DIRECTIVES));
   error_pb.add_error_data_type_ids(-1);
   SyncProtocolError error = ConvertErrorPBToSyncProtocolError(error_pb);
-  EXPECT_EQ(ModelTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
+  EXPECT_EQ(DataTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
             error.error_data_types);
 }
 
@@ -102,7 +102,7 @@ class SyncerProtoUtilTest : public testing::Test {
         /*extensions_activity=*/nullptr,
         /*listeners=*/std::vector<SyncEngineEventListener*>(),
         /*debug_info_getter=*/nullptr,
-        /*model_type_registry=*/nullptr,
+        /*data_type_registry=*/nullptr,
         /*cache_guid=*/"",
         /*birthday=*/"",
         /*bag_of_chips=*/"",
@@ -271,13 +271,13 @@ TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr, "cache_guid",
+                           /*data_type_registry=*/nullptr, "cache_guid",
                            "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);
 
   ClientToServerResponse response;
-  ModelTypeSet partial_failure_data_types;
+  DataTypeSet partial_failure_data_types;
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);
@@ -302,13 +302,13 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
                            /*extensions_activity=*/nullptr,
                            /*listeners=*/{},
                            /*debug_info_getter=*/nullptr,
-                           /*model_type_registry=*/nullptr, "cache_guid",
+                           /*data_type_registry=*/nullptr, "cache_guid",
                            "birthday",
                            /*bag_of_chips=*/"", base::Seconds(100));
   SyncCycle cycle(&context, &mock_sync_scheduler);
 
   ClientToServerResponse response;
-  ModelTypeSet partial_failure_data_types;
+  DataTypeSet partial_failure_data_types;
   SyncerError error = SyncerProtoUtil::PostClientToServerMessage(
       DefaultGetUpdatesRequest(), &response, &cycle,
       &partial_failure_data_types);

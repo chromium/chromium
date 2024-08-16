@@ -208,6 +208,9 @@ class PictureInPictureBrowserFrameView
   gfx::Insets GetClientAreaInsets(HMONITOR monitor) const;
 #endif
 
+  // Returns true if `content_setting_views_` has any visible views.
+  bool HasAnyVisibleContentSettingViews() const;
+
   // Helper functions for testing.
   std::vector<gfx::Animation*> GetRenderActiveAnimationsForTesting();
   std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
@@ -366,6 +369,8 @@ class PictureInPictureBrowserFrameView
   gfx::MultiAnimation hide_back_to_tab_button_animation_;
   gfx::MultiAnimation show_close_button_animation_;
   gfx::MultiAnimation hide_close_button_animation_;
+  gfx::LinearAnimation show_all_buttons_animation_;
+  gfx::LinearAnimation hide_all_buttons_animation_;
 
   // The foreground color given the current state of the
   // `top_bar_color_animation_`.

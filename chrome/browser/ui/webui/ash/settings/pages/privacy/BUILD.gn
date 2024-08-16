@@ -1,0 +1,123 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("privacy") {
+  sources = [
+    "app_permission_handler.cc",
+    "app_permission_handler.h",
+    "metrics_consent_handler.cc",
+    "metrics_consent_handler.h",
+    "peripheral_data_access_handler.cc",
+    "peripheral_data_access_handler.h",
+    "privacy_hub_handler.cc",
+    "privacy_hub_handler.h",
+    "privacy_section.cc",
+    "privacy_section.h",
+    "sync_section.cc",
+    "sync_section.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/login/auth",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
+    "//ash/components/arc",
+    "//ash/constants",
+    "//ash/webui/projector_app/public/cpp",
+    "//base:i18n",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/dbus/pciguard",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/peripheral_notification",
+    "//chromeos/ash/components/settings",
+    "//components/google/core/common",
+    "//components/sync/base:features",
+    "//ui/base",
+    "//ui/chromeos",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_permission_handler_unittest.cc",
+    "metrics_consent_handler_unittest.cc",
+    "privacy_hub_handler_unittest.cc",
+  ]
+
+  deps = [
+    ":privacy",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//ash/webui/projector_app/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/ash/eche_app",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/privacy_hub",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/settings",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/ownership",
+    "//components/pref_registry",
+    "//components/prefs:test_support",
+    "//components/services/app_service",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

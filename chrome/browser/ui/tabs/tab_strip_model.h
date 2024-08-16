@@ -435,6 +435,7 @@ class TabStripModel : public TabGroupController {
   // features from showing tabstrip-modal UI.
   bool CanShowModalUI() const;
   std::unique_ptr<ScopedTabStripModalUI> ShowModalUI();
+  void ForceShowingModalUIForTesting(bool showing);
 
   // Command level API /////////////////////////////////////////////////////////
 

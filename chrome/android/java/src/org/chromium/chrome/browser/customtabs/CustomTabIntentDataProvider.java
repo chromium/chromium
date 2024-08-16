@@ -70,6 +70,7 @@ import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -197,9 +198,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                     "com.google.android.googlequicksearchbox");
 
     /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
+    // TODO(b/40239922): remove when no longer relevant.
+    private static final String DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES =
+            BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : null;
+
     public static final StringCachedFieldTrialParameter OMNIBOX_ALLOWED_PACKAGE_NAMES =
             ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.SEARCH_IN_CCT, "omnibox_allowed_package_names", null);
+                    ChromeFeatureList.SEARCH_IN_CCT,
+                    "omnibox_allowed_package_names",
+                    DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES);
 
     private static final String EXTRA_TWA_DISCLOSURE_UI =
             "androidx.browser.trusted.extra.DISCLOSURE_VERSION";
@@ -573,7 +580,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                                 TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY,
                                 false);
 
-        mActivityType = isTwa ? ActivityType.TRUSTED_WEB_ACTIVITY : ActivityType.CUSTOM_TAB;
+        mActivityType =
+                isTwa
+                        ? ActivityType.TRUSTED_WEB_ACTIVITY
+                        : isAuthTab() ? ActivityType.AUTH_TAB : ActivityType.CUSTOM_TAB;
         mTrustedWebActivityAdditionalOrigins =
                 IntentUtils.safeGetStringArrayListExtra(
                         intent, TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
@@ -1551,10 +1561,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public boolean isAuthView() {
+    public boolean isAuthTab() {
         // TODO(crbug.com/345627627): Remove this and set this to return true in a new
         //     intent data provider.
-        boolean isAuthView = false;
-        return ChromeFeatureList.sCctAuthView.isEnabled() && isAuthView;
+        boolean isAuthTab = false;
+        return ChromeFeatureList.sCctAuthTab.isEnabled() && isAuthTab;
     }
 }

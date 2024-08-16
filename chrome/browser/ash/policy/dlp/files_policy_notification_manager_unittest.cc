@@ -117,7 +117,7 @@ FilesPolicyDialog::BlockReason ConvertPolicy(
       // return a generic reason.
       return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
     case file_manager::io_task::PolicyErrorType::kDlpWarningTimeout:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

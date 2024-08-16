@@ -135,9 +135,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -198,7 +200,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(11)
+                    .setRevision(13)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.
@@ -582,7 +584,7 @@ public class TabGridDialogTest {
 
         Callback<Integer> closeTabAt =
                 (index) -> {
-                    model.closeTab(model.getTabAt(index));
+                    model.closeTabs(TabClosureParams.closeTab(model.getTabAt(index)).build());
                 };
         // Close two tabs in the current group
         ThreadUtils.runOnUiThreadBlocking(closeTabAt.bind(0));
@@ -1360,6 +1362,7 @@ public class TabGridDialogTest {
     // Regression test for https://crbug.com/1419842
     @Test
     @MediumTest
+    @DisabledTest(message = "TODO(crbug.com/359632348): Fix flakiness.")
     public void testTabGroupNaming_afterFocusNoTitleSaved() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);
@@ -2095,11 +2098,13 @@ public class TabGridDialogTest {
 
         // For devices with version higher or equal to O_MR1 and use light color navigation bar,
         // make sure that the color of navigation bar is changed by dialog scrim.
+        // Skip if Chrome is drawing edge to edge as navigation bar will stay transparent.
         Resources resources = cta.getResources();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1
                 || !resources.getBoolean(R.bool.window_light_navigation_bar)
                 || isTablet(cta)
-                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()) {
+                || cta.getTabModelSelectorSupplier().get().isIncognitoBrandedModelSelected()
+                || EdgeToEdgeUtils.isEnabled()) {
             return;
         }
         @ColorInt int scrimDefaultColor = cta.getColor(R.color.default_scrim_color);

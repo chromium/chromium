@@ -28,8 +28,9 @@ bool ExtensionFunctionRegistry::OverrideFunctionForTesting(
     const std::string& name,
     ExtensionFunctionFactory factory) {
   auto iter = factories_.find(name);
-  if (iter == factories_.end())
+  if (iter == factories_.end()) {
     return false;
+  }
   iter->second.factory_ = factory;
   return true;
 }

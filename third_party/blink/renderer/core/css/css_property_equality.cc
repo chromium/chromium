@@ -467,8 +467,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ImageRendering() == b.ImageRendering();
     case CSSPropertyID::kInitialLetter:
       return a.InitialLetter() == b.InitialLetter();
+    case CSSPropertyID::kPositionArea:
     case CSSPropertyID::kInsetArea:
-      return a.GetInsetArea() == b.GetInsetArea();
+      return a.GetPositionArea() == b.GetPositionArea();
     case CSSPropertyID::kInterpolateSize:
       return a.InterpolateSize() == b.InterpolateSize();
     case CSSPropertyID::kIsolation:
@@ -515,6 +516,12 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MarkerStartResource() == b.MarkerStartResource();
     case CSSPropertyID::kMaskType:
       return a.MaskType() == b.MaskType();
+    case CSSPropertyID::kMasonryTemplateTracks:
+      return a.MasonryTemplateTracks() == b.MasonryTemplateTracks();
+    case CSSPropertyID::kMasonryTrackEnd:
+      return a.MasonryTrackEnd() == b.MasonryTrackEnd();
+    case CSSPropertyID::kMasonryTrackStart:
+      return a.MasonryTrackStart() == b.MasonryTrackStart();
     case CSSPropertyID::kMathShift:
       return a.MathShift() == b.MathShift();
     case CSSPropertyID::kMathStyle:
@@ -755,6 +762,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
               a.GetVerticalAlignLength() == b.GetVerticalAlignLength());
     case CSSPropertyID::kViewTransitionClass:
       return a.ViewTransitionClass() == b.ViewTransitionClass();
+    case CSSPropertyID::kViewTransitionGroup:
+      return a.ViewTransitionGroup() == b.ViewTransitionGroup();
     case CSSPropertyID::kViewTransitionName:
       return a.ViewTransitionName() == b.ViewTransitionName();
     case CSSPropertyID::kVisibility:
@@ -1245,6 +1254,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kScrollStart:
     case CSSPropertyID::kScrollStartTarget:
     case CSSPropertyID::kScrollTimeline:
+    case CSSPropertyID::kTextBox:
     case CSSPropertyID::kTextDecoration:
     case CSSPropertyID::kTextEmphasis:
     case CSSPropertyID::kTextSpacing:

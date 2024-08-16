@@ -470,33 +470,27 @@ TEST(BirchRankerTest, RankRecentTabItems) {
 
   // Create phone tab with a timestamp in the last 5 minutes.
   BirchTabItem item0(u"item0", GURL(), TimeFromString("22 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
 
   // Create tablet tab with a timestamp in the last 5 minutes.
   BirchTabItem item1(u"item1", GURL(), TimeFromString("22 Feb 2024 08:58 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kTablet);
 
   // Create phone tab with a timestamp in the last hour.
   BirchTabItem item2(u"item2", GURL(), TimeFromString("22 Feb 2024 08:31 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kPhone);
 
   // Create a desktop tab with timestamp in the last hour.
   BirchTabItem item3(u"item3", GURL(), TimeFromString("22 Feb 2024 08:30 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp in the last day.
   BirchTabItem item4(u"item4", GURL(), TimeFromString("21 Feb 2024 09:01 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Create a tab with timestamp more than a day ago.
   BirchTabItem item5(u"item5", GURL(), TimeFromString("21 Feb 2024 08:59 UTC"),
-                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop,
-                     ui::ImageModel());
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -538,7 +532,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_TRUE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"));
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);
@@ -558,7 +552,7 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   ASSERT_FALSE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, GURL("http://icon.com/"));
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);

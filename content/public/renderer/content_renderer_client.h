@@ -28,6 +28,7 @@
 #include "media/base/key_system_info.h"
 #include "media/base/key_systems_support_registration.h"
 #include "media/base/supported_types.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -134,6 +135,10 @@ class CONTENT_EXPORT ContentRendererClient {
       const GURL& original_url,
       const std::string& original_mime_type);
 
+  // Specifies whether to disable DOM storage interfaces such as localStorage
+  // and sessionStorage.
+  virtual bool IsDomStorageDisabled() const;
+
   // Returns a scriptable object which implements custom javascript API for the
   // given element. This is used for external plugin handlers for providing
   // custom API such as|postMessage| for <embed> and <object>.
@@ -202,6 +207,11 @@ class CONTENT_EXPORT ContentRendererClient {
   // returns NULL then none will be used.
   virtual std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
   CreateWebSocketHandshakeThrottleProvider();
+
+  // Allows the embedder to control whether the renderer should leverage the
+  // compiled code cache with hashing for a given `request_url`.
+  virtual bool ShouldUseCodeCacheWithHashing(
+      const blink::WebURL& request_url) const;
 
   // Called immediately after the sandbox is initialized on the main thread.
   // (If the renderer is run with --no-sandbox, it is still called in
@@ -377,7 +387,8 @@ class CONTENT_EXPORT ContentRendererClient {
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
-      const GURL& script_url) {}
+      const GURL& script_url,
+      const blink::ServiceWorkerToken& service_worker_token) {}
 
   // Notifies that a service worker context has finished executing its top-level
   // JavaScript. This function is called from the worker thread.

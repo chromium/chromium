@@ -20,6 +20,9 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
+// NSUserDefaults key to list the number of profile available.
+extern NSString* const kDisplaySwitchProfile;
+
 // Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
@@ -129,6 +132,12 @@ std::optional<int> GetFirstRunRecency();
 // The value could be set both from Experimental Settings and command line
 // switches, but the former takes precedence.
 std::string GetSegmentForForcedDeviceSwitcherExperience();
+
+// Returns the selected shopper segment the user wants to simulate as a string.
+// The string should either be nil, "ShoppingUser", or "Other". The value could
+// be set both from Experimental Settings and command line switches, but the
+// former takes precedence.
+std::string GetSegmentForForcedShopperExperience();
 
 // Whether a phone backup/restore state should be simulated.
 bool SimulatePostDeviceRestore();

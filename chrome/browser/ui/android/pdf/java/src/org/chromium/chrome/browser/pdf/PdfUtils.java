@@ -53,7 +53,7 @@ public class PdfUtils {
     }
 
     private static final String TAG = "PdfUtils";
-    private static final String PDF_EXTENSION = "pdf";
+    private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
     private static boolean sShouldOpenPdfInlineForTesting;
     private static boolean sSkipLoadPdfForTesting;
 
@@ -96,9 +96,6 @@ public class PdfUtils {
     }
 
     private static String getDecodedScheme(String url) {
-        if (!shouldOpenPdfInline()) {
-            return null;
-        }
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         if (decodedUrl == null) {
             return null;
@@ -109,11 +106,21 @@ public class PdfUtils {
 
     /** Determines whether to open pdf inline. */
     @CalledByNative
-    public static boolean shouldOpenPdfInline() {
+    public static boolean shouldOpenPdfInline(boolean isIncognito) {
         if (sShouldOpenPdfInlineForTesting) return true;
-        // TODO(https://crbug.com/327492784): Update checks once release plan is finalized.
-        return ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)
-                && BuildCompat.isAtLeastV();
+        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)) {
+            return false;
+        }
+        if (isIncognito
+                && !ContentFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsBoolean(
+                                ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
+                                PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO,
+                                false)) {
+            return false;
+        }
+        // TODO(https://crbug.com/337674493): Check if pdf viewer is available on pre-V devices.
+        return BuildCompat.isAtLeastV();
     }
 
     public static PdfInfo getPdfInfo(NativePage nativePage) {

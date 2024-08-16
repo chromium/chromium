@@ -17,7 +17,6 @@ Iban CreateServerIban(Iban::InstrumentId instrument_id) {
   Iban iban(instrument_id);
   iban.set_prefix(u"BE71");
   iban.set_suffix(u"8676");
-  iban.set_length(16);
   iban.set_nickname(u"My sister's IBAN");
   return iban;
 }

@@ -62,9 +62,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       delete;
   ~MediaNotificationViewImpl() override;
 
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // MediaNotificationView:
   void SetExpanded(bool expanded) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
@@ -159,10 +156,6 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // String to set as the app name of the header when there is no source title.
   std::u16string default_app_name_;
-
-  // The string to set as the accessible name once the accessibility cache is
-  // initialized.
-  std::u16string accessible_name_;
 
   // Width of the notification in pixels. Used for calculating artwork bounds.
   int notification_width_;

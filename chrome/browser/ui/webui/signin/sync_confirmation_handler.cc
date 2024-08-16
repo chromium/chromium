@@ -122,7 +122,7 @@ signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
     // Metric is not emitted for these cases:
     case SyncConfirmationScreenMode::kUnsupported:
     case SyncConfirmationScreenMode::kPending:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

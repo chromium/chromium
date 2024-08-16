@@ -1505,6 +1505,10 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ(-1, GetIntAttr(header5, ax::mojom::IntAttribute::kSortDirection));
 }
 
+// Fuchsia WebEngine (currently the only content embedder on the platform)
+// does not use or include these localization strings,
+// see: https://crbug.com/358567091 for more details.
+#if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        LocalizedLandmarkType) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
@@ -1696,6 +1700,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         mark_text_node, ax::mojom::Role::kStaticText, u"highlight");
   }
 }
+#endif  // #if !BUILDFLAG(IS_FUCHSIA)
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        TooltipStringAttributeMutuallyExclusiveOfNameFromTitle) {
@@ -2411,7 +2416,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <!DOCTYPE html>
       <html>
-      <body>
+      <body lang="fr">
         <div>
           <button>This should be accessible</button>
         </div>
@@ -2431,8 +2436,9 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(body_node, nullptr);
 
   // Make sure this is actually the body element.
-  ASSERT_EQ(body_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag),
-            "body");
+  ASSERT_EQ(
+      body_node->GetStringAttribute(ax::mojom::StringAttribute::kLanguage),
+      "fr");
   ASSERT_TRUE(body_node->IsIgnored());
 
   AccessibilityNotificationWaiter waiter(

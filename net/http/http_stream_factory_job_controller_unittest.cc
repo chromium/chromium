@@ -43,6 +43,10 @@
 #include "net/http/http_stream_factory.h"
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_factory_test_util.h"
+#include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool.h"
+#include "net/http/http_stream_pool_group.h"
+#include "net/http/http_stream_pool_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -285,6 +289,10 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     session_deps_.host_resolver->set_synchronous_mode(true);
     session_deps_.http_user_agent_settings =
         std::make_unique<StaticHttpUserAgentSettings>("*", "test-ua");
+    if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+      session_deps_.alternate_host_resolver =
+          std::make_unique<FakeServiceEndpointResolver>();
+    }
   }
 
   void SetPreconnect() {
@@ -714,6 +722,7 @@ class JobControllerReconsiderProxyAfterErrorTest
             /*socket_performance_watcher=*/nullptr,
             ConnectionEndpointMetadata(),
             /*report_ecn=*/true,
+            /*enable_origin_frame=*/true,
             NetLogWithSource::Make(NetLogSourceType::NONE)));
 
     quic::test::NoopQpackStreamSenderDelegate
@@ -6725,6 +6734,81 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
 
   request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+// Tests specific to the HappyEyeballsV3 feature.
+// TODO(crbug.com/346835898): Find ways to run more tests with the
+// HappyEyeballsV3 feature enabled.
+class HttpStreamFactoryJobControllerPoolTest
+    : public HttpStreamFactoryJobControllerTestBase {
+ public:
+  HttpStreamFactoryJobControllerPoolTest()
+      : HttpStreamFactoryJobControllerTestBase(
+            /*dns_https_alpn_enabled=*/false,
+            /*enabled_features=*/{features::kHappyEyeballsV3}) {}
+
+  ~HttpStreamFactoryJobControllerPoolTest() override = default;
+
+ protected:
+  HttpStreamPool* pool() { return session_->http_stream_pool(); }
+
+  FakeServiceEndpointResolver* resolver() {
+    return static_cast<FakeServiceEndpointResolver*>(
+        session_deps_.alternate_host_resolver.get());
+  }
+};
+
+TEST_F(HttpStreamFactoryJobControllerPoolTest, Preconnect) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("127.0.0.1").endpoint())
+      .set_start_result(OK);
+
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
+  SetPreconnect();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("http://www.example.com");
+  Initialize(request_info);
+
+  job_controller_->Preconnect(/*num_streams=*/1);
+  // No jobs should be created.
+  ASSERT_FALSE(job_controller_->main_job());
+  ASSERT_FALSE(job_controller_->alternative_job());
+
+  RunUntilIdle();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+  ASSERT_EQ(pool()->TotalIdleStreamCount(), 1u);
+}
+
+TEST_F(HttpStreamFactoryJobControllerPoolTest, PreconnectSync) {
+  SetPreconnect();
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("http://www.example.com");
+  Initialize(request_info);
+
+  // Add an idle stream to the pool.
+  const HttpStreamKey stream_key(
+      url::SchemeHostPort("http", "www.example.com", 80), PRIVACY_MODE_DISABLED,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_network_fetches=*/false);
+  HttpStreamPool::Group& group = pool()->GetOrCreateGroupForTesting(stream_key);
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+
+  // Preconnect should complete immediately as we already have an idle stream.
+  job_controller_->Preconnect(/*num_streams=*/1);
+  // No jobs should be created.
+  ASSERT_FALSE(job_controller_->main_job());
+  ASSERT_FALSE(job_controller_->alternative_job());
+  ASSERT_EQ(pool()->TotalIdleStreamCount(), 1u);
+
+  // Need RunUntilIdle() because the completion notification is delayed.
+  RunUntilIdle();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
 }
 

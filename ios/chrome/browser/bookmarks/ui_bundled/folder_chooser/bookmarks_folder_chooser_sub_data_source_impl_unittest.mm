@@ -90,7 +90,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
       case BookmarkStorageType::kAccount:
         return bookmark_model_->account_mobile_node();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void CreateSubDataSource() {

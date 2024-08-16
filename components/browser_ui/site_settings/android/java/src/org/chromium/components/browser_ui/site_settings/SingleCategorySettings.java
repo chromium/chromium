@@ -188,10 +188,10 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onCookiesDetailsRequested(@CookieControlsMode int cookieSettingsState) {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(FPSCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
+        fragmentArgs.putInt(RWSCookieSettings.EXTRA_COOKIE_PAGE_STATE, cookieSettingsState);
 
         mSettingsLauncher.launchSettingsActivity(
-                getActivity(), FPSCookieSettings.class, fragmentArgs);
+                getActivity(), RWSCookieSettings.class, fragmentArgs);
     }
 
     @Override
@@ -1350,8 +1350,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
         params.isPrivacySandboxFirstPartySetsUIEnabled =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
-        params.isFirstPartySetsDataAccessEnabled =
-                getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled();
+        params.isRelatedWebsiteSetsDataAccessEnabled =
+                getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
         triStateCookieToggle.setState(params);
     }
 

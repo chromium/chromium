@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.supervised_user.SupervisedUserCapabilities;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -220,7 +219,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureSignOutSwitch() {
         Preference signOutPreference = findPreference(PREF_SIGN_OUT);
-        if (SupervisedUserCapabilities.isSubjectToParentalControls(getProfile())) {
+        if (getProfile().isChild()) {
             getPreferenceScreen().removePreference(signOutPreference);
             getPreferenceScreen().removePreference(findPreference(PREF_SIGN_OUT_DIVIDER));
         } else {
@@ -283,7 +282,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
 
     private void configureChildAccountPreferences() {
         Preference parentAccounts = findPreference(PREF_PARENT_ACCOUNT_CATEGORY);
-        if (SupervisedUserCapabilities.isSubjectToParentalControls(getProfile())) {
+        if (getProfile().isChild()) {
             PrefService prefService = UserPrefs.get(getProfile());
 
             String firstParent = prefService.getString(Pref.SUPERVISED_USER_CUSTODIAN_EMAIL);

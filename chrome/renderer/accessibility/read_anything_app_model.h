@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/containers/contains.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -107,11 +108,17 @@ class ReadAnythingAppModel {
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
   float font_size() const { return font_size_; }
+  void set_font_size(float font_size) { font_size_ = font_size; }
   bool links_enabled() const { return links_enabled_; }
   bool images_enabled() const { return images_enabled_; }
-  float letter_spacing() const { return letter_spacing_; }
-  float line_spacing() const { return line_spacing_; }
+  int letter_spacing() const { return letter_spacing_; }
+  void set_letter_spacing(int letter_spacing) {
+    letter_spacing_ = letter_spacing;
+  }
+  int line_spacing() const { return line_spacing_; }
+  void set_line_spacing(int line_spacing) { line_spacing_ = line_spacing; }
   int color_theme() const { return color_theme_; }
+  void set_color_theme(int color_theme) { color_theme_ = color_theme; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -125,18 +132,16 @@ class ReadAnythingAppModel {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
 
-  bool screen_ai_service_ready_for_data_collection() const {
-    return screen_ai_service_ready_for_data_collection_;
-  }
-  void set_screen_ai_service_ready_for_data_collection(bool value) {
-    screen_ai_service_ready_for_data_collection_ = value;
-  }
-  bool page_finished_loading_for_data_collection() const {
-    return page_finished_loading_for_data_collection_;
-  }
-  void set_page_finished_loading_for_data_collection(bool value) {
-    page_finished_loading_for_data_collection_ = value;
-  }
+  // The following methods are used for the screen2x data collection pipeline.
+  // They all have CHECKs to ensure that the DataCollectionModeForScreen2x
+  // feature flag is enabled.
+  bool ScreenAIServiceReadyForDataColletion() const;
+  void SetScreenAIServiceReadyForDataColletion(bool value);
+  bool PageFinishedLoadingForDataCollection() const;
+  void SetPageFinishedLoadingForDataCollection(bool value);
+  void SetDataCollectionForScreen2xCallback(
+      base::RepeatingCallback<void()> callback);
+
   bool page_finished_loading() const { return page_finished_loading_; }
   void set_page_finished_loading(bool value) {
     page_finished_loading_ = value;
@@ -155,18 +160,16 @@ class ReadAnythingAppModel {
   }
 
   const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
-  void set_active_tree_id(const ui::AXTreeID& active_tree_id) {
-    active_tree_id_ = active_tree_id;
-  }
+  void SetActiveTreeId(const ui::AXTreeID& active_tree_id);
 
-  void SetDistillationInProgress(bool distillation) {
+  void set_distillation_in_progress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
 
-  const ukm::SourceId& ukm_source_id();
-  void set_ukm_source_id(const ukm::SourceId ukm_source_id);
-  int32_t num_selections();
-  void set_num_selections(const int32_t& num_selections);
+  const ukm::SourceId& UkmSourceId();
+  void SetUkmSourceId(const ukm::SourceId ukm_source_id);
+  int32_t NumSelections();
+  void SetNumSelections(const int32_t& num_selections);
 
   void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
   bool IsDocs() const;
@@ -266,6 +269,11 @@ class ReadAnythingAppModel {
                               size_t prev_tree_size,
                               size_t tree_size);
 
+  // Runs the data collection for screen2x pipeline, provided in the form of a
+  // callback from the ReadAnythingAppController. This should only be called
+  // when the DataCollectionModeForScreen2x feature is enabled.
+  void MaybeRunDataCollectionForScreen2xCallback();
+
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
       tree_infos_;
@@ -323,9 +331,8 @@ class ReadAnythingAppModel {
   float font_size_ = kReadAnythingDefaultFontScale;
   bool links_enabled_ = kReadAnythingDefaultLinksEnabled;
   bool images_enabled_ = kReadAnythingDefaultImagesEnabled;
-  float letter_spacing_ =
-      (int)read_anything::mojom::LetterSpacing::kDefaultValue;
-  float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
+  int letter_spacing_ = (int)read_anything::mojom::LetterSpacing::kDefaultValue;
+  int line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
 
   // Selection information.
@@ -343,8 +350,11 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading and
   // screen ai has loaded.
-  bool screen_ai_service_ready_for_data_collection_ = false;
-  bool page_finished_loading_for_data_collection_ = false;
+  bool ScreenAIServiceReadyForDataColletion_ = false;
+  bool PageFinishedLoadingForDataCollection_ = false;
+  base::OneShotTimer timer_since_page_load_for_data_collection_;
+  base::RetainingOneShotTimer timer_since_tree_changed_for_data_collection_;
+  base::RepeatingCallback<void()> data_collection_for_screen2x_callback_;
 
   // Whether the webpage has finished loading or not.
   bool page_finished_loading_ = false;
@@ -356,6 +366,8 @@ class ReadAnythingAppModel {
   // asynchronously from the language determination so we need to keep track of
   // that here.
   bool requires_tree_lang_ = false;
+
+  base::WeakPtrFactory<ReadAnythingAppModel> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_

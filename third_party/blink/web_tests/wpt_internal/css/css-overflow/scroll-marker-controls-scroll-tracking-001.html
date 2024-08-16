@@ -32,7 +32,7 @@
         border-radius: 50%;
     }
 
-    #scroller div::scroll-marker:focus {
+    #scroller div::scroll-marker:checked {
         background-color: green;
     }
 </style>
@@ -50,9 +50,9 @@
     }
     test(() => {
         assertPseudoElementProperty(target, "::scroll-marker", "rgb(255, 0, 0)");
-    }, "::scroll-marker is not focused when its originating element is not scrolled into the view");
+    }, "::scroll-marker is not activated when its originating element is not scrolled into the view");
     scroller.scrollTop = 150;
     test(() => {
         assertPseudoElementProperty(target, "::scroll-marker", "rgb(0, 128, 0)");
-    }, "::scroll-marker is focused when its originating element is scrolled into the view");
+    }, "::scroll-marker is activated when its originating element is scrolled into the view");
 </script>

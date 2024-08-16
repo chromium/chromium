@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/views/views_export.h"
@@ -66,7 +67,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
   Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,

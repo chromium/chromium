@@ -13,6 +13,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -105,7 +106,8 @@ public class TabArchiver implements TabWindowManager.Observer {
                     tab,
                     (archivePersistedTabData) -> {
                         if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
-                            mArchivedTabModel.closeTab(tab);
+                            mArchivedTabModel.closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build());
                             RecordUserAction.record("Tabs.ArchivedTabAutoDeleted");
                         }
                     });
@@ -136,7 +138,7 @@ public class TabArchiver implements TabWindowManager.Observer {
         ThreadUtils.assertOnUiThread();
         TabState tabState = prepareTabState(tab);
         Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
-        tabModel.closeTab(tab);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
 
         ArchivePersistedTabData.from(
                 newTab,

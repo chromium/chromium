@@ -166,6 +166,9 @@ constexpr std::string_view kPlaceholder = "placeholder";
 constexpr std::string_view kRole = "role";
 constexpr std::string_view kScript = "script";
 constexpr std::string_view kSpan = "span";
+#if BUILDFLAG(IS_ANDROID)
+constexpr std::string_view kSrc = "src";
+#endif
 constexpr std::string_view kStrong = "strong";
 constexpr std::string_view kSubmit = "submit";
 constexpr std::string_view kTable = "table";
@@ -1217,11 +1220,10 @@ void FilterOptionElementsAndGetOptionStrings(
 }
 
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
-                         const WebFormControlElement& element,
-                         bool is_initiating_element) {
+                         const WebFormControlElement& element) {
   enum class SkipReason {
     kUnfillable = 0,
-    kNoValueToFill = 1,
+    // kNoValueToFill = 1,
     kPreviouslyAutofilled = 2,
     kUserEditedText = 3,
     kUserEditedSelect = 4,
@@ -1239,16 +1241,7 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
                                   SkipReason::kUnfillable);
     return true;
   }
-  // Skip if there is no value to fill.
-  if (field.value.empty() || !field.is_autofilled) {
-    base::UmaHistogramEnumeration(kSkipReasonHistogram,
-                                  SkipReason::kNoValueToFill);
-    return true;
-  }
-  if (is_initiating_element) {
-    return false;
-  }
-  if (field.force_override) {
+  if (element.Focused() || field.force_override) {
     return false;
   }
   // Skip filling previously autofilled fields unless autofill is instructed to
@@ -1936,6 +1929,20 @@ void WebFormControlElementToFormField(
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Checks whether an `element` looks like a captcha based on
+// heuristics. The heuristics cannot be perfect and therefore is a subject to
+// change, e.g. adding a list of domains of captcha providers to be compared
+// with 'src' attribute.
+bool IsLikelyCaptchaIframe(const WebElement& element) {
+  static constexpr std::string_view kCaptcha = "captcha";
+  return GetAttribute<kSrc>(element).Find(kCaptcha) != std::string::npos ||
+         GetAttribute<kTitle>(element).Find(kCaptcha) != std::string::npos ||
+         GetAttribute<kId>(element).Find(kCaptcha) != std::string::npos ||
+         GetAttribute<kName>(element).Find(kCaptcha) != std::string::npos;
+}
+#endif
+
 std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     const WebDocument& document,
     const WebFormElement& form_element,
@@ -2099,6 +2106,15 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   }
   form.set_fields(std::move(fields));
   form.set_child_frames(std::move(child_frames));
+  // `likely_contains_captcha` is only needed for Android for the autosubmission
+  // after filling credentials from TTF bottom sheet.
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
+    form.set_likely_contains_captcha(
+        base::ranges::any_of(iframe_elements, IsLikelyCaptchaIframe));
+  }
+#endif
   return form;
 }
 
@@ -2224,7 +2240,7 @@ FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
     case blink::mojom::FormControlType::kTextArea:
       return FormControlType::kTextArea;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -2248,7 +2264,7 @@ bool IsCheckable(FormControlType form_control_type) {
     case FormControlType::kTextArea:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsWebauthnTaggedElement(const WebFormControlElement& element) {
@@ -2568,8 +2584,7 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
       continue;
     }
     if ((action_type == mojom::FormActionType::kFill &&
-         ShouldSkipFillField(field, element,
-                             /*is_initiating_element=*/element.Focused())) ||
+         ShouldSkipFillField(field, element)) ||
         (action_type == mojom::FormActionType::kUndo &&
          !element.IsAutofilled())) {
       continue;
@@ -2645,7 +2660,9 @@ void ClearPreviewedElements(
     // Clearing the suggested value in the focused node can cause the selection
     // to be lost. We force-set selection range in order to restore the text
     // cursor.
-    if (control_element.Focused()) {
+    if (control_element.Focused() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillDontUpdateSelectionRangeOnPreviewClearing)) {
       auto length =
           base::checked_cast<unsigned>(control_element.Value().length());
       control_element.SetSelectionRange(length, length);

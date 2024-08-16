@@ -115,6 +115,11 @@ TEST_F(NewTabPageFeaturePromoHelperTest,
 }
 
 TEST_F(NewTabPageFeaturePromoHelperTest, CloseFeaturePromo_CustomizeChrome) {
+  // By default let through all calls to endpromo.
+  EXPECT_CALL(*mock_promo_controller(), EndPromo(testing::_, testing::_))
+      .WillRepeatedly(
+          testing::Return(user_education::FeaturePromoResult::Success()));
+  // Check for this call specifically.
   EXPECT_CALL(
       *mock_promo_controller(),
       EndPromo(

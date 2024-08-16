@@ -207,8 +207,7 @@ std::string SysInfo::OperatingSystemVersion() {
 std::string SysInfo::KernelVersion() {
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
   return std::string(info.release);
 }

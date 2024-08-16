@@ -562,6 +562,9 @@ struct PublicKeyCredentialCreationOptions {
   // If present, reflects the contents of the "supplementalPubKeys" extension.
   // https://github.com/w3c/webauthn/pull/1663
   SupplementalPubKeysRequest? supplemental_pub_keys;
+
+  // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
+  array<string> attestation_formats;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference
@@ -599,9 +602,24 @@ struct WebAuthnDOMExceptionDetails {
 };
 
 // Parameters passed into calls to Report.
-struct PublicKeyCredentialReportOptions{
+struct PublicKeyCredentialReportOptions {
   string relying_party_id;
-  array<uint8> unknown_credential_id;
+  array<uint8>? unknown_credential_id;
+  AllAcceptedCredentialsOptions? all_accepted_credentials;
+  CurrentUserDetailsOptions? current_user_details;
+};
+
+// Parameters passed into calls to report all accepted credentials.
+struct AllAcceptedCredentialsOptions {
+  array<uint8> user_id;
+  array<array<uint8>> all_accepted_credentials_ids;
+};
+
+// Parameters passed into calls to report current user details.
+struct CurrentUserDetailsOptions {
+  array<uint8> user_id;
+  string name;
+  string display_name;
 };
 
 // Interface to direct authenticators to create or use a public key credential.

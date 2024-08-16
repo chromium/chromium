@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -97,6 +98,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
+  AutofillPredictionImprovementsDelegate*
+  GetAutofillPredictionImprovementsDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
   PrefService* GetPrefs() override;
@@ -131,12 +134,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
-  bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest) override;
-  void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;

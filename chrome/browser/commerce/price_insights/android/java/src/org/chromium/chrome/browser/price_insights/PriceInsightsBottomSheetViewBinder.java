@@ -4,8 +4,13 @@
 
 package org.chromium.chrome.browser.price_insights;
 
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
+
 import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -19,6 +24,8 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the price insights bottom sheet */
 public class PriceInsightsBottomSheetViewBinder {
+
+    private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         ButtonCompat priceTrackingButton =
@@ -71,9 +78,35 @@ public class PriceInsightsBottomSheetViewBinder {
                 == propertyKey) {
             priceTrackingButton.setEnabled(
                     model.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER
+                == propertyKey) {
+            priceTrackingButton.setOnClickListener(
+                    model.get(
+                            PriceInsightsBottomSheetProperties
+                                    .PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
         } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_history_title))
                     .setText(model.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        } else if (PRICE_HISTORY_DESCRIPTION == propertyKey) {
+            ((TextView) view.findViewById(R.id.price_history_description))
+                    .setText(model.get(PRICE_HISTORY_DESCRIPTION));
+        } else if (PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART == propertyKey) {
+            LinearLayout priceHistoryLayout =
+                    (LinearLayout) view.findViewById(R.id.price_history_layout);
+            View previousChart = priceHistoryLayout.findViewById(PRICE_HISTORY_CHART_ID);
+            if (previousChart != null) {
+                priceHistoryLayout.removeView(previousChart);
+            }
+            View priceHistoryChart = model.get(PRICE_HISTORY_CHART);
+            priceHistoryChart.setId(PRICE_HISTORY_CHART_ID);
+            int chartHeight =
+                    priceHistoryChart
+                            .getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.price_history_chart_height);
+            priceHistoryChart.setLayoutParams(
+                    new LayoutParams(LayoutParams.MATCH_PARENT, chartHeight));
+            priceHistoryLayout.addView(priceHistoryChart);
         } else if (PriceInsightsBottomSheetProperties.OPEN_URL_TITLE == propertyKey) {
             openUrlButton.setText(model.get(PriceInsightsBottomSheetProperties.OPEN_URL_TITLE));
         } else if (PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON == propertyKey) {

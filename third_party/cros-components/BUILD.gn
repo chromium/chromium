@@ -21,6 +21,8 @@ _cros_components_ts_files = [
   "dropdown/dropdown_option.ts",
   "helpers/helpers.ts",
   "icon_button/icon-button.ts",
+  "icon_dropdown/icon-dropdown.ts",
+  "icon_dropdown/icon-dropdown-option.ts",
   "lottie_renderer/event_binders.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",

@@ -687,10 +687,7 @@ void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
 bool AppServiceProxyAsh::ShouldExcludeBrowserTabApps(
     bool exclude_browser_tab_apps,
     WindowMode window_mode) {
-  if (!chromeos::features::IsCrosShortstandEnabled()) {
-    return (exclude_browser_tab_apps && window_mode == WindowMode::kBrowser);
-  }
-  return false;
+  return exclude_browser_tab_apps && window_mode == WindowMode::kBrowser;
 }
 
 void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,

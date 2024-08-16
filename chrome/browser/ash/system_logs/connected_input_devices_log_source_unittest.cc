@@ -11,9 +11,11 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -78,6 +80,8 @@ class ConnectedInputDevicesLogSourceTest : public ::testing::Test {
 
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
+  raw_ptr<base::test::ScopedCommandLine> command_line_;
+
  private:
   void OnFetchComplete(base::OnceClosure quit_closure,
                        std::unique_ptr<SystemLogsResponse> response) {
@@ -132,6 +136,53 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single) {
   EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
   it = response().find("TOUCHPAD_DRIVERS");
   EXPECT_EQ(driver_name, it->second);
+
+  /* Verify fetch_callback() has not been called again. */
+  EXPECT_EQ(1U, num_callback_calls());
+}
+
+TEST_F(ConnectedInputDevicesLogSourceTest, Flex_touchpad_single) {
+  const std::string vendor_name = "Synaptics";
+  const uint16_t vid = 0x06cb;
+  const uint16_t pid = 0x685f;
+  const std::string driver_name = "SynPS/2";
+  const std::string flex_library_name = "libinput";
+
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({ui::TouchpadDevice(
+      /*id=*/1, ui::INPUT_DEVICE_INTERNAL, /*name=*/"", /*phys=*/"",
+      /*sys_path=*/base::FilePath(), vid, pid, /*version=*/0)});
+
+  auto telem_info = ash::cros_healthd::mojom::TelemetryInfo::New();
+
+  SetCrosHealthdTouchpad(telem_info, driver_name);
+
+  telem_info->input_result->get_input_info()->touchpad_library_name =
+      flex_library_name;
+  ash::cros_healthd::FakeCrosHealthd::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
+  command_line_->GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kRevenBranding);
+
+  /* Fetch log data. */
+  ConnectedInputDevicesLogSource source;
+  base::RunLoop run_loop;
+  source.Fetch(fetch_callback(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  /* Verify fetch_callback() has been called. */
+  EXPECT_EQ(1U, num_callback_calls());
+  ASSERT_EQ(4U, response().size());
+
+  auto it = response().find("TOUCHPAD_VENDOR");
+  ASSERT_NE(it, response().end());
+  EXPECT_EQ(vendor_name, it->second);
+  it = response().find("TOUCHPAD_PID");
+  ASSERT_NE(it, response().end());
+  EXPECT_EQ(base::StringPrintf("0x%04x", pid), it->second);
+  it = response().find("TOUCHPAD_DRIVERS");
+  EXPECT_EQ(driver_name, it->second);
+  it = response().find("TOUCHPAD_LIBRARY");
+  EXPECT_EQ(flex_library_name, it->second);
 
   /* Verify fetch_callback() has not been called again. */
   EXPECT_EQ(1U, num_callback_calls());

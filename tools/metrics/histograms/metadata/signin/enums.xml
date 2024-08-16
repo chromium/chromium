@@ -503,6 +503,7 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="WebAuthn modal dialog"/>
   <int value="66" label="Avatar bubble sign in with sync promo"/>
   <int value="67" label="Account menu"/>
+  <int value="68" label="Product Specifications"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

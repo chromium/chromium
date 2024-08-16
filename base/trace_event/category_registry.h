@@ -39,7 +39,6 @@ class TraceLog;
 class BASE_EXPORT CategoryRegistry {
  public:
   // Known categories.
-  static TraceCategory* const kCategoryExhausted;
   static TraceCategory* const kCategoryMetadata;
   static TraceCategory* const kCategoryAlreadyShutdown;
 

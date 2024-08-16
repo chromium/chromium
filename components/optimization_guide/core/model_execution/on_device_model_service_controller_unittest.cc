@@ -166,10 +166,10 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
   ExecuteRemoteFn CreateExecuteRemoteFn() {
     return base::BindLambdaForTesting(
-        [=](ModelBasedCapabilityKey feature,
-            const google::protobuf::MessageLite& m,
-            std::unique_ptr<proto::LogAiDataRequest> l,
-            OptimizationGuideModelExecutionResultCallback c) {
+        [=, this](ModelBasedCapabilityKey feature,
+                  const google::protobuf::MessageLite& m,
+                  std::unique_ptr<proto::LogAiDataRequest> l,
+                  OptimizationGuideModelExecutionResultCallback c) {
           remote_execute_called_ = true;
           last_remote_message_ = base::WrapUnique(m.New());
           last_remote_message_->CheckTypeAndMergeFrom(m);

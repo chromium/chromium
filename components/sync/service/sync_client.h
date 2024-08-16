@@ -8,8 +8,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/model_type.h"
 
 class PrefService;
 

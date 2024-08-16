@@ -21,9 +21,14 @@ namespace blink {
 class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
     : public UnderlyingSourceBase {
  public:
+  // If |controller_override| is provided, it won't work as an instance of
+  // |UnderlyingSourceBase| so shouldn't be used directly, only with
+  // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      WTF::CrossThreadOnceClosure disconnect_callback,
+      ReadableStreamDefaultControllerWithScriptScope* controller_override =
+          nullptr);
 
   // UnderlyingSourceBase
   ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
@@ -46,12 +51,17 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   // context, called on the thread upon which the instance was created.
   void OnSourceTransferStartedOnTaskRunner();
 
+  // In case there is controller override, this one is returned. If not,
+  // Controller() from the underlying source base will be returned.
+  ReadableStreamDefaultControllerWithScriptScope* GetController();
+
   FRIEND_TEST_ALL_PREFIXES(RTCEncodedAudioUnderlyingSourceTest,
                            QueuedFramesAreDroppedWhenOverflow);
   static const int kMinQueueDesiredSize;
 
   const Member<ScriptState> script_state_;
   WTF::CrossThreadOnceClosure disconnect_callback_;
+  Member<ReadableStreamDefaultControllerWithScriptScope> override_controller_;
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

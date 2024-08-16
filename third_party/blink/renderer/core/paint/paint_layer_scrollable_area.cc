@@ -2390,6 +2390,19 @@ void PaintLayerScrollableArea::Resize(const gfx::Point& pos,
   // keep the point under the cursor in view.
 }
 
+PhysicalOffset PaintLayerScrollableArea::LocalToScrollOriginOffset() const {
+  PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
+                                                -GetLayoutBox()->BorderTop());
+  // There might be scroll bar between border_origin and scroll_origin.
+  gfx::Vector2d scroll_bar_adjustment =
+      GetLayoutBox()->OriginAdjustmentForScrollbars();
+  border_origin_to_scroll_origin.left -= scroll_bar_adjustment.x();
+  border_origin_to_scroll_origin.top -= scroll_bar_adjustment.y();
+  border_origin_to_scroll_origin +=
+      PhysicalOffset::FromVector2dFFloor(GetScrollOffset());
+  return border_origin_to_scroll_origin;
+}
+
 PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
     const PhysicalRect& absolute_rect,
     const PhysicalBoxStrut& scroll_margin,
@@ -2404,18 +2417,6 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
 
   PhysicalRect local_expose_rect =
       GetLayoutBox()->AbsoluteToLocalRect(absolute_rect, flag);
-  PhysicalOffset border_origin_to_scroll_origin(-GetLayoutBox()->BorderLeft(),
-                                                -GetLayoutBox()->BorderTop());
-  // There might be scroll bar between border_origin and scroll_origin.
-  gfx::Vector2d scroll_bar_adjustment =
-      GetLayoutBox()->OriginAdjustmentForScrollbars();
-  border_origin_to_scroll_origin.left -= scroll_bar_adjustment.x();
-  border_origin_to_scroll_origin.top -= scroll_bar_adjustment.y();
-  border_origin_to_scroll_origin +=
-      PhysicalOffset::FromVector2dFFloor(GetScrollOffset());
-  // Represent the rect in the container's scroll-origin coordinate.
-  local_expose_rect.Move(border_origin_to_scroll_origin);
-  PhysicalRect scroll_snapport_rect = VisibleScrollSnapportRect();
   ScrollOffset target_offset = scroll_into_view_util::GetScrollOffsetToExpose(
       *this, local_expose_rect, scroll_margin, *params->align_x.get(),
       *params->align_y.get());
@@ -2460,8 +2461,8 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
       -PhysicalOffset::FromVector2dFRound(scroll_offset_difference));
 
   // Represent the rects in the container's border-box coordinate.
-  local_expose_rect.Move(-border_origin_to_scroll_origin);
-  scroll_snapport_rect.Move(-border_origin_to_scroll_origin);
+  PhysicalRect scroll_snapport_rect =
+      VisibleScrollSnapportRect() - LocalToScrollOriginOffset();
   PhysicalRect intersect =
       Intersection(scroll_snapport_rect, local_expose_rect);
 

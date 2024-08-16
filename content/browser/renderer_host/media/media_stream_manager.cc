@@ -2326,7 +2326,6 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
   return (it != requests_.end()) ? it->second.get() : nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 MediaStreamManager::DeviceRequest*
 MediaStreamManager::FindRequestByVideoSessionId(
     const base::UnguessableToken& session_id) const {
@@ -2350,6 +2349,8 @@ MediaStreamManager::FindRequestByVideoSessionId(
 
   return nullptr;
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 CapturedSurfaceController* MediaStreamManager::GetCapturedSurfaceController(
     GlobalRenderFrameHostId capturer_rfh_id,
@@ -4289,6 +4290,15 @@ void MediaStreamManager::RegisterVideoCaptureHost(
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   video_capture_hosts_.Add(std::move(host), std::move(receiver));
+}
+
+std::optional<url::Origin> MediaStreamManager::GetOriginByVideoSessionId(
+    const base::UnguessableToken& session_id) {
+  DeviceRequest* request = FindRequestByVideoSessionId(session_id);
+  if (request == nullptr) {
+    return std::nullopt;
+  }
+  return request->salt_and_origin.origin();
 }
 
 // static

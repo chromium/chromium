@@ -35,7 +35,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -270,13 +270,12 @@ void PaymentsDataManager::Shutdown() {
   sync_observer_.Reset();
 }
 
-void PaymentsDataManager::OnAutofillChangedBySync(
-    syncer::ModelType model_type) {
-  if (model_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
-      model_type == syncer::AUTOFILL_WALLET_DATA ||
-      model_type == syncer::AUTOFILL_WALLET_METADATA ||
-      model_type == syncer::AUTOFILL_WALLET_OFFER ||
-      model_type == syncer::AUTOFILL_WALLET_USAGE) {
+void PaymentsDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
+  if (data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
+      data_type == syncer::AUTOFILL_WALLET_DATA ||
+      data_type == syncer::AUTOFILL_WALLET_METADATA ||
+      data_type == syncer::AUTOFILL_WALLET_OFFER ||
+      data_type == syncer::AUTOFILL_WALLET_USAGE) {
     Refresh();
   }
 }
@@ -690,7 +689,7 @@ std::vector<Iban> PaymentsDataManager::GetOrderedIbansToSuggest() const {
     return iban->record_type() == Iban::kLocalIban &&
            base::ranges::any_of(
                server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
-                 return server_iban->MatchesPrefixSuffixAndLength(*iban);
+                 return server_iban->MatchesPrefixAndSuffix(*iban);
                });
   });
 
@@ -1072,8 +1071,10 @@ bool PaymentsDataManager::ShouldShowCardsFromAccountOption() const {
   bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);
 
-  // The option should only be shown if the user has not already opted-in.
-  return !is_opted_in;
+  // The option should only be shown if the user has not already opted-in and
+  // the flag to remove the dropdown is disabled.
+  return !is_opted_in && !base::FeatureList::IsEnabled(
+                             features::kAutofillRemovePaymentsButterDropdown);
 #else
   return false;
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) ||
@@ -1158,20 +1159,16 @@ bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
 }
 
-std::vector<VirtualCardUsageData*>
+base::span<const VirtualCardUsageData>
 PaymentsDataManager::GetVirtualCardUsageData() const {
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<VirtualCardUsageData*> result;
-  result.reserve(autofill_virtual_card_usage_data_.size());
-  for (const auto& data : autofill_virtual_card_usage_data_) {
-    result.push_back(data.get());
-  }
-  return result;
+  return autofill_virtual_card_usage_data_;
 }
 
-std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
+std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest(
+    bool should_use_legacy_algorithm) const {
   if (!IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
@@ -1196,13 +1193,15 @@ std::vector<CreditCard*> PaymentsDataManager::GetCreditCardsToSuggest() const {
   base::Time comparison_time = AutofillClock::Now();
   if (cards_to_suggest.size() > 1) {
     std::sort(cards_to_suggest.begin(), cards_to_suggest.end(),
-              [comparison_time](const CreditCard* a, const CreditCard* b) {
+              [comparison_time, should_use_legacy_algorithm](
+                  const CreditCard* a, const CreditCard* b) {
                 const bool a_is_expired = a->IsExpired(comparison_time);
                 if (a_is_expired != b->IsExpired(comparison_time)) {
                   return !a_is_expired;
                 }
 
-                return a->HasGreaterRankingThan(b, comparison_time);
+                return a->HasGreaterRankingThan(*b, comparison_time,
+                                                should_use_legacy_algorithm);
               });
   }
 
@@ -1658,11 +1657,16 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   if (!sync_service_->IsSyncFeatureEnabled()) {
-    // For SyncTransport, only show server payment methods if the user has opted
-    // in to seeing them in the dropdown.
+    // For SyncTransport, only show server payment methods if the user has
+    // opted in to seeing them in the dropdown.
     if (!prefs::IsUserOptedInWalletSyncTransport(
             pref_service_, sync_service_->GetAccountInfo().account_id)) {
-      return false;
+      // If the AutofillRemovePaymentsButterDropdown feature is enabled, all
+      // users can see server payment methods, even in SyncTransport mode.
+      if (!base::FeatureList::IsEnabled(
+              features::kAutofillRemovePaymentsButterDropdown)) {
+        return false;
+      }
     }
   }
 

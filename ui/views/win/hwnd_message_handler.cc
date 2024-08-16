@@ -256,7 +256,7 @@ gfx::ResizeEdge GetWindowResizeEdge(UINT param) {
     case WMSZ_BOTTOMRIGHT:
       return gfx::ResizeEdge::kBottomRight;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -450,9 +450,10 @@ void HWNDMessageHandler::Init(HWND parent, const gfx::Rect& bounds) {
   InitExtras();
 }
 
-void HWNDMessageHandler::InitModalType(ui::ModalType modal_type) {
-  if (modal_type == ui::MODAL_TYPE_NONE)
+void HWNDMessageHandler::InitModalType(ui::mojom::ModalType modal_type) {
+  if (modal_type == ui::mojom::ModalType::kNone) {
     return;
+  }
   // We implement modality by crawling up the hierarchy of windows starting
   // at the owner, disabling all of them so that they don't receive input
   // messages.

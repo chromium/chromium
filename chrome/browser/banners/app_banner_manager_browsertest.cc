@@ -137,7 +137,7 @@ class AppBannerManagerTest : public AppBannerManager {
                                    const GURL& validated_url,
                                    const blink::mojom::Manifest& manifest,
                                    NativeCheckCallback callback) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void OnWebAppInstallableCheckedNoErrors(

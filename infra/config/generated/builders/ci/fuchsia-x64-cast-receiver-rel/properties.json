@@ -48,7 +48,8 @@
           "group": "tryserver.chromium.fuchsia"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-x64-cast-receiver-rel/targets"
     }
   },
   "$build/reclient": {

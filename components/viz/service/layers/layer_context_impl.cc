@@ -345,7 +345,7 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
 }
 
 void LayerContextImpl::DidLoseLayerTreeFrameSinkOnImplThread() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayerContextImpl::SetBeginFrameSource(BeginFrameSource* source) {}
@@ -373,11 +373,11 @@ void LayerContextImpl::SetNeedsOneBeginImplFrameOnImplThread() {
 }
 
 void LayerContextImpl::SetNeedsUpdateDisplayTreeOnImplThread() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayerContextImpl::SetNeedsPrepareTilesOnImplThread() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LayerContextImpl::SetNeedsCommitOnImplThread() {

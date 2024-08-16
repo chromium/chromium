@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Ketepikan dan tunjukkan tindakan seterusnya yang tersedia</translation>
 <translation id="3744111561329211289">Penyegerakan latar belakang</translation>
 <translation id="3763247130972274048">Dwiketik video di sebelah kiri atau kanan untuk melangkau 10s</translation>
+<translation id="3779154269823594982">Tukar kata laluan</translation>
 <translation id="3797520601150691162">Jangan gunakan tema gelap untuk laman tertentu</translation>
 <translation id="3803367742635802571">Laman yang anda lawati mungkin berhenti berfungsi seperti yang direka</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="789180354981963912">Sekat kuki pihak ketiga dalam Inkognito:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="FPS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}other{<ph name="FPS_MEMBERS_COUNT" /> laman dalam kumpulan laman <ph name="FPS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan}}</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
 <translation id="7990211076305263060">Apabila dihidupkan, laman dapat meminta untuk menggunakan mikrofon anda. Apabila dimatikan, laman tidak dapat menggunakan mikrofon anda.</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Sekat tapak daripada menyambung ke peranti</translation>
 <translation id="8525306231823319788">Skrin penuh</translation>
 <translation id="8541410041357371550">Laman ini mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Kuki dibenarkan untuk <ph name="FPS_MEMBERS_COUNT" /> laman <ph name="FPS_OWNER" />}other{Kuki dibenarkan untuk <ph name="FPS_MEMBERS_COUNT" /> laman <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dibenarkan (disyorkan)</translation>
 <translation id="8609465669617005112">Alihkan ke atas</translation>
 <translation id="8617611086246832542">Apabila dihidupkan, paparan desktop laman web akan dipaparkan. Apabila dimatikan, paparan mudah alih laman web akan dipaparkan.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Diurus oleh ibu bapa anda</translation>
 <translation id="9039697262778250930">Anda mungkin akan dilog keluar daripada laman ini</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Laman ini berada dalam kumpulan yang boleh melihat aktiviti anda. Kumpulan tersebut ditakrifkan oleh <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Padamkan kuki?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi}}</translation>
 <translation id="913657688200966289">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>

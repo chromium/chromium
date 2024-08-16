@@ -8,7 +8,7 @@
 #include <array>
 
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/inset_area.h"
+#include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -29,12 +29,12 @@ class CORE_EXPORT PositionTryFallback {
  public:
   PositionTryFallback(const ScopedCSSName* name, TryTacticList tactic_list)
       : position_try_name_(name), tactic_list_(tactic_list) {}
-  explicit PositionTryFallback(InsetArea inset_area)
-      : tactic_list_(kNoTryTactics), inset_area_(inset_area) {}
+  explicit PositionTryFallback(PositionArea position_area)
+      : tactic_list_(kNoTryTactics), position_area_(position_area) {}
 
   const TryTacticList& GetTryTactic() const { return tactic_list_; }
   const ScopedCSSName* GetPositionTryName() const { return position_try_name_; }
-  const InsetArea& GetInsetArea() const { return inset_area_; }
+  const PositionArea& GetPositionArea() const { return position_area_; }
 
   bool operator==(const PositionTryFallback& other) const;
 
@@ -43,7 +43,7 @@ class CORE_EXPORT PositionTryFallback {
  private:
   Member<const ScopedCSSName> position_try_name_;
   TryTacticList tactic_list_;
-  InsetArea inset_area_;
+  PositionArea position_area_;
 };
 
 class CORE_EXPORT PositionTryFallbacks

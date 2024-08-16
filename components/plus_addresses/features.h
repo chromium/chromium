@@ -23,6 +23,9 @@ COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressAndSingleFieldFormFill);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressBlocklistEnabled);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressesEnabled);
 
 // Used to control the enterprise plus address feature's OAuth scope.
@@ -87,6 +90,12 @@ BASE_DECLARE_FEATURE(kPlusAddressOfferCreationOnAllNonUsernameFields);
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+BASE_DECLARE_FEATURE(kPlusAddressPreallocation);
+
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize;
 
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 BASE_DECLARE_FEATURE(kPlusAddressProfileAwareFeatureCheck);

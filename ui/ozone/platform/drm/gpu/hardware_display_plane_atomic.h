@@ -46,6 +46,9 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
   // Sets the props on |property_set| for commit.
   bool SetPlaneProps(drmModeAtomicReq* property_set);
 
+  // Saves the props to disable the plane locally to be committed later.
+  void AssignDisableProps();
+
   uint32_t AssignedCrtcId() const;
 
  private:

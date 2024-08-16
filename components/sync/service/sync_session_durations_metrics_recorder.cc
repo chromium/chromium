@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 
@@ -206,10 +207,7 @@ bool SyncSessionDurationsMetricsRecorder::ShouldLogUpdate(
     FeatureState new_sync_status,
     SigninStatus new_signin_status) {
   bool sync_status_changed = new_sync_status != sync_status_;
-  // The session histograms treat kSignedInWithError and kSignedOut in the same
-  // way.
-  bool signin_status_changed = (signin_status_ == SigninStatus::kSignedIn) !=
-                               (new_signin_status == SigninStatus::kSignedIn);
+  bool signin_status_changed = new_signin_status != signin_status_;
   bool status_changed = sync_status_changed || signin_status_changed;
   bool was_unknown = sync_status_ == FeatureState::UNKNOWN;
   return sync_account_session_timer_ && status_changed && !was_unknown;
@@ -276,10 +274,12 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       break;
     case GetFeatureStates(SigninStatus::kSignedInWithError,
                           FeatureState::UNKNOWN):
+      // Sync engine not initialized yet, default to it being off.
+    case GetFeatureStates(SigninStatus::kSignedInWithError, FeatureState::OFF):
+      LogDuration("NotOptedInToSyncWithAccountInAuthError", session_length);
+      break;
     case GetFeatureStates(SigninStatus::kSignedOut, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
-      [[fallthrough]];
-    case GetFeatureStates(SigninStatus::kSignedInWithError, FeatureState::OFF):
     case GetFeatureStates(SigninStatus::kSignedOut, FeatureState::OFF):
       LogDuration("NotOptedInToSyncWithoutAccount", session_length);
       break;

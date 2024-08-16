@@ -64,8 +64,11 @@ class SelectType : public GarbageCollected<SelectType> {
   virtual void CreateShadowSubtree(ShadowRoot& root) = 0;
   virtual void ManuallyAssignSlots() = 0;
   virtual HTMLButtonElement* SlottedButton() const = 0;
+  virtual HTMLButtonElement* DisplayedButton() const = 0;
   virtual HTMLDataListElement* DisplayedDatalist() const = 0;
   virtual bool IsAppearanceBaseSelect() const = 0;
+  virtual HTMLSelectElement::SelectAutofillPreviewElement*
+  GetAutofillPreviewElement() const = 0;
   virtual Element& InnerElementForAppearanceAuto() const;
   virtual void ShowPopup(PopupMenu::ShowEventType type);
   virtual void HidePopup();

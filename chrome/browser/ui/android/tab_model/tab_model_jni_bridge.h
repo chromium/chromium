@@ -26,7 +26,7 @@ class WebContents;
 class TabModelJniBridge : public TabModel {
  public:
   TabModelJniBridge(JNIEnv* env,
-                    const jni_zero::JavaRef<jobject>& jobj,
+                    jobject obj,
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
                     bool is_archived_tab_model);

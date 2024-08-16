@@ -383,8 +383,6 @@ component("base") {
     "memory/memory_pressure_listener.h",
     "memory/memory_pressure_monitor.cc",
     "memory/memory_pressure_monitor.h",
-    "memory/nonscannable_memory.cc",
-    "memory/nonscannable_memory.h",
     "memory/page_size.h",
     "memory/platform_shared_memory_handle.cc",
     "memory/platform_shared_memory_handle.h",
@@ -424,6 +422,7 @@ component("base") {
     "memory/shared_memory_mapper.h",
     "memory/shared_memory_mapping.cc",
     "memory/shared_memory_mapping.h",
+    "memory/shared_memory_safety_checker.h",
     "memory/shared_memory_security_policy.cc",
     "memory/shared_memory_security_policy.h",
     "memory/shared_memory_tracker.cc",
@@ -472,6 +471,7 @@ component("base") {
     "metrics/histogram_flattener.h",
     "metrics/histogram_functions.cc",
     "metrics/histogram_functions.h",
+    "metrics/histogram_functions_internal_overloads.h",
     "metrics/histogram_macros.h",
     "metrics/histogram_macros_internal.h",
     "metrics/histogram_macros_local.h",
@@ -1110,7 +1110,7 @@ component("base") {
   if (build_rust_base_conversions) {
     sources += [
       "containers/span_rust.h",
-      "strings/string_piece_rust.h",
+      "strings/string_view_rust.h",
     ]
 
     # Base provides conversions between CXX types and base types (e.g.
@@ -2938,6 +2938,15 @@ if ((is_win && (current_cpu == "x64" || current_cpu == "arm64")) || is_mac ||
   loadable_module("base_profiler_test_support_library") {
     testonly = true
     sources = [ "profiler/test_support_library.cc" ]
+
+    # Don't link libc++ and libc++abi into the shared library.
+    # libc++abi uses `thread_local`, and that interferes with
+    # the ability to unload shared libraries on some systems.
+    no_default_deps = true
+    if (!toolchain_for_rust_host_build_tools) {
+      deps = [ "//build/config:common_deps_without_libcxx" ]
+      configs += [ "//build/config/sanitizers:link_shared_library" ]
+    }
   }
 }
 
@@ -2952,6 +2961,13 @@ if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
   loadable_module("base_profiler_reparsing_test_support_library") {
     testonly = true
     sources = [ "profiler/test_support_library.cc" ]
+
+    # For consistency with base_profiler_reparsing_test_support_library.
+    no_default_deps = true
+    if (!toolchain_for_rust_host_build_tools) {
+      deps = [ "//build/config:common_deps_without_libcxx" ]
+      configs += [ "//build/config/sanitizers:link_shared_library" ]
+    }
   }
 }
 
@@ -3349,6 +3365,7 @@ test("base_unittests") {
     "power_monitor/power_monitor_unittest.cc",
     "power_monitor/timer_sampling_event_source_unittest.cc",
     "process/environment_internal_unittest.cc",
+    "process/launch_unittest.cc",
     "process/memory_unittest.cc",
     "process/process_metrics_unittest.cc",
     "process/process_unittest.cc",
@@ -4193,6 +4210,7 @@ if (enable_nocompile_tests) {
       "logging_nocompile.nc",
       "memory/protected_memory_nocompile.nc",
       "memory/ref_counted_nocompile.nc",
+      "memory/shared_memory_mapping_nocompile.nc",
       "memory/weak_ptr_nocompile.nc",
       "metrics/field_trial_params_nocompile.nc",
       "metrics/histogram_nocompile.nc",
@@ -4785,6 +4803,15 @@ if (is_android) {
     sources = [ "android/application_status_listener.h" ]
   }
 
+  android_library("service_loader_java") {
+    deps = [
+      ":resetters_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+    sources = [ "android/java/src/org/chromium/base/ServiceLoaderUtil.java" ]
+  }
+
   android_library("resetters_java") {
     deps = [
       "//build/android:build_java",
@@ -4945,6 +4972,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",
+      "android/javatests/src/org/chromium/base/task/ChainedTasksTest.java",
       "android/javatests/src/org/chromium/base/task/PostTaskTest.java",
       "android/javatests/src/org/chromium/base/task/SequencedTaskRunnerImplTest.java",
       "android/javatests/src/org/chromium/base/test/metrics/HistogramWatcherTestBase.java",

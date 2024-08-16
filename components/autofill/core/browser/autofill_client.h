@@ -80,15 +80,14 @@ class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
+class AutofillPredictionImprovementsDelegate;
 class AutofillProfile;
 enum class CreditCardFetchResult;
 class FormDataImporter;
-class Iban;
 class LogManager;
 class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
-class TouchToFillDelegate;
 enum class WebauthnDialogState;
 
 namespace payments {
@@ -108,17 +107,6 @@ using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient {
  public:
-  enum class SaveCardOfferUserDecision {
-    // The user accepted credit card save.
-    kAccepted,
-
-    // The user explicitly declined credit card save.
-    kDeclined,
-
-    // The user ignored the credit card save prompt.
-    kIgnored,
-  };
-
   // Represents the user's possible decisions or outcomes in response to a
   // prompt related to address saving, updating, or migrating.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -159,66 +147,6 @@ class AutofillClient {
     std::u16string cardholder_name;
     std::u16string expiration_date_month;
     std::u16string expiration_date_year;
-  };
-
-  enum class CardSaveType {
-    // Credit card is saved without the CVC.
-    kCardSaveOnly = 0,
-    // Credit card is saved with the CVC.
-    kCardSaveWithCvc = 1,
-    // Only CVC is saved.
-    kCvcSaveOnly = 2,
-  };
-
-  // Used for options of upload prompt.
-  struct SaveCreditCardOptions {
-    SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
-      should_request_name_from_user = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_should_request_expiration_date_from_user(
-        bool b) {
-      should_request_expiration_date_from_user = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_show_prompt(bool b = true) {
-      show_prompt = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_has_multiple_legal_lines(bool b = true) {
-      has_multiple_legal_lines = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions&
-    with_same_last_four_as_server_card_but_different_expiration_date(bool b) {
-      has_same_last_four_as_server_card_but_different_expiration_date = b;
-      return *this;
-    }
-
-    SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
-      card_save_type = b;
-      return *this;
-    }
-
-    bool should_request_name_from_user = false;
-    bool should_request_expiration_date_from_user = false;
-    bool show_prompt = false;
-    bool has_multiple_legal_lines = false;
-    bool has_same_last_four_as_server_card_but_different_expiration_date =
-        false;
-    CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
-  };
-
-  // TODO(crbug.com/325440757): Remove after the save-update controller
-  // splitting is done or remove this TODO if a new option is added. Used for
-  // options of save (and update) address profile prompt.
-  struct SaveAddressProfilePromptOptions {
-    // Whether the prompt suggests migration into the user's account.
-    bool is_migration_to_account = false;
   };
 
   // Required arguments to create a dropdown showing autofill suggestions.
@@ -323,6 +251,14 @@ class AutofillClient {
 
   // Returns the `AutofillComposeDelegate` instance for the tab of this client.
   virtual AutofillComposeDelegate* GetComposeDelegate();
+
+  // Returns the `AutofillPredictionImprovementsDelegate` instance for
+  // the tab of this client. This method can return nullptr if the user does not
+  // have the feature available, either because of not being part of the
+  // experiment or because of the current platform (prediction improvements are
+  // only available in Desktop).
+  virtual AutofillPredictionImprovementsDelegate*
+  GetAutofillPredictionImprovementsDelegate();
 
   // Returns the `AutofillPlusAddressDelegate` associated with the profile of
   // the window of this tab.
@@ -431,25 +367,13 @@ class AutofillClient {
   // renders an update prompt where `original_profile` is the address profile
   // that will be updated if the user accepts the update prompt. Runs `callback`
   // once the user makes a decision with respect to the offer-to-save prompt.
-  // `options` carries extra configuration options for the prompt.
+  // `is_migration_to_account` differentiates saving `profile` in browser or
+  // in user's Google account.
   virtual void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) = 0;
-
-  // Shows the Touch To Fill surface for filling IBAN information, if
-  // possible, returning `true` on success. `delegate` will be notified of
-  // events. This function is not implemented on iOS and iOS WebView, and
-  // should not be used on those platforms.
-  virtual bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest);
-
-  // Hides the Touch To Fill surface for filling credit card information
-  // if one is currently shown. Should be called only if the feature is
-  // supported by the platform.
-  virtual void HideTouchToFillCreditCard() = 0;
 
   // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and
   // `identifiers` for the element at `element_bounds`. `delegate` will be

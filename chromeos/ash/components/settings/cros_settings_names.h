@@ -34,6 +34,10 @@ inline constexpr char kAccountsPrefDeviceLocalAccountsKeyKioskAppId[] =
     "kiosk_app_id";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL[] =
     "kiosk_app_update_url";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId[] =
+    "iwa_kiosk_web_bundle_id";
+inline constexpr char kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl[] =
+    "iwa_kiosk_update_manifest_url";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[] =
     "web_kiosk_url";
 inline constexpr char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =

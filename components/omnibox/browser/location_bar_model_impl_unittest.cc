@@ -227,31 +227,23 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
   EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(Return(false));
 
   // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());
   EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+            model.GetPageClassification(/*is_prefetch=*/true));
   EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
-  EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+            model.GetPageClassification(/*is_prefetch=*/true));
 
   // Simulate the page URL is being empty.
   EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(Return(true));
 
   // Verify the page classification for prefetch and non-prefetch requests.
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC, model.GetPageClassification());
   EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+            model.GetPageClassification(/*is_prefetch=*/true));
   EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
-  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::INVALID_SPEC,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+            model.GetPageClassification(/*is_prefetch=*/true));
 
   // Simulate the page being the 1P NTP.
   EXPECT_CALL(delegate, GetURL(_))
@@ -263,31 +255,25 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
 
   // Verify the page classification for prefetch and non-prefetch requests.
   EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
-  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
+            model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+            model.GetPageClassification());
   EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+            model.GetPageClassification(/*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH, model.GetPageClassification(
+                                                     /*is_prefetch=*/true));
 
   // Simulate the page URL being chrome://newtab/.
   EXPECT_CALL(delegate, IsNewTabPage()).WillRepeatedly(Return(false));
   EXPECT_CALL(delegate, IsNewTabPageURL(_)).WillRepeatedly(Return(true));
 
   // Verify the page classification for prefetch and non-prefetch requests.
-  EXPECT_EQ(OmniboxEventProto::NTP,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
-  EXPECT_EQ(OmniboxEventProto::NTP,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
-  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::NTP, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::NTP, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH, model.GetPageClassification(
+                                                     /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::NTP_ZPS_PREFETCH, model.GetPageClassification(
+                                                     /*is_prefetch=*/true));
 
   // Simulate the page URL being successfully retrieved, and is the SRP.
   EXPECT_CALL(delegate, GetURL(_))
@@ -300,15 +286,13 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
 
   // Verify the page classification for prefetch and non-prefetch requests.
   EXPECT_EQ(OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
+            model.GetPageClassification());
   EXPECT_EQ(OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
-  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+            model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH, model.GetPageClassification(
+                                                     /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::SRP_ZPS_PREFETCH, model.GetPageClassification(
+                                                     /*is_prefetch=*/true));
 
   // Simulate the page URL being successfully retrieved, and is non-empty.
   EXPECT_CALL(delegate, GetURL(_))
@@ -318,16 +302,12 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
       })));
 
   // Verify the page classification for prefetch and non-prefetch requests.
-  EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX));
-  EXPECT_EQ(OmniboxEventProto::OTHER,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX));
-  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                        /*is_prefetch=*/true));
-  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH,
-            model.GetPageClassification(OmniboxFocusSource::FAKEBOX,
-                                        /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());
+  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH, model.GetPageClassification(
+                                                       /*is_prefetch=*/true));
+  EXPECT_EQ(OmniboxEventProto::OTHER_ZPS_PREFETCH, model.GetPageClassification(
+                                                       /*is_prefetch=*/true));
 }
 
 }  // namespace

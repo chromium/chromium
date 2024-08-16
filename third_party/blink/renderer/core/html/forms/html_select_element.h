@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/forms/type_ahead.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -57,6 +58,21 @@ class CORE_EXPORT HTMLSelectElement final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  class SelectAutofillPreviewElement : public HTMLDivElement {
+   public:
+    SelectAutofillPreviewElement(Document& document, HTMLSelectElement* select);
+
+    const ComputedStyle* CustomStyleForLayoutObject(
+        const StyleRecalcContext& style_recalc_context) override;
+    Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+    void RemovedFrom(ContainerNode&) override;
+
+    void Trace(Visitor*) const override;
+
+   private:
+    Member<HTMLSelectElement> select_;
+  };
+
   explicit HTMLSelectElement(Document&);
   ~HTMLSelectElement() override;
 
@@ -223,12 +239,25 @@ class CORE_EXPORT HTMLSelectElement final
   // This <datalist> is the one which will get rendered as a popover.
   HTMLDataListElement* DisplayedDatalist() const;
 
+  // DisplayedButton does the same logic as DisplayedDatalist except for the
+  // <button> instead of the <datalist>.
+  HTMLButtonElement* DisplayedButton() const;
+
   // This method returns true if the computed style is appearance:base-select and
   // the SelectType supports alternate rendering based on appearance:base-select.
   bool IsAppearanceBaseSelect() const;
 
   void SelectedOptionElementInserted(HTMLSelectedOptionElement* selectedoption);
   void SelectedOptionElementRemoved(HTMLSelectedOptionElement* selectedoption);
+
+  // This will only return an element if IsAppearanceBaseSelect(). The element
+  // is a popover inside the UA shadowroot which is used to show the user a
+  // preview of what is going to be autofilled.
+  SelectAutofillPreviewElement* GetAutofillPreviewElement() const;
+
+  // Getter and setter for the selectedoptionelement attribute
+  HTMLSelectedOptionElement* selectedOptionElement() const;
+  void setSelectedOptionElement(HTMLSelectedOptionElement*);
 
   void DefaultEventHandler(Event&) override;
   bool SupportsFocus(UpdateBehavior update_behavior) const override;
@@ -324,6 +353,10 @@ class CORE_EXPORT HTMLSelectElement final
   // size).
   void ChangeRendering();
   void UpdateUserAgentShadowTree(ShadowRoot& root);
+
+  // Returns descendant_selectedoptions_ and the <selectedoption> targeted by
+  // the selectedoptionelement attribute.
+  HeapHashSet<Member<HTMLSelectedOptionElement>> TargetSelectedOptions() const;
 
   // list_items_ contains HTMLOptionElement, HTMLOptGroupElement, and
   // HTMLHRElement objects.

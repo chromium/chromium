@@ -139,6 +139,10 @@ void ExpectOnlyMockUpdater(const base::FilePath& mock_updater_path);
 void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
                         const updater::tagging::TagArgs& expected);
 
+// Wait for the process to exit up to the action timeout and returns the exit
+// code. The function expects the process to exit in time.
+int WaitForProcess(base::Process& process);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_UNIT_TEST_UTIL_H_

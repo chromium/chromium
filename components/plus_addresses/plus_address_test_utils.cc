@@ -8,6 +8,8 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/plus_address_types.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses::test {
 
@@ -22,7 +24,7 @@ PlusProfile CreatePlusProfile(std::string plus_address,
   }
 
   return PlusProfile(/*profile_id=*/"123", facet,
-                     /*plus_address=*/std::move(plus_address),
+                     PlusAddress(std::move(plus_address)),
                      /*is_confirmed=*/is_confirmed);
 }
 
@@ -39,7 +41,7 @@ PlusProfile CreatePlusProfile2(bool use_full_domain) {
     facet = "bar.com";
   }
   return PlusProfile(/*profile_id=*/"234", facet,
-                     /*plus_address=*/"plus+bar@plus.plus",
+                     PlusAddress("plus+bar@plus.plus"),
                      /*is_confirmed=*/true);
 }
 
@@ -76,6 +78,21 @@ std::string MakeListResponse(const std::vector<PlusProfile>& profiles) {
   return json.value();
 }
 
+std::string MakePreallocateResponse(
+    const std::vector<PreallocatedPlusAddress>& addresses) {
+  base::Value::List profiles;
+  for (const PreallocatedPlusAddress& address : addresses) {
+    profiles.Append(
+        base::Value::Dict()
+            .Set("emailAddress", *address.plus_address)
+            .Set("reservationLifetime",
+                 base::NumberToString(address.lifetime.InSeconds()) + "s"));
+  }
+  return base::WriteJson(
+             base::Value::Dict().Set("emailAddresses", std::move(profiles)))
+      .value();
+}
+
 std::string MakePlusProfile(const PlusProfile& profile) {
   // Note: the below must be kept in-line with the PlusAddressParser behavior.
   std::string mode = profile.is_confirmed ? "anyMode" : "UNSPECIFIED";
@@ -97,7 +114,7 @@ std::string MakePlusProfile(const PlusProfile& profile) {
             }
           }
         )",
-      {profile.profile_id, facet, profile.plus_address, mode}, nullptr);
+      {*profile.profile_id, facet, *profile.plus_address, mode}, nullptr);
   DCHECK(base::JSONReader::Read(json));
   return json;
 }

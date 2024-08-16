@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.supervised_user.SupervisedUserCapabilities;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
@@ -338,7 +337,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                             this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
 
             mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
-            if (SupervisedUserCapabilities.isSubjectToParentalControls(getProfile())) {
+            if (getProfile().isChild()) {
                 mSignOutPreference.setVisible(false);
             } else {
                 mSignOutPreference.initialize(
@@ -680,10 +679,15 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             // error.
             closeDialogIfOpen(FRAGMENT_CUSTOM_PASSPHRASE);
             closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
-            setEncryptionErrorSummary(
-                    mSyncService.isEncryptEverythingEnabled()
-                            ? R.string.sync_error_card_title
-                            : R.string.password_sync_error_summary);
+            if (shouldReplaceSyncSettingsWithAccountSettings()) {
+                // Show the same text as the error card button.
+                setEncryptionErrorSummary(R.string.identity_error_card_button_verify);
+            } else {
+                setEncryptionErrorSummary(
+                        mSyncService.isEncryptEverythingEnabled()
+                                ? R.string.sync_error_card_title
+                                : R.string.password_sync_error_summary);
+            }
             return;
         }
 

@@ -74,6 +74,9 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::PrimaryID::SMPTE240M:
       format.VideoPrimaries = DXVA2_VideoPrimaries_SMPTE240M;
       break;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      format.VideoPrimaries = DXVA2_VideoPrimaries_EBU3213;
+      break;
 
     case gfx::ColorSpace::PrimaryID::FILM:
     case gfx::ColorSpace::PrimaryID::BT2020:
@@ -194,6 +197,7 @@ bool ColorSpaceWin::CanConvertToDXGIColorSpace(const ColorSpace& color_space) {
     case gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB:
     case gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN:
     case gfx::ColorSpace::PrimaryID::CUSTOM:
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
       // Not supported.
       return false;
   }

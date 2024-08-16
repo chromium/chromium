@@ -31,7 +31,7 @@ void UrlScoringSignalsAnnotator::AnnotateResult(const AutocompleteInput& input,
       URLIndexPrivateData::GetTermsAndWordStartsOffsets(lower_raw_string);
   for (auto& match : *result) {
     // Skip ineligible matches
-    if (!IsEligibleMatch(match)) {
+    if (!match.IsMlSignalLoggingEligible()) {
       continue;
     }
 

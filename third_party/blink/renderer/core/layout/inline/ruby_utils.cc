@@ -155,7 +155,7 @@ RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
       i = sub_indexes.column_end;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
@@ -658,7 +658,7 @@ void AdjustRubyEmHeightBoxForPropagation(const PhysicalFragment& fragment,
   if (!fragment.IsCSSBox()) {
     return;
   }
-  if (UNLIKELY(fragment.IsLayoutObjectDestroyedOrMoved())) {
+  if (fragment.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
     NOTREACHED_IN_MIGRATION();
     return;
   }
@@ -724,7 +724,7 @@ void AddRubyEmHeightBoxForInlineChild(const PhysicalFragment& child,
   for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;) {
     const FragmentItem* item = descendants.CurrentItem();
     DCHECK(item);
-    if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       NOTREACHED_IN_MIGRATION();
       descendants.MoveToNextSkippingChildren();
       continue;
@@ -734,7 +734,7 @@ void AddRubyEmHeightBoxForInlineChild(const PhysicalFragment& child,
       child_scroll_overflow = AdjustTextRectForEmHeight(
           child_scroll_overflow, item->Style(), item->TextShapeResult(),
           container_writing_mode);
-      if (UNLIKELY(has_hanging)) {
+      if (has_hanging) [[unlikely]] {
         AdjustRubyEmHeightBoxForHanging(line.RectInContainerFragment(),
                                         container_writing_mode,
                                         &child_scroll_overflow);
@@ -756,7 +756,7 @@ void AddRubyEmHeightBoxForInlineChild(const PhysicalFragment& child,
                                          &child_scroll_overflow);
         AdjustRubyEmHeightBoxForPropagation(*child_box, container,
                                             &child_scroll_overflow);
-        if (UNLIKELY(has_hanging)) {
+        if (has_hanging) [[unlikely]] {
           AdjustRubyEmHeightBoxForHanging(line.RectInContainerFragment(),
                                           container_writing_mode,
                                           &child_scroll_overflow);
@@ -996,7 +996,7 @@ PhysicalRect ComputeRubyEmHeightBox(const PhysicalBoxFragment& box_fragment) {
   DCHECK(box_fragment.GetLayoutObject());
   // TODO(kojii): It might be that |ComputeAnnotationOverflow| should move to
   // scrollable overflow recalc, but it is to be thought out.
-  if (UNLIKELY(box_fragment.IsLayoutObjectDestroyedOrMoved())) {
+  if (box_fragment.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
     NOTREACHED_IN_MIGRATION();
     return PhysicalRect();
   }

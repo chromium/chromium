@@ -81,6 +81,9 @@ class TabStripViewController: UIViewController,
   /// Provides context menu for tab strip items.
   public weak var contextMenuProvider: TabStripContextMenuProvider?
 
+  /// Handler for tab group confirmation commands.
+  public weak var tabGroupConfirmationHandler: TabGroupConfirmationCommands?
+
   /// The LayoutGuideCenter.
   @objc public var layoutGuideCenter: LayoutGuideCenter? {
     didSet {
@@ -190,6 +193,9 @@ class TabStripViewController: UIViewController,
   override func viewWillTransition(
     to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
   ) {
+    // Dismisses the confirmation dialog for tab group if it's displayed.
+    tabGroupConfirmationHandler?.dismissTabGroupConfirmation()
+
     super.viewWillTransition(to: size, with: coordinator)
     weak var weakSelf = self
     coordinator.animate(alongsideTransition: nil) { _ in
@@ -699,7 +705,7 @@ class TabStripViewController: UIViewController,
 
   /// Scrolls the collection view to the given horizontal `offset`.
   func scrollToContentOffset(_ offset: CGFloat) {
-    // TODO(crbug.com/325415449): Update this when #unavailable is rocognized by
+    // TODO(crbug.com/325415449): Update this when #unavailable is recognized by
     // the formatter.
     if #available(iOS 17.0, *) {
     } else {
@@ -784,13 +790,6 @@ class TabStripViewController: UIViewController,
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension TabStripViewController: UICollectionViewDelegateFlowLayout {
-
-  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-    if #available(iOS 16, *) {
-    } else {
-      self.collectionView(collectionView, performPrimaryActionForItemAt: indexPath)
-    }
-  }
 
   func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath)
     -> Bool
@@ -1056,13 +1055,13 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       if let destinationIndexPath = coordinator.destinationIndexPath {
         destinationIndex = destinationIndexPath.item
       }
-      let dropIndexPah: IndexPath = IndexPath(item: destinationIndex, section: 0)
+      let dropIndexPath = dropIndexPath(item: item, destinationIndex: destinationIndex)
       dragEndAtNewIndex = true
 
       // Drop synchronously if local object is available.
       if item.dragItem.localObject != nil {
         weak var weakSelf = self
-        coordinator.drop(item.dragItem, toItemAt: dropIndexPah).addCompletion {
+        coordinator.drop(item.dragItem, toItemAt: dropIndexPath).addCompletion {
           _ in
           weakSelf?.dropAnimationInProgress = false
         }
@@ -1074,7 +1073,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
       } else {
         // Drop asynchronously if local object is not available.
         let placeholder: UICollectionViewDropPlaceholder = UICollectionViewDropPlaceholder(
-          insertionIndexPath: dropIndexPah,
+          insertionIndexPath: dropIndexPath,
           reuseIdentifier: TabStripConstants.CollectionView.tabStripTabCellReuseIdentifier)
         placeholder.previewParametersProvider = {
           (placeholderCell: UICollectionViewCell) -> UIDragPreviewParameters? in
@@ -1090,6 +1089,36 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
           from: item.dragItem.itemProvider, to: UInt(destinationIndex), placeholderContext: context)
       }
     }
+  }
+
+  // MARK: - Private
+
+  /// Determines the IndexPath where a dropped UICollectionViewDropItem should be inserted.
+  private func dropIndexPath(item: UICollectionViewDropItem, destinationIndex: Int) -> IndexPath {
+    let defaultIndexPath = IndexPath(item: destinationIndex, section: 0)
+
+    // Item originates from a different collection view.
+    guard let sourceIndexPath = item.sourceIndexPath else {
+      return defaultIndexPath
+    }
+
+    // Item is dropped before its original position.
+    if sourceIndexPath.item > destinationIndex {
+      return defaultIndexPath
+    }
+
+    guard let draggedItemIdentifier = draggedItemIdentifier,
+      let itemData = self.itemData[draggedItemIdentifier] as? TabStripItemData
+    else {
+      return defaultIndexPath
+    }
+
+    // If the tab item is the only item in its group, adjust drop position.
+    if itemData.groupStrokeColor != nil && itemData.isFirstTabInGroup && itemData.isLastTabInGroup {
+      return IndexPath(item: destinationIndex - 1, section: 0)
+    }
+
+    return defaultIndexPath
   }
 
 }

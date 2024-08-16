@@ -47,7 +47,7 @@ std::string WebFilterTypeToDisplayString(WebFilterType web_filter_type) {
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
     case WebFilterType::kMixed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

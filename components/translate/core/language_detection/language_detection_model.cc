@@ -4,7 +4,6 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -21,7 +20,7 @@ namespace {
 
 // The number of characters to sample and provide as a buffer to the model
 // for determining its language.
-constexpr int kTextSampleLength = 256;
+constexpr size_t kTextSampleLength = 256;
 
 // The number of samples of |kTextSampleLength| to evaluate the model when
 // determining the language of the page content.
@@ -30,6 +29,11 @@ constexpr int kNumTextSamples = 3;
 }  // namespace
 
 namespace translate {
+// If enabled, the string passed to the language detection model for the whole
+// page is truncated to `kTextSampleLength`
+BASE_FEATURE(kTruncateLanguageDetectionSample,
+             "TruncateLanguageDetectionSample",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 LanguageDetectionModel::LanguageDetectionModel(
     language_detection::LanguageDetectionModel* tflite_model_)
@@ -48,9 +52,11 @@ bool LanguageDetectionModel::IsAvailable() const {
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
     const std::u16string& sampled_str) const {
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
-  base::ElapsedTimer timer;
 
-  auto categories = tflite_model_->Predict(sampled_str);
+  auto categories =
+      tflite_model_->Predict(sampled_str,
+                             /*truncate=*/base::FeatureList::IsEnabled(
+                                 kTruncateLanguageDetectionSample));
   auto top_category = language_detection::TopPrediction((categories));
   base::UmaHistogramSparse(
       "LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage",
@@ -100,6 +106,7 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
 
 language_detection::Prediction LanguageDetectionModel::DetectLanguage(
     const std::u16string& contents) const {
+  base::ElapsedTimer timer;
   if (!tflite_model_->IsAvailable()) {
     return language_detection::Prediction{translate::kUnknownLanguageCode,
                                           0.0f};
@@ -127,6 +134,12 @@ language_detection::Prediction LanguageDetectionModel::DetectLanguage(
 
   const auto top_language_result =
       std::max_element(model_predictions.begin(), model_predictions.end());
+  base::UmaHistogramTimes(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
+      timer.Elapsed());
+  base::UmaHistogramCounts1M(
+      "LanguageDetection.TFLiteModel.DetectPageLanguage.Size", contents.size());
+
   return language_detection::Prediction{top_language_result->first,
                                         top_language_result->second};
 }

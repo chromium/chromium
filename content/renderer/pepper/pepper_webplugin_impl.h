@@ -67,7 +67,6 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   void PrintPage(int page_number, cc::PaintCanvas* canvas) override;
   void PrintEnd() override;
 
-  bool IsPlaceholder() override;
   void DidLoseMouseLock() override;
   void DidReceiveMouseLockResult(bool success) override;
 

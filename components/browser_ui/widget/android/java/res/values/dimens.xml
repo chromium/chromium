@@ -213,6 +213,7 @@ found in the LICENSE file.
 
     <!-- Tab Resumption module -->
     <dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_1</dimen>
+    <dimen name="tab_resumption_module_tile_reason_background_color_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Preference switch -->
     <!-- Work around to adopt the material switch . See crbug/1248590. -->

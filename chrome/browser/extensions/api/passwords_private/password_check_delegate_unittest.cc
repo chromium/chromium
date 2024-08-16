@@ -404,6 +404,7 @@ TEST_F(PasswordCheckDelegateTest, WeakCheckWhenUserSignedOut) {
 // credential covers the "Just now" cases (less than a minute ago), as well as
 // months and years.
 TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsHandlesTimes) {
+  RunUntilIdle();
   PasswordForm form_com_username1 = MakeSavedPassword(kExampleCom, kUsername1);
   AddIssueToForm(&form_com_username1, InsecureType::kLeaked, base::Seconds(59));
   store().AddLogin(form_com_username1);
@@ -452,6 +453,7 @@ TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsHandlesTimes) {
 // most recent compromise.
 TEST_F(PasswordCheckDelegateTest,
        GetInsecureCredentialsDedupesLeakedAndCompromised) {
+  RunUntilIdle();
   PasswordForm form_com_username1 = MakeSavedPassword(kExampleCom, kUsername1);
   AddIssueToForm(&form_com_username1, InsecureType::kLeaked, base::Minutes(1));
   AddIssueToForm(&form_com_username1, InsecureType::kPhished, base::Minutes(5));
@@ -499,6 +501,7 @@ TEST_F(PasswordCheckDelegateTest,
 }
 
 TEST_F(PasswordCheckDelegateTest, GetInsecureCredentialsInjectsAndroid) {
+  RunUntilIdle();
   PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
   AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(5));
   store().AddLogin(form);

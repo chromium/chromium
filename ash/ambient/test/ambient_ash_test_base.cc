@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/ambient/test/ambient_ash_test_base.h"
 
 #include <map>
@@ -729,9 +734,7 @@ void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
   SkBitmap bitmap = gfx::test::CreateBitmap(width, height, color);
   std::vector<unsigned char> data;
   ASSERT_TRUE(gfx::JPEGCodec::Encode(std::move(bitmap), /*quality=*/50, &data));
-  size_t bytes_written = base::WriteFile(
-      path, reinterpret_cast<const char*>(data.data()), data.size());
-  ASSERT_EQ(data.size(), bytes_written);
+  ASSERT_TRUE(base::WriteFile(path, data));
 }
 
 void AmbientAshTestBase::SetScreenSaverDuration(int minutes) {

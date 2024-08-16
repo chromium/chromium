@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabbed_mode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -20,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for {@link TabbedRootUiCoordinator}. */
@@ -54,10 +57,17 @@ public class TabbedRootUiCoordinatorTest {
     private TabbedRootUiCoordinator mTabbedRootUiCoordinator;
 
     @Mock private PrivacySandboxBridgeJni mPrivacySandboxBridgeJni;
+    @Mock private SearchEngineChoiceService mSearchEngineChoiceService;
 
     @Before
     public void setUp() {
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mPrivacySandboxBridgeJni);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SearchEngineChoiceService.setInstanceForTests(mSearchEngineChoiceService);
+                    doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+                });
 
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -83,5 +93,12 @@ public class TabbedRootUiCoordinatorTest {
     @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE)
     public void testRecordPrivacySandboxActivityTypeDoesNotIncrementRecordWhenFlagIsDisabled() {
         verify(mPrivacySandboxBridgeJni, never()).recordActivityType(any(), anyInt());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.CLAY_BLOCKING)
+    public void testDeviceChoiceDialogPlaceholder() {
+        verify(mSearchEngineChoiceService, never()).shouldShowDeviceChoiceDialog();
     }
 }

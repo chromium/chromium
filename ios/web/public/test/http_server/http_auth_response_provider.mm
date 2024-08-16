@@ -40,8 +40,9 @@ void HttpAuthResponseProvider::GetResponseHeadersAndBody(
 
 bool HttpAuthResponseProvider::HeadersHaveValidCredentials(
     const net::HttpRequestHeaders& headers) {
-  std::string header;
-  if (headers.GetHeader(net::HttpRequestHeaders::kAuthorization, &header)) {
+  std::optional<std::string> header =
+      headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
+  if (header) {
     std::string auth =
         base::StringPrintf("%s:%s", username_.c_str(), password_.c_str());
     std::string encoded_auth = base::Base64Encode(auth);

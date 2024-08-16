@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 
 #include <memory>
@@ -382,16 +387,10 @@ const std::string& CheckJSValue(const std::string* str) {
 }  // namespace
 
 AccessibilityUIConfig::AccessibilityUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIAccessibilityHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAccessibilityHost) {}
 
 AccessibilityUIConfig::~AccessibilityUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-AccessibilityUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                             const GURL& url) {
-  return std::make_unique<AccessibilityUI>(web_ui);
-}
 
 AccessibilityUI::AccessibilityUI(content::WebUI* web_ui)
     : WebUIController(web_ui) {

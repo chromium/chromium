@@ -106,7 +106,7 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
     case FragmentItem::kGeneratedText:
       return true;
     case FragmentItem::kText:
-      if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved())) {
+      if (item.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
         // See http://crbug.com/1217079
         NOTREACHED_IN_MIGRATION() << item;
         return true;
@@ -177,7 +177,7 @@ void InlineCursor::SetRoot(const PhysicalBoxFragment& box_fragment,
 bool InlineCursor::TrySetRootFragmentItems() {
   DCHECK(root_block_flow_);
   DCHECK(!fragment_items_ || fragment_items_->Equals(items_));
-  if (UNLIKELY(!root_block_flow_->MayHaveFragmentItems())) {
+  if (!root_block_flow_->MayHaveFragmentItems()) [[unlikely]] {
 #if EXPENSIVE_DCHECKS_ARE_ON()
     DCHECK(!root_block_flow_->PhysicalFragments().SlowHasFragmentItems());
 #endif
@@ -319,13 +319,16 @@ bool InlineCursorPosition::HasSoftWrapToNextLine() const {
 }
 
 bool InlineCursorPosition::IsInlineLeaf() const {
-  if (IsHiddenForPaint())
+  if (IsHiddenForPaint()) {
     return false;
-  if (IsText())
+  }
+  if (IsText()) {
     return !IsLayoutGeneratedText();
-  if (!IsAtomicInline())
-    return false;
-  return !IsListMarker();
+  }
+  if (IsAtomicInline()) {
+    return !IsListMarker();
+  }
+  return false;
 }
 
 bool InlineCursorPosition::IsPartOfCulledInlineBox(
@@ -731,9 +734,12 @@ PositionWithAffinity InlineCursor::PositionForPointInInlineBox(
          container->Type() == FragmentItem::kBox);
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(container->GetLayoutObject());
-  const PhysicalOffset point =
-      UNLIKELY(text_combine) ? text_combine->AdjustOffsetForHitTest(point_in)
-                             : point_in;
+  PhysicalOffset point;
+  if (text_combine) [[unlikely]] {
+    point = text_combine->AdjustOffsetForHitTest(point_in);
+  } else {
+    point = point_in;
+  }
   const auto writing_direction = container->Style().GetWritingDirection();
   const PhysicalSize& container_size = container->Size();
   const LayoutUnit point_inline_offset =
@@ -994,8 +1000,9 @@ void InlineCursor::MoveTo(const InlineCursor& cursor) {
 
 void InlineCursor::MoveToParent() {
   wtf_size_t count = 0;
-  if (UNLIKELY(!Current()))
+  if (!Current()) [[unlikely]] {
     return;
+  }
   for (;;) {
     MoveToPrevious();
     if (!Current())
@@ -1319,9 +1326,10 @@ bool InlineCursor::TryMoveToLastChild() {
 
 void InlineCursor::MoveToNext() {
   DCHECK(HasRoot());
-  if (UNLIKELY(!current_.item_))
+  if (!current_.item_) [[unlikely]] {
     return;
-  // Expensive DCHECK as MoveToNext() is callled frequently.
+  }
+  // Expensive DCHECK as MoveToNext() is called frequently.
   DCHECK(current_.item_iter_ != items_.end());
   if (++current_.item_iter_ != items_.end()) {
     current_.item_ = &*current_.item_iter_;
@@ -1332,8 +1340,9 @@ void InlineCursor::MoveToNext() {
 
 void InlineCursor::MoveToNextSkippingChildren() {
   DCHECK(HasRoot());
-  if (UNLIKELY(!current_.item_))
+  if (!current_.item_) [[unlikely]] {
     return;
+  }
   // If the current item has |DescendantsCount|, add it to move to the next
   // sibling, skipping all children and their descendants.
   if (wtf_size_t descendants_count = current_.item_->DescendantsCount())
@@ -1343,8 +1352,9 @@ void InlineCursor::MoveToNextSkippingChildren() {
 
 void InlineCursor::MoveToPrevious() {
   DCHECK(HasRoot());
-  if (UNLIKELY(!current_.item_))
+  if (!current_.item_) [[unlikely]] {
     return;
+  }
   if (current_.item_iter_ == items_.begin())
     return MakeNull();
   --current_.item_iter_;
@@ -1414,7 +1424,7 @@ void InlineCursor::SlowMoveToNextForSameLayoutObject(
 
 void InlineCursor::MoveTo(const LayoutObject& layout_object) {
   DCHECK(layout_object.IsInLayoutNGInlineFormattingContext());
-  if (UNLIKELY(layout_object.IsOutOfFlowPositioned())) {
+  if (layout_object.IsOutOfFlowPositioned()) [[unlikely]] {
     NOTREACHED_IN_MIGRATION();
     MakeNull();
     return;
@@ -1426,7 +1436,7 @@ void InlineCursor::MoveTo(const LayoutObject& layout_object) {
     const LayoutBlockFlow* root = layout_object.FragmentItemsContainer();
     DCHECK(root);
     SetRoot(*root);
-    if (UNLIKELY(!HasRoot())) {
+    if (!HasRoot()) [[unlikely]] {
       MakeNull();
       return;
     }
@@ -1436,7 +1446,7 @@ void InlineCursor::MoveTo(const LayoutObject& layout_object) {
   }
 
   wtf_size_t item_index = layout_object.FirstInlineFragmentItemIndex();
-  if (UNLIKELY(!item_index)) {
+  if (!item_index) [[unlikely]] {
 #if EXPENSIVE_DCHECKS_ARE_ON()
     const LayoutBlockFlow* root = layout_object.FragmentItemsContainer();
     InlineCursor check_cursor(*root);
@@ -1501,9 +1511,9 @@ void InlineCursor::MoveTo(const LayoutObject& layout_object) {
 #endif
 
     // Skip items before |items_|, in case |this| is part of IFC.
-    if (UNLIKELY(is_descendants_cursor)) {
+    if (is_descendants_cursor) [[unlikely]] {
       const wtf_size_t span_begin_item_index = SpanBeginItemIndex();
-      while (UNLIKELY(item_index < span_begin_item_index)) {
+      while (item_index < span_begin_item_index) [[unlikely]] {
         const FragmentItem& item = fragment_items_->Items()[item_index];
         const wtf_size_t next_delta = item.DeltaToNextForSameLayoutObject();
         if (!next_delta) {
@@ -1512,7 +1522,7 @@ void InlineCursor::MoveTo(const LayoutObject& layout_object) {
         }
         item_index += next_delta;
       }
-      if (UNLIKELY(item_index >= span_begin_item_index + items_.size())) {
+      if (item_index >= span_begin_item_index + items_.size()) [[unlikely]] {
         MakeNull();
         return;
       }
@@ -1726,7 +1736,7 @@ void InlineCursor::MoveToIncludingCulledInline(
 }
 
 void InlineCursor::MoveToNextForSameLayoutObject() {
-  if (UNLIKELY(culled_inline_)) {
+  if (culled_inline_) [[unlikely]] {
     MoveToNextForCulledInline();
     return;
   }

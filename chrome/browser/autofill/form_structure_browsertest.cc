@@ -246,6 +246,11 @@ void FormStructureBrowserTest::SetUpCommandLine(
   command_line->AppendSwitchASCII(switches::kLoggingLevel, "2");
   command_line->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, "us");
+  // SelectParserRelaxation affects the results from the test data because the
+  // test data has unclosed <select> tags. Since SelectParserRelaxation is not
+  // enabled by default, we are disabling it for this test.
+  command_line->AppendSwitchASCII("disable-blink-features",
+                                  "SelectParserRelaxation");
 }
 
 void FormStructureBrowserTest::SetUpOnMainThread() {
@@ -291,7 +296,7 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
 }
 
 // TODO(https://crbug.com/41493195): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DataDrivenHeuristics DISABLED_DataDrivenHeuristics
 #else
 #define MAYBE_DataDrivenHeuristics DataDrivenHeuristics

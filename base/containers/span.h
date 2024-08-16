@@ -16,6 +16,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <span>
 #include <type_traits>
 #include <utility>
@@ -161,28 +162,31 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 //     char str_buffer[100];
 //     SafeSNPrintf(str_buffer, "Pi ~= %lf", 3.14);
 //
-// Dynamic vs Fixed size spans
-// ---------------------------
+// Dynamic-extent spans vs fixed-extent spans
+// ------------------------------------------
 //
-// Normally spans have a dynamic size, which is represented as a type as
-// `span<T>`. However it is possible to encode the size of the span into the
-// type as a second parameter such as `span<T, N>`. When working with fixed-size
-// spans, the compiler will check the size of operations and prevent compilation
-// when an invalid size is used for an operation such as assignment or
-// `copy_from()`. However operations that produce a new span will make a
-// dynamic-sized span by default. See below for how to prevent that.
+// A `span<T>` has a dynamic extent—the size of the sequence of objects it
+// refers to is only known at runtime. It is also possible to create a span with
+// a fixed size at compile time by specifying the second template parameter,
+// e.g. `span<int, 6>` is a span of 6 elements. Operations on a fixed-extent
+// span will fail to compile if an index or size would lead to an out-of-bounds
+// access.
 //
-// Fixed-size spans implicitly convert to a dynamic-size span, throwing away the
-// compile-time size information from the type signature. So most code should
-// work with dynamic-sized `span<T>` types and not worry about the existence of
-// fixed-size spans.
+// A fixed-extent span implicitly converts to a dynamic-extent span (e.g.
+// `span<int, 6>` is implicitly convertible to `span<int>`), so most code that
+// operates on spans of arbitrary length can just accept a `span<T>`: there is
+// no need to add an additional overload for specially handling the `span<T, N>`
+// case.
 //
-// It is possible to convert from a dynamic-size to a fixed-size span (or to
-// move from a fixed-size span to another fixed-size span) but it requires
-// writing an the size explicitly in the code. Methods like `first` can be
-// passed a size as a template argument, such as `first<N>()` to generate a
-// fixed-size span. And the `make_span` function can be given a compile-time
-// size in a similar way with `make_span<N>()`.
+// There are several ways to go from a dynamic-extent span to a fixed-extent
+// span:
+// - Use the convenience `to_fixed_extent<N>()` method. This returns
+//   `std::nullopt` if `size() != N`.
+// - Use `first<N>()`, `last<N>()`, or `subspan<Index, N>()` to create a
+//   subsequence of the original span. These methods will `CHECK()` at runtime
+//   if the requested subsequence would lead to an out-of-bounds access.
+// - Explicitly construct `span<T, N>` from `span<T>`: this will `CHECK()` at
+//   runtime if the input span's `size()` is not exactly `N`.
 //
 // Spans with "const" and pointers
 // -------------------------------
@@ -246,6 +250,7 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 // - byte_span_from_cstring() function.
 // - byte_span_with_nul_from_cstring() function.
 // - split_at() method.
+// - to_fixed_extent() method.
 // - operator==() comparator function.
 // - operator<=>() comparator function.
 // - operator<<() printing function.
@@ -646,7 +651,12 @@ class GSL_POINTER span {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
       span<const T, N> other)
     requires(!std::is_const_v<T>)
@@ -691,7 +701,12 @@ class GSL_POINTER span {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   //
   // # Implementation note
   // The parameter is taken as a template to avoid implicit conversion where
@@ -1038,6 +1053,15 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
     return UNSAFE_BUFFERS({data() + offset, new_extent});
   }
 
+  // Convert a dynamic-extent span to a fixed-extent span. Returns a
+  // `span<T, Extent>` iff `size() == Extent`; otherwise, returns
+  // `std::nullopt`.
+  template <size_t Extent>
+  constexpr std::optional<span<T, Extent>> to_fixed_extent() const {
+    return size() == Extent ? std::optional(span<T, Extent>(*this))
+                            : std::nullopt;
+  }
+
   // Splits a span into two at the given `offset`, returning two spans that
   // cover the full range of the original span.
   //
@@ -1199,7 +1223,12 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   //
   // # Safety
   // The `other` span must not overlap with `this` or Undefined Behaviour may
-  // occur.
+  // occur. Hence this must be called from inside an UNSAFE_BUFFERS() region
+  // and there must be a // SAFETY: comment explaining why the buffers are
+  // known not to overlap.
+  //
+  // If the calling code is not performance sensitive, the safer copy_from()
+  // method may be a simpler option.
   UNSAFE_BUFFER_USAGE constexpr void copy_from_nonoverlapping(
       span<const T> other)
     requires(!std::is_const_v<T>)
@@ -1488,80 +1517,6 @@ constexpr auto make_span(Container&& container) noexcept {
   return span<T, Extent::value>(std::forward<Container>(container));
 }
 
-// make_span utility function that allows callers to explicit specify the span's
-// extent, the value_type is deduced automatically. This is useful when passing
-// a dynamically sized container to a method expecting static spans, when the
-// container is known to have the correct size.
-//
-// Note: This will CHECK that N indeed matches size(container).
-//
-// # Usage
-// As this function is unsafe, the caller must guarantee that the size is
-// correct for the iterator, and will not allow the span to reach out of bounds.
-// ```
-// // SAFETY: <An explanation of how the size is checked/ensured to always be
-// // valid for the iterator>.
-// auto static_span = UNSAFE_BUFFERS(base::make_span<N>(it, size));
-// ```
-//
-// # Safety
-// The contiguous iterator `it` must point to the first element of at least
-// `size` many elements or Undefined Behaviour may result as the span may give
-// access beyond the bounds of the collection pointed to by `it`.
-template <size_t N, int&... ExplicitArgumentBarrier, typename It>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(
-    It it,
-    StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` is the first of at least `size`
-  // many elements.
-  return UNSAFE_BUFFERS(span<T, N>(it, size));
-}
-
-// make_span utility function that allows callers to explicit specify the span's
-// extent, the value_type is deduced automatically. This is useful when passing
-// a dynamically sized container to a method expecting static spans, when the
-// container is known to have the correct size.
-//
-// Note: This will CHECK that N indeed matches size(container).
-//
-// # Usage
-// As this function is unsafe, the caller must guarantee that the `end` is from
-// the same allocation as the `it` iterator.
-// ```
-// // SAFETY: <An explanation if non-trivial how the iterators are not from
-// // different containers/allocations>.
-// auto static_span = UNSAFE_BUFFERS(base::make_span<N>(it, end));
-// ```
-//
-// # Checks
-// The function CHECKs that `it <= end` and will terminate otherwise.
-//
-// # Safety
-// The contiguous iterator `it` and its end sentinel `end` must be for the same
-// allocation or Undefined Behaviour may result as the span may give access
-// beyond the bounds of the collection pointed to by `it`.
-template <size_t N,
-          int&... ExplicitArgumentBarrier,
-          typename It,
-          typename End,
-          typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
-UNSAFE_BUFFER_USAGE constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<std::iter_reference_t<It>>;
-  // SAFETY: The caller guarantees that `it` and `end` are iterators of the
-  // same allocation.
-  return UNSAFE_BUFFERS(span<T, N>(it, end));
-}
-
-template <size_t N, int&... ExplicitArgumentBarrier, typename Container>
-constexpr auto make_span(Container&& container) noexcept {
-  using T =
-      std::remove_pointer_t<decltype(std::data(std::declval<Container>()))>;
-  // SAFETY: The std::size() function gives the number of elements pointed to by
-  // the std::data() function, which meets the requirement of span.
-  return UNSAFE_BUFFERS(span<T, N>(std::data(container), std::size(container)));
-}
-
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
 // non-std helper that is inspired by the `std::slice::from_ref()` function from
 // Rust.
@@ -1679,41 +1634,16 @@ constexpr span<const uint8_t, N> byte_span_with_nul_from_cstring(
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires byte spans.
-template <typename T>
-  requires requires(const T& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-  }
-constexpr span<const uint8_t> as_byte_span(const T& arg) {
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(const Spannable& arg) { make_span(arg); }
+constexpr auto as_byte_span(const Spannable& arg) {
   return as_bytes(make_span(arg));
 }
 
-// This overload for arrays preserves the compile-time size N of the array in
-// the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<const uint8_t, N * sizeof(T)> as_byte_span(
     const T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_bytes(make_span<N>(arr));
-}
-
-// This overload adds a compile-time size that must be explicitly given,
-// checking that the size is correct at runtime. The template argument `N` is
-// the number of _bytes_ in the input range, not the number of elements.
-//
-// This is sugar for `base::span<const uint8_t, N>(base::as_byte_span(x))`.
-//
-// Example:
-// ```
-// std::string foo = "hello";
-// base::span<const uint8_t, 5> s = base::as_byte_span<5>(foo);
-// ```
-template <size_t N, typename T>
-  requires requires(const T& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-  }
-constexpr span<const uint8_t, N> as_byte_span(const T& arg) {
-  return span<const uint8_t, N>(as_byte_span(arg));
+  return as_bytes(make_span(arr));
 }
 
 // Convenience function for converting an object which is itself convertible
@@ -1721,50 +1651,27 @@ constexpr span<const uint8_t, N> as_byte_span(const T& arg) {
 // to convert std::string or string-objects holding chars, or std::vector
 // or vector-like objects holding other scalar types, prior to passing them
 // into an API that requires mutable byte spans.
-template <typename T>
-  requires requires(T&& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
+template <int&... ExplicitArgumentBarrier, typename Spannable>
+  requires requires(Spannable&& arg) {
     make_span(arg);
     requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
   }
-constexpr span<uint8_t> as_writable_byte_span(T&& arg) {
-  return as_writable_bytes(make_span(arg));
+constexpr auto as_writable_byte_span(Spannable&& arg) {
+  return as_writable_bytes(make_span(std::forward<Spannable>(arg)));
 }
 
 // This overload for arrays preserves the compile-time size N of the array in
 // the span type signature span<uint8_t, N>.
-template <typename T, size_t N>
-  requires(!std::is_const_v<T>)
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
 constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
     T (&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span<N>(arr));
-}
-template <typename T, size_t N>
-  requires(!std::is_const_v<T>)
-constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
-    T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
-  return as_writable_bytes(make_span<N>(arr));
+  return as_writable_bytes(make_span(arr));
 }
 
-// This overload adds a compile-time size that must be explicitly given,
-// checking that the size is correct at runtime. The template argument `N` is
-// the number of _bytes_ in the input range, not the number of elements.
-//
-// This is sugar for `base::span<const uint8_t, N>(base::as_byte_span(x))`.
-//
-// Example:
-// ```
-// std::string foo = "hello";
-// base::span<const uint8_t, 5> s = base::as_writable_byte_span<5>(foo);
-// ```
-template <size_t N, typename T>
-  requires requires(T&& arg) {
-    requires !std::is_array_v<std::remove_reference_t<T>>;
-    make_span(arg);
-    requires !std::is_const_v<typename decltype(make_span(arg))::element_type>;
-  }
-constexpr span<uint8_t, N> as_writable_byte_span(T&& arg) {
-  return span<uint8_t, N>(as_writable_byte_span(arg));
+template <int&... ExplicitArgumentBarrier, typename T, size_t N>
+constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
+    T (&&arr ABSL_ATTRIBUTE_LIFETIME_BOUND)[N]) {
+  return as_writable_bytes(make_span(arr));
 }
 
 namespace internal {

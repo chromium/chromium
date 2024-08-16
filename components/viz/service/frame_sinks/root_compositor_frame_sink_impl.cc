@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/overloaded.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -16,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/output_surface.h"
@@ -38,7 +41,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
-#include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
 #endif
 
@@ -151,6 +153,10 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    hw_support_for_multiple_refresh_rates =
+        features::IsCrosContentAdjustedRefreshRateEnabled();
+#endif
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
@@ -159,9 +165,8 @@ RootCompositorFrameSinkImpl::Create(
     } else {
 #if BUILDFLAG(IS_WIN)
       // ExternalBeginFrameSourceWin also uses the D3D11 device used by dcomp.
-      if (output_surface->capabilities().supports_dc_layers) {
-        hw_support_for_multiple_refresh_rates =
-            params->set_present_duration_allowed;
+      if (output_surface->capabilities().dc_support_level !=
+          OutputSurface::DCSupportLevel::kNone) {
         // Vsync updates are required to update the FrameRateDecider with
         // supported refresh rates.
         wants_vsync_updates = true;
@@ -223,7 +228,8 @@ RootCompositorFrameSinkImpl::Create(
   auto display = std::make_unique<Display>(
       frame_sink_manager->shared_bitmap_manager(),
       output_surface_provider->GetSharedImageManager(),
-      output_surface_provider->GetSyncPointManager(), params->renderer_settings,
+      output_surface_provider->GetSyncPointManager(),
+      output_surface_provider->GetGpuScheduler(), params->renderer_settings,
       debug_settings, params->frame_sink_id, std::move(display_controller),
       std::move(output_surface), std::move(overlay_processor),
       std::move(scheduler), std::move(task_runner));
@@ -345,9 +351,9 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
     // If the incoming display interval changes, we should update the
     // |supported_intervals_| in FrameRateDecider
     if (display_frame_interval_ != interval) {
-      display_->SetSupportedFrameIntervals(
-          GetSupportedFrameIntervals(interval));
       display_frame_interval_ = interval;
+      display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
+      UpdateFrameIntervalDeciderSettings();
     }
 
     // If there is a meaningful |preferred_frame_interval_|, firstly
@@ -385,13 +391,20 @@ void RootCompositorFrameSinkImpl::SetDisplayVSyncParameters(
 }
 
 base::flat_set<base::TimeDelta>
-RootCompositorFrameSinkImpl::GetSupportedFrameIntervals(
-    base::TimeDelta interval) {
+RootCompositorFrameSinkImpl::GetSupportedFrameIntervals() {
+  if (!exact_supported_refresh_rates_.empty()) {
+    base::flat_set<base::TimeDelta> supported_frame_intervals;
+    for (auto& [supported_interval, rate] : exact_supported_refresh_rates_) {
+      supported_frame_intervals.insert(supported_interval);
+    }
+    return supported_frame_intervals;
+  }
   if (external_begin_frame_source_) {
-    return external_begin_frame_source_->GetSupportedFrameIntervals(interval);
+    return external_begin_frame_source_->GetSupportedFrameIntervals(
+        display_frame_interval_);
   }
 
-  return {interval, interval * 2};
+  return {display_frame_interval_, display_frame_interval_ * 2};
 }
 
 void RootCompositorFrameSinkImpl::UpdateVSyncParameters() {
@@ -430,17 +443,6 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
     external_begin_frame_source_->UpdateRefreshRate(refresh_rate);
 }
 
-void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
-    const std::vector<float>& supported_refresh_rates) {
-  base::flat_set<base::TimeDelta> supported_frame_intervals;
-  for (size_t i = 0; i < supported_refresh_rates.size(); ++i) {
-    supported_frame_intervals.insert(
-        base::Seconds(1 / supported_refresh_rates[i]));
-  }
-
-  display_->SetSupportedFrameIntervals(supported_frame_intervals);
-}
-
 void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
   display_->PreserveChildSurfaceControls();
 }
@@ -449,8 +451,29 @@ void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
     bool enable) {
   enable_swap_completion_callback_ = enable;
 }
-
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
+    const std::vector<float>& supported_refresh_rates) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK_NE(use_preferred_interval_,
+           features::IsCrosContentAdjustedRefreshRateEnabled());
+  if (use_preferred_interval_) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  exact_supported_refresh_rates_.clear();
+  for (float rate : supported_refresh_rates) {
+    const base::TimeDelta interval = base::Hertz(rate);
+    exact_supported_refresh_rates_[interval] = rate;
+  }
+
+  display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
+  UpdateFrameIntervalDeciderSettings();
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
     mojo::PendingRemote<mojom::VSyncParameterObserver> observer) {
@@ -604,8 +627,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
   use_preferred_interval_ = true;
 #else
   if (!hw_support_for_multiple_refresh_rates) {
-    display_->SetSupportedFrameIntervals(
-        GetSupportedFrameIntervals(display_frame_interval_));
+    display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
     use_preferred_interval_ = true;
   }
 #endif
@@ -614,6 +636,84 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     display_frame_interval_ =
         external_begin_frame_source_->GetMaximumRefreshFrameInterval();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  interval_decider_use_fixed_intervals_ =
+      !display_->OutputSurfaceSupportsSetFrameRate();
+#endif
+  UpdateFrameIntervalDeciderSettings();
+}
+
+void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
+  FrameIntervalDecider* decider = display_->frame_interval_decider();
+  if (!decider) {
+    return;
+  }
+
+  // TODO(crbug.com/346732738): This is only correctly configured for Android
+  // and ChromeOS. Support other platforms / configurations.
+
+  std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
+  matchers.push_back(std::make_unique<InputBoostMatcher>());
+
+#if BUILDFLAG(IS_ANDROID)
+  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+  matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
+  matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Only desktop platforms get VideoConferenceMatcher.
+  matchers.push_back(std::make_unique<VideoConferenceMatcher>());
+#endif
+
+  FrameIntervalDecider::Settings settings = decider->settings();
+  if (interval_decider_use_fixed_intervals_) {
+    FrameIntervalDecider::FixedIntervalSettings fixed_interval_settings;
+    fixed_interval_settings.supported_intervals = GetSupportedFrameIntervals();
+    fixed_interval_settings.default_interval =
+        *fixed_interval_settings.supported_intervals.begin();
+    settings.fixed_intervals = fixed_interval_settings;
+  } else {
+    settings.fixed_intervals.reset();
+  }
+
+  // Unretained is safe since this owns Display which owns FrameIntervalDecider.
+  settings.result_callback = base::BindRepeating(
+      &RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback,
+      base::Unretained(this));
+  decider->UpdateSettings(std::move(settings), std::move(matchers));
+}
+
+void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
+    FrameIntervalDecider::Result result,
+    FrameIntervalMatcherType matcher_type) {
+  // TODO(crbug.com/346732738): This is only correctly configured for Android
+  // and ChromeOS. Support other platforms / configurations.
+
+  base::TimeDelta interval = absl::visit(
+      base::Overloaded(
+          [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
+            // For now, setting 0 implies no preference, and
+            // allow the OS to use its own heuristics to
+            // estimate.
+            return base::Milliseconds(0);
+          },
+          [](base::TimeDelta interval) { return interval; }),
+      result);
+
+  if (decided_display_interval_ == interval) {
+    return;
+  }
+  decided_display_interval_ = interval;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (display_->OutputSurfaceSupportsSetFrameRate()) {
+    display_->SetFrameIntervalOnOutputSurface(interval);
+    return;
+  }
+#endif
+  SetPreferredFrameInterval(interval);
 }
 
 void RootCompositorFrameSinkImpl::DisplayOutputSurfaceLost() {
@@ -714,15 +814,37 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
-#if BUILDFLAG(IS_ANDROID)
-  float refresh_rate =
-      interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
-  if (display_client_)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CHECK_NE(use_preferred_interval_,
+           features::IsCrosContentAdjustedRefreshRateEnabled());
+  if (use_preferred_interval_) {
+    preferred_frame_interval_ = interval;
+    UpdateVSyncParameters();
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+  if (display_client_) {
+    float refresh_rate;
+    if (interval.is_zero()) {
+      refresh_rate = 0;
+    } else {
+      auto it = exact_supported_refresh_rates_.find(interval);
+      if (it != exact_supported_refresh_rates_.end()) {
+        refresh_rate = it->second;
+      } else {
+        refresh_rate = 1 / interval.InSecondsF();
+        LOG(WARNING) << "Requested unsupported preferred frame interval "
+                     << interval << " (=" << refresh_rate << "Hz)";
+      }
+    }
     display_client_->SetPreferredRefreshRate(refresh_rate);
+  }
 #else
   preferred_frame_interval_ = interval;
   UpdateVSyncParameters();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 base::TimeDelta
@@ -744,10 +866,14 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   return synthetic_begin_frame_source_.get();
 }
 
-void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
-    std::optional<base::TimeDelta> max_vrr_interval) {
+void RootCompositorFrameSinkImpl::SetMaxVSyncAndVrr(
+    std::optional<base::TimeDelta> max_vsync_interval,
+    display::VariableRefreshRateState vrr_state) {
   if (synthetic_begin_frame_source_) {
-    synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
+    synthetic_begin_frame_source_->SetMaxVrrInterval(
+        vrr_state == display::VariableRefreshRateState::kVrrEnabled
+            ? max_vsync_interval
+            : std::nullopt);
   }
 }
 

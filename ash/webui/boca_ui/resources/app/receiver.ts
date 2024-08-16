@@ -5,7 +5,8 @@
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {ClientApi} from './boca_app.js';
-import {CLIENT_DELEGATE} from './client_delegate.js';
+import {ClientDelegateFactory} from './client_delegate.js';
+import {pageHandler} from './mojo_api_bootstrap.js';
 
 /**
  * Returns the boca app if it can be found in the DOM.
@@ -18,8 +19,8 @@ function getApp(): ClientApi {
 /**
  * Runs any initialization code on the boca app once it is in the dom.
  */
-function initializeApp(app: ClientApi) {
-  app.setDelegate(CLIENT_DELEGATE);
+async function initializeApp(app: ClientApi) {
+  app.setDelegate(new ClientDelegateFactory(pageHandler).getInstance());
 }
 
 /**
@@ -54,6 +55,4 @@ window.addEventListener('DOMContentLoaded', () => {
   // In that case, observe <body> until it is.
   const observer = new MutationObserver(mutationCallback);
   observer.observe(document.body, {childList: true});
-
-  ColorChangeUpdater.forDocument().start();
 });

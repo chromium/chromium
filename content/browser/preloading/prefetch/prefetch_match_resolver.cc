@@ -98,11 +98,12 @@ void PrefetchMatchResolver::
 
 void PrefetchMatchResolver::
     FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged(
-        PrefetchContainer& prefetch_container) {
+        PrefetchContainer& prefetch_container,
+        const GURL& navigated_url) {
   // The prefetch_container has already received its head.
   CHECK(!IsWaitingForPrefetch(prefetch_container));
   prefetch_container.OnCookiesChanged();
-  prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
+  prefetch_container.OnReturnPrefetchToServe(/*served=*/false, navigated_url);
   DVLOG(1) << *this
            << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"
            << prefetch_container << " not served because Cookies changed.";
@@ -114,7 +115,8 @@ void PrefetchMatchResolver::
       continue;
     }
     weak_prefetch_container->OnCookiesChanged();
-    weak_prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
+    weak_prefetch_container->OnReturnPrefetchToServe(/*served=*/false,
+                                                     navigated_url);
     DVLOG(1)
         << *this
         << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"

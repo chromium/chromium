@@ -166,10 +166,8 @@ class PasswordStoreAndroidBackend
   PrefService* prefs() { return prefs_; }
 
   // Subclasses can override this method
-  // to have a special handling for different errors. This function returns
-  // whether the error is recoverable or not.
-  virtual PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
-      AndroidBackendAPIErrorCode error) = 0;
+  // to have a special handling for different errors.
+  virtual void RecoverOnError(AndroidBackendAPIErrorCode error) = 0;
   // Subclasses can override this method to react when GMSCore responds
   // successfully.
   virtual void OnCallToGMSCoreSucceeded() = 0;

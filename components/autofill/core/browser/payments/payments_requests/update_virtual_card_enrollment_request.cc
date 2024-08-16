@@ -105,7 +105,7 @@ std::string UpdateVirtualCardEnrollmentRequest::GetHistogramName() const {
     case VirtualCardEnrollmentRequestType::kEnroll:
       return "UpdateVirtualCardEnrollment_Enroll";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -24,12 +24,12 @@
 #include "components/sync/engine/backoff_delay_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/test/fake_model_type_processor.h"
+#include "components/sync/test/data_type_test_util.h"
+#include "components/sync/test/fake_data_type_processor.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
 #include "components/sync/test/mock_connection_manager.h"
 #include "components/sync/test/mock_invalidation.h"
 #include "components/sync/test/mock_nudge_handler.h"
-#include "components/sync/test/model_type_test_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,12 +51,12 @@ namespace syncer {
 
 namespace {
 base::OnceClosure g_quit_closure_;
-void SimulatePollSuccess(ModelTypeSet requested_types, SyncCycle* cycle) {
+void SimulatePollSuccess(DataTypeSet requested_types, SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::Success());
 }
 
-void SimulatePollFailed(ModelTypeSet requested_types, SyncCycle* cycle) {
+void SimulatePollFailed(DataTypeSet requested_types, SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::ProtocolError(TRANSIENT_ERROR));
 }
@@ -81,7 +81,7 @@ ACTION_P(SimulatePartialFailure, type) {
 }
 
 ACTION_P(SimulatePollIntervalUpdate, new_poll) {
-  const ModelTypeSet requested_types = arg0;
+  const DataTypeSet requested_types = arg0;
   SyncCycle* cycle = arg1;
   SimulatePollSuccess(requested_types, cycle);
   cycle->delegate()->OnReceivedPollIntervalUpdate(new_poll);
@@ -94,7 +94,7 @@ ACTION_P(SimulateGuRetryDelayCommand, delay) {
   cycle->delegate()->OnReceivedGuRetryDelay(delay);
 }
 
-void SimulateGetEncryptionKeyFailed(ModelTypeSet requsted_types,
+void SimulateGetEncryptionKeyFailed(DataTypeSet requsted_types,
                                     sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                     SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(true);
@@ -102,7 +102,7 @@ void SimulateGetEncryptionKeyFailed(ModelTypeSet requsted_types,
       SyncerError::Success());
 }
 
-void SimulateConfigureSuccess(ModelTypeSet requsted_types,
+void SimulateConfigureSuccess(DataTypeSet requsted_types,
                               sync_pb::SyncEnums::GetUpdatesOrigin origin,
                               SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -110,7 +110,7 @@ void SimulateConfigureSuccess(ModelTypeSet requsted_types,
       SyncerError::Success());
 }
 
-void SimulateConfigureFailed(ModelTypeSet requsted_types,
+void SimulateConfigureFailed(DataTypeSet requsted_types,
                              sync_pb::SyncEnums::GetUpdatesOrigin origin,
                              SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -119,7 +119,7 @@ void SimulateConfigureFailed(ModelTypeSet requsted_types,
 }
 
 void SimulateConfigureConnectionFailure(
-    ModelTypeSet requsted_types,
+    DataTypeSet requsted_types,
     sync_pb::SyncEnums::GetUpdatesOrigin origin,
     SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -127,7 +127,7 @@ void SimulateConfigureConnectionFailure(
       SyncerError::NetworkError(net::ERR_FAILED));
 }
 
-void SimulateNormalSuccess(ModelTypeSet requested_types,
+void SimulateNormalSuccess(DataTypeSet requested_types,
                            NudgeTracker* nudge_tracker,
                            SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_commit_result(SyncerError::Success());
@@ -135,14 +135,14 @@ void SimulateNormalSuccess(ModelTypeSet requested_types,
       SyncerError::Success());
 }
 
-void SimulateDownloadUpdatesFailed(ModelTypeSet requested_types,
+void SimulateDownloadUpdatesFailed(DataTypeSet requested_types,
                                    NudgeTracker* nudge_tracker,
                                    SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::ProtocolError(TRANSIENT_ERROR));
 }
 
-void SimulateCommitFailed(ModelTypeSet requested_types,
+void SimulateCommitFailed(DataTypeSet requested_types,
                           NudgeTracker* nudge_tracker,
                           SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_get_key_failed(false);
@@ -152,7 +152,7 @@ void SimulateCommitFailed(ModelTypeSet requested_types,
       SyncerError::ProtocolError(TRANSIENT_ERROR));
 }
 
-void SimulateConnectionFailure(ModelTypeSet requested_types,
+void SimulateConnectionFailure(DataTypeSet requested_types,
                                NudgeTracker* nudge_tracker,
                                SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
@@ -164,23 +164,23 @@ class MockSyncer : public Syncer {
   MockSyncer();
   MOCK_METHOD(bool,
               NormalSyncShare,
-              (ModelTypeSet, NudgeTracker*, SyncCycle*),
+              (DataTypeSet, NudgeTracker*, SyncCycle*),
               (override));
   MOCK_METHOD(bool,
               ConfigureSyncShare,
-              (const ModelTypeSet&,
+              (const DataTypeSet&,
                sync_pb::SyncEnums::GetUpdatesOrigin,
                SyncCycle*),
               (override));
-  MOCK_METHOD(bool, PollSyncShare, (ModelTypeSet, SyncCycle*), (override));
+  MOCK_METHOD(bool, PollSyncShare, (DataTypeSet, SyncCycle*), (override));
 };
 
 std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
-    ModelType model_type) {
+    DataType data_type) {
   auto response = std::make_unique<DataTypeActivationResponse>();
-  response->type_processor = std::make_unique<FakeModelTypeProcessor>();
-  response->model_type_state.mutable_progress_marker()->set_data_type_id(
-      GetSpecificsFieldNumberFromModelType(model_type));
+  response->type_processor = std::make_unique<FakeDataTypeProcessor>();
+  response->data_type_state.mutable_progress_marker()->set_data_type_id(
+      GetSpecificsFieldNumberFromDataType(data_type));
   return response;
 }
 
@@ -243,22 +243,22 @@ class SyncSchedulerImplTest : public testing::Test {
     connection_ = std::make_unique<MockConnectionManager>();
     connection_->SetServerReachable();
 
-    model_type_registry_ = std::make_unique<ModelTypeRegistry>(
+    data_type_registry_ = std::make_unique<DataTypeRegistry>(
         &mock_nudge_handler_, &cancelation_signal_, &encryption_handler_);
-    model_type_registry_->ConnectDataType(
+    data_type_registry_->ConnectDataType(
         HISTORY_DELETE_DIRECTIVES,
         MakeFakeActivationResponse(HISTORY_DELETE_DIRECTIVES));
-    model_type_registry_->ConnectDataType(NIGORI,
-                                          MakeFakeActivationResponse(NIGORI));
-    model_type_registry_->ConnectDataType(THEMES,
-                                          MakeFakeActivationResponse(THEMES));
-    model_type_registry_->ConnectDataType(HISTORY,
-                                          MakeFakeActivationResponse(HISTORY));
+    data_type_registry_->ConnectDataType(NIGORI,
+                                         MakeFakeActivationResponse(NIGORI));
+    data_type_registry_->ConnectDataType(THEMES,
+                                         MakeFakeActivationResponse(THEMES));
+    data_type_registry_->ConnectDataType(HISTORY,
+                                         MakeFakeActivationResponse(HISTORY));
 
     context_ = std::make_unique<SyncCycleContext>(
         connection_.get(), extensions_activity_.get(),
         std::vector<SyncEngineEventListener*>(), nullptr,
-        model_type_registry_.get(), "fake_cache_guid", "fake_birthday",
+        data_type_registry_.get(), "fake_cache_guid", "fake_birthday",
         "fake_bag_of_chips",
         /*poll_interval=*/base::Minutes(30));
     context_->set_notifications_enabled(true);
@@ -266,8 +266,8 @@ class SyncSchedulerImplTest : public testing::Test {
     RebuildScheduler();
   }
 
-  void DisconnectDataType(ModelType type) {
-    model_type_registry_->DisconnectDataType(type);
+  void DisconnectDataType(DataType type) {
+    data_type_registry_->DisconnectDataType(type);
   }
 
   void RebuildScheduler() {
@@ -284,9 +284,7 @@ class SyncSchedulerImplTest : public testing::Test {
   MockSyncer* syncer() { return syncer_; }
   MockDelayProvider* delay() { return delay_; }
   MockConnectionManager* connection() { return connection_.get(); }
-  ModelTypeRegistry* model_type_registry() {
-    return model_type_registry_.get();
-  }
+  DataTypeRegistry* data_type_registry() { return data_type_registry_.get(); }
   base::TimeDelta default_delay() { return base::Seconds(0); }
   base::TimeDelta long_delay() { return base::Seconds(60); }
   base::TimeDelta timeout() { return TestTimeouts::action_timeout(); }
@@ -298,7 +296,7 @@ class SyncSchedulerImplTest : public testing::Test {
   }
 
   void SetDefaultLocalChangeNudgeDelays() {
-    for (ModelType type : ModelTypeSet::All()) {
+    for (DataType type : DataTypeSet::All()) {
       scheduler_->nudge_tracker_.SetLocalChangeDelayIgnoringMinForTest(
           type, default_delay());
     }
@@ -350,10 +348,10 @@ class SyncSchedulerImplTest : public testing::Test {
 
   SyncCycleContext* context() { return context_.get(); }
 
-  ModelTypeSet GetThrottledTypes() {
-    ModelTypeSet throttled_types;
-    ModelTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
-    for (ModelType type : blocked_types) {
+  DataTypeSet GetThrottledTypes() {
+    DataTypeSet throttled_types;
+    DataTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
+    for (DataType type : blocked_types) {
       if (scheduler_->nudge_tracker_.GetTypeBlockingMode(type) ==
           WaitInterval::BlockingMode::kThrottled) {
         throttled_types.Put(type);
@@ -362,10 +360,10 @@ class SyncSchedulerImplTest : public testing::Test {
     return throttled_types;
   }
 
-  ModelTypeSet GetBackedOffTypes() {
-    ModelTypeSet backed_off_types;
-    ModelTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
-    for (ModelType type : blocked_types) {
+  DataTypeSet GetBackedOffTypes() {
+    DataTypeSet backed_off_types;
+    DataTypeSet blocked_types = scheduler_->nudge_tracker_.GetBlockedTypes();
+    for (DataType type : blocked_types) {
       if (scheduler_->nudge_tracker_.GetTypeBlockingMode(type) ==
           WaitInterval::BlockingMode::kExponentialBackoff) {
         backed_off_types.Put(type);
@@ -389,7 +387,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return MockInvalidation::Build(version, payload);
   }
 
-  base::TimeDelta GetTypeBlockingTime(ModelType type) {
+  base::TimeDelta GetTypeBlockingTime(DataType type) {
     NudgeTracker::TypeTrackerMap::const_iterator tracker_it =
         scheduler_->nudge_tracker_.type_trackers_.find(type);
     CHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
@@ -397,7 +395,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return tracker_it->second->wait_interval_->length;
   }
 
-  void SetTypeBlockingMode(ModelType type, WaitInterval::BlockingMode mode) {
+  void SetTypeBlockingMode(DataType type, WaitInterval::BlockingMode mode) {
     NudgeTracker::TypeTrackerMap::const_iterator tracker_it =
         scheduler_->nudge_tracker_.type_trackers_.find(type);
     CHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
@@ -438,7 +436,7 @@ class SyncSchedulerImplTest : public testing::Test {
   FakeSyncEncryptionHandler encryption_handler_;
   CancelationSignal cancelation_signal_;
   std::unique_ptr<MockConnectionManager> connection_;
-  std::unique_ptr<ModelTypeRegistry> model_type_registry_;
+  std::unique_ptr<DataTypeRegistry> data_type_registry_;
   std::unique_ptr<SyncCycleContext> context_;
   std::unique_ptr<SyncSchedulerImpl> scheduler_;
   MockNudgeHandler mock_nudge_handler_;
@@ -648,9 +646,9 @@ TEST_F(SyncSchedulerImplTest, NudgeWithConfigWithBackingOff) {
                       RecordSyncShare(&times, false)));
   base::MockOnceClosure ready_task;
   EXPECT_CALL(ready_task, Run).Times(0);
-  const ModelType model_type = THEMES;
+  const DataType data_type = THEMES;
   scheduler()->ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
-                                     {model_type}, ready_task.Get());
+                                     {data_type}, ready_task.Get());
   RunLoop();
   Mock::VerifyAndClearExpectations(syncer());
   Mock::VerifyAndClearExpectations(&ready_task);
@@ -659,7 +657,7 @@ TEST_F(SyncSchedulerImplTest, NudgeWithConfigWithBackingOff) {
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
       .WillOnce(DoAll(Invoke(SimulateConfigureFailed),
                       RecordSyncShare(&times, false)));
-  scheduler()->ScheduleLocalNudge(model_type);
+  scheduler()->ScheduleLocalNudge(data_type);
   RunLoop();
   // Note that we're not RunLoop()ing for the NUDGE we just scheduled, but
   // for the first retry attempt from the config job (after
@@ -718,7 +716,7 @@ TEST_F(SyncSchedulerImplTest, NudgeCoalescingWithDifferentTimings) {
   // Create a huge time delay.
   base::TimeDelta delay = base::Days(1);
 
-  std::map<ModelType, base::TimeDelta> delay_map;
+  std::map<DataType, base::TimeDelta> delay_map;
   delay_map[THEMES] = delay;
   scheduler()->OnReceivedCustomNudgeDelays(delay_map);
   scheduler()->ScheduleLocalNudge(THEMES);
@@ -906,7 +904,7 @@ TEST_F(SyncSchedulerImplTest, ThrottlingDoesThrottle) {
 
   StartSyncScheduler(base::Time());
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
   scheduler()->ScheduleLocalNudge(type);
   PumpLoop();
 
@@ -1001,7 +999,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingBlocksNudge) {
   base::TimeDelta throttle1(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1031,7 +1029,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffBlocksNudge) {
   base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1060,7 +1058,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffWillExpire) {
   base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1095,7 +1093,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndThrottling) {
   base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1147,7 +1145,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingBackingOffBlocksNudge) {
   base::TimeDelta throttle(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType throttled_type = THEMES;
+  const DataType throttled_type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1161,7 +1159,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingBackingOffBlocksNudge) {
   PumpLoop();  // To get PerformDelayedNudge called.
   PumpLoop();  // To get TrySyncCycleJob called
 
-  const ModelType backed_off_type = HISTORY;
+  const DataType backed_off_type = HISTORY;
 
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulatePartialFailure(backed_off_type)),
@@ -1197,7 +1195,7 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingDoesBlockOtherSources) {
   base::TimeDelta throttle1(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType throttled_type = THEMES;
+  const DataType throttled_type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1243,7 +1241,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffDoesBlockOtherSources) {
   base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
-  const ModelType backed_off_type = THEMES;
+  const DataType backed_off_type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1400,7 +1398,7 @@ TEST_F(SyncSchedulerImplTest, BackoffDropsJobs) {
 
   // This nudge should fail and put us into backoff.  Thanks to our mock
   // GetDelay() setup above, this will be a long backoff.
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
   scheduler()->ScheduleLocalNudge(type);
   RunLoop();
 
@@ -1755,7 +1753,7 @@ TEST_F(SyncSchedulerImplTest, ReceiveNewRetryDelay) {
 TEST_F(SyncSchedulerImplTest, PartialFailureWillExponentialBackoff) {
   scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
@@ -1800,7 +1798,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackoffAndSuccessfulSync) {
 
   scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
-  const ModelType type = THEMES;
+  const DataType type = THEMES;
 
   // Set backoff datatype.
   ::testing::InSequence seq;
@@ -1848,7 +1846,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndFailureSync) {
   scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   // Set a backoff datatype.
-  const ModelType backed_off_type = THEMES;
+  const DataType backed_off_type = THEMES;
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulatePartialFailure(backed_off_type)),
@@ -1865,7 +1863,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndFailureSync) {
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
   // Set anther backoff datatype.
-  const ModelType backed_off_type2 = HISTORY;
+  const DataType backed_off_type2 = HISTORY;
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulatePartialFailure(backed_off_type2)),
                       Return(true)))

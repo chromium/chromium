@@ -220,7 +220,7 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
                       const SvgContextPaints* context_paints,
                       SvgPaintMode paint_mode,
                       SvgPaints& paints) {
-  if (UNLIKELY(state.IsRenderingClipPathAsMaskImage())) {
+  if (state.IsRenderingClipPathAsMaskImage()) [[unlikely]] {
     cc::PaintFlags& flags = paints.fill.emplace();
     flags.setColor(SK_ColorBLACK);
     flags.setAntiAlias(true);
@@ -234,7 +234,7 @@ void PrepareSvgPaints(const TextPainter::SvgTextPaintState& state,
                                           ? *state.InlineText().Parent()
                                           : state.TextDecorationObject();
   SVGObjectPainter object_painter(layout_parent, context_paints);
-  if (UNLIKELY(state.IsPaintingTextMatch())) {
+  if (state.IsPaintingTextMatch()) [[unlikely]] {
     const ComputedStyle& style = state.Style();
 
     cc::PaintFlags& fill_flags = paints.fill.emplace();
@@ -429,7 +429,7 @@ void TextPainter::PaintSelectedText(
   // Because only a part of the text glyph can be selected, we need to draw
   // the selection twice. First, draw any shadow for the selection clipped.
   gfx::RectF float_selection_rect(selection_rect);
-  if (UNLIKELY(selection_style.shadow)) {
+  if (selection_style.shadow) [[unlikely]] {
     std::optional<base::AutoReset<bool>> is_painting_selection_reset;
     if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
       is_painting_selection_reset.emplace(&state->is_painting_selection_, true);

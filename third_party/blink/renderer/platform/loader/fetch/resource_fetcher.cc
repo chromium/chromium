@@ -901,12 +901,13 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
                                   resource->GetResponse());
   }
 
-  // Skip ResourceLoadObserver callbacks for placeholder images to get maximum
-  // performance.
-  // TODO(crbug.com/41496436): Explore skipping this in general for
+  // Only call ResourceLoadObserver callbacks for placeholder images when
+  // devtools is opened to get maximum performance.
+  // TODO(crbug.com/41496436): Explore optimizing this in general for
   // `is_static_data`.
   if (!IsSimplifyLoadingTransparentPlaceholderImageEnabled() ||
-      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound)) {
+      (request.GetKnownTransparentPlaceholderImageIndex() == kNotFound) ||
+      (resource_load_observer_->InterestedInAllRequests())) {
     resource_load_observer_->WillSendRequest(
         request, ResourceResponse() /* redirects */, resource->GetType(),
         resource->Options(), render_blocking_behavior, resource);
@@ -955,11 +956,17 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     AtomicString initiator_type = resource->IsPreloadedByEarlyHints()
                                       ? AtomicString(kEarlyHintsInitiatorType)
                                       : resource->Options().initiator_info.name;
-    scheduled_resource_timing_reports_.push_back(
-        ScheduledResourceTimingInfo{std::move(info), initiator_type});
+    // If the fetch originated from user agent CSS we do not emit a resource
+    // timing entry.
+    if (initiator_type != fetch_initiator_type_names::kUacss) {
+      scheduled_resource_timing_reports_.push_back(
+          ScheduledResourceTimingInfo{std::move(info), initiator_type});
 
-    if (!resource_timing_report_timer_.IsActive())
-      resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+      if (!resource_timing_report_timer_.IsActive()) {
+        resource_timing_report_timer_.StartOneShot(base::TimeDelta(),
+                                                   FROM_HERE);
+      }
+    }
   }
   resource->SetIsLoadedFromMemoryCache();
 }
@@ -1198,10 +1205,12 @@ std::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
       (resource_request.GetKnownTransparentPlaceholderImageIndex() !=
        kNotFound)) {
     // Since we are not actually sending the request to the server,
-    // we skip construction of the ResourceRequest for performance.
-    // TODO(crbug.com/41496436): This breaks all observers which were notified
-    // of the request previously, so we need additional work to expand to
+    // we skip construction of the full ResourceRequest for performance,
+    // and only set the properties needed for observer callbacks.
+    // TODO(crbug.com/41496436): We need additional work to expand to
     // generic data urls.
+    resource_request.SetPriority(ResourceLoadPriority::kLow);
+    SetReferrer(resource_request, properties_->GetFetchClientSettingsObject());
 
     // We check the report-only and enforced headers here to ensure we report
     // and block things we ought to block.

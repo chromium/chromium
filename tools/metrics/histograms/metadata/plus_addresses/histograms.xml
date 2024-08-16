@@ -33,8 +33,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Create" summary="Create a Plus Address after reservation"/>
   <variant name="GetOrCreate" summary="Get or create a Plus Address"/>
   <variant name="List" summary="Retrieve all Plus Addresses"/>
+  <variant name="Preallocate" summary="Preallocate plus addresses"/>
   <variant name="Reserve" summary="Reserve a Plus Address"/>
 </variants>
+
+<histogram name="PlusAddresses.Blocklist.ParsingResult"
+    enum="PlusAddressBlocklistDataParsingResult" expires_after="2025-01-26">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <summary>
+    Parsing result of the response body of the blocklist data received by the
+    Component Updater.
+  </summary>
+</histogram>
 
 <histogram name="PlusAddresses.Modal.Events" enum="PlusAddressModalEvent2"
     expires_after="2024-12-31">

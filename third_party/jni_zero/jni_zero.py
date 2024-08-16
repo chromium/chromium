@@ -145,6 +145,10 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         '--package-prefix',
         help='Adds a prefix to the classes fully qualified-name. Effectively '
         'changing a class name from foo.bar -> prefix.foo.bar')
+    group.add_argument(
+        '--package-prefix-filter',
+        help=
+        ': separated list of java packages to apply the --package-prefix to.')
 
   if not is_final:
     if is_javap:

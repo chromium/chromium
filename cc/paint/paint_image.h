@@ -42,7 +42,17 @@ class TextureBacking;
 
 enum class ImageType { kPNG, kJPEG, kWEBP, kGIF, kICO, kBMP, kAVIF, kInvalid };
 
-enum class AuxImage : size_t { kDefault = 0, kGainmap = 1 };
+// An encoded image may include several auxiliary images within it. This enum
+// is used to index those images. Auxiliary images can have different sizes and
+// pixel formats from the default image.
+enum class AuxImage : size_t {
+  // The default image that decoders unaware of independent auxiliary images
+  // will decode.
+  kDefault = 0,
+  // The UltraHDR or (equivalently) ISO 21496-1 gainmap image.
+  kGainmap = 1
+};
+
 static constexpr std::array<AuxImage, 2> kAllAuxImages = {AuxImage::kDefault,
                                                           AuxImage::kGainmap};
 constexpr size_t AuxImageIndex(AuxImage aux_image) {

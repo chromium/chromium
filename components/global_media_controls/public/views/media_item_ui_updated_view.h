@@ -18,11 +18,6 @@
 namespace media_message_center {
 class MediaNotificationItem;
 }  // namespace media_message_center
-
-namespace ui {
-struct AXNodeData;
-}  // namespace ui
-
 namespace views {
 class Button;
 class ImageView;
@@ -83,7 +78,6 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void AddedToWidget() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
@@ -118,6 +112,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateDeviceSelectorView(
       std::unique_ptr<MediaItemUIDeviceSelector> device_selector_view);
   void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
+  void UpdateDeviceSelectorIssue(bool has_issue);
 
   // Helper functions for testing:
   views::ImageView* GetArtworkViewForTesting();
@@ -177,6 +172,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   // Update the display states of UI elements for casting devices.
   void UpdateCastingState();
 
+  void UpdateAccessibleName();
+
   // Whether the media is currently in picture-in-picture.
   bool in_picture_in_picture_ = false;
 
@@ -221,6 +218,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   media_message_center::MediaColorTheme media_color_theme_;
   raw_ptr<MediaItemUIDeviceSelector> device_selector_view_ = nullptr;
   raw_ptr<MediaItemUIFooter> footer_view_ = nullptr;
+  base::CallbackListSubscription title_label_changed_callback_;
 };
 
 }  // namespace global_media_controls

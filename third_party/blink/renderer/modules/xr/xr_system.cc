@@ -52,6 +52,8 @@ namespace blink {
 
 namespace {
 
+constexpr uint64_t kInvalidTraceId = -1;
+
 const char kNavigatorDetachedError[] =
     "The navigator.xr object is no longer associated with a document.";
 
@@ -798,9 +800,9 @@ XRSystem::XRSystem(Navigator& navigator)
           navigator.DomWindow()
               ->GetFrame()
               ->GetFrameScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::kWebXR,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {}
+              ->RegisterFeature(SchedulingPolicy::Feature::kWebXR,
+                                {SchedulingPolicy::DisableBackForwardCache()})),
+      webxr_internals_renderer_listener_(GetExecutionContext()) {}
 
 void XRSystem::FocusedFrameChanged() {
   // Tell all sessions that focus changed.
@@ -926,8 +928,27 @@ void XRSystem::AddConsoleMessage(mojom::blink::ConsoleMessageLevel error_level,
   DVLOG(2) << __func__ << ": error_level=" << error_level
            << ", message=" << message;
 
+  if ((error_level == mojom::blink::ConsoleMessageLevel::kError ||
+       error_level == mojom::blink::ConsoleMessageLevel::kWarning) &&
+      frameProvider()->immersive_session()) {
+    AddWebXrInternalsMessage(message);
+  }
   GetExecutionContext()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript, error_level, message));
+}
+
+void XRSystem::AddWebXrInternalsMessage(const String& message) {
+  if (webxr_internals_renderer_listener_) {
+    device::mojom::blink::XrLogMessagePtr xr_logging_statistics =
+        device::mojom::blink::XrLogMessage::New();
+
+    xr_logging_statistics->message = message;
+    xr_logging_statistics->trace_id =
+        frameProvider()->immersive_session()->GetTraceId();
+
+    webxr_internals_renderer_listener_->OnConsoleLog(
+        std::move(xr_logging_statistics));
+  }
 }
 
 void XRSystem::InternalIsSessionSupported(ScriptPromiseResolverBase* resolver,
@@ -1400,6 +1421,12 @@ void XRSystem::MakeXrCompatibleSync(
     service_->MakeXrCompatible(xr_compatible_result);
 }
 
+void XRSystem::OnSessionEnded(XRSession* session) {
+  if (session->immersive()) {
+    webxr_internals_renderer_listener_.reset();
+  }
+}
+
 // This will be called when the XR hardware or capabilities have potentially
 // changed. For example, if a new physical device was connected to the system,
 // it might be able to support immersive sessions, where it couldn't before.
@@ -1533,9 +1560,18 @@ void XRSystem::FinishSessionCreation(
   XRSession* session = CreateSession(
       query->mode(), session_ptr->enviroment_blend_mode,
       session_ptr->interaction_mode, std::move(session_ptr->client_receiver),
-      std::move(session_ptr->device_config), enabled_features);
+      std::move(session_ptr->device_config), enabled_features,
+      result->get_success()->trace_id);
 
   frameProvider()->OnSessionStarted(session, std::move(session_ptr));
+
+  // The session is immersive, so we need to set up the WebXR Internals
+  // listener.
+  if (session->immersive() && result->get_success()->xr_internals_listener) {
+    webxr_internals_renderer_listener_.Bind(
+        std::move(std::move(result->get_success()->xr_internals_listener)),
+        GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault));
+  }
 
   if (query->mode() == device::mojom::blink::XRSessionMode::kImmersiveVr ||
       query->mode() == device::mojom::blink::XRSessionMode::kImmersiveAr) {
@@ -1612,11 +1648,12 @@ XRSession* XRSystem::CreateSession(
         client_receiver,
     device::mojom::blink::XRSessionDeviceConfigPtr device_config,
     XRSessionFeatureSet enabled_features,
+    uint64_t trace_id,
     bool sensorless_session) {
   XRSession* session = MakeGarbageCollected<XRSession>(
       this, std::move(client_receiver), mode, blend_mode, interaction_mode,
-      std::move(device_config), sensorless_session,
-      std::move(enabled_features));
+      std::move(device_config), sensorless_session, std::move(enabled_features),
+      trace_id);
   sessions_.insert(session);
   return session;
 }
@@ -1634,7 +1671,7 @@ XRSession* XRSystem::CreateSensorlessInlineSession() {
                        mojo::NullReceiver() /* client receiver */,
                        std::move(device_config),
                        {device::mojom::XRSessionFeature::REF_SPACE_VIEWER},
-                       true /* sensorless_session */);
+                       true, kInvalidTraceId /* sensorless_session */);
 }
 
 void XRSystem::Dispose(DisposeType dispose_type) {
@@ -1732,6 +1769,7 @@ void XRSystem::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(environment_provider_);
   visitor->Trace(receiver_);
+  visitor->Trace(webxr_internals_renderer_listener_);
   visitor->Trace(outstanding_support_queries_);
   visitor->Trace(outstanding_request_queries_);
   visitor->Trace(fullscreen_enter_observer_);
@@ -1739,6 +1777,14 @@ void XRSystem::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   EventTarget::Trace(visitor);
+}
+
+device::mojom::blink::WebXrInternalsRendererListener*
+XRSystem::GetWebXrInternalsRendererListener() {
+  if (!webxr_internals_renderer_listener_) {
+    return nullptr;
+  }
+  return webxr_internals_renderer_listener_.get();
 }
 
 }  // namespace blink

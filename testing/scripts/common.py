@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 import argparse
 import codecs
 import contextlib
@@ -18,9 +17,9 @@ import traceback
 
 logging.basicConfig(level=logging.INFO)
 
-# Add src/testing/ into sys.path for importing xvfb and test_env.
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+# //testing imports.
 import test_env
 if sys.platform.startswith('linux'):
   import xvfb
@@ -183,7 +182,8 @@ def record_local_script_results(name, output_fd, failures, valid):
     valid: Whether the results are valid.
   """
   local_script_results = {'valid': valid, 'failures': failures}
-  json.dump(local_script_results, output_fd)
+  with open(output_fd.name, 'w') as fd:
+    json.dump(local_script_results, fd)
 
   if not result_sink:
     return
@@ -511,7 +511,7 @@ class BaseIsolatedScriptArgsAdapter:
       print('Command returned exit code %d' % exit_code)
       sys.stdout.flush()
       self.do_post_test_run_tasks()
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       traceback.print_exc()
       exit_code = None
     finally:

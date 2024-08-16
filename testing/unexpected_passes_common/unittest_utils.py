@@ -3,11 +3,8 @@
 # found in the LICENSE file.
 """Helper methods for unittests."""
 
-import typing
 from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
-import unittest.mock as mock
 
-from google.cloud import bigquery
 import pandas
 
 from unexpected_passes_common import builders
@@ -54,6 +51,18 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
 
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
+
+  def _GetPublicCiQuery(self) -> str:
+    return 'public_ci'
+
+  def _GetInternalCiQuery(self) -> str:
+    return 'internal_ci'
+
+  def _GetPublicTryQuery(self) -> str:
+    return 'public_try'
+
+  def _GetInternalTryQuery(self) -> str:
+    return 'internal_try'
 
 
 def CreateGenericQuerier(

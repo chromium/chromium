@@ -1121,7 +1121,8 @@ void ContentAnalysisDelegate::FinishLargeDataRequestEarly(
   // it wasn't added in OnGetRequestData
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), /*access_token*/ "", /*upload_info*/
-      "Skipped - Large data blocked", request->content_analysis_request());
+      "Skipped - Large data blocked", /*upload_url*/ "",
+      request->content_analysis_request());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
       enterprise_connectors::ContentAnalysisResponse());

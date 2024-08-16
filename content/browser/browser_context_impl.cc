@@ -18,6 +18,7 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
@@ -318,7 +319,8 @@ void BrowserContextImpl::SetPrefetchServiceForTesting(
 
 NavigationEntryScreenshotManager*
 BrowserContextImpl::GetNavigationEntryScreenshotManager() {
-  if (!nav_entry_screenshot_manager_ && AreBackForwardTransitionsEnabled()) {
+  if (!nav_entry_screenshot_manager_ &&
+      NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
     nav_entry_screenshot_manager_ =
         std::make_unique<NavigationEntryScreenshotManager>();
   }

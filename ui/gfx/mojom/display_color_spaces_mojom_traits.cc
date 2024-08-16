@@ -21,7 +21,7 @@ EnumTraits<gfx::mojom::ContentColorUsage, gfx::ContentColorUsage>::ToMojom(
     case gfx::ContentColorUsage::kHDR:
       return gfx::mojom::ContentColorUsage::kHDR;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

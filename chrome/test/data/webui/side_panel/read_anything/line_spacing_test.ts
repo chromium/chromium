@@ -18,7 +18,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('LineSpacing', () => {
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
-  let spacingEmitted: number;
+  let spacingEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -27,10 +27,9 @@ suite('LineSpacing', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    spacingEmitted = -1;
-    document.addEventListener(ToolbarEvent.LINE_SPACING, event => {
-      spacingEmitted = (event as CustomEvent).detail.data;
-    });
+    spacingEmitted = false;
+    document.addEventListener(
+        ToolbarEvent.LINE_SPACING, () => spacingEmitted = true);
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     flush();
@@ -61,16 +60,16 @@ suite('LineSpacing', () => {
     test('first option propagates standard spacing', () => {
       lineSpacingMenuOptions[0]!.click();
 
-      assertEquals(chrome.readingMode.standardLineSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
-          chrome.readingMode.lineSpacing,
-          chrome.readingMode.standardLineSpacing);
+          chrome.readingMode.standardLineSpacing,
+          chrome.readingMode.lineSpacing);
     });
 
     test('second option propagates loose spacing', () => {
       lineSpacingMenuOptions[1]!.click();
 
-      assertEquals(chrome.readingMode.looseLineSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
           chrome.readingMode.looseLineSpacing, chrome.readingMode.lineSpacing);
     });
@@ -78,10 +77,10 @@ suite('LineSpacing', () => {
     test('third option propagates very loose spacing', () => {
       lineSpacingMenuOptions[2]!.click();
 
-      assertEquals(chrome.readingMode.veryLooseLineSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
-          chrome.readingMode.lineSpacing,
-          chrome.readingMode.veryLooseLineSpacing);
+          chrome.readingMode.veryLooseLineSpacing,
+          chrome.readingMode.lineSpacing);
     });
   });
 });

@@ -278,11 +278,6 @@ TEST_F(WebDatabaseHostImplTest, BadMessagesUnauthorized) {
   });
 
   CheckUnauthorizedOrigin([&]() {
-    host()->SetFileSize(bad_vfs_file_name, /*expected_size=*/0,
-                        base::DoNothing());
-  });
-
-  CheckUnauthorizedOrigin([&]() {
     host()->GetSpaceAvailable(incorrect_origin, base::DoNothing());
   });
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/prefs/pref_service_incognito_allowlist.h"
 
 #include <vector>
@@ -68,6 +73,7 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityColorVisionCorrectionAmount,
     ash::prefs::kAccessibilityColorVisionCorrectionType,
     ash::prefs::kAccessibilityReducedAnimationsEnabled,
+    ash::prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
     ash::prefs::kAccessibilityFaceGazeEnabled,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedDown,
@@ -80,6 +86,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityFaceGazeActionsEnabled,
     ash::prefs::kAccessibilityFaceGazeCursorControlEnabled,
     ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
+    ash::prefs::kAccessibilityFlashNotificationsEnabled,
+    ash::prefs::kAccessibilityFlashNotificationsColor,
     ash::prefs::kAccessibilityHighContrastEnabled,
     ash::prefs::kAccessibilityScreenMagnifierEnabled,
     ash::prefs::kAccessibilityScreenMagnifierFocusFollowingEnabled,

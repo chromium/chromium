@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
   <int value="54"
       label="Scroll content may resize tab
              EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE"/>
-  <int value="55" label="Incognito EXTRA_OPEN_NEW_EPHEMERAL_TAB"/>
+  <int value="55" label="Ephemeral EXTRA_ENABLE_EPHEMERAL_BROWSING"/>
   <int value="56"
       label="Enable google bottom bar EXTRA_ENABLE_GOOGLE_BOTTOM_BAR"/>
   <int value="57"

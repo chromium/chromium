@@ -15,6 +15,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/task/thread_pool.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
@@ -583,8 +584,7 @@ struct ASH_PUBLIC_EXPORT SystemInfoAnswerCardData {
 class ASH_PUBLIC_EXPORT FileMetadataLoader {
  public:
   using MetadataLoaderCallback = base::RepeatingCallback<base::File::Info()>;
-  using OnMetadataLoadedCallback =
-      base::RepeatingCallback<void(base::File::Info)>;
+  using OnMetadataLoadedCallback = base::OnceCallback<void(base::File::Info)>;
 
   FileMetadataLoader();
   FileMetadataLoader(const FileMetadataLoader&);
@@ -656,6 +656,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutInputModeChange,
     kKeyboardShortcutZoom,
     kKeyboardShortcutMediaLaunchApp1,
+    kKeyboardShortcutMediaLaunchApp1Refresh,
     kKeyboardShortcutMediaFastForward,
     kKeyboardShortcutMediaPause,
     kKeyboardShortcutMediaPlay,
@@ -665,6 +666,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutMicrophone,
     kKeyboardShortcutBrightnessDown,
     kKeyboardShortcutBrightnessUp,
+    kKeyboardShortcutBrightnessUpRefresh,
     kKeyboardShortcutVolumeMute,
     kKeyboardShortcutVolumeDown,
     kKeyboardShortcutVolumeUp,
@@ -676,11 +678,13 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutSettings,
     kKeyboardShortcutSnapshot,
     kKeyboardShortcutLauncher,
+    kKeyboardShortcutLauncherRefresh,
     kKeyboardShortcutSearch,
     kKeyboardShortcutPower,
     kKeyboardShortcutKeyboardBacklightToggle,
     kKeyboardShortcutKeyboardBrightnessDown,
     kKeyboardShortcutKeyboardBrightnessUp,
+    kKeyboardShortcutKeyboardRightAlt,
   };
 
   // Only used for SearchResultTextItemType kString

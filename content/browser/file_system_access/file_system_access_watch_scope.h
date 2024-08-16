@@ -16,6 +16,13 @@ namespace content {
 // subdirectories.
 class CONTENT_EXPORT FileSystemAccessWatchScope {
  public:
+  enum class WatchType {
+    kAllBucketFileSystems,
+    kFile,
+    kDirectoryNonRecursive,
+    kDirectoryRecursive,
+  };
+
   // TODO(crbug.com/341239594): Consider using something like a PassKey
   // to restrict access to these initializers.
   static FileSystemAccessWatchScope GetScopeForFileWatch(
@@ -55,6 +62,9 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
     CHECK(root_url_.is_valid());
     return root_url_;
   }
+
+  WatchType GetWatchType() const { return watch_type_; }
+
   FileSystemAccessPermissionContext::HandleType handle_type() const {
     switch (watch_type_) {
       case WatchType::kFile:
@@ -71,13 +81,6 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
   }
 
  private:
-  enum class WatchType {
-    kAllBucketFileSystems,
-    kFile,
-    kDirectoryNonRecursive,
-    kDirectoryRecursive,
-  };
-
   FileSystemAccessWatchScope(storage::FileSystemURL root_url,
                              WatchType watch_type);
 

@@ -33,12 +33,12 @@ void ConstraintSpaceBuilder::SetPercentageResolutionSize(
   DCHECK(is_available_size_set_);
   is_percentage_resolution_size_set_ = true;
 #endif
-  if (LIKELY(is_in_parallel_flow_)) {
+  if (is_in_parallel_flow_) [[likely]] {
     space_.bitfields_.percentage_inline_storage =
         GetPercentageStorage(percentage_resolution_size.inline_size,
                              space_.available_size_.inline_size);
-    if (UNLIKELY(space_.bitfields_.percentage_inline_storage ==
-                 ConstraintSpace::kRareDataPercentage)) {
+    if (space_.bitfields_.percentage_inline_storage ==
+        ConstraintSpace::kRareDataPercentage) [[unlikely]] {
       space_.EnsureRareData()->percentage_resolution_size.inline_size =
           percentage_resolution_size.inline_size;
     }
@@ -81,7 +81,7 @@ void ConstraintSpaceBuilder::SetReplacedPercentageResolutionSize(
   DCHECK(is_available_size_set_);
   DCHECK(is_percentage_resolution_size_set_);
 #endif
-  if (LIKELY(is_in_parallel_flow_)) {
+  if (is_in_parallel_flow_) [[likely]] {
     // We don't store the replaced percentage resolution inline size, so we need
     // it to be the same as the regular percentage resolution inline size.
     DCHECK_EQ(replaced_percentage_resolution_size.inline_size,

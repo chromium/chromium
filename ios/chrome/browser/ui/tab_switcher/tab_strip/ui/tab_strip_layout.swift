@@ -17,7 +17,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
   /// The tab strip new tab button.
   public var newTabButton: UIView?
 
-  /// Wether the selected cell is animated, used only on iOS 16.
+  /// Whether the selected cell is animated, used only on iOS 16.
   /// On iOS 16, the scroll animation after opening a new tab is delayed, the
   /// selected cell should remain in an animated state until the end of the
   /// (scroll) animation.

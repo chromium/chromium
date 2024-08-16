@@ -388,9 +388,10 @@ void GlanceableTrayBubbleView::UpdateChildBubblesInitialExpandState() {
   // one child bubble as `OnExpandStateChanged()` will automatically updates the
   // others.
   if (GetLastExpandedGlanceables() == GlanceablesContext::kTasks) {
-    classroom_bubble_student_view_->SetExpandState(false);
+    classroom_bubble_student_view_->SetExpandState(
+        false, /*expand_by_overscroll=*/false);
   } else {
-    tasks_bubble_view_->SetExpandState(false);
+    tasks_bubble_view_->SetExpandState(false, /*expand_by_overscroll=*/false);
   }
 }
 

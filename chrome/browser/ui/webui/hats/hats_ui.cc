@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 
 #include "chrome/browser/ui/ui_features.h"
@@ -14,17 +19,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 HatsUIConfig::HatsUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  chrome::kChromeUIUntrustedHatsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         chrome::kChromeUIUntrustedHatsHost) {}
 
 bool HatsUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(features::kHaTSWebUI);
-}
-
-std::unique_ptr<content::WebUIController> HatsUIConfig::CreateWebUIController(
-    content::WebUI* web_ui,
-    const GURL& url) {
-  return std::make_unique<HatsUI>(web_ui);
 }
 
 HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {

@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -146,6 +148,7 @@ class ProjectorUtilsTest : public testing::Test {
   virtual bool is_managed() const { return false; }
 
  private:
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

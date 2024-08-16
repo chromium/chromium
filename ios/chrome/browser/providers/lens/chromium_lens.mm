@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import <ostream>
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace ios {
@@ -30,6 +32,13 @@ using LensWebParamsCallback =
     base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
 
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
+  // Lens is not supported in Chromium.
+  return nil;
+}
+
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    UIImage* snapshot,
+    LensConfiguration* config) {
   // Lens is not supported in Chromium.
   return nil;
 }

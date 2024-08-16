@@ -614,7 +614,7 @@ net::RequestPriority NavigationEarlyHintsManager::CalculateRequestPriority(
           return net::IDLE;
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

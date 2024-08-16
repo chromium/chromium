@@ -339,9 +339,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     CHECK_EQ(write_buffer.GetBuffers().size(), 1ul);
     base::span<uint8_t> first_buffer = write_buffer.GetBuffers()[0];
     char event_bytes[kMinimumEventSize] = {};
-    base::span(event_bytes)
-        .first(first_buffer.size_bytes())
-        .copy_from(base::as_chars(first_buffer));
+    base::span(event_bytes).copy_prefix_from(base::as_chars(first_buffer));
 
     SendEventRequest send_event{false, target, mask};
     base::span(send_event.event).copy_from(event_bytes);

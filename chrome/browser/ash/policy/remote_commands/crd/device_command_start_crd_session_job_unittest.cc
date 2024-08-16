@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
@@ -33,6 +34,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "remoting/host/chromeos/features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -333,6 +335,9 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   ash::FakeChromeUserManager& user_manager() { return *user_manager_; }
 
  private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 

@@ -49,6 +49,7 @@ using ::testing::FieldsAre;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
+using ::testing::Ne;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Property;
@@ -60,7 +61,8 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEditorWrite,
     PickerCategory::kEditorRewrite,
     PickerCategory::kLinks,
-    PickerCategory::kExpressions,
+    PickerCategory::kEmojisGifs,
+    PickerCategory::kEmojis,
     PickerCategory::kClipboard,
     PickerCategory::kDriveFiles,
     PickerCategory::kLocalFiles,
@@ -228,6 +230,68 @@ TEST_F(PickerSearchRequestTest, DoesNotTruncateOmniboxOnlyResults) {
       {ash::PickerSearchResult::Text(u"1"), ash::PickerSearchResult::Text(u"2"),
        ash::PickerSearchResult::Text(u"3"),
        ash::PickerSearchResult::Text(u"4")});
+}
+
+TEST_F(PickerSearchRequestTest, DeduplicatesGoogleCorpGoLinks) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(search_results_callback,
+              Call(Ne(PickerSearchSource::kOmnibox), _, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(
+      search_results_callback,
+      Call(PickerSearchSource::kOmnibox,
+           ElementsAre(
+               Property(
+                   "data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                       "url", &PickerSearchResult::BrowsingHistoryData::url,
+                       GURL("https://example.com")))),
+               Property(
+                   "data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                       "url", &PickerSearchResult::BrowsingHistoryData::url,
+                       GURL("http://go/link")))),
+               Property(
+                   "data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                       "url", &PickerSearchResult::BrowsingHistoryData::url,
+                       GURL("https://example.com/2")))),
+               Property(
+                   "data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                       "url", &PickerSearchResult::BrowsingHistoryData::url,
+                       GURL("https://goto2.corp.google.com/link2")))),
+               Property(
+                   "data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::BrowsingHistoryData>(Field(
+                       "url", &PickerSearchResult::BrowsingHistoryData::url,
+                       GURL("https://example.com/3"))))),
+           /*has_more_results=*/false))
+      .Times(AtLeast(1));
+
+  PickerSearchRequest request(
+      u"cat", PickerCategory::kLinks,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)),
+      base::DoNothing(), &client(), kDefaultOptions);
+
+  client().cros_search_callback().Run(
+      AppListSearchResultType::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              {}),
+          PickerSearchResult::BrowsingHistory(GURL("http://go/link"), u"", {}),
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com/2"),
+                                              u"", {}),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://goto.google.com/link"), u"", {}),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://goto2.corp.google.com/link2"), u"", {}),
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com/3"),
+                                              u"", {}),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://goto.corp.google.com/link2"), u"", {}),
+      });
 }
 
 TEST_F(PickerSearchRequestTest, DoesNotFlashEmptyResultsFromOmniboxSearch) {

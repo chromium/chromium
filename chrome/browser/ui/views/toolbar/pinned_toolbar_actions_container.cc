@@ -16,11 +16,13 @@
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -86,6 +88,9 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
                                /*use_default_target_layout=*/false),
       browser_view_(browser_view),
       model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
+  if (features::IsToolbarPinningEnabled()) {
+    SetPaintToLayer();
+  }
   SetProperty(views::kElementIdentifierKey,
               kPinnedToolbarActionsContainerElementId);
   // So we only get enter/exit messages when the mouse enters/exits the whole
@@ -110,6 +115,17 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
   // container.
   layout->SetInteriorMargin(
       gfx::Insets::VH(0, -GetLayoutConstant(TOOLBAR_ICON_DEFAULT_MARGIN)));
+  if (features::IsToolbarPinningEnabled()) {
+    GetAnimatingLayoutManager()->SetDefaultFadeMode(
+        views::AnimatingLayoutManager::FadeInOutMode::
+            kFadeAndSlideFromTrailingEdge);
+    GetAnimatingLayoutManager()->SetTweenType(
+        gfx::Tween::Type::FAST_OUT_SLOW_IN_3);
+    GetAnimatingLayoutManager()->SetAnimationDuration(base::Milliseconds(300));
+    GetAnimatingLayoutManager()->SetOpacityTweenType(gfx::Tween::Type::LINEAR);
+    GetAnimatingLayoutManager()->SetOpacityAnimationDuration(
+        base::Milliseconds(200));
+  }
 
   // Create the toolbar divider.
   std::unique_ptr<views::View> toolbar_divider =
@@ -139,6 +155,8 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
     companion::UpdateCompanionDefaultPinnedToToolbarState(
         browser_view_->GetProfile());
   }
+
+  model_->MaybeMigrateChromeLabsPinnedState();
 
   UpdateViews();
 }
@@ -350,21 +368,14 @@ views::View::DropCallback PinnedToolbarActionsContainer::GetDropCallback(
                         std::move(cleanup));
 }
 
-void PinnedToolbarActionsContainer::OnActionAdded(const actions::ActionId& id) {
-  RecordPinnedActionsCount(model_->PinnedActionIds().size());
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void PinnedToolbarActionsContainer::OnActionRemoved(
+void PinnedToolbarActionsContainer::OnActionAddedLocally(
     const actions::ActionId& id) {
   RecordPinnedActionsCount(model_->PinnedActionIds().size());
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void PinnedToolbarActionsContainer::OnActionMoved(const actions::ActionId& id,
-                                                  int from_index,
-                                                  int to_index) {
-  drop_weak_ptr_factory_.InvalidateWeakPtrs();
+void PinnedToolbarActionsContainer::OnActionRemovedLocally(
+    const actions::ActionId& id) {
+  RecordPinnedActionsCount(model_->PinnedActionIds().size());
 }
 
 void PinnedToolbarActionsContainer::OnActionsChanged() {
@@ -428,6 +439,10 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
   auto* button = popped_out_button.get();
   action_view_controller_->CreateActionViewRelationship(
       button, GetActionItemFor(id)->GetAsWeakPtr());
+  if (features::IsToolbarPinningEnabled()) {
+    popped_out_button->SetPaintToLayer();
+    popped_out_button->layer()->SetFillsBoundsOpaquely(false);
+  }
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
   ReorderViews();
   return button;
@@ -473,6 +488,10 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     action_view_controller_->CreateActionViewRelationship(
         button.get(), action_item->GetAsWeakPtr());
     button->SetPinned(true);
+    if (features::IsToolbarPinningEnabled()) {
+      button->SetPaintToLayer();
+      button->layer()->SetFillsBoundsOpaquely(false);
+    }
     pinned_buttons_.push_back(AddChildView(std::move(button)));
   }
 }

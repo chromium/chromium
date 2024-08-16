@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/viz_service_export.h"
-#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom-forward.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-shared.h"
 
 namespace viz {

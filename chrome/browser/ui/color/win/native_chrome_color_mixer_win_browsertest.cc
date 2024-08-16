@@ -11,6 +11,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/win/accent_color_observer.h"
+#include "ui/native_theme/native_theme.h"
 
 class NativeChromeColorMixerWinBrowsertest : public InProcessBrowserTest {
  public:
@@ -61,4 +62,14 @@ IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowsertest,
   accent_color_observer->SetAccentColorForTesting(std::nullopt);
   accent_color_observer->SetUseDwmFrameColorForTesting(false);
   EXPECT_EQ(initial_header_color, get_header_color());
+}
+
+IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowsertest,
+                       NativeThemeForWebWithAccentColor) {
+  // Configure the observer with accent color for testing.
+  auto* accent_color_observer = ui::AccentColorObserver::Get();
+  constexpr SkColor kAccentColor = SkColorSetRGB(135, 115, 10);
+  accent_color_observer->SetAccentColorForTesting(kAccentColor);
+
+  EXPECT_EQ(kAccentColor, ui::NativeTheme::GetInstanceForWeb()->user_color());
 }

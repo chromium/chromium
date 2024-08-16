@@ -8,9 +8,11 @@
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -68,6 +70,8 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
   ApkWebAppServiceLacrosBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -263,6 +267,7 @@ class ApkWebAppServiceLacrosBrowserTest : public InProcessBrowserTest,
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   base::CallbackListSubscription dependency_manager_subscription_;
 
   bool arc_running_ = false;

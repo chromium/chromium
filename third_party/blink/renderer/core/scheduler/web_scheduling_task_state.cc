@@ -23,7 +23,6 @@ void WebSchedulingTaskState::Trace(Visitor* visitor) const {
   visitor->Trace(abort_source_);
   visitor->Trace(priority_source_);
   visitor->Trace(subtask_propagatable_task_state_);
-  ScriptWrappableTaskState::Trace(visitor);
 }
 
 AbortSignal* WebSchedulingTaskState::AbortSource() {

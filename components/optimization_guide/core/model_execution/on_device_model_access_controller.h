@@ -52,7 +52,7 @@ class OnDeviceModelAccessController {
   ValidationState GetValidationState() const;
   void SetValidationState(const ValidationState& state);
 
-  raw_ref<PrefService, LeakedDanglingUntriaged> pref_service_;
+  raw_ref<PrefService> pref_service_;
   bool is_gpu_blocked_ = false;
 };
 

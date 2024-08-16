@@ -2980,3 +2980,57 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   EXPECT_TRUE(
       group_model->ContainsTabGroup(saved_group.local_group_id().value()));
 }
+
+class TabRestoreSycnedServiceTest : public TabRestoreTest {
+ public:
+  TabRestoreSycnedServiceTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tab_groups::kTabGroupsSaveV2,
+         tab_groups::kTabGroupSyncServiceDesktopMigration},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Closing the last tab in a collapsed group then restoring will place the group
+// back collapsed with its metadata. Exact same test as
+// TabRestoreTest.RestoreCollapsedGroupTab but goes through the sync service
+// path initiated in BrowserLiveTabContext::AddRestoredTab.
+IN_PROC_BROWSER_TEST_F(TabRestoreSycnedServiceTest, RestoreCollapsedGroupTab) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  const int tab_count = AddFileSchemeTabs(browser(), 1);
+  ASSERT_LE(2, tab_count);
+
+  const int grouped_tab_index = tab_count - 1;
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({grouped_tab_index});
+  const tab_groups::TabGroupVisualData visual_data(
+      u"Foo", tab_groups::TabGroupColorId::kCyan, true);
+
+  TabGroup* group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
+  ASSERT_TRUE(group);
+  group->SetVisualData(visual_data);
+
+  CloseTab(grouped_tab_index);
+
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, grouped_tab_index));
+  ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
+
+  EXPECT_EQ(group_id, browser()
+                          ->tab_strip_model()
+                          ->GetTabGroupForTab(grouped_tab_index)
+                          .value());
+  const tab_groups::TabGroupVisualData* data = browser()
+                                                   ->tab_strip_model()
+                                                   ->group_model()
+                                                   ->GetTabGroup(group_id)
+                                                   ->visual_data();
+  ASSERT_TRUE(data);
+  EXPECT_EQ(data->title(), visual_data.title());
+  EXPECT_EQ(data->color(), visual_data.color());
+  EXPECT_TRUE(data->is_collapsed());
+}

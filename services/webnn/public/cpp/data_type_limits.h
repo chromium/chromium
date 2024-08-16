@@ -18,6 +18,33 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes arg_min_max_input,
                  SupportedDataTypes arg_min_max_output,
                  SupportedDataTypes concat_inputs,
+                 SupportedDataTypes add_input,
+                 SupportedDataTypes sub_input,
+                 SupportedDataTypes mul_input,
+                 SupportedDataTypes div_input,
+                 SupportedDataTypes max_input,
+                 SupportedDataTypes min_input,
+                 SupportedDataTypes pow_input,
+                 SupportedDataTypes equal_input,
+                 SupportedDataTypes greater_input,
+                 SupportedDataTypes greater_or_equal_input,
+                 SupportedDataTypes lesser_input,
+                 SupportedDataTypes lesser_or_equal_input,
+                 SupportedDataTypes logical_not_input,
+                 SupportedDataTypes logical_output,
+                 SupportedDataTypes abs_input,
+                 SupportedDataTypes ceil_input,
+                 SupportedDataTypes cos_input,
+                 SupportedDataTypes erf_input,
+                 SupportedDataTypes exp_input,
+                 SupportedDataTypes floor_input,
+                 SupportedDataTypes identity_input,
+                 SupportedDataTypes log_input,
+                 SupportedDataTypes neg_input,
+                 SupportedDataTypes reciprocal_input,
+                 SupportedDataTypes sin_input,
+                 SupportedDataTypes sqrt_input,
+                 SupportedDataTypes tan_input,
                  SupportedDataTypes elu_input,
                  SupportedDataTypes gather_input,
                  SupportedDataTypes gather_indices,
@@ -48,6 +75,33 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes arg_min_max_input;
   SupportedDataTypes arg_min_max_output;
   SupportedDataTypes concat_inputs;
+  SupportedDataTypes add_input;
+  SupportedDataTypes sub_input;
+  SupportedDataTypes mul_input;
+  SupportedDataTypes div_input;
+  SupportedDataTypes max_input;
+  SupportedDataTypes min_input;
+  SupportedDataTypes pow_input;
+  SupportedDataTypes equal_input;
+  SupportedDataTypes greater_input;
+  SupportedDataTypes greater_or_equal_input;
+  SupportedDataTypes lesser_input;
+  SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_not_input;
+  SupportedDataTypes logical_output;
+  SupportedDataTypes abs_input;
+  SupportedDataTypes ceil_input;
+  SupportedDataTypes cos_input;
+  SupportedDataTypes erf_input;
+  SupportedDataTypes exp_input;
+  SupportedDataTypes floor_input;
+  SupportedDataTypes identity_input;
+  SupportedDataTypes log_input;
+  SupportedDataTypes neg_input;
+  SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sin_input;
+  SupportedDataTypes sqrt_input;
+  SupportedDataTypes tan_input;
   SupportedDataTypes elu_input;
   SupportedDataTypes gather_input;
   SupportedDataTypes gather_indices;
@@ -71,6 +125,33 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.arg_min_max_input == rhs.arg_min_max_input &&
          lhs.arg_min_max_output == rhs.arg_min_max_output &&
          lhs.concat_inputs == rhs.concat_inputs &&
+         lhs.add_input == rhs.add_input &&
+         lhs.sub_input == rhs.sub_input &&
+         lhs.mul_input == rhs.mul_input &&
+         lhs.div_input == rhs.div_input &&
+         lhs.max_input == rhs.max_input &&
+         lhs.min_input == rhs.min_input &&
+         lhs.pow_input == rhs.pow_input &&
+         lhs.equal_input == rhs.equal_input &&
+         lhs.greater_input == rhs.greater_input &&
+         lhs.greater_or_equal_input == rhs.greater_or_equal_input &&
+         lhs.lesser_input == rhs.lesser_input &&
+         lhs.lesser_or_equal_input == rhs.lesser_or_equal_input &&
+         lhs.logical_not_input == rhs.logical_not_input &&
+         lhs.logical_output == rhs.logical_output &&
+         lhs.abs_input == rhs.abs_input &&
+         lhs.ceil_input == rhs.ceil_input &&
+         lhs.cos_input == rhs.cos_input &&
+         lhs.erf_input == rhs.erf_input &&
+         lhs.exp_input == rhs.exp_input &&
+         lhs.floor_input == rhs.floor_input &&
+         lhs.identity_input == rhs.identity_input &&
+         lhs.log_input == rhs.log_input &&
+         lhs.neg_input == rhs.neg_input &&
+         lhs.reciprocal_input == rhs.reciprocal_input &&
+         lhs.sin_input == rhs.sin_input &&
+         lhs.sqrt_input == rhs.sqrt_input &&
+         lhs.tan_input == rhs.tan_input &&
          lhs.elu_input == rhs.elu_input &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.leaky_relu_input == rhs.leaky_relu_input &&

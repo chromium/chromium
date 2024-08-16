@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 
-#import "ios/chrome/browser/ui/permissions/permission_info.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"

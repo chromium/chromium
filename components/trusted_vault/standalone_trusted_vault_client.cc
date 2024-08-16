@@ -258,7 +258,7 @@ base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
     case SecurityDomainId::kPasskeys:
       return base_dir.Append(kPasskeysTrustedVaultFilename);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -15,8 +15,8 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server.h"
 #include "content/public/test/browser_test.h"
@@ -28,7 +28,7 @@ using autofill::test::GetCardLinkedOfferData2;
 using offer_helper::CreateDefaultSyncCardLinkedOffer;
 using offer_helper::CreateSyncCardLinkedOffer;
 using wallet_helper::GetPersonalDataManager;
-using wallet_helper::GetWalletModelTypeState;
+using wallet_helper::GetWalletDataTypeState;
 
 namespace {
 
@@ -72,7 +72,7 @@ class SingleClientOfferSyncTest : public SyncTest {
   bool TriggerGetUpdatesAndWait() {
     const base::Time now = base::Time::Now();
     // Trigger a sync and wait for the new data to arrive.
-    TriggerSyncForModelTypes(0, {syncer::AUTOFILL_WALLET_OFFER});
+    TriggerSyncForDataTypes(0, {syncer::AUTOFILL_WALLET_OFFER});
     return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
                                                syncer::AUTOFILL_WALLET_OFFER)
         .Wait();
@@ -176,14 +176,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   EXPECT_EQ(999, offers[0]->GetOfferId());
 
   // Trigger a sync and wait for the new data to arrive.
-  sync_pb::ModelTypeState state_before =
-      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
+  sync_pb::DataTypeState state_before =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
   // regression check for crbug.com/924447.
-  sync_pb::ModelTypeState state_after =
-      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
+  sync_pb::DataTypeState state_after =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0);
   EXPECT_NE(state_before.progress_marker().token(),
             state_after.progress_marker().token());
 

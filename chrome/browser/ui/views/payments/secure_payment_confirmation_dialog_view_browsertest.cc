@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -214,11 +215,10 @@ class SecurePaymentConfirmationDialogViewTest
           SecurePaymentConfirmationDialogView::DialogViewID::HEADER_ICON));
     }
 
-    EXPECT_EQ(
-        model_.progress_bar_visible(),
-        GetViewByID(
-            SecurePaymentConfirmationDialogView::DialogViewID::PROGRESS_BAR)
-            ->GetVisible());
+    ASSERT_TRUE(test_delegate_->dialog_view()->GetBubbleFrameView());
+    std::optional<double> progress =
+        test_delegate_->dialog_view()->GetBubbleFrameView()->GetProgress();
+    ASSERT_EQ(model_.progress_bar_visible(), progress.has_value());
 
     ExpectLabelText(GetExpectedTitleText(),
                     SecurePaymentConfirmationDialogView::DialogViewID::TITLE);

@@ -1125,8 +1125,4 @@ std::ostream& operator<<(std::ostream& os, const KURL& url) {
   return os << url.GetString();
 }
 
-BASE_FEATURE(kAvoidWastefulHostCopies,
-             "AvoidWastefulHostCopies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace blink

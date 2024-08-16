@@ -160,7 +160,10 @@ inline bool IsASCIIAlphaCaselessEqual(CharType css_character, char character) {
   // lowercase letter to any input character.
   DCHECK_GE(character, 'a');
   DCHECK_LE(character, 'z');
-  return LIKELY((css_character | 0x20) == character);
+  if ((css_character | 0x20) == character) [[likely]] {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace WTF

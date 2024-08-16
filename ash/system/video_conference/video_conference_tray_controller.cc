@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 
 #include <string>
@@ -934,8 +939,7 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
       anchor_view = active_vc_tray->audio_icon();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   AnchoredNudgeData nudge_data(
@@ -961,8 +965,7 @@ VideoConferenceTrayController::GetUsedWhileDisabledNudgeType(
           kMicrophone;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      type = VideoConferenceTrayController::UsedWhileDisabledNudgeType::kCamera;
+      NOTREACHED();
   }
 
   return type;

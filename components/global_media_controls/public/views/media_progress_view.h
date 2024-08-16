@@ -95,16 +95,28 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   double current_value_for_testing() const;
   bool is_paused_for_testing() const;
   bool is_live_for_testing() const;
-  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> test_timer);
+  bool use_paused_colors_for_testing() const;
+  void set_update_progress_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
+  void set_switch_progress_colors_delay_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
+  void set_progress_drag_started_delay_timer_for_testing(
+      std::unique_ptr<base::OneShotTimer> test_timer);
 
  private:
   // Fires an accessibility event if the progress has changed.
   void MaybeNotifyAccessibilityValueChanged();
 
   // Handles the event when user drags the progress line using a mouse or
-  // gesture on a tablet.
-  void OnProgressDragStarted();
+  // gesture on a tablet. If the user only intends to click, these functions are
+  // still called but the work will be skipped.
+  void OnProgressDragStarted(double location);
+  void DelayedProgressDragStarted(double location);
   void OnProgressDragEnded();
+
+  // Updates the colors of the progress view based on whether the media is
+  // paused.
+  void UpdateProgressColors(bool is_paused);
 
   // Handles the event when user seeks to a new location on the progress view.
   void HandleSeeking(double location);
@@ -140,8 +152,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // between squiggly and straight lines, in the range from 0.0 to 1.0.
   double progress_amp_fraction_ = 0;
 
-  // The percentage progress value last announced for accessibility.
-  int last_announced_percentage_ = -1;
+  // The media position last announced for accessibility.
+  base::TimeDelta last_announced_position_;
 
   // The progress phase offset changing as time passes for the progress wave to
   // move.
@@ -155,6 +167,15 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   std::unique_ptr<base::OneShotTimer> update_progress_timer_ =
       std::make_unique<base::OneShotTimer>();
 
+  // Timer to delay switching the colors for the progress view.
+  std::unique_ptr<base::OneShotTimer> switch_progress_colors_delay_timer_ =
+      std::make_unique<base::OneShotTimer>();
+
+  // Timer to delay considering the user is dragging the progress view rather
+  // than clicking.
+  std::unique_ptr<base::OneShotTimer> progress_drag_started_delay_timer_ =
+      std::make_unique<base::OneShotTimer>();
+
   // True if the media is paused.
   bool is_paused_ = true;
 
@@ -164,6 +185,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // Whether the media is currently paused due to the user dragging the progress
   // line.
   bool paused_for_dragging_ = false;
+
+  // Whether we should use the paused colors for the progress view.
+  bool use_paused_colors_ = true;
 
   // Width for a foreground straight progress line. The value can change
   // depending on whether the user is dragging the progress line.

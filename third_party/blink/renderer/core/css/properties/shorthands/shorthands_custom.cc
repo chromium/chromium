@@ -202,8 +202,8 @@ bool ParseBackgroundOrMaskPosition(
           three_value_position, result_x, result_y)) {
     return false;
   }
-  const CSSProperty** longhands = shorthand.properties();
-  DCHECK_EQ(2u, shorthand.length());
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
+  DCHECK_EQ(2u, longhands.size());
   css_parsing_utils::AddProperty(
       longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
@@ -3464,15 +3464,13 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
       shorthandForProperty(CSSPropertyID::kTextDecoration);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        shorthand.properties()[i]->CSSValueFromComputedStyle(
-            style, layout_object, allow_visited_style, value_phase);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = longhand->CSSValueFromComputedStyle(
+        style, layout_object, allow_visited_style, value_phase);
     // Do not include initial value 'auto' for thickness.
     // TODO(https://crbug.com/1093826): general shorthand serialization issues
     // remain, in particular for text-decoration.
-    if (shorthand.properties()[i]->PropertyID() ==
-        CSSPropertyID::kTextDecorationThickness) {
+    if (longhand->PropertyID() == CSSPropertyID::kTextDecorationThickness) {
       if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
         CSSValueID value_id = identifier_value->GetValueID();
         if (value_id == CSSValueID::kAuto) {
@@ -3841,6 +3839,93 @@ const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::BackgroundPositionOrMaskPosition(
       *this, style, &style.MaskLayers());
+}
+
+bool TextBox::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  CSSValue* trim = nullptr;
+  CSSValue* edge = nullptr;
+
+  // Try `normal` first.
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kNormal>(stream)) {
+    trim = CSSIdentifierValue::Create(CSSValueID::kNone);
+    edge = CSSIdentifierValue::Create(CSSValueID::kAuto);
+  } else {
+    // Try <`text-box-trim> || <'text-box-edge>`.
+    while (!stream.AtEnd() && (!trim || !edge)) {
+      if (!trim && (trim = css_parsing_utils::ConsumeTextBoxTrim(stream))) {
+        continue;
+      }
+      if (!edge && (edge = css_parsing_utils::ConsumeTextBoxEdge(stream))) {
+        continue;
+      }
+
+      // Parse error, but we must accept whatever junk might be after our own
+      // tokens. Fail only if we didn't parse any useful values.
+      break;
+    }
+
+    if (!trim && !edge) {
+      return false;
+    }
+    if (!trim) {
+      trim = CSSIdentifierValue::Create(CSSValueID::kTrimBoth);
+    }
+    if (!edge) {
+      edge = CSSIdentifierValue::Create(CSSValueID::kAuto);
+    }
+  }
+
+  CHECK(trim);
+  AddProperty(CSSPropertyID::kTextBoxTrim, CSSPropertyID::kTextBox, *trim,
+              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+              properties);
+  CHECK(edge);
+  AddProperty(CSSPropertyID::kTextBoxEdge, CSSPropertyID::kTextBox, *edge,
+              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+              properties);
+  return true;
+}
+
+const CSSValue* TextBox::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const ETextBoxTrim trim = style.TextBoxTrim();
+  const TextBoxEdge edge = style.GetTextBoxEdge();
+
+  // If `text-box-edge: auto`, produce `normal` or `<text-box-trim>`.
+  if (edge.IsAuto()) {
+    if (trim == ETextBoxTrim::kNone) {
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    }
+    return CSSIdentifierValue::Create(trim);
+  }
+
+  const CSSValue* edge_value;
+  if (edge.IsUnderDefault()) {
+    edge_value = CSSIdentifierValue::Create(edge.Over());
+  } else {
+    CSSValueList* edge_list = CSSValueList::CreateSpaceSeparated();
+    edge_list->Append(*CSSIdentifierValue::Create(edge.Over()));
+    edge_list->Append(*CSSIdentifierValue::Create(edge.Under()));
+    edge_value = edge_list;
+  }
+
+  // Omit `text-box-trim` if `trim-both`, not when it's initial.
+  if (trim == ETextBoxTrim::kTrimBoth) {
+    return edge_value;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSIdentifierValue::Create(trim));
+  list->Append(*edge_value);
+  return list;
 }
 
 bool TextEmphasis::ParseShorthand(

@@ -33,8 +33,8 @@ if (is_android) {
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
+  import("//build/config/apple/swift_source_set.gni")
   import("//build/config/ios/config.gni")
-  import("//build/config/ios/swift_source_set.gni")
   import("//content/shell/app/ios/extensions.gni")
 }
 
@@ -1056,7 +1056,7 @@ group("content_shell_crash_test") {
   data_deps = [
     ":content_shell",
     "//testing:test_scripts_shared",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
   data = [
     "//content/shell/tools/breakpad_integration_test.py",

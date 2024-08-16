@@ -866,13 +866,16 @@ TEST_F(MediaNotificationViewImplTest, NotifysContainerOfExpandedState) {
   EXPECT_FALSE(expanded);
 }
 
-TEST_F(MediaNotificationViewImplTest, AccessibleNodeData) {
+TEST_F(MediaNotificationViewImplTest, AccessibleProperties) {
   ui::AXNodeData data;
-  view()->GetAccessibleNodeData(&data);
+  view()->GetViewAccessibility().GetAccessibleNodeData(&data);
 
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
   EXPECT_EQ(u"title - artist", accessible_name());
+
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kListItem);
 }
 
 TEST_F(MediaNotificationViewImplTest, ForcedExpandedState) {

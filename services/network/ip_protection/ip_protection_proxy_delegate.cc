@@ -23,6 +23,8 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
+#include "services/network/ip_protection/ip_protection_geo_utils.h"
+#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
@@ -417,7 +419,17 @@ void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
           ipp_config_cache_
               ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
                   IpProtectionProxyLayer::kProxyA));
-
+  auto* ipp_proxy_list_manager_impl =
+      static_cast<IpProtectionProxyListManagerImpl*>(
+          ipp_config_cache_
+              ->GetIpProtectionProxyListManagerForTesting());  // IN-TEST
+  CHECK(ipp_proxy_list_manager_impl);
+  ipp_proxy_list_manager_impl->SetProxyListForTesting(  // IN-TEST
+      std::vector{net::ProxyChain::ForIpProtection(
+          std::vector{net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
+      network::GetGeoHintFromGeoIdForTesting(
+          ipp_token_cache_manager_impl->CurrentGeo()));
   std::optional<BlindSignedAuthToken> result =
       ipp_config_cache_->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {

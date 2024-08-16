@@ -12,15 +12,15 @@
 #include "base/time/clock.h"
 #include "chrome/browser/android/webapk/webapk_database.h"
 #include "chrome/browser/android/webapk/webapk_specifics_fetcher.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 struct EntityData;
 class MetadataChangeList;
 class ModelError;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace webapk {
@@ -38,8 +38,8 @@ struct WebApkRestoreData;
 //
 // WebApkSyncBridge is the key class to support integration with Unified Sync
 // and Storage (USS) system. The sync bridge exclusively owns
-// ModelTypeChangeProcessor and WebApkDatabase (the storage).
-class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
+// DataTypeLocalChangeProcessor and WebApkDatabase (the storage).
+class WebApkSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   WebApkSyncBridge(AbstractWebApkDatabaseFactory* database_factory,
                    base::OnceClosure on_initialized);
@@ -47,7 +47,7 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
   WebApkSyncBridge(
       AbstractWebApkDatabaseFactory* database_factory,
       base::OnceClosure on_initialized,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       std::unique_ptr<base::Clock> clock,
       std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher);
   WebApkSyncBridge(const WebApkSyncBridge&) = delete;
@@ -56,7 +56,7 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -105,8 +105,8 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
 
   const Registry& GetRegistryForTesting() const;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate();
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and

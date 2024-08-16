@@ -220,6 +220,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2490721194269245365">Rosebrun</translation>
 <translation id="249330843868392562">Åpne innstillinger for tekst til tale</translation>
 <translation id="2497706219848005458">Grønngul</translation>
+<translation id="2512979179176933762">vis vinduer</translation>
 <translation id="2523609930580546572">ChromeVox-veiledning</translation>
 <translation id="2525706221823668172">Hurtigtaster på Chromebook</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4246217262268234757">Blågrå</translation>
 <translation id="4253168017788158739">Merknad</translation>
 <translation id="4254798249533888099">Tre</translation>
+<translation id="4259220820964911921">Vil du slå på ansiktskontroll?</translation>
 <translation id="4271220233568730077">Neste matteuttrykk</translation>
 <translation id="4275397969489577657">Slå på loggføring av aktivitetsstrømmer</translation>
 <translation id="4278486392851938658">Det finnes ingen tidligere linker som er besøkt</translation>
@@ -710,6 +712,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5760594853119905566">Vedlegg</translation>
 <translation id="5761219715606611783">Bra! Du har lært det grunnleggende som trengs for å bruke ChromeVox-berøring. Du kan gå gjennom veiledningen på nytt eller avslutte denne veiledningen med knappene under.</translation>
 <translation id="5776001898637896684">Google Enhanced Network-utvidelse for tekst til tale</translation>
+<translation id="5783252477644995371">Med ansiktskontroll får du markørkontroll med ansiktspeking og mulighet til å utføre handlinger, for eksempel venstreklikking med ansiktsbevegelser som smil</translation>
 <translation id="5805940204952508776">Trykk med to fingre</translation>
 <translation id="5819072574982403430">Treelement</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
@@ -1073,7 +1076,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="847040613207937740">Det finnes ingen flere avmerkingsbokser</translation>
 <translation id="8473540203671727883">Les opp teksten som er under musepekeren</translation>
 <translation id="8476408756881832830">Sett avspillingen på pause når ChromeVox snakker</translation>
-<translation id="8476508772960940536">vindusoversikt</translation>
 <translation id="8480873377842220259">Nå skal du få lære litt generell navigering. Du kan holde inne søketasten og trykke på piltastene for å bevege deg rundt på skjermen. For å fortsette, trykk på søketasten + høyrepil.</translation>
 <translation id="8503360654911991865">Reduser detaljnivået på navigeringen</translation>
 <translation id="8520472399088452386">Verdisettingsknapp</translation>

@@ -89,7 +89,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 
 #pragma mark - Helpers
 
-// Adds user demographics, which are ModelType::PRIORITY_PREFERENCES, to the
+// Adds user demographics, which are DataType::PRIORITY_PREFERENCES, to the
 // fake sync server. `rawBirthYear` is the true birth year, pre-noise, and the
 // gender corresponds to the options in UserDemographicsProto::Gender.
 //

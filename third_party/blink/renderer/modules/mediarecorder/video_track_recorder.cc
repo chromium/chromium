@@ -958,8 +958,8 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
     }
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
     default:
-      NOTREACHED_NORETURN()
-          << "Unsupported codec: " << static_cast<int>(codec_profile.codec_id);
+      NOTREACHED() << "Unsupported codec: "
+                   << static_cast<int>(codec_profile.codec_id);
   }
 }
 

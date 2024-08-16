@@ -18,9 +18,9 @@ class EmptyMetadataChangeList : public MetadataChangeList {
   ~EmptyMetadataChangeList() override;
 
   // MetadataChangeList implementation.
-  void UpdateModelTypeState(
-      const sync_pb::ModelTypeState& model_type_state) override;
-  void ClearModelTypeState() override;
+  void UpdateDataTypeState(
+      const sync_pb::DataTypeState& data_type_state) override;
+  void ClearDataTypeState() override;
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;

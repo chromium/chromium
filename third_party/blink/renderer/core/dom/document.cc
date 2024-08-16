@@ -596,7 +596,7 @@ static bool IsValidElementNamePerHTMLParser(const String& name) {
 static bool IsValidElementName(Document* document, const String& name) {
   bool is_valid_dom_name = Document::IsValidName(name);
   bool is_valid_html_name = IsValidElementNamePerHTMLParser(name);
-  if (UNLIKELY(is_valid_html_name != is_valid_dom_name)) {
+  if (is_valid_html_name != is_valid_dom_name) [[unlikely]] {
     // This is inaccurate because it will not report activity in
     // detached documents. However retrieving the frame from the
     // bindings is too slow.
@@ -829,7 +829,6 @@ Document::Document(const DocumentInit& initializer,
       // web-observable.
       ready_state_(dom_window_ ? kLoading : kComplete),
       parsing_state_(kFinishedParsing),
-      contains_plugins_(false),
       ignore_destructive_write_count_(0),
       throw_on_dynamic_markup_insertion_count_(0),
       ignore_opens_during_unload_count_(0),
@@ -2248,7 +2247,9 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                       kPseudoIdMarker,
                                       kPseudoIdBackdrop,
                                       kPseudoIdScrollMarkerGroupBefore,
-                                      kPseudoIdScrollMarkerGroupAfter};
+                                      kPseudoIdScrollMarkerGroupAfter,
+                                      kPseudoIdScrollNextButton,
+                                      kPseudoIdScrollPrevButton};
   for (auto pseudo_id : pseudo_ids) {
     if (auto* pseudo_element = element.GetPseudoElement(pseudo_id))
       AssertNodeClean(*pseudo_element);
@@ -4752,13 +4753,25 @@ void Document::ProcessBaseElement() {
     }
   }
 
-  if (base_element_url != base_element_url_ &&
-      !base_element_url.ProtocolIsData() &&
-      !base_element_url.ProtocolIsJavaScript() && GetExecutionContext() &&
-      GetExecutionContext()->GetContentSecurityPolicy()->AllowBaseURI(
-          base_element_url)) {
-    base_element_url_ = base_element_url;
-    UpdateBaseURL();
+  if (base_element_url != base_element_url_) {
+    // https://html.spec.whatwg.org/multipage/semantics.html#the-base-element
+    // > If any of the following are true:
+    // > - urlRecord is failure;
+    // > - urlRecord's scheme is "data" or "javascript"; or
+    // > - running Is base allowed for Document? on urlRecord and document
+    // >   returns "Blocked"
+    // > then set element's frozen base URL to document's fallback base URL and
+    // > return.
+    if (!base_element_url.ProtocolIsData() &&
+        !base_element_url.ProtocolIsJavaScript() && GetExecutionContext() &&
+        GetExecutionContext()->GetContentSecurityPolicy()->AllowBaseURI(
+            base_element_url)) {
+      base_element_url_ = base_element_url;
+      UpdateBaseURL();
+    } else if (RuntimeEnabledFeatures::BaseElementUrlUseFallbackEnabled()) {
+      base_element_url_ = FallbackBaseURL();
+      UpdateBaseURL();
+    }
   }
 
   AtomicString old_base_target = base_target_;
@@ -5838,10 +5851,13 @@ void Document::NodeWillBeRemoved(Node& n) {
   for (NodeIterator* ni : node_iterators_)
     ni->NodeWillBeRemoved(n);
 
-  for (Range* range : ranges_) {
-    range->NodeWillBeRemoved(n);
-    if (range == sequential_focus_navigation_starting_point_)
-      range->FixupRemovedNodeAcrossShadowBoundary(n);
+  if (!StatePreservingAtomicMoveInProgress()) {
+    for (Range* range : ranges_) {
+      range->NodeWillBeRemoved(n);
+      if (range == sequential_focus_navigation_starting_point_) {
+        range->FixupRemovedNodeAcrossShadowBoundary(n);
+      }
+    }
   }
 
   synchronous_mutation_observer_set_.ForEachObserver(

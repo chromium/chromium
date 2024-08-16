@@ -16,6 +16,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -58,6 +59,9 @@ namespace ash {
 class InternalInputDevicesEventBlocker;
 class TabletModeObserver;
 class TabletModeWindowManager;
+
+// TODO(b/357489575): cleanup this kill-switch.
+BASE_DECLARE_FEATURE(kBlockUiTabletModeInKiosk);
 
 // When EC (Embedded Controller) cannot handle lid angle calculation,
 // TabletModeController listens to accelerometer events and automatically
@@ -149,6 +153,7 @@ class ASH_EXPORT TabletModeController
   void OnDidApplyDisplayChanges() override;
 
   // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus login_status) override;
   void OnChromeTerminating() override;
 
   // AccelerometerReader::Observer:
@@ -411,8 +416,11 @@ class ASH_EXPORT TabletModeController
   // Source for the current time in base::TimeTicks.
   raw_ptr<const base::TickClock> tick_clock_;
 
-  // The state in which the UI mode is forced in via command-line flags, such as
-  // `--force-tablet-mode=touch_view` or `--force-tablet-mode=clamshell`.
+  // Forces the UI mode to be in tablet or clamsell state. Can be forced via:
+  //   1) command-line flags, such as `--force-tablet-mode=touch_view` or
+  //   `--force-tablet-mode=clamshell`.
+  //   2) observing `OnLoginStatusChanged`, since Ui tablet mode is blocked in
+  //   Kiosk.
   UiMode forced_ui_mode_ = UiMode::kNone;
 
   // True if the device is physically in a tablet state regardless of the UI

@@ -19,6 +19,7 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,10 +36,9 @@ class DisplayDamageTrackerTest : public testing::Test {
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         resource_provider_(&shared_bitmap_manager_,
                            &shared_image_manager_,
-                           &sync_point_manager_),
-        aggregator_(manager_.surface_manager(),
-                    &resource_provider_,
-                    false),
+                           &sync_point_manager_,
+                           &gpu_scheduler_),
+        aggregator_(manager_.surface_manager(), &resource_provider_, false),
         root_client_(&manager_, kRootFrameSinkId),
         task_runner_(base::MakeRefCounted<base::NullTaskRunner>()),
         fake_begin_frame_source_(0.f, false),
@@ -123,6 +123,7 @@ class DisplayDamageTrackerTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
   FrameSinkManagerImpl manager_;
   DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;

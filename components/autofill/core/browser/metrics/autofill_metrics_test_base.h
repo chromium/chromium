@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
@@ -46,7 +47,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<TouchToFillDelegate>),
                (base::span<const autofill::CreditCard>),
-               (const std::vector<bool>&)),
+               (base::span<const autofill::Suggestion>)),
               (override));
 };
 

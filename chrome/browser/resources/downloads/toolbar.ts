@@ -53,7 +53,6 @@ export class DownloadsToolbarElement extends PolymerElement {
 
       spinnerActive: {
         type: Boolean,
-        notify: true,
       },
     };
   }
@@ -114,6 +113,11 @@ export class DownloadsToolbarElement extends PolymerElement {
     const searchService = SearchService.getInstance();
     if (searchService.search(event.detail)) {
       this.spinnerActive = searchService.isSearching();
+      this.dispatchEvent(new CustomEvent('spinner-active-changed', {
+        detail: {value: this.spinnerActive},
+        bubbles: true,
+        composed: true,
+      }));
     }
     this.updateClearAll_();
   }

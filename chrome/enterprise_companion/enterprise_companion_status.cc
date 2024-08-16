@@ -8,8 +8,16 @@
 #include <variant>
 
 #include "base/functional/overloaded.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/posix/safe_strerror.h"
+#else
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#endif
 
 namespace enterprise_companion {
 
@@ -83,11 +91,21 @@ constexpr std::string ApplicationErrorToString(ApplicationError error) {
       return "Failed to persist policies to storage.";
     case ApplicationError::kCannotAcquireLock:
       return "Failed to acquire global singleton lock.";
-    case ApplicationError::kEnterpriseCompanionServiceConnectionFailed:
-      return "The EnterpriseCompanion IPC interface could not be reached.";
+    case ApplicationError::kMojoConnectionFailed:
+      return "A Mojo IPC connection could not be established.";
     case ApplicationError::kInstallationFailed:
       return "The application could not be installed.";
+    case ApplicationError::kIpcCallerNotAllowed:
+      return "The IPC caller is not allowed.";
   }
+}
+
+std::string PosixErrnoToString(EnterpriseCompanionStatus::PosixErrno error) {
+#if BUILDFLAG(IS_POSIX)
+  return base::safe_strerror(error);
+#else
+  return base::StrCat({"Posix error code ", base::NumberToString(error), "."});
+#endif
 }
 
 }  // namespace
@@ -117,6 +135,7 @@ std::string EnterpriseCompanionStatus::description() const {
           [](ApplicationError error) {
             return ApplicationErrorToString(error);
           },
+          [](PosixErrno error) { return PosixErrnoToString(error); },
       },
       status_variant_);
 }
@@ -129,7 +148,7 @@ EnterpriseCompanionStatus::EnterpriseCompanionStatus(ApplicationError error)
     : EnterpriseCompanionStatus(StatusVariant(error)) {}
 
 EnterpriseCompanionStatus::EnterpriseCompanionStatus(
-    StatusVariant&& status_variant)
+    StatusVariant status_variant)
     : status_variant_(std::move(status_variant)) {}
 
 }  // namespace enterprise_companion

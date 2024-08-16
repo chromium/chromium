@@ -56,6 +56,23 @@ TEST_F(PickerActionOnNextFocusRequestTest,
   EXPECT_TRUE(action_future.Wait());
 }
 
+TEST_F(PickerActionOnNextFocusRequestTest,
+       DoesNotCallTimeoutCallbackAfterSuccessfulAction) {
+  ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  InputMethodAsh input_method(nullptr);
+  base::test::TestFuture<void> action_future;
+  base::test::TestFuture<void> timeout_future;
+  PickerActionOnNextFocusRequest request(
+      &input_method, /*action_timeout=*/base::Seconds(1),
+      action_future.GetCallback(), timeout_future.GetCallback());
+
+  input_method.SetFocusedTextInputClient(&client);
+  task_environment().FastForwardBy(base::Seconds(2));
+
+  EXPECT_TRUE(action_future.Wait());
+  EXPECT_FALSE(timeout_future.IsReady());
+}
+
 TEST_F(PickerActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
@@ -65,6 +82,22 @@ TEST_F(PickerActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
       timeout_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(2));
 
+  EXPECT_TRUE(timeout_future.Wait());
+}
+
+TEST_F(PickerActionOnNextFocusRequestTest, DoesNotPerformActionAfterTimeout) {
+  ui::FakeTextInputClient client(ui::TEXT_INPUT_TYPE_TEXT);
+  InputMethodAsh input_method(nullptr);
+  base::test::TestFuture<void> action_future;
+  base::test::TestFuture<void> timeout_future;
+  PickerActionOnNextFocusRequest request(
+      &input_method, /*action_timeout=*/base::Seconds(1),
+      action_future.GetCallback(), timeout_future.GetCallback());
+
+  task_environment().FastForwardBy(base::Seconds(2));
+  input_method.SetFocusedTextInputClient(&client);
+
+  EXPECT_FALSE(action_future.IsReady());
   EXPECT_TRUE(timeout_future.Wait());
 }
 

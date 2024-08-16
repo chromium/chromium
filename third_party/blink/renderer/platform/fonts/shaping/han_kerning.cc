@@ -73,7 +73,7 @@ HanKerning::CharType CharTypeFromBounds(
     unsigned index,
     bool is_horizontal) {
   const HarfBuzzShaper::GlyphData& glyph = glyphs[index];
-  if (UNLIKELY(!glyph.glyph)) {
+  if (!glyph.glyph) [[unlikely]] {
     return HanKerning::CharType::kOther;
   }
   const float advance = GetAdvance(glyph, is_horizontal);
@@ -92,11 +92,11 @@ HanKerning::CharType CharTypeFromBounds(
   HanKerning::CharType type0 = HanKerning::CharType::kOther;
   unsigned i = 0;
   for (;; ++i) {
-    if (UNLIKELY(i >= glyphs.size())) {
+    if (i >= glyphs.size()) [[unlikely]] {
       return HanKerning::CharType::kOther;
     }
     const HarfBuzzShaper::GlyphData& glyph = glyphs[i];
-    if (UNLIKELY(!glyph.glyph)) {
+    if (!glyph.glyph) [[unlikely]] {
       continue;
     }
 
@@ -109,7 +109,7 @@ HanKerning::CharType CharTypeFromBounds(
   // Check if all other glyphs have the same advances and types.
   for (++i; i < glyphs.size(); ++i) {
     const HarfBuzzShaper::GlyphData& glyph = glyphs[i];
-    if (UNLIKELY(!glyph.glyph)) {
+    if (!glyph.glyph) [[unlikely]] {
       continue;
     }
 
@@ -170,7 +170,7 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
       return font_data.is_quote_fullwidth ? CharType::kClose
                                           : CharType::kCloseNarrow;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HanKerning::MayApply(StringView text) {
@@ -212,8 +212,8 @@ void HanKerning::Compute(const String& text,
   if (!font_data.has_alternate_spacing) {
     return;
   }
-  if (UNLIKELY(font_description.GetTextSpacingTrim() ==
-               TextSpacingTrim::kSpaceAll)) {
+  if (font_description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceAll)
+      [[unlikely]] {
     return;
   }
   for (const hb_feature_t& feature : *features) {
@@ -225,7 +225,7 @@ void HanKerning::Compute(const String& text,
   // Compute for the first character.
   Vector<wtf_size_t, 32> indices;
   CharType last_type;
-  if (UNLIKELY(options.apply_start)) {
+  if (options.apply_start) [[unlikely]] {
     indices.push_back(start);
     unsafe_to_break_before_.push_back(start);
     last_type = GetCharType(text[start], font_data);
@@ -244,7 +244,7 @@ void HanKerning::Compute(const String& text,
   if (font_data.has_contextual_spacing) {
     // The `chws` feature can handle charcters in a run.
     // Compute the end edge if there are following runs.
-    if (UNLIKELY(options.apply_end)) {
+    if (options.apply_end) [[unlikely]] {
       indices.push_back(end - 1);
     } else if (end < text.length()) {
       if (end - 1 > start) {
@@ -272,7 +272,7 @@ void HanKerning::Compute(const String& text,
     }
 
     // Compute for the last character.
-    if (UNLIKELY(options.apply_end)) {
+    if (options.apply_end) [[unlikely]] {
       indices.push_back(end - 1);
     } else if (end < text.length()) {
       type = GetCharType(text[end], font_data);
@@ -363,7 +363,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   Vector<Glyph, 256> glyphs;
   unsigned cluster = 0;
   for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
-    if (UNLIKELY(glyph_data.cluster != cluster)) {
+    if (glyph_data.cluster != cluster) [[unlikely]] {
       has_alternate_spacing = false;
       return;
     }

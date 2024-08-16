@@ -24,6 +24,8 @@ WebsocketReceiveMessageTimeoutError = TimeoutError
 
 
 class WebsocketServer():
+  enable_extra_logging = False
+
   def __init__(self):
     """Server that abstracts the websocket library under the hood.
 
@@ -64,10 +66,14 @@ class WebsocketServer():
     self.websocket = None
     self.connection_received_event.clear()
 
-  def WaitForConnection(self, timeout: Optional[int] = None) -> None:
+  def WaitForConnection(self, timeout: Optional[float] = None) -> None:
     if self.websocket:
       return
     timeout = timeout or WEBSOCKET_SETUP_TIMEOUT_SECONDS
+    if WebsocketServer.enable_extra_logging:
+      logging.error(
+          'crbug.com/344009517: Waiting %f seconds for websocket connection',
+          timeout)
     self.connection_received_event.wait(timeout)
     if not self.websocket:
       raise RuntimeError('Websocket connection was not established')
@@ -112,9 +118,17 @@ def StartWebsocketServer(server_thread: _ServerThread,
       websocket: sync_server.ServerConnection) -> None:
     # We only allow one active connection - if there are multiple, something is
     # wrong.
+    if WebsocketServer.enable_extra_logging:
+      logging.error('crbug.com/344009517: Handling websocket connection')
     assert server_instance.connection_stopper_event is None
+    if WebsocketServer.enable_extra_logging:
+      logging.error('crbug.com/344009517: connection stopper is None')
     assert server_instance.connection_closed_event is None
+    if WebsocketServer.enable_extra_logging:
+      logging.error('crbug.com/344009517: connection closed is None')
     assert server_instance.websocket is None
+    if WebsocketServer.enable_extra_logging:
+      logging.error('crbug.com/344009517: server websocket is None')
     server_instance.connection_stopper_event = threading.Event()
     server_instance.connection_closed_event = threading.Event()
     # Keep our own reference in case the server clears its reference before the
@@ -122,6 +136,8 @@ def StartWebsocketServer(server_thread: _ServerThread,
     connection_stopper_event = server_instance.connection_stopper_event
     connection_closed_event = server_instance.connection_closed_event
     server_instance.websocket = websocket
+    if WebsocketServer.enable_extra_logging:
+      logging.error('crbug.com/344009517: Setting connection received event')
     server_instance.connection_received_event.set()
     connection_stopper_event.wait()
     connection_closed_event.set()

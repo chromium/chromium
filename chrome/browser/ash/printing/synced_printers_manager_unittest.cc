@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,13 +60,13 @@ class LoggingObserver : public SyncedPrintersManager::Observer {
 class SyncedPrintersManagerTest : public testing::Test {
  protected:
   SyncedPrintersManagerTest()
-      : manager_(SyncedPrintersManager::Create(std::make_unique<
-                                               PrintersSyncBridge>(
-            syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-            base::BindRepeating(
-                base::IgnoreResult(&base::debug::DumpWithoutCrashing),
-                FROM_HERE,
-                base::Minutes(5))))) {
+      : manager_(
+            SyncedPrintersManager::Create(std::make_unique<PrintersSyncBridge>(
+                syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+                base::BindRepeating(
+                    base::IgnoreResult(&base::debug::DumpWithoutCrashing),
+                    FROM_HERE,
+                    base::Minutes(5))))) {
     base::RunLoop().RunUntilIdle();
   }
 

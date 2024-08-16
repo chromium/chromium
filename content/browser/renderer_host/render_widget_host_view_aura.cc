@@ -1351,6 +1351,10 @@ RenderWidgetHostViewAura::GetKeyboardLayoutMap() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, ui::TextInputClient implementation:
+base::WeakPtr<ui::TextInputClient> RenderWidgetHostViewAura::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void RenderWidgetHostViewAura::SetCompositionText(
     const ui::CompositionText& composition) {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())

@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -695,6 +696,7 @@ void DemoSetupController::SetupFailed(const DemoSetupError& error) {
   LOG(ERROR) << error.GetDebugDescription();
   if (!on_setup_error_.is_null())
     std::move(on_setup_error_).Run(error);
+  UMA_HISTOGRAM_ENUMERATION("DemoMode.Setup.Error", error.error_code());
 }
 
 void DemoSetupController::Reset() {

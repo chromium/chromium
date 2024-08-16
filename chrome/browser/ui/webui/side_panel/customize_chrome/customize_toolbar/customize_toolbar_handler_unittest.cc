@@ -12,6 +12,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,6 +71,7 @@ class MockPinnedToolbarActionsModel : public PinnedToolbarActionsModel {
   MOCK_METHOD(void,
               UpdatePinnedState,
               (const actions::ActionId& action_id, const bool should_pin));
+  MOCK_METHOD(void, ResetToDefault, ());
 
   MOCK_METHOD(void, AddObserver, (PinnedToolbarActionsModel::Observer*));
   MOCK_METHOD(void, RemoveObserver, (PinnedToolbarActionsModel::Observer*));
@@ -131,7 +133,8 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
   }
 
   virtual void SetupFeatureList() {
-    feature_list_.InitAndEnableFeature(lens::features::kLensOverlay);
+    feature_list_.InitWithFeatures(
+        {features::kToolbarPinning, lens::features::kLensOverlay}, {});
   }
 
   CustomizeToolbarHandler& handler() { return *handler_; }
@@ -281,22 +284,11 @@ TEST_F(CustomizeToolbarHandlerTest, PinForward) {
   EXPECT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
 }
 
-TEST_F(CustomizeToolbarHandlerTest, ActionAddedRemoved) {
-  bool pin;
-  side_panel::customize_chrome::mojom::ActionId id;
-  EXPECT_CALL(mock_page_, SetActionPinned)
-      .Times(2)
-      .WillRepeatedly(DoAll(SaveArg<0>(&id), SaveArg<1>(&pin)));
+TEST_F(CustomizeToolbarHandlerTest, ActionsChanged) {
+  EXPECT_CALL(mock_page_, NotifyActionsUpdated).Times(1);
 
-  handler().OnActionAdded(kActionDevTools);
+  handler().OnActionsChanged();
   mock_page_.FlushForTesting();
-  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kDevTools);
-  EXPECT_EQ(pin, true);
-
-  handler().OnActionRemoved(kActionDevTools);
-  mock_page_.FlushForTesting();
-  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kDevTools);
-  EXPECT_EQ(pin, false);
 }
 
 TEST_F(CustomizeToolbarHandlerTest, HomePrefUpdated) {
@@ -336,23 +328,8 @@ TEST_F(CustomizeToolbarHandlerTest, ForwardPrefUpdated) {
 }
 
 TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
-  std::vector<actions::ActionId> pinned = {kActionDevTools, kActionPrint};
-  EXPECT_CALL(mock_pinned_toolbar_actions_model(), PinnedActionIds)
-      .WillOnce(testing::ReturnRef(pinned));
-
-  std::vector<actions::ActionId> reset_ids;
-  EXPECT_CALL(mock_pinned_toolbar_actions_model(), UpdatePinnedState)
-      .Times(pinned.size())
-      .WillRepeatedly([&reset_ids](actions::ActionId id, testing::Unused) {
-        reset_ids.push_back(id);
-      });
+  EXPECT_CALL(mock_pinned_toolbar_actions_model(), ResetToDefault).Times(1);
   handler().ResetToDefault();
-
-  EXPECT_EQ(pinned.size(), reset_ids.size());
-  for (actions::ActionId id : pinned) {
-    EXPECT_NE(std::find(reset_ids.begin(), reset_ids.end(), id),
-              reset_ids.end());
-  }
 }
 
 TEST_F(CustomizeToolbarHandlerTest, ActionsUpdatedOnVisibilityChange) {

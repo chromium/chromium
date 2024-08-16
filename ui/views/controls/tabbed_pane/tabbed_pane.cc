@@ -72,6 +72,7 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
   // Use leaf so that name is spoken by screen reader without exposing the
   // children.
   GetViewAccessibility().SetIsLeaf(true);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
   UpdateAccessibleName();
 
   OnStateChanged();
@@ -143,10 +144,6 @@ gfx::Size TabbedPaneTab::CalculatePreferredSize(
     width = std::max(width, 192);
   }
   return gfx::Size(width, 32);
-}
-
-void TabbedPaneTab::GetAccessibleNodeData(ui::AXNodeData* data) {
-  data->role = ax::mojom::Role::kTab;
 }
 
 bool TabbedPaneTab::HandleAccessibleAction(
@@ -546,6 +543,7 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
   AddAccelerator(
       ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
   AddAccelerator(ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN));
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 }
 
 TabbedPane::~TabbedPane() = default;
@@ -677,7 +675,6 @@ bool TabbedPane::AcceleratorPressed(const ui::Accelerator& accelerator) {
 }
 
 void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTabList;
   const TabbedPaneTab* const selected_tab = GetSelectedTab();
   if (selected_tab) {
     node_data->SetName(selected_tab->GetTitleText());

@@ -106,7 +106,7 @@ struct BlockLineClampData {
         return !has_content_after_clamp;
       default:
         // previous_inflow_position_when_clamped shouldn't be set.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -159,7 +159,9 @@ struct BlockLineClampData {
       const std::optional<LayoutUnit>& bfc_block_offset,
       const PreviousInflowPosition& previous_inflow_position) {
     if (data.state == LineClampData::kClampByLines) {
-      data.lines_until_clamp = layout_result->LinesUntilClamp();
+      if (!layout_result->GetPhysicalFragment().IsFormattingContextRoot()) {
+        data.lines_until_clamp = layout_result->LinesUntilClamp();
+      }
       if (data.lines_until_clamp <= 0 &&
           !previous_inflow_position_when_clamped.has_value()) {
         previous_inflow_position_when_clamped = previous_inflow_position;

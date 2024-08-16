@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_SYNC_ENGINE_CYCLE_MODEL_NEUTRAL_STATE_H_
 #define COMPONENTS_SYNC_ENGINE_CYCLE_MODEL_NEUTRAL_STATE_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/syncer_error.h"
 
 namespace syncer {
 
-// Grouping of all state that applies to all model types.  Note that some
+// Grouping of all state that applies to all data types.  Note that some
 // components of the global grouping can internally implement finer grained
 // scope control, but the top level entity is still a singleton with respect to
-// model types.
+// data types.
 struct ModelNeutralState {
   ModelNeutralState();
   ModelNeutralState(const ModelNeutralState& other);
@@ -21,7 +21,7 @@ struct ModelNeutralState {
 
   // The set of types for which non-deletion updates were returned from the
   // server.
-  ModelTypeSet updated_types;
+  DataTypeSet updated_types;
 
   int num_successful_commits = 0;
 

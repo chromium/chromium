@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/stack_allocated.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace cc {
 class Layer;
@@ -40,6 +41,8 @@ enum {
 typedef unsigned LayerTreeFlags;
 
 class PLATFORM_EXPORT LayersAsJSON {
+  STACK_ALLOCATED();
+
  public:
   LayersAsJSON(LayerTreeFlags);
 
@@ -55,7 +58,7 @@ class PLATFORM_EXPORT LayersAsJSON {
   LayerTreeFlags flags_;
   int next_transform_id_;
   std::unique_ptr<JSONArray> layers_json_;
-  HashMap<const TransformPaintPropertyNode*, int> transform_id_map_;
+  HeapHashMap<Member<const TransformPaintPropertyNode>, int> transform_id_map_;
   std::unique_ptr<JSONArray> transforms_json_;
   HashMap<int, int> rendering_context_map_;
 };

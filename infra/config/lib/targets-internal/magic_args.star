@@ -56,6 +56,13 @@ _DEVICE_SUBSTITUTIONS = {
     "0c36": "36334330",
 }
 
+_ANDROID_VULKAN_DEVICES = {
+    # Pixel 6 phones map to multiple GPU models.
+    "oriole": _gpu_device(vendor = "13b5", device = "92020010,92020000"),
+    "dm1q": _gpu_device(vendor = "5143", device = "43050a01"),
+    "a23": _gpu_device(vendor = "5143", device = "6010001"),
+}
+
 def _get_dimensions(spec_value):
     dimensions = spec_value.get("swarming", {}).get("dimensions")
     if dimensions == None:
@@ -128,6 +135,13 @@ def _get_gpus(spec_value):
     dimensions = _get_dimensions(spec_value)
     return dimensions.get("gpu", []).split("|")
 
+def _get_android_vulkan_device(settings, spec_value):
+    if settings.os_type == common.os_type.ANDROID:
+        dimensions = _get_dimensions(spec_value)
+        if "device_type" in dimensions:
+            return _ANDROID_VULKAN_DEVICES.get(dimensions["device_type"])
+    return None
+
 def _gpu_expected_vendor_id(_, settings, spec_value):
     """Substitutes the correct expected GPU vendor for certain GPU tests.
 
@@ -142,6 +156,10 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     # default to 0.
     if not gpus:
         return ["--expected-vendor-id", "0"]
+
+    vulkan_device = _get_android_vulkan_device(settings, spec_value)
+    if vulkan_device:
+        return ["--expected-vendor-id", vulkan_device.vendor]
 
     vendor_ids = set()
     for gpu_and_driver in gpus:
@@ -176,6 +194,15 @@ def _gpu_expected_device_id(_, settings, spec_value):
     # We don't specify GPU on things like Android/CrOS devices, so default to 0.
     if not gpus:
         return ["--expected-device-id", "0"]
+
+    vulkan_device = _get_android_vulkan_device(settings, spec_value)
+    if vulkan_device:
+        device_ids = vulkan_device.device.split(",")
+        commands = []
+        for index, device_id in enumerate(device_ids):
+            commands.append("--expected-device-id")
+            commands.append(device_ids[index])
+        return commands
 
     device_ids = set()
     for gpu_and_driver in gpus:

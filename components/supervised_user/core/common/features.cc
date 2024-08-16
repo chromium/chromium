@@ -93,7 +93,7 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
   return skipParentApprovalEnabled &&
          permissionExtensionsForSupervisedUsersEnabled;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -155,12 +155,6 @@ BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
 BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid,
-             "ReplaceProfileIsChildWithAccountCapabilitiesOnAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kFetchListFamilyMembersWithCapability,

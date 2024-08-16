@@ -182,7 +182,7 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
     for (const char& c : kTestMsg) {
       size_t actually_written_bytes = 0;
       EXPECT_EQ(MOJO_RESULT_OK,
-                send_handle_->WriteData(base::as_bytes(base::span_from_ref(c)),
+                send_handle_->WriteData(base::byte_span_from_ref(c),
                                         MOJO_WRITE_DATA_FLAG_NONE,
                                         actually_written_bytes));
       // Flush the 1 byte write.

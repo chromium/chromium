@@ -67,6 +67,7 @@ class BrowsingTopicsRedirectObserver
   struct PendingNavigationRedirectState {
     int redirect_count;
     int redirect_with_topics_invoked_count;
+    ukm::SourceId source_id_before_redirects;
   };
 
   // For the ongoing main frame navigation(s), the redirect state to be

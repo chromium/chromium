@@ -69,13 +69,11 @@ class DawnImageRepresentation;
 class LegacyOverlayImageRepresentation;
 class OverlayImageRepresentation;
 class MemoryImageRepresentation;
-class VaapiImageRepresentation;
 class RasterImageRepresentation;
 class MemoryTracker;
-class VideoDecodeImageRepresentation;
+class VideoImageRepresentation;
 class MemoryTypeTracker;
 class SharedImageFactory;
-class VaapiDependenciesFactory;
 
 #if BUILDFLAG(ENABLE_VULKAN)
 class VulkanImageRepresentation;
@@ -107,10 +105,10 @@ enum class SharedImageBackingType {
 };
 
 #if BUILDFLAG(IS_WIN)
-using VideoDecodeDevice = Microsoft::WRL::ComPtr<ID3D11Device>;
+using VideoDevice = Microsoft::WRL::ComPtr<ID3D11Device>;
 #else
 // This parameter is only used on Windows so null is expected.
-using VideoDecodeDevice = void*;
+using VideoDevice = void*;
 #endif  // BUILDFLAG(IS_WIN)
 
 // Represents the actual storage (GL texture, VkImage, GMB) for a SharedImage.
@@ -313,10 +311,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
-  virtual std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VaapiDependenciesFactory* dep_factory);
   virtual std::unique_ptr<MemoryImageRepresentation> ProduceMemory(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker);
@@ -325,10 +319,10 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       MemoryTypeTracker* tracker);
   // Take void* device for resource generated from different devices. E.g  video
   // decoder starts using its own device on a separate thread.
-  virtual std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+  virtual std::unique_ptr<VideoImageRepresentation> ProduceVideo(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      VideoDecodeDevice device);
+      VideoDevice device);
 
 #if BUILDFLAG(ENABLE_VULKAN)
   virtual std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(

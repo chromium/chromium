@@ -9,6 +9,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/spdy/spdy_session_key.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -24,7 +25,10 @@ HttpStreamKey::HttpStreamKey(url::SchemeHostPort destination,
     : destination_(std::move(destination)),
       privacy_mode_(privacy_mode),
       socket_tag_(std::move(socket_tag)),
-      network_anonymization_key_(std::move(network_anonymization_key)),
+      network_anonymization_key_(
+          NetworkAnonymizationKey::IsPartitioningEnabled()
+              ? std::move(network_anonymization_key)
+              : NetworkAnonymizationKey()),
       secure_dns_policy_(secure_dns_policy),
       disable_cert_network_fetches_(disable_cert_network_fetches) {
   CHECK(socket_tag_ == SocketTag()) << "Socket tag is not supported yet";
@@ -60,11 +64,23 @@ base::Value::Dict HttpStreamKey::ToValue() const {
 }
 
 SpdySessionKey HttpStreamKey::ToSpdySessionKey() const {
-  return SpdySessionKey(HostPortPair::FromSchemeHostPort(destination()),
-                        privacy_mode(), ProxyChain::Direct(),
-                        SessionUsage::kDestination, socket_tag(),
-                        network_anonymization_key(), secure_dns_policy(),
-                        disable_cert_network_fetches());
+  HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
+                               ? HostPortPair::FromSchemeHostPort(destination())
+                               : HostPortPair();
+  return SpdySessionKey(std::move(host_port), privacy_mode(),
+                        ProxyChain::Direct(), SessionUsage::kDestination,
+                        socket_tag(), network_anonymization_key(),
+                        secure_dns_policy(), disable_cert_network_fetches());
+}
+
+QuicSessionKey HttpStreamKey::ToQuicSessionKey() const {
+  HostPortPair host_port = GURL::SchemeIsCryptographic(destination().scheme())
+                               ? HostPortPair::FromSchemeHostPort(destination())
+                               : HostPortPair();
+  return QuicSessionKey(std::move(host_port), privacy_mode(),
+                        ProxyChain::Direct(), SessionUsage::kDestination,
+                        socket_tag(), network_anonymization_key(),
+                        secure_dns_policy(), /*require_dns_https_alpn=*/false);
 }
 
 }  // namespace net

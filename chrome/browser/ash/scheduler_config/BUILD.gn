@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("scheduler_config") {
+  sources = [
+    "scheduler_configuration_manager.cc",
+    "scheduler_configuration_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/system",
+    "//components/prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scheduler_configuration_manager_unittest.cc" ]
+
+  deps = [
+    ":scheduler_config",
+    "//base/test:test_support",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+}

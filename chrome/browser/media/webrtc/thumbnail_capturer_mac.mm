@@ -27,9 +27,27 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/media/webrtc/delegated_source_list_capturer.h"
+#include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_base.h"
 #include "media/capture/video_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/desktop_frame_utils.h"
+
+#if BUILDFLAG(IS_MAC)
+// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker). This
+// flag will only use the built-in picker on MacOS 15 Sequoia and later where it
+// is required to avoid recurring permission dialogs.
+BASE_FEATURE(kUseSCContentSharingPicker,
+             "UseSCContentSharingPicker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use the built-in MacOS screen-sharing picker (SCContentSharingPicker) on
+// MacOS 14 Sonoma and later. This flag will use the built-in picker for all
+// MacOS versions where it is supported.
+BASE_FEATURE(kUseSCContentSharingPickerSonoma,
+             "UseSCContentSharingPickerSonoma",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 using SampleCallback =
     base::RepeatingCallback<void(base::apple::ScopedCFTypeRef<CGImageRef> image,
@@ -190,6 +208,22 @@ CaptureMode GetCaptureModeFeatureParam() {
     return kThumbnailCapturerMacCaptureMode.Get();
   }
   return CaptureMode::kSCStream;
+}
+
+content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
+    DesktopMediaList::Type type) {
+  switch (type) {
+    case DesktopMediaList::Type::kScreen:
+      return content::DesktopMediaID::Type::TYPE_SCREEN;
+    case DesktopMediaList::Type::kWindow:
+      return content::DesktopMediaID::Type::TYPE_WINDOW;
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      return content::DesktopMediaID::Type::TYPE_WEB_CONTENTS;
+    case DesktopMediaList::Type::kNone:
+      break;
+  }
+  NOTREACHED_NORETURN();
 }
 
 // The sort mode controls the order of the source list that is returned from
@@ -446,7 +480,7 @@ void ScreenshotManagerCapturer::CaptureSource(
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -652,7 +686,7 @@ bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return true;
@@ -1000,8 +1034,22 @@ bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type) {
 std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
     DesktopMediaList::Type type) {
   CHECK(ShouldUseThumbnailCapturerMac(type));
+  if (@available(macOS 15.0, *)) {
+    if (base::FeatureList::IsEnabled(kUseSCContentSharingPicker)) {
+      return std::make_unique<DesktopCapturerWrapper>(
+          std::make_unique<DelegatedSourceListCapturer>(
+              ConvertToDesktopMediaIDType(type)));
+    }
+  }
+  if (@available(macOS 14.0, *)) {
+    if (base::FeatureList::IsEnabled(kUseSCContentSharingPickerSonoma)) {
+      return std::make_unique<DesktopCapturerWrapper>(
+          std::make_unique<DelegatedSourceListCapturer>(
+              ConvertToDesktopMediaIDType(type)));
+    }
+  }
   if (@available(macOS 13.2, *)) {
     return std::make_unique<ThumbnailCapturerMac>(type);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

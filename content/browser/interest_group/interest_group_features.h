@@ -21,6 +21,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeFacilitatedTestingSignalsHeaders);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgePrefetchBandAKeys);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeStoreBandAKeysInDB);
 
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFledgeUsePreconnectCache);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDetectInconsistentPageImpl);
 
 }  // namespace features

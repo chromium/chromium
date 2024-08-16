@@ -276,7 +276,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
               // ValueSize() here is the number of non-NUL *bytes* in the
               // Value() string, so we cast the Value() to bytes which is what
               // we want in the end anyway.
-              UNSAFE_BUFFERS(
+              UNSAFE_TODO(
                   base::span(reinterpret_cast<const uint8_t*>(it.Value()),
                              it.ValueSize()))
                   .first<sizeof(DWORD)>();

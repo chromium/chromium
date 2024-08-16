@@ -136,7 +136,10 @@ void CSSFontSelectorBase::WillUseFontData(
     const FontFamily& family,
     const String& text) {
   if (family.FamilyIsGeneric()) {
-    if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().empty())) {
+    if (family.IsPrewarmed()) {
+      return;
+    }
+    if (family.FamilyName().empty()) [[unlikely]] {
       return;
     }
     family.SetIsPrewarmed();
@@ -166,7 +169,10 @@ void CSSFontSelectorBase::WillUseFontData(
     return;
   }
 
-  if (family.IsPrewarmed() || UNLIKELY(family.FamilyName().empty())) {
+  if (family.IsPrewarmed()) {
+    return;
+  }
+  if (family.FamilyName().empty()) [[unlikely]] {
     return;
   }
   family.SetIsPrewarmed();

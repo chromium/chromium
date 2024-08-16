@@ -49,4 +49,8 @@ void PaymentsDataManagerTestApi::OnCardArtImagesFetched(
   payments_data_manager_->OnCardArtImagesFetched(std::move(images));
 }
 
+bool PaymentsDataManagerTestApi::ShouldSuggestServerPaymentMethods() {
+  return payments_data_manager_->ShouldSuggestServerPaymentMethods();
+}
+
 }  // namespace autofill

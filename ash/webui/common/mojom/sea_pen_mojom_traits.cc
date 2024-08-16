@@ -36,8 +36,7 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
     case manta::MantaStatusCode::kNoIdentityManager:
       return MojomMantaStatusCode::kGenericError;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return MojomMantaStatusCode::kGenericError;
+      NOTREACHED();
   }
 }
 
@@ -72,7 +71,6 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
       *output = manta::MantaStatusCode::kGenericError;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 }  // namespace mojo

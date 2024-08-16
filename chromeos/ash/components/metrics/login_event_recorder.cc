@@ -419,6 +419,22 @@ void LoginEventRecorder::RunScheduledWriteLoginTimes() {
       base::BindOnce(std::move(callback_), std::move(login_time_markers_)));
 }
 
+std::optional<base::TimeDelta> LoginEventRecorder::GetDuration(
+    const std::string& begin_marker_name,
+    const std::string& end_marker_name) {
+  std::optional<base::TimeTicks> begin, end;
+  for (const auto& m : login_time_markers_) {
+    if (m.name() == begin_marker_name) {
+      begin = m.time();
+    } else if (m.name() == end_marker_name) {
+      end = m.time();
+    }
+  }
+  return (begin && end)
+             ? std::make_optional<base::TimeDelta>(end.value() - begin.value())
+             : std::nullopt;
+}
+
 void LoginEventRecorder::WriteLogoutTimes(const std::string base_name,
                                           const std::string uma_name,
                                           const std::string uma_prefix) {

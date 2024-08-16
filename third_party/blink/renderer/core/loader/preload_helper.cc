@@ -153,8 +153,9 @@ bool MediaMatches(const String& media,
                   const ExecutionContext* execution_context) {
   MediaQuerySet* media_queries =
       MediaQuerySet::Create(media, execution_context);
-  MediaQueryEvaluator evaluator(media_values);
-  return evaluator.Eval(*media_queries);
+  MediaQueryEvaluator* evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+  return evaluator->Eval(*media_queries);
 }
 
 KURL GetBestFitImageURL(const Document& document,

@@ -1184,7 +1184,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     DCHECK(child.IsTableCaption() || child.IsTableSection());
 
     const EarlyBreak* early_break_in_child = nullptr;
-    if (UNLIKELY(early_break_)) {
+    if (early_break_) [[unlikely]] {
       if (IsEarlyBreakTarget(*early_break_, container_builder_, child)) {
         container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
                                                /* is_forced_break */ false);
@@ -1639,7 +1639,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
   container_builder_.SetIsTablePart();
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     BreakStatus status =
         FinishFragmentation(border_padding.block_end, &container_builder_);
     if (status == BreakStatus::kNeedsEarlierBreak) {

@@ -86,17 +86,17 @@ const std::u16string AutofillErrorDialogControllerImpl::GetTitle() {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT);
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
     case AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError:
 #if BUILDFLAG(IS_IOS)
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_TITLE);
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
     case AutofillErrorDialogType::kTypeUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -137,17 +137,17 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT);
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
     case AutofillErrorDialogType::kVirtualCardEnrollmentTemporaryError:
 #if BUILDFLAG(IS_IOS)
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_TEMPORARY_ERROR_DESCRIPTION);
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif  // BUILDFLAG(IS_IOS)
     case AutofillErrorDialogType::kTypeUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -160,7 +160,7 @@ const std::u16string AutofillErrorDialogControllerImpl::GetButtonLabel() {
     return l10n_util::GetStringUTF16(IDS_OK);
 #else  // BUILDFLAG(IS_IOS)
     // Not reachable on non-iOS platforms.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

@@ -44,7 +44,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
@@ -241,7 +241,7 @@ class DeepScanningRequestTest : public testing::Test {
           temp_dir_.GetPath().AppendASCII(base::StrCat({file_name, ".tmp"}));
       base::File file(current_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(file_name, 7);
+      UNSAFE_TODO(file.WriteAtCurrentPos(file_name, 7));
       secondary_files_.push_back(current_path);
       secondary_files_targets_.push_back(final_path);
     }
@@ -254,8 +254,8 @@ class DeepScanningRequestTest : public testing::Test {
 
     base::File download(download_path_,
                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    download.WriteAtCurrentPos(download_contents.c_str(),
-                               download_contents.size());
+    UNSAFE_TODO(download.WriteAtCurrentPos(download_contents.c_str(),
+                                           download_contents.size()));
     download.Close();
 
     EXPECT_CALL(item_, GetFullPath()).WillRepeatedly(ReturnRef(download_path_));
@@ -1259,7 +1259,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, true);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, true);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();
@@ -1303,7 +1303,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, true);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, true);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();
@@ -1344,7 +1344,7 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
 
-  DownloadItemWarningData::SetIsEncryptedArchive(&item_, false);
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&item_, false);
   EXPECT_FALSE(DownloadItemWarningData::HasIncorrectPassword(&item_));
 
   request.Start();

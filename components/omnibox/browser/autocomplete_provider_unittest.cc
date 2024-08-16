@@ -453,7 +453,7 @@ class AutocompleteProviderTest : public testing::Test {
 AutocompleteProviderTest::AutocompleteProviderTest()
     : client_(new MockAutocompleteProviderClient()) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 }
 
 AutocompleteProviderTest::~AutocompleteProviderTest() {

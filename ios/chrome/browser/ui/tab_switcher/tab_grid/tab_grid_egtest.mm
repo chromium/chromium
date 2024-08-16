@@ -644,15 +644,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that the Undo button is no longer available after tapping Close All,
 // then creating a new tab, then coming back to the tab grid.
 // Validates this case when Tab Grid Bulk Actions feature is enabled.
-// TODO(crbug.com/41494757): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation \
-  DISABLED_testUndoCloseAllNotAvailableAfterNewTabCreation
-#else
-#define MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation \
-  testUndoCloseAllNotAvailableAfterNewTabCreation
-#endif
-- (void)MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation {
+- (void)testUndoCloseAllNotAvailableAfterNewTabCreation {
   [ChromeEarlGreyUI openTabGrid];
 
   [[EarlGrey selectElementWithMatcher:VisibleTabGridEditButton()]
@@ -1846,13 +1838,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
                            inStorage:BookmarkStorageType::kLocalOrSyncable];
 }
 
-// Tests adding items to the readinglist from the tab grid edit mode.
-- (void)testTabGridBulkActionAddToReadingList {
-  // TODO(crbug.com/40900596): Test flakes when run on iOS 16.
-  if (@available(iOS 16, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 16.");
-  }
-
+// Tests adding items to the Reading List from the tab grid edit mode.
+// TODO(crbug.com/40900596): Test flakes.
+- (void)FLAKY_testTabGridBulkActionAddToReadingList {
   [ChromeEarlGrey loadURL:_URL1];
   [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
@@ -2585,10 +2573,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests "search recent tabs" and "search open tabs" suggested actions switch
 // the tab grid page correctly while staying in the search mode.
-// TODO(crbug.com/356678903): Test fails on bots that don't use
-// fieldtrial_testing_config.json (and is already skipped below on bots that do
-// use it, since these bots have Tab Group Sync enabled).
-- (void)DISABLED_testSearchSuggestedActionsPageSwitch {
+- (void)testSearchSuggestedActionsPageSwitch {
   // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
   // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
   // supported with Tab Group Sync enabled.

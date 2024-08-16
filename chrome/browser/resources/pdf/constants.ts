@@ -63,6 +63,17 @@ export enum FittingType {
   FIT_TO_BOUNDING_BOX_HEIGHT = 'fit-to-bounding-box-height',
 }
 
+/**
+ * The different types of form fields that can be focused.
+ */
+export enum FormFieldFocusType {
+  // LINT.IfChange(FocusFieldTypes)
+  NONE = 'none',
+  NON_TEXT = 'non-text',
+  TEXT = 'text',
+  // LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:FocusFieldTypes)
+}
+
 export interface NamedDestinationMessageData {
   messageId: string;
   pageNumber: number;

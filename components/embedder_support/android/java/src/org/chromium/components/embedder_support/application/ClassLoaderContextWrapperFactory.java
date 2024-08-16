@@ -4,21 +4,18 @@
 
 package org.chromium.components.embedder_support.application;
 
-import static android.content.res.Configuration.UI_MODE_NIGHT_MASK;
-import static android.content.res.Configuration.UI_MODE_NIGHT_NO;
-import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
-
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.WrappedClassLoader;
 
 import java.lang.ref.WeakReference;
@@ -30,6 +27,8 @@ import java.util.WeakHashMap;
  * necessary to properly inflate UI.
  */
 public class ClassLoaderContextWrapperFactory {
+    private static final String TAG = "ClsLdrContextWrapper";
+
     private ClassLoaderContextWrapperFactory() {}
 
     // Note WeakHashMap only guarantees that keys are weakly held, and ContextWrapper holds a strong
@@ -39,31 +38,31 @@ public class ClassLoaderContextWrapperFactory {
             sCtxToWrapper = new WeakHashMap<>();
     private static final Object sLock = new Object();
 
-    @SuppressWarnings("StaticFieldLeak")
-    private static Context sLightModeResourceOverrideContext;
+    // Data needed to create a new package context as a resource override context for a wrapper.
+    private static final class OverrideInfo {
+        // WebView package name.
+        public final String mPackageName;
+        // Theme to apply to the resource override context.
+        public final int mTheme;
+        // Flags to pass through to createPackageContext.
+        public final int mFlags;
 
-    @SuppressWarnings("StaticFieldLeak")
-    private static Context sDarkModeResourceOverrideContext;
+        public OverrideInfo(String packageName, int theme, int flags) {
+            mPackageName = packageName;
+            mTheme = theme;
+            mFlags = flags;
+        }
+    }
+
+    private static OverrideInfo sOverrideInfo;
 
     /**
-     * Sets light and dark mode contexts that will override the return values from getAssets(),
-     * getResources(), and getSystemService() when asking for layout inflater.
+     * Sets necessary info for calling createPackageContext to create resource override contexts.
      */
-    public static void setWebViewResourceOverrideContext(
-            Context webViewResourceOverrideContext, int theme) {
-        Configuration lightModeConfig =
-                new Configuration(webViewResourceOverrideContext.getResources().getConfiguration());
-        lightModeConfig.uiMode = (lightModeConfig.uiMode & ~UI_MODE_NIGHT_MASK) | UI_MODE_NIGHT_NO;
-        Configuration darkModeConfig = new Configuration(lightModeConfig);
-        darkModeConfig.uiMode = (lightModeConfig.uiMode & ~UI_MODE_NIGHT_MASK) | UI_MODE_NIGHT_YES;
-        sLightModeResourceOverrideContext =
-                new ContextThemeWrapper(
-                        webViewResourceOverrideContext.createConfigurationContext(lightModeConfig),
-                        theme);
-        sDarkModeResourceOverrideContext =
-                new ContextThemeWrapper(
-                        webViewResourceOverrideContext.createConfigurationContext(darkModeConfig),
-                        theme);
+    public static void setOverrideInfo(String packageName, int theme, int flags) {
+        synchronized (sLock) {
+            sOverrideInfo = new OverrideInfo(packageName, theme, flags);
+        }
     }
 
     public static Context get(Context ctx) {
@@ -78,6 +77,17 @@ public class ClassLoaderContextWrapperFactory {
             if (wrapper == null) {
                 wrapper = new ClassLoaderContextWrapper(ctx);
                 sCtxToWrapper.put(ctx, new WeakReference<>(wrapper));
+                try {
+                    if (sOverrideInfo != null) {
+                        Context override =
+                                wrapper.createPackageContext(
+                                        sOverrideInfo.mPackageName, sOverrideInfo.mFlags);
+                        wrapper.setResourceOverrideContext(
+                                new ContextThemeWrapper(override, sOverrideInfo.mTheme));
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.e(TAG, "Could not get resource override context.");
+                }
             }
         }
         return wrapper;
@@ -100,6 +110,8 @@ public class ClassLoaderContextWrapperFactory {
     private static class ClassLoaderContextWrapper extends ContextWrapper {
         private Context mApplicationContext;
 
+        private Context mResourceOverrideContext;
+
         public ClassLoaderContextWrapper(Context base) {
             super(base);
         }
@@ -115,9 +127,8 @@ public class ClassLoaderContextWrapperFactory {
         @Override
         public Object getSystemService(String name) {
             if (Context.LAYOUT_INFLATER_SERVICE.equals(name)) {
-                Context context = getResourceOverrideContext();
-                if (context != null) {
-                    return LayoutInflater.from(context);
+                if (mResourceOverrideContext != null) {
+                    return LayoutInflater.from(mResourceOverrideContext);
                 }
                 LayoutInflater i = (LayoutInflater) getBaseContext().getSystemService(name);
                 return i.cloneInContext(this);
@@ -179,18 +190,12 @@ public class ClassLoaderContextWrapperFactory {
             return getResourceContext().getTheme();
         }
 
-        private Context getResourceOverrideContext() {
-            int uiMode = getBaseContext().getResources().getConfiguration().uiMode;
-            boolean darkModeEnabled =
-                    (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-            return darkModeEnabled
-                    ? sDarkModeResourceOverrideContext
-                    : sLightModeResourceOverrideContext;
+        void setResourceOverrideContext(Context context) {
+            mResourceOverrideContext = context;
         }
 
         private Context getResourceContext() {
-            Context resourceOverrideContext = getResourceOverrideContext();
-            return (resourceOverrideContext != null) ? resourceOverrideContext : getBaseContext();
+            return (mResourceOverrideContext != null) ? mResourceOverrideContext : getBaseContext();
         }
     }
 }

@@ -119,11 +119,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
       }
     }
 
-    if (!ns_image) {
-      LOG(WARNING) << "Unable to load image with id " << resource_id;
-      NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
-      return GetEmptyImage();
-    }
+    CHECK(ns_image) << "Unable to load image with id " << resource_id;
 
     image = gfx::Image(ns_image);
   }

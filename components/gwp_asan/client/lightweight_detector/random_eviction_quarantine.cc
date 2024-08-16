@@ -48,8 +48,8 @@ RandomEvictionQuarantineBase::RandomEvictionQuarantineBase(
 RandomEvictionQuarantineBase::~RandomEvictionQuarantineBase() = default;
 
 bool RandomEvictionQuarantineBase::Add(const AllocationInfo& new_allocation) {
-  if (UNLIKELY(new_allocation.size == 0 ||
-               new_allocation.size > kMaxAllocationSize)) {
+  if (new_allocation.size == 0 || new_allocation.size > kMaxAllocationSize)
+      [[unlikely]] {
     return false;
   }
 

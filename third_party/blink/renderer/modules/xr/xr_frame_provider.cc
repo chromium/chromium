@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
@@ -74,7 +75,6 @@ void XRFrameProvider::OnSessionStarted(
     DCHECK(!immersive_session_);
     DCHECK(session_ptr->data_provider);
     DCHECK(session_ptr->submit_frame_sink);
-
     immersive_session_ = session;
 
     for (auto& observer : immersive_observers_) {
@@ -100,6 +100,13 @@ void XRFrameProvider::OnSessionStarted(
     frame_transport_->SetTransportOptions(
         std::move(session_ptr->submit_frame_sink->transport_options));
     frame_transport_->PresentChange();
+
+    last_frame_statistics_sent_time_ = base::TimeTicks::Now();
+
+
+    repeating_timer_.Start(FROM_HERE, base::Seconds(1),
+                           WTF::BindRepeating(&XRFrameProvider::SendFrameData,
+                                              WrapWeakPersistent(this)));
   } else {
     // If a non-immersive session doesn't have a data provider, we don't
     // need to store a reference to it.
@@ -154,6 +161,7 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     frame_id_ = -1;
     immersive_presentation_provider_.reset();
     immersive_data_provider_.reset();
+
     first_immersive_frame_time_ = std::nullopt;
     first_immersive_frame_time_delta_ = std::nullopt;
 
@@ -162,6 +170,7 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
         session->GetExecutionContext()->GetTaskRunner(
             TaskType::kMiscPlatformAPI));
 
+    repeating_timer_.Stop();
     for (auto& observer : immersive_observers_) {
       observer->OnImmersiveSessionEnd();
     }
@@ -642,6 +651,8 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     // executing the implicit end-of-frame submit.
     frame_transport_->FrameSubmitMissing(immersive_presentation_provider_.get(),
                                          webgl_context->ContextGL(), frame_id_);
+    dropped_frames_++;
+
     return;
   }
 
@@ -652,10 +663,12 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     // placeholder.
     scoped_refptr<Image> image_ref;
     DVLOG(3) << __FUNCTION__ << ": FrameSubmit for SharedBuffer mode";
-    frame_transport_->FrameSubmit(
+    bool succeeded = frame_transport_->FrameSubmit(
         immersive_presentation_provider_.get(), webgl_context->ContextGL(),
         webgl_context->SharedImageInterface(), webgl_context,
         std::move(image_ref), frame_id_);
+    succeeded ? num_frames_++ : dropped_frames_++;
+
     return;
   }
 
@@ -673,10 +686,12 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayer* layer, bool was_changed) {
     return;
   }
 
-  frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
-                                webgl_context->ContextGL(),
-                                webgl_context->SharedImageInterface(),
-                                webgl_context, std::move(image_ref), frame_id_);
+  bool succeeded = frame_transport_->FrameSubmit(
+      immersive_presentation_provider_.get(), webgl_context->ContextGL(),
+      webgl_context->SharedImageInterface(), webgl_context,
+      std::move(image_ref), frame_id_);
+
+  succeeded ? num_frames_++ : dropped_frames_++;
 
   // Reset our frame id, since anything we'd want to do (resizing/etc) can
   // no-longer happen to this frame.
@@ -726,6 +741,32 @@ void XRFrameProvider::Dispose() {
   if (immersive_session_)
     immersive_session_->ForceEnd(XRSession::ShutdownPolicy::kImmediate);
   // TODO(bajones): Do something for outstanding frame requests?
+}
+
+void XRFrameProvider::SendFrameData() {
+  if (!immersive_session_) {
+    return;
+  }
+
+  device::mojom::blink::XrFrameStatisticsPtr xr_frame_stat =
+      device::mojom::blink::XrFrameStatistics::New();
+
+  xr_frame_stat->trace_id = immersive_session_->GetTraceId();
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  xr_frame_stat->duration = now - last_frame_statistics_sent_time_;
+  last_frame_statistics_sent_time_ = now;
+
+  xr_frame_stat->num_frames = num_frames_;
+  xr_frame_stat->dropped_frames = dropped_frames_;
+
+  num_frames_ = 0;
+  dropped_frames_ = 0;
+
+  if (xr_->GetWebXrInternalsRendererListener()) {
+    xr_->GetWebXrInternalsRendererListener()->OnFrameData(
+        std::move(xr_frame_stat));
+  }
 }
 
 void XRFrameProvider::Trace(Visitor* visitor) const {

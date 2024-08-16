@@ -728,6 +728,20 @@ const char kGrowthCampaigns[] = "growth-campaigns";
 // downloading from Omaha).
 const char kGrowthCampaignsPath[] = "growth-campaigns-path";
 
+// Specifies the device current time in `SecondsSinceUnixEpoch` format for
+// testing.
+const char kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch[] =
+    "growth-campaigns-current-time";
+
+// Specifies the device registered time in `SecondsSinceUnixEpoch` format for
+// testing.
+const char kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch[] =
+    "growth-campaigns-registered-time";
+
+// Specifies the delay time to trigger campaigns for testing.
+const char kGrowthCampaignsDelayedTriggerTimeInSecs[] =
+    "growth-campaigns-delayed-trigger-time-in-secs";
+
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
 const char kGuestSession[] = "bwsi";
@@ -914,6 +928,8 @@ const char kEnableLacrosForTesting[] = "enable-lacros-for-testing";
 
 // Supply secret key for the mahi feature.
 const char kMahiFeatureKey[] = "mahi-feature-key";
+
+const char kMahiRestrictionsOverride[] = "mahi-restrictions-override";
 
 // Supply secret key for the sparky feature.
 const char kSparkyFeatureKey[] = "sparky-feature-key";
@@ -1467,19 +1483,23 @@ bool IsModifierSplitSecretKeyMatched() {
     return true;
   }
 
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --modifier-split-feature-key="INSERT KEY HERE"
-  //  --enable-features=ModifierSplit
-  const std::string provided_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          kModifierSplitFeatureKey));
+  static const bool modifier_split_key_matched = []() {
+    // Commandline looks like:
+    //  out/Default/chrome --user-data-dir=/tmp/tmp123
+    //  --modifier-split-feature-key="INSERT KEY HERE"
+    //  --enable-features=ModifierSplit
+    const std::string provided_key_hash = base::SHA1HashString(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kModifierSplitFeatureKey));
 
-  bool modifier_split_key_matched =
-      (provided_key_hash == kModifierSplitHashKey);
-  if (!modifier_split_key_matched) {
-    LOG(ERROR) << "Provided secret key does not match with the expected one.";
-  }
+    const bool modifier_split_key_matched =
+        (provided_key_hash == kModifierSplitHashKey);
+    if (!modifier_split_key_matched) {
+      LOG(ERROR) << "Provided secret key does not match with the expected one.";
+    }
+
+    return modifier_split_key_matched;
+  }();
 
   return modifier_split_key_matched;
 }

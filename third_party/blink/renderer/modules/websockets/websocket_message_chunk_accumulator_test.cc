@@ -20,7 +20,7 @@ class WebSocketMessageChunkAccumulatorTest : public testing::Test {
   static Vector<char> Flatten(const Vector<base::span<const char>>& chunks) {
     Vector<char> v;
     for (const auto& chunk : chunks) {
-      v.Append(chunk.data(), base::checked_cast<wtf_size_t>(chunk.size()));
+      v.AppendSpan(chunk);
     }
     return v;
   }

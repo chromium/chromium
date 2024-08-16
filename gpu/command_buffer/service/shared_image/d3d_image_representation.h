@@ -89,20 +89,21 @@ class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 };
 
-class D3D11VideoDecodeImageRepresentation
-    : public VideoDecodeImageRepresentation {
+class D3D11VideoImageRepresentation : public VideoImageRepresentation {
  public:
-  D3D11VideoDecodeImageRepresentation(
+  D3D11VideoImageRepresentation(
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
-  ~D3D11VideoDecodeImageRepresentation() override;
+  ~D3D11VideoImageRepresentation() override;
 
  private:
   bool BeginWriteAccess() override;
   void EndWriteAccess() override;
+  bool BeginReadAccess() override;
+  void EndReadAccess() override;
   Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;

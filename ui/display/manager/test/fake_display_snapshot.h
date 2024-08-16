@@ -116,7 +116,8 @@ class FakeDisplaySnapshot : public DisplaySnapshot {
     raw_ptr<const DisplayMode> current_mode_ = nullptr;
     raw_ptr<const DisplayMode> native_mode_ = nullptr;
     DisplaySnapshot::ColorInfo color_info_;
-    VariableRefreshRateState variable_refresh_rate_state_ = kVrrNotCapable;
+    VariableRefreshRateState variable_refresh_rate_state_ =
+        VariableRefreshRateState::kVrrNotCapable;
   };
 
   FakeDisplaySnapshot(int64_t display_id,

@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
@@ -327,6 +328,35 @@ void RecordAppLaunchMetrics(Profile* profile,
       GetAppTypeName(profile, app_type, app_id, container));
   RecordAppLaunchPerAppTypeV2(
       GetAppTypeNameV2(profile, app_type, app_id, container));
+
+  // TODO(b/356937112): Refactor the metrics DemoMode.AppLaunchSource
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
+    ash::DemoSession::AppLaunchSource source;
+    bool will_report = true;
+    // Apps launched from the demo mode app has the launch source of
+    // kFromOtherApp, but we do not report it here since there could be other
+    // places that launch apps with the same launch source of kFromOtherApp. So,
+    // to be more accurate, we report it in
+    // [chrome_demo_mode_app_delegate.cc]ChromeDemoModeAppDelegate::LaunchApp.
+    // Additionally, we report only the following types of launch source based
+    // on the need of demo mode.
+    switch (launch_source) {
+      case apps::LaunchSource::kFromAppListGrid:
+        source = ash::DemoSession::AppLaunchSource::kAppList;
+        break;
+      case apps::LaunchSource::kFromAppListQuery:
+        source = ash::DemoSession::AppLaunchSource::kAppListQuery;
+        break;
+      case apps::LaunchSource::kFromShelf:
+        source = ash::DemoSession::AppLaunchSource::kShelf;
+        break;
+      default:
+        will_report = false;
+    }
+    if (will_report) {
+      ash::DemoSession::RecordAppLaunchSource(source);
+    }
+  }
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy && proxy->AppPlatformMetrics()) {

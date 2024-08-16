@@ -179,8 +179,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   void SendPendingSignalsRequests() override;
   void ReportWin(
       bool is_for_additional_bid,
-      mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -315,8 +317,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     ~ReportWinTask();
 
     bool is_for_additional_bid;
-    mojom::ReportingIdField reporting_id_field;
-    std::string reporting_id;
+    std::optional<std::string> interest_group_name_reporting_id;
+    std::optional<std::string> buyer_reporting_id;
+    std::optional<std::string> buyer_and_seller_reporting_id;
+    std::optional<std::string> selected_buyer_and_seller_reporting_id;
     std::optional<std::string> auction_signals_json;
     std::optional<std::string> per_buyer_signals_json;
     std::string seller_signals_json;
@@ -459,8 +463,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     void ReportWin(
         bool is_for_additional_bid,
-        mojom::ReportingIdField reporting_id_field,
-        const std::string& reporting_id,
+        const std::optional<std::string>& interest_group_name_reporting_id,
+        const std::optional<std::string>& buyer_reporting_id,
+        const std::optional<std::string>& buyer_and_seller_reporting_id,
+        const std::optional<std::string>&
+            selected_buyer_and_seller_reporting_id,
         const std::optional<std::string>& auction_signals_json,
         const std::optional<std::string>& per_buyer_signals_json,
         DirectFromSellerSignalsRequester::Result
@@ -748,7 +755,6 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // for.
   const GURL script_source_url_;
   std::optional<GURL> wasm_helper_url_;
-  mojom::TrustedSignalsPublicKeyPtr public_key_;
 
   // Populated only if `this` was created with a non-null
   // `trusted_scoring_signals_url`.

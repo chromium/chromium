@@ -254,10 +254,10 @@ cc::PaintOpBuffer::OffsetIterator::buffer_
 cc::PaintOpBuffer::OffsetIterator::offsets_
 cc::PaintOpBuffer::OffsetIterator::ptr_
 cc::PaintOpBuffer::PlaybackFoldingIterator::current_op_
-cc::PictureLayerTiling::CoverageIterator::current_tile_
-cc::PictureLayerTiling::CoverageIterator::tiling_
 cc::PlaybackParams::image_provider
 cc::ResourcePool::InUsePoolResource::resource_
+cc::TilingCoverageIterator::current_tile_;
+cc::TilingCoverageIterator::tiling_;
 cc::TilingSetEvictionQueue::EvictionRectIterator::tilings_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_
 cc::TilingSetRasterQueueAll::OnePriorityRectIterator::tiling_data_
@@ -332,7 +332,7 @@ cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
 cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
 cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
 cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_
-cc::PictureLayerTilingSet::CoverageIterator::set_
+cc::TilingSetCoverageIterator::tilings_
 cc::PrioritizedTile::tile_
 cc::PrioritizedTile::source_tiling_
 cc::LayerTreeHostImpl::FrameData::render_surface_list

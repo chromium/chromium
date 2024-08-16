@@ -114,18 +114,16 @@ void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
 
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
   v8::Local<v8::Object> v8_desc = descriptor_object.As<v8::Object>();
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   auto get_value = [&](const char* property, bool& has,
                        v8::Local<v8::Value>& value) -> bool {
     const auto& v8_property = V8AtomicString(isolate, property);
     if (!v8_desc->Has(current_context, v8_property).To(&has)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return false;
     }
     if (has) {
       if (!v8_desc->Get(current_context, v8_property).ToLocal(&value)) {
-        exception_state.RethrowV8Exception(try_catch.Exception());
         return false;
       }
     } else {

@@ -79,6 +79,11 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
   return self;
 }
 
+- (NSArray<GroupTabView*>*)allGroupTabViews {
+  return [_firstLine.arrangedSubviews
+      arrayByAddingObjectsFromArray:_secondLine.arrangedSubviews];
+}
+
 #pragma mark - Private Helpers
 
 // Returns a range computed with `start` index, `length` and the tab group's
@@ -191,8 +196,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
   _secondLine.hidden = [self compactHeight];
 
   NSUInteger index = snapshotsViewRange.location;
-  for (GroupTabView* view in [_firstLine.arrangedSubviews
-           arrayByAddingObjectsFromArray:_secondLine.arrangedSubviews]) {
+  for (GroupTabView* view in [self allGroupTabViews]) {
     if (index >= [_tabGroupInfos count]) {
       [view hideAllAttributes];
       continue;

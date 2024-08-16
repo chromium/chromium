@@ -20,9 +20,13 @@ class ASH_PUBLIC_EXPORT ActiveSessionAuthController {
       base::OnceCallback<void(bool success,
                               const ash::AuthProofToken& token,
                               base::TimeDelta timeout)>;
-  enum Reason {
-    kPasswordManager,
-    kSettings,
+  // The enums below are used in histograms, do not remove/renumber entries. If
+  // you're adding to any of these enums, update the corresponding enum listing
+  // in tools/metrics/histograms/metadata/ash/enums.xml:
+  enum class Reason {
+    kPasswordManager = 0,
+    kSettings = 1,
+    kMaxValue = kSettings
   };
 
   static ActiveSessionAuthController* Get();

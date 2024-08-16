@@ -25,7 +25,6 @@
 #  1  Unknown failure
 #  2  Basic sanity check source failure (e.g. no app on disk image)
 #  3  Basic sanity check destination failure (e.g. ticket points to nothing)
-#  4  Update driven by user ticket when a system ticket is also present
 #  5  Could not prepare existing installed version to receive update
 #  6  Patch sanity check failure
 #  7  rsync failed (could not copy new versioned directory to Versions)
@@ -36,6 +35,9 @@
 # 12  dirpatcher failed for versioned directory
 # 13  dirpatcher failed for outer .app bundle
 # 14  The update is incompatible with the system (presently unused)
+#
+# The following exit codes were formerly used and shouldn't be reassigned:
+#  4  Update driven by user ticket when a system ticket is also present
 #
 # The following exit codes can be used to convey special meaning to Keystone.
 # KeystoneRegistration will present these codes to Chrome as "success."
@@ -853,31 +855,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     system_ticket="y"
   fi
   note "system_ticket = ${system_ticket}"
-
-  # If this script is being driven by a user ticket, but a system ticket is also
-  # present and system Keystone is installed, there's a potential for the two
-  # tickets to collide.  Both ticket types might be present if another user on
-  # the system promoted the ticket to system: the other user could not have
-  # removed this user's user ticket.  Handle that case here by deleting the user
-  # ticket and exiting early with a discrete exit code.
-  #
-  # Current versions of ksadmin will exit 1 (false) when asked to print tickets
-  # and given a specific product ID to print.  Older versions of ksadmin would
-  # exit 0 (true), but those same versions did not support -S (meaning to check
-  # the system ticket store) and would exit 1 (false) with this invocation due
-  # to not understanding the question.  Therefore, the usage here will only
-  # delete the existing user ticket when running as non-root with access to a
-  # sufficiently recent ksadmin.  Older ksadmins are tolerated: the update will
-  # likely fail for another reason and the user ticket will hang around until
-  # something is eventually able to remove it.
-  if [[ -z "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]] &&
-     [[ -z "${system_ticket}" ]] &&
-     [[ -d "/${UNROOTED_KS_BUNDLE_DIR}" ]] &&
-     ksadmin -S --print-tickets --productid "${product_id}" >& /dev/null; then
-    ksadmin --delete --productid "${product_id}" || true
-    err "can't update on a user ticket when a system ticket is also present"
-    exit 4
-  fi
 
   # Figure out what the existing installed application is using for its
   # versioned directory.  This will be used later, to avoid removing the

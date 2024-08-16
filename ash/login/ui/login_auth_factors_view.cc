@@ -264,9 +264,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   label_wrapper_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
-  if (chromeos::features::IsJellyEnabled()) {
-    label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
@@ -413,8 +411,7 @@ void LoginAuthFactorsView::UpdateState() {
       }
       return;
     case PrioritizedAuthFactorViewState::kUnavailable:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -475,8 +472,7 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
 
   if (ready_factor_count == 0u) {
     LOG(ERROR) << "GetReadyLabelId() called without any ready auth factors.";
-    NOTREACHED_IN_MIGRATION();
-    return GetDefaultLabelId();
+    NOTREACHED();
   }
 
   if (ready_factor_count == 1u) {
@@ -489,8 +485,7 @@ int LoginAuthFactorsView::GetReadyLabelId() const {
       return IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return GetDefaultLabelId();
+  NOTREACHED();
 }
 
 int LoginAuthFactorsView::GetDefaultLabelId() const {

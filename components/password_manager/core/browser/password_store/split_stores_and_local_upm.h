@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SPLIT_STORES_AND_LOCAL_UPM_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_SPLIT_STORES_AND_LOCAL_UPM_H_
 
-#include <memory>
-
 class PrefService;
 
 namespace syncer {
@@ -30,8 +28,7 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service);
 // - If the GMSCore version supports both the account and local stores, the
 // update is never required.
 bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
-                             const syncer::SyncService* sync_service,
-                             const std::string& gms_version_str);
+                             const syncer::SyncService* sync_service);
 
 // The min GMS version which supports the account UPM backend.
 inline constexpr int kAccountUpmMinGmsVersion = 223012000;

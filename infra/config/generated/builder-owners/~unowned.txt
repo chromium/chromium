@@ -64,7 +64,6 @@ ci/ios-fieldtrial-rel
 ci/ios-simulator
 ci/ios-simulator-code-coverage
 ci/ios-simulator-full-configs
-ci/ios-simulator-multi-window
 ci/ios-simulator-noncq
 ci/ios-webkit-tot
 ci/ios-wpt-fyi-rel
@@ -76,7 +75,6 @@ ci/ios18-sdk-simulator
 ci/lacros-arm64-archive-rel
 ci/lacros-arm64-generic-rel
 ci/linux-annotator-rel
-ci/linux-ash-chromium-generator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
 ci/linux-blink-wpt-reset-rel
@@ -95,7 +93,6 @@ ci/linux-lacros-code-coverage
 ci/linux-lacros-dbg-fyi
 ci/linux-lacros-dbg-tests-fyi
 ci/linux-lacros-tester-fyi-rel
-ci/linux-network-sandbox-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
@@ -135,7 +132,6 @@ ci/rts-model-packager
 ci/rts-suite-analysis
 ci/win-annotator-rel
 ci/win-fieldtrial-rel
-ci/win-network-sandbox-tester
 ci/win-perfetto-rel
 ci/win-rust-x64-dbg
 ci/win-rust-x64-rel
@@ -182,8 +178,6 @@ reclient/Linux Builder reclient test (unified uploads) untrusted
 reclient/Linux Builder reclient test untrusted
 reclient/Mac Builder reclient staging
 reclient/Mac Builder reclient staging untrusted
-reclient/Mac Builder reclient test
-reclient/Mac Builder reclient test untrusted
 reclient/Simple Chrome Builder reclient staging
 reclient/Simple Chrome Builder reclient staging untrusted
 reclient/Simple Chrome Builder reclient test
@@ -196,12 +190,8 @@ reclient/Win x64 Cross Builder (reclient compare)
 reclient/Windows Cross deterministic
 reclient/ios-simulator reclient staging
 reclient/ios-simulator reclient staging untrusted
-reclient/ios-simulator reclient test
-reclient/ios-simulator reclient test untrusted
 reclient/mac-arm64-rel reclient staging
 reclient/mac-arm64-rel reclient staging untrusted
-reclient/mac-arm64-rel reclient test
-reclient/mac-arm64-rel reclient test untrusted
 reviver/android-coverage-launcher
 reviver/android-device-launcher
 reviver/android-launcher
@@ -289,7 +279,6 @@ try/ios-simulator
 try/ios-simulator-code-coverage
 try/ios-simulator-compilator
 try/ios-simulator-full-configs
-try/ios-simulator-multi-window
 try/ios-simulator-noncq
 try/ios-wpt-fyi-rel
 try/ios17-beta-simulator

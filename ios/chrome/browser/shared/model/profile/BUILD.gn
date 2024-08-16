@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("profile") {
+  sources = [
+    "profile_attributes_storage_ios.cc",
+    "profile_attributes_storage_ios.h",
+    "profile_ios.h",
+    "profile_ios_forward.h",
+    "profile_manager_ios.h",
+    "profile_manager_observer_ios.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_attributes_storage_ios_unittest.cc" ]
+  deps = [
+    ":profile",
+    "//base",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//testing/gtest",
+  ]
+}

@@ -10,11 +10,8 @@ import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
+import './pages/generic_chart.js';
 import './pages/telemetry.js';
-import './pages/battery_chart.js';
-import './pages/cpu_frequency_chart.js';
-import './pages/cpu_usage_chart.js';
-import './pages/thermal_chart.js';
 import './settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
@@ -24,27 +21,29 @@ import {getTemplate} from './app.html.js';
 import {PagePath} from './constants.js';
 import {DataManager} from './data_manager.js';
 import type {HealthdInternalsFeatureFlagResult} from './externs.js';
-import type {HealthdInternalsBatteryChartElement} from './pages/battery_chart.js';
-import type {HealthdInternalsCpuFrequencyChartElement} from './pages/cpu_frequency_chart.js';
-import type {HealthdInternalsCpuUsageChartElement} from './pages/cpu_usage_chart.js';
+import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
 import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
-import type {HealthdInternalsThermalChartElement} from './pages/thermal_chart.js';
+import {HealthdInternalsPage} from './pages/utils/page_interface.js';
 import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {
   name: string;
   path: PagePath;
+  obj: HealthdInternalsPage;
 }
 
 export interface HealthdInternalsAppElement {
   $: {
     telemetryPage: HealthdInternalsTelemetryElement,
-    batteryChart: HealthdInternalsBatteryChartElement,
-    cpuFrequencyChart: HealthdInternalsCpuFrequencyChartElement,
-    cpuUsageChart: HealthdInternalsCpuUsageChartElement,
-    thermalChart: HealthdInternalsThermalChartElement,
+    batteryChart: HealthdInternalsGenericChartElement,
+    cpuFrequencyChart: HealthdInternalsGenericChartElement,
+    cpuUsageChart: HealthdInternalsGenericChartElement,
+    memoryChart: HealthdInternalsGenericChartElement,
+    thermalChart: HealthdInternalsGenericChartElement,
     settingsDialog: HealthdInternalsSettingsDialogElement,
+    sidebar: HTMLElement,
+    sidebarToggleButton: HTMLElement,
   };
 }
 
@@ -74,14 +73,16 @@ export class HealthdInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.initLineChartPages();
     this.dataManager = new DataManager(
-        this.$.settingsDialog.getDataRetentionDuration(),
-        this.$.telemetryPage,
-        this.$.batteryChart,
-        this.$.cpuFrequencyChart,
-        this.$.cpuUsageChart,
-        this.$.thermalChart,
-    );
+        this.$.settingsDialog.getDataRetentionDuration(), this.$.telemetryPage,
+        {
+          battery: this.$.batteryChart,
+          cpuFrequency: this.$.cpuFrequencyChart,
+          cpuUsage: this.$.cpuUsageChart,
+          memory: this.$.memoryChart,
+          thermal: this.$.thermalChart,
+        });
 
     this.$.settingsDialog.addEventListener('ui-update-interval-updated', () => {
       this.updateUiUpdateInterval();
@@ -103,18 +104,42 @@ export class HealthdInternalsAppElement extends PolymerElement {
           }
 
           this.pageList = [
-            {name: 'Telemetry', path: PagePath.TELEMETRY},
-            {name: 'Battery Chart', path: PagePath.BATTERY},
-            {name: 'CPU Frequency Chart', path: PagePath.CPU_FREQUENCY},
-            {name: 'CPU Usage Chart', path: PagePath.CPU_USAGE},
-            {name: 'Thermal Chart', path: PagePath.THERMAL},
+            {
+              name: 'Telemetry',
+              path: PagePath.TELEMETRY,
+              obj: this.$.telemetryPage,
+            },
+            {
+              name: 'Battery Chart',
+              path: PagePath.BATTERY,
+              obj: this.$.batteryChart,
+            },
+            {
+              name: 'CPU Frequency Chart',
+              path: PagePath.CPU_FREQUENCY,
+              obj: this.$.cpuFrequencyChart,
+            },
+            {
+              name: 'CPU Usage Chart',
+              path: PagePath.CPU_USAGE,
+              obj: this.$.cpuUsageChart,
+            },
+            {
+              name: 'Memory Chart',
+              path: PagePath.MEMORY,
+              obj: this.$.memoryChart,
+            },
+            {
+              name: 'Thermal Chart',
+              path: PagePath.THERMAL,
+              obj: this.$.thermalChart,
+            },
           ];
 
           // `currentPath` will be set when chrome://healthd-internals is open.
           // Update the selected index to render the page after `pageList` is
           // set.
           this.updateSelectedIndex(this.currentPath);
-          this.handleVisibilityChanged(this.currentPath, true);
           this.updateUiUpdateInterval();
           this.setupFetchDataRequests();
           this.updateDataRetentionDuration();
@@ -139,24 +164,44 @@ export class HealthdInternalsAppElement extends PolymerElement {
     return !this.pageList.length;
   }
 
+  // Init all line chart pages.
+  private initLineChartPages() {
+    this.$.batteryChart.setupChartHeader('Battery');
+    this.$.batteryChart.initCanvasDrawer([''], 1);
+
+    this.$.cpuFrequencyChart.setupChartHeader('CPU Frequency');
+    this.$.cpuFrequencyChart.initCanvasDrawer(['kHz', 'mHz', 'GHz'], 1000);
+
+    this.$.cpuUsageChart.setupChartHeader('CPU Usage');
+    this.$.cpuUsageChart.initCanvasDrawer(['%'], 1);
+    this.$.cpuUsageChart.setChartMaxValue(100);
+
+    this.$.memoryChart.setupChartHeader('Memory');
+    this.$.memoryChart.initCanvasDrawer(['KiB', 'MiB', 'GiB'], 1024);
+
+    this.$.thermalChart.setupChartHeader('Thermal');
+    this.$.thermalChart.initCanvasDrawer(['C'], 1);
+  }
+
   // Handle path changes caused by popstate events (back/forward navigation).
-  private currentPathChanged(newPath: string, oldPath: string) {
+  private currentPathChanged(newValue: string) {
     if (this.areTabsHidden()) {
       return;
     }
-    this.updateSelectedIndex(newPath);
-    this.handleVisibilityChanged(newPath, true);
-    this.handleVisibilityChanged(oldPath, false);
+    this.updateSelectedIndex(newValue);
   }
 
   // Handle selected index changes caused by clicking on navigation items.
-  private selectedIndexChanged() {
+  private selectedIndexChanged(newIndex: number, oldIndex: number) {
     if (this.areTabsHidden()) {
       return;
     }
-    if (this.selectedIndex >= 0 && this.selectedIndex < this.pageList.length) {
-      this.currentPath = this.pageList[this.selectedIndex].path;
+    if (newIndex >= 0 && newIndex < this.pageList.length) {
+      this.currentPath = this.pageList[newIndex].path;
     }
+
+    this.handleVisibilityChanged(newIndex, true);
+    this.handleVisibilityChanged(oldIndex, false);
   }
 
   // Update the selected index when `pageList` is not empty. Redirect to
@@ -168,27 +213,17 @@ export class HealthdInternalsAppElement extends PolymerElement {
   }
 
   // Update the visibility of line chart pages to render the visible page only.
-  private handleVisibilityChanged(pagePath: string, isVisible: boolean) {
-    if (pagePath === PagePath.BATTERY) {
-      this.$.batteryChart.updateVisibility(isVisible);
-    } else if (pagePath === PagePath.CPU_FREQUENCY) {
-      this.$.cpuFrequencyChart.updateVisibility(isVisible);
-    } else if (pagePath === PagePath.CPU_USAGE) {
-      this.$.cpuUsageChart.updateVisibility(isVisible);
-    } else if (pagePath === PagePath.TELEMETRY) {
-      this.$.telemetryPage.updateVisibility(isVisible);
-    } else if (pagePath === PagePath.THERMAL) {
-      this.$.thermalChart.updateVisibility(isVisible);
+  private handleVisibilityChanged(pageIndex: number, isVisible: boolean) {
+    if (pageIndex >= 0 && pageIndex < this.pageList.length) {
+      this.pageList[pageIndex].obj.updateVisibility(isVisible);
     }
   }
 
   private updateUiUpdateInterval() {
     const interval: number = this.$.settingsDialog.getUiUpdateInterval();
-    this.$.batteryChart.updateUiUpdateInterval(interval);
-    this.$.cpuFrequencyChart.updateUiUpdateInterval(interval);
-    this.$.cpuUsageChart.updateUiUpdateInterval(interval);
-    this.$.telemetryPage.updateUiUpdateInterval(interval);
-    this.$.thermalChart.updateUiUpdateInterval(interval);
+    for (const page of this.pageList) {
+      page.obj.updateUiUpdateInterval(interval);
+    }
   }
 
 
@@ -217,6 +252,11 @@ export class HealthdInternalsAppElement extends PolymerElement {
 
     const duration: number = this.$.settingsDialog.getDataRetentionDuration();
     this.dataManager.updateDataRetentionDuration(duration);
+  }
+
+  private toggleSidebar() {
+    this.$.sidebar.hidden = !this.$.sidebar.hidden;
+    this.$.sidebarToggleButton.innerText = this.$.sidebar.hidden ? '>' : '<';
   }
 }
 

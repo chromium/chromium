@@ -62,15 +62,15 @@ TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
 // clean-ups, since it's expecting another call once sync is ready.
 TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_SyncingAddresses) {
   sync_service_.SetDownloadStatusFor(
-      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
-      syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates);
+      {syncer::DataType::AUTOFILL_PROFILE, syncer::DataType::CONTACT_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
   ASSERT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
   data_cleaner_.MaybeCleanupAddressData();
   EXPECT_TRUE(test_api(data_cleaner_).AreCleanupsPending());
 
   sync_service_.SetDownloadStatusFor(
-      {syncer::ModelType::AUTOFILL_PROFILE, syncer::ModelType::CONTACT_INFO},
-      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+      {syncer::DataType::AUTOFILL_PROFILE, syncer::DataType::CONTACT_INFO},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
   data_cleaner_.MaybeCleanupAddressData();
   EXPECT_FALSE(test_api(data_cleaner_).AreCleanupsPending());
 }

@@ -42,14 +42,13 @@
 }
 
 @media (forced-colors: active) {
-  :host {
-    /* TODO(crbug.com/40168415): cr-toggle heavily relies on
-       background-color to convey various states (on/off,
-       enabled/disabled). Until proper specs for HCM exist, turn off
-       forced-colors automatic adjustments so that the cr-toggle is at
-       least visible. Replace with a HCM compliant implementation once
-       specs exist.*/
-    forced-color-adjust: none;
+  /* TODO(crbug.com/40168415): cr-toggle heavily relies on
+     background-color to convey various states (on/off,
+     enabled/disabled). Until proper specs for HCM exist, this styling
+     at least makes the toggle visible. Replace with a HCM compliant
+     implementation once specs exist. */
+  :host #knob {
+    background-color: CanvasText !important;
   }
 }
 

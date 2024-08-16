@@ -18,7 +18,11 @@ BASE_FEATURE(kEnableProfileTokenManagement,
 
 BASE_FEATURE(kOidcAuthProfileManagement,
              "OidcAuthProfileManagement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOidcEnrollmentTimeout,
+             "kOidcEnrollmentTimeout",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableGenericOidcAuthProfileManagement,
              "EnableGenericOidcAuthProfileManagement",
@@ -64,5 +68,10 @@ constexpr base::FeatureParam<bool> kOidcAuthForceErrorUi{
 // Timeout dialog.
 constexpr base::FeatureParam<bool> kOidcAuthForceTimeoutUi{
     &kOidcAuthProfileManagement, "force_timeout_ui", false};
+
+// Controls the timeout duration of client registration during OIDC enrollment
+// flow, in seconds.
+constexpr base::FeatureParam<base::TimeDelta> kOidcEnrollRegistrationTimeout{
+    &kOidcEnrollmentTimeout, "registration_timeout", base::Seconds(30)};
 
 }  // namespace profile_management::features

@@ -7,8 +7,12 @@
 #include <optional>
 #include <string_view>
 
+#include "base/base64.h"
+#include "base/check_deref.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -20,6 +24,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
+#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -31,7 +36,9 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -103,6 +110,14 @@ constexpr std::string_view kServiceWorkerScript = R"(
   });
 )";
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void CheckBundleExists(Profile* profile, const base::FilePath& directory) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::DirectoryExists(
+      CHECK_DEREF(profile).GetPath().Append(kIwaDirName).Append(directory)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 class ServiceWorkerVersionStartedRunningWaiter
     : public content::ServiceWorkerContextObserver {
  public:
@@ -164,9 +179,6 @@ class IsolatedWebAppUpdateManagerBrowserTest
   web_package::SignedWebBundleId GetWebBundleId() const {
     return test::GetDefaultEd25519WebBundleId();
   }
-  GURL GetUpdateManifestUrl() const {
-    return update_server_mixin_.GetUpdateManifestUrl(GetWebBundleId());
-  }
 
   const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
     return provider().registrar_unsafe().GetAppById(app_id);
@@ -198,10 +210,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
-          base::Value::Dict()
-              .Set(kPolicyWebBundleIdKey, GetWebBundleId().id())
-              .Set(kPolicyUpdateManifestUrlKey,
-                   GetUpdateManifestUrl().spec())));
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
 
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
@@ -238,10 +248,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
-          base::Value::Dict()
-              .Set(kPolicyWebBundleIdKey, GetWebBundleId().id())
-              .Set(kPolicyUpdateManifestUrlKey,
-                   GetUpdateManifestUrl().spec())));
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
 
   web_app::WebAppTestInstallObserver(browser()->profile())
       .BeginListeningAndWait({GetAppId()});
@@ -297,10 +305,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(
-          base::Value::Dict()
-              .Set(kPolicyWebBundleIdKey, GetWebBundleId().id())
-              .Set(kPolicyUpdateManifestUrlKey,
-                   GetUpdateManifestUrl().spec())));
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
 
   SessionStartupPref pref(SessionStartupPref::LAST);
   SessionStartupPref::SetStartupPref(profile(), pref);
@@ -356,7 +362,155 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   title_watcher.AlsoWaitForTitle(u"3.0.4");
   EXPECT_THAT(title_watcher.WaitAndGetTitle(), Eq(u"7.0.6"));
 }
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
+                       PendingUpdateDoesNotGetCleanedUp) {
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile(), pref);
+
+  profile()->GetPrefs()->CommitPendingWrite();
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({GetAppId()});
+
+  // Open the app to prevent the update from being applied.
+  OpenApp(GetAppId());
+  EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
+
+  AddUpdate();
+  EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(1ul));
+
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    const WebApp* app = GetIsolatedWebApp(GetAppId());
+    return app->isolation_data()->pending_update_info().has_value();
+  }));
+
+  const auto& isolation_data = GetIsolatedWebApp(GetAppId())->isolation_data();
+  const auto& app_location =
+      base::FilePath(absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+                         &isolation_data->location.variant())
+                         ->dir_name_ascii());
+  const auto& app_update_location = base::FilePath(
+      absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
+          &isolation_data->pending_update_info()->location.variant())
+          ->dir_name_ascii());
+
+  // Check that both IWA directories (currently running instance and the update)
+  // are there.
+  CheckBundleExists(profile(), app_location);
+  CheckBundleExists(profile(), app_update_location);
+
+  // Run the cleanup while both bundles are there.
+  base::test::TestFuture<
+      base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
+                     CleanupOrphanedIsolatedWebAppsCommandError>>
+      future;
+  provider().scheduler().CleanupOrphanedIsolatedApps(future.GetCallback());
+  const bool command_successful =
+      future
+          .Get<base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
+                              CleanupOrphanedIsolatedWebAppsCommandError>>()
+          .has_value();
+  ASSERT_TRUE(command_successful);
+
+  // Neither of the bundles should be deleted.
+  CheckBundleExists(profile(), app_location);
+  CheckBundleExists(profile(), app_update_location);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ public:
+  IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebAppAutomaticUpdates,
+         component_updater::kIwaKeyDistributionComponent},
+        {});
+  }
+
+  const WebApp* GetIsolatedWebApp(const webapps::AppId& app_id) {
+    return provider().registrar_unsafe().GetAppById(app_id);
+  }
+
+ protected:
+  void AddBundleSignedBy(
+      const web_package::WebBundleSigner::KeyPair& key_pair) {
+    update_server_mixin_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder().SetName("app-1.0.0").SetVersion("1.0.0"))
+            .BuildBundle(web_bundle_id_, {key_pair}));
+  }
+
+  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  web_package::SignedWebBundleId web_bundle_id_ =
+      test::GetDefaultEd25519WebBundleId();
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
+                       Succeeds) {
+  auto app_id =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
+          .app_id();
+
+  // Add a bundle with version 1.0.0 signed by the original key corresponding to
+  // `web_bundle_id_`.
+  AddBundleSignedBy(test::GetDefaultEd25519KeyPair());
+
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::Value::List().Append(
+          update_server_mixin_.CreateForceInstallPolicyEntry(web_bundle_id_)));
+
+  web_app::WebAppTestInstallObserver(browser()->profile())
+      .BeginListeningAndWait({app_id});
+
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(Eq("app-1.0.0"),
+                  test::IsolationDataIs(
+                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(std::nullopt),
+                      /*integrity_block_data=*/
+                      test::IntegrityBlockDataPublicKeysAre(
+                          test::GetDefaultEd25519KeyPair().public_key))));
+
+  // Add a bundle with version 1.0.0 signed by a rotated key.
+  AddBundleSignedBy(test::GetDefaultEcdsaP256KeyPair());
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({app_id});
+  // Key rotation should trigger a discovery in the update manager.
+  EXPECT_THAT(
+      test::InstallIwaKeyDistributionComponent(
+          base::Version("0.1.0"), test::GetDefaultEd25519WebBundleId().id(),
+          test::GetDefaultEcdsaP256KeyPair().public_key.bytes()),
+      HasValue());
+  manifest_updated_observer.Wait();
+
+  // The app's integrity block data must be different now due to an update.
+  EXPECT_THAT(
+      GetIsolatedWebApp(app_id),
+      test::IwaIs(Eq("app-1.0.0"),
+                  test::IsolationDataIs(
+                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*controlled_frame_partitions=*/_,
+                      /*pending_update_info=*/Eq(std::nullopt),
+                      /*integrity_block_data=*/
+                      test::IntegrityBlockDataPublicKeysAre(
+                          test::GetDefaultEcdsaP256KeyPair().public_key))));
+}
 
 }  // namespace
 }  // namespace web_app

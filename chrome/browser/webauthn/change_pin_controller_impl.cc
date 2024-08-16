@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +38,8 @@ ChangePinControllerImpl::ChangePinControllerImpl(
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   enclave_manager_ =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
-  model_ = std::make_unique<AuthenticatorRequestDialogModel>(render_frame_host);
+  model_ =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(render_frame_host);
   model_observation_.Observe(model_.get());
 }
 

@@ -53,7 +53,7 @@ void KeywordExtensionsDelegateImplTest::SetUp() {
 void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
   search_engines::SearchEnginesTestEnvironment test_environment;
   MockAutocompleteProviderClient client;
-  client.set_template_url_service(test_environment.ReleaseTemplateURLService());
+  client.set_template_url_service(test_environment.template_url_service());
   scoped_refptr<KeywordProvider> keyword_provider =
       new KeywordProvider(&client, nullptr);
 

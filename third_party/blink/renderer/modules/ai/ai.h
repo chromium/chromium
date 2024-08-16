@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_summarizer_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session_factory.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,7 +21,9 @@
 
 namespace blink {
 class AITextSession;
-class V8AIModelAvailability;
+class V8AICapabilityAvailability;
+class AIWriterFactory;
+class AIRewriterFactory;
 
 // The class that manages the exposed model APIs that load model assets and
 // create AITextSession.
@@ -34,7 +37,7 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
   void Trace(Visitor* visitor) const override;
 
   // model_manager.idl implementation.
-  ScriptPromise<V8AIModelAvailability> canCreateTextSession(
+  ScriptPromise<V8AICapabilityAvailability> canCreateTextSession(
       ScriptState* script_state,
       ExceptionState& exception_state);
   ScriptPromise<AITextSession> createTextSession(
@@ -43,13 +46,21 @@ class AI final : public ScriptWrappable, public ExecutionContextClient {
       ExceptionState& exception_state);
   ScriptPromise<AITextModelInfo> textModelInfo(ScriptState* script_state,
                                                ExceptionState& exception_state);
+  AISummarizerFactory* summarizer();
+
+  AIWriterFactory* writer();
+  AIRewriterFactory* rewriter();
+
+  HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
  private:
-  HeapMojoRemote<mojom::blink::AIManager>& GetAIRemote();
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIManager> ai_remote_;
-  AITextSessionFactory text_session_factory_;
+  Member<AITextSessionFactory> text_session_factory_;
+  Member<AISummarizerFactory> ai_summarizer_factory_;
+  Member<AIWriterFactory> ai_writer_factory_;
+  Member<AIRewriterFactory> ai_rewriter_factory_;
 };
 
 }  // namespace blink

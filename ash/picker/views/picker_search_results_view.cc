@@ -39,6 +39,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -48,6 +49,8 @@
 
 namespace ash {
 namespace {
+
+constexpr int kThrobberDiameter = 32;
 
 constexpr gfx::Insets kNoResultsViewInsets(24);
 constexpr int kNoResultsIllustrationAndDescriptionSpacing = 16;
@@ -96,6 +99,18 @@ PickerSearchResultsView::PickerSearchResultsView(
 
   skeleton_loader_view_ = AddChildView(
       views::Builder<PickerSkeletonLoaderView>().SetVisible(false).Build());
+
+  throbber_container_ = AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetInsideBorderInsets(kNoResultsViewInsets)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::SmoothedThrobber>(
+                  std::make_unique<views::SmoothedThrobber>(kThrobberDiameter))
+                  .CopyAddressTo(&throbber_)
+                  .SetStartDelay(kLoadingAnimationDelay))
+          .Build());
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
@@ -160,13 +175,17 @@ void PickerSearchResultsView::ClearSearchResults() {
   section_list_view_->SetVisible(true);
   no_results_view_->SetVisible(false);
   StopLoadingAnimation();
+  StartThrobber();
   top_results_.clear();
   delegate_->OnSearchResultsViewHeightChanged();
+  UpdateAccessibleName();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
     PickerSearchResultsSection section) {
   StopLoadingAnimation();
+  StopThrobber();
+
   auto* section_view = section_list_view_->AddSection();
   std::u16string section_title =
       GetSectionTitleForPickerSectionType(section.type());
@@ -189,11 +208,13 @@ void PickerSearchResultsView::AppendSearchResults(
 
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
   delegate_->OnSearchResultsViewHeightChanged();
+  UpdateAccessibleName();
 }
 
 bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
                                             std::u16string description) {
   StopLoadingAnimation();
+  StopThrobber();
   if (!section_views_.empty()) {
     return false;
   }
@@ -203,12 +224,13 @@ bool PickerSearchResultsView::SearchStopped(ui::ImageModel illustration,
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
   delegate_->OnSearchResultsViewHeightChanged();
-  AnnounceNoResultsFound();
+  UpdateAccessibleName();
   return true;
 }
 
 void PickerSearchResultsView::ShowLoadingAnimation() {
   ClearSearchResults();
+  StopThrobber();
   skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
   skeleton_loader_view_->SetVisible(true);
   delegate_->OnSearchResultsViewHeightChanged();
@@ -242,6 +264,9 @@ void PickerSearchResultsView::OnTrailingLinkClicked(
 
 int PickerSearchResultsView::GetIndex(
     const PickerSearchResult& inserted_result) {
+  if (top_results_.empty()) {
+    return -1;
+  }
   auto it = base::ranges::find(top_results_, inserted_result);
   if (it == top_results_.end()) {
     return kMaxIndexForMetrics;
@@ -255,21 +280,41 @@ void PickerSearchResultsView::SetNumEmojiResultsForA11y(
   num_emoji_results_displayed_ = num_emoji_results;
 }
 
+void PickerSearchResultsView::StartThrobber() {
+  throbber_container_->SetVisible(true);
+  throbber_->Start();
+  delegate_->OnSearchResultsViewHeightChanged();
+}
+
+void PickerSearchResultsView::StopThrobber() {
+  throbber_container_->SetVisible(false);
+  throbber_->Stop();
+  delegate_->OnSearchResultsViewHeightChanged();
+}
+
 void PickerSearchResultsView::StopLoadingAnimation() {
   skeleton_loader_view_->StopAnimation();
   skeleton_loader_view_->SetVisible(false);
   delegate_->OnSearchResultsViewHeightChanged();
 }
 
-void PickerSearchResultsView::AnnounceNoResultsFound() {
-  if (num_emoji_results_displayed_ == 0) {
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT));
-  } else {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
-        base::NumberToString16(num_emoji_results_displayed_)));
+void PickerSearchResultsView::UpdateAccessibleName() {
+  if (!section_views_.empty()) {
+    GetViewAccessibility().SetName(u"");
+    return;
   }
+
+  // Avoid announcing the same "no results found" live region consecutively.
+  const std::u16string accessible_name =
+      num_emoji_results_displayed_ == 0
+          ? l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT)
+          : l10n_util::GetPluralStringFUTF16(
+                IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT,
+                num_emoji_results_displayed_);
+  if (GetAccessibleName() == accessible_name) {
+    return;
+  }
+  GetViewAccessibility().SetName(std::move(accessible_name));
   NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged, true);
 }
 

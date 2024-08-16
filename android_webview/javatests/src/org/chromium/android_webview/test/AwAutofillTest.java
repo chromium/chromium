@@ -446,6 +446,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.clickNode() which is known to be flaky"
+        + " under modified scaling factor, see crbug.com/40840940")
     public void testTouchingFormWithAdjustResize() throws Throwable {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -461,6 +464,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.clickNode() which is known to be flaky"
+        + " under modified scaling factor, see crbug.com/40840940")
     public void testTouchingFormWithAdjustPan() throws Throwable {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
@@ -741,6 +747,9 @@ public class AwAutofillTest extends AwParameterizedTest {
         "disable-features=AutofillServerCommunication",
         "enable-features=AndroidAutofillCancelSessionOnNavigation"
     })
+    @SkipMutations(
+        reason = "This test uses DOMUtils.clickNode() which is known to be flaky"
+        + " under modified scaling factor, see crbug.com/40840940")
     public void testAutofillTriggersAfterReload() throws Throwable {
         int cnt = 0;
 
@@ -1239,6 +1248,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.clickNode() which is known to be flaky"
+        + " under modified scaling factor, see crbug.com/40840940")
     public void testTouchingPasswordFieldTriggerQuery() throws Throwable {
         int cnt = 0;
         loadHTML(
@@ -1267,6 +1279,9 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+        reason = "This test uses DOMUtils.clickNode() which is known to be flaky"
+        + " under modified scaling factor, see crbug.com/40840940")
     public void testFocusRemovedAndRestored() throws Throwable {
         int cnt = 0;
         loadHTML(

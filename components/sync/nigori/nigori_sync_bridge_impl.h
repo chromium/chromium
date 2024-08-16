@@ -22,10 +22,10 @@
 #include "components/sync/nigori/nigori_local_change_processor.h"
 #include "components/sync/nigori/nigori_state.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
-#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace sync_pb {
 class NigoriLocalData;
+class NigoriSpecifics;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -58,7 +58,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void NotifyInitialStateToObservers() override;
-  ModelTypeSet GetEncryptedTypes() override;
+  DataTypeSet GetEncryptedTypes() override;
   Cryptographer* GetCryptographer() override;
   PassphraseType GetPassphraseType() override;
   void SetEncryptionPassphrase(
@@ -69,7 +69,7 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
       const std::vector<std::vector<uint8_t>>& keys) override;
   base::Time GetKeystoreMigrationTime() override;
   KeystoreKeysHandler* GetKeystoreKeysHandler() override;
-  const sync_pb::NigoriSpecifics::TrustedVaultDebugInfo&
+  const sync_pb::NigoriSpecifics_TrustedVaultDebugInfo&
   GetTrustedVaultDebugInfo() override;
 
   // KeystoreKeysHandler implementation.

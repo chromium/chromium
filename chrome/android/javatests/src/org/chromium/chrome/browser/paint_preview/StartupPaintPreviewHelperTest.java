@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -82,7 +83,8 @@ public class StartupPaintPreviewHelperTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
-                                .closeTab(tab));
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build()));
         assertHasCaptureForTab(tab, false);
     }
 
@@ -147,7 +149,8 @@ public class StartupPaintPreviewHelperTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
-                                .closeTab(previewTab));
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build()));
         assertHasCaptureForTab(previewTab, false);
     }
 

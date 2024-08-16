@@ -12,9 +12,12 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/keyed_service/core/service_access_type.h"
 #import "components/page_info/core/page_info_action.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -25,6 +28,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_mediator.h"
+#import "ios/chrome/browser/ui/page_info/page_info_history_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_permissions_mediator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_security_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
@@ -33,6 +37,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -50,6 +55,9 @@
   PageInfoSecurityCoordinator* _securityCoordinator;
   PageInfoAboutThisSiteMediator* _aboutThisSiteMediator;
   PageInfoSiteSecurityDescription* _siteSecurityDescription;
+
+  // Mediator for the Last Visited feature.
+  PageInfoHistoryMediator* _pageInfoHistoryMediator;
 }
 
 @synthesize presentationProvider = _presentationProvider;
@@ -107,6 +115,28 @@
         feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
   }
 
+  const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+
+  // Create the PageInfoHistoryMediator only if kPageInfoLastVisitedIOS is
+  // enabled, the browser is not in incognito mode and the page is neither
+  // offline nor a chrome page.
+  if (IsPageInfoLastVisitedIOSEnabled() && !isIncognito &&
+      !_siteSecurityDescription.isEmpty) {
+    history::HistoryService* historyService =
+        ios::HistoryServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState(),
+            ServiceAccessType::EXPLICIT_ACCESS);
+
+    const GURL& siteURL =
+        webState->GetNavigationManager()->GetVisibleItem()->GetURL();
+
+    _pageInfoHistoryMediator =
+        [[PageInfoHistoryMediator alloc] initWithHistoryService:historyService
+                                                        siteURL:siteURL];
+
+    _pageInfoHistoryMediator.consumer = self.viewController;
+  }
+
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -124,6 +154,11 @@
   [self.dispatcher stopDispatchingToTarget:self];
   self.navigationController = nil;
   self.viewController = nil;
+
+  if (IsPageInfoLastVisitedIOSEnabled()) {
+    [_pageInfoHistoryMediator disconnect];
+    _pageInfoHistoryMediator = nil;
+  }
 
   [_securityCoordinator stop];
   _securityCoordinator.pageInfoPresentationHandler = nil;

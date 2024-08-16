@@ -1353,7 +1353,12 @@ void MainThreadSchedulerImpl::DidHandleInputEventOnMainThread(
     }
   }
 
-  if (!PendingUserInput::IsContinuousEventType(web_input_event.GetType())) {
+  bool is_discrete =
+      base::FeatureList::IsEnabled(
+          features::kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics)
+          ? WebInputEvent::IsWebInteractionEvent(web_input_event.GetType())
+          : !PendingUserInput::IsContinuousEventType(web_input_event.GetType());
+  if (is_discrete) {
     main_thread_only().is_current_task_discrete_input = true;
     main_thread_only().is_frame_requested_after_discrete_input =
         frame_requested;
@@ -2643,10 +2648,13 @@ void MainThreadSchedulerImpl::MaybeUpdatePolicyOnTaskCompleted(
   if (base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput) &&
       queue) {
     base::AutoLock lock(any_thread_lock_);
-
-    if (main_thread_only().is_current_task_main_frame) {
-      CHECK_EQ(queue->queue_type(),
-               MainThreadTaskQueue::QueueType::kCompositor);
+    // In web tests using non-threaded compositing, BeginMainFrame is scheduled
+    // (eagarly) via a per-frame kInternalTest task runner, which is ignored
+    // here.
+    // TODO(crbug.com/350540984): Consider using the appropriate compositor task
+    // queue for tests that use non-threaded compositing.
+    if (main_thread_only().is_current_task_main_frame &&
+        queue->queue_type() == MainThreadTaskQueue::QueueType::kCompositor) {
       if (any_thread().awaiting_discrete_input_response) {
         any_thread().awaiting_discrete_input_response = false;
         any_thread().user_model.DidProcessDiscreteInputResponse();
@@ -2802,7 +2810,7 @@ MainThreadSchedulerImpl::ComputeCompositorPriorityForMainFrame() const {
       // (e.g. typing) will starve rendering.
       return TaskPriority::kHighestPriority;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool MainThreadSchedulerImpl::AllPagesFrozen() const {

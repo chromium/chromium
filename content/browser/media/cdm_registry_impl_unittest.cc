@@ -259,6 +259,15 @@ class CdmRegistryImplTest : public testing::Test {
 #endif
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // On Android checking for key system support can be run on a separate
+  // thread. Disable this for testing.
+  void DisableMediaCodecCallsInSeparateThread() {
+    scoped_feature_list_.InitAndDisableFeature(
+        media::kAllowMediaCodecCallsInSeparateProcess);
+  }
+#endif
+
   void ClearCapabilityTestOverride() {
     cdm_registry_.SetCapabilityCBForTesting(base::NullCallback());
   }
@@ -1051,6 +1060,10 @@ TEST_F(
 }
 
 TEST_F(CdmRegistryImplTest, KeySystemCapabilities_NoOverride) {
+#if BUILDFLAG(IS_ANDROID)
+  DisableMediaCodecCallsInSeparateThread();
+#endif
+
   // kTestKeySystem doesn't exist on any platform, but this should at least
   // exercise a bit more of the code (and leave the capabilities as nullptr).
   RegisterForLazySoftwareSecureInitialization();

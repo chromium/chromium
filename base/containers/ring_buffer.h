@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_CONTAINERS_RING_BUFFER_H_
 #define BASE_CONTAINERS_RING_BUFFER_H_
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
@@ -129,7 +126,7 @@ class RingBuffer {
     return buffer_index < current_index_;
   }
 
-  T buffer_[kSize];
+  std::array<T, kSize> buffer_;
   size_t current_index_;
 };
 

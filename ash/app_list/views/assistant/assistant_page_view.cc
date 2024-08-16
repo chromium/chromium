@@ -39,6 +39,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view_shadow.h"
 
@@ -163,6 +164,10 @@ AssistantPageView::AssistantPageView(
     AssistantUiController::Get()->GetModel()->AddObserver(this);
 
   display_observation_.Observe(display::Screen::GetScreen());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 
 AssistantPageView::~AssistantPageView() {
@@ -194,14 +199,6 @@ void AssistantPageView::RequestFocus() {
 
   if (assistant_main_view_)
     assistant_main_view_->RequestFocus();
-}
-
-void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
-  // A valid role must be set prior to setting the name.
-  node_data->role = ax::mojom::Role::kPane;
-  node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 
 void AssistantPageView::ChildPreferredSizeChanged(views::View* child) {

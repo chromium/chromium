@@ -33,6 +33,8 @@ gfx::ColorSpace::PrimaryID MFPrimaryToColorSpace(uint32_t mf_primary) {
       return gfx::ColorSpace::PrimaryID::XYZ_D50;
     case MFVideoPrimaries_DCI_P3:
       return gfx::ColorSpace::PrimaryID::P3;
+    case MFVideoPrimaries_EBU3213:
+      return gfx::ColorSpace::PrimaryID::EBU_3213_E;
     default:
       return gfx::ColorSpace::PrimaryID::INVALID;
   }
@@ -56,6 +58,8 @@ MFVideoPrimaries ColorSpaceToMFPrimary(gfx::ColorSpace::PrimaryID color_space) {
       return MFVideoPrimaries_XYZ;
     case gfx::ColorSpace::PrimaryID::P3:
       return MFVideoPrimaries_DCI_P3;
+    case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+      return MFVideoPrimaries_EBU3213;
     default:
       return MFVideoPrimaries_Unknown;
   }

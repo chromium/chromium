@@ -132,10 +132,10 @@ bool CanSendHistoryData(syncer::SyncService* sync_service) {
   // SESSIONS and HISTORY both contain history-like data, so it's sufficient if
   // either of them is being uploaded.
   return syncer::GetUploadToGoogleState(sync_service,
-                                        syncer::ModelType::SESSIONS) ==
+                                        syncer::DataType::SESSIONS) ==
              syncer::UploadState::ACTIVE ||
          syncer::GetUploadToGoogleState(sync_service,
-                                        syncer::ModelType::HISTORY) ==
+                                        syncer::DataType::HISTORY) ==
              syncer::UploadState::ACTIVE;
 }
 
@@ -352,6 +352,9 @@ void CredentialProviderService::AddCredentialsLegacy(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
 
   int fetched_favicon_count = 0;
 
@@ -374,7 +377,8 @@ void CredentialProviderService::AddCredentialsLegacy(
         form.url.is_valid()) {
       ArchivableCredential* credential =
           [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                     favicon:favicon_key];
+                                                     favicon:favicon_key
+                                                        gaia:gaia];
       DCHECK(credential);
       [store addCredential:credential];
     }
@@ -390,6 +394,9 @@ void CredentialProviderService::AddCredentialsRefactored(
   const bool should_skip_max_verification = forms.size() == 1;
   const bool fallback_to_google_server_allowed =
       CanSendHistoryData(sync_service_);
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
 
   // Get the list of existing favicon files, along with their creation date.
   NSDictionary<NSString*, NSDate*>* favicon_dict =
@@ -416,7 +423,8 @@ void CredentialProviderService::AddCredentialsRefactored(
         form.url.is_valid()) {
       ArchivableCredential* credential =
           [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                     favicon:favicon_key];
+                                                     favicon:favicon_key
+                                                        gaia:gaia];
       DCHECK(credential);
       [store addCredential:credential];
     }
@@ -431,6 +439,9 @@ void CredentialProviderService::AddCredentials(
   // User is adding a passkey (not batch add from user login).
   const bool should_skip_max_verification = passkeys.size() == 1;
   const bool fallback_to_google_server = CanSendHistoryData(sync_service_);
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  NSString* gaia = base::SysUTF8ToNSString(account.gaia);
 
   for (const auto& passkey : passkeys) {
     // Only fetch favicon for valid URL.
@@ -446,6 +457,7 @@ void CredentialProviderService::AddCredentials(
 
       ArchivableCredential* credential =
           [[ArchivableCredential alloc] initWithFavicon:favicon_key
+                                                   gaia:gaia
                                                 passkey:passkey];
       DCHECK(credential);
       [store addCredential:credential];
@@ -564,7 +576,7 @@ void CredentialProviderService::OnPasskeysChanged(
         passkeys_to_remove.push_back(passkey);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

@@ -4,15 +4,10 @@
 # found in the LICENSE file.
 
 import copy
-import os
-import six
-import sys
 import unittest
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+import six
 
-# For results_merger.
-sys.path.insert(0, os.path.join(THIS_DIR, '..', 'resources'))
 import results_merger
 
 GOOD_JSON_TEST_RESULT_0 = {
@@ -174,7 +169,7 @@ class MergingTest(unittest.TestCase):  # pragma: no cover
     }}))
 
   def test_merge_tries_unmergable(self):
-    with six.assertRaisesRegex(self, results_merger.MergeException, "a:b"):
+    with six.assertRaisesRegex(self, results_merger.MergeException, 'a:b'):
       results_merger.merge_tries({'a': {'b': 'A'}}, {'a': {'b': 'C'}})
 
   def test_merge_metadata(self):

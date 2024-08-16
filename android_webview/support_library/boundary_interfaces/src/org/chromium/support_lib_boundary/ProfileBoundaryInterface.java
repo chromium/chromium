@@ -7,7 +7,11 @@ package org.chromium.support_lib_boundary;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
+import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
+
+import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Executor;
 
 /** Boundary interface for Profile. */
 public interface ProfileBoundaryInterface {
@@ -20,4 +24,11 @@ public interface ProfileBoundaryInterface {
     GeolocationPermissions getGeoLocationPermissions();
 
     ServiceWorkerController getServiceWorkerController();
+
+    void prefetchUrl(
+            String url,
+            /* PrefetchCallbackBoundaryInterface */ InvocationHandler prefetchCallback,
+            Executor callbackExecutor);
+
+    void clearPrefetch(String url, ValueCallback<Void> callback);
 }

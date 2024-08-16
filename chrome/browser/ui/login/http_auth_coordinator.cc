@@ -13,7 +13,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/api/web_request/web_request_api.h"  // nogncheck
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
 

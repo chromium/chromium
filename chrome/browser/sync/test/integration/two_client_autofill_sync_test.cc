@@ -90,9 +90,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Each of the clients deletes one profile.
-  histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               syncer::ModelTypeEntityChange::kLocalDeletion,
-                               2);
+  histograms.ExpectBucketCount("Sync.DataTypeEntityChange.AUTOFILL_PROFILE",
+                               syncer::DataTypeEntityChange::kLocalDeletion, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
@@ -118,17 +117,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   // update. And finally, at some point, each client receives its own entity
   // back as a non-initial update, for a total of 1 initial and 3 non-initial
   // updates.
-  histograms.ExpectBucketCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                               syncer::ModelTypeEntityChange::kLocalCreation,
-                               2);
+  histograms.ExpectBucketCount("Sync.DataTypeEntityChange.AUTOFILL_PROFILE",
+                               syncer::DataTypeEntityChange::kLocalCreation, 2);
   histograms.ExpectBucketCount(
-      "Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-      syncer::ModelTypeEntityChange::kRemoteInitialUpdate, 1);
+      "Sync.DataTypeEntityChange.AUTOFILL_PROFILE",
+      syncer::DataTypeEntityChange::kRemoteInitialUpdate, 1);
   histograms.ExpectBucketCount(
-      "Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-      syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate, 3);
-  histograms.ExpectTotalCount("Sync.ModelTypeEntityChange3.AUTOFILL_PROFILE",
-                              6);
+      "Sync.DataTypeEntityChange.AUTOFILL_PROFILE",
+      syncer::DataTypeEntityChange::kRemoteNonInitialUpdate, 3);
+  histograms.ExpectTotalCount("Sync.DataTypeEntityChange.AUTOFILL_PROFILE", 6);
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, AddDuplicateProfiles) {

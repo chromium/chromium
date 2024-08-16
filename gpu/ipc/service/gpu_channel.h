@@ -217,7 +217,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(mojo::PlatformHandle service_handle,
                                       mojo::PlatformHandle sysmem_token,
-                                      gfx::BufferFormat format,
+                                      const viz::SharedImageFormat& format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
 #endif  // BUILDFLAG(IS_FUCHSIA)

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_H_
 
@@ -89,7 +94,7 @@ InstallEventLog<T, C>::InstallEventLog(const base::FilePath& file_name)
 
   int64_t version;
   if (!file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&version, 1u)))) {
+          base::as_writable_bytes(base::span_from_ref(version)))) {
     LOG(WARNING) << "Corrupted install log.";
     return;
   }
@@ -101,7 +106,7 @@ InstallEventLog<T, C>::InstallEventLog(const base::FilePath& file_name)
 
   ssize_t entries;
   if (!file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&entries, 1u)))) {
+          base::as_writable_bytes(base::span_from_ref(entries)))) {
     LOG(WARNING) << "Corrupted install log.";
     return;
   }
@@ -164,14 +169,13 @@ void InstallEventLog<T, C>::Store() {
   }
 
   if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(&kLogFileVersion, 1u)))) {
+          base::byte_span_from_ref(kLogFileVersion))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }
 
   ssize_t entries = logs_.size();
-  if (!file.WriteAtCurrentPosAndCheck(
-          base::as_bytes(base::make_span(&entries, 1u)))) {
+  if (!file.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(entries))) {
     LOG(WARNING) << "Unable to store install log.";
     return;
   }

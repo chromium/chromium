@@ -99,6 +99,9 @@ NSString* const kBottomOmniboxOptionSymbol = @"bottom_omnibox_option";
 NSString* const kDangerousOmniboxSymbol = @"dangerous_omnibox";
 NSString* const kArrowDownSymbol = @"arrow.down";
 NSString* const kArrowUpSymbol = @"arrow.up";
+NSString* const kFamilylinkSymbol = @"familylink";
+NSString* const kMyDriveSymbol = @"my_drive";
+NSString* const kSharedDrivesSymbol = @"shared_drives";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
@@ -259,6 +262,7 @@ NSString* const kPencilSymbol = @"pencil";
 NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
 NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
+NSString* const kPersonTwoSymbol = @"person.2";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

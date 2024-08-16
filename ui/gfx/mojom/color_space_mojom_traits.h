@@ -50,6 +50,8 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
         return gfx::mojom::ColorSpacePrimaryID::WIDE_GAMUT_COLOR_SPIN;
       case gfx::ColorSpace::PrimaryID::CUSTOM:
         return gfx::mojom::ColorSpacePrimaryID::CUSTOM;
+      case gfx::ColorSpace::PrimaryID::EBU_3213_E:
+        return gfx::mojom::ColorSpacePrimaryID::EBU_3213_E;
     }
     NOTREACHED_IN_MIGRATION();
     return gfx::mojom::ColorSpacePrimaryID::INVALID;
@@ -105,6 +107,9 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
         return true;
       case gfx::mojom::ColorSpacePrimaryID::CUSTOM:
         *out = gfx::ColorSpace::PrimaryID::CUSTOM;
+        return true;
+      case gfx::mojom::ColorSpacePrimaryID::EBU_3213_E:
+        *out = gfx::ColorSpace::PrimaryID::EBU_3213_E;
         return true;
     }
     NOTREACHED_IN_MIGRATION();

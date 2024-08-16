@@ -1364,6 +1364,6 @@ std::u16string DownloadUIModel::GetInProgressAccessibleAlertText() const {
       GetFileNameToReportUser().LossyDisplayName());
 }
 
-bool DownloadUIModel::IsEncryptedArchive() const {
+bool DownloadUIModel::IsTopLevelEncryptedArchive() const {
   return false;
 }

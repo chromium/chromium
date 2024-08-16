@@ -4,21 +4,21 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/browser_context.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
 
-void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
-                                  gfx::NativeWindow parent,
+void ShowMv2DeprecationKeepDialog(Browser* browser,
                                   const Extension& extension,
                                   base::OnceClosure accept_callback,
                                   base::OnceClosure cancel_callback) {
-  CHECK(ManifestV2ExperimentManager::Get(browser_context)
+  CHECK(ManifestV2ExperimentManager::Get(browser->profile())
             ->IsExtensionAffected(extension));
 
   auto split_cancel_callback =
@@ -39,7 +39,7 @@ void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
           .SetCloseActionCallback(std::move(split_cancel_callback.second))
           .Build();
 
-  ShowDialog(parent, extension.id(), std::move(dialog_model));
+  ShowDialog(browser, std::move(dialog_model));
 }
 
 }  // namespace extensions

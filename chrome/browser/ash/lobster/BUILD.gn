@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("lobster") {
+  sources = [
+    "image_fetcher.cc",
+    "image_fetcher.h",
+    "lobster_candidate_id_generator.cc",
+    "lobster_candidate_id_generator.h",
+    "lobster_candidate_resizer.cc",
+    "lobster_candidate_resizer.h",
+    "lobster_client_factory_impl.cc",
+    "lobster_client_factory_impl.h",
+    "lobster_client_impl.cc",
+    "lobster_client_impl.h",
+    "lobster_service.cc",
+    "lobster_service.h",
+    "lobster_service_provider.cc",
+    "lobster_service_provider.h",
+    "lobster_system_state_provider.cc",
+    "lobster_system_state_provider.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/manta",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp:cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "lobster_test_utils.cc",
+    "lobster_test_utils.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp:cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/manta",
+    "//components/manta/proto",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "image_fetcher_unittest.cc",
+    "lobster_candidate_resizer_unittest.cc",
+  ]
+
+  deps = [
+    ":lobster",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/lobster:test_support",
+    "//chrome/browser/ash/lobster/mock:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

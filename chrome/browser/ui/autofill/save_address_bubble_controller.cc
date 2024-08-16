@@ -81,11 +81,14 @@ void MigrationHeaderImageSource::Draw(gfx::Canvas* canvas) {
   canvas->ClipPath(avatar_bound, /*do_anti_alias=*/true);
 
   // Finally draw the avatar, above the background and cropped.
-  gfx::ImageSkia avatar = gfx::ImageSkiaOperations::CreateResizedImage(
-      avatar_.GetImage().AsImageSkia(),
-      skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-      gfx::Size(avatar_size_, avatar_size_));
-  canvas->DrawImageInt(avatar, avatar_position_.x(), avatar_position_.y());
+  // Note that some testing profiles do not have an avatar.
+  if (!avatar_.IsEmpty()) {
+    gfx::ImageSkia avatar = gfx::ImageSkiaOperations::CreateResizedImage(
+        avatar_.GetImage().AsImageSkia(),
+        skia::ImageOperations::ResizeMethod::RESIZE_BEST,
+        gfx::Size(avatar_size_, avatar_size_));
+    canvas->DrawImageInt(avatar, avatar_position_.x(), avatar_position_.y());
+  }
 }
 
 ui::ImageModel EmbedAvatar(int background_id,

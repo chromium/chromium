@@ -19,11 +19,11 @@
 #include "components/saved_tab_groups/tab_group_sync_coordinator.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service_impl.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/test/fake_model_type_controller.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/fake_data_type_controller.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
@@ -62,6 +62,9 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(void,
               HandleOpenTabGroupRequest,
               (const base::Uuid&, std::unique_ptr<TabGroupActionContext>));
+  MOCK_METHOD(void,
+              ConnectLocalTabGroup,
+              (const base::Uuid&, const LocalTabGroupID&));
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,
               CreateScopedLocalObserverPauser,
               ());
@@ -81,7 +84,7 @@ MATCHER_P(UuidEq, uuid, "") {
 class TabGroupSyncServiceTest : public testing::Test {
  public:
   TabGroupSyncServiceTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         fake_controller_delegate_(syncer::SAVED_TAB_GROUP),
         group_1_(test::CreateTestSavedTabGroup()),
         group_2_(test::CreateTestSavedTabGroup()),
@@ -106,7 +109,7 @@ class TabGroupSyncServiceTest : public testing::Test {
         std::move(model),
         std::make_unique<SyncDataTypeConfiguration>(
             processor_.CreateForwardingProcessor(),
-            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 store_.get())),
         nullptr, &pref_service_, std::move(metrics_logger));
     ON_CALL(processor_, IsTrackingMetadata())
@@ -127,7 +130,8 @@ class TabGroupSyncServiceTest : public testing::Test {
     InitializeTestGroups();
   }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &processor_;
   }
 
@@ -204,13 +208,13 @@ class TabGroupSyncServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   std::unique_ptr<MockTabGroupSyncServiceObserver> observer_;
   syncer::FakeDeviceInfoTracker device_info_tracker_;
   raw_ptr<MockTabGroupSyncCoordinator> coordinator_;
   std::unique_ptr<TabGroupSyncServiceImpl> tab_group_sync_service_;
-  syncer::FakeModelTypeControllerDelegate fake_controller_delegate_;
+  syncer::FakeDataTypeControllerDelegate fake_controller_delegate_;
 
   SavedTabGroup group_1_;
   SavedTabGroup group_2_;
@@ -379,6 +383,15 @@ TEST_F(TabGroupSyncServiceTest, OpenTabGroup) {
       .Times(1);
   tab_group_sync_service_->OpenTabGroup(
       group_2_.saved_guid(), std::make_unique<TabGroupActionContext>());
+}
+
+TEST_F(TabGroupSyncServiceTest, ConnectLocalTabGroup) {
+  LocalTabGroupID local_id = test::GenerateRandomTabGroupID();
+  EXPECT_CALL(*coordinator_,
+              ConnectLocalTabGroup(group_2_.saved_guid(), local_id))
+      .Times(1);
+  tab_group_sync_service_->ConnectLocalTabGroup(group_2_.saved_guid(),
+                                                local_id);
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {

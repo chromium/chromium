@@ -25,8 +25,8 @@ public class WebsiteGroup implements WebsiteEntry {
     private final long mTotalUsage;
     // Total number of cookies associated with the websites.
     private final int mCookiesCount;
-    // First Party Sets info relative to the eTLD+1.
-    private FPSCookieInfo mFPSInfo;
+    // Related Website Sets info relative to the eTLD+1.
+    private RWSCookieInfo mRWSInfo;
 
     /**
      * Groups the websites by eTLD+1.
@@ -65,10 +65,10 @@ public class WebsiteGroup implements WebsiteEntry {
         long totalUsage = 0;
         for (Website website : websites) {
             totalUsage += website.getTotalUsage();
-            // If there's more than 1 website with FPS info in the group it's fine to override it
-            // since websites are grouped by eTLD+1, and FPS info are at eTLD+1 level as well.
-            if (website.getFPSCookieInfo() != null) {
-                mFPSInfo = website.getFPSCookieInfo();
+            // If there's more than 1 website with RWS info in the group it's fine to override it
+            // since websites are grouped by eTLD+1, and RWS info are at eTLD+1 level as well.
+            if (website.getRWSCookieInfo() != null) {
+                mRWSInfo = website.getRWSCookieInfo();
             }
         }
         mTotalUsage = totalUsage;
@@ -119,19 +119,19 @@ public class WebsiteGroup implements WebsiteEntry {
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfRws() {
-        return getFPSInfo() != null;
+        return getRWSInfo() != null;
     }
 
     /** {@inheritDoc} */
     @Override
     public String getRwsOwner() {
-        return isPartOfRws() ? getFPSInfo().getOwner() : null;
+        return isPartOfRws() ? getRWSInfo().getOwner() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public int getRwsSize() {
-        return isPartOfRws() ? getFPSInfo().getMembersCount() : 0;
+        return isPartOfRws() ? getRWSInfo().getMembersCount() : 0;
     }
 
     /**
@@ -151,8 +151,8 @@ public class WebsiteGroup implements WebsiteEntry {
         return true;
     }
 
-    public FPSCookieInfo getFPSInfo() {
-        return mFPSInfo;
+    public RWSCookieInfo getRWSInfo() {
+        return mRWSInfo;
     }
 
     public String getDomainAndRegistry() {

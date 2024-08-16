@@ -199,7 +199,7 @@ void IncomingStream::ProcessClose() {
   if (fin_received_.value()) {
     ScriptState::Scope scope(script_state_);
     ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     CloseAbortAndReset(exception_state);
     // Ignore exception because stream will be errored soon.
     if (exception_state.HadException()) {
@@ -293,9 +293,7 @@ size_t IncomingStream::RespondBYOBRequestOrEnqueueBytes(
   if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
     DOMArrayPiece view(request->view().Get());
     size_t byob_response_length = std::min(view.ByteLength(), source.size());
-    view.ByteSpan()
-        .first(byob_response_length)
-        .copy_from(source.first(byob_response_length));
+    view.ByteSpan().copy_prefix_from(source.first(byob_response_length));
     request->respond(script_state_, byob_response_length, exception_state);
     return byob_response_length;
   }

@@ -82,6 +82,7 @@ Slider::Slider(SliderListener* listener) : listener_(listener) {
 #endif
 
   SchedulePaint();
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
 }
 
 Slider::~Slider() = default;
@@ -325,7 +326,6 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
 
 void Slider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kSlider;
   node_data->SetValue(base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
   node_data->AddAction(ax::mojom::Action::kIncrement);

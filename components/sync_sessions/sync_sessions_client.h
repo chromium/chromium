@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 class GURL;
 
@@ -32,7 +32,7 @@ class SyncSessionsClient {
 
   // Getters for services that sessions depends on.
   virtual SessionSyncPrefs* GetSessionSyncPrefs() = 0;
-  virtual syncer::RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
+  virtual syncer::RepeatingDataTypeStoreFactory GetStoreFactory() = 0;
 
   // Clears all on demand favicons (downloaded based on synced history data).
   virtual void ClearAllOnDemandFavicons() = 0;

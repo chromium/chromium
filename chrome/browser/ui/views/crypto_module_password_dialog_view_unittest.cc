@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/crypto_module_password_dialog.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_observer.h"
@@ -31,7 +32,7 @@ TEST_F(CryptoModulePasswordDialogViewTest, AcceptUsesPassword) {
   auto dialog = CreateCryptoDialog(base::BindLambdaForTesting(
       [&](const std::string& text) { password = text; }));
   EXPECT_EQ(dialog->password_entry_, dialog->GetInitiallyFocusedView());
-  EXPECT_TRUE(dialog->GetModalType() != ui::MODAL_TYPE_NONE);
+  EXPECT_TRUE(dialog->GetModalType() != ui::mojom::ModalType::kNone);
 
   const std::string kPassword = "diAl0g";
   dialog->password_entry_->SetText(base::ASCIIToUTF16(kPassword));

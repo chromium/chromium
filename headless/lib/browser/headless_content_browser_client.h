@@ -72,6 +72,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       net::ClientCertIdentityList client_certs,
       std::unique_ptr<content::ClientCertificateDelegate> delegate) override;
   bool ShouldEnableStrictSiteIsolation() override;
+  bool ShouldAllowProcessPerSiteForMultipleMainFrames(
+      content::BrowserContext* context) override;
 
   // Returns whether |api_origin| on |top_frame_origin| can perform
   // |operation| within the interest group API.
@@ -79,6 +81,12 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
                                  content::InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
+
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override;
 
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,

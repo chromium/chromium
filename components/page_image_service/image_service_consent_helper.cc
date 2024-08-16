@@ -26,9 +26,9 @@ PageImageServiceConsentStatus ConsentStatusToUmaStatus(
 
 ImageServiceConsentHelper::ImageServiceConsentHelper(
     syncer::SyncService* sync_service,
-    syncer::ModelType model_type)
+    syncer::DataType data_type)
     : sync_service_(sync_service),
-      model_type_(model_type),
+      data_type_(data_type),
       timeout_duration_(base::Seconds(10)) {
   // `sync_service` can be null, for example when disabled via flags.
   if (sync_service) {
@@ -97,27 +97,27 @@ std::optional<bool> ImageServiceConsentHelper::GetConsentStatus() {
     return false;
   }
 
-  // If upload of the given ModelType is disabled (or inactive due to an
+  // If upload of the given DataType is disabled (or inactive due to an
   // error), then consent must be assumed to be NOT given.
   // Note that the "INITIALIZING" state is good enough: It means the data
   // type is enabled in principle, Sync just hasn't fully finished
   // initializing yet. This case is handled by the DownloadStatus check
   // below.
-  if (syncer::GetUploadToGoogleState(sync_service_, model_type_) ==
+  if (syncer::GetUploadToGoogleState(sync_service_, data_type_) ==
       syncer::UploadState::NOT_ACTIVE) {
     return false;
   }
 
   // Ensure Sync has downloaded all relevant updates (i.e. any deletions from
   // other devices are known).
-  syncer::SyncService::ModelTypeDownloadStatus download_status =
-      sync_service_->GetDownloadStatusFor(model_type_);
+  syncer::SyncService::DataTypeDownloadStatus download_status =
+      sync_service_->GetDownloadStatusFor(data_type_);
   switch (download_status) {
-    case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
       return std::nullopt;
-    case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate:
       return true;
-    case syncer::SyncService::ModelTypeDownloadStatus::kError:
+    case syncer::SyncService::DataTypeDownloadStatus::kError:
       return false;
   }
 }

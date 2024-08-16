@@ -26,6 +26,9 @@ void DisableParentalControls(PrefService& pref_service);
 
 bool IsChildAccountStatusKnown(const PrefService& pref_service);
 
+// Returns true if the safe sites preference is enabled and user is supervised.
+bool IsSafeSitesEnabled(const PrefService& pref_service);
+
 // Returns true if both the primary account is a child account subject to
 // parental controls and the platform supports Family Link supervision features.
 // TODO(b/342097235): prefs::kSupervisedUserID is being deprecated. Supervision
@@ -33,17 +36,6 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service);
 // `IsPrimaryAccountSubjectToParentalControls`.
 bool IsSubjectToParentalControls(const PrefService& pref_service);
 
-// Returns true if the extensions permissions parental control is enabled
-// for supervised users.
-// Returns false if the user is not supervised.
-bool AreExtensionsPermissionsEnabled(const PrefService& pref_service);
-
-// Returns true if the extension handling mode for skipping parent approval is
-// enabled and the parent has authorized installing extensions without their
-// approval.
-// Returns false if the user is not supervised.
-bool SupervisedUserCanSkipExtensionParentApprovals(
-    const PrefService& pref_service);
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_PREFERENCES_H_

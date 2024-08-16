@@ -501,8 +501,9 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
        HideInMainFrameOnMainFrameNavigation) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
+  // The navigation generates a PrimaryMainFrameWasResized callback.
   EXPECT_CALL(client().popup_controller(manager()),
-              Hide(SuggestionHidingReason::kNavigation));
+              Hide(SuggestionHidingReason::kWidgetChanged));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
   // Verify and clear before TearDown() closes the popup.
   Mock::VerifyAndClearExpectations(&client().popup_controller(manager()));
@@ -539,7 +540,7 @@ TEST_F(AutofillSuggestionControllerTestHidingLogic,
   ShowSuggestions(sub_manager(), {SuggestionType::kAddressEntry});
   test::GenerateTestAutofillPopup(&sub_manager().external_delegate());
   EXPECT_CALL(client().popup_controller(sub_manager()),
-              Hide(SuggestionHidingReason::kRendererEvent));
+              Hide(SuggestionHidingReason::kWidgetChanged));
   NavigateAndCommitFrame(main_frame(), GURL("https://bar.com/"));
 }
 

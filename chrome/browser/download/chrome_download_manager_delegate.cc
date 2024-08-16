@@ -344,6 +344,11 @@ base::FilePath GetTempPdfDir() {
   base::android::GetCacheDirectory(&cache_dir);
   return cache_dir.Append(kPdfDirName);
 }
+
+bool ShouldOpenPdfInlineInternal(bool incognito) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_PdfUtils_shouldOpenPdfInline(env, incognito);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void OnCheckExistingDownloadPathDone(download::DownloadTargetInfo target_info,
@@ -932,7 +937,8 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     }
   }
 
-  if (ShouldOpenPdfInline() && mime_type == pdf::kPDFMimeType) {
+  if (ShouldOpenPdfInlineInternal(/*incognito=*/false) &&
+      mime_type == pdf::kPDFMimeType) {
     // If this is already a file, there is no need to download.
     if (url.SchemeIsFile() || url.SchemeIs("content")) {
       return true;
@@ -1232,6 +1238,10 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         std::move(callback).Run(DownloadConfirmationResult::CANCELED,
                                 ui::SelectedFileInfo());
         return;
+      }
+
+      if (download->GetMimeType() == pdf::kPDFMimeType) {
+        download::RecordDuplicatePdfDownloadTriggered(/*open_inline=*/false);
       }
 
       if (!download_prefs_->PromptForDownload()) {
@@ -2058,8 +2068,7 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
 }
 
 bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_PdfUtils_shouldOpenPdfInline(env);
+  return ShouldOpenPdfInlineInternal(profile_->IsOffTheRecord());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -2091,7 +2100,7 @@ void ChromeDownloadManagerDelegate::ConnectToQuarantineService(
 
 void ChromeDownloadManagerDelegate::OnManagerInitialized() {
 #if BUILDFLAG(IS_ANDROID)
-  if (ShouldOpenPdfInline()) {
+  if (ShouldOpenPdfInlineInternal(/*incognito=*/false)) {
     download::GetDownloadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce([]() { base::DeleteFile(GetTempPdfDir()); }));
   }

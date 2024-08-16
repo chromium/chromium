@@ -601,6 +601,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Eligible"/>
 </enum>
 
+<!-- LINT.IfChange(IpProtectionGetAuthTokenResultForGeo) -->
+
+<enum name="IpProtectionGetAuthTokenResultForGeo">
+  <int value="0" label="Auth token unavailable and cache is empty"/>
+  <int value="1" label="Auth token unavailable but cache contains tokens"/>
+  <int value="2" label="Auth token available for current geo"/>
+  <int value="3" label="Auth token available for other geo"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/ip_protection/ip_protection_token_cache_manager_impl.h:AuthTokenResultForGeo) -->
+
 <enum name="IpProtectionGetProxyListResult">
   <int value="0" label="Failed to acquire a list"/>
   <int value="1" label="Got a list without any valid entries"/>

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -23,7 +22,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -48,21 +46,11 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
 
     private static class TestContextualSearchObserver implements ContextualSearchObserver {
         private int mShowCount;
-        private int mShowRedactedCount;
         private int mHideCount;
-        private int mFirstShownLength;
-        private int mLastShownLength;
 
         @Override
-        public void onShowContextualSearch(@Nullable GSAContextDisplaySelection selectionContext) {
+        public void onShowContextualSearch() {
             mShowCount++;
-            if (selectionContext != null
-                    && selectionContext.startOffset < selectionContext.endOffset) {
-                mLastShownLength = selectionContext.endOffset - selectionContext.startOffset;
-                if (mFirstShownLength == 0) mFirstShownLength = mLastShownLength;
-            } else {
-                mShowRedactedCount++;
-            }
         }
 
         @Override
@@ -82,28 +70,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
          */
         int getShowCount() {
             return mShowCount;
-        }
-
-        /**
-         * @return The count of Show notifications sent to observers that had the data redacted due
-         *     to our policy on privacy.
-         */
-        int getShowRedactedCount() {
-            return mShowRedactedCount;
-        }
-
-        /**
-         * @return The length of the selection for the first Show notification.
-         */
-        int getFirstShownLength() {
-            return mFirstShownLength;
-        }
-
-        /**
-         * @return The length of the selection for the last Show notification.
-         */
-        int getLastShownLength() {
-            return mLastShownLength;
         }
     }
 
@@ -143,12 +109,10 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
         TestContextualSearchObserver observer = new TestContextualSearchObserver();
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.addObserver(observer));
         triggerNonResolve(SEARCH_NODE);
-        Assert.assertEquals(1, observer.getShowRedactedCount());
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(0, observer.getHideCount());
 
         tapBasePageToClosePanel();
-        Assert.assertEquals(1, observer.getShowRedactedCount());
         Assert.assertEquals(1, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
@@ -217,8 +181,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
         simulateSlowResolveFinished();
         closePanel();
 
-        Assert.assertEquals("States".length(), observer.getFirstShownLength());
-        Assert.assertEquals("United States".length(), observer.getLastShownLength());
         Assert.assertEquals(2, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
         ThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));

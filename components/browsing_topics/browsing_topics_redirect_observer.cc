@@ -69,6 +69,9 @@ void BrowsingTopicsRedirectObserver::ReadyToCommitNavigation(
       previous_page_tracker->redirect_count() + 1;
   int pending_navigation_redirect_with_topics_invoked_count =
       previous_page_tracker->redirect_with_topics_invoked_count();
+  ukm::SourceId source_id_before_redirects =
+      previous_page_tracker->source_id_before_redirects();
+
   if (previous_page_tracker->topics_invoked()) {
     pending_navigation_redirect_with_topics_invoked_count++;
   }
@@ -78,7 +81,8 @@ void BrowsingTopicsRedirectObserver::ReadyToCommitNavigation(
       PendingNavigationRedirectState{
           .redirect_count = pending_navigation_redirect_count,
           .redirect_with_topics_invoked_count =
-              pending_navigation_redirect_with_topics_invoked_count});
+              pending_navigation_redirect_with_topics_invoked_count,
+          .source_id_before_redirects = source_id_before_redirects});
 }
 
 void BrowsingTopicsRedirectObserver::DidFinishNavigation(
@@ -111,7 +115,8 @@ void BrowsingTopicsRedirectObserver::DidFinishNavigation(
   if (!page_tracker) {
     BrowsingTopicsPageLoadDataTracker::CreateForPage(
         page, extracted.mapped().redirect_count,
-        extracted.mapped().redirect_with_topics_invoked_count);
+        extracted.mapped().redirect_with_topics_invoked_count,
+        extracted.mapped().source_id_before_redirects);
   }
 }
 

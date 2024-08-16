@@ -339,7 +339,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrl(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -372,7 +373,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithSyncChecker) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrlWithSyncChecker(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -405,7 +407,8 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithAsyncChecker) {
                               browser_state_.get(), &safe_browsing_client_);
   GURL safe_url = GURL(kSafePage);
   client.CheckUrlWithAsyncChecker(safe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -469,7 +472,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -515,7 +519,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithSyncChecker) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrlWithSyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -561,7 +566,8 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithAsyncChecker) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrlWithAsyncChecker(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }
@@ -603,7 +609,8 @@ TEST_F(SafeBrowsingServiceTest,
   // flagged.
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   client.CheckUrl(unsafe_url);
-  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread) ||
+      safe_browsing::kMmapSafeBrowsingDatabaseAsync.Get()) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
   }

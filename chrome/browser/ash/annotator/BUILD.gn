@@ -13,6 +13,8 @@ static_library("annotator") {
     "untrusted_annotator_ui_config.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//ash/webui/annotator",

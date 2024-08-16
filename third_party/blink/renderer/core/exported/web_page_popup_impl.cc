@@ -473,6 +473,14 @@ void WebPagePopupImpl::ProcessInputEventSynchronouslyForTesting(
                                                  base::DoNothing());
 }
 
+void WebPagePopupImpl::DispatchNonBlockingEventForTesting(
+    std::unique_ptr<WebCoalescedInputEvent> event) {
+  widget_base_->widget_input_handler_manager()
+      ->DispatchEventOnInputThreadForTesting(
+          std::move(event),
+          mojom::blink::WidgetInputHandler::DispatchEventCallback());
+}
+
 void WebPagePopupImpl::UpdateTextInputState() {
   widget_base_->UpdateTextInputState();
 }

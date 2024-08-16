@@ -35,19 +35,17 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   struct DownloadMetrics {
     enum Downloader { kNone = 0, kUrlFetcher, kBits, kBackgroundMac };
 
-    DownloadMetrics();
-
     GURL url;
 
-    Downloader downloader;
+    Downloader downloader = kNone;
 
-    int error;
-    int extra_code1;
+    int error = 0;
+    int extra_code1 = 0;
 
-    int64_t downloaded_bytes;  // -1 means that the byte count is unknown.
-    int64_t total_bytes;
+    int64_t downloaded_bytes = -1;  // -1 means that the byte count is unknown.
+    int64_t total_bytes = -1;
 
-    uint64_t download_time_ms;
+    uint64_t download_time_ms = 0;
   };
 
   // Contains the progress or the outcome of the download.

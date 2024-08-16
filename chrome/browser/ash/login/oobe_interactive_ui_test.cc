@@ -810,9 +810,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   RunSyncConsentScreenChecks();
   test::ExitScreenSyncConsent();
 
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    HandlePasswordSelectionScreen();
-  }
+  HandlePasswordSelectionScreen();
 
   if (test_setup()->is_quick_unlock_enabled()) {
     test::WaitForFingerprintScreen();

@@ -7,16 +7,22 @@ package org.chromium.chrome.browser.price_insights;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_CHART;
+import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_HISTORY_DESCRIPTION;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.View;
 import android.view.View.OnClickListener;
 
 import org.junit.Before;
@@ -31,11 +37,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,12 +51,13 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfoCallback;
+import org.chromium.components.commerce.core.ShoppingService.PricePoint;
 import org.chromium.components.commerce.core.ShoppingService.ProductInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 
 /** Tests for {@link PriceInsightsBottomSheetMediator}. */
@@ -60,7 +66,6 @@ import java.util.Optional;
 @Config(manifest = Config.NONE)
 public class PriceInsightsBottomSheetMediatorTest {
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mMockContext;
@@ -70,8 +75,9 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Mock private ShoppingService mMockShoppingService;
     @Mock private Resources mMockResources;
     @Mock private BookmarkId mMockBookmarkId;
-    @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
+    @Mock private ObservableSupplier<Boolean> mMockPriceTrackingStateSupplier;
+    @Mock private View mMockPriceHistoryChart;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_TRACKING_DESCRIPTION =
@@ -79,7 +85,32 @@ public class PriceInsightsBottomSheetMediatorTest {
     private static final String PRICE_TRACKING_DISABLED_BUTTON_TEXT = "Track";
     private static final String PRICE_TRACKING_ENABLED_BUTTON_TEXT = "Tracking";
     private static final String PRICE_HISTORY_TITLE = "Price history across the web";
+    private static final String PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE =
+            "Price history across the web for this option";
+    private static final String CATALOG_ATTRIBUTES = "Stainless steel, Espresso Bundle";
     private static final String OPEN_URL_TITLE = "Search buying options";
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_SINGLE_CATALOG =
+            new PriceInsightsInfo(
+                    Optional.empty(),
+                    "USD",
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    0,
+                    false);
+    private static final PriceInsightsInfo PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS =
+            new PriceInsightsInfo(
+                    Optional.empty(),
+                    "USD",
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.of(CATALOG_ATTRIBUTES),
+                    Arrays.asList(new PricePoint("08-08-2024", 65000000L)),
+                    Optional.of(JUnitTestGURLs.EXAMPLE_URL),
+                    0,
+                    true);
 
     private PriceInsightsBottomSheetMediator mPriceInsightsMediator;
     private PropertyModel mPropertyModel =
@@ -88,8 +119,6 @@ public class PriceInsightsBottomSheetMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
 
         doReturn(mMockResources).when(mMockContext).getResources();
         doReturn(PRICE_TRACKING_DESCRIPTION)
@@ -104,6 +133,9 @@ public class PriceInsightsBottomSheetMediatorTest {
         doReturn(PRICE_HISTORY_TITLE)
                 .when(mMockResources)
                 .getString(eq(R.string.price_history_title));
+        doReturn(PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE)
+                .when(mMockResources)
+                .getString(eq(R.string.price_history_multiple_catalogs_title));
         doReturn(OPEN_URL_TITLE)
                 .when(mMockResources)
                 .getString(eq(R.string.price_insights_open_url_title));
@@ -112,6 +144,11 @@ public class PriceInsightsBottomSheetMediatorTest {
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        doReturn(mMockPriceTrackingStateSupplier)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceTrackingStateSupplier(mMockTab);
 
         mPriceInsightsMediator =
                 new PriceInsightsBottomSheetMediator(
@@ -150,12 +187,16 @@ public class PriceInsightsBottomSheetMediatorTest {
                 R.color.price_insights_sheet_price_tracking_ineligible_button_bg_color,
                 mPropertyModel.get(
                         PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
+        assertNull(
+                mPropertyModel.get(
+                        PriceInsightsBottomSheetProperties
+                                .PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER));
     }
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndDisabled() {
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
-        setIsBookmarkPriceTrackedResult(false);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
@@ -164,30 +205,27 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertEquals(
                 PRICE_TRACKING_DESCRIPTION,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION));
-        assertTrue(
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Track")
+                        .build();
+
+        // Test click price tracking button and set from state disabled to enabled success.
+        setResultForPriceTrackingUpdate(/* success= */ true);
+        OnClickListener priceTrackingButtonListener =
                 mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
-        assertEquals(
-                R.drawable.price_insights_sheet_price_tracking_button_disabled,
-                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON));
-        assertEquals(
-                PRICE_TRACKING_DISABLED_BUTTON_TEXT,
-                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT));
-        assertEquals(
-                R.color.price_insights_sheet_price_tracking_disabled_button_foreground_color,
-                mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
-        assertEquals(
-                R.color.price_insights_sheet_price_tracking_disabled_button_bg_color,
-                mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER);
+        assertNotNull(priceTrackingButtonListener);
+        priceTrackingButtonListener.onClick(null);
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ true);
+        watcher.assertExpected();
     }
 
     @Test
     public void testRequestShowContent_PriceTrackingEligibleAndEnabled() {
-        doReturn(mMockBookmarkId).when(mMockPriceInsightsDelegate).getBookmarkIdForTab(mMockTab);
+        doReturn(true).when(mMockPriceTrackingStateSupplier).get();
         setShoppingServiceGetProductInfoForUrl();
-        setIsBookmarkPriceTrackedResult(true);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
@@ -196,37 +234,78 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertEquals(
                 PRICE_TRACKING_DESCRIPTION,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_DESCRIPTION));
-        assertTrue(
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Untrack")
+                        .build();
+
+        // Test click price tracking button and set from state enabled to disabled success.
+        setResultForPriceTrackingUpdate(/* success= */ true);
+        OnClickListener priceTrackingButtonListener =
                 mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
-        assertEquals(
-                R.drawable.price_insights_sheet_price_tracking_button_enabled,
-                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON));
-        assertEquals(
-                PRICE_TRACKING_ENABLED_BUTTON_TEXT,
-                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT));
-        assertEquals(
-                R.color.price_insights_sheet_price_tracking_enabled_button_foreground_color,
-                mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
-        assertEquals(
-                R.color.price_insights_sheet_price_tracking_enabled_button_bg_color,
-                mPropertyModel.get(
-                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER);
+        assertNotNull(priceTrackingButtonListener);
+        priceTrackingButtonListener.onClick(null);
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        watcher.assertExpected();
     }
 
     @Test
-    public void testRequestShowContent_PriceHistory() {
+    public void testRequestShowContent_PriceTrackingButtonOnClick_Failed() {
+        doReturn(false).when(mMockPriceTrackingStateSupplier).get();
+        setShoppingServiceGetProductInfoForUrl();
+        mPriceInsightsMediator.requestShowContent();
+
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.PriceTracking.Track")
+                        .build();
+
+        // Test click price tracking button and set from state disabled to enabled failed.
+        setResultForPriceTrackingUpdate(/* success= */ false);
+        OnClickListener priceTrackingButtonListener =
+                mPropertyModel.get(
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ON_CLICK_LISTENER);
+        priceTrackingButtonListener.onClick(null);
+        assertPriceTrackingButtonHasTrackingState(/* isTracking= */ false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRequestShowContent_PriceHistorySingleCatalog() {
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
                 PRICE_HISTORY_TITLE,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        assertNull(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
+        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
+    }
+
+    @Test
+    public void testRequestShowContent_PriceHistoryMultipleCatalogs() {
+        doReturn(mMockPriceHistoryChart)
+                .when(mMockPriceInsightsDelegate)
+                .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
+        mPriceInsightsMediator.requestShowContent();
+
+        assertEquals(
+                PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE,
+                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_HISTORY_TITLE));
+        assertEquals(CATALOG_ATTRIBUTES, mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
+        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
     }
 
     @Test
     public void testRequestShowContent_OpenUrlButton() {
-        setShoppingServiceGetPriceInsightsInfoForUrl();
+        setShoppingServiceGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         mPriceInsightsMediator.requestShowContent();
 
         assertEquals(
@@ -235,6 +314,10 @@ public class PriceInsightsBottomSheetMediatorTest {
         assertEquals(
                 R.drawable.ic_open_in_new_24dp,
                 mPropertyModel.get(PriceInsightsBottomSheetProperties.OPEN_URL_BUTTON_ICON));
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Commerce.PriceInsights.BuyingOptionsClicked")
+                        .build();
 
         OnClickListener openUrlListener =
                 mPropertyModel.get(
@@ -247,17 +330,30 @@ public class PriceInsightsBottomSheetMediatorTest {
                         eq(TabLaunchType.FROM_LINK),
                         eq(mMockTab),
                         eq(false));
+        watcher.assertExpected();
     }
 
-    private void setIsBookmarkPriceTrackedResult(boolean isBookmarkPriceTracked) {
+    @Test
+    public void testPriceTrackingStateSupplier() {
+        mPriceInsightsMediator.requestShowContent();
+        verify(mMockPriceTrackingStateSupplier, times(1)).addObserver(any());
+
+        mPriceInsightsMediator.closeContent();
+        verify(mMockPriceTrackingStateSupplier, times(1)).removeObserver(any());
+    }
+
+    private void setResultForPriceTrackingUpdate(boolean success) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
-                            ((Callback<Boolean>) invocation.getArgument(2))
-                                    .onResult(isBookmarkPriceTracked);
+                            if (success) {
+                                boolean newState = invocation.getArgument(1);
+                                doReturn(newState).when(mMockPriceTrackingStateSupplier).get();
+                            }
+                            ((Callback<Boolean>) invocation.getArgument(2)).onResult(success);
                             return null;
                         })
-                .when(mMockPriceTrackingUtilsJni)
-                .isBookmarkPriceTracked(any(Profile.class), anyLong(), any());
+                .when(mMockPriceInsightsDelegate)
+                .setPriceTrackingStateForTab(any(Tab.class), anyBoolean(), any());
     }
 
     private void setShoppingServiceGetProductInfoForUrl() {
@@ -274,26 +370,53 @@ public class PriceInsightsBottomSheetMediatorTest {
         doReturn(productInfo).when(mMockShoppingService).getAvailableProductInfoForUrl(any());
     }
 
-    private void setShoppingServiceGetPriceInsightsInfoForUrl() {
-        PriceInsightsInfo priceInsightsInfo =
-                new PriceInsightsInfo(
-                        Optional.empty(),
-                        "",
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.empty(),
-                        new ArrayList<>(),
-                        Optional.of(JUnitTestGURLs.EXAMPLE_URL),
-                        0,
-                        false);
-
+    private void setShoppingServiceGetPriceInsightsInfoForUrl(PriceInsightsInfo info) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((PriceInsightsInfoCallback) invocation.getArgument(1))
-                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, priceInsightsInfo);
+                                    .onResult(JUnitTestGURLs.EXAMPLE_URL, info);
                             return null;
                         })
                 .when(mMockShoppingService)
                 .getPriceInsightsInfoForUrl(any(), any());
+    }
+
+    private void assertPriceTrackingButtonHasTrackingState(boolean isTracking) {
+        String buttonText =
+                isTracking
+                        ? PRICE_TRACKING_ENABLED_BUTTON_TEXT
+                        : PRICE_TRACKING_DISABLED_BUTTON_TEXT;
+        int buttonIconResId =
+                isTracking
+                        ? R.drawable.price_insights_sheet_price_tracking_button_enabled
+                        : R.drawable.price_insights_sheet_price_tracking_button_disabled;
+        int buttonForegroundColorResId =
+                isTracking
+                        ? R.color
+                                .price_insights_sheet_price_tracking_enabled_button_foreground_color
+                        : R.color
+                                .price_insights_sheet_price_tracking_disabled_button_foreground_color;
+        int buttonBackgroundColorResId =
+                isTracking
+                        ? R.color.price_insights_sheet_price_tracking_enabled_button_bg_color
+                        : R.color.price_insights_sheet_price_tracking_disabled_button_bg_color;
+
+        assertTrue(
+                mPropertyModel.get(
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ENABLED));
+        assertEquals(
+                buttonText,
+                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_TEXT));
+        assertEquals(
+                buttonIconResId,
+                mPropertyModel.get(PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_ICON));
+        assertEquals(
+                buttonForegroundColorResId,
+                mPropertyModel.get(
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
+        assertEquals(
+                buttonBackgroundColorResId,
+                mPropertyModel.get(
+                        PriceInsightsBottomSheetProperties.PRICE_TRACKING_BUTTON_BACKGROUND_COLOR));
     }
 }

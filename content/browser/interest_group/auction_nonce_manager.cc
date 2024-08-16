@@ -17,29 +17,10 @@
 
 namespace content {
 
-std::unique_ptr<AuctionNonceManager> CreateAuctionNonceManager(
-    RenderFrameHostImpl* frame_host) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
-    return std::make_unique<SynchronousAuctionNonceManager>(frame_host);
-  } else {
-    return std::make_unique<AsynchronousAuctionNonceManager>(frame_host);
-  }
-}
-
-AuctionNonceManager::~AuctionNonceManager() = default;
-
-SynchronousAuctionNonceManager::SynchronousAuctionNonceManager(
-    RenderFrameHostImpl* frame_host)
+AuctionNonceManager::AuctionNonceManager(RenderFrameHostImpl* frame_host)
     : frame_host_(frame_host) {}
 
-SynchronousAuctionNonceManager::~SynchronousAuctionNonceManager() = default;
-
-AuctionNonce SynchronousAuctionNonceManager::CreateAuctionNonce() {
-  LOG(FATAL) << "Unexpected call to AuctionNonceManager::CreateAuctionNonce, "
-             << "which should not be called when "
-             << "FledgeCreateAuctionNonceSynchronousResolution is enabled.";
-}
+AuctionNonceManager::~AuctionNonceManager() = default;
 
 namespace {
 // Returns true iff the first 30 characters of the two provided UUIDs are
@@ -68,8 +49,7 @@ uint32_t GetNonceSuffix(AuctionNonce nonce) {
 }
 }  // namespace
 
-bool SynchronousAuctionNonceManager::ClaimAuctionNonceIfAvailable(
-    AuctionNonce nonce) {
+bool AuctionNonceManager::ClaimAuctionNonceIfAvailable(AuctionNonce nonce) {
   if (!frame_host_ || !nonce->is_valid()) {
     return false;
   }
@@ -93,37 +73,6 @@ bool SynchronousAuctionNonceManager::ClaimAuctionNonceIfAvailable(
 
   claimed_auction_nonce_suffixes_.insert(nonce_suffix);
   return true;
-}
-
-AsynchronousAuctionNonceManager::AsynchronousAuctionNonceManager(
-    RenderFrameHostImpl* frame_host)
-    : frame_host_(frame_host) {}
-
-AsynchronousAuctionNonceManager::~AsynchronousAuctionNonceManager() = default;
-
-AuctionNonce AsynchronousAuctionNonceManager::CreateAuctionNonce() {
-  AuctionNonce nonce =
-      static_cast<AuctionNonce>(base::Uuid::GenerateRandomV4());
-  pending_auction_nonces_.insert(nonce);
-  return nonce;
-}
-
-bool AsynchronousAuctionNonceManager::ClaimAuctionNonceIfAvailable(
-    AuctionNonce nonce) {
-  if (auto nonce_iter = pending_auction_nonces_.find(nonce);
-      nonce_iter != pending_auction_nonces_.end()) {
-    pending_auction_nonces_.erase(nonce_iter);
-    return true;
-  }
-
-  // No matching auction nonce from a prior call to CreateAuctionNonce.
-  if (frame_host_) {
-    devtools_instrumentation::LogWorkletMessage(
-        *frame_host_, blink::mojom::ConsoleMessageLevel::kError,
-        "Invalid AuctionConfig. The config provided an auctionNonce value "
-        "that was _not_ created by a previous call to createAuctionNonce.");
-  }
-  return false;
 }
 
 }  // namespace content

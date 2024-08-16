@@ -44,7 +44,7 @@ void ReadingListModelStorageImpl::ScopedBatchUpdate::RemoveEntry(
 }
 
 ReadingListModelStorageImpl::ReadingListModelStorageImpl(
-    syncer::OnceModelTypeStoreFactory create_store_callback)
+    syncer::OnceDataTypeStoreFactory create_store_callback)
     : create_store_callback_(std::move(create_store_callback)) {}
 
 ReadingListModelStorageImpl::~ReadingListModelStorageImpl() {
@@ -106,7 +106,7 @@ void ReadingListModelStorageImpl::CommitTransaction() {
 
 void ReadingListModelStorageImpl::OnDatabaseLoad(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
+    std::unique_ptr<syncer::DataTypeStore::RecordList> entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     std::move(load_callback_).Run(base::unexpected(error->message()));
@@ -115,7 +115,7 @@ void ReadingListModelStorageImpl::OnDatabaseLoad(
 
   ReadingListEntries loaded_entries;
 
-  for (const syncer::ModelTypeStore::Record& r : *entries) {
+  for (const syncer::DataTypeStore::Record& r : *entries) {
     reading_list::ReadingListLocal proto;
     if (!proto.ParseFromString(r.value)) {
       continue;
@@ -162,7 +162,7 @@ void ReadingListModelStorageImpl::OnDatabaseSave(
 
 void ReadingListModelStorageImpl::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     std::move(load_callback_).Run(base::unexpected(error->message()));

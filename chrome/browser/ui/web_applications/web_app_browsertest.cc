@@ -483,29 +483,6 @@ class ColorSystemWebAppBrowserTest : public WebAppBrowserTest {
       system_web_app_installation_;
 };
 
-class BackgroundColorChangeSystemWebAppBrowserTest
-    : public ColorSystemWebAppBrowserTest,
-      public testing::WithParamInterface<
-          /*prefer_manifest_background_color=*/bool> {
- public:
-  BackgroundColorChangeSystemWebAppBrowserTest() {
-    // TODO(b/284501548): Delete this test when Jelly is fully enabled.
-    // UseSystemTheme() supersedes this behavior.
-    features_.InitAndDisableFeature(chromeos::features::kJelly);
-
-    static_cast<ash::UnittestingSystemAppDelegate*>(
-        system_web_app_installation_->GetDelegate())
-        ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
-  }
-
-  // Returns whether the web app under test prefers manifest background colors
-  // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
 class DynamicColorSystemWebAppBrowserTest
     : public ColorSystemWebAppBrowserTest,
       public testing::WithParamInterface</*use_system_theme_color=*/bool> {
@@ -525,61 +502,6 @@ class DynamicColorSystemWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kJelly};
 };
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackgroundColorChangeSystemWebAppBrowserTest,
-                         /*prefer_manifest_background_color=*/testing::Bool(),
-                         [](const testing::TestParamInfo<
-                             /*prefer_manifest_background_color=*/bool>& info) {
-                           return info.param ? "PreferManifestBackgroundColor"
-                                             : "WebContentsBackgroundColor";
-                         });
-
-// Also see WebAppBrowserTest.BackgroundColorChange above.
-IN_PROC_BROWSER_TEST_P(BackgroundColorChangeSystemWebAppBrowserTest,
-                       BackgroundColorChange) {
-  const webapps::AppId app_id = WaitForSwaInstall();
-  Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  content::WebContents* const web_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-
-  const bool is_dark_mode_state =
-      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
-  // Wait for original background color to load.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE);
-  }
-  content::AwaitDocumentOnLoadCompleted(web_contents);
-
-  // Changing background color should update the active tab color unless a
-  // system web app prefers manifest background colors over web contents
-  // background colors.
-  {
-    content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecJs(
-        web_contents, "document.body.style.backgroundColor = 'cyan';"));
-    waiter.Wait();
-    if (PreferManifestBackgroundColor()) {
-      EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-                (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE));
-    } else {
-      auto background_opt = app_browser->app_controller()->GetBackgroundColor();
-      ASSERT_TRUE(background_opt);
-      EXPECT_EQ(background_opt.value(), SK_ColorCYAN);
-    }
-    SkColor active_tab_color;
-    app_browser->app_controller()->GetThemeSupplier()->GetColor(
-        ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-        &active_tab_color);
-    EXPECT_EQ(active_tab_color,
-              PreferManifestBackgroundColor()
-                  ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)
-                  : SK_ColorCYAN);
-  }
-}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DynamicColorSystemWebAppBrowserTest,

@@ -24,10 +24,8 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -299,7 +297,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
 
 TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
   base::HistogramTester histogram_tester;
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   const TestLegalMessageLine google_legal_message =
       TestLegalMessageLine("google_test_legal_message");
   const TestLegalMessageLine issuer_legal_message =
@@ -318,7 +315,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
 #endif  // BUILDFLAG(IS_IOS)
       virtual_card_enrollment_manager_
           ->get_details_for_enrollment_request_sent_timestamp_ =
-          AutofillClock::Now();
+          base::Time::Now();
       payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
           response = std::move(SetUpOnDidGetDetailsForEnrollResponse(
               google_legal_message, issuer_legal_message, make_image_present));
@@ -341,7 +338,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
             network_image);
       }
 
-      test_autofill_clock.Advance(base::Milliseconds(5));
+      task_environment_.FastForwardBy(base::Milliseconds(5));
 
       virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
           payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -851,7 +848,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, VirtualCardEnrollmentFields_LastShow) {
 TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
   base::HistogramTester histogram_tester;
   SetUpStrikeDatabaseTest();
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   VirtualCardEnrollmentProcessState* state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   SetUpCard();
@@ -878,7 +874,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
 
   // Advances the clock for `kEnrollmentEnforcedDelayInDays` - 1 days. Verifies
   // that enrollment should still be blocked.
-  test_autofill_clock.Advance(base::Days(kEnrollmentEnforcedDelayInDays - 1));
+  task_environment_.FastForwardBy(
+      base::Days(kEnrollmentEnforcedDelayInDays - 1));
   EXPECT_TRUE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
           base::NumberToString(card_->instrument_id()),
@@ -892,7 +889,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
 
   // Advances the clock for another days. Verifies that enrollment should not
   // be blocked.
-  test_autofill_clock.Advance(base::Days(1));
+  task_environment_.FastForwardBy(base::Days(1));
   EXPECT_FALSE(
       virtual_card_enrollment_manager_->ShouldBlockVirtualCardEnrollment(
           base::NumberToString(card_->instrument_id()),
@@ -907,14 +904,12 @@ TEST_F(VirtualCardEnrollmentManagerTest, RequiredDelaySinceLastStrike) {
 
 TEST_F(VirtualCardEnrollmentManagerTest, Metrics_LatencySinceUpstream) {
   base::HistogramTester histogram_tester;
-  TestAutofillClock test_autofill_clock;
-  test_autofill_clock.SetNow(AutofillClock::Now());
   virtual_card_enrollment_manager_->SetSaveCardBubbleAcceptedTimestamp(
-      AutofillClock::Now());
+      base::Time::Now());
   virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState()
       ->virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kUpstream;
-  test_autofill_clock.Advance(base::Minutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   virtual_card_enrollment_manager_->ShowVirtualCardEnrollBubble();
   histogram_tester.ExpectTimeBucketCount(
       "Autofill.VirtualCardEnrollBubble.LatencySinceUpstream", base::Minutes(1),

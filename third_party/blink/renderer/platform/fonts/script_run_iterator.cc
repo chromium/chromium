@@ -30,10 +30,11 @@ namespace {
 // https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags
 inline UScriptCode GetScriptForOpenType(UChar32 ch, UErrorCode* status) {
   UScriptCode script = uscript_getScript(ch, status);
-  if (UNLIKELY(U_FAILURE(*status)))
+  if (U_FAILURE(*status)) [[unlikely]] {
     return script;
-  if (UNLIKELY(script == USCRIPT_KATAKANA ||
-               script == USCRIPT_KATAKANA_OR_HIRAGANA)) {
+  }
+  if (script == USCRIPT_KATAKANA || script == USCRIPT_KATAKANA_OR_HIRAGANA)
+      [[unlikely]] {
     return USCRIPT_HIRAGANA;
   }
   return script;
@@ -104,7 +105,7 @@ void FixScriptsByEastAsianWidth(UChar32 ch,
     // U+300C in https://www.unicode.org/Public/UNIDATA/ScriptExtensions.txt.
     DEFINE_STATIC_LOCAL(ScriptRunIterator::UScriptCodeList, han_scripts,
                         (GetHanScriptExtensions()));
-    if (UNLIKELY(han_scripts.empty())) {
+    if (han_scripts.empty()) [[unlikely]] {
       // When |GetHanScriptExtensions| returns an empty list, replacing with it
       // will crash later, which makes the analysis complicated.
       NOTREACHED_IN_MIGRATION();
@@ -172,8 +173,10 @@ void ICUScriptData::GetScripts(UChar32 ch, UScriptCodeList& dst) const {
     auto it = std::find(dst.begin() + 1, dst.end(), primary_script);
     if (it == dst.end()) {
       dst.push_back(primary_script);
+      std::swap(dst.front(), dst.back());
+    } else {
+      std::swap(*dst.begin(), *it);
     }
-    std::swap(*dst.begin(), *it);
     return;
   }
 

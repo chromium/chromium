@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -240,7 +241,12 @@ public class JavascriptTabModalDialogTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.getCurrentTabModel().closeTab(mActivity.getActivityTab());
+                    mActivity
+                            .getCurrentTabModel()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(mActivity.getActivityTab())
+                                            .allowUndo(false)
+                                            .build());
                 });
 
         // Closing the tab should have dismissed the dialog.

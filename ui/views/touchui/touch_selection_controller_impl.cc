@@ -142,8 +142,7 @@ gfx::Image* GetHandleImage(gfx::SelectionBound::Type bound_type) {
     case gfx::SelectionBound::RIGHT:
       return GetRightHandleImage();
     default:
-      NOTREACHED_NORETURN()
-          << "Invalid touch handle bound type: " << bound_type;
+      NOTREACHED() << "Invalid touch handle bound type: " << bound_type;
   }
 }
 
@@ -161,8 +160,7 @@ ui::ImageModel GetHandleVectorIcon(gfx::SelectionBound::Type bound_type) {
       icon = &ui::kTextSelectionHandleRightIcon;
       break;
     default:
-      NOTREACHED_NORETURN()
-          << "Invalid touch handle bound type: " << bound_type;
+      NOTREACHED() << "Invalid touch handle bound type: " << bound_type;
   }
   return ui::ImageModel::FromVectorIcon(*icon,
                                         /*color_id=*/ui::kColorSysPrimary);
@@ -203,7 +201,7 @@ gfx::Rect GetSelectionWidgetBounds(const gfx::SelectionBound& bound) {
       widget_left = bound.edge_start_rounded().x() - widget_width / 2;
       break;
     default:
-      NOTREACHED_NORETURN() << "Undefined bound type.";
+      NOTREACHED() << "Undefined bound type.";
   }
   return gfx::Rect(widget_left, bound.edge_start_rounded().y(), widget_width,
                    widget_height);
@@ -251,16 +249,15 @@ gfx::Rect BoundToRect(const gfx::SelectionBound& bound) {
                            bound.edge_end_rounded());
 }
 
-views::UniqueWidgetPtr CreateHandleWidget(gfx::NativeView parent) {
+std::unique_ptr<views::Widget> CreateHandleWidget(gfx::NativeView parent) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.parent = parent;
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
+  auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->GetNativeWindow()->SetEventTargeter(
       std::make_unique<aura::WindowTargeter>());
   if (::features::IsTouchTextEditingRedesignEnabled()) {
@@ -487,15 +484,10 @@ TouchSelectionControllerImpl::~TouchSelectionControllerImpl() {
   // Close the handle widgets to clean up the EditingHandleViews. We do this
   // here to ensure that the EditingHandleViews aren't left with a pointer to a
   // deleted TouchSelectionControllerImpl.
-  if (selection_handle_1_widget_) {
-    selection_handle_1_widget_->CloseNow();
-  }
-  if (selection_handle_2_widget_) {
-    selection_handle_2_widget_->CloseNow();
-  }
-  if (cursor_handle_widget_) {
-    cursor_handle_widget_->CloseNow();
-  }
+  selection_handle_1_widget_->CloseNow();
+  selection_handle_2_widget_->CloseNow();
+  cursor_handle_widget_->CloseNow();
+
   CHECK(!IsInObserverList());
 }
 
@@ -748,8 +740,9 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
 
   gfx::Size handle_image_size;
   if (::features::IsTouchTextEditingRedesignEnabled()) {
-    if (!cursor_handle_widget_ || !selection_handle_1_widget_ ||
-        !selection_handle_2_widget_) {
+    if (selection_handle_1_widget_->IsClosed() ||
+        selection_handle_2_widget_->IsClosed() ||
+        cursor_handle_widget_->IsClosed()) {
       return;
     }
     handle_image_size = cursor_handle_widget_->IsVisible()
@@ -863,23 +856,24 @@ void TouchSelectionControllerImpl::CreateHandleWidgets() {
 }
 
 EditingHandleView* TouchSelectionControllerImpl::GetSelectionHandle1() {
-  return selection_handle_1_widget_
-             ? AsViewClass<EditingHandleView>(
-                   selection_handle_1_widget_->GetContentsView())
-             : nullptr;
+  return selection_handle_1_widget_->IsClosed()
+             ? nullptr
+             : AsViewClass<EditingHandleView>(
+                   selection_handle_1_widget_->GetContentsView());
 }
 
 EditingHandleView* TouchSelectionControllerImpl::GetSelectionHandle2() {
-  return selection_handle_2_widget_
-             ? AsViewClass<EditingHandleView>(
-                   selection_handle_2_widget_->GetContentsView())
-             : nullptr;
+  return selection_handle_1_widget_->IsClosed()
+             ? nullptr
+             : AsViewClass<EditingHandleView>(
+                   selection_handle_2_widget_->GetContentsView());
 }
 
 EditingHandleView* TouchSelectionControllerImpl::GetCursorHandle() {
-  return cursor_handle_widget_ ? AsViewClass<EditingHandleView>(
-                                     cursor_handle_widget_->GetContentsView())
-                               : nullptr;
+  return selection_handle_1_widget_->IsClosed()
+             ? nullptr
+             : AsViewClass<EditingHandleView>(
+                   cursor_handle_widget_->GetContentsView());
 }
 
 EditingHandleView* TouchSelectionControllerImpl::GetDraggingHandle() {
@@ -887,11 +881,11 @@ EditingHandleView* TouchSelectionControllerImpl::GetDraggingHandle() {
   EditingHandleView* selection_handle_2 = GetSelectionHandle2();
   EditingHandleView* cursor_handle = GetCursorHandle();
 
-  if (selection_handle_1 && selection_handle_1->GetIsDragging()) {
+  if (selection_handle_1->GetIsDragging()) {
     return selection_handle_1;
-  } else if (selection_handle_2 && selection_handle_2->GetIsDragging()) {
+  } else if (selection_handle_2->GetIsDragging()) {
     return selection_handle_2;
-  } else if (cursor_handle && cursor_handle->GetIsDragging()) {
+  } else if (cursor_handle->GetIsDragging()) {
     return cursor_handle;
   }
   return nullptr;

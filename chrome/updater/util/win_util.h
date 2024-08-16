@@ -295,10 +295,15 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
                              const std::wstring& parameters);
 
+// Runs `command_line` de-elevated. The function waits until the spawned process
+// has completed. Returns the exit code of the process or HRESULT on failure.
+HResultOr<DWORD> RunDeElevated(const base::CommandLine& command_line);
+
 // Runs `path` de-elevated. `path` specifies the exe or url to be launched.
 // `parameters` can be an empty string. The function does not wait for the
 // spawned process.
-HRESULT RunDeElevated(const std::wstring& path, const std::wstring& parameters);
+HRESULT RunDeElevatedNoWait(const std::wstring& path,
+                            const std::wstring& parameters);
 
 // Runs `cmd_line` de-elevated.The function does not wait for the spawned
 // process.

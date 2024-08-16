@@ -24,9 +24,11 @@ class LenientMockBFCachePolicy : public BFCachePolicy {
   ~LenientMockBFCachePolicy() override = default;
   LenientMockBFCachePolicy(const LenientMockBFCachePolicy& other) = delete;
   LenientMockBFCachePolicy& operator=(const LenientMockBFCachePolicy&) = delete;
-  MOCK_METHOD2(MaybeFlushBFCache,
-               void(const PageNode* page_node,
-                    MemoryPressureLevel memory_pressure_level));
+  MOCK_METHOD(void,
+              MaybeFlushBFCache,
+              (const PageNode* page_node,
+               MemoryPressureLevel memory_pressure_level),
+              (override));
 };
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using MockBFCachePolicy = ::testing::StrictMock<LenientMockBFCachePolicy>;

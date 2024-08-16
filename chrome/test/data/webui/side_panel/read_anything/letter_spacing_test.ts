@@ -18,7 +18,7 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('LetterSpacing', () => {
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
-  let spacingEmitted: number;
+  let spacingEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -27,10 +27,9 @@ suite('LetterSpacing', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    spacingEmitted = -1;
-    document.addEventListener(ToolbarEvent.LETTER_SPACING, event => {
-      spacingEmitted = (event as CustomEvent).detail.data;
-    });
+    spacingEmitted = false;
+    document.addEventListener(
+        ToolbarEvent.LETTER_SPACING, () => spacingEmitted = true);
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     flush();
@@ -61,28 +60,28 @@ suite('LetterSpacing', () => {
     test('first option propagates standard spacing', () => {
       letterSpacingMenuOptions[0]!.click();
 
-      assertEquals(chrome.readingMode.standardLetterSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
-          chrome.readingMode.letterSpacing,
-          chrome.readingMode.standardLetterSpacing);
+          chrome.readingMode.standardLetterSpacing,
+          chrome.readingMode.letterSpacing);
     });
 
     test('second option propagates wide spacing', () => {
       letterSpacingMenuOptions[1]!.click();
 
-      assertEquals(chrome.readingMode.wideLetterSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
-          chrome.readingMode.letterSpacing,
-          chrome.readingMode.wideLetterSpacing);
+          chrome.readingMode.wideLetterSpacing,
+          chrome.readingMode.letterSpacing);
     });
 
     test('third option propagates very wide spacing', () => {
       letterSpacingMenuOptions[2]!.click();
 
-      assertEquals(chrome.readingMode.veryWideLetterSpacing, spacingEmitted);
+      assertTrue(spacingEmitted);
       assertEquals(
-          chrome.readingMode.letterSpacing,
-          chrome.readingMode.veryWideLetterSpacing);
+          chrome.readingMode.veryWideLetterSpacing,
+          chrome.readingMode.letterSpacing);
     });
   });
 });

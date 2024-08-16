@@ -1,0 +1,60 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("network_change_manager") {
+  sources = [
+    "network_change_manager_client.cc",
+    "network_change_manager_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/network",
+    "//chromeos/crosapi/mojom",
+    "//chromeos/dbus/power",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "network_change_manager_client_unittest.cc" ]
+
+  deps = [
+    ":network_change_manager",
+    "//base",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/dbus/power",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "network_change_manager_client_browsertest.cc" ]
+
+  deps = [
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net",
+  ]
+}

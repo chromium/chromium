@@ -587,8 +587,9 @@ bool PrePaintTreeWalk::CollectMissableChildren(
     const PhysicalBoxFragment& parent) {
   bool has_missable_children = false;
   for (const PhysicalFragmentLink& child : parent.Children()) {
-    if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
+    if (child->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
     if (child->IsOutOfFlowPositioned() &&
         (context.current_container.fragment || child->IsFixedPositioned())) {
       // Add all out-of-flow positioned fragments inside a fragmentation
@@ -744,8 +745,9 @@ void PrePaintTreeWalk::WalkMissedChildren(
   }
 
   for (const PhysicalFragmentLink& child : fragment.Children()) {
-    if (UNLIKELY(child->IsLayoutObjectDestroyedOrMoved()))
+    if (child->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
     if (!child->IsOutOfFlowPositioned()) {
       continue;
     }
@@ -813,8 +815,9 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
 
   for (PhysicalFragmentLink child : fragment.Children()) {
     const auto* box_fragment = To<PhysicalBoxFragment>(child.fragment.Get());
-    if (UNLIKELY(box_fragment->IsLayoutObjectDestroyedOrMoved()))
+    if (box_fragment->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
 
     if (box_fragment->GetLayoutObject()) {
       // OOFs contained by a multicol container will be visited during object

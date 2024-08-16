@@ -6,27 +6,20 @@
 
 #include <memory>
 
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace extensions {
 
-std::unique_ptr<ContextData> BrowserFrameContextData::Clone() const {
-  return CloneFrameContextData();
-}
-
 std::unique_ptr<FrameContextData>
 BrowserFrameContextData::CloneFrameContextData() const {
   return std::make_unique<BrowserFrameContextData>(frame_);
 }
 
-bool BrowserFrameContextData::IsIsolatedApplication() const {
-  return frame_ &&
-         content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
-             frame_->GetBrowserContext()) &&
-         frame_->GetWebExposedIsolationLevel() ==
-             content::WebExposedIsolationLevel::kIsolatedApplication;
+bool BrowserFrameContextData::HasIsolatedContextCapability() const {
+  return frame_ && content::HasIsolatedContextCapability(frame_);
 }
 
 std::unique_ptr<FrameContextData>

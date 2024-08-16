@@ -4,8 +4,11 @@
 
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -118,6 +121,38 @@ ControlledFrameTestBase::CreateAndInstallEmptyApp(
     });
 )";
   return ExecJs(frame, content::JsReplace(kCreateControlledFrame, src));
+}
+
+std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+ControlledFrameTestBase::InstallAndOpenIwaThenCreateControlledFrame(
+    std::optional<std::string_view> controlled_frame_host_name,
+    std::string_view controlled_frame_src_relative_url,
+    web_app::ManifestBuilder manfest_buider) {
+  CHECK(embedded_https_test_server().Started())
+      << "Controlled Frame content server has not been started.";
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(manfest_buider);
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  CHECK(app_frame);
+
+  GURL controlled_frame_src = controlled_frame_host_name.has_value()
+                                  ? embedded_https_test_server().GetURL(
+                                        controlled_frame_host_name.value(),
+                                        controlled_frame_src_relative_url)
+                                  : embedded_https_test_server().GetURL(
+                                        controlled_frame_src_relative_url);
+
+  CHECK(CreateControlledFrame(app_frame, controlled_frame_src));
+
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  CHECK(web_view_guest);
+
+  content::RenderFrameHost* controlled_frame =
+      web_view_guest->GetGuestMainFrame();
+  CHECK(controlled_frame);
+
+  return {app_frame, controlled_frame};
 }
 
 extensions::WebViewGuest* ControlledFrameTestBase::GetWebViewGuest(

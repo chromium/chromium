@@ -37,25 +37,19 @@ class FormEventLoggerBase {
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
-  void OnDidInteractWithAutofillableForm(
-      const FormStructure& form,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
+  void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
-  void OnDidPollSuggestions(
-      const FormFieldData& field,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
+  void OnDidPollSuggestions(const FormFieldData& field);
 
   void OnDidParseForm(const FormStructure& form);
 
   void OnUserHideSuggestions(const FormStructure& form,
                              const AutofillField& field);
 
-  virtual void OnDidShowSuggestions(
-      const FormStructure& form,
-      const AutofillField& field,
-      base::TimeTicks form_parsed_timestamp,
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      bool off_the_record);
+  virtual void OnDidShowSuggestions(const FormStructure& form,
+                                    const AutofillField& field,
+                                    base::TimeTicks form_parsed_timestamp,
+                                    bool off_the_record);
 
   // This is different from OnDidFillSuggestion because it does not require to
   // provide data models or other parameters. It is needed to be used in field
@@ -65,17 +59,11 @@ class FormEventLoggerBase {
       base::span<const FormFieldData* const> filled_fields,
       base::span<const AutofillField* const> filled_autofill_fields);
 
-  void OnDidRefill(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
+  void OnDidRefill(const FormStructure& form);
 
-  void OnWillSubmitForm(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
+  void OnWillSubmitForm(const FormStructure& form);
 
-  void OnFormSubmitted(
-      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
-      const FormStructure& form);
+  void OnFormSubmitted(const FormStructure& form);
 
   void OnTypedIntoNonFilledField();
   void OnEditedAutofilledField();
@@ -272,9 +260,6 @@ class FormEventLoggerBase {
 
   // Weak reference.
   const raw_ref<AutofillClient> client_;
-
-  AutofillMetrics::PaymentsSigninState signin_state_for_metrics_ =
-      AutofillMetrics::PaymentsSigninState::kUnknown;
 };
 }  // namespace autofill::autofill_metrics
 

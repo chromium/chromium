@@ -1,0 +1,41 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "enelnimkndkcejhjnpaofdlbbfmdnagi"
+
+manifest:
+  '{'
+  '  "name": "chrome.fileSystem.getVolumeList test for kiosk apps in the kiosk session",'
+  '  "version": "0.1",'
+  '  "description": "Tests available volumes to kiosk apps running in the kiosk session. Especially Drive must not be exposed.",'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "background.js"'
+  '      ]'
+  '    }'
+  '  },'
+  '  "kiosk_only": true,'
+  '  "kiosk_enabled": true,'
+  '  "permissions": ['
+  '    {'
+  '      "fileSystem": ['
+  '        "requestFileSystem"'
+  '      ]'
+  '    }'
+  '  ]'
+  '}'
+
+title: "chrome.fileSystem.getVolumeList test for kiosk apps in the kiosk session"
+
+summary: "Tests available volumes to kiosk apps running in the kiosk session. Especially Drive must not be exposed."
+
+logo_uri: "webstore/itemsnippet/icons/app_1_green16x16.png"
+
+user_count_string: "1234"
+
+rating_count: 999
+
+average_rating: 1
+
+rating_count_string: "999"

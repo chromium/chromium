@@ -36,7 +36,7 @@ const char kTranslateCompactInfobarEvent[] = "Translate.CompactInfobar.Event";
 void ReportLanguageVerification(LanguageVerificationType type) {
   base::UmaHistogramEnumeration(
       metrics_internal::kTranslateLanguageDetectionLanguageVerification, type,
-      LANGUAGE_VERIFICATION_MAX);
+      LanguageVerificationType::kMaxValue);
 }
 
 void ReportTimeToBeReady(double time_in_msec) {

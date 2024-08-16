@@ -1,0 +1,171 @@
+// Imported from
+// //depot/google3/google/internal/chrome/cros/edu/schooltools/v1/session.proto
+syntax = "proto3";
+
+package boca;
+
+import "chromeos/ash/components/boca/proto/bundle.proto";
+import "chromeos/ash/components/boca/proto/roster.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// Below copied proto are due to exist in `protobuf_full` source not
+// `protobuf_lite`. The former cannot be included into chrome due to its large
+// size. Copied from //third_party/protobuf/src/google/protobuf/duration.proto
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+// Copied from //third_party/protobuf/src/google/protobuf/timestamp.proto
+// Measured as seconds + nanos from the epoch (00:00:00 UTC on 1 January 1970).
+message Timestamp {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message Session {
+  reserved 8;
+
+  string session_id = 1;
+
+  UserIdentity teacher = 2;
+
+  Roster roster = 3;
+
+  AccessCode access_code = 4;
+
+  map<string, SessionConfig> student_group_configs = 5;
+
+  map<string, StudentStatus> student_statuses = 6;
+
+  Timestamp start_time = 7;
+
+  Duration duration = 11;
+
+  TeacherCaptionsConfig teacher_captions_config = 12;
+
+  bool save_transcript = 9;
+
+  enum SessionState {
+    SESSION_STATE_UNKNOWN = 0;
+
+    PLANNING = 1;
+
+    ACTIVE = 2;
+
+    PAST = 3;
+  }
+
+  SessionState session_state = 10;
+}
+
+message AccessCode {
+  bool enabled = 1;
+
+  string code = 2;
+}
+
+message SessionConfig {
+  OnTaskConfig on_task_config = 1;
+
+  CaptionsConfig captions_config = 2;
+}
+
+message OnTaskConfig {
+  Bundle active_bundle = 1;
+
+  bool close_previous_locked_bundle = 2;
+}
+
+message CaptionsConfig {
+  bool captions_enabled = 1;
+
+  bool translations_enabled = 2;
+
+  repeated string allowed_language_codes = 3;
+}
+
+message StudentStatus {
+  reserved 2;
+
+  enum StudentState {
+    STUDENT_STATE_UNKNOWN = 0;
+
+    NOT_FOUND = 1;
+
+    ADDED = 2;
+
+    ACTIVE = 3;
+
+    REMOVED_BY_OTHER_SESSION = 4;
+
+    REMOVED_BY_BEING_TEACHER = 5;
+
+    REMOVED_BY_TEACHER = 6;
+  }
+
+  StudentState state = 1;
+
+  map<string, StudentDevice> devices = 3;
+
+  Timestamp raised_hand_time = 4;
+}
+
+message StudentDevice {
+  DeviceInfo info = 1;
+
+  enum StudentDeviceState {
+    STUDENT_DEVICE_STATE_UNKNOWN = 0;
+
+    ACTIVE = 1;
+  }
+
+  StudentDeviceState state = 2;
+
+  StudentDeviceActivity activity = 3;
+}
+
+message DeviceInfo {
+  string device_id = 1;
+}
+
+message StudentDeviceActivity {
+  ActiveTab active_tab = 1;
+
+  CaptionsActivity captions_activity = 2;
+}
+
+message ActiveTab {
+  string url = 1;
+
+  string title = 2;
+
+  string favicon_url = 3;
+
+  Timestamp time_opened = 4;
+}
+
+message CaptionsActivity {
+  string language_code = 1;
+
+  Timestamp time_enabled = 2;
+
+  Timestamp time_disabled = 3;
+}
+
+message TeacherCaptionsConfig {
+  string capturing_audio_device_id = 1;
+
+  string capturing_audio_language_code = 3;
+
+  map<string, DeviceCaptionsConfig> device_captions_configs = 2;
+}
+
+message DeviceCaptionsConfig {
+  DeviceInfo device_info = 1;
+
+  bool captions_enabled = 2;
+
+  string language_code = 3;
+}

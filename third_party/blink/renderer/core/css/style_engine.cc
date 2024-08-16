@@ -38,7 +38,6 @@
 #include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/check_pseudo_has_cache_scope.h"
@@ -134,7 +133,7 @@ namespace {
 
 CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
   DCHECK(document.GetFrame());
-  if (UNLIKELY(document.GetFrame()->PagePopupOwner())) {
+  if (document.GetFrame()->PagePopupOwner()) [[unlikely]] {
     return PagePopupController::CreateCSSFontSelector(document);
   }
   return MakeGarbageCollected<CSSFontSelector>(document);
@@ -221,14 +220,12 @@ StyleEngine::StyleEngine(Document& document)
           MakeGarbageCollected<StyleContainmentScopeTree>()),
       document_style_sheet_collection_(
           MakeGarbageCollected<DocumentStyleSheetCollection>(document)),
-      resolver_(MakeGarbageCollected<StyleResolver>(document)),
-      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight),
-      owner_color_scheme_(mojom::blink::ColorScheme::kLight) {
+      resolver_(MakeGarbageCollected<StyleResolver>(document)) {
   if (document.GetFrame()) {
     global_rule_set_ = MakeGarbageCollected<CSSGlobalRuleSet>();
     font_selector_ = CreateCSSFontSelectorFor(document);
     font_selector_->RegisterForInvalidationCallbacks(this);
-    if (const auto* owner = document.GetFrame()->Owner()) {
+    if (const FrameOwner* owner = document.GetFrame()->Owner()) {
       owner_color_scheme_ = owner->GetColorScheme();
     }
 
@@ -241,17 +238,6 @@ StyleEngine::StyleEngine(Document& document)
       viewport_resolver_ =
           MakeGarbageCollected<ViewportStyleResolver>(document);
     }
-
-    DCHECK(document.GetSettings());
-    preferred_color_scheme_ = document.GetSettings()->GetPreferredColorScheme();
-    force_dark_mode_enabled_ =
-        document.GetSettings()->GetForceDarkModeEnabled();
-    UpdateColorSchemeMetrics();
-
-    forced_colors_ = document.GetSettings()->GetInForcedColors()
-                         ? ForcedColors::kActive
-                         : ForcedColors::kNone;
-    UpdateForcedBackgroundColor();
   }
 
   UpdateColorScheme();
@@ -1387,15 +1373,17 @@ void StyleEngine::InvalidateElementAffectedByHas(
         StyleChangeReasonForTracing::Create(
             blink::style_change_reason::kAffectedByHas));
 
-    if (GetRuleFeatureSet().UsesHasInsideNth()) {
+    if (GetRuleFeatureSet().GetRuleInvalidationData().UsesHasInsideNth()) {
       PossiblyScheduleNthPseudoInvalidations(element);
     }
   }
 
   if (element.AffectedByNonSubjectHas()) {
     InvalidationLists invalidation_lists;
-    GetRuleFeatureSet().CollectInvalidationSetsForPseudoClass(
-        invalidation_lists, element, CSSSelector::kPseudoHas);
+    GetRuleFeatureSet()
+        .GetRuleInvalidationData()
+        .CollectInvalidationSetsForPseudoClass(invalidation_lists, element,
+                                               CSSSelector::kPseudoHas);
     pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                            element);
   }
@@ -1564,12 +1552,13 @@ void StyleEngine::ClassChangedForElement(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
-  if (features.NeedsHasInvalidationForClassChange() &&
+  if (rule_invalidation_data.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element)) {
     for (const AtomicString& changed_class : changed_classes) {
-      if (features.NeedsHasInvalidationForClass(changed_class)) {
+      if (rule_invalidation_data.NeedsHasInvalidationForClass(changed_class)) {
         InvalidateChangedElementAffectedByLogicalCombinationsInHas(
             element, /* for_element_affected_by_pseudo_in_has */ false);
         InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1586,8 +1575,8 @@ void StyleEngine::ClassChangedForElement(
 
   InvalidationLists invalidation_lists;
   for (const AtomicString& changed_class : changed_classes) {
-    features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                             changed_class);
+    rule_invalidation_data.CollectInvalidationSetsForClass(
+        invalidation_lists, element, changed_class);
   }
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
@@ -1605,11 +1594,12 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
   bool needs_schedule_invalidation = !IsSubtreeAndSiblingsStyleDirty(element);
   bool possibly_affecting_has_state =
-      features.NeedsHasInvalidationForClassChange() &&
+      rule_invalidation_data.NeedsHasInvalidationForClassChange() &&
       PossiblyAffectingHasState(element);
   if (!needs_schedule_invalidation && !possibly_affecting_has_state) {
     return;
@@ -1635,12 +1625,12 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     }
     // Class was added.
     if (!found) {
-      if (LIKELY(needs_schedule_invalidation)) {
-        features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                                 new_class);
+      if (needs_schedule_invalidation) [[likely]] {
+        rule_invalidation_data.CollectInvalidationSetsForClass(
+            invalidation_lists, element, new_class);
       }
-      if (UNLIKELY(possibly_affecting_has_state)) {
-        if (features.NeedsHasInvalidationForClass(new_class)) {
+      if (possibly_affecting_has_state) [[unlikely]] {
+        if (rule_invalidation_data.NeedsHasInvalidationForClass(new_class)) {
           affecting_has_state = true;
           possibly_affecting_has_state = false;  // Clear to skip check
         }
@@ -1653,12 +1643,12 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
       continue;
     }
     // Class was removed.
-    if (LIKELY(needs_schedule_invalidation)) {
-      features.CollectInvalidationSetsForClass(invalidation_lists, element,
-                                               old_classes[i]);
+    if (needs_schedule_invalidation) [[likely]] {
+      rule_invalidation_data.CollectInvalidationSetsForClass(
+          invalidation_lists, element, old_classes[i]);
     }
-    if (UNLIKELY(possibly_affecting_has_state)) {
-      if (features.NeedsHasInvalidationForClass(old_classes[i])) {
+    if (possibly_affecting_has_state) [[unlikely]] {
+      if (rule_invalidation_data.NeedsHasInvalidationForClass(old_classes[i])) {
         affecting_has_state = true;
         possibly_affecting_has_state = false;  // Clear to skip check
       }
@@ -1710,8 +1700,7 @@ bool HasAttributeDependentStyle(const Element& element) {
   if (style && style->HasAttrFunction()) {
     return true;
   }
-  // TODO(crbug.com/40320391): Handle pseudo elements invalidation.
-  return false;
+  return element.PseudoElementStylesDependOnAttr();
 }
 
 }  // namespace
@@ -1723,11 +1712,13 @@ void StyleEngine::AttributeChangedForElement(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
-  if (features.NeedsHasInvalidationForAttributeChange() &&
+  if (rule_invalidation_data.NeedsHasInvalidationForAttributeChange() &&
       PossiblyAffectingHasState(element)) {
-    if (features.NeedsHasInvalidationForAttribute(attribute_name)) {
+    if (rule_invalidation_data.NeedsHasInvalidationForAttribute(
+            attribute_name)) {
       InvalidateChangedElementAffectedByLogicalCombinationsInHas(
           element, /* for_element_affected_by_pseudo_in_has */ false);
       InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1741,8 +1732,8 @@ void StyleEngine::AttributeChangedForElement(
   }
 
   InvalidationLists invalidation_lists;
-  features.CollectInvalidationSetsForAttribute(invalidation_lists, element,
-                                               attribute_name);
+  rule_invalidation_data.CollectInvalidationSetsForAttribute(
+      invalidation_lists, element, attribute_name);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
 
@@ -1766,12 +1757,15 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
-  if (features.NeedsHasInvalidationForIdChange() &&
+  if (rule_invalidation_data.NeedsHasInvalidationForIdChange() &&
       PossiblyAffectingHasState(element)) {
-    if ((!old_id.empty() && features.NeedsHasInvalidationForId(old_id)) ||
-        (!new_id.empty() && features.NeedsHasInvalidationForId(new_id))) {
+    if ((!old_id.empty() &&
+         rule_invalidation_data.NeedsHasInvalidationForId(old_id)) ||
+        (!new_id.empty() &&
+         rule_invalidation_data.NeedsHasInvalidationForId(new_id))) {
       InvalidateChangedElementAffectedByLogicalCombinationsInHas(
           element, /* for_element_affected_by_pseudo_in_has */ false);
       InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1786,10 +1780,12 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
 
   InvalidationLists invalidation_lists;
   if (!old_id.empty()) {
-    features.CollectInvalidationSetsForId(invalidation_lists, element, old_id);
+    rule_invalidation_data.CollectInvalidationSetsForId(invalidation_lists,
+                                                        element, old_id);
   }
   if (!new_id.empty()) {
-    features.CollectInvalidationSetsForId(invalidation_lists, element, new_id);
+    rule_invalidation_data.CollectInvalidationSetsForId(invalidation_lists,
+                                                        element, new_id);
   }
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
@@ -1807,12 +1803,14 @@ void StyleEngine::PseudoStateChangedForElement(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
   if (invalidate_ancestors_or_siblings &&
-      features.NeedsHasInvalidationForPseudoStateChange() &&
+      rule_invalidation_data.NeedsHasInvalidationForPseudoStateChange() &&
       PossiblyAffectingHasState(element)) {
-    if (features.NeedsHasInvalidationForPseudoClass(pseudo_type)) {
+    if (rule_invalidation_data.NeedsHasInvalidationForPseudoClass(
+            pseudo_type)) {
       InvalidateChangedElementAffectedByLogicalCombinationsInHas(
           element, /* for_element_affected_by_pseudo_in_has */ true);
       InvalidateAncestorsOrSiblingsAffectedByHas(
@@ -1828,8 +1826,8 @@ void StyleEngine::PseudoStateChangedForElement(
   }
 
   InvalidationLists invalidation_lists;
-  features.CollectInvalidationSetsForPseudoClass(invalidation_lists, element,
-                                                 pseudo_type);
+  rule_invalidation_data.CollectInvalidationSetsForPseudoClass(
+      invalidation_lists, element, pseudo_type);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
 }
@@ -1844,7 +1842,7 @@ void StyleEngine::PartChangedForElement(Element& element) {
   if (element.GetTreeScope() == document_) {
     return;
   }
-  if (!GetRuleFeatureSet().InvalidatesParts()) {
+  if (!GetRuleFeatureSet().GetRuleInvalidationData().InvalidatesParts()) {
     return;
   }
   element.SetNeedsStyleRecalc(
@@ -1864,7 +1862,8 @@ void StyleEngine::ExportpartsChangedForElement(Element& element) {
   }
 
   InvalidationLists invalidation_lists;
-  GetRuleFeatureSet().CollectPartInvalidationSet(invalidation_lists);
+  GetRuleFeatureSet().GetRuleInvalidationData().CollectPartInvalidationSet(
+      invalidation_lists);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          element);
 }
@@ -1877,29 +1876,30 @@ void StyleEngine::ScheduleSiblingInvalidationsForElement(
 
   InvalidationLists invalidation_lists;
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
 
   if (element.HasID()) {
-    features.CollectSiblingInvalidationSetForId(invalidation_lists, element,
-                                                element.IdForStyleResolution(),
-                                                min_direct_adjacent);
+    rule_invalidation_data.CollectSiblingInvalidationSetForId(
+        invalidation_lists, element, element.IdForStyleResolution(),
+        min_direct_adjacent);
   }
 
   if (element.HasClass()) {
     const SpaceSplitString& class_names = element.ClassNames();
-    for (wtf_size_t i = 0; i < class_names.size(); i++) {
-      features.CollectSiblingInvalidationSetForClass(
-          invalidation_lists, element, class_names[i], min_direct_adjacent);
+    for (const AtomicString& class_name : class_names) {
+      rule_invalidation_data.CollectSiblingInvalidationSetForClass(
+          invalidation_lists, element, class_name, min_direct_adjacent);
     }
   }
 
   for (const Attribute& attribute : element.Attributes()) {
-    features.CollectSiblingInvalidationSetForAttribute(
+    rule_invalidation_data.CollectSiblingInvalidationSetForAttribute(
         invalidation_lists, element, attribute.GetName(), min_direct_adjacent);
   }
 
-  features.CollectUniversalSiblingInvalidationSet(invalidation_lists,
-                                                  min_direct_adjacent);
+  rule_invalidation_data.CollectUniversalSiblingInvalidationSet(
+      invalidation_lists, min_direct_adjacent);
 
   pending_invalidations_.ScheduleSiblingInvalidationsAsDescendants(
       invalidation_lists, scheduling_parent);
@@ -1957,7 +1957,8 @@ void StyleEngine::ScheduleInvalidationsForRemovedSibling(
 
 void StyleEngine::ScheduleNthPseudoInvalidations(ContainerNode& nth_parent) {
   InvalidationLists invalidation_lists;
-  GetRuleFeatureSet().CollectNthInvalidationSet(invalidation_lists);
+  GetRuleFeatureSet().GetRuleInvalidationData().CollectNthInvalidationSet(
+      invalidation_lists);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          nth_parent);
 }
@@ -2088,8 +2089,9 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidationForInsertionOrRemoval()) {
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
+  if (!rule_invalidation_data.NeedsHasInvalidationForInsertionOrRemoval()) {
     return;
   }
 
@@ -2126,7 +2128,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       parent->ChildrenAffectedByDirectAdjacentRules();
 
   if (!needs_has_invalidation_for_inserted_subtree &&
-      features.NeedsHasInvalidationForInsertedOrRemovedElement(
+      rule_invalidation_data.NeedsHasInvalidationForInsertedOrRemovedElement(
           inserted_element)) {
     needs_has_invalidation_for_inserted_subtree = true;
   }
@@ -2137,7 +2139,8 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
     for (Element& element : ElementTraversal::DescendantsOf(inserted_element)) {
       element.SetAncestorsOrAncestorSiblingsAffectedByHas();
       if (!needs_has_invalidation_for_inserted_subtree &&
-          features.NeedsHasInvalidationForInsertedOrRemovedElement(element)) {
+          rule_invalidation_data
+              .NeedsHasInvalidationForInsertedOrRemovedElement(element)) {
         needs_has_invalidation_for_inserted_subtree = true;
       }
     }
@@ -2150,7 +2153,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
     return;
   }
 
-  if (features.NeedsHasInvalidationForPseudoStateChange()) {
+  if (rule_invalidation_data.NeedsHasInvalidationForPseudoStateChange()) {
     InvalidateAncestorsOrSiblingsAffectedByHas(
         PseudoHasInvalidationTraversalContext::ForInsertion(parent,
                                                             previous_sibling)
@@ -2170,8 +2173,9 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidationForInsertionOrRemoval()) {
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
+  if (!rule_invalidation_data.NeedsHasInvalidationForInsertionOrRemoval()) {
     return;
   }
 
@@ -2198,7 +2202,8 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
 
   for (Element& element :
        ElementTraversal::InclusiveDescendantsOf(removed_element)) {
-    if (features.NeedsHasInvalidationForInsertedOrRemovedElement(element)) {
+    if (rule_invalidation_data.NeedsHasInvalidationForInsertedOrRemovedElement(
+            element)) {
       InvalidateAncestorsOrSiblingsAffectedByHas(
           PseudoHasInvalidationTraversalContext::ForRemoval(
               parent, previous_sibling, removed_element));
@@ -2206,7 +2211,7 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
     }
   }
 
-  if (features.NeedsHasInvalidationForPseudoStateChange()) {
+  if (rule_invalidation_data.NeedsHasInvalidationForPseudoStateChange()) {
     InvalidateAncestorsOrSiblingsAffectedByHas(
         PseudoHasInvalidationTraversalContext::ForRemoval(
             parent, previous_sibling, removed_element)
@@ -2220,8 +2225,9 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(
     return;
   }
 
-  const RuleFeatureSet& features = GetRuleFeatureSet();
-  if (!features.NeedsHasInvalidationForInsertionOrRemoval()) {
+  const RuleInvalidationData& rule_invalidation_data =
+      GetRuleFeatureSet().GetRuleInvalidationData();
+  if (!rule_invalidation_data.NeedsHasInvalidationForInsertionOrRemoval()) {
     return;
   }
 
@@ -2516,7 +2522,9 @@ void StyleEngine::UpdateViewTransitionOptIn() {
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
   DCHECK(global_rule_set_);
-  return global_rule_set_->GetRuleFeatureSet().HasSelectorForId(id);
+  return global_rule_set_->GetRuleFeatureSet()
+      .GetRuleInvalidationData()
+      .HasSelectorForId(id);
 }
 
 void StyleEngine::InitialStyleChanged() {
@@ -2948,8 +2956,9 @@ void StyleEngine::LoadVisionDeficiencyFilter() {
     vision_deficiency_filter_ = nullptr;
   } else {
     AtomicString url = CreateVisionDeficiencyFilterUrl(vision_deficiency_);
-    cssvalue::CSSURIValue css_uri_value{CSSUrlData(url)};
-    SVGResource* svg_resource = css_uri_value.EnsureResourceReference();
+    cssvalue::CSSURIValue* css_uri_value =
+        MakeGarbageCollected<cssvalue::CSSURIValue>(CSSUrlData(url));
+    SVGResource* svg_resource = css_uri_value->EnsureResourceReference();
     // Note: The fact that we're using data: URLs here is an
     // implementation detail. Emulating vision deficiencies should still
     // work even if the Document's Content-Security-Policy disallows

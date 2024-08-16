@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,4 +14,41 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:paddingEnd="@dimen/shared_image_tiles_overlap_margin"
     android:clipToPadding="false"
-    android:orientation="horizontal" />
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/last_tile_container"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/shared_image_tiles_icon_height"
+        android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"
+        android:minWidth="@dimen/shared_image_tiles_icon_height"
+        android:orientation="vertical"
+        android:background="@drawable/round_image_filled"
+        android:focusable="false"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/tiles_count"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/shared_image_tiles_overlap_margin"
+            android:paddingEnd="@dimen/shared_image_tiles_overlap_margin"
+            android:layout_gravity="center"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
+            android:gravity="center"
+            android:visibility="gone"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:src="@drawable/ic_person_add_40dp"
+            android:id="@+id/shared_image_tiles_add"
+            android:layout_height="@dimen/shared_image_tiles_icon_height"
+            android:layout_width="@dimen/shared_image_tiles_add_width"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:background="@android:color/transparent"
+            android:tint="@color/default_icon_color_secondary_tint_list"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView>

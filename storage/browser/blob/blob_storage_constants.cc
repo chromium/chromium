@@ -33,8 +33,8 @@ static_assert(kDefaultMinPageFileSize < kDefaultMaxBlobInMemorySpace,
 
 BlobStorageLimits::BlobStorageLimits() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (UNLIKELY(
-          command_line->HasSwitch(kBlobFileTransportByFileTriggerSwitch))) {
+  if (command_line->HasSwitch(kBlobFileTransportByFileTriggerSwitch))
+      [[unlikely]] {
     CHECK(base::StringToUint64(command_line->GetSwitchValueASCII(
                                    kBlobFileTransportByFileTriggerSwitch),
                                &override_file_transport_min_size))
@@ -42,8 +42,8 @@ BlobStorageLimits::BlobStorageLimits() {
         << command_line->GetSwitchValueASCII(
                kBlobFileTransportByFileTriggerSwitch);
   }
-  if (UNLIKELY(
-          command_line->HasSwitch(kBlobSharedMemoryTransportMaxSizeSwitch))) {
+  if (command_line->HasSwitch(kBlobSharedMemoryTransportMaxSizeSwitch))
+      [[unlikely]] {
     CHECK(base::StringToSizeT(command_line->GetSwitchValueASCII(
                                   kBlobSharedMemoryTransportMaxSizeSwitch),
                               &max_shared_memory_size))
@@ -51,7 +51,8 @@ BlobStorageLimits::BlobStorageLimits() {
         << command_line->GetSwitchValueASCII(
                kBlobSharedMemoryTransportMaxSizeSwitch);
   }
-  if (UNLIKELY(command_line->HasSwitch(kBlobFileTransportMinFileSizeSwitch))) {
+  if (command_line->HasSwitch(kBlobFileTransportMinFileSizeSwitch))
+      [[unlikely]] {
     CHECK(base::StringToUint64(
         command_line->GetSwitchValueASCII(kBlobFileTransportMinFileSizeSwitch),
         &min_page_file_size))
@@ -59,7 +60,8 @@ BlobStorageLimits::BlobStorageLimits() {
         << command_line->GetSwitchValueASCII(
                kBlobSharedMemoryTransportMaxSizeSwitch);
   }
-  if (UNLIKELY(command_line->HasSwitch(kBlobFileTransportMaxFileSizeSwitch))) {
+  if (command_line->HasSwitch(kBlobFileTransportMaxFileSizeSwitch))
+      [[unlikely]] {
     CHECK(base::StringToUint64(
         command_line->GetSwitchValueASCII(kBlobFileTransportMaxFileSizeSwitch),
         &max_file_size))

@@ -35,6 +35,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
@@ -384,7 +385,7 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
   // This should be a modal dialog blocking the browser since we don't want
   // users to lose progress in the migration workflow until they are done.
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

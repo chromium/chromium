@@ -14,6 +14,7 @@
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file.h"
@@ -162,7 +163,7 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
 
   // Check checksum of the file.
   std::vector<char> buf(file_length);
-  if (file.Read(0, buf.data(), file_length) != file_length) {
+  if (UNSAFE_TODO(file.Read(0, buf.data(), file_length)) != file_length) {
     return base::File();
   }
 

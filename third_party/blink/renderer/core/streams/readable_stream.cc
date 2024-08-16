@@ -67,7 +67,7 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     ScriptPromiseUntyped promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -115,7 +115,7 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
+                                   v8::ExceptionContext::kUnknown, "", "");
     ScriptPromiseUntyped promise;
     if (script_state->ContextIsValid()) {
       // This is needed because the realm of the underlying source can be
@@ -228,7 +228,7 @@ void ReadableStream::IterationSource::GetNextIterationResult() {
   // 5. Perform ! ReadableStreamDefaultReaderRead(this, readRequest).
   ScriptState* script_state = GetScriptState();
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   ReadableStreamDefaultReader::Read(script_state, reader_, read_request,
                                     exception_state);
 }
@@ -315,9 +315,8 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
   auto* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke,
-      "ReadableStream");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                 "ReadableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -712,11 +711,10 @@ void ReadableStream::InitInternal(ScriptState* script_state,
   }
 
   // 4. Let type be ? GetV(underlyingSource, "type").
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> type;
   if (!underlying_source->Get(context, V8AtomicString(isolate, "type"))
            .ToLocal(&type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 
@@ -724,7 +722,6 @@ void ReadableStream::InitInternal(ScriptState* script_state,
     // 5. Let typeString be ? ToString(type).
     v8::Local<v8::String> type_string;
     if (!type->ToString(context).ToLocal(&type_string)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return;
     }
 

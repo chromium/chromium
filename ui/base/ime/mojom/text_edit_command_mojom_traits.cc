@@ -24,7 +24,7 @@ EnumTraits<ui::mojom::TextEditCommand, ui::TextEditCommand>::ToMojom(
 #undef TEXT_EDIT_COMMAND
 
   // Failure to convert should never occur.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

@@ -797,14 +797,14 @@ def make_v8_to_blink_value(blink_var_name,
     elif idl_type.type_name == "String":
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
-        fast_path_cond = "LIKELY({}->IsString())".format(v8_value_expr)
+        fast_path_cond = "{}->IsString()".format(v8_value_expr)
         fast_path_body_text = _format(
             "{}.Init(${isolate}, {}.As<v8::String>());", blink_var_name,
             v8_value_expr)
     elif idl_type.unwrap(typedef=True).is_callback_function:
         # A key point of this fast path is that it doesn't require an
         # ExceptionState.
-        fast_path_cond = "LIKELY({}->IsFunction())".format(v8_value_expr)
+        fast_path_cond = "{}->IsFunction()".format(v8_value_expr)
         fast_path_body_text = "{} = {}::Create({}.As<v8::Function>());".format(
             blink_var_name,
             blink_class_name(idl_type.unwrap().type_definition_object),
@@ -837,7 +837,8 @@ def make_v8_to_blink_value(blink_var_name,
         else:
             default_expr = None
         exception_exit_node = CxxUnlikelyIfNode(
-            cond="UNLIKELY(${exception_state}.HadException())",
+            cond="${exception_state}.HadException()",
+            attribute="[[unlikely]]",
             body=T(error_exit_return_statement))
 
         if not (default_expr or fast_path_cond):
@@ -873,10 +874,12 @@ def make_v8_to_blink_value(blink_var_name,
               or default_expr.is_initialization_lightweight):
             assignment = CxxLikelyIfNode(
                 cond="!{}->IsUndefined()".format(v8_value_expr),
+                attribute=None,
                 body=assignment)
         else:
             assignment = CxxIfElseNode(
                 cond="{}->IsUndefined()".format(v8_value_expr),
+                attribute=None,
                 then=F("${{{}}} = {};", blink_var_name,
                        default_expr.assignment_value),
                 then_likeliness=Likeliness.LIKELY,
@@ -884,6 +887,7 @@ def make_v8_to_blink_value(blink_var_name,
                 else_likeliness=Likeliness.LIKELY)
         if fast_path_cond:
             assignment = CxxIfElseNode(cond=fast_path_cond,
+                                       attribute="[[likely]]",
                                        then=T(fast_path_body_text),
                                        then_likeliness=Likeliness.LIKELY,
                                        else_=assignment,
@@ -924,9 +928,9 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
     def create_definition(symbol_node):
         return SymbolDefinitionNode(symbol_node, [
             TextNode(text),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=TextNode("return;")),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=TextNode("return;")),
         ])
 
     return SymbolNode(blink_var_name, definition_constructor=create_definition)

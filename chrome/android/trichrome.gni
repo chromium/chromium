@@ -101,6 +101,11 @@ template("trichrome_library_apk_tmpl") {
     version_code = _version_code
     min_sdk_version = 29
 
+    # Only the .build_config.json is used from this target, and it's fine if
+    # it contains more assets than we need (always use the 64_32 variant).
+    # https://crbug.com/357131361
+    suffix_apk_assets_used_by = system_webview_apk_target
+
     # No support for this has been added, also not supported by test runner
     # since trichrome library is used in "additional_apks" in the trichrome
     # bundle smoke tests.

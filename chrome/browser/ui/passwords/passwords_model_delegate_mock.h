@@ -51,6 +51,10 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
       GetCurrentForms,
       (),
       (const override));
+  MOCK_METHOD(const std::optional<password_manager::PasswordForm>&,
+              GetManagePasswordsSingleCredentialDetailsModeCredential,
+              (),
+              (const override));
   MOCK_METHOD(password_manager::InteractionsStats*,
               GetCurrentInteractionStats,
               (),

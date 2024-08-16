@@ -26,15 +26,12 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.SigninFeatures;
 
 /** Tests for {@link ConfirmSyncDataStateMachine}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 public class ConfirmSyncDataStateMachineTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

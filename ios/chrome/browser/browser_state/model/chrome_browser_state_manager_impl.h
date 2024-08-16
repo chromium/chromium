@@ -14,10 +14,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 class PrefService;
 
@@ -40,11 +41,21 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
   // ChromeBrowserStateManager:
   void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
   void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
+  void LoadBrowserStates() override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
-  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
-  void LoadBrowserStates() override;
+  bool LoadBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback) override;
+  bool CreateBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback) override;
+  ChromeBrowserState* LoadBrowserState(std::string_view name) override;
+  ChromeBrowserState* CreateBrowserState(std::string_view name) override;
+  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
 
   // ChromeBrowserState::Delegate:
   void OnChromeBrowserStateCreationStarted(
@@ -57,31 +68,39 @@ class ChromeBrowserStateManagerImpl : public ChromeBrowserStateManager,
       bool success) override;
 
  private:
-  using ChromeBrowserMap =
-      std::map<std::string, std::unique_ptr<ChromeBrowserState>, std::less<>>;
+  class BrowserStateInfo;
 
-  // Callback invoked with the BrowserState once its initialisation is done.
-  // May be invoked with nullptr if loading the BrowserState failed. Will be
-  // called on the calling sequence, but may be asynchronous.
-  using BrowserStateLoadedCallback =
-      base::OnceCallback<void(ChromeBrowserState*)>;
+  using CreationMode = ChromeBrowserState::CreationMode;
+  using ChromeBrowserMap = std::map<std::string, BrowserStateInfo, std::less<>>;
 
   // Get the name of the last used browser state, or if that's undefined, the
   // default browser state.
   std::string GetLastUsedBrowserStateName() const;
 
-  // Load ChromeBrowserState with `name` and invoke `callback` when the load
-  // is complete.
-  void LoadBrowserState(const std::string& name,
-                        BrowserStateLoadedCallback callback);
+  // Returns whether a ChromeBrowserState with `name` exists on disk.
+  bool BrowserStateWithNameExists(std::string_view name);
+
+  // Returns if creating a ChromeBrowserState with `name` is allowed.
+  bool CanCreateBrowserStateWithName(std::string_view name);
+
+  // Creates or loads the ChromeBrowserState known by `name` using the
+  // `creation_mode`. The callbacks have the same meaning as the method
+  // CreateBrowserStateAsync(...). Returns whether a ChromeBrowserState
+  // with that name already exists or it can be created.
+  bool CreateBrowserStateWithMode(
+      std::string_view name,
+      CreationMode creation_mode,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback);
+
+  // Adds `browser_state` to the browser state info cache if necessary.
+  void AddBrowserStateToCache(ChromeBrowserState* browser_state);
 
   // Final initialization of the browser state.
   void DoFinalInit(ChromeBrowserState* browser_state);
   void DoFinalInitForServices(ChromeBrowserState* browser_state);
 
-  // Adds `browser_state` to the browser state info cache if it hasn't been
-  // added yet.
-  void AddBrowserStateToCache(ChromeBrowserState* browser_state);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // The PrefService storing the local state.
   raw_ptr<PrefService> local_state_;

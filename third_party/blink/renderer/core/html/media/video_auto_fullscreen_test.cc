@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -104,8 +105,13 @@ class VideoAutoFullscreen : public testing::Test,
 
   HTMLVideoElement* Video() const { return video_.Get(); }
 
+  void UpdateLifecyclePhases() {
+    GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
+  }
+
  private:
   test::TaskEnvironment task_environment_;
+  CSSDefaultStyleSheets::TestingScope ua_style_sheets_scope_;
   Persistent<HTMLVideoElement> video_;
   VideoAutoFullscreenFrameHost frame_host_;
   VideoAutoFullscreenFrameClient web_frame_client_;
@@ -121,6 +127,7 @@ TEST_F(VideoAutoFullscreen, PlayTriggersFullscreenWithoutPlaysInline) {
 
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
   test::RunPendingTasks();
+  UpdateLifecyclePhases();
 
   EXPECT_TRUE(Video()->IsFullscreen());
 }
@@ -135,6 +142,7 @@ TEST_F(VideoAutoFullscreen, PlayDoesNotTriggerFullscreenWithPlaysInline) {
 
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
   test::RunPendingTasks();
+  UpdateLifecyclePhases();
 
   EXPECT_FALSE(Video()->IsFullscreen());
 }
@@ -148,6 +156,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenPausesWithoutPlaysInline) {
 
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
   test::RunPendingTasks();
+  UpdateLifecyclePhases();
   ASSERT_TRUE(Video()->IsFullscreen());
 
   EXPECT_FALSE(Video()->paused());
@@ -169,6 +178,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
   Video()->webkitEnterFullscreen();
   test::RunPendingTasks();
+  UpdateLifecyclePhases();
   ASSERT_TRUE(Video()->IsFullscreen());
 
   EXPECT_FALSE(Video()->paused());

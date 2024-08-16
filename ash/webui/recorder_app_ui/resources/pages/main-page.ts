@@ -3,20 +3,22 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/mwc/@material/web/iconbutton/filled-icon-button.js';
+import '../components/cra/cra-icon-button.js';
+import '../components/cra/cra-icon.js';
+import '../components/delete-recording-dialog.js';
 import '../components/mic-selection-menu.js';
 import '../components/onboarding-dialog.js';
 import '../components/recording-file-list.js';
+import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
-import '../components/cra/cra-icon.js';
-import '../components/cra/cra-icon-button.js';
-import '../components/delete-recording-dialog.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {MicSelectionMenu} from '../components/mic-selection-menu.js';
+import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {SettingsMenu} from '../components/settings-menu.js';
 import {
   useMicrophoneManager,
@@ -33,14 +35,26 @@ import {assertExists, assertInstanceof} from '../core/utils/assert.js';
 export class MainPage extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --actions-padding-vertical: 24px;
+      --record-button-height: 96px;
+
+      @container style(--small-viewport: 1) {
+        --record-button-height: 80px;
+      }
+
       display: block;
       height: 100%;
       width: 100%;
     }
 
     recording-file-list {
+      --actions-height: calc(
+        var(--actions-padding-vertical) * 2 + var(--record-button-height)
+      );
+      --scroll-bottom-extra-padding: calc(var(--actions-height) / 2);
+
       inset: 0;
-      margin: 0 16px 106px;
+      margin: 16px 16px calc(32px + var(--actions-height) / 2);
       position: absolute;
     }
 
@@ -61,20 +75,19 @@ export class MainPage extends ReactiveLitElement {
       height: fit-content;
       inset: 0;
       margin: auto auto 32px;
-      padding: 24px 44px;
+      padding: var(--actions-padding-vertical) 44px;
       position: absolute;
       width: fit-content;
     }
 
     #record-button {
       --cra-icon-button-container-color: var(--cros-sys-error_container);
-      --cra-icon-button-container-height: 96px;
+      --cra-icon-button-container-height: var(--record-button-height);
       --cra-icon-button-container-width: 152px;
       --cros-icon-button-color-override: var(--cros-sys-on_error_container);
       --cros-icon-button-icon-size: 32px;
 
       @container style(--small-viewport: 1) {
-        --cra-icon-button-container-height: 80px;
         --cra-icon-button-container-width: 136px;
       }
 
@@ -103,6 +116,8 @@ export class MainPage extends ReactiveLitElement {
     return this.shadowRoot?.querySelector('settings-menu') ?? null;
   }
 
+  private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
+
   private onRecordingClick(ev: CustomEvent<string>) {
     navigateTo(`/playback?id=${ev.detail}`);
   }
@@ -128,15 +143,22 @@ export class MainPage extends ReactiveLitElement {
     dialog.show();
   }
 
+  private onShowRecordingInfoClick(ev: CustomEvent<string>) {
+    const dialog = assertExists(this.recordingInfoDialog.value);
+    dialog.recordingId = ev.detail;
+    dialog.show();
+  }
+
   private onClickRecordButton() {
     // TODO(shik): Should we let the record page read the store value
     // directly?
     const includeSystemAudio = settings.value.includeSystemAudio.toString();
     const micId = assertExists(
       this.microphoneManager.getSelectedMicId().value,
-      'There is no selected microphone.'
+      'There is no selected microphone.',
     );
-    navigateTo(`/record?includeSystemAudio=${includeSystemAudio}&micId=${micId}`
+    navigateTo(
+      `/record?includeSystemAudio=${includeSystemAudio}&micId=${micId}`,
     );
   }
 
@@ -188,12 +210,15 @@ export class MainPage extends ReactiveLitElement {
       >
       </delete-recording-dialog>
       <export-dialog ${ref(this.exportDialog)}></export-dialog>
+      <recording-info-dialog ${ref(this.recordingInfoDialog)}>
+      </recording-info-dialog>
       <div id="root" ?inert=${onboarding}>
         <recording-file-list
           .recordingMetadataMap=${this.recordingMetadataMap.value}
           @recording-clicked=${this.onRecordingClick}
           @delete-recording-clicked=${this.onDeleteRecordingClick}
           @export-recording-clicked=${this.onExportRecordingClick}
+          @show-recording-info-clicked=${this.onShowRecordingInfoClick}
         >
         </recording-file-list>
         <div id="actions">

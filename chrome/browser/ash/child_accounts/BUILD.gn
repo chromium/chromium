@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
@@ -152,7 +153,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/child_accounts/apps",
     "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
@@ -192,7 +193,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/child_accounts:test_support",
     "//chrome/browser/ash/child_accounts/parent_access_code:browser_tests",
     "//chrome/browser/ash/child_accounts/time_limits",
@@ -201,6 +201,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -222,12 +223,10 @@ source_set("browser_tests") {
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [ "web_approvals_integration_test.cc" ]
+
+    sources_metadata = [ "web_approvals_integration_test.yaml" ]
 
     deps = [
       ":child_accounts",
@@ -259,7 +258,6 @@ if (is_chromeos_device) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/child_accounts/parent_access_code:test_support",
       "//chrome/browser/ash/child_accounts/time_limits",

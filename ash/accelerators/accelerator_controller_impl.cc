@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 
 #include <string>
@@ -888,6 +893,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
     case AcceleratorAction::kDebugSystemUiStyleViewer:
+    case AcceleratorAction::kDebugStartSunfishSession:
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
@@ -1193,6 +1199,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugShowInformedRestore:
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
+    case AcceleratorAction::kDebugStartSunfishSession:
     case AcceleratorAction::kDebugToggleDarkMode:
     case AcceleratorAction::kDebugToggleDynamicColor:
     case AcceleratorAction::kDebugClearUseKMeansPref:
@@ -1765,7 +1772,8 @@ AcceleratorControllerImpl::MaybeDeprecatedAcceleratorPressed(
   MaybeShowDeprecatedAcceleratorNotification(
       deprecated_data->uma_histogram_name,
       deprecated_data->notification_message_id,
-      deprecated_data->new_shortcut_id, deprecated_data->replacement, action);
+      deprecated_data->new_shortcut_id, deprecated_data->replacement, action,
+      deprecated_data->pref_name);
 
   if (!deprecated_data->deprecated_enabled)
     return AcceleratorProcessingStatus::STOP;

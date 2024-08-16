@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
@@ -428,8 +429,7 @@ void CWSInfoService::SendRequest() {
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
+  google_apis::AddAPIKeyToRequest(*resource_request, google_apis::GetAPIKey());
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

@@ -495,7 +495,7 @@ void LayoutTheme::AdjustSliderContainerStyle(
   } else {
     builder.SetTouchAction(TouchAction::kPanY);
     builder.SetWritingMode(WritingMode::kHorizontalTb);
-    if (To<HTMLInputElement>(element.OwnerShadowHost())->list()) {
+    if (To<HTMLInputElement>(element.OwnerShadowHost())->DataList()) {
       builder.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
                                                   OverflowAlignment::kUnsafe));
     }

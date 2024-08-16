@@ -55,7 +55,7 @@ void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   proxy_->RegisterSysmemBufferCollection(std::move(service_handle),

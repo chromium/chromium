@@ -46,7 +46,8 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.INFO_PAGE,
         CustomTabsUiType.READER_MODE,
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
-        CustomTabsUiType.OFFLINE_PAGE
+        CustomTabsUiType.OFFLINE_PAGE,
+        CustomTabsUiType.AUTH_TAB
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
@@ -57,6 +58,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int MINIMAL_UI_WEBAPP = 4;
         int OFFLINE_PAGE = 5;
         int READ_LATER = 6;
+        int AUTH_TAB = 7;
     }
 
     // The type of Disclosure for TWAs to use.
@@ -653,7 +655,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /** Return {@code true} if the service was launched for authentication. */
-    public boolean isAuthView() {
+    public boolean isAuthTab() {
         return false;
     }
 }

@@ -68,8 +68,8 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_scheduler_impl.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
@@ -476,17 +476,6 @@ bool SyncTest::UseVerifier() {
   return false;
 }
 
-bool SyncTest::UseArcPackage() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ARC_PACKAGE do not support supervised users, switches::kSupervisedUserId
-  // need to be set in SetUpCommandLine() when a test will use supervise users.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSupervisedUserId);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 bool SyncTest::SetupClients() {
   previous_profile_ =
       g_browser_process->profile_manager()->GetLastUsedProfile();
@@ -513,10 +502,8 @@ bool SyncTest::SetupClients() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (UseArcPackage()) {
-    // Sets Arc flags, need to be called before create test profiles.
-    ArcAppListPrefsFactory::SetFactoryForSyncTest();
-  }
+  // Sets Arc flags, need to be called before create test profiles.
+  ArcAppListPrefsFactory::SetFactoryForSyncTest();
 
   // Uses a fake app list model updater to avoid interacting with Ash.
   model_updater_factory_scope_ =
@@ -1029,18 +1016,18 @@ bool SyncTest::AwaitQuiescence() {
   return SyncServiceImplHarness::AwaitQuiescence(GetSyncClients());
 }
 
-void SyncTest::TriggerMigrationDoneError(syncer::ModelTypeSet model_types) {
+void SyncTest::TriggerMigrationDoneError(syncer::DataTypeSet data_types) {
   ASSERT_TRUE(server_type_ == IN_PROCESS_FAKE_SERVER);
-  fake_server_->TriggerMigrationDoneError(model_types);
+  fake_server_->TriggerMigrationDoneError(data_types);
 }
 
 fake_server::FakeServer* SyncTest::GetFakeServer() const {
   return fake_server_.get();
 }
 
-void SyncTest::TriggerSyncForModelTypes(int index,
-                                        syncer::ModelTypeSet model_types) {
-  GetSyncService(index)->TriggerRefresh(model_types);
+void SyncTest::TriggerSyncForDataTypes(int index,
+                                       syncer::DataTypeSet data_types) {
+  GetSyncService(index)->TriggerRefresh(data_types);
 }
 
 arc::SyncArcPackageHelper* SyncTest::sync_arc_helper() {
@@ -1101,8 +1088,7 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
   DCHECK(GetClient(client_index));
 
   auto* service = GetClient(client_index)->service();
-  syncer::ModelTypeSet types_to_check =
-      service->GetRegisteredDataTypesForTest();
+  syncer::DataTypeSet types_to_check = service->GetRegisteredDataTypesForTest();
   types_to_check.RemoveAll(excluded_types_from_check_for_data_type_failures_);
 
   if (service->HasAnyDatatypeErrorForTest(types_to_check)) {
@@ -1115,26 +1101,26 @@ void SyncTest::CheckForDataTypeFailures(size_t client_index) const {
 }
 
 void SyncTest::ExcludeDataTypesFromCheckForDataTypeFailures(
-    syncer::ModelTypeSet types) {
+    syncer::DataTypeSet types) {
   excluded_types_from_check_for_data_type_failures_ = types;
 }
 
 // The set of types that *can* run in transport mode. Doesn't mean they are all
 // enabled by default, e.g. HISTORY requires a dedicated opt-in via
 // SyncUserSettings::SetSelectedTypes().
-syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(53 == syncer::GetNumModelTypes(),
+syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
+  static_assert(53 == syncer::GetNumDataTypes(),
                 "Add new types below if they can run in transport mode");
   // Only some types will run by default in transport mode (i.e. without their
   // own separate opt-in).
-  syncer::ModelTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
-                                        syncer::AUTOFILL_WALLET_DATA,
-                                        syncer::AUTOFILL_WALLET_USAGE,
-                                        syncer::DEVICE_INFO,
-                                        syncer::SECURITY_EVENTS,
-                                        syncer::SEND_TAB_TO_SELF,
-                                        syncer::SHARING_MESSAGE,
-                                        syncer::USER_CONSENTS};
+  syncer::DataTypeSet allowed_types = {syncer::AUTOFILL_WALLET_CREDENTIAL,
+                                       syncer::AUTOFILL_WALLET_DATA,
+                                       syncer::AUTOFILL_WALLET_USAGE,
+                                       syncer::DEVICE_INFO,
+                                       syncer::SECURITY_EVENTS,
+                                       syncer::SEND_TAB_TO_SELF,
+                                       syncer::SHARING_MESSAGE,
+                                       syncer::USER_CONSENTS};
   allowed_types.PutAll(syncer::ControlTypes());
 
   if (base::FeatureList::IsEnabled(

@@ -357,9 +357,9 @@ void FromTextureQuad(const TextureDrawQuad* quad,
   }
 }
 
-DCLayerResult IsUnderlayAllowed(const QuadList::Iterator& it) {
-  if (it->ShouldDrawWithBlending() &&
-      !it->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
+DCLayerResult IsUnderlayAllowed(const DrawQuad* quad) {
+  if (quad->ShouldDrawWithBlending() &&
+      !quad->shared_quad_state->mask_filter_info.HasRoundedCorners()) {
     return DC_LAYER_FAILED_TRANSPARENT;
   }
 
@@ -491,18 +491,18 @@ void RecordVideoDCLayerResult(DCLayerResult result,
   }
 }
 
-void RecordDCLayerResult(DCLayerResult result, QuadList::ConstIterator it) {
+void RecordDCLayerResult(DCLayerResult result, const DrawQuad* quad) {
   // Skip recording unsupported quads since that'd dwarf the data we care about.
   if (result == DC_LAYER_FAILED_UNSUPPORTED_QUAD)
     return;
 
-  switch (it->material) {
+  switch (quad->material) {
     case DrawQuad::Material::kYuvVideoContent:
       RecordVideoDCLayerResult(
-          result, YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type);
+          result, YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type);
       break;
     case DrawQuad::Material::kTextureContent: {
-      auto* tex_quad = TextureDrawQuad::MaterialCast(*it);
+      auto* tex_quad = TextureDrawQuad::MaterialCast(quad);
       if (tex_quad->is_stream_video) {
         UMA_HISTOGRAM_ENUMERATION(
             "GPU.DirectComposition.DCLayerResult.StreamVideo", result);
@@ -570,63 +570,64 @@ QuadList::Iterator FindAnOverlayCandidateExcludingMediaFoundationVideoContent(
   return it;
 }
 
-bool IsVideoQuad(const QuadList::ConstIterator& it) {
-  return it->material == DrawQuad::Material::kYuvVideoContent ||
-         (it->material == DrawQuad::Material::kTextureContent &&
-          TextureDrawQuad::MaterialCast(*it)->is_video_frame);
+bool IsVideoQuad(const DrawQuad* quad) {
+  return quad->material == DrawQuad::Material::kYuvVideoContent ||
+         (quad->material == DrawQuad::Material::kTextureContent &&
+          TextureDrawQuad::MaterialCast(quad)->is_video_frame);
 }
 
-gfx::ProtectedVideoType GetProtectedVideoType(
-    const QuadList::ConstIterator& it) {
-  if (it->material == DrawQuad::Material::kYuvVideoContent) {
-    return YUVVideoDrawQuad::MaterialCast(*it)->protected_video_type;
-  } else if (it->material == DrawQuad::Material::kTextureContent) {
-    return TextureDrawQuad::MaterialCast(*it)->protected_video_type;
+gfx::ProtectedVideoType GetProtectedVideoType(const DrawQuad* quad) {
+  if (quad->material == DrawQuad::Material::kYuvVideoContent) {
+    return YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type;
+  } else if (quad->material == DrawQuad::Material::kTextureContent) {
+    return TextureDrawQuad::MaterialCast(quad)->protected_video_type;
   } else {
     return gfx::ProtectedVideoType::kClear;
   }
 }
 
-bool IsOverlayRequiredForQuad(const QuadList::ConstIterator& it) {
+bool IsOverlayRequiredForQuad(const DrawQuad* quad) {
   // Hardware protected video always requires overlays, and for software
   // protected video we prefer it for the protection benefits of overlays.
-  if (GetProtectedVideoType(it) != gfx::ProtectedVideoType::kClear) {
+  if (GetProtectedVideoType(quad) != gfx::ProtectedVideoType::kClear) {
     return true;
   }
   // As do stream video textures e.g. when MediaFoundationRenderer is used for
   // clear video with direct composition.
-  return it->material == DrawQuad::Material::kTextureContent &&
-         TextureDrawQuad::MaterialCast(*it)->is_stream_video;
+  return quad->material == DrawQuad::Material::kTextureContent &&
+         TextureDrawQuad::MaterialCast(quad)->is_stream_video;
 }
 
 // A bit of a misnomer, but these are all the "standard" no overlay required
 // (which implies) clear video quads.
-bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
-  return IsVideoQuad(it) && !IsOverlayRequiredForQuad(it);
+bool IsClearVideoQuad(const DrawQuad* quad) {
+  return IsVideoQuad(quad) && !IsOverlayRequiredForQuad(quad);
 }
 
 bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
     const DisplayResourceProvider* resource_provider,
-    const QuadList::ConstIterator& it,
+    const DrawQuad* quad,
     bool force_overlay_for_auto_hdr) {
-  if (!IsClearVideoQuad(it)) {
+  if (!IsClearVideoQuad(quad)) {
     return false;
   }
   // Do not allow remove clear video quad candidates for HDR videos or SDR to
   // HDR videos, since there will always be a huge visual difference between
   // compositor tone-mapping (by Chrome) and MPO tone-mapping (by Driver).
-  switch (it->material) {
+  switch (quad->material) {
     case DrawQuad::Material::kYuvVideoContent: {
-      const YUVVideoDrawQuad* quad = YUVVideoDrawQuad::MaterialCast(*it);
-      return !(quad->video_color_space.IsHDR() || force_overlay_for_auto_hdr);
+      const YUVVideoDrawQuad* yuv_quad = YUVVideoDrawQuad::MaterialCast(quad);
+      return !(yuv_quad->video_color_space.IsHDR() ||
+               force_overlay_for_auto_hdr);
     }
     case DrawQuad::Material::kTextureContent: {
-      const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
-      return !(resource_provider->GetColorSpace(quad->resource_id()).IsHDR() ||
+      const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
+      return !(resource_provider->GetColorSpace(texture_quad->resource_id())
+                   .IsHDR() ||
                force_overlay_for_auto_hdr);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -770,7 +771,7 @@ std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
       has_p010_video_processor_support_, INT_MAX, INT_MIN, false);
 
   if (result.code != DC_LAYER_SUCCESS) {
-    RecordDCLayerResult(result.code, it);
+    RecordDCLayerResult(result.code, *it);
     return std::nullopt;
   }
 
@@ -974,7 +975,7 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
         current_overlay_candidate_rects.size() + candidates.size());
     for (auto candidate_it : candidates) {
       if (AllowRemoveClearVideoQuadCandidatesWhenMoving(
-              resource_provider, candidate_it, force_overlay_for_auto_hdr())) {
+              resource_provider, *candidate_it, force_overlay_for_auto_hdr())) {
         gfx::Rect quad_rect_in_target_space =
             ClippedQuadRectangle(*candidate_it);
         gfx::Rect quad_rect_in_root_space =
@@ -1005,10 +1006,10 @@ void DCLayerOverlayProcessor::RemoveClearVideoQuadCandidatesIfMoving(
       auto candidate_it = candidates.begin();
       while (candidate_it != candidates.end()) {
         if (AllowRemoveClearVideoQuadCandidatesWhenMoving(
-                resource_provider, *candidate_it,
+                resource_provider, **candidate_it,
                 force_overlay_for_auto_hdr())) {
           RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED,
-                              *candidate_it);
+                              **candidate_it);
           candidate_it = candidates.erase(candidate_it);
         } else {
           candidate_it++;
@@ -1096,11 +1097,11 @@ void DCLayerOverlayProcessor::CollectCandidates(
     }
 
     if (result.code != DC_LAYER_SUCCESS) {
-      RecordDCLayerResult(result.code, it);
+      RecordDCLayerResult(result.code, *it);
       continue;
     }
 
-    if (!IsClearVideoQuad(it)) {
+    if (!IsClearVideoQuad(*it)) {
       global_overlay_state.has_non_clear_video_overlays = true;
     }
 
@@ -1123,7 +1124,7 @@ void DCLayerOverlayProcessor::PromoteCandidates(
   // quads in quad_list.
   for (auto& it : current_frame_state.candidates) {
     if (global_overlay_state.reject_overlays) {
-      RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, it);
+      RecordDCLayerResult(DC_LAYER_FAILED_TOO_MANY_OVERLAYS, *it);
       continue;
     }
 
@@ -1137,8 +1138,8 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 
     if (global_overlay_state.yuv_quads > allowed_yuv_overlay_count_ &&
         !global_overlay_state.has_non_clear_video_overlays && undamaged &&
-        no_undamaged_overlay_promotion_ && IsVideoQuad(it)) {
-      RecordDCLayerResult(DC_LAYER_FAILED_NOT_DAMAGED, it);
+        no_undamaged_overlay_promotion_ && IsVideoQuad(*it)) {
+      RecordDCLayerResult(DC_LAYER_FAILED_NOT_DAMAGED, *it);
       continue;
     }
 
@@ -1150,7 +1151,7 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 
     // Protected video is always put in an overlay, but texture quads can be
     // skipped if they're not underlay compatible.
-    const bool requires_overlay = IsOverlayRequiredForQuad(it);
+    const bool requires_overlay = IsOverlayRequiredForQuad(*it);
 
     // TODO(magchen@): Since we reject underlays here, the max number of YUV
     // overlays we can promote might not be accurate. We should allow all YUV
@@ -1160,10 +1161,10 @@ void DCLayerOverlayProcessor::PromoteCandidates(
 
     // Skip quad if it's an underlay and underlays are not allowed.
     if (!is_overlay && !requires_overlay) {
-      DCLayerResult result = IsUnderlayAllowed(it);
+      DCLayerResult result = IsUnderlayAllowed(*it);
 
       if (result != DC_LAYER_SUCCESS) {
-        RecordDCLayerResult(result, it);
+        RecordDCLayerResult(result, *it);
         continue;
       }
     }
@@ -1320,8 +1321,8 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
     QuadList::Iterator it = FindAnOverlayCandidate(*quad_list);
     if (it != quad_list->end()) {
       render_pass->video_capture_enabled
-          ? RecordDCLayerResult(DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED, it)
-          : RecordDCLayerResult(DC_LAYER_FAILED_COPY_REQUESTS, it);
+          ? RecordDCLayerResult(DC_LAYER_FAILED_VIDEO_CAPTURE_ENABLED, *it)
+          : RecordDCLayerResult(DC_LAYER_FAILED_COPY_REQUESTS, *it);
     }
     return true;
   }
@@ -1341,7 +1342,7 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
           gl::GetDirectCompositionOverlaySupportFlags(
               DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
       if (!supports_rgb10a2_overlay) {
-        RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, it);
+        RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, *it);
         return true;
       }
       // Skip overlay processing if output colorspace is HDR and any
@@ -1355,7 +1356,7 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
       // processor.
       if (system_hdr_disabled_on_any_display_) {
         RecordDCLayerResult(DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_TONE_MAPPING,
-                            it);
+                            *it);
         return true;
       }
     }
@@ -1376,7 +1377,7 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
     RenderPassCurrentFrameState& current_frame_state,
     GlobalOverlayState& global_overlay_state) {
   // Record the result first before ProcessForOverlay().
-  RecordDCLayerResult(DC_LAYER_SUCCESS, it);
+  RecordDCLayerResult(DC_LAYER_SUCCESS, *it);
 
   OverlayCandidate dc_layer;
   FromDrawQuad(resource_provider, render_pass, is_page_fullscreen_mode, it,

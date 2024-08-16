@@ -176,7 +176,7 @@ void SliderTest::SetUp() {
       slider->SetAllowedValues(&values_);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   gfx::Size size = slider->GetPreferredSize({});
   slider->SetSize(size);

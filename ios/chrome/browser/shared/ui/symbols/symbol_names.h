@@ -91,6 +91,9 @@ extern NSString* const kBottomOmniboxOptionSymbol;
 extern NSString* const kDangerousOmniboxSymbol;
 extern NSString* const kArrowDownSymbol;
 extern NSString* const kArrowUpSymbol;
+extern NSString* const kFamilylinkSymbol;
+extern NSString* const kMyDriveSymbol;
+extern NSString* const kSharedDrivesSymbol;
 
 // Custom symbol names which can be configured with a color palette. iOS 15+
 // only.
@@ -250,6 +253,7 @@ extern NSString* const kPencilSymbol;
 extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
 extern NSString* const kFilterSymbol;
+extern NSString* const kPersonTwoSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

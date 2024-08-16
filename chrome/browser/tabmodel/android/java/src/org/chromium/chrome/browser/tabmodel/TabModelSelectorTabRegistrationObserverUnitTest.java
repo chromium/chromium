@@ -267,7 +267,9 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
                         TabCreationState.LIVE_IN_FOREGROUND);
         verify(observer).onTabRegistered(normalTab1);
 
-        mTabModelSelector.getModel(false).closeTab(normalTab1, false, true);
+        mTabModelSelector
+                .getModel(false)
+                .closeTabs(TabClosureParams.closeTab(normalTab1).allowUndo(true).build());
         mTabModelSelector.getModel(false).commitTabClosure(normalTab1.getId());
         verify(observer).onTabUnregistered(normalTab1);
     }

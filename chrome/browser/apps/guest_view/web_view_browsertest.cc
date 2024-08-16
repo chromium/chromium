@@ -5871,8 +5871,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   LoadAppWithGuest("web_view/simple");
   content::RenderFrameHost* guest = GetGuestView()->GetGuestMainFrame();
 
-  const extensions::Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("web_accessible_resources"));
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("web_accessible_resources/subframe"));
   ASSERT_TRUE(extension);
   GURL extension_url = extension->GetResourceURL("web_accessible_page.html");
 

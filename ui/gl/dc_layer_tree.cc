@@ -901,14 +901,6 @@ bool DCLayerTree::VisualTree::BuildTree(
   // each overlay. |left_sibling_visual| is required to properly stack visual
   // subtrees that are detached from the root visual.
   for (unsigned int i = 0; i < overlays.size(); i++) {
-    const bool is_root_plane = overlays[i]->z_order == 0;
-    if (!is_root_plane && overlays[i]->overlay_image) {
-      TRACE_EVENT2(
-          "gpu", "DCLayerTree::VisualTree::UpdateOverlay", "image_type",
-          DCLayerOverlayTypeToString(overlays[i]->overlay_image->type()),
-          "size", overlays[i]->content_rect.size().ToString());
-    }
-
     bool subtree_attached_to_root = false;
     if (visual_subtrees[i]) {
       DCHECK(overlay_index_to_reused_subtree[i]);

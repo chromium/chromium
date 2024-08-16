@@ -7,6 +7,7 @@
 #import <CoreML/CoreML.h>
 
 #include "base/sequence_checker.h"
+#include "services/webnn/coreml/buffer_impl_coreml.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/coreml/graph_impl_coreml.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -45,10 +46,8 @@ void ContextImplCoreml::CreateBufferImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
     mojom::BufferInfoPtr buffer_info,
     CreateBufferImplCallback callback) {
-  // TODO(crbug.com/40278771): Implement MLBuffer for CoreML. Involve
-  // an IPC security reviewer.
-  std::move(callback).Run(base::unexpected(mojom::Error::New(
-      mojom::Error::Code::kNotSupportedError, "Failed to create buffer.")));
+  std::move(callback).Run(BufferImplCoreml::Create(std::move(receiver), this,
+                                                   std::move(buffer_info)));
 }
 
 }  // namespace webnn::coreml

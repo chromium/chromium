@@ -8,7 +8,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/sharing_message/sharing_message_bridge_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 namespace {
 constexpr char kServiceName[] = "SharingMessageBridge";
@@ -46,7 +46,7 @@ std::unique_ptr<KeyedService>
 SharingMessageBridgeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SHARING_MESSAGE,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));

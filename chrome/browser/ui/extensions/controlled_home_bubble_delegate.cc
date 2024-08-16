@@ -253,7 +253,7 @@ void ControlledHomeBubbleDelegate::OnBubbleClosed(CloseAction action) {
       AcknowledgeExtension(*profile_, extension_->id());
       break;
     case CLOSE_DISMISS_DEACTIVATION:
-      NOTREACHED_NORETURN();  // This was handled above.
+      NOTREACHED();  // This was handled above.
   }
 
   // Warning: |this| may be deleted here!

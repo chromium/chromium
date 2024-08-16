@@ -193,4 +193,20 @@ base::Value IsolatedWebAppIntegrityBlockData::AsDebugValue() const {
       })));
 }
 
+bool IsolatedWebAppIntegrityBlockData::HasPublicKey(
+    base::span<const uint8_t> public_key) const {
+  return base::ranges::any_of(signatures(), [&](const auto& signature_info) {
+    return absl::visit(
+        base::Overloaded{
+            [&](const auto& signature_info) {
+              return base::ranges::equal(signature_info.public_key().bytes(),
+                                         public_key);
+            },
+            [](const web_package::SignedWebBundleSignatureInfoUnknown&) {
+              return false;
+            }},
+        signature_info);
+  });
+}
+
 }  // namespace web_app

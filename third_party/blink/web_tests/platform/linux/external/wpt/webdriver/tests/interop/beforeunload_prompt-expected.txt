@@ -1,0 +1,18 @@
+This is a wdspec test.
+[FAIL] test_accept[capabilities0-False]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_accept[capabilities0-True]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_accept_and_notify[capabilities0-False]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_accept_and_notify[capabilities0-True]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_dismiss[capabilities0-False]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_dismiss[capabilities0-True]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_dismiss_and_notify[capabilities0-False]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+[FAIL] test_dismiss_and_notify[capabilities0-True]
+  webdriver.bidi.error.NoSuchAlertException: no such alert (No dialog is showing)
+Harness: the test ran to completion.

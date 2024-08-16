@@ -43,7 +43,7 @@ const bool PlatformStyle::kTableViewSupportsKeyboardNavigationByCell = false;
 const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = true;
 const bool PlatformStyle::kUseRipples = false;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = true;
-const bool PlatformStyle::kAdjustBubbleIfOffscreen = false;
+const bool PlatformStyle::kAdjustBubbleIfOffscreen = true;
 const View::FocusBehavior PlatformStyle::kDefaultFocusBehavior =
     View::FocusBehavior::ACCESSIBLE_ONLY;
 

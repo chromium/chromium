@@ -690,7 +690,7 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
         // Grow auto columns if available.
         LayoutUnit remaining_deficit = distributable_inline_size;
         LayoutUnit* last_computed_size = nullptr;
-        LayoutUnit* computed_size = computed_sizes.begin();
+        LayoutUnit* computed_size = computed_sizes.data();
         for (const TableTypes::Column* column = start_column;
              column != end_column; ++column, ++computed_size) {
           if (column->is_mergeable) {

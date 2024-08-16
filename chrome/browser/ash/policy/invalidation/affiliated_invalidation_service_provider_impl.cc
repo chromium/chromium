@@ -22,6 +22,7 @@
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
@@ -177,7 +178,8 @@ void AffiliatedInvalidationServiceProviderImpl::OnUserProfileLoaded(
   // Create a state observer for the user's invalidation service.
   auto invalidation_service_or_listener =
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID, /*project_id=*/"");
+          policy::kPolicyFCMInvalidationSenderID,
+          invalidation::InvalidationListener::kProjectNumberEnterprise);
   CHECK(std::holds_alternative<invalidation::InvalidationService*>(
       invalidation_service_or_listener))
       << "AffiliatedInvalidationServiceProviderImpl is created with "

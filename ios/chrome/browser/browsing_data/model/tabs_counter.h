@@ -12,6 +12,7 @@
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 
+class Browser;
 class BrowserList;
 class SessionRestorationService;
 
@@ -59,7 +60,8 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // navigation timestamp. It then increments `total_tab_count_` and
   // `total_window_count_` and reports the result if all callbacks have been
   // received, i.e. if `pending_tasks_count_ == 0`.
-  void OnLoadDataFromStorageResult(tabs_closure_util::WebStateIDToTime result);
+  void OnLoadDataFromStorageResult(base::WeakPtr<Browser> weak_browser,
+                                   tabs_closure_util::WebStateIDToTime result);
 
   // Reports the results to the caller of `TabsCounters`.
   void ReportTabsResult();
@@ -75,6 +77,14 @@ class TabsCounter : public browsing_data::BrowsingDataCounter {
   // the timerange and the number of windows that have such tabs.
   int total_tab_count_ = 0;
   int total_window_count_ = 0;
+
+  // Active browsers with tabs with last navigation within the timerange.
+  // This is needed, because inactive tabs have a different Browser from their
+  // active counterparts. As we increment the `total_window_count_` by Browser,
+  // we should make sure we're not overcounting by keeping track of the active
+  // browsers (or the active browsers of inactive browsers) with tabs within the
+  // timeframe.
+  std::set<Browser*> active_browsers_;
 
   // Holds the tabs information used for counting the number of tabs with a last
   // navigation within the timerange. It's returned in `TabsCounter::TabsResult`

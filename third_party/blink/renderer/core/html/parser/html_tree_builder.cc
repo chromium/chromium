@@ -185,7 +185,7 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     ++current_;
     for (; current_ != end_; ++current_) {
       const UChar ch = characters_[current_];
-      if (LIKELY(ch == ' ')) {
+      if (ch == ' ') [[likely]] {
         continue;
       } else if (IsHTMLSpecialWhitespace(ch)) {
         whitespace_mode = WhitespaceMode::kAllWhitespace;
@@ -1029,23 +1029,13 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
 }
 
 namespace {
-DeclarativeShadowRootMode DeclarativeShadowRootModeFromToken(
-    AtomicHTMLToken* token,
-    const Document& document,
-    bool include_shadow_roots) {
-  Attribute* type_attribute =
+String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
+                                          const Document& document,
+                                          bool include_shadow_roots) {
+  Attribute* mode_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
-  if (!type_attribute) {
-    return DeclarativeShadowRootMode::kNone;
-  }
-  String shadow_mode = type_attribute->Value();
-
-  if (include_shadow_roots) {
-    if (EqualIgnoringASCIICase(shadow_mode, "open")) {
-      return DeclarativeShadowRootMode::kOpen;
-    } else if (EqualIgnoringASCIICase(shadow_mode, "closed")) {
-      return DeclarativeShadowRootMode::kClosed;
-    }
+  if (!mode_attribute) {
+    return String();
   }
   if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -1054,14 +1044,9 @@ DeclarativeShadowRootMode DeclarativeShadowRootModeFromToken(
         "Found declarative shadowrootmode attribute on a template, but "
         "declarative Shadow DOM is not being parsed. Use setHTMLUnsafe() "
         "or parseHTMLUnsafe() instead."));
-  } else {
-    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid declarative shadowrootmode attribute value \"" + shadow_mode +
-            "\". Valid values include \"open\" and \"closed\"."));
+    return String();
   }
-  return DeclarativeShadowRootMode::kNone;
+  return mode_attribute->Value();
 }
 }  // namespace
 

@@ -6,15 +6,11 @@
 <translation id="1142001580032786438">Weekkiezer bekijken</translation>
 <translation id="1171774979989969504">Geef een e-mailadres op.</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
-<translation id="1306460908038601864">Uit</translation>
 <translation id="1311894908970423688">Waarde moet <ph name="VALUE_DATE_OR_TIME" /> zijn.</translation>
-<translation id="1480676835519562650">Meerdere selecties mogelijk. <ph name="SELECTED" /> van <ph name="COUNT" /> geselecteerd.</translation>
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1591562245178063882">Deze maand</translation>
 <translation id="1637811476055996098">Bestanden kiezen</translation>
 <translation id="1680090928918677457">Camera gebruiken</translation>
-<translation id="1681022320378710418">huidige tijd</translation>
-<translation id="1727839386348365796">Pipet</translation>
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
 <translation id="1787192514241997742">totale tijd: <ph name="REMAINING_TIME" /></translation>
@@ -24,7 +20,6 @@
 <translation id="1938124657309484470">Waarde moet <ph name="MAXIMUM_DATE_OR_TIME" /> of eerder zijn.</translation>
 <translation id="1946271899482435442">Datumkiezer bekijken</translation>
 <translation id="1993104285338243655">Overgeschakeld naar mirroring</translation>
-<translation id="2031987842108996681">Rood kanaal</translation>
 <translation id="2060505056492490888">'<ph name="DOT" />' wordt op een verkeerde positie gebruikt in '<ph name="INVALIDDOMAIN" />'.</translation>
 <translation id="2068711044993563745">De minimumwaarde (<ph name="MINIMUM" />) moet kleiner zijn dan de maximumwaarde (<ph name="MAXIMUM" />).</translation>
 <translation id="2148716181193084225">Vandaag</translation>
@@ -37,11 +32,9 @@
 <translation id="245932805758469625">aantal seconden van resterende video</translation>
 <translation id="248395913932153421">Dag</translation>
 <translation id="2507943997699731163">Vul dit veld in.</translation>
-<translation id="2530182415807757784">Meerdere selecties mogelijk. Niets geselecteerd.</translation>
 <translation id="2561842179657104141">meer mediabedieningselementen bekijken</translation>
 <translation id="2572483411312390101">afspelen</translation>
 <translation id="2613802280814924224">Geef een geldige waarde op. De dichtstbijzijnde geldige waarde is <ph name="VALID_VALUE" />.</translation>
-<translation id="2634240155926812724">Groen kanaal</translation>
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later zijn.</translation>
@@ -51,9 +44,7 @@
 <translation id="3053226512517284904">menu met audiobeschrijvingen tonen</translation>
 <translation id="3075154866155599887">Voer een geldige waarde in. Het veld is onvolledig of bevat een ongeldige datum.</translation>
 <translation id="310520048233152454">Geef een URL op.</translation>
-<translation id="3220661731597678625">huidige stap</translation>
 <translation id="3321030238473337787">Afspeelsnelheid</translation>
-<translation id="3329013043687509092">Verzadiging</translation>
 <translation id="3450233048674729344">Waarde moet kleiner dan of gelijk zijn aan <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
@@ -61,7 +52,6 @@
 <translation id="3822383571486410024">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="383465348367842624">Het naamgedeelte vóór '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="3846214748874656680">Volledig scherm sluiten</translation>
-<translation id="3914173277599553213">Vereist</translation>
 <translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4103419683916926126">Milliseconden</translation>
 <translation id="4201051445878709314">Vorige maand bekijken</translation>
@@ -74,18 +64,14 @@
 <translation id="4763480195061959176">video</translation>
 <translation id="4792862212177489858">Locatie delen</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
-<translation id="4912200001568447310">huidig item</translation>
 <translation id="4915360478455618802">Tijdkiezer bekijken</translation>
-<translation id="4924138096460353083">onbepaald</translation>
 <translation id="49269513399674318">Microfoon gebruiken</translation>
 <translation id="4950364064308314478">Kiezer voor lokale datum en tijd bekijken</translation>
-<translation id="4971739861736909480"><ph name="ACCNAME" /> geselecteerd</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
 <translation id="49969490063480558">Geef een adresgedeelte op na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
 <translation id="5037575921016181960">Sterk wachtwoord</translation>
 <translation id="5090250355906949916">scrollbar met tijd van de video</translation>
-<translation id="509897012892853729">Blauw kanaal</translation>
 <translation id="5117590920725113268">Volgende maand bekijken</translation>
 <translation id="5164977714490026579">Waarde moet groter dan of gelijk zijn aan <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
@@ -96,7 +82,6 @@
 <translation id="5334352251556557839">Kan media niet afspelen.</translation>
 <translation id="537648784377940524">De minimum datum (<ph name="MIN_DATE_OR_TIME" />) moet voor de maximum datum (<ph name="MAX_DATE_OR_TIME" />) liggen.</translation>
 <translation id="5378437566635403538">uitgevouwen, dialoogvenster geopend.</translation>
-<translation id="5425179576310518467">huidige datum</translation>
 <translation id="5466621249238537318">Selecteer een of meer bestanden.</translation>
 <translation id="5468998798572797635">volledig scherm sluiten</translation>
 <translation id="5514612371225420585">Bestand op je apparaat</translation>
@@ -108,18 +93,14 @@
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5786442179789148008">menu afspeelsnelheid tonen</translation>
 <translation id="5787939484346677755">uitgevouwen, er zijn opties voor automatisch aanvullen beschikbaar.</translation>
-<translation id="5860033963881614850">Uit</translation>
 <translation id="588258955323874662">Volledig scherm</translation>
 <translation id="5888666972993069672">Wordt nu gecast naar <ph name="DEVICE_FRIENDLY_NAME" /></translation>
-<translation id="5916664084637901428">Aan</translation>
 <translation id="5939518447894949180">Resetten</translation>
 <translation id="5966707198760109579">Week</translation>
 <translation id="5985507339671257014">0,5</translation>
 <translation id="6011459053400940133">volumeregelaar</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6165053282446038410">uitgevouwen, er zijn <ph name="COUNT" /> opties voor automatisch aanvullen beschikbaar.</translation>
-<translation id="6212595056017402527">huidige pagina</translation>
-<translation id="6281588256137006900">Helderheid</translation>
 <translation id="6310801910862476708">Scherm-in-scherm afsluiten</translation>
 <translation id="6398862346408813489">Deelvenster voor maandselectie bekijken</translation>
 <translation id="6404546809543547843">scrollbar met audiotijd</translation>
@@ -139,11 +120,9 @@
 <translation id="6843725295806269523">geluid uitzetten</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6941933287844615239">media downloaden</translation>
-<translation id="698788488269350478">uitgevouwen.</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
 <translation id="7080893216867146095">Locatie delen toegestaan</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
-<translation id="7102274145889307184">huidige locatie</translation>
 <translation id="7134810312945846184">Microfoon en camera gebruiken</translation>
 <translation id="7263440858009898357">Selecteer een item in de lijst.</translation>
 <translation id="7320576522385648310">bufferen</translation>
@@ -157,10 +136,8 @@
 <translation id="775297008183122718">Ongeldige invoer</translation>
 <translation id="7782515065589691344">1.25</translation>
 <translation id="7789962463072032349">onderbreken</translation>
-<translation id="7852167693871241274">Schuifregelaar voor kleurtinten</translation>
 <translation id="7888071071722539607">Gebruik een '<ph name="ATSIGN" />' in het e-mailadres. In '<ph name="INVALIDADDRESS" />' ontbreekt een '<ph name="ATSIGN" />'.</translation>
 <translation id="795667975304826397">Geen bestand gekozen</translation>
-<translation id="7962328325860248200"><ph name="ACCNAME" /> niet geselecteerd</translation>
 <translation id="8117451130807776954">Deze week</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
@@ -180,9 +157,7 @@
 <translation id="8750798805984357768">Selecteer een van deze opties.</translation>
 <translation id="8845239796550121995">Wordt nu gecast naar je tv</translation>
 <translation id="8875657656876809964">Fout bij afspelen video</translation>
-<translation id="8889402386540077796">Kleurtoon</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" />  KB</translation>
-<translation id="894736920926684893">Schakelaar voor indeling</translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="901493112792887934">huidige tijd in seconden</translation>
 <translation id="9093215626363556771">scherm-in-scherm afsluiten</translation>

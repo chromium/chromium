@@ -251,7 +251,7 @@ be signed on the command line, e.g.:
 $ autoninja -C out/Debug-iphoneos ios_web_shell
 ninja: Entering directory `out/Debug-iphoneos'
 FAILED: ios_web_shell.app/ios_web_shell ios_web_shell.app/_CodeSignature/CodeResources ios_web_shell.app/embedded.mobileprovision
-python ../../build/config/ios/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
+python ../../build/config/apple/codesign.py code-sign-bundle -t=iphoneos -i=0123456789ABCDEF0123456789ABCDEF01234567 -e=../../build/config/ios/entitlements.plist -b=obj/ios/web/shell/ios_web_shell ios_web_shell.app
 Error: no mobile provisioning profile found for "org.chromium.ios-web-shell".
 ninja: build stopped: subcommand failed.
 ```

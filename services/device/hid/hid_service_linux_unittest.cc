@@ -78,7 +78,7 @@ TEST_F(HidServiceLinuxTest, EnumerateUsbHidDevice) {
   uint8_t data = 0;
   ASSERT_TRUE(base::CreateDirectory(hid_path));
   ASSERT_TRUE(
-      base::WriteFile(report_descriptor_path, base::make_span(&data, 1u)));
+      base::WriteFile(report_descriptor_path, base::span_from_ref(data)));
 
   // Add the fake HID device as well as its ancestors up to the USB device node.
   // Ancestors must be added starting from the closest to the root to ensure
@@ -147,7 +147,7 @@ TEST_F(HidServiceLinuxTest, EnumerateBluetoothClassicHidDevice) {
   uint8_t data = 0;
   ASSERT_TRUE(base::CreateDirectory(hid_path));
   ASSERT_TRUE(
-      base::WriteFile(report_descriptor_path, base::make_span(&data, 1u)));
+      base::WriteFile(report_descriptor_path, base::span_from_ref(data)));
 
   // Add the fake HID device as well as its ancestors up to the Bluetooth link.
   // Ancestors must be added starting from the closest to the root to ensure
@@ -212,7 +212,7 @@ TEST_F(HidServiceLinuxTest, EnumerateBleHidDevice) {
   uint8_t data = 0;
   ASSERT_TRUE(base::CreateDirectory(hid_path));
   ASSERT_TRUE(
-      base::WriteFile(report_descriptor_path, base::make_span(&data, 1u)));
+      base::WriteFile(report_descriptor_path, base::span_from_ref(data)));
 
   // Add the fake HID device as well as its ancestors up to the Bluetooth link.
   // Ancestors must be added starting from the closest to the root to ensure

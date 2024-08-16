@@ -144,9 +144,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
        */
       keyboard: KeyboardInfo,
 
-      layoutIsKnown: {
+      shouldDisplayDiagram: {
         type: Boolean,
-        computed: 'computeLayoutIsKnown(keyboard)',
+        computed: 'computeShouldDisplayDiagram(keyboard)',
       },
 
       diagramMechanicalLayout: {
@@ -191,7 +191,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   isLoggedIn: boolean;
   protected diagramTopRightKey: DiagramTopRightKey|null;
   private lostFocusToastLingerMs: number;
-  private layoutIsKnown: boolean;
+  private shouldDisplayDiagram: boolean;
   private diagramMechanicalLayout: DiagramMechanicalLayout|null;
   private diagramPhysicalLayout: DiagramPhysicalLayout|null;
   private showNumberPad: boolean;
@@ -216,7 +216,7 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     getInstance(this.$.dialog.getNative()).announce(e.detail.text);
   };
 
-  private computeLayoutIsKnown(keyboard?: KeyboardInfo): boolean {
+  private computeShouldDisplayDiagram(keyboard?: KeyboardInfo): boolean {
     if (!keyboard) {
       return false;
     }
@@ -337,10 +337,12 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   }
 
   close(): void {
-    const diagram: KeyboardDiagramElement|null =
-        this.shadowRoot!.querySelector('#diagram');
-    assert(diagram);
-    diagram.resetAllKeys();
+    if (this.shouldDisplayDiagram) {
+      const diagram: KeyboardDiagramElement|null =
+          this.shadowRoot!.querySelector('#diagram');
+      assert(diagram);
+      diagram.resetAllKeys();
+    }
     this.$.dialog.close();
 
     const url = new URL(window.location.href);

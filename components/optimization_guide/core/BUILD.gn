@@ -121,6 +121,12 @@ if (build_with_tflite_lib) {
 
 component("features") {
   sources = [
+    "feature_registry/enterprise_policy_registry.cc",
+    "feature_registry/enterprise_policy_registry.h",
+    "feature_registry/mqls_feature_registry.cc",
+    "feature_registry/mqls_feature_registry.h",
+    "feature_registry/settings_ui_registry.cc",
+    "feature_registry/settings_ui_registry.h",
     "insertion_ordered_set.h",
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
@@ -314,6 +320,7 @@ static_library("core") {
     "//components/unified_consent",
     "//components/variations",
     "//components/variations/net",
+    "//google_apis/common:request_util",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -325,6 +332,7 @@ static_library("core") {
   if (!is_fuchsia || !optimize_for_size) {
     deps += [
       ":on_device_model_execution_proto_generator",
+      "//components/component_updater",
       "//components/version_info",
       "//services/data_decoder/public/cpp",
       "//third_party/re2",
@@ -359,6 +367,7 @@ static_library("prediction") {
     "//components/prefs",
     "//components/services/unzip/public/cpp",
     "//crypto",
+    "//google_apis/common:request_util",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
   ]
@@ -373,6 +382,8 @@ static_library("prediction") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_optimization_guide_model_executor.cc",
+    "mock_optimization_guide_model_executor.h",
     "mock_push_notification_manager.cc",
     "mock_push_notification_manager.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
@@ -443,6 +454,9 @@ source_set("unit_tests") {
   sources = [
     "bloom_filter_unittest.cc",
     "command_line_top_host_provider_unittest.cc",
+    "feature_registry/enterprise_policy_registry_unittest.cc",
+    "feature_registry/mqls_feature_registry_unittest.cc",
+    "feature_registry/settings_ui_registry_unittest.cc",
     "hint_cache_unittest.cc",
     "hints_component_util_unittest.cc",
     "hints_fetcher_unittest.cc",
@@ -558,6 +572,11 @@ source_set("unit_tests") {
   if (!is_ios) {
     deps += [ "//components/services/unzip/content" ]
   }
+
+  if (!is_fuchsia || !optimize_for_size) {
+    deps += [ "//components/component_updater" ]
+  }
+
   if (build_with_tflite_lib) {
     deps += [
       "//third_party/abseil-cpp:absl",
@@ -632,6 +651,7 @@ action("on_device_model_execution_proto_generator") {
     "$root_gen_dir/components/optimization_guide/proto/string_value.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/tab_organization.descriptor",
     "$root_gen_dir/components/optimization_guide/proto/history_answer.descriptor",
+    "$root_gen_dir/components/optimization_guide/proto/summarize.descriptor",
   ]
   outputs = [ output_proto_descriptors_cc_file ]
 
@@ -642,10 +662,12 @@ action("on_device_model_execution_proto_generator") {
     "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/tab_organization.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/history_answer.pb.h\"",
+    "--include=\"components/optimization_guide/proto/features/summarize.pb.h\"",
     "--request=.optimization_guide.proto.ComposeRequest",
     "--request=.optimization_guide.proto.TabOrganizationRequest",
     "--request=.optimization_guide.proto.HistoryAnswerRequest",
     "--request=.optimization_guide.proto.StringValue",
+    "--request=.optimization_guide.proto.SummarizeRequest",
     "--response=.optimization_guide.proto.ComposeResponse",
     "--response=.optimization_guide.proto.TabOrganizationResponse",
     "--response=.optimization_guide.proto.HistoryAnswerResponse",
@@ -662,6 +684,7 @@ action("on_device_model_execution_proto_generator") {
     "//components/optimization_guide/proto:compose_proto_descriptor",
     "//components/optimization_guide/proto:history_answer_proto_descriptor",
     "//components/optimization_guide/proto:string_value_proto_descriptor",
+    "//components/optimization_guide/proto:summarize_descriptor",
     "//components/optimization_guide/proto:tab_organization_proto_descriptor",
     "//third_party/protobuf:py_proto_runtime",
   ]

@@ -4014,6 +4014,11 @@ Called by update_autofill_enums.py.-->
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
 </enum>
 
+<enum name="AutofillProfileSource">
+  <int value="0" label="The profile is saved to local store."/>
+  <int value="1" label="The profile is saved to account store."/>
+</enum>
+
 <enum name="AutofillProfileTokenQualityObservationType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>
@@ -4891,6 +4896,12 @@ Called by update_autofill_enums.py.-->
   <int value="13"
       label="Server and heuristic type, garbage autocomplete attribute"/>
   <int value="14" label="Server and heuristic type, autocomplete=off"/>
+</enum>
+
+<enum name="RelativePosition">
+  <int value="0" label="Ranked higher"/>
+  <int value="1" label="Ranked lower"/>
+  <int value="2" label="Ranked same"/>
 </enum>
 
 <enum name="RendererFillSkipReason">

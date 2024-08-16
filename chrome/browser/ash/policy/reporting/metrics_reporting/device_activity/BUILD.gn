@@ -36,3 +36,36 @@ source_set("unit_tests") {
     "//ui/base/idle:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "device_activity_sampler_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/session_manager/core",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

@@ -88,6 +88,10 @@ const char* LayerTypeAsString(mojom::LayerType type) {
 
 }  // namespace
 
+LayerImpl::RareProperties::RareProperties() = default;
+LayerImpl::RareProperties::RareProperties(const RareProperties&) = default;
+LayerImpl::RareProperties::~RareProperties() = default;
+
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
                      int id,
                      bool will_always_push_properties)
@@ -747,8 +751,10 @@ void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   wheel_event_handler_region().AsValueInto(state);
   state->EndArray();
 
+  // TODO(crbug.com/358408565): At least DevTools reads from trace using this
+  // name.
   state->BeginArray("non_fast_scrollable_region");
-  non_fast_scrollable_region().AsValueInto(state);
+  main_thread_scroll_hit_test_region().AsValueInto(state);
   state->EndArray();
 
   state->SetBoolean("hit_testable", HitTestable());

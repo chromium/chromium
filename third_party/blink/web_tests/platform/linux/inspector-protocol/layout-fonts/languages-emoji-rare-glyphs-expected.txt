@@ -23,9 +23,14 @@
 "DejaVu Sans" : 71,
 "Tinos" : 14
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
-#emoji:
-"Noto Color Emoji" : 23
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪♐☔☃️™️
+#emoji_emoji:
+"Noto Color Emoji" : 27
+
+☔︎♐︎☺☺︎☃☃︎☯︎☯™™︎00︎
+#text_emoji:
+"DejaVu Sans" : 10,
+"Tinos" : 9
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:

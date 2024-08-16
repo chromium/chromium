@@ -75,6 +75,8 @@ export class PolicyTestRowElement extends CustomElement {
     const newValueType = this.schema_[ns]![nameInput.value];
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     const inputElementCell = inputElement.parentNode! as HTMLElement;
+    const previousValue = inputElement.value;
+    const previousValueType = this.inputType_;
     inputElement.remove();
     switch (newValueType) {
       case 'boolean':
@@ -145,6 +147,10 @@ export class PolicyTestRowElement extends CustomElement {
         break;
       default:
         assertNotReached();
+    }
+    if (previousValueType === this.inputType_) {
+      this.getRequiredElement<HTMLInputElement>('.value')!.value =
+          previousValue;
     }
   }
 
@@ -359,9 +365,10 @@ export class PolicyTestRowElement extends CustomElement {
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
     if (this.inputType_ === String) {
-      initialValues.value = this.trimSurroundingQuotes_(initialValues.value);
+      policyValueInput.value = initialValues.value;
+    } else {
+      policyValueInput.value = JSON.stringify(initialValues.value);
     }
-    policyValueInput.value = JSON.stringify(initialValues.value);
   }
 
   // Event listener function for setting the select element background back to
@@ -379,21 +386,6 @@ export class PolicyTestRowElement extends CustomElement {
     this.errorEvents_.add(
         inputElement, 'focus', this.resetErrorState_.bind(this));
     this.hasAnError_ = true;
-  }
-
-  // Helper method for trimming the surrounding double quotes in the string, if
-  // any are present.
-  private trimSurroundingQuotes_(stringToTrim: string): string {
-    if (stringToTrim.length < 2) {
-      return stringToTrim;
-    }
-    stringToTrim.trim();
-    if (stringToTrim.charAt(0) === '"' &&
-        stringToTrim.charAt(stringToTrim.length - 1) === '"') {
-      stringToTrim = stringToTrim.substring(1, stringToTrim.length - 1);
-    }
-    stringToTrim.trim();
-    return stringToTrim;
   }
 
   // Class method for returning the value for this policy (the value in the

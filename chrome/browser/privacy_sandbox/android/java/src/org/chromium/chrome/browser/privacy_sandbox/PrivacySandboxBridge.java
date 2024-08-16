@@ -90,8 +90,13 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().getRequiredPromptType(mProfile);
     }
 
+    public void promptActionOccurred(@PromptAction int action, @SurfaceType int surfaceType) {
+        PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
+    }
+
+    // TODO(crbug.com/355238694): Remove this method and hardcoded SurfaceType value.
     public void promptActionOccurred(@PromptAction int action) {
-        PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action);
+        this.promptActionOccurred(action, SurfaceType.BR_APP);
     }
 
     public boolean isFirstPartySetsDataAccessEnabled() {
@@ -176,7 +181,7 @@ public class PrivacySandboxBridge {
 
         int getRequiredPromptType(Profile profile);
 
-        void promptActionOccurred(Profile profile, int action);
+        void promptActionOccurred(Profile profile, int action, int surfaceType);
 
         void topicsToggleChanged(Profile profile, boolean newValue);
 

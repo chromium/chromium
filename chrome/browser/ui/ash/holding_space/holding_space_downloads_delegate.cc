@@ -18,8 +18,6 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
@@ -45,21 +43,6 @@ using ItemLaunchFailureReason = holding_space_metrics::ItemLaunchFailureReason;
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns a mojo download item converted from the specified `item`.
-crosapi::mojom::DownloadItemPtr ConvertToMojoDownloadItem(
-    const download::DownloadItem* item) {
-  // NOTE: `browser_context` may be `nullptr` in tests. We assume in this case
-  // that the item is not from an incognito profile; tests exercising incognito
-  // behavior should make sure `browser_context` is not `nullptr`.
-  auto* browser_context = content::DownloadItemUtils::GetBrowserContext(item);
-  const bool is_from_incognito_profile =
-      browser_context
-          ? Profile::FromBrowserContext(browser_context)->IsIncognitoProfile()
-          : false;
-  return download::download_item_utils::ConvertToMojoDownloadItem(
-      item, is_from_incognito_profile);
-}
-
 // Returns a `gfx::ImageSkia` to show as a placeholder in a holding space image
 // to indicate error.
 gfx::ImageSkia CreateErrorPlaceholderImageSkia(
@@ -79,35 +62,9 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
                   DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()))));
 }
 
-// Returns the singleton `crosapi::DownloadControllerAsh` if it exists.
-crosapi::DownloadControllerAsh* GetDownloadControllerAsh() {
-  return crosapi::CrosapiManager::IsInitialized()
-             ? crosapi::CrosapiManager::Get()
-                   ->crosapi_ash()
-                   ->download_controller_ash()
-             : nullptr;
-}
-
-// Returns whether the specified `mojo_download_item` is complete.
-bool IsComplete(const crosapi::mojom::DownloadItem* mojo_download_item) {
-  return mojo_download_item->state == crosapi::mojom::DownloadState::kComplete;
-}
-
-// Returns whether or not the specified `mojo_download_item` is eligible for
-// in-progress downloads integration.
-bool IsEligibleForInProgressIntegration(
-    const crosapi::mojom::DownloadItem* mojo_download_item) {
-  // The `has_is_insecure` field was the last field to be implemented in
-  // Lacros. Its presence indicates that other required metadata and APIs (e.g.
-  // pause, resume, cancel, etc.) are also implemented and is therefore used to
-  // gate eligibility.
-  return mojo_download_item->has_is_insecure;
-}
-
-// Returns whether the specified `mojo_download_item` is in progress.
-bool IsInProgress(const crosapi::mojom::DownloadItem* mojo_download_item) {
-  return mojo_download_item->state ==
-         crosapi::mojom::DownloadState::kInProgress;
+// Returns whether the specified `download_item` is complete.
+bool IsComplete(const download::DownloadItem* download_item) {
+  return download_item->GetState() == download::DownloadItem::COMPLETE;
 }
 
 // Returns whether the specified `download_item` is in progress.
@@ -115,74 +72,83 @@ bool IsInProgress(const download::DownloadItem* download_item) {
   return download_item->GetState() == download::DownloadItem::IN_PROGRESS;
 }
 
-// Returns whether the specified `mojo_download_item` is being scanned.
-bool IsScanning(const crosapi::mojom::DownloadItem* mojo_download_item) {
-  return IsInProgress(mojo_download_item) &&
-         mojo_download_item->danger_type ==
-             crosapi::mojom::DownloadDangerType::
-                 kDownloadDangerTypeAsyncScanning;
+// Returns whether the specified `download_item` is being scanned.
+bool IsScanning(const download::DownloadItem* download_item) {
+  return IsInProgress(download_item) &&
+         download_item->GetDangerType() ==
+             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
 }
 
 }  // namespace
 
 // HoldingSpaceDownloadsDelegate::InProgressDownload ---------------------------
 
-// A wrapper around an in-progress `crosapi::mojom::DownloadItem` which notifies
+// A wrapper around an in-progress `download::DownloadItem` which notifies
 // its associated `delegate_` of changes in download state. Each in-progress
 // download is associated with a single in-progress holding space item once the
 // target file path for the in-progress download has been set. NOTE: Instances
 // of this class are immediately destroyed when the underlying download is no
 // longer in-progress or when the associated in-progress holding space item is
 // removed from the model.
-class HoldingSpaceDownloadsDelegate::InProgressDownload {
+class HoldingSpaceDownloadsDelegate::InProgressDownload
+    : public download::DownloadItem::Observer {
  public:
-  enum class Type {
-    kAsh,     // See `InProgressAshDownload`.
-    kLacros,  // See `InProgressLacrosDownload`.
-  };
-
-  InProgressDownload(Type type,
-                     HoldingSpaceDownloadsDelegate* delegate,
-                     crosapi::mojom::DownloadItemPtr mojo_download_item)
-      : type_(type),
-        delegate_(delegate),
-        mojo_download_item_(std::move(mojo_download_item)) {
-    DCHECK(IsInProgress(mojo_download_item_.get()));
+  InProgressDownload(HoldingSpaceDownloadsDelegate* delegate,
+                     content::DownloadManager* manager,
+                     download::DownloadItem* download_item)
+      : delegate_(delegate),
+        manager_(manager),
+        download_item_(download_item),
+        is_dangerous_(IsDangerous()),
+        is_insecure_(IsInsecure()),
+        might_be_malicious_(MightBeMalicious()) {
+    DCHECK(IsInProgress(download_item_));
+    download_item_observation_.Observe(download_item_);
   }
 
   InProgressDownload(const InProgressDownload&) = delete;
   InProgressDownload& operator=(const InProgressDownload&) = delete;
-  virtual ~InProgressDownload() = default;
+  ~InProgressDownload() override = default;
 
-  // Returns the specific type of `InProgressDownload` that this is.
-  Type GetType() const { return type_; }
+  // Returns the download manager that originated this download.
+  const content::DownloadManager* manager() const { return manager_; }
+
+  // Returns the download item that this in-progress download wraps.
+  const download::DownloadItem* download_item() const { return download_item_; }
 
   // Cancels the underlying download. NOTE: This is expected to be invoked in
   // direct response to an explicit user action and will result in the
   // destruction of `this`.
-  virtual void Cancel() = 0;
+  void Cancel() { download_item_->Cancel(/*from_user=*/true); }
 
   // Pauses the underlying download.
-  virtual void Pause() = 0;
+  void Pause() { download_item_->Pause(); }
 
   // Resumes the underlying download. NOTE: This is expected to be invoked in
   // direct response to an explicit user action.
-  virtual void Resume() = 0;
+  void Resume() { download_item_->Resume(/*from_user=*/true); }
 
   // Marks the underlying download to open when complete. Returns `absl:nullopt`
   // on success or the reason if the attempt was not successful.
-  virtual std::optional<ItemLaunchFailureReason> OpenWhenComplete() = 0;
+  std::optional<ItemLaunchFailureReason> OpenWhenComplete() {
+    if (GetOpenWhenComplete()) {
+      return ItemLaunchFailureReason::kReattemptToOpenWhenComplete;
+    }
+    download_item_->SetOpenWhenComplete(true);
+    return std::nullopt;
+  }
 
   // Returns the accessible name to use for the underlying download.
   // NOTE: If the underlying download is complete, the return value will be
   // absent so as to fallback to default accessibility behavior.
   std::optional<std::u16string> GetAccessibleName() const {
-    if (IsComplete(mojo_download_item_.get()))
+    if (IsComplete(download_item_)) {
       return std::nullopt;
+    }
 
     int msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME;
 
-    if (IsScanning(mojo_download_item_.get())) {
+    if (IsScanning(download_item_)) {
       msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_SCANNING;
     } else if (IsDangerous() && !MightBeMalicious()) {
       msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_CONFIRM;
@@ -192,26 +158,23 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
       msg_id = IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_A11Y_NAME_PAUSED;
     }
 
-    const auto& filename =
-        mojo_download_item_->target_file_path.BaseName().LossyDisplayName();
+    const auto filename = GetTargetFilePath().BaseName().LossyDisplayName();
     return l10n_util::GetStringFUTF16(msg_id, filename);
   }
 
   // Returns the file path associated with the underlying download.
   // NOTE: The file path may be empty before a target file path has been picked.
-  base::FilePath GetFilePath() const {
-    return mojo_download_item_->full_path.value_or(base::FilePath());
+  const base::FilePath& GetFilePath() const {
+    return download_item_->GetFullPath();
   }
 
   // Returns the GUID which uniquely identifies the underlying download.
   // NOTE: The existence of `this` implies that GUID is present.
-  const std::string& GetGuid() const {
-    return mojo_download_item_->guid.value();
-  }
+  const std::string& GetGuid() const { return download_item_->GetGuid(); }
 
   // Returns whether the underlying download is marked to open when complete.
   bool GetOpenWhenComplete() const {
-    return mojo_download_item_->open_when_complete;
+    return download_item_->GetOpenWhenComplete();
   }
 
   // Returns the current progress of the underlying download.
@@ -219,9 +182,10 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   //   * Progress is indeterminate if the download is being scanned.
   //   * Progress is hidden if the download is dangerous or insecure.
   HoldingSpaceProgress GetProgress() const {
-    if (IsComplete(mojo_download_item_.get()))
+    if (IsComplete(download_item_)) {
       return HoldingSpaceProgress();
-    if (IsScanning(mojo_download_item_.get())) {
+    }
+    if (IsScanning(download_item_)) {
       return HoldingSpaceProgress(/*current_bytes=*/std::nullopt,
                                   /*total_bytes=*/std::nullopt);
     }
@@ -233,35 +197,35 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // Returns the target file path associated with the underlying download.
   // NOTE: Returned path may be empty before a target file path has been picked.
   const base::FilePath& GetTargetFilePath() const {
-    return mojo_download_item_->target_file_path;
+    return download_item_->GetTargetFilePath();
   }
 
   // Returns the number of bytes received for the underlying download.
   int64_t GetReceivedBytes() const {
-    return mojo_download_item_->received_bytes;
+    return download_item_->GetReceivedBytes();
   }
 
   // Returns the number of total bytes for the underlying download.
   // NOTE: The total number of bytes will be absent if unknown or indeterminate.
   std::optional<int64_t> GetTotalBytes() const {
-    const int64_t total_bytes = mojo_download_item_->total_bytes;
+    const int64_t total_bytes = download_item_->GetTotalBytes();
     return total_bytes > 0 ? std::make_optional(total_bytes) : std::nullopt;
   }
 
   // Returns whether the underlying download is dangerous.
-  bool IsDangerous() const { return mojo_download_item_->is_dangerous; }
+  bool IsDangerous() const { return download_item_->IsDangerous(); }
 
   // Returns whether the underlying download is insecure.
-  bool IsInsecure() const { return mojo_download_item_->is_insecure; }
+  bool IsInsecure() const { return download_item_->IsInsecure(); }
 
   // Returns whether the underlying download is paused.
-  bool IsPaused() const { return mojo_download_item_->is_paused; }
+  bool IsPaused() const { return download_item_->IsPaused(); }
 
   // Returns whether the underlying download might be malicious.
   bool MightBeMalicious() const {
-    return IsDangerous() && mojo_download_item_->danger_type !=
-                                crosapi::mojom::DownloadDangerType::
-                                    kDownloadDangerTypeDangerousFile;
+    return IsDangerous() && download_item_->GetDangerType() !=
+                                download::DownloadDangerType::
+                                    DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
   }
 
   // Associates this in-progress download with the specified in-progress
@@ -302,7 +266,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
           base::FilePath rewritten_file_path(file_path);
           if (in_progress_download &&
-              IsInProgress(in_progress_download->mojo_download_item_.get())) {
+              IsInProgress(in_progress_download->download_item())) {
             rewritten_file_path = in_progress_download->GetTargetFilePath();
           }
 
@@ -317,20 +281,22 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
     // Only in-progress download items override primary text. In other cases,
     // the primary text will fall back to the lossy display name of the backing
     // file and be automatically updated in response to file system changes.
-    if (!IsInProgress(mojo_download_item_.get()))
+    if (!IsInProgress(download_item_)) {
       return std::nullopt;
-    return mojo_download_item_->target_file_path.BaseName().LossyDisplayName();
+    }
+    return GetTargetFilePath().BaseName().LossyDisplayName();
   }
 
   // Returns the secondary text to display for the underlying download.
   std::optional<std::u16string> GetSecondaryText() const {
     // Only in-progress download items have secondary text.
-    if (!IsInProgress(mojo_download_item_.get()))
+    if (!IsInProgress(download_item_)) {
       return std::nullopt;
+    }
 
     // In-progress download items which are being scanned have a special
     // secondary text treatment.
-    if (IsScanning(mojo_download_item_.get())) {
+    if (IsScanning(download_item_)) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SCANNING);
     }
@@ -393,13 +359,15 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // download.
   std::optional<ui::ColorId> GetSecondaryTextColorId() const {
     // Only in-progress download items have secondary text.
-    if (!IsInProgress(mojo_download_item_.get()))
+    if (!IsInProgress(download_item_)) {
       return std::nullopt;
+    }
 
     // In-progress download items which are being scanned have a special
     // secondary text treatment.
-    if (IsScanning(mojo_download_item_.get()))
+    if (IsScanning(download_item_)) {
       return cros_tokens::kTextColorProminent;
+    }
 
     // In-progress download items which are dangerous but not malicious can be
     // kept or discarded by the user via notification. This being the case, such
@@ -416,25 +384,27 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   }
 
  protected:
-  // Updates the `mojo_download_item_` associated with this in-progress
-  // download, notifying `delegate_` of the change in state. Note that invoking
-  // this method may result in the destruction of `this`.
-  void UpdateMojoDownloadItem(
-      crosapi::mojom::DownloadItemPtr mojo_download_item) {
+  // Updates cached `download_item_` properties and notifies `delegate_` of the
+  // change in state. Note that invoking this method may result in the
+  // destruction of `this`.
+  void UpdateDownloadItem(bool destroyed) {
     const bool was_dangerous_but_not_malicious =
-        IsDangerous() && !MightBeMalicious();
-    const bool was_dangerous_or_insecure = IsDangerous() || IsInsecure();
+        is_dangerous_ && !might_be_malicious_;
+    const bool was_dangerous_or_insecure = is_dangerous_ || is_insecure_;
 
-    mojo_download_item_ = std::move(mojo_download_item);
+    // Update cached properties.
+    is_dangerous_ = IsDangerous();
+    is_insecure_ = IsInsecure();
+    might_be_malicious_ = MightBeMalicious();
 
-    if (!mojo_download_item_) {
+    if (destroyed) {
       delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
       return;
     }
 
     const bool is_dangerous_but_not_malicious =
-        IsDangerous() && !MightBeMalicious();
-    const bool is_dangerous_or_insecure = IsDangerous() || IsInsecure();
+        is_dangerous_ && !might_be_malicious_;
+    const bool is_dangerous_or_insecure = is_dangerous_ || is_insecure_;
 
     // Explicitly invalidate the image of the associated holding space item if
     // the download is transitioning to/from a state which required an error
@@ -443,27 +413,38 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
         was_dangerous_but_not_malicious != is_dangerous_but_not_malicious ||
         was_dangerous_or_insecure != is_dangerous_or_insecure;
 
-    switch (mojo_download_item_->state) {
-      case crosapi::mojom::DownloadState::kInProgress:
+    switch (download_item_->GetState()) {
+      case download::DownloadItem::IN_PROGRESS:
         delegate_->OnDownloadUpdated(this, invalidate_image);
         break;
-      case crosapi::mojom::DownloadState::kComplete:
+      case download::DownloadItem::COMPLETE:
         delegate_->OnDownloadCompleted(this);  // NOTE: Destroys `this`.
         break;
-      case crosapi::mojom::DownloadState::kCancelled:
-      case crosapi::mojom::DownloadState::kInterrupted:
+      case download::DownloadItem::CANCELLED:
+      case download::DownloadItem::INTERRUPTED:
         delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
         break;
-      case crosapi::mojom::DownloadState::kUnknown:
+      case download::DownloadItem::MAX_DOWNLOAD_STATE:
         NOTREACHED_IN_MIGRATION();
         break;
     }
   }
 
  private:
-  const Type type_;
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download_item) override {
+    // NOTE: This method invocation may result in destruction of `this`,
+    // depending on the state of the underlying download.
+    UpdateDownloadItem(/*destroyed=*/false);
+  }
+
+  void OnDownloadDestroyed(download::DownloadItem* download_item) override {
+    UpdateDownloadItem(/*destroyed=*/true);  // NOTE: Destroys `this`.
+  }
+
   const raw_ptr<HoldingSpaceDownloadsDelegate> delegate_;  // NOTE: Owns `this`.
-  crosapi::mojom::DownloadItemPtr mojo_download_item_;
+  const raw_ptr<content::DownloadManager> manager_;
+  const raw_ptr<download::DownloadItem> download_item_;
 
   // The in-progress holding space item associated with this in-progress
   // download. NOTE: This may be `nullptr` until the target file path for the
@@ -471,148 +452,18 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
   // and associated.
   raw_ptr<const HoldingSpaceItem> holding_space_item_ = nullptr;
 
-  base::WeakPtrFactory<InProgressDownload> weak_factory_{this};
-};
-
-// HoldingSpaceDownloadsDelegate::InProgressAshDownload ------------------------
-
-// A wrapper around an in-progress `download::DownloadItem` originating from the
-// Ash Chrome browser. NOTE: Instances of this class are immediately destroyed
-// when the underlying download is no longer in-progress or when the associated
-// in-progress holding space item is removed from the model.
-class HoldingSpaceDownloadsDelegate::InProgressAshDownload
-    : public HoldingSpaceDownloadsDelegate::InProgressDownload,
-      public download::DownloadItem::Observer {
- public:
-  InProgressAshDownload(HoldingSpaceDownloadsDelegate* delegate,
-                        content::DownloadManager* manager,
-                        download::DownloadItem* download_item)
-      : InProgressDownload(Type::kAsh,
-                           delegate,
-                           ConvertToMojoDownloadItem(download_item)),
-        manager_(manager),
-        download_item_(download_item) {
-    download_item_observation_.Observe(download_item);
-  }
-
-  InProgressAshDownload(const InProgressAshDownload&) = delete;
-  InProgressAshDownload& operator=(const InProgressAshDownload&) = delete;
-  ~InProgressAshDownload() override = default;
-
-  // Returns the download manager that originated this download.
-  const content::DownloadManager* manager() const { return manager_; }
-
-  // Returns the download item that this in-progress download wraps.
-  const download::DownloadItem* download_item() const { return download_item_; }
-
- private:
-  // InProgressDownload:
-  void Cancel() override { download_item_->Cancel(/*from_user=*/true); }
-  void Pause() override { download_item_->Pause(); }
-  void Resume() override { download_item_->Resume(/*from_user=*/true); }
-
-  std::optional<ItemLaunchFailureReason> OpenWhenComplete() override {
-    if (GetOpenWhenComplete())
-      return ItemLaunchFailureReason::kReattemptToOpenWhenComplete;
-    download_item_->SetOpenWhenComplete(true);
-    return std::nullopt;
-  }
-
-  // download::DownloadItem::Observer:
-  void OnDownloadUpdated(download::DownloadItem* download_item) override {
-    // NOTE: This method invocation may result in destruction of `this`,
-    // depending on the state of the underlying download.
-    UpdateMojoDownloadItem(ConvertToMojoDownloadItem(download_item));
-  }
-
-  void OnDownloadDestroyed(download::DownloadItem* download_item) override {
-    UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
-  }
-
-  const raw_ptr<content::DownloadManager> manager_;
-  const raw_ptr<download::DownloadItem> download_item_;
+  // Cached `download_item_` properties used to determine when to invalidate the
+  // associated `holding_space_item_` image. The image is only invalidated when
+  // these properties change.
+  bool is_dangerous_ = false;
+  bool is_insecure_ = false;
+  bool might_be_malicious_ = false;
 
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       download_item_observation_{this};
-};
 
-// HoldingSpaceDownloadsDelegate::InProgressLacrosDownload ---------------------
-
-// A wrapper around an in-progress `crosapi::mojom::DownloadItem` originating
-// from the Lacros Chrome browser. NOTE: Instances of this class are immediately
-// destroyed when the underlying download is no longer in-progress or when the
-// associated in-progress holding space item is removed from the model.
-class HoldingSpaceDownloadsDelegate::InProgressLacrosDownload
-    : public HoldingSpaceDownloadsDelegate::InProgressDownload,
-      public crosapi::DownloadControllerAsh::DownloadControllerObserver {
- public:
-  InProgressLacrosDownload(HoldingSpaceDownloadsDelegate* delegate,
-                           crosapi::mojom::DownloadItemPtr mojo_download_item)
-      : InProgressDownload(Type::kLacros,
-                           delegate,
-                           std::move(mojo_download_item)) {
-    CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->AddObserver(this);
-  }
-
-  InProgressLacrosDownload(const InProgressLacrosDownload&) = delete;
-  InProgressLacrosDownload& operator=(const InProgressLacrosDownload&) = delete;
-
-  ~InProgressLacrosDownload() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->RemoveObserver(this);
-  }
-
- private:
-  // InProgressDownload:
-  void Cancel() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Cancel(GetGuid(), /*user_cancel=*/true);
-  }
-
-  void Pause() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Pause(GetGuid());
-  }
-
-  void Resume() override {
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash)
-      download_controller_ash->Resume(GetGuid(), /*user_resume=*/true);
-  }
-
-  std::optional<ItemLaunchFailureReason> OpenWhenComplete() override {
-    if (GetOpenWhenComplete())
-      return ItemLaunchFailureReason::kReattemptToOpenWhenComplete;
-    auto* const download_controller_ash = GetDownloadControllerAsh();
-    if (download_controller_ash) {
-      download_controller_ash->SetOpenWhenComplete(GetGuid(), true);
-      return std::nullopt;
-    }
-    return ItemLaunchFailureReason::kCrosApiNotFound;
-  }
-
-  // crosapi::DownloadControllerAsh::DownloadControllerObserver:
-  void OnLacrosDownloadUpdated(
-      const crosapi::mojom::DownloadItem& mojo_download_item) override {
-    if (mojo_download_item.guid != GetGuid())
-      return;
-    // NOTE: This method invocation may result in destruction of `this`,
-    // depending on the state of the underlying download.
-    UpdateMojoDownloadItem(mojo_download_item.Clone());
-  }
-
-  void OnLacrosDownloadDestroyed(
-      const crosapi::mojom::DownloadItem& mojo_download_item) override {
-    if (mojo_download_item.guid == GetGuid())
-      UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
-  }
+  base::WeakPtrFactory<InProgressDownload> weak_factory_{this};
 };
 
 // HoldingSpaceDownloadsDelegate -----------------------------------------------
@@ -622,12 +473,7 @@ HoldingSpaceDownloadsDelegate::HoldingSpaceDownloadsDelegate(
     HoldingSpaceModel* model)
     : HoldingSpaceKeyedServiceDelegate(service, model) {}
 
-HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() {
-  // Lacros Chrome downloads.
-  auto* const download_controller_ash = GetDownloadControllerAsh();
-  if (download_controller_ash)
-    download_controller_ash->RemoveObserver(this);
-}
+HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
 std::optional<holding_space_metrics::ItemLaunchFailureReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
@@ -650,18 +496,6 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
 
   // Ash Chrome downloads.
   download_notifier_.AddProfile(profile());
-
-  // Lacros Chrome downloads.
-  // NOTE: If the downloads integration V2 feature is enabled, the download
-  // status updater, rather than the download controller, is observed for Lacros
-  // downloads.
-  if (!features::IsSysUiDownloadsIntegrationV2Enabled()) {
-    if (auto* const download_controller_ash = GetDownloadControllerAsh()) {
-      download_controller_ash->GetAllDownloads(base::BindOnce(
-          &HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced,
-          weak_factory_.GetWeakPtr()));
-    }
-  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
@@ -691,11 +525,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(
   // in a loop that iterates over `in_progress_downloads_`.
   std::set<InProgressDownload*> downloads_to_remove;
   for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetType() != InProgressDownload::Type::kAsh)
-      continue;
-
-    if (static_cast<InProgressAshDownload*>(in_progress_download.get())
-            ->manager() == manager) {
+    if (in_progress_download->manager() == manager) {
       downloads_to_remove.insert(in_progress_download.get());
     }
   }
@@ -711,7 +541,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   DCHECK(!is_restoring_persistence());
   if (IsInProgress(download_item)) {
     in_progress_downloads_.emplace(
-        std::make_unique<InProgressAshDownload>(this, manager, download_item));
+        std::make_unique<InProgressDownload>(this, manager, download_item));
   }
 }
 
@@ -724,17 +554,15 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
   // In the common case, we already created an `InProgressDownload` for
   // `download_item` in `OnDownloadCreated()`.
   for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetType() == InProgressDownload::Type::kAsh &&
-        static_cast<InProgressAshDownload*>(in_progress_download.get())
-                ->download_item() == download_item) {
+    if (in_progress_download->download_item() == download_item) {
       return;
     }
   }
 
-  // If `download_item` does not have an existing `InProgressDownload` (e.g.,
+  // If `download_item` does not have an existing `InProgressDownload` (e.g.
   // because it was interrupted and then resumed), create one.
   in_progress_downloads_.emplace(
-      std::make_unique<InProgressAshDownload>(this, manager, download_item));
+      std::make_unique<InProgressDownload>(this, manager, download_item));
 }
 
 void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
@@ -762,46 +590,6 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
   }
 
   service()->AddItemOfType(HoldingSpaceItem::Type::kArcDownload, path);
-}
-
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
-    const crosapi::mojom::DownloadItem& mojo_download_item) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // NOTE: If ineligible for in-progress download handling, the download will
-  // still be added to holding space on completion.
-  if (IsInProgress(&mojo_download_item) &&
-      IsEligibleForInProgressIntegration(&mojo_download_item)) {
-    in_progress_downloads_.emplace(std::make_unique<InProgressLacrosDownload>(
-        this, mojo_download_item.Clone()));
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
-    const crosapi::mojom::DownloadItem& mojo_download_item) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // NOTE: It is only necessary to add a holding space item on completion here
-  // if the download was ineligible for in-progress download handling.
-  if (IsComplete(&mojo_download_item) &&
-      !IsEligibleForInProgressIntegration(&mojo_download_item)) {
-    service()->AddItemOfType(HoldingSpaceItem::Type::kLacrosDownload,
-                             mojo_download_item.target_file_path);
-  }
-}
-
-void HoldingSpaceDownloadsDelegate::OnLacrosDownloadsSynced(
-    std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items) {
-  CHECK(!features::IsSysUiDownloadsIntegrationV2Enabled());
-
-  // After the initial sync, observe updates to Lacros downloads.
-  auto* const download_controller_ash = GetDownloadControllerAsh();
-  if (download_controller_ash)
-    download_controller_ash->AddObserver(this);
-
-  // Sync `in_progress_downloads_` with `mojo_download_items` state.
-  for (const auto& mojo_download_item : mojo_download_items)
-    OnLacrosDownloadCreated(*mojo_download_item);
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
@@ -852,17 +640,8 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
 
   // Create.
   if (!item) {
-    HoldingSpaceItem::Type type;
-    switch (in_progress_download->GetType()) {
-      case InProgressDownload::Type::kAsh:
-        type = HoldingSpaceItem::Type::kDownload;
-        break;
-      case InProgressDownload::Type::kLacros:
-        type = HoldingSpaceItem::Type::kLacrosDownload;
-        break;
-    }
     const std::string& id = service()->AddItemOfType(
-        type, in_progress_download->GetFilePath(),
+        HoldingSpaceItem::Type::kDownload, in_progress_download->GetFilePath(),
         in_progress_download->GetProgress(),
         in_progress_download->GetPlaceholderImageSkiaResolver());
     in_progress_download->SetHoldingSpaceItem(item = model()->GetItem(id));

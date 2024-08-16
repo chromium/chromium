@@ -140,7 +140,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .query = u"next Friday",
                     .expected_results =
                         {MakeResult(u"Mar 29", u"Friday next week"),
-                         MakeResult(u"Mar 22", u"this coming Friday")},
+                         MakeResult(u"Mar 22", u"This coming Friday")},
                 },
                 // search for last Friday on Tuesday
                 TestCase{
@@ -153,16 +153,16 @@ INSTANTIATE_TEST_SUITE_P(
                     .date = "22 Mar 2024",
                     .query = u"Tuesday",
                     .expected_results =
-                        {MakeResult(u"Mar 26", u"this coming Tuesday"),
-                         MakeResult(u"Mar 19", u"this past Tuesday")},
+                        {MakeResult(u"Mar 26", u"This coming Tuesday"),
+                         MakeResult(u"Mar 19", u"This past Tuesday")},
                 },
                 // search for this Tuesday on Friday
                 TestCase{
                     .date = "22 Mar 2024",
                     .query = u"this Tuesday",
                     .expected_results =
-                        {MakeResult(u"Mar 26", u"this coming Tuesday"),
-                         MakeResult(u"Mar 19", u"this past Tuesday")},
+                        {MakeResult(u"Mar 26", u"This coming Tuesday"),
+                         MakeResult(u"Mar 19", u"This past Tuesday")},
                 },
                 // search for next Tuesday on Friday
                 TestCase{
@@ -176,7 +176,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .query = u"last Tuesday",
                     .expected_results =
                         {MakeResult(u"Mar 12", u"Tuesday last week"),
-                         MakeResult(u"Mar 19", u"this past Tuesday")},
+                         MakeResult(u"Mar 19", u"This past Tuesday")},
                 },
                 // search for Monday on Monday
                 TestCase{
@@ -218,11 +218,12 @@ TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
       results,
       Each(Property(
           "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(AllOf(
-              Field("primary_text", &PickerSearchResult::TextData::primary_text,
+          VariantWith<PickerSearchResult::SearchRequestData>(AllOf(
+              Field("primary_text",
+                    &PickerSearchResult::SearchRequestData::primary_text,
                     Not(IsEmpty())),
               Field("secondary_text",
-                    &PickerSearchResult::TextData::secondary_text,
+                    &PickerSearchResult::SearchRequestData::secondary_text,
                     Not(IsEmpty())))))));
 }
 }  // namespace

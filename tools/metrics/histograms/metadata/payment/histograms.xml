@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.HasEnrolledInstrument.CallAllowedByPref"
-    enum="Boolean" expires_after="2024-11-27">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once.DisabledReason"
-    enum="CanMakePaymentPreferenceSetter" expires_after="2024-11-27">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2025-02-02">
   <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>

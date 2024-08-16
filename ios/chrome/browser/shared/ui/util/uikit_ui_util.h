@@ -200,4 +200,10 @@ CGFloat DeviceCornerRadius();
 // Returns whether bottom omnibox is an available option.
 bool IsBottomOmniboxAvailable();
 
+// Returns the `traits` array provided in the function's parameter if the
+// feature flag for the 'traitCollectionDidChange' refactor work is enabled.
+// Otherwise, return an array containing every iOS UITrait.
+NSArray<UITrait>* TraitCollectionSetForTraits(NSArray<UITrait>* traits)
+    API_AVAILABLE(ios(17.0));
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

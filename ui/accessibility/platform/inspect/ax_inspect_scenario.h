@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -134,10 +135,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
 
   // Parses directives from the given line.
   static Directive ParseDirective(const std::string& directive_prefix,
-                                  const std::string& directive);
+                                  std::string_view directive);
 
   // Adds a given directive into a scenario.
-  void ProcessDirective(Directive directive, const std::string& value);
+  void ProcessDirective(Directive directive, std::string_view value);
 };
 
 }  // namespace ui

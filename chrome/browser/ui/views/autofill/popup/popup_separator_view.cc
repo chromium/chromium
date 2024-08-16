@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/separator.h"
@@ -27,14 +28,11 @@ PopupSeparatorView::PopupSeparatorView(int vertical_padding) {
                    .Build());
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
 }
 
 PopupSeparatorView::~PopupSeparatorView() = default;
-
-void PopupSeparatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Separators are not selectable.
-  node_data->role = ax::mojom::Role::kSplitter;
-}
 
 BEGIN_METADATA(PopupSeparatorView)
 END_METADATA

@@ -112,10 +112,13 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
 
-    if (!match.scoring_signals) {
-      match.scoring_signals = std::make_optional<ScoringSignals>();
+    // Only set scoring signals for eligible matches.
+    if (match.IsMlSignalLoggingEligible()) {
+      if (!match.scoring_signals) {
+        match.scoring_signals = std::make_optional<ScoringSignals>();
+      }
+      match.scoring_signals->set_is_verbatim(true);
     }
-    match.scoring_signals->set_is_verbatim(true);
   }
 
   return match;

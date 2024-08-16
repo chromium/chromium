@@ -517,8 +517,7 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->crashed = tab_renderer_data.IsCrashed();
   // TODO(johntlee): Add the rest of TabRendererData
 
-  for (const auto alert_state :
-       chrome::GetTabAlertStatesForContents(contents)) {
+  for (const auto alert_state : GetTabAlertStatesForContents(contents)) {
     tab_data->alert_states.push_back(alert_state);
   }
 

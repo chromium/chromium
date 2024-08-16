@@ -19,8 +19,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-namespace chrome {
-
 namespace enterprise_util {
 
 namespace {
@@ -133,4 +131,3 @@ INSTANTIATE_TEST_SUITE_P(,
                                           testing::Bool()));
 }  // namespace enterprise_util
 
-}  // namespace chrome

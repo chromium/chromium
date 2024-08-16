@@ -703,7 +703,6 @@ external/wpt/html/canvas/element/manual/the-canvas-state/2d.zero.size.canvas.htm
 external/wpt/html/canvas/element/path-objects/2d.path.arc.angle.2.html
 external/wpt/html/canvas/element/pixel-manipulation/2d.imageData.get.range.html
 external/wpt/html/canvas/element/reset/2d.reset.basic.html
-external/wpt/html/canvas/element/scroll/2d.scrollPathIntoView.basic.html
 external/wpt/html/canvas/element/shadows/2d.shadow.image.scale.html
 external/wpt/html/canvas/element/text-styles/2d.text.draw.space.collapse.end.html
 external/wpt/html/canvas/element/the-canvas-state/2d.state.saverestore.strokeStyle.html
@@ -1017,7 +1016,6 @@ external/wpt/scroll-animations/css/progress-based-animation-timeline.html
 external/wpt/scroll-animations/scroll-timelines/setting-playback-rate.html
 external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html
 external/wpt/secure-contexts/shared-worker-insecure-first.https.html
-external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html
 external/wpt/selection/addRange-40.html
 external/wpt/selection/anonymous/details-ancestor.html
 external/wpt/selection/bidi/modify.tentative.html

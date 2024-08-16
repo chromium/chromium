@@ -448,7 +448,7 @@ SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
     return restriction_target;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -467,7 +467,7 @@ ScriptPromiseUntyped ProduceSubCaptureTargetAndGetPromise(
           scope.GetScriptState(), element, scope.GetExceptionState());
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

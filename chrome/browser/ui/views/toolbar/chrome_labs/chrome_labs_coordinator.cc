@@ -10,10 +10,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -25,10 +28,17 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #endif
 
-ChromeLabsCoordinator::ChromeLabsCoordinator(ChromeLabsButton* anchor_view,
-                                             Browser* browser,
-                                             const ChromeLabsModel* model)
-    : anchor_view_(anchor_view), browser_(browser), chrome_labs_model_(model) {}
+ChromeLabsCoordinator::ChromeLabsCoordinator(Browser* browser)
+    : ChromeLabsCoordinator(browser, nullptr) {}
+
+ChromeLabsCoordinator::ChromeLabsCoordinator(
+    Browser* browser,
+    std::unique_ptr<ChromeLabsModel> model)
+    : browser_(browser), model_(std::move(model)) {
+  if (!model) {
+    model_ = std::make_unique<ChromeLabsModel>();
+  }
+}
 
 ChromeLabsCoordinator::~ChromeLabsCoordinator() {
   if (BubbleExists()) {
@@ -63,12 +73,19 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
 
   flags_state_ = about_flags::GetCurrentFlagsState();
 
+  if (features::IsToolbarPinningEnabled()) {
+    BrowserView::GetBrowserViewForBrowser(browser_)
+        ->toolbar()
+        ->pinned_toolbar_actions_container()
+        ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
+  }
+
   auto chrome_labs_bubble_view =
-      std::make_unique<ChromeLabsBubbleView>(anchor_view_);
+      std::make_unique<ChromeLabsBubbleView>(GetChromeLabsButton(), browser_);
   chrome_labs_bubble_view_tracker_.SetView(chrome_labs_bubble_view.get());
 
   controller_ = std::make_unique<ChromeLabsViewController>(
-      chrome_labs_model_, chrome_labs_bubble_view.get(), browser_, flags_state_,
+      model_.get(), chrome_labs_bubble_view.get(), browser_, flags_state_,
       flags_storage_.get());
 
   // ChromeLabsButton should not appear in the toolbar if there are no
@@ -79,8 +96,12 @@ void ChromeLabsCoordinator::Show(ShowUserType user_type) {
       std::move(chrome_labs_bubble_view));
   widget->Show();
 
+  // TODO(b/354207075): Figure out how to get the dot indicator to show on the
+  // pinned toolbar button.
   // Hide dot indicator once bubble has been shown.
-  anchor_view_->HideDotIndicator();
+  if (!features::IsToolbarPinningEnabled()) {
+    static_cast<ChromeLabsButton*>(GetChromeLabsButton())->HideDotIndicator();
+  }
 }
 
 void ChromeLabsCoordinator::Hide() {
@@ -138,6 +159,21 @@ void ChromeLabsCoordinator::ShowOrHide() {
   }
 #endif
   Show();
+}
+
+views::Button* ChromeLabsCoordinator::GetChromeLabsButton() {
+  views::Button* button;
+  ToolbarView* toolbar =
+      BrowserView::GetBrowserViewForBrowser(browser_)->toolbar();
+
+  if (features::IsToolbarPinningEnabled()) {
+    button = toolbar->pinned_toolbar_actions_container()->GetButtonFor(
+        kActionShowChromeLabs);
+  } else {
+    button = toolbar->chrome_labs_button();
+  }
+
+  return button;
 }
 
 ChromeLabsBubbleView* ChromeLabsCoordinator::GetChromeLabsBubbleView() {

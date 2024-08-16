@@ -72,7 +72,7 @@ blink::WebPlugin* CreateInternalPlugin(
       pdf_host.BindNewEndpointAndPassReceiver());
   return new chrome_pdf::PdfViewWebPlugin(
       std::make_unique<PdfViewWebPluginClient>(render_frame),
-      std::move(pdf_host), params);
+      std::move(pdf_host), std::move(params));
 }
 
 }  // namespace pdf

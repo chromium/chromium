@@ -123,8 +123,9 @@ class UpdateDataProviderTest : public ExtensionsTest {
                                 .Set("name", "My First Extension")
                                 .Set("version", version)
                                 .Set("manifest_version", 2);
-    if (!fingerprint.empty())
+    if (!fingerprint.empty()) {
       manifest_builder.Set("differential_fingerprint", fingerprint);
+    }
     builder.SetManifest(std::move(manifest_builder));
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());

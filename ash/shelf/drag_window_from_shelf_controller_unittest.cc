@@ -39,6 +39,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -154,7 +155,7 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
                                           bounds, display::kInvalidDisplayId);
     child->Show();
 
-    child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    child->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
     wm::SetModalParent(child.get(), transient_parent);
     return child;
   }

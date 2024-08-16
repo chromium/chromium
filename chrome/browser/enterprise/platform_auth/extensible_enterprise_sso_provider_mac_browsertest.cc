@@ -18,17 +18,28 @@ namespace enterprise_auth {
 
 class ExtensibleEnterpriseSSOTest : public InProcessBrowserTest {};
 
-IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, Unsupported) {
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSSOTest, UnsupportedCalledTwice) {
   ExtensibleEnterpriseSSOProvider provider;
+  {
+    base::RunLoop run_loop;
+    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
+    EXPECT_CALL(mock, Run(_)).WillOnce([&run_loop](net::HttpRequestHeaders) {
+      run_loop.Quit();
+    });
 
-  base::RunLoop run_loop;
-  base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
-  EXPECT_CALL(mock, Run(_)).WillOnce([&run_loop](net::HttpRequestHeaders) {
-    run_loop.Quit();
-  });
+    provider.GetData(GURL(), mock.Get());
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    base::MockCallback<PlatformAuthProviderManager::GetDataCallback> mock;
+    EXPECT_CALL(mock, Run(_)).WillOnce([&run_loop](net::HttpRequestHeaders) {
+      run_loop.Quit();
+    });
 
-  provider.GetData(GURL(), mock.Get());
-  run_loop.Run();
+    provider.GetData(GURL(), mock.Get());
+    run_loop.Run();
+  }
 }
 
 }  // namespace enterprise_auth

@@ -179,7 +179,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   base::span<uint8_t> y_plane =
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers.
-      UNSAFE_BUFFERS(base::span(
+      UNSAFE_TODO(base::span(
           y_plane_ptr,
           y_plane_stride *
               base::checked_cast<size_t>(mapped_frame->coded_size().height())));
@@ -191,7 +191,7 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
       // TODO(crbug.com/338570700): VideoFrame should return spans instead of
       // unbounded pointers. Note: Elsewhere the `height / 2` is rounded up, but
       // here it is not.
-      UNSAFE_BUFFERS(base::span(
+      UNSAFE_TODO(base::span(
           uv_plane_ptr,
           uv_plane_stride *
               base::checked_cast<size_t>(mapped_frame->coded_size().height()) /
@@ -907,8 +907,7 @@ int main(int argc, char** argv) {
 #endif
 
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
 
   return RUN_ALL_TESTS();
 }

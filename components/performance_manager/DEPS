@@ -28,6 +28,7 @@ include_rules = [
   "+third_party/blink/public/mojom/service_worker",
   "+third_party/blink/public/mojom/tokens",
   "+third_party/leveldatabase",
+  "+ui/accessibility/ax_mode.h",
   "+ui/gfx/geometry",
 
   # Aliases used in the resource_attribution implementation should never be

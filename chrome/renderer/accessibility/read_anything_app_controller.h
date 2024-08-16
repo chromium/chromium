@@ -45,6 +45,7 @@ class MojoUkmRecorder;
 
 class AXTreeDistiller;
 class ReadAnythingAppControllerTest;
+class ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingAppController
@@ -88,6 +89,7 @@ class ReadAnythingAppController
 
  private:
   friend ReadAnythingAppControllerTest;
+  friend ReadAnythingAppControllerScreen2xDataCollectionModeTest;
 
   explicit ReadAnythingAppController(content::RenderFrame* render_frame);
   ~ReadAnythingAppController() override;
@@ -152,8 +154,8 @@ class ReadAnythingAppController
   void OnFontSizeReset();
   void OnLinksEnabledToggled();
   void OnImagesEnabledToggled();
-  float LetterSpacing() const;
-  float LineSpacing() const;
+  int LetterSpacing() const;
+  int LineSpacing() const;
   int ColorTheme() const;
   int HighlightGranularity() const;
   bool IsHighlightOn();
@@ -174,8 +176,7 @@ class ReadAnythingAppController
   std::string GetDataFontCss(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
-  std::string GetNameAttributeText(ui::AXNode* ax_node) const;
-  std::string GetTextContent(ui::AXNodeID ax_node_id) const;
+  std::u16string GetTextContent(ui::AXNodeID ax_node_id) const;
   std::string GetTextDirection(ui::AXNodeID ax_node_id) const;
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
@@ -203,17 +204,9 @@ class ReadAnythingAppController
   bool IsAutoVoiceSwitchingEnabled() const;
   bool IsLanguagePackDownloadingEnabled() const;
   bool IsAutomaticWordHighlightingEnabled() const;
-  void OnStandardLineSpacing();
-  void OnLooseLineSpacing();
-  void OnVeryLooseLineSpacing();
-  void OnStandardLetterSpacing();
-  void OnWideLetterSpacing();
-  void OnVeryWideLetterSpacing();
-  void OnLightTheme();
-  void OnDefaultTheme();
-  void OnDarkTheme();
-  void OnYellowTheme();
-  void OnBlueTheme();
+  void OnLetterSpacingChange(int value);
+  void OnLineSpacingChange(int value);
+  void OnThemeChange(int value);
   void OnFontChange(const std::string& font);
   void OnSpeechRateChange(double rate);
   void OnVoiceChange(const std::string& voice, const std::string& lang);

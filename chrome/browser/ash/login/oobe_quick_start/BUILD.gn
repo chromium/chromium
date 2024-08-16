@@ -61,7 +61,6 @@ source_set("unit_tests") {
     "connectivity:unit_tests",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/nearby:test_support",
     "//chrome/test:test_support",

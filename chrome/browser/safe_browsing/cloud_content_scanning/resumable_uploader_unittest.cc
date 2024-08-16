@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -75,7 +76,7 @@ class ResumableUploadRequestTest : public testing::Test {
     base::FilePath path = temp_dir_.GetPath().AppendASCII(file_name);
     base::File file(path, base::File::FLAG_CREATE_ALWAYS |
                               base::File::FLAG_READ | base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(content.data(), content.size());
+    file.WriteAtCurrentPos(base::as_byte_span(content));
     return path;
   }
 

@@ -8,13 +8,16 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace ash::cloud_upload {
 
@@ -61,8 +64,7 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
       new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
-                               file_type, std::move(progress_callback),
-                               /*target_path=*/std::nullopt);
+                               file_type, std::move(progress_callback));
 
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
   odfs_skyvault_uploader->Run(base::BindOnce(
@@ -82,14 +84,23 @@ base::WeakPtr<OdfsSkyvaultUploader> OdfsSkyvaultUploader::Upload(
       file_manager::util::GetFileManagerFileSystemContext(profile);
   DCHECK(file_system_context);
   base::FilePath tmp_dir;
-  CHECK((base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path)) ||
-        file_type == FileType::kMigration);
   auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
       blink::StorageKey(), storage::kFileSystemTypeLocal, path);
-  scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
-      new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
-                               file_type, std::move(progress_callback),
-                               target_path);
+
+  scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader;
+  switch (file_type) {
+    case FileType::kDownload:
+    case FileType::kScreenCapture:
+      CHECK(base::GetTempDir(&tmp_dir) && tmp_dir.IsParent(path));
+      odfs_skyvault_uploader =
+          new OdfsSkyvaultUploader(profile, ++g_id_counter, file_system_url,
+                                   file_type, std::move(progress_callback));
+      break;
+    case FileType::kMigration:
+      odfs_skyvault_uploader = OdfsMigrationUploader::Create(
+          profile, ++g_id_counter, file_system_url, target_path);
+      break;
+  }
 
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
   odfs_skyvault_uploader->Run(
@@ -114,14 +125,12 @@ OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     int64_t id,
     const storage::FileSystemURL& file_system_url,
     FileType file_type,
-    base::RepeatingCallback<void(int64_t)> progress_callback,
-    std::optional<base::FilePath> target_path)
+    base::RepeatingCallback<void(int64_t)> progress_callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
       id_(id),
       file_system_url_(file_system_url),
-      target_path_(target_path),
       file_type_(file_type),
       progress_callback_(std::move(progress_callback)) {}
 
@@ -130,6 +139,18 @@ OdfsSkyvaultUploader::~OdfsSkyvaultUploader() {
   if (io_task_controller_) {
     io_task_controller_->RemoveObserver(this);
   }
+}
+
+base::FilePath OdfsSkyvaultUploader::GetDestinationFolderPath(
+    file_system_provider::ProvidedFileSystemInterface* file_system) {
+  return file_system->GetFileSystemInfo().mount_path();
+}
+
+void OdfsSkyvaultUploader::RequestSignIn(
+    base::OnceCallback<void(base::File::Error)> on_sign_in_cb) {
+  policy::skyvault_ui_utils::ShowSignInNotification(
+      profile_, id_, file_type_, file_system_url_.path().BaseName().value(),
+      std::move(on_sign_in_cb));
 }
 
 void OdfsSkyvaultUploader::Run(UploadDoneCallback upload_callback) {
@@ -178,13 +199,10 @@ void OdfsSkyvaultUploader::GetODFSMetadataAndStartIOTask() {
   file_system_provider::ProvidedFileSystemInterface* file_system =
       GetODFS(profile_);
   if (!file_system) {
-    policy::skyvault_ui_utils::ShowSignInNotification(
-        profile_, id_, file_type_, file_system_url_.path().BaseName().value(),
-        base::BindOnce(&OdfsSkyvaultUploader::OnMountResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    RequestSignIn(base::BindOnce(&OdfsSkyvaultUploader::OnMountResponse,
+                                 weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-
   // First check that ODFS is not in the "ReauthenticationRequired" state.
   GetODFSMetadata(
       file_system,
@@ -205,13 +223,10 @@ void OdfsSkyvaultUploader::CheckReauthenticationAndStartIOTask(
     // TODO(b/330786891): Only query account_state once
     // reauthentication_required is no longer needed for backwards compatibility
     // with ODFS.
-    policy::skyvault_ui_utils::ShowSignInNotification(
-        profile_, id_, file_type_, file_system_url_.path().BaseName().value(),
-        base::BindOnce(&OdfsSkyvaultUploader::OnMountResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
+    RequestSignIn(base::BindOnce(&OdfsSkyvaultUploader::OnMountResponse,
+                                 weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-
   StartIOTask();
 }
 
@@ -281,12 +296,7 @@ void OdfsSkyvaultUploader::StartIOTask() {
     return;
   }
 
-  auto destination_folder_path = file_system->GetFileSystemInfo().mount_path();
-  if (target_path_.has_value()) {
-    CHECK(file_type_ == FileType::kMigration);
-    destination_folder_path =
-        destination_folder_path.Append(target_path_->value());
-  }
+  auto destination_folder_path = GetDestinationFolderPath(file_system);
 
   auto destination_folder_url = FilePathToFileSystemURL(
       profile_, file_system_context_, destination_folder_path);
@@ -304,6 +314,51 @@ void OdfsSkyvaultUploader::StartIOTask() {
           /*show_notification=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
+}
+
+// =========
+// MIGRATION
+// =========
+
+// static
+scoped_refptr<OdfsMigrationUploader> OdfsMigrationUploader::Create(
+    Profile* profile,
+    int64_t id,
+    const storage::FileSystemURL& file_system_url,
+    const base::FilePath& target_path) {
+  return new OdfsMigrationUploader(profile, id, file_system_url, target_path);
+}
+
+OdfsMigrationUploader::OdfsMigrationUploader(
+    Profile* profile,
+    int64_t id,
+    const storage::FileSystemURL& file_system_url,
+    const base::FilePath& target_path)
+    : OdfsSkyvaultUploader(profile,
+                           id,
+                           file_system_url,
+                           FileType::kMigration,
+                           /*progress_callback=*/base::DoNothing()),
+      target_path_(target_path) {}
+
+OdfsMigrationUploader::~OdfsMigrationUploader() = default;
+
+base::FilePath OdfsMigrationUploader::GetDestinationFolderPath(
+    file_system_provider::ProvidedFileSystemInterface* file_system) {
+  base::FilePath path =
+      OdfsSkyvaultUploader::GetDestinationFolderPath(file_system)
+          .Append(target_path_);
+  return path;
+}
+
+void OdfsMigrationUploader::RequestSignIn(
+    base::OnceCallback<void(base::File::Error)> on_sign_in_cb) {
+  policy::local_user_files::MigrationNotificationManager* notification_manager =
+      policy::local_user_files::MigrationNotificationManagerFactory::
+          GetForBrowserContext(profile_);
+  CHECK(notification_manager);
+  subscription_ = notification_manager->ShowOneDriveSignInNotification(
+      std::move(on_sign_in_cb));
 }
 
 }  // namespace ash::cloud_upload

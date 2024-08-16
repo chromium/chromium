@@ -7,11 +7,13 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -186,9 +188,10 @@ class InlineLoginHandlerTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Configure embedded test server.
     const GURL& base_url = embedded_test_server_.base_url();
-    command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
-    command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
-    command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
+    command_line->AppendSwitchASCII(::switches::kGaiaUrl, base_url.spec());
+    command_line->AppendSwitchASCII(::switches::kLsoUrl, base_url.spec());
+    command_line->AppendSwitchASCII(::switches::kGoogleApisUrl,
+                                    base_url.spec());
     fake_gaia_.Initialize();
   }
 
@@ -516,6 +519,8 @@ class InlineLoginHandlerTestWithArcRestrictions
     lacros.push_back(
         ash::standalone_browser::features::kLacrosForSupervisedUsers);
     feature_list_.InitWithFeatures(/*enabled=*/lacros, /*disabled=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   ~InlineLoginHandlerTestWithArcRestrictions() override = default;
@@ -594,6 +599,7 @@ class InlineLoginHandlerTestWithArcRestrictions
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_P(InlineLoginHandlerTestWithArcRestrictions,

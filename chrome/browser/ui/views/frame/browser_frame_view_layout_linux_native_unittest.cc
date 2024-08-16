@@ -106,7 +106,7 @@ class TestNavButtonProvider : public ui::NavButtonProvider {
       case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return GetTestImageForSize(kMinimizeButtonSize);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -120,7 +120,7 @@ class TestNavButtonProvider : public ui::NavButtonProvider {
       case ui::NavButtonProvider::FrameButtonDisplayType::kMinimize:
         return kMinimizeButtonMargin;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

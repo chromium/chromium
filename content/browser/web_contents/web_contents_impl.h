@@ -67,7 +67,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
@@ -457,7 +456,8 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsBeingDestroyed() override;
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override;
   void OnAudioStateChanged() override;
-  base::TimeTicks GetLastActiveTime() override;
+  base::TimeTicks GetLastActiveTimeTicks() override;
+  base::Time GetLastActiveTime() override;
   void WasShown() override;
   void WasHidden() override;
   void WasOccluded() override;
@@ -1481,10 +1481,9 @@ class CONTENT_EXPORT WebContentsImpl
     return ownership_location_;
   }
 
-  std::optional<double> AdjustedChildZoom(
-      const RenderWidgetHostViewChildFrame* render_widget) override;
-
   bool IsPopup() const override;
+
+  bool IsPartitionedPopin() const override;
 
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
@@ -1511,7 +1510,7 @@ class CONTENT_EXPORT WebContentsImpl
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, FrameTreeShape);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            NonActivityCaptureDoesNotCountAsActivity);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, GetLastActiveTime);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest, GetLastActiveTimeTicks);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
                            LoadResourceFromMemoryCacheWithBadSecurityInfo);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplTest,
@@ -1942,7 +1941,7 @@ class CONTENT_EXPORT WebContentsImpl
   // can be called with the current visibility to affect capturing
   // changes.
   // |is_activity| controls whether a change to |visible| affects
-  // the value returned by GetLastActiveTime().
+  // the value returned by GetLastActiveTimeTicks().
   void UpdateVisibilityAndNotifyPageAndView(Visibility new_visibility,
                                             bool is_activity = true);
 
@@ -2220,9 +2219,13 @@ class CONTENT_EXPORT WebContentsImpl
   // Settings that get passed to the renderer process.
   blink::RendererPreferences renderer_preferences_;
 
+  // The time ticks that this WebContents was last made active. The initial
+  // value is the WebContents creation time.
+  base::TimeTicks last_active_time_ticks_;
+
   // The time that this WebContents was last made active. The initial value is
   // the WebContents creation time.
-  base::TimeTicks last_active_time_;
+  base::Time last_active_time_;
 
   // The most recent time that this WebContents was interacted with. Currently,
   // this counts:
@@ -2482,9 +2485,6 @@ class CONTENT_EXPORT WebContentsImpl
   // Records the last time we saw a screen orientation change.
   base::TimeTicks last_screen_orientation_change_time_;
 
-  // Manages a transient affordance for this page's frames to enter fullscreen.
-  blink::TransientAllowFullscreen transient_allow_fullscreen_;
-
   // Indicates how many sources are currently suppressing the unresponsive
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
@@ -2556,6 +2556,11 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Whether this contents represents a window initially opened as a new popup.
   bool is_popup_{false};
+
+  // Whether this contents represents a window initially opened as a new
+  // partitioned popin. Should only be true if `is_popup_` is true. See:
+  // https://explainers-by-googlers.github.io/partitioned-popins/
+  bool is_partitioned_popin_{false};
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

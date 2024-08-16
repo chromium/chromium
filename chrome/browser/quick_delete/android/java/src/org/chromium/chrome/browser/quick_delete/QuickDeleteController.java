@@ -20,12 +20,11 @@ import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -52,8 +51,6 @@ public class QuickDeleteController {
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull Profile mProfile;
     private final @NonNull TabModel mTabModel;
-    // Null when declutter is disabled.
-    private final @Nullable TabModel mArchivedTabModel;
     private final QuickDeleteBridge mQuickDeleteBridge;
     private final QuickDeleteMediator mQuickDeleteMediator;
     private final PropertyModel mPropertyModel;
@@ -87,7 +84,6 @@ public class QuickDeleteController {
         mLayoutManager = layoutManager;
 
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
-        mArchivedTabModel = archivedTabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
                         (TabGroupModelFilter)
@@ -212,7 +208,10 @@ public class QuickDeleteController {
         if (isTabClosureDisabled) {
             showPostDeleteFeedback(timePeriod, trackerLock);
         } else {
-            navigateToTabSwitcher(() -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
+            TabSwitcherUtils.navigateToTabSwitcher(
+                    mLayoutManager,
+                    /* animate= */ true,
+                    () -> maybeShowQuickDeleteAnimation(timePeriod, trackerLock));
         }
     }
 
@@ -274,27 +273,6 @@ public class QuickDeleteController {
     private void showSurvey(@NonNull WebContents webContents) {
         mQuickDeleteBridge.showSurvey(webContents);
         destroy();
-    }
-
-    /** A method to navigate to tab switcher. */
-    private void navigateToTabSwitcher(Runnable onNavigationFinished) {
-        if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-            onNavigationFinished.run();
-            return;
-        }
-
-        mLayoutManager.addObserver(
-                new LayoutStateObserver() {
-                    @Override
-                    public void onFinishedShowing(int layoutType) {
-                        if (layoutType == LayoutType.TAB_SWITCHER) {
-                            mLayoutManager.removeObserver(this);
-                            onNavigationFinished.run();
-                        }
-                    }
-                });
-
-        mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ true);
     }
 
     private void triggerHapticFeedback() {

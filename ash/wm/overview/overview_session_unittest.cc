@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/overview/overview_session.h"
 
 #include <memory>
@@ -36,6 +41,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/test/ash_test_base.h"
@@ -116,6 +122,8 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -141,6 +149,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -1413,7 +1422,7 @@ TEST_P(OverviewSessionTest, ModalChild) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window(CreateTestWindow(bounds));
   std::unique_ptr<aura::Window> child(CreateTestWindow(bounds));
-  child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  child->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::AddTransientChild(window.get(), child.get());
   EXPECT_EQ(window->parent(), child->parent());
   ToggleOverview();
@@ -1430,7 +1439,7 @@ TEST_P(OverviewSessionTest, ClickModalWindowParent) {
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(180, 180)));
   std::unique_ptr<aura::Window> child(
       CreateTestWindow(gfx::Rect(200, 0, 180, 180)));
-  child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  child->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::AddTransientChild(window.get(), child.get());
   EXPECT_FALSE(WindowsOverlapping(window.get(), child.get()));
   EXPECT_EQ(window->parent(), child->parent());
@@ -3353,8 +3362,8 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   auto* item_widget2 = GetOverviewItemForWindow(window2.get())->item_widget();
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
 
-  // With forest, there are is no saved desk save desk container.
-  if (features::IsForestFeatureEnabled()) {
+  // With this flag enabled, there are is no saved desk save desk container.
+  if (features::IsSavedDeskUiRevampEnabled()) {
     // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
     // desk_widget, save_widget].
     CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
@@ -4034,6 +4043,23 @@ TEST_P(OverviewSessionTest,
   // Verify that there will be no crash when activating the minimized Crostini
   // window.
   event_generator->ClickLeftButton();
+}
+
+TEST_P(OverviewSessionTest, OverviewItemViewAccessibleProperties) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  wm::ActivateWindow(window.get());
+  ToggleOverview();
+  auto* overview_item_view =
+      static_cast<OverviewItem*>(GetOverviewItemForWindow(window.get()))
+          ->overview_item_view();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(overview_item_view);
+  overview_item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+  EXPECT_EQ(overview_item_view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
 }
 
 // If you update the parameterisation of OverviewSessionTest also update the
@@ -5320,7 +5346,7 @@ TEST_P(OverviewRasterScaleTest,
   ASSERT_EQ(3u, desks_bar_view->mini_views().size());
   auto* mini_view = desks_bar_view->mini_views()[2].get();
   EXPECT_EQ(desk3, mini_view->desk());
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
@@ -5341,7 +5367,7 @@ TEST_P(OverviewRasterScaleTest,
   EXPECT_EQ(2u, overview_grid->item_list().size());
   mini_view = desks_bar_view->mini_views()[0];
   EXPECT_EQ(desk1, mini_view->desk());
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     views::MenuItemView* combine_item_view =
         DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
             Shell::GetPrimaryRootWindow(), DeskBarViewBase::Type::kOverview,
@@ -7279,7 +7305,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         case SplitViewDragIndicators::WindowDraggingState::kFromTop:
         case SplitViewDragIndicators::WindowDraggingState::kFromShelf:
         case SplitViewDragIndicators::WindowDraggingState::kFromFloat:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 
@@ -7330,8 +7356,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
         start_location = item->target_bounds().bottom_left();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     GetOverviewSession()->InitiateDrag(item, start_location,
                                        /*is_touch_dragging=*/true,

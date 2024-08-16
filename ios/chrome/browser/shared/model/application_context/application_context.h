@@ -52,8 +52,8 @@ namespace os_crypt_async {
 class OSCryptAsync;
 }
 
-namespace segmentation_platform {
-class OTRWebStateObserver;
+namespace signin {
+class ActivePrimaryAccountsMetricsRecorder;
 }
 
 namespace ukm {
@@ -64,11 +64,18 @@ namespace variations {
 class VariationsService;
 }
 
+class AccountProfileMapper;
 class ApplicationContext;
 class BrowserPolicyConnectorIOS;
-class ChromeBrowserStateManager;
+class IncognitoSessionTracker;
 class IOSChromeIOThread;
 class PrefService;
+
+class ProfileManagerIOS;
+// TODO(crbug.com/358356195): Remove this typedef when this header is updated
+// to use ProfileManagerIOS.
+using ChromeBrowserStateManager = ProfileManagerIOS;
+
 class PushNotificationService;
 class SafeBrowsingService;
 @protocol SingleSignOnService;
@@ -121,7 +128,12 @@ class ApplicationContext {
   virtual const std::string& GetApplicationCountry() = 0;
 
   // Gets the ChromeBrowserStateManager used by this application.
+  // TODO(crbug.com/358299872): After all usage has changed to
+  // GetProfileManager(), remove this method.
   virtual ChromeBrowserStateManager* GetChromeBrowserStateManager() = 0;
+
+  // Gets the Profile Manager used by this application.
+  virtual ChromeBrowserStateManager* GetProfileManager() = 0;
 
   // Gets the manager for the various metrics-related service, constructing it
   // if necessary. May return null.
@@ -130,6 +142,11 @@ class ApplicationContext {
 
   // Gets the MetricsService used by this application. May return null.
   virtual metrics::MetricsService* GetMetricsService() = 0;
+
+  // Gets the ActivePrimaryAccountsMetricsRecorder used by this application. May
+  // return null.
+  virtual signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() = 0;
 
   // Gets the UkmRecorder used by this application. May return null.
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
@@ -171,9 +188,11 @@ class ApplicationContext {
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;
 
-  // Returns the application's OTRWebStateObserver for segmentation platform.
-  virtual segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() = 0;
+  // Returns the AccountProfileMapper instance used by this application.
+  virtual AccountProfileMapper* GetAccountProfileMapper() = 0;
+
+  // Returns the application's IncognitoSessionTracker instance.
+  virtual IncognitoSessionTracker* GetIncognitoSessionTracker() = 0;
 
   // Returns the application's PushNotificationService that handles all
   // interactions with the push notification server

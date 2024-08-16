@@ -174,8 +174,9 @@ bool PeImageReader::EnumCertificates(EnumCertificatesCallback callback,
     }
     if (!(*callback)(
             win_certificate->wRevision, win_certificate->wCertificateType,
-            &win_certificate->bCertificate[0],
-            win_certificate->dwLength - kWinCertificateSize, context)) {
+            base::span(&win_certificate->bCertificate[0],
+                       win_certificate->dwLength - kWinCertificateSize),
+            context)) {
       return false;
     }
     size_t padded_length = (win_certificate->dwLength + 7) & ~0x7u;

@@ -602,6 +602,23 @@ Vector<int> ReturnOneTwoThree() {
   return {1, 2, 3};
 }
 
+TEST(VectorTest, AppendContainers) {
+  Vector<int> result;
+  Vector<int> empty_vector;
+  Vector<int> other_vector({1, 2});
+  std::array<int, 3> other_array = {{3, 4, 5}};
+  int other_c_array[4] = {6, 7, 8, 9};
+  result.AppendVector(other_vector);
+  result.AppendRange(other_array.begin(), other_array.end());
+  result.AppendSpan(base::span(other_c_array));
+  EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
+
+  result.AppendVector(empty_vector);
+  result.AppendRange(other_array.end(), other_array.end());
+  result.AppendSpan(base::span(other_c_array).subspan(4));
+  EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
+}
+
 TEST(VectorTest, InitializerList) {
   Vector<int> empty({});
   EXPECT_TRUE(empty.empty());
@@ -762,6 +779,20 @@ TEST(VectorTest, CopyWithProjection) {
     Vector<int> v1 = {1, 2, 3, 4, 5, 6};
     Vector<int> v2(v1, std::negate<>());
     EXPECT_THAT(v2, testing::ElementsAre(-1, -2, -3, -4, -5, -6));
+  }
+}
+
+TEST(VectorTest, IteratorSwitching) {
+  using UncheckedIntVector = Vector<int, 0, PartitionAllocator, false>;
+  using CheckedIntVector = Vector<int, 0, PartitionAllocator, true>;
+  static_assert(std::is_same_v<UncheckedIntVector::iterator,
+                               WTF::UncheckedIterator<int>>);
+  static_assert(std::is_same_v<CheckedIntVector::iterator,
+                               base::CheckedContiguousIterator<int>>);
+
+  // Check if we can compile code using checked iterators.
+  CheckedIntVector v = {3, 2, 1};
+  for ([[maybe_unused]] int i : v) {
   }
 }
 

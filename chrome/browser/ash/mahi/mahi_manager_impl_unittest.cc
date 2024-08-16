@@ -94,6 +94,8 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   // NoSessionAshTestBase::
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kMahiRestrictionsOverride);
 
     magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
     mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
@@ -127,12 +129,14 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   bool IsEnabled() const { return mahi_manager_impl_->IsEnabled(); }
 
   crosapi::mojom::MahiPageInfoPtr CreatePageInfo(const std::string& url,
-                                                 const std::u16string& title) {
+                                                 const std::u16string& title,
+                                                 bool is_incognito = false) {
     return crosapi::mojom::MahiPageInfo::New(
         /*client_id=*/base::UnguessableToken(),
         /*page_id=*/base::UnguessableToken(), /*url=*/GURL(url),
         /*title=*/title,
-        /*favicon_image=*/gfx::ImageSkia(), /*is_distillable*/ true);
+        /*favicon_image=*/gfx::ImageSkia(), /*is_distillable=*/true,
+        /*is_incognito=*/is_incognito);
   }
 
   MahiCacheManager* GetCacheManager() {
@@ -143,10 +147,11 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
     mahi_manager_impl_->NotifyRefreshAvailability(available);
   }
 
-  void RequestSummary() {
+  void RequestSummary(bool incognito = false) {
     // Sets the page that needed to get summary.
-    mahi_manager_impl_->SetCurrentFocusedPageInfo(
-        CreatePageInfo("http://url1.com/abc#skip", u"Title of url1"));
+    mahi_manager_impl_->SetCurrentFocusedPageInfo(CreatePageInfo(
+        /*url=*/"http://url1.com/abc#skip", /*title=*/u"Title of url1",
+        /*is_incognito=*/incognito));
     // Gets the summary of the page.
     mahi_manager_impl_->GetSummary(base::DoNothing());
   }
@@ -180,6 +185,22 @@ TEST_F(MahiManagerImplTest, CacheSavedForSummaryRequest) {
   EXPECT_EQ(GetMahiProvider()->NumberOfSumarizeCall(), 1);
   EXPECT_TRUE(summary.has_value());
   EXPECT_EQ(base::UTF16ToUTF8(summary.value()), kFakeSummary);
+}
+
+TEST_F(MahiManagerImplTest, NoCacheSavedForIncognitoPage) {
+  // No cache at the beginning.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  // Request summary from a incognito page.
+  RequestSummary(/*incognito=*/true);
+
+  // Summary is not saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  // Request summary from a normal page.
+  RequestSummary(/*incognito=*/false);
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
 }
 
 TEST_F(MahiManagerImplTest, NoSummaryCallWhenSummaryIsInCache) {

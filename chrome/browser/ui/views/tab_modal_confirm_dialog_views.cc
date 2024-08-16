@@ -15,6 +15,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -42,7 +43,7 @@ TabModalConfirmDialogViews::TabModalConfirmDialogViews(
                                    base::Unretained(delegate_.get())));
   SetCloseCallback(base::BindOnce(&TabModalConfirmDialogDelegate::Close,
                                   base::Unretained(delegate_.get())));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetOwnedByWidget(true);
 
   std::optional<int> default_button = delegate_->GetDefaultDialogButton();

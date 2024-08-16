@@ -10,13 +10,13 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service_impl.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 // static
 PasswordSenderServiceFactory* PasswordSenderServiceFactory::GetInstance() {
@@ -40,7 +40,7 @@ PasswordSenderServiceFactory::PasswordSenderServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
@@ -62,7 +62,7 @@ PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
   CHECK(profile->IsRegularProfile());
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel()));

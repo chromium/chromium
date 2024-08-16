@@ -27,6 +27,7 @@ source_set("quick_pair") {
   ]
 
   deps = [
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//chromeos/ash/services/quick_pair/public/cpp",
     "//chromeos/ash/services/quick_pair/public/mojom",
@@ -69,6 +70,7 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_pair",
+    "//ash/constants",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/fast_pair_handshake",
     "//base/test:test_support",

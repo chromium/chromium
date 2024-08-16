@@ -49,6 +49,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/filename_util.h"
 #include "net/base/url_util.h"
@@ -930,7 +931,7 @@ void ChildProcessSecurityPolicyImpl::Remove(int child_id) {
 
 void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme(
     const std::string& scheme) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Add schemes at most once.";
   DCHECK_EQ(0U, pseudo_schemes_.count(scheme))
@@ -943,7 +944,7 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme(
 void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
     const std::string& scheme,
     bool always_allow_in_origin_headers) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Add schemes at most once.";
   DCHECK_EQ(0U, pseudo_schemes_.count(scheme))
@@ -956,14 +957,14 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
 
 bool ChildProcessSecurityPolicyImpl::IsWebSafeScheme(
     const std::string& scheme) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
 
   return base::Contains(schemes_okay_to_request_in_any_process_, scheme);
 }
 
 void ChildProcessSecurityPolicyImpl::RegisterPseudoScheme(
     const std::string& scheme) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, pseudo_schemes_.count(scheme)) << "Add schemes at most once.";
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Pseudo implies not web-safe.";
@@ -975,14 +976,14 @@ void ChildProcessSecurityPolicyImpl::RegisterPseudoScheme(
 
 bool ChildProcessSecurityPolicyImpl::IsPseudoScheme(
     const std::string& scheme) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
 
   return base::Contains(pseudo_schemes_, scheme);
 }
 
 void ChildProcessSecurityPolicyImpl::ClearRegisteredSchemeForTesting(
     const std::string& scheme) {
-  base::AutoLock lock(lock_);
+  base::AutoLock lock(schemes_lock_);
   schemes_okay_to_request_in_any_process_.erase(scheme);
   schemes_okay_to_commit_in_any_process_.erase(scheme);
   pseudo_schemes_.erase(scheme);
@@ -1416,8 +1417,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     //
     // TODO(creis, nick): https://crbug.com/515309: The line below does not
     // enforce that http pages cannot commit in an extension process.
-    if (base::Contains(schemes_okay_to_commit_in_any_process_, scheme)) {
-      return true;
+    {
+      base::AutoLock schemes_lock(schemes_lock_);
+      if (base::Contains(schemes_okay_to_commit_in_any_process_, scheme)) {
+        return true;
+      }
     }
 
     auto* state = GetSecurityState(child_id);

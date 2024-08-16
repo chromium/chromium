@@ -89,6 +89,7 @@
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
@@ -291,6 +292,10 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {}
 
   void OnQuicBroken() override {}
+
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      quic::ParsedQuicVersion quic_version) override {}
 
   void WaitForStream() {
     stream_done_ = false;
@@ -1307,7 +1312,7 @@ TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   session_deps.host_resolver->set_synchronous_mode(true);
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  StaticSocketDataProvider socket_data(base::make_span(&mock_read, 1u),
+  StaticSocketDataProvider socket_data(base::span_from_ref(mock_read),
                                        base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -1356,7 +1361,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   MockRead mock_read(ASYNC, OK);
-  StaticSocketDataProvider socket_data(base::make_span(&mock_read, 1u),
+  StaticSocketDataProvider socket_data(base::span_from_ref(mock_read),
                                        base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -1487,7 +1492,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   MockRead mock_read(ASYNC, OK);
-  StaticSocketDataProvider socket_data(base::make_span(&mock_read, 1u),
+  StaticSocketDataProvider socket_data(base::span_from_ref(mock_read),
                                        base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -1579,7 +1584,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -1628,7 +1633,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps->socket_factory->AddSocketDataProvider(&socket_data);
@@ -1701,7 +1706,7 @@ TEST_F(HttpStreamFactoryTest,
           "HTTPS myproxy.org:443", TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps->socket_factory->AddSocketDataProvider(&socket_data);
@@ -1916,7 +1921,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   MockRead mock_read(ASYNC, OK);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -2690,7 +2695,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
       ConfiguredProxyResolutionService::CreateDirect());
 
   MockRead mock_read(ASYNC, OK);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
@@ -2741,12 +2746,12 @@ TEST_F(HttpStreamFactoryTest, Tag) {
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
   MockRead mock_read2(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data2(base::make_span(&mock_read2, 1u),
+  SequencedSocketData socket_data2(base::span_from_ref(mock_read2),
                                    base::span<MockWrite>());
   socket_data2.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data2);
@@ -2993,12 +2998,12 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
   MockRead mock_read2(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data2(base::make_span(&mock_read2, 1u),
+  SequencedSocketData socket_data2(base::span_from_ref(mock_read2),
                                    base::span<MockWrite>());
   socket_data2.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data2);
@@ -3175,12 +3180,12 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
 
   // Prepare for two HTTPS connects.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);
   MockRead mock_read2(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data2(base::make_span(&mock_read2, 1u),
+  SequencedSocketData socket_data2(base::span_from_ref(mock_read2),
                                    base::span<MockWrite>());
   socket_data2.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data2);
@@ -3350,12 +3355,12 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
 
   // Prepare for two HTTPS connects.
   MockRead mock_read1(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data1(base::make_span(&mock_read1, 1u),
+  SequencedSocketData socket_data1(base::span_from_ref(mock_read1),
                                    base::span<MockWrite>());
   socket_data1.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data1);
   MockRead mock_read2(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data2(base::make_span(&mock_read2, 1u),
+  SequencedSocketData socket_data2(base::span_from_ref(mock_read2),
                                    base::span<MockWrite>());
   socket_data2.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data2);
@@ -3500,7 +3505,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
 
   // Prepare for an HTTPS connect.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
-  SequencedSocketData socket_data(base::make_span(&mock_read, 1u),
+  SequencedSocketData socket_data(base::span_from_ref(mock_read),
                                   base::span<MockWrite>());
   socket_data.set_connect_data(MockConnect(ASYNC, OK));
   session_deps.socket_factory->AddSocketDataProvider(&socket_data);

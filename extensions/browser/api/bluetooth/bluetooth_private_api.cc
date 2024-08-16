@@ -116,7 +116,7 @@ std::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
     case bt_private::ConnectResultType::kAuthCanceled:
       [[fallthrough]];
     case bt_private::ConnectResultType::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

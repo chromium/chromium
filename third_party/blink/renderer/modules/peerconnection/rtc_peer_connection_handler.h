@@ -130,14 +130,16 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       PeerConnectionTracker* peer_connection_tracker,
-      ExceptionState& exception_state);
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport);
 
   virtual bool Initialize(
       ExecutionContext* context,
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       WebLocalFrame* web_frame,
-      ExceptionState& exception_state);
+      ExceptionState& exception_state,
+      RTCRtpTransport* rtp_transport);
 
   virtual void Close();
   virtual void CloseAndUnregister();

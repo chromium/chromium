@@ -68,6 +68,34 @@ class ProfileCloudManagementStatusProvider final
   raw_ptr<Profile> profile_;
 };
 
+class LocalTestPolicyUserManagementProvider final
+    : public policy::ManagementStatusProvider {
+ public:
+  explicit LocalTestPolicyUserManagementProvider(Profile* profile);
+  ~LocalTestPolicyUserManagementProvider() final;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
+class LocalTestPolicyBrowserManagementProvider final
+    : public policy::ManagementStatusProvider {
+ public:
+  explicit LocalTestPolicyBrowserManagementProvider(Profile* profile);
+  ~LocalTestPolicyBrowserManagementProvider() final;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
+
+ private:
+  raw_ptr<Profile> profile_;
+};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the platform managment status of ChromeOS Ash devices. For LaCros,
 // see DeviceEnterpriseManagedStatusProvider which needs to be defined under

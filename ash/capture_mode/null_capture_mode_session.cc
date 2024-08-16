@@ -16,7 +16,7 @@ NullCaptureModeSession::NullCaptureModeSession(
 views::Widget* NullCaptureModeSession::GetCaptureModeBarWidget() {
   // The null session will never have a bar widget, so this function should
   // never be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 aura::Window* NullCaptureModeSession::GetSelectedWindow() const {
@@ -41,7 +41,7 @@ void NullCaptureModeSession::OnCaptureSourceChanged(
   // Currently, the null session only applies to game dashboard, which only
   // records selected windows.
   if (new_source != CaptureModeSource::kWindow) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -77,11 +77,11 @@ void NullCaptureModeSession::StartCountDown(
 }
 
 void NullCaptureModeSession::OnCaptureFolderMayHaveChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NullCaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool NullCaptureModeSession::CalculateCameraPreviewTargetVisibility() const {
@@ -102,7 +102,8 @@ void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
 void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
 
-void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                             bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
   current_root_ = new_root;
 }

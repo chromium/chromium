@@ -103,6 +103,7 @@ void PriceInsightsModel::OnProductInfoUrlReceived(
   }
 
   price_insights_executions_[url]->is_subscribed_processed = true;
+  RunCallbacks(url);
 }
 
 void PriceInsightsModel::OnPriceInsightsInfoUrlReceived(
@@ -176,6 +177,9 @@ void PriceInsightsModel::UpdatePriceInsightsItemConfig(const GURL& url) {
   execution_it->second->config->iph_entrypoint_used_event_name =
       feature_engagement::events::
           kIOSContextualPanelPriceInsightsEntrypointUsed;
+  execution_it->second->config->iph_entrypoint_explicitly_dismissed =
+      feature_engagement::events::
+          kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed;
 
   if (!execution_it->second->config->price_insights_info.has_value()) {
     execution_it->second->config->relevance =
@@ -252,6 +256,8 @@ PriceInsightsItemConfiguration::PriceInsightsItemConfiguration(
   entrypoint_image_name = config->entrypoint_image_name;
   iph_feature = config->iph_feature;
   iph_entrypoint_used_event_name = config->iph_entrypoint_used_event_name;
+  iph_entrypoint_explicitly_dismissed =
+      config->iph_entrypoint_explicitly_dismissed;
   image_type = config->image_type;
   relevance = config->relevance;
   iph_title = config->iph_title;

@@ -7,9 +7,12 @@
  * type-safe manner. The API is intentionally designed to work like a minimal
  * version of mix of https://github.com/gcanti/io-ts and
  * https://github.com/colinhacks/zod, focusing on JSON validation and encode.
+ *
+ * TODO(pihsun): There are a LOT of type assertions in this file, it'd be very
+ * helpful to have some unit tests...
  */
 
-import {assertNotReached, checkEnumVariant} from './assert.js';
+import {assertExists, assertNotReached, checkEnumVariant} from './assert.js';
 
 type KeyPath = string[];
 
@@ -192,9 +195,8 @@ function createLiteralSchema<const T>(literal: T): Schema<T> {
   );
 }
 
-type EnumObj = Record<string, string>;
+type EnumObj = Record<string, number|string>;
 
-// TODO(shik): Support numerical enums with bidirection mapping.
 function createNativeEnumSchema<T extends EnumObj>(
   enumObj: T,
 ): Schema<T[keyof T]> {
@@ -297,6 +299,25 @@ function createAutoNullOptionalSchema<T, I>(
   });
 }
 
+function createCatchSchema<T, I>(
+  schema: Schema<T, I>,
+  fallback: T,
+): Schema<T, I> {
+  return new Schema({
+    test: schema.test,
+    decode(input, ctx) {
+      const val = schema.decode(input, ctx);
+      if (val === DECODE_ERROR) {
+        return fallback;
+      }
+      return val;
+    },
+    encode(val) {
+      return schema.encode(val);
+    },
+  });
+}
+
 function createArraySchema<T, I>(elem: Schema<T, I>): Schema<T[], I[]> {
   return new Schema({
     test(input): input is T[] {
@@ -326,6 +347,62 @@ function createArraySchema<T, I>(elem: Schema<T, I>): Schema<T[], I[]> {
     },
     encode(val) {
       return val.map((v) => elem.encode(v));
+    },
+  });
+}
+
+type SchemaArray = AnySchema[];
+
+type InferTupleOutput<S> = S extends [infer Head, ...infer Tail] ?
+  [Infer<Head>, ...InferTupleOutput<Tail>] :
+  [];
+
+type InferTupleInput<S> = S extends [infer Head, ...infer Tail] ?
+  [InferInput<Head>, ...InferUnionInput<Tail>] :
+  [];
+
+function createTupleSchema<const T extends SchemaArray>(
+  schemas: T,
+): Schema<InferTupleOutput<T>, InferTupleInput<T>> {
+  return new Schema({
+    test(input): input is InferTupleOutput<T> {
+      if (!Array.isArray(input) || input.length !== schemas.length) {
+        return false;
+      }
+      return schemas.every((schema, i) => {
+        const el = assertExists(input[i]);
+        return schema.test(el);
+      });
+    },
+    decode(input, ctx) {
+      if (!Array.isArray(input) || input.length !== schemas.length) {
+        ctx.setIssue(`expect tuple of length ${schemas.length}`);
+        return DECODE_ERROR;
+      }
+
+      const ret: unknown[] = [];
+      for (const [i, schema] of schemas.entries()) {
+        ctx.pushKey(`${i}`);
+        const el = assertExists(input[i]);
+        const val = schema.decode(el, ctx);
+        if (val === DECODE_ERROR) {
+          return DECODE_ERROR;
+        }
+        ret.push(val);
+        ctx.popKey();
+      }
+
+      // The entries in `ret` are from decoded values, so the type should be
+      // correct.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return ret as InferTupleOutput<T>;
+    },
+    encode(val): InferTupleInput<T> {
+      // The entries are from decoded values, so the type should be correct.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      return schemas.map(
+               (schema, i) => schema.encode(val[i]),
+             ) as InferTupleInput<T>;
     },
   });
 }
@@ -428,8 +505,6 @@ function createObjectSchema<T extends SchemaObject>(
     },
   });
 }
-
-type SchemaArray = AnySchema[];
 
 type InferUnionOutput<S> = S extends [infer Head, ...infer Tail] ?
   Infer<Head>|InferUnionOutput<Tail>:
@@ -607,7 +682,9 @@ export const z = {
   'optional': createOptionalSchema,
   'nullable': createNullableSchema,
   'autoNullOptional': createAutoNullOptionalSchema,
+  'catch': createCatchSchema,
   'array': createArraySchema,
+  'tuple': createTupleSchema,
   'object': createObjectSchema,
   'union': createUnionSchema,
   'intersection': createIntersectionSchema,

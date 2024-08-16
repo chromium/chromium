@@ -13,7 +13,7 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
       @expanded-changed="${this.onExpandedChanged_}">
     <div id="container">
       <site-favicon class="favicon" domain="${this.primarySite}"
-          url="${this.getIconImageUrl_()}" aria-hidden="true">
+          url="${this.getIconImageUrl_(this.primarySite)}" aria-hidden="true">
       </site-favicon>
       <div id="borderPart">${this.boldQuery_(this.primarySite)}</div>
       <cr-icon class="icon" icon="cr20:domain"
@@ -24,8 +24,8 @@ export function getHtml(this: RelatedWebsiteSetListItemElement) {
   <cr-collapse id="expandedContent" ?opened="${this.expanded}">
     ${this.memberSites.map(item => html`
       <div class="cr-padded-text hr">
-        <site-favicon class="favicon" domain="${this.primarySite}"
-            url="${this.getIconImageUrl_()}"
+        <site-favicon class="favicon" domain="${item.site}"
+            url="${this.getIconImageUrl_(item.site)}"
             aria-hidden="true">
         </site-favicon>
         <div class="cr-secondary-text">

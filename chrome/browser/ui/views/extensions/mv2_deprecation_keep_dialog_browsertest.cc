@@ -7,7 +7,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "content/public/test/browser_test.h"
@@ -42,8 +41,7 @@ class Mv2DeprecationKeepDialogBrowserTest : public ExtensionsDialogBrowserTest {
         ->AddExtension(extension.get());
 
     extensions::ShowMv2DeprecationKeepDialog(
-        browser()->profile(), browser()->window()->GetNativeWindow(),
-        *extension,
+        browser(), *extension,
         /*accept_callback=*/base::DoNothing(),
         /*cancel_callback=*/base::DoNothing());
   }

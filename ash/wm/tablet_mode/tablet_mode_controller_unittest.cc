@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 #include <math.h>
@@ -1116,6 +1121,63 @@ TEST_F(TabletModeControllerTest, ShowAndHideMouseCursorTest) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
+TEST_F(TabletModeControllerTest, StartingKioskSwitchesToUiClamshellMode) {
+  SetTabletMode(true);
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  // When the device is in the physical tablet state, the internal events should
+  // still be blocked even when the device is in the UI clamshell mode.
+  EXPECT_TRUE(AreEventsBlocked());
+}
+
+TEST_F(TabletModeControllerTest, KioskBlocksEnteringTabletMode) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  SetTabletMode(true);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+  EXPECT_TRUE(IsInPhysicalTabletState());
+}
+
+TEST_F(TabletModeControllerTest, DeviceReactsOnLidChangeInKioskSession) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  // Opening the lid to 270 degrees should start tablet mode if not blocked.
+  OpenLidToAngle(270.0f);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+  EXPECT_TRUE(IsInPhysicalTabletState());
+}
+
+TEST_F(TabletModeControllerTest,
+       KioskBlocksUiTabletModeEvenAfterMultipleLidChange) {
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  OpenLidToAngle(270.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+
+  OpenLidToAngle(30.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(AreEventsBlocked());
+
+  OpenLidToAngle(270.0f);
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(AreEventsBlocked());
+}
+
 class TabletModeControllerForceTabletModeTest
     : public TabletModeControllerTest {
  public:
@@ -1156,6 +1218,15 @@ TEST_F(TabletModeControllerForceTabletModeTest, ForceTabletModeTest) {
   AttachExternalMouse();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_FALSE(AreEventsBlocked());
+}
+
+TEST_F(TabletModeControllerForceTabletModeTest,
+       ForceTabletModeOverridenInKiosk) {
+  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
+  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
 }
 
 TEST_F(TabletModeControllerForceTabletModeTest, DockInForcedTabletMode) {

@@ -113,7 +113,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                 SiteSettingsCategory.createFromType(
                         mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
         new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate())
-                .fetchPreferencesForCategoryAndPopulateFpsInfo(
+                .fetchPreferencesForCategoryAndPopulateRwsInfo(
                         storageCategory, this::onStorageFetched);
 
         return view;
@@ -129,11 +129,11 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
 
-            boolean isFPSInfoShown =
-                    mSubPage.maybeShowFPSInfo(
-                            mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
+            boolean isRWSInfoShown =
+                    mSubPage.maybeShowRWSInfo(
+                            mWebsite.getRWSCookieInfo(), mWebsite.getAddress().getOrigin());
             RecordHistogram.recordBooleanHistogram(
-                    "Security.PageInfo.Cookies.HasFPSInfo", isFPSInfoShown);
+                    "Security.PageInfo.Cookies.HasFPSInfo", isRWSInfoShown);
         }
     }
 

@@ -1945,9 +1945,9 @@ TEST_P(VirtualCardRankingTest, HasGreaterRankingThan) {
   model_b.set_use_date(test_case.use_date_b);
 
   EXPECT_EQ(test_case.expectation == GREATER,
-            model_a.HasGreaterRankingThan(&model_b, current_time));
+            model_a.HasGreaterRankingThan(model_b, current_time));
   EXPECT_NE(test_case.expectation == GREATER,
-            model_b.HasGreaterRankingThan(&model_a, current_time));
+            model_b.HasGreaterRankingThan(model_a, current_time));
 }
 
 INSTANTIATE_TEST_SUITE_P(

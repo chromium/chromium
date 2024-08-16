@@ -64,6 +64,12 @@
   static <fields>;
 }
 
+# Causes R8 to more agressively optimize ServiceLoader.load() calls, by
+# assuming no exceptions will be thrown.
+-assumenosideeffects class java.util.ServiceLoader {
+  static *** load(...);
+}
+
 # Keep the names of exception types, to make it easier to understand stack
 # traces in contexts where it's not trivial to deobfuscate them - for example
 # when reported to app developers who are using WebView.

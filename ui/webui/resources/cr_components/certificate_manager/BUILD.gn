@@ -33,6 +33,7 @@ build_webui("build") {
 
   web_component_files = []
   non_web_component_files = []
+  static_files = []
 
   if (use_nss_certs) {
     web_component_files += [
@@ -53,6 +54,7 @@ build_webui("build") {
   }
 
   if (chrome_root_store_cert_management_ui) {
+    static_files += [ "favicon.svg" ]
     web_component_files += [
       "certificate_entry_v2.ts",
       "certificate_list_v2.ts",

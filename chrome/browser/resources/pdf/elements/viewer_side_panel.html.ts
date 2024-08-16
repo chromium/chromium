@@ -13,15 +13,15 @@ export function getHtml(this: ViewerSidePanelElement) {
   return html`
     <div id="brush-selector">
       <!-- TODO(crbug.com/351868764): Set production icon and aria. -->
-      <cr-icon-button id="pen" iron-icon="cr:create"
+      <cr-icon-button id="pen" iron-icon="pdf:ink-pen"
           data-brush="${AnnotationBrushType.PEN}"
           @click="${this.onBrushClick_}">
       </cr-icon-button>
-      <cr-icon-button id="highlighter" iron-icon="pdf:highlighter"
+      <cr-icon-button id="highlighter" iron-icon="pdf:ink-highlighter"
           data-brush="${AnnotationBrushType.HIGHLIGHTER}"
           @click="${this.onBrushClick_}">
       </cr-icon-button>
-      <cr-icon-button id="eraser" iron-icon="pdf:eraser"
+      <cr-icon-button id="eraser" iron-icon="pdf:ink-eraser"
           data-brush="${AnnotationBrushType.ERASER}"
           @click="${this.onBrushClick_}">
       </cr-icon-button>
@@ -30,7 +30,7 @@ export function getHtml(this: ViewerSidePanelElement) {
       <h2>Size</h2>
       <div id="sizes">
         ${this.getCurrentBrushSizes_().map(item => html`
-          <cr-icon-button iron-icon="cr20:menu" data-size="${item.size}"
+          <cr-icon-button iron-icon="pdf:${item.icon}" data-size="${item.size}"
               @click="${this.onSizeClick_}"></cr-icon-button>`)}
       </div>
       ${this.shouldShowColorOptions_() ? html`

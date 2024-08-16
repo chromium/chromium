@@ -115,7 +115,7 @@ base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
 std::vector<uint8_t> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
-    const std::string& expected_serialized_shared_info);
+    std::string_view expected_serialized_shared_info);
 
 MATCHER_P(RequestIdIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.id, result_listener);

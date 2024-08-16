@@ -25,7 +25,9 @@ std::string GetDeviceModeSuffix() {
                                                       : "ClamshellMode";
 }
 
-void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
+void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data,
+                  base::TimeTicks first_animation_started_at,
+                  base::TimeTicks animation_finished_at) {
   if (!data.frames_expected_v3) {
     LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
     return;

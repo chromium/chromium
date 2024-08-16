@@ -197,14 +197,14 @@ v8::Local<v8::Object> CreatePlatformObject(
 v8::StartupData SerializeInternalFieldCallback(v8::Local<v8::Object> object,
                                                int index,
                                                void* unused_data) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DeserializeInternalFieldCallback(v8::Local<v8::Object> object,
                                       int index,
                                       v8::StartupData payload,
                                       void* data) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 v8::StartupData SerializeAPIWrapperCallback(v8::Local<v8::Object> holder,

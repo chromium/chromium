@@ -5,6 +5,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//device/bluetooth/cast_bluetooth.gni")
+import("//device/bluetooth/emulation/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -24,6 +25,12 @@ config("bluetooth_config") {
   }
   if (is_castos) {
     defines = [ "USE_CAST_BLUETOOTH_ADAPTER" ]
+  }
+}
+
+config("bluetooth_emulation_config") {
+  if (enable_bluetooth_emulation) {
+    defines = [ "ENABLE_BLUETOOTH_EMULATION" ]
   }
 }
 
@@ -112,6 +119,8 @@ source_set("fake_bluetooth") {
     "//mojo/public/cpp/bindings",
     "//net",
   ]
+
+  public_configs = [ ":bluetooth_emulation_config" ]
 }
 
 component("bluetooth") {

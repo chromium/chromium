@@ -12,6 +12,7 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,11 +46,11 @@ public class TabSwitcherActionMenuBatchedPTTest {
     public BatchedPublicTransitRule<PageStation> mBatchedRule =
             new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule = new ChromeTabbedActivityTestRule();
 
     ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(mActivityTestRule);
+            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
 
     @Test
     @LargeTest
@@ -142,10 +143,10 @@ public class TabSwitcherActionMenuBatchedPTTest {
     }
 
     private TabModelSelector getTabModelSelector() {
-        return mActivityTestRule.getActivity().getTabModelSelector();
+        return sActivityTestRule.getActivity().getTabModelSelector();
     }
 
     private TabModel getCurrentTabModel() {
-        return mActivityTestRule.getActivity().getCurrentTabModel();
+        return sActivityTestRule.getActivity().getCurrentTabModel();
     }
 }

@@ -1,0 +1,24 @@
+Tests that cookies for a different origin can be set
+Setting cookie by URL without expires: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+Setting cookie by URL with expires: {
+    id : <number>
+    result : {
+        success : true
+    }
+    sessionId : <string>
+}
+All cookies before deletion: Num of cookies 2
+name: cookie1, value: .domain, domain: .chromium.org, path: /path, session
+name: cookie2, value: .domain, domain: .chromium.org, path: /path, expires
+Delete cookie1: {
+}
+Delete cookie2: {
+}
+All cookies after deletion: Num of cookies 0
+

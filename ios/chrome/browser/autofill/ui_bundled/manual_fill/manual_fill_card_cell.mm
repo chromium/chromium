@@ -290,9 +290,20 @@ CGFloat GPayIconTopAnchorOffset() {
   [self verticallyArrangeViews:card];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.accessibilityLabel =
+    NSString* accessibilityLabel =
         [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                    self.cardLabel.attributedText.string];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (ShouldShowGPayIcon(self.card.recordType)) {
+      accessibilityLabel =
+          [NSString stringWithFormat:@"%@, %@", accessibilityLabel,
+                                     l10n_util::GetNSString(
+                                         IDS_IOS_AUTOFILL_WALLET_SERVER_NAME)];
+    }
+#endif
+    GiveAccessibilityContextToCellAndButton(
+        self.contentView, self.overflowMenuButton, self.autofillFormButton,
+        accessibilityLabel);
   }
 }
 
@@ -300,6 +311,14 @@ CGFloat GPayIconTopAnchorOffset() {
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
+  // Holds the views that should be accessible. The ordering in which views are
+  // added to this array will reflect the order followed by VoiceOver. When the
+  // Keyboard Accessory Upgrade feature is enabled, subviews that need to be
+  // read by VoiceOver must be added to this array. Otherwise, they will be
+  // ignored.
+  NSMutableArray<UIView*>* accessibilityElements =
+      [[NSMutableArray alloc] initWithObjects:self.contentView, nil];
+
   self.layoutGuide =
       AddLayoutGuideToContentView(self.contentView, /*cell_has_header=*/YES);
 
@@ -312,6 +331,7 @@ CGFloat GPayIconTopAnchorOffset() {
   self.headerView =
       CreateHeaderView(self.cardIcon, self.cardLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
+  [accessibilityElements addObject:self.overflowMenuButton];
 
   if (IsKeyboardAccessoryUpgradeEnabled()) {
     self.headerSeparator = CreateGraySeparatorForContainer(self.contentView);
@@ -331,6 +351,8 @@ CGFloat GPayIconTopAnchorOffset() {
     self.virtualCardInstructionTextView =
         [self createVirtualCardInstructionTextView];
     [self.contentView addSubview:self.virtualCardInstructionTextView];
+    [accessibilityElements addObject:self.virtualCardInstructionTextView];
+
     self.virtualCardInstructionsSeparator =
         CreateGraySeparatorForContainer(self.contentView);
 
@@ -338,50 +360,66 @@ CGFloat GPayIconTopAnchorOffset() {
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCardNumber:)];
     [self.contentView addSubview:self.cardNumberLabeledChip];
+    [accessibilityElements addObject:self.cardNumberLabeledChip.singleButton];
 
     self.expirationDateLabeledChip = [[ManualFillLabeledChip alloc]
         initExpirationDateChipWithTarget:self
                            monthSelector:@selector(userDidTapExpirationMonth:)
                             yearSelector:@selector(userDidTapExpirationYear:)];
     [self.contentView addSubview:self.expirationDateLabeledChip];
+    [accessibilityElements
+        addObject:self.expirationDateLabeledChip.expirationMonthButton];
+    [accessibilityElements
+        addObject:self.expirationDateLabeledChip.expirationYearButton];
 
     self.cardholderLabeledChip = [[ManualFillLabeledChip alloc]
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCardholderName:)];
     [self.contentView addSubview:self.cardholderLabeledChip];
+    [accessibilityElements addObject:self.cardholderLabeledChip.singleButton];
 
     self.CVCLabeledChip = [[ManualFillLabeledChip alloc]
         initSingleChipWithTarget:self
                         selector:@selector(userDidTapCVC:)];
     [self.contentView addSubview:self.CVCLabeledChip];
+    [accessibilityElements addObject:self.CVCLabeledChip.singleButton];
   } else {
     // TODO(crbug.com/330329960): Deprecate button use once
     // kAutofillEnableVirtualCards is enabled.
     self.cardNumberButton =
         CreateChipWithSelectorAndTarget(@selector(userDidTapCardNumber:), self);
     [self.contentView addSubview:self.cardNumberButton];
+    [accessibilityElements addObject:self.cardNumberButton];
+
     self.expirationMonthButton =
         CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
     [self.contentView addSubview:self.expirationMonthButton];
+    [accessibilityElements addObject:self.expirationMonthButton];
+
     expirationDateSeparatorLabel = [self createExpirationSeparatorLabel];
     [self.contentView addSubview:expirationDateSeparatorLabel];
+
     self.expirationYearButton =
         CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
     [self.contentView addSubview:self.expirationYearButton];
+    [accessibilityElements addObject:self.expirationYearButton];
+
     self.cardholderButton =
         CreateChipWithSelectorAndTarget(@selector(userDidTapCardInfo:), self);
     [self.contentView addSubview:self.cardholderButton];
+    [accessibilityElements addObject:self.cardholderButton];
   }
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
-    self.autofillFormButton = CreateAutofillFormButton();
-    [self.contentView addSubview:self.autofillFormButton];
-    [self.autofillFormButton addTarget:self
-                                action:@selector(onAutofillFormButtonTapped)
-                      forControlEvents:UIControlEventTouchUpInside];
-  }
+  self.autofillFormButton = CreateAutofillFormButton();
+  [self.contentView addSubview:self.autofillFormButton];
+  [accessibilityElements addObject:self.autofillFormButton];
+  [self.autofillFormButton addTarget:self
+                              action:@selector(onAutofillFormButtonTapped)
+                    forControlEvents:UIControlEventTouchUpInside];
 
   [self horizontallyArrangeViews:expirationDateSeparatorLabel];
+
+  SetUpCellAccessibilityElements(self, accessibilityElements);
 }
 
 // Horizontally positions the UIViews.
@@ -447,14 +485,14 @@ CGFloat GPayIconTopAnchorOffset() {
                                      constant:GPayIconTopAnchorOffset()]];
   }
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
-  }
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
 
-  // Without this set, Voice Over will read the content vertically instead of
-  // horizontally.
-  self.contentView.shouldGroupAccessibilityChildren = YES;
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    // Without this set, Voice Over will read the content vertically instead of
+    // horizontally.
+    self.contentView.shouldGroupAccessibilityChildren = YES;
+  }
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
 }
@@ -658,10 +696,14 @@ CGFloat GPayIconTopAnchorOffset() {
   AddChipGroupsToVerticalLeadViews(@[ cardInfoGroupVerticalLeadChips ],
                                    verticalLeadViews);
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
+  if (_showAutofillFormButton) {
+    CHECK(IsKeyboardAccessoryUpgradeEnabled());
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
+    self.autofillFormButton.hidden = NO;
+  } else {
+    self.autofillFormButton.hidden = YES;
   }
 
   // Set and activate constraints.

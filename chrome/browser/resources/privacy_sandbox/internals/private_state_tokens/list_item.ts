@@ -4,14 +4,15 @@
 
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons_lit.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './list_item.css.js';
 import {getHtml} from './list_item.html.js';
-import type {Redemption} from './test_data.js';
+import type {Metadata, Redemption} from './types.js';
+import {nullMetadataObj} from './types.js';
 
 export class PrivateStateTokensListItemElement extends CrLitElement {
   static get is() {
@@ -33,6 +34,7 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
       numTokens: {type: Number},
       redemptions: {type: Array},
       index: {type: Number},
+      metadata: {type: Object},
     };
   }
 
@@ -41,12 +43,22 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
   numTokens: number = 0;
   redemptions: Redemption[] = [];
   index: number = -1;
+  metadata: Metadata = nullMetadataObj;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
     this.dispatchEvent(new CustomEvent(
         'expanded-toggled',
         {detail: {id: this.issuerOrigin, expanded: this.expanded}}));
+  }
+
+  protected updateMetadataUrlParams() {
+    const metadataUrlParam = new URLSearchParams(window.location.search);
+    metadataUrlParam.set('id', this.index.toString());
+    window.history.pushState(
+        {}, '', `${window.location.pathname}?${metadataUrlParam}`);
+    window.dispatchEvent(
+        new CustomEvent('navigate-to-metadata', {detail: this.metadata}));
   }
 
   protected getNumTokensString_() {

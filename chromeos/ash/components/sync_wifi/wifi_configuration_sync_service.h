@@ -12,13 +12,13 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace ash::timer_factory {
@@ -43,7 +43,7 @@ class WifiConfigurationSyncService : public KeyedService {
   WifiConfigurationSyncService(
       version_info::Channel channel,
       PrefService* pref_service,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
 
   WifiConfigurationSyncService(const WifiConfigurationSyncService&) = delete;
   WifiConfigurationSyncService& operator=(const WifiConfigurationSyncService&) =
@@ -51,7 +51,7 @@ class WifiConfigurationSyncService : public KeyedService {
 
   ~WifiConfigurationSyncService() override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
   void SetNetworkMetadataStore(
       base::WeakPtr<NetworkMetadataStore> network_metadata_store);
 

@@ -204,10 +204,18 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Tests that the interstitials have the expected title and content.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
                        SupervisedUserVerificationInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/supervised-user-verify"),
-                   "Verify it's you", IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU);
+                   "YouTube", IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationBlockedSiteInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-blocked-site"),
+      "Site blocked", IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN);
 }
 #endif
 

@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -399,7 +400,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     bool pixel_pack_buffer_binding_dirty_ = false;
   };
 
-  struct ColorBuffer : public base::RefCountedThreadSafe<ColorBuffer> {
+  struct ColorBuffer : public ThreadSafeRefCounted<ColorBuffer> {
     ColorBuffer(base::WeakPtr<DrawingBuffer> drawing_buffer,
                 const gfx::Size&,
                 const gfx::ColorSpace& color_space,
@@ -411,7 +412,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 scoped_refptr<gpu::ClientSharedImage> shared_image);
     ColorBuffer(const ColorBuffer&) = delete;
     ColorBuffer& operator=(const ColorBuffer&) = delete;
-    ~ColorBuffer();
 
     // The thread on which the ColorBuffer is created and the DrawingBuffer is
     // bound to.
@@ -438,6 +438,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     // The sync token for when this buffer was received back from the
     // compositor.
     gpu::SyncToken receive_sync_token;
+
+   private:
+    friend class ThreadSafeRefCounted<ColorBuffer>;
+    ~ColorBuffer();
   };
 
   using CopyFunctionRef = base::FunctionRef<bool(const gpu::MailboxHolder&,

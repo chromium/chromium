@@ -81,7 +81,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       initWithWebStateList:self.browser->GetWebStateList()
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
-              gridConsumer:_viewController.gridViewController];
+              gridConsumer:_viewController.gridViewController
+                modeHolder:self.modeHolder];
   _mediator.browser = self.browser;
   _mediator.tabGroupsHandler = handler;
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
@@ -239,14 +240,14 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
             didSelectGroup:(const TabGroup*)group {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // TODO(crbug.com/40273478): Remove once inactive tabs do not depends on it
 // anymore.
 - (void)gridViewController:(BaseGridViewController*)gridViewController
         didCloseItemWithID:(web::WebStateID)itemID {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)gridViewControllerDidMoveItem:
@@ -291,12 +292,12 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)gridViewControllerDidRequestContextMenu:

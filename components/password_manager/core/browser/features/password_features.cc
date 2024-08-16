@@ -123,43 +123,10 @@ BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
              "UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-             "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-             "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// A parameter which reflects the delay when the local passwords migration is
-// triggered after Chrome startup in seconds.
-constexpr base::FeatureParam<int>
-    kLocalPasswordsMigrationToAndroidBackendDelayParam{
-        &kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-        /* name= */ "local_pwd_migration_delay_seconds",
-        /* default_value= */ 5};
-
-int GetLocalPasswordsMigrationToAndroidBackendDelay() {
-  return kLocalPasswordsMigrationToAndroidBackendDelayParam.Get();
-}
-
-BASE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore,
-             "UnifiedPasswordManagerSyncOnlyInGMSCore",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,
              "ClearLoginDatabaseForAllMigratedUPMUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClearLoginDatabaseForUPMUsers,
-             "ClearLoginDatabaseForUPMUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
-#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  return false;
-#else
-  return base::FeatureList::IsEnabled(kUnifiedPasswordManagerSyncOnlyInGMSCore);
-#endif
-}
 #endif
 
 BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,

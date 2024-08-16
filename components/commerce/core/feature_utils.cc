@@ -7,7 +7,10 @@
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/user_selectable_type.h"
 
 namespace commerce {
 
@@ -40,15 +43,59 @@ bool IsProductSpecificationsAllowedForEnterprise(PrefService* prefs) {
   return true;
 }
 
-bool IsProductSpecificationsEnabled(AccountChecker* account_checker) {
+bool IsSyncingProductSpecifications(AccountChecker* account_checker) {
+  return account_checker && account_checker->IsSyncTypeEnabled(
+                                syncer::UserSelectableType::kProductComparison);
+}
+
+bool CanLoadProductSpecificationsFullPageUi(AccountChecker* account_checker) {
   // TODO(352761768): Reintroduce the "region launched" version of the flag
   //                  with a supplementary kill switch flag so that it's
   //                  possible turn the whole feature off using one flag
   //                  while also supporting our "staggered" rollout.
-  return base::FeatureList::IsEnabled(kProductSpecifications) &&
+  return base::FeatureList::IsEnabled(kProductSpecifications);
+}
+
+bool CanManageProductSpecificationsSets(
+    AccountChecker* account_checker,
+    ProductSpecificationsService* product_spec_service) {
+  if (!account_checker) {
+    return false;
+  }
+
+  // If we can't read sync entities, there's nothing to manage. Similarly,
+  // being able to load the full-page is required so clicking on the items
+  // works correctly.
+  if (!IsSyncingProductSpecifications(account_checker) ||
+      !CanLoadProductSpecificationsFullPageUi(account_checker)) {
+    return false;
+  }
+
+  // We allow management of entities if they exist even if the feature is
+  // otherwise inaccessible (assuming the flags are on).
+  if (!CanFetchProductSpecificationsData(account_checker)) {
+    int entity_count =
+        product_spec_service
+            ? product_spec_service->GetAllProductSpecifications().size()
+            : 0;
+
+    if (entity_count == 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
+  // msbb, enterprise, parental controls, sync type
+  return account_checker &&
          IsProductSpecificationsAllowedForEnterprise(
              account_checker->GetPrefs()) &&
-         account_checker->IsSignedIn();
+         account_checker->IsSignedIn() &&
+         account_checker->IsAnonymizedUrlDataCollectionEnabled() &&
+         IsSyncingProductSpecifications(account_checker) &&
+         CanLoadProductSpecificationsFullPageUi(account_checker);
 }
 
 }  // namespace commerce

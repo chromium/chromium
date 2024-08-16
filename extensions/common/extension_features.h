@@ -147,6 +147,13 @@ BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 // cmd.exe process as a proxy.
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 
+#if BUILDFLAG(IS_MAC)
+// Controls whether extension resource file paths ending with a separator are
+// rejected. See https://crbug.com/356878412.
+// TODO(crbug.com/357636604): Remove this feature flag in M132.
+BASE_DECLARE_FEATURE(kMacRejectFilePathsEndingWithSeparator);
+#endif
+
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 

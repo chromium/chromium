@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -195,7 +196,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
     : listener_(listener),
       view_position_handler_(std::make_unique<ViewPositionHandler>(this)),
       screen_capturer_(std::make_unique<ScreenCapturer>(this)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   // This is owned as a unique_ptr<EyeDropper> elsewhere.
   SetOwnedByWidget(false);
   // TODO(pbos): Remove this, perhaps by separating the contents view from the

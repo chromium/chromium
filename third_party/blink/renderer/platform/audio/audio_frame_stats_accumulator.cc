@@ -32,9 +32,11 @@ void AudioFrameStatsAccumulator::Update(
 void AudioFrameStatsAccumulator::Absorb(AudioFrameStatsAccumulator& from) {
   // |from| should have newer stats, so |from|'s counters should be at least as
   // high as |this|.
-  CHECK_GE(from.observed_frames_, observed_frames_);
+  CHECK_GE(static_cast<uint64_t>(from.observed_frames_),
+           static_cast<uint64_t>(observed_frames_));
   CHECK_GE(from.observed_frames_duration_, observed_frames_duration_);
-  CHECK_GE(from.glitch_frames_, glitch_frames_);
+  CHECK_GE(static_cast<uint64_t>(from.glitch_frames_),
+           static_cast<uint64_t>(glitch_frames_));
   CHECK_GE(from.glitch_frames_duration_, glitch_frames_duration_);
   CHECK_GE(from.glitch_event_count_, glitch_event_count_);
 

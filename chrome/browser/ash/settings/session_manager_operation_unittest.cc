@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -48,23 +49,24 @@ namespace {
 
 class ObservableFakeSessionManagerClient : public FakeSessionManagerClient {
  public:
-  void SetOnRetrieveDevicePolicyCalled(const base::RepeatingClosure& closure) {
-    on_retrieve_device_policy_called_ = closure;
+  void SetOnRetrievePolicyCalled(const base::RepeatingClosure& closure) {
+    on_retrieve_policy_called_ = closure;
   }
 
   // SessionManagerClient override:
-  void RetrieveDevicePolicy(RetrievePolicyCallback callback) override {
-    FakeSessionManagerClient::RetrieveDevicePolicy(std::move(callback));
+  void RetrievePolicy(const login_manager::PolicyDescriptor& descriptor,
+                      RetrievePolicyCallback callback) override {
+    FakeSessionManagerClient::RetrievePolicy(descriptor, std::move(callback));
 
     // Run the task just after the |callback| is invoked.
-    if (!on_retrieve_device_policy_called_.is_null()) {
+    if (!on_retrieve_policy_called_.is_null()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, on_retrieve_device_policy_called_);
+          FROM_HERE, on_retrieve_policy_called_);
     }
   }
 
  private:
-  base::RepeatingClosure on_retrieve_device_policy_called_;
+  base::RepeatingClosure on_retrieve_policy_called_;
 };
 
 }  // namespace
@@ -73,8 +75,6 @@ class SessionManagerOperationTest : public testing::Test {
  public:
   SessionManagerOperationTest()
       : owner_key_util_(new ownership::MockOwnerKeyUtil()),
-        user_manager_(new FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
         validated_(false) {
     OwnerSettingsServiceAshFactory::GetInstance()->SetOwnerKeyUtilForTesting(
         owner_key_util_);
@@ -121,8 +121,8 @@ class SessionManagerOperationTest : public testing::Test {
   ObservableFakeSessionManagerClient session_manager_client_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
 
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<OwnerSettingsServiceAsh> service_;
@@ -216,15 +216,15 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  // Just after the first RetrieveDevicePolicy() completion,
+  // Just after the first RetrievePolicy() completion,
   // verify the state, install a different key, then RestartLoad().
-  session_manager_client_.SetOnRetrieveDevicePolicyCalled(base::BindRepeating(
+  session_manager_client_.SetOnRetrievePolicyCalled(base::BindRepeating(
       [](SessionManagerOperationTest* test, policy::DevicePolicyBuilder* policy,
          ObservableFakeSessionManagerClient* session_manager_client,
          scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util,
          LoadSettingsOperation* op) {
         // Reset this callback to avoid infinite loop.
-        session_manager_client->SetOnRetrieveDevicePolicyCalled(
+        session_manager_client->SetOnRetrievePolicyCalled(
             base::RepeatingClosure());
 
         // Verify the public_key() is properly set, but the callback is

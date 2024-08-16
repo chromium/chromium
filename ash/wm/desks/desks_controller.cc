@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/desks/desks_controller.h"
 
 #include <algorithm>
@@ -117,6 +122,10 @@ constexpr int kDeskTraversalsMaxValue = 20;
 // |kNumberOfDeskTraversalsHistogramName| will be recorded after this time
 // interval.
 constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
+
+// The timeout duration that we allow an app window on a closed desk to run
+// its "close" hooks before being forcefully closed.
+base::TimeDelta g_close_all_window_close_timeout = base::Seconds(1);
 
 constexpr int kDeskDefaultNameIds[] = {
     IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
@@ -1442,8 +1451,7 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           case chromeos::WindowStateType::kPinned:
           case chromeos::WindowStateType::kTrustedPinned:
           case chromeos::WindowStateType::kPip:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
       }
 
@@ -2181,7 +2189,7 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
       base::BindOnce(&DesksController::CleanUpClosedAppWindowsTask,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(closing_window_tracker)),
-      kCloseAllWindowCloseTimeout);
+      g_close_all_window_close_timeout);
 
   // `temporary_removed_desk_` should not be set at this point.
   DCHECK(!temporary_removed_desk_);
@@ -2372,6 +2380,18 @@ void DesksController::ReportCustomDeskNames() const {
                               custom_names_count);
   base::UmaHistogramPercentage(kPercentageOfCustomNamesHistogramName,
                                custom_names_count * 100 / desks_.size());
+}
+
+// static
+base::TimeDelta DesksController::GetCloseAllWindowCloseTimeoutForTest() {
+  return g_close_all_window_close_timeout;
+}
+
+// static
+base::AutoReset<base::TimeDelta>
+DesksController::SetCloseAllWindowCloseTimeoutForTest(
+    base::TimeDelta interval) {
+  return {&g_close_all_window_close_timeout, interval};
 }
 
 }  // namespace ash

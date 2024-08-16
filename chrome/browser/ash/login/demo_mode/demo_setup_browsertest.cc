@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <string>
 #include <string_view>
 
@@ -457,14 +462,25 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     test::TapConsolidatedConsentAccept();
   }
 
-  void AcceptTermsAndExpectDemoSetupFailure() {
+  void AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode setup_error_code) {
     WaitForConsolidatedConsentScreen();
     test::TapConsolidatedConsentAccept();
+
+    // After accepting the metrics reporting consent, there should be no
+    // DemoMode.Setup.Error metrics reported yet before the setup process.
+    histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 0);
 
     // As we expect the error message to stay on the screen, it is safe to
     // wait for it in the usual manner.
     OobeScreenWaiter(DemoSetupScreenView::kScreenId).Wait();
     test::OobeJS().CreateVisibilityWaiter(true, kDemoSetupErrorDialog)->Wait();
+
+    // The corresponding error `setup_error_code` should be reported after the
+    // setup fails.
+    histogram_tester_.ExpectBucketCount("DemoMode.Setup.Error",
+                                        setup_error_code, 1);
+    histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
   }
 
   std::string GetQueryForCountrySelectOptionFromCountryCode(
@@ -757,7 +773,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
 
   ProceedThroughDemoPreferencesScreen();
 
-  AcceptTermsAndExpectDemoSetupFailure();
+  // policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable);
 
   // Default error returned by MockDemoModeOnlineEnrollmentHelperCreator.
   ExpectErrorMessage(IDS_DEMO_SETUP_TEMPORARY_ERROR,
@@ -787,7 +807,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   ProceedThroughDemoPreferencesScreen();
 
-  AcceptTermsAndExpectDemoSetupFailure();
+  // policy::DeviceManagementStatus::LOCK_ALREADY_LOCKED matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kAlreadyLocked in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kAlreadyLocked);
 
   ExpectErrorMessage(IDS_DEMO_SETUP_ALREADY_LOCKED_ERROR,
                      IDS_DEMO_SETUP_RECOVERY_POWERWASH);
@@ -892,7 +916,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
 
   ProceedThroughDemoPreferencesScreen();
 
-  AcceptTermsAndExpectDemoSetupFailure();
+  // policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable);
 
   test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
   test::OobeJS().ClickOnPath(kDemoSetupErrorDialogBack);
@@ -921,7 +949,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
 
   ProceedThroughDemoPreferencesScreen();
 
-  AcceptTermsAndExpectDemoSetupFailure();
+  // policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE matching to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable);
   test::LockDemoDeviceInstallAttributes();
 
   // We need to create another mock after showing error dialog.
@@ -1079,7 +1111,11 @@ IN_PROC_BROWSER_TEST_F(DemoSetupComponentLoadErrorTest,
 
   ProceedThroughDemoPreferencesScreen();
 
-  AcceptTermsAndExpectDemoSetupFailure();
+  // We should expect
+  // DemoSetupController::DemoSetupError::ErrorCode::kOnlineComponentError for
+  // cros component failure.
+  AcceptTermsAndExpectDemoSetupFailure(
+      DemoSetupController::DemoSetupError::ErrorCode::kOnlineComponentError);
 
   ExpectErrorMessage(IDS_DEMO_SETUP_COMPONENT_ERROR,
                      IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK);

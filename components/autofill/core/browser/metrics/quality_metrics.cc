@@ -46,6 +46,11 @@ void LogNumericQuantityMetrics(const FormStructure& form) {
     // Log if there was a colliding server prediction.
     AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
         field_has_non_empty_server_prediction);
+    if (field_has_non_empty_server_prediction) {
+      base::UmaHistogramBoolean(
+          "Autofill.NumericQuantity.DidTriggerSuggestions",
+          field->did_trigger_suggestions());
+    }
     // If there was a collision, log if the NUMERIC_QUANTITY was a false
     // positive since the field was correctly filled.
     if ((field->is_autofilled() || field->previously_autofilled()) &&

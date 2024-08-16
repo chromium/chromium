@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 #include <algorithm>
@@ -297,9 +302,7 @@ int TabStripModel::InsertWebContentsAt(
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
   return InsertDetachedTabAt(
-      index,
-      std::make_unique<tabs::TabModel>(std::move(contents),
-                                       delegate()->IsNormalWindow()),
+      index, std::make_unique<tabs::TabModel>(std::move(contents), this),
       add_types, group);
 }
 
@@ -418,6 +421,9 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
   std::optional<SessionID> id = std::nullopt;
   if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(tab->contents());
+  }
+  if (reason == TabStripModelChange::RemoveReason::kDeleted) {
+    tab->DestroyTabFeatures();
   }
 
   std::unique_ptr<tabs::TabModel> old_data =
@@ -933,14 +939,17 @@ std::unique_ptr<ScopedTabStripModalUI> TabStripModel::ShowModalUI() {
   return std::make_unique<ScopedTabStripModalUIImpl>(this);
 }
 
+void TabStripModel::ForceShowingModalUIForTesting(bool showing) {
+  showing_modal_ui_ = showing;
+}
+
 void TabStripModel::AddWebContents(
     std::unique_ptr<WebContents> contents,
     int index,
     ui::PageTransition transition,
     int add_types,
     std::optional<tab_groups::TabGroupId> group) {
-  auto tab = std::make_unique<tabs::TabModel>(std::move(contents),
-                                              delegate()->IsNormalWindow());
+  auto tab = std::make_unique<tabs::TabModel>(std::move(contents), this);
   AddTab(std::move(tab), index, transition, add_types, group);
 }
 
@@ -1793,7 +1802,7 @@ void TabStripModel::ExecuteCloseTabsByIndicesCommand(
 }
 
 bool TabStripModel::WillContextMenuMuteSites(int index) {
-  return !chrome::AreAllSitesMuted(*this, GetIndicesForCommand(index));
+  return !AreAllSitesMuted(*this, GetIndicesForCommand(index));
 }
 
 bool TabStripModel::WillContextMenuPin(int index) {
@@ -2929,9 +2938,8 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
     if (url.SchemeIs(content::kChromeUIScheme)) {
       // chrome:// URLs don't have content settings but can be muted, so just
       // mute the WebContents.
-      chrome::SetTabAudioMuted(web_contents, mute,
-                               TabMutedReason::CONTENT_SETTING_CHROME,
-                               std::string());
+      SetTabAudioMuted(web_contents, mute,
+                       TabMutedReason::CONTENT_SETTING_CHROME, std::string());
     } else {
       Profile* profile =
           Profile::FromBrowserContext(web_contents->GetBrowserContext());

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] relu float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+[FAIL] relu float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test relu float32 actual 79 should be close enough to expected 79.04724884033203 by the acceptable 0 ULP distance, but they have 6193 ULP distance expected true got false
+Harness: the test ran to completion.
+

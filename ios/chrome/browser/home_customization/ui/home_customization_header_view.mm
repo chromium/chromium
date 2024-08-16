@@ -43,7 +43,7 @@
   textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   textLabel.numberOfLines = 3;
-  textLabel.textAlignment = NSTextAlignmentCenter;
+  textLabel.textAlignment = NSTextAlignmentLeft;
   textLabel.adjustsFontForContentSizeCategory = YES;
   textLabel.translatesAutoresizingMaskIntoConstraints = NO;
   return textLabel;

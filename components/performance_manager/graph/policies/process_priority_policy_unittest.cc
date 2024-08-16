@@ -96,8 +96,9 @@ class ProcessPriorityPolicyTest : public PerformanceManagerTestHarness,
 
   // This is eventually invoked by the testing callback when the policy sets a
   // process priority.
-  MOCK_METHOD2(OnSetPriority,
-               void(content::RenderProcessHost*, base::Process::Priority));
+  MOCK_METHOD(void,
+              OnSetPriority,
+              (content::RenderProcessHost*, base::Process::Priority));
 
  private:
   void OnSetPriorityWrapper(RenderProcessHostProxy rph_proxy,

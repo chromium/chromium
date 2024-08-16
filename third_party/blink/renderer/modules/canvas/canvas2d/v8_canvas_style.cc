@@ -33,7 +33,7 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
   if (value->IsString()) {
     style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
                                                              exception_state);
-    if (UNLIKELY(exception_state.HadException())) {
+    if (exception_state.HadException()) [[unlikely]] {
       return false;
     }
     style.type = V8CanvasStyleType::kString;
@@ -59,8 +59,9 @@ bool ExtractV8CanvasStyle(v8::Isolate* isolate,
   // (such as numbers).
   style.string = NativeValueTraits<IDLString>::NativeValue(isolate, value,
                                                            exception_state);
-  if (UNLIKELY(exception_state.HadException()))
+  if (exception_state.HadException()) [[unlikely]] {
     return false;
+  }
   style.type = V8CanvasStyleType::kString;
   return true;
 }

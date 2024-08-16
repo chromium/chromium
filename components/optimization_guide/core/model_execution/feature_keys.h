@@ -27,9 +27,11 @@ enum class ModelBasedCapabilityKey {
   kPromptApi = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API,
   kHistorySearch =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH,
+  kFormsPredictions =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 7>
+inline constexpr std::array<ModelBasedCapabilityKey, 8>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -38,6 +40,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 7>
         ModelBasedCapabilityKey::kTextSafety,
         ModelBasedCapabilityKey::kPromptApi,
         ModelBasedCapabilityKey::kHistorySearch,
+        ModelBasedCapabilityKey::kFormsPredictions,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -90,8 +93,11 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kPromptApi;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return ModelBasedCapabilityKey::kHistorySearch;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
+      return ModelBasedCapabilityKey::kFormsPredictions;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-      NOTREACHED_NORETURN() << "Invalid feature";
+      NOTREACHED() << "Invalid feature";
   }
 }
 
@@ -115,6 +121,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kHistorySearch:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_HISTORY_SEARCH;
+    case ModelBasedCapabilityKey::kFormsPredictions:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS;
   }
 }
 

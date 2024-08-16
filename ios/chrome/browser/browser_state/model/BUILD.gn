@@ -124,6 +124,7 @@ source_set("model") {
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/prerender/model",
     "//ios/chrome/browser/price_insights/model",
+    "//ios/chrome/browser/profile/model",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
     "//ios/chrome/browser/reading_list/model",
@@ -145,9 +146,11 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sharing_message/model",
+    "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:trusted_vault_factory",
@@ -155,8 +158,8 @@ source_set("model") {
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
-    "//ios/chrome/browser/sync/model:model_type_store_service_factory",
     "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/tabs_search/model:model_factory",
@@ -195,6 +198,9 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model/glue",
   ]
+
+  # TODO(crbug.com/358267438): Remove once forwarding headers are removed.
+  allow_circular_includes_from += [ "//ios/chrome/browser/profile/model" ]
 }
 
 source_set("constants") {
@@ -214,6 +220,8 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

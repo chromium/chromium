@@ -48,6 +48,10 @@ interface DropdownOption<T extends string> {
 
 export class ExportDialog extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
+    :host {
+      display: contents;
+    }
+
     cra-dialog {
       width: 440px;
 

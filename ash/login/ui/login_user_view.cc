@@ -67,7 +67,6 @@ constexpr int kJellyDropdownIconSizeDp = 20;
 
 // Width/height of the user view. Ensures proper centering.
 constexpr int kLargeUserViewWidthDp = 306;
-constexpr int kLargeUserViewHeightDp = 346;
 constexpr int kSmallUserViewWidthDp = 304;
 constexpr int kExtraSmallUserViewWidthDp = 282;
 
@@ -589,22 +588,22 @@ LoginButton* LoginUserView::GetDropdownButton() {
 
 gfx::Size LoginUserView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
+  int preferred_width = 0;
   switch (display_style_) {
     case LoginDisplayStyle::kLarge:
-      return gfx::Size(kLargeUserViewWidthDp, kLargeUserViewHeightDp);
+      preferred_width = kLargeUserViewWidthDp;
+      break;
     case LoginDisplayStyle::kSmall:
-      return gfx::Size(kSmallUserViewWidthDp, kSmallUserImageSizeDp);
+      preferred_width = kSmallUserViewWidthDp;
+      break;
     case LoginDisplayStyle::kExtraSmall:
-      return gfx::Size(kExtraSmallUserViewWidthDp, kExtraSmallUserImageSizeDp);
+      preferred_width = kExtraSmallUserViewWidthDp;
+      break;
   }
-}
 
-int LoginUserView::GetHeightForWidth(int w) const {
-  // TODO(crbug.com/40232718): The behavior of GetHeightForWidth is inconsistent
-  // with the behavior of CalculatePreferredSize. This results in LoginUserView
-  // having different heights in different layouts. There is a conflict between
-  // multiple pixel tests.
-  return GetLayoutManager()->GetPreferredHeightForWidth(this, w);
+  return gfx::Size(
+      preferred_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width));
 }
 
 void LoginUserView::Layout(PassKey) {

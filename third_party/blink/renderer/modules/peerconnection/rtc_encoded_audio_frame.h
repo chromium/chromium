@@ -68,7 +68,6 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
 
  private:
   scoped_refptr<RTCEncodedAudioFrameDelegate> delegate_;
-  Vector<uint32_t> contributing_sources_;
   mutable Member<DOMArrayBuffer> frame_data_;
 };
 

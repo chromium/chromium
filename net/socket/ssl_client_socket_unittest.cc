@@ -781,9 +781,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
     // EmbeddedTestServer callbacks run on another thread, so protect this
     // with a lock.
     base::AutoLock lock(server_ssl_info_lock_);
-    auto result = server_ssl_info_;
-    server_ssl_info_ = std::nullopt;
-    return result;
+    return std::exchange(server_ssl_info_, std::nullopt);
   }
 
   RecordingNetLogObserver log_observer_;
@@ -4177,6 +4175,159 @@ TEST_F(SSLClientSocketTest, DontClearSessionCacheOnServerCertDatabaseChange) {
   EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
 
   context_->RemoveObserver(&observer);
+}
+
+// Test client certificate signature algorithm selection.
+TEST_F(SSLClientSocketTest, ClientCertSignatureAlgorithm) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<net::X509Certificate> client_cert =
+      ImportCertFromFile(certs_dir, "client_1.pem");
+  scoped_refptr<net::SSLPrivateKey> client_key =
+      key_util::LoadPrivateKeyOpenSSL(certs_dir.AppendASCII("client_1.key"));
+
+  const struct {
+    const char* name;
+    bool legacy_pkcs1_enabled = true;
+    uint16_t version;
+    std::vector<uint16_t> server_prefs;
+    std::vector<uint16_t> client_prefs;
+    Error error = OK;
+    uint16_t expected_signature_algorithm = 0;
+  } kTests[] = {
+      {
+          .name = "TLS 1.2 client preference",
+          .version = SSL_PROTOCOL_VERSION_TLS1_2,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA384,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .client_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA384},
+          // The client's preference should be used.
+          .expected_signature_algorithm = SSL_SIGN_RSA_PSS_RSAE_SHA256,
+      },
+      {
+          .name = "TLS 1.3 client preference",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA384,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .client_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA384},
+          // The client's preference should be used.
+          .expected_signature_algorithm = SSL_SIGN_RSA_PSS_RSAE_SHA256,
+      },
+
+      {
+          .name = "TLS 1.2 no common algorithms",
+          .version = SSL_PROTOCOL_VERSION_TLS1_2,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA384},
+          .client_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+      {
+          .name = "TLS 1.3 no common algorithms",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA384},
+          .client_prefs = {SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+
+      {
+          .name = "TLS 1.2 PKCS#1",
+          .version = SSL_PROTOCOL_VERSION_TLS1_2,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          .expected_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA256,
+      },
+      {
+          .name = "TLS 1.2 no PKCS#1",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          // The rsa_pkcs1_sha256 codepoint may not be used in TLS 1.3, so the
+          // TLS library should exclude it.
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+
+      // Test rsa_pkcs1_sha256_legacy. The value is omitted from `client_prefs`
+      // because SSLPrivateKey implementations are not expected to specify
+      // `SSL_SIGN_RSA_PKCS1_SHA256_LEGACY`. Instead, SSLClientSocket
+      // automatically applies support when `SSL_SIGN_RSA_PKCS1_SHA256` is
+      // available.
+      {
+          .name = "TLS 1.2 no legacy PKCS#1",
+          .version = SSL_PROTOCOL_VERSION_TLS1_2,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          // The rsa_pkcs1_sha256_legacy codepoint is specifically for
+          // restoring PKCS#1 to TLS 1.3, so it should not be accepted.
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+      {
+          .name = "TLS 1.3 legacy PKCS#1",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          // The rsa_pkcs1_sha256_legacy codepoint may be used in TLS 1.3.
+          .expected_signature_algorithm = SSL_SIGN_RSA_PKCS1_SHA256_LEGACY,
+      },
+      {
+          .name = "TLS 1.3 legacy PKCS#1 disabled",
+          .legacy_pkcs1_enabled = false,
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256},
+          // The rsa_pkcs1_sha256_legacy codepoint may be used in TLS 1.3, but
+          // was disabled.
+          .error = ERR_SSL_CLIENT_AUTH_NO_COMMON_ALGORITHMS,
+      },
+      {
+          .name = "TLS 1.3 legacy PKCS#1 not preferred",
+          .version = SSL_PROTOCOL_VERSION_TLS1_3,
+          .server_prefs = {SSL_SIGN_RSA_PKCS1_SHA256_LEGACY,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          .client_prefs = {SSL_SIGN_RSA_PKCS1_SHA256,
+                           SSL_SIGN_RSA_PSS_RSAE_SHA256},
+          // The legacy codepoint is only used when no other options are
+          // available. The key supports PSS, so we will use PSS instead.
+          .expected_signature_algorithm = SSL_SIGN_RSA_PSS_RSAE_SHA256,
+      },
+  };
+  for (const auto& test : kTests) {
+    SCOPED_TRACE(test.name);
+
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        net::features::kLegacyPKCS1ForTLS13, test.legacy_pkcs1_enabled);
+
+    SSLServerConfig server_config;
+    server_config.version_min = test.version;
+    server_config.version_max = test.version;
+    server_config.client_cert_type = SSLServerConfig::REQUIRE_CLIENT_CERT;
+    server_config.client_cert_signature_algorithms = test.server_prefs;
+    ASSERT_TRUE(
+        StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+    // Connect with the client certificate.
+    context_->SetClientCertificate(
+        host_port_pair(), client_cert,
+        WrapSSLPrivateKeyWithPreferences(client_key, test.client_prefs));
+    int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    if (test.error != OK) {
+      EXPECT_THAT(rv, IsError(test.error));
+      continue;
+    }
+
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_TRUE(sock_->IsConnected());
+
+    // Capture the SSLInfo from the server to get the client's chosen signature
+    // algorithm.
+    EXPECT_THAT(MakeHTTPRequest(sock_.get(), "/ssl-info"), IsOk());
+    std::optional<SSLInfo> server_ssl_info = LastSSLInfoFromServer();
+    ASSERT_TRUE(server_ssl_info);
+    EXPECT_EQ(server_ssl_info->peer_signature_algorithm,
+              test.expected_signature_algorithm);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 

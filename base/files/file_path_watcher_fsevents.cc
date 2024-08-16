@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <list>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/files/file_util.h"
@@ -212,18 +213,19 @@ void FilePathWatcherFSEvents::UpdateEventStream(
     FSEventStreamEventId start_event) {
   // It can happen that the watcher gets canceled while tasks that call this
   // function are still in flight, so abort if this situation is detected.
-  if (resolved_target_.empty())
+  if (resolved_target_.empty()) {
     return;
+  }
 
-  if (fsevent_stream_)
+  if (fsevent_stream_) {
     DestroyEventStream();
+  }
 
-  apple::ScopedCFTypeRef<CFStringRef> cf_path(CFStringCreateWithCString(
-      NULL, resolved_target_.value().c_str(), kCFStringEncodingMacHFS));
-  apple::ScopedCFTypeRef<CFStringRef> cf_dir_path(CFStringCreateWithCString(
-      NULL, resolved_target_.DirName().value().c_str(),
-      kCFStringEncodingMacHFS));
-  CFStringRef paths_array[] = { cf_path.get(), cf_dir_path.get() };
+  apple::ScopedCFTypeRef<CFStringRef> cf_path =
+      apple::FilePathToCFString(resolved_target_);
+  apple::ScopedCFTypeRef<CFStringRef> cf_dir_path =
+      apple::FilePathToCFString(resolved_target_.DirName());
+  CFStringRef paths_array[] = {cf_path.get(), cf_dir_path.get()};
   apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));

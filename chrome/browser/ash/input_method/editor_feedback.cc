@@ -5,7 +5,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"

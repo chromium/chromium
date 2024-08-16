@@ -18,8 +18,10 @@ EnumTraits<viz::mojom::ContentFrameIntervalType,
       return viz::mojom::ContentFrameIntervalType::kVideo;
     case viz::ContentFrameIntervalType::kAnimatingImage:
       return viz::mojom::ContentFrameIntervalType::kAnimatingImage;
+    case viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
+      return viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<viz::mojom::ContentFrameIntervalType,
@@ -32,6 +34,9 @@ bool EnumTraits<viz::mojom::ContentFrameIntervalType,
       return true;
     case viz::mojom::ContentFrameIntervalType::kAnimatingImage:
       *out = viz::ContentFrameIntervalType::kAnimatingImage;
+      return true;
+    case viz::mojom::ContentFrameIntervalType::kScrollBarFadeOutAnimation:
+      *out = viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation;
       return true;
   }
   return false;

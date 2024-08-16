@@ -63,10 +63,13 @@ void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
     load_time_data.Set("cant_go_back", true);
   }
 
-  PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
+  PopulateHttpsOnlyModeStringsForSharedHTML(
+      load_time_data,
+      /*august2024_refresh_enabled=*/false);
   PopulateHttpsOnlyModeStringsForBlockingPage(
       load_time_data, request_url(),
-      security_interstitials::https_only_mode::HttpInterstitialState{});
+      security_interstitials::https_only_mode::HttpInterstitialState{},
+      /*august2024_refresh_enabled=*/false);
 }
 
 bool HttpsOnlyModeBlockingPage::ShouldDisplayURL() const {

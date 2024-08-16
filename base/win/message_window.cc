@@ -194,7 +194,7 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
   MessageWindow* self = message_window_map.Get(hwnd);
 
   // CreateWindow will send a WM_CREATE message during window creation.
-  if (UNLIKELY(!self && message == WM_CREATE)) {
+  if (!self && message == WM_CREATE) [[unlikely]] {
     CREATESTRUCT* const cs = reinterpret_cast<CREATESTRUCT*>(lparam);
     self = reinterpret_cast<MessageWindow*>(cs->lpCreateParams);
 
@@ -205,7 +205,7 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
     message_window_map.Insert(hwnd, *self);
   }
 
-  if (UNLIKELY(!self)) {
+  if (!self) [[unlikely]] {
     return DefWindowProc(hwnd, message, wparam, lparam);
   }
 
@@ -214,7 +214,7 @@ LRESULT CALLBACK MessageWindow::WindowProc(HWND hwnd,
     message_result = DefWindowProc(hwnd, message, wparam, lparam);
   }
 
-  if (UNLIKELY(message == WM_DESTROY)) {
+  if (message == WM_DESTROY) [[unlikely]] {
     // Tell the MessageWindow instance that it no longer has an HWND.
     self->window_ = nullptr;
 

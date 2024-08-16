@@ -98,7 +98,7 @@ GetNetworkAndIssuerIconsTreatment() {
     return SecurePaymentConfirmationNetworkAndIssuerIconsTreatment::kRows;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 

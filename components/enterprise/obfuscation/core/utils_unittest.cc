@@ -8,29 +8,23 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_obfuscation {
 namespace {
 
+constexpr size_t kKeySize = 32u;
 constexpr size_t kDataChunkSize = 524288;  // default download buffer size
-constexpr size_t kNonceSize = 12u;
 constexpr size_t kAuthTagSize = 16u;
-
-// Helper function to generate a random string of the given size.
-std::string GetRandomLargeData(size_t size) {
-  std::string data(size, '\0');
-  for (char& c : data) {
-    c = static_cast<char>(base::RandInt(0, 255));
-  }
-  return data;
-}
+constexpr size_t kNoncePrefixSize = 7u;
+constexpr size_t kHeaderSize = 1u + kKeySize + kNoncePrefixSize;
 
 }  // namespace
 
 class ObfuscationUtilsTest
-    : public ::testing::TestWithParam<std::tuple<bool, std::string>> {
+    : public ::testing::TestWithParam<std::tuple<bool, size_t>> {
  protected:
   ObfuscationUtilsTest() {
     feature_list_.InitWithFeatureState(kEnterpriseFileObfuscation,
@@ -43,7 +37,7 @@ class ObfuscationUtilsTest
     return temp_dir_.GetPath().AppendASCII("test_file.txt");
   }
 
-  std::string test_data() const { return std::get<1>(GetParam()); }
+  size_t test_data_size() const { return std::get<1>(GetParam()); }
 
   bool file_obfuscation_feature_enabled() { return std::get<0>(GetParam()); }
 
@@ -53,29 +47,46 @@ class ObfuscationUtilsTest
 
 TEST_P(ObfuscationUtilsTest, ObfuscateAndDeobfuscateDataChunk) {
   // Obfuscate the data chunk.
-  auto obfuscated_result = ObfuscateDataChunk(base::as_byte_span(test_data()));
+  std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
+
+  std::vector<uint8_t> derived_key;
+  std::vector<uint8_t> nonce_prefix;
+  auto header = CreateHeader(&derived_key, &nonce_prefix);
+  uint32_t counter = 0;
+
+  auto obfuscated_chunk = ObfuscateDataChunk(
+      base::as_byte_span(test_data), derived_key, nonce_prefix, counter, true);
 
   if (!file_obfuscation_feature_enabled()) {
-    ASSERT_EQ(obfuscated_result.error(), Error::kDisabled);
+    ASSERT_EQ(obfuscated_chunk.error(), Error::kDisabled);
+    ASSERT_EQ(header.error(), Error::kDisabled);
     return;
   }
-
-  ASSERT_TRUE(obfuscated_result.has_value());
-  ASSERT_NE(obfuscated_result.value(), base::as_byte_span(test_data()));
+  ASSERT_TRUE(header.has_value());
+  ASSERT_TRUE(obfuscated_chunk.has_value());
+  ASSERT_NE(obfuscated_chunk.value(), test_data);
 
   // Deobfuscate the data chunk.
-  auto deobfuscated_result = DeobfuscateDataChunk(obfuscated_result.value());
-  ASSERT_TRUE(deobfuscated_result.has_value());
-  EXPECT_EQ(deobfuscated_result.value(), base::as_byte_span(test_data()));
+  auto header_data = GetHeaderData(header.value());
+  ASSERT_TRUE(header_data.has_value());
+
+  auto deobfuscated_chunk =
+      DeobfuscateDataChunk(obfuscated_chunk.value(), header_data.value().first,
+                           header_data.value().second, counter, true);
+  ASSERT_TRUE(deobfuscated_chunk.has_value());
+  EXPECT_EQ(deobfuscated_chunk.value(), test_data);
 
   // Deobfuscation should fail when we modify the ciphertext.
-  obfuscated_result.value()[0] ^= 1;
-  deobfuscated_result = DeobfuscateDataChunk(obfuscated_result.value());
-  ASSERT_EQ(deobfuscated_result.error(), Error::kDeobfuscationFailed);
+  obfuscated_chunk.value()[0] ^= 1;
+  deobfuscated_chunk =
+      DeobfuscateDataChunk(obfuscated_chunk.value(), header_data.value().first,
+                           header_data.value().second, counter, true);
+  ASSERT_EQ(deobfuscated_chunk.error(), Error::kDeobfuscationFailed);
 }
 
 TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
-  ASSERT_TRUE(base::WriteFile(test_file_path(), test_data()));
+  std::vector<uint8_t> test_data = base::RandBytesAsVector(test_data_size());
+  ASSERT_TRUE(base::WriteFile(test_file_path(), test_data));
 
   int64_t original_size = 0;
   base::GetFileSize(test_file_path(), &original_size);
@@ -94,36 +105,38 @@ TEST_P(ObfuscationUtilsTest, DeobfuscateFileInPlace) {
   std::vector<uint8_t> obfuscated_content;
 
   // Calculate the number of chunks and reserve needed space.
-  size_t num_chunks =
-      (test_data().length() + kDataChunkSize - 1) / kDataChunkSize;
-  obfuscated_content.reserve(test_data().size() +
-                             num_chunks * (kNonceSize + kAuthTagSize));
+  size_t num_chunks = (test_data.size() + kDataChunkSize - 1) / kDataChunkSize;
+  obfuscated_content.reserve(test_data.size() + num_chunks * kAuthTagSize +
+                             kHeaderSize);
+
+  std::vector<uint8_t> derived_key;
+  std::vector<uint8_t> nonce_prefix;
+  auto header = CreateHeader(&derived_key, &nonce_prefix);
+  obfuscated_content.insert(obfuscated_content.end(), header.value().begin(),
+                            header.value().end());
 
   // Obufscate in chunks of kChunkSize if the content is large
-  if (test_data().size() > kDataChunkSize) {
-    for (size_t i = 0; i < test_data().size(); i += kDataChunkSize) {
-      std::string chunk = test_data().substr(i, kDataChunkSize);
-
-      auto obfuscated_result = ObfuscateDataChunk(base::as_byte_span(chunk));
-      ASSERT_TRUE(obfuscated_result.has_value());
-
-      std::move(obfuscated_result.value().begin(),
-                obfuscated_result.value().end(),
-                std::back_inserter(obfuscated_content));
-    }
-  } else {  // For smaller content, obfuscate in one go
+  uint32_t counter = 0;
+  for (size_t i = 0; i < test_data.size(); i += kDataChunkSize) {
+    size_t remaining_data = test_data.size() - i;
+    size_t chunk_size = std::min(kDataChunkSize, remaining_data);
+    std::vector<uint8_t> chunk(test_data.begin() + i,
+                               test_data.begin() + i + chunk_size);
     auto obfuscated_result =
-        ObfuscateDataChunk(base::as_byte_span(test_data()));
+        ObfuscateDataChunk(chunk, derived_key, nonce_prefix, counter++,
+                           (i + kDataChunkSize >= test_data.size()));
     ASSERT_TRUE(obfuscated_result.has_value());
-    obfuscated_content = std::move(obfuscated_result.value());
+
+    std::move(obfuscated_result.value().begin(),
+              obfuscated_result.value().end(),
+              std::back_inserter(obfuscated_content));
   }
   ASSERT_TRUE(base::WriteFile(test_file_path(), obfuscated_content));
-
   ASSERT_TRUE(DeobfuscateFileInPlace(test_file_path()).has_value());
 
-  std::string deobfuscated_content;
-  ASSERT_TRUE(base::ReadFileToString(test_file_path(), &deobfuscated_content));
-  EXPECT_EQ(deobfuscated_content, test_data());
+  auto deobfuscated_content = base::ReadFileToBytes(test_file_path());
+  ASSERT_TRUE(deobfuscated_content.has_value());
+  EXPECT_EQ(deobfuscated_content.value(), test_data);
 
   // Get deobfuscated file size which should match original.
   int64_t deobfuscated_size = 0;
@@ -142,8 +155,6 @@ INSTANTIATE_TEST_SUITE_P(
     ObfuscationUtilsTest,
     ::testing::Combine(
         ::testing::Bool(),  // File obfuscator feature enabled/disabled
-        ::testing::Values("",
-                          "Small data",
-                          GetRandomLargeData(kDataChunkSize + 1024))));
+        ::testing::Values(0, 10, kDataChunkSize + 1024)));
 
 }  // namespace enterprise_obfuscation

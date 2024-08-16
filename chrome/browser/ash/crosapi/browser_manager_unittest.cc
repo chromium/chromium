@@ -191,6 +191,8 @@ class BrowserManagerTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
                                    {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
 
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
@@ -340,6 +342,7 @@ class BrowserManagerTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {

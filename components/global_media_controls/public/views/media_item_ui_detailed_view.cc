@@ -386,6 +386,10 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   if (item_) {
     item_->SetView(this);
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 }
 
 MediaItemUIDetailedView::~MediaItemUIDetailedView() {
@@ -531,13 +535,6 @@ void MediaItemUIDetailedView::AddedToWidget() {
   if (device_selector_view_) {
     UpdateCastingState();
   }
-}
-
-void MediaItemUIDetailedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 }
 
 bool MediaItemUIDetailedView::OnKeyPressed(const ui::KeyEvent& event) {

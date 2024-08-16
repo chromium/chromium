@@ -136,11 +136,11 @@
   }
 </style>
 <cr-dialog id="dialog" on-close="handleClose">
-  <div slot="title" aria-labelledby="description shortcutInstruction">[[i18n('keyboardTesterTitle')]]</div>
+  <div slot="title" aria-describedby="description shortcutInstruction">[[i18n('keyboardTesterTitle')]]</div>
   <div slot="body">
     <p id="description">[[getDescriptionLabel()]]</p>
     <p id="shortcutInstruction" inner-h-t-m-l="[[getShortcutInstructionLabel()]]"></p>
-    <template is="dom-if" if="[[layoutIsKnown]]">
+    <template is="dom-if" if="[[shouldDisplayDiagram]]">
       <div id="diagram-border">
         <keyboard-diagram
             id="diagram"

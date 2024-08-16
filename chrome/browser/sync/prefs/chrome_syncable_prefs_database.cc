@@ -18,7 +18,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/sharing_message/pref_names.h"
 #include "components/spellcheck/browser/pref_names.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -36,7 +36,7 @@
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/supervised_user/core/common/pref_names.h"
-#include "extensions/browser/pref_names.h"
+#include "extensions/browser/pref_names.h"  // nogncheck
 #endif
 
 namespace browser_sync {
@@ -318,7 +318,7 @@ enum {
   kProfileContentSettingsPartitionedExceptionsMouselock = 100258,
   kProfileContentSettingsPartitionedExceptionsPopups = 100259,
   kProfileContentSettingsPartitionedExceptionsWindowPlacement = 100260,
-  kStandaloneWindowMigrationNudgeShown = 100261,
+  // kStandaloneWindowMigrationNudgeShown = 100261, (deprecated)
   kTabDiscardingExceptionsWithTime = 100262,
   kAccessibilityFaceGazeCursorSpeedUp = 100263,
   kAccessibilityFaceGazeCursorSpeedDown = 100264,
@@ -355,6 +355,9 @@ enum {
   kAccessibilityMagnifierFollowsChromeVox = 100295,
   kKeyboardHasSplitModifierKeyboard = 100296,
   kHttpsFirstBalancedMode = 100297,
+  kAccessibilityFlashNotificationsEnabled = 100298,
+  kAccessibilityFlashNotificationsColor = 100299,
+  kPinnedChromeLabsMigrationComplete = 100300,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -521,6 +524,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
     {prefs::kPinnedSearchCompanionMigrationComplete,
      {syncable_prefs_ids::kPinnedSearchCompanionMigrationComplete,
+      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinnedChromeLabsMigrationComplete,
+     {syncable_prefs_ids::kPinnedChromeLabsMigrationComplete,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1114,10 +1121,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kApplicationLocale, syncer::OS_PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kStandaloneWindowMigrationNudgeShown,
-     {syncable_prefs_ids::kStandaloneWindowMigrationNudgeShown,
-      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
      {syncable_prefs_ids::kAccessibilityFaceGazeCursorSpeedUp,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
@@ -1160,6 +1163,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
      {syncable_prefs_ids::kAccessibilityFaceGazeAdjustSpeedSeparately,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsEnabled,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFlashNotificationsColor,
+     {syncable_prefs_ids::kAccessibilityFlashNotificationsColor,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kShelfContainerAppPinRolls,

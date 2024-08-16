@@ -53,7 +53,8 @@ class FeaturedSearchProvider : public AutocompleteProvider {
                    const std::u16string& iph_contents,
                    const std::u16string& matched_term,
                    const std::u16string& iph_link_text,
-                   const GURL& iph_link_url);
+                   const GURL& iph_link_url,
+                   bool deletable);
 
   void AddFeaturedEnterpriseSearchMatch(const TemplateURL& template_url,
                                         const AutocompleteInput& input);
@@ -78,8 +79,18 @@ class FeaturedSearchProvider : public AutocompleteProvider {
   void AddFeaturedEnterpriseSearchIPHMatch();
 
   bool ShouldShowHistoryEmbeddingsSettingsPromoIphMatch() const;
-
   void AddHistoryEmbeddingsSettingsPromoIphMatch();
+
+  bool ShouldShowHistoryEmbeddingsDisclaimerIphMatch() const;
+  void AddHistoryEmbeddingsDisclaimerIphMatch();
+
+  bool ShouldShowHistoryScopePromoIphMatch(
+      const AutocompleteInput& input) const;
+  void AddHistoryScopePromoIphMatch();
+
+  bool ShouldShowHistoryEmbeddingsScopePromoIphMatch(
+      const AutocompleteInput& input) const;
+  void AddHistoryEmbeddingsScopePromoIphMatch();
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;

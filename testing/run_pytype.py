@@ -29,7 +29,7 @@ FILES_AND_DIRECTORIES_TO_CHECK = [
 ]
 
 TEST_NAME = 'testing_pytype'
-TEST_LOCATION = "//testing/run_pytype.py"
+TEST_LOCATION = '//testing/run_pytype.py'
 
 
 def main() -> int:

@@ -70,7 +70,7 @@ class MockWebSocketChannelClient
       const Vector<base::span<const char>>& data) override {
     Vector<char> flatten;
     for (const auto& span : data) {
-      flatten.Append(span.data(), static_cast<wtf_size_t>(span.size()));
+      flatten.AppendSpan(span);
     }
     DidReceiveBinaryMessageMock(flatten);
   }

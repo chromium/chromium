@@ -2176,7 +2176,7 @@ std::string GetDocumentDataTypeTestSuffix(
     const testing::TestParamInfo<DocumentDataType>& info) {
   switch (info.param) {
     case DocumentDataType::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DocumentDataType::kPdf:
       return "Pdf";
     case DocumentDataType::kXps:

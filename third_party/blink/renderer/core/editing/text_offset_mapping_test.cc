@@ -458,7 +458,7 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\">"
-      "<button pseudo=\"select-fallback-button\" type=\"popover\">"
+      "<button pseudo=\"select-fallback-button\">"
       "<span pseudo=\"select-fallback-button-text\"></span>"
       "<div pseudo=\"select-fallback-button-icon\">"
       "<svg fill=\"none\" viewBox=\"0 0 20 16\"><path d=\"M4 6 L10 12 L 16 6\"></path></svg>"
@@ -470,13 +470,16 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "<slot id=\"select-datalist-options\"></slot>"
       "</datalist>"
       "</slot>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\">"
-      "<button pseudo=\"select-fallback-button\" type=\"popover\">"
+      "<button pseudo=\"select-fallback-button\">"
       "<span pseudo=\"select-fallback-button-text\"></span>"
       "<div pseudo=\"select-fallback-button-icon\">"
       "<svg fill=\"none\" viewBox=\"0 0 20 16\"><path d=\"M4 6 L10 12 L 16 6\"></path></svg>"
@@ -488,6 +491,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect1) {
       "<slot id=\"select-datalist-options\"></slot>"
       "</datalist>"
       "</slot>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));
@@ -502,7 +508,7 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "<div aria-hidden=\"true\"></div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\">"
-      "<button pseudo=\"select-fallback-button\" type=\"popover\">"
+      "<button pseudo=\"select-fallback-button\">"
       "<span pseudo=\"select-fallback-button-text\"></span>"
       "<div pseudo=\"select-fallback-button-icon\">"
       "<svg fill=\"none\" viewBox=\"0 0 20 16\"><path d=\"M4 6 L10 12 L 16 6\"></path></svg>"
@@ -514,13 +520,16 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "<slot id=\"select-datalist-options\"></slot>"
       "</datalist>"
       "</slot>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo|";
   const auto& expected_inner =
       "<select>"
       "<div aria-hidden=\"true\">^|</div>"
       "<slot id=\"select-options\"></slot>"
       "<slot id=\"select-button\">"
-      "<button pseudo=\"select-fallback-button\" type=\"popover\">"
+      "<button pseudo=\"select-fallback-button\">"
       "<span pseudo=\"select-fallback-button-text\"></span>"
       "<div pseudo=\"select-fallback-button-icon\">"
       "<svg fill=\"none\" viewBox=\"0 0 20 16\"><path d=\"M4 6 L10 12 L 16 6\"></path></svg>"
@@ -532,6 +541,9 @@ TEST_F(TextOffsetMappingTest, RangeWithSelect2) {
       "<slot id=\"select-datalist-options\"></slot>"
       "</datalist>"
       "</slot>"
+      "<div popover=\"manual\" pseudo=\"-internal-select-autofill-preview\">"
+      "<div pseudo=\"-internal-select-autofill-preview-text\"></div>"
+      "</div>"
       "</select>foo";
   EXPECT_EQ(expected_outer, GetRange(PositionInFlatTree::BeforeNode(*select)));
   EXPECT_EQ(expected_inner, GetRange(PositionInFlatTree(select, 0)));

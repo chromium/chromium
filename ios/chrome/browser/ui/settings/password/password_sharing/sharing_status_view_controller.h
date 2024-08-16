@@ -32,8 +32,7 @@
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;
 
 // Detent that attempts to fit the preferred height of the content.
-- (UISheetPresentationControllerDetent*)
-    preferredHeightDetent API_AVAILABLE(ios(16));
+- (UISheetPresentationControllerDetent*)preferredHeightDetent;
 
 @end
 

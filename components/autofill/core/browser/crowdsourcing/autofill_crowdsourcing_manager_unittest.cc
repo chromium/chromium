@@ -51,6 +51,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
+#include "google_apis/common/api_key_request_test_util.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -89,8 +90,9 @@ constexpr int CACHE_HIT = 1;
 std::vector<raw_ptr<FormStructure, VectorExperimental>> ToRawPointerVector(
     const std::vector<std::unique_ptr<FormStructure>>& list) {
   std::vector<raw_ptr<FormStructure, VectorExperimental>> result;
-  for (const auto& item : list)
+  for (const auto& item : list) {
     result.push_back(item.get());
+  }
   return result;
 }
 
@@ -176,11 +178,11 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
     : public AutofillCrowdsourcingManager {
  public:
   AutofillCrowdsourcingManagerWithCustomPayloadSize(AutofillClient* client,
-                                               const std::string& api_key,
-                                               size_t length)
+                                                    const std::string& api_key,
+                                                    size_t length)
       : AutofillCrowdsourcingManager(client,
-                                api_key,
-                                /*log_manager=*/nullptr),
+                                     api_key,
+                                     /*log_manager=*/nullptr),
         length_(length) {}
   ~AutofillCrowdsourcingManagerWithCustomPayloadSize() override = default;
 
@@ -195,10 +197,10 @@ class AutofillCrowdsourcingManagerWithCustomPayloadSize
 
 }  // namespace
 
-// This tests AutofillCrowdsourcingManager. AutofillCrowdsourcingManagerTest implements
-// AutofillCrowdsourcingManager::Observer and creates an instance of
-// AutofillCrowdsourcingManager. Then it records responses to different initiated
-// requests, which are verified later. To mock network requests
+// This tests AutofillCrowdsourcingManager. AutofillCrowdsourcingManagerTest
+// implements AutofillCrowdsourcingManager::Observer and creates an instance of
+// AutofillCrowdsourcingManager. Then it records responses to different
+// initiated requests, which are verified later. To mock network requests
 // TestURLLoaderFactory is used, which creates SimpleURLLoaders that do not
 // go over the wire, but allow calling back HTTP responses directly.
 // The responses in test are out of order and verify: successful query request,
@@ -275,7 +277,8 @@ class AutofillCrowdsourcingManagerTest : public ::testing::Test {
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   std::list<ResponseData> responses_;
 
-  base::WeakPtrFactory<AutofillCrowdsourcingManagerTest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillCrowdsourcingManagerTest> weak_ptr_factory_{
+      this};
 };
 
 TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
@@ -317,7 +320,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
   // Validate if the API key is in the request headers.
   network::TestURLLoaderFactory::PendingRequest* request =
       url_loader_factory().GetPendingRequest(0);
-  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
+  EXPECT_EQ(google_apis::test_util::GetAPIKeyFromRequest(request->request),
+            "dummykey");
 
   // Request with id 1.
   std::vector<AutofillUploadContents> upload_contents_1 = EncodeUploadRequest(
@@ -499,7 +503,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
   }
 
   // Verify API key header.
-  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
+  EXPECT_EQ(google_apis::test_util::GetAPIKeyFromRequest(request->request),
+            "dummykey");
   // Verify binary response header.
   EXPECT_EQ(request->request.headers.GetHeader(
                 "X-Goog-Encode-Response-If-Executable"),
@@ -556,7 +561,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
       "https://content-autofill.googleapis.com/v1/pages:get?alt=proto"};
   // Verify API key header.
   EXPECT_EQ(request->request.url, expected_url);
-  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
+  EXPECT_EQ(google_apis::test_util::GetAPIKeyFromRequest(request->request),
+            "dummykey");
   // Verify Content-Type header.
   EXPECT_EQ(request->request.headers.GetHeader("Content-Type"),
             "application/x-protobuf");
@@ -639,7 +645,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, UploadToAPITest) {
   const std::string expected_url =
       "https://content-autofill.googleapis.com/v1/forms:vote?alt=proto";
   EXPECT_EQ(request->request.url, expected_url);
-  EXPECT_EQ(request->request.headers.GetHeader("X-Goog-Api-Key"), "dummykey");
+  EXPECT_EQ(google_apis::test_util::GetAPIKeyFromRequest(request->request),
+            "dummykey");
 
   // Assert some of the fields within the uploaded proto to make sure it was
   // filled with something else than default data.
@@ -1077,13 +1084,15 @@ class AutofillServerCommunicationTest
   }
 
   void TearDown() override {
-    if (server_.Started())
+    if (server_.Started()) {
       ASSERT_TRUE(server_.ShutdownAndWaitUntilComplete());
+    }
 
     auto* variations_ids_provider =
         variations::VariationsIdsProvider::GetInstance();
-    if (variations_ids_provider != nullptr)
+    if (variations_ids_provider != nullptr) {
       variations_ids_provider->ResetForTesting();
+    }
   }
 
   // AutofillCrowdsourcingManager::Observer implementation.
@@ -1097,8 +1106,9 @@ class AutofillServerCommunicationTest
   // Helper to extract the value passed to a lookup in the URL. Returns "*** not
   // found ***" if the the data cannot be decoded.
   std::string GetLookupContent(const std::string& query_path) {
-    if (query_path.find("/v1/pages/") == std::string::npos)
+    if (query_path.find("/v1/pages/") == std::string::npos) {
       return "*** not found ***";
+    }
     std::string payload = query_path.substr(strlen("/v1/pages/"));
     std::string decoded_payload;
     if (base::Base64UrlDecode(payload,
@@ -1158,8 +1168,9 @@ class AutofillServerCommunicationTest
         base::BindOnce(
             &AutofillServerCommunicationTest::OnLoadedServerPredictions,
             weak_ptr_factory_.GetWeakPtr()));
-    if (succeeded)
+    if (succeeded) {
       run_loop_->Run();
+    }
     run_loop_.reset();
     return succeeded;
   }
@@ -1181,8 +1192,9 @@ class AutofillServerCommunicationTest
     bool succeeded = crowdsourcing_manager.StartUploadRequest(
         std::move(upload_contents), form.submission_source(),
         is_password_manager_upload);
-    if (succeeded)
+    if (succeeded) {
       run_loop_->Run();
+    }
     run_loop_.reset();
     return succeeded;
   }

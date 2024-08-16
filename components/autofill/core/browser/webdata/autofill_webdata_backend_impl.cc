@@ -34,7 +34,7 @@
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_database_backend.h"
 
 namespace autofill {
@@ -133,7 +133,7 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<WebDatabaseBackend> web_database_backend,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-    const base::RepeatingCallback<void(syncer::ModelType)>&
+    const base::RepeatingCallback<void(syncer::DataType)>&
         on_autofill_changed_by_sync_callback)
     : base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>(
           std::move(db_task_runner)),
@@ -223,13 +223,13 @@ void AutofillWebDataBackendImpl::NotifyOfIbanChanged(const IbanChange& change) {
 }
 
 void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // UI sequence notification.
   ui_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(on_autofill_changed_by_sync_callback_, model_type));
+      base::BindOnce(on_autofill_changed_by_sync_callback_, data_type));
 }
 
 void AutofillWebDataBackendImpl::NotifyOnServerCvcChanged(
@@ -827,11 +827,10 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetAutofillOffers(
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<VirtualCardUsageData>> virtual_card_usage_data;
+  std::vector<VirtualCardUsageData> virtual_card_usage_data;
   PaymentsAutofillTable::FromWebDatabase(db)->GetAllVirtualCardUsageData(
-      &virtual_card_usage_data);
-  return std::make_unique<
-      WDResult<std::vector<std::unique_ptr<VirtualCardUsageData>>>>(
+      virtual_card_usage_data);
+  return std::make_unique<WDResult<std::vector<VirtualCardUsageData>>>(
       AUTOFILL_VIRTUAL_CARD_USAGE_DATA, std::move(virtual_card_usage_data));
 }
 

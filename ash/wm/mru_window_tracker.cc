@@ -77,7 +77,7 @@ bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
 
   // Exclude system modal because we only care about non systm modal windows.
   if (window->GetProperty(aura::client::kModalKey) ==
-      static_cast<int>(ui::MODAL_TYPE_SYSTEM)) {
+      ui::mojom::ModalType::kSystem) {
     return false;
   }
 

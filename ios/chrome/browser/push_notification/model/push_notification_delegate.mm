@@ -36,10 +36,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -281,7 +281,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   ChromeBrowserState* browserState =
       sceneState.browserProviderInterface.mainBrowserProvider.browser
           ->GetBrowserState();
-  if ([self isContentNotificationAvailable:browserState]) {
+  if (IsContentNotificationEnabled(browserState)) {
     ContentNotificationService* contentNotificationService =
         ContentNotificationServiceFactory::GetForBrowserState(browserState);
     int maxNauSentPerSession = base::GetFieldTrialParamByFeatureAsInt(

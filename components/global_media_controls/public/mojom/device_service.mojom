@@ -56,13 +56,17 @@ interface DeviceListHost {
 // 1-to-1 relationship with a DeviceListHost.
 // On Chrome OS, this is implemented by the Ash system UI.
 //
-// Next version: 1
-// Next method id: 1
+// Next version: 2
+// Next method id: 2
 [Stable, Uuid="ba4ece9a-0557-471a-a3bf-888b71bcde5f"]
 interface DeviceListClient {
   // Receives devices available for playback of the media session that this
   // object is associated with.
   OnDevicesUpdated@0(array<Device> devices);
+
+  // Receives permission rejected error. Mac only.
+  [MinVersion=1]
+  OnPermissionRejected@1();
 };
 
 // Provides access to DeviceListHosts.

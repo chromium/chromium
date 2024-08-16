@@ -137,6 +137,8 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry,
         country_codes::CountryIDToCountryString(kBelgiumCountryId));
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {

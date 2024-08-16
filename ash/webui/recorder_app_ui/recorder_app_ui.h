@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -44,7 +45,8 @@ class RecorderAppUI
     : public ui::MojoWebUIController,
       public recorder_app::mojom::PageHandler,
       public speech::SodaInstaller::Observer,
-      public on_device_model::mojom::PlatformModelProgressObserver {
+      public on_device_model::mojom::PlatformModelProgressObserver,
+      public message_center::MessageCenterObserver {
  public:
   using WithRealIdCallback =
       base::OnceCallback<void(const std::optional<std::string>&)>;
@@ -102,6 +104,11 @@ class RecorderAppUI
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       LoadModelCallback callback) override;
 
+  void FormatModelInput(const base::Uuid& model_id,
+                        on_device_model::mojom::FormatFeature feature,
+                        const base::flat_map<std::string, std::string>& fields,
+                        FormatModelInputCallback callback) override;
+
   void AddModelMonitor(
       const base::Uuid& model_id,
       ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
@@ -122,6 +129,12 @@ class RecorderAppUI
   void GetMicrophoneInfo(const std::string& source_id,
                          GetMicrophoneInfoCallback callback) override;
 
+  void AddQuietModeMonitor(
+      ::mojo::PendingRemote<recorder_app::mojom::QuietModeMonitor> monitor,
+      AddQuietModeMonitorCallback callback) override;
+
+  void SetQuietMode(bool quiet_mode) override;
+
   // speech::SodaInstaller::Observer
   void OnSodaInstalled(speech::LanguageCode language_code) override;
 
@@ -133,6 +146,9 @@ class RecorderAppUI
 
   // on_device_model::mojom::PlatformModelProgressObserver:
   void Progress(double progress) override;
+
+  // message_center::MessageCenterObserver
+  void OnQuietModeChanged(bool in_quiet_mode) override;
 
   mojo::Remote<MachineLearningService> ml_service_;
 
@@ -154,6 +170,10 @@ class RecorderAppUI
   base::flat_map<base::Uuid, ModelState> model_states_;
 
   mojo::Remote<OnDeviceModelService> on_device_model_service_;
+
+  mojo::RemoteSet<recorder_app::mojom::QuietModeMonitor> quiet_mode_monitors_;
+
+  bool in_quiet_mode_;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 

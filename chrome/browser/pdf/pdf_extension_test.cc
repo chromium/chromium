@@ -2948,6 +2948,29 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, DISABLED_TabInAndOutOfPDFPlugin) {
   EXPECT_EQ("\"zoom-out-button\"", press_tab_and_wait_for_message(true));
 }
 
+// Test that a PDF with COEP: require-corp header can load successfully.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       CrossOriginEmbedderPolicyRequireCorpPdf) {
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-coep.pdf")));
+}
+
+// Test that a PDF without the COEP: require-corp header fails to load when
+// embedded in a page that has the header.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       CrossOriginEmbedderPolicyRequireCorpIframe) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test-coep-iframe.html")));
+
+  // The PDF failed to load if there aren't any PDF extension hosts or PDF
+  // plugin frames.
+  WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(
+      pdf_extension_test_util::GetPdfExtensionHosts(web_contents).empty());
+  EXPECT_TRUE(
+      pdf_extension_test_util::GetPdfPluginFrames(web_contents).empty());
+  EXPECT_EQ(0u, pdf_extension_test_util::CountPdfPluginProcesses(browser()));
+}
+
 class PDFExtensionPrerenderTest : public PDFExtensionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3835,17 +3858,55 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, DocumentBodyAppendIframe) {
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
 }
 
+// Loading a PDF in a subframe without a corresponding FrameNavigationEntry
+// should not cause a crash. See https://crbug.com/358084015 and
+// https://crbug.com/40467594.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, SubframePDFMissingFrameEntry) {
+  WebContents* contents = GetActiveWebContents();
+
+  // Navigate to a test page, and then navigate same-document.
+  const GURL main_url(embedded_test_server()->GetURL("/title1.html"));
+  const GURL same_doc_url(embedded_test_server()->GetURL("/title1.html#foo"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  content::TestNavigationObserver same_doc_observer(contents);
+  EXPECT_TRUE(content::ExecJs(contents, "location.href='#foo';"));
+  same_doc_observer.Wait();
+  EXPECT_EQ(same_doc_url, contents->GetLastCommittedURL());
+
+  // Append an iframe to the document.body.
+  content::TestNavigationObserver iframe_observer(contents);
+  EXPECT_TRUE(content::ExecJs(contents,
+                              "let iframe = document.createElement('iframe');"
+                              "iframe.src = 'title1.html';"
+                              "document.body.appendChild(iframe);"));
+  iframe_observer.Wait();
+
+  // Go back to the previous same-document entry. There will be no
+  // subframe FrameNavigationEntry even though the subframe continues to exist,
+  // due to https://crbug.com/40467594.
+  content::TestNavigationObserver back_observer(contents);
+  contents->GetController().GoBack();
+  back_observer.Wait();
+
+  // Loading a PDF in the subframe at this point should not crash.
+  content::TestNavigationObserver pdf_observer(contents);
+  EXPECT_TRUE(
+      content::ExecJs(contents, "frames[0].location.href='/pdf/test.pdf';"));
+  pdf_observer.Wait();
+  EXPECT_TRUE(EnsurePDFHasLoadedInFirstChildWithValidFrameTree(contents));
+}
+
 // Ensure that when the only other PDF instance closes in the middle of another
 // PDF's extension frame load, the PDF extension frame can still complete its
 // subsequent navigation. See https://crbug.com/1295431.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                        PdfExtensionLoadedWhileOldPdfCloses) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  auto* embedder_host1 = GetActiveWebContents()->GetPrimaryMainFrame();
 
   // Load a test PDF in the first tab.
   content::RenderFrameHost* extension_host1 = LoadPdfGetExtensionHost(main_url);
   ASSERT_TRUE(extension_host1);
+  auto* embedder_host1 = GetActiveWebContents()->GetPrimaryMainFrame();
   EXPECT_NE(embedder_host1, extension_host1);
 
   // Verify the extension loaded.
@@ -4035,7 +4096,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
                                PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
 
   auto* web_contents = GetActiveWebContents();
-  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   const GURL main_url(embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
 
   // Delay the PDF extension navigation.
@@ -4048,6 +4108,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, MetricsPDFLoadStatusPartialLoad) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), main_url, WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
   test_pdf_viewer_stream_manager->WaitUntilPdfExtensionNavigationStarted(
       primary_main_frame);
 

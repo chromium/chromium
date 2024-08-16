@@ -19,10 +19,11 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
@@ -691,13 +692,11 @@ void EventReportValidator::ValidateThreatInfo(
                 expected_threat_info.matched_url_navigation_rule()
                     .matched_url_category());
 
-  std::optional<bool> expect_watermarking;
   if (expected_threat_info.matched_url_navigation_rule()
           .has_watermark_message()) {
-    expect_watermarking = true;
+    ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
+                  std::optional<bool>(true));
   }
-  ValidateField(value, SafeBrowsingPrivateEventRouter::kKeyHasWatermarking,
-                expect_watermarking);
 }
 
 void EventReportValidator::ValidateFilenameMappedAttributes(
@@ -966,6 +965,13 @@ void ClearAnalysisConnector(PrefService* prefs, AnalysisConnector connector) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void SetProfileDMToken(Profile* profile, const std::string& dm_token) {
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->set_request_token(dm_token);
+  profile->GetCloudPolicyManager()
+      ->core()
+      ->store()
+      ->set_policy_data_for_testing(std::move(policy_data));
+
   auto client = std::make_unique<policy::MockCloudPolicyClient>();
   client->SetDMToken(dm_token);
 

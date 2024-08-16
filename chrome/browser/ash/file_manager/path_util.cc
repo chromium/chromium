@@ -59,6 +59,7 @@
 #include "extensions/common/extension.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
@@ -241,6 +242,17 @@ bool AppendRelativePath(const FilePath& parent,
                         const FilePath& child,
                         FilePath* path) {
   return child == parent || parent.AppendRelativePath(child, path);
+}
+
+// Same as parent.AppendRelativePath(child, path) except that the relative path
+// to the child is just set to `path` (instead of being appended).
+// Note that `path` is always cleared at the beginning, so it becomes empty when
+// parent.IsParent(child) does not hold.
+bool SetRelativePath(const FilePath& parent,
+                     const FilePath& child,
+                     FilePath* path) {
+  path->clear();
+  return parent.AppendRelativePath(child, path);
 }
 
 // Translates known DriveFS folders into their localized message id.
@@ -755,7 +767,7 @@ bool ConvertPathToArcUrl(const FilePath& path,
 
   // Convert paths under /media/removable.
   FilePath relative_path;
-  if (FilePath(kRemovableMediaPath).AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(FilePath(kRemovableMediaPath), path, &relative_path)) {
     const std::string volume_name =
         ExtractVolumeNameFromRelativePathForRemovableMedia(relative_path);
     if (volume_name.empty()) {
@@ -780,8 +792,8 @@ bool ConvertPathToArcUrl(const FilePath& path,
   }
 
   // Convert paths under MyFiles.
-  if (GetMyFilesFolderForProfile(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(GetMyFilesFolderForProfile(primary_profile), path,
+                      &relative_path)) {
     *arc_url_out = GURL(kArcMyFilesContentUrlPrefix)
                        .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
     return true;
@@ -792,8 +804,8 @@ bool ConvertPathToArcUrl(const FilePath& path,
   const DriveIntegrationService* integration_service =
       drive::util::GetIntegrationServiceByProfile(primary_profile);
   if (integration_service &&
-      integration_service->GetMountPointPath().AppendRelativePath(
-          path, &relative_path)) {
+      SetRelativePath(integration_service->GetMountPointPath(), path,
+                      &relative_path)) {
     // TODO(b/157297349) Remove this condition.
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
@@ -809,13 +821,12 @@ bool ConvertPathToArcUrl(const FilePath& path,
   }
 
   // Force external URL for Crostini.
-  if (GetCrostiniMountDirectory(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  if (GetCrostiniMountDirectory(primary_profile).IsParent(path)) {
     force_external = true;
   }
 
   // Convert path under /media/archive.
-  if (FilePath(kArchiveMountPath).AppendRelativePath(path, &relative_path)) {
+  if (SetRelativePath(FilePath(kArchiveMountPath), path, &relative_path)) {
     // TODO(b/157297349) Remove this condition.
     if (arc::IsArcVmEnabled()) {
       *arc_url_out =
@@ -833,7 +844,7 @@ bool ConvertPathToArcUrl(const FilePath& path,
           ash::smb_client::SmbServiceFactory::Get(primary_profile)) {
     if (const ash::smb_client::SmbFsShare* const share =
             service->GetSmbFsShareForPath(path)) {
-      if (share->mount_path().AppendRelativePath(path, &relative_path)) {
+      if (SetRelativePath(share->mount_path(), path, &relative_path)) {
         // TODO(b/157297349) Remove this condition.
         if (arc::IsArcVmEnabled()) {
           *arc_url_out =
@@ -849,10 +860,22 @@ bool ConvertPathToArcUrl(const FilePath& path,
     }
   }
 
+  // Convert path under /media/fuse/fusebox.
+  if (SetRelativePath(FilePath(kFuseBoxMediaPath), path, &relative_path)) {
+    if (arc::IsArcVmEnabled()) {
+      *arc_url_out =
+          GURL("content://org.chromium.arc.volumeprovider/fusebox/")
+              .Resolve(base::EscapePath(relative_path.AsUTF8Unsafe()));
+      *requires_sharing_out = true;
+      return true;
+    }
+    // Use ChromeContentProvider for ARC++ container.
+    force_external = true;
+  }
+
   // ShareCache files are not available as mount-passthrough and must be shared
   // through ChromeContentProvider.
-  if (GetShareCacheFilePath(primary_profile)
-          .AppendRelativePath(path, &relative_path)) {
+  if (GetShareCacheFilePath(primary_profile).IsParent(path)) {
     force_external = true;
   }
 
@@ -867,6 +890,18 @@ bool ConvertPathToArcUrl(const FilePath& path,
 
   // TODO(kinaba): Add conversion logic once other file systems are supported.
   return false;
+}
+
+base::FilePath ConvertFileSystemURLToPathForSharingWithArc(
+    const storage::FileSystemURL& file_system_url) {
+  switch (file_system_url.type()) {
+    // Use Fusebox path for FSP and MTP.
+    case storage::kFileSystemTypeProvided:
+    case storage::kFileSystemTypeDeviceMediaAsFileStorage:
+      return fusebox::Server::SubstituteFuseboxFilePath(file_system_url);
+    default:
+      return file_system_url.path();
+  }
 }
 
 void ConvertToContentUrls(
@@ -915,16 +950,18 @@ void ConvertToContentUrls(
       }
     }
 
-    GURL arc_url;
-    bool requires_sharing = false;
-    if (file_system_url.mount_type() == storage::kFileSystemTypeExternal &&
-        ConvertPathToArcUrl(file_system_url.path(), &arc_url,
-                            &requires_sharing)) {
-      if (requires_sharing) {
-        paths_to_share_ptr->push_back(file_system_url.path());
+    if (file_system_url.mount_type() == storage::kFileSystemTypeExternal) {
+      const base::FilePath path =
+          ConvertFileSystemURLToPathForSharingWithArc(file_system_url);
+      GURL arc_url;
+      bool requires_sharing = false;
+      if (ConvertPathToArcUrl(path, &arc_url, &requires_sharing)) {
+        if (requires_sharing) {
+          paths_to_share_ptr->push_back(path);
+        }
+        single_content_url_callback.Run(index, arc_url);
+        continue;
       }
-      single_content_url_callback.Run(index, arc_url);
-      continue;
     }
 
     single_content_url_callback.Run(index, GURL());

@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
@@ -131,7 +132,7 @@ PasswordReuseModalWarningDialog::PasswordReuseModalWarningDialog(
   show_check_passwords = password_type_.account_type() ==
                          ReusedPasswordAccountType::SAVED_PASSWORD;
 #endif
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowIcon(true);
   if (password_type.account_type() !=
           ReusedPasswordAccountType::SAVED_PASSWORD ||
@@ -280,7 +281,7 @@ void PasswordReuseModalWarningDialog::InvokeActionForTesting(
       Close();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

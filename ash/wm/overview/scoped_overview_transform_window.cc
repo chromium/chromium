@@ -206,8 +206,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
           if (window == window->parent()->children()[i])
             return i;
         }
-        NOTREACHED_IN_MIGRATION();
-        return 0u;
+        NOTREACHED();
       };
 
       if (get_z_order(window_) > get_z_order(snapped_window))

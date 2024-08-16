@@ -19,9 +19,9 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
@@ -140,8 +140,6 @@ void UndoSyncToSigninMigration(PrefService* pref_service) {
 #endif
 
   // Restore the "previously syncing user" prefs too.
-  pref_service->SetString(prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
-                          signed_in_gaia_id);
   pref_service->SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                           signed_in_gaia_id);
   pref_service->SetString(
@@ -181,7 +179,7 @@ const char* GetHistogramMigratingOrNotInfix(bool doing_migration) {
 
 SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
     const PrefService* pref_service,
-    syncer::ModelType type,
+    syncer::DataType type,
     const char* type_enabled_pref) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS-Ash, the "initial-setup-complete" pref doesn't exist.
@@ -254,9 +252,13 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::BOOKMARKS)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::BOOKMARKS)}),
       bookmarks_decision);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // On Android no password migration is required here, because other layers are
+  // responsible for migrating the user to the local+account model, e.g.
+  // SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
   const SyncToSigninMigrationDataTypeDecision passwords_decision =
       GetSyncToSigninMigrationDataTypeDecision(
           pref_service, syncer::PASSWORDS,
@@ -264,8 +266,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::PASSWORDS)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::PASSWORDS)}),
       passwords_decision);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   const SyncToSigninMigrationDataTypeDecision reading_list_decision =
       GetSyncToSigninMigrationDataTypeDecision(
@@ -274,7 +277,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   base::UmaHistogramEnumeration(
       base::StrCat({"Sync.SyncToSigninMigrationDecision.",
                     GetHistogramMigratingOrNotInfix(doing_migration),
-                    syncer::ModelTypeToHistogramSuffix(syncer::READING_LIST)}),
+                    syncer::DataTypeToHistogramSuffix(syncer::READING_LIST)}),
       reading_list_decision);
 
   if (decision != SyncToSigninMigrationDecision::kMigrate) {
@@ -305,7 +308,6 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
       prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn,
       pref_service->GetString(prefs::kGoogleServicesLastSyncingUsername));
   // Clear the "previously syncing user" prefs, to prevent accidental misuse.
-  pref_service->ClearPref(prefs::kGoogleServicesLastSyncingAccountIdDeprecated);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
   pref_service->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
   // Also clear the "InitialSyncFeatureSetup" pref. It's not needed
@@ -332,6 +334,10 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
 
   bool migration_successful = true;
 
+// On Android no password migration is required here, because other layers are
+// responsible for migrating the user to the local+account model, e.g.
+// SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
+#if !BUILDFLAG(IS_ANDROID)
   // Move passwords DB file, if password sync is enabled.
   if (passwords_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     base::FilePath from_path =
@@ -347,6 +353,7 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     migration_successful =
         migration_successful && (error == base::File::Error::FILE_OK);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Move bookmarks json file, if bookmark sync is enabled.
   if (bookmarks_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
@@ -364,9 +371,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         migration_successful && (error == base::File::Error::FILE_OK);
   }
 
-  // Reading list: Set migration pref. The ModelTypeStoreServiceImpl will read
-  // it, and instruct the ModelTypeStoreBackend to actually migrate the data.
-  // Note that ModelTypeStoreServiceImpl (a KeyedService) can't have been
+  // Reading list: Set migration pref. The DataTypeStoreServiceImpl will read
+  // it, and instruct the DataTypeStoreBackend to actually migrate the data.
+  // Note that DataTypeStoreServiceImpl (a KeyedService) can't have been
   // constructed yet, so no risk of race conditions.
   if (reading_list_decision ==
       SyncToSigninMigrationDataTypeDecision::kMigrate) {

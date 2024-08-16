@@ -34,11 +34,13 @@ HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     const GURL& request_url,
     std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
     const security_interstitials::https_only_mode::HttpInterstitialState&
-        interstitial_state)
+        interstitial_state,
+    bool use_new_interstitial)
     : SecurityInterstitialPage(web_contents,
                                request_url,
                                std::move(controller_client)),
-      interstitial_state_(interstitial_state) {
+      interstitial_state_(interstitial_state),
+      new_interstitial_enabled_(use_new_interstitial) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -111,9 +113,11 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
 
 void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
-  PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
+  PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data,
+                                            new_interstitial_enabled_);
   PopulateHttpsOnlyModeStringsForBlockingPage(load_time_data, request_url(),
-                                              interstitial_state_);
+                                              interstitial_state_,
+                                              new_interstitial_enabled_);
 }
 
 }  // namespace security_interstitials

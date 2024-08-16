@@ -109,6 +109,7 @@ const char kRegisterUVKeyPending[] = "uv_key_pending";
 const char kHardwareKey[] = "hw";
 const char kSoftwareKey[] = "sw";
 const char kUserVerificationKey[] = "uv";
+const char kSoftwareUserVerificationKey[] = "swuv";
 
 const char kWrappingPurpose[] = "purpose";
 const char kWrappingKeyToWrap[] = "key";

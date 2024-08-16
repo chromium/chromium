@@ -46,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubUtils.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
   ]
   deps = [
@@ -107,6 +108,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubTestRule.java",
   ]
   deps = [
     ":java",
@@ -234,6 +236,7 @@ source_set("unit_tests") {
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/safety_hub_magic_stack_icon_background.xml",
+    "java/res/drawable/safety_hub_notifications_icon.xml",
     "java/res/drawable/safety_hub_safety_tips_icon.xml",
     "java/res/layout/safety_hub_bottom_elements.xml",
     "java/res/layout/safety_hub_button_widget.xml",

@@ -10,6 +10,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
@@ -24,14 +27,80 @@
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ash/camera_presence_notifier.h"
-#include "chrome/browser/ash/privacy_hub/content_block_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::privacy_hub_util {
+
+namespace {
+
+class ContentBlockObservationImpl : public ContentBlockObservation,
+                                    public SessionObserver {
+ public:
+  // Access restricted constructor.
+  ContentBlockObservationImpl(SessionController* session_controller,
+                              SystemPermissionChangedCallback callback)
+      : callback_(std::move(callback)), session_observation_(this) {
+    session_observation_.Observe(session_controller);
+  }
+
+  ~ContentBlockObservationImpl() override = default;
+
+  // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override {
+    // Subscribing to pref changes.
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(pref_service);
+    pref_change_registrar_->Add(
+        prefs::kUserCameraAllowed,
+        base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kUserMicrophoneAllowed,
+        base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
+                            base::Unretained(this)));
+    pref_change_registrar_->Add(
+        prefs::kUserGeolocationAccessLevel,
+        base::BindRepeating(&ContentBlockObservationImpl::OnPreferenceChanged,
+                            base::Unretained(this)));
+  }
+  void OnChromeTerminating() override { session_observation_.Reset(); }
+
+ private:
+  // Handles changes in the user pref ( e.g. toggling the camera switch on
+  // Privacy Hub UI).
+  void OnPreferenceChanged(const std::string& pref_name) {
+    if (pref_name == prefs::kUserCameraAllowed) {
+      callback_.Run(
+          ContentType::MEDIASTREAM_CAMERA,
+          privacy_hub_util::ContentBlocked(ContentType::MEDIASTREAM_CAMERA));
+      return;
+    }
+    if (pref_name == prefs::kUserMicrophoneAllowed) {
+      callback_.Run(
+          ContentType::MEDIASTREAM_MIC,
+          privacy_hub_util::ContentBlocked(ContentType::MEDIASTREAM_MIC));
+      return;
+    }
+    if (pref_name == prefs::kUserGeolocationAccessLevel) {
+      callback_.Run(ContentType::GEOLOCATION,
+                    privacy_hub_util::ContentBlocked(ContentType::GEOLOCATION));
+      return;
+    }
+    NOTREACHED();
+  }
+
+  SystemPermissionChangedCallback callback_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  base::ScopedObservation<SessionController, ContentBlockObservationImpl>
+      session_observation_;
+  base::WeakPtrFactory<ContentBlockObservationImpl> weak_ptr_factory_{this};
+};
+}  // namespace
 
 void SetFrontend(PrivacyHubDelegate* ptr) {
   PrivacyHubController* const controller = PrivacyHubController::Get();
@@ -160,7 +229,7 @@ void SetAppAccessNotifier(AppAccessNotifier* app_access_notifier) {
         case Sensor::kLocation:
           break;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
 
    private:
@@ -221,9 +290,27 @@ bool ContentBlocked(ContentType type) {
   }
 }
 
-std::unique_ptr<base::CheckedObserver> CreateObservationForBlockedContent(
-    ContentBlockCallback callback) {
-  return ContentBlockObservation::Create(std::move(callback));
+std::unique_ptr<ContentBlockObservation> CreateObservationForBlockedContent(
+    SystemPermissionChangedCallback callback) {
+  if (!ash::Shell::HasInstance()) {
+    return nullptr;
+  }
+  auto* shell = ash::Shell::Get();
+  CHECK(shell);
+  auto* session_controller = shell->session_controller();
+  if (!session_controller) {
+    return nullptr;
+  }
+  PrefService* pref_service =
+      session_controller->GetLastActiveUserPrefService();
+  if (!pref_service) {
+    return nullptr;
+  }
+
+  auto observation = std::make_unique<ContentBlockObservationImpl>(
+      session_controller, std::move(callback));
+  observation->OnActiveUserPrefServiceChanged(pref_service);
+  return observation;
 }
 
 void OpenSystemSettings(Profile* profile, ContentType type) {
@@ -235,7 +322,7 @@ void OpenSystemSettings(Profile* profile, ContentType type) {
     }
     case ContentType::MEDIASTREAM_MIC: {
       settings_path =
-          chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath;
+          chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath;
       break;
     }
     case ContentType::GEOLOCATION: {

@@ -115,9 +115,10 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
 bool SizesAttributeParser::MediaConditionMatches(
     const MediaQuerySet& media_condition) {
   // A Media Condition cannot have a media type other then screen.
-  MediaQueryEvaluator media_query_evaluator(media_values_);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values_);
 
-  return media_query_evaluator.Eval(media_condition);
+  return media_query_evaluator->Eval(media_condition);
 }
 
 float SizesAttributeParser::Size() {

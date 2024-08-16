@@ -5,7 +5,7 @@
 #include "components/sync/model/syncable_service.h"
 
 namespace syncer {
-void SyncableService::OnBrowserShutdown(ModelType type) {
+void SyncableService::OnBrowserShutdown(DataType type) {
   // Stop the syncable service to make sure instances of LocalChangeProcessor
   // are not continued to be used.
   // TODO(crbug.com/40883731): This is a temporary workaround.

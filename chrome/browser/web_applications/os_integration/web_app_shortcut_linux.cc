@@ -812,14 +812,16 @@ std::vector<base::FilePath> GetShortcutLocations(
 
 namespace internals {
 
-bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
+void CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason /*creation_reason*/,
-                             const ShortcutInfo& shortcut_info) {
+                             const ShortcutInfo& shortcut_info,
+                             CreateShortcutsCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return CreateDesktopShortcut(env.get(), shortcut_info, creation_locations);
+  std::move(callback).Run(
+      CreateDesktopShortcut(env.get(), shortcut_info, creation_locations));
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
@@ -841,16 +843,18 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                                     shortcut_info.app_id)));
 }
 
-Result UpdatePlatformShortcuts(
+void UpdatePlatformShortcuts(
     const base::FilePath& /*web_app_path*/,
     const std::u16string& /*old_app_title*/,
     std::optional<ShortcutLocations> user_specified_locations,
+    ResultCallback callback,
     const ShortcutInfo& shortcut_info) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return (
-      UpdateDesktopShortcuts(env.get(), shortcut_info, user_specified_locations)
-          ? Result::kOk
-          : Result::kError);
+  Result result = (UpdateDesktopShortcuts(env.get(), shortcut_info,
+                                          user_specified_locations)
+                       ? Result::kOk
+                       : Result::kError);
+  std::move(callback).Run(result);
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

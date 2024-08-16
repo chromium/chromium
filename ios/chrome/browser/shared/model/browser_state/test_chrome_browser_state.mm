@@ -106,7 +106,7 @@ TestChromeBrowserState::TestChromeBrowserState(
 
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
-    const std::string& browser_state_name,
+    std::string_view browser_state_name,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector,

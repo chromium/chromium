@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 namespace syncer {
@@ -29,14 +29,14 @@ enum class PageImageServiceConsentStatus;
 class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
  public:
   ImageServiceConsentHelper(syncer::SyncService* sync_service,
-                            syncer::ModelType model_type);
+                            syncer::DataType data_type);
   ~ImageServiceConsentHelper() override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync_service) override;
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
-  // If Sync downloads for `model_type_` have already been initialized, this
+  // If Sync downloads for `data_type_` have already been initialized, this
   // method calls `callback` synchronously with the result. If not, it will hold
   // the request up until the timeout for the consent helper to initialize.
   void EnqueueRequest(
@@ -45,7 +45,7 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
 
  private:
   // Returns whether it is appropriate to fetch images for synced entities of
-  // `model_type_`. Will return nullopt if Sync Service is not ready yet.
+  // `data_type_`. Will return nullopt if Sync Service is not ready yet.
   std::optional<bool> GetConsentStatus();
 
   // Run periodically to sweep away old queued requests.
@@ -54,8 +54,8 @@ class ImageServiceConsentHelper : public syncer::SyncServiceObserver {
   // The sync service `this` is observing.
   raw_ptr<syncer::SyncService> sync_service_;
 
-  // The model type `this` pertains to.
-  const syncer::ModelType model_type_;
+  // The data type `this` pertains to.
+  const syncer::DataType data_type_;
 
   // Timer used to periodically process unanswered enqueued requests, and
   // respond to them in the negative.

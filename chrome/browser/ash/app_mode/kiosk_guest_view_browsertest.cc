@@ -9,27 +9,28 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/guest_view/browser/guest_view.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 
 namespace {
 
 void NotifyKioskGuestAdded(content::WebContents* guest_web_contents) {
-  KioskSystemSession* system_session =
-      KioskController::Get().GetKioskSystemSession();
-  ASSERT_NE(system_session, nullptr);
-  system_session->OnGuestAdded(guest_web_contents);
+  KioskController::Get().OnGuestAdded(guest_web_contents);
 }
 
 Profile& GetProfile() {

@@ -241,6 +241,9 @@ void FileSystemChooser::CreateAndShow(
     return;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  listener->dialog_->SetOpenWritable(true);
+#endif
   listener->dialog_->SelectFile(
       options.type(), options.title(), options.default_path(),
       &options.file_type_info(), options.default_file_type_index(),

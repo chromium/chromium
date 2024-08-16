@@ -85,7 +85,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Ist die Richtlinie deaktiviert, kann die Synchronisierung von SMS nicht eingerichtet werden.
 
       Ist sie nicht konfiguriert, gilt die Standardeinstellung, in der diese Funktion zwar für verwaltete Nutzer nicht zulässig ist, für andere Nutzer jedoch schon.</translation>
-<translation id="1035860095382451169">Schloss-Symbol in der Omnibox für sichere Verbindungen aktivieren</translation>
+<translation id="1035860095382451169">Schloss-Symbol in der Omnibox für verschlüsselte Verbindungen aktivieren</translation>
 <translation id="1037426296070139784">TLS-Zertifikate, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung als nicht vertrauenswürdig eingestuft werden sollen</translation>
 <translation id="1037470927044831850">Zulassen, dass Nutzer auf Websites aufgefordert werden, einen Videostream ihres Bildschirms freizugeben</translation>
 <translation id="1038049732032297658">Dadurch wird die Autokorrektur bei Nutzung der physischen Tastatur aktiviert oder deaktiviert.
@@ -175,7 +175,7 @@ Wenn sie nicht konfiguriert ist, sind keine Ausnahmen zu „<ph name="DEVICE_AUT
 <translation id="1096105751829466145">Standardsuchmaschine</translation>
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
 <translation id="1100840127293327071">Option zum standardmäßigen Beibehalten bestehender Browserdaten nicht aktivieren</translation>
-<translation id="1105572260329131950">Standardsymbole für sichere Verbindungen verwenden</translation>
+<translation id="1105572260329131950">Standardsymbole für verschlüsselte Verbindungen verwenden</translation>
 <translation id="1105711894873068933">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, werden beim nächsten Log-in alle Nutzerdaten entfernt.</translation>
 <translation id="1107538157073168076">Erweiterung „Insights“ deaktivieren</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche deaktivieren.</translation>
@@ -433,6 +433,15 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn „Erzwungen“ (2) ausgewählt ist, kann der Profil-Picker nicht durch den Nutzer unterdrückt werden. Der Profil-Picker wird auch dann angezeigt, wenn nur ein Profil verfügbar ist.</translation>
 <translation id="1339174690935954950">Verhindern, dass Nutzer Feedback geben</translation>
 <translation id="1340053691042184658">Browseranmeldungen durch Gäste verhindern</translation>
+<translation id="134154550994512097">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer verschlüsselte Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
+      Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
+      Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
+      Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus im strikten Modus aktiviert und Nutzer können ihn nicht deaktivieren.
+      Ist diese Einstellung auf „force_balanced_enabled“ gesetzt, wird der Nur-HTTPS-Modus im ausgewogenen Modus aktiviert und Nutzer können ihn nicht deaktivieren.
+      Die Option „force_enabled“ wird ab M112 unterstützt, „force_balanced_enabled“ ab M129.
+      Wird die Richtlinie auf einen Wert festgelegt, der von der Chrome-Version, die diese Richtlinie erhält, nicht unterstützt wird, wird in Chrome standardmäßig die Einstellung auf „Erlaubt“ gesetzt.
+
+Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="1342918903685430097">Konfiguriere die für das Gerät erforderliche Mindestversion von <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1343128241903870688">Melden der App-Informationen auf Geräten deaktivieren</translation>
 <translation id="1347198119056266798">Diese Richtlinie wurde eingestellt. Verwende statt ihrer "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />" und "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />". Diese Richtlinie wird ignoriert, wenn entweder die Richtlinie "<ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />", "<ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />" oder die veraltete Richtlinie "<ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />" konfiguriert ist.
@@ -465,7 +474,6 @@ Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit 
 <translation id="1369698103169067223">Glanceables sind für Nutzer nicht aktiviert.</translation>
 <translation id="1371626834351873151">Die Verringerung des User-Agents ist für alle Ursprünge aktiviert.</translation>
 <translation id="1371851989348083665">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web zulassen</translation>
-<translation id="1372511977715560169">Aktivierung der Funktion <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> steuern</translation>
 <translation id="1372618949173323717">JavaScript deaktivieren</translation>
 <translation id="1376119291123231789">Intelligenten Akkulademodus aktivieren</translation>
 <translation id="1376299650477150211">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
@@ -1460,13 +1468,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Definition über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Definition über „Schnellinfo“ deaktiviert.</translation>
-<translation id="2095778449451007308">Mit dieser Richtlinie wird festgelegt, ob Nutzer den Nur-HTTPS-Modus („Immer sichere Verbindungen verwenden“) in den Einstellungen aktivieren können. Über den Nur-HTTPS-Modus werden alle Aufrufe von Websites auf HTTPS umgestellt.
-      Wenn diese Einstellung nicht konfiguriert oder auf „Zugelassen“ festgelegt ist, dürfen Nutzer den Nur-HTTPS-Modus aktivieren.
-      Ist sie auf „Nicht zugelassen“ festgelegt, dürfen Nutzer den Nur-HTTPS-Modus nicht aktivieren.
-      Wenn diese Einstellung auf „force_enabled“ gesetzt ist, wird der Nur-HTTPS-Modus aktiviert und Nutzer können ihn nicht deaktivieren.
-      Die erzwungene Aktivierung des Nur-HTTPS-Modus wird ab M112 unterstützt.
-
-Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verwendet werden, um bestimmte Hostnamen oder Hostnamenmuster von der Aktualisierung auf HTTPS durch diese Funktion auszuschließen.</translation>
 <translation id="209586405398070749">Stabiler Kanal</translation>
 <translation id="2096932573113293941">Nutzer um Erlaubnis zum Ausführen von Plug-ins bitten, die eine Autorisierung erfordern</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
@@ -1512,7 +1513,6 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" nicht konfiguriert, wird kein Symbol für den Suchanbieter angezeigt.</translation>
 <translation id="2136073175041447267">Cloud-Treiber (Google Drive, Microsoft OneDrive) in <ph name="PRODUCT_OS_NAME" /> konfigurieren.</translation>
-<translation id="2140379319368541863">„GenAI Wallpaper“ nicht zulassen</translation>
 <translation id="2144236546337326489">Aktivieren der Aufgabenfortsetzung für den Phone Hub zulassen</translation>
 <translation id="2145735238144543545">Erforderliche Clientzertifikate</translation>
 <translation id="2146103669166779785">Der Hex-Farbcode wird verwendet, um ein Design für den Browser zu erstellen und anzuwenden.</translation>
@@ -1796,7 +1796,6 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_CLIPBOARD_SETTING" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
-<translation id="2297432074108752232">„GenAI VC Background“ ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="2299220924812062390">Liste der aktivierten Plug-ins angeben</translation>
 <translation id="2299815818824242485">Keine weitergeleiteten Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2303795211377219696">Autofill für Kreditkartendaten zulassen</translation>
@@ -1907,6 +1906,7 @@ Der Nutzer kann ein Google Fotos-Bild als Hintergrund auswählen, wenn diese Ric
       Wenn du "<ph name="VARIATIONS_DISABLED_OPTION_NAME" />" festlegst (Wert: 2), werden keine Variationen auf den Browser angewendet. Dieser Modus kann die <ph name="PRODUCT_NAME" />-Entwickler möglicherweise daran hindern, wichtige Sicherheitskorrekturen zeitnah durchzuführen. Er wird daher nicht empfohlen.</translation>
 <translation id="2402537890732357732">Verwaltungslabel immer anzeigen</translation>
 <translation id="2402547085566757554">„Neuer Tab“-Seite nicht als Startseite verwenden</translation>
+<translation id="2405765347317553213">Einstellungen für „Tab Compare“</translation>
 <translation id="240713331529749993">Wenn die Richtlinie konfiguriert ist, wird unter Android für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Jeder Prozess darf nur Dokumente aus diesem Ursprung und den zugehörigen Subdomains enthalten. Wird zum Beispiel https://a1.beispiel.de/ angegeben, ist https://a2.a1.beispiel.de/ im selben Prozess zulässig, https://beispiel.de oder https://b.beispiel.de aber nicht. Ab <ph name="PRODUCT_NAME" />-Version 77 werden unter Android bestimmte sensible Websites standardmäßig isoliert. Diese Richtlinie weitet diesen Modus auf die Isolierung zusätzlicher Ursprünge aus.
 
       Seit <ph name="PRODUCT_NAME" />-Version 77 kann auch ein Ursprungsbereich für die Isolierung angegeben werden. Dazu wird ein Platzhalter verwendet. Wenn du z. B. https://[*.]firma.beispiel.de angibst, wird für jeden Ursprung unter https://firma.beispiel.de ein eigener Prozess ausgeführt, einschließlich https://firma.beispiel.de selbst, https://a1.firma.beispiel.de und https://a2.a1.firma.beispiel.de.
@@ -2026,7 +2026,6 @@ Ist die Richtlinie nicht konfiguriert, ist „<ph name="POLICY_VALUE_VISIBLE" />
 <translation id="2492240920793040106">Berichte zu Systeminformationen und Seiteninhalten aktivieren, um Safe Browsing zu verbessern</translation>
 <translation id="2496180316473517155">Browserverlauf</translation>
 <translation id="2497751676088107779">Nutzerskript</translation>
-<translation id="2497965601277442929">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="249798396824949930"> Über diese Richtlinie wird geregelt, ob der Browser den obligatorischen Anwendungsbereich von Richtlinien unter <ph name="MAC_OS_NAME" /> erkennen kann.
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird der Anwendungsbereich jeder Richtlinie vom Anwendungsbereich des jeweiligen verwalteten <ph name="MAC_OS_NAME" />-Profils bestimmt.
@@ -2600,6 +2599,9 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 <translation id="2973972555495515337">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die <ph name="DESK_API_NAME" /> verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu speichern und freizugeben. Ist die Richtlinie deaktiviert, können Nutzer keine Desktopdaten über die <ph name="DESK_API_NAME" /> speichern und freigeben. Ist die Richtlinie nicht konfiguriert, entspricht das Verhalten der Einstellung „Deaktiviert“. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="2976033779241323433">Touch-Bildschirmtastatur basierend auf der standardmäßigen Systemheuristik aktivieren</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
+<translation id="2977576137210520963">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
 <translation id="2987155890997901449">ARC aktivieren</translation>
@@ -2658,7 +2660,6 @@ Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden En
 
       Wenn diese Richtlinie in <ph name="PRODUCT_NAME" /> (Version 81 oder neuer) nicht konfiguriert ist, wird die passive Authentifizierung nur für reguläre Sitzungen aktiviert.</translation>
 <translation id="3021562480854470924">Rollback bei erreichter Anzahl von Meilensteinen ist erlaubt</translation>
-<translation id="3023172689742785487">Aktivierung des Nur-HTTPS-Modus erzwingen</translation>
 <translation id="3023572080620427845">URL einer XML-Datei, die URLs enthält, mit denen ein alternativer Browser geladen werden kann.</translation>
 <translation id="302528139996622624">Bildeinstellungen</translation>
 <translation id="3026740867910702435">Mit dieser Richtlinie kann die Bedienungshilfe "großer Cursor" auf der Anmeldeseite aktiviert werden.
@@ -2778,7 +2779,6 @@ Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
       Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
-<translation id="3111315283985318774">Aktivierung der Funktion <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> steuern</translation>
 <translation id="3112501357749061018">Eine Liste von TLS-Zertifikaten, die von <ph name="PRODUCT_NAME" /> für die Serverauthentifizierung mit außerhalb des Zertifikats hinzugefügten Einschränkungen als vertrauenswürdig eingestuft werden sollen. Wenn keine Einschränkung eines bestimmten Typs vorhanden ist, ist jeder Name dieses Typs zulässig.
 Zertifikate müssen mit Base64 codiert sein. Für jedes Zertifikat muss mindestens eine Einschränkung angegeben werden.</translation>
 <translation id="3118552207903834734">Nutzer erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
@@ -3492,6 +3492,17 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="3660562134618097814">SAML-IdP-Cookies bei der Anmeldung übertragen</translation>
 <translation id="3662660961914441274">Lokales Speichern von Nutzerdateien deaktivieren</translation>
 <translation id="3665437376055221832">Nutzer nur dann auffordern, wenn kein Zertifikat zur automatischen Auswahl passt.</translation>
+<translation id="3667467644216039144">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
+
+Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
+
+Die folgenden Datentypen sind verfügbar: Browserverlauf (<ph name="DATA_TYPE_BROWSING_HISTORY" />), Downloadverlauf (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), Cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), Cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), die Funktion „Autofill“ (<ph name="DATA_TYPE_AUTOFILL" />), Passwörter (<ph name="DATA_TYPE_PASSWORD" />), Website-Einstellungen (<ph name="DATA_TYPE_SITE_SETTINGS" />) und Daten von gehosteten Apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Diese Richtlinie hat keinen Vorrang vor <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Bis Chrome 114 musste die Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ auf „True“ gesetzt werden. Ab Chrome 115 wird mit dieser Richtlinie die Synchronisierung für die jeweiligen Datentypen deaktiviert, wenn weder „<ph name="CHROME_SYNC_NAME" />“ durch Festlegen der Richtlinie „<ph name="SYNC_DISABLED_POLICY_NAME" />“ noch „<ph name="BROWSER_SIGNIN_POLICY_NAME" />“ deaktiviert ist.
+
+Wenn die Datenlöschung gestartet, aber aus irgendeinem Grund nicht abgeschlossen wurde, werden die Browserdaten beim nächsten Laden des Profils gelöscht.
+
+Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim Absturz des Browsers oder Betriebssystems, werden die Browserdaten nicht gelöscht, da der Browser nicht durch den Nutzer geschlossen wurde.</translation>
 <translation id="3671773704245936868">„Objekt mit Tastaturfokus hervorheben“ deaktivieren</translation>
 <translation id="3674010627788940405">CORS-Anfrageheader ohne Platzhalter nicht unterstützen.</translation>
 <translation id="3675303748198647471">„setTimeout(…, 0)“ wird häufig verwendet, um lange JavaScript-Aufgaben aufzuteilen.
@@ -3522,7 +3533,6 @@ Verbindungen, die diese Prüfung nicht bestehen, schlagen mit dem Fehler ERR_SSL
 <translation id="3695204334462456702">Zeroconf-basierte (mDNS + DNS-SD) Protokollziele (veraltet)</translation>
 <translation id="3695706037816556327">Aktion bei der Entfernung von Sicherheitstoken (z. B. Smartcard) für <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="3696134803170884851">Ladetöne deaktivieren</translation>
-<translation id="3699322543136447790">„GenAI Wallpaper“ ohne Verbesserung von KI‑Modellen zulassen</translation>
 <translation id="3699986274986041335">Immer fragen, wenn eine Website die Berechtigung für lokale Schriftarten haben möchte</translation>
 <translation id="3700193037252896716">Häufigkeit, mit der Neustarts wiederholt werden sollen.</translation>
 <translation id="3700318587977845664">Häufigkeit der Updateprüfungen.</translation>
@@ -4020,27 +4030,6 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
 <translation id="4101826711886952606">In den Einstellungen von „Position 1“ und „Ende“ wird die Tastenkombination verwendet, die den Suchmodifikator enthält</translation>
 <translation id="4102347680024644994">Ereignisse vom Typ „Extended Detection and Response“ (XDR) melden</translation>
-<translation id="4104303092334469130">Konfiguriert eine Liste von Datenkontrollregeln zur Vermeidung von Datenlecks.
-
-      Jede Regel besteht aus den folgenden Elementen:
-      – Bedingungsfeldern zum Auslösen der Regel. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern in den Feldern „<ph name="DATA_CONTROLS_SOURCES" />“, „<ph name="DATA_CONTROLS_DESTINATIONS" />“, „<ph name="DATA_CONTROLS_AND" />“, „<ph name="DATA_CONTROLS_OR" />“ und „<ph name="DATA_CONTROLS_NOT" />“ übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
-      – Einer Liste der anzuwendenden Einschränkungen. Je nach Einschränkung sind möglicherweise nur „<ph name="DATA_CONTROLS_SOURCES" />“- oder „<ph name="DATA_CONTROLS_DESTINATIONS" />“-Bedingungen verfügbar.
-
-      Regeln können hinzugefügt werden, um Folgendes zu steuern:
-      – Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
-      – Das Blockieren von Screenshots basierend auf den Quelltabs.
-
-      Wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ auf „True“ gesetzt ist, werden die ausgelösten Regeln dem Administrator gemeldet.
-      Die Einschränkungsebene kann mit BLOCK, WARN oder REPORT festgelegt werden.
-      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
-      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen.
-      – Wenn die Einschränkungsebene auf REPORT gesetzt ist, wird die Nutzeraktion nicht unterbrochen, aber ein Bericht wird gesendet, wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ aktiviert ist.
-
-      Hinweise:
-      – Formatiere die URL-Muster gemäß diesem Format (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-      – Für Regeln zur Vermeidung von Datenlecks speziell für <ph name="PRODUCT_OS_NAME" /> kannst du dir auch die Richtlinie „<ph name="DATA_LEAK_PREVENTION_RULES_LIST" />“ ansehen.
-
-      Ist die Richtlinie nicht konfiguriert, werden keine Einschränkungen angewendet.</translation>
 <translation id="4105989332710272578">Erzwingung der Zertifikatstransparenz für eine Liste von URLs deaktivieren</translation>
 <translation id="410740968939768919">Mit dieser Richtlinie kann festgelegt werden, ob Manifest V2-Erweiterungen auf dem <ph name="PRODUCT_OS_NAME" />-Anmeldebildschirm verwendet werden können.
 
@@ -5583,6 +5572,15 @@ Verwaltete Konten können keiner Familiengruppe beitreten oder eine erstellen un
 <translation id="5331746669335642668">Cloud-Richtlinie von <ph name="PRODUCT_NAME" /> überschreibt Plattformrichtlinie.</translation>
 <translation id="5334404204520035180">Verwendung der WebPrinting API festlegen</translation>
 <translation id="5334501839642146593">Messwerte nie an Google senden</translation>
+<translation id="5334717773960843025">„Tab Compare“ ist ein KI‑basiertes Tool, mit dem Informationen auf Tabs verglichen werden können. Beispielsweise kann die Funktion dem Nutzer angeboten werden, wenn mehrere Tabs mit Produkten einer ähnlichen Kategorie geöffnet sind.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern.
+
+„0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.</translation>
 <translation id="5335910979215357815">Save and Share API für die <ph name="PRODUCT_OS_NAME" />-Steuerung durch Drittanbieter aktivieren.</translation>
 <translation id="5339096331970464266">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
@@ -5881,6 +5879,15 @@ Weitere Informationen findest du auch unter https://wiki.samba.org/index.php/Sam
 <translation id="5561811616825571914">Clientzertifikate für diese Websites automatisch auf dem Anmeldebildschirm auswählen</translation>
 <translation id="5561893881195372931">Hohen Kontrast deaktivieren</translation>
 <translation id="5563240289883266691">Nutzungsberichte für Linux-Apps aktivieren</translation>
+<translation id="5564424694465792000">Mit dieser Richtlinie wird gesteuert, wie sich Nutzer im Browser anmelden. Du kannst damit festlegen, ob sich der Nutzer über sein Konto in <ph name="PRODUCT_NAME" /> anmelden und Kontodienste wie die <ph name="PRODUCT_NAME" />-Synchronisierung verwenden kann.
+
+      Wenn die Richtlinie auf „Browseranmeldung deaktivieren“ gesetzt ist, kann der Nutzer sich nicht im Browser anmelden und keine Kontodienste nutzen. Funktionen auf Browserebene wie die <ph name="PRODUCT_NAME" />-Synchronisierung können dann nicht verwendet werden und sind auch nicht verfügbar. Unter <ph name="IOS_NAME" /> gilt: Falls ein Nutzer bereits angemeldet ist und die Richtlinie auf „Disabled“ gesetzt wird, wird er sofort abgemeldet. Bei anderen Plattformen wird der Nutzer automatisch abgemeldet, wenn er <ph name="PRODUCT_NAME" /> das nächste Mal verwendet. Bei allen Plattformen bleiben seine lokalen Profildaten wie z. B. Lesezeichen und Passwörter jedoch erhalten. Der Nutzer kann sich auch weiterhin in Google-Webdiensten wie Gmail anmelden und diese verwenden.
+
+      Wenn die Richtlinie auf „Browseranmeldung aktivieren“ gesetzt ist, kann sich der Nutzer im Browser anmelden. Bei allen Plattformen außer <ph name="IOS_NAME" /> wird der Nutzer automatisch im Browser angemeldet, wenn er in Google-Webdiensten wie Gmail angemeldet ist. Solange er im Browser angemeldet ist, werden seine Kontoinformationen dort gespeichert. Das bedeutet aber nicht, dass die <ph name="PRODUCT_NAME" />-Synchronisierung standardmäßig aktiviert wird. Der Nutzer muss diese Funktion separat aktivieren. Wird diese Richtlinie aktiviert, kann der Nutzer die Einstellung für die Browseranmeldung nicht mehr deaktivieren. Die Verfügbarkeit der <ph name="PRODUCT_NAME" />-Synchronisierung lässt sich mithilfe der Richtlinie „<ph name="SYNC_POLICY_NAME" />“ steuern.
+
+      Wenn die Richtlinie auf „Erzwingen, dass Nutzer sich im Browser anmelden müssen“ gesetzt ist, wird dem Nutzer ein Dialogfeld zur Kontoauswahl angezeigt. Er muss dann ein Konto auswählen und sich anmelden, um den Browser verwenden zu können. Dadurch wird bei verwalteten Konten sichergestellt, dass die entsprechenden Richtlinien erzwungen und angewendet werden. Der Standardwert für „<ph name="GUEST_MODE_POLICY_NAME" />“ wird auf „deaktiviert“ gesetzt. Nach dem Aktivieren dieser Richtlinie sind Profile ohne angemeldeten Nutzer gesperrt und nicht mehr zugänglich. Weitere Informationen findest du im Chrome-Hilfeartikel unter: https://support.google.com/chrome/a/answer/7572556. Diese Option wird unter <ph name="LINUX_OS_NAME" /> und <ph name="ANDROID_NAME" /> nicht unterstützt. Dort wird sie bei Verwendung auf „Browseranmeldung aktivieren“ festgelegt.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer selbst entscheiden, ob er die Option zur Browseranmeldung in den <ph name="PRODUCT_NAME" />-Einstellungen aktivieren und verwenden möchte.</translation>
 <translation id="5565178130821694365">Passworteingabe alle zwei Tage (48 Stunden) erforderlich</translation>
 <translation id="5566210228171064229">Drucken mit und ohne PIN zulassen</translation>
 <translation id="5569504149646180067">Mit dieser Richtlinie wird die automatische Nutzeranmeldung für Konten konfiguriert, die von einem Microsoft®-Cloudidentitätsanbieter bereitgestellt werden.
@@ -6230,7 +6237,6 @@ Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ 
 <translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>
 <translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
-<translation id="5853547031212075792">Nutzern erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="5859344336338527083">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, über welche URLs Erweiterungen, Apps und Designs installiert werden dürfen. Vor <ph name="PRODUCT_NAME" />-Version 21 konnten Nutzer auf den Link zu einer CRX-Datei klicken und die Datei nach einigen Hinweisen in <ph name="PRODUCT_NAME" /> installieren. In allen nachfolgenden Versionen müssen solche Dateien zuerst heruntergeladen und dann auf die Seite "Einstellungen" in <ph name="PRODUCT_NAME" /> gezogen werden. Anhand dieser Einstellung kann bei bestimmten URLs der alte, einfachere Installationsvorgang angewendet werden.
 
       Bei den Einträgen in dieser Liste handelt es sich um auf die Erweiterung angepasste Übereinstimmungsmuster (siehe https://developer.chrome.com/extensions/match_patterns). Wenn eine URL mit einem Eintrag in dieser Liste übereinstimmt, können Nutzer eine Datei ganz einfach über diese URL installieren. Sowohl der Speicherort der CRX-Datei als auch die Seite, über die der Download gestartet wird, also die Referrer-URL, müssen durch diese Muster zugelassen sein.
@@ -6484,15 +6490,6 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
       Wenn die Richtlinie nicht konfiguriert ist (sofern die Funktion vom Gerät unterstützt wird), wird der Standardakkulademodus verwendet und Nutzer können sie nicht ändern.
 
       Hinweis: Wenn der benutzerdefinierte Akkulademodus ausgewählt wird, müssen „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ und „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ konfiguriert sein.</translation>
-<translation id="60655674079349516">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
-
-Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
-
-Die folgenden Datentypen sind verfügbar: Browserverlauf (<ph name="DATA_TYPE_BROWSING_HISTORY" />), Downloadverlauf (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), Cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), Cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), die Funktion „Autofill“ (<ph name="DATA_TYPE_AUTOFILL" />), Passwörter (<ph name="DATA_TYPE_PASSWORD" />), Website-Einstellungen (<ph name="DATA_TYPE_SITE_SETTINGS" />) und Daten von gehosteten Apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Diese Richtlinie hat keinen Vorrang vor <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
-
-Bis Chrome 114 musste die Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „true“ gesetzt werden. Ab Chrome 115 wird mit dieser Richtlinie die Synchronisierung für die jeweiligen Datentypen deaktiviert, wenn weder „<ph name="CHROME_SYNC_NAME" />“ durch Festlegen der Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> noch <ph name="BROWSER_SIGNIN_POLICY_NAME" /> deaktiviert ist.
-
-Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim Absturz des Browsers oder Betriebssystems, werden die Browserdaten beim nächsten Laden des Profils gelöscht.</translation>
 <translation id="6066761914755798079">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />" die URL der Suchmaschine für Suchvorschläge an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Du kannst die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -6610,6 +6607,7 @@ Wenn die Richtlinie auf „<ph name="BR_UNDER_USER_CONTROL" />“ festgelegt ist
 
 Nach der Ersteinrichtung können Nutzer selbst entscheiden, ob sie „Sichern und wiederherstellen“ nutzen möchten.</translation>
 <translation id="6169768162756928771">GAIA-Einstellungen zur Verwaltung der Nutzeridentität</translation>
+<translation id="6170316094401732532">Einstellung für den Nur-HTTPS-Modus von Nutzern nicht einschränken</translation>
 <translation id="6172110090237528457">Mit dieser Richtlinie wird der Bildschirmschoner auf Geräteebene für den Anmeldebildschirm konfiguriert.
 
 Wenn diese Richtlinie auf „true“ gesetzt ist, wird bei Inaktivität auf dem <ph name="PRODUCT_OS_NAME" />-Gerät ein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
@@ -6740,6 +6738,27 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
       Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, dürfen Nutzer Chrome for Testing installieren und ausführen.
 
       Ist die Richtlinie deaktiviert, dürfen Nutzer Chrome for Testing nicht ausführen. Nutzer können Chrome for Testing dennoch installieren, aber diese Chrome-Version wird nicht mit den Profilen ausgeführt, für die diese Richtlinie deaktiviert ist.</translation>
+<translation id="6258646807927528870">Konfiguriert eine Liste von Datenkontrollregeln zur Vermeidung von Datenlecks.
+
+      Jede Regel besteht aus den folgenden Elementen:
+      – Bedingungsfeldern zum Auslösen der Regel. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern in den Feldern „<ph name="DATA_CONTROLS_SOURCES" />“, „<ph name="DATA_CONTROLS_DESTINATIONS" />“, „<ph name="DATA_CONTROLS_AND" />“, „<ph name="DATA_CONTROLS_OR" />“ und „<ph name="DATA_CONTROLS_NOT" />“ übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
+      – Einer Liste der anzuwendenden Einschränkungen. Je nach Einschränkung sind möglicherweise nur „<ph name="DATA_CONTROLS_SOURCES" />“- oder „<ph name="DATA_CONTROLS_DESTINATIONS" />“-Bedingungen verfügbar.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Das Blockieren von Screenshots basierend auf den Quelltabs.
+
+      Wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ auf „True“ gesetzt ist, werden die ausgelösten Regeln dem Administrator gemeldet.
+      Die Einschränkungsebene kann mit BLOCK, WARN oder REPORT festgelegt werden.
+      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
+      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen.
+      – Wenn die Einschränkungsebene auf REPORT gesetzt ist, wird die Nutzeraktion nicht unterbrochen, aber ein Bericht wird gesendet, wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ aktiviert ist.
+
+      Hinweise:
+      – Formatiere die URL-Muster gemäß diesem Format (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      – Für Regeln zur Vermeidung von Datenlecks speziell für <ph name="PRODUCT_OS_NAME" /> kannst du dir auch die Richtlinie „<ph name="DATA_LEAK_PREVENTION_RULES_LIST" />“ ansehen.
+
+      Ist die Richtlinie nicht konfiguriert, werden keine Einschränkungen angewendet.</translation>
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
 <translation id="6261643884958898336">Gerätebezogene Daten erfassen</translation>
 <translation id="6264247808139384018">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
@@ -7301,18 +7320,14 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 
           Diese Richtlinie ist nicht wirksam, wenn sie aktiviert, leer gelassen oder nicht konfiguriert wird.</translation>
 <translation id="6583249367505445969">Lesezeichenleiste deaktivieren</translation>
+<translation id="6583473893541367102">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
+
+      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="6584122839583172231">In den Einstellungen von F12 wird die Tastenkombination verwendet, die den Strg- und den Umschalttaste-Modifikator enthält</translation>
 <translation id="6584541828182430328">Anzeige von Vollbild-Warnung deaktivieren</translation>
 <translation id="658537215958747575">Geeigneten Ursprüngen erlauben, Direct Sockets zu verwenden</translation>
 <translation id="6588634282328239769">Vollständige URL anzeigen</translation>
 <translation id="6589049539706330510">Unterstützung aktivieren</translation>
-<translation id="6590906503707750118">Mit dieser Richtlinie wird <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> aktiviert oder deaktiviert.
-0 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> nicht zulassen.
-
-1 = <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> ohne Verbesserung von KI‑Modellen zulassen.
-
-Wenn die Richtlinie nicht konfiguriert ist, ist die Funktion <ph name="GEN_AI_WALLPAPER_FEATURE_NAME" /> für Unternehmens- und Education-Nutzer ohne Verbesserung von KI‑Modellen zulässig.
-In M127 wurde die Richtlinie für Unternehmensnutzer standardmäßig deaktiviert.</translation>
 <translation id="6593025196187527239">Wird die Richtlinie auf „True“ festgelegt oder keine Einstellung gewählt, können Nutzer ARC verwenden, es sei denn, die Funktion wurde an anderer Stelle deaktiviert. Wenn die Richtlinie auf „False“ festgelegt ist, können nicht verbundene Nutzer ARC nicht verwenden.
 
 Änderungen an der Richtlinie werden nur dann wirksam, wenn ARC nicht läuft, z. B. beim Start von ChromeOS.</translation>
@@ -7753,13 +7768,6 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, gilt das Standardve
 <translation id="6929746927224321095">Autofill deaktivieren</translation>
 <translation id="6931242315485576290">Synchronisierung der Daten mit Google deaktivieren</translation>
 <translation id="6932282102911647185">Tastaturbeleuchtungsfarbe „Lila“</translation>
-<translation id="6934127980901887540">Mit dieser Richtlinie wird die Funktion <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> in <ph name="PRODUCT_OS_NAME" /> aktiviert oder deaktiviert.
-0 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> nicht zulassen.
-
-1 = <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> ohne Verbesserung von KI‑Modellen zulassen.
-
-Wenn die Richtlinie nicht konfiguriert ist, ist die Funktion <ph name="GEN_AI_VC_BACKGROUND_FEATURE_NAME" /> für Unternehmens- und Education-Nutzer zulässig.
-In M127 wurde die Richtlinie für Unternehmensnutzer standardmäßig deaktiviert.</translation>
 <translation id="6938424179790370595">Wenn du die Richtlinie auf „None“ setzt, ist die Lupe deaktiviert.
 
 Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
@@ -8146,9 +8154,6 @@ Hinweis: Wenn du diese Richtlinie verwendest, um die Zeitzone automatisch zu erm
       Wenn eine Erweiterung nicht in der Liste enthalten ist oder keine Liste festgelegt wurde, schlägt der API-Aufruf fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="718956142899066210">Für Updates zugelassene Verbindungstypen</translation>
 <translation id="7190286937411178540">Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktivieren</translation>
-<translation id="7193489339723768342">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Audioaufnahmegeräte gewährt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="719398790886719721">Root-Zugriff auf virtuelle Maschinen mit Linux deaktivieren</translation>
 <translation id="7194407337890404814">Name der Standardsuchmaschine</translation>
 <translation id="7196336906814426783">Diese Richtlinie legt eine Reihe von wöchentlichen Intervallen zur Planung des automatischen Ruhemodus fest. Zu Beginn eines Intervalls wechselt das <ph name="PRODUCT_OS_NAME" />-Gerät in den Ruhemodus und wird wieder aktiv, wenn das Intervall endet.
@@ -8171,7 +8176,7 @@ Wichtiger Hinweis: Die durch diese Richtlinie festgelegten Zeitpläne werden mö
 <translation id="7216442368414164495">Ermöglicht Nutzern die Aktivierung erweiterter Berichterstellung bei Verwendung von Safe Browsing</translation>
 <translation id="7218238054592349618">JavaScript-Optimierung auf diesen Websites zulassen</translation>
 <translation id="721970071627370558">Melden des Energiestatus auf Geräten deaktivieren</translation>
-<translation id="7221574724100909818">Schloss-Symbol für sichere Verbindungen verwenden</translation>
+<translation id="7221574724100909818">Schloss-Symbol für verschlüsselte Verbindungen verwenden</translation>
 <translation id="7227348936232766462">Nutzer dürfen Low-Level-Debug-Daten von allen unten verfügbaren Gerätetypen im Nutzerfeedback einbeziehen</translation>
 <translation id="7229365071755865554">Speichern von Passwörtern im Passwortmanager aktivieren</translation>
 <translation id="7229975860249300121">Enthält einen regulären Ausdruck, der festlegt, welche Google-Konten in <ph name="PRODUCT_NAME" /> als primäre Browserkonten eingerichtet werden können, also als das Konto, das bei der Zustimmung zur Synchronisierung ausgewählt wurde.
@@ -8439,7 +8444,6 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 
       Wenn diese Richtlinie deaktiviert ist, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist.
       </translation>
-<translation id="7457431437931521451">„GenAI VC Background“ nicht zulassen</translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
 <translation id="7459633275230216698">Dialogfelder zur Dateiauswahl zulassen</translation>
 <translation id="7462256705280836453">Du kannst festlegen, ob die <ph name="PRIVACY_SANDBOX_NAME" />-Einstellung für von Websites vorgeschlagene Werbung deaktiviert werden kann</translation>
@@ -8579,15 +8583,6 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
       Bei nicht verwalteten Geräten ist es auch wichtig, ob der jeweilige Nutzer der Geräteeigentümer ist.</translation>
 <translation id="7570291542739287032">Nur Cloud</translation>
-<translation id="7571530187275708765">Mit dieser Richtlinie wird gesteuert, wie sich Nutzer im Browser anmelden. Du kannst damit festlegen, ob sich der Nutzer über sein Konto in <ph name="PRODUCT_NAME" /> anmelden und Kontodienste wie die <ph name="PRODUCT_NAME" />-Synchronisierung verwenden kann.
-
-      Wenn die Richtlinie auf „Browseranmeldung deaktivieren“ gesetzt ist, kann der Nutzer sich nicht im Browser anmelden und keine Kontodienste nutzen. Funktionen auf Browserebene wie die <ph name="PRODUCT_NAME" />-Synchronisierung können dann nicht verwendet werden und sind auch nicht verfügbar. Unter <ph name="IOS_NAME" /> gilt: Falls ein Nutzer bereits angemeldet ist und die Richtlinie auf „Disabled“ gesetzt wird, wird er sofort abgemeldet. Bei anderen Plattformen wird der Nutzer automatisch abgemeldet, wenn er <ph name="PRODUCT_NAME" /> das nächste Mal verwendet. Bei allen Plattformen bleiben seine lokalen Profildaten wie z. B. Lesezeichen und Passwörter jedoch erhalten. Der Nutzer kann sich auch weiterhin in Google-Webdiensten wie Gmail anmelden und diese verwenden.
-
-      Wenn die Richtlinie auf „Browseranmeldung aktivieren“ gesetzt ist, kann sich der Nutzer im Browser anmelden. Bei allen Plattformen außer <ph name="IOS_NAME" /> wird der Nutzer automatisch im Browser angemeldet, wenn er in Google-Webdiensten wie Gmail angemeldet ist. Solange er im Browser angemeldet ist, werden seine Kontoinformationen dort gespeichert. Das bedeutet aber nicht, dass die <ph name="PRODUCT_NAME" />-Synchronisierung standardmäßig aktiviert wird. Das muss vom Nutzer separat erledigt werden. Wird diese Richtlinie aktiviert, kann der Nutzer die Einstellung für die Browseranmeldung nicht mehr deaktivieren. Die Verfügbarkeit der <ph name="PRODUCT_NAME" />-Synchronisierung lässt sich mithilfe der Richtlinie „<ph name="SYNC_POLICY_NAME" />“ steuern.
-
-      Wenn die Richtlinie auf „Erzwingen, dass Nutzer sich im Browser anmelden müssen“ gesetzt ist, wird dem Nutzer ein Dialogfeld zur Kontoauswahl angezeigt. Er muss dann ein Konto auswählen und sich anmelden, um den Browser verwenden zu können. Dadurch wird bei verwalteten Konten sichergestellt, dass die entsprechenden Richtlinien erzwungen und angewendet werden. Der Standardwert für „<ph name="GUEST_MODE_POLICY_NAME" />“ wird auf „deaktiviert“ gesetzt. Nach dem Aktivieren dieser Richtlinie sind Profile ohne angemeldeten Nutzer gesperrt und nicht mehr zugänglich. Weitere Informationen findest du im Chrome-Hilfeartikel unter: https://support.google.com/chrome/a/answer/7572556. Diese Option wird unter <ph name="LINUX_OS_NAME" />, <ph name="ANDROID_NAME" /> und <ph name="IOS_NAME" /> nicht unterstützt. Wenn sie verwendet wird, wird auf „Browseranmeldung aktivieren“ zurückgegriffen.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, kann der Nutzer selbst entscheiden, ob er die Option zur Browseranmeldung in den <ph name="PRODUCT_NAME" />-Einstellungen aktivieren und verwenden möchte.</translation>
 <translation id="757395965347379751">Wenn diese Einstellung aktiviert ist, werden von <ph name="PRODUCT_NAME" /> SHA-1-signierte Zertifikate genehmigt, vorausgesetzt sie werden erfolgreich überprüft und bilden eine Kette zu einem lokal installierten CA-Zertifikat.
 
       Diese Richtlinie setzt voraus, dass vom Zertifikatüberprüfungsstapel des Betriebssystems SHA-1-Signaturen zugelassen werden. Wenn sich durch ein Update des Betriebssystems die Handhabung von SHA-1-Zertifikaten ändert, ist diese Richtlinie nicht mehr wirksam. Diese Richtlinie dient zur vorübergehenden Problemumgehung, um Unternehmen mehr Zeit zu geben, SHA-1 zu ersetzen. Diese Richtlinie wird ab dem 1. Januar 2019 entfernt.
@@ -8762,6 +8757,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser 
       Hinweis: Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables findest du eine Liste der Variablen, die verwendet werden können.</translation>
 <translation id="7719808201797990069">URL-Muster-Ausnahmen für das Verwerfen von Tabs</translation>
 <translation id="7721944091689270995"><ph name="PLUGIN_VM_NAME" />-Nutzer-ID</translation>
+<translation id="7725010277314676939">Aktivieren des Nur-HTTPS-Modus im strikten Modus erzwingen</translation>
 <translation id="7728486978686128364">Anfragemethoden nie groß schreiben, außer DELETE/GET/HEAD/OPTIONS/POST/PUT</translation>
 <translation id="7731026922044991970">Auf allen Websites das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten für Cookies wiederherstellen</translation>
 <translation id="7732907212083471072">Entfernte Richtlinien</translation>
@@ -8775,9 +8771,6 @@ werden abgelehnt.</translation>
 
       Diese Richtlinie war für die vorübergehende Nutzung vorgesehen und wurde entfernt, nachdem die neue Benutzeroberfläche für das Download-Infofeld vollständig eingeführt wurde.</translation>
 <translation id="7736521021425189418">Terminal (wird seit Version 117 unterstützt)</translation>
-<translation id="77379430721695807">Wenn du diese Richtlinie konfigurierst, gibst du eine Liste von URLs an, deren Muster mit dem SecurityOrigin-Objekt der anfragenden URL abgeglichen werden. Bei einer Übereinstimmung wird ohne Nachfrage Zugriff auf Videoaufnahmegeräte gewährt.
-
-      Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="7740644123648617252">Import von Autofill-Daten für Formulare bei der ersten Ausführung aktivieren</translation>
 <translation id="7744253761377202223">Bildschirmhelligkeit im Netzbetrieb in Prozent</translation>
 <translation id="7747447585227954402">Geräten erlauben, <ph name="PLUGIN_VM_NAME" /> auf <ph name="PRODUCT_OS_NAME" /> zu verwenden</translation>
@@ -9900,9 +9893,9 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="8643838501942693770">Drittanbieter-Cookies zulassen, aber Nutzern ermöglichen, diese Einstellung zu ändern</translation>
 <translation id="864611373241249369">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, alle Daten zu migrieren.</translation>
 <translation id="8648844602494595665">Mit dieser Richtlinie legst du fest, wie das Schloss-Symbol in der Omnibox gehandhabt wird.
-       Ab Chrome M93 gibt es ein neues Omnibox-Symbol für sichere Verbindungen.
-       Wenn die Richtlinie aktiviert ist, verwendet Chrome das bestehende Schloss-Symbol für sichere Verbindungen.
-       Ist die Richtlinie deaktiviert oder nicht konfiguriert, verwendet Chrome das Standardsymbol für sichere Verbindungen.</translation>
+       Ab Chrome M93 gibt es ein neues Omnibox-Symbol für verschlüsselte Verbindungen.
+       Wenn die Richtlinie aktiviert ist, verwendet Chrome das bestehende Schloss-Symbol für verschlüsselte Verbindungen.
+       Ist die Richtlinie deaktiviert oder nicht konfiguriert, verwendet Chrome das Standardsymbol für verschlüsselte Verbindungen.</translation>
 <translation id="8650974590712548439">Windows-Registrierungspfad für Windows-Clients:</translation>
 <translation id="8653085952260859632">Informationen zum Arbeitsspeicher ausgeben</translation>
 <translation id="8653212052128283886">Ansicht des Chrome-Verlaufs in Seitengruppen</translation>
@@ -10650,6 +10643,7 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
+<translation id="9172648973829444124">Aktivieren des Nur-HTTPS-Modus im ausgewogenen Modus erzwingen</translation>
 <translation id="9172911925443428317">Werbung für App Store-Bewertungen nicht zulassen</translation>
 <translation id="9173133289347070466">Mit produktinternen Umfragen für <ph name="PRODUCT_NAME" /> wird Nutzerfeedback zum Browser erfasst. Umfrageantworten sind nicht mit Nutzerkonten verknüpft.
 Ist diese Richtlinie aktiviert oder nicht konfiguriert, können Nutzern produktinterne Umfragen angezeigt werden.
@@ -10661,6 +10655,7 @@ Diese Richtlinie ist nicht wirksam, wenn „<ph name="METRICS_REPORTING_ENABLED_
 <translation id="9180108183162961002">Browseranmeldungen durch Gäste zulassen</translation>
 <translation id="9185963199234034321">Hohen Kontrast auf dem Anmeldebildschirm aktivieren und dem Nutzer erlauben, die Funktion vorübergehend zu deaktivieren</translation>
 <translation id="9187743794267626640">Bereitstellen von externem Speicher deaktivieren</translation>
+<translation id="9189737595688383533">Nutzern nicht erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="9190022798664427644">Mono-Audio aktivieren</translation>
 <translation id="9190456586252617675">Mit dieser Richtlinie kann der Modus für die Einrichtung von Assistant konfiguriert werden.
 

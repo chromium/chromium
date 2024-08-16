@@ -188,7 +188,7 @@ Button::ButtonState Button::GetButtonStateFrom(ui::NativeTheme::State state) {
     case ui::NativeTheme::kPressed:
       return Button::STATE_PRESSED;
     case ui::NativeTheme::kNumStates:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return Button::STATE_NORMAL;
 }
@@ -446,6 +446,7 @@ Button::KeyClickAction Button::GetKeyClickActionForEvent(
 void Button::SetButtonController(
     std::unique_ptr<ButtonController> button_controller) {
   button_controller_ = std::move(button_controller);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 gfx::Point Button::GetMenuPosition() const {
@@ -629,11 +630,6 @@ void Button::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       // No additional accessibility node_data set for this button node_data.
       break;
   }
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kPress);
-  }
-
-  button_controller_->UpdateAccessibleNodeData(node_data);
 }
 
 void Button::VisibilityChanged(View* starting_from, bool visible) {
@@ -711,6 +707,7 @@ Button::Button(PressedCallback callback)
   InkDrop::Get(ink_drop_view_)->SetBaseColor(gfx::kPlaceholderColor);
 
   GetViewAccessibility().SetProperties(ax::mojom::Role::kButton);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Button::RequestFocusFromEvent() {
@@ -813,6 +810,7 @@ void Button::OnEnabledChanged() {
     SetState(STATE_DISABLED);
     InkDrop::Get(ink_drop_view_)->GetInkDrop()->SetHovered(false);
   }
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void Button::ReleaseAnchorHighlight() {
@@ -820,6 +818,22 @@ void Button::ReleaseAnchorHighlight() {
     SetHighlighted(false);
   }
   anchor_count_changed_callbacks_.Notify(anchor_count_);
+}
+
+void Button::SetDefaultActionVerb(ax::mojom::DefaultActionVerb verb) {
+  default_action_verb_ = verb;
+}
+
+void Button::UpdateAccessibleDefaultActionVerb() {
+  if (GetEnabled()) {
+    GetViewAccessibility().SetDefaultActionVerb(default_action_verb_);
+  } else {
+    GetViewAccessibility().RemoveDefaultActionVerb();
+  }
+
+  if (button_controller_) {
+    button_controller_->UpdateButtonAccessibleDefaultActionVerb();
+  }
 }
 
 ButtonActionViewInterface::ButtonActionViewInterface(Button* action_view)

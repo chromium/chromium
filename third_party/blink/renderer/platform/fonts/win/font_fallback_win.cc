@@ -331,7 +331,8 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
 
-  if (UNLIKELY(!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())) {
+  if (!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())
+      [[unlikely]] {
     const ScriptToFontFamilies no_noto[] = {
         {USCRIPT_HANGUL, kHangulFontsNoNoto},
         {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
@@ -403,10 +404,12 @@ const char* FirstAvailableEmojiFont(const SkFontMgr& font_manager) {
   static const char* const kEmojiFonts[] = {"Segoe UI Emoji",
                                             "Segoe UI Symbol"};
   static const char* emoji_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     emoji_font = FirstAvailableFont(kEmojiFonts, font_manager);
-  });
+    initialized = true;
+  }
   return emoji_font;
 }
 
@@ -414,17 +417,24 @@ const char* FirstAvailableMathFont(const SkFontMgr& font_manager) {
   static const char* const kMathFonts[] = {"Cambria Math", "Segoe UI Symbol",
                                            "Code2000"};
   static const char* math_font = nullptr;
-  static std::once_flag once_flag;
-  std::call_once(once_flag, [&] {
+  // `std::once()` may cause hangs. crbug.com/349456407
+  static bool initialized = false;
+  if (!initialized) {
     math_font = FirstAvailableFont(kMathFonts, font_manager);
-  });
+    initialized = true;
+  }
   return math_font;
 }
 
 const AtomicString& GetEmojiFont(const SkFontMgr& font_manager) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kEmojiFont,
-                                  (FirstAvailableEmojiFont(font_manager)));
-  return kEmojiFont;
+  // Calling `FirstAvailableEmojiFont()` from `DEFINE_THREAD_SAFE_STATIC_LOCAL`
+  // may cause hangs. crbug.com/349456407
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, emoji_font, (g_empty_atom));
+  if (emoji_font.empty() && !emoji_font.IsNull()) {
+    emoji_font = AtomicString(FirstAvailableEmojiFont(font_manager));
+    CHECK(!emoji_font.empty() || emoji_font.IsNull());
+  }
+  return emoji_font;
 }
 
 const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
@@ -487,7 +497,7 @@ const AtomicString& GetFontFamilyForScript(
     UScriptCode script,
     FontDescription::GenericFamilyType generic,
     const SkFontMgr& font_manager) {
-  if (UNLIKELY(script < 0 || script >= ScriptToFontMap::kSize)) {
+  if (script < 0 || script >= ScriptToFontMap::kSize) [[unlikely]] {
     return g_null_atom;
   }
 
@@ -531,7 +541,7 @@ const AtomicString& GetFallbackFamily(
     const SkFontMgr& font_manager,
     UScriptCode& script_out) {
   DCHECK(character);
-  if (UNLIKELY(fallback_priority == FontFallbackPriority::kEmojiEmoji)) {
+  if (fallback_priority == FontFallbackPriority::kEmojiEmoji) [[unlikely]] {
     if (const AtomicString& family = GetEmojiFont(font_manager)) {
       script_out = USCRIPT_INVALID_CODE;
       return family;

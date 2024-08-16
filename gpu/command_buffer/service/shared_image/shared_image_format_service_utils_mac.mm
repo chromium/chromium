@@ -69,7 +69,7 @@ uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
       return 0;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {

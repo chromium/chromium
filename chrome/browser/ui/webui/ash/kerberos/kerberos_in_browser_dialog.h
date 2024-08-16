@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace ash {
 
@@ -34,7 +35,7 @@ class KerberosInBrowserDialog : public SystemWebDialogDelegate {
   ~KerberosInBrowserDialog() override;
 
   // ui::WebDialogDelegate overrides
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   void GetDialogSize(gfx::Size* size) const override;
   void OnDialogClosed(const std::string& json_retval) override;
   bool ShouldShowCloseButton() const override;

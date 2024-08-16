@@ -121,30 +121,6 @@ source_set("libvpx_test_generic_headers") {
   sources = libvpx_test_srcs_generic_headers
 }
 
-config("gtest_config") {
-  include_dirs = [
-    "source/libvpx/third_party/googletest/src/include/",
-    "source/libvpx/third_party/googletest/src/",
-  ]
-}
-
-source_set("gtest") {
-  sources = [ "source/libvpx/third_party/googletest/src/src/gtest-all.cc" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  public_configs = [ ":gtest_config" ]
-
-  # gtest-death-test dependency on fdio for fuchsia builds
-  if (is_fuchsia) {
-    deps = [
-      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
-      "//third_party/fuchsia-sdk/sdk/pkg/zx",
-    ]
-  }
-}
-
 executable("decode_encode_profile_test") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -166,9 +142,9 @@ executable("decode_encode_profile_test") {
     "tests/pgo/decode_encode_profile_test.cc",
   ]
   deps = [
-    ":gtest",
     ":libvpx",
     ":libvpx_test_generic_headers",
+    "//testing/gtest",
   ]
 }
 
@@ -697,9 +673,9 @@ test("test_libvpx") {
   include_dirs = [ "source/libvpx/third_party/libwebm/" ]
 
   deps = [
-    ":gtest",
     ":libvpx",
     ":libvpx_test_generic_headers",
+    "//testing/gtest",
   ]
 
   if (is_android) {

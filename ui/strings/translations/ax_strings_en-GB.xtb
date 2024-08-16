@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">slider</translation>
 <translation id="1211441953136645838">endnote</translation>
 <translation id="1281252709823657822">dialogue</translation>
+<translation id="1306460908038601864">Off</translation>
 <translation id="1335095011850992622">credits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> of <ph name="COUNT" /> selected.</translation>
 <translation id="1589122976691792535">region</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">current time</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1821985195704844674">tree grid</translation>
 <translation id="1823704031293214298">page footer</translation>
 <translation id="1838681052457320736">alert dialogue</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">deletion</translation>
 <translation id="1907737156431278478">example</translation>
 <translation id="1930711995431081526">status</translation>
+<translation id="2031987842108996681">Red channel</translation>
 <translation id="2158401438286456825">page list</translation>
 <translation id="2291999235780842123">Tick box</translation>
 <translation id="2311842470354187719">page break</translation>
 <translation id="2335594187091864976">date and time picker</translation>
 <translation id="2508569020611168319">tab list</translation>
+<translation id="2530182415807757784">multiselectable, none selected.</translation>
+<translation id="2634240155926812724">Green channel</translation>
 <translation id="2657045182931379222">graphics object</translation>
 <translation id="2674318244760992338">footer</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">timer</translation>
 <translation id="3199563858620722075">combo box</translation>
+<translation id="3220661731597678625">current step</translation>
+<translation id="3329013043687509092">Saturation</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3557673793733683882">heading <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">week picker</translation>
 <translation id="3706100364254443312">switch</translation>
 <translation id="3808586225841795776">term</translation>
+<translation id="3914173277599553213">Required</translation>
 <translation id="3920932319529768807">conclusion</translation>
 <translation id="3924558731517983934">application</translation>
 <translation id="3944740393230681990">prologue</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">cover</translation>
 <translation id="4757246831282535685">tab panel</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">current item</translation>
 <translation id="4912536737030637138">bibliography entry</translation>
 <translation id="492244087561876220">comment</translation>
+<translation id="4924138096460353083">indeterminate</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> selected</translation>
 <translation id="5022314756875057021">row group</translation>
 <translation id="5034860022980953847">progress indicator</translation>
 <translation id="5093189678851173835">epigraph</translation>
+<translation id="509897012892853729">Blue channel</translation>
 <translation id="512758898067543763">row header</translation>
 <translation id="5143125788380636750">epilogue</translation>
 <translation id="5406322316791861025">figure</translation>
+<translation id="5425179576310518467">current date</translation>
 <translation id="5453733299334684579">tree item</translation>
 <translation id="546643433018805598">subscript</translation>
 <translation id="5476505524087279545">untick</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">button</translation>
 <translation id="5693537480074347398">superscript</translation>
 <translation id="576709008726043716">introduction</translation>
+<translation id="5860033963881614850">Off</translation>
 <translation id="591047860372322273">search box</translation>
+<translation id="5916664084637901428">On</translation>
 <translation id="5987525920412732405">spin button</translation>
 <translation id="6023896073578205740">list box</translation>
 <translation id="6119846243427417423">activate</translation>
 <translation id="6150588977291308318">bibliography</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6166809985690652833">afterword</translation>
+<translation id="6212595056017402527">current page</translation>
 <translation id="6213469881011901533">glossary</translation>
+<translation id="6281588256137006900">Lightness</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">acknowledgements</translation>
 <translation id="648732519525291180">time picker</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">header</translation>
 <translation id="6981594929165378967">insertion</translation>
+<translation id="698788488269350478">expanded.</translation>
 <translation id="7034405885550056553">suggestion</translation>
+<translation id="7102274145889307184">current location</translation>
 <translation id="7139483182332611405">preface</translation>
 <translation id="7198226213493847604">menu pop-up button</translation>
 <translation id="7214187073215825913">content information</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">index</translation>
 <translation id="7740050170769002709">HTML content</translation>
 <translation id="7802800022689234070">disclosure triangle</translation>
+<translation id="7852167693871241274">Hue slider</translation>
 <translation id="7891486169920085145">splitter</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> not selected</translation>
 <translation id="8034303206267677282">strong</translation>
 <translation id="8053789581856978548">search text field</translation>
 <translation id="8057695513531652401">notice</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">chapter</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">dialogue pop-up button</translation>
+<translation id="8889402386540077796">Hue</translation>
+<translation id="894736920926684893">Format toggler</translation>
 <translation id="9002566407876343676">open</translation>
 <translation id="901834265349196618">email</translation>
 <translation id="9048119486235211610">navigation</translation>

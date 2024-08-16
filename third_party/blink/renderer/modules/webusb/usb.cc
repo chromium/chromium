@@ -142,7 +142,7 @@ bool ShouldBlockUsbServiceCall(LocalDOMWindow* window,
   } else if (context->IsServiceWorkerGlobalScope()) {
     security_origin = context->GetSecurityOrigin();
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   if (security_origin->IsOpaque()) {
     if (exception_state) {

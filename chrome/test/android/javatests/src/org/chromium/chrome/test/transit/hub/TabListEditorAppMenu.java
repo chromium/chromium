@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.action.ViewActions.click;
-
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.Transition;
@@ -123,7 +121,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
         mHostStation.exitFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),
                 Transition.conditionOption(tabCountDecreased),
-                () -> itemOnScreen.getItem().getViewElement().perform(click()));
+                itemOnScreen.getItem().getViewSpec()::click);
 
         return null;
     }

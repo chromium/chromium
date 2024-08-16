@@ -77,34 +77,32 @@ AggregatableValuesValue::AggregatableValuesValue::Create(
 base::expected<AggregatableValuesValue, TriggerRegistrationError>
 AggregatableValuesValue::FromJSON(const base::Value& json,
                                   TriggerRegistrationError value_error) {
-  std::optional<int> int_value = json.GetIfInt();
+  int value;
   std::optional<uint64_t> filtering_id;
 
-  if (!int_value.has_value() && FilteringIdEnabled()) {
-    const base::Value::Dict* dict = json.GetIfDict();
-    if (!dict) {
+  if (const base::Value::Dict* dict = json.GetIfDict();
+      dict && FilteringIdEnabled()) {
+    const base::Value* value_v = dict->Find(kValue);
+    if (!value_v) {
       return base::unexpected(value_error);
     }
-    int_value = dict->FindInt(kValue);
-    if (!int_value.has_value()) {
-      return base::unexpected(value_error);
-    }
+    ASSIGN_OR_RETURN(value, ParseInt(*value_v),
+                     [value_error](ParseError) { return value_error; });
 
     ASSIGN_OR_RETURN(filtering_id, ParseUint64(*dict, kFilteringId),
                      [value_error](ParseError) { return value_error; });
+  } else {
+    ASSIGN_OR_RETURN(value, ParseInt(json),
+                     [value_error](ParseError) { return value_error; });
   }
 
-  if (!int_value.has_value()) {
+  auto result = AggregatableValuesValue::Create(
+      value, filtering_id.value_or(kDefaultFilteringId));
+  if (!result) {
     return base::unexpected(value_error);
   }
 
-  auto value = AggregatableValuesValue::Create(
-      int_value.value(), filtering_id.value_or(kDefaultFilteringId));
-  if (!value) {
-    return base::unexpected(value_error);
-  }
-
-  return *std::move(value);
+  return *std::move(result);
 }
 
 AggregatableValuesValue::AggregatableValuesValue(uint32_t value,

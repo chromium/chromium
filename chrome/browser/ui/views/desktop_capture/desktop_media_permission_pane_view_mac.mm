@@ -66,7 +66,7 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kCurrentTab:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<views::View> MakeToggleAnimation() {
@@ -196,7 +196,7 @@ void DesktopMediaPermissionPaneViewMac::OpenScreenRecordingSettingsPane() {
     case DesktopMediaList::Type::kCurrentTab:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BEGIN_METADATA(DesktopMediaPermissionPaneViewMac)

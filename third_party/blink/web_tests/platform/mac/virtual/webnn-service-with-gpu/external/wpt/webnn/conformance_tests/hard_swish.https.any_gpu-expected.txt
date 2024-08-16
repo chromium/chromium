@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] hardSwish float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+[FAIL] hardSwish float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test hardSwish float32 actual 0.456298828125 should be close enough to expected 0.4569105803966522 by the acceptable 4 ULP distance, but they have 20527 ULP distance expected true got false
+Harness: the test ran to completion.
+

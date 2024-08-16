@@ -72,7 +72,7 @@ PhotoCapabilities::AndroidMeteringMode ToAndroidMeteringMode(
     case mojom::MeteringMode::NONE:
       return PhotoCapabilities::AndroidMeteringMode::NONE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::FillLightMode ToMojomFillLightMode(
@@ -88,7 +88,7 @@ mojom::FillLightMode ToMojomFillLightMode(
     case PhotoCapabilities::AndroidFillLightMode::NUM_ENTRIES:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
@@ -101,7 +101,7 @@ PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
     case mojom::FillLightMode::OFF:
       return PhotoCapabilities::AndroidFillLightMode::OFF;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // anonymous namespace

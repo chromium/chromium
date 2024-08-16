@@ -145,6 +145,11 @@ size_t EstimateBlinkInterestGroupSize(
       size += ad->size_group.length();
       size += ad->buyer_reporting_id.length();
       size += ad->buyer_and_seller_reporting_id.length();
+      if (ad->selectable_buyer_and_seller_reporting_ids) {
+        for (const auto& id : *ad->selectable_buyer_and_seller_reporting_ids) {
+          size += id.length();
+        }
+      }
       size += ad->metadata.length();
       size += ad->ad_render_id.length();
       if (ad->allowed_reporting_origins) {
@@ -421,6 +426,8 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       DCHECK(group.ad_components.value()[i]->buyer_reporting_id.IsNull());
       DCHECK(group.ad_components.value()[i]
                  ->buyer_and_seller_reporting_id.IsNull());
+      DCHECK(!group.ad_components.value()[i]
+                  ->selectable_buyer_and_seller_reporting_ids.has_value());
       DCHECK(!group.ad_components.value()[i]
                   ->allowed_reporting_origins.has_value());
     }

@@ -606,9 +606,11 @@ void VideoCaptureHost::ConnectClient(const base::UnguessableToken session_id,
                                      VideoCaptureControllerID controller_id,
                                      VideoCaptureManager::DoneCB done_cb,
                                      BrowserContext* browser_context) {
+  std::optional<url::Origin> origin =
+      media_stream_manager_->GetOriginByVideoSessionId(session_id);
   media_stream_manager_->video_capture_manager()->ConnectClient(
-      session_id, params, controller_id, this, std::move(done_cb),
-      browser_context);
+      session_id, params, controller_id, this, std::move(origin),
+      std::move(done_cb), browser_context);
 }
 
 }  // namespace content

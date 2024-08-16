@@ -597,59 +597,11 @@
           "--platform",
           "iPad Air (5th generation)",
           "--version",
-          "16.4",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "15f31d",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "ios_remoting_unittests iPad Air (5th generation) 16.4",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-14"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
-            },
-            {
-              "name": "xcode_ios_15f31d",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_remoting_unittests",
-        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air (5th generation) 16.4"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Air (5th generation)",
-          "--version",
           "17.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15f31d",
+          "16a5211f",
           "--xctest"
         ],
         "merge": {
@@ -665,7 +617,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
             }
           ],
           "dimensions": {
@@ -678,7 +630,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_15f31d",
+              "name": "xcode_ios_16a5211f",
               "path": "Xcode.app"
             }
           ],
@@ -691,19 +643,19 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "16.4",
+          "18.0",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15f31d",
+          "16a5211f",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPhone 14 16.4",
+        "name": "ios_remoting_unittests iPad Air (6th generation) 18.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -713,7 +665,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
             }
           ],
           "dimensions": {
@@ -722,11 +674,11 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_16_4",
-              "path": "Runtime-ios-16.4"
+              "name": "runtime_ios_18_0",
+              "path": "Runtime-ios-18.0"
             },
             {
-              "name": "xcode_ios_15f31d",
+              "name": "xcode_ios_16a5211f",
               "path": "Xcode.app"
             }
           ],
@@ -734,7 +686,7 @@
         },
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPhone 14 16.4"
+        "variant_id": "iPad Air (6th generation) 18.0"
       },
       {
         "args": [
@@ -745,7 +697,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15f31d",
+          "16a5211f",
           "--xctest"
         ],
         "merge": {
@@ -761,7 +713,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
             }
           ],
           "dimensions": {
@@ -774,7 +726,7 @@
               "path": "Runtime-ios-17.5"
             },
             {
-              "name": "xcode_ios_15f31d",
+              "name": "xcode_ios_16a5211f",
               "path": "Xcode.app"
             }
           ],
@@ -783,6 +735,54 @@
         "test": "ios_remoting_unittests",
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
         "variant_id": "iPhone 14 17.5"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 15",
+          "--version",
+          "18.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16a5211f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ios_remoting_unittests iPhone 15 18.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_18_0",
+              "path": "Runtime-ios-18.0"
+            },
+            {
+              "name": "xcode_ios_16a5211f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ios_remoting_unittests",
+        "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
+        "variant_id": "iPhone 15 18.0"
       }
     ]
   }

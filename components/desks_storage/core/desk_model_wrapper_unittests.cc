@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/desk_model_wrapper.h"
 
 #include <stddef.h>
@@ -13,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,9 +38,8 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "desk_model_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -190,7 +189,7 @@ class DeskModelWrapperTest : public testing::Test {
         cache_(std::make_unique<apps::AppRegistryCache>()),
         account_id_(AccountId::FromUserEmail("test@gmail.com")),
         data_manager_(std::unique_ptr<LocalDeskDataManager>()),
-        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+        store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   DeskModelWrapperTest(const DeskModelWrapperTest&) = delete;
   DeskModelWrapperTest& operator=(const DeskModelWrapperTest&) = delete;
@@ -212,7 +211,7 @@ class DeskModelWrapperTest : public testing::Test {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<DeskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         account_id_);
     bridge_->AddObserver(&mock_observer_);
   }
@@ -315,8 +314,8 @@ class DeskModelWrapperTest : public testing::Test {
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
   std::unique_ptr<LocalDeskDataManager> data_manager_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<DeskSyncBridge> bridge_;
   testing::NiceMock<MockDeskModelObserver> mock_observer_;
   std::unique_ptr<DeskModelWrapper> model_wrapper_;

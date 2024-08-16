@@ -285,6 +285,17 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetFloatingPointAttribute(const QualifiedName& attribute_name,
                                  double value);
 
+  // If this element hosts a shadow root with a referenceTarget, returns the
+  // target element inside the shadow root. In the case where there are multiple
+  // nested layers of shadow roots, returns the innermost target element.
+  Element* GetShadowReferenceTarget(const QualifiedName& name) const;
+
+  // Same as GetShadowReferenceTarget, but returns this element instead of
+  // nullptr in the case where there is no shadow root reference target.
+  Element* GetShadowReferenceTargetOrSelf(const QualifiedName& name);
+  const Element* GetShadowReferenceTargetOrSelf(
+      const QualifiedName& name) const;
+
   // Returns true if |this| element has attr-associated elements that were set
   // via the IDL, rather than computed from the content attribute.
   // See
@@ -294,9 +305,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // computes aria-owns differently for element reflection.
   bool HasExplicitlySetAttrAssociatedElements(const QualifiedName& name);
   Element* GetElementAttribute(const QualifiedName& name) const;
+  Element* GetElementAttributeResolvingReferenceTarget(
+      const QualifiedName& name) const;
   void SetElementAttribute(const QualifiedName&, Element*);
   HeapVector<Member<Element>>* GetAttrAssociatedElements(
-      const QualifiedName& name);
+      const QualifiedName& name,
+      bool resolve_reference_target);
+
+  // If treescope_element is connected, then we will search treescope_element's
+  // TreeScope for an element with the id. If treescope_element is disconnected,
+  // then we will use its TreeRoot() to search for an element with the id
+  // instead.
+  Element* getElementByIdIncludingDisconnected(const Element& treescope_element,
+                                               const AtomicString& id) const;
 
   FrozenArray<Element>* ariaControlsElements();
   void setAriaControlsElements(HeapVector<Member<Element>>* given_elements);
@@ -791,11 +812,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Returns true if the attachment was successful.
   bool AttachDeclarativeShadowRoot(HTMLTemplateElement&,
-                                   ShadowRootMode,
+                                   String,
                                    FocusDelegation,
                                    SlotAssignmentMode,
                                    bool serializable,
-                                   bool clonable);
+                                   bool clonable,
+                                   const AtomicString& reference_target);
 
   ShadowRoot& CreateUserAgentShadowRoot(
       SlotAssignmentMode = SlotAssignmentMode::kNamed);
@@ -804,7 +826,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                        SlotAssignmentMode,
                                        CustomElementRegistry*,
                                        bool serializable,
-                                       bool clonable);
+                                       bool clonable,
+                                       const AtomicString& reference_target);
   // This version is for testing only, and allows easy attachment of a shadow
   // root, specifying only the type and none of the other arguments.
   ShadowRoot& AttachShadowRootForTesting(ShadowRootMode type) {
@@ -812,7 +835,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                     SlotAssignmentMode::kNamed,
                                     /*registry*/ nullptr,
                                     /*serializable*/ false,
-                                    /*clonable*/ false);
+                                    /*clonable*/ false,
+                                    /*reference_target*/ g_null_atom);
   }
 
   // Returns the shadow root attached to this element if it is a shadow host.
@@ -1069,6 +1093,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool PseudoElementStylesAffectCounters() const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
+  bool PseudoElementStylesDependOnAttr() const;
 
   // Retrieve the ComputedStyle (if any) corresponding to the provided
   // PseudoId from cache, calculating the ComputedStyle on-demand if it's
@@ -1272,8 +1297,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   EnsureResizeObserverData();
 
   DisplayLockContext* GetDisplayLockContext() const {
-    if (LIKELY(!HasDisplayLockContext()))
+    if (!HasDisplayLockContext()) [[likely]] {
       return nullptr;
+    }
     return GetDisplayLockContextFromRareData();
   }
   DisplayLockContext& EnsureDisplayLockContext();
@@ -1390,7 +1416,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
   // this will return nullptr;
   Element* anchorElement() const;
-  void setAnchorElement(Element*);
+  Element* anchorElementForBinding() const;
+  void setAnchorElementForBinding(Element*);
 
   AnchorPositionScrollData& EnsureAnchorPositionScrollData();
   void RemoveAnchorPositionScrollData();
@@ -1545,6 +1572,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   friend class AXObject;
   struct AffectedByPseudoStateChange;
 
+  template <typename Functor>
+  bool PseudoElementStylesDependOnFunc(Functor& func) const;
+
   void ScrollLayoutBoxBy(const ScrollToOptions*);
   void ScrollLayoutBoxTo(const ScrollToOptions*);
   void ScrollFrameBy(const ScrollToOptions*);
@@ -1566,7 +1596,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       delete;  // This will catch anyone doing an unnecessary check.
 
   bool CanAttachShadowRoot() const;
-  const char* ErrorMessageForAttachShadow(bool for_declarative) const;
+  const char* ErrorMessageForAttachShadow(String mode_string,
+                                          bool for_declarative,
+                                          ShadowRootMode& mode_out) const;
 
   void StyleAttributeChanged(const AtomicString& new_style_string,
                              AttributeModificationReason);
@@ -1673,6 +1705,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 
   void AttachPrecedingPseudoElements(AttachContext& context) {
+    AttachPseudoElement(kPseudoIdScrollPrevButton, context);
     AttachPseudoElement(kPseudoIdMarker, context);
     AttachPseudoElement(kPseudoIdBefore, context);
   }
@@ -1682,9 +1715,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     AttachPseudoElement(kPseudoIdBackdrop, context);
     UpdateFirstLetterPseudoElement(StyleUpdatePhase::kAttachLayoutTree);
     AttachPseudoElement(kPseudoIdFirstLetter, context);
+    AttachPseudoElement(kPseudoIdScrollNextButton, context);
   }
 
   void DetachPrecedingPseudoElements(bool performing_reattach) {
+    DetachPseudoElement(kPseudoIdScrollPrevButton, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupBefore, performing_reattach);
     DetachPseudoElement(kPseudoIdMarker, performing_reattach);
     DetachPseudoElement(kPseudoIdBefore, performing_reattach);
@@ -1693,6 +1728,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void DetachSucceedingPseudoElements(bool performing_reattach) {
     DetachPseudoElement(kPseudoIdAfter, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollMarkerGroupAfter, performing_reattach);
+    DetachPseudoElement(kPseudoIdScrollNextButton, performing_reattach);
     DetachPseudoElement(kPseudoIdBackdrop, performing_reattach);
     DetachPseudoElement(kPseudoIdFirstLetter, performing_reattach);
   }

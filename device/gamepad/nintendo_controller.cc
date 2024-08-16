@@ -839,7 +839,6 @@ GamepadBusType BusTypeFromDeviceInfo(const mojom::HidDeviceInfo* device_info) {
     default:
       break;
   }
-  DUMP_WILL_BE_NOTREACHED();
   return GAMEPAD_BUS_UNKNOWN;
 }
 }  // namespace
@@ -851,16 +850,16 @@ NintendoController::SwitchImuData::SwitchImuData() = default;
 NintendoController::SwitchImuData::~SwitchImuData() = default;
 
 NintendoController::NintendoController(int source_id,
+                                       GamepadBusType bus_type,
                                        mojom::HidDeviceInfoPtr device_info,
                                        mojom::HidManager* hid_manager)
     : source_id_(source_id),
       is_composite_(false),
-      bus_type_(GAMEPAD_BUS_UNKNOWN),
+      bus_type_(bus_type),
       output_report_size_bytes_(0),
       device_info_(std::move(device_info)),
       hid_manager_(hid_manager) {
   if (device_info_) {
-    bus_type_ = BusTypeFromDeviceInfo(device_info_.get());
     output_report_size_bytes_ = device_info_->max_output_report_size;
     gamepad_id_ = GamepadIdList::Get().GetGamepadId(device_info_->product_name,
                                                     device_info_->vendor_id,
@@ -897,8 +896,16 @@ std::unique_ptr<NintendoController> NintendoController::Create(
     int source_id,
     mojom::HidDeviceInfoPtr device_info,
     mojom::HidManager* hid_manager) {
-  return std::make_unique<NintendoController>(source_id, std::move(device_info),
-                                              hid_manager);
+  // Ignore if BusTypeFromDeviceInfo could not determine the bus type.
+  GamepadBusType bus_type = device_info
+                                ? BusTypeFromDeviceInfo(device_info.get())
+                                : GAMEPAD_BUS_UNKNOWN;
+  if (bus_type == GAMEPAD_BUS_UNKNOWN) {
+    return nullptr;
+  }
+
+  return std::make_unique<NintendoController>(
+      source_id, bus_type, std::move(device_info), hid_manager);
 }
 
 // static

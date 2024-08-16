@@ -15,8 +15,6 @@
 
 // The page for which this configuration is created.
 @property(nonatomic, assign, readonly) TabGridPage page;
-// The current mode for this configuration.
-@property(nonatomic, assign) TabGridMode mode;
 
 // NORMAL MODE ====================
 // YES if the button should be displayed.

@@ -17,6 +17,7 @@ namespace ppapi {
 
 namespace {
 
+// TODO(tsepez): this should be delcared UNSAFE_BUFFER_USAGE.
 void GetRandomBytes(char* buffer, uint32_t num_bytes) {
   base::RandBytes(base::as_writable_bytes(
       // SAFETY: The caller is required to give a valid pointer and size pair.

@@ -88,8 +88,9 @@ void BrowserPolicyConnector::ScheduleServiceInitialization(
 
 bool BrowserPolicyConnector::ProviderHasPolicies(
     const ConfigurationPolicyProvider* provider) const {
-  if (!provider)
+  if (!provider || !provider->is_active()) {
     return false;
+  }
   for (const auto& pair : provider->policies()) {
     if (!pair.second.empty())
       return true;

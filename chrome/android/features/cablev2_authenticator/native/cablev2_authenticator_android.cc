@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
@@ -356,6 +361,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
         case Error::NO_SCREENLOCK:
         case Error::NO_BLUETOOTH_PERMISSION:
         case Error::QR_URI_ERROR:
+        case Error::INVALID_JSON:
           result = CableV2MobileResult::kInternalError;
           break;
       }
@@ -431,7 +437,8 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     Java_USBHandler_startReading(env_, usb_device_);
   }
 
-  void Write(std::vector<uint8_t> data) override {
+  void Write(device::cablev2::PayloadType payload_type,
+             std::vector<uint8_t> data) override {
     Java_USBHandler_write(env_, usb_device_, data);
   }
 
@@ -440,7 +447,9 @@ class USBTransport : public device::cablev2::authenticator::Transport {
     if (!data) {
       callback_.Run(Disconnected::kDisconnected);
     } else {
-      callback_.Run(device::fido_parsing_utils::Materialize(*data));
+      callback_.Run(
+          std::make_pair(device::cablev2::PayloadType::kCTAP,
+                         device::fido_parsing_utils::Materialize(*data)));
     }
   }
 

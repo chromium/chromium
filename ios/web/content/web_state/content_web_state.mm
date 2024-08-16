@@ -5,6 +5,7 @@
 #import "ios/web/content/web_state/content_web_state.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
 #import "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
@@ -269,10 +270,6 @@ base::Time ContentWebState::GetCreationTime() const {
 }
 
 void ContentWebState::WasShown() {
-  if (IsVisible()) {
-    return;
-  }
-
   ForceRealized();
 
   // Update last active time when the ContentWebState transition to visible.
@@ -284,10 +281,6 @@ void ContentWebState::WasShown() {
 }
 
 void ContentWebState::WasHidden() {
-  if (!IsVisible()) {
-    return;
-  }
-
   ForceRealized();
   for (auto& observer : observers_) {
     observer.WasHidden(this);
@@ -355,7 +348,13 @@ void ContentWebState::LoadData(NSData* data,
                                NSString* mime_type,
                                const GURL& url) {}
 
-void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {}
+void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {
+  auto* primary_main_frame = web_contents_->GetPrimaryMainFrame();
+  DCHECK(primary_main_frame);
+
+  primary_main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(javaScript),
+                                        {});
+}
 
 NSString* ContentWebState::GetStableIdentifier() const {
   return UUID_;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/printing/uri_impl.h"
 
 #include <algorithm>
@@ -106,7 +111,7 @@ bool Uri::Pim::ParseString(const Iter& begin,
       // Try to parse UTF-8 character.
       base::StreamingUtf8Validator utf_parser;
       base::StreamingUtf8Validator::State state =
-          utf_parser.AddBytes(base::as_bytes(base::make_span(&c, 1u)));
+          utf_parser.AddBytes(base::byte_span_from_ref(c));
       if (state != base::StreamingUtf8Validator::State::VALID_MIDPOINT) {
         parser_error_.status = ParserStatus::kDisallowedASCIICharacter;
         return false;
@@ -122,7 +127,7 @@ bool Uri::Pim::ParseString(const Iter& begin,
           parser_error_.status = ParserStatus::kInvalidPercentEncoding;
           return false;
         }
-        state = utf_parser.AddBytes(base::as_bytes(base::make_span(&c, 1u)));
+        state = utf_parser.AddBytes(base::byte_span_from_ref(c));
         if (state == base::StreamingUtf8Validator::State::INVALID) {
           parser_error_.status = ParserStatus::kInvalidUTF8Character;
           return false;

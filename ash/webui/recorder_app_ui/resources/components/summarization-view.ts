@@ -22,7 +22,7 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId, ModelResponse} from '../core/on_device_model/types.js';
+import {ModelResponse} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {Transcription} from '../core/soda/soda.js';
@@ -120,7 +120,7 @@ export class SummarizationView extends ReactiveLitElement {
     }
 
     #summary {
-      font: var(--cros-body-2-font);
+      font: var(--cros-body-1-font);
       padding: 12px 16px;
       white-space: pre-wrap;
     }
@@ -164,7 +164,7 @@ export class SummarizationView extends ReactiveLitElement {
   // should just pass in the whole metadata after we have summarization in
   // metadata though, but would still need a way to "re-run" summarization
   // for dev iteration purpose.
-  private readonly summary = signal<ModelResponse|null>(null);
+  private readonly summary = signal<ModelResponse<string>|null>(null);
 
   // TODO(pihsun): Have a single struct for all possible states, instead of
   // multiple boolean.
@@ -189,9 +189,9 @@ export class SummarizationView extends ReactiveLitElement {
     this.summaryRequested.value = true;
     this.summaryOpened.value = true;
     const text = this.transcription?.toPlainText() ?? '';
-    const model = await this.platformHandler.loadModel(ModelId.SUMMARY);
+    const model = await this.platformHandler.summaryModelLoader.load();
     try {
-      this.summary.value = await model.summarize(text);
+      this.summary.value = await model.execute(text);
       // TODO(pihsun): Handle error.
     } finally {
       model.close();
@@ -274,9 +274,7 @@ export class SummarizationView extends ReactiveLitElement {
   }
 
   override render(): RenderResult {
-    const summaryModelState = this.platformHandler.getModelState(
-      ModelId.SUMMARY,
-    );
+    const summaryModelState = this.platformHandler.summaryModelLoader.state;
     const summaryEnabled = settings.value.summaryEnabled;
 
     if (summaryModelState.value.kind === 'unavailable') {

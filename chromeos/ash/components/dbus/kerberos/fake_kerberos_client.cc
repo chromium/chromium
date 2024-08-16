@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 
 #include <utility>
@@ -106,7 +111,7 @@ void PostResponse(base::OnceCallback<void(const TProto&)> callback,
 std::string ReadPassword(int password_fd) {
   std::string password;
   char c;
-  while (base::ReadFromFD(password_fd, base::make_span(&c, 1u))) {
+  while (base::ReadFromFD(password_fd, base::span_from_ref(c))) {
     password.push_back(c);
   }
   return password;

@@ -65,7 +65,7 @@ void RecordDlcInstallResult(std::string_view result_string) {
   } else if (result_string == dlcservice::kErrorNoImageFound) {
     result_enum = DlcInstallResult::kErrorNoImageFound;
   } else {
-    NOTREACHED_NORETURN() << "Unexpected error: " << result_string;
+    NOTREACHED() << "Unexpected error: " << result_string;
   }
 
   base::UmaHistogramEnumeration("Accessibility.ScreenAI.DlcInstallResult",

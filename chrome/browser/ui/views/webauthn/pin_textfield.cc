@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
@@ -15,6 +16,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/render_text.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -72,6 +74,7 @@ bool PinTextfield::AppendDigit(std::u16string digit) {
 
   render_texts_[digits_typed_count_++]->SetText(std::move(digit));
   SchedulePaint();
+  UpdateAccessibilityAfterPinChange();
   return true;
 }
 
@@ -86,6 +89,7 @@ bool PinTextfield::RemoveDigit() {
 
   render_texts_[--digits_typed_count_]->SetText(u"");
   SchedulePaint();
+  UpdateAccessibilityAfterPinChange();
   return true;
 }
 
@@ -107,11 +111,17 @@ void PinTextfield::SetPin(const std::u16string& pin) {
 }
 
 void PinTextfield::SetObscured(bool obscured) {
-  SetTextInputType(obscured ? ui::TEXT_INPUT_TYPE_PASSWORD
-                            : ui::TEXT_INPUT_TYPE_TEXT);
+  if (obscured_ == obscured) {
+    return;
+  }
+
+  obscured_ = obscured;
+  GetViewAccessibility().SetIsProtected(obscured);
   for (int i = 0; i < pin_digits_count_; i++) {
     render_texts_[i]->SetObscured(obscured);
   }
+  UpdateAccessibilityAfterPinChange();
+  SchedulePaint();
 }
 
 void PinTextfield::SetDisabled(bool disabled) {
@@ -122,6 +132,7 @@ void PinTextfield::SetDisabled(bool disabled) {
   disabled_ = disabled;
   SetTextInputType(disabled ? ui::TEXT_INPUT_TYPE_NONE
                             : ui::TEXT_INPUT_TYPE_PASSWORD);
+  UpdateTextColor();
   SchedulePaint();
 }
 
@@ -137,8 +148,9 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
                 : ui::kColorTextfieldBackground);
   for (int i = 0; i < pin_digits_count_; i++) {
     paint_flags.setColor(GetColorProvider()->GetColor(
-        HasCellFocus(i) ? ui::kColorFocusableBorderFocused
-                        : ui::kColorFocusableBorderUnfocused));
+        disabled_ ? ui::kColorTextfieldOutlineDisabled
+                  : (HasCellFocus(i) ? ui::kColorFocusableBorderFocused
+                                     : ui::kColorTextfieldOutline)));
     float stroke_width = HasCellFocus(i) ? 2.f : 1.f;
     paint_flags.setStrokeWidth(stroke_width);
 
@@ -177,13 +189,23 @@ gfx::Size PinTextfield::CalculatePreferredSize(
 
 void PinTextfield::OnThemeChanged() {
   views::View::OnThemeChanged();
+  UpdateTextColor();
+}
 
-  SkColor text_color =
-      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
-          views::style::CONTEXT_TEXTFIELD, views::style::STYLE_PRIMARY));
-  for (int i = 0; i < pin_digits_count_; i++) {
-    render_texts_[i]->SetColor(text_color);
-  }
+void PinTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  std::u16string pin = GetPin();
+  node_data->SetValue(
+      (obscured_ || disabled_)
+          ? std::u16string(pin.size(),
+                           gfx::RenderText::kPasswordReplacementChar)
+          : pin);
+}
+
+void PinTextfield::UpdateAccessibleTextSelection() {
+  // Pin textfield does not support selecting characters, set it to an empty
+  // selection at the end of the currently typed pin.
+  GetViewAccessibility().SetTextSelStart(digits_typed_count_);
+  GetViewAccessibility().SetTextSelEnd(digits_typed_count_);
 }
 
 bool PinTextfield::HasCellFocus(int cell) const {
@@ -191,6 +213,33 @@ bool PinTextfield::HasCellFocus(int cell) const {
                             ? pin_digits_count_ - 1
                             : digits_typed_count_;
   return HasFocus() && cell == cell_with_focus;
+}
+
+void PinTextfield::UpdateAccessibilityAfterPinChange() {
+  UpdateAccessibleTextSelection();
+  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged,
+                           /*send_native_event=*/true);
+
+  // Don't announce the selected text (last typed digit) in `obscured_` mode.
+  if (!obscured_) {
+    NotifyAccessibilityEvent(ax::mojom::Event::kTextSelectionChanged,
+                             /*send_native_event=*/true);
+  }
+}
+
+void PinTextfield::UpdateTextColor() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  int text_style =
+      disabled_ ? views::style::STYLE_DISABLED : views::style::STYLE_PRIMARY;
+  SkColor text_color =
+      GetColorProvider()->GetColor(views::TypographyProvider::Get().GetColorId(
+          views::style::CONTEXT_TEXTFIELD, text_style));
+  for (int i = 0; i < pin_digits_count_; i++) {
+    render_texts_[i]->SetColor(text_color);
+  }
 }
 
 BEGIN_METADATA(PinTextfield)

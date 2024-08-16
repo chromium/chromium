@@ -43,7 +43,8 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
     // change source.
     virtual void OnRawChange(const storage::FileSystemURL& changed_url,
                              bool error,
-                             const ChangeInfo& change_info) = 0;
+                             const ChangeInfo& change_info,
+                             const FileSystemAccessWatchScope& scope) = 0;
 
     virtual void OnSourceBeingDestroyed(
         FileSystemAccessChangeSource* source) = 0;

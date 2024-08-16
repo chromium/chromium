@@ -205,7 +205,7 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
     return GetLoginMatchType::kGrouped;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {

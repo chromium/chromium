@@ -189,6 +189,14 @@ class CORE_EXPORT FetchRequestData final
     attribution_reporting_eligibility_ = eligibility;
   }
 
+  network::mojom::AttributionSupport AttributionSupport() const {
+    return attribution_reporting_support_;
+  }
+  void SetAttributionReportingSupport(
+      network::mojom::AttributionSupport support) {
+    attribution_reporting_support_ = support;
+  }
+
   base::UnguessableToken ServiceWorkerRaceNetworkRequestToken() const {
     return service_worker_race_network_request_token_;
   }
@@ -250,6 +258,8 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::AttributionReportingEligibility
       attribution_reporting_eligibility_ =
           network::mojom::AttributionReportingEligibility::kUnset;
+  network::mojom::AttributionSupport attribution_reporting_support_ =
+      network::mojom::AttributionSupport::kUnset;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.
   // Currently used for blob: URLs, to ensure they can still be loaded even if

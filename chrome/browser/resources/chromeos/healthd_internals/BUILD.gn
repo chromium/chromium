@@ -24,11 +24,8 @@ build_webui("build") {
     "line_chart/line_chart.ts",
     "line_chart/menu.ts",
     "line_chart/scrollbar.ts",
-    "pages/battery_chart.ts",
-    "pages/cpu_frequency_chart.ts",
-    "pages/cpu_usage_chart.ts",
+    "pages/generic_chart.ts",
     "pages/telemetry.ts",
-    "pages/thermal_chart.ts",
     "settings/config_slider.ts",
     "settings/settings_dialog.ts",
   ]
@@ -42,6 +39,7 @@ build_webui("build") {
     "line_chart/utils/canvas_drawer.ts",
     "line_chart/utils/data_series.ts",
     "line_chart/utils/unit_label.ts",
+    "pages/utils/page_interface.ts",
     "pages/utils/ui_update_helper.ts",
   ]
 

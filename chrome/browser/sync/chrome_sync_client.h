@@ -11,16 +11,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/local_data_description.h"
-#include "components/sync/service/model_type_controller.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
 class Profile;
 
 namespace syncer {
-class ModelTypeController;
-class ModelTypeStoreService;
+class DataTypeController;
+class DataTypeStoreService;
 class SyncService;
 class SyncableService;
 }  // namespace syncer
@@ -39,7 +39,7 @@ class ChromeSyncClient : public syncer::SyncClient {
   ~ChromeSyncClient() override;
 
   // TODO(crbug.com/335688372): Inline this in the sync_service_factory.cc.
-  syncer::ModelTypeController::TypeVector CreateModelTypeControllers(
+  syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service);
 
   // SyncClient implementation.
@@ -58,24 +58,23 @@ class ChromeSyncClient : public syncer::SyncClient {
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
  private:
-  // Convenience function that exercises ModelTypeStoreServiceFactory.
-  syncer::ModelTypeStoreService* GetModelTypeStoreService();
+  // Convenience function that exercises DataTypeStoreServiceFactory.
+  syncer::DataTypeStoreService* GetDataTypeStoreService();
 
   // Convenience function used during controller creation.
   base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::ModelType type);
+      syncer::DataType type);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Creates the ModelTypeController for syncer::APPS.
-  std::unique_ptr<syncer::ModelTypeController> CreateAppsModelTypeController();
+  // Creates the DataTypeController for syncer::APPS.
+  std::unique_ptr<syncer::DataTypeController> CreateAppsDataTypeController();
 
-  // Creates the ModelTypeController for syncer::APP_SETTINGS.
-  std::unique_ptr<syncer::ModelTypeController>
-  CreateAppSettingsModelTypeController(syncer::SyncService* sync_service);
+  // Creates the DataTypeController for syncer::APP_SETTINGS.
+  std::unique_ptr<syncer::DataTypeController>
+  CreateAppSettingsDataTypeController(syncer::SyncService* sync_service);
 
-  // Creates the ModelTypeController for syncer::WEB_APPS.
-  std::unique_ptr<syncer::ModelTypeController>
-  CreateWebAppsModelTypeController();
+  // Creates the DataTypeController for syncer::WEB_APPS.
+  std::unique_ptr<syncer::DataTypeController> CreateWebAppsDataTypeController();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   const raw_ptr<Profile> profile_;

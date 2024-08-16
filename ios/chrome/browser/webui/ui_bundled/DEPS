@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/omaha/model/omaha_service.h",
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service.h",
   "+ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h",
+  "+ios/chrome/browser/optimization_guide/resources/on_device_llm_buildflags.h",
   "+ios/chrome/browser/passwords/model/password_manager_log_router_factory.h",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h",

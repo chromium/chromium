@@ -631,9 +631,9 @@ class EventSenderBindings : public gin::Wrappable<EventSenderBindings> {
   void KeyDownOnly(gin::Arguments* args);
   void KeyUp(gin::Arguments* args);
 
-  void KeyEvent(EventSender::KeyEventType event_type, gin::Arguments* args);
-  void KeyEventAsync(EventSender::KeyEventType event_type,
-                     gin::Arguments* args);
+  void KeyEvent(EventSender::KeyEventType event_type,
+                gin::Arguments* args,
+                bool async);
 
   // Binding properties:
   bool ForceLayoutOnEvents() const;
@@ -1092,40 +1092,28 @@ void EventSenderBindings::SetMouseButtonState(gin::Arguments* args) {
 // `KeyDown` sends both `KeyDown` and `KeyUp` events. It's similar to `KeyPress`
 // in other APIs.
 void EventSenderBindings::KeyDown(gin::Arguments* args) {
-  KeyEvent(EventSender::kKeyPress, args);
+  KeyEvent(EventSender::kKeyPress, args, /*async=*/false);
 }
 
 // `KeyDownAsync` sends both `KeyDown` and `KeyUp` events. It's similar to
 // `KeyPress` in other APIs. It sends those events asynchronously, outside of a
 // JS task.
 void EventSenderBindings::KeyDownAsync(gin::Arguments* args) {
-  KeyEventAsync(EventSender::kKeyPress, args);
+  KeyEvent(EventSender::kKeyPress, args, /*async=*/true);
 }
 
 // `KeyDownOnly` sends `KeyDown` without `KeyUp`.
 void EventSenderBindings::KeyDownOnly(gin::Arguments* args) {
-  KeyEvent(EventSender::kKeyDown, args);
+  KeyEvent(EventSender::kKeyDown, args, /*async=*/false);
 }
 
 void EventSenderBindings::KeyUp(gin::Arguments* args) {
-  KeyEvent(EventSender::kKeyUp, args);
-}
-
-void EventSenderBindings::KeyEventAsync(EventSender::KeyEventType event_type,
-                                        gin::Arguments* args) {
-  std::string code_str;
-  int modifiers = 0;
-  int location = DOMKeyLocationStandard;
-  args->GetNext(&code_str);
-  frame_->GetTaskRunner(blink::TaskType::kInternalTest)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&EventSender::KeyEvent, sender_, event_type, code_str,
-                         modifiers, static_cast<KeyLocationCode>(location)));
+  KeyEvent(EventSender::kKeyUp, args, /*async=*/false);
 }
 
 void EventSenderBindings::KeyEvent(EventSender::KeyEventType event_type,
-                                   gin::Arguments* args) {
+                                   gin::Arguments* args,
+                                   bool async) {
   if (!sender_)
     return;
 
@@ -1141,7 +1129,7 @@ void EventSenderBindings::KeyEvent(EventSender::KeyEventType event_type,
       args->GetNext(&location);
   }
   sender_->KeyEvent(event_type, code_str, modifiers,
-                    static_cast<KeyLocationCode>(location));
+                    static_cast<KeyLocationCode>(location), async);
 }
 
 bool EventSenderBindings::ForceLayoutOnEvents() const {
@@ -1465,13 +1453,15 @@ void EventSender::SetMouseButtonState(int button_number, int modifiers) {
 void EventSender::KeyDown(const std::string& code_str,
                           int modifiers,
                           KeyLocationCode location) {
-  KeyEvent(KeyEventType::kKeyPress, code_str, modifiers, location);
+  KeyEvent(KeyEventType::kKeyPress, code_str, modifiers, location,
+           /*async=*/false);
 }
 
 void EventSender::KeyEvent(KeyEventType event_type,
                            const std::string& code_str,
                            int modifiers,
-                           KeyLocationCode location) {
+                           KeyLocationCode location,
+                           bool async) {
   // FIXME: I'm not exactly sure how we should convert the string to a key
   // event. This seems to work in the cases I tested.
   // FIXME: Should we also generate a KEY_UP?
@@ -1731,7 +1721,7 @@ void EventSender::KeyEvent(KeyEventType event_type,
           WebString::FromLatin1(edit_command), "");
     }
 
-    HandleInputEventOnViewOrPopup(event_down);
+    HandleInputEventOnViewOrPopup(event_down, async);
 
     if (code == ui::VKEY_ESCAPE && current_drag_data_) {
       WebMouseEvent event(WebInputEvent::Type::kMouseDown,
@@ -1752,10 +1742,10 @@ void EventSender::KeyEvent(KeyEventType event_type,
     if (generate_char) {
       WebKeyboardEvent event_char = event_up;
       event_char.SetType(WebInputEvent::Type::kChar);
-      HandleInputEventOnViewOrPopup(event_char);
+      HandleInputEventOnViewOrPopup(event_char, async);
     }
 
-    HandleInputEventOnViewOrPopup(event_up);
+    HandleInputEventOnViewOrPopup(event_up, async);
   }
 }
 
@@ -2534,7 +2524,10 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
   if (force_layout_on_events_)
     UpdateLifecycleToPrePaint();
 
-  WebInputEventResult result = HandleInputEventOnViewOrPopup(event);
+  std::optional<WebInputEventResult> result =
+      HandleInputEventOnViewOrPopup(event);
+  // Async gestures are not currently supported.
+  CHECK(result);
 
   // Long press might start a drag drop session. Complete it if so.
   if (type == WebInputEvent::Type::kGestureLongPress && current_drag_data_) {
@@ -2548,7 +2541,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
 
     FinishDragAndDrop(mouse_event, ui::mojom::DragOperation::kNone, false);
   }
-  args->Return(result != WebInputEventResult::kNotHandled);
+  args->Return(*result != WebInputEventResult::kNotHandled);
 }
 
 void EventSender::UpdateClickCountForButton(WebMouseEvent::Button button_type) {
@@ -2813,18 +2806,25 @@ void EventSender::ReplaySavedEvents() {
 
   replaying_saved_events_ = false;
 }
-
-WebInputEventResult EventSender::HandleInputEventOnViewOrPopup(
-    const WebInputEvent& event) {
+std::optional<blink::WebInputEventResult>
+EventSender::HandleInputEventOnViewOrPopup(const WebInputEvent& event,
+                                           bool async) {
   last_event_timestamp_ = event.TimeStamp();
 
-  WebPagePopup* popup = view()->GetPagePopup();
-  if (popup && !WebInputEvent::IsKeyboardEventType(event.GetType()))
-    return popup->HandleInputEvent(
+  blink::WebWidget* target =
+      view()->GetPagePopup() &&
+              !WebInputEvent::IsKeyboardEventType(event.GetType())
+          ? view()->GetPagePopup()
+          : widget();
+  if (async) {
+    target->DispatchNonBlockingEventForTesting(
+        std::make_unique<blink::WebCoalescedInputEvent>(event,
+                                                        ui::LatencyInfo()));
+    return std::nullopt;
+  } else {
+    return target->HandleInputEvent(
         blink::WebCoalescedInputEvent(event, ui::LatencyInfo()));
-
-  return widget()->HandleInputEvent(
-      blink::WebCoalescedInputEvent(event, ui::LatencyInfo()));
+  }
 }
 
 const blink::WebView* EventSender::view() const {

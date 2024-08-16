@@ -189,4 +189,18 @@ void FakeDataSharingSDKDelegate::LookupGaiaIdByEmail(
                                                    "Account not found"))));
 }
 
+void FakeDataSharingSDKDelegate::AddAccessToken(
+    const data_sharing_pb::AddAccessTokenParams& params,
+    base::OnceCallback<
+        void(const base::expected<data_sharing_pb::AddAccessTokenResult,
+                                  absl::Status>&)> callback) {
+  const GroupId group_id = AddGroupAndReturnId("Test_Group");
+
+  data_sharing_pb::AddAccessTokenResult result;
+  *result.mutable_group_data() = groups_[group_id];
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
 }  // namespace data_sharing

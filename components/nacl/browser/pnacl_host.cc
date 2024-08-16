@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -57,7 +58,7 @@ FileProxy::FileProxy(std::unique_ptr<base::File> file, PnaclHost* host)
     : file_(std::move(file)), host_(host) {}
 
 int FileProxy::Write(scoped_refptr<net::DrainableIOBuffer> buffer) {
-  int rv = file_->Write(0, buffer->data(), buffer->size());
+  int rv = UNSAFE_TODO(file_->Write(0, buffer->data(), buffer->size()));
   if (rv == -1)
     PLOG(ERROR) << "FileProxy::Write error";
   return rv;
@@ -409,7 +410,7 @@ scoped_refptr<net::DrainableIOBuffer> PnaclHost::CopyFileToBuffer(
       base::MakeRefCounted<net::IOBufferWithSize>(
           base::checked_cast<size_t>(file_size)),
       base::checked_cast<size_t>(file_size));
-  if (file->Read(0, buffer->data(), buffer->size()) != file_size) {
+  if (UNSAFE_TODO(file->Read(0, buffer->data(), buffer->size())) != file_size) {
     PLOG(ERROR) << "CopyFileToBuffer file read failed";
     buffer = nullptr;
   }

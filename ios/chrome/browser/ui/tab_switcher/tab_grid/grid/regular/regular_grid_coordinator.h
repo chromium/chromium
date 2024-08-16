@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_REGULAR_REGULAR_GRID_COORDINATOR_H_
 
+#import "ios/chrome/browser/shared/public/commands/tabs_animation_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator+subclassing.h"
 
 @protocol GridCommands;
@@ -15,7 +16,7 @@
 @protocol TabContextMenuDelegate;
 
 // Coordinator to manage regular grid.
-@interface RegularGridCoordinator : BaseGridCoordinator
+@interface RegularGridCoordinator : BaseGridCoordinator <TabsAnimationCommands>
 
 // The command handler to handle commands related to this grid. This is exposed
 // to make sure other can use it.

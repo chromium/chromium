@@ -32,9 +32,9 @@ class LayoutObject;
 class LocalFrameView;
 class PropertyTreeStateOrAlias;
 class MediaTiming;
-class StyleFetchedImage;
 class TextPaintTimingDetector;
 class TextRecord;
+class StyleImage;
 
 // PaintTimingDetector receives signals regarding text and image paints and
 // orchestrates the functionality of more specific paint detectors
@@ -61,7 +61,7 @@ class CORE_EXPORT PaintTimingDetector
   static bool NotifyBackgroundImagePaint(
       const Node&,
       const Image&,
-      const StyleFetchedImage&,
+      const StyleImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
   // Returns true if the image is a candidate for largest paint, otherwise

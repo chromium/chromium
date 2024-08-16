@@ -111,9 +111,9 @@ void OmniboxChipButton::UpdateBackgroundColor() {
   if (theme_ == OmniboxChipTheme::kIconStyle) {
     SetBackground(nullptr);
   } else {
-    SetBackground(
-        CreateBackgroundFromPainter(views::Painter::CreateSolidRoundRectPainter(
-            GetBackgroundColor(), GetCornerRadius())));
+    SkColor color = GetColorProvider()->GetColor(GetBackgroundColorId());
+    SetBackground(CreateBackgroundFromPainter(
+        views::Painter::CreateSolidRoundRectPainter(color, GetCornerRadius())));
   }
 }
 
@@ -144,7 +144,7 @@ void OmniboxChipButton::SetMessage(std::u16string message) {
 }
 
 ui::ImageModel OmniboxChipButton::GetIconImageModel() const {
-  return ui::ImageModel::FromVectorIcon(GetIcon(), GetForegroundColor(),
+  return ui::ImageModel::FromVectorIcon(GetIcon(), GetForegroundColorId(),
                                         GetIconSize(), nullptr);
 }
 
@@ -156,21 +156,20 @@ const gfx::VectorIcon& OmniboxChipButton::GetIcon() const {
   return gfx::kNoneIcon;
 }
 
-SkColor OmniboxChipButton::GetForegroundColor() const {
-  return GetColorProvider()->GetColor(
-      kColorOmniboxChipForegroundNormalVisibility);
+ui::ColorId OmniboxChipButton::GetForegroundColorId() const {
+  return kColorOmniboxChipForegroundNormalVisibility;
 }
 
-SkColor OmniboxChipButton::GetBackgroundColor() const {
+ui::ColorId OmniboxChipButton::GetBackgroundColorId() const {
   DCHECK(theme_ != OmniboxChipTheme::kIconStyle);
-  return GetColorProvider()->GetColor(kColorOmniboxChipBackground);
+  return kColorOmniboxChipBackground;
 }
 
 void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget()) {
     return;
   }
-  SetEnabledTextColors(GetForegroundColor());
+  SetEnabledTextColorIds(GetForegroundColorId());
   SetImageModel(views::Button::STATE_NORMAL, GetIconImageModel());
     ConfigureInkDropForRefresh2023(this, kColorOmniboxChipInkDropHover,
                                    kColorOmniboxChipInkDropRipple);

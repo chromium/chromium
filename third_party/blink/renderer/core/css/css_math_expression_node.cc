@@ -166,7 +166,7 @@ CSSMathOperator CSSValueIDToCSSMathOperator(CSSValueID id) {
 
 #undef CONVERSION_CASE
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1147,7 +1147,7 @@ CalculationExpressionSizingKeywordNode::Keyword CSSValueIDToSizingKeyword(
       break;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CSSValueID SizingKeywordToCSSValueID(
@@ -1173,7 +1173,7 @@ CSSValueID SizingKeywordToCSSValueID(
 #undef KEYWORD_CASE
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CalculationResultCategory DetermineKeywordCategory(
@@ -1216,7 +1216,7 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
               CalculationExpressionPixelsAndPercentNode>(
               PixelsAndPercent(length_resolver.ViewportHeight()));
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
@@ -1225,7 +1225,7 @@ CSSMathExpressionKeywordLiteral::ToCalculationExpression(
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
       // TODO(crbug.com/325309578): Produce a CalculationExpressionNode-derived
       // object for color channel keywords.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
 }
 
@@ -1239,12 +1239,12 @@ double CSSMathExpressionKeywordLiteral::ComputeDouble(
         case CSSValueID::kHeight:
           return length_resolver.ViewportHeight();
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
 }
 
@@ -1259,7 +1259,7 @@ CSSMathExpressionKeywordLiteral::ToPixelsAndPercent(
         case CSSValueID::kHeight:
           return PixelsAndPercent(length_resolver.ViewportHeight());
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     case CSSMathExpressionKeywordLiteral::Context::kCalcSize:
     case CSSMathExpressionKeywordLiteral::Context::kColorChannel:
@@ -2946,7 +2946,7 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
       case CSSValueID::kHeight:
         return length_resolver.ContainerHeight(*name);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     switch (size_feature->GetValueID()) {
@@ -2955,7 +2955,7 @@ double EvaluateContainerSize(const CSSIdentifierValue* size_feature,
       case CSSValueID::kHeight:
         return length_resolver.ContainerHeight();
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -3184,7 +3184,7 @@ std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
           length_resolver.GetAnchorEvaluator()) {
     return anchor_evaluator->Evaluate(query,
                                       length_resolver.GetPositionAnchor(),
-                                      length_resolver.GetInsetAreaOffsets());
+                                      length_resolver.GetPositionAreaOffsets());
   }
   return std::nullopt;
 }
@@ -3428,6 +3428,8 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAcos:
       case CSSValueID::kAtan:
       case CSSValueID::kAtan2:
+      case CSSValueID::kAnchor:
+      case CSSValueID::kAnchorSize:
         return true;
       case CSSValueID::kPow:
       case CSSValueID::kSqrt:
@@ -3442,9 +3444,6 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
         return RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled();
-      case CSSValueID::kAnchor:
-      case CSSValueID::kAnchorSize:
-        return RuntimeEnabledFeatures::CSSAnchorPositioningEnabled();
       case CSSValueID::kProgress:
       case CSSValueID::kMediaProgress:
       case CSSValueID::kContainerProgress:
@@ -3459,7 +3458,6 @@ class CSSMathExpressionNodeParser {
 
   CSSMathExpressionNode* ParseAnchorQuery(CSSValueID function_id,
                                           CSSParserTokenRange& tokens) {
-    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     CSSAnchorQueryType anchor_query_type;
     switch (function_id) {
       case CSSValueID::kAnchor:
@@ -3639,10 +3637,6 @@ class CSSMathExpressionNodeParser {
 
     DCHECK(RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled());
 
-    // TODO(https://crbug.com/313072): Restrict usage of calc-size() inside of
-    // calc(), probably along the lines of
-    // https://github.com/w3c/csswg-drafts/issues/626#issuecomment-1881898328
-
     tokens.ConsumeWhitespace();
 
     CSSMathExpressionNode* basis = nullptr;
@@ -3682,42 +3676,14 @@ class CSSMathExpressionNodeParser {
       // expression whose basis is 'any', set basis_is_any to true.
     }
 
-    CSSMathExpressionNode* calculation = nullptr;
-    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
-      state.allow_size_keyword = !basis_is_any;
-      calculation = ParseValueExpression(tokens, state);
-      if (!calculation) {
-        return nullptr;
-      }
-    } else {
-      // Handle the 1-argument form of calc-size().  Based on the discussion
-      // in https://github.com/w3c/csswg-drafts/issues/10259 , eagerly convert
-      // it to the two-argument form.
-      bool argument_is_basis;
-      if (basis->IsKeywordLiteral()) {
-        CHECK(To<CSSMathExpressionKeywordLiteral>(basis)->GetContext() ==
-              CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-        if (basis_is_any) {
-          return nullptr;
-        }
-        argument_is_basis = true;
-      } else {
-        argument_is_basis =
-            basis->IsOperation() &&
-            To<CSSMathExpressionOperation>(basis)->OperatorType() ==
-                CSSMathOperator::kCalcSize;
-      }
+    if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens)) {
+      return nullptr;
+    }
 
-      if (argument_is_basis) {
-        calculation = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kSize,
-            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-      } else {
-        std::swap(basis, calculation);
-        basis = CSSMathExpressionKeywordLiteral::Create(
-            CSSValueID::kAny,
-            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
-      }
+    state.allow_size_keyword = !basis_is_any;
+    CSSMathExpressionNode* calculation = ParseValueExpression(tokens, state);
+    if (!calculation) {
+      return nullptr;
     }
 
     return CSSMathExpressionOperation::CreateCalcSizeOperation(basis,
@@ -3730,11 +3696,9 @@ class CSSMathExpressionNodeParser {
     if (!IsSupportedMathFunction(function_id)) {
       return nullptr;
     }
-    if (RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-      if (auto* anchor_query = ParseAnchorQuery(function_id, tokens)) {
-        context_.Count(WebFeature::kCSSAnchorPositioning);
-        return anchor_query;
-      }
+    if (auto* anchor_query = ParseAnchorQuery(function_id, tokens)) {
+      context_.Count(WebFeature::kCSSAnchorPositioning);
+      return anchor_query;
     }
     if (RuntimeEnabledFeatures::CSSProgressNotationEnabled()) {
       if (CSSMathExpressionNode* progress =

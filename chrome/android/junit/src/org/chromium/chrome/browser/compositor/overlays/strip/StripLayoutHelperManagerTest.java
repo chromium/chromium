@@ -100,6 +100,7 @@ import java.util.List;
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, qualifiers = "sw600dp")
+@DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
 public class StripLayoutHelperManagerTest {
     @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;
@@ -645,7 +646,7 @@ public class StripLayoutHelperManagerTest {
         when(mStandardTabModel.getTabAt(selectedTabId)).thenReturn(mSelectedTab);
         when(mSelectedTab.getId()).thenReturn(selectedTabId);
 
-        when(mHoveredStripTab.getId()).thenReturn(hoveredTabId);
+        when(mHoveredStripTab.getTabId()).thenReturn(hoveredTabId);
         var activeLayoutHelper = mStripLayoutHelperManager.getActiveStripLayoutHelper();
         activeLayoutHelper.setLastHoveredTabForTesting(mHoveredStripTab);
 
@@ -1196,6 +1197,15 @@ public class StripLayoutHelperManagerTest {
         assertTrue(
                 "Strip motion event should be handled.",
                 motionEventHandled(SCREEN_WIDTH / 2, TAB_STRIP_HEIGHT_PX / 2f));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    public void testIncognitoSwitcherDisabled() {
+        initializeTest();
+        assertNull(
+                "Incognto switcher button should not be created.",
+                mStripLayoutHelperManager.getModelSelectorButton());
     }
 
     private void resizeDesktopWindowAndTriggerFadeTransition(boolean showStrip) {

@@ -3765,6 +3765,9 @@ TEST_F(UpdateClientTest, DiskFull) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
+                                  "jebgalgnebhfojomionfpkfelancnnkf"))
+        .Times(1);
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "jebgalgnebhfojomionfpkfelancnnkf"))
         .Times(1);
@@ -3784,13 +3787,15 @@ TEST_F(UpdateClientTest, DiskFull) {
       false, base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
   RunThreads();
 
-  EXPECT_EQ(3u, items.size());
+  EXPECT_EQ(4u, items.size());
   EXPECT_EQ(ComponentState::kChecking, items[0].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[0].id.c_str());
   EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id.c_str());
-  EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
+  EXPECT_EQ(ComponentState::kDownloading, items[2].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id.c_str());
+  EXPECT_EQ(ComponentState::kUpdateError, items[3].state);
+  EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[3].id.c_str());
 
   update_client->RemoveObserver(&observer);
 }
@@ -4068,6 +4073,9 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_FOUND,
                                   "ihfokbkgjpifnbbojhneepfflplebdkc"))
         .Times(1);
+    EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_DOWNLOADING,
+                                  "ihfokbkgjpifnbbojhneepfflplebdkc"))
+        .Times(AtLeast(1));
     EXPECT_CALL(observer, OnEvent(Events::COMPONENT_UPDATE_ERROR,
                                   "ihfokbkgjpifnbbojhneepfflplebdkc"))
         .Times(1);
@@ -4136,13 +4144,17 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                        runloop.QuitClosure()));
     runloop.Run();
 
-    EXPECT_EQ(3u, items.size());
+    EXPECT_EQ(5u, items.size());
     EXPECT_EQ(ComponentState::kChecking, items[0].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id.c_str());
     EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id.c_str());
-    EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
+    EXPECT_EQ(ComponentState::kDownloadingDiff, items[2].state);
     EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id.c_str());
+    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
+    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id.c_str());
+    EXPECT_EQ(ComponentState::kUpdateError, items[4].state);
+    EXPECT_STREQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id.c_str());
   }
 
   update_client->RemoveObserver(&observer);
@@ -4171,8 +4183,7 @@ INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
                               1,
                               {},
                               10,
-                              base::Version("1.2.3.4"),
-                              base::Version("0")},
+                              base::Version("1.2.3.4")},
                          }));
 
 TEST_P(SendPingTest, TestCases) {

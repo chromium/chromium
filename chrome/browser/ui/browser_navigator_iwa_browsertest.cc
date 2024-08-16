@@ -95,8 +95,9 @@ class ExternalProtocolHandlerDelegate
 
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
-  BrowserNavigatorIwaTest() {
+  void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    InProcessBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -393,7 +394,7 @@ INSTANTIATE_TEST_SUITE_P(
         case WindowOpenDisposition::NEW_BACKGROUND_TAB:
           return "NEW_BACKGROUND_TAB";
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     });
 

@@ -19,7 +19,7 @@
 class PrefService;
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace tab_groups {
@@ -48,9 +48,9 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   ~TabGroupSyncBridgeMediator() override;
 
   // Delegates for sync initialization.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate();
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate();
 
   // SavedTabGroupSyncBridge specific getters.

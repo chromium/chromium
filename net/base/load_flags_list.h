@@ -95,15 +95,15 @@ LOAD_FLAG(SUPPORT_ASYNC_REVALIDATION, 1 << 14)
 
 // Indicates that a prefetch request's cached response should be restricted in
 // in terms of reuse. The cached response can only be reused by requests with
-// the LOAD_CAN_USE_RESTRICTED_PREFETCH load flag.
-LOAD_FLAG(RESTRICTED_PREFETCH, 1 << 15)
+// the LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME load flag.
+LOAD_FLAG(RESTRICTED_PREFETCH_FOR_MAIN_FRAME, 1 << 15)
 
 // This flag must be set on requests that are allowed to reuse cache entries
-// that are marked as RESTRICTED_PREFETCH. Requests without this flag cannot
-// reuse restricted prefetch responses in the cache. Restricted response reuse
-// is considered privileged, and therefore this flag must only be set from a
-// trusted process.
-LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH, 1 << 16)
+// that are marked as RESTRICTED_PREFETCH_FOR_MAIN_FRAME. Requests without this
+// flag cannot reuse restricted prefetch responses in the cache. Restricted
+// response reuse is considered privileged, and therefore this flag must only be
+// set from a trusted process.
+LOAD_FLAG(CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME, 1 << 16)
 
 // Indicates that this load can use a shared dictionary.
 LOAD_FLAG(CAN_USE_SHARED_DICTIONARY, 1 << 17)

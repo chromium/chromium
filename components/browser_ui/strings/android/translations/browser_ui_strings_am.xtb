@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">ያሰናብቱ እና የሚገኘውን ቀጣይ ያሳዩ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3763247130972274048">10 ሴ ለመዝለል ቪዲዮ ወደ ግራ ወይም ቀኝ ላይ ሁለቴ መታ ያድርጉ</translation>
+<translation id="3779154269823594982">የይለፍ ቃላት ይለውጡ</translation>
 <translation id="3797520601150691162">ለተወሰነ ጣቢያ ጨለማ ገጽታ አትጠቀም</translation>
 <translation id="3803367742635802571">የሚጎበኟቸው ጣቢያዎች እንደተነደፉት መስራታቸውን ሊያቆሙ ይችላሉ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />። <ph name="TYPE_2" />።</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">ለተወሰነ ጣቢያ ድምፅ ፍቀድ።</translation>
 <translation id="789180354981963912">ማንነትን በማያሳውቅ ላይ የሶስተኛ ወገን ኩኪዎችን ያግዱ፦</translation>
 <translation id="7940722705963108451">አስታውሰኝ</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{በ<ph name="FPS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="FPS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="FPS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="FPS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="FPS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="FPS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
 <translation id="7990211076305263060">ሲበራ፣ ጣቢያዎች ማይክሮፎንዎን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች ማይክሮፎንዎን መጠቀም አይችሉም።</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">ጣቢያዎች ከመሣሪያዎች ጋር እንዳይገናኙ አግድ</translation>
 <translation id="8525306231823319788">ሙሉ ማያ ገፅ</translation>
 <translation id="8541410041357371550">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}one{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያ የተፈቀደ ኩኪ}other{ለ<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> ጣቢያዎች የተፈቀዱ ኩኪዎች}}</translation>
 <translation id="857943718398505171">ተፈቅዷል (የሚመከር)</translation>
 <translation id="8609465669617005112">ወደላይ አውጣ</translation>
 <translation id="8617611086246832542">ሲበራ፣ የድር ጣቢያዎች የዴስክቶፕ እይታ ይታያል። ሲጠፋ፣ የድር ጣቢያዎች የሞባይል እይታ ይታያል።</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">በእርስዎ ወላጆች የሚቀናበር</translation>
 <translation id="9039697262778250930">ከእነዚህ ጣቢያዎች በመለያ ሊወጡ ይችላሉ</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
-<translation id="9090268041676521955">ይህ ጣቢያ እንቅስቃሴዎን ማየት በሚችል አንድ ቡድን ውስጥ ነው። ይህ ቡድን በ<ph name="FPS_OWNER" /> የሚገለጽ ነው።</translation>
 <translation id="9106233582039520022">ኩኪዎችን ይሰረዙ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ}}</translation>
 <translation id="913657688200966289">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃዶችን ያብሩ።</translation>

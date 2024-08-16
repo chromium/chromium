@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">แถบเลื่อน</translation>
 <translation id="1211441953136645838">อ้างอิงท้ายเรื่อง</translation>
 <translation id="1281252709823657822">กล่องโต้ตอบ</translation>
+<translation id="1306460908038601864">ปิด</translation>
 <translation id="1335095011850992622">เครดิต</translation>
 <translation id="1342835525016946179">บทความ</translation>
 <translation id="1359897965706325498">แบนเนอร์</translation>
+<translation id="1480676835519562650">เลือกได้หลายรายการ และมีการเลือกไว้ <ph name="SELECTED" /> จาก <ph name="COUNT" /> รายการ</translation>
 <translation id="1589122976691792535">ภูมิภาค</translation>
 <translation id="1650423536718072820">การเน้นข้อความ</translation>
+<translation id="1681022320378710418">เวลาปัจจุบัน</translation>
+<translation id="1727839386348365796">หลอดดูดสี</translation>
 <translation id="1821985195704844674">แผนผังต้นไม้</translation>
 <translation id="1823704031293214298">ส่วนท้ายของหน้า</translation>
 <translation id="1838681052457320736">กล่องโต้ตอบการแจ้งเตือน</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">การลบ</translation>
 <translation id="1907737156431278478">ตัวอย่าง</translation>
 <translation id="1930711995431081526">สถานะ</translation>
+<translation id="2031987842108996681">ช่องสีแดง</translation>
 <translation id="2158401438286456825">รายการหน้า</translation>
 <translation id="2291999235780842123">ช่องทำเครื่องหมาย</translation>
 <translation id="2311842470354187719">ตัวแบ่งหน้า</translation>
 <translation id="2335594187091864976">เครื่องมือเลือกวันที่และเวลา</translation>
 <translation id="2508569020611168319">รายการแท็บ</translation>
+<translation id="2530182415807757784">เลือกได้หลายรายการ แต่ยังไม่ได้เลือกรายการใดเลย</translation>
+<translation id="2634240155926812724">ช่องสีเขียว</translation>
 <translation id="2657045182931379222">ออบเจ็กต์กราฟิก</translation>
 <translation id="2674318244760992338">ส่วนท้าย</translation>
 <translation id="2723001399770238859">เสียง</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">หมายเหตุ</translation>
 <translation id="3175736971608411871">ตัวจับเวลา</translation>
 <translation id="3199563858620722075">ช่องตัวเลือกรวม</translation>
+<translation id="3220661731597678625">ขั้นตอนปัจจุบัน</translation>
+<translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
 <translation id="3486220673238053218">คำจำกัดความ</translation>
 <translation id="3557673793733683882">ส่วนหัว <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">เครื่องมือเลือกสัปดาห์</translation>
 <translation id="3706100364254443312">สวิตช์</translation>
 <translation id="3808586225841795776">คีย์เวิร์ด</translation>
+<translation id="3914173277599553213">จำเป็น</translation>
 <translation id="3920932319529768807">บทสรุป</translation>
 <translation id="3924558731517983934">แอปพลิเคชัน</translation>
 <translation id="3944740393230681990">อารัมภบท</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">หน้าปก</translation>
 <translation id="4757246831282535685">แผงแท็บ</translation>
 <translation id="479989351350248267">ค้นหา</translation>
+<translation id="4912200001568447310">รายการปัจจุบัน</translation>
 <translation id="4912536737030637138">รายการบรรณานุกรม</translation>
 <translation id="492244087561876220">ความคิดเห็น</translation>
+<translation id="4924138096460353083">ไม่ชัดเจน</translation>
+<translation id="4971739861736909480">เลือก <ph name="ACCNAME" /> ไว้</translation>
 <translation id="5022314756875057021">กลุ่มแถวแนวนอน</translation>
 <translation id="5034860022980953847">ตัวบอกสถานะความคืบหน้า</translation>
 <translation id="5093189678851173835">คำจารึก</translation>
+<translation id="509897012892853729">ช่องสีน้ำเงิน</translation>
 <translation id="512758898067543763">ส่วนหัวของแถว</translation>
 <translation id="5143125788380636750">ปัจฉิมบท</translation>
 <translation id="5406322316791861025">ตัวเลข</translation>
+<translation id="5425179576310518467">วันที่ปัจจุบัน</translation>
 <translation id="5453733299334684579">รายการแบบต้นไม้</translation>
 <translation id="546643433018805598">ตัวห้อย</translation>
 <translation id="5476505524087279545">ยกเลิกการทำเครื่องหมาย</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">ปุ่ม</translation>
 <translation id="5693537480074347398">ตัวยก</translation>
 <translation id="576709008726043716">บทนำ</translation>
+<translation id="5860033963881614850">ปิด</translation>
 <translation id="591047860372322273">ช่องค้นหา</translation>
+<translation id="5916664084637901428">เปิด</translation>
 <translation id="5987525920412732405">ปุ่มหมุน</translation>
 <translation id="6023896073578205740">ช่องรายการ</translation>
 <translation id="6119846243427417423">เปิดใช้งาน</translation>
 <translation id="6150588977291308318">บรรณานุกรม</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6166809985690652833">คำแถลงท้ายเล่ม</translation>
+<translation id="6212595056017402527">หน้าปัจจุบัน</translation>
 <translation id="6213469881011901533">อภิธานศัพท์</translation>
+<translation id="6281588256137006900">ความสว่าง</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">กิตติกรรมประกาศ</translation>
 <translation id="648732519525291180">เครื่องมือเลือกเวลา</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">ข้อความที่ยกมา</translation>
 <translation id="693476918119313863">ส่วนหัว</translation>
 <translation id="6981594929165378967">การแทรก</translation>
+<translation id="698788488269350478">ขยายอยู่</translation>
 <translation id="7034405885550056553">คำแนะนำ</translation>
+<translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
 <translation id="7139483182332611405">ส่วนนำ</translation>
 <translation id="7198226213493847604">ปุ่มป๊อปอัปของเมนู</translation>
 <translation id="7214187073215825913">ข้อมูลเกี่ยวกับเนื้อหา</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">ดัชนี</translation>
 <translation id="7740050170769002709">เนื้อหา HTML</translation>
 <translation id="7802800022689234070">สามเหลี่ยมซ่อนเนื้อหา</translation>
+<translation id="7852167693871241274">แถบเลื่อนโทนสี</translation>
 <translation id="7891486169920085145">ตัวแยก</translation>
+<translation id="7962328325860248200">ไม่ได้เลือก <ph name="ACCNAME" />ไว้</translation>
 <translation id="8034303206267677282">สำคัญ</translation>
 <translation id="8053789581856978548">ช่องข้อความค้นหา</translation>
 <translation id="8057695513531652401">ประกาศ</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">บท</translation>
 <translation id="8851136666856101339">หลัก</translation>
 <translation id="8861621546968757188">ปุ่มป๊อปอัปของกล่องโต้ตอบ</translation>
+<translation id="8889402386540077796">โทนสี</translation>
+<translation id="894736920926684893">ปุ่มสลับรูปแบบ</translation>
 <translation id="9002566407876343676">เปิด</translation>
 <translation id="901834265349196618">อีเมล</translation>
 <translation id="9048119486235211610">การนำทาง</translation>

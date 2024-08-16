@@ -108,15 +108,16 @@ DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info) {
 
 void DawnControlClientHolder::Flush() {
   auto context_provider = GetContextProviderWeakPtr();
-  if (LIKELY(context_provider)) {
+  if (context_provider) [[likely]] {
     context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
   }
 }
 
 void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
   auto context_provider = GetContextProviderWeakPtr();
-  if (UNLIKELY(!context_provider))
+  if (!context_provider) [[unlikely]] {
     return;
+  }
   if (!context_provider->ContextProvider()
            ->WebGPUInterface()
            ->EnsureAwaitingFlush()) {

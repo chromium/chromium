@@ -145,6 +145,7 @@ static_library("exo") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/ui/base",
     "//chromeos/ui/frame",
+    "//components/account_id",
     "//components/app_restore",
     "//components/fullscreen_control",
     "//components/strings",

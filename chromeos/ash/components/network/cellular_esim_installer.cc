@@ -82,7 +82,7 @@ CellularNetworkMetricsLogger::ESimUserInstallMethod ComputeUserInstallMethod(
       return CellularNetworkMetricsLogger::ESimUserInstallMethod::
           kViaActivationCodeSkippedSmds;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CellularNetworkMetricsLogger::ESimPolicyInstallMethod
@@ -102,7 +102,7 @@ ComputePolicyInstallMethod(ProfileInstallMethod install_method) {
     case ProfileInstallMethod::kViaActivationCodeSkippedSmds:
       return CellularNetworkMetricsLogger::ESimPolicyInstallMethod::kViaSmdp;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

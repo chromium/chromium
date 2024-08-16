@@ -20,7 +20,6 @@ js_files = [
   "iron-list/iron-list.js",
   "iron-media-query/iron-media-query.js",
   "iron-meta/iron-meta.js",
-  "iron-pages/iron-pages.js",
   "iron-resizable-behavior/iron-resizable-behavior.js",
   "iron-scroll-target-behavior/iron-scroll-target-behavior.js",
   "iron-scroll-threshold/iron-scroll-threshold.js",
@@ -55,6 +54,7 @@ if (is_chromeos_ash) {
     "iron-overlay-behavior/iron-overlay-behavior.js",
     "iron-overlay-behavior/iron-overlay-manager.js",
     "iron-overlay-behavior/iron-scroll-manager.js",
+    "iron-pages/iron-pages.js",
     "iron-range-behavior/iron-range-behavior.js",
     "iron-test-helpers/mock-interactions.js",
     "neon-animation/animations/fade-in-animation.js",
@@ -133,7 +133,6 @@ ts_library("library") {
     "//chrome/browser/resources/side_panel/read_anything:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/signin:build_ts",
-    "//chrome/browser/resources/signin/profile_picker:build_ts",
     "//chrome/browser/resources/suggest_internals:build_ts",
     "//chrome/browser/resources/support_tool:build_ts",
     "//chrome/test/data/pdf:build_ts",
@@ -174,7 +173,10 @@ ts_library("library") {
   }
 
   if (is_chromeos_lacros) {
-    visibility += [ "//chrome/browser/resources/intro:build_ts" ]
+    visibility += [
+      "//chrome/browser/resources/intro:build_ts",
+      "//chrome/browser/resources/signin/profile_picker:build_ts",
+    ]
   }
 
   if (is_chromeos_ash) {
@@ -203,7 +205,6 @@ ts_library("library") {
     "components-chromium/iron-list/iron-list.d.ts",
     "components-chromium/iron-media-query/iron-media-query.d.ts",
     "components-chromium/iron-meta/iron-meta.d.ts",
-    "components-chromium/iron-pages/iron-pages.d.ts",
     "components-chromium/iron-resizable-behavior/iron-resizable-behavior.d.ts",
     "components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.d.ts",
     "components-chromium/iron-scroll-threshold/iron-scroll-threshold.d.ts",
@@ -285,6 +286,7 @@ ts_library("library") {
       "components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts",
       "components-chromium/iron-overlay-behavior/iron-overlay-manager.d.ts",
       "components-chromium/iron-overlay-behavior/iron-scroll-manager.d.ts",
+      "components-chromium/iron-pages/iron-pages.d.ts",
       "components-chromium/iron-range-behavior/iron-range-behavior.d.ts",
       "components-chromium/iron-test-helpers/mock-interactions.d.ts",
       "components-chromium/neon-animation/animations/fade-in-animation.d.ts",

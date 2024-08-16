@@ -73,7 +73,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1376703628032300005">अगले वर्ण पर जाएं</translation>
 <translation id="1377925789329510816">यह आखिरी टाइटल है. पहले टाइटल पर जाने के लिए Search+H दबाएं या इस पेज के दूसरे टाइटल पर जाने के लिए Search+Shift+H दबाएं.</translation>
 <translation id="138218114945450791">हल्का नीला</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">खोजें</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1411043317877497323">प्रैक्टिस करने की जगह</translation>
@@ -220,6 +220,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2490721194269245365">गुलाबी भूरा</translation>
 <translation id="249330843868392562">लिखाई को बोली में बदलने की सेटिंग खोलें</translation>
 <translation id="2497706219848005458">पीला-हरा</translation>
+<translation id="2512979179176933762">विंडो दिखाएं</translation>
 <translation id="2523609930580546572">ChromeVox ट्यूटोरियल</translation>
 <translation id="2525706221823668172">Chromebook कीबोर्ड शॉर्टकट</translation>
 <translation id="2553108862507765288">व्याकरण की गलती</translation>
@@ -497,6 +498,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="4246217262268234757">स्लेटी नीला</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4254798249533888099">ट्री</translation>
+<translation id="4259220820964911921">क्या आपको फ़ेस कंट्रोल की सुविधा चालू करनी है?</translation>
 <translation id="4271220233568730077">अगला गणित</translation>
 <translation id="4275397969489577657">इवेंट स्ट्रीम में लॉग इन करना चालू करें</translation>
 <translation id="4278486392851938658">पहले देखा गया कोई लिंक नहीं है</translation>
@@ -710,6 +712,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5760594853119905566">परिशिष्ट</translation>
 <translation id="5761219715606611783">बहुत खूब! ChromeVox टच से जुड़ी ज़रूरी बातें जान ली हैं. आप ट्यूटोरियल को दोबारा देख सकते हैं या नीचे दिए गए बटन इस्तेमाल करके इसे बंद कर सकते हैं.</translation>
 <translation id="5776001898637896684">'Google बेहतर नेटवर्क' का लिखाई को बोली में बदलने वाला एक्सटेंशन</translation>
+<translation id="5783252477644995371">फ़ेस कंट्रोल की सुविधा इस्तेमाल करके, चेहरे के जेस्चर से कर्सर को कंट्रोल करने और कार्रवाइयां करने की सुविधा मिलती है. जैसे, मुस्कुराने के जेस्चर से स्क्रीन पर बाईं ओर क्लिक किया जा सकता है</translation>
 <translation id="5805940204952508776">दो उंगलियों से टैप करें</translation>
 <translation id="5819072574982403430">ट्री आइटम</translation>
 <translation id="5822819874379903994">गहरा फ़िरोज़ी</translation>
@@ -1072,7 +1075,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="847040613207937740">आगे कोई चेकबॉक्स नहीं है</translation>
 <translation id="8473540203671727883">माउस के नीचे वाला टेक्स्ट बोलें</translation>
 <translation id="8476408756881832830">जब ChromeVox बोल रहा हो, तब प्लेबैक रोकें</translation>
-<translation id="8476508772960940536">विंडो अवलोकन</translation>
 <translation id="8480873377842220259">अब आप स्क्रीन पर एक से दूसरी जगह जाने (नेविगेशन) के सामान्य तरीके के बारे में जानेंगे. स्क्रीन पर एक से दूसरी जगह जाने के लिए, एक उंगली से खोज बटन दबाकर रखें और दूसरी उंगली से ऐरो बटन दबाएं. जारी रखने के लिए, खोज बटन और राइट ऐरो दबाएं.</translation>
 <translation id="8503360654911991865">मार्गदर्शक विवरण का स्तर घटाएं</translation>
 <translation id="8520472399088452386">स्पिन बटन</translation>

@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -73,7 +74,7 @@ bool IsCustomPassphraseEnabled(
     case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string_view GetCustomPassphraseSuffix(bool custom_passphrase_enabled) {
@@ -658,13 +659,12 @@ StoreMetricsReporter::StoreMetricsReporter(
     const syncer::SyncService* sync_service,
     PrefService* prefs,
     password_manager::PasswordReuseManager* password_reuse_manager,
+    PasswordManagerSettingsService* settings,
     base::OnceClosure done_callback)
     : profile_store_(profile_store),
       account_store_(account_store),
+      prefs_(prefs),
       done_callback_(std::move(done_callback)) {
-  DCHECK(prefs);
-  prefs_ = prefs;
-
   base::TimeDelta time_since_last_metrics_reporting =
       base::Time::Now() -
       base::Time::FromTimeT(prefs_->GetDouble(
@@ -695,11 +695,15 @@ StoreMetricsReporter::StoreMetricsReporter(
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 
+  // TODO(crbug/358998546): use PasswordManagerSettingsService here.
   base::UmaHistogramEnumeration(
       base::StrCat({kPasswordManager, ".EnableState"}),
       CredentialsEnableServiceSettingToPasswordManagerEnableState(
           prefs_->FindPreference(
               password_manager::prefs::kCredentialsEnableService)));
+  base::UmaHistogramBoolean(
+      base::StrCat({kPasswordManager, ".AutoSignin"}),
+      settings->IsSettingEnabled(PasswordManagerSetting::kAutoSignIn));
 
   ReportBiometricAuthenticationBeforeFillingMetrics(prefs_);
 
@@ -769,6 +773,7 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
 }
 
 StoreMetricsReporter::~StoreMetricsReporter() {
+  // Avoid complaints in case those objects are already dead.
   prefs_ = nullptr;
 }
 

@@ -14,7 +14,10 @@ static_library("skyvault") {
     "local_files_migration_ui.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/ash" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash",
+  ]
 
   deps = [
     "//base",

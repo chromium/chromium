@@ -34,7 +34,7 @@ class EngineComponentsFactoryImpl : public EngineComponentsFactory {
       ExtensionsActivity* extensions_activity,
       const std::vector<SyncEngineEventListener*>& listeners,
       DebugInfoGetter* debug_info_getter,
-      ModelTypeRegistry* model_type_registry,
+      DataTypeRegistry* data_type_registry,
       const std::string& cache_guid,
       const std::string& store_birthday,
       const std::string& bag_of_chips,

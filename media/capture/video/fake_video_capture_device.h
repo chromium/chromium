@@ -134,6 +134,7 @@ struct FakeDeviceState {
   mojom::MeteringMode focus_mode;
   VideoCaptureFormat format;
   bool background_blur = false;
+  bool background_segmentation_mask = false;
   bool eye_gaze_correction = false;
   bool face_framing = false;
 };

@@ -16,7 +16,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
-#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "components/sync/test/fake_data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,14 +51,14 @@ class FakeConsentSyncBridge : public ConsentSyncBridge {
     recorded_user_consents_.push_back(*specifics);
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return delegate_;
   }
 
   // Fake methods.
   void SetControllerDelegate(
-      base::WeakPtr<syncer::ModelTypeControllerDelegate> delegate) {
+      base::WeakPtr<syncer::DataTypeControllerDelegate> delegate) {
     delegate_ = delegate;
   }
 
@@ -67,7 +67,7 @@ class FakeConsentSyncBridge : public ConsentSyncBridge {
   }
 
  private:
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> delegate_;
+  base::WeakPtr<syncer::DataTypeControllerDelegate> delegate_;
   std::vector<UserConsentSpecifics> recorded_user_consents_;
 };
 
@@ -216,8 +216,8 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
 TEST_F(ConsentAuditorImplTest, ShouldReturnSyncDelegateWhenBridgePresent) {
   auto fake_bridge = std::make_unique<FakeConsentSyncBridge>();
 
-  syncer::FakeModelTypeControllerDelegate fake_delegate(
-      syncer::ModelType::USER_CONSENTS);
+  syncer::FakeDataTypeControllerDelegate fake_delegate(
+      syncer::DataType::USER_CONSENTS);
   auto expected_delegate_ptr = fake_delegate.GetWeakPtr();
   DCHECK(expected_delegate_ptr);
   fake_bridge->SetControllerDelegate(expected_delegate_ptr);

@@ -127,10 +127,31 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 @implementation PrerenderTestCase
 
+// These tests fail very often on Official builds because of flakiness in the
+// prerender. Only build these tests in non-Official builds.
+#if defined(OFFICIAL_BUILD)
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testLegacyOpenTabInTabStripBeforePrerenderedTab
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  DISABLED_testOpenTabInTabStripBeforePrerenderedTab
+#else
+#define MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab \
+  testLegacyOpenTabInTabStripBeforePrerenderedTab
+#define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
+  testOpenTabInTabStripBeforePrerenderedTab
+#endif  // defined(OFFICIAL_BUILD)
+
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovePrerenderedTabInTabStrip testMovePrerenderedTabInTabStrip
+#else
+#define MAYBE_testMovePrerenderedTabInTabStrip \
+  DISABLED_testMovePrerenderedTabInTabStrip
+#endif  // TARGET_IPHONE_SIMULATOR
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
+            (MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab)] ||
       [self isRunningTest:@selector(MAYBE_testMovePrerenderedTabInTabStrip)]) {
     config.features_disabled.push_back(kModernTabStrip);
     config.features_disabled.push_back(kTabGroupsIPad);
@@ -349,11 +370,10 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
       [NSString stringWithUTF8String:kPageTitle], @"New Tab");
 }
 
-// TODO(crbug.com/355143775): Remove FLAKY_ from this test.
 // Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
 // lead to an incorrect data source, as can be seen after opening a new tab in
 // the background before the pre-rendered tab.
-- (void)FLAKY_testLegacyOpenTabInTabStripBeforePrerenderedTab {
+- (void)MAYBE_testLegacyOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -383,6 +403,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return self->_visitCounter == visitCountBeforePrerender + 1;
   });
+  GREYAssertEqual(_visitCounter, visitCountBeforePrerender + 1,
+                  @"Visit count mismatch");
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 
   // Open the suggestion. The suggestion needs to be the first suggestion to
@@ -416,9 +438,10 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey waitForMainTabCount:3];
 }
 
-// TODO(crbug.com/334874066): This test is flaky on ios-tests and
-// ios-dcheck-tests.
-- (void)DISABLED_testOpenTabInTabStripBeforePrerenderedTab {
+// Regression test for crbug.com/1482622. Tests that a pre-rendered tab doesn't
+// lead to an incorrect data source, as can be seen after opening a new tab in
+// the background before the pre-rendered tab.
+- (void)MAYBE_testOpenTabInTabStripBeforePrerenderedTab {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped for iPhone. The test makes use of the tab strip.");
@@ -449,6 +472,8 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return self->_visitCounter == visitCountBeforePrerender + 1;
   });
+  GREYAssertEqual(_visitCounter, visitCountBeforePrerender + 1,
+                  @"Visit count mismatch");
   GREYAssertTrue(prerendered, @"Prerender did not happen");
 
   // Open the suggestion. The suggestion needs to be the first suggestion to

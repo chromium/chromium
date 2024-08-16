@@ -337,11 +337,12 @@ var mapperTab = (function () {
 
 	Object.defineProperty(ErrorResponse, "__esModule", { value: true });
 	ErrorResponse.UnderspecifiedStoragePartitionException = ErrorResponse.UnableToSetFileInputException = ErrorResponse.UnableToSetCookieException = ErrorResponse.NoSuchStoragePartitionException = ErrorResponse.UnsupportedOperationException = ErrorResponse.UnableToCloseBrowserException = ErrorResponse.UnableToCaptureScreenException = ErrorResponse.UnknownErrorException = ErrorResponse.UnknownCommandException = ErrorResponse.SessionNotCreatedException = ErrorResponse.NoSuchUserContextException = ErrorResponse.NoSuchScriptException = ErrorResponse.NoSuchRequestException = ErrorResponse.NoSuchNodeException = ErrorResponse.NoSuchInterceptException = ErrorResponse.NoSuchHistoryEntryException = ErrorResponse.NoSuchHandleException = ErrorResponse.NoSuchFrameException = ErrorResponse.NoSuchElementException = ErrorResponse.NoSuchAlertException = ErrorResponse.MoveTargetOutOfBoundsException = ErrorResponse.InvalidSessionIdException = ErrorResponse.InvalidSelectorException = ErrorResponse.InvalidArgumentException = ErrorResponse.Exception = void 0;
-	class Exception {
+	class Exception extends Error {
 	    error;
 	    message;
 	    stacktrace;
 	    constructor(error, message, stacktrace) {
+	        super();
 	        this.error = error;
 	        this.message = message;
 	        this.stacktrace = stacktrace;
@@ -756,7 +757,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(BrowserProcessor$1, "__esModule", { value: true });
 	BrowserProcessor$1.BrowserProcessor = void 0;
-	const protocol_js_1$n = protocol;
+	const protocol_js_1$o = protocol;
 	class BrowserProcessor {
 	    #browserCdpClient;
 	    constructor(browserCdpClient) {
@@ -784,7 +785,7 @@ var mapperTab = (function () {
 	    async removeUserContext(params) {
 	        const userContext = params.userContext;
 	        if (userContext === 'default') {
-	            throw new protocol_js_1$n.InvalidArgumentException('`default` user context cannot be removed');
+	            throw new protocol_js_1$o.InvalidArgumentException('`default` user context cannot be removed');
 	        }
 	        try {
 	            await this.#browserCdpClient.sendCommand('Target.disposeBrowserContext', {
@@ -794,7 +795,7 @@ var mapperTab = (function () {
 	        catch (err) {
 	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
 	            if (err.message.startsWith('Failed to find context with id')) {
-	                throw new protocol_js_1$n.NoSuchUserContextException(err.message);
+	                throw new protocol_js_1$o.NoSuchUserContextException(err.message);
 	            }
 	            throw err;
 	        }
@@ -838,7 +839,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(CdpProcessor$1, "__esModule", { value: true });
 	CdpProcessor$1.CdpProcessor = void 0;
-	const protocol_js_1$m = protocol;
+	const protocol_js_1$n = protocol;
 	class CdpProcessor {
 	    #browsingContextStorage;
 	    #realmStorage;
@@ -862,7 +863,7 @@ var mapperTab = (function () {
 	        const context = params.realm;
 	        const realm = this.#realmStorage.getRealm({ realmId: context });
 	        if (realm === undefined) {
-	            throw new protocol_js_1$m.UnknownErrorException(`Could not find realm ${params.realm}`);
+	            throw new protocol_js_1$n.UnknownErrorException(`Could not find realm ${params.realm}`);
 	        }
 	        return { executionContextId: realm.executionContextId };
 	    }
@@ -883,7 +884,7 @@ var mapperTab = (function () {
 
 	Object.defineProperty(BrowsingContextProcessor$1, "__esModule", { value: true });
 	BrowsingContextProcessor$1.BrowsingContextProcessor = void 0;
-	const protocol_js_1$l = protocol;
+	const protocol_js_1$m = protocol;
 	class BrowsingContextProcessor {
 	    #browserCdpClient;
 	    #browsingContextStorage;
@@ -892,7 +893,7 @@ var mapperTab = (function () {
 	        this.#browserCdpClient = browserCdpClient;
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#eventManager = eventManager;
-	        this.#eventManager.addSubscribeHook(protocol_js_1$l.ChromiumBidi.BrowsingContext.EventNames.ContextCreated, this.#onContextCreatedSubscribeHook.bind(this));
+	        this.#eventManager.addSubscribeHook(protocol_js_1$m.ChromiumBidi.BrowsingContext.EventNames.ContextCreated, this.#onContextCreatedSubscribeHook.bind(this));
 	    }
 	    getTree(params) {
 	        const resultContexts = params.root === undefined
@@ -908,7 +909,7 @@ var mapperTab = (function () {
 	        if (params.referenceContext !== undefined) {
 	            referenceContext = this.#browsingContextStorage.getContext(params.referenceContext);
 	            if (!referenceContext.isTopLevelContext()) {
-	                throw new protocol_js_1$l.InvalidArgumentException(`referenceContext should be a top-level context`);
+	                throw new protocol_js_1$m.InvalidArgumentException(`referenceContext should be a top-level context`);
 	            }
 	            userContext = referenceContext.userContext;
 	        }
@@ -947,7 +948,7 @@ var mapperTab = (function () {
 	            err.message.startsWith('Failed to find browser context with id') ||
 	                // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
 	                err.message === 'browserContextId') {
-	                throw new protocol_js_1$l.NoSuchUserContextException(`The context ${userContext} was not found`);
+	                throw new protocol_js_1$m.NoSuchUserContextException(`The context ${userContext} was not found`);
 	            }
 	            throw err;
 	        }
@@ -972,7 +973,7 @@ var mapperTab = (function () {
 	    async activate(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$l.InvalidArgumentException('Activation is only supported on the top-level context');
+	            throw new protocol_js_1$m.InvalidArgumentException('Activation is only supported on the top-level context');
 	        }
 	        await context.activate();
 	        return {};
@@ -988,7 +989,7 @@ var mapperTab = (function () {
 	    async setViewport(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$l.InvalidArgumentException('Emulating viewport is only supported on the top-level context');
+	            throw new protocol_js_1$m.InvalidArgumentException('Emulating viewport is only supported on the top-level context');
 	        }
 	        await context.setViewport(params.viewport, params.devicePixelRatio);
 	        return {};
@@ -996,7 +997,7 @@ var mapperTab = (function () {
 	    async traverseHistory(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context) {
-	            throw new protocol_js_1$l.InvalidArgumentException(`No browsing context with id ${params.context}`);
+	            throw new protocol_js_1$m.InvalidArgumentException(`No browsing context with id ${params.context}`);
 	        }
 	        await context.traverseHistory(params.delta);
 	        return {};
@@ -1010,7 +1011,7 @@ var mapperTab = (function () {
 	            // Heuristically determine the error
 	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium
 	            if (error.message?.includes('No dialog is showing')) {
-	                throw new protocol_js_1$l.NoSuchAlertException('No dialog is showing');
+	                throw new protocol_js_1$m.NoSuchAlertException('No dialog is showing');
 	            }
 	            throw error;
 	        }
@@ -1019,7 +1020,7 @@ var mapperTab = (function () {
 	    async close(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        if (!context.isTopLevelContext()) {
-	            throw new protocol_js_1$l.InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
+	            throw new protocol_js_1$m.InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
 	        }
 	        try {
 	            const detachedFromTargetPromise = new Promise((resolve) => {
@@ -1067,7 +1068,7 @@ var mapperTab = (function () {
 	        contextsToReport.forEach((context) => {
 	            this.#eventManager.registerEvent({
 	                type: 'event',
-	                method: protocol_js_1$l.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+	                method: protocol_js_1$m.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
 	                params: context.serializeToBidiValue(),
 	            }, context.id);
 	        });
@@ -2088,7 +2089,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ActionDispatcher$1, "__esModule", { value: true });
 	ActionDispatcher$1.ActionDispatcher = void 0;
-	const protocol_js_1$k = protocol;
+	const protocol_js_1$l = protocol;
 	const assert_js_1$6 = assert$1;
 	const GraphemeTools_1 = GraphemeTools;
 	const InputSource_js_1$1 = InputSource;
@@ -2106,7 +2107,7 @@ var mapperTab = (function () {
 	    const sandbox = await context.getOrCreateSandbox(undefined);
 	    const result = await sandbox.callFunction(CALCULATE_IN_VIEW_CENTER_PT_DECL, false, { type: 'undefined' }, [element]);
 	    if (result.type === 'exception') {
-	        throw new protocol_js_1$k.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
+	        throw new protocol_js_1$l.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
 	    }
 	    (0, assert_js_1$6.assert)(result.result.type === 'array');
 	    (0, assert_js_1$6.assert)(result.result.value?.[0]?.type === 'number');
@@ -2317,7 +2318,7 @@ var mapperTab = (function () {
 	        const { radiusX, radiusY } = getRadii(width ?? 1, height ?? 1);
 	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY);
 	        if (targetX < 0 || targetY < 0) {
-	            throw new protocol_js_1$k.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	            throw new protocol_js_1$l.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
 	        }
 	        let last;
 	        do {
@@ -2432,11 +2433,11 @@ var mapperTab = (function () {
 	    async #dispatchScrollAction(_source, keyState, action) {
 	        const { deltaX: targetDeltaX, deltaY: targetDeltaY, x: offsetX, y: offsetY, origin = 'viewport', duration = this.#tickDuration, } = action;
 	        if (origin === 'pointer') {
-	            throw new protocol_js_1$k.InvalidArgumentException('"pointer" origin is invalid for scrolling.');
+	            throw new protocol_js_1$l.InvalidArgumentException('"pointer" origin is invalid for scrolling.');
 	        }
 	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, 0, 0);
 	        if (targetX < 0 || targetY < 0) {
-	            throw new protocol_js_1$k.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	            throw new protocol_js_1$l.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
 	        }
 	        let currentDeltaX = 0;
 	        let currentDeltaY = 0;
@@ -2476,7 +2477,7 @@ var mapperTab = (function () {
 	        if (!(0, GraphemeTools_1.isSingleGrapheme)(rawKey)) {
 	            // https://w3c.github.io/webdriver/#dfn-process-a-key-action
 	            // WebDriver spec allows a grapheme to be used.
-	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${rawKey}`);
+	            throw new protocol_js_1$l.InvalidArgumentException(`Invalid key value: ${rawKey}`);
 	        }
 	        const isGrapheme = (0, GraphemeTools_1.isSingleComplexGrapheme)(rawKey);
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
@@ -2559,7 +2560,7 @@ var mapperTab = (function () {
 	        if (!(0, GraphemeTools_1.isSingleGrapheme)(rawKey)) {
 	            // https://w3c.github.io/webdriver/#dfn-process-a-key-action
 	            // WebDriver spec allows a grapheme to be used.
-	            throw new protocol_js_1$k.InvalidArgumentException(`Invalid key value: ${rawKey}`);
+	            throw new protocol_js_1$l.InvalidArgumentException(`Invalid key value: ${rawKey}`);
 	        }
 	        const isGrapheme = (0, GraphemeTools_1.isSingleComplexGrapheme)(rawKey);
 	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
@@ -2872,7 +2873,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(InputState$1, "__esModule", { value: true });
 	InputState$1.InputState = void 0;
-	const protocol_js_1$j = protocol;
+	const protocol_js_1$k = protocol;
 	const Mutex_js_1 = Mutex$1;
 	const InputSource_js_1 = InputSource;
 	class InputState {
@@ -2907,20 +2908,20 @@ var mapperTab = (function () {
 	                    source = new InputSource_js_1.WheelSource();
 	                    break;
 	                default:
-	                    throw new protocol_js_1$j.InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
+	                    throw new protocol_js_1$k.InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
 	            }
 	            this.#sources.set(id, source);
 	            return source;
 	        }
 	        if (source.type !== type) {
-	            throw new protocol_js_1$j.InvalidArgumentException(`Input source type of ${id} is ${source.type}, but received ${type}.`);
+	            throw new protocol_js_1$k.InvalidArgumentException(`Input source type of ${id} is ${source.type}, but received ${type}.`);
 	        }
 	        return source;
 	    }
 	    get(id) {
 	        const source = this.#sources.get(id);
 	        if (!source) {
-	            throw new protocol_js_1$j.UnknownErrorException(`Internal error.`);
+	            throw new protocol_js_1$k.UnknownErrorException(`Internal error.`);
 	        }
 	        return source;
 	    }
@@ -2997,7 +2998,7 @@ var mapperTab = (function () {
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
-	const protocol_js_1$i = protocol;
+	const protocol_js_1$j = protocol;
 	const assert_js_1$4 = assert$1;
 	const ActionDispatcher_js_1 = ActionDispatcher$1;
 	const InputStateManager_js_1 = InputStateManager$1;
@@ -3051,25 +3052,25 @@ var mapperTab = (function () {
 	            }), false, params.element, [{ type: 'number', value: params.files.length }]);
 	        }
 	        catch {
-	            throw new protocol_js_1$i.NoSuchNodeException(`Could not find element ${params.element.sharedId}`);
+	            throw new protocol_js_1$j.NoSuchNodeException(`Could not find element ${params.element.sharedId}`);
 	        }
 	        (0, assert_js_1$4.assert)(result.type === 'success');
 	        if (result.result.type === 'number') {
 	            switch (result.result.value) {
 	                case 0 /* ErrorCode.Node */: {
-	                    throw new protocol_js_1$i.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	                    throw new protocol_js_1$j.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
 	                }
 	                case 1 /* ErrorCode.Element */: {
-	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a input`);
+	                    throw new protocol_js_1$j.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a input`);
 	                }
 	                case 2 /* ErrorCode.Type */: {
-	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Input element ${params.element.sharedId} is not a file type`);
+	                    throw new protocol_js_1$j.UnableToSetFileInputException(`Input element ${params.element.sharedId} is not a file type`);
 	                }
 	                case 3 /* ErrorCode.Disabled */: {
-	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
+	                    throw new protocol_js_1$j.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
 	                }
 	                case 4 /* ErrorCode.Multiple */: {
-	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
+	                    throw new protocol_js_1$j.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
 	                }
 	            }
 	        }
@@ -3149,7 +3150,7 @@ var mapperTab = (function () {
 	                    action.parameters.pointerType ??= "mouse" /* Input.PointerType.Mouse */;
 	                    const source = inputState.getOrCreate(action.id, "pointer" /* SourceType.Pointer */, action.parameters.pointerType);
 	                    if (source.subtype !== action.parameters.pointerType) {
-	                        throw new protocol_js_1$i.InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
+	                        throw new protocol_js_1$j.InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
 	                    }
 	                    break;
 	                }
@@ -3192,7 +3193,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
 	NetworkProcessor$1.NetworkProcessor = void 0;
-	const protocol_js_1$h = protocol;
+	const protocol_js_1$i = protocol;
 	/** Dispatches Network domain commands. */
 	class NetworkProcessor {
 	    #browsingContextStorage;
@@ -3223,7 +3224,7 @@ var mapperTab = (function () {
 	        }
 	        if (params.method !== undefined) {
 	            if (!NetworkProcessor.isMethodValid(params.method)) {
-	                throw new protocol_js_1$h.InvalidArgumentException(`Method '${params.method}' is invalid.`);
+	                throw new protocol_js_1$i.InvalidArgumentException(`Method '${params.method}' is invalid.`);
 	            }
 	        }
 	        if (params.headers) {
@@ -3267,10 +3268,10 @@ var mapperTab = (function () {
 	    async failRequest({ request: networkId, }) {
 	        const request = this.#getRequestOrFail(networkId);
 	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
-	            throw new protocol_js_1$h.InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
+	            throw new protocol_js_1$i.InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
 	        }
 	        if (!request.interceptPhase) {
-	            throw new protocol_js_1$h.NoSuchRequestException(`No blocked request found for network id '${networkId}'`);
+	            throw new protocol_js_1$i.NoSuchRequestException(`No blocked request found for network id '${networkId}'`);
 	        }
 	        await request.failRequest('Failed');
 	        return {};
@@ -3302,17 +3303,17 @@ var mapperTab = (function () {
 	    #getRequestOrFail(id) {
 	        const request = this.#networkStorage.getRequestById(id);
 	        if (!request) {
-	            throw new protocol_js_1$h.NoSuchRequestException(`Network request with ID '${id}' doesn't exist`);
+	            throw new protocol_js_1$i.NoSuchRequestException(`Network request with ID '${id}' doesn't exist`);
 	        }
 	        return request;
 	    }
 	    #getBlockedRequestOrFail(id, phases) {
 	        const request = this.#getRequestOrFail(id);
 	        if (!request.interceptPhase) {
-	            throw new protocol_js_1$h.NoSuchRequestException(`No blocked request found for network id '${id}'`);
+	            throw new protocol_js_1$i.NoSuchRequestException(`No blocked request found for network id '${id}'`);
 	        }
 	        if (request.interceptPhase && !phases.includes(request.interceptPhase)) {
-	            throw new protocol_js_1$h.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
+	            throw new protocol_js_1$i.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
 	        }
 	        return request;
 	    }
@@ -3331,7 +3332,7 @@ var mapperTab = (function () {
 	            if (headerValue !== headerValue.trim() ||
 	                headerValue.includes('\n') ||
 	                headerValue.includes('\0')) {
-	                throw new protocol_js_1$h.InvalidArgumentException(`Header value '${headerValue}' is not acceptable value`);
+	                throw new protocol_js_1$i.InvalidArgumentException(`Header value '${headerValue}' is not acceptable value`);
 	            }
 	        }
 	    }
@@ -3348,7 +3349,7 @@ var mapperTab = (function () {
 	            return new URL(url);
 	        }
 	        catch (error) {
-	            throw new protocol_js_1$h.InvalidArgumentException(`Invalid URL '${url}': ${error}`);
+	            throw new protocol_js_1$i.InvalidArgumentException(`Invalid URL '${url}': ${error}`);
 	        }
 	    }
 	    static parseUrlPatterns(urlPatterns) {
@@ -3370,7 +3371,7 @@ var mapperTab = (function () {
 	                    if (urlPattern.protocol) {
 	                        urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
 	                        if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
-	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$i.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    if (urlPattern.hostname) {
@@ -3386,7 +3387,7 @@ var mapperTab = (function () {
 	                        }
 	                        if (urlPattern.pathname.includes('#') ||
 	                            urlPattern.pathname.includes('?')) {
-	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$i.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    else if (urlPattern.pathname === '') {
@@ -3398,31 +3399,31 @@ var mapperTab = (function () {
 	                            urlPattern.search = `?${urlPattern.search}`;
 	                        }
 	                        if (urlPattern.search.includes('#')) {
-	                            throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
+	                            throw new protocol_js_1$i.InvalidArgumentException('Forbidden characters');
 	                        }
 	                    }
 	                    if (urlPattern.protocol === '') {
-	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a protocol`);
+	                        throw new protocol_js_1$i.InvalidArgumentException(`URL pattern must specify a protocol`);
 	                    }
 	                    if (urlPattern.hostname === '') {
-	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a hostname`);
+	                        throw new protocol_js_1$i.InvalidArgumentException(`URL pattern must specify a hostname`);
 	                    }
 	                    if ((urlPattern.hostname?.length ?? 0) > 0) {
 	                        if (urlPattern.protocol?.match(/^file/i)) {
-	                            throw new protocol_js_1$h.InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
+	                            throw new protocol_js_1$i.InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
 	                        }
 	                        if (urlPattern.hostname?.includes(':')) {
-	                            throw new protocol_js_1$h.InvalidArgumentException(`URL pattern hostname must not contain a colon`);
+	                            throw new protocol_js_1$i.InvalidArgumentException(`URL pattern hostname must not contain a colon`);
 	                        }
 	                    }
 	                    if (urlPattern.port === '') {
-	                        throw new protocol_js_1$h.InvalidArgumentException(`URL pattern must specify a port`);
+	                        throw new protocol_js_1$i.InvalidArgumentException(`URL pattern must specify a port`);
 	                    }
 	                    try {
 	                        new URLPattern(urlPattern);
 	                    }
 	                    catch (error) {
-	                        throw new protocol_js_1$h.InvalidArgumentException(`${error}`);
+	                        throw new protocol_js_1$i.InvalidArgumentException(`${error}`);
 	                    }
 	                    return urlPattern;
 	            }
@@ -3431,7 +3432,7 @@ var mapperTab = (function () {
 	    static wrapInterceptionError(error) {
 	        // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
 	        if (error?.message.includes('Invalid header')) {
-	            return new protocol_js_1$h.InvalidArgumentException('Invalid header');
+	            return new protocol_js_1$i.InvalidArgumentException('Invalid header');
 	        }
 	        return error;
 	    }
@@ -3447,7 +3448,7 @@ var mapperTab = (function () {
 	    for (const c of pattern) {
 	        if (!isEscaped) {
 	            if (forbidden.has(c)) {
-	                throw new protocol_js_1$h.InvalidArgumentException('Forbidden characters');
+	                throw new protocol_js_1$i.InvalidArgumentException('Forbidden characters');
 	            }
 	            if (c === '\\') {
 	                isEscaped = true;
@@ -3480,7 +3481,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(PermissionsProcessor$1, "__esModule", { value: true });
 	PermissionsProcessor$1.PermissionsProcessor = void 0;
-	const protocol_js_1$g = protocol;
+	const protocol_js_1$h = protocol;
 	class PermissionsProcessor {
 	    #browserCdpClient;
 	    constructor(browserCdpClient) {
@@ -3508,7 +3509,7 @@ var mapperTab = (function () {
 	                // existing origins).
 	                return {};
 	            }
-	            throw new protocol_js_1$g.InvalidArgumentException(err.message);
+	            throw new protocol_js_1$h.InvalidArgumentException(err.message);
 	        }
 	        return {};
 	    }
@@ -3539,6 +3540,9 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(uuid, "__esModule", { value: true });
 	uuid.uuidv4 = uuidv4;
+	function bytesToHex(bytes) {
+	    return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+	}
 	/**
 	 * Generates a random v4 UUID, as specified in RFC4122.
 	 *
@@ -3558,21 +3562,20 @@ var mapperTab = (function () {
 	    }
 	    const randomValues = new Uint8Array(16);
 	    if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
-	        // Node with
+	        // Node (>=18) with
 	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
 	        // browser.
 	        globalThis.crypto.getRandomValues(randomValues);
 	    }
 	    else {
-	        // Node without
+	        // Node (<=16) without
 	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-	        // eslint-disable-next-line @typescript-eslint/no-var-requires
+	        // eslint-disable-next-line @typescript-eslint/no-var-requires,@typescript-eslint/no-require-imports
 	        require('crypto').webcrypto.getRandomValues(randomValues);
 	    }
 	    // Set version (4) and variant (RFC4122) bits.
 	    randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
 	    randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
-	    const bytesToHex = (bytes) => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
 	    return [
 	        bytesToHex(randomValues.subarray(0, 4)),
 	        bytesToHex(randomValues.subarray(4, 6)),
@@ -3603,7 +3606,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ChannelProxy$1, "__esModule", { value: true });
 	ChannelProxy$1.ChannelProxy = void 0;
-	const protocol_js_1$f = protocol;
+	const protocol_js_1$g = protocol;
 	const log_js_1$d = log$1;
 	const uuid_js_1$3 = uuid;
 	/**
@@ -3724,12 +3727,14 @@ var mapperTab = (function () {
 	                    },
 	                });
 	                if (message.exceptionDetails) {
-	                    throw message.exceptionDetails;
+	                    throw new Error('Runtime.callFunctionOn in ChannelProxy', {
+	                        cause: message.exceptionDetails,
+	                    });
 	                }
 	                for (const browsingContext of realm.associatedBrowsingContexts) {
 	                    eventManager.registerEvent({
 	                        type: 'event',
-	                        method: protocol_js_1$f.ChromiumBidi.Script.EventNames.Message,
+	                        method: protocol_js_1$g.ChromiumBidi.Script.EventNames.Message,
 	                        params: {
 	                            channel: this.#properties.channel,
 	                            data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" /* Script.ResultOwnership.None */),
@@ -3959,7 +3964,7 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(ScriptProcessor$1, "__esModule", { value: true });
 	ScriptProcessor$1.ScriptProcessor = void 0;
-	const protocol_js_1$e = protocol;
+	const protocol_js_1$f = protocol;
 	const PreloadScript_js_1 = PreloadScript$1;
 	class ScriptProcessor {
 	    #browsingContextStorage;
@@ -3990,7 +3995,7 @@ var mapperTab = (function () {
 	        const { script: id } = params;
 	        const scripts = this.#preloadScriptStorage.find({ id });
 	        if (scripts.length === 0) {
-	            throw new protocol_js_1$e.NoSuchScriptException(`No preload script with id '${id}'`);
+	            throw new protocol_js_1$f.NoSuchScriptException(`No preload script with id '${id}'`);
 	        }
 	        await Promise.all(scripts.map((script) => script.remove()));
 	        this.#preloadScriptStorage.remove({ id });
@@ -4054,26 +4059,79 @@ var mapperTab = (function () {
 	 */
 	Object.defineProperty(SessionProcessor$1, "__esModule", { value: true });
 	SessionProcessor$1.SessionProcessor = void 0;
+	const protocol_js_1$e = protocol;
 	class SessionProcessor {
 	    #eventManager;
 	    #browserCdpClient;
-	    constructor(eventManager, browserCdpClient) {
+	    #initConnection;
+	    #created = false;
+	    constructor(eventManager, browserCdpClient, initConnection) {
 	        this.#eventManager = eventManager;
 	        this.#browserCdpClient = browserCdpClient;
+	        this.#initConnection = initConnection;
 	    }
 	    status() {
 	        return { ready: false, message: 'already connected' };
 	    }
-	    async new(_params) {
-	        // Since mapper exists, there is a session already.
-	        // Still the mapper can handle capabilities for us.
-	        // Currently, only Puppeteer calls here but, eventually, every client
-	        // should delegrate capability processing here.
+	    #mergeCapabilities(capabilitiesRequest) {
+	        // Roughly following https://www.w3.org/TR/webdriver2/#dfn-capabilities-processing.
+	        // Validations should already be done by the parser.
+	        const mergedCapabilities = [];
+	        for (const first of capabilitiesRequest.firstMatch ?? [{}]) {
+	            const result = {
+	                ...capabilitiesRequest.alwaysMatch,
+	            };
+	            for (const key of Object.keys(first)) {
+	                if (result[key] !== undefined) {
+	                    throw new protocol_js_1$e.InvalidArgumentException(`Capability ${key} in firstMatch is already defined in alwaysMatch`);
+	                }
+	                result[key] = first[key];
+	            }
+	            mergedCapabilities.push(result);
+	        }
+	        const match = mergedCapabilities.find((c) => c.browserName === 'chrome') ??
+	            mergedCapabilities[0] ??
+	            {};
+	        match.unhandledPromptBehavior = this.#getUnhandledPromptBehavior(match.unhandledPromptBehavior);
+	        return match;
+	    }
+	    #getUnhandledPromptBehavior(capabilityValue) {
+	        if (capabilityValue === undefined) {
+	            return undefined;
+	        }
+	        if (typeof capabilityValue === 'object') {
+	            // Do not validate capabilities. Incorrect ones will be ignored by Mapper.
+	            return capabilityValue;
+	        }
+	        if (typeof capabilityValue !== 'string') {
+	            throw new protocol_js_1$e.InvalidArgumentException(`Unexpected 'unhandledPromptBehavior' type: ${typeof capabilityValue}`);
+	        }
+	        switch (capabilityValue) {
+	            case 'accept':
+	            case 'accept and notify':
+	                return { default: "accept" /* Session.UserPromptHandlerType.Accept */ };
+	            case 'dismiss':
+	            case 'dismiss and notify':
+	                return { default: "dismiss" /* Session.UserPromptHandlerType.Dismiss */ };
+	            case 'ignore':
+	                return { default: "ignore" /* Session.UserPromptHandlerType.Ignore */ };
+	            default:
+	                throw new protocol_js_1$e.InvalidArgumentException(`Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`);
+	        }
+	    }
+	    async new(params) {
+	        if (this.#created) {
+	            throw new Error('Session has been already created.');
+	        }
+	        this.#created = true;
+	        const matchedCapabitlites = this.#mergeCapabilities(params.capabilities);
+	        await this.#initConnection(matchedCapabitlites);
 	        const version = await this.#browserCdpClient.sendCommand('Browser.getVersion');
 	        return {
 	            sessionId: 'unknown',
 	            capabilities: {
-	                acceptInsecureCerts: false,
+	                ...matchedCapabitlites,
+	                acceptInsecureCerts: matchedCapabitlites.acceptInsecureCerts ?? false,
 	                browserName: version.product,
 	                browserVersion: version.revision,
 	                platformName: '',
@@ -4762,7 +4820,7 @@ var mapperTab = (function () {
 	    // keep-sorted end
 	    #parser;
 	    #logger;
-	    constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, parser = new BidiNoOpParser_js_1.BidiNoOpParser(), logger) {
+	    constructor(cdpConnection, browserCdpClient, eventManager, browsingContextStorage, realmStorage, preloadScriptStorage, networkStorage, parser = new BidiNoOpParser_js_1.BidiNoOpParser(), initConnection, logger) {
 	        super();
 	        this.#parser = parser;
 	        this.#logger = logger;
@@ -4774,7 +4832,7 @@ var mapperTab = (function () {
 	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
 	        this.#permissionsProcessor = new PermissionsProcessor_js_1.PermissionsProcessor(browserCdpClient);
 	        this.#scriptProcessor = new ScriptProcessor_js_1.ScriptProcessor(browsingContextStorage, realmStorage, preloadScriptStorage, logger);
-	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager, browserCdpClient);
+	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager, browserCdpClient, initConnection);
 	        this.#storageProcessor = new StorageProcessor_js_1.StorageProcessor(browserCdpClient, browsingContextStorage, logger);
 	        // keep-sorted end
 	    }
@@ -7592,6 +7650,7 @@ var mapperTab = (function () {
 	            ]);
 	        }
 	        catch (err) {
+	            this.#logger?.(log_js_1$7.LogType.debugError, err);
 	            this.#networkDomainEnabled = !enabled;
 	        }
 	    }
@@ -9332,7 +9391,7 @@ var mapperTab = (function () {
 	                    ? Math.min(priority, cdpPriority)
 	                    : // At this point we know that we have subscribed
 	                        // to only one of the two
-	                        priority ?? cdpPriority;
+	                        (priority ?? cdpPriority);
 	            }
 	            return priority;
 	        })
@@ -9747,7 +9806,7 @@ var mapperTab = (function () {
 	        }
 	        await this.#transport.sendMessage(message);
 	    };
-	    constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, options, parser, logger) {
+	    constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger) {
 	        super();
 	        this.#logger = logger;
 	        this.#messageQueue = new ProcessingQueue_js_1.ProcessingQueue(this.#processOutgoingMessage, this.#logger);
@@ -9755,8 +9814,24 @@ var mapperTab = (function () {
 	        this.#transport.setOnMessage(this.#handleIncomingMessage);
 	        this.#eventManager = new EventManager_js_1.EventManager(this.#browsingContextStorage);
 	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(this.#eventManager, this.#browsingContextStorage, browserCdpClient, logger);
-	        new CdpTargetManager_js_1.CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#preloadScriptStorage, defaultUserContextId, options?.unhandledPromptBehavior, logger);
-	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, parser, this.#logger);
+	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, this.#preloadScriptStorage, networkStorage, parser, async (options) => {
+	            // This is required to ignore certificate errors when service worker is fetched.
+	            await browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+	                ignore: options.acceptInsecureCerts ?? false,
+	            });
+	            new CdpTargetManager_js_1.CdpTargetManager(cdpConnection, browserCdpClient, selfTargetId, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, networkStorage, this.#preloadScriptStorage, defaultUserContextId, options?.unhandledPromptBehavior, logger);
+	            // Needed to get events about new targets.
+	            await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
+	                discover: true,
+	            });
+	            // Needed to automatically attach to new targets.
+	            await browserCdpClient.sendCommand('Target.setAutoAttach', {
+	                autoAttach: true,
+	                waitForDebuggerOnStart: true,
+	                flatten: true,
+	            });
+	            await this.#topLevelContextsLoaded();
+	        }, this.#logger);
 	        this.#eventManager.on("event" /* EventManagerEvents.Event */, ({ message, event }) => {
 	            this.emitOutgoingMessage(message, event);
 	        });
@@ -9767,7 +9842,7 @@ var mapperTab = (function () {
 	    /**
 	     * Creates and starts BiDi Mapper instance.
 	     */
-	    static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, options, parser, logger) {
+	    static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, parser, logger) {
 	        // The default context is not exposed in Target.getBrowserContexts but can
 	        // be observed via Target.getTargets. To determine the default browser
 	        // context, we check which one is mentioned in Target.getTargets and not in
@@ -9775,10 +9850,6 @@ var mapperTab = (function () {
 	        const [{ browserContextIds }, { targetInfos }] = await Promise.all([
 	            browserCdpClient.sendCommand('Target.getBrowserContexts'),
 	            browserCdpClient.sendCommand('Target.getTargets'),
-	            // This is required to ignore certificate errors when service worker is fetched.
-	            browserCdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
-	                ignore: options?.acceptInsecureCerts ?? false,
-	            }),
 	        ]);
 	        let defaultUserContextId = 'default';
 	        for (const info of targetInfos) {
@@ -9788,18 +9859,7 @@ var mapperTab = (function () {
 	                break;
 	            }
 	        }
-	        const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, options, parser, logger);
-	        // Needed to get events about new targets.
-	        await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
-	            discover: true,
-	        });
-	        // Needed to automatically attach to new targets.
-	        await browserCdpClient.sendCommand('Target.setAutoAttach', {
-	            autoAttach: true,
-	            waitForDebuggerOnStart: true,
-	            flatten: true,
-	        });
-	        await server.#topLevelContextsLoaded();
+	        const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger);
 	        return server;
 	    }
 	    /**
@@ -17276,23 +17336,23 @@ var mapperTab = (function () {
 	 * @param {string} selfTargetId
 	 * @param options Mapper options. E.g. `acceptInsecureCerts`.
 	 */
-	async function runMapperInstance(selfTargetId, options) {
+	async function runMapperInstance(selfTargetId) {
 	    // eslint-disable-next-line no-console
 	    console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
 	    const bidiServer = await BidiMapper_js_1.BidiServer.createAndStart(mapperTabToServerTransport, cdpConnection, 
 	    /**
 	     * Create a Browser CDP Session per Mapper instance.
 	     */
-	    await cdpConnection.createBrowserSession(), selfTargetId, options, new BidiParser_js_1.BidiParser(), mapperTabPage_js_1.log);
+	    await cdpConnection.createBrowserSession(), selfTargetId, new BidiParser_js_1.BidiParser(), mapperTabPage_js_1.log);
 	    (0, mapperTabPage_js_1.log)(log_js_1.LogType.debugInfo, 'Mapper instance has been launched');
 	    return bidiServer;
 	}
 	/**
 	 * Set `window.runMapper` to a function which launches the BiDi mapper instance.
 	 * @param selfTargetId Needed to filter out info related to BiDi target.
-	 * @param options Mapper options. E.g. `acceptInsecureCerts`. */
-	window.runMapperInstance = async (selfTargetId, options) => {
-	    await runMapperInstance(selfTargetId, options);
+	 */
+	window.runMapperInstance = async (selfTargetId) => {
+	    await runMapperInstance(selfTargetId);
 	};
 
 	return bidiTab;

@@ -19,6 +19,7 @@ namespace ash {
 
 class PickerSearchResult;
 enum class PickerActionType;
+enum class PickerCapsLockPosition;
 
 // Delegate for `PickerZeroStateView`.
 class ASH_EXPORT PickerZeroStateViewDelegate {
@@ -44,6 +45,10 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   // Informs that the height of the zero state view may change.
   virtual void OnZeroStateViewHeightChanged() = 0;
+
+  virtual PickerCapsLockPosition GetCapsLockPosition() = 0;
+
+  virtual void SetCapsLockDisplayed(bool displayed) = 0;
 };
 
 }  // namespace ash

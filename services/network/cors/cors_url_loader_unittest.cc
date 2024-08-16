@@ -376,10 +376,8 @@ TEST_F(CorsURLLoaderTest, CrossOriginRequestWithNoCorsModeAndPatchMethod) {
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
-  std::string origin_header;
-  EXPECT_TRUE(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin,
-                                             &origin_header));
-  EXPECT_EQ(origin_header, "https://example.com");
+  EXPECT_EQ(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "https://example.com");
 }
 
 TEST_F(CorsURLLoaderTest, CrossOriginRequestFetchRequestModeSameOrigin) {
@@ -412,10 +410,8 @@ TEST_F(CorsURLLoaderTest, CrossOriginRequestWithCorsModeButMissingCorsHeader) {
   RunUntilComplete();
 
   EXPECT_TRUE(IsNetworkLoaderStarted());
-  std::string origin_header;
-  EXPECT_TRUE(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin,
-                                             &origin_header));
-  EXPECT_EQ(origin_header, "https://example.com");
+  EXPECT_EQ(GetRequest().headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+            "https://example.com");
   EXPECT_FALSE(client().has_received_redirect());
   EXPECT_FALSE(client().has_received_response());
   EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
@@ -1438,9 +1434,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_POST) {
   ASSERT_EQ(1, num_created_loaders());
   EXPECT_EQ(GetRequest().url, url);
   EXPECT_EQ(GetRequest().method, "POST");
-  std::string attached_origin;
-  EXPECT_TRUE(GetRequest().headers.GetHeader("origin", &attached_origin));
-  EXPECT_EQ(attached_origin, url::Origin::Create(origin).Serialize());
+  EXPECT_EQ(GetRequest().headers.GetHeader("origin"),
+            url::Origin::Create(origin).Serialize());
 }
 
 TEST_F(CorsURLLoaderTest, 304ForSimpleRevalidation) {
@@ -1552,10 +1547,8 @@ TEST_F(CorsURLLoaderTest, RevalidationAndPreflight) {
   EXPECT_EQ(1, num_created_loaders());
   EXPECT_EQ(GetRequest().url, url);
   EXPECT_EQ(GetRequest().method, "OPTIONS");
-  std::string preflight_request_headers;
-  EXPECT_TRUE(GetRequest().headers.GetHeader("access-control-request-headers",
-                                             &preflight_request_headers));
-  EXPECT_EQ(preflight_request_headers, "foo");
+  EXPECT_EQ(GetRequest().headers.GetHeader("access-control-request-headers"),
+            "foo");
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"},
@@ -1900,7 +1893,7 @@ TEST_F(CorsURLLoaderTest, TrustedParamsWithUntrustedFactoryFailsBeforeCORS) {
   }
 }
 
-// Test that when a request has LOAD_RESTRICTED_PREFETCH and a
+// Test that when a request has LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME and a
 // NetworkAnonymizationKey, CorsURLLoaderFactory does not reject the request.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
@@ -1917,7 +1910,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = GURL("http://other.example.com/foo.png");
   request.request_initiator = initiator;
-  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   request.trusted_params = ResourceRequest::TrustedParams();
 
   // Fill up the `trusted_params` NetworkAnonymizationKey member.
@@ -1942,10 +1935,10 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   EXPECT_TRUE(GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
-// Test that when a request has LOAD_RESTRICTED_PREFETCH but no
+// Test that when a request has LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME but no
 // NetworkAnonymizationKey, CorsURLLoaderFactory rejects the request. This is
-// because the LOAD_RESTRICTED_PREFETCH flag must only appear on requests that
-// make use of their TrustedParams' `isolation_info`.
+// because the LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME flag must only appear on
+// requests that make use of their TrustedParams' `isolation_info`.
 TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
 
@@ -1961,7 +1954,7 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = GURL("http://other.example.com/foo.png");
   request.request_initiator = initiator;
-  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH;
+  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   request.trusted_params = ResourceRequest::TrustedParams();
 
   CreateLoaderAndStart(request);
@@ -1972,9 +1965,11 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchFailsWithoutNIK) {
   EXPECT_FALSE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
-  EXPECT_THAT(bad_message_helper.bad_message_reports(),
-              ElementsAre("CorsURLLoaderFactory: Request with "
-                          "LOAD_RESTRICTED_PREFETCH flag is not trusted"));
+  EXPECT_THAT(
+      bad_message_helper.bad_message_reports(),
+      ElementsAre(
+          "CorsURLLoaderFactory: Request with "
+          "LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME flag is not trusted"));
 }
 
 TEST_F(CorsURLLoaderTest, DevToolsObserverOnCorsErrorCallback) {

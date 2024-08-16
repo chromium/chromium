@@ -25,81 +25,79 @@ namespace cc {
 // display list.
 class FakeRecordingSource : public RecordingSource {
  public:
-  explicit FakeRecordingSource(const gfx::Size& layer_bounds) {
-    SetCanUseRecordedBounds(true);
-    SetLayerBounds(layer_bounds);
-  }
+  explicit FakeRecordingSource(const gfx::Size& layer_bounds);
+  ~FakeRecordingSource();
 
   void SetLayerBounds(const gfx::Size& layer_bounds) {
     size_ = layer_bounds;
-    client_.set_bounds(layer_bounds);
+    client_->set_bounds(layer_bounds);
   }
 
   void set_fill_with_nonsolid_color(bool nonsolid) {
-    client_.set_fill_with_nonsolid_color(nonsolid);
+    client_->set_fill_with_nonsolid_color(nonsolid);
   }
 
   void set_has_non_aa_paint(bool has_non_aa_paint) {
-    client_.set_has_non_aa_paint(has_non_aa_paint);
+    client_->set_has_non_aa_paint(has_non_aa_paint);
   }
 
   void set_has_slow_paths(bool slow_paths) {
-    client_.set_contains_slow_paths(slow_paths);
+    client_->set_contains_slow_paths(slow_paths);
   }
 
-  void set_has_draw_text_op() { client_.set_has_draw_text_op(); }
+  void set_has_draw_text_op() { client_->set_has_draw_text_op(); }
 
   void Rerecord() {
     SetNeedsDisplayRect(gfx::Rect(size_));
     Region invalidation;
-    Update(size_, recording_scale_factor_, client_, invalidation);
+    Update(size_, recording_scale_factor_, *client_, invalidation);
   }
 
   void add_draw_rect(const gfx::Rect& rect) {
-    client_.add_draw_rect(rect, default_flags_);
+    client_->add_draw_rect(rect, default_flags_);
   }
 
   void add_draw_rect_with_flags(const gfx::Rect& rect,
                                 const PaintFlags& flags) {
-    client_.add_draw_rect(rect, flags);
+    client_->add_draw_rect(rect, flags);
   }
 
   void add_draw_rectf(const gfx::RectF& rect) {
-    client_.add_draw_rectf(rect, default_flags_);
+    client_->add_draw_rectf(rect, default_flags_);
   }
 
   void add_draw_rectf_with_flags(const gfx::RectF& rect,
                                  const PaintFlags& flags) {
-    client_.add_draw_rectf(rect, flags);
+    client_->add_draw_rectf(rect, flags);
   }
 
   void add_draw_image(sk_sp<SkImage> image, const gfx::Point& point) {
-    client_.add_draw_image(std::move(image), point, SkSamplingOptions(),
-                           default_flags_);
+    client_->add_draw_image(std::move(image), point, SkSamplingOptions(),
+                            default_flags_);
   }
   void add_draw_image(PaintImage image, const gfx::Point& point) {
-    client_.add_draw_image(std::move(image), point, SkSamplingOptions(),
-                           default_flags_);
+    client_->add_draw_image(std::move(image), point, SkSamplingOptions(),
+                            default_flags_);
   }
 
   void add_draw_image_with_transform(PaintImage image,
                                      const gfx::Transform& transform) {
-    client_.add_draw_image_with_transform(std::move(image), transform,
-                                          SkSamplingOptions(), default_flags_);
+    client_->add_draw_image_with_transform(std::move(image), transform,
+                                           SkSamplingOptions(), default_flags_);
   }
 
   void add_draw_image_with_flags(sk_sp<SkImage> image,
                                  const gfx::Point& point,
                                  const SkSamplingOptions& sampling,
                                  const PaintFlags& flags) {
-    client_.add_draw_image(std::move(image), point, sampling, flags);
+    client_->add_draw_image(std::move(image), point, sampling, flags);
   }
 
   void set_default_flags(const PaintFlags& flags) { default_flags_ = flags; }
 
   void reset_draws() {
-    client_ = FakeContentLayerClient();
-    client_.set_bounds(size_);
+    client_.emplace();
+    client_->set_bounds(size_);
   }
 
   void SetRecordingScaleFactor(float recording_scale_factor) {
@@ -107,9 +105,17 @@ class FakeRecordingSource : public RecordingSource {
   }
 
  private:
-  FakeContentLayerClient client_;
+  std::optional<FakeContentLayerClient> client_;
   PaintFlags default_flags_;
 };
+
+inline FakeRecordingSource::FakeRecordingSource(const gfx::Size& layer_bounds) {
+  client_.emplace();
+  SetCanUseRecordedBounds(true);
+  SetLayerBounds(layer_bounds);
+}
+
+inline FakeRecordingSource::~FakeRecordingSource() = default;
 
 }  // namespace cc
 

@@ -70,6 +70,14 @@ inline constexpr char kDownloadBubblePartialViewEnabled[] =
 inline constexpr char kDownloadBubblePartialViewImpressions[] =
     "download_bubble.partial_view_impressions";
 
+#if BUILDFLAG(IS_ANDROID)
+// Records the timestamp of each time we show a prompt to the user
+// suggesting they enable app verification on Android. We use this pref
+// to limit the number of times users see a prompt in a given window.
+inline constexpr char kDownloadAppVerificationPromptTimestamps[] =
+    "download.app_verification_prompt_timestamps";
+#endif
+
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";
@@ -481,11 +489,6 @@ inline constexpr char kInsightsExtensionEnabled[] =
 // Boolean controlling whether showing Sync Consent during sign-in is enabled.
 // Controlled by policy.
 inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
-
-// Boolean pref recording the whether a nudge has been shown, to notify users of
-// changes to default display modes for affected web apps.
-inline constexpr char kStandaloneWindowMigrationNudgeShown[] =
-    "standalone_window_migration_nudge_shown";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -508,6 +511,7 @@ inline constexpr char kResolveTimezoneByGeolocationMigratedToMethod[] =
     "settings.resolve_timezone_by_geolocation_migrated_to_method";
 
 // A string pref set to the current input method.
+// TODO: b/308389509 - Remove this constant to complete migration.
 inline constexpr char kLanguageCurrentInputMethod[] =
     "settings.language.current_input_method";
 
@@ -1938,6 +1942,8 @@ inline constexpr char kSidePanelHorizontalAlignment[] =
 // a button in the toolbar.
 inline constexpr char kSidePanelCompanionEntryPinnedToToolbar[] =
     "side_panel.companion_pinned_to_toolbar";
+// Stores the mapping of side panel IDs to their widths.
+inline constexpr char kSidePanelIdToWidth[] = "side_panel.id_to_width";
 // Corresponds to the enterprise policy.
 inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
@@ -2527,6 +2533,13 @@ inline constexpr char kWebAppsUninstalledDefaultChromeApps[] =
 // outlive the app installation and uninstallation.
 inline constexpr char kWebAppsPreferences[] = "web_apps.web_app_ids";
 
+#if BUILDFLAG(IS_MAC)
+// A boolean that indicates whether ad-hoc code signing should be used for
+// PWA app shims. This is managed by enterprise policy.
+inline constexpr char kWebAppsUseAdHocCodeSigningForAppShims[] =
+    "web_apps.use_adhoc_code_signing_for_app_shims";
+#endif  // BUILDFLAG(IS_MAC)
+
 // The default audio capture device used by the Media content setting.
 // TODO(crbug.com/311205211): Remove this once users have been migrated to
 // `kAudioInputUserPreferenceRanking`.
@@ -2656,6 +2669,14 @@ inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
 // Isolated Web App,
 inline constexpr char kIsolatedWebAppInstallForceList[] =
     "profile.isolated_web_app.install.forcelist";
+
+// An integer pref that remembers how many force install initializations are
+// pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
+// initializations are pending, the initialization is delayed for
+// `kIsolatedWebAppForceInstallEmergencyDelay` time (More details in
+// go/iwa-install-emergency-mechanism).
+inline constexpr char kIsolatedWebAppPendingInitializationCount[] =
+    "profile.isolated_web_app.install.pending_initialization_count";
 
 // Holds URL patterns that specify origins that will be allowed to call
 // `subApps.{add|remove|list}())` without prior user gesture and that will skip
@@ -3140,6 +3161,11 @@ inline constexpr char kKioskTroubleshootingToolsEnabled[] =
 inline constexpr char kKioskBrowserPermissionsAllowedForOrigins[] =
     "policy.kiosk_browser_permissions_allowed_for_origins";
 
+// Pref name to toggle the network prompt at web app kiosk launch when the
+// device is offline and the web app is not offline enabled.
+inline constexpr char kKioskWebAppOfflineEnabled[] =
+    "policy.kiosk_web_app_offline_enabled";
+
 // A boolean pref which determines whether a Web Kiosk can open more than one
 // browser window.
 inline constexpr char kNewWindowsInKioskAllowed[] =
@@ -3161,33 +3187,6 @@ inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
 // up the device.
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =
     "device_weekly_scheduled_suspend";
-
-// A list of weekly time intervals when login to the device is blocked.
-// Example content:
-// [
-//   {
-//     "start": {
-//         "day_of_week": "WEDNESDAY",
-//         "milliseconds_since_midnight": 43200000
-//     },
-//     "end": {
-//         "day_of_week": "WEDNESDAY",
-//         "milliseconds_since_midnight": 75600000
-//     }
-//   },
-//   {
-//     "start": {
-//         "day_of_week": "FRIDAY",
-//         "milliseconds_since_midnight": 64800000
-//     },
-//     "end": {
-//         "day_of_week": "MONDAY",
-//         "milliseconds_since_midnight": 21600000
-//     }
-//   }
-// ]
-inline constexpr char kDeviceRestrictionSchedule[] =
-    "device_restriction_schedule";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -4225,7 +4224,6 @@ inline constexpr char kReadAloudSyntheticTrials[] =
     "readaloud.synthetic_trials";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 // A list of base64 encoded certificates that are to be trusted as root certs.
 // Only specifiable as an enterprise policy.
 inline constexpr char kCACertificates[] = "certificates.ca_certificates";
@@ -4254,7 +4252,6 @@ inline constexpr char kCAHintCertificates[] =
 inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
 #endif
-#endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 // Integer value controlling whether to show any enterprise badging on a managed
 // profile.

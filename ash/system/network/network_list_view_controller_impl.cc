@@ -102,6 +102,16 @@ bool IsCellularDeviceInhibited() {
          chromeos::network_config::mojom::InhibitReason::kNotInhibited;
 }
 
+bool IsCellularDeviceFlashing() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+  if (!cellular_device) {
+    return false;
+  }
+  return cellular_device->is_flashing;
+}
+
 bool IsESimSupported() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
@@ -505,8 +515,9 @@ void NetworkListViewControllerImpl::MaybeShowConnectionWarningManagedIcon(
 }
 
 bool NetworkListViewControllerImpl::ShouldAddESimEntry() const {
-  const bool is_add_esim_enabled =
-      is_mobile_network_enabled_ && !IsCellularDeviceInhibited();
+  const bool is_add_esim_enabled = is_mobile_network_enabled_ &&
+                                   !IsCellularDeviceInhibited() &&
+                                   !IsCellularDeviceFlashing();
 
   bool is_add_esim_visible = IsESimSupported();
   const GlobalPolicy* global_policy = model()->global_policy();
@@ -808,6 +819,23 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
       return;
     }
 
+    if (IsCellularDeviceFlashing()) {
+      // When a device is flashing, it cannot process any new operations. Thus,
+      // keep the toggle on to show users that the device is active, but set it
+      // to be disabled to make it clear that users cannot update it until
+      // operation completes.
+      CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_UPDATING,
+                                        &mobile_status_message_);
+
+      mobile_header_view_->SetToggleVisibility(/*visible=*/true);
+      mobile_header_view_->SetToggleState(/*enabled=*/false,
+                                          /*is_on=*/true,
+                                          /*animate_toggle=*/true);
+      network_detailed_network_view()->UpdateMobileStatus(true);
+
+      return;
+    }
+
     const bool cellular_enabled = cellular_state == DeviceStateType::kEnabled;
 
     // The toggle will never be enabled for secondary users.
@@ -932,7 +960,7 @@ void NetworkListViewControllerImpl::CreateInfoLabelIfMissingAndUpdate(
                           ->GetNetworkList(NetworkType::kTether)
                           ->AddChildView(std::move(info));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

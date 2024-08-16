@@ -70,24 +70,25 @@ std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
     views::Widget::InitParams::Ownership expected_ownership);
 
 // Create a widget for |dialog| that is modal to |web_contents|.
-// The modal type of |dialog->GetModalType()| must be ui::MODAL_TYPE_CHILD.
+// The modal type of |dialog->GetModalType()| must be
+// ui::mojom::ModalType::kChild.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents);
 
 // Create a widget for |dialog| that has a modality given by
 // |dialog->GetModalType()|.  The modal type must be either
-// ui::MODAL_TYPE_SYSTEM or ui::MODAL_TYPE_WINDOW.  This places the dialog
-// appropriately if |parent| is a valid browser window. Currently, |parent| may
-// be null for MODAL_TYPE_WINDOW, but that's a bug and callers shouldn't rely on
-// that working. See http://crbug.com/657293. Instead of calling this function
-// with null |parent| and MODAL_TYPE_WINDOW, consider calling views::
-// DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr) instead.
-// For dialogs that may appear without direct user interaction (i.e., that may
-// appear while a user is busily accomplishing some other task in the browser),
-// consider providing an override of GetDefaultDialogButton on |dialog| to
-// suppress the normal behavior of choosing a focused-by-default button. This is
-// especially important if the action of the default button has consequences on
-// the user's task at hand.
+// ui::mojom::ModalType::kSystem or ui::mojom::ModalType::kWindow.  This places
+// the dialog appropriately if |parent| is a valid browser window. Currently,
+// |parent| may be null for MODAL_TYPE_WINDOW, but that's a bug and callers
+// shouldn't rely on that working. See http://crbug.com/657293. Instead of
+// calling this function with null |parent| and MODAL_TYPE_WINDOW, consider
+// calling views:: DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr)
+// instead. For dialogs that may appear without direct user interaction (i.e.,
+// that may appear while a user is busily accomplishing some other task in the
+// browser), consider providing an override of GetDefaultDialogButton on
+// |dialog| to suppress the normal behavior of choosing a focused-by-default
+// button. This is especially important if the action of the default button has
+// consequences on the user's task at hand.
 views::Widget* CreateBrowserModalDialogViews(
     std::unique_ptr<views::DialogDelegate> dialog,
     gfx::NativeWindow parent);

@@ -1,0 +1,24 @@
+Noto Emoji Font
+Shipped: no
+
+1. Source Origin
+https://fonts.google.com/noto/specimen/Noto+Emoji
+
+2. LICENSE AND OPENSOURCE
+SIL Open Font License. For license information, see the OFL.txt file
+
+3. Reason:
+Font file subset included to have a cross platform font for testing emoji variation selectors support.
+
+
+Command to generate subset font:
+$ pyftsubset NotoEmoji-Regular.ttf --text="☔☃"
+
+where pyftsubset comes from https://github.com/behdad/fonttools
+
+
+Modified font cmap table to include variation selector 15 (U+FE0E).
+
+Command to generate XML text format file from font: ttx NotoEmoji-Regular.ttf
+
+where ttx comes from https://github.com/behdad/fonttools

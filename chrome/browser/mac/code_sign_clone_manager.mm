@@ -109,8 +109,8 @@ bool ValidateTempDir(const base::FilePath& path) {
 // Get a temporary directory that is cleaned on machine boot but not
 // periodically. `DIRHELPER_USER_LOCAL_TRANSLOCATION` and `Cleanup At Startup`
 // are the only found directories that have this behavior. Use
-// `DIRHELPER_USER_LOCAL_TRANSLOCATION` when running on macOS 11+, and `Cleanup
-// At Startup` otherwise.
+// `DIRHELPER_USER_LOCAL_TRANSLOCATION` as it can be obtained through an API,
+// albeit a private one.
 //
 // Returns true if a suitable temporary directory path is found. Returns false
 // otherwise.
@@ -181,9 +181,9 @@ bool GetCleanupOnBootTempDir(base::FilePath* path) {
   base::FilePath temporary_directory_path =
       base::apple::NSStringToFilePath(temp_dir);
 
-  // `DIRHELPER_USER_LOCAL_TRANSLOCATION` created by `_dirhelper` or `"Cleanup
-  // At Startup"` by `mkdir`, from the browser process, will be stamped with a
-  // quarantine attribute. Attempt to remove it.
+  // `DIRHELPER_USER_LOCAL_TRANSLOCATION` created by `_dirhelper`, from the
+  // browser process, will be stamped with a quarantine attribute. Attempt to
+  // remove it.
   RemoveQuarantineAttribute(temporary_directory_path);
 
   *path = temporary_directory_path;
@@ -493,7 +493,7 @@ MacCloneExists CloneExists(const base::FilePath& clone_app_path,
   } else if (!main_executable_exists && !info_plist_exists) {
     return MacCloneExists::kMissingMainExecutableAndInfoPlist;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

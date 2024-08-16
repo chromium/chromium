@@ -61,7 +61,8 @@ void FuzzerBrowserProcess::EmbedFuzzedCompositorFrame(
   frame_sink_manager_.CreateCompositorFrameSink(
       kEmbeddedFrameSinkId, /*bundle_id=*/std::nullopt,
       sink_remote.BindNewPipeAndPassReceiver(),
-      sink_client.BindInterfaceRemote());
+      sink_client.BindInterfaceRemote(),
+      /* render_input_router_client= */ mojo::NullRemote());
 
   for (auto& fuzzed_bitmap : allocated_bitmaps) {
     sink_remote->DidAllocateSharedBitmap(

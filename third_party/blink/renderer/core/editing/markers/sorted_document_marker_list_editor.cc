@@ -19,7 +19,7 @@ void SortedDocumentMarkerListEditor::AddMarkerWithoutMergingOverlapping(
     return;
   }
 
-  auto* const pos = std::lower_bound(
+  auto const pos = std::lower_bound(
       list->begin(), list->end(), marker,
       [](const Member<DocumentMarker>& marker_in_list,
          const DocumentMarker* marker_to_insert) {
@@ -183,7 +183,7 @@ DocumentMarker* SortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
     unsigned end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
-  auto* const marker_it =
+  auto const marker_it =
       std::lower_bound(list.begin(), list.end(), start_offset,
                        [](const DocumentMarker* marker, unsigned start_offset) {
                          return marker->EndOffset() <= start_offset;
@@ -203,12 +203,12 @@ SortedDocumentMarkerListEditor::MarkersIntersectingRange(const MarkerList& list,
                                                          unsigned end_offset) {
   DCHECK_LE(start_offset, end_offset);
 
-  auto* const start_it =
+  auto const start_it =
       std::lower_bound(list.begin(), list.end(), start_offset,
                        [](const DocumentMarker* marker, unsigned start_offset) {
                          return marker->EndOffset() <= start_offset;
                        });
-  auto* const end_it =
+  auto const end_it =
       std::upper_bound(list.begin(), list.end(), end_offset,
                        [](unsigned end_offset, const DocumentMarker* marker) {
                          return end_offset <= marker->StartOffset();

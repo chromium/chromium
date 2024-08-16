@@ -97,7 +97,6 @@ class DevToolsEmulator;
 class Frame;
 class FullscreenController;
 class PageScaleConstraintsSet;
-class WebDevToolsAgentImpl;
 class WebLocalFrame;
 class WebLocalFrameImpl;
 class WebSettingsImpl;
@@ -361,8 +360,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   Page* GetPage() const { return page_.Get(); }
 
   WebViewClient* Client() { return web_view_client_; }
-
-  WebDevToolsAgentImpl* MainFrameDevToolsAgentImpl();
 
   DevToolsEmulator* GetDevToolsEmulator() const {
     return dev_tools_emulator_.Get();
@@ -637,8 +634,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DraggableRegionsChanged();
 
   double ClampZoomLevel(double zoom_level) const;
-  double ZoomLevelToZoomFactor(double zoom_level, bool for_main_frame) const;
-  double ZoomFactorToZoomLevel(double zoom_factor) const;
+  double ZoomLevelToZoomFactor(double zoom_level) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, DivScrollIntoEditableTest);
@@ -857,7 +853,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   const double maximum_zoom_level_;
 
   // Additional zoom factor used to scale the content by device scale factor.
-  double zoom_factor_for_device_scale_factor_ = 0.;
+  double zoom_factor_for_device_scale_factor_ = 1.;
 
   // This value, when multiplied by the font scale factor, gives the maximum
   // page scale that can result from automatic zooms.

@@ -155,6 +155,8 @@ class HardwareRenderer {
   std::unique_ptr<OnViz> on_viz_;
 
   const bool report_rendering_threads_;
+
+  base::TimeDelta preferred_frame_interval_;
 };
 
 }  // namespace android_webview

@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">control lliscant</translation>
 <translation id="1211441953136645838">nota final</translation>
 <translation id="1281252709823657822">quadre de diàleg</translation>
+<translation id="1306460908038601864">Desactivat</translation>
 <translation id="1335095011850992622">crèdits</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">bàner</translation>
+<translation id="1480676835519562650">multiseleccionable; se n'han seleccionat <ph name="SELECTED" /> de <ph name="COUNT" /></translation>
 <translation id="1589122976691792535">regió</translation>
 <translation id="1650423536718072820">citació extreta</translation>
+<translation id="1681022320378710418">hora actual</translation>
+<translation id="1727839386348365796">Comptagotes</translation>
 <translation id="1821985195704844674">quadrícula d'arbre</translation>
 <translation id="1823704031293214298">peu de pàgina</translation>
 <translation id="1838681052457320736">quadre de diàleg d'alerta</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">supressió</translation>
 <translation id="1907737156431278478">exemple</translation>
 <translation id="1930711995431081526">estat</translation>
+<translation id="2031987842108996681">Canal vermell</translation>
 <translation id="2158401438286456825">llista de pàgines</translation>
 <translation id="2291999235780842123">casella de selecció</translation>
 <translation id="2311842470354187719">salt de pàgina</translation>
 <translation id="2335594187091864976">selector de data i hora</translation>
 <translation id="2508569020611168319">llista de pestanyes</translation>
+<translation id="2530182415807757784">multiseleccionable; no s'ha seleccionat res</translation>
+<translation id="2634240155926812724">Canal verd</translation>
 <translation id="2657045182931379222">objecte gràfic</translation>
 <translation id="2674318244760992338">peu</translation>
 <translation id="2723001399770238859">àudio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">nota</translation>
 <translation id="3175736971608411871">temporitzador</translation>
 <translation id="3199563858620722075">quadre combinat</translation>
+<translation id="3220661731597678625">pas actual</translation>
+<translation id="3329013043687509092">Saturació</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3557673793733683882">capçalera <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">selector setmanal</translation>
 <translation id="3706100364254443312">commutador</translation>
 <translation id="3808586225841795776">terme</translation>
+<translation id="3914173277599553213">Obligatori</translation>
 <translation id="3920932319529768807">conclusió</translation>
 <translation id="3924558731517983934">aplicació</translation>
 <translation id="3944740393230681990">pròleg</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">portada</translation>
 <translation id="4757246831282535685">tauler de pestanyes</translation>
 <translation id="479989351350248267">cerca</translation>
+<translation id="4912200001568447310">element actual</translation>
 <translation id="4912536737030637138">entrada bibliogràfica</translation>
 <translation id="492244087561876220">comentari</translation>
+<translation id="4924138096460353083">indeterminat</translation>
+<translation id="4971739861736909480">S'ha seleccionat <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">grup de files</translation>
 <translation id="5034860022980953847">indicador de progrés</translation>
 <translation id="5093189678851173835">epígraf</translation>
+<translation id="509897012892853729">Canal blau</translation>
 <translation id="512758898067543763">capçalera de la fila</translation>
 <translation id="5143125788380636750">epíleg</translation>
 <translation id="5406322316791861025">figura</translation>
+<translation id="5425179576310518467">data actual</translation>
 <translation id="5453733299334684579">element de l'arbre</translation>
 <translation id="546643433018805598">subíndex</translation>
 <translation id="5476505524087279545">desmarca</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">botó</translation>
 <translation id="5693537480074347398">superíndex</translation>
 <translation id="576709008726043716">introducció</translation>
+<translation id="5860033963881614850">Desactivat</translation>
 <translation id="591047860372322273">quadre de cerca</translation>
+<translation id="5916664084637901428">Activat</translation>
 <translation id="5987525920412732405">botó de selecció de valors</translation>
 <translation id="6023896073578205740">quadre de llista</translation>
 <translation id="6119846243427417423">activa</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">comptador</translation>
 <translation id="6166809985690652833">cloenda</translation>
+<translation id="6212595056017402527">pàgina actual</translation>
 <translation id="6213469881011901533">glossari</translation>
+<translation id="6281588256137006900">Lluminositat</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">agraïments</translation>
 <translation id="648732519525291180">selector d'hora</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">citació en bloc</translation>
 <translation id="693476918119313863">capçalera</translation>
 <translation id="6981594929165378967">inserció</translation>
+<translation id="698788488269350478">està desplegat.</translation>
 <translation id="7034405885550056553">suggeriment</translation>
+<translation id="7102274145889307184">ubicació actual</translation>
 <translation id="7139483182332611405">prefaci</translation>
 <translation id="7198226213493847604">botó emergent del menú</translation>
 <translation id="7214187073215825913">informació sobre el contingut</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">índex</translation>
 <translation id="7740050170769002709">Contingut HTML</translation>
 <translation id="7802800022689234070">triangle desplegable</translation>
+<translation id="7852167693871241274">Control lliscant de to</translation>
 <translation id="7891486169920085145">divisor</translation>
+<translation id="7962328325860248200">No s'ha seleccionat <ph name="ACCNAME" /></translation>
 <translation id="8034303206267677282">important</translation>
 <translation id="8053789581856978548">camp de text de la cerca</translation>
 <translation id="8057695513531652401">avís</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">capítol</translation>
 <translation id="8851136666856101339">principal</translation>
 <translation id="8861621546968757188">botó emergent del quadre de diàleg</translation>
+<translation id="8889402386540077796">To</translation>
+<translation id="894736920926684893">Commutador per al format</translation>
 <translation id="9002566407876343676">obrir</translation>
 <translation id="901834265349196618">correu electrònic</translation>
 <translation id="9048119486235211610">navegació</translation>

@@ -4,12 +4,11 @@
 
 module webnn.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/webnn/public/mojom/features.mojom";
-import "services/webnn/public/mojom/webnn_buffer.mojom";
+import "services/webnn/public/mojom/webnn_context.mojom";
+import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
-import "services/webnn/public/mojom/webnn_graph.mojom";
-import "services/webnn/public/mojom/webnn_graph_builder.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 // Represents options of creating `WebNNContext` interface.
 struct CreateContextOptions {
@@ -57,50 +56,6 @@ struct CreateContextOptions {
   uint8 thread_count_hint;
 };
 
-struct SupportedDataTypes {
-  bool float32;
-  bool float16;
-  bool int32;
-  bool uint32;
-  bool int64;
-  bool uint64;
-  bool int8;
-  bool uint8;
-};
-
-// Represents the data type limits exposed through
-// `MLContext::opSupportLimits()`.
-// Keep the order as the same as build methods of `MLGraphBuilder`, for
-// operator with multiple parameters, maintain the parameter positions order.
-struct DataTypeLimits {
-  SupportedDataTypes input;
-  SupportedDataTypes constant;
-  SupportedDataTypes arg_min_max_input;
-  SupportedDataTypes arg_min_max_output;
-  SupportedDataTypes concat_inputs;
-  SupportedDataTypes elu_input;
-  SupportedDataTypes gather_input;
-  SupportedDataTypes gather_indices;
-  SupportedDataTypes gelu_input;
-  SupportedDataTypes leaky_relu_input;
-  SupportedDataTypes relu_input;
-  SupportedDataTypes sigmoid_input;
-  SupportedDataTypes slice_input;
-  SupportedDataTypes softmax_input;
-  SupportedDataTypes softplus_input;
-  SupportedDataTypes softsign_input;
-  SupportedDataTypes split_input;
-  SupportedDataTypes where_condition;
-  SupportedDataTypes where_value;
-};
-
-// Represents properties of the `WebNNContext` implementation that has been
-// provided.
-struct ContextProperties {
-  InputOperandLayout input_operand_layout;
-  DataTypeLimits data_type_limits;
-};
-
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.
 struct CreateContextSuccess {
   pending_remote<WebNNContext>? context_remote;
@@ -109,7 +64,7 @@ struct CreateContextSuccess {
   // the context from the renderer. The token is only valid for the lifetime
   // of the context and is used to resolve a buffer in the service using the
   // context corresponding to this handle.
-  mojo_base.mojom.UnguessableToken context_handle;
+  blink.mojom.WebNNContextToken context_handle;
 };
 
 // Represents the return value of `WebNNContextProvider::CreateWebNNContext()`.
@@ -118,37 +73,6 @@ struct CreateContextSuccess {
 union CreateContextResult {
   CreateContextSuccess success;
   Error error;
-};
-
-// Represents a successful call to `WebNNContext::CreateBuffer()`.
-struct CreateBufferSuccess {
-  pending_associated_remote<WebNNBuffer> buffer_remote;
-  // buffer_handle is a generated token used as a handle to identify the buffer
-  // from the renderer. The token is only valid for the lifetime
-  // of the buffer and is used by context operations in the service using the
-  // buffer corresponding to this handle.
-  mojo_base.mojom.UnguessableToken buffer_handle;
-};
-
-// Represents the return value of `WebNNContext::CreateBuffer()`. Let it be
-// `success` if the buffer was successfully created and `error` otherwise.
-union CreateBufferResult {
-  CreateBufferSuccess success;
-  Error error;
-};
-
-// Represents the `MLContext` object in the WebIDL definition that is a global
-// state of neural network compute workload and execution processes. This
-// interface runs in the GPU process and is called from the renderer process.
-[RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
-interface WebNNContext {
-  // Creates a connection to an `MLGraphBuilder` in the WebNN service.
-  CreateGraphBuilder(pending_associated_receiver<WebNNGraphBuilder> receiver);
-
-  // Called by the renderer process to create `WebNNBuffer` message pipe for
-  // creating platform specific buffers, the WebNN buffer will be validated and
-  // created. This method guarantees memory allocation on the device.
-  CreateBuffer(BufferInfo buffer_info) => (CreateBufferResult result);
 };
 
 // This interface runs in the GPU process and is called from the renderer

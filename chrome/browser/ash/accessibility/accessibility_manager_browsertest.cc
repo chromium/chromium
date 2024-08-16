@@ -26,7 +26,7 @@
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/ash/preferences.h"
+#include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -485,7 +485,8 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys},
+         ::features::kAccessibilityMouseKeys,
+         ::features::kAccessibilityFaceGaze},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -995,6 +996,18 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
   EXPECT_EQ(600, panel->GetWidget()->GetWindowBoundsInScreen().width());
   EXPECT_TRUE(root_windows[0]->GetBoundsInScreen().Contains(
       panel->GetWidget()->GetWindowBoundsInScreen()));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
+                       FaceGazeSettingsPageOpensWhenFeatureIsEnabled) {
+  GetActiveUserPrefs()->SetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted, true);
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+  // Enable FaceGaze and wait for settings page to open.
+  AccessibilityManager::Get()->EnableFaceGaze(true);
+  waiter.Run();
 }
 
 class AccessibilityManagerDlcTest : public AccessibilityManagerTest {

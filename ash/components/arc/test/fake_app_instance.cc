@@ -87,7 +87,7 @@ void FakeAppInstance::RequestAppIcon(const std::string& package_name,
                                      const std::string& activity,
                                      int dimension,
                                      RequestAppIconCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeAppInstance::GetAppIcon(const std::string& package_name,
@@ -246,8 +246,7 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
       icon_file_name = "icon_300p.png";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   base::FilePath base_path;
@@ -495,7 +494,7 @@ void FakeAppInstance::RequestShortcutIcon(
     const std::string& icon_resource_id,
     int dimension,
     RequestShortcutIconCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeAppInstance::GetAppShortcutIcon(const std::string& icon_resource_id,
@@ -512,7 +511,7 @@ void FakeAppInstance::RequestPackageIcon(const std::string& package_name,
                                          int dimension,
                                          bool normalize,
                                          RequestPackageIconCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeAppInstance::GetPackageIcon(const std::string& package_name,

@@ -8,10 +8,12 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class ManagedMenuViewUnitTest : public TestWithBrowserView {
@@ -36,7 +38,10 @@ TEST_F(ManagedMenuViewUnitTest, ManagedAccountLabel) {
 
   EXPECT_TRUE(view->browser_management_label().empty());
   EXPECT_TRUE(view->profile_management_label().empty());
-  EXPECT_EQ(view->GetWindowTitle(), u"Your profile is managed by Manager");
+  ASSERT_FALSE(view->inline_management_title());
+  EXPECT_EQ(view->GetWindowTitle(),
+            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_DIALOG_PROFILE_MANAGED_BY,
+                                       u"Manager"));
 }
 
 TEST_F(ManagedMenuViewUnitTest, ManagedBrowserLabel) {
@@ -56,7 +61,10 @@ TEST_F(ManagedMenuViewUnitTest, ManagedBrowserLabel) {
 
   EXPECT_TRUE(view->browser_management_label().empty());
   EXPECT_TRUE(view->profile_management_label().empty());
-  EXPECT_EQ(view->GetWindowTitle(), u"Your browser is managed by Manager");
+  ASSERT_FALSE(view->inline_management_title());
+  EXPECT_EQ(view->GetWindowTitle(),
+            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY,
+                                       u"Manager"));
   g_browser_process->local_state()->ClearPref(prefs::kEnterpriseCustomLabel);
 }
 
@@ -79,10 +87,15 @@ TEST_F(ManagedMenuViewUnitTest, ManagedProfileBrowserDifferentLabel) {
   view->Init();
 
   EXPECT_EQ(view->browser_management_label(),
-            u"Device Manager is managing your browser");
+            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY,
+                                       u"Device Manager"));
   EXPECT_EQ(view->profile_management_label(),
-            u"Account Manager is managing your profile");
-  EXPECT_EQ(view->GetWindowTitle(), u"Your browser and profile are managed");
+            u"Account Manager manages your profile");
+  ASSERT_FALSE(view->inline_management_title());
+  EXPECT_EQ(
+      view->GetWindowTitle(),
+      l10n_util::GetStringUTF16(
+          IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS));
   g_browser_process->local_state()->ClearPref(prefs::kEnterpriseCustomLabel);
 }
 
@@ -106,7 +119,9 @@ TEST_F(ManagedMenuViewUnitTest, ManagedProfileBrowserSameLabel) {
 
   EXPECT_TRUE(view->browser_management_label().empty());
   EXPECT_TRUE(view->profile_management_label().empty());
+  ASSERT_FALSE(view->inline_management_title());
   EXPECT_EQ(view->GetWindowTitle(),
-            u"Your browser and profile are managed by Manager");
+            l10n_util::GetStringFUTF16(IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY,
+                                       u"Manager"));
   g_browser_process->local_state()->ClearPref(prefs::kEnterpriseCustomLabel);
 }

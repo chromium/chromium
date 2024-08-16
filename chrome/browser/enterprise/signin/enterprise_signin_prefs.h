@@ -35,6 +35,8 @@ inline constexpr char kPolicyRecoveryToken[] =
 inline constexpr char kPolicyRecoveryClientId[] =
     "enterprise_signin.policy_recovery_client_id";
 
+inline constexpr char kPolicyRecoveryRequired[] =
+    "enterprise_signin.policy_recovery_required";
 }  // namespace prefs
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

@@ -395,11 +395,8 @@ TEST(AggregatableAttributionUtilsTest,
                       kExclude)
               .BuildAggregatableAttribution());
   ASSERT_TRUE(request.has_value());
-  const std::string* source_registration_time =
-      request->shared_info().additional_fields.FindString(
-          "source_registration_time");
-  ASSERT_TRUE(source_registration_time);
-  EXPECT_EQ(*source_registration_time, "0");
+  EXPECT_FALSE(request->shared_info().additional_fields.Find(
+      "source_registration_time"));
 }
 
 TEST(AggregatableAttributionUtilsTest, TotalBudgetMetrics) {

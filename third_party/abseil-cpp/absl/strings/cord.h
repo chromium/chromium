@@ -641,7 +641,6 @@ class Cord {
     bool operator==(const CharIterator& other) const;
     bool operator!=(const CharIterator& other) const;
     reference operator*() const;
-    pointer operator->() const;
 
     friend Cord;
 
@@ -1657,10 +1656,6 @@ inline bool Cord::CharIterator::operator!=(const CharIterator& other) const {
 
 inline Cord::CharIterator::reference Cord::CharIterator::operator*() const {
   return *chunk_iterator_->data();
-}
-
-inline Cord::CharIterator::pointer Cord::CharIterator::operator->() const {
-  return chunk_iterator_->data();
 }
 
 inline Cord Cord::AdvanceAndRead(absl::Nonnull<CharIterator*> it,

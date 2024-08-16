@@ -28,11 +28,13 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
+#include "chrome/browser/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_util_impl.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
@@ -51,9 +53,9 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
+#include "chrome/browser/exo_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
-#include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc_open_url_delegate_impl.h"
@@ -67,7 +69,6 @@
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_token_provider_impl.h"
-#include "chrome/browser/ui/ash/lobster/lobster_client_factory_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
@@ -88,6 +89,7 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
@@ -109,7 +111,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
-#include "chrome/browser/exo_parts.h"
 
 namespace {
 ChromeBrowserMainExtraPartsAsh* g_instance = nullptr;
@@ -194,9 +195,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   cast_config_controller_media_router_ =
       std::make_unique<CastConfigControllerMediaRouter>();
-
-  // Needed by AmbientController in ash.
-  ambient_client_ = std::make_unique<AmbientClientImpl>();
 
   // This controller MUST be initialized before the UI (AshShellInit) is
   // constructed. The video conferencing views will observe and have their own
@@ -305,6 +303,11 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   g_browser_process->platform_part()->GetTimezoneResolverManager();
 
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
+
+  if (ash::boca_util::IsEnabled()) {
+    boca_client_ = std::make_unique<ash::BocaAppClientImpl>();
+  }
+
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();
 
@@ -399,11 +402,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
     picker_client_ = std::make_unique<PickerClientImpl>(
         picker_controller, user_manager::UserManager::Get());
-  }
-
-  if (auto* lobster_controller = ash::Shell::Get()->lobster_controller()) {
-    lobster_client_factory_ =
-        std::make_unique<LobsterClientFactoryImpl>(lobster_controller);
   }
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
@@ -514,8 +512,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   mahi_media_app_content_manager_.reset();
   mahi_media_app_events_proxy_.reset();
-
-  ambient_client_.reset();
 
   cast_config_controller_media_router_.reset();
   if (ash::NetworkConnect::IsInitialized()) {

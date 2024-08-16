@@ -177,7 +177,6 @@ TEST_F(HatsHandlerTest,
       {"Client Channel", "unknown"},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"Time On Page", "20000"},
-      {"Friendlier Safe Browsing Settings", "true"},
   };
 
   // Check that triggering the security page handler function will trigger HaTS
@@ -194,89 +193,6 @@ TEST_F(HatsHandlerTest,
   // Set the time spent on the page to 20,000 milliseconds, which is longer than
   // the configured value from Finch, 15,000 milliseconds.
   args.Append(20000);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
-
-  handler()->HandleSecurityPageHatsRequest(args);
-  task_environment()->RunUntilIdle();
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService \
-  DISABLED_HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService
-#else
-#define MAYBE_HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService \
-  HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService
-#endif
-TEST_F(
-    HatsHandlerTest,
-    MAYBE_HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService) {
-  base::test::FeatureRefAndParams security_page{
-      features::kHappinessTrackingSurveysForSecurityPage,
-      {{"security-page-time", "15s"},
-       {"security-page-require-interaction", "true"}}};
-  base::test::FeatureRefAndParams friendlierSafeBrowsingSettingsStandard{
-      safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection, {}};
-  base::test::FeatureRefAndParams friendlierSafeBrowsingSettingsEnhanced{
-      safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection, {}};
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {security_page, friendlierSafeBrowsingSettingsStandard,
-       friendlierSafeBrowsingSettingsEnhanced},
-      {});
-
-  SurveyStringData expected_product_specific_data = {
-      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
-      {"Safe Browsing Setting Before Trigger", "standard_protection"},
-      {"Safe Browsing Setting After Trigger", "standard_protection"},
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Client Channel", "stable"},
-#else
-      {"Client Channel", "unknown"},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"Time On Page", "20000"},
-      {"Friendlier Safe Browsing Settings", "true"},
-  };
-
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _,
-                           expected_product_specific_data))
-      .Times(1);
-  base::Value::List args;
-  args.Append(static_cast<int>(
-      HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
-  args.Append(20000);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
-
-  handler()->HandleSecurityPageHatsRequest(args);
-  task_environment()->RunUntilIdle();
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime \
-  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime
-#else
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime \
-  HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime
-#endif
-TEST_F(
-    HatsHandlerTest,
-    MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime) {
-  // Check that staying on the security page less than 15,000 ms will not
-  // trigger the survey.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(kHatsSurveyTriggerSettingsSecurity, _, _, _, _))
-      .Times(0);
-
-  base::Value::List args;
-  args.Append(static_cast<int>(
-      HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
-  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
-  args.Append(10000);
 
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);

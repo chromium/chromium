@@ -158,6 +158,15 @@ bool FakeMahiManager::IsEnabled() {
   return true;
 }
 
+bool FakeMahiManager::AllowRepeatingAnswers() {
+  return false;
+}
+
+void FakeMahiManager::AnswerQuestionRepeating(
+    const std::u16string& question,
+    bool current_panel_content,
+    MahiAnswerQuestionCallbackRepeating callback) {}
+
 void FakeMahiManager::SetMediaAppPDFFocused() {}
 
 // ScopedFakeMahiManagerZeroDuration -------------------------------------------

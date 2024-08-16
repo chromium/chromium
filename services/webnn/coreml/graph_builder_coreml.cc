@@ -37,6 +37,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/fixed_array.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -125,6 +126,7 @@ constexpr char kOpExpandTypeName[] = "tile";
 constexpr char kOpGatherTypeName[] = "gather_along_axis";
 constexpr char kOpHardSigmoidTypeName[] = "sigmoid_hard";
 constexpr char kOpInstanceNormalizationTypeName[] = "instance_norm";
+constexpr char kOpLayerNormalizationTypeName[] = "layer_norm";
 constexpr char kOpLeakyReluTypeName[] = "leaky_relu";
 constexpr char kOpMatmulTypeName[] = "matmul";
 constexpr char kOpPadTypeName[] = "pad";
@@ -187,10 +189,12 @@ constexpr char kOpUpsampleNearestNeighborTypeName[] =
     "upsample_nearest_neighbor";
 // General op params that are shared across multiple ops.
 constexpr char kOpParamAlpha[] = "alpha";
+constexpr char kOpParamAxes[] = "axes";
 constexpr char kOpParamAxis[] = "axis";
 constexpr char kOpParamBeta[] = "beta";
 constexpr char kOpParamDataTypeName[] = "dtype";
 constexpr char kOpParamEpsilon[] = "epsilon";
+constexpr char kOpParamGamma[] = "gamma";
 constexpr char kOpParamKeepDims[] = "keep_dims";
 constexpr char kOpParamPad[] = "pad";
 constexpr char kOpParamX[] = "x";
@@ -341,7 +345,7 @@ OperandDataType MILDataTypeToOperandType(
     case CoreML::Specification::MILSpec::DataType::UINT8:
       return OperandDataType::kUint8;
     default:
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -363,7 +367,7 @@ std::string_view MilDataTypeToString(
     case CoreML::Specification::MILSpec::DataType::BOOL:
       return "bool";
     default:
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
   }
 }
 
@@ -385,11 +389,6 @@ template <>
 struct MilDataTypeMap<int32_t> {
   static constexpr CoreML::Specification::MILSpec::DataType value =
       CoreML::Specification::MILSpec::DataType::INT32;
-};
-template <>
-struct MilDataTypeMap<int8_t> {
-  static constexpr CoreML::Specification::MILSpec::DataType value =
-      CoreML::Specification::MILSpec::DataType::INT8;
 };
 template <>
 struct MilDataTypeMap<Float16> {
@@ -425,13 +424,6 @@ template <>
 void SetTensorValueForImmediateValue<Float16>(
     CoreML::Specification::MILSpec::TensorValue& tensor,
     base::span<const Float16> value) {
-  tensor.mutable_bytes()->mutable_values()->assign(
-      base::as_string_view(base::as_bytes(value)));
-}
-template <>
-void SetTensorValueForImmediateValue<int8_t>(
-    CoreML::Specification::MILSpec::TensorValue& tensor,
-    base::span<const int8_t> value) {
   tensor.mutable_bytes()->mutable_values()->assign(
       base::as_string_view(base::as_bytes(value)));
 }
@@ -653,6 +645,33 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*arg_min_max_output=*/
        kArgMinMaxOutputSupportedDataTypes,
        /*concat_inputs=*/kFloatsAndInt32,
+       /*add_input=*/kFloatsAndInt32,
+       /*sub_input=*/kFloatsAndInt32,
+       /*mul_input=*/kFloatsAndInt32,
+       /*div_input=*/kFloatsAndInt32,
+       /*max_input=*/kFloatsAndInt32,
+       /*min_input=*/kFloatsAndInt32,
+       /*pow_input=*/kFloatsAndInt32,
+       /*equal_input=*/kFloatsAndInt32,
+       /*greater_input=*/kFloatsAndInt32,
+       /*greater_or_equal_input=*/kFloatsAndInt32,
+       /*lesser_input=*/kFloatsAndInt32,
+       /*lesser_or_equal_input=*/kFloatsAndInt32,
+       /*logical_not_input=*/DataTypeConstraint::kUint8,
+       /*logical_output=*/DataTypeConstraint::kUint8,
+       /*abs_input=*/kFloatsAndInt32,
+       /*ceil_input=*/DataTypeConstraint::kFloat16To32,
+       /*cos_input=*/DataTypeConstraint::kFloat16To32,
+       /*erf_input=*/DataTypeConstraint::kFloat16To32,
+       /*exp_input=*/DataTypeConstraint::kFloat16To32,
+       /*floor_input=*/DataTypeConstraint::kFloat16To32,
+       /*identity_input=*/kFloatsAndInt32,
+       /*log_input=*/DataTypeConstraint::kFloat16To32,
+       /*neg_input=*/kFloatsAndInt32,
+       /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
+       /*sin_input=*/DataTypeConstraint::kFloat16To32,
+       /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
+       /*tan_input=*/DataTypeConstraint::kFloat16To32,
        /*elu_input=*/DataTypeConstraint::kFloat16To32,
        // Note that INT16, and UINT16 is also supported by CoreML, but WebNN
        // does not have corresponding types. See docs here:
@@ -815,6 +834,11 @@ GraphBuilderCoreml::BuildCoreMLModel() {
             *operation->get_instance_normalization(), block));
         break;
       }
+      case mojom::Operation::Tag::kLayerNormalization: {
+        RETURN_IF_ERROR(AddOperationForLayerNormalization(
+            *operation->get_layer_normalization(), block));
+        break;
+      }
       case mojom::Operation::Tag::kLeakyRelu: {
         RETURN_IF_ERROR(
             AddOperationForLeakyRelu(*operation->get_leaky_relu(), block));
@@ -913,7 +937,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:
-      case mojom::Operation::Tag::kLayerNormalization:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
@@ -1184,19 +1207,14 @@ void GraphBuilderCoreml::AddUnaryOperation(
                     operation.output_operand_id, block);
 }
 
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
+void GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
     std::string_view input_name,
     CoreML::Specification::MILSpec::DataType input_mil_data_type,
     uint64_t output_operand_id,
     float epsilon,
-    CoreML::Specification::MILSpec::Block& block,
-    std::string_view operand_op_name) {
-  if (!kFloatDataTypes.contains(input_mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        operand_op_name, MILDataTypeToOperandType(input_mil_data_type)));
-  }
+    CoreML::Specification::MILSpec::Block& block) {
+  CHECK(kFloatDataTypes.contains(input_mil_data_type));
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(std::string(op_name));
@@ -1207,22 +1225,19 @@ GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
                     CreateFloatValue(input_mil_data_type, epsilon));
 
   PopulateNamedValueType(output_operand_id, *op->add_outputs());
-  return base::ok();
 }
 
 template <typename T>
-base::expected<void, mojom::ErrorPtr>
-GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
+void GraphBuilderCoreml::AddUnaryFloatsOperationWithEpsilon(
     std::string_view op_name,
     const T& operation,
     float epsilon,
-    CoreML::Specification::MILSpec::Block& block,
-    std::string_view operand_op_name) {
+    CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  return AddUnaryFloatsOperationWithEpsilon(
+  AddUnaryFloatsOperationWithEpsilon(
       op_name, input_operand_info.coreml_name, input_operand_info.mil_data_type,
-      operation.output_operand_id, epsilon, block, operand_op_name);
+      operation.output_operand_id, epsilon, block);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -1322,7 +1337,6 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
 
   static constexpr char kParamMean[] = "mean";
   static constexpr char kParamVariance[] = "variance";
-  static constexpr char kParamGamma[] = "gamma";
 
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   SetInputWithName(*op->mutable_inputs(), kParamMean,
@@ -1330,7 +1344,7 @@ GraphBuilderCoreml::AddOperationForBatchNormalization(
   SetInputWithName(*op->mutable_inputs(), kParamVariance,
                    GetOperandInfo(operation.variance_operand_id).coreml_name);
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
                      GetOperandInfo(*operation.scale_operand_id).coreml_name);
   }
   if (operation.bias_operand_id.has_value()) {
@@ -1531,14 +1545,83 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
-  std::string operand_op_name = OpKindToString(kind);
-
   const OperandInfo& lhs_operand_info = GetOperandInfo(lhs_operand_id);
+  const OperandDataType input_data_type =
+      MILDataTypeToOperandType(lhs_operand_info.mil_data_type);
 
-  if (!kFloatsAndInt32DataTypes.contains(lhs_operand_info.mil_data_type)) {
-    return NewNotSupportedError(NotSupportedInputArgumentTypeError(
-        operand_op_name,
-        MILDataTypeToOperandType(lhs_operand_info.mil_data_type)));
+  switch (kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd: {
+      CHECK(
+          context_properties_.data_type_limits.add_input.Has(input_data_type));
+      op->set_type(kOpAddTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kDiv: {
+      CHECK(
+          context_properties_.data_type_limits.div_input.Has(input_data_type));
+      op->set_type(kOpDivideTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMul: {
+      CHECK(
+          context_properties_.data_type_limits.mul_input.Has(input_data_type));
+      op->set_type(kOpMultiplyTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kSub: {
+      CHECK(
+          context_properties_.data_type_limits.sub_input.Has(input_data_type));
+      op->set_type(kOpSubtractTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMax: {
+      CHECK(
+          context_properties_.data_type_limits.max_input.Has(input_data_type));
+      op->set_type(kOpMaximumTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kMin: {
+      CHECK(
+          context_properties_.data_type_limits.min_input.Has(input_data_type));
+      op->set_type(kOpMinimumTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kPow: {
+      CHECK(
+          context_properties_.data_type_limits.pow_input.Has(input_data_type));
+      op->set_type(kOpPowerTypeName);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kEqual: {
+      CHECK(context_properties_.data_type_limits.equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreater: {
+      CHECK(context_properties_.data_type_limits.greater_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalGreater);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      CHECK(context_properties_.data_type_limits.greater_or_equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalGreaterEqual);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesser: {
+      CHECK(context_properties_.data_type_limits.lesser_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalLess);
+      break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      CHECK(context_properties_.data_type_limits.lesser_or_equal_input.Has(
+          input_data_type));
+      op->set_type(kOpLogicalLessEqual);
+      break;
+    }
   }
 
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
@@ -1548,10 +1631,8 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
       base::Overloaded{[&](uint64_t rhs_operand_id) {
                          const OperandInfo& rhs_operand_info =
                              GetOperandInfo(rhs_operand_id);
-                         // TODO: crbug.com/345271830 - use context_properties
-                         // to check.
-                         CHECK(kFloatsAndInt32DataTypes.contains(
-                             rhs_operand_info.mil_data_type));
+                         CHECK_EQ(lhs_operand_info.mil_data_type,
+                                  rhs_operand_info.mil_data_type);
                          SetInputWithName(*op->mutable_inputs(), kOpParamY,
                                           rhs_operand_info.coreml_name);
                        },
@@ -1560,57 +1641,6 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
                                            rhs_value);
                        }},
       rhs_operand);
-
-  switch (kind) {
-    case mojom::ElementWiseBinary::Kind::kAdd: {
-      op->set_type(kOpAddTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kDiv: {
-      op->set_type(kOpDivideTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMul: {
-      op->set_type(kOpMultiplyTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kSub: {
-      op->set_type(kOpSubtractTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMax: {
-      op->set_type(kOpMaximumTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kMin: {
-      op->set_type(kOpMinimumTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kPow: {
-      op->set_type(kOpPowerTypeName);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kEqual: {
-      op->set_type(kOpLogicalEqual);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kGreater: {
-      op->set_type(kOpLogicalGreater);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
-      op->set_type(kOpLogicalGreaterEqual);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kLesser: {
-      op->set_type(kOpLogicalLess);
-      break;
-    }
-    case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
-      op->set_type(kOpLogicalLessEqual);
-      break;
-    }
-  }
 
   if (IsLogicalElementWiseBinary(kind)) {
     // The output of logical binary ops need to be cast from a boolean
@@ -1638,105 +1668,114 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
   const OperandInfo& input_operand_info = GetOperandInfo(input_operand_id);
   const CoreML::Specification::MILSpec::DataType input_data_type =
       input_operand_info.mil_data_type;
+  const OperandDataType input_operand_data_type =
+      MILDataTypeToOperandType(input_data_type);
 
   std::string_view input_name = GetOperandInfo(input_operand_id).coreml_name;
 
-  std::string operand_op_name = OpKindToString(kind);
-
   switch (kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
-      CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type ==
-                CoreML::Specification::MILSpec::DataType::INT32 ||
-            input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
-      return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
-                               kOpAbsTypeName, input_operand_id,
-                               output_operand_id, block, operand_op_name);
+      CHECK(context_properties_.data_type_limits.abs_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpAbsTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kCast: {
       return AddOperationForCast(input_operand_id, output_operand_id, block);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpCeilTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
+      CHECK(context_properties_.data_type_limits.ceil_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpCeilTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpCosTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
-    }
-    case mojom::ElementWiseUnary::Kind::kExp: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpExpTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
-    }
-    case mojom::ElementWiseUnary::Kind::kFloor: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpFloorTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
-    }
-    case mojom::ElementWiseUnary::Kind::kIdentity: {
-      return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
-                               kOpIdentityTypeName, input_operand_id,
-                               output_operand_id, block, operand_op_name);
-    }
-    case mojom::ElementWiseUnary::Kind::kSin: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpSinTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
-    }
-    case mojom::ElementWiseUnary::Kind::kTan: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpTanTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
+      CHECK(context_properties_.data_type_limits.cos_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpCosTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpErfTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
+      CHECK(context_properties_.data_type_limits.erf_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpErfTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kExp: {
+      CHECK(context_properties_.data_type_limits.exp_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpExpTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kFloor: {
+      CHECK(context_properties_.data_type_limits.floor_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpFloorTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      CHECK(context_properties_.data_type_limits.identity_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
+                        output_operand_id, block);
+      return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kSin: {
+      CHECK(context_properties_.data_type_limits.sin_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpSinTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
-      return AddUnaryOperation(SupportedDataType::kFloats, kOpSqrtTypeName,
-                               input_operand_id, output_operand_id, block,
-                               operand_op_name);
+      CHECK(context_properties_.data_type_limits.sqrt_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpSqrtTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
+    }
+    case mojom::ElementWiseUnary::Kind::kTan: {
+      CHECK(context_properties_.data_type_limits.tan_input.Has(
+          input_operand_data_type));
+      AddUnaryOperation(kOpTanTypeName, input_operand_id, output_operand_id,
+                        block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties_.data_type_limits.reciprocal_input.Has(
+          input_operand_data_type));
       // CoreML's reciprocal operator requires an epsilon value, the default
       // value as per the documentation 1e-4 results in expressions like
       // reciprocal(4) returning  0.24999 rather than 0.25.
       // In order to return expected results similar to other platforms,
       // set epsilon to 0.
-      return AddUnaryFloatsOperationWithEpsilon(
-          kOpReciprocalTypeName, input_name, input_data_type, output_operand_id,
-          /*epsilon=*/0, block, operand_op_name);
+      AddUnaryFloatsOperationWithEpsilon(kOpReciprocalTypeName, input_name,
+                                         input_data_type, output_operand_id,
+                                         /*epsilon=*/0, block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kLog: {
-      CHECK(kFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties_.data_type_limits.log_input.Has(
+          input_operand_data_type));
       // CoreML's log operator requires an epsilon value, the default
       // value as per the documentation 1e-45 potentially could result
       // in different result compared to other platforms.
       // In order to return expected results compatible with other
       // platforms, set epsilon to 0.
-      return AddUnaryFloatsOperationWithEpsilon(
-          kOpLogTypeName, input_name, input_data_type, output_operand_id,
-          /*epsilon=*/0, block, operand_op_name);
+      AddUnaryFloatsOperationWithEpsilon(kOpLogTypeName, input_name,
+                                         input_data_type, output_operand_id,
+                                         /*epsilon=*/0, block);
+      return base::ok();
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
-      CHECK(kFloatDataTypes.contains(input_data_type) ||
-            input_data_type ==
-                CoreML::Specification::MILSpec::DataType::INT32 ||
-            input_data_type == CoreML::Specification::MILSpec::DataType::INT8);
-
+      CHECK(context_properties_.data_type_limits.neg_input.Has(
+          input_operand_data_type));
       // Implement this as mul(a, -1)
       CoreML::Specification::MILSpec::Value negative_one_value;
       switch (input_data_type) {
@@ -1750,11 +1789,8 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
         case CoreML::Specification::MILSpec::DataType::INT32:
           negative_one_value = CreateScalarImmediateValue<int32_t>(-1);
           break;
-        case CoreML::Specification::MILSpec::DataType::INT8:
-          negative_one_value = CreateScalarImmediateValue<int8_t>(-1);
-          break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       return AddOperationForElementwiseBinary(
           /*lhs_operand_id=*/input_operand_id,
@@ -1763,8 +1799,8 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
           mojom::ElementWiseBinary::Kind::kMul, block);
     }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK_EQ(input_data_type,
-               CoreML::Specification::MILSpec::DataType::UINT8);
+      CHECK(context_properties_.data_type_limits.logical_not_input.Has(
+          input_operand_data_type));
       ASSIGN_OR_RETURN(uint64_t cast_to_bool_operand_id,
                        GenerateInternalOperandInfo(
                            CoreML::Specification::MILSpec::DataType::BOOL,
@@ -1832,15 +1868,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForExpand(
   }
 
   // Dimension i of input will be replicated reps[i] times.
-  std::vector<int32_t> reps;
-  reps.reserve(output_rank);
+  base::FixedArray<int32_t> reps(output_rank);
   for (size_t i = 0; i < output_rank; ++i) {
     if (output_operand_info.dimensions[i] == reshaped_dimensions[i]) {
-      reps.push_back(1u);
+      reps[i] = 1u;
     } else {
       CHECK_EQ(reshaped_dimensions[i], 1u);
-      reps.push_back(
-          base::checked_cast<int32_t>(output_operand_info.dimensions[i]));
+      reps[i] = base::checked_cast<int32_t>(output_operand_info.dimensions[i]);
     }
   }
   ASSIGN_OR_RETURN(
@@ -2043,11 +2077,9 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  static constexpr char kParamGamma[] = "gamma";
-
   // TODO(crbug.com/338529226): These params must all be constant tensors.
   if (operation.scale_operand_id.has_value()) {
-    SetInputWithName(*op->mutable_inputs(), kParamGamma,
+    SetInputWithName(*op->mutable_inputs(), kOpParamGamma,
                      GetOperandInfo(*operation.scale_operand_id).coreml_name);
   }
   if (operation.bias_operand_id.has_value()) {
@@ -2061,6 +2093,50 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
 
   CoreML::Specification::MILSpec::NamedValueType& output = *op->add_outputs();
   PopulateNamedValueType(operation.output_operand_id, output);
+  return base::ok();
+}
+
+base::expected<void, mojom::ErrorPtr>
+GraphBuilderCoreml::AddOperationForLayerNormalization(
+    const mojom::LayerNormalization& operation,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type));
+
+  // TODO: crbug.com/356905058: Figure out if unordered axes should be allowed.
+  if (!base::ranges::is_sorted(operation.axes)) {
+    return NewNotSupportedError("Axes must be ordered for layerNormalization.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(kOpLayerNormalizationTypeName);
+  SetInputWithName(*op->mutable_inputs(), kOpParamX,
+                   input_operand_info.coreml_name);
+  std::vector<int32_t> axes;
+  base::ranges::transform(
+      operation.axes, std::back_inserter(axes),
+      [](uint32_t val) { return base::checked_cast<int32_t>(val); });
+
+  // TODO: crbug.com/338529226: These params must all be constant tensors.
+  if (operation.scale_operand_id.has_value()) {
+    SetInputWithName(
+        *op->mutable_inputs(), kOpParamGamma,
+        GetOperandInfo(operation.scale_operand_id.value()).coreml_name);
+  }
+  if (operation.bias_operand_id.has_value()) {
+    SetInputWithName(
+        *op->mutable_inputs(), kOpParamBeta,
+        GetOperandInfo(operation.bias_operand_id.value()).coreml_name);
+  }
+
+  SetInputsWithValues(
+      *op->mutable_inputs(),
+      {{kOpParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
+       {kOpParamEpsilon, CreateFloatValue(input_operand_info.mil_data_type,
+                                          operation.epsilon)}});
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
@@ -2178,13 +2254,12 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPad(
   SetInputWithName(*op->mutable_inputs(), kOpParamX,
                    input_operand_info.coreml_name);
 
-  std::vector<int32_t> paddings;
-  paddings.reserve(operation.beginning_padding.size() +
-                   operation.ending_padding.size());
+  base::FixedArray<int32_t> paddings(operation.beginning_padding.size() +
+                                     operation.ending_padding.size());
   CHECK_EQ(operation.beginning_padding.size(), operation.ending_padding.size());
   for (size_t i = 0; i < operation.beginning_padding.size(); ++i) {
-    paddings.push_back(operation.beginning_padding[i]);
-    paddings.push_back(operation.ending_padding[i]);
+    paddings[i * 2] = operation.beginning_padding[i];
+    paddings[i * 2 + 1] = operation.ending_padding[i];
   }
 
   constexpr char kParamMode[] = "mode";
@@ -2238,7 +2313,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForPool2d(
     switch (operation.kind) {
       case mojom::Pool2d::Kind::kAveragePool2d:
       case mojom::Pool2d::Kind::kL2Pool2d:
-        NOTREACHED_NORETURN() << "Invalid input datatype.";
+        NOTREACHED() << "Invalid input datatype.";
       case mojom::Pool2d::Kind::kMaxPool2d:
         return NewNotSupportedError(NotSupportedInputArgumentTypeError(
             ops::kMaxPool2d,
@@ -2408,8 +2483,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
         MILDataTypeToOperandType(input_operand_info.mil_data_type)));
   }
 
-  static constexpr char kParamAxes[] = "axes";
-
   std::vector<int32_t> axes;
 
   base::ranges::transform(
@@ -2417,7 +2490,7 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
       [](uint32_t val) { return base::checked_cast<int32_t>(val); });
   SetInputsWithValues(
       *op->mutable_inputs(),
-      {{kParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
+      {{kOpParamAxes, Create1DTensorImmediateValue<int32_t>(axes)},
        {kOpParamKeepDims,
         CreateScalarImmediateValue(operation.keep_dimensions)}});
 
@@ -2725,7 +2798,7 @@ GraphBuilderCoreml::AddConstantImmediateValue(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8: {
-      NOTREACHED_NORETURN() << "Unsupported data type.";
+      NOTREACHED() << "Unsupported data type.";
     }
   }
   return base::ok();
@@ -2805,7 +2878,7 @@ GraphBuilderCoreml::PopulateFeatureDescription(
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
-        NOTREACHED_NORETURN() << "Unsupported input data type";
+      NOTREACHED() << "Unsupported input data type";
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers

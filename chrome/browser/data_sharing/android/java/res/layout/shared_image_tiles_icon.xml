@@ -10,4 +10,5 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/shared_image_tiles_icon_height"
     android:layout_height="@dimen/shared_image_tiles_icon_height"
+    android:background="@drawable/round_image_filled"
     android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"/>

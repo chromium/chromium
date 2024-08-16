@@ -20,6 +20,7 @@
 #include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sharing_message/vapid_key_manager.h"
+#include "components/sync/protocol/unencrypted_sharing_message.pb.h"
 #include "components/sync/service/sync_service.h"
 
 SharingService::SharingService(
@@ -85,6 +86,15 @@ base::OnceClosure SharingService::SendMessageToDevice(
   return message_sender_->SendMessageToDevice(
       device, response_timeout, std::move(message),
       SharingMessageSender::DelegateType::kFCM, std::move(callback));
+}
+
+base::OnceClosure SharingService::SendUnencryptedMessageToDevice(
+    const SharingTargetDeviceInfo& device,
+    sync_pb::UnencryptedSharingMessage message,
+    SharingMessageSender::ResponseCallback callback) {
+  return message_sender_->SendUnencryptedMessageToDevice(
+      device, std::move(message), SharingMessageSender::DelegateType::kIOSPush,
+      std::move(callback));
 }
 
 void SharingService::RegisterSharingHandler(
@@ -164,7 +174,7 @@ void SharingService::OnStateChanged(syncer::SyncService* sync) {
 }
 
 void SharingService::RefreshVapidKey() {
-  if (vapid_key_manager_->RefreshCachedKey()) {
+  if (vapid_key_manager_ && vapid_key_manager_->RefreshCachedKey()) {
     RegisterDevice();
   }
 }

@@ -58,9 +58,11 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/bank_account_icon_background.xml",
     "java/res/drawable/facilitated_payments_error_icon.xml",
     "java/res/drawable/lock_icon.xml",
     "java/res/layout/bank_account_item.xml",
+    "java/res/layout/facilitated_payments_continue_button.xml",
     "java/res/layout/facilitated_payments_error_screen.xml",
     "java/res/layout/facilitated_payments_fop_selector.xml",
     "java/res/layout/facilitated_payments_payment_methods_additional_info.xml",

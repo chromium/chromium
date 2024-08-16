@@ -86,9 +86,9 @@ const Registry& WebApkSyncService::GetRegistryForTesting() const {
   return sync_bridge_->GetRegistryForTesting();  // IN-TEST
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-WebApkSyncService::GetModelTypeControllerDelegate() {
-  return sync_bridge_->GetModelTypeControllerDelegate();
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+WebApkSyncService::GetDataTypeControllerDelegate() {
+  return sync_bridge_->GetDataTypeControllerDelegate();
 }
 
 void WebApkSyncService::OnWebApkUsed(

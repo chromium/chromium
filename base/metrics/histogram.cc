@@ -242,6 +242,31 @@ HistogramBase* Histogram::Factory::Build() {
   return histogram;
 }
 
+HistogramBase* Histogram::FactoryGet(std::string_view name,
+                                     Sample minimum,
+                                     Sample maximum,
+                                     size_t bucket_count,
+                                     int32_t flags) {
+  return FactoryGetInternal(name, minimum, maximum, bucket_count, flags);
+}
+
+HistogramBase* Histogram::FactoryTimeGet(std::string_view name,
+                                         TimeDelta minimum,
+                                         TimeDelta maximum,
+                                         size_t bucket_count,
+                                         int32_t flags) {
+  return FactoryTimeGetInternal(name, minimum, maximum, bucket_count, flags);
+}
+
+HistogramBase* Histogram::FactoryMicrosecondsTimeGet(std::string_view name,
+                                                     TimeDelta minimum,
+                                                     TimeDelta maximum,
+                                                     size_t bucket_count,
+                                                     int32_t flags) {
+  return FactoryMicrosecondsTimeGetInternal(name, minimum, maximum,
+                                            bucket_count, flags);
+}
+
 HistogramBase* Histogram::FactoryGet(const std::string& name,
                                      Sample minimum,
                                      Sample maximum,
@@ -501,13 +526,13 @@ void Histogram::AddCount(int value, int count) {
   if (value < 0)
     value = 0;
   if (count <= 0) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   unlogged_samples_->Accumulate(value, count);
 
-  if (UNLIKELY(StatisticsRecorder::have_active_callbacks()))
+  if (StatisticsRecorder::have_active_callbacks()) [[unlikely]] {
     FindAndRunCallbacks(value);
+  }
 }
 
 std::unique_ptr<HistogramSamples> Histogram::SnapshotSamples() const {
@@ -773,6 +798,22 @@ class LinearHistogram::Factory : public Histogram::Factory {
 
 LinearHistogram::~LinearHistogram() = default;
 
+HistogramBase* LinearHistogram::FactoryGet(std::string_view name,
+                                           Sample minimum,
+                                           Sample maximum,
+                                           size_t bucket_count,
+                                           int32_t flags) {
+  return FactoryGetInternal(name, minimum, maximum, bucket_count, flags);
+}
+
+HistogramBase* LinearHistogram::FactoryTimeGet(std::string_view name,
+                                               TimeDelta minimum,
+                                               TimeDelta maximum,
+                                               size_t bucket_count,
+                                               int32_t flags) {
+  return FactoryTimeGetInternal(name, minimum, maximum, bucket_count, flags);
+}
+
 HistogramBase* LinearHistogram::FactoryGet(const std::string& name,
                                            Sample minimum,
                                            Sample maximum,
@@ -943,20 +984,7 @@ HistogramBase* LinearHistogram::DeserializeInfoImpl(PickleIterator* iter) {
 // scales input counts.
 //------------------------------------------------------------------------------
 
-ScaledLinearHistogram::ScaledLinearHistogram(const std::string& name,
-                                             Sample minimum,
-                                             Sample maximum,
-                                             size_t bucket_count,
-                                             int32_t scale,
-                                             int32_t flags)
-    : ScaledLinearHistogram(name.data(),
-                            minimum,
-                            maximum,
-                            bucket_count,
-                            scale,
-                            flags) {}
-
-ScaledLinearHistogram::ScaledLinearHistogram(const char* name,
+ScaledLinearHistogram::ScaledLinearHistogram(std::string_view name,
                                              Sample minimum,
                                              Sample maximum,
                                              size_t bucket_count,
@@ -983,6 +1011,32 @@ ScaledLinearHistogram::ScaledLinearHistogram(const char* name,
   LinearHistogram* histogram = static_cast<LinearHistogram*>(histogram_);
   remainders_.resize(histogram->bucket_count(), 0);
 }
+
+ScaledLinearHistogram::ScaledLinearHistogram(const std::string& name,
+                                             Sample minimum,
+                                             Sample maximum,
+                                             size_t bucket_count,
+                                             int32_t scale,
+                                             int32_t flags)
+    : ScaledLinearHistogram(std::string_view(name),
+                            minimum,
+                            maximum,
+                            bucket_count,
+                            scale,
+                            flags) {}
+
+ScaledLinearHistogram::ScaledLinearHistogram(const char* name,
+                                             Sample minimum,
+                                             Sample maximum,
+                                             size_t bucket_count,
+                                             int32_t scale,
+                                             int32_t flags)
+    : ScaledLinearHistogram(std::string_view(name),
+                            minimum,
+                            maximum,
+                            bucket_count,
+                            scale,
+                            flags) {}
 
 ScaledLinearHistogram::~ScaledLinearHistogram() = default;
 
@@ -1051,6 +1105,11 @@ class BooleanHistogram::Factory : public Histogram::Factory {
     return WrapUnique(new BooleanHistogram(GetPermanentName(name_), ranges));
   }
 };
+
+HistogramBase* BooleanHistogram::FactoryGet(std::string_view name,
+                                            int32_t flags) {
+  return FactoryGetInternal(name, flags);
+}
 
 HistogramBase* BooleanHistogram::FactoryGet(const std::string& name,
                                             int32_t flags) {
@@ -1160,6 +1219,13 @@ class CustomHistogram::Factory : public Histogram::Factory {
  private:
   raw_ptr<const std::vector<Sample>> custom_ranges_;
 };
+
+HistogramBase* CustomHistogram::FactoryGet(
+    std::string_view name,
+    const std::vector<Sample>& custom_ranges,
+    int32_t flags) {
+  return FactoryGetInternal(name, custom_ranges, flags);
+}
 
 HistogramBase* CustomHistogram::FactoryGet(
     const std::string& name,

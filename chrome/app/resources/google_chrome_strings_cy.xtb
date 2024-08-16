@@ -115,6 +115,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2559253115192232574">Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chrome weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld. Gall Chrome rannu hyd at 3 diddordeb.</translation>
 <translation id="2563121210305478421">Ail-lansio Chrome?</translation>
 <translation id="2569974318947988067">Bydd Chrome yn ceisio uwchraddio llywio i HTTPS</translation>
+<translation id="2571392474191184472">Mae eich sefydliad yn rheoli Chrome</translation>
 <translation id="2574930892358684005">Mae <ph name="EXISTING_USER" /> eisoes wedi'i fewngofnodi i'r proffil Chrome hwn. I gadw'ch pori ar wahân, gall Chrome greu proffil eich hun ar eich cyfer.</translation>
 <translation id="2580411288591421699">Methu â gosod yr un fersiwn Google Chrome sy'n rhedeg ar hyn o bryd. Caewch Google Chrome a rhowch gynnig arall arni.</translation>
 <translation id="2586406160782125153">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
@@ -215,6 +216,8 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Mae Chrome yn gofyn am Windows 10 neu uwch.</translation>
 <translation id="3835168907083856002">Bydd hyn yn creu proffil Chrome newydd ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Mae angen mynediad Bluetooth ar Google Chrome i archwilio 
+ dyfeisiau Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Caewch holl ffenestri Google Chrome a rhowch gynnig arall arni.</translation>
 <translation id="3865754807470779944">Mae fersiwn <ph name="PRODUCT_VERSION" /> o Chrome wedi'i osod</translation>
 <translation id="3873044882194371212">Agor y Ddolen mewn ffenestr anhy&amp;sbys Chrome</translation>
@@ -425,6 +428,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6938166777909186039">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.1.</translation>
 <translation id="6943584222992551122">Bydd data pori’r unigolyn hwn yn cael eu dileu o’r ddyfais hon. I adfer y data, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rheol dod i mewn ar gyfer Beta Google Chrome i ganiatáu traffig mDNS.</translation>
+<translation id="6979589607440534284">Dysgu pam fod Chrome yn rhwystro rhai ffeiliau, yn agor mewn tab newydd</translation>
 <translation id="7011190694940573312">Wedi methu â gosod oherwydd ni chefnogir y fersiwn hon o'r system weithredu.</translation>
 <translation id="7024536598735240744">Gwall dadbacio: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Wedi Stopio Gosod.</translation>
@@ -447,6 +451,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7177959540995930968">Gallwch ddysgu rhagor am y nodweddion hyn yng ngosodiadau Chrome.</translation>
 <translation id="7193885263065350793">Mae eich sefydliad yn cau Chrome pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Rydych yn mewngofnodi gyda chyfrif a reolir ac yn rhoi rheolaeth dros eich proffil Google Chrome i'w weinyddwr. Bydd eich data Chrome, megis eich apiau, eich nodau tudalen, eich hanes, eich cyfrineiriau, a'ch gosodiadau eraill yn cysylltu'n barhaol â <ph name="USER_NAME" />. Byddwch yn gallu dileu'r data hyn drwy'r Dangosfwrdd Cyfrifon Google, ond ni fyddwch yn gallu cysylltu'r data hyn â chyfrif arall. Gallwch ddewis creu proffil newydd i gadw'ch data Chrome presennol ar wahân. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Mae <ph name="MANAGER" /> yn rheoli Chrome</translation>
 <translation id="7295052994004373688">Mae'r iaith hon yn cael ei defnyddio i arddangos UI Google Chrome</translation>
 <translation id="7296210096911315575">Gwybodaeth bwysig am ddefnydd a diogelwch</translation>
 <translation id="7302361266603927550">Nid yw peth o'ch data Chrome wedi'u cadw yn eich Cyfrif Google eto. Arhoswch ychydig funudau cyn allgofnodi. Os byddwch yn allgofnodi nawr, bydd y data hyn yn cael eu dileu.</translation>
@@ -580,6 +585,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8989968390305463310">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu'ch diddordebau yn awtomatig bob mis. Gall diddordebau ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="8999117580775242387">Pan nad yw HTTPS ar gael, bydd Chrome yn defnyddio cysylltiad anniogel heb eich rhybuddio</translation>
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
+<translation id="9014771989710951291">Mae mwy nag un sefydliad yn rheoli Chrome</translation>
 <translation id="9024318700713112071">Gosod Chrome fel porwr diofyn</translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
 <translation id="9090566250983691233">Dysgu pam fod Chrome yn rhwystro rhai ffeiliau</translation>

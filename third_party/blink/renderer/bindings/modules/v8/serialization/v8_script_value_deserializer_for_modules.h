@@ -20,6 +20,7 @@ class MediaSourceHandleImpl;
 class RestrictionTarget;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
+class RTCDataChannel;
 class VideoFrame;
 
 // Extends V8ScriptValueSerializer with support for modules/ types.
@@ -51,6 +52,7 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   EncodedAudioChunk* ReadEncodedAudioChunk();
   EncodedVideoChunk* ReadEncodedVideoChunk();
   MediaStreamTrack* ReadMediaStreamTrack();
+  RTCDataChannel* ReadRTCDataChannel();
   CropTarget* ReadCropTarget();
   RestrictionTarget* ReadRestrictionTarget();
   MediaSourceHandleImpl* ReadMediaSourceHandle();

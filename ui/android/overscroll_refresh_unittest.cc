@@ -24,8 +24,6 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   // OverscrollRefreshHandler implementation.
   bool PullStart(
       OverscrollAction type,
-      float startx,
-      float starty,
       std::optional<BackGestureEventSwipeEdge> initiating_edge) override {
     started_ = true;
     return true;
@@ -91,7 +89,7 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   bool refresh_allowed_ = false;
 };
 
-TEST_F(OverscrollRefreshTest, Basic) {
+TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   EXPECT_FALSE(effect.IsActive());
@@ -140,11 +138,14 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
   // even if the subsequent scroll overscrolls upward.
   gfx::PointF nonzero_offset(0, 10);
   gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 10000);
   bool overflow_y_hidden = false;
-  effect.OnFrameUpdated(viewport, nonzero_offset, overflow_y_hidden);
+  effect.OnFrameUpdated(viewport, nonzero_offset, content_size,
+                        overflow_y_hidden);
   effect.OnScrollBegin(kStartPos);
 
-  effect.OnFrameUpdated(viewport, gfx::PointF(), overflow_y_hidden);
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
+                        overflow_y_hidden);
   ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
@@ -164,7 +165,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
   gfx::PointF zero_offset;
   bool overflow_y_hidden = true;
   gfx::SizeF viewport(100, 100);
-  effect.OnFrameUpdated(viewport, zero_offset, overflow_y_hidden);
+  gfx::SizeF content_size(100, 10000);
+  effect.OnFrameUpdated(viewport, zero_offset, content_size, overflow_y_hidden);
   effect.OnScrollBegin(kStartPos);
 
   ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
@@ -263,6 +265,106 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfReset) {
   effect.Reset();
   EXPECT_TRUE(GetAndResetPullReset());
   effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullReleased());
+}
+
+TEST_F(OverscrollRefreshTest, TriggerPullFromBottomEdge) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  // Set yOffset as reaching the bottom of the page.
+  gfx::PointF nonzero_offset(0, 900);
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 1000);
+  bool overflow_y_hidden = false;
+  effect.OnFrameUpdated(viewport, nonzero_offset, content_size,
+                        overflow_y_hidden);
+
+  gfx::PointF start(2.f, 902.f);
+  effect.OnScrollBegin(start);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The initial scroll should not be consumed, as it should first be offered
+  // to content.
+  gfx::Vector2dF scroll_down(0, -10);
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(scroll_down));
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The unconsumed, overscrolling scroll will trigger the effect.
+  effect.OnOverscrolled(cc::OverscrollBehavior());
+  EXPECT_TRUE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Further scrolls will be consumed.
+  EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -50)));
+  EXPECT_EQ(-50.f, GetAndResetPullDelta());
+  EXPECT_TRUE(effect.IsActive());
+
+  // Even scrolls in the different direction should be consumed.
+  EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 50)));
+  EXPECT_EQ(50.f, GetAndResetPullDelta());
+  EXPECT_TRUE(effect.IsActive());
+
+  // Ending the scroll while beyond the threshold should trigger a refresh.
+  gfx::Vector2dF zero_velocity;
+  EXPECT_FALSE(GetAndResetPullReleased());
+  effect.OnScrollEnd(zero_velocity);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_TRUE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollNotFromBottom) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  // A negative y scroll offset at the start of scroll will prevent activation,
+  // since it's not starting from the bottom, even if the subsequent scroll
+  // overscrolls upward.
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 110);
+  bool overflow_y_hidden = false;
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
+                        overflow_y_hidden);
+  effect.OnScrollBegin(kStartPos);
+
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
+                        overflow_y_hidden);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -10)));
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  effect.OnOverscrolled(cc::OverscrollBehavior());
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));
+  effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
+  EXPECT_FALSE(GetAndResetPullReleased());
+}
+
+TEST_F(OverscrollRefreshTest, NotTriggeredIfContentSizeEqualsToViewport) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  // bottom overscroll only triggers when content is scrollable.
+  gfx::SizeF viewport(100, 100);
+  gfx::SizeF content_size(100, 100);
+  bool overflow_y_hidden = false;
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
+                        overflow_y_hidden);
+  effect.OnScrollBegin(kStartPos);
+
+  effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
+                        overflow_y_hidden);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -10)));
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  effect.OnOverscrolled(cc::OverscrollBehavior());
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));
+  effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 

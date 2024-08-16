@@ -32,6 +32,7 @@
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/webgpu_blocklist.h"
 #include "skia/buildflags.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/gl/buildflags.h"
@@ -552,10 +553,8 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   gpu_info->passthrough_cmd_decoder =
       gl::UsePassthroughCommandDecoder(command_line);
 
-  bool fallback_to_software = false;
   std::optional<gl::GLImplementationParts> implementation =
-      gl::GetRequestedGLImplementationFromCommandLine(command_line,
-                                                      &fallback_to_software);
+      gl::GetRequestedGLImplementationFromCommandLine(command_line);
 
   if (implementation == gl::kGLImplementationDisabled) {
     // If GL is disabled then we don't need GPUInfo.
@@ -927,13 +926,19 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       adapter_options_get_gl_proc = {};
   adapter_options_get_gl_proc.getProc = gl::GetGLProcAddress;
   gl::GLDisplayEGL* gl_display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  if (gl_display) {
-    adapter_options_get_gl_proc.display = gl_display->GetDisplay();
-  } else {
-    adapter_options_get_gl_proc.display = EGL_NO_DISPLAY;
-  }
+  EGLDisplay display = gl_display ? gl_display->GetDisplay() : EGL_NO_DISPLAY;
+  adapter_options_get_gl_proc.display = display;
   adapter_options_get_gl_proc.nextInChain = adapter_options.nextInChain;
   adapter_options.nextInChain = &adapter_options_get_gl_proc;
+  EGLSurface drawSurface = eglGetCurrentSurface(EGL_DRAW);
+  EGLSurface readSurface = eglGetCurrentSurface(EGL_READ);
+  EGLContext context = eglGetCurrentContext();
+
+  // Dawn WebGPU API calls, such as adapter.CreateDevice(), may change the
+  // EGLContext. Restore the context on return from this function.
+  absl::Cleanup on_return = [display, drawSurface, readSurface, context] {
+    eglMakeCurrent(display, drawSurface, readSurface, context);
+  };
 #endif
 
   for (bool compatibilityMode : {false, true}) {

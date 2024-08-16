@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("kerberos") {
+  sources = [
+    "kerberos_accounts_handler.cc",
+    "kerberos_accounts_handler.h",
+    "kerberos_section.cc",
+    "kerberos_section.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ash/kerberos",
+    "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
+    "//components/signin/public/identity_manager",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//content/public/browser",
+    "//skia:skia_core_public_headers",
+    "//ui/base",
+    "//ui/chromeos/resources",
+    "//ui/gfx",
+  ]
+}

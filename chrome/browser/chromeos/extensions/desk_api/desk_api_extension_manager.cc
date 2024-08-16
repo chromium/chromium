@@ -104,7 +104,7 @@ bool DeskApiExtensionManager::Delegate::IsProfileAffiliated(
   if (profile->IsOffTheRecord())
     return false;
 
-  return ::chrome::enterprise_util::IsProfileAffiliated(profile);
+  return ::enterprise_util::IsProfileAffiliated(profile);
 }
 
 bool DeskApiExtensionManager::Delegate::IsExtensionInstalled(

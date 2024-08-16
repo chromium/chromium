@@ -556,7 +556,8 @@ bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
 
 void ContentBrowserClient::OnAuctionComplete(
     RenderFrameHost* render_frame_host,
-    InterestGroupManager::InterestGroupDataKey data_key) {}
+    std::optional<content::InterestGroupManager::InterestGroupDataKey>
+        winner_data_key) {}
 
 network::mojom::AttributionSupport ContentBrowserClient::GetAttributionSupport(
     AttributionReportingOsApiState state,
@@ -1656,11 +1657,6 @@ bool ContentBrowserClient::
   return true;
 }
 
-bool ContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
-    content::RenderFrameHost* render_frame_host) {
-  return true;
-}
-
 bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
   return false;
@@ -1751,8 +1747,9 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
 
 void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
+    std::variant<RenderFrameHost*, base::SupportsUserData*> context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  EchoAIManagerImpl::Create(browser_context, std::move(receiver));
+  EchoAIManagerImpl::Create(browser_context, context, std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1765,5 +1762,10 @@ void ContentBrowserClient::QueryInstalledWebAppsByManifestId(
   std::move(callback).Run(std::nullopt);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+bool ContentBrowserClient::IsSaveableNavigation(
+    NavigationHandle* navigation_handle) {
+  return false;
+}
 
 }  // namespace content

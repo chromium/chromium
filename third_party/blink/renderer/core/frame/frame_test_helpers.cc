@@ -1030,7 +1030,8 @@ void TestWebFrameWidget::BindWidgetChannels(
   mojo::PendingRemote<mojom::blink::RenderInputRouterClient> rir_client_remote;
   // Setup RenderInputRouter mojo connections.
   widget_remote->SetupRenderInputRouterConnections(
-      rir_client_remote.InitWithNewPipeAndPassReceiver());
+      rir_client_remote.InitWithNewPipeAndPassReceiver(),
+      /* viz_client= */ mojo::NullReceiver());
   widget_host_->BindRenderInputRouterInterfaces(std::move(rir_client_remote));
 
   widget_host_->GetWidgetInputHandler(

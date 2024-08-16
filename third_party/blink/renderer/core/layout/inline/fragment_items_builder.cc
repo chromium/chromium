@@ -46,7 +46,7 @@ FragmentItemsBuilder::FragmentItemsBuilder(
   // oilpan doesn't get around to collecting it.
   if (!is_block_fragmented) {
     const wtf_size_t estimated_item_count = text_content_.length() / 40 * 3;
-    if (UNLIKELY(estimated_item_count > items_.capacity() * 2)) {
+    if (estimated_item_count > items_.capacity() * 2) [[unlikely]] {
       items_.ReserveInitialCapacity(estimated_item_count);
     }
   }
@@ -149,7 +149,7 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
   const wtf_size_t line_start_index = items_.size();
   items_.emplace_back(offset, line_fragment);
 
-  AddItems(line_items.begin(), line_items.end());
+  AddItems(base::span(line_items));
 
   for (auto& annotation_line : line_container->AnnotationLineList()) {
     const wtf_size_t annotation_line_start_index = items_.size();
@@ -175,7 +175,7 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
                             : PhysicalSize(line_height, line_inline_size);
     // The offset must be relative to the base line box for now.
     items_.emplace_back(line_offset, size, line_fragment);
-    AddItems(annotation_line->begin(), annotation_line->end());
+    AddItems(base::span(*annotation_line.line_items));
     items_[annotation_line_start_index].item.SetDescendantsCount(
         items_.size() - annotation_line_start_index);
   }
@@ -194,23 +194,22 @@ void FragmentItemsBuilder::AddLine(const PhysicalLineBoxFragment& line_fragment,
   DCHECK_LE(items_.size(), estimated_size);
 }
 
-void FragmentItemsBuilder::AddItems(LogicalLineItem* child_begin,
-                                    LogicalLineItem* child_end) {
+void FragmentItemsBuilder::AddItems(base::span<LogicalLineItem> child_span) {
   DCHECK(!is_converted_to_physical_);
 
   const WritingMode writing_mode = GetWritingMode();
-  for (LogicalLineItem* child_iter = child_begin; child_iter != child_end;) {
-    LogicalLineItem& child = *child_iter;
+  for (size_t i = 0; i < child_span.size();) {
+    LogicalLineItem& child = child_span[i];
     // OOF children should have been added to their parent box fragments.
     DCHECK(!child.out_of_flow_positioned_box);
     if (!child.CanCreateFragmentItem()) {
-      ++child_iter;
+      ++i;
       continue;
     }
 
     if (child.children_count <= 1) {
       items_.emplace_back(child.rect.offset, std::move(child), writing_mode);
-      ++child_iter;
+      ++i;
       continue;
     }
 
@@ -224,10 +223,8 @@ void FragmentItemsBuilder::AddItems(LogicalLineItem* child_begin,
 
     // Add all children, including their desendants, skipping this item.
     CHECK_GE(children_count, 1u);  // 0 will loop infinitely.
-    LogicalLineItem* end_child_iter = child_iter + children_count;
-    CHECK_LE(end_child_iter - child_begin, child_end - child_begin);
-    AddItems(child_iter + 1, end_child_iter);
-    child_iter = end_child_iter;
+    AddItems(child_span.subspan(i + 1, children_count - 1));
+    i += children_count;
 
     // All children are added. Compute how many items are actually added. The
     // number of items added may be different from |children_count|.
@@ -260,7 +257,7 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
     DCHECK(container_builder);
     DCHECK(text_content_);
 
-    if (UNLIKELY(items.FirstLineText() && !first_line_text_content_)) {
+    if (items.FirstLineText() && !first_line_text_content_) [[unlikely]] {
       // Don't reuse previous items if they have different `::first-line` style
       // but |this| doesn't. Reaching here means that computed style doesn't
       // change, but |FragmentItem| has wrong |StyleVariant|.
@@ -314,14 +311,15 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
             To<InlineBreakToken>(line_fragment->GetBreakToken());
         DCHECK(break_token);
         const InlineItemsData* current_items_data;
-        if (UNLIKELY(break_token->UseFirstLineStyle()))
+        if (break_token->UseFirstLineStyle()) [[unlikely]] {
           current_items_data = &node_.ItemsData(true);
-        else if (items_data)
+        } else if (items_data) {
           current_items_data = items_data;
-        else
+        } else {
           current_items_data = items_data = &node_.ItemsData(false);
-        if (UNLIKELY(
-                !current_items_data->IsValidOffset(break_token->Start()))) {
+        }
+        if (!current_items_data->IsValidOffset(break_token->Start()))
+            [[unlikely]] {
           NOTREACHED_IN_MIGRATION();
           break;
         }

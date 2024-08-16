@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] resample2d(upsample) float32 4D tensor options.axes=[1, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axes."
+[FAIL] resample2d(upsample) float32 4D tensor options.axes=[1, 2] options.mode='linear'
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axes."
+Harness: the test ran to completion.
+

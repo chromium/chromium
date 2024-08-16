@@ -63,7 +63,7 @@ void SessionRestorationWebStateObserver::WebStateRealized(
 
 void SessionRestorationWebStateObserver::WebStateDestroyed(
     web::WebState* web_state) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - web::WebFramesManager::Observer

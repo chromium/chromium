@@ -24,6 +24,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
@@ -232,7 +233,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
     case ui::VKEY_NEXT:
       return settings->six_pack_key_remappings->page_down;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -259,6 +260,28 @@ ui::mojom::ExtendedFkeysModifier GetExtendedFkeysModifier(
   }
 
   return settings->f12.value();
+}
+
+bool HasRightAltKeyViaModifierRemapping(const ui::KeyboardDevice& keyboard) {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    return false;
+  }
+
+  auto* settings =
+      Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+          keyboard.id);
+  if (!settings) {
+    return false;
+  }
+
+  bool has_right_alt_key = false;
+  for (const auto& [_, to] : settings->modifier_remappings) {
+    if (to == ui::mojom::ModifierKey::kRightAlt) {
+      has_right_alt_key = true;
+      break;
+    }
+  }
+  return has_right_alt_key;
 }
 
 }  // namespace
@@ -819,6 +842,18 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       if ((internal_keyboard &&
            !IsSplitModifierKeyboard(internal_keyboard->id)) ||
           priority_keyboard) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    if (accelerator.key_code() == ui::VKEY_RIGHT_ALT) {
+      if (internal_keyboard && IsSplitModifierKeyboard(internal_keyboard->id)) {
+        filtered_accelerators.push_back(accelerator);
+      } else if ((internal_keyboard &&
+                  HasRightAltKeyViaModifierRemapping(*internal_keyboard)) ||
+                 (priority_keyboard &&
+                  HasRightAltKeyViaModifierRemapping(*priority_keyboard))) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;

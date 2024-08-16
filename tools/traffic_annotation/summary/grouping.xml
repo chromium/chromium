@@ -308,7 +308,6 @@ after discussions on the right group.
       <annotation id="remoting_corp_session_authz_generate_host_token"/>
       <annotation id="remoting_corp_session_authz_verify_session_token"/>
       <annotation id="remoting_corp_session_reauthorize_host"/>
-      <annotation id="weather_icon"/>
       <annotation id="birch_calendar_provider"/>
       <annotation id="recovery_key_store_fetch"/>
       <annotation id="enterprise_logo_fetcher"/>
@@ -338,6 +337,8 @@ after discussions on the right group.
       <annotation id="enterprise_companion_event_logging"/>
       <annotation id="get_locale_oauth2_people_api_call"/>
       <annotation id="boca_classroom_integration"/>
+      <annotation id="android_webview_shell"/>
+      <annotation id="contextual_search_resolve_debug"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
@@ -384,7 +385,6 @@ after discussions on the right group.
       <annotation id="supervised_user_list_family_members"/>
       <annotation id="password_protection_request"/>
       <annotation id="permission_predictions"/>
-      <annotation id="safe_browsing_certificate_error_reporting"/>
       <annotation id="safe_browsing_client_side_phishing_detector"/>
       <annotation id="safe_browsing_extended_reporting"/>
       <annotation id="safe_browsing_extension_telemetry"/>
@@ -434,6 +434,7 @@ after discussions on the right group.
       <annotation id="bidding_and_auction_server_key_fetch"/>
       <annotation id="interest_group_update_fetcher"/>
       <annotation id="interest_group_well_known_fetcher"/>
+      <annotation id="trusted_signals_fetcher"/>
     </sender>
   </group>
   <group name="Identity and Security" hidden="true">
@@ -624,6 +625,7 @@ after discussions on the right group.
       <annotation id="get_all_plus_addresses"/>
       <annotation id="plus_address_reservation"/>
       <annotation id="plus_address_confirmation"/>
+      <annotation id="plus_address_preallocation"/>
     </sender>
   </group>
 </groups>

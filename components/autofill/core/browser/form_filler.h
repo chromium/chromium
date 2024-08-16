@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/common/autofill_constants.h"
 
@@ -154,7 +155,7 @@ class FormFiller {
                           FormStructure* form_structure,
                           AutofillField* autofill_field,
                           const std::u16string& value,
-                          SuggestionType type,
+                          FillingProduct filling_product,
                           std::optional<FieldType> field_type_used);
 
   // Fills or previews |data_model| in the |form|.

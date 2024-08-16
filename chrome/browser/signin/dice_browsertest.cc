@@ -801,16 +801,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class DiceBrowserTestWithBoundSessionCredentialsEnabled
     : public DiceBrowserTest {
- public:
-  DiceBrowserTestWithBoundSessionCredentialsEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnableBoundSessionCredentials,
-                              switches::kEnableChromeRefreshTokenBinding},
-        /*disabled_features=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableChromeRefreshTokenBinding};
   crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
 };
 

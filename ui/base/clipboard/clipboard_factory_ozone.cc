@@ -31,10 +31,10 @@ Clipboard* Clipboard::Create() {
     return new ClipboardOzone;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED_IN_MIGRATION()
-      << "System clipboard integration should be in place.";
-#endif
+  NOTREACHED() << "System clipboard integration should be in place.";
+#else
   return new ClipboardNonBacked;
+#endif
 }
 
 }  // namespace ui

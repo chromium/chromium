@@ -12,7 +12,12 @@
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui
-enum OverscrollAction { NONE = 0, PULL_TO_REFRESH = 1, HISTORY_NAVIGATION = 2 };
+enum OverscrollAction {
+  NONE = 0,
+  PULL_TO_REFRESH = 1,
+  HISTORY_NAVIGATION = 2,
+  PULL_FROM_BOTTOM_EDGE = 3
+};
 
 namespace cc {
 struct OverscrollBehavior;
@@ -70,6 +75,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // hidden. Note: All dimensions are in device pixels.
   void OnFrameUpdated(const gfx::SizeF& viewport_size,
                       const gfx::PointF& content_scroll_offset,
+                      const gfx::SizeF& content_size,
                       bool root_overflow_y_hidden);
 
   // Reset the effect to its inactive state, immediately detaching and
@@ -93,9 +99,14 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   void Release(bool allow_refresh);
 
   bool scrolled_to_top_;
+  bool scrolled_to_bottom_;
+
   // True if the content y offset was zero before scroll began. Overscroll
   // should not be triggered for the scroll that started from non-zero offset.
   bool top_at_scroll_start_;
+  // True if the scroll is from the bottom of the screen. Overscroll
+  // should not be triggered for the scroll that started from non-zero offset.
+  bool bottom_at_scroll_start_;
   bool overflow_y_hidden_;
 
   enum ScrollConsumptionState {

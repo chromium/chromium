@@ -24,13 +24,14 @@ static_library("test_support") {
     "view_test_base.h",
   ]
 
+  public_deps = [ "//chrome/browser/ash/app_list/arc:test_support" ]
+
   deps = [
     "//ash",
     "//ash/components/arc",
     "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//ash/public/cpp",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc/input_overlay",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/ui",

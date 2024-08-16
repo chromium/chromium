@@ -1558,6 +1558,8 @@ chromium-metrics-reviews@google.com.
   <int value="2145736075" label="pragma: value mismatch"/>
 </enum>
 
+<!-- LINT.IfChange(PrerenderActivationNavigationParamsMatch) -->
+
 <enum name="PrerenderActivationNavigationParamsMatch">
   <int value="0" label="kOk"/>
   <int value="1" label="kInitiatorFrameToken"/>
@@ -1585,6 +1587,8 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="kReferrerPolicy (Obsolete)"/>
   <int value="24" label="kRequestDestination"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:ActivationNavigationParamsMatch) -->
 
 <enum name="PrerenderActivationTransitionMismatchType">
   <int value="0" label="Link"/>
@@ -1740,6 +1744,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Prerender unused"/>
   <int value="3" label="Prerender hit finished"/>
 </enum>
+
+<!-- LINT.IfChange(PrerenderWaitingForHeadersFinishedReason) -->
+
+<enum name="PrerenderWaitingForHeadersFinishedReason">
+  <int value="0" label="NoVarySearchHeaderReceived"/>
+  <int value="1" label="NoVarySearchHeaderNotReceived"/>
+  <int value="2" label="NoVarySearchHeaderParseFailed"/>
+  <int value="3" label="HostDestroyed"/>
+  <int value="4" label="TimeoutElapsed"/>
+  <int value="5" label="MaybeNavigationCancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/prerender/prerender_host.h:WaitingForHeadersFinishedReason) -->
 
 <enum name="RelatedActiveContentsSyncAccessInfo">
   <int value="0" label="kNoSyncAccess"/>

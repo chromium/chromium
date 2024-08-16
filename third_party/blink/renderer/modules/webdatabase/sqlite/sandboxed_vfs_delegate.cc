@@ -84,11 +84,4 @@ SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   return access;
 }
 
-bool SandboxedVfsDelegate::SetFileLength(const base::FilePath& file_path,
-                                         base::File& file,
-                                         size_t size) {
-  return WebDatabaseHost::GetInstance().SetFileSize(
-      StringFromFullPath(file_path), size);
-}
-
 }  // namespace blink

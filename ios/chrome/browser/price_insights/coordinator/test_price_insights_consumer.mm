@@ -4,6 +4,12 @@
 
 #import "ios/chrome/browser/price_insights/coordinator/test_price_insights_consumer.h"
 
+#import "ios/chrome/browser/price_insights/ui/price_insights_item.h"
+
+namespace commerce {
+enum class PriceBucket;
+}
+
 @implementation TestPriceInsightsConsumer
 
 - (void)didStartPriceTrackingWithNotification:(BOOL)granted {
@@ -14,11 +20,13 @@
   self.didPriceUntrack = YES;
 }
 
-- (void)didStartNavigationToWebpage {
+- (void)didStartNavigationToWebpageWithPriceBucket:
+    (commerce::PriceBucket)bucket {
   self.didNavigateToWebpage = YES;
 }
 
-- (void)presentPushNotificationPermissionAlert {
+- (void)presentPushNotificationPermissionAlertForItem:(PriceInsightsItem*)item {
+  self.didPresentPushNotificationPermissionAlertForItem = YES;
 }
 
 - (void)presentStartPriceTrackingErrorAlertForItem:(PriceInsightsItem*)item {

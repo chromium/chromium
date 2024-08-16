@@ -220,6 +220,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
 
   // Overridden from ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;

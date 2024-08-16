@@ -22,7 +22,6 @@ import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -459,20 +458,8 @@ export class SettingsCursorAndTouchpadPageElement extends
     return {label: label, value: data.tick, ariaValue: value};
   }
 
-  private onFaceGazeToggleChange_(): void {
-    const faceGazeToggle =
-        this.shadowRoot!.querySelector<CrToggleElement>('#faceGazeToggle');
-    if (!faceGazeToggle) {
-      return;
-    }
-    this.setPrefValue(
-        'settings.a11y.face_gaze.enabled', faceGazeToggle.checked);
-  }
-
   private onFaceGazeSettingsClick_(): void {
-    if (this.getPref<boolean>('settings.a11y.face_gaze.enabled').value) {
-      Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_SETTINGS);
-    }
+    Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_SETTINGS);
   }
 
   pointersChanged(

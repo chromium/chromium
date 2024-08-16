@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/overview/overview_controller.h"
 
 #include <memory>
@@ -838,6 +843,21 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
   EXPECT_TRUE(frame_throttling_controller->GetFrameSinkIdsToThrottle().empty());
 
   frame_throttling_controller->RemoveArcObserver(&observer);
+}
+
+// Tests that Ash.Overview.DeskCount metric is recorded.
+TEST_F(OverviewControllerTest, RecordsDeskCountMetric) {
+  base::HistogramTester histogram_tester;
+  EnterOverview();
+  ExitOverview();
+  histogram_tester.ExpectUniqueSample("Ash.Overview.DeskCount", 1, 1);
+
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ASSERT_EQ(2u, DesksController::Get()->desks().size());
+  EnterOverview();
+  ExitOverview();
+  histogram_tester.ExpectBucketCount("Ash.Overview.DeskCount", 1, 1);
+  histogram_tester.ExpectBucketCount("Ash.Overview.DeskCount", 2, 1);
 }
 
 class OverviewEnterFromWallpaperTest : public OverviewControllerTest {

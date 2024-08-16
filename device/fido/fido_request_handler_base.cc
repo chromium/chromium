@@ -57,7 +57,7 @@ bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
     case AuthenticatorType::kChromeOSPasskeys:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void MaybeRecordPlatformCredentialStatus(AuthenticatorType type,

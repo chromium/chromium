@@ -1217,7 +1217,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
     // Print Preview resets `print_in_progress_` when the dialog closes.
     return;
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -2005,7 +2005,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
     // Print Preview resets `print_in_progress_` when the dialog closes.
     return;
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

@@ -94,17 +94,18 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
   // Uninstalls a single DLC and calls the callback with indication of
   // success/failure. Uninstall is the same as `Purge()`.
-  virtual void Uninstall(std::string_view dlc_id,
+  virtual void Uninstall(const std::string& dlc_id,
                          UninstallCallback callback) = 0;
 
   // Purges a single DLC and calls the callback with indication of
   // success/failure. Purging removes the DLC entirely from disk, regardless if
   // the DLC has been uninstalled already.
-  virtual void Purge(std::string_view dlc_id, PurgeCallback purge_callback) = 0;
+  virtual void Purge(const std::string& dlc_id,
+                     PurgeCallback purge_callback) = 0;
 
   // Returns the state of a single DLC. Including information
   // such as installation state, id, and verification state.
-  virtual void GetDlcState(std::string_view dlc_id,
+  virtual void GetDlcState(const std::string& dlc_id,
                            GetDlcStateCallback callback) = 0;
 
   // Provides the DLC(s) information such as:

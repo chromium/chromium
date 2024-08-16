@@ -358,6 +358,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return gpu_channel_manager_->sync_point_manager();
   }
 
+  gpu::Scheduler* gpu_scheduler() { return gpu_channel_manager_->scheduler(); }
+
   scoped_refptr<base::SingleThreadTaskRunner>& main_runner() {
     return main_runner_;
   }

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] no value definitions in serialization - @font-feature-values bongo { @blah @styleset { abc: 1 2 3; } }
   assert_equals: cssText serialization should have no value defintions -  expected "" but got "@styleset { abc: 1 2 3; }"
 [FAIL] basic parse tests - @font-feature-values bongo { @blah } @styleset { abc: 1 2 3; } }
@@ -7,12 +7,76 @@ Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] no value definitions in serialization - @font-feature-values bongo { @blah , @styleset { abc: 1 2 3; } }
   assert_equals: cssText serialization should have no value defintions -  expected "" but got "@styleset { abc: 1 2 3; }"
 [FAIL] serialization check - @font-feature-values bongo { \n@styleset\n  { blah: 3; super-blah: 4 5;\n  more-blah: 5 6 7;\n } }
-  assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 3; super-blah: 4 5; more-blah: 5 6 7; }" but got "@styleset { blah: 3; more-blah: 5 6 7; super-blah: 4 5; }"
+  assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 3; super-blah: 4 5; more-blah: 5 6 7; }" but got "@styleset { super-blah: 4 5; blah: 3; more-blah: 5 6 7; }"
 [FAIL] serialization check - @font-feature-values bongo { \n@styleset\n  {\n blah:\n 3\n;\n super-blah:\n 4\n 5\n;\n  more-blah:\n 5 6\n 7;\n } }
-  assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 3; super-blah: 4 5; more-blah: 5 6 7; }" but got "@styleset { blah: 3; more-blah: 5 6 7; super-blah: 4 5; }"
+  assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 3; super-blah: 4 5; more-blah: 5 6 7; }" but got "@styleset { super-blah: 4 5; blah: 3; more-blah: 5 6 7; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { styleset { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { stylistic { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { character-variant { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { swash { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { ornaments { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { annotation { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @bongo { blah: 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @bongo { blah: 1 2 3 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @bongo { blah: 1 2 3; burp: 1;;; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: -1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: 1 -1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: 1.5 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: 15px } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: red } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: (1) } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah:(1) } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah:, 1 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: <1> } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: 1! } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { blah: 1,, } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @stylistic { blah: 1 2 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @character-variant { blah: 1 2 3 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @swash { blah: 1 2 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @ornaments { blah: 1 2 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @annotation { blah: 1 2 } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
 [FAIL] serialization check - @font-feature-values bongo { @styleset { blah: 1; blah: 1; } }
   assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 1; blah: 1; }" but got "@styleset { blah: 1; }"
 [FAIL] serialization check - @font-feature-values bongo { @styleset { blah: 1; de-blah: 1; blah: 2; } }
   assert_equals: canonical cssText serialization doesn't match expected "@styleset { blah: 1; de-blah: 1; blah: 2; }" but got "@styleset { blah: 2; de-blah: 1; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { 123blah: 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { :123blah 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { :123blah: 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { ?123blah: 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { "blah": 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { complex blah: 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
+[FAIL] invalid declarations don't affect valid ones - @font-feature-values bongo { @styleset { complex\\  blah: 1; } }
+  assert_equals: invalid declarations should not affect valid ones -  expected "@ornaments { whatchamacallit-1: 23; thingy-dingy: 3; }" but got "@ornaments { thingy-dingy: 3; whatchamacallit-1: 23; }"
 Harness: the test ran to completion.
 

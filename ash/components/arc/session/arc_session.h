@@ -14,6 +14,7 @@
 #include "ash/components/arc/session/arc_upgrade_params.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 class SchedulerConfigurationManagerBase;
@@ -40,7 +41,7 @@ class ArcBridgeService;
 class ArcSession {
  public:
   // Observer to notify events corresponding to one ARC session run.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Called when ARC instance is stopped. This is called exactly once per
     // instance.  |was_running| is true if the stopped instance was fully set
@@ -51,7 +52,7 @@ class ArcSession {
                                   bool full_requested) = 0;
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   // Creates a default instance of ArcSession.
@@ -122,7 +123,7 @@ class ArcSession {
  protected:
   ArcSession();
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 };
 
 }  // namespace arc

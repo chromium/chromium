@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/accessibility/accessibility_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui.h"
@@ -72,7 +73,9 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AccessibilityUIConfig>());
   map.AddWebUIConfig(std::make_unique<AutofillInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<BrowsingTopicsInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ChromeURLsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ComponentsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<CreditsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DataSharingInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DownloadInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<FlagsUIConfig>());
@@ -104,7 +107,13 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ReadingListUIConfig>());
   map.AddWebUIConfig(std::make_unique<ShoppingInsightsSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
+  map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
+  map.AddWebUIConfig(std::make_unique<LinuxProxyConfigUI>());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_OPENBSD)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   map.AddWebUIConfig(std::make_unique<extensions::ExtensionsUIConfig>());

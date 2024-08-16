@@ -145,7 +145,7 @@ void CalculateLocationAndSize(int pref_size,
         *location = *location + available_size - *size;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

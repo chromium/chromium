@@ -279,11 +279,6 @@ Page::Page(base::PassKey<Page>,
     // production.
     IsolatedSVGDocumentHostInitializer::Get()
         ->MaybePrepareIsolatedSVGDocumentHost();
-    static const bool preload_system_fonts_from_page =
-        features::kPreloadSystemFontsFromPage.Get();
-    if (preload_system_fonts_from_page) {
-      FontCache::MaybePreloadSystemFonts();
-    }
   }
 }
 
@@ -866,8 +861,9 @@ bool Page::IsCursorVisible() const {
 
 // static
 int Page::MaxNumberOfFrames() {
-  if (UNLIKELY(g_limit_max_frames_to_ten_for_testing))
+  if (g_limit_max_frames_to_ten_for_testing) [[unlikely]] {
     return kTenFrames;
+  }
   return kMaxNumberOfFrames;
 }
 

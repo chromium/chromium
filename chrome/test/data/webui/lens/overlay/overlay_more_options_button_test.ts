@@ -78,7 +78,7 @@ suite('OverlayFeedbackButton', () => {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kMyActivity));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kMyActivity, action);
   });
 
@@ -111,7 +111,7 @@ suite('OverlayFeedbackButton', () => {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kLearnMore));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kLearnMore, action);
   });
 
@@ -131,7 +131,7 @@ suite('OverlayFeedbackButton', () => {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kSendFeedback));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kSendFeedback, action);
     return testBrowserProxy.handler.whenCalled('feedbackRequestedByOverlay');
   });

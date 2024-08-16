@@ -1072,7 +1072,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
   // If we have Pepper players then we should force ducking.
   info->force_duck = HasPepper();
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // If this is a webapp, and instanced media controls are on, mark this session
   // as a pwa session so that the browser sessions can stay isolated. This is
   // used to differentiate webapp sessions for different handling.
@@ -1083,7 +1083,7 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
       web_contents_delegate->ShouldUseInstancedSystemMediaControls();
 #else
   info->ignore_for_active_session = false;
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   if (always_ignore_for_active_session_for_testing_) {
     info->ignore_for_active_session = true;

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -94,6 +95,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
     private final TabModelSelector mTabModelSelector;
+    private final TabContentManager mTabContentManager;
     private final TabCreatorManager mTabCreatorManager;
     private final BottomControlsCoordinator.BottomControlsVisibilityController
             mVisibilityController;
@@ -123,6 +125,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
+            TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             IncognitoStateProvider incognitoStateProvider,
@@ -137,6 +140,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                 resetHandler,
                 model,
                 tabModelSelector,
+                tabContentManager,
                 tabCreatorManager,
                 layoutStateProviderSupplier,
                 incognitoStateProvider,
@@ -154,6 +158,7 @@ public class TabGroupUiMediator implements BackPressHandler {
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
+            TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             IncognitoStateProvider incognitoStateProvider,
@@ -167,6 +172,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
+        mTabContentManager = tabContentManager;
         mTabCreatorManager = tabCreatorManager;
         mVisibilityController = visibilityController;
         mIncognitoStateProvider = incognitoStateProvider;
@@ -409,6 +415,10 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                     Tab currentTab = mTabModelSelector.getCurrentTab();
                     if (currentTab == null) return;
+
+                    // Ensure the current tab has a thumbnail.
+                    mTabContentManager.cacheTabThumbnail(currentTab);
+
                     mResetHandler.resetGridWithListOfTabs(getTabsToShowForId(currentTab.getId()));
                     RecordUserAction.record("TabGroup.ExpandedFromStrip.TabGridDialog");
                 };

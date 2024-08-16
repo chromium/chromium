@@ -19,6 +19,7 @@ using MultiStoreCredentialStoreTest = PlatformTest;
 
 ArchivableCredential* TestCredential(NSString* user) {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwerty123"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"

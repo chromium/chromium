@@ -7,20 +7,20 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store_service.h"
 
 namespace {
 
-std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
+std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor>
 CreateChangeProcessor() {
-  return std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+  return std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::PRODUCT_COMPARISON,
       base::BindRepeating(&syncer::ReportUnrecoverableError,
                           chrome::GetChannel()));
@@ -69,7 +69,7 @@ std::unique_ptr<KeyedService>
 ProductSpecificationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<commerce::ProductSpecificationsService>(
-      ModelTypeStoreServiceFactory::GetForProfile(
+      DataTypeStoreServiceFactory::GetForProfile(
           Profile::FromBrowserContext(context))
           ->GetStoreFactory(),
       CreateChangeProcessor());

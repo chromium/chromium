@@ -6,12 +6,12 @@ import './app.js';
 
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
+export {AutoTabGroupsPageElement} from './auto_tab_groups/auto_tab_groups_page.js';
+export {AutoTabGroupsResultsElement} from './auto_tab_groups/auto_tab_groups_results.js';
 export {InfiniteList} from './infinite_list.js';
 export {search, SearchOptions} from './search.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
-export {TabOrganizationPageElement} from './tab_organization_page.js';
-export {TabOrganizationResultsElement} from './tab_organization_results.js';
 export {PageCallbackRouter, PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, SwitchToTabInfo, Tab, TabGroup, TabOrganizationError, TabOrganizationSession, TabOrganizationState, TabsRemovedInfo, TabUpdateInfo, UserFeedback, Window} from './tab_search.mojom-webui.js';
 export {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 export {TabSearchGroupItemElement} from './tab_search_group_item.js';

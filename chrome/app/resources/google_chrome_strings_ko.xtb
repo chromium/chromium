@@ -115,6 +115,7 @@
 <translation id="2559253115192232574">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chrome에 요청할 수 있습니다. Chrome은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
 <translation id="2563121210305478421">Chrome을 다시 시작하시겠습니까?</translation>
 <translation id="2569974318947988067">Chrome에서 탐색을 HTTPS로 업그레이드하려고 시도합니다</translation>
+<translation id="2571392474191184472">조직에서 Chrome을 관리합니다.</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />님이 이미 Chrome 프로필에 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chrome에서 나만의 프로필을 만들 수 있습니다.</translation>
 <translation id="2580411288591421699">현재 실행 중인 Chrome과 동일한 버전은 설치할 수 없습니다. Chrome을 닫고 다시 시도하세요.</translation>
 <translation id="2586406160782125153">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
@@ -449,6 +450,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7177959540995930968">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chrome을 종료합니다.</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" />에서 Chrome을 관리합니다.</translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7302361266603927550">Chrome 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다. 잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다</translation>
@@ -582,6 +584,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
+<translation id="9014771989710951291">여러 조직에서 Chrome을 관리합니다.</translation>
 <translation id="9024318700713112071">Chrome을 기본 브라우저로 설정</translation>
 <translation id="9053892488859122171">ChromeOS Flex 시스템</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>

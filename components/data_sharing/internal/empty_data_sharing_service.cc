@@ -21,7 +21,7 @@ EmptyDataSharingService::GetDataSharingNetworkLoader() {
   return nullptr;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 EmptyDataSharingService::GetCollaborationGroupControllerDelegate() {
   return nullptr;
 }
@@ -77,5 +77,9 @@ DataSharingService::ParseURLResult EmptyDataSharingService::ParseDataSharingURL(
     const GURL& url) {
   return GroupToken();
 }
+
+void EmptyDataSharingService::EnsureGroupVisibility(
+    const GroupId& group_id,
+    base::OnceCallback<void(const GroupDataOrFailureOutcome&)> callback) {}
 
 }  // namespace data_sharing

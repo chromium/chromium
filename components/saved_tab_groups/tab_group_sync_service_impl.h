@@ -23,8 +23,8 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/sync_data.h"
 
 class PrefService;
@@ -100,14 +100,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
+  void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                            const LocalTabGroupID& local_id) override;
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
 
   std::unique_ptr<ScopedLocalObservationPauser>

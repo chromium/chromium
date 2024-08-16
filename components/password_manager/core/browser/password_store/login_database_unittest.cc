@@ -44,7 +44,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/database.h"
@@ -292,7 +292,9 @@ class LoginDatabaseTestBase : public testing::Test {
 
     db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false));
     db_->SetIsEmptyCb(is_empty_cb_.Get());
-    ASSERT_TRUE(db_->Init(nullptr));
+    ASSERT_TRUE(
+        db_->Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                  /*encryptor=*/nullptr));
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }
@@ -321,7 +323,9 @@ class LoginDatabaseTest : public LoginDatabaseTestBase,
 
     db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(false));
     db_->SetIsEmptyCb(is_empty_cb_.Get());
-    ASSERT_TRUE(db_->Init(encryptor()));
+    ASSERT_TRUE(
+        db_->Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                  /*encryptor=*/encryptor()));
   }
 
   std::unique_ptr<os_crypt_async::Encryptor> encryptor() {
@@ -1639,7 +1643,9 @@ TEST_P(LoginDatabaseTest, ReportMetricsTest) {
   base::FilePath account_db_file =
       temp_dir_.GetPath().AppendASCII("TestAccountStoreDatabase");
   LoginDatabase account_db(account_db_file, IsAccountStore(true));
-  ASSERT_TRUE(account_db.Init(encryptor()));
+  ASSERT_TRUE(account_db.Init(
+      /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+      /*encryptor=*/encryptor()));
   AddMetricsTestData(&account_db);
 
   base::HistogramTester histogram_tester;
@@ -1668,7 +1674,9 @@ TEST_P(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
   base::FilePath account_db_file =
       temp_dir_.GetPath().AppendASCII("TestAccountStoreDatabase");
   LoginDatabase account_db(account_db_file, IsAccountStore(true));
-  ASSERT_TRUE(account_db.Init(encryptor()));
+  ASSERT_TRUE(account_db.Init(
+      /*on_undecryptable_passwords_removed=*/base::NullCallback(),
+      /*encryptor=*/encryptor()));
   AddMetricsTestData(&account_db);
 
   base::HistogramTester histogram_tester;
@@ -1681,16 +1689,16 @@ TEST_P(LoginDatabaseTest, ReportAccountStoreMetricsTest) {
 
 class LoginDatabaseSyncMetadataTest : public LoginDatabaseTestBase {
  public:
-  syncer::ModelType SyncModelType() { return syncer::PASSWORDS; }
+  syncer::DataType SyncDataType() { return syncer::PASSWORDS; }
 };
 
 TEST_F(LoginDatabaseSyncMetadataTest, NoMetadata) {
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      db().password_sync_metadata_store().GetAllSyncMetadata(SyncModelType());
+      db().password_sync_metadata_store().GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
   EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
@@ -1703,25 +1711,25 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
   metadata.set_sequence_number(1);
 
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey1, metadata));
+      SyncDataType(), kStorageKey1, metadata));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncDataType(), data_type_state));
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey2, metadata));
+      SyncDataType(), kStorageKey2, metadata));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
 
-  EXPECT_EQ(metadata_batch->GetModelTypeState().initial_sync_state(),
-            sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  EXPECT_EQ(metadata_batch->GetDataTypeState().initial_sync_state(),
+            sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   syncer::EntityMetadataMap metadata_records =
       metadata_batch->TakeAllMetadata();
@@ -1730,18 +1738,18 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetAllSyncMetadata) {
   EXPECT_EQ(metadata_records[kStorageKey1]->sequence_number(), 1);
   EXPECT_EQ(metadata_records[kStorageKey2]->sequence_number(), 2);
 
-  // Now check that a model type state update replaces the old value
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  // Now check that a data type state update replaces the old value
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncDataType(), data_type_state));
 
   metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
   EXPECT_EQ(
-      metadata_batch->GetModelTypeState().initial_sync_state(),
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+      metadata_batch->GetDataTypeState().initial_sync_state(),
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, GetSyncEntityMetadataForStorageKey) {
@@ -1757,7 +1765,7 @@ TEST_F(LoginDatabaseSyncMetadataTest, GetSyncEntityMetadataForStorageKey) {
   metadata.set_sequence_number(1);
 
   ASSERT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey1, metadata));
+      SyncDataType(), kStorageKey1, metadata));
 
   LoginDatabase::SyncMetadataStore& store_impl =
       static_cast<LoginDatabase::SyncMetadataStore&>(
@@ -1785,28 +1793,28 @@ TEST_F(LoginDatabaseSyncMetadataTest, DeleteAllSyncMetadata) {
   metadata.set_sequence_number(1);
 
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey1, metadata));
+      SyncDataType(), kStorageKey1, metadata));
 
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncDataType(), data_type_state));
 
   metadata.set_sequence_number(2);
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey2, metadata));
+      SyncDataType(), kStorageKey2, metadata));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
   ASSERT_EQ(metadata_batch->TakeAllMetadata().size(), 2u);
 
-  password_sync_metadata_store.DeleteAllSyncMetadata(SyncModelType());
+  password_sync_metadata_store.DeleteAllSyncMetadata(SyncDataType());
 
   std::unique_ptr<syncer::MetadataBatch> empty_metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(empty_metadata_batch, testing::NotNull());
   EXPECT_EQ(empty_metadata_batch->TakeAllMetadata().size(), 0u);
 }
@@ -1816,24 +1824,24 @@ TEST_F(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
   PasswordStoreSync::MetadataStore& password_sync_metadata_store =
       db().password_sync_metadata_store();
   const std::string kStorageKey = "1";
-  sync_pb::ModelTypeState model_type_state;
+  sync_pb::DataTypeState data_type_state;
 
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
   metadata.set_client_tag_hash("client_hash");
 
   // Write the data into the store.
   EXPECT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kStorageKey, metadata));
-  EXPECT_TRUE(password_sync_metadata_store.UpdateModelTypeState(
-      SyncModelType(), model_type_state));
+      SyncDataType(), kStorageKey, metadata));
+  EXPECT_TRUE(password_sync_metadata_store.UpdateDataTypeState(
+      SyncDataType(), data_type_state));
   // Delete the data we just wrote.
-  EXPECT_TRUE(password_sync_metadata_store.ClearEntityMetadata(SyncModelType(),
+  EXPECT_TRUE(password_sync_metadata_store.ClearEntityMetadata(SyncDataType(),
                                                                kStorageKey));
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
 
   // It shouldn't be there any more.
@@ -1841,15 +1849,14 @@ TEST_F(LoginDatabaseSyncMetadataTest, WriteThenDeleteSyncMetadata) {
       metadata_batch->TakeAllMetadata();
   EXPECT_EQ(metadata_records.size(), 0u);
 
-  // Now delete the model type state.
-  EXPECT_TRUE(
-      password_sync_metadata_store.ClearModelTypeState(SyncModelType()));
+  // Now delete the data type state.
+  EXPECT_TRUE(password_sync_metadata_store.ClearDataTypeState(SyncDataType()));
   metadata_batch =
-      password_sync_metadata_store.GetAllSyncMetadata(SyncModelType());
+      password_sync_metadata_store.GetAllSyncMetadata(SyncDataType());
   ASSERT_THAT(metadata_batch, testing::NotNull());
 
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(LoginDatabaseSyncMetadataTest, HasUnsyncedPasswordDeletions) {
@@ -1871,15 +1878,15 @@ TEST_F(LoginDatabaseSyncMetadataTest, HasUnsyncedPasswordDeletions) {
   const std::string kNonTombstoneStorageKey = "2";
 
   ASSERT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kTombstoneStorageKey, tombstone_metadata));
+      SyncDataType(), kTombstoneStorageKey, tombstone_metadata));
   ASSERT_TRUE(password_sync_metadata_store.UpdateEntityMetadata(
-      SyncModelType(), kNonTombstoneStorageKey, non_tombstone_metadata));
+      SyncDataType(), kNonTombstoneStorageKey, non_tombstone_metadata));
 
   EXPECT_TRUE(password_sync_metadata_store.HasUnsyncedPasswordDeletions());
 
   // Delete the only metadata entry representing a deletion.
   ASSERT_TRUE(password_sync_metadata_store.ClearEntityMetadata(
-      SyncModelType(), kTombstoneStorageKey));
+      SyncDataType(), kTombstoneStorageKey));
 
   EXPECT_FALSE(password_sync_metadata_store.HasUnsyncedPasswordDeletions());
 }
@@ -1905,7 +1912,9 @@ TEST_P(LoginDatabaseTest, EncryptionEnabled) {
 
   {
     LoginDatabase db(file, IsAccountStore(false));
-    ASSERT_TRUE(db.Init(encryptor()));
+    ASSERT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
     EXPECT_EQ(AddChangeForForm(password_form), db.AddLogin(password_form));
   }
   std::u16string decrypted_pw;
@@ -1939,7 +1948,9 @@ TEST_P(LoginDatabaseTest, HandleObfuscationMix) {
   base::FilePath file = temp_dir_.GetPath().AppendASCII("TestUnencryptedDB");
   {
     LoginDatabase db(file, IsAccountStore(false));
-    ASSERT_TRUE(db.Init(encryptor()));
+    ASSERT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
     // Add obfuscated (new) entries.
     PasswordForm password_form = GenerateExamplePasswordForm();
     password_form.password_value = k_obfuscated_pw16;
@@ -1956,7 +1967,9 @@ TEST_P(LoginDatabaseTest, HandleObfuscationMix) {
   std::vector<PasswordForm> forms;
   {
     LoginDatabase db(file, IsAccountStore(false));
-    ASSERT_TRUE(db.Init(encryptor()));
+    ASSERT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
     ASSERT_TRUE(db.GetAutofillableLogins(&forms));
   }
 
@@ -1995,7 +2008,9 @@ TEST_P(LoginDatabaseTest, Init_NoCrashOnFailedRollback) {
   // Now try to init the database with the file. The test succeeds if it does
   // not crash.
   LoginDatabase db(database_path, IsAccountStore(false));
-  EXPECT_FALSE(db.Init(encryptor()));
+  EXPECT_FALSE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/encryptor()));
 }
 
 // If the database version is from the future, it shouldn't be downgraded.
@@ -2009,7 +2024,9 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   {
     // Open a database with the current version.
     LoginDatabase db(database_path, IsAccountStore(false));
-    EXPECT_TRUE(db.Init(encryptor()));
+    EXPECT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
   }
   {
     // Overwrite the current version to be |kDBFutureVersion|
@@ -2024,7 +2041,9 @@ TEST_P(LoginDatabaseTest, ShouldNotDowngradeDatabaseVersion) {
   {
     // Open the database again.
     LoginDatabase db(database_path, IsAccountStore(false));
-    EXPECT_TRUE(db.Init(encryptor()));
+    EXPECT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
   }
   {
     // The DB version should remain the same.
@@ -2115,7 +2134,9 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     // Assert that the database was successfully opened and updated
     // to current version.
     LoginDatabase db(database_path_, IsAccountStore(false));
-    ASSERT_TRUE(db.Init(encryptor()));
+    ASSERT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/encryptor()));
 
     // Check that the contents was preserved.
     std::vector<PasswordForm> result;
@@ -2277,7 +2298,9 @@ PasswordForm LoginDatabaseUndecryptableLoginsTest::AddDummyLogin(
 
   {
     LoginDatabase db(database_path(), IsAccountStore(false));
-    EXPECT_TRUE(db.Init(nullptr));
+    EXPECT_TRUE(
+        db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                /*encryptor=*/nullptr));
     EXPECT_EQ(db.AddLogin(form), AddChangeForForm(form));
   }
 
@@ -2322,7 +2345,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   NiceMock<base::MockCallback<LoginDatabase::IsEmptyCallback>> is_empty_cb;
   db.SetIsEmptyCb(is_empty_cb.Get());
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
 
 #if BUILDFLAG(IS_CASTOS)
   // Disabling the checks in chromecast because encryption is unavailable.
@@ -2380,15 +2405,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
-
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2419,15 +2441,13 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
+
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
-
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2457,15 +2477,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
-
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2498,15 +2515,12 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
-
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2534,18 +2548,15 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
   // Make authentication not available.
   OSCryptMocker::SetBackendLocked(true);
 
-  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(on_undecryptable_passwords_removed, Run).Times(0);
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2573,10 +2584,11 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
-
-  db.SetIsDeletingUndecryptableLoginsDisabledByPolicy(true);
+  LoginDatabase db(database_path(), IsAccountStore(false),
+                   LoginDatabase::DeletingUndecryptablePasswordsEnabled(false));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
 
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
@@ -2594,7 +2606,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   AddDummyLogin("foo2", GURL("https://foo2.com/"), true, /*blocklisted=*/false);
 
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
 
   std::vector<PasswordForm> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
@@ -2612,7 +2626,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, KeychainLockedTest) {
   OSCryptMocker::SetBackendLocked(true);
   LoginDatabase db(database_path(), IsAccountStore(false));
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
   EXPECT_EQ(DatabaseCleanupResult::kEncryptionUnavailable,
             db.DeleteUndecryptableLogins());
 
@@ -2655,16 +2671,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/false);
-  LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+  LoginDatabase db(database_path(), IsAccountStore(false));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
-    EXPECT_CALL(callback, Run(true));
+    EXPECT_CALL(on_undecryptable_passwords_removed, Run);
     EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
     EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                             HasPrimaryKeyAndEquals(form3)));
@@ -2677,14 +2690,14 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
       EXPECT_THAT(forms, UnorderedElementsAre(HasPrimaryKeyAndEquals(form1),
                                               HasPrimaryKeyAndEquals(form3)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2701,18 +2714,15 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
   auto form2 =
       AddDummyLogin("user2", GURL("http://www.google.com/"),
                     /*should_be_corrupted=*/true, /*blocklisted=*/false);
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
+
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
   std::vector<PasswordForm> result;
   PasswordForm form = GenerateExamplePasswordForm();
 
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
-
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
-    EXPECT_CALL(callback, Run(true));
+    EXPECT_CALL(on_undecryptable_passwords_removed, Run);
     EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
                              /*should_PSL_matching_apply=*/false, &result));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
@@ -2725,14 +2735,14 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_TRUE(db.GetLogins(PasswordFormDigest(form),
                                /*should_PSL_matching_apply=*/false, &result));
       EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_FALSE(db.GetLogins(PasswordFormDigest(form),
                                 /*should_PSL_matching_apply=*/false, &result));
       histogram_tester.ExpectTotalCount(
@@ -2755,17 +2765,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
   auto form3 =
       AddDummyLogin("foo3", GURL("https://foo3.com/"),
                     /*should_be_corrupted=*/false, /*blocklisted=*/true);
+  NiceMock<base::MockRepeatingClosure> on_undecryptable_passwords_removed;
 
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
-
-  NiceMock<
-      base::MockCallback<LoginDatabase::ClearingUndecryptablePasswordsCallback>>
-      callback;
-  db.SetClearingUndecryptablePasswordsCb(callback.Get());
+  ASSERT_TRUE(db.Init(on_undecryptable_passwords_removed.Get(), nullptr));
 
   if (base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords)) {
-    EXPECT_CALL(callback, Run(true));
+    EXPECT_CALL(on_undecryptable_passwords_removed, Run);
     EXPECT_TRUE(db.GetAutofillableLogins(&result));
     EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
     histogram_tester.ExpectUniqueSample(
@@ -2777,13 +2783,13 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_TRUE(db.GetAutofillableLogins(&result));
       EXPECT_THAT(result, ElementsAre(HasPrimaryKeyAndEquals(form1)));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
     } else {
-      EXPECT_CALL(callback, Run(true));
+      EXPECT_CALL(on_undecryptable_passwords_removed, Run);
       EXPECT_FALSE(db.GetAutofillableLogins(&result));
       histogram_tester.ExpectTotalCount(
           "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
@@ -2806,7 +2812,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
       AddDummyLogin("user2", GURL("http://www.google.com/"),
                     /*should_be_corrupted=*/true, /*blocklisted=*/false);
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
   PasswordForm form = GenerateExamplePasswordForm();
 
   // Set the user data directory switch, it will prevent passwords from being
@@ -2847,7 +2855,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest,
                     /*should_be_corrupted=*/true, /*blocklisted=*/false);
 
   LoginDatabase db(database_path(), IsAccountStore(false));
-  ASSERT_TRUE(db.Init(nullptr));
+  ASSERT_TRUE(
+      db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+              /*encryptor=*/nullptr));
 
   // Set the user data directory switch, it will prevent passwords from being
   // deleted.
@@ -3288,7 +3298,8 @@ TEST_P(LoginDatabaseTest, IsEmptyCb_InitEmpty) {
   EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                .no_login_found = true,
                                .autofillable_credentials_exist = false}));
-  db.Init(encryptor());
+  db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+          /*encryptor=*/encryptor());
 }
 
 TEST_P(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
@@ -3296,7 +3307,8 @@ TEST_P(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
   {
     // Simulate the DB being populated in a previous startup.
     auto db = std::make_unique<LoginDatabase>(directory, IsAccountStore(false));
-    db->Init(encryptor());
+    db->Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+             /*encryptor=*/encryptor());
     std::ignore =
         db->AddLogin(GenerateExamplePasswordForm(), /*error=*/nullptr);
     db.reset();
@@ -3308,7 +3320,8 @@ TEST_P(LoginDatabaseTest, IsEmptyCb_InitNonEmpty) {
   EXPECT_CALL(is_empty_cb, Run(LoginDatabase::LoginDatabaseEmptinessState{
                                .no_login_found = false,
                                .autofillable_credentials_exist = true}));
-  db.Init(encryptor());
+  db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+          /*encryptor=*/encryptor());
 }
 
 TEST_P(LoginDatabaseTest, IsEmptyCb_AddLogin) {
@@ -3460,7 +3473,9 @@ class LoginDatabaseForAccountStoreTest : public testing::Test {
     OSCryptMocker::SetUp();
 
     db_ = std::make_unique<LoginDatabase>(file_, IsAccountStore(true));
-    ASSERT_TRUE(db_->Init(nullptr));
+    ASSERT_TRUE(
+        db_->Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
+                  /*encryptor=*/nullptr));
   }
 
   void TearDown() override { OSCryptMocker::TearDown(); }

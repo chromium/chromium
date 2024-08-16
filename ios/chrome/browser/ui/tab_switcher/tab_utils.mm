@@ -35,7 +35,7 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
   for (GridItemIdentifier* item in items) {
     switch (item.type) {
       case GridItemType::kInactiveTabsButton:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab:
         identifiers.insert(item.tabSwitcherItem.identifier);
         break;
@@ -43,7 +43,7 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
         groups.insert(item.tabGroupItem.tabGroup);
         break;
       case GridItemType::kSuggestedActions:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return (identifiers.size() + groups.size()) != items.count;

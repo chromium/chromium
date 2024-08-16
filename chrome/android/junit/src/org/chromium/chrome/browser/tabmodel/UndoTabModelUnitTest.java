@@ -231,7 +231,7 @@ public class UndoTabModelUnitTest {
                 });
 
         // Take action.
-        model.closeTab(tab, false, undoable);
+        model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(undoable).build());
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 
@@ -267,11 +267,15 @@ public class UndoTabModelUnitTest {
     private void closeMultipleTabs(
             final TabModel model, final List<Tab> tabs, final boolean undoable)
             throws TimeoutException {
-        closeMultipleTabsInternal(model, () -> model.closeMultipleTabs(tabs, undoable), undoable);
+        closeMultipleTabsInternal(
+                model,
+                () -> model.closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(undoable).build()),
+                undoable);
     }
 
     private void closeAllTabs(final TabModel model) throws TimeoutException {
-        closeMultipleTabsInternal(model, () -> model.closeAllTabs(), true);
+        closeMultipleTabsInternal(
+                model, () -> model.closeTabs(TabClosureParams.closeAllTabs().build()), true);
     }
 
     private void cancelTabClosure(final TabModel model, final Tab tab) throws TimeoutException {

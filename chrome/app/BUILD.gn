@@ -204,6 +204,9 @@ static_library("test_support") {
     deps += [
       "//ash/constants",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/locale",
+      "//chrome/browser/ash/schedqos",
       "//chromeos",
       "//chromeos/ash/components/memory:memory",
     ]

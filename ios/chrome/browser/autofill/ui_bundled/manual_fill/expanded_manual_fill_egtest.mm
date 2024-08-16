@@ -4,13 +4,21 @@
 
 #import <string_view>
 
+#import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/plus_address_test_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -102,14 +110,18 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestionChip() {
   return grey_text(@"concrete username");
 }
 
-// Matcher for the username chip button of a password option shown in expanded
-// view.
-id<GREYMatcher> UsernameChipButton() {
-  NSString* accessibility_label = l10n_util::GetNSStringF(
-      IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, u"concrete username");
+// Matcher for the chip button with the given `title`.
+id<GREYMatcher> ChipButton(std::u16string title) {
   return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabel(accessibility_label),
+      chrome_test_util::ButtonWithAccessibilityLabel(l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)),
       grey_interactable(), nullptr);
+}
+
+// Checks that the chip button with `title` is sufficiently visible.
+void CheckChipButtonVisibility(std::u16string title) {
+  [[EarlGrey selectElementWithMatcher:ChipButton(title)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that the header view is as expected according to whether or not the
@@ -222,8 +234,8 @@ void MakeSurePaymentMethodSuggestionsAreVisisble() {
 
 // Matcher for the "Autofill Form" button shown in the cells.
 id<GREYMatcher> AutofillFormButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
+  return grey_allOf(grey_accessibilityID(
+                        manual_fill::kExpandedManualFillAutofillFormButtonID),
                     grey_interactable(), nullptr);
 }
 
@@ -239,8 +251,25 @@ id<GREYMatcher> AutofillFormButton() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  // Enable the Keyboard Accessory Upgrade feature.
-  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  if ([self isRunningTest:@selector(testPlusAddressFallback)]) {
+    std::string fakeLocalUrl =
+        base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressesEnabled,
+         {{
+             {"server-url", {fakeLocalUrl}},
+             {"manage-url", {fakeLocalUrl}},
+         }}});
+
+    // Enable the Keyboard Accessory Upgrade feature.
+    config.features_enabled_and_params.push_back(
+        {kIOSKeyboardAccessoryUpgrade, {}});
+    config.features_enabled_and_params.push_back(
+        {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
+  } else {
+    // Enable the Keyboard Accessory Upgrade feature.
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+  }
 
   return config;
 }
@@ -488,8 +517,7 @@ id<GREYMatcher> AutofillFormButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Confirm that the password option is visible.
-  [[EarlGrey selectElementWithMatcher:UsernameChipButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  CheckChipButtonVisibility(u"concrete username");
 }
 
 // Tests that the "Autofill Form" button does not exist for the other data types
@@ -642,6 +670,32 @@ id<GREYMatcher> AutofillFormButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the plus address fallback is shown in the address and the
+// password segment.
+- (void)testPlusAddressFallback {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Expanded manual fill view is only available on iPhone.");
+  }
+
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [PlusAddressAppInterface
+      saveExamplePlusProfile:base::SysUTF8ToNSString(
+                                 self.testServer->base_url().spec())];
+
+  // Open the expanded manual fill view for an address field.
+  [self openExpandedManualFillViewForDataType:ManualFillDataType::kAddress
+                                  fieldToFill:kNameFieldID];
+
+  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
+
+  // Switch over to passwords.
+  [[EarlGrey selectElementWithMatcher:SegmentedControlPasswordTab()]
+      performAction:grey_tap()];
+  CheckChipButtonVisibility(plus_addresses::test::kFakePlusAddressU16);
 }
 
 @end

@@ -624,6 +624,11 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                 const OperandDescriptor& false_value,
                                 std::string_view label);
 
+// Validate the creation of an MLBuffer given `descriptor`.
+base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
+    ValidateBuffer(const ContextProperties& context_properties,
+                   OperandDescriptor descriptor);
+
 // Validate that the axes are within the range of [0, rank - 1] without
 // duplication.
 base::expected<void, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)

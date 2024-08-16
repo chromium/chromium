@@ -10,6 +10,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_utils.h"
 #include "ui/views/controls/scroll_view.h"
@@ -49,7 +50,7 @@ DigitalIdentityMultiStepDialog::Delegate::Delegate()
                                   views::BubbleBorder::Arrow::NONE,
                                   views::BubbleBorder::DIALOG_SHADOW,
                                   /*autosize=*/true) {
-  SetModalType(ui::ModalType::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(true);
 
   auto contents_view_unique = std::make_unique<views::BoxLayoutView>();

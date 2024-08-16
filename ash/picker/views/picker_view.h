@@ -40,7 +40,9 @@ class NonClientFrameView;
 
 namespace ash {
 
+enum class PickerCapsLockPosition;
 enum class PickerLayoutType;
+enum class PickerPositionType;
 enum class PickerPseudoFocusDirection;
 class PickerEmojiBarView;
 class PickerMainContainerView;
@@ -67,6 +69,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   explicit PickerView(PickerViewDelegate* delegate,
                       const gfx::Rect& anchor_bounds,
                       PickerLayoutType layout_type,
+                      PickerPositionType position_type,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
@@ -93,6 +96,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
   void OnZeroStateViewHeightChanged() override;
+  void SetCapsLockDisplayed(bool displayed) override;
+  PickerCapsLockPosition GetCapsLockPosition() override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
@@ -144,25 +149,26 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
  private:
   // Sets the search text field's query text to the query, focuses it, then
-  // starts a search.
-  void StartSearchWithNewQuery(std::u16string query);
+  // updates the active page - starting / ending a search if necessary.
+  void UpdateSearchQueryAndActivePage(std::u16string query);
 
-  // Starts a search with the current query, with search results being returned
-  // to `PublishSearchResults` and `PublishEmojiResults`.
-  // If the query is empty, this calls `StopSearch` instead.
-  void StartSearch();
-
-  // Stops any previous searches, and sets the active page to the zero state /
-  // category results view.
-  void StopSearch();
+  // Updates the active page based on the search text field's query text, as
+  // well as the active category.
+  // If the search text field's query text is non-empty, this starts a search
+  // and sets the active page to the search view after a delay via
+  // `OnClearResultsTimerFired` and `PublishSearchResults`.
+  // Otherwise, stops any previous searches and immediately sets the active page
+  // to the zero state / category results view, fetching category results if
+  // necessary.
+  void UpdateActivePage();
 
   // Displays `results` in the emoji bar.
   void PublishEmojiResults(std::vector<PickerSearchResult> results);
 
-  // Clears the search results.
+  // Clears the search results and sets the active page to the search view.
   void OnClearResultsTimerFired();
 
-  // Displays `results` in the search view.
+  // Displays `results` in the search view and sets it as the active page.
   // If `results` is empty and no results were previously published, then a "no
   // results found" view is shown instead of a blank view.
   void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
@@ -220,7 +226,28 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // (e.g. to re-align the Picker search field after results have changed).
   void SetWidgetBoundsNeedsUpdate();
 
+  // The currently selected category.
+  // Should only be set to `std::nullopt` through `OnSearchBackButtonPressed`.
+  // Should only be set to a value through `SelectCategory` and
+  // `SelectCategoryWithQuery`.
   std::optional<PickerCategory> selected_category_;
+  // The category which `category_results_view_` has results for.
+  // Used for caching results if the user did not change their selected
+  // category.
+  // For example:
+  // - When a user starts a filtered search from a category's suggested results,
+  //   then clears the search query, the old suggested results are not cleared
+  //   as `last_suggested_results_category_ == selected_category_`.
+  // - When a user starts a non-filtered search from zero state, then filters
+  //   results to a category, then clears the search query, new results will be
+  //   fetched as the `last_suggested_results_category_ != selected_category_`.
+  std::optional<PickerCategory> last_suggested_results_category_;
+  // The whitespace-trimmed query and category when `UpdateActivePage()` was
+  // last called.
+  // Used for avoid unnecessary searches if `UpdateActivePage()` is called again
+  // with the same {query, selected_category}.
+  std::u16string last_query_;
+  std::optional<PickerCategory> last_selected_category_;
 
   PickerKeyEventHandler key_event_handler_;
   PickerSubmenuController submenu_controller_;

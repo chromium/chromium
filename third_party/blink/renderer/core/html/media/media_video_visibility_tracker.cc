@@ -364,6 +364,7 @@ void MediaVideoVisibilityTracker::Detach() {
 
   MaybeRemoveFullscreenEventListeners();
 
+  meets_visibility_threshold_ = false;
   tracker_attached_to_document_ = nullptr;
 }
 
@@ -695,8 +696,6 @@ void MediaVideoVisibilityTracker::ComputeAreaOccludedByViewport(
 
 void MediaVideoVisibilityTracker::MaybeComputeVisibility(
     ShouldReportVisibility should_report_visibility) {
-  occlusion_state_ = {};
-
   if (!tracker_attached_to_document_ ||
       !tracker_attached_to_document_->GetFrame()->View() ||
       !VideoElement().GetLayoutObject()) {
@@ -710,24 +709,33 @@ void MediaVideoVisibilityTracker::MaybeComputeVisibility(
 
   if (VideoElement().GetDocument().Lifecycle().GetState() !=
       DocumentLifecycle::kPaintClean) {
+    // If we have a pending visibility request, run it now with the cached
+    // `meets_visibility_threshold_` value.
+    if (request_visibility_callback_) {
+      RecordVideoOcclusionState(VideoElement(), occlusion_state_,
+                                meets_visibility_threshold_,
+                                visibility_threshold_);
+      std::move(request_visibility_callback_).Run(meets_visibility_threshold_);
+    }
     return;
   }
 
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration");
 
+  occlusion_state_ = {};
   ComputeAreaOccludedByViewport(
       *tracker_attached_to_document_->GetFrame()->View());
 
-  bool meets_visibility_threshold = ComputeVisibility();
+  meets_visibility_threshold_ = ComputeVisibility();
   if (should_report_visibility == ShouldReportVisibility::kYes) {
-    report_visibility_cb_.Run(meets_visibility_threshold);
+    report_visibility_cb_.Run(meets_visibility_threshold_);
   }
   if (request_visibility_callback_) {
     RecordVideoOcclusionState(VideoElement(), occlusion_state_,
-                              meets_visibility_threshold,
+                              meets_visibility_threshold_,
                               visibility_threshold_);
-    std::move(request_visibility_callback_).Run(meets_visibility_threshold);
+    std::move(request_visibility_callback_).Run(meets_visibility_threshold_);
   }
 }
 

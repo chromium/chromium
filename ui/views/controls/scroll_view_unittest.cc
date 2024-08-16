@@ -520,7 +520,7 @@ std::string UiConfigToString(const testing::TestParamInfo<UiConfig>& info) {
     case UiConfig::kRtlWithLayers:
       return "RTL_LAYERS";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Verifies the viewport is sized to fit the available space.
@@ -599,6 +599,15 @@ TEST_F(ScrollViewTest, VerticallScrollbarDoesNotAppearIfDisabled) {
   views::test::RunScheduledLayout(scroll_view_.get());
   EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
   EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
+TEST_F(ScrollViewTest, AccessibleProperties) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+  InstallContents();
+
+  ui::AXNodeData data;
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kScrollView);
 }
 
 // Verifies the scrollbars are added as necessary.

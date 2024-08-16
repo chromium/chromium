@@ -10,10 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
-#include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
@@ -27,6 +27,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -35,7 +36,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
@@ -53,6 +53,11 @@
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-forward.h"
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "content/browser/compute_pressure/pressure_service_for_worker.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 namespace network {
 
@@ -79,7 +84,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     : public blink::mojom::DedicatedWorkerHost,
       public blink::mojom::BackForwardCacheControllerHost,
       public RenderProcessHostObserver,
-      public BucketContext {
+      public BucketContext,
+      public base::SupportsUserData {
  public:
   // Creates a new browser-side host for a single dedicated worker.
   //
@@ -158,8 +164,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
   void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   void BindPressureService(
       mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindSerialService(
@@ -218,9 +227,11 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     return service_worker_handle_.get();
   }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   PressureServiceForWorker<DedicatedWorkerHost>* pressure_service() {
     return pressure_service_.get();
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Exposed so that tests can swap the implementation and intercept calls.
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
@@ -369,8 +380,10 @@ class CONTENT_EXPORT DedicatedWorkerHost final
 
   std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   std::unique_ptr<PressureServiceForWorker<DedicatedWorkerHost>>
       pressure_service_;
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Script request URL used, only for DevTools and tracing. Only set after
   // `StartScriptLoad()`. Only set and used if PlzDedicatedWorker is enabled.

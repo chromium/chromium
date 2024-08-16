@@ -62,6 +62,10 @@ const std::vector<CVImagePrimary>& GetSupportedImagePrimaries() {
              kCMFormatDescriptionColorPrimaries_EBU_3213,
              gfx::ColorSpace::PrimaryID::BT470BG});
         supported_primaries.push_back(
+            {kCVImageBufferColorPrimaries_EBU_3213,
+             kCMFormatDescriptionColorPrimaries_EBU_3213,
+             gfx::ColorSpace::PrimaryID::EBU_3213_E});
+        supported_primaries.push_back(
             {kCVImageBufferColorPrimaries_SMPTE_C,
              kCMFormatDescriptionColorPrimaries_SMPTE_C,
              gfx::ColorSpace::PrimaryID::SMPTE170M});

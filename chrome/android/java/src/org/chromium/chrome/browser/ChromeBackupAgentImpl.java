@@ -804,8 +804,12 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     final AccountManagerFacade accountManagerFacade =
                             AccountManagerFacadeProvider.getInstance();
 
-                    Runnable signinRunnable =
-                            () -> {
+                    Callback<Boolean> accountManagedCallback =
+                            (isManaged) -> {
+                                // If restoring a managed account, the user most likely already
+                                // accepted account management previously and we don't have the
+                                // ability to re-show the confirmation dialog here anyways.
+                                if (isManaged) signinManager.setUserAcceptedAccountManagement(true);
                                 signinManager.runAfterOperationInProgress(
                                         () -> {
                                             signinManager.signin(
@@ -814,15 +818,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                                             .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
                                                     callback);
                                         });
-                            };
-
-                    Callback<Boolean> accountManagedCallback =
-                            (isManaged) -> {
-                                // If restoring a managed account, the user most likely already
-                                // accepted account management previously and we don't have the
-                                // ability to re-show the confirmation dialog here anyways.
-                                if (isManaged) signinManager.setUserAcceptedAccountManagement(true);
-                                signinRunnable.run();
                             };
 
                     AccountManagerFacade.ChildAccountStatusListener listener =
@@ -836,14 +831,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                     callback.onSignInAborted();
                                     return;
                                 }
-
-                                if (SigninFeatureMap.isEnabled(
-                                        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
-                                    signinManager.isAccountManaged(
-                                            accountInfo, accountManagedCallback);
-                                } else {
-                                    signinRunnable.run();
-                                }
+                                signinManager.isAccountManaged(accountInfo, accountManagedCallback);
                             };
 
                     AccountUtils.checkChildAccountStatus(

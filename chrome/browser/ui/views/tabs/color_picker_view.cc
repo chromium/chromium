@@ -97,6 +97,9 @@ class ColorPickerElementView : public views::Button {
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
     SetAnimateOnStateChange(true);
     GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
   }
 
   ~ColorPickerElementView() override = default;
@@ -106,6 +109,9 @@ class ColorPickerElementView : public views::Button {
       return;
     }
     selected_ = selected;
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
     SchedulePaint();
   }
 
@@ -120,12 +126,6 @@ class ColorPickerElementView : public views::Button {
   views::View* GetSelectedViewForGroup(int group) override {
     DCHECK(parent());
     return parent()->GetSelectedViewForGroup(group);
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(GetSelected() ? ax::mojom::CheckedState::kTrue
-                                             : ax::mojom::CheckedState::kFalse);
   }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
@@ -193,7 +193,7 @@ class ColorPickerElementView : public views::Button {
   void ButtonPressed() {
     // Pressing this a second time shouldn't do anything.
     if (!selected_) {
-      selected_ = true;
+      SetSelected(true);
       SchedulePaint();
       selected_callback_.Run(this);
     }

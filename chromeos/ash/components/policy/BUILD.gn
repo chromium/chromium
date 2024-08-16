@@ -10,22 +10,31 @@ component("policy") {
   output_name = "chromeos_ash_components_policy"
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
+  public = [
+    "restriction_schedule/device_restriction_schedule_controller.h",
+    "weekly_time/time_utils.h",
+    "weekly_time/weekly_time.h",
+    "weekly_time/weekly_time_interval.h",
+  ]
+
+  sources = [
+    "restriction_schedule/device_restriction_schedule_controller.cc",
+    "weekly_time/time_utils.cc",
+    "weekly_time/weekly_time.cc",
+    "weekly_time/weekly_time_interval.cc",
+  ]
+
   public_deps = [
+    "//base",
     "//components/policy/proto",
     "//third_party/abseil-cpp:absl",
-  ]
-  deps = [
-    "//base",
-    "//base:i18n",
     "//third_party/icu",
   ]
-  sources = [
-    "weekly_time/time_utils.cc",
-    "weekly_time/time_utils.h",
-    "weekly_time/weekly_time.cc",
-    "weekly_time/weekly_time.h",
-    "weekly_time/weekly_time_interval.cc",
-    "weekly_time/weekly_time_interval.h",
+
+  deps = [
+    "//base:i18n",
+    "//chromeos/constants",
+    "//components/prefs",
   ]
 }
 

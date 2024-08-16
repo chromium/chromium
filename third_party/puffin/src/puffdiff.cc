@@ -81,12 +81,10 @@ bool CreatePatch(const Buffer& raw_patch,
   patch->resize(kMagicLength + sizeof(header_size) + header_size +
                 raw_patch.size());
 
-  base::span(*patch)
-      .subspan(offset, kMagicLength)
-      .copy_from(base::as_bytes(
-          // SAFETY: The kMagicLength is the number of non-null chars in the
-          // kMagic string.
-          UNSAFE_BUFFERS(base::span(kMagic, kMagicLength))));
+  base::span(*patch).copy_prefix_from(base::as_bytes(
+      // SAFETY: The kMagicLength is the number of non-null chars in the
+      // kMagic string.
+      UNSAFE_BUFFERS(base::span(kMagic, kMagicLength))));
   offset += kMagicLength;
 
   // Read header size from big-endian mode.

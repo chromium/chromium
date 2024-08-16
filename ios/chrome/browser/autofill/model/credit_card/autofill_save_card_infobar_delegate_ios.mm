@@ -60,15 +60,11 @@ bool AutofillSaveCardInfoBarDelegateIOS::ShouldExpire(
 bool AutofillSaveCardInfoBarDelegateIOS::UpdateAndAccept(
     std::u16string cardholder_name,
     std::u16string expiration_date_month,
-    std::u16string expiration_date_year,
-    base::OnceCallback<void(bool card_saved)>
-        credit_card_upload_completion_callback) {
+    std::u16string expiration_date_year) {
   AutofillClient::UserProvidedCardDetails user_provided_details;
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;
   user_provided_details.expiration_date_year = expiration_date_year;
-  credit_card_upload_completion_callback_ =
-      std::move(credit_card_upload_completion_callback);
   delegate()->OnUiUpdatedAndAccepted(user_provided_details);
   return true;
 }
@@ -78,9 +74,19 @@ void AutofillSaveCardInfoBarDelegateIOS::CreditCardUploadCompleted(
     std::optional<autofill::payments::PaymentsAutofillClient::
                       OnConfirmationClosedCallback>
         on_confirmation_closed_callback) {
+  credit_card_upload_completed_ = true;
   on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
   if (credit_card_upload_completion_callback_) {
     std::move(credit_card_upload_completion_callback_).Run(card_saved);
+  }
+
+  // `on_confirmation_closed_callback_` is executed when infobar showing
+  // confirmation gets closed. When there is no infobar showing, this callback
+  // should be executed immediately otherwise it will be pending till the
+  // delegate gets destructed, which could be when user navigates to a different
+  // web page.
+  if (!infobar_is_presenting_ && on_confirmation_closed_callback_) {
+    (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
   }
 }
 
@@ -90,6 +96,25 @@ void AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed() {
       on_confirmation_closed_callback_) {
     (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
   }
+}
+
+bool AutofillSaveCardInfoBarDelegateIOS::IsCreditCardUploadComplete() {
+  return credit_card_upload_completed_;
+}
+
+void AutofillSaveCardInfoBarDelegateIOS::SetCreditCardUploadCompletionCallback(
+    base::OnceCallback<void(bool card_saved)> callback) {
+  if (callback.is_null()) {
+    credit_card_upload_completion_callback_.Reset();
+    return;
+  }
+  CHECK(credit_card_upload_completion_callback_.is_null());
+  credit_card_upload_completion_callback_ = std::move(callback);
+}
+
+void AutofillSaveCardInfoBarDelegateIOS::SetInfobarIsPresenting(
+    bool is_presenting) {
+  infobar_is_presenting_ = is_presenting;
 }
 
 }  // namespace autofill

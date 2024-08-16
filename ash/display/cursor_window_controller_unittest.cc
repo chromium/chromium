@@ -92,12 +92,16 @@ class CursorWindowControllerTest : public AshTestBase {
     return cursor_window_controller()->cursor_.type();
   }
 
+  const gfx::Rect GetCursorBounds() const {
+    return cursor_window_controller()->GetCursorBoundsInScreenForTest();
+  }
+
   const gfx::Point& GetCursorHotPoint() const {
     return cursor_window_controller()->hot_point_;
   }
 
-  aura::Window* GetCursorWindow() const {
-    return cursor_window_controller()->cursor_window_.get();
+  const aura::Window* GetCursorHostWindow() const {
+    return cursor_window_controller()->GetCursorHostWindowForTest();
   }
 
   const gfx::ImageSkia& GetCursorImage() const {
@@ -144,12 +148,12 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   ui::test::EventGenerator primary_generator(primary_root);
   primary_generator.MoveMouseToInHost(20, 50);
 
-  EXPECT_TRUE(primary_root->Contains(GetCursorWindow()));
+  EXPECT_TRUE(primary_root->Contains(GetCursorHostWindow()));
   EXPECT_EQ(primary_display_id, GetCursorDisplayId());
   EXPECT_EQ(CursorType::kNull, GetCursorType());
   gfx::Point hot_point = GetCursorHotPoint();
   EXPECT_EQ(gfx::Point(4, 4), hot_point);
-  gfx::Rect cursor_bounds = GetCursorWindow()->GetBoundsInScreen();
+  gfx::Rect cursor_bounds = GetCursorBounds();
   EXPECT_EQ(20, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 
@@ -168,46 +172,46 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   ui::test::EventGenerator secondary_generator(secondary_root);
   secondary_generator.MoveMouseToInHost(new_cursor_position_in_host);
 
-  EXPECT_TRUE(secondary_root->Contains(GetCursorWindow()));
+  EXPECT_TRUE(secondary_root->Contains(GetCursorHostWindow()));
   EXPECT_EQ(secondary_display_id, GetCursorDisplayId());
   EXPECT_EQ(CursorType::kNull, GetCursorType());
   hot_point = GetCursorHotPoint();
   EXPECT_EQ(gfx::Point(3, 3), hot_point);
-  cursor_bounds = GetCursorWindow()->GetBoundsInScreen();
+  cursor_bounds = GetCursorBounds();
   EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 }
 
 // Make sure that composition cursor inherits the visibility state.
 TEST_F(CursorWindowControllerTest, VisibilityTest) {
-  ASSERT_TRUE(GetCursorWindow());
-  EXPECT_TRUE(GetCursorWindow()->IsVisible());
+  ASSERT_TRUE(GetCursorHostWindow());
+  EXPECT_TRUE(GetCursorHostWindow()->IsVisible());
   aura::client::CursorClient* client = Shell::Get()->cursor_manager();
   client->HideCursor();
-  ASSERT_TRUE(GetCursorWindow());
-  EXPECT_FALSE(GetCursorWindow()->IsVisible());
+  ASSERT_TRUE(GetCursorHostWindow());
+  EXPECT_FALSE(GetCursorHostWindow()->IsVisible());
 
   // Normal cursor should be in the correct state.
   SetCursorCompositionEnabled(false);
-  ASSERT_FALSE(GetCursorWindow());
+  ASSERT_FALSE(GetCursorHostWindow());
   ASSERT_FALSE(client->IsCursorVisible());
 
   // Cursor was hidden.
   SetCursorCompositionEnabled(true);
-  ASSERT_TRUE(GetCursorWindow());
-  EXPECT_FALSE(GetCursorWindow()->IsVisible());
+  ASSERT_TRUE(GetCursorHostWindow());
+  EXPECT_FALSE(GetCursorHostWindow()->IsVisible());
 
   // Goback to normal cursor and show the cursor.
   SetCursorCompositionEnabled(false);
-  ASSERT_FALSE(GetCursorWindow());
+  ASSERT_FALSE(GetCursorHostWindow());
   ASSERT_FALSE(client->IsCursorVisible());
   client->ShowCursor();
   ASSERT_TRUE(client->IsCursorVisible());
 
   // Cursor was shown.
   SetCursorCompositionEnabled(true);
-  ASSERT_TRUE(GetCursorWindow());
-  EXPECT_TRUE(GetCursorWindow()->IsVisible());
+  ASSERT_TRUE(GetCursorHostWindow());
+  EXPECT_TRUE(GetCursorHostWindow()->IsVisible());
 }
 
 namespace {
@@ -228,8 +232,7 @@ class TestCursorImageSource : public gfx::ImageSkiaSource {
     } else if (resource_scale == 2.f) {
       return rep_2x_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return rep_1x_;
+    NOTREACHED();
   }
 
  private:
@@ -337,7 +340,7 @@ TEST_F(CursorWindowControllerTest, DSF) {
     }
 
     // The cursor window should have the same size as the cursor.
-    EXPECT_EQ(GetCursorWindow()->bounds().size(), GetCursorImage().size());
+    EXPECT_EQ(GetCursorBounds().size(), GetCursorImage().size());
   };
 
   auto* const cursor_manager = Shell::Get()->cursor_manager();

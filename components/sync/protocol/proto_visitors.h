@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 #define COMPONENTS_SYNC_PROTOCOL_PROTO_VISITORS_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -19,6 +19,7 @@
 #include "components/sync/protocol/contact_info_specifics.pb.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/deletion_origin.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
@@ -28,7 +29,6 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/note_entity.pb.h"
@@ -360,6 +360,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonItem& proto) {
   VISIT(product_comparison_uuid);
   VISIT(url);
   VISIT(unique_position);
+  VISIT(title);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ProductComparisonSpecifics& proto) {
@@ -677,7 +678,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(53 == GetNumModelTypes(),
+  static_assert(53 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -828,7 +829,7 @@ VISIT_PROTO_FIELDS(const sync_pb::MetaInfo& proto) {
   VISIT(value);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::DataTypeState& proto) {
   VISIT(progress_marker);
   VISIT(type_context);
   VISIT(encryption_key_name);
@@ -839,7 +840,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState& proto) {
   VISIT(notes_enabled_before_initial_sync_for_passwords);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::ModelTypeState::Invalidation& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::DataTypeState::Invalidation& proto) {
   VISIT(hint);
   VISIT(version);
 }
@@ -887,7 +888,7 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriModel& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriLocalData& proto) {
-  VISIT(model_type_state);
+  VISIT(data_type_state);
   VISIT(entity_metadata);
   VISIT(nigori_model);
 }

@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/commit.h"
@@ -24,6 +24,7 @@
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/sync_protocol_error.h"
 #include "components/sync/engine/syncer_error.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "net/http/http_status_code.h"
 
 namespace syncer {
@@ -60,7 +61,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case INVALID_MESSAGE:
       return SyncerErrorValueForUma::kServerReturnUnknownError;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
@@ -79,7 +80,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(const SyncerError& error) {
     case SyncerError::Type::kProtocolViolationError:
       return SyncerErrorValueForUma::kServerResponseValidationFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns invalidation info after applying updates. This is used to drop
@@ -113,13 +114,13 @@ bool Syncer::IsSyncing() const {
   return is_syncing_;
 }
 
-bool Syncer::NormalSyncShare(ModelTypeSet request_types,
+bool Syncer::NormalSyncShare(DataTypeSet request_types,
                              NudgeTracker* nudge_tracker,
                              SyncCycle* cycle) {
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
   HandleCycleBegin(cycle);
   if (nudge_tracker->IsGetUpdatesRequired(request_types)) {
-    VLOG(1) << "Downloading types " << ModelTypeSetToDebugString(request_types);
+    VLOG(1) << "Downloading types " << DataTypeSetToDebugString(request_types);
     if (!DownloadAndApplyUpdates(&request_types, cycle,
                                  NormalGetUpdatesDelegate(*nudge_tracker))) {
       return HandleCycleEnd(cycle, nudge_tracker->GetOrigin());
@@ -133,48 +134,48 @@ bool Syncer::NormalSyncShare(ModelTypeSet request_types,
   return HandleCycleEnd(cycle, nudge_tracker->GetOrigin());
 }
 
-bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
+bool Syncer::ConfigureSyncShare(const DataTypeSet& request_types,
                                 sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                 SyncCycle* cycle) {
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
 
   // It is possible during configuration that datatypes get unregistered from
-  // ModelTypeRegistry before scheduled configure sync cycle gets executed.
-  // This happens either because ModelTypeController::LoadModels fail and type
+  // DataTypeRegistry before scheduled configure sync cycle gets executed.
+  // This happens either because DataTypeController::LoadModels fail and type
   // need to be stopped or during shutdown when all datatypes are stopped. When
   // it happens we should adjust set of types to download to only include
   // registered types.
-  ModelTypeSet still_enabled_types =
+  DataTypeSet still_enabled_types =
       Intersection(request_types, cycle->context()->GetConnectedTypes());
   VLOG(1) << "Configuring types "
-          << ModelTypeSetToDebugString(still_enabled_types);
+          << DataTypeSetToDebugString(still_enabled_types);
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&still_enabled_types, cycle,
                           ConfigureGetUpdatesDelegate(origin));
   return HandleCycleEnd(cycle, origin);
 }
 
-bool Syncer::PollSyncShare(ModelTypeSet request_types, SyncCycle* cycle) {
+bool Syncer::PollSyncShare(DataTypeSet request_types, SyncCycle* cycle) {
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
-  VLOG(1) << "Polling types " << ModelTypeSetToDebugString(request_types);
+  VLOG(1) << "Polling types " << DataTypeSetToDebugString(request_types);
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&request_types, cycle, PollGetUpdatesDelegate());
   return HandleCycleEnd(cycle, sync_pb::SyncEnums::PERIODIC);
 }
 
-bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
+bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
                                      SyncCycle* cycle,
                                      const GetUpdatesDelegate& delegate) {
   // CommitOnlyTypes() should not be included in the GetUpdates, but should be
   // included in the Commit. We are given a set of types for our SyncShare,
   // and we must do this filtering. Note that |request_types| is also an out
   // param, see below where we update it.
-  ModelTypeSet requested_commit_only_types =
+  DataTypeSet requested_commit_only_types =
       Intersection(*request_types, CommitOnlyTypes());
-  ModelTypeSet download_types =
+  DataTypeSet download_types =
       Difference(*request_types, requested_commit_only_types);
   GetUpdatesProcessor get_updates_processor(
-      cycle->context()->model_type_registry()->update_handler_map(), delegate);
+      cycle->context()->data_type_registry()->update_handler_map(), delegate);
   SyncerError download_result = SyncerError::Success();
   do {
     download_result =
@@ -206,15 +207,15 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
   return !ExitRequested();
 }
 
-SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
+SyncerError Syncer::BuildAndPostCommits(const DataTypeSet& request_types,
                                         NudgeTracker* nudge_tracker,
                                         SyncCycle* cycle) {
   VLOG(1) << "Committing from types "
-          << ModelTypeSetToDebugString(request_types);
+          << DataTypeSetToDebugString(request_types);
 
   CommitProcessor commit_processor(
       request_types,
-      cycle->context()->model_type_registry()->commit_contributor_map());
+      cycle->context()->data_type_registry()->commit_contributor_map());
 
   // The ExitRequested() check is unnecessary, since we should start getting
   // errors from the ServerConnectionManager if an exist has been requested.
@@ -235,9 +236,9 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
         cycle->context()->extensions_activity());
     base::UmaHistogramEnumeration("Sync.CommitResponse",
                                   GetSyncerErrorValueForUma(error));
-    for (ModelType type : commit->GetContributingDataTypes()) {
+    for (DataType type : commit->GetContributingDataTypes()) {
       const std::string kPrefix = "Sync.CommitResponse.";
-      base::UmaHistogramEnumeration(kPrefix + ModelTypeToHistogramSuffix(type),
+      base::UmaHistogramEnumeration(kPrefix + DataTypeToHistogramSuffix(type),
                                     GetSyncerErrorValueForUma(error));
     }
     if (error.type() != SyncerError::Type::kSuccess) {

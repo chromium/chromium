@@ -1,6 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "chrome/services/sharing/nearby/platform/ble_v2_medium.h"
 
 #include "base/containers/flat_set.h"
@@ -108,7 +113,7 @@ std::string_view ConnectResultToString(bluetooth::mojom::ConnectResult result) {
       return "Wakelock";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

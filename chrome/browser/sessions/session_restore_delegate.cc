@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/sessions/session_restore_delegate.h"
 
 #include <stddef.h>
@@ -75,7 +80,8 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
   if (is_app_ != right.is_app_)
     return is_app_;
   // Finally, older tabs should be deferred first.
-  return contents_->GetLastActiveTime() > right.contents_->GetLastActiveTime();
+  return contents_->GetLastActiveTimeTicks() >
+         right.contents_->GetLastActiveTimeTicks();
 }
 
 // static

@@ -14,6 +14,7 @@
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -134,6 +135,10 @@ class ExclusiveAccessBubbleViewsTest
         ->GetInstructionTextForTest();
   }
 
+  SubtleNotificationView* GetSubtleNotificationView() {
+    return static_cast<SubtleNotificationView*>(bubble_view_->GetView());
+  }
+
  private:
   std::unique_ptr<ExclusiveAccessBubbleViews> bubble_view_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -144,6 +149,12 @@ TEST_P(ExclusiveAccessBubbleViewsTest, UpdateViewContent) {
   UpdateExclusiveAccessBubbleType(test_case.type, test_case.has_download);
   EXPECT_EQ(GetInstructionViewText(),
             CreateInstructionText(test_case.goal, test_case.shortcut));
+}
+
+TEST_P(ExclusiveAccessBubbleViewsTest,
+       SubtleNotificationViewAccessibleProperties) {
+  EXPECT_EQ(GetSubtleNotificationView()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kAlert);
 }
 
 INSTANTIATE_TEST_SUITE_P(

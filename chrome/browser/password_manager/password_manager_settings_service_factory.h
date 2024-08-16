@@ -17,7 +17,8 @@ class Profile;
 class PasswordManagerSettingsServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
-  static PasswordManagerSettingsService* GetForProfile(Profile* profile);
+  static password_manager::PasswordManagerSettingsService* GetForProfile(
+      Profile* profile);
 
   static PasswordManagerSettingsServiceFactory* GetInstance();
 

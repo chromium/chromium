@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -2373,13 +2374,15 @@ public class TabGroupModelFilterUnitTest {
 
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
-        // canUndo will always be true for pending tab closure, but use false just to verify it is
+        // allowUndo will always be true for pending tab closure, but use false just to verify it is
         // forwarded correctly.
-        mTabGroupModelFilter.closeMultipleTabs(
-                groupWithTab2AndTab3, /* canUndo= */ false, /* hideTabGroups= */ true);
-        verify(mTabModel)
-                .closeMultipleTabs(
-                        groupWithTab2AndTab3, /* canUndo= */ false, /* canRestore= */ true);
+        var params =
+                TabClosureParams.closeTabs(groupWithTab2AndTab3)
+                        .allowUndo(false)
+                        .hideTabGroups(true)
+                        .build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
@@ -2400,11 +2403,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
-        mTabGroupModelFilter.closeMultipleTabs(
-                groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
-        verify(mTabModel)
-                .closeMultipleTabs(
-                        groupWithTab2AndTab3, /* canUndo= */ true, /* canRestore= */ true);
+        var params = TabClosureParams.closeTabs(groupWithTab2AndTab3).hideTabGroups(true).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
@@ -2431,11 +2432,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> listWithTab2AndTab4 = List.of(mTab2, mTab4);
-        mTabGroupModelFilter.closeMultipleTabs(
-                listWithTab2AndTab4, /* canUndo= */ true, /* hideTabGroups= */ true);
-        verify(mTabModel)
-                .closeMultipleTabs(
-                        listWithTab2AndTab4, /* canUndo= */ true, /* canRestore= */ true);
+        var params = TabClosureParams.closeTabs(listWithTab2AndTab4).hideTabGroups(true).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
 
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
@@ -2449,8 +2448,9 @@ public class TabGroupModelFilterUnitTest {
 
         // Close the remainder of the group separately.
         List<Tab> groupWithTab3 = List.of(mTab3);
-        mTabGroupModelFilter.closeMultipleTabs(
-                groupWithTab3, /* canUndo= */ true, /* hideTabGroups= */ true);
+        params = TabClosureParams.closeTabs(groupWithTab3).hideTabGroups(true).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab3, /* didCloseAlone= */ false);
@@ -2467,11 +2467,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
-        mTabGroupModelFilter.closeMultipleTabs(
-                groupWithTab2AndTab3, /* canUndo= */ true, /* hideTabGroups= */ false);
-        verify(mTabModel)
-                .closeMultipleTabs(
-                        groupWithTab2AndTab3, /* canUndo= */ true, /* canRestore= */ true);
+        var params = TabClosureParams.closeTabs(groupWithTab2AndTab3).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
 
         mTabGroupModelFilter.willCloseTab(mTab2, /* didCloseAlone= */ false);
@@ -2494,8 +2492,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
-        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        var params = TabClosureParams.closeAllTabs().hideTabGroups(true).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
@@ -2542,8 +2541,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
-        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        var params = TabClosureParams.closeAllTabs().hideTabGroups(true).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertTrue(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
@@ -2583,8 +2583,9 @@ public class TabGroupModelFilterUnitTest {
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 
-        mTabGroupModelFilter.closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ false);
-        verify(mTabModel).closeAllTabs(/* uponExit= */ false);
+        var params = TabClosureParams.closeAllTabs().hideTabGroups(false).build();
+        mTabGroupModelFilter.closeTabs(params);
+        verify(mTabModel).closeTabs(params);
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB5_TAB_GROUP_ID));
 

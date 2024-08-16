@@ -92,7 +92,7 @@ void PodsOverflowTray::UpdateTrayItemColor(bool is_active) {
   tray_icon_->SetImage(GetTrayContainerImage(is_active));
 }
 
-void PodsOverflowTray::CloseBubble() {
+void PodsOverflowTray::CloseBubbleInternal() {
   pods_container_ = nullptr;
   bubble_.reset();
   SetIsActive(false);

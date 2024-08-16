@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/controls/webview/web_dialog_view.h"
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -24,7 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -274,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
 
   // TestWebDialogDelegate defaults to window-modal, so closing the browser
   // Window (as opposed to closing merely the tab) should close the dialog.
-  EXPECT_EQ(ui::MODAL_TYPE_WINDOW,
+  EXPECT_EQ(ui::mojom::ModalType::kWindow,
             view_->GetWidget()->widget_delegate()->GetModalType());
 
   // Close the parent window. Tear down may happen asynchronously.

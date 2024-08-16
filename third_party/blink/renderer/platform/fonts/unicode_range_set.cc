@@ -58,7 +58,7 @@ UnicodeRangeSet::UnicodeRangeSet(HeapVector<UnicodeRange>&& ranges)
 bool UnicodeRangeSet::Contains(UChar32 c) const {
   if (IsEntireRange())
     return true;
-  Vector<UnicodeRange>::const_iterator it =
+  HeapVector<UnicodeRange>::const_iterator it =
       std::lower_bound(ranges_.begin(), ranges_.end(), c);
   return it != ranges_.end() && it->Contains(c);
 }

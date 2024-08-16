@@ -6,12 +6,14 @@
 
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/focus_mode/sounds/playlist_image_button.h"
 #include "base/functional/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -99,7 +101,10 @@ void PlaylistView::UpdateContents(
     title_label_->SetTooltipText(text);
     title_label_->GetViewAccessibility().SetName(text);
     playlist_image_button_->SetTooltipText(text);
-    playlist_image_button_->GetViewAccessibility().SetName(text);
+    playlist_image_button_->GetViewAccessibility().SetName(
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_ACCESSIBLE_NAME,
+            text));
   }
   playlist_image_button_->UpdateContents(playlist_data_.thumbnail);
 }

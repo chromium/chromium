@@ -9,9 +9,6 @@ namespace first_run {
 NSString* const kFirstRunSignInScreenAccessibilityIdentifier =
     @"firstRunSignInScreenAccessibilityIdentifier";
 
-NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
-    @"SearchEngineChoiceTitleAccessibilityIdentifier";
-
 NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier =
     @"firstRunDefaultBrowserScreenAccessibilityIdentifier";
 

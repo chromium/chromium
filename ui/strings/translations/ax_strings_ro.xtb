@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">glisor</translation>
 <translation id="1211441953136645838">notă de final</translation>
 <translation id="1281252709823657822">dialog</translation>
+<translation id="1306460908038601864">Dezactivat</translation>
 <translation id="1335095011850992622">mulțumiri</translation>
 <translation id="1342835525016946179">articol</translation>
 <translation id="1359897965706325498">banner</translation>
+<translation id="1480676835519562650">Este posibilă selectarea multiplă, ai selectat <ph name="SELECTED" /> din <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">regiune</translation>
 <translation id="1650423536718072820">citat</translation>
+<translation id="1681022320378710418">ora actuală</translation>
+<translation id="1727839386348365796">Pipetă</translation>
 <translation id="1821985195704844674">grilă arbore</translation>
 <translation id="1823704031293214298">subsolul paginii</translation>
 <translation id="1838681052457320736">casetă de dialog de tip alertă</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ștergere</translation>
 <translation id="1907737156431278478">exemplu</translation>
 <translation id="1930711995431081526">stare</translation>
+<translation id="2031987842108996681">Canalul roșu</translation>
 <translation id="2158401438286456825">listă de pagini</translation>
 <translation id="2291999235780842123">casetă de selectare</translation>
 <translation id="2311842470354187719">sfârșit de pagină</translation>
 <translation id="2335594187091864976">selector pentru dată și oră</translation>
 <translation id="2508569020611168319">listă de file</translation>
+<translation id="2530182415807757784">Este posibilă selectarea multiplă, nu s-a selectat nicio opțiune.</translation>
+<translation id="2634240155926812724">Canalul verde</translation>
 <translation id="2657045182931379222">obiect grafic</translation>
 <translation id="2674318244760992338">notă de subsol</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">notă</translation>
 <translation id="3175736971608411871">temporizator</translation>
 <translation id="3199563858620722075">casetă combo</translation>
+<translation id="3220661731597678625">pasul actual</translation>
+<translation id="3329013043687509092">Saturație</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3557673793733683882">titlu <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">selector pentru săptămână</translation>
 <translation id="3706100364254443312">comutator</translation>
 <translation id="3808586225841795776">termen</translation>
+<translation id="3914173277599553213">Solicitate</translation>
 <translation id="3920932319529768807">concluzie</translation>
 <translation id="3924558731517983934">aplicație</translation>
 <translation id="3944740393230681990">prolog</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">copertă</translation>
 <translation id="4757246831282535685">panou de file</translation>
 <translation id="479989351350248267">căutați</translation>
+<translation id="4912200001568447310">elementul actual</translation>
 <translation id="4912536737030637138">intrare bibliografică</translation>
 <translation id="492244087561876220">comentariu</translation>
+<translation id="4924138096460353083">nedeterminat</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> selectat</translation>
 <translation id="5022314756875057021">grup de rânduri</translation>
 <translation id="5034860022980953847">indicator de progres</translation>
 <translation id="5093189678851173835">epigraf</translation>
+<translation id="509897012892853729">Canalul albastru</translation>
 <translation id="512758898067543763">antet rând</translation>
 <translation id="5143125788380636750">epilog</translation>
 <translation id="5406322316791861025">cifră</translation>
+<translation id="5425179576310518467">data actuală</translation>
 <translation id="5453733299334684579">element arbore</translation>
 <translation id="546643433018805598">indice</translation>
 <translation id="5476505524087279545">debifează</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">buton</translation>
 <translation id="5693537480074347398">exponent</translation>
 <translation id="576709008726043716">introducere</translation>
+<translation id="5860033963881614850">Dezactivat</translation>
 <translation id="591047860372322273">casetă de căutare</translation>
+<translation id="5916664084637901428">Activat</translation>
 <translation id="5987525920412732405">buton incrementare/decrementare</translation>
 <translation id="6023896073578205740">casetă listă</translation>
 <translation id="6119846243427417423">activează</translation>
 <translation id="6150588977291308318">bibliografie</translation>
 <translation id="6164829606128959761">instrument de măsurare</translation>
 <translation id="6166809985690652833">postfață</translation>
+<translation id="6212595056017402527">pagina actuală</translation>
 <translation id="6213469881011901533">glosar</translation>
+<translation id="6281588256137006900">Luminozitate</translation>
 <translation id="6281763101136022427">adresă URL</translation>
 <translation id="6453774872122745852">lista colaboratorilor</translation>
 <translation id="648732519525291180">selector oră</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">antet</translation>
 <translation id="6981594929165378967">inserare</translation>
+<translation id="698788488269350478">extins.</translation>
 <translation id="7034405885550056553">sugestie</translation>
+<translation id="7102274145889307184">locația actuală</translation>
 <translation id="7139483182332611405">prefață</translation>
 <translation id="7198226213493847604">buton pop-up de meniu</translation>
 <translation id="7214187073215825913">informații despre conținut</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">index</translation>
 <translation id="7740050170769002709">Conținut HTML</translation>
 <translation id="7802800022689234070">triunghi pentru afișare</translation>
+<translation id="7852167693871241274">Glisor pentru nuanță</translation>
 <translation id="7891486169920085145">element de divizare</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> nu este selectat</translation>
 <translation id="8034303206267677282">puternic</translation>
 <translation id="8053789581856978548">câmp pentru căutarea textului</translation>
 <translation id="8057695513531652401">anunț</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">capitol</translation>
 <translation id="8851136666856101339">principal</translation>
 <translation id="8861621546968757188">buton pop-up al ferestrei de dialog</translation>
+<translation id="8889402386540077796">Nuanță</translation>
+<translation id="894736920926684893">Comutator pentru format</translation>
 <translation id="9002566407876343676">deschide</translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9048119486235211610">navigare</translation>

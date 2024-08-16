@@ -28,6 +28,8 @@ namespace device::enclave {
 namespace {
 
 constexpr char kKeychainAccessGroup[] = "keychain-access-group";
+constexpr uint8_t kHeader[]{'h', 'e', 'a', 'd', 'e', 'r'};
+constexpr uint8_t kPlaintext[]{'h', 'e', 'l', 'l', 'o'};
 
 class ICloudRecoveryKeyTest : public testing::Test {
  public:
@@ -48,6 +50,33 @@ class ICloudRecoveryKeyTest : public testing::Test {
   crypto::ScopedFakeAppleKeychainV2 fake_keychain_{kKeychainAccessGroup};
   base::test::TaskEnvironment task_environment_;
 };
+
+TEST_F(ICloudRecoveryKeyTest, EndToEnd) {
+  std::unique_ptr<ICloudRecoveryKey> key = CreateKey();
+  std::optional<std::vector<uint8_t>> encrypted =
+      key->key()->public_key().Encrypt(base::span<uint8_t>(), kHeader,
+                                       kPlaintext);
+  ASSERT_TRUE(encrypted);
+
+  std::unique_ptr<ICloudRecoveryKey> retrieved;
+  base::RunLoop run_loop;
+  ICloudRecoveryKey::Retrieve(
+      base::BindLambdaForTesting(
+          [&](std::vector<std::unique_ptr<ICloudRecoveryKey>> ret) {
+            ASSERT_EQ(ret.size(), 1u);
+            retrieved = std::move(ret.at(0));
+            run_loop.Quit();
+          }),
+      kKeychainAccessGroup);
+  run_loop.Run();
+
+  std::optional<std::vector<uint8_t>> decrypted =
+      retrieved->key()->private_key().Decrypt(base::span<uint8_t>(), kHeader,
+                                              *encrypted);
+  ASSERT_TRUE(decrypted);
+  EXPECT_EQ(base::span<const uint8_t>(*decrypted),
+            base::span<const uint8_t>(kPlaintext));
+}
 
 TEST_F(ICloudRecoveryKeyTest, CreateAndRetrieve) {
   std::unique_ptr<ICloudRecoveryKey> key1 = CreateKey();

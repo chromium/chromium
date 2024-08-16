@@ -18,6 +18,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -316,8 +317,7 @@ int GetDisabledNotificationMessageId(CaptureAllowance allowance,
       return for_title ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
                        : IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
     case CaptureAllowance::kAllowed:
-      NOTREACHED_IN_MIGRATION();
-      return IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
+      NOTREACHED();
   }
 }
 
@@ -457,7 +457,7 @@ std::unique_ptr<BaseCaptureModeSession> CreateSession(
                                                       active_behavior);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -658,6 +658,13 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
                     CaptureModeController::Get()->PerformCapture();
                   }
                 }));
+}
+
+void CaptureModeController::StartSunfishSession() {
+  DCHECK(features::IsSunfishFeatureEnabled());
+  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
+  // TODO(b/357658506): Implement sunfish behavior. Currently this will start
+  // what looks like the default capture mode session.
 }
 
 void CaptureModeController::Stop() {
@@ -902,6 +909,11 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
 bool CaptureModeController::IsRootOneDriveFilesPath(
     const base::FilePath& path) const {
   return path == delegate_->GetOneDriveMountPointPath();
+}
+
+std::unique_ptr<AshWebView> CaptureModeController::CreateSearchResultsView()
+    const {
+  return delegate_->CreateSearchResultsView();
 }
 
 aura::Window* CaptureModeController::GetOnCaptureSurfaceWidgetParentWindow()
@@ -1500,10 +1512,16 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
   // which doesn't go through the capture mode UI, and doesn't change |type_|.
   CHECK(delegate_->IsCaptureAllowedByPolicy());
 
-  // Stop the capture session now, so as not to take a screenshot of the capture
-  // bar.
-  if (IsActive()) {
-    CHECK_EQ(capture_mode_session_->active_behavior(), behavior);
+  // A screenshot can be requested via the fullscreen screenshot keyboard
+  // shortcut (which uses the default `behavior`) even though an active capture
+  // mode session belongs to a different `behavior` kind (e.g. Projector or
+  // Game Dashboard). In this case, the assumption is that the user wants to
+  // take a screenshot of the screen in its current state (i.e. while keeping
+  // the session active). Therefore, we don't stop the session in this case.
+  // See http://b/353908198 for more details.
+  if (IsActive() && behavior == capture_mode_session_->active_behavior()) {
+    // Other than the above mentioned case, we stop the session now, so the
+    // capture UIs don't end up in the screenshot.
     Stop();
   }
 
@@ -1732,8 +1750,7 @@ void CaptureModeController::HandleNotificationClicked(
                             std::move(on_file_deleted_callback_for_test_));
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
       } else {
         CHECK_EQ(VideoNotificationButtonIndex::kButtonDeleteVideo,
@@ -1755,8 +1772,7 @@ void CaptureModeController::HandleNotificationClicked(
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -2147,6 +2163,9 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
     CHECK(features::IsGameDashboardEnabled());
     behavior_type = BehaviorType::kGameDashboard;
+  } else if (entry_type == CaptureModeEntryType::kSunfish) {
+    DCHECK(features::IsSunfishFeatureEnabled());
+    behavior_type = BehaviorType::kSunfish;
   }
 
   RecordCaptureModeEntryType(entry_type);
@@ -2247,8 +2266,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
     return;
   }
 
-  // Due to fact that the DLP warning dialog may take a while, check the
-  // enterprise policy again even though we checked in
+  // Due to the fact that the DLP warning dialog may take a while, check the
+  // enterprise policy again even though we checked it in
   // `CaptureInstantScreenshot()`.
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     ShowDisabledNotification(CaptureAllowance::kDisallowedByPolicy);

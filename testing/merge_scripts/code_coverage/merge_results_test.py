@@ -9,8 +9,7 @@ import os
 import subprocess
 import sys
 import unittest
-
-import mock
+from unittest import mock
 
 import merge_results
 import merge_steps
@@ -254,7 +253,7 @@ class MergeProfilesTest(unittest.TestCase):
       with mock.patch.object(os, 'remove'):
         mock_walk.return_value = mock_input_dir_walk
         with mock.patch.object(subprocess, 'run') as mock_exec_cmd:
-          input_profdata_filename_pattern = '.+_unittests\.profdata'
+          input_profdata_filename_pattern = r'.+_unittests\.profdata'
           merger.merge_profiles('/b/some/path', 'output/dir/default.profdata',
                                 '.profdata', 'llvm-profdata',
                                 input_profdata_filename_pattern)

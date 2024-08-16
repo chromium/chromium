@@ -114,4 +114,46 @@ TEST_F(FontRenderParamsTest, OverrideRegistryValues) {
   }
 }
 
+TEST_F(FontRenderParamsTest, OverrideRegistryValuesAndIncreaseContrast) {
+  // Ensure that registry values have precedence over the increased contrast
+  // flag.
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {features::kIncreaseWindowsTextContrast,
+       features::kUseGammaContrastRegistrySettings},
+      {});
+
+  // Override the registry to maintain test machine state.
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+
+  base::win::RegKey key = FontUtilWin::GetTextSettingsRegistryKey(KEY_WRITE);
+
+  if (key.Valid()) {
+    // Write non-default values for contrast and gamma.
+    DWORD contrast = 75;
+    ASSERT_EQ(key.WriteValue(L"EnhancedContrastLevel", contrast),
+              ERROR_SUCCESS);
+    DWORD gamma = 1900;
+    ASSERT_EQ(key.WriteValue(L"GammaLevel", gamma), ERROR_SUCCESS);
+    key.Close();
+
+    // Verify that the contrast and gamma getters return non-defaults above.
+    EXPECT_FLOAT_EQ(
+        FontUtilWin::GetContrastFromRegistry() * kContrastMultiplier, contrast);
+    EXPECT_FLOAT_EQ(FontUtilWin::GetGammaFromRegistry() * kGammaMultiplier,
+                    gamma);
+  }
+}
+
+TEST_F(FontRenderParamsTest, TextGammaContrast) {
+  EXPECT_EQ(FontUtilWin::TextGammaContrast(), SK_GAMMA_CONTRAST);
+}
+
+TEST_F(FontRenderParamsTest, IncreasedContrast) {
+  base::test::ScopedFeatureList scoped_features(
+      features::kIncreaseWindowsTextContrast);
+  EXPECT_EQ(FontUtilWin::TextGammaContrast(), 1.0f);
+}
+
 }  // namespace gfx

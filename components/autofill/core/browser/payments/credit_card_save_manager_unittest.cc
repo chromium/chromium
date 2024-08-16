@@ -48,7 +48,6 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -56,7 +55,6 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -95,11 +93,13 @@ using ::testing::UnorderedElementsAre;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
+using SaveCreditCardOptions =
+    payments::PaymentsAutofillClient::SaveCreditCardOptions;
+using SaveCardOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
 
 #if !BUILDFLAG(IS_IOS)
-// time_t representation of 9th Sep, 2001 01:46:40 GMT
-constexpr base::Time kArbitraryTime = base::Time::FromTimeT(1000000000);
-constexpr base::Time kMuchLaterTime = base::Time::FromTimeT(1234567890);
+base::TimeDelta kVeryLargeDelta = base::Days(365) * 75;
 #endif
 
 // Used to configure form for |CreateTestCreditCardFormData|.
@@ -165,14 +165,14 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(void,
               ConfirmSaveCreditCardLocally,
               (const CreditCard&,
-               AutofillClient::SaveCreditCardOptions,
+               SaveCreditCardOptions,
                payments::PaymentsAutofillClient::LocalSaveCardPromptCallback),
               (override));
   MOCK_METHOD(void,
               ConfirmSaveCreditCardToCloud,
               (const CreditCard&,
                const LegalMessageLines&,
-               AutofillClient::SaveCreditCardOptions,
+               SaveCreditCardOptions,
                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback),
               (override));
   MOCK_METHOD(
@@ -188,23 +188,23 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   // 1) ConfirmSaveCreditCardLocally() was called.
   // 2) The SaveCreditCardOptions::show_prompt matches the `prompt_shown` param.
   void ExpectLocalSaveWithPromptShown(bool prompt_shown) {
-    EXPECT_CALL(*this,
-                ConfirmSaveCreditCardLocally(
-                    /*card=*/_,
-                    /*options=*/
-                    Field(&AutofillClient::SaveCreditCardOptions::show_prompt,
-                          prompt_shown),
-                    /*callback=*/_));
+    EXPECT_CALL(*this, ConfirmSaveCreditCardLocally(
+                           /*card=*/_,
+                           /*options=*/
+                           Field(&payments::PaymentsAutofillClient::
+                                     SaveCreditCardOptions::show_prompt,
+                                 prompt_shown),
+                           /*callback=*/_));
   }
 
-  // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
+  // Used in tests to set what SaveCardOfferUserDecision the
   // ConfirmSaveCreditCardLocally() method should call the callback with.
   void SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision offer_decision) {
+      SaveCardOfferUserDecision offer_decision) {
     ON_CALL(*this, ConfirmSaveCreditCardLocally)
         .WillByDefault(
             [offer_decision](
-                const CreditCard&, AutofillClient::SaveCreditCardOptions,
+                const CreditCard&, SaveCreditCardOptions,
                 payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
                     callback) { std::move(callback).Run(offer_decision); });
   }
@@ -213,23 +213,23 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   // 1) ConfirmSaveCreditCardToCloud() was called.
   // 2) The SaveCreditCardOptions::show_prompt matches the `prompt_shown` param.
   void ExpectCloudSaveWithPromptShown(bool prompt_shown) {
-    EXPECT_CALL(*this,
-                ConfirmSaveCreditCardToCloud(
-                    _, _,
-                    Field(&AutofillClient::SaveCreditCardOptions::show_prompt,
-                          prompt_shown),
-                    _));
+    EXPECT_CALL(*this, ConfirmSaveCreditCardToCloud(
+                           _, _,
+                           Field(&payments::PaymentsAutofillClient::
+                                     SaveCreditCardOptions::show_prompt,
+                                 prompt_shown),
+                           _));
   }
 
-  // Used in tests to set what AutofillClient::SaveCardOfferUserDecision the
+  // Used in tests to set what SaveCardOfferUserDecision the
   // ConfirmSaveCreditCardToCloud() method should call the callback with.
   void SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision offer_decision) {
+      SaveCardOfferUserDecision offer_decision) {
     ON_CALL(*this, ConfirmSaveCreditCardToCloud)
         .WillByDefault(
             [offer_decision](
                 const CreditCard&, const LegalMessageLines&,
-                AutofillClient::SaveCreditCardOptions,
+                SaveCreditCardOptions,
                 payments::PaymentsAutofillClient::UploadSaveCardPromptCallback
                     callback) { std::move(callback).Run(offer_decision, {}); });
   }
@@ -272,6 +272,9 @@ class MockVirtualCardEnrollmentManager
 class CreditCardSaveManagerTest : public testing::Test {
  public:
   void SetUp() override {
+    // Change the year to be 20XX.
+    task_environment_.FastForwardBy(base::Days(365) * 31);
+
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
@@ -290,9 +293,9 @@ class CreditCardSaveManagerTest : public testing::Test {
             autofill_client_.GetPersonalDataManager(),
             &payments_network_interface(), &autofill_client_));
     payments_client().SetLocalSaveCallbackOfferDecision(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted);
+        SaveCardOfferUserDecision::kAccepted);
     payments_client().SetCloudSaveCallbackOfferDecision(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted);
+        SaveCardOfferUserDecision::kAccepted);
     auto credit_card_save_manager =
         std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager_ = credit_card_save_manager.get();
@@ -330,20 +333,17 @@ class CreditCardSaveManagerTest : public testing::Test {
   void UserHasAcceptedCardUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnUploadSave(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted,
-        user_provided_card_details);
+        SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
 
-  void UserDidDecideCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision user_decision) {
+  void UserDidDecideCvcLocalSave(SaveCardOfferUserDecision user_decision) {
     credit_card_save_manager_->OnUserDidDecideOnCvcLocalSave(user_decision);
   }
 
   void UserHasAcceptedCvcUpload(
       AutofillClient::UserProvidedCardDetails user_provided_card_details) {
     credit_card_save_manager_->OnUserDidDecideOnCvcUploadSave(
-        AutofillClient::SaveCardOfferUserDecision::kAccepted,
-        user_provided_card_details);
+        SaveCardOfferUserDecision::kAccepted, user_provided_card_details);
   }
 
   // Returns a `FormData` with data corresponding to a simple credit card form.
@@ -510,7 +510,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     return *autofill_client_.GetStrikeDatabase();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
@@ -790,16 +791,18 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_WithNonFocusableField) {
 // `kCvcSaveOnly` option.
 TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcLocalSave_ShouldShowSaveCardLocallyWithCvcSaveOnly) {
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardLocally(
-          /*card=*/_,
-          /*options=*/
-          AllOf(
-              Field(&AutofillClient::SaveCreditCardOptions::show_prompt, true),
-              Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                    AutofillClient::CardSaveType::kCvcSaveOnly)),
-          /*callback=*/_));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardLocally(
+                  /*card=*/_,
+                  /*options=*/
+                  AllOf(Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::show_prompt,
+                              true),
+                        Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::card_save_type,
+                              payments::PaymentsAutofillClient::CardSaveType::
+                                  kCvcSaveOnly)),
+                  /*callback=*/_));
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(test::GetCreditCard());
 }
@@ -810,15 +813,17 @@ TEST_F(CreditCardSaveManagerTest,
        AttemptToOfferCvcUploadSave_ShouldShowSaveCardWithCvcSaveOnly) {
   CreditCard credit_card = test::WithCvc(test::GetMaskedServerCard());
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardToCloud(
-          _, _,
-          AllOf(
-              Field(&AutofillClient::SaveCreditCardOptions::show_prompt, true),
-              Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                    AutofillClient::CardSaveType::kCvcSaveOnly)),
-          _));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardToCloud(
+                  _, _,
+                  AllOf(Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::show_prompt,
+                              true),
+                        Field(&payments::PaymentsAutofillClient::
+                                  SaveCreditCardOptions::card_save_type,
+                              payments::PaymentsAutofillClient::CardSaveType::
+                                  kCvcSaveOnly)),
+                  _));
 
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(credit_card);
 }
@@ -835,8 +840,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   EXPECT_CALL(payments_data_manager(), UpdateLocalCvc(local_card.guid(), kCvc));
-  UserDidDecideCvcLocalSave(
-      AutofillClient::SaveCardOfferUserDecision::kAccepted);
+  UserDidDecideCvcLocalSave(SaveCardOfferUserDecision::kAccepted);
 }
 
 // Tests that adding a CVC clears all strikes for that card.
@@ -845,12 +849,11 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard local_card = test::GetCreditCard();
 
   // Add 2 strike for the card and advance the required delay time.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   cvc_storage_strike_database.AddStrikes(2, local_card.guid());
   EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(local_card.guid()));
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
 
   // Verify that the CVC prompt is offered and reset the strike count for that
@@ -886,7 +889,7 @@ TEST_F(CreditCardSaveManagerTest,
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
@@ -906,11 +909,11 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ConfirmSaveCreditCardLocally)
       .Times(3)
       .WillRepeatedly(
-          [](const CreditCard&, AutofillClient::SaveCreditCardOptions,
+          [](const CreditCard&, SaveCreditCardOptions,
              payments::PaymentsAutofillClient::LocalSaveCardPromptCallback
                  callback) {
-            std::move(callback).Run(
-                AutofillClient::SaveCardOfferUserDecision::kIgnored);
+            std::move(callback).Run(payments::PaymentsAutofillClient::
+                                        SaveCardOfferUserDecision::kIgnored);
           });
 
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -921,8 +924,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcLocalSave with
   // user decision of `kIgnored`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -933,7 +935,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcLocalSave with
   // user decision of `kIgnored`.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
@@ -951,7 +953,7 @@ TEST_F(CreditCardSaveManagerTest,
       CvcStorageStrikeDatabase(&strike_database());
   CreditCard local_card = test::GetCreditCard();
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -960,11 +962,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time and AttemptToOfferCvcLocalSave with user
   // decision of `kDeclined`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetLocalSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcLocalSave(local_card);
 
   // Verify that the user declining an offer will count as the max strike.
@@ -978,14 +979,13 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 
   // Add 2 strikes for the card and advance the required delay time.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   cvc_storage_strike_database.AddStrikes(
       2, base::NumberToString(server_card.instrument_id()));
   EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(
                    base::NumberToString(server_card.instrument_id())));
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
 
   // Verify that the CVC prompt is offered
@@ -1041,11 +1041,10 @@ TEST_F(CreditCardSaveManagerTest,
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
 
   // AttemptToOfferCvcUpload save and user declined.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user declining an offer will count as the max strike.
@@ -1064,7 +1063,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -1074,12 +1073,11 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcUpload user
   // decision of `kIgnored`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that user ignoring an offer will not add a strike count for that
@@ -1089,11 +1087,11 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time by half and AttemptToOfferCvcUpload user
   // decision of `kIgnored`.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value() /
       2);
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that user ignoring an offer after sufficient delay time will add a
@@ -1112,7 +1110,7 @@ TEST_F(CreditCardSaveManagerTest,
   CvcStorageStrikeDatabase cvc_storage_strike_database =
       CvcStorageStrikeDatabase(&strike_database());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+      SaveCardOfferUserDecision::kIgnored);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user ignoring an offer will add a strike count for that
@@ -1122,11 +1120,10 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Advance the required delay time and AttemptToOfferCvcUploadSave with user
   // decision of `kDeclined`.
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   payments_client().SetCloudSaveCallbackOfferDecision(
-      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+      SaveCardOfferUserDecision::kDeclined);
   credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
 
   // Verify that the user declining an offer will count as the max strike.
@@ -1222,7 +1219,6 @@ TEST_P(CvcStorageMetricTest, AttemptToOfferCvcSave_NotOfferSaveWithMaxStrikes) {
 // even if the strike limit has not yet been reached.
 TEST_P(CvcStorageMetricTest,
        AttemptToOfferCvcSave_NotOfferSaveWithoutRequiredDelay) {
-  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   base::HistogramTester histogram_tester;
 
   CvcStorageStrikeDatabase cvc_storage_strike_database =
@@ -1241,7 +1237,7 @@ TEST_P(CvcStorageMetricTest,
 
   // Advance the clock by the required delay time and check that CVC save is
   // offered.
-  test_autofill_clock.Advance(
+  task_environment_.FastForwardBy(
       cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
   if (record_type == CreditCard::RecordType::kLocalCard) {
     credit_card_save_manager_->AttemptToOfferCvcLocalSave(card);
@@ -1779,10 +1775,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoProfileAvailable) {
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-
   // Create, fill and submit an address form in order to establish a profile.
   FormData address_form = CreateTestAddressFormData();
   FormsSeen({address_form});
@@ -1791,7 +1783,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoRecentlyUsedProfile) {
   FormSubmitted(address_form);
 
   // Set the current time to another value.
-  test_clock.SetNow(kMuchLaterTime);
+  task_environment_.FastForwardBy(kVeryLargeDelta);
 
   // Set up our credit card form data.
   FormData credit_card_form = CreateTestCreditCardFormData();
@@ -2585,10 +2577,6 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
 // permanently if the test doesn't apply to iOS flow.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
-  // Create the test clock and set the time to a specific value.
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime);
-
   // Create, fill and submit two address forms with different names.
   FormData address_form1 = test::CreateTestAddressFormData("1");
   FormData address_form2 = test::CreateTestAddressFormData("2");
@@ -2599,7 +2587,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_IgnoreOldProfiles) {
 
   // Advance the current time. Since |address_form1| will not be a recently
   // used address profile, we will not include it in the candidate profiles.
-  test_clock.SetNow(kMuchLaterTime);
+  task_environment_.FastForwardBy(kVeryLargeDelta);
 
   ManuallyFillAddressForm("John", "Smith", "77401", "US", &address_form2);
   FormSubmitted(address_form2);
@@ -3388,6 +3376,9 @@ TEST_F(CreditCardSaveManagerTest,
 TEST_F(
     CreditCardSaveManagerTest,
     UploadCreditCard_RequestExpirationDateIfExpirationDateInputIsTwoDigitAndExpired) {
+  // Make sure that the card will be expired.
+  task_environment_.FastForwardBy(base::Days(365 * 15));
+
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -5462,15 +5453,14 @@ TEST_F(CreditCardSaveManagerTest, InvalidLegalMessageInOnDidGetUploadDetails) {
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardLocally(
-          /*card=*/_,
-          /*options=*/
-          Field(
-              &AutofillClient::SaveCreditCardOptions::has_multiple_legal_lines,
-              false),
-          /*callback=*/_));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardLocally(
+                  /*card=*/_,
+                  /*options=*/
+                  Field(&payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions::has_multiple_legal_lines,
+                        false),
+                  /*callback=*/_));
 
   FormSubmitted(credit_card_form);
   // Verify that the correct histogram entries were logged.
@@ -5507,14 +5497,13 @@ TEST_F(CreditCardSaveManagerTest, LegalMessageInOnDidGetUploadDetails) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  EXPECT_CALL(
-      payments_client(),
-      ConfirmSaveCreditCardToCloud(
-          _, _,
-          Field(
-              &AutofillClient::SaveCreditCardOptions::has_multiple_legal_lines,
-              true),
-          _));
+  EXPECT_CALL(payments_client(),
+              ConfirmSaveCreditCardToCloud(
+                  _, _,
+                  Field(&payments::PaymentsAutofillClient::
+                            SaveCreditCardOptions::has_multiple_legal_lines,
+                        true),
+                  _));
 
   FormSubmitted(credit_card_form);
 }
@@ -5552,7 +5541,7 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
       ConfirmSaveCreditCardToCloud(
           _, _,
           Field(
-              &AutofillClient::SaveCreditCardOptions::
+              &SaveCreditCardOptions::
                   has_same_last_four_as_server_card_but_different_expiration_date,
               true),
           _));
@@ -5763,27 +5752,28 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
   test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
   test_api(credit_card_form).field(4).set_value(u"123");
 
-  auto card_save_type = (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled())
-                            ? AutofillClient::CardSaveType::kCardSaveWithCvc
-                            : AutofillClient::CardSaveType::kCardSaveOnly;
+  auto card_save_type =
+      (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled())
+          ? payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc
+          : payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
 
   if (IsCreditCardUpstreamEnabled()) {
-    EXPECT_CALL(
-        payments_client(),
-        ConfirmSaveCreditCardToCloud(
-            _, _,
-            Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                  card_save_type),
-            _));
+    EXPECT_CALL(payments_client(),
+                ConfirmSaveCreditCardToCloud(
+                    _, _,
+                    Field(&payments::PaymentsAutofillClient::
+                              SaveCreditCardOptions::card_save_type,
+                          card_save_type),
+                    _));
   } else {
-    EXPECT_CALL(
-        payments_client(),
-        ConfirmSaveCreditCardLocally(
-            /*card=*/_,
-            /*options=*/
-            Field(&AutofillClient::SaveCreditCardOptions::card_save_type,
-                  card_save_type),
-            /*callback=*/_));
+    EXPECT_CALL(payments_client(),
+                ConfirmSaveCreditCardLocally(
+                    /*card=*/_,
+                    /*options=*/
+                    Field(&payments::PaymentsAutofillClient::
+                              SaveCreditCardOptions::card_save_type,
+                          card_save_type),
+                    /*callback=*/_));
   }
 
   FormSubmitted(credit_card_form);
@@ -6134,18 +6124,20 @@ class CreditCardSaveManagerWithVirtualCardEnrollTestParameterized
 // correctly only when a card becomes eligible after upload.
 TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
        PrepareUploadedCardForVirtualCardEnrollment) {
-#if BUILDFLAG(IS_IOS)
   base::test::ScopedFeatureList feature_list;
-  if (IsVirtualCardEnrollmentEnabled()) {
-    feature_list.InitWithFeatureState(features::kAutofillEnableVirtualCards,
-                                      IsVirtualCardEnrollmentEnabled());
-  }
-#else
+  base::flat_map<base::test::FeatureRef, bool> feature_states;
+#if !BUILDFLAG(IS_IOS)
   if (!IsVirtualCardEnrollmentEnabled()) {
     GTEST_SKIP() << "Virtual card enrollment is always enabled on non-iOS "
                     "platforms.";
   }
+#else
+  feature_states.insert({features::kAutofillEnableVirtualCards,
+                         IsVirtualCardEnrollmentEnabled()});
 #endif
+  feature_states.insert(
+      {features::kAutofillEnableSaveCardLoadingAndConfirmation, true});
+  feature_list.InitWithFeatureStates(feature_states);
   payments::PaymentsNetworkInterface::UploadCardResponseDetails
       upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://www.example.com/");
@@ -6190,6 +6182,15 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       upload_card_response_details);
+
+  // If loading and confirmation is enabled, `InitVirtualCardEnroll` is passed
+  // as a closure to save card bubble controller that executes it after bubble
+  // is closed. Since there is no actual bubble, calling `InitVirtualCardEnroll`
+  // from here.
+  credit_card_save_manager_->InitVirtualCardEnroll(
+      credit_card_save_manager_->upload_request()->card,
+      std::move(upload_card_response_details
+                    .get_details_for_enrollment_response_details));
 
   // The condition inside of this if-statement is true if virtual card
   // enrollment should be offered.

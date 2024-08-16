@@ -24,8 +24,7 @@ mojom::BatteryState ConvertBatteryStateFromProto(
     case power_manager::PowerSupplyProperties_BatteryState_FULL:
       return mojom::BatteryState::kFull;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::BatteryState::kFull;
+      NOTREACHED();
   }
 }
 
@@ -39,8 +38,7 @@ mojom::ExternalPowerSource ConvertPowerSourceFromProto(
     case power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED:
       return mojom::ExternalPowerSource::kDisconnected;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::ExternalPowerSource::kDisconnected;
+      NOTREACHED();
   }
 }
 

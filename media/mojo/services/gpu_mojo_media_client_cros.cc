@@ -40,7 +40,7 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
     case media::OOPVDMode::kEnabledWithoutGpuProcessAsProxy:
       // The browser process ensures that this path is never reached for this
       // OOP-VD mode.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case media::OOPVDMode::kDisabled:
       break;
   }
@@ -50,7 +50,7 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
 #elif BUILDFLAG(USE_V4L2_CODEC)
   return VideoDecoderType::kV4L2;
 #endif
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -99,7 +99,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
             /*in_video_decoder_process=*/false);
       }
       case VideoDecoderType::kVda: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
       default: {
         return nullptr;
@@ -129,7 +129,7 @@ class GpuMojoMediaClientCrOS final : public GpuMojoMediaClient {
         GetActualPlatformDecoderImplementation(gpu_preferences_);
     switch (decoder_implementation) {
       case VideoDecoderType::kVda:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case VideoDecoderType::kOutOfProcess:
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:

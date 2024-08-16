@@ -221,6 +221,7 @@ component("wtf") {
     "//build:chromeos_buildflags",
     "//third_party/blink/public/common:common",
     "//third_party/modp_b64",
+    "//third_party/rapidhash",
 
     # TODO(tkent): WTF should not depend on it.
     "//third_party/blink/public/common:headers",

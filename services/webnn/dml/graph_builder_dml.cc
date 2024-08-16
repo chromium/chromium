@@ -85,7 +85,7 @@ const TensorDesc& NodeOutput::GetTensorDesc() const {
   return tensor_desc_;
 }
 
-GraphBuilderDml::GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice> dml_device)
+GraphBuilderDml::GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice1> dml_device)
     : dml_device_(std::move(dml_device)) {}
 
 GraphBuilderDml::GraphBuilderDml(GraphBuilderDml&& other) = default;
@@ -228,11 +228,8 @@ GraphBuilderDml::Compile(DML_EXECUTION_FLAGS flags) const {
           base::checked_cast<uint32_t>(dml_intermediate_edges.size()),
       .IntermediateEdges = dml_intermediate_edges.data()};
 
-  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device1;
-  CHECK_EQ(dml_device_->QueryInterface(IID_PPV_ARGS(&dml_device1)), S_OK);
-
   Microsoft::WRL::ComPtr<IDMLCompiledOperator> compiled_operator;
-  RETURN_UNEXPECTED_IF_FAILED(dml_device1->CompileGraph(
+  RETURN_UNEXPECTED_IF_FAILED(dml_device_->CompileGraph(
       &dml_graph_desc, flags, IID_PPV_ARGS(&compiled_operator)));
   return compiled_operator;
 }

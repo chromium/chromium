@@ -1,0 +1,26 @@
+<!--
+@BLINK-ALLOW:scrollable=true
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:focusable*
+-->
+<!DOCTYPE html>
+<style>
+  body { font-style: monospace; width: 999px; }
+  .scrollable { margin-bottom: 50px; height: 25px; width: 20em;}
+  .not-scrollable { margin-bottom: 50px; height: 250px; width: 200em}
+</style>
+
+<!-- Must be tabbable, not just focusable, to receive minimum role of group -->
+<div tabindex="0">Tabindex=0</div>
+<div tabindex="-1">Tabindex=-1</div>
+
+<!-- Receives role of group if keyboard focusable scrollers feature adds it
+  to the tab order -->
+<div class="scrollable" style="overflow: auto;">
+  <p>Scrollable
+</div>
+
+<div class="not-scrollable" style="overflow: auto;">
+  <p>Scrollable
+</div>
+

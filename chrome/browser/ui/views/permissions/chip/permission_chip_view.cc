@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/permissions/chip/multi_image_container.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -29,10 +30,7 @@
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
-                                      kRequestChipElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
-                                      kIndicatorChipElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView, kElementIdForTesting);
 
 PermissionChipView::PermissionChipView(PressedCallback callback)
     : MdTextButton(std::move(callback),
@@ -50,6 +48,7 @@ PermissionChipView::PermissionChipView(PressedCallback callback)
   label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   SetCornerRadius(GetCornerRadius());
   animation_ = std::make_unique<gfx::SlideAnimation>(this);
+  SetProperty(views::kElementIdentifierKey, kElementIdForTesting);
 
   UpdateIconAndColors();
 }
@@ -125,6 +124,13 @@ gfx::Size PermissionChipView::CalculatePreferredSize(
                               .height());
 }
 
+bool PermissionChipView::OnMousePressed(const ui::MouseEvent& event) {
+  for (Observer& observer : observers_) {
+    observer.OnMousePressed();
+  }
+  return MdTextButton::OnMousePressed(event);
+}
+
 void PermissionChipView::OnThemeChanged() {
   MdTextButton::OnThemeChanged();
   UpdateIconAndColors();
@@ -173,13 +179,6 @@ void PermissionChipView::SetUserDecision(
 void PermissionChipView::SetTheme(PermissionChipTheme theme) {
   theme_ = theme;
   UpdateIconAndColors();
-
-  if (theme == PermissionChipTheme::kNormalVisibility ||
-      theme == PermissionChipTheme::kLowVisibility) {
-    SetProperty(views::kElementIdentifierKey, kRequestChipElementId);
-  } else {
-    SetProperty(views::kElementIdentifierKey, kIndicatorChipElementId);
-  }
 }
 
 void PermissionChipView::SetBlockedIconShowing(bool should_show_blocked_icon) {
@@ -216,20 +215,17 @@ const gfx::VectorIcon& PermissionChipView::GetIcon() const {
 }
 
 SkColor PermissionChipView::GetForegroundColor() const {
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kInUseActivityIndicator) {
+  if (theme() == PermissionChipTheme::kInUseActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipInUseActivityIndicatorForeground);
   }
 
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kBlockedActivityIndicator) {
+  if (theme() == PermissionChipTheme::kBlockedActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipBlockedActivityIndicatorForeground);
   }
 
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
+  if (theme() == PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground);
   }
@@ -275,20 +271,17 @@ SkColor PermissionChipView::GetForegroundColor() const {
 }
 
 SkColor PermissionChipView::GetBackgroundColor() const {
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kInUseActivityIndicator) {
+  if (theme() == PermissionChipTheme::kInUseActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipInUseActivityIndicatorBackground);
   }
 
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kBlockedActivityIndicator) {
+  if (theme() == PermissionChipTheme::kBlockedActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipBlockedActivityIndicatorBackground);
   }
 
-  if (GetPermissionChipTheme() ==
-      PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
+  if (theme() == PermissionChipTheme::kOnSystemBlockedActivityIndicator) {
     return GetColorProvider()->GetColor(
         kColorOmniboxChipOnSystemBlockedActivityIndicatorBackground);
   }
@@ -362,6 +355,18 @@ void PermissionChipView::SetChipIcon(const gfx::VectorIcon* icon) {
   icon_ = icon;
 
   UpdateIconAndColors();
+}
+
+bool PermissionChipView::GetIsRequestForTesting() const {
+  switch (theme()) {
+    case PermissionChipTheme::kNormalVisibility:
+    case PermissionChipTheme::kLowVisibility:
+      return true;
+    case PermissionChipTheme::kBlockedActivityIndicator:
+    case PermissionChipTheme::kOnSystemBlockedActivityIndicator:
+    case PermissionChipTheme::kInUseActivityIndicator:
+      return false;
+  }
 }
 
 void PermissionChipView::AddObserver(Observer* observer) {

@@ -22,17 +22,15 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_consumer.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
-#import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -47,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
@@ -144,6 +143,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
     PagePlaceholderBrowserAgent::CreateForBrowser(browser_.get());
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
+    OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -185,6 +185,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         startDispatchingToTarget:mockParcelTrackingCommandHandler
                      forProtocol:@protocol(ParcelTrackingOptInCommands)];
 
+    id mockHelpHandler = OCMProtocolMock(@protocol(HelpCommands));
+    [dispatcher startDispatchingToTarget:mockHelpHandler
+                             forProtocol:@protocol(HelpCommands)];
+
     // Set up Applicationhander and SettingsHandler mocks.
     mock_application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
@@ -225,24 +229,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
     [popup_menu_coordinator_ start];
 
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            GetBrowserState());
-    HostContentSettingsMap* settings_map =
-        ios::HostContentSettingsMapFactory::GetForBrowserState(
-            GetBrowserState());
-
-    bubble_presenter_ = [[BubblePresenter alloc]
-        initWithDeviceSwitcherResultDispatcher:nullptr
-                        hostContentSettingsMap:(HostContentSettingsMap*)
-                                                   settings_map
-                       tabStripCommandsHandler:nil
-                                       tracker:(feature_engagement::Tracker*)
-                                                   tracker
-                                  webStateList:browser_->GetWebStateList()];
-    [dispatcher startDispatchingToTarget:bubble_presenter_
-                             forProtocol:@protocol(HelpCommands)];
-
     toolbar_coordinator_ =
         [[ToolbarCoordinator alloc] initWithBrowser:browser_.get()];
     [toolbar_coordinator_ start];
@@ -272,7 +258,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
 
     BrowserViewControllerDependencies dependencies;
-    dependencies.bubblePresenter = bubble_presenter_;
     dependencies.popupMenuCoordinator = popup_menu_coordinator_;
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.tabStripCoordinator = tab_strip_coordinator_;
@@ -325,7 +310,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
     [side_swipe_mediator_ disconnect];
-    [bubble_presenter_ stop];
     ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
@@ -405,7 +389,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   raw_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   KeyCommandsProvider* key_commands_provider_;
-  BubblePresenter* bubble_presenter_;
   BrowserContainerViewController* container_;
   BrowserViewController* bvc_;
   UIWindow* window_;

@@ -309,6 +309,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDebugShowToast;
     case ash::AcceleratorAction::kDebugShowSystemNudge:
       return mojom_accelerator_action::kDebugShowSystemNudge;
+    case ash::AcceleratorAction::kDebugStartSunfishSession:
+      return mojom_accelerator_action::kDebugStartSunfishSession;
     case ash::AcceleratorAction::kDebugSystemUiStyleViewer:
       return mojom_accelerator_action::kDebugSystemUiStyleViewer;
     case ash::AcceleratorAction::kDebugToggleDarkMode:
@@ -350,7 +352,7 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDevToggleUnifiedDesktop;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
@@ -795,6 +797,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kDebugShowSystemNudge:
       *out = ash::AcceleratorAction::kDebugShowSystemNudge;
       return true;
+    case mojom_accelerator_action::kDebugStartSunfishSession:
+      *out = ash::AcceleratorAction::kDebugStartSunfishSession;
+      return true;
     case mojom_accelerator_action::kDebugSystemUiStyleViewer:
       *out = ash::AcceleratorAction::kDebugSystemUiStyleViewer;
       return true;
@@ -853,7 +858,7 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       *out = ash::AcceleratorAction::kDevToggleUnifiedDesktop;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace mojo

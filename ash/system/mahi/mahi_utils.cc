@@ -24,7 +24,7 @@ bool CalculateRetryLinkVisible(chromeos::MahiResponseStatus error) {
       return false;
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -45,7 +45,7 @@ int GetErrorStatusViewTextId(chromeos::MahiResponseStatus error) {
       return IDS_ASH_MAHI_ERROR_STATUS_LABEL_UNSUPPORTED_LANGUAGE;
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
       // TOOD(b/343472496): Remove this when UI is added.
       return IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL;

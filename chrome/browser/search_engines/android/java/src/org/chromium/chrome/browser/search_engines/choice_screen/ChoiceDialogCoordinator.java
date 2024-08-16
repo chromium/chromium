@@ -12,14 +12,23 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Entry point to show the choice screen associated with {@link SearchEnginePromoType#SHOW_WAFFLE}
@@ -36,6 +45,37 @@ public class ChoiceDialogCoordinator {
     private final ChoiceScreenDelegate mDelegate;
 
     private @Nullable PropertyModel mDialogModel;
+
+    public static ChoiceDialogCoordinator maybeShow(Activity activity) {
+        return maybeShowInternal(
+                () ->
+                        new ChoiceDialogCoordinator(
+                                activity, new PlaceholderDelegate(), unused -> {}));
+    }
+
+    @VisibleForTesting
+    static ChoiceDialogCoordinator maybeShowInternal(
+            Supplier<ChoiceDialogCoordinator> coordinatorSupplier) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.CLAY_BLOCKING);
+
+        var searchEngineChoiceService = SearchEngineChoiceService.getInstance();
+        if (searchEngineChoiceService == null
+                || !searchEngineChoiceService.isDeviceChoiceDialogEligible()) {
+            return null;
+        }
+
+        var coordinator = coordinatorSupplier.get();
+        withUiThreadTimeout(searchEngineChoiceService.shouldShowDeviceChoiceDialog(), 1000)
+                .then(
+                        shouldShow -> {
+                            if (shouldShow) coordinator.show();
+                        },
+                        unused -> {
+                            /* timeout*/
+                        });
+
+        return coordinator;
+    }
 
     /**
      * Creates the coordinator that will show a search engine choice dialog.
@@ -127,5 +167,57 @@ public class ChoiceDialogCoordinator {
                             public void handleOnBackPressed() {}
                         })
                 .build();
+    }
+
+    private static <T> Promise<T> withUiThreadTimeout(Promise<T> promise, long delayMillis) {
+        if (!promise.isPending()) return promise;
+
+        Promise<T> timeoutPromise = new Promise<>();
+        promise.then(timeoutPromise::fulfill, timeoutPromise::reject);
+        ThreadUtils.postOnUiThreadDelayed(
+                () -> {
+                    if (timeoutPromise.isPending()) {
+                        timeoutPromise.reject(new TimeoutException());
+                    }
+                },
+                delayMillis);
+        return timeoutPromise;
+    }
+
+    // TODO(b/355054464): Remove when we update the coordinator.
+    private static class PlaceholderDelegate implements DefaultSearchEngineDialogHelper.Delegate {
+        @Override
+        public List<TemplateUrl> getSearchEnginesForPromoDialog(int type) {
+            return List.of(
+                    new TemplateUrl(0) {
+                        @Override
+                        public String getShortName() {
+                            return "Placeholder Engine";
+                        }
+
+                        @Override
+                        public int getPrepopulatedId() {
+                            return 999;
+                        }
+
+                        @Override
+                        public boolean getIsPrepopulated() {
+                            return true;
+                        }
+
+                        @Override
+                        public String getKeyword() {
+                            return "placeholder";
+                        }
+
+                        @Override
+                        public long getLastVisitedTime() {
+                            return 0;
+                        }
+                    });
+        }
+
+        @Override
+        public void onUserSearchEngineChoice(int type, List<String> keywords, String keyword) {}
     }
 }

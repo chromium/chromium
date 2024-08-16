@@ -60,6 +60,10 @@ bool ContentRendererClient::IsPluginHandledExternally(
   return false;
 }
 
+bool ContentRendererClient::IsDomStorageDisabled() const {
+  return false;
+}
+
 v8::Local<v8::Object> ContentRendererClient::GetScriptableObject(
     const blink::WebElement& plugin_element,
     v8::Isolate* isolate) {
@@ -107,6 +111,11 @@ std::unique_ptr<media::Demuxer> ContentRendererClient::OverrideDemuxerForUrl(
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 ContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return nullptr;
+}
+
+bool ContentRendererClient::ShouldUseCodeCacheWithHashing(
+    const blink::WebURL& request_url) const {
+  return true;
 }
 
 void ContentRendererClient::PostIOThreadCreated(

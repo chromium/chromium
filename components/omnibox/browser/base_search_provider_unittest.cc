@@ -104,7 +104,7 @@ class BaseSearchProviderTestFixture {
   void SetUp() {
     client_ = std::make_unique<MockAutocompleteProviderClient>();
     client_->set_template_url_service(
-        search_engines_test_environment_.ReleaseTemplateURLService());
+        search_engines_test_environment_.template_url_service());
 
     provider_ = new NiceMock<TestBaseSearchProvider>(
         AutocompleteProvider::TYPE_SEARCH, client_.get());
@@ -132,7 +132,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   TestBaseSearchProvider::MatchMap map;
   std::u16string query = u"weather los angeles";
   SuggestionAnswer answer;
-  answer.set_type(2334);
+  omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_WEATHER;
 
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
@@ -152,6 +152,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
   less_relevant.SetAnswer(answer);
+  less_relevant.SetAnswerType(answer_type);
   provider_->AddMatchToMap(
       less_relevant, AutocompleteInput(), template_url.get(),
       client_->GetTemplateURLService()->search_terms_data(),
@@ -163,11 +164,13 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   AutocompleteMatch duplicate = match.duplicate_matches[0];
 
   EXPECT_TRUE(answer.Equals(*match.answer));
+  EXPECT_EQ(answer_type, match.answer_type);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
   EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
   EXPECT_EQ(1300, match.relevance);
 
   EXPECT_TRUE(answer.Equals(*duplicate.answer));
+  EXPECT_EQ(answer_type, duplicate.answer_type);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, duplicate.type);
   EXPECT_EQ(omnibox::TYPE_QUERY, duplicate.suggest_type);
   EXPECT_EQ(850, duplicate.relevance);
@@ -175,7 +178,6 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   // Ensure answers are not copied over existing answers.
   map.clear();
   SuggestionAnswer answer2;
-  answer2.set_type(8242);
   more_relevant = SearchSuggestionParser::SuggestResult(
       query, AutocompleteMatchType::SEARCH_HISTORY, omnibox::TYPE_NATIVE_CHROME,
       /*subtypes=*/{}, /*from_keyword=*/false,
@@ -184,6 +186,7 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
       /*relevance_from_server=*/true,
       /*input_text=*/query);
   more_relevant.SetAnswer(answer2);
+  more_relevant.SetAnswerType(answer_type);
   provider_->AddMatchToMap(
       more_relevant, AutocompleteInput(), template_url.get(),
       client_->GetTemplateURLService()->search_terms_data(),
@@ -198,11 +201,13 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   duplicate = match.duplicate_matches[0];
 
   EXPECT_TRUE(answer2.Equals(*match.answer));
+  EXPECT_EQ(answer_type, match.answer_type);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, match.type);
   EXPECT_EQ(omnibox::TYPE_NATIVE_CHROME, match.suggest_type);
   EXPECT_EQ(1300, match.relevance);
 
   EXPECT_TRUE(answer.Equals(*duplicate.answer));
+  EXPECT_EQ(answer_type, duplicate.answer_type);
   EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST, duplicate.type);
   EXPECT_EQ(omnibox::TYPE_QUERY, duplicate.suggest_type);
   EXPECT_EQ(850, duplicate.relevance);

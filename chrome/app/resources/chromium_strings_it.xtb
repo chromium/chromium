@@ -21,6 +21,7 @@
 <translation id="126567311906253476">Quando accedi a servizi Google come Gmail o YouTube con <ph name="USER_EMAIL" />, puoi accedere automaticamente a Chromium con lo stesso account</translation>
 <translation id="1290883685122687410">Errore di configurazione: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura il tuo nuovo profilo di Chromium</translation>
+<translation id="1324107359134968521">Chromium richiede l'accesso al Bluetooth per individuare i dispositivi Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Hai eseguito l'accesso a Chromium.</translation>
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
@@ -59,6 +60,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="1951406923938785464">Chromium ha bloccato questo download perché il tipo di file non viene scaricato comunemente e potrebbe essere pericoloso</translation>
 <translation id="1953553007165777902">Download in corso… Minuti rimanenti: <ph name="MINUTE" /></translation>
 <translation id="1966382378801805537">Chromium non è in grado di determinare o impostare il browser predefinito</translation>
+<translation id="1990262977744080398">Scopri perché Chromium blocca alcuni file (si apre in una nuova scheda)</translation>
 <translation id="2008474315282236005">Verrà eliminato 1 elemento da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chromium come <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Installazione non riuscita. Riprova.</translation>
 <translation id="2020032459870799438">Per controllare che le tue altre password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
@@ -119,6 +121,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2915996080311180594">Riavvia in seguito</translation>
 <translation id="2928420929544864228">Installazione completata.</translation>
 <translation id="2945997411976714835">Errore di installazione: impossibile avviare il processo di installazione.</translation>
+<translation id="2970426615109535079">La tua organizzazione gestisce Chromium</translation>
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
 <translation id="2977506796191543575">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="2987208172821108655">Chromium può rendere inattive queste schede per migliorare la tua esperienza di navigazione e liberare risorse.</translation>
@@ -219,6 +222,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4423735387467980091">Personalizza e controlla Chromium</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4434353761996769206">Errore del programma di installazione: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> gestisce Chromium</translation>
 <translation id="4447409407328223819">Informazioni su Chrome for Testing</translation>
 <translation id="4501471624619070934">Installazione non riuscita perché l'accesso in questo paese è sottoposto a limitazioni.</translation>
 <translation id="4510853178268397146">Per questa estensione non sono state pubblicate Norme di tutela della privacy, ad esempio la modalità di raccolta e utilizzo dei dati. Chromium consiglia di rimuoverla.</translation>
@@ -487,6 +491,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8555465886620020932">Errore del servizio: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8568283329061645092">Chromium può controllare le tue password quando accedi con il tuo Account Google</translation>
+<translation id="8576826849825683917">Più organizzazioni gestiscono Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chromium informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="8619360774459241877">Avvio di Chromium...</translation>

@@ -258,7 +258,7 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_BUTTON_DECLINE;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return IOSPromoConfig;
 }

@@ -34,9 +34,11 @@ constexpr char kPermissionsPolicyError[] =
 SharedStorageBindings::SharedStorageBindings(
     AuctionV8Helper* v8_helper,
     mojom::AuctionSharedStorageHost* shared_storage_host,
+    mojom::AuctionWorkletFunction source_auction_worklet_function,
     bool shared_storage_permissions_policy_allowed)
     : v8_helper_(v8_helper),
       shared_storage_host_(shared_storage_host),
+      source_auction_worklet_function_(source_auction_worklet_function),
       shared_storage_permissions_policy_allowed_(
           shared_storage_permissions_policy_allowed) {
   DCHECK_EQ(!!shared_storage_host_, shared_storage_permissions_policy_allowed_);
@@ -140,8 +142,9 @@ void SharedStorageBindings::Set(
     return;
   }
 
-  bindings->shared_storage_host_->Set(arg0_key, arg1_value,
-                                      ignore_if_present.value_or(false));
+  bindings->shared_storage_host_->Set(
+      arg0_key, arg1_value, ignore_if_present.value_or(false),
+      bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -184,7 +187,8 @@ void SharedStorageBindings::Append(
     return;
   }
 
-  bindings->shared_storage_host_->Append(arg0_key, arg1_value);
+  bindings->shared_storage_host_->Append(
+      arg0_key, arg1_value, bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -219,7 +223,8 @@ void SharedStorageBindings::Delete(
     return;
   }
 
-  bindings->shared_storage_host_->Delete(arg0_key);
+  bindings->shared_storage_host_->Delete(
+      arg0_key, bindings->source_auction_worklet_function_);
 }
 
 // static
@@ -236,6 +241,7 @@ void SharedStorageBindings::Clear(
     return;
   }
 
-  bindings->shared_storage_host_->Clear();
+  bindings->shared_storage_host_->Clear(
+      bindings->source_auction_worklet_function_);
 }
 }  // namespace auction_worklet

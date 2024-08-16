@@ -184,8 +184,8 @@ TEST_P(PushPullFIFOSmokeTest, SmokeTests) {
   LOG(INFO) << "PushPullFIFOSmokeTest - Started";
 
   // We have to wait both of events to be signaled.
-  base::WaitableEvent::WaitMany(done_events.data(), done_events.size());
-  base::WaitableEvent::WaitMany(done_events.data(), done_events.size());
+  base::WaitableEvent::WaitMany(done_events);
+  base::WaitableEvent::WaitMany(done_events);
 }
 
 FIFOSmokeTestParam smoke_test_params[] = {

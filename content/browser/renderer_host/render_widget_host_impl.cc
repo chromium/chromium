@@ -48,6 +48,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/input/timeout_monitor.h"
+#include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -705,11 +706,19 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
 
   renderer_widget_created_ = true;
 
-  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> remote;
-
+  mojo::PendingRemote<blink::mojom::RenderInputRouterClient> browser_remote;
+  mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_receiver =
+      mojo::NullReceiver();
+  if (input::TransferInputToViz()) {
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> viz_remote;
+    viz_receiver = viz_remote.InitWithNewPipeAndPassReceiver();
+    viz_rir_client_remote_ = std::move(viz_remote);
+  }
   blink_widget_->SetupRenderInputRouterConnections(
-      remote.InitWithNewPipeAndPassReceiver());
-  GetRenderInputRouter()->BindRenderInputRouterInterfaces(std::move(remote));
+      browser_remote.InitWithNewPipeAndPassReceiver(), std::move(viz_receiver));
+
+  GetRenderInputRouter()->BindRenderInputRouterInterfaces(
+      std::move(browser_remote));
   GetRenderInputRouter()->RendererWidgetCreated(for_frame_widget);
 
   // TODO(crbug.com/40162510): The `view_` can be null. :( Speculative
@@ -981,7 +990,8 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   } else {
     visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
   }
-  visual_properties.zoom_level = view_->GetZoomLevel();
+  visual_properties.zoom_level = delegate_->GetPendingPageZoomLevel();
+  visual_properties.css_zoom_factor = view_->GetCSSZoomFactor();
 
   RenderViewHostDelegateView* rvh_delegate_view = delegate_->GetDelegateView();
   CHECK(rvh_delegate_view);
@@ -1138,6 +1148,10 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   }
 
   return visual_properties;
+}
+
+void RenderWidgetHostImpl::ClearVisualProperties() {
+  old_visual_properties_.reset();
 }
 
 bool RenderWidgetHostImpl::UpdateVisualProperties(bool propagate) {
@@ -2430,6 +2444,13 @@ void RenderWidgetHostImpl::ForwardDelegatedInkPoint(
     return;
   }
 
+  // If being given the same point twice, return early and avoid an unnecessary
+  // call to the GPU process.
+  if (last_delegated_ink_point_sent_ == delegated_ink_point) {
+    return;
+  }
+  last_delegated_ink_point_sent_ = delegated_ink_point;
+
   auto* delegated_ink_point_renderer =
       delegate_->GetDelegatedInkRenderer(view_->GetCompositor());
   if (!delegated_ink_point_renderer) {
@@ -2796,7 +2817,9 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
           new_parent_local_surface_id.embed_token();
 
   const bool zoom_changed =
-      old_visual_properties->zoom_level != new_visual_properties.zoom_level;
+      old_visual_properties->zoom_level != new_visual_properties.zoom_level ||
+      old_visual_properties->css_zoom_factor !=
+          new_visual_properties.css_zoom_factor;
 
   return zoom_changed || size_changed || parent_local_surface_id_changed ||
          old_visual_properties->screen_infos !=
@@ -3478,12 +3501,16 @@ void RenderWidgetHostImpl::CreateFrameSink(
   create_frame_sink_callback_ = base::BindOnce(
       [](mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver,
          mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
+         std::optional<mojo::PendingRemote<
+             blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
          const viz::FrameSinkId& frame_sink_id) {
         GetHostFrameSinkManager()->CreateCompositorFrameSink(
-            frame_sink_id, std::move(receiver), std::move(client));
+            frame_sink_id, std::move(receiver), std::move(client),
+            std::move(viz_rir_client_remote));
       },
       std::move(compositor_frame_sink_receiver),
-      std::move(compositor_frame_sink_client));
+      std::move(compositor_frame_sink_client),
+      std::move(viz_rir_client_remote_));
 
   MaybeDispatchBufferedFrameSinkRequest();
 }

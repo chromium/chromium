@@ -458,8 +458,13 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
 
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);
+
+  // Enable block IO scheduler for virtio-blk /data devices.
+  // LVM-backed devices are excluded to mitigate boot time regression.
+  // (See go/arcvm-data-block-io-scheduler)
   request.set_enable_data_block_io_scheduler(
       start_params.use_virtio_blk_data &&
+      !ShouldUseLvmApplicationContainerForVirtioBlkData() &&
       base::FeatureList::IsEnabled(kBlockIoScheduler) &&
       kEnableDataBlockIoScheduler.Get());
 
@@ -550,7 +555,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       request.set_ureadahead_mode(StartArcVmRequest::UREADAHEAD_MODE_DISABLED);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));

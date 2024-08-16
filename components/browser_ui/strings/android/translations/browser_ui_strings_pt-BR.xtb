@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1500473259453106018">Ocultar nas guias o card de redução no preço</translation>
 <translation id="1510341833810331442">Os sites não podem salvar dados no seu dispositivo</translation>
 <translation id="1547123415014299762">Cookies de terceiros são permitidos</translation>
 <translation id="1568470248891039841">Os sites que você visita podem incorporar conteúdo de outros sites, como imagens, anúncios e texto. Esses outros sites podem pedir permissão para usar informações que salvaram sobre você durante a navegação. <ph name="BEGIN_LINK" />Saber mais sobre conteúdo incorporado<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3232293466644486101">Excluir dados de navegação…</translation>
 <translation id="3242646949159196181">Quando essa configuração está ativada, os sites podem tocar sons. Quando está desativada, os sites não podem tocar sons.</translation>
+<translation id="3273479183583863618">Guias mostrando reduções no preço</translation>
 <translation id="3277252321222022663">Permitir que sites acessem os sensores (recomendado)</translation>
 <translation id="3285500645985761267">Permitir que sites relacionados vejam sua atividade no grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: A maravilhosa Cidade das Esmeraldas de Oz</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Dispensar e mostrar a próxima ação disponível</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
+<translation id="3779154269823594982">Mudar senhas</translation>
 <translation id="3797520601150691162">Não aplicar o tema escuro para um site específico</translation>
 <translation id="3803367742635802571">Os sites que você visita podem parar de funcionar como planejado</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Selecionar itens</translation>
 <translation id="6840760312327750441">Para agrupar guias, toque em uma delas e a mantenha pressionada. Depois disso, arraste-a para outra guia.</translation>
 <translation id="6864395892908308021">O dispositivo não consegue ler a NFC</translation>
+<translation id="6870169401250095575">Ocultar o card da Confirmação de segurança</translation>
 <translation id="6912998170423641340">Impedir que sites leiam textos e imagens da área de transferência</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6950072572526089586">Um site que você visita pode salvar informações sobre o que você está fazendo para funcionar conforme o esperado. Por exemplo, para manter sua conta conectada em um site ou salvar itens no seu carrinho de compras. Geralmente, os sites salvam essas informações temporariamente no dispositivo.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
 <translation id="789180354981963912">Bloquear cookies de terceiros na navegação anônima:</translation>
 <translation id="7940722705963108451">Lembrar</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}one{<ph name="FPS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="FPS_OWNER" />}other{<ph name="FPS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="FPS_OWNER" />}}</translation>
 <translation id="7986741934819883144">Selecione um contato</translation>
 <translation id="7990211076305263060">Quando essa configuração está ativada, os sites podem pedir para usar o microfone. Quando está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ocultar o card "Continuar com esta guia"}one{Ocultar o card "Continuar com esta guia"}other{Ocultar o card "Continuar com estas guias"}}</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8067883171444229417">Assistir vídeo</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Impedir que sites se conectem a dispositivos</translation>
 <translation id="8525306231823319788">Tela cheia</translation>
 <translation id="8541410041357371550">Este site usa seus temas de anúncios do Chrome para mostrar anúncios mais relevantes</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}one{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando essa configuração está ativada, a versão para computadores dos sites aparece. Quando está desativada, a versão para dispositivos móveis aparece.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Gerenciado pelos seus pais</translation>
 <translation id="9039697262778250930">Sua conta pode ser desconectada desses sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Excluir cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Ative as permissões para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>

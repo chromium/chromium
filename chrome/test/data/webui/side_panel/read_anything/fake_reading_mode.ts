@@ -150,14 +150,8 @@ export class FakeReadingMode {
   onLinkClicked(_nodeId: number) {}
 
   // Called when the line spacing is changed via the webui toolbar.
-  onStandardLineSpacing() {
-    this.lineSpacing = this.standardLineSpacing;
-  }
-  onLooseLineSpacing() {
-    this.lineSpacing = this.looseLineSpacing;
-  }
-  onVeryLooseLineSpacing() {
-    this.lineSpacing = this.veryLooseLineSpacing;
+  onLineSpacingChange(value: number) {
+    this.lineSpacing = value;
   }
 
   // Called when a user makes a font size change via the webui toolbar.
@@ -184,31 +178,13 @@ export class FakeReadingMode {
   }
 
   // Called when the letter spacing is changed via the webui toolbar.
-  onStandardLetterSpacing() {
-    this.letterSpacing = this.standardLetterSpacing;
-  }
-  onWideLetterSpacing() {
-    this.letterSpacing = this.wideLetterSpacing;
-  }
-  onVeryWideLetterSpacing() {
-    this.letterSpacing = this.veryWideLetterSpacing;
+  onLetterSpacingChange(value: number) {
+    this.letterSpacing = value;
   }
 
   // Called when the color theme is changed via the webui toolbar.
-  onDefaultTheme() {
-    this.colorTheme = this.defaultTheme;
-  }
-  onLightTheme() {
-    this.colorTheme = this.lightTheme;
-  }
-  onDarkTheme() {
-    this.colorTheme = this.darkTheme;
-  }
-  onYellowTheme() {
-    this.colorTheme = this.yellowTheme;
-  }
-  onBlueTheme() {
-    this.colorTheme = this.blueTheme;
+  onThemeChange(value: number) {
+    this.colorTheme = value;
   }
 
   // Returns the css name of the given font, or the default if it's not valid.
@@ -370,6 +346,9 @@ export class FakeReadingMode {
   // effectively updating ReadAloud's state of the current granularity to
   // refer to the previous granularity.
   movePositionToPreviousGranularity(): void {}
+
+  // Signal that the page language has changed.
+  languageChanged(): void {}
 
   // Returns the index of the next sentence of the given text, such that the
   // next sentence is equivalent to text.substr(0, <returned_index>).

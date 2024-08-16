@@ -166,7 +166,7 @@ const char* TestEnvironmentKeyToString(TestEnvironmentKey key) {
       return "gl_renderer";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
@@ -182,12 +182,11 @@ bool WriteTestEnvironmentToFile(const TestEnvironmentMap& test_environment,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::File file(keys_file, base::File::Flags::FLAG_CREATE_ALWAYS |
                                  base::File::Flags::FLAG_WRITE);
-  int ret_code = file.Write(0, content.c_str(), content.size());
+  bool ok = file.WriteAndCheck(0, base::as_byte_span(content));
   file.Close();
-  if (ret_code <= 0) {
+  if (!ok) {
     LOG(ERROR) << "Writing the keys file to temporary file failed."
-               << "File path:" << keys_file.AsUTF8Unsafe()
-               << ". Return code: " << ret_code;
+               << "File path:" << keys_file.AsUTF8Unsafe();
     return false;
   }
   return true;
@@ -497,12 +496,11 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
       base::FilePath::FromUTF8Unsafe(golden_image_name + ".png"));
   base::File file(temporary_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                       base::File::Flags::FLAG_WRITE);
-  int ret_code = file.Write(0, (char*)output.data(), output.size());
+  bool ok = file.WriteAndCheck(0, output);
   file.Close();
-  if (ret_code <= 0) {
+  if (!ok) {
     LOG(ERROR) << "Writing the PNG image to temporary file failed."
-               << "File path:" << temporary_path.AsUTF8Unsafe()
-               << ". Return code: " << ret_code;
+               << "File path:" << temporary_path.AsUTF8Unsafe();
     return false;
   }
   bool success =

@@ -19,7 +19,7 @@
 
 FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   set_template_url_service(
-      search_engines_test_enviroment_.ReleaseTemplateURLService());
+      search_engines_test_enviroment_.template_url_service());
 
   tile_service_ = std::make_unique<query_tiles::FakeTileService>();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -35,9 +35,10 @@ FakeAutocompleteProviderClient::~FakeAutocompleteProviderClient() {
   // destroyed before it.
   shortcuts_backend_.reset();
 
-  // We explicitly set `TemplateURLService` to `nullptr` because its object
-  // lives in the parent class `MockAutocompleteProviderClient` while its
-  // services live in `SearchEnginesTestEnvironment` in this class.
+  // We explicitly set `TemplateURLService` to `nullptr` because the parent
+  // `MockAutocompleteProviderClient` class  has a pointer to
+  // `TemplateURLService` which lives in the `SearchEnginesTestEnvironment`
+  // object in this class.
   set_template_url_service(nullptr);
   // The InMemoryURLIndex must be explicitly shut down or it will DCHECK() in
   // its destructor.

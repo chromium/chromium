@@ -71,12 +71,12 @@ class ScreenAIServiceRouter : public KeyedService,
   // Initialzies the `service` if it's not already done.
   void InitializeServiceIfNeeded(Service service);
 
-  void InitializeOCR(int request_id,
+  void InitializeOCR(base::TimeTicks request_start_time,
                      mojo::PendingReceiver<mojom::OCRService> receiver,
                      std::unique_ptr<ComponentFiles> model_files);
 
   void InitializeMainContentExtraction(
-      int request_id,
+      base::TimeTicks request_start_time,
       mojo::PendingReceiver<mojom::MainContentExtractionService> receiver,
       std::unique_ptr<ComponentFiles> model_files);
 
@@ -87,25 +87,19 @@ class ScreenAIServiceRouter : public KeyedService,
   // nullopt if not known.
   std::optional<bool> GetServiceState(Service service);
 
-  // Creates a delayed task to record initialization failure if there is no
-  // reply from the service, and returns a new id for the current initialization
-  // request.
-  int CreateRequestIdAndSetTimeOut(Service service);
-
   // Callback from Screen AI service with library load result.
-  void SetLibraryLoadState(int request_id, bool successful);
+  void SetLibraryLoadState(Service service,
+                           base::TimeTicks request_start_time,
+                           bool successful);
 
   // Calls back all pendnding service state requests.
   void CallPendingStatusRequests(Service service, bool successful);
 
+  // Called when ScreenAI service factory is disconnected.
+  void OnScreenAIServiceDisconnected();
+
   // Returns the list of services that have a pending status request.
   std::set<Service> GetAllPendingStatusServices();
-
-  // Service type and trigger time of initialization requests, keyed on request
-  // id.
-  std::map<int, std::pair<Service, base::TimeTicks>>
-      pending_initialization_requests_;
-  int last_request_id_{0};
 
   // Pending requests to receive service state for each service type.
   std::map<Service, std::vector<ServiceStateCallback>> pending_state_requests_;

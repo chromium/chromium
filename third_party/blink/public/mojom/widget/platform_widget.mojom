@@ -123,8 +123,10 @@ interface Widget {
   CancelSuccessfulPresentationTimeRequest();
 
   // Setup the RenderInputRouter mojo connections.
+  // `viz_client` is only set when `InputOnViz` flag is enabled.
   SetupRenderInputRouterConnections(
-    pending_receiver<blink.mojom.RenderInputRouterClient> client);
+    pending_receiver<blink.mojom.RenderInputRouterClient> browser_client,
+    pending_receiver<blink.mojom.RenderInputRouterClient>? viz_client);
 };
 
 // Implemented in Blink, this interface defines input-specific methods that will

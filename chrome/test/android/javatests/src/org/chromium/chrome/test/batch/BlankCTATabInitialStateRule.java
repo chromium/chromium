@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -149,7 +150,12 @@ public class BlankCTATabInitialStateRule implements TestRule {
                                             .getModel(/* incognito= */ false);
                             for (int i = regularTabModel.getCount() - 1; i >= 0; i--) {
                                 Tab tab = regularTabModel.getTabAt(i);
-                                if (tab != newTab) regularTabModel.closeTab(tab);
+                                if (tab != newTab) {
+                                    regularTabModel.closeTabs(
+                                            TabClosureParams.closeTab(tab)
+                                                    .allowUndo(false)
+                                                    .build());
+                                }
                             }
                             return newTab;
                         });

@@ -47,7 +47,10 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
 
   bool IsCachePending(const float device_scale_factor) const;
   StyleImage* CachedImage(const float device_scale_factor) const;
-  StyleImage* CacheImage(StyleImage*, const float device_scale_factor);
+  StyleImage* CacheImage(StyleImage*,
+                         const float device_scale_factor,
+                         bool is_lcp_mouseover_dispatched_recently,
+                         bool is_origin_clean);
 
   const CSSImageSetOptionValue* GetBestOption(const float device_scale_factor);
 

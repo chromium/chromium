@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/viz/common/constants.h"
@@ -26,6 +27,7 @@ enum class FrameIntervalMatcherType {
   kOnlyVideo,
   kVideoConference,
   kOnlyAnimatingImage,
+  kOnlyScrollBarFadeOut,
 };
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.
@@ -45,6 +47,8 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     kDefault,  // Used if nothing matched.
   };
   using Result = absl::variant<FrameIntervalClass, base::TimeDelta>;
+  using ResultCallback =
+      base::RepeatingCallback<void(Result, FrameIntervalMatcherType)>;
 
   // Settings for configuration where display supports a fixed set of frame
   // intervals. If this setting is provided, then `FrameIntervalDecider`
@@ -68,6 +72,10 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
     Settings& operator=(const Settings& other);
     Settings(Settings&& other);
     Settings& operator=(Settings&& other);
+
+    // Called with desired display frame interval Result. Must remain valid to
+    // call for the lifetime of FrameIntervalDecider.
+    ResultCallback result_callback;
 
     std::optional<FixedIntervalSettings> fixed_intervals;
 
@@ -131,6 +139,7 @@ DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(InputBoostMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyVideoMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(VideoConferenceMatcher);
 DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyAnimatingImageMatcher);
+DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER(OnlyScrollBarFadeOutAnimationMatcher);
 
 #undef DECLARE_SIMPLE_FRAME_INTERVAL_MATCHER
 

@@ -38,7 +38,7 @@ std::string VideoRotationToString(VideoRotation rotation) {
     case VIDEO_ROTATION_270:
       return "270°";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool operator==(const struct VideoTransformation& first,

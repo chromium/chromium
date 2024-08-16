@@ -27,7 +27,7 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/touch_selection_menu_runner_chromeos.h"
+#include "chrome/browser/ui/ash/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"

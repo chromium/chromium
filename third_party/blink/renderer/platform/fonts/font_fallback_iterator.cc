@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -28,7 +29,11 @@ FontFallbackIterator::FontFallbackIterator(
       current_font_data_index_(0),
       segmented_face_index_(0),
       fallback_stage_(kFontGroupFonts),
-      font_fallback_priority_(font_fallback_priority) {}
+      font_fallback_priority_(font_fallback_priority) {
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    HarfBuzzFace::SetIsSystemFallbackStage(false);
+  }
+}
 
 void FontFallbackIterator::Reset() {
   DCHECK(RuntimeEnabledFeatures::FontVariationSequencesEnabled());
@@ -39,6 +44,9 @@ void FontFallbackIterator::Reset() {
   unique_font_data_for_range_sets_returned_.clear();
   first_candidate_ = nullptr;
   tracked_loading_range_sets_.clear();
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+    HarfBuzzFace::SetIsSystemFallbackStage(false);
+  }
 }
 
 bool FontFallbackIterator::AlreadyLoadingRangeForHintChar(UChar32 hint_char) {
@@ -186,6 +194,9 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
     fallback_stage_ = IsNonTextFallbackPriority(font_fallback_priority_)
                           ? kFallbackPriorityFonts
                           : kSystemFonts;
+    if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled()) {
+      HarfBuzzFace::SetIsSystemFallbackStage(true);
+    }
     return Next(hint_list);
   }
 

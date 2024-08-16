@@ -124,6 +124,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="2915996080311180594">Reiniciar más tarde</translation>
 <translation id="2928420929544864228">Instalación completada.</translation>
 <translation id="2945997411976714835">Error de instalación: no se ha podido iniciar el proceso de instalación.</translation>
+<translation id="2970426615109535079">Tu organización gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="2977506796191543575">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chromium también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="2987208172821108655">Chromium puede inactivar estas pestañas para mejorar tu experiencia de navegación y liberar recursos.</translation>
@@ -224,6 +225,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="4423735387467980091">Personaliza y controla Chromium</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y malware.</translation>
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> gestiona Chromium</translation>
 <translation id="4447409407328223819">Información de Chrome for Testing</translation>
 <translation id="4501471624619070934">Se ha producido un error en la instalación debido a una restricción de acceso en este país.</translation>
 <translation id="4510853178268397146">Esta extensión no ha publicado sus prácticas de privacidad, como la forma en la que recoge y usa los datos. Chromium te recomienda que la elimines.</translation>
@@ -492,6 +494,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8550334526674375523">Este perfil de trabajo es completamente independiente de tu perfil personal.</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google</translation>
+<translation id="8576826849825683917">Varias organizaciones gestionan Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> los sitios pueden almacenar información con Chromium sobre tus intereses. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Si más tarde visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
 <translation id="8619360774459241877">Iniciando Chromium...</translation>

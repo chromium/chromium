@@ -1268,6 +1268,18 @@
             "description": "True if Dictation was activated, false if it was deactivated."
           }
         ]
+      },
+      {
+        "name": "onToggleGestureInfoForSettings",
+        "type": "function",
+        "description": "Fired only from the FaceGaze settings when the settings page requests to receive or stop receiving gesture detection information from FaceGaze.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if FaceGaze should start sending gesture detection information, false if FaceGaze should stop."
+          }
+        ]
       }
     ]
   }

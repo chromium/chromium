@@ -65,7 +65,8 @@ enum class MenuActionType {
   RemoveTabFromGroup = 52,
   OpenLinkInNewGroup = 53,
   ShowDetails = 54,
-  kMaxValue = ShowDetails
+  ShowFullURL = 55,
+  kMaxValue = ShowFullURL
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 

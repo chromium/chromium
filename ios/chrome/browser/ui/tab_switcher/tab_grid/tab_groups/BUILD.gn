@@ -42,6 +42,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_activity_observer",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_idle_status_handler",
@@ -68,6 +69,7 @@ source_set("tab_group_creation") {
     "create_tab_group_coordinator.mm",
     "create_tab_group_mediator.h",
     "create_tab_group_mediator.mm",
+    "create_tab_group_mediator_delegate.h",
   ]
   deps = [
     ":tab_group_consumer",
@@ -217,6 +219,7 @@ source_set("tab_group_mutator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "create_tab_group_mediator_unittest.mm",
     "tab_group_coordinator_unittest.mm",
     "tab_group_mediator_unittest.mm",
     "tab_groups_panel_coordinator_unittest.mm",
@@ -225,6 +228,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":tab_group_consumer",
+    ":tab_group_creation",
     ":tab_groups",
     ":tab_groups_ui",
     "//base/test:test_support",
@@ -247,6 +251,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_mode",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:test_fixture",
@@ -254,6 +259,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/browser/ui/tab_switcher/test:fakes",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

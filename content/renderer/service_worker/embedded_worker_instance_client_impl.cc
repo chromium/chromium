@@ -151,7 +151,7 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(params->subresource_loader_updater),
       params->script_url_to_skip_throttling, initiator_thread_task_runner_,
       params->service_worker_route_id, cors_exempt_header_list_,
-      params->storage_key);
+      params->storage_key, params->service_worker_token);
 
   std::unique_ptr<blink::WebServiceWorkerInstalledScriptsManagerParams>
       installed_scripts_manager_params;

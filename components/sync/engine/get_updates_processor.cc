@@ -32,11 +32,11 @@ namespace syncer {
 namespace {
 
 using SyncEntityList = std::vector<const sync_pb::SyncEntity*>;
-using TypeSyncEntityMap = std::map<ModelType, SyncEntityList>;
-using TypeToIndexMap = std::map<ModelType, size_t>;
+using TypeSyncEntityMap = std::map<DataType, SyncEntityList>;
+using TypeToIndexMap = std::map<DataType, size_t>;
 
 bool ShouldRequestEncryptionKey(SyncCycleContext* context) {
-  return context->model_type_registry()
+  return context->data_type_registry()
       ->keystore_keys_handler()
       ->NeedKeystoreKey();
 }
@@ -66,7 +66,7 @@ bool HandleGetEncryptionKeyResponse(
       ExtractKeystoreKeys(update_response);
 
   bool success =
-      context->model_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
+      context->data_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
           keystore_keys);
 
   DVLOG(1) << "GetUpdates returned "
@@ -77,17 +77,17 @@ bool HandleGetEncryptionKeyResponse(
 }
 
 // Given a GetUpdates response, iterates over all the returned items and
-// divides them according to their type.  Outputs a map from model types to
+// divides them according to their type.  Outputs a map from data types to
 // received SyncEntities.  The output map will have entries (possibly empty)
 // for all types in |requested_types|.
 void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
-                            ModelTypeSet requested_types,
+                            DataTypeSet requested_types,
                             TypeSyncEntityMap* updates_by_type) {
-  for (ModelType type : requested_types) {
+  for (DataType type : requested_types) {
     updates_by_type->insert(std::make_pair(type, SyncEntityList()));
   }
   for (const sync_pb::SyncEntity& update : gu_response.entries()) {
-    ModelType type = GetModelTypeFromSpecifics(update.specifics());
+    DataType type = GetDataTypeFromSpecifics(update.specifics());
     if (!IsRealDataType(type)) {
       NOTREACHED_IN_MIGRATION() << "Received update with invalid type.";
       continue;
@@ -97,7 +97,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
     if (it == updates_by_type->end()) {
       DLOG(WARNING) << "Received update for unexpected type, or the type is "
                        "throttled or failed with partial failure:"
-                    << ModelTypeToDebugString(type);
+                    << DataTypeToDebugString(type);
       continue;
     }
 
@@ -105,47 +105,47 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
   }
 }
 
-// Builds a map of ModelTypes to indices to progress markers in the given
+// Builds a map of DataTypes to indices to progress markers in the given
 // |gu_response| message.  The map is returned in the |index_map| parameter.
 void PartitionProgressMarkersByType(
     const sync_pb::GetUpdatesResponse& gu_response,
-    const ModelTypeSet& request_types,
+    const DataTypeSet& request_types,
     TypeToIndexMap* index_map) {
   for (int i = 0; i < gu_response.new_progress_marker_size(); ++i) {
     int field_number = gu_response.new_progress_marker(i).data_type_id();
-    ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-    if (!IsRealDataType(model_type)) {
+    DataType data_type = GetDataTypeFromSpecificsFieldNumber(field_number);
+    if (!IsRealDataType(data_type)) {
       DLOG(WARNING) << "Unknown field number " << field_number;
       continue;
     }
-    if (!request_types.Has(model_type)) {
+    if (!request_types.Has(data_type)) {
       DLOG(WARNING)
           << "Skipping unexpected progress marker for non-enabled type "
-          << ModelTypeToDebugString(model_type);
+          << DataTypeToDebugString(data_type);
       continue;
     }
-    index_map->insert(std::make_pair(model_type, i));
+    index_map->insert(std::make_pair(data_type, i));
   }
 }
 
 void PartitionContextMutationsByType(
     const sync_pb::GetUpdatesResponse& gu_response,
-    const ModelTypeSet& request_types,
+    const DataTypeSet& request_types,
     TypeToIndexMap* index_map) {
   for (int i = 0; i < gu_response.context_mutations_size(); ++i) {
     int field_number = gu_response.context_mutations(i).data_type_id();
-    ModelType model_type = GetModelTypeFromSpecificsFieldNumber(field_number);
-    if (!IsRealDataType(model_type)) {
+    DataType data_type = GetDataTypeFromSpecificsFieldNumber(field_number);
+    if (!IsRealDataType(data_type)) {
       DLOG(WARNING) << "Unknown field number " << field_number;
       continue;
     }
-    if (!request_types.Has(model_type)) {
+    if (!request_types.Has(data_type)) {
       DLOG(WARNING)
           << "Skipping unexpected context mutation for non-enabled type "
-          << ModelTypeToDebugString(model_type);
+          << DataTypeToDebugString(data_type);
       continue;
     }
-    index_map->insert(std::make_pair(model_type, i));
+    index_map->insert(std::make_pair(data_type, i));
   }
 }
 
@@ -180,7 +180,7 @@ GetUpdatesProcessor::GetUpdatesProcessor(UpdateHandlerMap* update_handler_map,
 
 GetUpdatesProcessor::~GetUpdatesProcessor() = default;
 
-SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
+SyncerError GetUpdatesProcessor::DownloadUpdates(DataTypeSet* request_types,
                                                  SyncCycle* cycle) {
   TRACE_EVENT0("sync", "DownloadUpdates");
 
@@ -196,14 +196,14 @@ SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
 }
 
 void GetUpdatesProcessor::PrepareGetUpdates(
-    const ModelTypeSet& gu_types,
+    const DataTypeSet& gu_types,
     sync_pb::ClientToServerMessage* message) {
   sync_pb::GetUpdatesMessage* get_updates = message->mutable_get_updates();
 
-  for (ModelType type : gu_types) {
+  for (DataType type : gu_types) {
     auto handler_it = update_handler_map_->find(type);
     CHECK(handler_it != update_handler_map_->end(), base::NotFatalUntil::M130)
-        << "Failed to look up handler for " << ModelTypeToDebugString(type);
+        << "Failed to look up handler for " << DataTypeToDebugString(type);
     sync_pb::DataTypeProgressMarker* progress_marker =
         get_updates->add_from_progress_marker();
     *progress_marker = handler_it->second->GetDownloadProgress();
@@ -222,7 +222,7 @@ void GetUpdatesProcessor::PrepareGetUpdates(
 }
 
 SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
-    ModelTypeSet* request_types,
+    DataTypeSet* request_types,
     SyncCycle* cycle,
     sync_pb::ClientToServerMessage* msg) {
   sync_pb::ClientToServerResponse update_response;
@@ -239,7 +239,7 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
   cycle->SendProtocolEvent(
       *(delegate_->GetNetworkRequestEvent(base::Time::Now(), *msg)));
 
-  ModelTypeSet partial_failure_data_types;
+  DataTypeSet partial_failure_data_types;
 
   SyncerError result = SyncerProtoUtil::PostClientToServerMessage(
       *msg, &update_response, cycle, &partial_failure_data_types);
@@ -299,7 +299,7 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
 
 SyncerError GetUpdatesProcessor::ProcessResponse(
     const sync_pb::GetUpdatesResponse& gu_response,
-    const ModelTypeSet& gu_types,
+    const DataTypeSet& gu_types,
     StatusController* status_controller) {
   status_controller->increment_num_updates_downloaded_by(
       gu_response.entries_size());
@@ -333,7 +333,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
           updates_iter != updates_by_type.end());
        ++progress_marker_iter, ++updates_iter) {
     DCHECK_EQ(progress_marker_iter->first, updates_iter->first);
-    ModelType type = progress_marker_iter->first;
+    DataType type = progress_marker_iter->first;
 
     auto update_handler_iter = update_handler_map_->find(type);
 
@@ -348,7 +348,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
           context, updates_iter->second, status_controller);
     } else {
       DLOG(WARNING) << "Ignoring received updates of a type we can't handle.  "
-                    << "Type is: " << ModelTypeToDebugString(type);
+                    << "Type is: " << DataTypeToDebugString(type);
       continue;
     }
   }
@@ -359,7 +359,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   return SyncerError::Success();
 }
 
-void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
+void GetUpdatesProcessor::ApplyUpdates(const DataTypeSet& gu_types,
                                        StatusController* status_controller) {
   for (const auto& [type, update_handler] : *update_handler_map_) {
     if (gu_types.Has(type)) {

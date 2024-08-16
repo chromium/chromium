@@ -69,7 +69,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
     return;
   }
 
-  auto* registry = SidePanelRegistry::Get(web_contents());
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents());
   last_url_info_ = {web_contents()->GetLastCommittedURL(), more_about_url,
                     CreateOpenUrlParams(more_about_url)};
   registered_but_not_shown_ = true;
@@ -128,7 +128,7 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
     return;
   }
 
-  auto* registry = SidePanelRegistry::Get(web_contents());
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents());
   SidePanelEntry::Key key(SidePanelEntry::Id::kAboutThisSite);
 
   // Update the SidePanel when a user navigates to another url with the

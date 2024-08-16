@@ -228,7 +228,7 @@ int CalculateMargin(QuietZone quiet_zone) {
     case QuietZone::kWillBeAddedByClient:
       return 0;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkBitmap RenderBitmap(base::span<const uint8_t> data,

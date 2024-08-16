@@ -121,6 +121,7 @@
 <translation id="2915996080311180594">暂不重启</translation>
 <translation id="2928420929544864228">安装完毕。</translation>
 <translation id="2945997411976714835">安装时出错：安装程序进程未能启动。</translation>
+<translation id="2970426615109535079">贵组织负责管理 Chromium</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="2987208172821108655">Chromium 可以让这些标签页处于非活跃状态，以改善您的浏览体验并释放资源。</translation>
@@ -221,6 +222,7 @@
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" />负责管理 Chromium</translation>
 <translation id="4447409407328223819">关于 Chrome for Testing</translation>
 <translation id="4501471624619070934">由于在此国家/地区的访问权限遭到限制，安装失败。</translation>
 <translation id="4510853178268397146">此扩展程序尚未发布隐私权规范，例如如何收集和使用数据。Chromium 建议您移除它。</translation>
@@ -489,6 +491,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">您需要先登录 Google 账号才能使用 Chromium 的密码检查功能。</translation>
+<translation id="8576826849825683917">多个组织负责管理 Chromium</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chromium 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="8619360774459241877">正在启动 Chromium…</translation>

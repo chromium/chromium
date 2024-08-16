@@ -35,7 +35,8 @@
   Browser* browser = self.browser;
   CHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
-  _mediator = [[TabGridToolbarsMediator alloc] init];
+  _mediator =
+      [[TabGridToolbarsMediator alloc] initWithModeHolder:self.modeHolder];
 
   [self setupTopToolbar];
   [self setupBottomToolbar];

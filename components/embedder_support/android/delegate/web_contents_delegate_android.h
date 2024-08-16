@@ -44,8 +44,7 @@ enum WebContentsDelegateLogLevel {
 // as required.
 class WebContentsDelegateAndroid : public content::WebContentsDelegate {
  public:
-  WebContentsDelegateAndroid(JNIEnv* env,
-                             const jni_zero::JavaRef<jobject>& obj);
+  WebContentsDelegateAndroid(JNIEnv* env, jobject obj);
   ~WebContentsDelegateAndroid() override;
 
   // Overridden from WebContentsDelegate:
@@ -123,15 +122,15 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
   void DidChangeCloseSignalInterceptStatus() override;
-
   // Return true if the WebContents is presenting a java native view for the
   // committed navigation entry. This is possible for chrome* URLs, such as
   // an NTP. Callback is guaranteed to be dispatched asynchronously (with an
   // empty bitmap if the capture fails) only if this returns true.
   bool MaybeCopyContentAreaAsBitmap(
       base::OnceCallback<void(const SkBitmap&)> callback) override;
-
   void DidBackForwardTransitionAnimationChange() override;
+  content::BackForwardTransitionAnimationManager::FallbackUXConfig
+  GetBackForwardTransitionFallbackUXConfig() override;
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;

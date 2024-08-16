@@ -19,10 +19,13 @@ proto_library("optimization_guide_proto") {
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/default.proto",
+    "features/forms_annotations.proto",
+    "features/forms_predictions.proto",
     "features/history_answer.proto",
     "features/history_document.proto",
     "features/history_query.proto",
     "features/product_specifications.proto",
+    "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
     "features/wallpaper_search.proto",
@@ -109,5 +112,15 @@ proto_library("history_answer_proto_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "history_answer.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("summarize_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/summarize.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "summarize.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
 }

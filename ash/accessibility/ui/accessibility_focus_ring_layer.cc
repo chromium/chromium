@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
@@ -157,7 +162,7 @@ void AccessibilityFocusRingLayer::DrawSolidFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -176,7 +181,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
     ui::PaintRecorder& recorder,
     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   SkPath path;
   gfx::Vector2d offset = layer()->bounds().OffsetFromOrigin();
@@ -199,7 +204,7 @@ void AccessibilityFocusRingLayer::DrawDashedFocusRing(
 void AccessibilityFocusRingLayer::DrawGlowFocusRing(ui::PaintRecorder& recorder,
                                                     cc::PaintFlags& flags) {
   if (!has_custom_color())
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   SkColor base_color = custom_color();
 
   SkPath path;

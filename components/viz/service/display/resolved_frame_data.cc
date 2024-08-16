@@ -7,17 +7,34 @@
 #include <set>
 #include <utility>
 
-#include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
+#include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
+namespace {
+
+gfx::Rect EnclosingOffsetRect(const gfx::Rect& rect, gfx::Vector2dF offset) {
+  if (rect.IsEmpty()) {
+    return gfx::Rect();
+  }
+  gfx::RectF offset_rect(rect);
+  offset_rect.Offset(offset);
+  return gfx::ToEnclosingRect(offset_rect);
+}
+
+}  // namespace
 
 const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
     const DrawQuad* quad) {
@@ -128,7 +145,21 @@ void ResolvedFrameData::ForceReleaseResource() {
   RegisterWithResourceProvider();
 }
 
-void ResolvedFrameData::UpdateForActiveFrame(
+void ResolvedFrameData::UpdateForAggregation(
+    AggregatedRenderPassId::Generator& render_pass_id_generator) {
+  CHECK(!used_in_aggregation_);
+  used_in_aggregation_ = true;
+
+  if (previous_frame_index() != surface_->GetActiveFrameIndex()) {
+    // There is a new active CompositorFrame.
+    UpdateActiveFrame(render_pass_id_generator);
+  } else if (is_valid()) {
+    // The same active CompositorFrame as last aggregation.
+    ReuseActiveFrame();
+  }
+}
+
+void ResolvedFrameData::UpdateActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
   // If there are modified render passes they need to be rebuilt based on
   // current active CompositorFrame.
@@ -252,6 +283,8 @@ void ResolvedFrameData::UpdateForActiveFrame(
 
   valid_ = true;
 
+  ComputeOffsetTagContainingRects();
+
   // Declare the used resources to the provider. This will cause all resources
   // that were received but not used in the render passes to be unreferenced in
   // the surface, and returned to the child in the resource provider.
@@ -263,28 +296,31 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
   auto& offset_tags_to_find =
       surface_->GetActiveFrameMetadata().offset_tag_definitions;
 
-  if (tag_values_.empty() && offset_tags_to_find.empty()) {
+  if (offset_tags_to_find.empty() && !has_non_zero_offset_tag_value_) {
     // Early return if there were no offset tags last and this aggregation. This
     // is the common case so avoid doing any work on this path.
     return;
   }
 
-  base::flat_map<OffsetTag, gfx::Vector2dF> new_tag_values;
-  new_tag_values.reserve(offset_tags_to_find.size());
+  // Find the offset value for all defined tags first.
+  has_non_zero_offset_tag_value_ = false;
   for (auto& tag_def : offset_tags_to_find) {
-    new_tag_values.insert(
-        {tag_def.tag, tag_def.constraints.Clamp(lookup_value_fn(tag_def))});
+    auto offset = tag_def.constraints.Clamp(lookup_value_fn(tag_def));
+    auto& tag_data = offset_tag_data_[tag_def.tag];
+    tag_data.current_offset = offset;
+    tag_data.defined_in_frame = true;
+    if (!offset.IsZero()) {
+      has_non_zero_offset_tag_value_ = true;
+    }
   }
 
-  // TODO(kylechar): If there are added/removed tags with value 0,0 that can be
-  // considered not changing from last frame as an optimization.
-  offset_tag_values_changed_from_last_frame_ = tag_values_ != new_tag_values;
+  bool offset_tag_values_changed_from_last_frame =
+      std::ranges::any_of(offset_tag_data_, [](auto& entry) {
+        return entry.second.current_offset != entry.second.last_offset;
+      });
 
-  if (offset_tag_values_changed_from_last_frame_) {
-    tag_values_ = std::move(new_tag_values);
+  if (offset_tag_values_changed_from_last_frame) {
     offset_tag_render_passes_.clear();
-    has_non_zero_offset_tag_value_ = std::ranges::any_of(
-        tag_values_, [](auto& entry) { return !entry.second.IsZero(); });
   } else if (!offset_tag_render_passes_.empty()) {
     // If offset tag values haven't changed and the copied render passes weren't
     // cleared elsewhere they can be reused.
@@ -293,19 +329,54 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
       resolved_passes_[i].SetCompositorRenderPass(
           offset_tag_render_passes_[i].get());
     }
+    // Skip running RecomputeOffsetTagDamage() since nothing changed since
+    // last frame and there is no added damage.
     return;
   }
 
-  RebuildRenderPassesForOffsetTags();
+  if (has_non_zero_offset_tag_value_) {
+    RebuildRenderPassesForOffsetTags();
+  }
+  RecomputeOffsetTagDamage();
+}
+
+void ResolvedFrameData::ComputeOffsetTagContainingRects() {
+  auto& offset_tags_to_find = GetMetadata().offset_tag_definitions;
+  if (offset_tags_to_find.empty()) {
+    return;
+  }
+
+  // `offset_tag_data_` hasn't been populated for this frame yet so build a set
+  // to check if a definition exists when a tag is seen on a layer.
+  base::flat_set<OffsetTag> tag_set(
+      base::ToVector(offset_tags_to_find,
+                     [](const OffsetTagDefinition& def) { return def.tag; }));
+
+  for (auto& resolved_pass : resolved_passes_) {
+    const CompositorRenderPass& render_pass = resolved_pass.render_pass();
+
+    for (auto* sqs : render_pass.shared_quad_state_list) {
+      if (sqs->offset_tag && tag_set.contains(sqs->offset_tag)) {
+        gfx::Transform combined_transform =
+            render_pass.transform_to_root_target *
+            sqs->quad_to_target_transform;
+        gfx::Rect containing_rect_in_root =
+            cc::MathUtil::MapEnclosingClippedRect(combined_transform,
+                                                  sqs->visible_quad_layer_rect);
+        offset_tag_data_[sqs->offset_tag].current_containing_rect.Union(
+            containing_rect_in_root);
+      }
+    }
+  }
+
+  for (auto& [tag, data] : offset_tag_data_) {
+    data.current_containing_rect.Intersect(GetOutputRect());
+  }
 }
 
 void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
   CHECK(offset_tag_render_passes_.empty());
-
-  if (!has_non_zero_offset_tag_value_) {
-    // No modifications are required so don't make a copy of render passes.
-    return;
-  }
+  CHECK(has_non_zero_offset_tag_value_);
 
   // Create copies of the render passes and modify tagged quad positions by
   // adjusting `quad_to_target_transform` transform.
@@ -325,9 +396,10 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
     source_pass->copy_requests = std::move(copy_requests);
 
     for (auto* sqs : modified_pass->shared_quad_state_list) {
-      if (sqs->offset_tag) {
-        if (auto& offset = tag_values_[sqs->offset_tag]; !offset.IsZero()) {
-          sqs->quad_to_target_transform.PostTranslate(offset);
+      if (sqs->offset_tag && offset_tag_data_.contains(sqs->offset_tag)) {
+        auto& tag_data = offset_tag_data_[sqs->offset_tag];
+        if (!tag_data.current_offset.IsZero()) {
+          sqs->quad_to_target_transform.PostTranslate(tag_data.current_offset);
         }
       }
     }
@@ -339,15 +411,74 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
   }
 }
 
+void ResolvedFrameData::RecomputeOffsetTagDamage() {
+  CHECK(offset_tag_added_damage_.IsEmpty());
+
+  // Get the surface damage before this function modifies it.
+  const gfx::Rect surface_damage_rect = GetSurfaceDamage();
+  const gfx::Rect output_rect = GetOutputRect();
+
+  if (surface_damage_rect == output_rect) {
+    // If the frame already has full damage then there is no point computing
+    // damage to add.
+    return;
+  }
+
+  for (auto& [tag, data] : offset_tag_data_) {
+    if (data.current_offset != data.last_offset) {
+      // If the offset value for a tag changed then both the old and new
+      // locations of tagged quads are damaged since content moved.
+      offset_tag_added_damage_.Union(EnclosingOffsetRect(
+          data.current_containing_rect, data.current_offset));
+      offset_tag_added_damage_.Union(
+          EnclosingOffsetRect(data.last_containing_rect, data.last_offset));
+    } else if (!data.current_offset.IsZero()) {
+      // If the offset didn't change then adjust client provided damage to take
+      // into account quads that were offset. This assumes that any damage which
+      // intersects the tagged quads comes from the tagged quads. This isn't
+      // necessarily true but there isn't enough information in viz to know what
+      // layer/quads introduced the damage so this is pessimistic.
+      offset_tag_added_damage_.Union(
+          EnclosingOffsetRect(gfx::IntersectRects(data.current_containing_rect,
+                                                  surface_damage_rect),
+                              data.current_offset));
+
+      if (!data.last_containing_rect.IsEmpty() &&
+          !data.current_containing_rect.Contains(data.last_containing_rect)) {
+        // This case aims to detect when a layer had a tag removed or a tagged
+        // layer was deleted. The client will add damage for the removed layer
+        // at it's default location but that isn't necessarily where the layer
+        // was drawn last aggregation. Viz needs to add damage where the removed
+        // layer was drawn. There is no simple way to track when tagged layers
+        // are removed, so this uses an imperfect proxy of containing rect
+        // shrinking, and if that happens it adds damage for all tagged layers
+        // last frame.
+        //
+        // It's possible the containing rect shrinks without removing a tagged
+        // layer, eg. size or position of the tagged layers change. This case
+        // will result in adding extra damage that isn't needed which has no
+        // impact on correctness.
+        //
+        // It's also possible a tagged layer was removed but the containing rect
+        // doesn't shrink, eg. either another tagged layer was added or other
+        // tagged layers had size/position change. The current containing rect
+        // still contains all last frames tagged layers and client adds damage
+        // for the removed layer so the code above to shift client damage will
+        // handle it.
+        offset_tag_added_damage_.Union(
+            EnclosingOffsetRect(data.last_containing_rect, data.last_offset));
+      }
+    }
+  }
+  // Clip added damage if it extends beyond output rect.
+  offset_tag_added_damage_.Intersect(output_rect);
+}
+
 void ResolvedFrameData::SetInvalid() {
   frame_index_ = surface_->GetActiveFrameIndex();
   render_pass_id_map_.clear();
   resolved_passes_.clear();
   valid_ = false;
-}
-
-void ResolvedFrameData::MarkAsUsedInAggregation() {
-  used_in_aggregation_ = true;
 }
 
 bool ResolvedFrameData::WasUsedInAggregation() const {
@@ -364,6 +495,22 @@ void ResolvedFrameData::ResetAfterAggregation() {
 
   previous_frame_index_ = frame_index_;
   used_in_aggregation_ = false;
+
+  // Delete entries for tags that weren't defined in this frame.
+  base::EraseIf(offset_tag_data_,
+                [](auto& entry) { return !entry.second.defined_in_frame; });
+
+  // Reset remaining offset tag data for next aggregation.
+  for (auto& [tag, data] : offset_tag_data_) {
+    data.last_containing_rect = data.current_containing_rect;
+    data.current_containing_rect = gfx::Rect();
+    data.last_offset = data.current_offset;
+    data.current_offset = gfx::Vector2dF();
+    data.defined_in_frame = false;
+  }
+  offset_tag_added_damage_ = gfx::Rect();
+  // Don't reset `has_non_zero_offset_tag_value_` until next aggregation when
+  // UpdateOffsetTags() is called.
 }
 
 const CompositorFrameMetadata& ResolvedFrameData::GetMetadata() const {
@@ -419,20 +566,14 @@ FrameDamageType ResolvedFrameData::GetFrameDamageType() const {
 }
 
 gfx::Rect ResolvedFrameData::GetSurfaceDamage() const {
-  if (has_non_zero_offset_tag_value_ ||
-      offset_tag_values_changed_from_last_frame_) {
-    // TODO(kylechar): If the current or last aggregation had OffsetTags then
-    // just assume full damage. This should be replaced with proper damage
-    // computations based on shifted content.
-    return GetOutputRect();
-  }
   switch (GetFrameDamageType()) {
     case FrameDamageType::kFull:
       return GetOutputRect();
     case FrameDamageType::kFrame:
-      return resolved_passes_.back().render_pass().damage_rect;
+      return gfx::UnionRects(resolved_passes_.back().render_pass().damage_rect,
+                             offset_tag_added_damage_);
     case FrameDamageType::kNone:
-      return gfx::Rect();
+      return offset_tag_added_damage_;
   }
 }
 
@@ -441,7 +582,7 @@ const gfx::Rect& ResolvedFrameData::GetOutputRect() const {
   return resolved_passes_.back().render_pass().output_rect;
 }
 
-void ResolvedFrameData::SetRenderPassPointers() {
+void ResolvedFrameData::ReuseActiveFrame() {
   const CompositorRenderPassList& render_pass_list =
       surface_->GetActiveFrame().render_pass_list;
 
@@ -453,6 +594,11 @@ void ResolvedFrameData::SetRenderPassPointers() {
     const auto& render_pass = render_pass_list[i];
     CHECK_EQ(resolved_pass.render_pass_id(), render_pass->id);
     resolved_pass.SetCompositorRenderPass(render_pass.get());
+  }
+
+  // OffsetTag containing rects are the same as last frame.
+  for (auto& [tag, containing] : offset_tag_data_) {
+    containing.current_containing_rect = containing.last_containing_rect;
   }
 }
 

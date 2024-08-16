@@ -34,6 +34,7 @@
 #include "components/manta/manta_service.h"
 #include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_context.h"
+#include "components/manta/sparky/sparky_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -43,6 +44,7 @@ namespace {
 
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
+constexpr int kMaxConsecutiveTurns = 20;
 
 ash::MahiBrowserDelegateAsh* GetMahiBrowserDelgateAsh() {
   auto* mahi_browser_delegate_ash = crosapi::CrosapiManager::Get()
@@ -92,9 +94,10 @@ void SparkyManagerImpl::GetOutlines(MahiOutlinesCallback callback) {
 
 void SparkyManagerImpl::GoToOutlineContent(int outline_id) {}
 
-void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
-                                       bool current_panel_content,
-                                       MahiAnswerQuestionCallback callback) {
+void SparkyManagerImpl::AnswerQuestionRepeating(
+    const std::u16string& question,
+    bool current_panel_content,
+    MahiAnswerQuestionCallbackRepeating callback) {
   if (current_panel_content) {
     // Add the current question to the dialog.
     dialog_turns_.emplace_back(base::UTF16ToUTF8(question), manta::Role::kUser);
@@ -103,6 +106,7 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
         dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
+    sparky_context->files = sparky_provider_->GetFilesSummary();
 
     sparky_provider_->QuestionAndAnswer(
         std::move(sparky_context),
@@ -205,7 +209,7 @@ void SparkyManagerImpl::OnGetPageContentForSummary(
 }
 
 void SparkyManagerImpl::OnSparkyProviderQAResponse(
-    MahiAnswerQuestionCallback callback,
+    MahiAnswerQuestionCallbackRepeating callback,
     manta::MantaStatus status,
     manta::DialogTurn* latest_turn) {
   // Currently the history of dialogs will only refresh if the user closes the
@@ -220,8 +224,8 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
 
   if (latest_turn) {
     latest_response_status_ = MahiResponseStatus::kSuccess;
-    std::move(callback).Run(base::UTF8ToUTF16(latest_turn->message),
-                            latest_response_status_);
+    callback.Run(base::UTF8ToUTF16(latest_turn->message),
+                 latest_response_status_);
 
     dialog_turns_.emplace_back(std::move(*latest_turn));
 
@@ -229,6 +233,8 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
         dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
     sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
     sparky_context->page_url = current_page_info_->url.spec();
+    sparky_context->files = sparky_provider_->GetFilesSummary();
+    CheckTurnLimit();
 
     // If the latest action is not the final action from the server, then an
     // additional request is made to the server.
@@ -237,7 +243,7 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
       sparky_provider_->QuestionAndAnswer(
           std::move(sparky_context),
           base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                         weak_ptr_factory_.GetWeakPtr(), callback));
     }
 
   } else {
@@ -246,9 +252,34 @@ void SparkyManagerImpl::OnSparkyProviderQAResponse(
   }
 }
 
+void SparkyManagerImpl::CheckTurnLimit() {
+  // If the size of the dialog does not exceed the turn limit then return.
+  if (dialog_turns_.size() < kMaxConsecutiveTurns) {
+    return;
+  }
+  // If the last action is already set to not made an additional server call
+  // then return.
+  if (dialog_turns_.back().actions.empty() ||
+      dialog_turns_.back().actions.back().type != manta::ActionType::kAllDone ||
+      dialog_turns_.back().actions.back().all_done == true) {
+    return;
+  }
+  // Iterate through the last n turns if any of them are from the user then
+  // return as the turn limit has not yet been reached.
+  for (int position = 1; position < kMaxConsecutiveTurns; ++position) {
+    auto turn = dialog_turns_.at(dialog_turns_.size() - kMaxConsecutiveTurns);
+    if (turn.role == manta::Role::kUser) {
+      return;
+    }
+  }
+  // Assign the last action as all done to prevent any additional calls to the
+  // server.
+  dialog_turns_.back().actions.back().all_done = true;
+}
+
 void SparkyManagerImpl::OnGetPageContentForQA(
     const std::u16string& question,
-    MahiAnswerQuestionCallback callback,
+    MahiAnswerQuestionCallbackRepeating callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
   if (!mahi_content_ptr) {
     std::move(callback).Run(std::nullopt,
@@ -266,11 +297,24 @@ void SparkyManagerImpl::OnGetPageContentForQA(
       dialog_turns_, base::UTF16ToUTF8(current_panel_content_->page_content));
   sparky_context->server_url = ash::switches::ObtainSparkyServerUrl();
   sparky_context->page_url = current_page_info_->url.spec();
+  sparky_context->files = sparky_provider_->GetFilesSummary();
 
   sparky_provider_->QuestionAndAnswer(
       std::move(sparky_context),
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+// This function will never be called as Sparky uses a repeating callback to
+// respond to the question rather than a once callback.
+void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
+                                       bool current_panel_content,
+                                       MahiAnswerQuestionCallback callback) {}
+
+// Sparky allows for multi consecutive responses back from the server to
+// complete the task requested by the user.
+bool SparkyManagerImpl::AllowRepeatingAnswers() {
+  return true;
 }
 
 void SparkyManagerImpl::OpenFeedbackDialog() {}

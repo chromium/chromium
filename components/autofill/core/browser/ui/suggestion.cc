@@ -12,6 +12,30 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
 namespace autofill {
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails() = default;
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    std::u16string_view username,
+    std::u16string_view password,
+    std::string_view signon_realm,
+    std::u16string_view display_signon_realm,
+    bool is_cross_domain)
+    : username(username),
+      password(password),
+      signon_realm(signon_realm),
+      display_signon_realm(display_signon_realm),
+      is_cross_domain(is_cross_domain) {}
+
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    const PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
+    PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails&
+Suggestion::PasswordSuggestionDetails::operator=(
+    const PasswordSuggestionDetails&) = default;
+Suggestion::PasswordSuggestionDetails&
+Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
+    default;
+Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
 
 Suggestion::Text::Text() = default;
 
@@ -164,7 +188,7 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {
@@ -175,7 +199,8 @@ void PrintTo(const Suggestion& suggestion, std::ostream* os) {
       << ", minor_text:\"" << suggestion.minor_text.value << "\""
       << (suggestion.minor_text.is_primary ? "(Primary)" : "(Not Primary)")
       << ", additional_label: \"" << suggestion.additional_label << "\""
-      << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
+      << ", apply_deactivated_style: \"" << suggestion.apply_deactivated_style
+      << "\"" << ", icon:" << ConvertIconToPrintableString(suggestion.icon)
       << ", trailing_icon:"
       << ConvertIconToPrintableString(suggestion.trailing_icon) << ")";
 }

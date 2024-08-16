@@ -558,16 +558,12 @@ void ContentVerifier::ShutdownOnIO() {
   hash_helper_.reset();
 }
 
+// static
 scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
-    const base::FilePath& relative_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-
-  if (shutdown_on_io_ || !verification_enabled_) {
-    return nullptr;
-  }
-
+    const base::FilePath& relative_path,
+    scoped_refptr<ContentVerifier> verifier) {
   base::FilePath normalized_unix_path = NormalizeRelativePath(relative_path);
 
   // TODO(asargent) - we can probably get some good performance wins by having
@@ -575,19 +571,28 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
       extension_id, extension_root, normalized_unix_path);
 
-  // If the extension data is not ready yet, add the job to the pending list.
-  // It will be started when the data is available.
-  if (!ready_extensions_.contains(extension_id)) {
-    pending_jobs_.push_back(job);
-    return job;
-  }
-
-  if (!StartJob(job)) {
-    // No verification is needed.
-    return nullptr;
-  }
+  // Priority set explicitly to avoid unwanted task priority inheritance.
+  content::GetIOThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&ContentVerifier::OnJobCreated, verifier, job));
 
   return job;
+}
+
+void ContentVerifier::OnJobCreated(scoped_refptr<ContentVerifyJob> job) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (shutdown_on_io_ || !verification_enabled_) {
+    return;
+  }
+
+  // If the extension data is not ready yet, add the job to the pending list.
+  // It will be started when the data is available.
+  if (!ready_extensions_.contains(job->extension_id())) {
+    pending_jobs_[job->extension_id()].push_back(std::move(job));
+    return;
+  }
+
+  StartJob(job);
 }
 
 void ContentVerifier::CreateContentHash(
@@ -660,7 +665,7 @@ void ContentVerifier::VerifyFailed(
     switch (file_type) {
       case VerifiedFileType::kNone:
         // We should only consider a file type that should be verified.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case VerifiedFileType::kBackgroundPage:
         histogram_suffix = "BackgroundPage";
         break;
@@ -818,27 +823,19 @@ void ContentVerifier::OnExtensionUnloadedOnIO(
     hash_helper->Cancel(extension_id, extension_version);
 
   ready_extensions_.erase(extension_id);
-  RemovePendingJobsForId(extension_id);
+  pending_jobs_.erase(extension_id);
 }
 
 void ContentVerifier::OnExtensionDataReady(const ExtensionId& extension_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   ready_extensions_.insert(extension_id);
 
-  for (auto& job : pending_jobs_) {
-    if (job->extension_id() == extension_id) {
+  if (auto it = pending_jobs_.find(extension_id); it != pending_jobs_.end()) {
+    for (const auto& job : it->second) {
       StartJob(job);
     }
+    pending_jobs_.erase(it);
   }
-
-  RemovePendingJobsForId(extension_id);
-}
-
-void ContentVerifier::RemovePendingJobsForId(const ExtensionId& extension_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  base::ranges::remove_if(pending_jobs_, [&extension_id](const auto& job) {
-    return job->extension_id() == extension_id;
-  });
 }
 
 bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {

@@ -401,7 +401,6 @@ public class OmniboxMetrics {
         switch (pageClass) {
             case PageClassification.NTP_VALUE:
             case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
-            case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
                 suffix = "NTP";
                 break;
 
@@ -419,6 +418,12 @@ public class OmniboxMetrics {
             case PageClassification.HOME_PAGE_VALUE:
             case PageClassification.OTHER_VALUE:
                 // use default value for websites.
+                break;
+
+            case PageClassification.OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.OBSOLETE_INSTANT_NTP_VALUE:
+                assert false
+                        : "Obsolete page classification. Please use the OMNIBOX variant instead.";
                 break;
 
             default:

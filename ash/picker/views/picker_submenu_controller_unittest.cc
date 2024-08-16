@@ -11,6 +11,7 @@
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/i18n/rtl.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,11 +40,14 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidget) {
   EXPECT_NE(controller.widget_for_testing(), nullptr);
 }
 
-TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchor) {
+TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorLTR) {
+  base::i18n::SetRTLForTesting(false);
+  UpdateDisplay("2000x1000");
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();
   anchor_widget->SetContentsView(std::make_unique<views::View>());
-  anchor_widget->SetBounds(gfx::Rect(123, 345, 100, 100));
+  const gfx::Rect anchor_bounds(345, 123, 100, 100);
+  anchor_widget->SetBounds(anchor_bounds);
 
   controller.Show(anchor_widget->GetContentsView(), {});
 
@@ -52,10 +56,32 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchor) {
       controller.widget_for_testing()->GetClientAreaBoundsInScreen();
   // The submenu widget should be on the right of the anchor, with a horizontal
   // small overlap.
-  EXPECT_NEAR(submenu_bounds.x(), 223, 20);
+  EXPECT_NEAR(submenu_bounds.x(), anchor_bounds.right(), 20);
   // The submenu widget should be below the anchor, with a vertical small
   // overlap.
-  EXPECT_NEAR(submenu_bounds.y(), 345, 20);
+  EXPECT_NEAR(submenu_bounds.y(), anchor_bounds.y(), 20);
+}
+
+TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchorRTL) {
+  base::i18n::SetRTLForTesting(true);
+  UpdateDisplay("2000x1000");
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  anchor_widget->SetContentsView(std::make_unique<views::View>());
+  const gfx::Rect anchor_bounds(345, 123, 100, 100);
+  anchor_widget->SetBounds(anchor_bounds);
+
+  controller.Show(anchor_widget->GetContentsView(), {});
+
+  ASSERT_NE(controller.widget_for_testing(), nullptr);
+  const gfx::Rect submenu_bounds =
+      controller.widget_for_testing()->GetClientAreaBoundsInScreen();
+  // The submenu widget should be on the left of the anchor, with a horizontal
+  // small overlap.
+  EXPECT_NEAR(submenu_bounds.right(), anchor_bounds.x(), 20);
+  // The submenu widget should be below the anchor, with a vertical small
+  // overlap.
+  EXPECT_NEAR(submenu_bounds.y(), anchor_bounds.y(), 20);
 }
 
 TEST_F(PickerSubmenuControllerTest, ShowsWidgetWithParent) {

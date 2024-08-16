@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL-адресата е скратена</translation>
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
+<translation id="1500473259453106018">Скриј ја картичката „Намалувања на цената на картичките“</translation>
 <translation id="1510341833810331442">На сајтовите не им е дозволено да зачувуваат податоци на вашиот уред</translation>
 <translation id="1547123415014299762">Колачињата од трети страни се дозволени</translation>
 <translation id="1568470248891039841">Сајтовите што го отворате може да вметнуваат содржини од други сајтови, на пример, слики, реклами и текст. Другиве сајтови може да побараат дозвола да ги користат податоците што ги зачувале за вас додека прелистувате на сајтот. <ph name="BEGIN_LINK" />Дознајте повеќе за вметнатите содржини<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3232293466644486101">Избришете ги податоците од прелистување…</translation>
 <translation id="3242646949159196181">Кога е вклучено, сајтовите може да репродуцираат звук. Кога е исклучено, сајтовите не може да репродуцираат звук.</translation>
+<translation id="3273479183583863618">Намалувања на цената на картичките</translation>
 <translation id="3277252321222022663">Дозволете сајтовите да пристапуваат до сензорите (препорачано)</translation>
 <translation id="3285500645985761267">Дозволувај поврзаните сајтови да ја гледаат мојата активност во групата</translation>
 <translation id="3295019059349372795">Поглавје 11: Чудесниот смарагден град Оз</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Отфрли и прикажи го следното достапно дејство</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
+<translation id="3779154269823594982">Променете ги лозинките</translation>
 <translation id="3797520601150691162">Не применувај темна тема за конкретен сајт</translation>
 <translation id="3803367742635802571">Сајтовите што ги посетувате може да прекинат со функционирање како што се дизајнирани</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Изберете ставки</translation>
 <translation id="6840760312327750441">За групирање на картичките, допрете и задржете една картичка. Потоа, повлечете ја врз друга картичка.</translation>
 <translation id="6864395892908308021">Уредов не може да чита NFC</translation>
+<translation id="6870169401250095575">Скриј ја картичката „Безбедносна проверка“</translation>
 <translation id="6912998170423641340">Блокирај го читањето текст и слики од привремената меморија за сајтовите</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6950072572526089586">Сајтот што го отворате може да зачувува податоци за тоа што го правите за да функционира според очекувањата, на пример, за да ве задржи најавени на сајт или да ги зачува ставките во вашата кошничка за купување. Честопати сајтовите ги зачувуваат податоциве привремено на вашиот уред.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Дозволете го звукот за одреден сајт.</translation>
 <translation id="789180354981963912">Блокирајте колачиња од трети страни во „Инкогнито“:</translation>
 <translation id="7940722705963108451">Потсети ме</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}one{<ph name="FPS_MEMBERS_COUNT" /> сајт во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}other{<ph name="FPS_MEMBERS_COUNT" /> сајтови во групата сајтови на <ph name="FPS_OWNER" /> што може да ја гледаат вашата активност во групата}}</translation>
 <translation id="7986741934819883144">Изберете контакт</translation>
 <translation id="7990211076305263060">Кога е вклучено, сајтовите може да бараат да го користат микрофонот. Кога е исклучено, сајтовите не може да го користат микрофонот.</translation>
 <translation id="8007176423574883786">Исклучена за овој уред</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Скриј ја картичката „Продолжете со картичкава“}one{Скриј ја картичката „Продолжете со картичкиве“}other{Скриј ја картичката „Продолжете со картичкиве“}}</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8042586301629853791">Подреди по:</translation>
 <translation id="8067883171444229417">Пушти го видеото</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Блокирај ги сајтовите од поврзување со уреди</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="8541410041357371550">Сајтов ги добива вашите теми за реклами од Chrome за да ви прикажува порелевантни реклами</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}one{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајт на <ph name="FPS_OWNER" />}other{Колачињата се дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Дозволено (препорачано)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8617611086246832542">Кога е вклучено, се прикажува приказот на компјутер на веб-сајтовите. Кога е исклучено, се прикажува приказот на мобилен на веб-сајтовите.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
 <translation id="9039697262778250930">Можно е да се одјавите од сајтовиве</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Сајтов е во група што може да ја гледа вашата активност. Групата ја дефинираше <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Да се избришат колачињата?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и уште <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>

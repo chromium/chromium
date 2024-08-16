@@ -127,7 +127,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
       promo_info.weight = PromoWeight::kHeavy;
       break;
     case FeaturePromoSpecification::PromoType::kUnspecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return promo_info;
 }

@@ -10,6 +10,12 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 
+declare_args() {
+  # Generating the credits page requires a filesystem traversal for licenses
+  # that is slow in some environments.
+  generate_about_credits = is_official_build
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -109,29 +115,36 @@ grit("components_scaled_resources") {
   output_dir = "$root_gen_dir/components"
 }
 
-action("about_credits") {
-  script = "//tools/licenses/licenses.py"
-  depfile = "$target_gen_dir/$target_name.d"
+if (generate_about_credits) {
+  action("about_credits") {
+    script = "//tools/licenses/licenses.py"
+    depfile = "$target_gen_dir/$target_name.d"
 
-  inputs = [
-    "../about_ui/resources/about_credits.tmpl",
-    "../about_ui/resources/about_credits_entry.tmpl",
-    "../about_ui/resources/about_credits_reciprocal.tmpl",
-  ]
+    inputs = [
+      "../about_ui/resources/about_credits.tmpl",
+      "../about_ui/resources/about_credits_entry.tmpl",
+      "../about_ui/resources/about_credits_reciprocal.tmpl",
+    ]
 
-  outputs = [ about_credits_file ]
+    outputs = [ about_credits_file ]
 
-  args = [
-    "--target-os=$target_os",
-    "--depfile",
-    rebase_path(depfile, root_build_dir),
-    "credits",
-    rebase_path(about_credits_file, root_build_dir),
-  ]
+    args = [
+      "--target-os=$target_os",
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "credits",
+      rebase_path(about_credits_file, root_build_dir),
+    ]
 
-  # Defined by downstream projects.
-  if (defined(extra_third_party_notice_dirs)) {
-    args += [ "--extra-third-party-dirs=$extra_third_party_notice_dirs" ]
+    # Defined by downstream projects.
+    if (defined(extra_third_party_notice_dirs)) {
+      args += [ "--extra-third-party-dirs=$extra_third_party_notice_dirs" ]
+    }
+  }
+} else {
+  copy("about_credits") {
+    sources = [ "sample_credits.html" ]
+    outputs = [ about_credits_file ]
   }
 }
 

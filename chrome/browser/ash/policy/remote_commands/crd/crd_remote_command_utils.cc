@@ -163,7 +163,7 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     case ErrorCode::NO_COMMON_AUTH_METHOD:
       return ExtendedStartCrdSessionResultCode::kFailureNoCommonAuthMethod;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 StartCrdSessionResultCode ToStartCrdSessionResultCode(
@@ -214,7 +214,7 @@ StartCrdSessionResultCode ToStartCrdSessionResultCode(
       // 'FAILURE_CRD_HOST_ERROR`.
       return StartCrdSessionResultCode::FAILURE_CRD_HOST_ERROR;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 base::TimeDelta GetDeviceIdleTime() {

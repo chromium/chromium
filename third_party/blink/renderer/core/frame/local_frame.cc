@@ -554,20 +554,26 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
                request.GetResourceRequest().Url().GetString().Utf8(),
                "load_type", static_cast<int>(frame_load_type));
 
-  if (request.ClientRedirectReason() != ClientNavigationReason::kNone)
+  if (request.GetClientNavigationReason() != ClientNavigationReason::kNone &&
+      request.GetClientNavigationReason() !=
+          ClientNavigationReason::kInitialFrameNavigation) {
     probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                     base::TimeDelta(),
-                                    request.ClientRedirectReason());
+                                    request.GetClientNavigationReason());
+  }
 
   if (NavigationShouldReplaceCurrentHistoryEntry(request, frame_load_type))
     frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
 
   const ClientNavigationReason client_redirect_reason =
-      request.ClientRedirectReason();
+      request.GetClientNavigationReason();
   loader_.StartNavigation(request, frame_load_type);
 
-  if (client_redirect_reason != ClientNavigationReason::kNone)
+  if (client_redirect_reason != ClientNavigationReason::kNone &&
+      client_redirect_reason !=
+          ClientNavigationReason::kInitialFrameNavigation) {
     probe::FrameClearedScheduledNavigation(this);
+  }
 }
 
 // Much of this function is redundant with the browser process
@@ -651,8 +657,9 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
   // Most non-user-initiated navigations before the load event replace. The
   // exceptions are "internal" navigations (e.g., drag-and-drop triggered
   // navigations), and anchor clicks.
-  if (request.ClientRedirectReason() == ClientNavigationReason::kNone ||
-      request.ClientRedirectReason() == ClientNavigationReason::kAnchorClick) {
+  if (request.GetClientNavigationReason() == ClientNavigationReason::kNone ||
+      request.GetClientNavigationReason() ==
+          ClientNavigationReason::kAnchorClick) {
     return false;
   }
   return true;
@@ -1012,10 +1019,6 @@ bool LocalFrame::CanAccessEvent(
   }
 }
 
-bool LocalFrame::IsTransientAllowFullscreenActive() const {
-  return transient_allow_fullscreen_.IsActive();
-}
-
 void LocalFrame::Reload(WebFrameLoadType load_type) {
   DCHECK(IsReloadLoadType(load_type));
   if (!loader_.GetDocumentLoader()->GetHistoryItem())
@@ -1026,7 +1029,7 @@ void LocalFrame::Reload(WebFrameLoadType load_type) {
   FrameLoadRequest request(
       DomWindow(), loader_.ResourceRequestForReload(
                        load_type, ClientRedirectPolicy::kClientRedirect));
-  request.SetClientRedirectReason(ClientNavigationReason::kReload);
+  request.SetClientNavigationReason(ClientNavigationReason::kReload);
   probe::FrameScheduledNavigation(this, request.GetResourceRequest().Url(),
                                   base::TimeDelta(),
                                   ClientNavigationReason::kReload);
@@ -2527,18 +2530,17 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
     // around this problem.
     Vector<char> current_chunk;
     for (const auto& segment : data) {
-      current_chunk.Append(segment.data(),
-                           static_cast<wtf_size_t>(segment.size()));
+      current_chunk.AppendSpan(base::span(segment));
       if (current_chunk.size() > kMaxDocumentChunkSize) {
-        parser->AppendBytes(current_chunk.data(), current_chunk.size());
+        parser->AppendBytes(base::as_byte_span(current_chunk));
         current_chunk.clear();
       }
     }
-    parser->AppendBytes(current_chunk.data(), current_chunk.size());
+    parser->AppendBytes(base::as_byte_span(current_chunk));
     current_chunk.clear();
   } else {
     for (const auto& segment : data) {
-      parser->AppendBytes(segment.data(), segment.size());
+      parser->AppendBytes(base::as_bytes(segment));
     }
   }
 
@@ -3081,6 +3083,10 @@ bool LocalFrame::SwapIn() {
   return client->SwapIn(WebFrame::FromCoreFrame(provisional_owner_frame));
 }
 
+void LocalFrame::Discard() {
+  DomWindow()->GetScriptController().DiscardFrame();
+}
+
 void LocalFrame::LoadJavaScriptURL(const KURL& url) {
   // Protect privileged pages against bookmarklets and other JavaScript
   // manipulations.
@@ -3134,8 +3140,7 @@ void LocalFrame::RequestExecuteScript(
   }
 
   Vector<WebScriptSource> script_sources;
-  script_sources.Append(sources.data(),
-                        base::checked_cast<wtf_size_t>(sources.size()));
+  script_sources.AppendSpan(sources);
 
   ScriptState* script_state = ToScriptState(this, *world);
   CHECK(script_state);
@@ -3995,9 +4000,6 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
 }
 
 void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   for (auto& client : scroll_snapshot_clients_) {
     if (AnchorPositionScrollData* scroll_data =
             DynamicTo<AnchorPositionScrollData>(client.Get())) {
@@ -4009,9 +4011,6 @@ void LocalFrame::CheckPositionAnchorsForCssVisibilityChanges() {
 }
 
 void LocalFrame::CheckPositionAnchorsForChainedVisibilityChanges() {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
       scroll_snapshot_clients_);
 }

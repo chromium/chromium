@@ -78,7 +78,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service/app_install",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/web_applications:web_applications_test_support",

@@ -19,8 +19,7 @@ ScopedFakePowerStatus* ScopedFakePowerStatus::instance_ = nullptr;
 ScopedFakePowerStatus::ScopedFakePowerStatus() {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   instance_ = this;
 
@@ -34,8 +33,7 @@ ScopedFakePowerStatus::ScopedFakePowerStatus() {
 
 ScopedFakePowerStatus::~ScopedFakePowerStatus() {
   if (instance_ != this) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   instance_ = nullptr;

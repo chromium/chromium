@@ -48,6 +48,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     }
 
     @Override
+    @SuppressWarnings("TraditionalSwitchExpression")
     public void onPageLoadFailed(Tab tab, int errorCode) {
         int navigationEvent =
                 errorCode == NET_ERROR_ABORTED

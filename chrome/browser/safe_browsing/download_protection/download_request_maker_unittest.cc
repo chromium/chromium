@@ -669,7 +669,8 @@ TEST_F(DownloadRequestMakerTest, SetsIsEncrypted) {
       run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_TRUE(DownloadItemWarningData::IsEncryptedArchive(&mock_download_item));
+  EXPECT_TRUE(
+      DownloadItemWarningData::IsTopLevelEncryptedArchive(&mock_download_item));
 }
 
 TEST_F(DownloadRequestMakerTest, UsesPassword) {

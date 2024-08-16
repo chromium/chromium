@@ -238,20 +238,71 @@ class VisitedLinkPlatform : public TestingPlatformSupport {
   std::map<url::Origin, uint64_t> unpartitioned_hashtable_;
 };
 
-class DocumentLoaderTest : public testing::TestWithParam<bool> {
+enum TestMode {
+  kUnpartitionedStorageAndLinks,
+  kUnpartitionedStoragePartitionedNoSelfLinks,
+  kUnpartitionedStorageParttionedWithSelfLinks,
+  kUnpartitionedStoragePartitionedLinksBothEnabled,
+  kPartitionedStorageUnpartitionedLinks,
+  kPartitionedStorageAndLinksNoSelfLinks,
+  kPartitionedStorageAndLinksWithSelfLinks,
+  kPartitionedAllEnabled
+};
+
+class DocumentLoaderTest : public testing::Test,
+                           public ::testing::WithParamInterface<TestMode> {
  protected:
   void SetUp() override {
-    if (GetParam()) {
-      // Enabled the features.
-      scoped_feature_list_.InitWithFeatures(
-          {net::features::kThirdPartyStoragePartitioning,
-           blink::features::kPartitionVisitedLinkDatabase},
-          {});
-    } else {
-      // Disables the features.
-      scoped_feature_list_.InitWithFeatures(
-          {}, {net::features::kThirdPartyStoragePartitioning,
-               blink::features::kPartitionVisitedLinkDatabase});
+    switch (GetParam()) {
+      case TestMode::kUnpartitionedStorageAndLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {}, {net::features::kThirdPartyStoragePartitioning,
+                 blink::features::kPartitionVisitedLinkDatabase,
+                 blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+        break;
+      case TestMode::kUnpartitionedStoragePartitionedNoSelfLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kPartitionVisitedLinkDatabase},
+            {net::features::kThirdPartyStoragePartitioning,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+        break;
+      case TestMode::kUnpartitionedStorageParttionedWithSelfLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
+            {net::features::kThirdPartyStoragePartitioning,
+             blink::features::kPartitionVisitedLinkDatabase});
+        break;
+      case TestMode::kUnpartitionedStoragePartitionedLinksBothEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kPartitionVisitedLinkDatabase,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
+            {net::features::kThirdPartyStoragePartitioning});
+        break;
+      case TestMode::kPartitionedStorageUnpartitionedLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kThirdPartyStoragePartitioning},
+            {blink::features::kPartitionVisitedLinkDatabase,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+        break;
+      case TestMode::kPartitionedStorageAndLinksNoSelfLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kThirdPartyStoragePartitioning,
+             blink::features::kPartitionVisitedLinkDatabase},
+            {blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks});
+        break;
+      case TestMode::kPartitionedStorageAndLinksWithSelfLinks:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kThirdPartyStoragePartitioning,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
+            {blink::features::kPartitionVisitedLinkDatabase});
+        break;
+      case TestMode::kPartitionedAllEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            {net::features::kThirdPartyStoragePartitioning,
+             blink::features::kPartitionVisitedLinkDatabase,
+             blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks},
+            {});
+        break;
     }
 
     web_view_helper_.Initialize();
@@ -294,6 +345,15 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
+  bool are_visited_links_partitioned() {
+    return GetParam() == kUnpartitionedStoragePartitionedNoSelfLinks ||
+           (GetParam() == kUnpartitionedStorageParttionedWithSelfLinks) ||
+           (GetParam() == kUnpartitionedStoragePartitionedLinksBothEnabled) ||
+           (GetParam() == kPartitionedStorageAndLinksNoSelfLinks) ||
+           (GetParam() == kPartitionedStorageAndLinksWithSelfLinks) ||
+           (GetParam() == kPartitionedAllEnabled);
+  }
+
   class ScopedLoaderDelegate {
    public:
     explicit ScopedLoaderDelegate(URLLoaderTestDelegate* delegate) {
@@ -310,9 +370,17 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(DocumentLoaderTest,
-                         DocumentLoaderTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    DocumentLoaderTest,
+    DocumentLoaderTest,
+    testing::Values(TestMode::kUnpartitionedStorageAndLinks,
+                    TestMode::kUnpartitionedStoragePartitionedNoSelfLinks,
+                    TestMode::kUnpartitionedStorageParttionedWithSelfLinks,
+                    TestMode::kUnpartitionedStoragePartitionedLinksBothEnabled,
+                    TestMode::kPartitionedStorageUnpartitionedLinks,
+                    TestMode::kPartitionedStorageAndLinksNoSelfLinks,
+                    TestMode::kPartitionedStorageAndLinksWithSelfLinks,
+                    TestMode::kPartitionedAllEnabled));
 
 TEST_P(DocumentLoaderTest, SingleChunk) {
   class TestDelegate : public URLLoaderTestDelegate {
@@ -852,6 +920,25 @@ TEST_P(DocumentLoaderTest, JavascriptURLKeepsStorageKeyNonce) {
             frame->DomWindow()->GetStorageKey().GetNonce());
 }
 
+// Tests that discarding the frame keeps the storage key's nonce of the previous
+// document, ensuring that
+// `DocumentLoader::CreateWebNavigationParamsToCloneDocument` works correctly
+// w.r.t. storage key.
+TEST_P(DocumentLoaderTest, DiscardingFrameKeepsStorageKeyNonce) {
+  WebViewImpl* web_view_impl = web_view_helper_.Initialize();
+
+  BlinkStorageKey storage_key = BlinkStorageKey::CreateWithNonce(
+      SecurityOrigin::CreateUniqueOpaque(), base::UnguessableToken::Create());
+
+  LocalFrame* frame = To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  frame->DomWindow()->SetStorageKey(storage_key);
+
+  frame->Discard();
+
+  EXPECT_EQ(storage_key.GetNonce(),
+            frame->DomWindow()->GetStorageKey().GetNonce());
+}
+
 TEST_P(DocumentLoaderTest, PublicSecureNotCounted) {
   // Checking to make sure secure pages served in the public address space
   // aren't counted for WebFeature::kMainFrameNonSecurePrivateAddressSpace
@@ -1015,9 +1102,7 @@ TEST_P(DocumentLoaderTest, VisitedLinkSalt) {
   // Check if the platform was notified of our salt.
   std::optional<uint64_t> result_salt =
       platform_->GetVisitedLinkSaltForOrigin(url::Origin::Create(GURL(kUrl)));
-  ASSERT_EQ(result_salt.has_value(),
-            base::FeatureList::IsEnabled(
-                blink::features::kPartitionVisitedLinkDatabase));
+  ASSERT_EQ(result_salt.has_value(), are_visited_links_partitioned());
   if (result_salt.has_value()) {
     EXPECT_EQ(result_salt.value(), kSalt);
   }

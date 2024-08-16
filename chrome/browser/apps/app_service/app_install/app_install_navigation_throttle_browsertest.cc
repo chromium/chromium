@@ -100,8 +100,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        JavaScriptTriggeredInstallation) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] =
-      app_install_server()->SetupDefaultServerResponse();
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -140,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        OmniboxTriggeredInstallation) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] =
-      app_install_server()->SetupDefaultServerResponse();
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -252,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] =
-      app_install_server()->SetupDefaultServerResponse();
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -281,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, NonSpecialUrl) {
 IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] =
-      app_install_server()->SetupDefaultServerResponse();
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
 
   auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
@@ -315,8 +311,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        InstallationWithoutParentWindow) {
   base::HistogramTester histograms;
 
-  auto [app_id, package_id] =
-      app_install_server()->SetupDefaultServerResponse();
+  auto [app_id, package_id] = app_install_server()->SetUpWebAppResponse();
 
   // Force BrowserAppInstanceTracker to forget about the current window. This
   // will cause the dialog to have no parent, and is more reliable than trying

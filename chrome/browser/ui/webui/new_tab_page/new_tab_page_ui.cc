@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 
 #include <memory>
@@ -12,13 +17,13 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion_handler.h"
@@ -159,9 +164,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
-  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
-      g_browser_process->GetApplicationLocale(),
-      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  bool redesigned_modules_enabled =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
   source->AddBoolean("singleRowShortcutsEnabled", redesigned_modules_enabled);
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
@@ -330,8 +334,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_TITLE_V2},
       {"modulesDriveInfo", IDS_NTP_MODULES_DRIVE_INFO},
       {"modulesDummyTitle", IDS_NTP_MODULES_DUMMY_TITLE},
-      {"modulesGoogleCalendarDismissButtonText",
-       IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_BUTTON_TEXT},
+      {"modulesDismissForHoursButtonText",
+       IDS_NTP_MODULES_DISMISS_FOR_HOURS_BUTTON_TEXT},
       {"modulesGoogleCalendarDismissToastMessage",
        IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_TOAST_MESSAGE},
       {"modulesGoogleCalendarDisableToastMessage",
@@ -345,7 +349,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesOutlookCalendarTitle", IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE},
       {"modulesOutlookCalendarDisableButtonText",
        IDS_NTP_MODULES_OUTLOOK_CALENDAR_DISABLE_BUTTON_TEXT},
-      {"modulesCalendarDoubleBooked", IDS_NTP_MODULES_CALENDAR_DOUBLE_BOOKED},
       {"modulesCalendarJoinMeetingButtonText",
        IDS_NTP_MODULES_CALENDAR_JOIN_MEETING_BUTTON_TEXT},
       {"modulesCalendarInProgress", IDS_NTP_MODULES_CALENDAR_IN_PROGRESS},
@@ -403,6 +406,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kStrings);
 
+  source->AddBoolean("wideModulesEnabled", base::FeatureList::IsEnabled(
+                                               ntp_features::kNtpWideModules));
+
   source->AddBoolean(
       "modulesHeaderIconEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesHeaderIcon));
@@ -412,6 +418,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
 
   source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
+
+  source->AddString(
+      "calendarModuleDismissHours",
+      base::NumberToString(
+          ntp_features::kNtpCalendarModuleWindowEndDeltaParam.Get().InHours()));
 
   SearchboxHandler::SetupWebUIDataSource(
       source, profile,
@@ -453,9 +464,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
-      module_id_names_(ntp::MakeModuleIdNames(
-          NewTabPageUI::IsDriveModuleEnabledForProfile(profile_),
-          NewTabPageUI::IsManagedProfile(profile_))) {
+      module_id_names_(
+          ntp::MakeModuleIdNames(IsDriveModuleEnabledForProfile(profile_),
+                                 NewTabPageUI::IsManagedProfile(profile_))) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
@@ -560,24 +571,6 @@ void NewTabPageUI::ResetProfilePrefs(PrefService* prefs) {
   ntp_tiles::MostVisitedSites::ResetProfilePrefs(prefs);
   prefs->SetBoolean(ntp_prefs::kNtpUseMostVisitedTiles, false);
   prefs->SetBoolean(ntp_prefs::kNtpShortcutsVisible, true);
-}
-
-// static
-bool NewTabPageUI::IsDriveModuleEnabledForProfile(Profile* profile) {
-  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
-  // module to be enabled.
-  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
-  if (!IsDriveModuleEnabled() || !sync_service ||
-      !sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-  if (!base::GetFieldTrialParamByFeatureAsBool(
-          ntp_features::kNtpDriveModule,
-          ntp_features::kNtpDriveModuleManagedUsersOnlyParam, true)) {
-    return true;
-  }
-
-  return NewTabPageUI::IsManagedProfile(profile);
 }
 
 // static

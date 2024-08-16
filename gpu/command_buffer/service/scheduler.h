@@ -33,7 +33,6 @@ class SingleThreadTaskRunner;
 
 namespace gpu {
 class SyncPointManager;
-struct GpuPreferences;
 
 // Forward-decl of the new DFS-based Scheduler.
 class SchedulerDfs;
@@ -74,7 +73,7 @@ class GPU_EXPORT Scheduler {
     ReportingCallback report_callback;
   };
 
-  struct ScopedAddWaitingPriority {
+  struct GPU_EXPORT ScopedAddWaitingPriority {
    public:
     ScopedAddWaitingPriority(Scheduler* scheduler,
                              SequenceId sequence_id,
@@ -87,8 +86,7 @@ class GPU_EXPORT Scheduler {
     const SchedulingPriority priority_;
   };
 
-  Scheduler(SyncPointManager* sync_point_manager,
-            const GpuPreferences& gpu_preferences);
+  explicit Scheduler(SyncPointManager* sync_point_manager);
 
   Scheduler(const Scheduler&) = delete;
   Scheduler& operator=(const Scheduler&) = delete;

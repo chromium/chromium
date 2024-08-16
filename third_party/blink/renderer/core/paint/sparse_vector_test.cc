@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/sparse_vector.h"
 
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
@@ -35,15 +36,14 @@ enum class TestFieldId : unsigned {
   kNumFields = kBoom + 1
 };
 
-using TestSparseVector =
-    SparseVector<TestFieldId, std::unique_ptr<TestDataField>>;
+// It's Garbage collected to allow Persistent<TestSparseVector> in the
+// non-GC-managed SparseVectorTest.
+class TestSparseVector
+    : public GarbageCollected<TestSparseVector>,
+      public SparseVector<TestFieldId, std::unique_ptr<TestDataField>> {};
 
 class SparseVectorTest : public testing::Test {
-  USING_FAST_MALLOC(SparseVectorTest);
-
  public:
-  SparseVectorTest() : sparse_vector_(std::make_unique<TestSparseVector>()) {}
-
   void SetField(unsigned field_id, std::unique_ptr<TestDataField> field) {
     sparse_vector_->SetField(static_cast<TestFieldId>(field_id),
                              std::move(field));
@@ -58,7 +58,7 @@ class SparseVectorTest : public testing::Test {
     const auto fid = static_cast<TestFieldId>(field_id);
     EXPECT_EQ(
         (*sparse_vector_->GetField(fid)),
-        *(const_cast<TestSparseVector*>(sparse_vector_.get())->GetField(fid)));
+        *(const_cast<TestSparseVector*>(sparse_vector_.Get())->GetField(fid)));
 
     return *(sparse_vector_->GetField(fid));
   }
@@ -70,7 +70,8 @@ class SparseVectorTest : public testing::Test {
   const TestSparseVector& sparse_vector() { return *sparse_vector_; }
 
   test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestSparseVector> sparse_vector_;
+  Persistent<TestSparseVector> sparse_vector_{
+      MakeGarbageCollected<TestSparseVector>()};
 };
 
 TEST_F(SparseVectorTest, Basic) {

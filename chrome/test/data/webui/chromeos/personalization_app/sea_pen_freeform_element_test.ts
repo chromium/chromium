@@ -25,7 +25,7 @@ suite('SeaPenFreeformElementTest', function() {
         freeformElement!.shadowRoot!.querySelector(SeaPenSamplesElement.is);
     const samples = seaPenSamplesElement!.shadowRoot!
                         .querySelectorAll<WallpaperGridItemElement>(
-                            `${WallpaperGridItemElement.is}:not([hidden])`);
+                            `${WallpaperGridItemElement.is}`);
     assertTrue(!!samples, 'samples should exist');
 
     return Array.from(samples).map(sample => {
@@ -65,8 +65,8 @@ suite('SeaPenFreeformElementTest', function() {
         !!freeformElement.shadowRoot!.querySelector('#tabContainer'),
         'tab container is not shown');
     assertTrue(
-        !!freeformElement.shadowRoot!.querySelector('#samplesTitle'),
-        'Sample Prompts title is shown');
+        !!freeformElement.shadowRoot!.querySelector('#promptingGuide'),
+        'Prompting guide is shown');
     assertTrue(
         !!freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is),
         'sea-pen-samples shown on freeform page');
@@ -181,24 +181,30 @@ suite('SeaPenFreeformElementTest', function() {
         'sea-pen-images is not shown');
   });
 
-  test('shuffles suggestions', async () => {
+  test('shuffles samples', async () => {
     freeformElement = initElement(SeaPenFreeformElement);
     await waitAfterNextRender(freeformElement);
-    const shuffleButton =
-        freeformElement!.shadowRoot!.getElementById('shuffle');
-    assertTrue(!!shuffleButton, 'shuffle button should exist');
+
+    let seaPenSamplesElement =
+        freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+    await waitAfterNextRender(seaPenSamplesElement as HTMLElement);
+    assertTrue(!!seaPenSamplesElement, 'sea-pen-samples is visible');
     const originalSamples = getSamples();
 
-    shuffleButton.click();
+    // Click shuffle button
+    const shuffleButton =
+        freeformElement!.shadowRoot!.getElementById('shuffle');
+    shuffleButton!.click();
     await waitAfterNextRender(freeformElement);
+    seaPenSamplesElement =
+        freeformElement.shadowRoot!.querySelector(SeaPenSamplesElement.is);
+    await waitAfterNextRender(seaPenSamplesElement as HTMLElement);
 
     chai.assert.notSameOrderedMembers(
         originalSamples, getSamples(), 'the order should be different');
-    chai.assert.sameMembers(
-        originalSamples, getSamples(), 'the samples should be the same');
   });
 
-  test('shuffles suggestions with tab', async () => {
+  test('shuffles samples with tab', async () => {
     personalizationStore.data.wallpaper.seaPen.currentSeaPenQuery =
         seaPenProvider.seaPenFreeformQuery;
     freeformElement = initElement(SeaPenFreeformElement);
@@ -230,8 +236,6 @@ suite('SeaPenFreeformElementTest', function() {
 
     chai.assert.notSameOrderedMembers(
         originalSamples, getSamples(), 'the order should be different');
-    chai.assert.sameMembers(
-        originalSamples, getSamples(), 'the samples should be the same');
   });
 
   test('shows results page for errors', async () => {

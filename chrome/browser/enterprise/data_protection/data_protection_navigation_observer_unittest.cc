@@ -21,8 +21,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -54,28 +54,44 @@ content::Page& GetPageFromWebContents(content::WebContents* web_contents) {
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
     std::optional<std::string> watermark_text,
-    int64_t timestamp_seconds) {
+    int64_t timestamp_seconds,
+    bool has_matched_rule = false) {
   safe_browsing::RTLookupResponse::ThreatInfo threat_info;
   threat_info.set_verdict_type(
       safe_browsing::RTLookupResponse::ThreatInfo::SAFE);
-  safe_browsing::MatchedUrlNavigationRule* matched_url_navigation_rule =
-      threat_info.mutable_matched_url_navigation_rule();
+  if (has_matched_rule || watermark_text.has_value()) {
+    *threat_info.mutable_matched_url_navigation_rule()->mutable_rule_id() =
+        "123";
+    *threat_info.mutable_matched_url_navigation_rule()->mutable_rule_name() =
+        "watermark rule";
+  }
   if (watermark_text.has_value()) {
     safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
     wm.set_watermark_message(*watermark_text);
     wm.mutable_timestamp()->set_seconds(timestamp_seconds);
-    *matched_url_navigation_rule->mutable_watermark_message() = wm;
+    *threat_info.mutable_matched_url_navigation_rule()
+         ->mutable_watermark_message() = wm;
   }
 
   return threat_info;
 }
 
-safe_browsing::RTLookupResponse CreateWatermarkResponse(
-    std::optional<std::string> watermark_text) {
+safe_browsing::RTLookupResponse CreateRTLookupResponse(
+    std::optional<std::string> watermark_text,
+    bool has_matched_rule) {
   safe_browsing::RTLookupResponse response;
   safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
       response.add_threat_info();
-  *new_threat_info = GetTestThreatInfo(std::move(watermark_text), 1709181364);
+  *new_threat_info = GetTestThreatInfo(std::move(watermark_text), 1709181364,
+                                       has_matched_rule);
+  return response;
+}
+
+safe_browsing::RTLookupResponse CreateAuditRuleResponse() {
+  safe_browsing::RTLookupResponse response;
+  safe_browsing::RTLookupResponse::ThreatInfo* new_threat_info =
+      response.add_threat_info();
+  *new_threat_info = GetTestThreatInfo(std::nullopt, 1709181364, true);
   return response;
 }
 
@@ -101,7 +117,8 @@ class FakeRealTimeUrlLookupService
     }
 
     auto response = std::make_unique<safe_browsing::RTLookupResponse>(
-        CreateWatermarkResponse(std::move(watermark_text)));
+        CreateRTLookupResponse(std::move(watermark_text),
+                               should_have_matched_rule_));
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -129,15 +146,20 @@ class FakeRealTimeUrlLookupService
     is_rt_lookup_successful_ = successful;
   }
 
-  void SetWatermaktTextForURL(const GURL& url,
+  void SetWatermarkTextForURL(const GURL& url,
                               std::optional<std::string> watermark_text) {
     url_to_watermark_[url] = std::move(watermark_text);
+  }
+
+  void SetShouldHaveMatchedRule(bool should_have_matched_rule) {
+    should_have_matched_rule_ = should_have_matched_rule;
   }
 
  private:
   base::OnceClosure on_start_lookup_complete_;
   bool is_rt_lookup_successful_ = true;
   std::map<GURL, std::optional<std::string>> url_to_watermark_;
+  bool should_have_matched_rule_ = false;
 };
 
 class DataProtectionNavigationObserverTest
@@ -225,7 +247,7 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
       /*event_result*/ "EVENT_RESULT_ALLOWED",
       /*profile_user_name*/ "test-user@chromium.org",
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
-      /*rt_lookup_response*/ CreateWatermarkResponse("custom_message"));
+      /*rt_lookup_response*/ CreateRTLookupResponse("custom_message", true));
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://test"), web_contents()->GetPrimaryMainFrame());
@@ -272,6 +294,56 @@ TEST_F(DataProtectionNavigationObserverTest, TestWatermarkTextUpdated) {
   ASSERT_TRUE(user_data);
   EXPECT_NE(user_data->settings().watermark_text.find("custom_message"),
             std::string::npos);
+}
+
+TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
+  enterprise_connectors::test::EventReportValidator validator(client_.get());
+  validator.ExpectURLFilteringInterstitialEvent(
+      /*url*/ "https://example.com/",
+      /*event_result*/ "EVENT_RESULT_ALLOWED",
+      /*profile_user_name*/ "test-user@chromium.org",
+      /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
+      /*rt_lookup_response*/ CreateAuditRuleResponse());
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com/"),
+                                         std::nullopt);
+  lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com/"),
+                                         std::nullopt);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+
+  // DataProtectionNavigationObserver does not implement DidStartNavigation(),
+  // this is called by BrowserView. So we simply call Start() and manually
+  // construct the class using the navigation handle that is provided once
+  // Start() is called.
+  simulator->Start();
+  content::NavigationHandle* navigation_handle =
+      simulator->GetNavigationHandle();
+  base::test::TestFuture<const UrlSettings&> future;
+
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  // The DataProtectionNavigationObserver needs to be constructed using
+  // CreateForNavigationHandle to allow for proper lifetime management of the
+  // object, since we call DeleteForNavigationHandle() in our
+  // DidFinishNavigation() override.
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(*navigation_handle, &lookup_service_,
+                                navigation_handle->GetWebContents(),
+                                future.GetCallback());
+  EXPECT_TRUE(future_lookup_complete.Wait());
+
+  // Call DidFinishNavigation() navigation, which should invoke our callback.
+  simulator->Commit();
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
 }
 
 TEST_F(DataProtectionNavigationObserverTest,
@@ -627,9 +699,9 @@ TEST_F(DataProtectionNavigationObserverTest,
         }
       )"});
 
-  lookup_service_.SetWatermaktTextForURL(GURL("https://example.com"),
+  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com"),
                                          std::nullopt);
-  lookup_service_.SetWatermaktTextForURL(GURL("https://redirect.com"),
+  lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com"),
                                          std::nullopt);
 
   SetContents(CreateTestWebContents());
@@ -782,8 +854,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DataProtectionWatermarkStringTest,
        TestGetWatermarkStringFromThreatInfo) {
-  safe_browsing::RTLookupResponse::ThreatInfo threat_info = GetTestThreatInfo(
-      GetParam().custom_message, GetParam().timestamp_seconds);
+  safe_browsing::RTLookupResponse::ThreatInfo threat_info =
+      GetTestThreatInfo(GetParam().custom_message, GetParam().timestamp_seconds,
+                        GetParam().custom_message.has_value());
   EXPECT_EQ(
       enterprise_data_protection::GetWatermarkString(
           GetParam().identifier, threat_info.matched_url_navigation_rule()),

@@ -63,16 +63,37 @@ std::aligned_storage_t<sizeof(String) *
     g_canonical_whitespace_table_storage;
 }
 
+WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str,
+                                             unsigned length) {
+  bool is_all_latin1 = true;
+  for (unsigned i = 0; i < length; ++i) {
+    if (str[i] & 0xff00) {
+      is_all_latin1 = false;
+      break;
+    }
+  }
+  if (is_all_latin1) {
+    return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+        (char*)str, length);
+  } else {
+    return StringHasher::ComputeHashAndMaskTop8Bits((char*)str, length * 2);
+  }
+}
+
 WTF_EXPORT const String (&NewlineThenWhitespaceStringsTable::g_table_)
     [NewlineThenWhitespaceStringsTable::kTableSize] = *reinterpret_cast<
         String (*)[NewlineThenWhitespaceStringsTable::kTableSize]>(
         &g_canonical_whitespace_table_storage);
 
 NOINLINE unsigned StringImpl::HashSlowCase() const {
-  if (Is8Bit())
-    SetHash(StringHasher::ComputeHashAndMaskTop8Bits(Characters8(), length_));
-  else
-    SetHash(StringHasher::ComputeHashAndMaskTop8Bits(Characters16(), length_));
+  if (Is8Bit()) {
+    // This is the common case, so we take the size penalty
+    // of the inlining here.
+    SetHash(StringHasher::ComputeHashAndMaskTop8BitsInline((char*)Characters8(),
+                                                           length_));
+  } else {
+    SetHash(ComputeHashForWideString(Characters16(), length_));
+  }
   return ExistingHash();
 }
 

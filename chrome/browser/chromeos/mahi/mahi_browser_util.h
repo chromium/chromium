@@ -24,6 +24,7 @@ struct WebContentState {
   std::u16string title;
   gfx::ImageSkia favicon = gfx::ImageSkia();
   std::optional<bool> is_distillable = std::nullopt;
+  bool is_incognito = true;
 
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   ui::AXTreeUpdate snapshot;

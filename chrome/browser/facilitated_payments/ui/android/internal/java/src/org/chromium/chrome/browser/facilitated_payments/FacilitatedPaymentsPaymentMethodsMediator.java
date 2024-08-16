@@ -151,7 +151,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
                         .with(
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
-                                () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
+                                () -> mDelegate.showManagePaymentMethodsSettings(mContext))
                         .build());
     }
 
@@ -187,7 +187,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                             .getCustomImageForAutofillSuggestionIfAvailable(
                                     bankAccount.getDisplayIconUrl(),
                                     AutofillUiUtils.CardIconSpecs.create(
-                                            context, AutofillUiUtils.CardIconSize.LARGE));
+                                            context, AutofillUiUtils.CardIconSize.SQUARE));
         }
         if (bankIconOptional.isPresent()) {
             bankAccountModelBuilder.with(BANK_ACCOUNT_ICON_BITMAP, bankIconOptional.get());

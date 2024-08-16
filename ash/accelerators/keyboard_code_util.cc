@@ -11,8 +11,13 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -98,11 +103,23 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &kOverviewRefreshIcon
+                 : &ash::kKsvOverviewIcon;
+#else
       return &ash::kKsvOverviewIcon;
+#endif
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
-      return &ash::kKsvBrightnessUpIcon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &kBrightnessUpRefreshIcon
+                 : &ash::kKsvBrightnessUpIcon;
+#else
+      return &ash::kKsvOverviewIcon;
+#endif
     case ui::VKEY_VOLUME_MUTE:
       return &ash::kKsvMuteIcon;
     case ui::VKEY_VOLUME_DOWN:
@@ -121,19 +138,30 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:
       return &ash::kKsvSnapshotIcon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case ui::VKEY_RIGHT_ALT:
+      return &kRightAltInternalIcon;
+#endif
     default:
+
       return nullptr;
   }
 }
 
 const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
-  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
-    return IsAssistantAvailable()
-               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
-               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+    case ui::mojom::MetaKey::kSearch:
+      return &kCaptureModeDemoToolsSearchIcon;
+    case ui::mojom::MetaKey::kLauncher:
+      return IsAssistantAvailable()
+                 ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
+                 : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+    case ui::mojom::MetaKey::kLauncherRefresh:
+      return &kCampbellHeroIcon;
+    case ui::mojom::MetaKey::kExternalMeta:
+    case ui::mojom::MetaKey::kCommand:
+      NOTREACHED();
   }
-
-  return &kCaptureModeDemoToolsSearchIcon;
 }
 
 }  // namespace ash

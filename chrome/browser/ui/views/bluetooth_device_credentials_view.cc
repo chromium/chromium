@@ -16,6 +16,7 @@
 #include "device/bluetooth/strings/grit/bluetooth_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -55,7 +56,7 @@ BluetoothDeviceCredentialsView::BluetoothDeviceCredentialsView(
     const std::u16string& device_identifier,
     BluetoothDelegate::PairPromptCallback close_callback)
     : close_callback_(std::move(close_callback)) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
   SetAcceptCallback(

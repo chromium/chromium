@@ -1362,8 +1362,9 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
-      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
   EXPECT_FALSE(decoder->IsSizeAvailable());
 
   Vector<char> data =
@@ -1387,8 +1388,9 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
-      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
 
   Vector<char> data = ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
   ASSERT_EQ(data.size(), 70944u);
@@ -1453,8 +1455,9 @@ TEST(StaticAVIFTests, IncrementalDecoding) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::CreateByMimeType(
       "image/avif", segment_reader, /*data_complete=*/false,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
-      SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes(), SkISize::MakeEmpty(),
+      ImageDecoder::AnimationOption::kUnspecified);
 
   Vector<char> data =
       ReadFile("/images/resources/avif/tiger_420_8b_grid1x13.avif");

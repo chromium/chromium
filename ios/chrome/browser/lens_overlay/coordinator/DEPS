@@ -1,5 +1,16 @@
 include_rules = [
+  "+ios/chrome/browser/autocomplete/model",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/https_upgrades/model",
+  "+ios/chrome/browser/ui/omnibox",
+  "+ios/chrome/browser/search_engines/model",
+  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
   "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",
+  "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+components/lens",
 ]

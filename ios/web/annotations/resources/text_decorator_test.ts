@@ -30,7 +30,8 @@ class TestTextDecorator extends TestSuite {
 
   // Test case 3 (see text_decorator.ts), the normal flow without collision with
   // in-flight chunks or mutation by external 3p.
-  testTextDecoratorFlow() {
+  // All annotations are limited to one element
+  testTextDecoratorFlowInElement() {
     const html = '<div id="d1">abcde</div>' +
         '<div id="d2">fghij</div>' +
         '<div id="d3">klmno</div>' +
@@ -64,9 +65,78 @@ class TestTextDecorator extends TestSuite {
     const list = new TextAnnotationList(
         [
           this.annotation(1, 4, 'e f'),  // Should be ignored
-          this.annotation(4, 7, 'ghi'), this.annotation(11, 16, 'mno p'),
+          this.annotation(4, 7, 'ghi'),
+          this.annotation(11, 16, 'mno p'),  // Across elements, ignored
           this.annotation(17, 18, 'r'), this.annotation(19, 20, 't'),
           this.annotation(22, 24, 'vw'),  // Should be ignored
+        ],
+        chunk.visibleStart, chunk.visibleEnd);
+
+    const styler = new InertTextStyler();
+    const decorator = new TextDecorator(styler);
+
+    decorator.decorateChunk(chunk, list);
+
+    expectEq(3, list.successes);
+    expectEq(3, list.failures);
+    expectEq(3, list.cancelled.length);
+
+    const decoratedHTML = '<div id="d1">abcde</div>' +
+        '<div id="d2">f<chrome_annotation>ghi</chrome_annotation>j</div>' +
+        '<div id="d3">klmno</div>' +
+        '<div id="d4">pq' +
+        '<chrome_annotation>r</chrome_annotation>s' +
+        '<chrome_annotation>t</chrome_annotation></div>' +
+        '<div id="d5">uvwxy</div>';
+    expectEq(decoratedHTML, document.body.innerHTML);
+
+    decorator.removeAllDecorations();
+    expectEq(html, document.body.innerHTML);
+  }
+
+  // Test case 3 (see text_decorator.ts), the normal flow without collision with
+  // in-flight chunks or mutation by external 3p.
+  // All annotations are limited to one element
+  testTextDecoratorFlowAcrossElement() {
+    const html = '<div id="d1">abcde</div>' +
+        '<div id="d2">fghij</div>' +
+        '<div id="d3">klmno</div>' +
+        '<div id="d4">pqrst</div>' +
+        '<div id="d5">uvwxy</div>';
+    load(html);
+    const d1 = document.querySelector('#d1')!;
+    const d2 = document.querySelector('#d2')!;
+    const d3 = document.querySelector('#d3')!;
+    const d4 = document.querySelector('#d4')!;
+    const d5 = document.querySelector('#d5')!;
+
+    // Let's pretend the extracted text is:
+    //  'de fghij klmno pqrst uvw'
+    //             111111111122222
+    //   0123456789012345678901234
+    // with a prefix = 'de fg' and suffix is 't uvw'. Offset in first node is 3
+    // and the visible range of 'h...t' is [5, 20).
+    const sections = [
+      new TextSection(d1.childNodes[0] as Text, 0),  // first section
+      new TextSection(d2.childNodes[0] as Text, 3),
+      new TextSection(d3.childNodes[0] as Text, 9),
+      new TextSection(d4.childNodes[0] as Text, 15),
+      new TextSection(d5.childNodes[0] as Text, 21),
+    ];
+    const chunk = new TextChunk(3, 5, 20);
+    chunk.add(sections, 'de fghij klmno pqrst uvw');
+
+    // Let's pretend the annotation are 'e f', 'ghi', 'mno p', 'r', 't'  and
+    // 'vw', where 'e f' and 'vw'are outside the visible range.
+    const list = new TextAnnotationList(
+        [
+          this.annotation(1, 4, 'e f', 'address'),  // Should be ignored
+          this.annotation(4, 7, 'ghi', 'address'),
+          this.annotation(
+              11, 16, 'mno p', 'address'),  // Across elements, ignored
+          this.annotation(17, 18, 'r', 'address'),
+          this.annotation(19, 20, 't', 'address'),
+          this.annotation(22, 24, 'vw', 'address'),  // Should be ignored
         ],
         chunk.visibleStart, chunk.visibleEnd);
 
@@ -118,10 +188,11 @@ class TestTextDecorator extends TestSuite {
     chunk.add(sections, 'abcde fghij klmno pqrst uvwxy');
 
     const list = new TextAnnotationList([
-      this.annotation(3, 14, 'de fghij kl', 'A'),  // spans over a full node.
-      this.annotation(17, 20, 'zzz', 'B'),         // Text doesn't match.
-      this.annotation(27, 28, 'x', 'B'),           // Side by side with 'y'
-      this.annotation(28, 29, 'y', 'A'),           // End of text.
+      this.annotation(
+          3, 14, 'de fghij kl', 'address'),     // spans over a full node.
+      this.annotation(17, 20, 'zzz', 'other'),  // Text doesn't match.
+      this.annotation(27, 28, 'x', 'other'),    // Side by side with 'y'
+      this.annotation(28, 29, 'y', 'address'),  // End of text.
     ]);
 
     const styler = new InertTextStyler();
@@ -141,15 +212,15 @@ class TestTextDecorator extends TestSuite {
         '<chrome_annotation>y</chrome_annotation></div>';
     expectEq(decoratedHTML, document.body.innerHTML);
 
-    // Remove by type 'A', then 'B',
-    decorator.removeDecorationsOfType('A');
+    // Remove by type 'address', then 'other',
+    decorator.removeDecorationsOfType('address');
     const partialRemoveHTML = '<div id="d1">abcde</div>' +
         '<div id="d2">fghij</div>' +
         '<div id="d3">klmno</div>' +
         '<div id="d4">pqrst</div>' +
         '<div id="d5">uvw<chrome_annotation>x</chrome_annotation>y</div>';
     expectEq(partialRemoveHTML, document.body.innerHTML);
-    decorator.removeDecorationsOfType('B');
+    decorator.removeDecorationsOfType('other');
     expectEq(html, document.body.innerHTML);
     // Check that removing all, doesn't corrupt the DOM.
     decorator.removeAllDecorations();
@@ -252,7 +323,7 @@ class TestTextDecorator extends TestSuite {
     //                   012345678901234567890
     chunk.add(sections, 'ghijklmnopqrstuvwxyz');
     list = new TextAnnotationList([
-      this.annotation(5, 9, 'lmno', 'A'),  // second annotation.
+      this.annotation(5, 9, 'lmno', 'address'),  // second annotation.
     ]);
     decorator.decorateChunk(chunk, list);
     expectEq(1, list.successes, 'successes 2: ');
@@ -289,7 +360,7 @@ class TestTextDecorator extends TestSuite {
     chunk.add(sections, 'abcdefghijklmnopqrstuvwxyz');
 
     const list = new TextAnnotationList([
-      this.annotation(11, 15, 'lmno', 'A'),
+      this.annotation(11, 15, 'lmno', 'address'),
     ]);
 
     // Remove from DOM

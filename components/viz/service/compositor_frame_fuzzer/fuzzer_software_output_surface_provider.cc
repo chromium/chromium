@@ -116,4 +116,7 @@ FuzzerSoftwareOutputSurfaceProvider::GetSyncPointManager() {
   return nullptr;
 }
 
+gpu::Scheduler* FuzzerSoftwareOutputSurfaceProvider::GetGpuScheduler() {
+  return nullptr;
+}
 }  // namespace viz

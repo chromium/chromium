@@ -1,13 +1,4 @@
 <style include="cr-shared-style">
-  .expand-row {
-    padding-inline-start: 0;
-  }
-
-  .cert-list {
-    padding-inline-end: var(--cr-section-padding);
-    padding-inline-start: var(--cr-section-padding);
-  }
-
   .header-row {
     display: flex;
     font-weight: 500;
@@ -27,11 +18,9 @@
   .no-certs {
     border-top: none;
   }
-
 </style>
 
-<cr-expand-button class="cr-row first expand-row"
-    expanded="{{expanded_}}">
+<cr-expand-button class="cr-row first" expanded="{{expanded_}}">
   <div class="header-row">
     [[headerText]]
     <div class="header-buttons">
@@ -43,13 +32,14 @@
       <!-- TODO(crbug.com/40928765): button for "import and bind" -->
       <cr-button class="action-button"
           hidden$="[[hideExportButton_(hideExport, hasCerts_)]]"
+          aria-label="[[i18n('certificateManagerV2ExportButtonAriaLabel', headerText)]]"
           id="exportCerts" on-click="onExportCertsClick_">
         [[i18n("certificateManagerV2ExportButtonLabel")]]
       </cr-button>
     </div>
   </div>
 </cr-expand-button>
-<cr-collapse id="certs" class="cert-list" opened="[[expanded_]]">
+<cr-collapse id="certs" opened="[[expanded_]]">
   <template is="dom-repeat" items="[[certificates_]]">
     <certificate-entry-v2
         cert-source="[[certSource]]"

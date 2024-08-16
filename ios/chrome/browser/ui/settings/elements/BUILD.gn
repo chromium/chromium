@@ -20,6 +20,7 @@ source_set("info_popover_view_controller") {
     "//components/supervised_user/core/common:common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",

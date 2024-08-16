@@ -149,11 +149,6 @@ void WebSettingsImpl::SetRequireTransientActivationForShowFileOrDirectoryPicker(
       required);
 }
 
-void WebSettingsImpl::SetRequireTransientActivationForHtmlFullscreen(
-    bool required) {
-  settings_->SetRequireTransientActivationForHtmlFullscreen(required);
-}
-
 void WebSettingsImpl::SetAutoZoomFocusedEditableToLegibleScale(
     bool auto_zoom_focused_editable_to_legible_scale) {
   auto_zoom_focused_editable_to_legible_scale_ =

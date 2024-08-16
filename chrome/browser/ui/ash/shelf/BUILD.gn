@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
@@ -76,8 +77,6 @@ static_library("shelf") {
     "standalone_browser_extension_app_context_menu.h",
     "standalone_browser_extension_app_shelf_item_controller.cc",
     "standalone_browser_extension_app_shelf_item_controller.h",
-    "standalone_window_migration_nudge_util.cc",
-    "standalone_window_migration_nudge_util.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -123,6 +122,7 @@ static_library("shelf") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/scalable_iph:scalable_iph_factory",
     "//chrome/browser/sync",
+    "//chrome/browser/ui/apps",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf/app_service",
@@ -234,6 +234,7 @@ source_set("unit_tests") {
     "//chrome/browser/extensions",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/apps",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf/app_service",
@@ -274,7 +275,7 @@ source_set("browser_tests") {
     "browser_shortcut_shelf_item_controller_browsertest.cc",
     "chrome_shelf_controller_browsertest.cc",
     "extension_shelf_context_menu_browsertest.cc",
-    "standalone_window_migration_nudge_browsertest.cc",
+    "shelf_browsertest.cc",
   ]
 
   deps = [
@@ -331,12 +332,10 @@ source_set("browser_tests") {
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [ "shelf_integration_test.cc" ]
+
+    sources_metadata = [ "shelf_integration_test.yaml" ]
 
     deps = [
       ":shelf",

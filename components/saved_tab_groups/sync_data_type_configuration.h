@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace tab_groups {
@@ -18,12 +18,12 @@ namespace tab_groups {
 // Configuration for a specific sync data type.
 struct SyncDataTypeConfiguration {
   SyncDataTypeConfiguration(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory model_type_store_factory);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory data_type_store_factory);
   ~SyncDataTypeConfiguration();
 
-  std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor;
-  syncer::OnceModelTypeStoreFactory model_type_store_factory;
+  std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor;
+  syncer::OnceDataTypeStoreFactory data_type_store_factory;
 };
 
 }  // namespace tab_groups

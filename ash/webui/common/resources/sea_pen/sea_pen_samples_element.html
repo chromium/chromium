@@ -39,6 +39,12 @@
      * parent width. */
     width: calc(100% / 3 - 0.34px);
   }
+
+  #samplePrompt {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+  }
 </style>
 <iron-list id="grid"
     items="[[samples]]"
@@ -53,6 +59,9 @@
           role="option"
           src="[[sample.preview]]"
           tabindex$="[[tabIndex]]">
+        <div id="samplePrompt" slot="text" class="primary-text">
+          [[sample.prompt]]
+        </div>
       </wallpaper-grid-item>
       <iron-icon class="add-icon" icon="personalization-shared:circular-add">
     </iron-icon>

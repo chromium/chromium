@@ -15,13 +15,17 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
-#include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
 #include "extensions/browser/url_fetcher.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/controlled_frame_embedder_url_fetcher.h"
+#include "extensions/browser/guest_view/web_view/web_ui/web_ui_url_fetcher.h"
+#endif
 
 namespace {
 
@@ -124,13 +128,18 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
     std::unique_ptr<extensions::URLFetcher> fetcher;
     switch (host_id_.type) {
       case extensions::mojom::HostID::HostType::kWebUi:
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
         fetcher = std::make_unique<extensions::WebUIURLFetcher>(
             render_process_id, render_frame_id, content->url(),
             base::BindOnce(
                 &EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete,
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
+#else
+        NOTREACHED();
+#endif
       case extensions::mojom::HostID::HostType::kControlledFrameEmbedder:
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
         fetcher = std::make_unique<
             extensions::ControlledFrameEmbedderURLFetcher>(
             render_process_id, render_frame_id, content->url(),
@@ -138,6 +147,9 @@ void EmbedderUserScriptLoader::CreateEmbedderURLFetchers(
                 &EmbedderUserScriptLoader::OnSingleEmbedderURLFetchComplete,
                 weak_ptr_factory_.GetWeakPtr(), content.get()));
         break;
+#else
+        NOTREACHED();
+#endif
       case extensions::mojom::HostID::HostType::kExtensions:
         NOTREACHED_IN_MIGRATION();
         break;

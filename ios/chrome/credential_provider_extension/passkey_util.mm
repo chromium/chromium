@@ -48,9 +48,8 @@ NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
 NSData* GenerateSignature(NSData* encrypted_private_key,
                           NSData* encrypted_message,
                           NSData* authenticator_data,
-                          NSData* client_data_hash) {
-  // Retrieve the security domain secret.
-  NSData* security_domain_secret = GetSecurityDomainSecret();
+                          NSData* client_data_hash,
+                          NSData* security_domain_secret) {
   if (!security_domain_secret) {
     return nil;
   }
@@ -95,22 +94,79 @@ NSData* GenerateSignature(NSData* encrypted_private_key,
 
 }  // namespace
 
+void FetchSecurityDomainSecret(FetchKeyCompletionBlock completion) {
+  NSData* security_domain_secret = GetSecurityDomainSecret();
+  completion(security_domain_secret);
+}
+
+ASPasskeyRegistrationCredential* PerformPasskeyCreation(
+    NSData* client_data_hash,
+    NSString* rp_id,
+    NSString* user_name,
+    NSData* user_handle,
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
+  if (!security_domain_secret) {
+    return nil;
+  }
+
+  std::vector<uint8_t> trusted_vault_key;
+  Append(trusted_vault_key, security_domain_secret);
+
+  // Convert input arguments to std equivalents for use in functions below.
+  std::vector<uint8_t> user_id;
+  Append(user_id, user_handle);
+  std::string rp_id_str = SysNSStringToUTF8(rp_id);
+  std::string user_name_str = SysNSStringToUTF8(user_name);
+
+  // Generate a key pair containing the webauthn specifics and the public key.
+  std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
+      generated_passkey =
+          webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+              rp_id_str,
+              webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
+                                                 user_name_str),
+              trusted_vault_key,
+              /*trusted_vault_key_version=*/0);
+  sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
+  std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
+
+  // TODO(crbug.com/330355124): Save the new credential to a store so that it
+  //                            can be synced.
+
+  base::span<const uint8_t> cred_id =
+      base::as_byte_span(passkey.credential_id());
+  NSData* credential_id = [NSData dataWithBytes:cred_id.data()
+                                         length:cred_id.size()];
+  std::vector<uint8_t> authenticator_data =
+      webauthn::passkey_model_utils::MakeAuthenticatorDataForCreation(
+          rp_id_str, cred_id, public_key_spki_der);
+  NSData* attestation_object = [NSData dataWithBytes:authenticator_data.data()
+                                              length:authenticator_data.size()];
+
+  return [ASPasskeyRegistrationCredential
+      credentialWithRelyingParty:rp_id
+                  clientDataHash:client_data_hash
+                    credentialID:credential_id
+               attestationObject:attestation_object];
+}
+
 ASPasskeyAssertionCredential* PerformPasskeyAssertion(
     id<Credential> credential,
-    NSData* clientDataHash,
-    NSArray<NSData*>* allowedCredentials) API_AVAILABLE(ios(17.0)) {
+    NSData* client_data_hash,
+    NSArray<NSData*>* allowed_credentials,
+    NSData* security_domain_secret) API_AVAILABLE(ios(17.0)) {
   // If the array is empty, then the relying party accepts any passkey
   // credential.
-  if (allowedCredentials.count > 0 &&
-      ![allowedCredentials containsObject:credential.credentialId]) {
+  if (allowed_credentials.count > 0 &&
+      ![allowed_credentials containsObject:credential.credentialId]) {
     return nil;
   }
 
   NSData* authenticatorData =
       MakeAuthenticatorDataForAssertion(credential.rpId);
-  NSData* signature =
-      GenerateSignature(credential.privateKey, credential.encrypted,
-                        authenticatorData, clientDataHash);
+  NSData* signature = GenerateSignature(
+      credential.privateKey, credential.encrypted, authenticatorData,
+      client_data_hash, security_domain_secret);
 
   // Update the credential's last used time.
   credential.lastUsedTime =
@@ -122,7 +178,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
       credentialWithUserHandle:credential.userId
                   relyingParty:credential.rpId
                      signature:signature
-                clientDataHash:clientDataHash
+                clientDataHash:client_data_hash
              authenticatorData:authenticatorData
                   credentialID:credential.credentialId];
 }

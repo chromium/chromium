@@ -86,9 +86,11 @@ static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
 ImageFrameGenerator::ImageFrameGenerator(const SkISize& full_size,
                                          bool is_multi_frame,
                                          ColorBehavior color_behavior,
+                                         cc::AuxImage aux_image,
                                          Vector<SkISize> supported_sizes)
     : full_size_(full_size),
       decoder_color_behavior_(color_behavior),
+      aux_image_(aux_image),
       is_multi_frame_(is_multi_frame),
       supported_sizes_(std::move(supported_sizes)) {
 #if DCHECK_IS_ON()
@@ -141,8 +143,8 @@ bool ImageFrameGenerator::DecodeAndScale(
     // Lock the mutex, so only one thread can use the decoder at once.
     ClientAutoLock lock(this, client_id);
     ImageDecoderWrapper decoder_wrapper(this, data, pixmap,
-                                        decoder_color_behavior_, index,
-                                        all_data_received, client_id);
+                                        decoder_color_behavior_, aux_image_,
+                                        index, all_data_received, client_id);
     current_decode_succeeded = decoder_wrapper.Decode(
         image_decoder_factory_.get(), &frame_count, &has_alpha);
     decode_failed = decoder_wrapper.decode_failed();
@@ -191,7 +193,7 @@ bool ImageFrameGenerator::DecodeToYUV(
   const bool all_data_received = true;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, all_data_received, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_, aux_image_,
       Platform::GetMaxDecodedImageBytes());
   // getYUVComponentSizes was already called and was successful, so
   // ImageDecoder::create must succeed.
@@ -282,7 +284,7 @@ bool ImageFrameGenerator::GetYUVAInfo(
     return false;
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
-      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_,
+      ImageDecoder::kDefaultBitDepth, decoder_color_behavior_, aux_image_,
       Platform::GetMaxDecodedImageBytes());
   DCHECK(decoder);
 

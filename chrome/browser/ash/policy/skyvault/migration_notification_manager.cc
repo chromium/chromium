@@ -4,18 +4,25 @@
 
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
@@ -74,7 +81,7 @@ std::u16string CloudProviderToString(CloudProvider provider) {
       return l10n_util::GetStringUTF16(
           IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_ONEDRIVE);
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -84,7 +91,9 @@ MigrationNotificationManager::MigrationNotificationManager(
     content::BrowserContext* context)
     : context_(context) {}
 
-MigrationNotificationManager::~MigrationNotificationManager() = default;
+MigrationNotificationManager::~MigrationNotificationManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void MigrationNotificationManager::ShowMigrationInfoDialog(
     CloudProvider provider,
@@ -200,7 +209,30 @@ void MigrationNotificationManager::ShowConfigurationErrorNotification(
       /*metadata=*/nullptr);
 }
 
+base::CallbackListSubscription
+MigrationNotificationManager::ShowOneDriveSignInNotification(
+    SignInCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (sign_in_callbacks_.empty()) {
+    policy::skyvault_ui_utils::ShowSignInNotification(
+        Profile::FromBrowserContext(context_), /*id=*/0,
+        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
+        /*file_name=*/"",
+        base::BindOnce(&MigrationNotificationManager::OnSignInResponse,
+                       weak_factory_.GetWeakPtr()));
+  }
+
+  // sign_in_callback_subscriptions_.emplace_back(
+  return sign_in_callbacks_.Add(std::move(callback));
+}
+
 void MigrationNotificationManager::CloseAll() {
+  // TODO(b/349097807): Potential race condition. When migration stopping is
+  // fully implemented, make sure this runs after uploads were already stopped
+  // (otherwise upload might fail before it's cancelled) and/or post this to
+  // same sequence & fail new requests that come in (if closing exactly when an
+  // upload job was getting paused for sign in).
   CloseNotification(profile());
   CloseDialog();
 }
@@ -214,6 +246,17 @@ void MigrationNotificationManager::CloseDialog() {
 
 Profile* MigrationNotificationManager::profile() {
   return Profile::FromBrowserContext(context_);
+}
+
+void MigrationNotificationManager::OnSignInResponse(base::File::Error error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (error == base::File::Error::FILE_OK) {
+    // This is only reached for OneDrive.
+    ShowMigrationProgressNotification(CloudProvider::kOneDrive);
+  }
+  // If there was an error, the notification will be shown when migration fails.
+  sign_in_callbacks_.Notify(error);
 }
 
 // static
@@ -238,7 +281,9 @@ MigrationNotificationManagerFactory::MigrationNotificationManagerFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(NotificationDisplayServiceFactory::GetInstance());
+}
 
 MigrationNotificationManagerFactory::~MigrationNotificationManagerFactory() =
     default;

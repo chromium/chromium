@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -46,7 +47,7 @@ bool ContainsNonEmptyUsername(
 
 // No-op constructor for tests.
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
-    base::PassKey<TouchToFillControllerAutofillTest>,
+    base::PassKey<class TouchToFillControllerAutofillTest>,
     password_manager::PasswordManagerClient* password_client,
     content::WebContents* web_contents,
     std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator,
@@ -56,7 +57,8 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     const password_manager::PasswordForm* form_to_fill,
     autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option,
-    ShowPasswordMigrationWarningCallback show_password_migration_warning)
+    ShowPasswordMigrationWarningCallback show_password_migration_warning,
+    std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge)
     : password_client_(password_client),
       web_contents_(web_contents),
       authenticator_(std::move(authenticator)),
@@ -64,9 +66,10 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       filler_(std::move(filler)),
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
+      should_show_hybrid_option_(should_show_hybrid_option),
       show_password_migration_warning_(
           std::move(show_password_migration_warning)),
-      should_show_hybrid_option_(should_show_hybrid_option) {}
+      access_loss_warning_bridge_(std::move(data_loss_warning_bridge)) {}
 
 TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     ChromePasswordManagerClient* password_client,
@@ -88,9 +91,11 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       filler_(std::move(filler)),
       form_to_fill_(form_to_fill),
       focused_field_renderer_id_(focused_field_renderer_id),
+      should_show_hybrid_option_(should_show_hybrid_option),
       show_password_migration_warning_(
           base::BindRepeating(&local_password_migration::ShowWarning)),
-      should_show_hybrid_option_(should_show_hybrid_option),
+      access_loss_warning_bridge_(
+          std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       source_id_(password_client->web_contents()
                      ->GetPrimaryMainFrame()
                      ->GetPageUkmSourceId()) {}
@@ -306,13 +311,21 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
 
   // Do not trigger autosubmission if the password migration warning is being
   // shown because it interrupts the nomal workflow.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
   filler_->UpdateTriggerSubmission(
       ShouldTriggerSubmission() &&
-      !local_password_migration::ShouldShowWarning(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
+      !local_password_migration::ShouldShowWarning(profile) &&
+      !access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs));
   filler_->FillUsernameAndPassword(credential.username(),
                                    credential.password());
-  ShowPasswordMigrationWarningIfNeeded();
+  if (access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(prefs)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet();
+  } else {
+    // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
+    ShowPasswordMigrationWarningIfNeeded();
+  }
 
   if (ShouldTriggerSubmission()) {
     password_client_->StartSubmissionTrackingAfterTouchToFill(

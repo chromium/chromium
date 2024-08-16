@@ -245,7 +245,7 @@ bool IdentityDialogController::TrySetAccountView() {
   account_view_ = AccountSelectionView::Create(this);
 #else
   tabs::TabInterface* tab =
-      tabs::TabInterface::GetFromContents(rp_web_contents_);
+      tabs::TabInterface::MaybeGetFromContents(rp_web_contents_);
   if (!tab) {
     return false;
   }

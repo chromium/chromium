@@ -5707,6 +5707,22 @@ WebGLBuffer* WebGL2RenderingContextBase::ValidateBufferDataTarget(
     SynthesizeGLError(GL_INVALID_OPERATION, function_name, "no buffer");
     return nullptr;
   }
+  if (transform_feedback_binding_->HasBoundIndexedTransformFeedbackBuffer(
+          buffer)) {
+    DCHECK(buffer != bound_vertex_array_object_->BoundElementArrayBuffer());
+    if (bound_indexed_uniform_buffers_.Contains(buffer) ||
+        bound_vertex_array_object_->HasArrayBuffer(buffer) ||
+        buffer == bound_array_buffer_ || buffer == bound_copy_read_buffer_ ||
+        buffer == bound_copy_write_buffer_ ||
+        buffer == bound_pixel_pack_buffer_ ||
+        buffer == bound_pixel_unpack_buffer_ ||
+        buffer == bound_uniform_buffer_) {
+      SynthesizeGLError(GL_INVALID_OPERATION, function_name,
+                        "buffer is bound to an indexed transform feedback "
+                        "binding point and some other binding point");
+      return nullptr;
+    }
+  }
   return buffer;
 }
 
@@ -5799,6 +5815,12 @@ void WebGL2RenderingContextBase::RemoveBoundBuffer(WebGLBuffer* buffer) {
     bound_uniform_buffer_ = nullptr;
 
   transform_feedback_binding_->UnbindBuffer(buffer);
+
+  for (auto& bound_buffer : bound_indexed_uniform_buffers_) {
+    if (bound_buffer == buffer) {
+      bound_buffer = nullptr;
+    }
+  }
 
   WebGLRenderingContextBase::RemoveBoundBuffer(buffer);
 }

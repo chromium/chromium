@@ -43,7 +43,6 @@ from blinkpy.common.path_finder import PathFinder
 class PortFactory:
     PORT_CLASSES = (
         'android.AndroidPort',
-        'chrome.ChromePort',
         'fuchsia.FuchsiaPort',
         'ios.IOSPort',
         'linux.LinuxPort',
@@ -453,6 +452,14 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                action='append',
                                metavar='FILE',
                                help='read filters for tests to run')
+    testing_group.add_argument(
+        '--exclude-test-list',
+        dest='exclude_test_lists',
+        action='append',
+        metavar='FILE',
+        help=('read test (directories) that should not run '
+              '(the most specific prefix among `--(exclude-)test-list` and '
+              'the positional arguments wins)'))
     testing_group.add_argument(
         '--isolated-script-test-filter-file',
         '--test-launcher-filter-file',

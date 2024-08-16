@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -72,6 +73,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
  private:
   void OnCategorySelected(PickerCategory category);
   void OnResultSelected(const PickerSearchResult& result);
+  void RecordCapsLockIgnored(bool ignored);
 
   // Gets or creates the category type section for `category_type`.
   PickerSectionView* GetOrCreateSectionView(PickerCategoryType category_type);
@@ -80,6 +82,8 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
 
   void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
+  void AddResultToSection(const PickerSearchResult& result,
+                          PickerSectionView* section);
 
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
   raw_ptr<PickerSubmenuController> submenu_controller_;
@@ -98,6 +102,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
       category_section_views_;
 
   std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;
+
+  // Timer used to put caps lock toggle to the end of the primary section.
+  base::OneShotTimer add_caps_lock_delay_timer_;
 
   base::WeakPtrFactory<PickerZeroStateView> weak_ptr_factory_{this};
 };

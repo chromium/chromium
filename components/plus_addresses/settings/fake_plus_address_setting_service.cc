@@ -24,7 +24,7 @@ void FakePlusAddressSettingService::SetHasAcceptedNotice() {
   set_has_accepted_notice(true);
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 FakePlusAddressSettingService::GetSyncControllerDelegate() {
   return nullptr;
 }

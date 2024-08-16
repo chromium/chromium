@@ -15,10 +15,13 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "components/nacl/browser/nacl_browser.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
+
+#if BUILDFLAG(ENABLE_NACL)
+#include "components/nacl/browser/nacl_browser.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

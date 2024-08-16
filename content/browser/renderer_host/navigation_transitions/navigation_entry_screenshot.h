@@ -73,8 +73,10 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // case when it's being displayed in the UI.
   bool is_cached() const { return cache_ != nullptr; }
 
-  // Returns the size of the bounds of the bitmap.
-  gfx::Size GetDimensions() const;
+  // Returns the bounds of the uncompressed bitmap.
+  gfx::Size dimensions_without_compression() const {
+    return dimensions_without_compression_;
+  }
 
   int navigation_entry_id() const { return navigation_entry_id_; }
 
@@ -108,6 +110,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   // This screenshot is cached for the navigation entry of
   // `navigation_entry_id_`.
   const int navigation_entry_id_;
+
+  const gfx::Size dimensions_without_compression_;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };

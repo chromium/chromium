@@ -4,7 +4,7 @@
 
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {

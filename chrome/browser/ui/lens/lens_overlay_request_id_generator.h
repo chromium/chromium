@@ -28,6 +28,9 @@ class LensOverlayRequestIdGenerator {
   // Increments the sequence and returns the next request id.
   std::unique_ptr<lens::LensOverlayRequestId> GetNextRequestId();
 
+  // Returns the current analytics id as a base32 encoded string.
+  std::string GetBase32EncodedAnalyticsId();
+
  private:
   // The current uuid. Valid for the duration of a Lens overlay session.
   uint64_t uuid_;

@@ -30,6 +30,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -84,6 +85,11 @@ const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
 const char kInitialPageDestinationLinkText[] = "link";
 
+// The DOM element ID of the long link to the destination page.
+const char kInitialPageDestinationLongLinkID[] = "LongLink";
+// The text of the long link to the destination page.
+const char kInitialPageDestinationLongLinkText[] = "LongLink";
+
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
 // HTML content of a page with a javascript link.
@@ -122,6 +128,8 @@ const char kShortTruncationPageUrl[] = "/shortTruncation";
 
 const char kLongTruncationPageUrl[] = "/longTruncation";
 
+const char kLongLinkPageURL[] = "/longLink";
+
 NSString* const kShortLinkHref = @"/destination";
 
 NSString* const kShortImgTitle = @"Chromium logo with a short title";
@@ -157,6 +165,18 @@ NSString* const kLongImgTitle =
      "characters, so formulated as to thest the very limits of the context "
      "menu layout system, and to ensure that all users can enjoy the full "
      "majesty of image titles, however sesquipedalian they may be!";
+
+// Template HTML, URLs, and link and title values for title truncation tests.
+// (Use NSString for easier format printing and matching).
+// Template params:
+//    [0] NSString - link href.
+//    [1] char[]   - link element ID.
+NSString* const kLongLinkTestPageTemplateHtml =
+    @"<html><head><meta name='viewport' content='width=device-width, "
+     "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' "
+     "/></head><body><p style='margin-bottom:50px'>Short title test.</p>"
+     "<p><a style='margin-left:150px' href='%@' id='%s'>LongLink</a></p>"
+     "</body></html>";
 
 // Matcher for the open image button in the context menu.
 id<GREYMatcher> OpenImageButton() {
@@ -222,6 +242,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
         [NSString stringWithFormat:kLinkImageHtml, kShortLinkHref,
                                    kInitialPageDestinationLinkId,
                                    kShortImgTitle, kLogoPageChromiumImageId];
+    http_response->set_content(base::SysNSStringToUTF8(content));
+  } else if (request.relative_url == kLongLinkPageURL) {
+    NSString* content =
+        [NSString stringWithFormat:kLongLinkTestPageTemplateHtml, kLongLinkHref,
+                                   kInitialPageDestinationLongLinkText];
     http_response->set_content(base::SysNSStringToUTF8(content));
   } else {
     return nullptr;
@@ -432,11 +457,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   ClearContextMenu();
 
   LongPressElement(kInitialPageDestinationLinkId);
-  // Expect the link to be truncated, so the matcher for the full text of the
-  // link returns nil.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
-                                          kLongLinkHref)]
-      assertWithMatcher:grey_nil()];
+
   // But expect that some of the link is visible in the title.
   NSString* startOfTitle = [kLongLinkHref substringToIndex:30];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
@@ -785,6 +806,32 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   if (error) {
     GREYFail([error description]);
   }
+}
+
+// TODO(crbug.com/358221944): Fix and re-enable.
+- (void)DISABLED_testShowFullURLInWebContextMenu {
+  const GURL pageURL = self.testServer->GetURL(kLongLinkPageURL);
+  const GURL longURL =
+      self.testServer->GetURL(base::SysNSStringToUTF8(kLongLinkHref));
+
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLongLinkText];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  LongPressElement(kInitialPageDestinationLongLinkID);
+
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          ShowFullURLFromWebContextMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
+                                              @"AlertAccessibilityIdentifier")),
+                                          grey_text(base::SysUTF8ToNSString(
+                                              longURL.spec())),
+                                          nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

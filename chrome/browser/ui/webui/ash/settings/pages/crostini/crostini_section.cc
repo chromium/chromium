@@ -620,6 +620,7 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kUninstallCrostini,
       mojom::Setting::kBruschettaMicAccess,
       mojom::Setting::kGuestUsbNotification,
+      mojom::Setting::kGuestUsbPersistentPassthrough,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kCrostiniDetails,
                             kCrostiniDetailsSettings, generator);

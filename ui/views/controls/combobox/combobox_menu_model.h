@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_COMBOBOX_COMBOBOX_MENU_MODEL_H_
 
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -13,7 +14,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 
 // Adapts a ui::ComboboxModel to a ui::MenuModel.
-class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
+class VIEWS_EXPORT ComboboxMenuModel final : public ui::MenuModel {
  public:
   ComboboxMenuModel(views::Combobox* owner, ui::ComboboxModel* model);
   ComboboxMenuModel(const ComboboxMenuModel&) = delete;
@@ -46,6 +47,7 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
   bool UseCheckmarks() const;
 
   // ui::MenuModel:
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override;
   size_t GetItemCount() const override;
   ui::MenuModel::ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
@@ -70,6 +72,8 @@ class VIEWS_EXPORT ComboboxMenuModel : public ui::MenuModel {
 
   raw_ptr<views::Combobox> owner_;    // Weak. Owns this.
   raw_ptr<ui::ComboboxModel> model_;  // Weak.
+
+  base::WeakPtrFactory<ComboboxMenuModel> weak_ptr_factory_{this};
 };
 
 #endif  // UI_VIEWS_CONTROLS_COMBOBOX_COMBOBOX_MENU_MODEL_H_

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill {
 
@@ -121,6 +122,69 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kFido = 2,
   };
 
+  enum class CardSaveType {
+    // Credit card is saved without the CVC.
+    kCardSaveOnly = 0,
+    // Credit card is saved with the CVC.
+    kCardSaveWithCvc = 1,
+    // Only CVC is saved.
+    kCvcSaveOnly = 2,
+  };
+
+  // Used for options of upload prompt.
+  struct SaveCreditCardOptions {
+    SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
+      should_request_name_from_user = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_should_request_expiration_date_from_user(
+        bool b) {
+      should_request_expiration_date_from_user = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_show_prompt(bool b = true) {
+      show_prompt = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_has_multiple_legal_lines(bool b = true) {
+      has_multiple_legal_lines = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions&
+    with_same_last_four_as_server_card_but_different_expiration_date(bool b) {
+      has_same_last_four_as_server_card_but_different_expiration_date = b;
+      return *this;
+    }
+
+    SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
+      card_save_type = b;
+      return *this;
+    }
+
+    bool should_request_name_from_user = false;
+    bool should_request_expiration_date_from_user = false;
+    bool show_prompt = false;
+    bool has_multiple_legal_lines = false;
+    bool has_same_last_four_as_server_card_but_different_expiration_date =
+        false;
+    CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
+  };
+
+  enum class SaveCardOfferUserDecision {
+    // The user accepted credit card save.
+    kAccepted,
+
+    // The user explicitly declined credit card save.
+    kDeclined,
+
+    // The user ignored the credit card save prompt.
+    kIgnored,
+  };
+
   // Callback to run if user presses the Save button in the migration dialog.
   // Will pass a vector of GUIDs of cards that the user selected to upload to
   // LocalCardMigrationManager.
@@ -141,7 +205,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
                               std::u16string_view nickname)>;
 
-  // Callback to run after credit card upload confirmation prompt is closed.
+  // Callback to run after credit card or IBAN upload confirmation prompt is
+  // closed.
   using OnConfirmationClosedCallback = base::OnceClosure;
 
   // Callback to run if the OK button or the cancel button in a
@@ -155,17 +220,17 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Callback to run after local credit card save or local CVC save is offered.
   // Sends whether the prompt was accepted, declined, or ignored in
   // `user_decision`.
-  using LocalSaveCardPromptCallback = base::OnceCallback<void(
-      AutofillClient::SaveCardOfferUserDecision user_decision)>;
+  using LocalSaveCardPromptCallback =
+      base::OnceCallback<void(SaveCardOfferUserDecision user_decision)>;
 
   // Callback to run after upload credit card save or upload CVC save for
   // existing server card is offered. Sends whether the prompt was accepted,
   // declined, or ignored in `user_decision`, and additional
   // `user_provided_card_details` if applicable.
-  using UploadSaveCardPromptCallback = base::OnceCallback<void(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
-      const AutofillClient::UserProvidedCardDetails&
-          user_provided_card_details)>;
+  using UploadSaveCardPromptCallback =
+      base::OnceCallback<void(SaveCardOfferUserDecision user_decision,
+                              const AutofillClient::UserProvidedCardDetails&
+                                  user_provided_card_details)>;
 
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
@@ -261,7 +326,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // is true; otherwise does not offer to save at all.
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       LocalSaveCardPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
@@ -280,7 +345,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   virtual void ConfirmSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.
@@ -328,6 +393,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
                                         LegalMessageLines legal_message_lines,
                                         bool should_show_prompt,
                                         SaveIbanPromptCallback callback);
+
+  // Shows upload result to users. Called after IBAN upload is finished.
+  // `iban_saved` indicates if the IBAN was successfully saved.
+  // `hit_max_strikes` indicates whether the maximum number of strikes has been
+  // reached when the offer to upload IBAN request fails.
+  virtual void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes);
 
   // Show/dismiss the progress dialog which contains a throbber and a text
   // message indicating that something is in progress.
@@ -449,15 +520,29 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns `true` on success. `delegate` will be notified of
-  // events. `card_acceptabilies` is a boolean list denoting if the virtual
-  // card in `cards_to_suggest` is acceptable on the merchant's platform.
-  // Should be called only if the feature is supported by the platform.
-  // This function is implemented on all platforms, so this should be a pure
-  // virtual function to enforce the override implementation.
+  // events. `suggestions` are generated using the `cards_to_suggest` data and
+  // include fields such as `main_text`, `minor_text`, and
+  // `apply_deactivated_style`. Should be called only if the feature is
+  // supported by the platform. This function is implemented on all platforms,
+  // so this should be a pure virtual function to enforce the override
+  // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilies);
+      base::span<const Suggestion> suggestions);
+
+  // Shows the Touch To Fill surface for filling IBAN information, if
+  // possible, returning `true` on success. `delegate` will be notified of
+  // events. This function is not implemented on iOS and iOS WebView, and
+  // should not be used on those platforms.
+  virtual bool ShowTouchToFillIban(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::Iban> ibans_to_suggest);
+
+  // Hides the Touch To Fill surface for filling payment information if one is
+  // currently shown. Should be called only if the feature is supported by the
+  // platform.
+  virtual void HideTouchToFillPaymentMethod();
 };
 
 }  // namespace payments

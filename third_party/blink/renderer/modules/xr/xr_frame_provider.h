@@ -100,6 +100,10 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void ScheduleNonImmersiveFrame(
       device::mojom::blink::XRFrameDataRequestOptionsPtr options);
 
+  // Sends the frame data to the requesting sessions for calculating
+  // diagnostics.
+  void SendFrameData();
+
   void OnProviderConnectionError(XRSession* session);
   void ProcessScheduledFrame(device::mojom::blink::XRFrameDataPtr frame_data,
                              double high_res_now_ms,
@@ -170,6 +174,12 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   gpu::SyncToken camera_image_sync_token_;
 
   bool last_has_focus_ = false;
+
+  int num_frames_ = 0;
+  int dropped_frames_ = 0;
+
+  base::TimeTicks last_frame_statistics_sent_time_;
+  base::RepeatingTimer repeating_timer_;
 };
 
 }  // namespace blink

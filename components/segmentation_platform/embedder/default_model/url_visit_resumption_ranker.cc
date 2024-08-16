@@ -23,7 +23,7 @@ using proto::SegmentId;
 
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER;
-constexpr uint64_t kRankerVersion = 1;
+constexpr uint64_t kRankerVersion = 2;
 
 constexpr std::array<MetadataWriter::UMAFeature, 1> kOutput = {
     MetadataWriter::UMAFeature::FromUserAction("MetadataWriter", 1)};

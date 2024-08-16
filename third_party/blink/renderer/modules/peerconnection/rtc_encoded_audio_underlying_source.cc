@@ -26,14 +26,24 @@ const int RTCEncodedAudioUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback)
+    WTF::CrossThreadOnceClosure disconnect_callback,
+    ReadableStreamDefaultControllerWithScriptScope* override_controller)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
-      disconnect_callback_(std::move(disconnect_callback)) {
+      disconnect_callback_(std::move(disconnect_callback)),
+      override_controller_(override_controller) {
   DCHECK(disconnect_callback_);
 
   ExecutionContext* context = ExecutionContext::From(script_state);
   task_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
+}
+
+ReadableStreamDefaultControllerWithScriptScope*
+RTCEncodedAudioUnderlyingSource::GetController() {
+  if (override_controller_) {
+    return override_controller_;
+  }
+  return Controller();
 }
 
 ScriptPromiseUntyped RTCEncodedAudioUnderlyingSource::Pull(
@@ -57,6 +67,7 @@ ScriptPromiseUntyped RTCEncodedAudioUnderlyingSource::Cancel(
 
 void RTCEncodedAudioUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
+  visitor->Trace(override_controller_);
   UnderlyingSourceBase::Trace(visitor);
 }
 
@@ -76,21 +87,20 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
   if (!disconnect_callback_ || !GetExecutionContext()) {
     return;
   }
-  if (!Controller()) {
+  if (!GetController()) {
     // TODO(ricea): Maybe avoid dropping frames during transfer?
     DVLOG(1) << "Dropped frame due to null Controller(). This can happen "
                 "during transfer.";
     return;
   }
-  if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+  if (GetController()->DesiredSize() <= kMinQueueDesiredSize) {
     dropped_frames_++;
     VLOG_IF(2, (dropped_frames_ % 20 == 0))
         << "Dropped total of " << dropped_frames_
         << " encoded audio frames due to too many already being queued.";
     return;
   }
-
-  Controller()->Enqueue(
+  GetController()->Enqueue(
       MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame)));
 }
 
@@ -99,16 +109,18 @@ void RTCEncodedAudioUnderlyingSource::Close() {
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 
-  if (Controller())
-    Controller()->Close();
+  if (GetController()) {
+    GetController()->Close();
+  }
 }
 
 void RTCEncodedAudioUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   // This can potentially be called before the stream is constructed and so
   // Controller() is still unset.
-  if (Controller())
-    Controller()->Close();
+  if (GetController()) {
+    GetController()->Close();
+  }
 }
 
 void RTCEncodedAudioUnderlyingSource::OnSourceTransferStarted() {

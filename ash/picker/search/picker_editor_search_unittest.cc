@@ -41,5 +41,26 @@ TEST(PickerEditorSearchTest, DoesNotMatchShortSentence) {
             std::nullopt);
 }
 
+TEST(PickerEditorSearchTest, MatchesJapaneseSentence) {
+  EXPECT_THAT(
+      PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
+                         u"素早い茶色のキツネ"),
+      Optional(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::EditorData>(
+              AllOf(Field("mode", &PickerSearchResult::EditorData::mode,
+                          PickerSearchResult::EditorData::Mode::kWrite),
+                    Field("display_name",
+                          &PickerSearchResult::EditorData::display_name, u""),
+                    Field("category", &PickerSearchResult::EditorData::category,
+                          std::nullopt))))));
+}
+
+TEST(PickerEditorSearchTest, DoesNotMatchShortJapaneseSentence) {
+  EXPECT_EQ(PickerEditorSearch(PickerSearchResult::EditorData::Mode::kWrite,
+                               u"素早い茶色"),
+            std::nullopt);
+}
+
 }  // namespace
 }  // namespace ash

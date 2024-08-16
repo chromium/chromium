@@ -206,6 +206,7 @@ public class WebappNavigationTest {
     @SmallTest
     @Feature({"Webapps"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @DisabledTest(message = "Flaky - crbug.com/359629160")
     public void testFormSubmitOffOrigin() throws Exception {
         Intent launchIntent =
                 mActivityTestRule

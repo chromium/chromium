@@ -38,6 +38,7 @@ export interface AuthCompletedCredentials {
   trusted: boolean;
   usingSAML: boolean;
   isAvailableInArc?: boolean;
+  scrapedSAMLPasswords?: string[];
 }
 
 export interface AuthParams {
@@ -45,6 +46,7 @@ export interface AuthParams {
   clientId: string;
   clientVersion?: string;
   constrained: string;
+  doSamlRedirect?: boolean;
   dontResizeNonEmbeddedPages: boolean;
   emailDomain: string;
   email: string;
@@ -53,6 +55,7 @@ export interface AuthParams {
   extractSamlPasswordAttributes: boolean;
   flow: string;
   forceDarkMode: boolean;
+  frameUrl: URL;
   gaiaPath: string;
   gaiaUrl: string;
   hl: string;
@@ -66,9 +69,9 @@ export interface AuthParams {
   samlAclUrl: string;
   service: string;
   showTos: string;
-  ssoProfile: string;
+  ssoProfile?: string;
   urlParameterToAutofillSAMLUsername: string;
-  frameUrl: URL;
+  [key: string]: AuthParams[keyof AuthParams];
 }
 
 export enum AuthMode {
@@ -83,6 +86,13 @@ export enum AuthFlow {
 }
 
 export const SUPPORTED_PARAMS: string[];
+
+type ChangeEvent<T> = CustomEvent<{oldValue: T, newValue: T}>;
+
+export type AuthCompletedEvent = CustomEvent<AuthCompletedCredentials>;
+export type AuthDomainChangeEvent = ChangeEvent<string>;
+export type AuthFlowChangeEvent = ChangeEvent<AuthFlow>;
+export type LoadAbortEvent = CustomEvent<{error_code: number, src: string}>;
 
 export class Authenticator extends EventTarget {
   constructor(webview: HTMLElement|string);

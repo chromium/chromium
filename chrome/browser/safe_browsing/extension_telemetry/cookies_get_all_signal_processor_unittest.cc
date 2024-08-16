@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
+
+#include <array>
 
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -24,16 +21,16 @@ using CookiesGetAllInfo =
 using GetAllArgsInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo_GetAllArgsInfo;
 
-constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                        "eeeeeeeeffffffffgggggggghhhhhhhh"};
-constexpr const char* domains[] = {"domain1", "domain2"};
-constexpr const char* names[] = {"cookie-1", "cookie-2"};
-constexpr const char* paths[] = {"/path1", "/path2"};
-constexpr bool is_secure_cookie_values[] = {true, false};
-constexpr const char* store_ids[] = {"store-1", "store-2"};
-constexpr const char* urls[] = {"http://www.example1.com/",
-                                "https://www.example2.com/"};
-constexpr bool is_session_cookie_values[] = {false, true};
+constexpr auto kExtensionId = std::to_array(
+    {"aaaaaaaabbbbbbbbccccccccdddddddd", "eeeeeeeeffffffffgggggggghhhhhhhh"});
+constexpr auto domains = std::to_array({"domain1", "domain2"});
+constexpr auto names = std::to_array({"cookie-1", "cookie-2"});
+constexpr auto paths = std::to_array({"/path1", "/path2"});
+constexpr auto is_secure_cookie_values = std::to_array({true, false});
+constexpr auto store_ids = std::to_array({"store-1", "store-2"});
+constexpr auto urls =
+    std::to_array({"http://www.example1.com/", "https://www.example2.com/"});
+constexpr auto is_session_cookie_values = std::to_array({false, true});
 
 class CookiesGetAllSignalProcessorTest : public ::testing::Test {
  protected:
@@ -252,16 +249,16 @@ TEST_F(CookiesGetAllSignalProcessorTest,
 }
 
 TEST_F(CookiesGetAllSignalProcessorTest, IncludesJSCallStacksInSignalInfo) {
-  const extensions::StackTrace stack_trace[] = {
-      {{1, 1, u"foo1.js", u"cookies.getAll"},
-       {2, 2, u"foo2.js", u"Func2"},
-       {3, 3, u"foo3.js", u"Func3"},
-       {4, 4, u"foo4.js", u"Func4"},
-       {5, 5, u"foo5.js", u"Func5"}},
-      {{1, 1, u"foo1.js", u"cookies.getAll"},
-       {2, 2, u"foo2.js", u"Func2"},
-       {3, 3, u"foo3.js", u"Func3"},
-       {5, 5, u"foo4.js", u"Func4"}}};
+  const std::array<extensions::StackTrace, 2> stack_trace = {
+      {{{1, 1, u"foo1.js", u"cookies.getAll"},
+        {2, 2, u"foo2.js", u"Func2"},
+        {3, 3, u"foo3.js", u"Func3"},
+        {4, 4, u"foo4.js", u"Func4"},
+        {5, 5, u"foo5.js", u"Func5"}},
+       {{1, 1, u"foo1.js", u"cookies.getAll"},
+        {2, 2, u"foo2.js", u"Func2"},
+        {3, 3, u"foo3.js", u"Func3"},
+        {5, 5, u"foo4.js", u"Func4"}}}};
 
   // Process 2 signals with different argument sets.
   for (int i = 0; i < 2; i++) {

@@ -16,6 +16,9 @@
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         A parent or guardian has to say that it's OK for you to visit this website
       </message>
+      <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent. Before they can ask their parent to allow the site, the child first needs to enter their Google Account password because their credentials expired.">
+        A parent or guardian has to say that it's OK for you to visit this website. Before you ask them, we need to make sure it's you.
+      </message>
       <message name="IDS_REQUEST_SENT_OK" desc="A button acknowledging that the request has been sent for accessing a blocked site.">
         OK
       </message>
@@ -79,12 +82,16 @@
       <message name="IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE" desc="The banner message for the first time a user is blocked from a website because of parental controls">
         The settings your parent chose are now keeping you safer online
       </message>
-      <!-- Supervised user verification interstitial. TODO(b/346264927): replace with final versions -->
-      <message name="IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU" desc="The title used for the supervised user verification interstitial." translateable="false">
-        Verify it's you
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE" desc="The title of the tab when displaying a message to the child user when they attempt to visit YouTube.com. The child is signed in to their Google Account in Chrome, but their credentials have expired, so they need to sign in to get all the settings that their parent chose for them on YouTube.">
+        YouTube
       </message>
-      <!-- Supervised user verification interstitial. TODO(b/346264927): replace with final versions -->
-      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH" desc="The primary paragraph shown in the supervised user verification interstitial." translateable="false">
-        Sign back in with your Google Account to visit this site with Family Link settings to help keep you safer online
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING" desc="A heading for the message to the child user when they attempt to visit YouTube.com. The child is signed in to their Google Account in Chrome, but their credentials have expired, so they need to sign in to get all the settings that their parent chose for them on YouTube.">
+        Use YouTube with your parent's choices
+      </message>
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH" desc="A message for the child user when they attempt to YouTube.com. Before they can get the settings that their parent chose for this site, the child first needs to enter their Google Account password because their credentials expired.">
+        To continue to YouTube, we need to make sure it's you. You'll get the settings that your parent or guardian set up in Family Link.
+      </message>
+      <message name="IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON" desc="This screen appears for a child user when they attempt to visit YouTube.com. In order to get the settings that parent chose for this site, the child first needs to enter their Google Account password because their credentials expired. This string is found on a button that will take the child to the next screen where they can enter their Google password. This text is short for the longer phrase 'Go to the next step'.">
+        Next
       </message>
 </grit-part>

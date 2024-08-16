@@ -1913,15 +1913,7 @@ void WizardController::OnPersonalizedRecomendAppsScreenExit(
     case PersonalizedRecommendAppsScreen::Result::kDataMalformed:
     case PersonalizedRecommendAppsScreen::Result::kError:
     case PersonalizedRecommendAppsScreen::Result::kTimeout:
-      if (features::IsOobePerksDiscoveryEnabled()) {
         ShowPerksDiscoveryScreen();
-      } else if (features::IsOobeAiIntroEnabled()) {
-        ShowAiIntroScreen();
-      } else if (features::IsOobeGeminiIntroEnabled()) {
-        ShowGeminiIntroScreen();
-      } else {
-        ShowAssistantOptInFlowScreen();
-      }
       break;
   }
 }
@@ -2370,11 +2362,7 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    ShowPasswordSelectionScreen();
-  } else {
-    ShowFingerprintSetupScreen();
-  }
+  ShowPasswordSelectionScreen();
 }
 
 void WizardController::OnPasswordSelectionScreenExit(
@@ -2593,15 +2581,7 @@ void WizardController::OnRecommendAppsScreenExit(
     case RecommendAppsScreen::Result::kSkipped:
     case RecommendAppsScreen::Result::kNotApplicable:
     case RecommendAppsScreen::Result::kLoadError:
-      if (features::IsOobePerksDiscoveryEnabled()) {
         ShowPerksDiscoveryScreen();
-      } else if (features::IsOobeAiIntroEnabled()) {
-        ShowAiIntroScreen();
-      } else if (features::IsOobeGeminiIntroEnabled()) {
-        ShowGeminiIntroScreen();
-      } else {
-        ShowAssistantOptInFlowScreen();
-      }
       break;
   }
 }
@@ -2625,16 +2605,7 @@ void WizardController::OnRemoteActivityNotificationScreenExit() {
 
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
-
-  if (features::IsOobePerksDiscoveryEnabled()) {
-    ShowPerksDiscoveryScreen();
-  } else if (features::IsOobeAiIntroEnabled()) {
-    ShowAiIntroScreen();
-  } else if (features::IsOobeGeminiIntroEnabled()) {
-    ShowGeminiIntroScreen();
-  } else {
-    ShowAssistantOptInFlowScreen();
-  }
+  ShowPerksDiscoveryScreen();
 }
 
 void WizardController::OnAiIntroScreenExit(AiIntroScreen::Result result) {
@@ -3164,6 +3135,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowCategoriesSelectionScreen();
   } else if (screen_id == PersonalizedRecommendAppsScreenView::kScreenId) {
     ShowPersonalizedRecomendAppsScreen();
+  } else if (screen_id == PerksDiscoveryScreenView::kScreenId) {
+    ShowPerksDiscoveryScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == InstallAttributesErrorView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

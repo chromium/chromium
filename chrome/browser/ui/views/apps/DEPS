@@ -6,6 +6,7 @@ include_rules = [
 specific_include_rules = {
   # These are only used in non-Mash configs.
   "chrome_native_app_window_views_aura_ash\.*": [
+    "+ash/utility/wm_util.h",
     "+ash/frame/non_client_frame_view_ash.h",
     "+ash/wm/window_state.h",
     "+ash/wm/window_state_observer.h",

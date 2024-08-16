@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scheduler/script_wrappable_task_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink::scheduler {
@@ -18,13 +19,14 @@ class AbortSignal;
 class DOMTaskSignal;
 
 class CORE_EXPORT WebSchedulingTaskState final
-    : public ScriptWrappableTaskState {
+    : public GarbageCollected<WebSchedulingTaskState>,
+      public WrappableTaskState {
  public:
   WebSchedulingTaskState(scheduler::TaskAttributionInfo*,
                          AbortSignal* abort_source,
                          DOMTaskSignal* priority_source);
 
-  // `ScriptWrappableTaskState` implementation:
+  // `WrappableTaskState` implementation:
   AbortSignal* AbortSource() override;
   DOMTaskSignal* PrioritySource() override;
   scheduler::TaskAttributionInfo* GetTaskAttributionInfo() override;

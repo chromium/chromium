@@ -644,7 +644,6 @@ void View::SetVisible(bool visible) {
     // of its descendants.
     GetViewAccessibility().UpdateFocusableStateRecursive();
     GetViewAccessibility().UpdateInvisibleState();
-    AdvanceFocusIfNecessary();
 
     AdvanceFocusIfNecessary();
 
@@ -1699,7 +1698,7 @@ void View::OnMouseEvent(ui::MouseEvent* event) {
 void View::OnScrollEvent(ui::ScrollEvent* event) {}
 
 void View::OnTouchEvent(ui::TouchEvent* event) {
-  NOTREACHED_NORETURN() << "Views should not receive touch events.";
+  NOTREACHED() << "Views should not receive touch events.";
 }
 
 void View::OnGestureEvent(ui::GestureEvent* event) {}
@@ -2934,7 +2933,7 @@ void View::PaintDebugRects(const PaintInfo& parent_paint_info) {
   ui::PaintRecorder recorder(context, paint_info.paint_recording_size(),
                              paint_info.paint_recording_scale_x(),
                              paint_info.paint_recording_scale_y(),
-                             &paint_cache_);
+                             /*cache*/ nullptr);
   gfx::Canvas* canvas = recorder.canvas();
   const float scale = canvas->UndoDeviceScaleFactor();
   gfx::RectF outline_rect(ScaleToEnclosedRect(GetLocalBounds(), scale));
@@ -2998,9 +2997,22 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // inherit the visibility of the owner View.
   view->UpdateLayerVisibility();
 
+  // TODO(https://crbug.com/325137417): We should only complete the
+  // initialization of the accessible cache when we know an accessibility API
+  // client fetches information from the browser. Add a condition for the
+  // kNativeAPIs mode after doing some testing.
+  view->GetViewAccessibility().CompleteCacheInitialization();
+
   // Make sure that the accessible focusable state of the descendants of the
   // `view` is correct, and make sure they are ready to send event
   // notifications.
+  //
+  // TODO(https://crbug.com/325137417): This function and
+  // `CompleteCacheInitialization` called above both walk the views hierarchy.
+  // Their responsibilities are also similar. Investigate whether we can prevent
+  // events from being fired until accessibility is fully initialized, and if we
+  // need to update the accessible focusable state before the cache is fully
+  // initialized. If so, let's merge these two functions.
   view->GetViewAccessibility().UpdateStatesForViewAndDescendants();
 
   if (widget) {

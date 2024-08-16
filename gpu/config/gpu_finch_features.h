@@ -40,8 +40,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kDefaultEnableGpuRasterization);
 GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopRasterization);
 #endif
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kCanvasOopWithoutGpuTileRaster);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableMSAAOnNewIntelGPUs);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages);
@@ -75,8 +73,6 @@ GPU_EXPORT extern const base::FeatureParam<bool>
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
 GPU_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableVkPipelineCache);
 

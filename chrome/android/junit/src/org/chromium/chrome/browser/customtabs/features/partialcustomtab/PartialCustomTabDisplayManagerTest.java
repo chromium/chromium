@@ -297,7 +297,6 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
-    @DisabledTest(message = "b/354141061")
     public void transitionFromBottomSheetToSideSheetWhileSoftkeyboardIsOn() {
         mPCCTTestRule.configPortraitMode();
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();

@@ -430,9 +430,12 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     // not history-traversable).
     // Exclude the WebView not being composited because we won't present any
     // frame if it is not being actively drawn.
+    // Exclude cases with prefers-reduced-motion. Back forward transitions are
+    // disabled in this case so no screenshots are necessary.
     bool navigation_with_screenshot = false;
     if (IsCompositedOutermostMainFrame(web_frame_) &&
-        commit_type != kWebHistoryInertCommit) {
+        commit_type != kWebHistoryInertCommit &&
+        !web_frame_->GetFrame()->GetSettings()->GetPrefersReducedMotion()) {
       navigation_with_screenshot = true;
       WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
       // The outermost mainframe must have a frame widget.
@@ -549,8 +552,10 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
       }
     }
   }
-  if (WebDevToolsAgentImpl* dev_tools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* dev_tools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     dev_tools->DidCommitLoadForLocalFrame(web_frame_->GetFrame());
+  }
 
   web_frame_->DidCommitLoad();
 }
@@ -729,7 +734,8 @@ void LocalFrameClientImpl::BeginNavigation(
     }
   }
 
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent()) {
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/false)) {
     navigation_info->devtools_initiator_info =
         devtools->NavigationInitiatorInfo(web_frame_->GetFrame());
   }
@@ -1009,9 +1015,10 @@ unsigned LocalFrameClientImpl::BackForwardLength() {
   return webview ? webview->HistoryListLength() : 0;
 }
 
-WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent() {
+WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent(
+    bool create_if_necessary) {
   return WebLocalFrameImpl::FromFrame(web_frame_->GetFrame()->LocalFrameRoot())
-      ->DevToolsAgentImpl();
+      ->DevToolsAgentImpl(create_if_necessary);
 }
 
 KURL LocalFrameClientImpl::OverrideFlashEmbedWithHTML(const KURL& url) {
@@ -1067,8 +1074,10 @@ base::UnguessableToken LocalFrameClientImpl::GetDevToolsFrameToken() const {
 
 String LocalFrameClientImpl::evaluateInInspectorOverlayForTesting(
     const String& script) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     return devtools->EvaluateInOverlayForTesting(script);
+  }
   return g_empty_string;
 }
 
@@ -1186,8 +1195,14 @@ LocalFrameClientImpl::CreateResourceLoadInfoNotifierWrapper() {
 void LocalFrameClientImpl::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
-  if (WebDevToolsAgentImpl* devtools = DevToolsAgent())
+  if (WebDevToolsAgentImpl* devtools =
+          DevToolsAgent(/*create_if_necessary=*/true)) {
     devtools->BindReceiver(std::move(host), std::move(receiver));
+  }
+}
+
+bool LocalFrameClientImpl::IsDomStorageDisabled() const {
+  return web_frame_->Client()->IsDomStorageDisabled();
 }
 
 }  // namespace blink

@@ -174,13 +174,6 @@ bool ContentTranslateDriver::HasCurrentPage() const {
   return true;
 }
 
-void ContentTranslateDriver::OpenUrlInNewTab(const GURL& url) {
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK, false);
-  web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
-}
-
 void ContentTranslateDriver::InitiateTranslationIfReload(
     content::NavigationHandle* navigation_handle) {
   // Check whether this is a reload: When doing a page reload, the

@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.gesturenav;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.graphics.Bitmap;
 import android.os.Build.VERSION_CODES;
 
@@ -26,15 +30,18 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
+import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -57,7 +64,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "hide-scrollbars",
-    "enable-features=" + BlinkFeatures.BACK_FORWARD_TRANSITIONS
+    "enable-features=BackForwardTransitions<Study",
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
+            + "transition_to_native_pages/true"
 })
 @DoNotBatch(reason = "Affect nav settings")
 @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -67,6 +77,8 @@ public class ScreenshotCaptureTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
+    @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -109,6 +121,7 @@ public class ScreenshotCaptureTest {
 
     @Before
     public void setUp() {
+        TestAnimations.setEnabled(true);
         // Fix the port cause the screenshot includes the url bar
         mTestServer =
                 EmbeddedTestServer.createAndStartServerWithPort(
@@ -119,6 +132,7 @@ public class ScreenshotCaptureTest {
         mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
         mScreenshotCaptureTestHelper = new ScreenshotCaptureTestHelper();
+        mHomepageTestRule.useChromeNtpForTest();
     }
 
     @After
@@ -211,6 +225,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     // The test is based on 3-button mode. The newer version defaults to gesture mode.
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q)
+    @DisabledTest(message = "https://crbug.com/357833738")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingBackToNtpFromNormalPage(boolean nightModeEnabled)
             throws IOException, TimeoutException, InterruptedException {
@@ -220,7 +235,7 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE));
 
-        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -248,6 +263,7 @@ public class ScreenshotCaptureTest {
     @Feature({"RenderTest"})
     // The test is based on 3-button mode. The newer version defaults to gesture mode.
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q)
+    @DisabledTest(message = "https://crbug.com/357833738")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testNavigatingBackToNtpFromNormalPageWithoutTopControls(boolean nightModeEnabled)
             throws Throwable {
@@ -267,7 +283,7 @@ public class ScreenshotCaptureTest {
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
-        GestureNavigationUtils mNavUtils = new GestureNavigationUtils(mActivityTestRule);
+        GestureNavigationTestUtils mNavUtils = new GestureNavigationTestUtils(mActivityTestRule);
         mNavUtils.swipeFromEdgeAndHold(/* leftEdge= */ true);
 
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -326,5 +342,47 @@ public class ScreenshotCaptureTest {
 
         mActivityTestRule.loadUrl(mTestServer.getURL(TEST_PAGE_2));
         callbackHelper.waitForOnly();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/357833738")
+    public void testNavigateToNTPByHomeButton()
+            throws InterruptedException, IOException, TimeoutException {
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
+
+        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        int currentNavIndex =
+                mActivityTestRule
+                        .getActivity()
+                        .getCurrentWebContents()
+                        .getNavigationController()
+                        .getNavigationHistory()
+                        .getCurrentEntryIndex();
+
+        mScreenshotCaptureTestHelper.setNavScreenshotCallbackForTesting(
+                new ScreenshotCaptureTestHelper.NavScreenshotCallback() {
+                    @Override
+                    public Bitmap onAvailable(int navIndex, Bitmap bitmap, boolean requested) {
+                        Assert.assertEquals(
+                                "Should capture the screenshot of the previous page.",
+                                currentNavIndex,
+                                navIndex);
+                        Assert.assertTrue(requested);
+                        mCapturedBitmap = bitmap;
+                        callbackHelper.notifyCalled();
+                        return null;
+                    }
+                });
+
+        onView(withId(R.id.home_button)).perform(click());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+
+        // Expect to capture a screenshot of TEST_PAGE
+        callbackHelper.waitForOnly();
+        mRenderTestRule.compareForResult(mCapturedBitmap, "navigate_to_ntp_by_home_button");
     }
 }

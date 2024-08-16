@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] X SNR between actual expected channel 0 is not greater than or equal to 110.97. Got 110.33326648257862.
+  assert_true: expected true got false
+[FAIL] X SNR between actual expected channel 1 is not greater than or equal to 110.97. Got 110.33326648257862.
+  assert_true: expected true got false
+[FAIL] < [test] 2 out of 7 assertions were failed.
+  assert_true: expected true got false
+[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed.
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

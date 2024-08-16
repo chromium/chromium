@@ -43,7 +43,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
   // |actions_| may not get switched off causing a previously available button
   // to stay available when it is not available in the current media context.
   // Currently used only by browser system media controls when
-  // kWebAppSystemMediaControlsWin is enabled.
+  // kWebAppSystemMediaControls is enabled.
   void RebindMojoForNewID(base::UnguessableToken request_id);
 
   // media_session::mojom::MediaControllerObserver:

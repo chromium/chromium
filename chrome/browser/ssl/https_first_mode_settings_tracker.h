@@ -35,12 +35,16 @@ class StatefulSSLHostStateDelegate;
 // numeric values should never be reused.
 // Must be kept in sync with the HttpsFirstModeSetting enums located in
 // chrome/browser/resources/settings/privacy_page/security_page.ts and enums.xml
+// LINT.IfChange
 enum class HttpsFirstModeSetting {
   kDisabled = 0,
-  kEnabledIncognito = 1,
+  // DEPRECATED: A separate Incognito setting never shipped.
+  // kEnabledIncognito = 1,
   kEnabledFull = 2,
-  kMaxValue = kEnabledFull,
+  kEnabledBalanced = 3,
+  kMaxValue = kEnabledBalanced,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/security/enums.xml)
 
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:

@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -40,7 +41,7 @@ CardUnmaskOtpInputDialogViews::CardUnmaskOtpInputDialogViews(
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

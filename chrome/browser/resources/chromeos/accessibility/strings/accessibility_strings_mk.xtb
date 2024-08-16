@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Розово-кафеава</translation>
 <translation id="249330843868392562">Отвори ги поставките за „Од текст во говор“</translation>
 <translation id="2497706219848005458">Зелено-жолта</translation>
+<translation id="2512979179176933762">прикажување прозорци</translation>
 <translation id="2523609930580546572">Упатство за ChromeVox</translation>
 <translation id="2525706221823668172">Кратенки од тастатурата на Chromebook</translation>
 <translation id="2553108862507765288">граматичка грешка</translation>
@@ -498,6 +499,7 @@
 <translation id="4246217262268234757">Челичносина</translation>
 <translation id="4253168017788158739">Забелешка</translation>
 <translation id="4254798249533888099">Дрво</translation>
+<translation id="4259220820964911921">Да се овозможи „Контрола со лик“?</translation>
 <translation id="4271220233568730077">Next math</translation>
 <translation id="4275397969489577657">Овозможи евидентирање пренос на настани</translation>
 <translation id="4278486392851938658">Нема претходен посетен линк</translation>
@@ -711,6 +713,7 @@
 <translation id="5760594853119905566">Прилог</translation>
 <translation id="5761219715606611783">Браво! Ги научивте основните движења со допир на ChromeVox. Може повторно да го разгледате или да излезете од упатствово преку копчињата подолу.</translation>
 <translation id="5776001898637896684">Екстензија за „Од текст во говор“ за Google Enhanced Network</translation>
+<translation id="5783252477644995371">„Контролата со лик“ ви овозможува да го контролирате курсорот со покажување со ликот, а и способност за извршување дејства, на пр., кликнување на левото копче со движења на ликот како насмевка</translation>
 <translation id="5805940204952508776">Допрете со два прста</translation>
 <translation id="5819072574982403430">Ставка во дрво</translation>
 <translation id="5822819874379903994">Темнотиркизна</translation>
@@ -1074,7 +1077,6 @@
 <translation id="847040613207937740">Нема следно поле за избор</translation>
 <translation id="8473540203671727883">Изговарај го текстот под глувчето</translation>
 <translation id="8476408756881832830">Паузирај ja репродукцијата кога зборува ChromeVox</translation>
-<translation id="8476508772960940536">преглед на прозорец</translation>
 <translation id="8480873377842220259">Сега ќе научите основна навигација. Може да го задржите копчето Search и да ги притискате копчињата со стрелки за да се движите низ екранот. За да продолжите, притиснете Search + стрелка надесно.</translation>
 <translation id="8503360654911991865">Намали грануларност на навигација</translation>
 <translation id="8520472399088452386">Копче за приспособување</translation>

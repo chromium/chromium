@@ -15,20 +15,14 @@
 			<string>PackageTracking</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Track this Package? </key>
+				<key>Track this Package?</key>
 				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_1</string>
-				<key>Chrome can help you track this package on the New Tab page.</key>
-				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2</string>
 				<key>Track</key>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_2</string>
+				<key>Your shipment</key>
 				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_3</string>
-				<key>Your Shipment</key>
-				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4</string>
-				<key>1ZX32F000348211000</key>
-				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_5</string>
 				<key>Estimated delivery</key>
-				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_6</string>
-				<key>Wednesday, May 01 by 7:00 P.M.</key>
-				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_7</string>
+				<string>IDS_IOS_WHATS_NEW_PACKAGETRACKING_SCREENSHOT_TEXT_4</string>
 			</dict>
 			<key>IconImageName</key>
 			<string>shippingbox</string>
@@ -60,9 +54,9 @@
 			<string>PasswordSharing</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Share Passwords with your Family Group</key>
+				<key>Share Your Passwords</key>
 				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_1</string>
-				<key>Easily and securely share a copy of a password with your family group in Google Password Manager.</key>
+				<key>Share</key>
 				<string>IDS_IOS_WHATS_NEW_PASSWORDSHARING_SCREENSHOT_TEXT_2</string>
 			</dict>
          <key>IconImageName</key>
@@ -99,7 +93,7 @@
 			<dict>
 				<key>Hide</key>
 				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_1</string>
-				<key>Customization</key>
+				<key>Customize</key>
 				<string>IDS_IOS_WHATS_NEW_CUSTOMIZABLEOVERFLOWMENU_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>

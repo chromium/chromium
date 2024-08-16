@@ -37,12 +37,14 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR)
 @Config(manifest = Config.NONE)
 public class EdgeToEdgeBottomChinMediatorTest {
+    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private LayoutManager mLayoutManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private NavigationBarColorProvider mNavigationBarColorProvider;
@@ -54,10 +56,12 @@ public class EdgeToEdgeBottomChinMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
         mModel = new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS).build();
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
                         mModel,
+                        mKeyboardVisibilityDelegate,
                         mLayoutManager,
                         mEdgeToEdgeController,
                         mNavigationBarColorProvider,
@@ -68,6 +72,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     public void testInitialization() {
         assertEquals(0, mModel.get(Y_OFFSET));
 
+        verify(mKeyboardVisibilityDelegate).addKeyboardVisibilityListener(eq(mMediator));
         verify(mLayoutManager).addObserver(eq(mMediator));
         verify(mEdgeToEdgeController).registerObserver(eq(mMediator));
         verify(mNavigationBarColorProvider).addObserver(eq(mMediator));
@@ -78,6 +83,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
     public void testDestroy() {
         mMediator.destroy();
 
+        verify(mKeyboardVisibilityDelegate).removeKeyboardVisibilityListener(eq(mMediator));
         verify(mLayoutManager).removeObserver(eq(mMediator));
         verify(mEdgeToEdgeController).unregisterObserver(eq(mMediator));
         verify(mNavigationBarColorProvider).removeObserver(eq(mMediator));
@@ -241,6 +247,27 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
         mMediator.onBrowserControlsOffsetUpdate(60);
         assertEquals("The y-offset should be 60.", 60, mModel.get(Y_OFFSET));
+    }
+
+    @Test
+    public void testKeyboardVisibilityChanged() {
+        assertFalse(
+                "The chin should not be visible as it has just been initialized.",
+                mModel.get(IS_VISIBLE));
+
+        doReturn(LayoutType.BROWSING).when(mLayoutManager).getActiveLayoutType();
+        mMediator.onToEdgeChange(60, /* isDrawingToEdge= */ true, /* isPageOptInToEdge= */ false);
+        assertTrue("The chin should be visible as all conditions are met.", mModel.get(IS_VISIBLE));
+
+        mMediator.keyboardVisibilityChanged(true);
+        assertFalse(
+                "The chin should not be visible as the keyboard is showing.",
+                mModel.get(IS_VISIBLE));
+
+        mMediator.keyboardVisibilityChanged(false);
+        assertTrue(
+                "The chin should be visible as the keyboard is no longer showing.",
+                mModel.get(IS_VISIBLE));
     }
 
     private void onToEdgeChange(

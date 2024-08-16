@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/lobster/lobster_ui.h"
 
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/lobster/lobster_service_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash {

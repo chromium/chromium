@@ -20,7 +20,7 @@ class OpenTabsUIDelegate;
 }
 
 namespace syncer {
-class ModelTypeProcessor;
+class DataTypeProcessor;
 struct UpdateResponseData;
 }  // namespace syncer
 
@@ -58,7 +58,7 @@ class RecentTabsBuilderTestHelper {
                              int window_index,
                              int tab_index);
 
-  void ExportToSessionSync(syncer::ModelTypeProcessor* processor);
+  void ExportToSessionSync(syncer::DataTypeProcessor* processor);
   void VerifyExport(sync_sessions::OpenTabsUIDelegate* delegate);
 
   std::vector<std::u16string> GetTabTitlesSortedByRecency();

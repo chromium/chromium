@@ -442,13 +442,14 @@ TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
   EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
-TEST_F(PopupRowViewTest, SetSizePosInSetAccessibleProperties) {
+TEST_F(PopupRowViewTest, AccessibleProperties) {
   ShowView(/*line_number=*/0,
            {Suggestion("test_value", "test_label", Suggestion::Icon::kNoIcon,
                        SuggestionType::kAddressEntry)});
 
   ui::AXNodeData node_data;
   row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
 }
@@ -625,5 +626,49 @@ TEST_P(PopupRowPosInSetViewTest, All) {
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowPosInSetViewTest,
                          ::testing::ValuesIn(kPosInSetTestcases));
+
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_ReturnKeyPress) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_LeftClick) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  generator().MoveMouseTo(kOutOfBounds);
+  Paint();
+  generator().MoveMouseTo(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  generator().ClickLeftButton();
+}
+
+// Gestures are not supported on MacOS.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(PopupRowViewTest, NoQuickSuggestionAccepting_GestureEvents) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
+  ON_CALL(controller(), IsViewVisibilityAcceptingThresholdEnabled())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
+      .WillOnce(Return(true));
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  generator().GestureTapAt(
+      row_view().GetContentView().GetBoundsInScreen().CenterPoint());
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace autofill

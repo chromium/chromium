@@ -11,5 +11,5 @@ java_library("custom_lint_java") {
 
   # Avoid using java_prebuilt() to ensure all uses go through the checked-in
   # version.
-  input_jars_paths = [ "//third_party/android_build_tools/lint/lint.jar" ]
+  input_jars_paths = [ "//third_party/android_build_tools/lint/cipd/lint.jar" ]
 }

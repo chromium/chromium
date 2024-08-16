@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -126,6 +127,9 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
   // and there is no matching.
   void ShowCapsLockRewritingNudge();
 
+  std::optional<std::string> GetDeviceKeyForNotificationId(
+      const std::string& notification_id);
+
  private:
   void HandleRightClickNotificationClicked(const std::string& notification_id,
                                            std::optional<int> button_index);
@@ -134,6 +138,9 @@ class ASH_EXPORT InputDeviceSettingsNotificationController {
                                         const char* pref_name,
                                         const std::string& notification_id,
                                         std::optional<int> button_index);
+
+  base::flat_map<std::string, std::string> notification_id_to_device_key_map_;
+
   // MessageCenter for adding notifications.
   const raw_ptr<message_center::MessageCenter, DanglingUntriaged>
       message_center_;

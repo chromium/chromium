@@ -40,13 +40,13 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
     ~Writer();
 
     // Adds data to the stream. |is_done| should be true if this is the last
-    // data to be appended. |data_len| must not be 0 unless |is_done| is true.
+    // data to be appended. |data| must not be empty unless |is_done| is true.
     // Once called with |is_done| being true, must never be called again.
     // Returns true if write was passed successfully on to the next layer,
     // though the data may not actually have been written to the underlying
     // URLRequest.  Returns false if unable to write the data failed because the
     // underlying ChunkedUploadDataStream was destroyed.
-    bool AppendData(const char* data, int data_len, bool is_done);
+    bool AppendData(base::span<const uint8_t> data, bool is_done);
 
    private:
     friend class ChunkedUploadDataStream;
@@ -71,12 +71,12 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
   std::unique_ptr<Writer> CreateWriter();
 
   // Adds data to the stream. |is_done| should be true if this is the last
-  // data to be appended. |data_len| must not be 0 unless |is_done| is true.
+  // data to be appended. |data| must not be empty unless |is_done| is true.
   // Once called with |is_done| being true, must never be called again.
   // TODO(mmenke):  Consider using IOBuffers instead, to reduce data copies.
   // TODO(mmenke):  Consider making private, and having all consumers use
   //     Writers.
-  void AppendData(const char* data, int data_len, bool is_done);
+  void AppendData(base::span<const uint8_t> data, bool is_done);
 
  private:
   // UploadDataStream implementation.
@@ -93,7 +93,7 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
   // True once all data has been appended to the stream.
   bool all_data_appended_ = false;
 
-  std::vector<std::unique_ptr<std::vector<char>>> upload_data_;
+  std::vector<std::unique_ptr<std::vector<uint8_t>>> upload_data_;
 
   // Buffer to write the next read's data to. Only set when a call to
   // ReadInternal reads no data.

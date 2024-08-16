@@ -1,11 +1,11 @@
 rootWebArea focusable scrollXMin=0 scrollable=true
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer ignored className='no-overflow not-scrollable'
+++++++genericContainer ignored
 ++++++++paragraph
 ++++++++++staticText name='no overflow'
 ++++++++++++inlineTextBox name='no overflow'
-++++++genericContainer ignored className='clipped-not scrollable'
+++++++genericContainer ignored
 ++++++++paragraph
 ++++++++++staticText name='clipped large lots of text more text'
 ++++++++++++inlineTextBox name='clipped large lots of text more text'
@@ -15,7 +15,7 @@ rootWebArea focusable scrollXMin=0 scrollable=true
 ++++++++++++inlineTextBox name='ab'
 ++++++++++++inlineTextBox name=' '
 ++++++++++++inlineTextBox name='cd'
-++++++genericContainer ignored className='not-enough-content not-scrollable'
+++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='tiny'
@@ -37,7 +37,7 @@ rootWebArea focusable scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='x=scroll'
 ++++++++++++++inlineTextBox name='x=scroll'
-++++++++genericContainer ignored className='x-visible not-scrollable'
+++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='x=visible'
 ++++++++++++++inlineTextBox name='x=visible'
@@ -58,7 +58,7 @@ rootWebArea focusable scrollXMin=0 scrollable=true
 ++++++++++paragraph
 ++++++++++++staticText name='y=scroll'
 ++++++++++++++inlineTextBox name='y=scroll'
-++++++++genericContainer ignored className='y-visible not-scrollable'
+++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='y=visible'
 ++++++++++++++inlineTextBox name='y=visible'

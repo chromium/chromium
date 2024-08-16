@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 
 #include <algorithm>
@@ -1131,7 +1136,16 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   display_observer_.emplace(this);
 
 #if !BUILDFLAG(IS_ANDROID)
+// In ChromeOS, the chrome application typically starts at the login screen and
+// waits for the user to log in before opening a browser window, so calling
+// `BeginFirstWebContentsProfiling()` is inappropriate because the
+// `BrowserList` is typically empty at this point. Similarly, a restart after a
+// crash (which has no login screen) requires the user to click a notification
+// prompt before browser windows are restored, so the `BrowserList` is also
+// empty in this case.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::BeginFirstWebContentsProfiling();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Instantiate the power-related metrics reporters.
 

@@ -23,8 +23,10 @@
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/audio/audio_system.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
@@ -188,13 +190,23 @@ SpeechRecognizerImpl::SpeechRecognizerImpl(
     int session_id,
     bool continuous,
     bool provisional_results,
-    std::unique_ptr<SpeechRecognitionEngine> engine)
+    std::unique_ptr<SpeechRecognitionEngine> engine,
+    std::optional<SpeechRecognitionAudioForwarderConfig> audio_forwarder_config)
     : SpeechRecognizer(listener, session_id),
       audio_system_(audio_system),
       recognition_engine_(std::move(engine)),
-      endpointer_(kAudioSampleRate),
+      sample_rate_(audio_forwarder_config.has_value()
+                       ? audio_forwarder_config.value().sample_rate
+                       : kAudioSampleRate),
+      endpointer_(sample_rate_),
       provisional_results_(provisional_results),
-      end_of_utterance_(false) {
+      end_of_utterance_(false),
+      use_audio_capturer_source_(!audio_forwarder_config.has_value()),
+      audio_forwarder_receiver_(
+          this,
+          audio_forwarder_config.has_value()
+              ? std::move(audio_forwarder_config.value().audio_forwarder)
+              : mojo::NullReceiver()) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(recognition_engine_ != nullptr);
   DCHECK(audio_system_ != nullptr);
@@ -273,7 +285,7 @@ SpeechRecognizerImpl::recognition_engine() const {
 SpeechRecognizerImpl::~SpeechRecognizerImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   endpointer_.EndSession();
-  if (GetAudioCapturerSource()) {
+  if (use_audio_capturer_source_ && GetAudioCapturerSource()) {
     GetAudioCapturerSource()->Stop();
     audio_capturer_source_ = nullptr;
   }
@@ -312,6 +324,30 @@ void SpeechRecognizerImpl::OnCaptureError(
                                 weak_ptr_factory_.GetWeakPtr(), event_args));
 }
 
+void SpeechRecognizerImpl::AddAudioFromRenderer(
+    media::mojom::AudioDataS16Ptr buffer) {
+  if (audio_converter_ == nullptr) {
+    return;
+  }
+
+  std::unique_ptr<media::AudioBus> data =
+      AudioBus::Create(buffer->channel_count, buffer->frame_count);
+
+  data->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+      buffer->data.data(), buffer->frame_count);
+
+  scoped_refptr<AudioChunk> chunk(new AudioChunk(
+      buffer->channel_count * buffer->frame_count * kNumBitsPerAudioSample / 8,
+      kNumBitsPerAudioSample / 8));
+  data->ToInterleaved<media::SignedInt16SampleTypeTraits>(
+      data->frames(), reinterpret_cast<int16_t*>(chunk->writable_data()));
+  FSMEventArgs event_args(EVENT_AUDIO_DATA);
+  event_args.audio_chunk = std::move(chunk);
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                weak_ptr_factory_.GetWeakPtr(), event_args));
+}
+
 void SpeechRecognizerImpl::OnSpeechRecognitionEngineResults(
     const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results) {
   FSMEventArgs event_args(EVENT_ENGINE_RESULT);
@@ -333,14 +369,6 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineError(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
                                 weak_ptr_factory_.GetWeakPtr(), event_args));
-}
-
-void SpeechRecognizerImpl::OnDeviceInfo(
-    const std::optional<media::AudioParameters>& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  device_params_ = params.value_or(AudioParameters());
-  DVLOG(1) << "Device parameters: " << device_params_.AsHumanReadableString();
-  DispatchEvent(FSMEventArgs(EVENT_START));
 }
 
 // -----------------------  Core FSM implementation ---------------------------
@@ -412,15 +440,33 @@ void SpeechRecognizerImpl::ProcessAudioPipeline(
   }
 }
 
+void SpeechRecognizerImpl::OnAudioParametersReceived(
+    const std::optional<media::AudioParameters>& params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  audio_parameters_ = params.value_or(AudioParameters());
+  DVLOG(1) << "Audio parameters: " << audio_parameters_.AsHumanReadableString();
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                FSMEventArgs(EVENT_START)));
+}
+
 SpeechRecognizerImpl::FSMState SpeechRecognizerImpl::PrepareRecognition(
     const FSMEventArgs&) {
   DCHECK(state_ == STATE_IDLE);
   DCHECK(recognition_engine_.get() != nullptr);
   DCHECK(!IsCapturingAudio());
-
-  GetAudioSystem()->GetInputStreamParameters(
-      device_id_, base::BindOnce(&SpeechRecognizerImpl::OnDeviceInfo,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  if (!use_audio_capturer_source_) {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  FSMEventArgs(EVENT_START)));
+  } else {
+    GetAudioSystem()->GetInputStreamParameters(
+        device_id_,
+        base::BindOnce(&SpeechRecognizerImpl::OnAudioParametersReceived,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   listener()->OnRecognitionStart(session_id());
   return STATE_PREPARING;
@@ -439,14 +485,14 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
 
   int chunk_duration_ms = recognition_engine_->GetDesiredAudioChunkDurationMs();
 
-  if (!device_params_.IsValid()) {
+  if (!audio_parameters_.IsValid()) {
     DLOG(WARNING) << "Audio input device not found, but one should exist -- "
                      "using fake audio input parameters.";
 
     // It's okay to try with fake parameters since we've already been given
     // permission from SpeechRecognitionManagerImpl. If no device exists, this
     // will just result in an OnCaptureError().
-    device_params_ = media::AudioParameters::UnavailableDeviceParams();
+    audio_parameters_ = media::AudioParameters::UnavailableDeviceParams();
   }
 
   // Audio converter shall provide audio based on these parameters as output.
@@ -455,7 +501,7 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   AudioParameters output_parameters =
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                       media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
-                      kAudioSampleRate, frames_per_buffer);
+                      sample_rate_, frames_per_buffer);
   DVLOG(1) << "SRI::output_parameters: "
            << output_parameters.AsHumanReadableString();
 
@@ -475,13 +521,13 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
 
   // AUDIO_FAKE means we are running a test.
   if (use_native_audio_params &&
-      device_params_.format() != media::AudioParameters::AUDIO_FAKE) {
+      audio_parameters_.format() != media::AudioParameters::AUDIO_FAKE) {
     // Use native audio parameters but avoid opening up at the native buffer
     // size. Instead use same frame size (in milliseconds) as WebSpeech uses.
     // We rely on internal buffers in the audio back-end to fulfill this request
     // and the idea is to simplify the audio conversion since each Convert()
     // call will then render exactly one ProvideInput() call.
-    input_parameters = device_params_;
+    input_parameters = audio_parameters_;
     frames_per_buffer =
         ((input_parameters.sample_rate() * chunk_duration_ms) / 1000.0) + 0.5;
     input_parameters.set_frames_per_buffer(frames_per_buffer);
@@ -501,9 +547,11 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   // to user input mode.
   endpointer_.SetEnvironmentEstimationMode();
 
-  CreateAudioCapturerSource();
-  GetAudioCapturerSource()->Initialize(input_parameters, this);
-  GetAudioCapturerSource()->Start();
+  if (use_audio_capturer_source_) {
+    CreateAudioCapturerSource();
+    GetAudioCapturerSource()->Initialize(input_parameters, this);
+    GetAudioCapturerSource()->Start();
+  }
 
   return STATE_STARTING;
 }
@@ -706,12 +754,15 @@ SpeechRecognizerImpl::NotFeasible(const FSMEventArgs& event_args) {
 void SpeechRecognizerImpl::CloseAudioCapturerSource() {
   DCHECK(IsCapturingAudio());
   DVLOG(1) << "SpeechRecognizerImpl closing audio capturer source.";
-  GetAudioCapturerSource()->Stop();
-  audio_capturer_source_ = nullptr;
+
+  if (use_audio_capturer_source_) {
+    GetAudioCapturerSource()->Stop();
+    audio_capturer_source_ = nullptr;
+  }
 }
 
 int SpeechRecognizerImpl::GetElapsedTimeMs() const {
-  return (num_samples_recorded_ * 1000) / kAudioSampleRate;
+  return (num_samples_recorded_ * 1000) / sample_rate_;
 }
 
 void SpeechRecognizerImpl::UpdateSignalAndNoiseLevels(const float& rms,

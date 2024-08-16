@@ -117,7 +117,7 @@ crosapi::TelemetryDiagnosticRoutineInquiryPtr UncheckedConvertPtr(
       return crosapi::TelemetryDiagnosticRoutineInquiry::NewUnrecognizedInquiry(
           /*unrecognizedArgument=*/false);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticRoutineInteractionPtr UncheckedConvertPtr(
@@ -130,7 +130,7 @@ crosapi::TelemetryDiagnosticRoutineInteractionPtr UncheckedConvertPtr(
       return crosapi::TelemetryDiagnosticRoutineInteraction::NewInquiry(
           ConvertRoutinePtr(std::move(input->get_inquiry())));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
@@ -173,7 +173,7 @@ crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
           /*unrecognizedArgument=*/false);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticRoutineStateFinishedPtr UncheckedConvertPtr(
@@ -201,7 +201,7 @@ crosapi::TelemetryDiagnosticRoutineStateUnionPtr UncheckedConvertPtr(
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
           ConvertRoutinePtr(std::move(input->get_finished())));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticRoutineStatePtr UncheckedConvertPtr(
@@ -328,7 +328,7 @@ healthd::RoutineInquiryReplyPtr UncheckedConvertPtr(
           ConvertRoutinePtr(
               std::move(input->get_check_keyboard_backlight_state())));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace unchecked
@@ -348,7 +348,7 @@ healthd::LedName Convert(crosapi::TelemetryDiagnosticLedName input) {
     case crosapi::TelemetryDiagnosticLedName::kRight:
       return healthd::LedName::kRight;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 healthd::LedColor Convert(crosapi::TelemetryDiagnosticLedColor input) {
@@ -368,7 +368,7 @@ healthd::LedColor Convert(crosapi::TelemetryDiagnosticLedColor input) {
     case crosapi::TelemetryDiagnosticLedColor::kAmber:
       return healthd::LedColor::kAmber;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 healthd::CheckLedLitUpStateReply::State Convert(
@@ -383,7 +383,7 @@ healthd::CheckLedLitUpStateReply::State Convert(
     case crosapi::TelemetryDiagnosticCheckLedLitUpStateReply::State::kNotLitUp:
       return healthd::CheckLedLitUpStateReply::State::kNotLitUp;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 healthd::CheckKeyboardBacklightStateReply::State Convert(
@@ -400,7 +400,7 @@ healthd::CheckKeyboardBacklightStateReply::State Convert(
         kAnyNotLitUp:
       return healthd::CheckKeyboardBacklightStateReply::State::kAnyNotLitUp;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
@@ -451,7 +451,7 @@ crosapi::TelemetryDiagnosticMemtesterTestItemEnum Convert(
       return crosapi::TelemetryDiagnosticMemtesterTestItemEnum::
           kSixteenBitWrites;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticHardwarePresenceStatus Convert(
@@ -467,7 +467,7 @@ crosapi::TelemetryDiagnosticHardwarePresenceStatus Convert(
     case healthd::HardwarePresenceStatus::kNotConfigured:
       return crosapi::TelemetryDiagnosticHardwarePresenceStatus::kNotConfigured;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
@@ -483,7 +483,7 @@ crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason Convert(
       return crosapi::TelemetryDiagnosticRoutineStateWaiting::Reason::
           kWaitingForInteraction;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type Convert(
@@ -499,7 +499,7 @@ crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::Type Convert(
       return crosapi::TelemetryDiagnosticNetworkBandwidthRoutineRunningInfo::
           Type::kUpload;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue Convert(
@@ -523,7 +523,7 @@ crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::Issue Convert(
       return crosapi::TelemetryDiagnosticCameraFrameAnalysisRoutineDetail::
           Issue::kLensAreDirty;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 crosapi::TelemetryDiagnosticCameraSubtestResult Convert(
@@ -539,7 +539,7 @@ crosapi::TelemetryDiagnosticCameraSubtestResult Convert(
     case healthd::CameraSubtestResult::kFailed:
       return crosapi::TelemetryDiagnosticCameraSubtestResult::kFailed;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash::converters

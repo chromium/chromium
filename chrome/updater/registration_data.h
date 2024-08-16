@@ -15,6 +15,7 @@
 namespace updater {
 
 inline constexpr int kRegistrationSuccess = 0;
+inline constexpr int kRegistrationError = 1;
 
 struct RegistrationRequest {
   RegistrationRequest();

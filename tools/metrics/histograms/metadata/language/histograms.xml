@@ -77,6 +77,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The size of the input to LanguageDetectionModel::Predict before truncation
+    for passing to the TFLite detection model.
+
+    This histogram is recorded once for each invocation of the model. The model
+    may be invoked multiple times after pageload, running against samples of
+    text from the page.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.Create.Duration" units="ms"
     expires_after="2025-01-20">
   <owner>fergal@google.com</owner>
@@ -90,8 +104,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Duration"
+    units="ms" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total time taken to prepare the input and run the TFLite detection model
+    possibly multiple times on samples of text from the page.
+
+    This histogram is recorded once for each pageload.
+  </summary>
+</histogram>
+
+<histogram name="LanguageDetection.TFLiteModel.DetectPageLanguage.Size"
+    units="characters" expires_after="2025-01-20">
+  <owner>fergal@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The total size in chracters of the page under consideration.
+
+    This histogram is recorded once for each pageload.
+  </summary>
+</histogram>
+
 <histogram name="LanguageDetection.TFLiteModel.LanguageDetectionModelState"
-    enum="LanguageDetectionModelState" expires_after="2024-12-10">
+    enum="LanguageDetectionModelState" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -102,7 +139,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.UpdateLanaguageDetectionModelTime"
-    units="ms" expires_after="2024-12-10">
+    units="ms" expires_after="2025-02-10">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -114,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
-    enum="BooleanAvailable" expires_after="2024-12-10">
+    enum="BooleanAvailable" expires_after="2025-02-09">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -125,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelRequestDeferred"
-    enum="BooleanDeferred" expires_after="2024-12-10">
+    enum="BooleanDeferred" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -137,7 +174,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.WasModelUnavailableDueToDeferredLoad"
-    enum="Boolean" expires_after="2024-12-10">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -160,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Action"
-    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2024-12-10">
+    enum="LanguageSettingsAppLanguagePromptAction" expires_after="2025-02-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -239,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.TopULPMatchStatus"
-    enum="ULPTopLanguageMatch" expires_after="2024-12-10">
+    enum="ULPTopLanguageMatch" expires_after="2025-02-09">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -252,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.PageImpression"
-    enum="LanguageSettingsPageType" expires_after="2024-12-10">
+    enum="LanguageSettingsPageType" expires_after="2025-02-10">
   <owner>googleo@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -263,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.SplitInstallFinalStatus"
-    enum="LanguageSettingsSplitInstallStatus" expires_after="2024-12-10">
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -275,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -285,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.Count" units="count"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>dvallet@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -295,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
-    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2024-12-10">
+    enum="AcceptLanguageAndContentLanguageUsage" expires_after="2025-02-10">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -306,7 +343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguageAndXmlHtmlLangUsage"
-    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2024-12-10">
+    enum="AcceptLanguageAndXmlHtmlLangUsage" expires_after="2025-02-10">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -317,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -393,7 +430,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
     enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -480,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2024-12-10">
+    expires_after="2025-02-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

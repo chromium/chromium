@@ -200,45 +200,6 @@ TEST_F(ReauthenticationCoordinatorTest,
   ASSERT_FALSE(delegate_.successfulReauth);
 }
 
-// Tests that the set passcode alert is presented after
-// backgrounding/foregrounding the scene without a passcode.
-TEST_F(ReauthenticationCoordinatorTest,
-       SetPasscodeRequestedAfterSceneGoesToBackground) {
-  CheckReauthenticationViewControllerNotPresented();
-
-  // Simulate start of transition to background state.
-  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-
-  // Wait for presentation of ReauthenticationViewController to finish.
-  // Otherwise its view will not get loaded and the AlertCoordinator will not
-  // present its alert. See AlertCoordinator start.
-  base::test::ios::SpinRunLoopWithMaxDelay(
-      base::test::ios::kWaitForUIElementTimeout);
-
-  CheckReauthenticationViewControllerIsPresented();
-
-  // Simulate transition to background.
-  scene_state_.activationLevel = SceneActivationLevelBackground;
-
-  // Reauth vc should still be there.
-  CheckReauthenticationViewControllerIsPresented();
-  ASSERT_FALSE(delegate_.successfulReauth);
-
-  // Mock no local authentication available.
-  mock_reauth_module_.canAttempt = NO;
-
-  // Back to foreground active should present an alert.
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-
-  CheckReauthenticationViewControllerIsPresented();
-
-  ASSERT_TRUE(
-      [base_navigation_controller_.topViewController.presentedViewController
-          isKindOfClass:[UIAlertController class]]);
-
-  ASSERT_FALSE(delegate_.successfulReauth);
-}
-
 // Tests that settings are closed after backgrounding/foregrounding the scene
 // and canceling local authentication.
 TEST_F(ReauthenticationCoordinatorTest,

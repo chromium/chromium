@@ -39,7 +39,7 @@
   #content {
     border-radius: var(--cr-card-border-radius);
     margin: 6px auto;
-    min-height: 103px;
+    min-height: 75px;
     width: var(--downloads-card-width);
     max-width: calc(100% - 2 * var(--downloads-card-margin));
   }
@@ -72,7 +72,6 @@
   }
 
   #details {
-    border-inline-start: 1px #d8d8d8 solid;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -80,7 +79,7 @@
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: var(--downloads-card-margin);
-    padding-top: 16px;
+    padding-top: 18px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -115,10 +114,10 @@
   }
 
   .icon-wrapper {
-    align-self: center;
+    align-self: start;
     flex: none;
     justify-content: center;
-    margin: 0 24px;
+    margin: 18px 24px;
   }
 
   .icon,
@@ -429,6 +428,13 @@
     <div class="more-options">
       <!-- Menu and/or quick action(s). -->
       <div role="gridcell" id="action-icon-buttons">
+        <cr-icon-button id="copy-download-link" iron-icon="downloads:link"
+            hidden="[[!computeShowCopyDownloadLink_(data.url)]]"
+            title="$i18n{controlCopyDownloadLink}"
+            aria-label$="$i18n{controlCopyDownloadLink}"
+            on-click="onCopyDownloadLinkClick_"
+            focus-row-control focus-type="copyDownloadLink">
+        </cr-icon-button>
         <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
             hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
                 isDangerous_, isReviewable_, showDeepScan_, showCancel_,

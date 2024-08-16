@@ -106,10 +106,13 @@ void LayoutCustomScrollbarPart::Trace(Visitor* visitor) const {
 
 // TODO(crbug.com/1020913): Support subpixel layout of scrollbars and remove
 // ToInt() in the following functions.
+// TODO(crbug.com/40339056): This could handle intrinsic sizing keywords
+// and calc-size() a bit better than it does.
 int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
-  if (length.IsSpecified()) {
+  if (!length.HasAutoOrContentOrIntrinsic()) {
+    CHECK(length.IsSpecified());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
@@ -179,7 +182,7 @@ void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
 
 LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
   NOT_DESTROYED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PhysicalSize LayoutCustomScrollbarPart::Size() const {

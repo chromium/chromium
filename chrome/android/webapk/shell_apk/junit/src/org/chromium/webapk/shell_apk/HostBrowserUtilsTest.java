@@ -102,8 +102,7 @@ public class HostBrowserUtilsTest {
     // is:
     // 1) Browser specified in shared preferences if it is still installed.
     // 2) Bound browser specified in AndroidManifest.xml
-    // The default browser and the number of installed browsers which support WebAPKs should
-    // have no effect.
+    // 3) The default browser.
     @Test
     public void testComputeHostBrowserBoundWebApkPrecedence() {
         if (!mIsBoundWebApk) return;
@@ -140,10 +139,11 @@ public class HostBrowserUtilsTest {
 
         // Shared pref browser: Null
         // Bound browser in AndroidManifest.xml: No longer installed
-        // Should ignore default browser and number of browsers supporting WebAPKs.
+        // Should use default browser.
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.YES, null);
         setHostBrowserInSharedPreferences(null);
-        Assert.assertNull(
+        Assert.assertEquals(
+                DEFAULT_BROWSER_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
     }
 
@@ -151,8 +151,7 @@ public class HostBrowserUtilsTest {
     // {@link #computeHostBrowserPackageClearCachedDataOnChange()}. The expected order of precedence
     // is:
     // 1) Browser specified in shared preferences if it is still installed.
-    // 2) Default browser if the default browser supports WebAPKs.
-    // 3) The browser which supports WebAPKs if there is just one.
+    // 2) Default browser.
     @Test
     public void testComputeHostBrowserUnboundWebApkPrecedence() {
         if (mIsBoundWebApk) return;
@@ -178,15 +177,18 @@ public class HostBrowserUtilsTest {
 
         // Shared pref browser: Null
         // Default browser: Does not support WebAPKs
-        // > 1 installed browsers supporting WebAPKs
+        // > 1 installed browsers supporting WebAPKs - just use the default browser even though it
+        // doesn't support WebAPKs.
         setInstalledBrowsersAndClearedCachedData(DefaultBrowserWebApkSupport.NO, ALL_BROWSERS);
         setHostBrowserInSharedPreferences(null);
-        Assert.assertNull(
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: Null
         // Default browser: Does not support WebAPKS
-        // 1 installed browser supporting WebAPKS
+        // 1 installed browser supporting WebAPKS - still use the default browser even though it
+        // doesn't support WebAPKs.
         setInstalledBrowsersAndClearedCachedData(
                 DefaultBrowserWebApkSupport.NO,
                 new String[] {
@@ -196,7 +198,7 @@ public class HostBrowserUtilsTest {
                 });
         setHostBrowserInSharedPreferences(null);
         Assert.assertEquals(
-                BROWSERS_SUPPORTING_WEBAPKS[0],
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // Shared pref browser: Null
@@ -294,12 +296,14 @@ public class HostBrowserUtilsTest {
         Assert.assertEquals("random", mSharedPrefs.getString(sharedPrefToTest, null));
 
         mBrowserInstaller.uninstallBrowser(sharedPrefBrowserSupportingWebApks);
-        Assert.assertNull(
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS,
                 HostBrowserUtils.computeHostBrowserPackageClearCachedDataOnChange(mContext));
 
         // The return value of {@link computeHostBrowserPackageClearCachedDataOnChange} changed,
         // the shared preferences should have been cleared.
-        Assert.assertNull(getHostBrowserFromSharedPreferences());
+        Assert.assertEquals(
+                DEFAULT_BROWSER_NOT_SUPPORTING_WEBAPKS, getHostBrowserFromSharedPreferences());
         Assert.assertNull(mSharedPrefs.getString(sharedPrefToTest, null));
     }
 

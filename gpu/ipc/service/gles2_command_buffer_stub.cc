@@ -194,7 +194,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     auto surface_format = default_surface->GetFormat();
     surface_ = ImageTransportSurface::CreateNativeGLSurface(
         display, init_params.surface_handle, surface_format);
-    if (!surface_ || !surface_->Initialize(surface_format)) {
+    // CreateNativeGLSurface should have already initialized the surface, and
+    // doubly initializing it can lead to errors.
+    if (!surface_) {
       surface_ = nullptr;
       LOG(ERROR) << "ContextResult::kSurfaceFailure: Failed to create surface.";
       return gpu::ContextResult::kSurfaceFailure;

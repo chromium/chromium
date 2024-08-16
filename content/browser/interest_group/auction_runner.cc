@@ -394,13 +394,6 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
 
 void AuctionRunner::ResolvedAdditionalBids(
     blink::mojom::AuctionAdConfigAuctionIdPtr auction_id) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeNegativeTargeting)) {
-    mojo::ReportBadMessage(
-        "ResolvedAdditionalBids with FledgeNegativeTargeting off");
-    return;
-  }
-
   if (state_ == State::kFailed) {
     return;
   }

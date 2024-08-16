@@ -93,13 +93,13 @@ TEST_F(WebPushSenderTest, SendMessageTest) {
   EXPECT_EQ("POST", pendingRequest->request.method);
 
   net::HttpRequestHeaders headers = pendingRequest->request.headers;
-  std::string auth_header, time_to_live, encoding;
 
-  ASSERT_TRUE(
-      headers.GetHeader(net::HttpRequestHeaders::kAuthorization, &auth_header));
+  std::optional<std::string> auth_header =
+      headers.GetHeader(net::HttpRequestHeaders::kAuthorization);
+  ASSERT_TRUE(auth_header.has_value());
   const std::string expected_header = "vapid t=(.*), k=(.*)";
   std::string jwt, base64_public_key;
-  ASSERT_TRUE(re2::RE2::FullMatch(auth_header, expected_header, &jwt,
+  ASSERT_TRUE(re2::RE2::FullMatch(auth_header.value(), expected_header, &jwt,
                                   &base64_public_key));
 
   // Make sure JWT dat can be decomposed
@@ -131,11 +131,9 @@ TEST_F(WebPushSenderTest, SendMessageTest) {
                                     base::Base64UrlDecodePolicy::IGNORE_PADDING,
                                     &public_key));
 
-  ASSERT_TRUE(headers.GetHeader("TTL", &time_to_live));
-  EXPECT_EQ("3600", time_to_live);
+  EXPECT_EQ("3600", headers.GetHeader("TTL"));
 
-  ASSERT_TRUE(headers.GetHeader("content-encoding", &encoding));
-  EXPECT_EQ("aes128gcm", encoding);
+  EXPECT_EQ("aes128gcm", headers.GetHeader("content-encoding"));
 
   const std::vector<network::DataElement>* body_elements =
       pendingRequest->request.request_body->elements();
@@ -177,7 +175,6 @@ TEST_P(WebPushUrgencyTest, SetUrgencyTest) {
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
           private_key_info.begin(), private_key_info.end()));
   std::optional<std::string> message_id;
-  std::string urgency;
 
   WebPushMessage message = CreateMessage();
   message.urgency = GetParam().urgency;
@@ -188,8 +185,7 @@ TEST_P(WebPushUrgencyTest, SetUrgencyTest) {
   net::HttpRequestHeaders headers =
       loader().GetPendingRequest(0)->request.headers;
 
-  ASSERT_TRUE(headers.GetHeader("Urgency", &urgency));
-  ASSERT_EQ(GetParam().expected_header, urgency);
+  ASSERT_EQ(GetParam().expected_header, headers.GetHeader("Urgency"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

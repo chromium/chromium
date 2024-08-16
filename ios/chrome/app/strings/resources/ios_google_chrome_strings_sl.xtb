@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Pomagajte izboljšati funkcije in delovanje Chroma</translation>
 <translation id="1333745675627230582">Igranje igre Dino za Chrome</translation>
 <translation id="1352919863522755794">Googlov upravitelj gesel ni mogel preveriti vaših gesel. Poskusite preveriti internetno povezavo.</translation>
+<translation id="1380565463006545725">Izkoristite prednosti nakupovanja v Chromu</translation>
 <translation id="139623527619433858">Privzeto uporabljajte Chrome za iPad</translation>
 <translation id="1407843355326180937">Prijavite se na tem spletnem mestu in v Chromu, če želite dostopati do zaznamkov in drugega v vseh napravah.</translation>
 <translation id="1436059927646026729">Odpiranje zadnjega zavihka v Chromu</translation>
@@ -35,6 +36,7 @@ Kaj je treba upoštevati:
 <translation id="1554731936187952550">Uporabljate Chromovo najmočnejšo zaščito pred škodljivimi spletnimi mesti.</translation>
 <translation id="1615715390546812898">Iskanje z govorom v Chromu.</translation>
 <translation id="1657395063736185342">Slikovno iskanje v Chromu</translation>
+<translation id="1670609221633730681">Nasvet za Chrome: Izberite položaj naslovne vrstice</translation>
 <translation id="1675955119303651351">Nekateri podatki v Chromu še niso shranjeni v računu Google.
         Poskusite počakati nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="1682483655351012182">Sinhronizacija podatkov v Chromu</translation>
@@ -43,6 +45,7 @@ Kaj je treba upoštevati:
 <translation id="1799920918471566157">Nasveti za Chrome</translation>
 <translation id="1830634592642484976">Ta naslov je trenutno shranjen v Chromu. Če ga želite uporabiti v Googlovih izdelkih, ga shranite v računu Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="1910975740091000991">Chrome za iOS</translation>
+<translation id="1917288746637765175">Privzeto uporabljajte Chrome za preprosto pridobivanje vpogledov v cene</translation>
 <translation id="1917964099031477364">Ta račun in vsi neshranjeni podatki bodo odstranjeni iz Chroma in drugih Googlovih aplikacij v tej napravi.</translation>
 <translation id="1965935827552890526">Končajte, kar ste počeli v drugem odprtem oknu v Chromu.</translation>
 <translation id="1987779152850321833">Če želite kar najbolje izkoristiti Chrome, upoštevajte ta predlagana dejanja.</translation>
@@ -112,12 +115,14 @@ Kaj je treba upoštevati:
 <translation id="3984746313391923992">Vaša organizacija zahteva, da niste prijavljeni v Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, potrdite, da ste to vi.</translation>
+<translation id="4066411101507716142">Hitreje dostopajte do Chroma iz vrstice Dock na začetnem zaslonu iPada.</translation>
 <translation id="4067858366537947361">Odpiranje aninimnega zavihka v Chromu</translation>
 <translation id="4093042601582616698">Želite nastaviti Chrome kot privzeti brskalnik?</translation>
 <translation id="417201473131094001">Ni podprto v Chromu Canary</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251174643044751591">V Chromu odpre stran z nastavitvijo plačilnih sredstev.</translation>
 <translation id="4286914711740227883">Brisanje podatkov brskanja v Chromu</translation>
+<translation id="430839890088895017">Nasvet za Chrome: Chrome premaknite v vrstico Dock</translation>
 <translation id="4453284704333523777">Upravljanje Chromovih nastavitev</translation>
 <translation id="4523886039239821078">Nekateri dodatki povzročajo zrušitve Chroma. Odstranite jih:</translation>
 <translation id="4633328489441962921">Chrome ne more preveriti, ali so na voljo posodobitve</translation>
@@ -181,6 +186,7 @@ Kaj je treba upoštevati:
 <translation id="6272822675004864999">Če želite prejemati Chromova obvestila, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="630693926528731525">Geslo ni bilo deljeno. Preverite internetno povezavo in se prepričajte, ali ste prijavljeni v Chrome. Nato poskusite znova.</translation>
 <translation id="6348855835728304880">Dostopajte do gesel v Chromu in drugega v drugih aplikacijah v tej napravi.</translation>
+<translation id="6373751563207403289">Varnostno preverjanje vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome zazna.</translation>
 <translation id="6374691158439235563">Dokončajte nastavitev Chroma</translation>
 <translation id="6389317667633680932">Raziščite nove funkcije, s katerimi boste lahko najbolje izkoristili Chrome.</translation>
 <translation id="6412673304250309937">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromu. Če vam spletno mesto poskusi ukrasti geslo ali ko prenašate škodljivo datoteko, lahko Chrome prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
@@ -233,8 +239,10 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="746684838091935575">3. Izberite Chrome.</translation>
 <translation id="7492574581995589075">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
 <translation id="7581063337314642333">Odpiranje mreže zavihkov v Chromu</translation>
+<translation id="7642373780953416937">Prejemajte opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome samodejno zazna.</translation>
 <translation id="7662994914830945754">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="7669869107155339016">Odprite nastavitve Chroma.</translation>
+<translation id="7683540977001394271">Hitreje dostopajte do Chroma iz vrstice Dock na začetnem zaslonu iPhona.</translation>
 <translation id="769104993356536261">Uporaba dejanj v Chromu za iOS</translation>
 <translation id="7693590760643069321">Zdaj lahko uporabljate Chrome, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="7698568245838009292">Chrome želi dostopati do fotoaparata</translation>
@@ -248,6 +256,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="8006014511203279255">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih ali drugih aplikacijah.</translation>
 <translation id="8022947259858476807">Uporabljajte Chrome kot privzeto možnost odpiranja povezav, iskanja v pripomočkih in samodejnega izpolnjevanja gesel v drugih aplikacijah.</translation>
 <translation id="804638182476029347">Dovolite obvestila za Chrome, če želite prejemati opozorila o znižanju cen</translation>
+<translation id="804756029368067824">Nastavite Chrome kot privzeti brskalnik, če želite preprosto spremljati cene in prejemati vpoglede v cene za stvari, ki jih želite kupiti.</translation>
 <translation id="8065292699993359127">Odprite URL-je v Chromu v anonimnem načinu</translation>
 <translation id="8069507567842347179">Temu paketu že sledite v Chromu.</translation>
 <translation id="8136856065410661948">To bo uporabljeno za ustvarjanje dogodkov v koledarju Apple Calendar s Chromom in Googlom Lens.</translation>
@@ -275,6 +284,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
   2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
   3. Izberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Opozorila o težavah z zasebnostjo ali varnostjo, ki jih Chrome zazna.</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="8603022514504485810">Googlovemu upravitelju gesel ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="8727043961453758442">Izkoristite Chrome na najboljši način</translation>

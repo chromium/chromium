@@ -48,8 +48,8 @@ CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method addEventListener
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method dispatchEvent
-CONSOLE MESSAGE:     method on
 CONSOLE MESSAGE:     method removeEventListener
+CONSOLE MESSAGE:     method when
 CONSOLE MESSAGE: interface MessageEvent : Event
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter data

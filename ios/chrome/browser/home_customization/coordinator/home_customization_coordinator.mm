@@ -16,6 +16,14 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 
+namespace {
+
+// The height of the menu's initial detent, which roughly represents a header
+// and 3 cells.
+const CGFloat kInitialDetentHeight = 350;
+
+}  // namespace
+
 @interface HomeCustomizationCoordinator () <
     HomeCustomizationNavigationDelegate,
     UISheetPresentationControllerDelegate>
@@ -78,7 +86,8 @@
 
 #pragma mark - Public
 
-- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page {
+- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page
+                              animated:(BOOL)animated {
   [self.mediator configureMainPageData];
 
   // Configure the navigation controller.
@@ -92,10 +101,21 @@
   UISheetPresentationController* presentationController =
       self.navigationController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
+
+  auto detentResolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return kInitialDetentHeight;
+  };
+  UISheetPresentationControllerDetent* initialDetent =
+      [UISheetPresentationControllerDetent
+          customDetentWithIdentifier:kBottomSheetDetentIdentifier
+                            resolver:detentResolver];
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
+    initialDetent,
     UISheetPresentationControllerDetent.largeDetent,
   ];
+  presentationController.selectedDetentIdentifier =
+      kBottomSheetDetentIdentifier;
 
   // Present the navigation controller.
   [self.baseViewController presentViewController:self.navigationController
@@ -104,33 +124,32 @@
 
   // Handle navigation if the initial page isn't the main one.
   if (page != CustomizationMenuPage::kMain) {
-    [self navigateToPage:page];
+    [self navigateToPage:page animated:animated];
   }
 }
 
 #pragma mark - HomeCustomizationNavigationDelegate
 
-- (void)navigateToPage:(CustomizationMenuPage)page {
+- (void)navigateToPage:(CustomizationMenuPage)page animated:(BOOL)animated {
   switch (page) {
     case CustomizationMenuPage::kMain:
       [self.navigationController pushViewController:self.mainViewController
-                                           animated:YES];
+                                           animated:animated];
       break;
     case CustomizationMenuPage::kMagicStack:
-      [self expandMenu];
       [self.navigationController
           pushViewController:self.magicStackViewController
-                    animated:YES];
+                    animated:animated];
       [self.mediator configureMagicStackPageData];
       break;
     case CustomizationMenuPage::kDiscover:
       [self expandMenu];
       [self.navigationController pushViewController:self.discoverViewController
-                                           animated:YES];
+                                           animated:animated];
       [self.mediator configureDiscoverPageData];
       break;
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

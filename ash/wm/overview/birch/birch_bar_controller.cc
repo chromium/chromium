@@ -69,9 +69,11 @@ std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
       return prefs::kBirchUseChromeTabs;
     case BirchSuggestionType::kMedia:
       return prefs::kBirchUseLostMedia;
+    case BirchSuggestionType::kCoral:
+      return prefs::kBirchUseCoral;
     case BirchSuggestionType::kExplore:
     case BirchSuggestionType::kUndefined:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

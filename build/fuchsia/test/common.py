@@ -75,13 +75,25 @@ GN_SDK_ROOT = os.path.abspath(_find_fuchsia_gn_sdk_root())
 
 SDK_TOOLS_DIR = os.path.join(SDK_ROOT, 'tools', get_host_arch())
 _FFX_TOOL = os.path.join(SDK_TOOLS_DIR, 'ffx')
+_FFX_ISOLATE_DIR = 'FFX_ISOLATE_DIR'
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
-    """Overwrites the global environment so the following ffx calls will have
-    the isolate dir being carried."""
+    """Sets the global environment so the following ffx calls will have the
+    isolate dir being carried."""
+    assert not has_ffx_isolate_dir(), 'The isolate dir is already set.'
+    os.environ[_FFX_ISOLATE_DIR] = isolate_dir
 
-    os.environ['FFX_ISOLATE_DIR'] = isolate_dir
+
+def get_ffx_isolate_dir() -> str:
+    """Returns the global environment of the isolate dir of ffx. This function
+    should only be called after set_ffx_isolate_dir."""
+    return os.environ[_FFX_ISOLATE_DIR]
+
+
+def has_ffx_isolate_dir() -> bool:
+    """Returns whether the isolate dir of ffx is set."""
+    return _FFX_ISOLATE_DIR in os.environ
 
 
 def get_hash_from_sdk():

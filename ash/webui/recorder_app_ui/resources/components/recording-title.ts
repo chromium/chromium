@@ -23,7 +23,6 @@ import {
   usePlatformHandler,
   useRecordingDataManager,
 } from '../core/lit/context.js';
-import {ModelId} from '../core/on_device_model/types.js';
 import {
   ReactiveLitElement,
   ScopedAsyncComputed,
@@ -63,7 +62,7 @@ export class RecordingTitle extends ReactiveLitElement {
       anchor-name: --title;
       border-radius: 12px;
       box-sizing: border-box;
-      font: var(--cros-button-1-font);
+      font: var(--cros-headline-1-font);
       overflow: hidden;
       padding: 8px 16px;
       text-overflow: ellipsis;
@@ -111,9 +110,7 @@ export class RecordingTitle extends ReactiveLitElement {
   });
 
   private readonly shouldShowTitleSuggestion = computed(() => {
-    const modelState = this.platformHandler.getModelState(
-      ModelId.GEMINI_XXS_IT_BASE,
-    );
+    const modelState = this.platformHandler.titleSuggestionModelLoader.state;
     return (
       modelState.value.kind === 'installed' &&
       settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
@@ -134,11 +131,9 @@ export class RecordingTitle extends ReactiveLitElement {
     // TODO(pihsun): Have a specific format for transcription to be used as
     // model input.
     const text = this.transcription.value.toPlainText();
-    const model = await this.platformHandler.loadModel(
-      ModelId.GEMINI_XXS_IT_BASE,
-    );
+    const model = await this.platformHandler.titleSuggestionModelLoader.load();
     try {
-      return await model.suggestTitles(text);
+      return await model.execute(text);
       // TODO(pihsun): Handle error.
     } finally {
       model.close();

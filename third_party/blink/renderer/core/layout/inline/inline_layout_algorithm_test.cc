@@ -873,7 +873,7 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpace) {
   ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
-    <div id="parent" style="text-box-trim: both; position: relative">
+    <div id="parent" style="text-box-trim: trim-both; position: relative">
       <div id="abs1" style="position: absolute">abs1</div>
       <div id="float1" style="float: left">float1</div>
       <div id="empty_before"> </div>
@@ -934,7 +934,7 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceSingle) {
   ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
-    <div id="parent" style="text-box-trim: both">
+    <div id="parent" style="text-box-trim: trim-both">
       <div id="single">single<br>single L2</div>
       <div id="empty_after"> </div>
     </div>
@@ -961,7 +961,7 @@ TEST_F(InlineLayoutAlgorithmTest, TextBoxTrimConstraintSpaceEmptyOnly) {
   ScopedCSSTextBoxTrimForTest enable_text_box_trim(true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
-    <div id="parent" style="text-box-trim: both">
+    <div id="parent" style="text-box-trim: trim-both">
       <div id="empty"> </div>
     </div>
   )HTML");

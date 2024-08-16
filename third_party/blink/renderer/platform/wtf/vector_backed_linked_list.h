@@ -127,8 +127,8 @@ class ConstructTraits<VectorBackedLinkedListNode<ValueType, Allocator>,
     return object;
   }
 
-  static void NotifyNewElements(Node* array, size_t len) {
-    Allocator::template NotifyNewObjects<Node, Traits>(array, len);
+  static void NotifyNewElements(base::span<Node> nodes) {
+    Allocator::template NotifyNewObjects<Node, Traits>(nodes);
   }
 
  private:

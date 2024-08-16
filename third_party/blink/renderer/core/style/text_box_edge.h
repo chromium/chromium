@@ -18,9 +18,9 @@ class CORE_EXPORT TextBoxEdge {
   DISALLOW_NEW();
 
  public:
-  // https://drafts.csswg.org/css-inline-3/#text-edges.
+  // https://drafts.csswg.org/css-inline-3/#text-edges
   enum class Type : uint8_t {
-    kLeading,
+    kAuto,
     kText,
     kCap,
     kEx,
@@ -38,7 +38,7 @@ class CORE_EXPORT TextBoxEdge {
   // The number of bits needed when storing `TextBoxEdge` as `unsigned`.
   static constexpr unsigned kBits = kTypeBits * 2;
 
-  constexpr TextBoxEdge() : TextBoxEdge(Type::kLeading, Type::kLeading) {}
+  constexpr TextBoxEdge() = default;
   explicit constexpr TextBoxEdge(Type over)
       : TextBoxEdge(over, ComputeMissingUnderEdge(over)) {}
   constexpr TextBoxEdge(Type over, Type under) : over_(over), under_(under) {}
@@ -60,22 +60,27 @@ class CORE_EXPORT TextBoxEdge {
   const Type& Over() const { return over_; }
   const Type& Under() const { return under_; }
 
+  bool IsAuto() const { return Over() == Type::kAuto; }
+  bool IsUnderDefault() const {
+    return Under() == Type::kAuto || Under() == Type::kText;
+  }
+
  private:
   static constexpr Type ComputeMissingUnderEdge(Type over) {
     switch (over) {
+      case Type::kAuto:
       case Type::kText:
-      case Type::kLeading:
         return over;
       case Type::kCap:
       case Type::kEx:
         return Type::kText;
       case Type::kAlphabetic:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
-  Type over_;
-  Type under_;
+  Type over_ = Type::kAuto;
+  Type under_ = Type::kAuto;
 };
 
 // The initial value being 0 is preferred for performance reasons.

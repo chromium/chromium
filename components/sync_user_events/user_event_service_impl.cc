@@ -121,7 +121,7 @@ void UserEventServiceImpl::RecordUserEvent(
   RecordUserEvent(std::make_unique<UserEventSpecifics>(specifics));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 UserEventServiceImpl::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

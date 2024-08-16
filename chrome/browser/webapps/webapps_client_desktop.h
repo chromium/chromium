@@ -58,6 +58,8 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   segmentation_platform::SegmentationPlatformService*
   GetSegmentationPlatformService(
       content::BrowserContext* browsing_context) const override;
+  std::optional<webapps::AppId> GetAppIdForWebContents(
+      content::WebContents* web_contents) override;
 
  private:
   friend base::NoDestructor<WebappsClientDesktop>;

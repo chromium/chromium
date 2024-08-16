@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DIPS_DIPS_SERVICE_H_
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -34,7 +35,41 @@ namespace dips {
 class PersistentRepeatingTimer;
 }
 
-class DIPSService : public KeyedService {
+// When DIPS moves to //content, DIPSService will be exposed in the Content API,
+// available to embedders such as Chrome.
+class DIPSService {
+ public:
+  using DeletedSitesCallback =
+      base::OnceCallback<void(const std::vector<std::string>& sites)>;
+  using CheckInteractionCallback = base::OnceCallback<void(bool)>;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) = 0;
+  };
+
+  static DIPSService* Get(content::BrowserContext* context);
+
+  virtual void RecordBrowserSignIn(std::string_view domain) = 0;
+
+  virtual void DeleteEligibleSitesImmediately(
+      DeletedSitesCallback callback) = 0;
+
+  virtual void RecordInteractionForTesting(const GURL& url) = 0;
+
+  virtual void DidSiteHaveInteractionSince(
+      const GURL& url,
+      base::Time bound,
+      CheckInteractionCallback callback) const = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(const Observer* observer) = 0;
+};
+
+// When DIPS moves to //content, DIPSServiceImpl will *not* be exposed in the
+// Content API. Only other code in //content (such as the DIPS implementation)
+// will be allowed to access it.
+class DIPSServiceImpl : public DIPSService, KeyedService {
  public:
   using RecordBounceCallback = base::RepeatingCallback<void(
       const GURL& url,
@@ -43,18 +78,10 @@ class DIPSService : public KeyedService {
       base::Time time,
       bool stateful,
       base::RepeatingCallback<void(const GURL&)> content_settings_callback)>;
-  using DeletedSitesCallback =
-      base::OnceCallback<void(const std::vector<std::string>& sites)>;
-  using CheckInteractionCallback = base::OnceCallback<void(bool)>;
 
-  ~DIPSService() override;
+  ~DIPSServiceImpl() override;
 
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnChainHandled(const DIPSRedirectChainInfoPtr& chain) {}
-  };
-
-  static DIPSService* Get(content::BrowserContext* context);
+  static DIPSServiceImpl* Get(content::BrowserContext* context);
 
   base::SequenceBound<DIPSStorage>* storage() { return &storage_; }
   void RecordBounceForTesting(
@@ -77,16 +104,19 @@ class DIPSService : public KeyedService {
 
   // This allows for deletion of state for sites deemed eligible when evaluated
   // with no grace period.
-  void DeleteEligibleSitesImmediately(DeletedSitesCallback callback);
+  void DeleteEligibleSitesImmediately(DeletedSitesCallback callback) override;
 
   void HandleRedirectChain(
       std::vector<DIPSRedirectInfoPtr> redirects,
       DIPSRedirectChainInfoPtr chain,
       base::RepeatingCallback<void(const GURL&)> content_settings_callback);
 
-  void DidSiteHaveInteractionSince(const GURL& url,
-                                   base::Time bound,
-                                   CheckInteractionCallback callback) const;
+  void RecordInteractionForTesting(const GURL& url) override;
+
+  void DidSiteHaveInteractionSince(
+      const GURL& url,
+      base::Time bound,
+      CheckInteractionCallback callback) const override;
 
   // This allows unit-testing the metrics emitted by HandleRedirect() without
   // instantiating DIPSService.
@@ -107,8 +137,8 @@ class DIPSService : public KeyedService {
     wait_for_file_deletion_.Run();
   }
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(const Observer* observer);
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(const Observer* observer) override;
 
   void AddOpenSite(const std::string& site) {
     if (open_sites_.contains(site)) {
@@ -131,7 +161,7 @@ class DIPSService : public KeyedService {
  private:
   // So DIPSServiceFactory::BuildServiceInstanceFor can call the constructor.
   friend class DIPSServiceFactory;
-  explicit DIPSService(content::BrowserContext* context);
+  explicit DIPSServiceImpl(content::BrowserContext* context);
   std::unique_ptr<dips::PersistentRepeatingTimer> CreateTimer();
   void Shutdown() override;
   bool IsShuttingDown() const { return !cookie_settings_; }
@@ -163,6 +193,9 @@ class DIPSService : public KeyedService {
   void RunDeletionTaskOnUIThread(std::vector<std::string> sites_to_clear,
                                  base::OnceClosure callback);
 
+  // DIPSService overrides:
+  void RecordBrowserSignIn(std::string_view domain) override;
+
   // Checks whether |third_party_url| is allowed to use third-party cookies when
   // embedded under |first_party_url|. Factors the following into account:
   // - Global 3PC setting
@@ -190,7 +223,7 @@ class DIPSService : public KeyedService {
 
   std::map<std::string, int> open_sites_;
 
-  base::WeakPtrFactory<DIPSService> weak_factory_{this};
+  base::WeakPtrFactory<DIPSServiceImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_SERVICE_H_

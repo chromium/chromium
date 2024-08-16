@@ -38,6 +38,7 @@ source_set("starboard") {
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_adapter",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//ui/display",
     "//ui/gfx/geometry",
   ]
@@ -125,6 +126,7 @@ test("starboard_audio_decoder_test") {
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
     "//chromecast/public",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//media",
     "//testing/gmock",
     "//testing/gtest",
@@ -142,6 +144,7 @@ test("starboard_video_decoder_test") {
     "//chromecast/media/base",
     "//chromecast/media/cma/base",
     "//chromecast/public",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//media",
     "//testing/gmock",
     "//testing/gtest",

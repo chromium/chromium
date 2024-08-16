@@ -90,6 +90,10 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   MOCK_METHOD1(OnNeedsClientAuth, void(SSLCertRequestInfo* cert_info));
 
   MOCK_METHOD0(OnQuicBroken, void());
+
+  MOCK_METHOD2(OnSwitchesToHttpStreamPool,
+               void(HttpStreamKey stream_key,
+                    quic::ParsedQuicVersion quic_version));
 };
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {

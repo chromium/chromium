@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/devtools/device/adb/mock_adb_server.h"
 
 #include <stddef.h>
@@ -311,7 +316,8 @@ void SimpleHttpServer::Connection::Send(const std::string& message) {
         output_buffer_->span().subspan(old_offset, bytes_to_write_));
   }
 
-  base::as_writable_bytes(output_buffer_->span().subspan(bytes_to_write_, size))
+  output_buffer_->span()
+      .subspan(bytes_to_write_, size)
       .copy_from(base::as_byte_span(message));
   bytes_to_write_ += size;
 
@@ -353,9 +359,8 @@ void SimpleHttpServer::Connection::OnDataRead(int count) {
 
     if (bytes_processed) {
       const size_t unprocessed_size = data_buffer.size() - bytes_processed;
-      input_buffer_->everything()
-          .first(unprocessed_size)
-          .copy_from(data_buffer.subspan(bytes_processed));
+      input_buffer_->everything().copy_prefix_from(
+          data_buffer.subspan(bytes_processed));
       input_buffer_->set_offset(unprocessed_size);
     }
   } while (bytes_processed);

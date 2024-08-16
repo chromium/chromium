@@ -232,6 +232,13 @@ void AccessibilityTreeFormatterBlink::AddDefaultFilters(
   AddPropertyFilter(property_filters, "roleDescription=*");
   AddPropertyFilter(property_filters, "errormessageId=*");
   AddPropertyFilter(property_filters, "virtualContent=*");
+  AddPropertyFilter(property_filters, "descriptionFrom=prohibitedNameRepair");
+  // Add the rare name-from values.
+  AddPropertyFilter(property_filters, "nameFrom=caption");
+  AddPropertyFilter(property_filters, "nameFrom=placeholder");
+  AddPropertyFilter(property_filters, "nameFrom=prohibited");
+  AddPropertyFilter(property_filters, "nameFrom=title");
+  AddPropertyFilter(property_filters, "nameFrom=value");
 }
 
 const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",

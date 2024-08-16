@@ -42,8 +42,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaActionButton
   // Update the button tooltip text.
   void UpdateText(int tooltip_text_id);
 
+  // Update the button icon.
+  void UpdateIcon(const gfx::VectorIcon& vector_icon);
+
  private:
   const int icon_size_;
+  ui::ColorId foreground_color_id_;
   const ui::ColorId foreground_disabled_color_id_;
 };
 

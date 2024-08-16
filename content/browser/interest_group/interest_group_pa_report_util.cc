@@ -66,7 +66,7 @@ std::optional<double> GetBaseValue(
       }
       return std::nullopt;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns contribution's bucket calculated from `base`, and `bucket_obj`'s
@@ -231,6 +231,49 @@ CalculateContributionBucketAndValue(
 }
 
 }  // namespace
+
+PrivateAggregationKey::PrivateAggregationKey(
+    url::Origin reporting_origin,
+    std::optional<url::Origin> aggregation_coordinator_origin)
+    : reporting_origin(std::move(reporting_origin)),
+      aggregation_coordinator_origin(
+          std::move(aggregation_coordinator_origin)) {}
+
+PrivateAggregationKey::PrivateAggregationKey(
+    const PrivateAggregationKey& other) = default;
+
+PrivateAggregationKey& PrivateAggregationKey::operator=(
+    const PrivateAggregationKey& other) = default;
+
+PrivateAggregationKey::PrivateAggregationKey(PrivateAggregationKey&& other) =
+    default;
+
+PrivateAggregationKey& PrivateAggregationKey::operator=(
+    PrivateAggregationKey&& other) = default;
+
+PrivateAggregationKey::~PrivateAggregationKey() = default;
+
+PrivateAggregationPhaseKey::PrivateAggregationPhaseKey(
+    url::Origin reporting_origin,
+    PrivateAggregationPhase phase,
+    std::optional<url::Origin> aggregation_coordinator_origin)
+    : reporting_origin(reporting_origin),
+      phase(phase),
+      aggregation_coordinator_origin(aggregation_coordinator_origin) {}
+
+PrivateAggregationPhaseKey::PrivateAggregationPhaseKey(
+    const PrivateAggregationPhaseKey&) = default;
+
+PrivateAggregationPhaseKey& PrivateAggregationPhaseKey::operator=(
+    const PrivateAggregationPhaseKey&) = default;
+
+PrivateAggregationPhaseKey::PrivateAggregationPhaseKey(
+    PrivateAggregationPhaseKey&&) = default;
+
+PrivateAggregationPhaseKey& PrivateAggregationPhaseKey::operator=(
+    PrivateAggregationPhaseKey&&) = default;
+
+PrivateAggregationPhaseKey::~PrivateAggregationPhaseKey() = default;
 
 PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
     auction_worklet::mojom::PrivateAggregationRequestPtr request,
@@ -405,7 +448,10 @@ bool HasValidFilteringId(
     filtering_id =
         request->contribution->get_for_event_contribution()->filtering_id;
   }
+  return IsValidFilteringId(filtering_id);
+}
 
+bool IsValidFilteringId(std::optional<uint64_t> filtering_id) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kPrivateAggregationApiFilteringIds)) {
     return filtering_id == std::nullopt;

@@ -758,9 +758,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   if (!webFramesManager->GetMainWebFrame()) {
     return;
   }
-  if (!autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
-           _webState, webFramesManager->GetMainWebFrame())
-           ->is_processed()) {
+  auto* main_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      _webState, webFramesManager->GetMainWebFrame());
+  CHECK(main_driver, base::NotFatalUntil::M132);
+  if (!main_driver || !main_driver->is_processed()) {
     return;
   }
   [self processFrame:webFrame inWebState:_webState];
@@ -780,10 +781,14 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
 
   // Return early if the page is not processed yet.
-  DCHECK(autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame));
-  if (!autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame)
-           ->is_processed())
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
+  CHECK(driver, base::NotFatalUntil::M132);
+  if (!driver ||
+      !autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame)
+           ->is_processed()) {
     return;
+  }
 
   // Return early if |params| is not complete.
   if (params.input_missing)
@@ -1168,9 +1173,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   if (!webState || !_webStateObserverBridge) {
     return nullptr;
   }
-  return &autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState,
-                                                               webFrame)
-              ->GetAutofillManager();
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, webFrame);
+  CHECK(driver, base::NotFatalUntil::M132);
+  if (!driver) {
+    return nullptr;
+  }
+  return &driver->GetAutofillManager();
 }
 
 // Notifies the autofill manager when forms are detected on a page.
@@ -1263,8 +1272,13 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     return;
   }
   _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
-  autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame.get())
-      ->AskForValuesToFill(form, _lastQueriedFieldID);
+  auto* driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+      _webState, frame.get());
+  CHECK(driver, base::NotFatalUntil::M132);
+  if (!driver) {
+    return;
+  }
+  driver->AskForValuesToFill(form, _lastQueriedFieldID);
 }
 
 - (void)processPage:(web::WebState*)webState {
@@ -1289,8 +1303,9 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 
   autofill::AutofillDriverIOS* driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(webState, frame);
+  CHECK(driver, base::NotFatalUntil::M132);
   // This process is only done once.
-  if (driver->is_processed()) {
+  if (!driver || driver->is_processed()) {
     return;
   }
   driver->set_processed(true);

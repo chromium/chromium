@@ -51,6 +51,7 @@ std::string Playlist::ToString() const {
 
 PlaybackContext::PlaybackContext(const std::string& track_name,
                                  const std::string& track_title,
+                                 const std::string& track_artists,
                                  const std::string& track_explicit_type,
                                  const Image& track_image,
                                  const GURL& stream_url,
@@ -58,6 +59,7 @@ PlaybackContext::PlaybackContext(const std::string& track_name,
                                  const std::string& queue_name)
     : track_name(track_name),
       track_title(track_title),
+      track_artists(track_artists),
       track_explicit_type_(track_explicit_type),
       track_image(track_image),
       stream_url(stream_url),
@@ -71,11 +73,12 @@ PlaybackContext::~PlaybackContext() = default;
 std::string PlaybackContext::ToString() const {
   return base::StringPrintf(
       "PlaybackContext(track_name=\"%s\", track_title=\"%s\", "
-      "track_explicit_type=\"%s\", track_image=%s, stream_url=\"%s\", "
-      "playback_reporting_token=\"%s\", queue_name=\"%s\")",
-      track_name.c_str(), track_title.c_str(), track_explicit_type_.c_str(),
-      track_image.ToString().c_str(), stream_url.spec().c_str(),
-      playback_reporting_token.c_str(), queue_name.c_str());
+      "track_artists=\"%s\", track_explicit_type=\"%s\", track_image=%s, "
+      "stream_url=\"%s\", playback_reporting_token=\"%s\", queue_name=\"%s\")",
+      track_name.c_str(), track_title.c_str(), track_artists.c_str(),
+      track_explicit_type_.c_str(), track_image.ToString().c_str(),
+      stream_url.spec().c_str(), playback_reporting_token.c_str(),
+      queue_name.c_str());
 }
 
 PlaybackData::PlaybackData(const PlaybackState state,

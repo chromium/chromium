@@ -158,15 +158,10 @@ public abstract class TabModelOrchestrator {
             boolean isStandardIndexOutOfBounds =
                     standardActiveIndex < TabModel.INVALID_TAB_INDEX
                             || standardActiveIndex >= mStandardCount;
-            boolean isStandardIndexUnexpectedlyInvalid =
-                    standardActiveIndex == TabModel.INVALID_TAB_INDEX
-                            && mStandardActiveIndex != TabModel.INVALID_TAB_INDEX;
             boolean isIncognitoIndexOutOfBounds =
                     mIncognitoActiveIndex < TabModel.INVALID_TAB_INDEX
                             || mIncognitoActiveIndex >= mIncognitoCount;
-            if (isStandardIndexOutOfBounds
-                    || isStandardIndexUnexpectedlyInvalid
-                    || isIncognitoIndexOutOfBounds) {
+            if (isStandardIndexOutOfBounds || isIncognitoIndexOutOfBounds) {
                 String message =
                         String.format(
                                 Locale.ENGLISH,

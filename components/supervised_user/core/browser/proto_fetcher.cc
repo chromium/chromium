@@ -308,9 +308,9 @@ std::string Metrics::GetMetricKey(MetricType metric_type) const {
     case MetricType::kAuthError:
       return "AuthError";
     case MetricType::kRetryCount:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -356,7 +356,7 @@ std::string Metrics::ToMetricEnumLabel(const ProtoFetcherStatus& status) {
     case ProtoFetcherStatus::DATA_ERROR:
       return "DataError";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -382,11 +382,11 @@ std::string OverallMetrics::GetMetricKey(MetricType metric_type) const {
     case MetricType::kLatency:
       return "OverallLatency";
     case MetricType::kHttpStatusOrNetError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case MetricType::kRetryCount:
       return "RetryCount";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

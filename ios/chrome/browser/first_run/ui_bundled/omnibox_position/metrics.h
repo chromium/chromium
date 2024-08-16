@@ -40,25 +40,22 @@ enum class OmniboxPromoSelectedPosition {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
-/// Records the omnibox position choice screen `event` with the histogram
-/// variant of `is_first_run`. Also record the associated user action if needed.
-void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event,
-                       BOOL is_first_run);
+/// Records the omnibox position choice screen `event`. Also record the
+/// associated user action if needed.
+void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event);
 
 /// Records the selected omnibox position.
 /// `toolbar_type`: The selected toolbar for the omnibox.
 /// `is_default`: Whether the selected option is the default option.
-/// `is_first_run`: Whether the screen is presented during first run.
 /// `device_switcher_result_dispatcher`: Used to classify user as Safari
 /// switcher.
 void RecordSelectedPosition(
     ToolbarType toolbar_type,
     BOOL is_default,
-    BOOL is_first_run,
     segmentation_platform::DeviceSwitcherResultDispatcher*
         device_switcher_result_dispatcher);
 
 /// Records the time `elapsed` between the screen show and dismiss.
-void RecordTimeOpen(base::TimeDelta elapsed, BOOL is_first_run);
+void RecordTimeOpen(base::TimeDelta elapsed);
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_OMNIBOX_POSITION_METRICS_H_

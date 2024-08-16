@@ -57,7 +57,7 @@ GLDisplay* GLTestSupport::InitializeGL(
   DCHECK(impl.IsAllowed(allowed_impls));
 
   GLDisplay* display =
-      GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
+      GLSurfaceTestSupport::InitializeOneOffImplementation(impl);
 #if BUILDFLAG(IS_OZONE)
   // Make sure all the tasks posted to the current task runner by the
   // initialization functions are run before running the tests.

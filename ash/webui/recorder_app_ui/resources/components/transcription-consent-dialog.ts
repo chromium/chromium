@@ -4,7 +4,7 @@
 
 import './cra/cra-button.js';
 import './cra/cra-feature-tour-dialog.js';
-import './speaker-id-consent-dialog.js';
+import './speaker-label-consent-dialog.js';
 
 import {createRef, css, html, ref} from 'chrome://resources/mwc/lit/index.js';
 
@@ -14,7 +14,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, TranscriptionEnableState} from '../core/state/settings.js';
 
 import {CraFeatureTourDialog} from './cra/cra-feature-tour-dialog.js';
-import {SpeakerIdConsentDialog} from './speaker-id-consent-dialog.js';
+import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 
 /**
  * Dialog for asking transcription consent from user.
@@ -33,17 +33,22 @@ import {SpeakerIdConsentDialog} from './speaker-id-consent-dialog.js';
 export class TranscriptionConsentDialog extends ReactiveLitElement {
   static override styles = css`
     :host {
-      display: block;
+      display: contents;
     }
 
     .left {
       margin-right: auto;
     }
+
+    cra-feature-tour-dialog {
+      height: 512px;
+    }
   `;
 
   private readonly dialog = createRef<CraFeatureTourDialog>();
 
-  private readonly speakerIdConsentDialog = createRef<SpeakerIdConsentDialog>();
+  private readonly speakerLabelConsentDialog =
+    createRef<SpeakerLabelConsentDialog>();
 
   private readonly platformHandler = usePlatformHandler();
 
@@ -67,14 +72,14 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
       s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
     });
     this.platformHandler.installSoda();
-    this.speakerIdConsentDialog.value?.show();
+    this.speakerLabelConsentDialog.value?.show();
     this.hide();
   }
 
   override render(): RenderResult {
-    // TODO(pihsun): The dialogs (like speaker-id-consent-dialog) are currently
-    // initialized at multiple places when it needs to be used, consider making
-    // it "global" so it'll only be rendered once?
+    // TODO(pihsun): The dialogs (like speaker-label-consent-dialog) are
+    // currently initialized at multiple places when it needs to be used,
+    // consider making it "global" so it'll only be rendered once?
     return html`<cra-feature-tour-dialog
         ${ref(this.dialog)}
         illustrationName="onboarding_transcription"
@@ -101,8 +106,8 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
           ></cra-button>
         </div>
       </cra-feature-tour-dialog>
-      <speaker-id-consent-dialog ${ref(this.speakerIdConsentDialog)}>
-      </speaker-id-consent-dialog>`;
+      <speaker-label-consent-dialog ${ref(this.speakerLabelConsentDialog)}>
+      </speaker-label-consent-dialog>`;
   }
 }
 

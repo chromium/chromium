@@ -14,7 +14,7 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_local_session_event_router.h"
 #import "ios/chrome/browser/tabs/model/ios_synced_window_delegate_getter.h"
 #import "ios/chrome/common/channel_info.h"
@@ -63,11 +63,11 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
       BrowserList* browser_list,
       history::HistoryService* history_service,
       syncer::DeviceInfoSyncService* device_info_service,
-      syncer::ModelTypeStoreService* model_type_store_service,
+      syncer::DataTypeStoreService* data_type_store_service,
       syncer::SyncableService::StartSyncFlare start_sync_flare)
       : history_service_(history_service),
         device_info_service_(device_info_service),
-        model_type_store_service_(model_type_store_service),
+        data_type_store_service_(data_type_store_service),
         window_delegates_getter_(browser_list),
         local_session_event_router_(browser_list, this, start_sync_flare),
         session_sync_prefs_(pref_service) {}
@@ -82,8 +82,8 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
     return &session_sync_prefs_;
   }
 
-  syncer::RepeatingModelTypeStoreFactory GetStoreFactory() override {
-    return model_type_store_service_->GetStoreFactory();
+  syncer::RepeatingDataTypeStoreFactory GetStoreFactory() override {
+    return data_type_store_service_->GetStoreFactory();
   }
 
   void ClearAllOnDemandFavicons() override {
@@ -119,7 +119,7 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
  private:
   raw_ptr<history::HistoryService> history_service_;
   raw_ptr<syncer::DeviceInfoSyncService> device_info_service_;
-  raw_ptr<syncer::ModelTypeStoreService> model_type_store_service_;
+  raw_ptr<syncer::DataTypeStoreService> data_type_store_service_;
   IOSSyncedWindowDelegatesGetter window_delegates_getter_;
   IOSChromeLocalSessionEventRouter local_session_event_router_;
   sync_sessions::SessionSyncPrefs session_sync_prefs_;
@@ -151,7 +151,7 @@ SessionSyncServiceFactory::SessionSyncServiceFactory()
           "SessionSyncService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(ios::HistoryServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
@@ -170,6 +170,6 @@ SessionSyncServiceFactory::BuildServiceInstanceFor(
           ios::HistoryServiceFactory::GetForBrowserState(
               browser_state, ServiceAccessType::EXPLICIT_ACCESS),
           DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
-          ModelTypeStoreServiceFactory::GetForBrowserState(browser_state),
+          DataTypeStoreServiceFactory::GetForBrowserState(browser_state),
           ios::sync_start_util::GetFlareForSyncableService(browser_state)));
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/video_conference/bubble/mic_indicator.h"
 
 #include <cmath>
@@ -37,6 +42,7 @@ const float kLogEwmaMin = std::log(0.00002);
 const float kLogEwmaDiff = kLogEwmaMax - kLogEwmaMin;
 
 constexpr int kMaxStep = 8;
+constexpr float phaseLengths[] = {1.0, 1.1, 1.3, 1.1, 1.0, 0.9, 0.7, 0.9};
 constexpr auto kMicIndicatorInsets = gfx::Insets::TLBR(16, 16, 16, 16);
 
 float ScalePower(float power) {
@@ -76,7 +82,7 @@ MicIndicator::~MicIndicator() {
 }
 
 void MicIndicator::UpdateProgress() {
-  step_ = (step_ + 1) % (2 * kMaxStep + 1);
+  step_ = (step_ + 1) % kMaxStep;
   if (step_ == 0) {
     bool sidetone_enabled =
         VideoConferenceTrayController::Get()->GetSidetoneEnabled();
@@ -90,16 +96,6 @@ void MicIndicator::UpdateProgress() {
 void MicIndicator::OnPaint(gfx::Canvas* canvas) {
   const float multiplier = ScalePower(power_);
 
-  // Use 1-base to avoid 0 in length calculation;
-  int step = step_ + 1;
-
-  // [1..kMaxStep]              -> Growing phase
-  // [kMaxStep+1]               -> Peak
-  // [kMaxStep+2..2*kMaxStep+1] -> Shrinking phase
-  if (step > kMaxStep) {
-    step = kMaxStep - (step - kMaxStep);
-  }
-
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStrokeWidth(kIndicatorWidth);
@@ -111,14 +107,11 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
   const int view_width = GetContentsBounds().width();
   float x = (view_width - kIndicatorTotalWidth) / 2;
   for (int i = 0; i < kIndicatorLines; i++) {
-    float length = step * view_height * kIndicatorLengths[i] / kMaxStep;
-
-    // Special case for the last line.
-    // It is shorter than the previouos line during the growing phase,
-    // but has its own length during the shrinking phase.
-    if (i == kIndicatorLines - 1 && step_ <= kMaxStep) {
-      length = 0.65 * step * view_height * kIndicatorLengths[i - 1] / kMaxStep;
-    }
+    float length = view_height *
+                   // Set each line's animation cycle based on the previous
+                   // line, creating a wave-like effect.
+                   phaseLengths[(step_ + kMaxStep - i) % kMaxStep] *
+                   kIndicatorLengths[i];
 
     length = length * multiplier;
 

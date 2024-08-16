@@ -76,6 +76,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES_DESCRIPTION},
       {"certificateManagerV2CRSLearnMoreLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK},
+      {"certificateManagerV2CRSLearnMoreLinkAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK_ARIA_LABEL},
       {"certificateManagerV2HashCopiedToast",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
       {"certificateManagerV2AdminCertsTitle",
@@ -92,6 +94,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NO_CERTIFICATES_ROW},
       {"certificateManagerV2ExportButtonLabel",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL},
+      {"certificateManagerV2ExportButtonAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_ARIA_LABEL},
       {"certificateManagerV2PlatformCertsTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE},
       {"certificateManagerV2PlatformCertsToggleLabel",
@@ -99,11 +103,21 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       {"certificateManagerV2PlatformCertsManageLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK},
+      {"certificateManagerV2PlatformCertsManageLinkAriaDescription",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       {"certificateManagerV2PlatformCertsViewLink",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK},
       {"certificateManagerV2Platform",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM},
+      {"certificateManagerV2SubpageBackButtonAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_LABEL},
+      {"certificateManagerV2SubpageBackButtonAriaRoleDescription",
+       IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION},
+      {"certificateManagerV2CertEntryViewAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL},
+      {"certificateManagerV2CertHashCopyAriaLabel",
+       IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

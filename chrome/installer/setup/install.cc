@@ -28,8 +28,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
-#include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
@@ -304,7 +302,8 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
 void LaunchOSUpdateHandlerIfNeeded(const InstallerState& installer_state,
                                    const std::wstring& installed_version) {
   auto os_update_handler_cmd = GetOsUpdateHandlerCommand(
-      installer_state.target_path(), installed_version);
+      installer_state.target_path(), installed_version,
+      *base::CommandLine::ForCurrentProcess());
   if (!os_update_handler_cmd.has_value()) {
     return;
   }
@@ -350,22 +349,21 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Returns a CommandLine to run if os_update_handler.exe should be run,
 // i.e.. a Windows update has been detected, absl::nullopt otherwise.
-// Note that the file version of kernel32.dll is used as a proxy for the Windows
-// version to avoid issues when compatibility mode is set.
+// Use the Windows version update string set by Omaha on the command line
+// as the version update string to pass to os_update_handler.exe.
 std::optional<base::CommandLine> GetOsUpdateHandlerCommand(
     const base::FilePath& target_path,
-    const std::wstring& installed_version) {
-  const auto current_os_version = base::ASCIIToWide(
-      base::win::OSInfo::GetInstance()->Kernel32BaseVersion().GetString());
-  const auto last_os_version = UpdateLastWindowsVersion(current_os_version);
-  if (last_os_version.empty() || last_os_version == current_os_version) {
+    const std::wstring& installed_version,
+    const base::CommandLine& command_line) {
+  const auto args = command_line.GetArgs();
+  if (args.size() != 1) {
     return std::nullopt;
   }
   base::CommandLine os_update_handler_cmd(
       target_path.Append(installed_version).Append(kOsUpdateHandlerExe));
   InstallUtil::AppendModeAndChannelSwitches(&os_update_handler_cmd);
-  os_update_handler_cmd.AppendArgNative(
-      base::StrCat({last_os_version, L"-", current_os_version}));
+  // args[0] has the form "<prev_windows_version>-<new_windows_version>".
+  os_update_handler_cmd.AppendArgNative(args[0]);
   return os_update_handler_cmd;
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

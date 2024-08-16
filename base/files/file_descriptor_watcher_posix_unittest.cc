@@ -175,7 +175,7 @@ class FileDescriptorWatcherTest
   void WriteByte() {
     constexpr char kByte = '!';
     ASSERT_TRUE(WriteFileDescriptor(write_file_descriptor(),
-                                    as_bytes(make_span(&kByte, 1u))));
+                                    byte_span_from_ref(kByte)));
   }
 
   void ReadByte() {
@@ -184,13 +184,13 @@ class FileDescriptorWatcherTest
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
 
     char buffer;
-    ASSERT_TRUE(ReadFromFD(read_file_descriptor(), make_span(&buffer, 1u)));
+    ASSERT_TRUE(ReadFromFD(read_file_descriptor(), span_from_ref(buffer)));
   }
 
   void WriteByte2() {
     constexpr char kByte = '!';
     ASSERT_TRUE(WriteFileDescriptor(write_file_descriptor2(),
-                                    as_bytes(make_span(&kByte, 1u))));
+                                    byte_span_from_ref(kByte)));
   }
 
   void ReadByte2() {
@@ -199,7 +199,7 @@ class FileDescriptorWatcherTest
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
 
     char buffer;
-    ASSERT_TRUE(ReadFromFD(read_file_descriptor2(), make_span(&buffer, 1u)));
+    ASSERT_TRUE(ReadFromFD(read_file_descriptor2(), span_from_ref(buffer)));
   }
 
   void CloseWriteFd2() {

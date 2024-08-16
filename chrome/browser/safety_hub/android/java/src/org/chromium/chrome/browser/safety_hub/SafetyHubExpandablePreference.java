@@ -78,6 +78,8 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
         TextView summary = (TextView) holder.findViewById(android.R.id.summary);
         assert summary != null;
         summary.setVisibility(getSummary() != null && isExpanded() ? View.VISIBLE : View.GONE);
+
+        updatePreferenceContentDescription(holder.itemView);
     }
 
     @Override
@@ -131,6 +133,19 @@ public class SafetyHubExpandablePreference extends ChromeBasePreference {
     @Nullable
     String getSecondaryButtonText() {
         return mSecondaryButtonText;
+    }
+
+    private void updatePreferenceContentDescription(View view) {
+        // For accessibility, read out the whole title and whether the group is collapsed/expanded.
+        String description =
+                getTitle()
+                        + getContext()
+                                .getResources()
+                                .getString(
+                                        mExpanded
+                                                ? R.string.accessibility_expanded_group
+                                                : R.string.accessibility_collapsed_group);
+        view.setContentDescription(description);
     }
 
     private static Drawable createDrawable(Context context) {

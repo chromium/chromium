@@ -33,3 +33,38 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "kiosk_heartbeat_telemetry_events_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//chromeos/constants",
+    "//chromeos/dbus/missive:test_support",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

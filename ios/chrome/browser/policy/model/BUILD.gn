@@ -75,6 +75,7 @@ source_set("model") {
     "//components/keyed_service/ios",
     "//components/lens:enterprise_policy",
     "//components/metrics",
+    "//components/optimization_guide/core:features",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common",
@@ -97,6 +98,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
@@ -338,6 +340,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/test/app:test_support",
   ]
   frameworks = [ "Foundation.framework" ]

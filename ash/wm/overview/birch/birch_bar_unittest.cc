@@ -37,20 +37,18 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/models/image_model.h"
-#include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -79,12 +77,12 @@ class TestBirchItem : public BirchItem {
  public:
   TestBirchItem(const std::u16string& title,
                 const std::u16string& subtitle,
-                const std::optional<std::u16string>& secondary_action,
+                const std::optional<std::u16string>& addon_label,
                 float ranking = 1.0f)
       : BirchItem(title, subtitle) {
     set_ranking(ranking);
-    if (secondary_action) {
-      set_secondary_action(*secondary_action);
+    if (addon_label) {
+      set_addon_label(*addon_label);
     }
   }
   TestBirchItem(const BirchItem&) = delete;
@@ -97,11 +95,10 @@ class TestBirchItem : public BirchItem {
     return std::string("Test item ") + base::UTF16ToUTF8(title());
   }
   void PerformAction() override {}
-  void PerformSecondaryAction() override {}
   void LoadIcon(LoadIconCallback callback) const override {
     std::move(callback).Run(
         ui::ImageModel::FromVectorIcon(kSettingsIcon, SK_ColorBLACK, 20),
-        /*success=*/true);
+        SecondaryIconType::kNoIcon);
   }
 };
 
@@ -268,12 +265,9 @@ class TestBirchClient : public BirchClient {
 
   void RemoveFileItemFromLauncher(const base::FilePath& path) override {}
 
-  void GetFaviconImageForIconURL(
+  void GetFaviconImage(
       const GURL& url,
-      base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
-
-  void GetFaviconImageForPageURL(
-      const GURL& url,
+      const bool is_page_url,
       base::OnceCallback<void(const ui::ImageModel&)> callback) override {}
 
  private:
@@ -298,41 +292,6 @@ class TestBirchClient : public BirchClient {
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
   base::ScopedTempDir test_dir_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// LayerAnimationWaiter:
-class LayerAnimationWaiter : public ui::LayerAnimationObserver {
- public:
-  explicit LayerAnimationWaiter(ui::Layer* layer) {
-    animation_observation_.Observe(layer->GetAnimator());
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // ui::LayerAnimationObserver:
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
-    Stop();
-  }
-
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {
-    Stop();
-  }
-
-  void OnLayerAnimationScheduled(
-      ui::LayerAnimationSequence* sequence) override {}
-
- private:
-  void Stop() {
-    if (!animation_observation_.GetSource()->is_animating()) {
-      run_loop_.Quit();
-      animation_observation_.Reset();
-    }
-  }
-
-  base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
-      animation_observation_{this};
-  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -440,8 +399,7 @@ class BirchBarTest : public AshTestBase {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/GURL("https://www.favicon.com/"),
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop,
-          /*backup_icon=*/ui::ImageModel());
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop);
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetRecentTabsItems(item_list);
@@ -452,7 +410,7 @@ class BirchBarTest : public AshTestBase {
     std::vector<BirchLastActiveItem> item_list;
     for (size_t i = 0; i < num; ++i) {
       item_list.emplace_back(u"last active", GURL("https://yahoo.com/"),
-                             base::Time(), ui::ImageModel());
+                             base::Time());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetLastActiveItems(item_list);
@@ -462,8 +420,7 @@ class BirchBarTest : public AshTestBase {
   void SetMostVisitedItems(size_t num) {
     std::vector<BirchMostVisitedItem> item_list;
     for (size_t i = 0; i < num; ++i) {
-      item_list.emplace_back(u"most visited", GURL("https://google.com/"),
-                             ui::ImageModel());
+      item_list.emplace_back(u"most visited", GURL("https://google.com/"));
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetMostVisitedItems(item_list);
@@ -477,7 +434,6 @@ class BirchBarTest : public AshTestBase {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/GURL("https://www.exampletwo.com/"),
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*backup_icon=*/ui::ImageModel(),
           /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
@@ -492,8 +448,6 @@ class BirchBarTest : public AshTestBase {
       item_list.emplace_back(
           /*source_url=*/GURL("https://www.source.com/"),
           /*media_title=*/u"media title",
-          /*is_video_conference_tab=*/false,
-          /*backup_icon=*/ui::ImageModel(),
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing());
       item_list.back().set_ranking(1.0f);
@@ -520,7 +474,7 @@ class BirchBarTest : public AshTestBase {
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*weather_description=*/u"cloudy",
                              /*temperature=*/72.f,
-                             /*icon*/ ui::ImageModel());
+                             /*icon_url=*/GURL("http://icon.com/"));
       item_list.back().set_ranking(1.0f);
     }
     weather_provider_->set_items(item_list);
@@ -647,6 +601,34 @@ TEST_F(BirchBarTest, KeyboardTraversal) {
   EXPECT_TRUE(birch_chips[0]->HasFocus());
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(birch_chips[1]->HasFocus());
+}
+
+// Test that there is no crash when SetIconImage was called after shutting down
+// the chips.
+TEST_F(BirchBarTest, NoCrashOnSettingIconAfterShutdown) {
+  EnterOverview();
+  const auto& chips =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips();
+  ASSERT_EQ(1u, chips.size());
+
+  BirchChipButton* chip = views::AsViewClass<BirchChipButton>(chips[0].get());
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a set icon callback to simulate the case of setting icon after
+  // shutting down the chip.
+  auto set_icon = base::BindOnce(&BirchChipButton::SetIconImage,
+                                 chip->weak_factory_.GetWeakPtr(),
+                                 ui::ImageModel(), SecondaryIconType::kNoIcon);
+
+  ExitOverview();
+
+  // The chip is shut down.
+  EXPECT_FALSE(!!chip->GetItem());
+
+  // Trigger setting icon.
+  std::move(set_icon).Run();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -804,14 +786,63 @@ TEST_F(BirchBarMenuTest, NoCrashOnRemovingChip) {
             base::to_underlying(
                 BirchChipContextMenuModel::CommandId::kHideSuggestion));
 
-  LayerAnimationWaiter waiter(chips[2]->layer());
+  ui::LayerAnimationStoppedWaiter animation_waiter;
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   LeftClickOn(hide_suggestion_item);
-  waiter.Wait();
+  animation_waiter.Wait(chips[2]->layer());
 
   // There should be 3 chips on the bar after animation without crash.
   EXPECT_EQ(3u, chips.size());
+}
+
+// Regression test to confirm there is no crash when removing a chip from a two
+// rows bar.
+TEST_F(BirchBarMenuTest, NoCrashOnRemovingChipFromTwoRowsBar) {
+  // Set a narrow display whose short side can only hold two chips.
+  UpdateDisplay("640x1080");
+
+  // Add 5 calendar items.
+  SetCalendarItems(/*num=*/5);
+
+  EnterOverview();
+  OverviewGridTestApi test_api =
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow());
+  auto* birch_bar_view = test_api.birch_bar_view();
+
+  // There should be 4 chips on two rows.
+  EXPECT_EQ(4, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
+
+  // Remove the second chip.
+  RightClickOn(test_api.GetBirchChips()[1]);
+
+  auto* model_adapter = GetBirchBarChipMenuModelAdaper();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Hiding the third suggestion by selecting the corresponding menu item.
+  const auto* hide_suggestion_item =
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0);
+  EXPECT_EQ(hide_suggestion_item->GetCommand(),
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kHideSuggestion));
+
+  LeftClickOn(hide_suggestion_item);
+
+  // There should still be 4 chips on two rows since the 5th item is filled in.
+  EXPECT_EQ(4, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
+
+  // Continue to remove the second chip.
+  RightClickOn(test_api.GetBirchChips()[1]);
+
+  model_adapter = GetBirchBarChipMenuModelAdaper();
+  LeftClickOn(
+      model_adapter->root_for_testing()->GetSubmenu()->GetMenuItemAt(0));
+
+  // There should be 3 chips on two rows.
+  EXPECT_EQ(3, birch_bar_view->GetChipsNum());
+  EXPECT_EQ(2u, birch_bar_view->children().size());
 }
 
 // Tests showing/hiding suggestions from context menu.
@@ -1352,6 +1383,9 @@ TEST_F(BirchBarMenuTest, HideSuggestionTypes) {
     SCOPED_TRACE(testing::Message()
                  << "Hide type of suggestion: " << chip->GetItem()->ToString());
 
+    // Manually set birch bar bounds to trigger layout.
+    views::test::RunScheduledLayout(grid_test_api.birch_bar_view());
+
     // Right clicking on a chip to show the chip menu.
     RightClickOn(chip);
     auto* model_adapter =
@@ -1583,12 +1617,12 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   // Add test chips to the bar in landscape mode.
   std::vector<std::unique_ptr<BirchItem>> items_;
   for (int i = 0; i < 4; i++) {
-    std::optional<std::u16string> secondary_action;
+    std::optional<std::u16string> addon_label;
     if (i % 2) {
-      secondary_action = u"add-on";
+      addon_label = u"add-on";
     }
-    auto item = std::make_unique<TestBirchItem>(u"title", u"subtitle",
-                                                secondary_action);
+    auto item =
+        std::make_unique<TestBirchItem>(u"title", u"subtitle", addon_label);
     birch_bar_view->AddChip(item.get());
     items_.emplace_back(std::move(item));
     EXPECT_EQ(birch_bar_widget->GetWindowBoundsInScreen(),

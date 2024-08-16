@@ -19,7 +19,7 @@ PlusProfile PlusProfileFromEntityData(const syncer::EntityData& entity_data) {
   return PlusProfile(
       specifics.profile_id(),
       affiliations::FacetURI::FromCanonicalSpec(specifics.facet()),
-      specifics.plus_email().email_address(),
+      PlusAddress(specifics.plus_email().email_address()),
       /*is_confirmed=*/true);
 }
 
@@ -29,10 +29,10 @@ syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile) {
   syncer::EntityData entity_data;
   sync_pb::PlusAddressSpecifics* specifics =
       entity_data.specifics.mutable_plus_address();
-  specifics->set_profile_id(profile.profile_id);
+  specifics->set_profile_id(profile.profile_id.value());
   specifics->set_facet(
       absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
-  specifics->mutable_plus_email()->set_email_address(profile.plus_address);
+  specifics->mutable_plus_email()->set_email_address(*profile.plus_address);
   // The name visible in chrome://sync-internals.
   entity_data.name = specifics->facet();
   return entity_data;

@@ -9,10 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -21,6 +21,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/browser_context.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace storage {
 class FileSystemURL;
@@ -127,7 +131,7 @@ class ConnectorsManager {
   void CacheReportingConnectorPolicy(ReportingConnector connector);
 
   // Get data location region from policy.
-  safe_browsing::DataRegion GetDataRegion() const;
+  DataRegion GetDataRegion() const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Close connection with local agent if all the relevant connectors are turned

@@ -533,7 +533,7 @@ void PartitionAddressSpace::MapMetadata(uintptr_t super_page,
   PA_CHECK(ptr != MAP_FAILED);
   PA_CHECK(ptr == reinterpret_cast<void*>(writable_metadata));
 
-  if (PA_UNLIKELY(copy_metadata)) {
+  if (copy_metadata) [[unlikely]] {
     // Copy the metadata from the private and copy-on-write page to
     // the shared page. (=update the memory file)
     memcpy(reinterpret_cast<void*>(writable_metadata),

@@ -147,6 +147,8 @@ component("views_examples_lib") {
     "//ui/views",
   ]
 
+  public_deps = [ "//ui/base/mojom:mojom" ]
+
   if (is_win) {
     deps += [ "//third_party/wtl" ]
   }

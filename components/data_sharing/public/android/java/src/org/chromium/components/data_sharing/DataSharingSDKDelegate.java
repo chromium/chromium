@@ -5,6 +5,7 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.DeleteGroupParams;
@@ -35,4 +36,7 @@ public interface DataSharingSDKDelegate {
 
     void lookupGaiaIdByEmail(
             LookupGaiaIdByEmailParams params, DataSharingSDKDelegateProtoResponseCallback callback);
+
+    void addAccessToken(
+            AddAccessTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback);
 }

@@ -18,8 +18,11 @@ extern const char kExceptionMessageSessionDestroyed[];
 extern const char kExceptionMessageInvalidTemperatureAndTopKFormat[];
 extern const char kExceptionMessageUnableToCreateSession[];
 extern const char kExceptionMessageUnableToCloneSession[];
+extern const char kExceptionMessageRequestAborted[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
+
+void ThrowSessionDestroyedException(ExceptionState& exception_state);
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
 

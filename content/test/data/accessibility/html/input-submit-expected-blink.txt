@@ -4,10 +4,10 @@ rootWebArea
 ++++++sectionWithoutName
 ++++++++textField inputType='text'
 ++++++++++genericContainer
-++++++++button default inputType='submit' name='First submit in a form is a valid default button'
+++++++++button default inputType='submit' name='First submit in a form is a valid default button' nameFrom=value
 ++++++++++staticText name='First submit  in a form is a valid default button'
 ++++++++++++inlineTextBox name='First submit  in a form is a valid default button'
-++++++++button inputType='submit' name='Second submit in a form not a valid default button'
+++++++++button inputType='submit' name='Second submit in a form not a valid default button' nameFrom=value
 ++++++++++staticText name='Second submit in a form not a valid default button'
 ++++++++++++inlineTextBox name='Second submit in a form not a valid default button'
 ++++++sectionWithoutName
@@ -24,6 +24,6 @@ rootWebArea
 ++++++++++++image
 ++++++++++++staticText name='Second image button in a form not a valid default button'
 ++++++++++++++inlineTextBox name='Second image button in a form not a valid default button'
-++++++button inputType='submit' name='Submit outside of form not a valid default button'
+++++++button inputType='submit' name='Submit outside of form not a valid default button' nameFrom=value
 ++++++++staticText name='Submit outside of form not a valid default button'
 ++++++++++inlineTextBox name='Submit outside of form not a valid default button'

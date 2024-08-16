@@ -84,11 +84,12 @@ DOMWrapperWorld* DOMWrapperWorld::Create(v8::Isolate* isolate,
   DCHECK(isolate);
   DCHECK_NE(WorldType::kIsolated, world_type);
   const auto world_id = GenerateWorldIdForType(world_type);
-  return LIKELY(world_id.has_value())
-             ? MakeGarbageCollected<DOMWrapperWorld>(
-                   PassKey(), isolate, world_type, world_id.value(),
-                   is_default_world_of_isolate)
-             : nullptr;
+  if (world_id.has_value()) [[likely]] {
+    return MakeGarbageCollected<DOMWrapperWorld>(PassKey(), isolate, world_type,
+                                                 world_id.value(),
+                                                 is_default_world_of_isolate);
+  }
+  return nullptr;
 }
 
 DOMWrapperWorld* DOMWrapperWorld::EnsureIsolatedWorld(v8::Isolate* isolate,
@@ -264,7 +265,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
     case WorldType::kIsolated:
       // This function should not be called for IsolatedWorld because an
       // identifier for the world is given from out of DOMWrapperWorld.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WorldType::kInspectorIsolated: {
       DCHECK(IsMainThread());
       static int next_devtools_isolated_world_id =
@@ -283,7 +284,7 @@ std::optional<int> DOMWrapperWorld::GenerateWorldIdForType(
       return next_world_id++;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

@@ -17,4 +17,9 @@ struct WindowFeatures {
     bool has_height = false;
 
     bool is_popup = false;
+
+    // Whether the created window is a partitioned popin. If true, `is_popup`
+    // must be true.
+    // See: https://explainers-by-googlers.github.io/partitioned-popins/
+    bool is_partitioned_popin = false;
 };

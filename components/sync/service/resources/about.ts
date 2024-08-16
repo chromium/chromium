@@ -66,7 +66,7 @@ function refreshAboutInfo(newAboutInfo: AboutInfo) {
 }
 
 interface EntityCount {
-  modelType: string;
+  dataType: string;
   entities: number;
   nonTombstoneEntities: number;
 }
@@ -87,7 +87,7 @@ function onEntityCountsUpdatedEvent(response: {entityCounts: EntityCount}) {
   }
 
   const typeStatusRow = aboutInfo.type_status.find(
-      row => row.name === response.entityCounts.modelType);
+      row => row.name === response.entityCounts.dataType);
   if (typeStatusRow) {
     typeStatusRow.num_entries = response.entityCounts.entities;
     typeStatusRow.num_live = response.entityCounts.nonTombstoneEntities;

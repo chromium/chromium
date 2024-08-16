@@ -65,6 +65,7 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
     mediator_ = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safety_check_manager_.get()
                         localState:local_pref_service_.get()
+                         userState:pref_service_.get()
                           appState:mock_app_state_];
 
     safety_check_magic_stack_consumer_ =

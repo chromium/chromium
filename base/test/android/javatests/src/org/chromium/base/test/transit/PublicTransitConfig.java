@@ -118,12 +118,8 @@ public class PublicTransitConfig {
                 }
                 totalMsFrozen += backoffTimer;
                 backoffTimer = 2 * backoffTimer;
+                Log.e(TAG, "Frozen for %sms on TravelException:", totalMsFrozen, travelException);
                 if (sOnExceptionCallbackIsRecurring) {
-                    Log.e(
-                            TAG,
-                            "Frozen for %sms on TravelException:",
-                            totalMsFrozen,
-                            travelException);
                     triggerOnExceptionCallback();
                 }
             }

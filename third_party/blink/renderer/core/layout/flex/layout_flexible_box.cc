@@ -6,6 +6,8 @@
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -68,10 +70,12 @@ void MergeAnonymousFlexItems(LayoutObject* remove_child) {
 bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
                                        const ComputedStyle& style) const {
   const auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (UNLIKELY(select && select->UsesMenuList())) {
+  if (select && select->UsesMenuList()) [[unlikely]] {
     if (select->IsAppearanceBaseSelect()) {
       CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-      if (IsA<HTMLOptionElement>(object->GetNode())) {
+      if (IsA<HTMLOptionElement>(object->GetNode()) ||
+          IsA<HTMLOptGroupElement>(object->GetNode()) ||
+          IsA<HTMLHRElement>(object->GetNode())) {
         // TODO(crbug.com/1511354): Remove this when <option>s are slotted into
         // the UA <datalist>, which will be hidden by default as a popover.
         return false;

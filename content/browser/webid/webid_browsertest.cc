@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1650,6 +1651,65 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
+}
+
+// Verify that using mediation in the wrong place adds log to console.
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
+                       MediationInIdentityCredentialRequestOptions) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+              mediation: 'required'
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "The 'mediation' parameter should be used outside of 'identity' in the "
+      "FedCM API call.");
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
+  EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                 "*The 'mediation' parameter*"));
+  ASSERT_TRUE(console_observer.Wait());
+}
+
+// Verify that using mediation in the right place does not add log to console.
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
+                       NoConsoleWarningWithProperMediationCall) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+            },
+            mediation: 'required'
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
+  EXPECT_TRUE(console_observer.messages().empty());
 }
 
 }  // namespace content

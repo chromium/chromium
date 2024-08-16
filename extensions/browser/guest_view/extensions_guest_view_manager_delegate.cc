@@ -40,6 +40,27 @@ using guest_view::GuestViewManager;
 
 namespace extensions {
 
+// Returns a HostID instance based on the given GuestViewBase.
+mojom::HostID GenerateHostIdFromGuestView(
+    const guest_view::GuestViewBase& guest) {
+  // Note: We return a type of kExtensions for all cases where
+  // |guest.IsOwnedByExtension()| are true, as well as some additional cases
+  // where that call is false but also |guest.IsOwnedByWebUI()| and
+  // |guest.IsOwnedByControlledFrameEmbedder()| are false. Those appear to be
+  // when the provided extension identifier is blank. Future work in this area
+  // could improve the checks here so all the cases are declared relative to
+  // what the GuestView instance asserts itself to be.
+  mojom::HostID::HostType host_type = mojom::HostID::HostType::kExtensions;
+
+  if (guest.IsOwnedByWebUI()) {
+    host_type = mojom::HostID::HostType::kWebUi;
+  } else if (guest.IsOwnedByControlledFrameEmbedder()) {
+    host_type = mojom::HostID::HostType::kControlledFrameEmbedder;
+  }
+
+  return mojom::HostID(host_type, guest.owner_host());
+}
+
 // static
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContextWithFeature(
     const GuestViewBase* guest,
@@ -111,7 +132,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
 
   EventRouter::Get(guest->browser_context())
       ->DispatchEventToSender(owner->GetProcess(), guest->browser_context(),
-                              util::GenerateHostIdFromGuestView(*guest),
+                              GenerateHostIdFromGuestView(*guest),
                               histogram_value, event_name,
                               extensions::kMainThreadId,
                               blink::mojom::kInvalidServiceWorkerVersionId,

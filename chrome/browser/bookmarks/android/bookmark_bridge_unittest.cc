@@ -37,7 +37,7 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync/test/test_sync_user_settings.h"
@@ -136,9 +136,9 @@ class BookmarkBridgeTest : public testing::Test {
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // After this update initial sync is for sure done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     activation_response->type_processor->OnUpdateReceived(
         state, {}, /*gc_directive=*/std::nullopt);

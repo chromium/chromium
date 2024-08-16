@@ -30,6 +30,8 @@ static_library("handlers") {
     "wallpaper_image_external_data_handler.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//base",
     "//chrome/browser/ash/crostini",

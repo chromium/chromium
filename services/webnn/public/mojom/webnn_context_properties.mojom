@@ -1,0 +1,102 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+// Represents the `MLInputOperandLayout` that specifies the layout format of
+// the input tensor. `kChannelsFirst` means `nchw` (batches, channels, height,
+// width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
+// The type is used to get the spatial dimension from input tensor, thus safe to
+// represent as enum.
+enum InputOperandLayout {
+  kChannelsFirst,
+  kChannelsLast,
+};
+
+struct SupportedDataTypes {
+  bool float32;
+  bool float16;
+  bool int32;
+  bool uint32;
+  bool int64;
+  bool uint64;
+  bool int8;
+  bool uint8;
+};
+
+// Represents the data type limits exposed through
+// `MLContext::opSupportLimits()`.
+// Keep the order as the same as build methods of `MLGraphBuilder`, for
+// operator with multiple parameters, maintain the parameter positions order.
+struct DataTypeLimits {
+  SupportedDataTypes input;
+  SupportedDataTypes constant;
+
+  // ArgMin/Max.
+  SupportedDataTypes arg_min_max_input;
+  SupportedDataTypes arg_min_max_output;
+
+  SupportedDataTypes concat_inputs;
+
+  // Element-wise binary ops.
+  SupportedDataTypes add_input;
+  SupportedDataTypes sub_input;
+  SupportedDataTypes mul_input;
+  SupportedDataTypes div_input;
+  SupportedDataTypes max_input;
+  SupportedDataTypes min_input;
+  SupportedDataTypes pow_input;
+
+  // Element-wise logical ops.
+  SupportedDataTypes equal_input;
+  SupportedDataTypes greater_input;
+  SupportedDataTypes greater_or_equal_input;
+  SupportedDataTypes lesser_input;
+  SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_not_input;
+  SupportedDataTypes logical_output;
+
+  // Element-wise unary ops.
+  SupportedDataTypes abs_input;
+  SupportedDataTypes ceil_input;
+  SupportedDataTypes cos_input;
+  SupportedDataTypes erf_input;
+  SupportedDataTypes exp_input;
+  SupportedDataTypes floor_input;
+  SupportedDataTypes identity_input;
+  SupportedDataTypes log_input;
+  SupportedDataTypes neg_input;
+  SupportedDataTypes reciprocal_input;
+  SupportedDataTypes sin_input;
+  SupportedDataTypes sqrt_input;
+  SupportedDataTypes tan_input;
+
+  SupportedDataTypes elu_input;
+
+  // Gather.
+  SupportedDataTypes gather_input;
+  SupportedDataTypes gather_indices;
+
+  SupportedDataTypes gelu_input;
+  SupportedDataTypes leaky_relu_input;
+  SupportedDataTypes relu_input;
+  SupportedDataTypes sigmoid_input;
+  SupportedDataTypes slice_input;
+  SupportedDataTypes softmax_input;
+  SupportedDataTypes softplus_input;
+  SupportedDataTypes softsign_input;
+  SupportedDataTypes split_input;
+
+  // Where.
+  SupportedDataTypes where_condition;
+  SupportedDataTypes where_value;
+};
+
+// Represents properties of the `WebNNContext` implementation that has been
+// provided.
+struct ContextProperties {
+  InputOperandLayout input_operand_layout;
+  DataTypeLimits data_type_limits;
+};
+

@@ -140,7 +140,7 @@ RenderMediaClient::RenderMediaClient()
 RenderMediaClient::~RenderMediaClient() {
   // The RenderMediaClient should never get destroyed and we have usages of
   // base::Unretained(this) here that rely on that behaviour.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {

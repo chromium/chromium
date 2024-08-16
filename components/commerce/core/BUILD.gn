@@ -56,7 +56,9 @@ source_set("feature_utils") {
     ":account_checker",
     ":feature_list",
     ":pref_names",
+    "product_specifications",
     "//components/prefs",
+    "//components/sync/base",
   ]
 }
 
@@ -345,6 +347,7 @@ source_set("shopping_service_unit_tests") {
     "bookmark_update_manager_unittest.cc",
     "commerce_info_cache_unittest.cc",
     "discounts_storage_unittest.cc",
+    "feature_utils_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
@@ -358,11 +361,14 @@ source_set("shopping_service_unit_tests") {
     ":account_checker_test_support",
     ":commerce_info_cache",
     ":discounts_db_content_proto",
+    ":feature_utils",
     ":metrics",
     ":pref_names",
     ":shopping_service_test_support",
     "compare:unit_tests",
     "parcel:unit_tests",
+    "product_specifications",
+    "product_specifications:test_support",
     "subscriptions:test_support",
     "webui:unit_tests",
     "//components/history/core/browser",
@@ -399,6 +405,7 @@ source_set("account_checker") {
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",
     "//components/signin/public/identity_manager:identity_manager",
+    "//components/sync/base",
     "//components/sync/service",
     "//components/unified_consent",
     "//net/traffic_annotation:traffic_annotation",
@@ -422,6 +429,7 @@ source_set("account_checker_test_support") {
     ":account_checker",
     "//base",
     "//components/prefs",
+    "//components/sync/base",
     "//services/network/public/cpp:cpp",
     "//testing/gmock",
   ]

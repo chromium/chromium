@@ -77,7 +77,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
 #undef MERGE_OPTIONAL_FIELD
 }
 
-void VideoFrameMetadata::ClearTextureFrameMedatada() {
+void VideoFrameMetadata::ClearTextureFrameMetadata() {
   is_webgpu_compatible = false;
   texture_origin_is_top_left = true;
   read_lock_fences_enabled = false;

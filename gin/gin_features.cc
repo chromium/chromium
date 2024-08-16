@@ -309,6 +309,12 @@ BASE_FEATURE(kJavaScriptPromiseTry,
 
 // WebAssembly features.
 
+// Enable WebAssembly deoptimization support (not user visible), see
+// https://crbug.com/42204618.
+BASE_FEATURE(kWebAssemblyDeopt,
+             "WebAssemblyDeopt",
+             kFeatureDefaultStateControlledByV8);
+
 // Enable WebAssembly inlining (not user visible).
 BASE_FEATURE(kWebAssemblyInlining,
              ("WebAssemblyInlining"),

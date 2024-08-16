@@ -4,12 +4,13 @@
 
 import 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 
-import type {RelatedWebsiteSetsAppElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
+import type {RelatedWebsiteSetsAppElement, RelatedWebsiteSetsListContainerElement, RelatedWebsiteSetsToolbarElement} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {RelatedWebsiteSetsApiBrowserProxyImpl} from 'chrome://privacy-sandbox-internals/related_website_sets/related_website_sets.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestRelatedWebsiteSetsApiBrowserProxy} from './test_api_proxy.js';
+import {GetRelatedWebsiteSetsResponseForTest} from './test_data.js';
 
 suite('AppTest', () => {
   let app: RelatedWebsiteSetsAppElement;
@@ -18,7 +19,8 @@ suite('AppTest', () => {
   setup(async () => {
     testProxy = new TestRelatedWebsiteSetsApiBrowserProxy();
     RelatedWebsiteSetsApiBrowserProxyImpl.setInstance(testProxy);
-
+    testProxy.handler.relatedWebsiteSetsInfo =
+        GetRelatedWebsiteSetsResponseForTest;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('related-website-sets-app');
     document.body.appendChild(app);
@@ -73,9 +75,22 @@ suite('AppTest', () => {
 
   test('UI search box updates URL parameters', async () => {
     app.$.toolbar.$.mainToolbar.getSearchField().setValue('hello');
-
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('q');
     assertEquals('hello', query);
+  });
+
+  test('propagates query to child element', async () => {
+    const expectedQuery = 'set2-';
+    const toolbar = $$<RelatedWebsiteSetsToolbarElement>(app, '#toolbar');
+    assertTrue(!!toolbar);
+    toolbar.setSearchFieldValue(expectedQuery);
+    await microtasksFinished();
+    const contentContainer =
+        app.shadowRoot!.querySelector<RelatedWebsiteSetsListContainerElement>(
+            '#content > related-website-sets-list-container');
+    assertTrue(!!contentContainer);
+    const actualQuery = contentContainer.query;
+    assertEquals(expectedQuery, actualQuery);
   });
 });

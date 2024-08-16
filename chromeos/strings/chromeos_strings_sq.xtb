@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1300115153046603471">APN-ja është e llojit të parazgjedhur dhe <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Data e krijimit</translation>
 <translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
 <translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">Galeri arti</translation>
 <translation id="1836553715834333258">Ngjyra e sistemit</translation>
 <translation id="183675228220305365">realist</translation>
-<translation id="1837537071599385610">Udhëzuesi për kërkesat</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1840474674287087346">Ngjyra e desktopit</translation>
 <translation id="184095011128924488">krijuese</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Kontrollet</translation>
 <translation id="2652403576514495859">aktivizo ose çaktivizo diktimin</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
-<translation id="2653807227758181366">Përshkruaj imazhin e sfondit që dëshiron të krijosh ose përdor një shembull kërkese</translation>
 <translation id="2654647726140493436">Mos e fik pajisjen "<ph name="DEVICE_TYPE" />" dhe mos e hiq nga priza pajisjen "<ph name="DEVICE_TYPE" />" ndërkohë që përditësimi është në vazhdim</translation>
 <translation id="2656001153562991489">Ekskluzive për Chromebook Plus</translation>
 <translation id="2665671725390405060">Dëgjo shqiptimin</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Sfonde të fundit të mundësuara nga IA-ja e Google</translation>
 <translation id="2783010256799387990">KALOI</translation>
 <translation id="2786429550992142861">lino</translation>
+<translation id="2787237339470862294">Kjo gjuhë nuk mbështetet në këtë moment</translation>
 <translation id="2787435249130282949">tastiera më e ndritshme</translation>
 <translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
 <translation id="3201315366910775591">Albumet e ndara mund të përditësohen nga persona të tjerë</translation>
 <translation id="3211671540163313381">Blloku i drejtimit për organizimin e tasteve</translation>
-<translation id="3224812403568276799">Kur e lejon këtë, "Regjistruesi" do të përdorë analizën e përparuar të audios për të zbuluar automatikisht zërat e veçantë dhe për t'i dhënë secilit një etiketë të përgjithshme, si p.sh. "Folësi 1" dhe "Folësi 2".
-
-Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3227186760713762082">Pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
@@ -465,6 +462,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="346423161771747987">Rryma</translation>
 <translation id="346539236881580388">Nxirr përsëri</translation>
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
+<translation id="3485555238092220889">veprimi i qasshmërisë</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3487866404496702283">Komentet për veçorinë mahi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
@@ -509,6 +507,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
 <translation id="3715651196924935218">Dil nga pluskimi</translation>
 <translation id="3716250181321371108">Krijo një kontroll</translation>
+<translation id="3716830479327464973">Kur e lejon këtë, "Regjistruesi" do të analizojë regjistrimet e tua audio që:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
@@ -535,6 +534,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3877066159641251281">Dëgjo përkthimin</translation>
+<translation id="3880601782712134623">Të zbulojë automatikisht zërat e veçantë dhe t'i japë çdo folësi një etiketë të përgjithshme, si p.sh. "Folësi 1" dhe "Folësi 2".</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
 <translation id="3889914174935857450">Rivendos datën</translation>
 <translation id="3897092660631435901">Menyja</translation>
@@ -638,6 +638,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="4422041425070339732">shigjeta poshtë</translation>
 <translation id="4425149324548788773">Disku im</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> është joaktiv</translation>
+<translation id="4428840632568803690">Folësi <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Bileta e Kerberos skadon së shpejti</translation>
 <translation id="4431821876790500265">Shiko raportin</translation>
 <translation id="4443192710976771874">të kuqe</translation>
@@ -673,6 +674,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="458794348635939462">Zgjidhja e të gjithë pritësve dështoi</translation>
 <translation id="4593212453765072419">Kërkohet vërtetimi i serverit përfaqësues</translation>
 <translation id="4594021849294327751">Krijo transkriptin</translation>
+<translation id="4607282946861182308">Nuk mund të krijohen imazhe të kësaj. Provo një kërkesë tjetër.</translation>
 <translation id="4609350030397390689">Ulja e ndriçimit të tastierës</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> nga <ph name="TOTAL_PAGE_NUMBER" />. Shtyp Enter për të anuluar printimin.</translation>
 <translation id="463791356324567266">Skanimi po anulohet...</translation>
@@ -759,6 +761,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Emri i grupit</translation>
 <translation id="5051044138948155788">Kjo është faqja e vetme. Kjo do të të çojë tek ekrani i fillimit të skanimit.</translation>
+<translation id="5078711626843651677">Modelet e zërit ruhen përkohësisht në pajisje derisa të përfundojë etiketimi i folësit. Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5078983345702708852">futuriste</translation>
 <translation id="5087864757604726239">prapa</translation>
 <translation id="5088172560898466307">Emri i strehuesit të serverit</translation>
@@ -813,9 +816,11 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5318334351163689047">Dështimet e kërkesave TCP</translation>
 <translation id="53196409393069519">Të aktivizohet transkriptimi?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Emri</translation>
 <translation id="5332948983412042822">Zgjidh një të ri tani</translation>
 <translation id="5333530671332546086">Gjendje e panjohur portali</translation>
 <translation id="5335373365677455232">rozë</translation>
+<translation id="5344619683981067131">Teksti i zgjedhur po zëvendësohet me sugjerimin</translation>
 <translation id="5346687412805619883">Rrjeti lokal</translation>
 <translation id="5358174242040570474">Ndodhi një gabim. Provo të zgjedhësh sërish një imazh sfondi ose të rihapësh aplikacionin.</translation>
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
@@ -867,6 +872,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="5662240986744577912">aktivizo/çaktivizo ekranin e privatësisë</translation>
 <translation id="5669267381087807207">Po aktivizohet</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Përshkruaj imazhin e sfondit që dëshiron të krijosh</translation>
 <translation id="5680504961595602662">Një <ph name="SURREAL_LANDSCAPE" /> surreale me <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">qershi</translation>
 <translation id="5691511426247308406">Familja</translation>
@@ -974,7 +980,6 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="6231648282154119906">Skedarët e dyshimtë do të skanohen automatikisht nga "Shfletimi i sigurt i Google" si pjesë e mbrojtjes së përmirësuar që ke zgjedhur</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Shfaq strukturat</translation>
-<translation id="6235460611964961764">Rivendos manualisht përdorimin e të dhënave</translation>
 <translation id="6243280677745499710">Caktuar aktualisht</translation>
 <translation id="6250316632541035980">pançetë dhe vezë</translation>
 <translation id="6265268291107409527">Tasti i zgjedhur është <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
 <translation id="6871256179359663621">vjollcë e çelur</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
@@ -1108,7 +1114,9 @@ Mund ta çaktivizosh këtë në çdo kohë te "Cilësimet".</translation>
 <translation id="6905163627763043954">Provoje</translation>
 <translation id="6905724422583748843">Prapa te <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kapaku i skanerit është i hapur. Mbylle kapakun dhe provo përsëri.</translation>
+<translation id="6910845598686542904">Të llogaritë modelet e zërave të zbuluar në regjistrim</translation>
 <translation id="6911383237894364323">Nuk mund të lidhet me serverët e medias.</translation>
+<translation id="6930242544192836755">Kohëzgjatja</translation>
 <translation id="6930597342185648547">Rreth sfondit</translation>
 <translation id="6939667434404433010">Kërko për emrin e regjistrimit</translation>
 <translation id="6939766318048400022">Kafene</translation>
@@ -1291,6 +1299,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7802764839223122985">Tasti mungon. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7805768142964895445">Statusi</translation>
+<translation id="7811024689617730980">Zgjidh një ditë për rivendosjen automatike që varion nga 1 deri në 31, duke i përfshirë këto</translation>
 <translation id="7813073042185856802">mal</translation>
 <translation id="7819857487979277519">PSK (WPA ose RSN)</translation>
 <translation id="7824219488248240180">post-impresionist</translation>
@@ -1329,6 +1338,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
 <translation id="802154636333426148">Shkarkimi dështoi</translation>
+<translation id="8028993641010258682">Madhësia</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
@@ -1365,6 +1375,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8226628635270268143">Zgjidh fotografitë dhe albumet e tua të preferuara</translation>
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
+<translation id="8227488649450500937">Provo një nga këto kërkesa ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin për kërkesat<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8238771987802558562">Zgjidh një APN</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
@@ -1570,6 +1581,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
 <translation id="950520315903467048">Tasti mungon për drejtimin <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Të krahasojë zërat gjatë të gjithë regjistrimit që transkripti të pasqyrojë atë që ka thënë dhe kur e ka thënë çdo folës</translation>
 <translation id="952992212772159698">Nuk është aktivizuar</translation>
 <translation id="95718197892796296">argjilë</translation>
 <translation id="960719561871045870">Kodi i operatorit</translation>

@@ -34,7 +34,7 @@ TouchSelectionMenuAction MapCommandIdToMenuAction(int command_id) {
     case TouchEditable::kSelectWord:
       return TouchSelectionMenuAction::kSelectWord;
     default:
-      NOTREACHED_NORETURN() << "Invalid command id: " << command_id;
+      NOTREACHED() << "Invalid command id: " << command_id;
   }
 }
 

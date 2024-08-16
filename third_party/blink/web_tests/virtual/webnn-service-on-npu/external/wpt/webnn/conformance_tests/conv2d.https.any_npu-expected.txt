@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] conv2d float32 4D both input and filter non-constant tensors default options
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d float32 4D both input and filter constant tensors default options
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors default options
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors options.padding
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.0380859375 should be close enough to expected 1.0390141010284424 by the acceptable 18 ULP distance, but they have 7786 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors options.strides
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.53125 should be close enough to expected 1.5323282480239868 by the acceptable 18 ULP distance, but they have 9045 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors options.dilations
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.359375 should be close enough to expected 1.3599307537078857 by the acceptable 18 ULP distance, but they have 4662 ULP distance expected true got false
+[FAIL] depthwise conv2d float32 4D input and filter tensors options.groups= input_channels
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.1796875 should be close enough to expected 1.1808103322982788 by the acceptable 8 ULP distance, but they have 9419 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors options.inputLayout='nchw'
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 0.88427734375 should be close enough to expected 0.8845428228378296 by the acceptable 8 ULP distance, but they have 4454 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors options.filterLayout='oihw'
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 0.88427734375 should be close enough to expected 0.8845428228378296 by the acceptable 8 ULP distance, but they have 4454 ULP distance expected true got false
+[FAIL] conv2d float32 4D input and filter tensors 1D options.bias
+  assert_true: assert_array_approx_equals_ulp: test conv2d float32 actual 1.697265625 should be close enough to expected 1.698119044303894 by the acceptable 8 ULP distance, but they have 7159 ULP distance expected true got false
+Harness: the test ran to completion.
+

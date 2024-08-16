@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CompanionAppInfo, CompanionAppState, PerDeviceInstallRowElement} from 'chrome://os-settings/os_settings.js';
+import {CompanionAppInfo, CompanionAppState, CrAutoImgElement, PerDeviceInstallRowElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -36,5 +36,12 @@ suite(PerDeviceInstallRowElement.is, () => {
         strictQuery('#appName', installRow.shadowRoot, HTMLSpanElement);
     assertEquals(
         `Install ${defaultAppInfo.appName}`, appLabel.textContent!.trim());
+  });
+
+  test('App image is loaded', async () => {
+    await createInstallRow(defaultAppInfo);
+    assertEquals(
+        defaultAppInfo.iconUrl,
+        installRow.shadowRoot!.querySelector<CrAutoImgElement>('img')!.autoSrc);
   });
 });

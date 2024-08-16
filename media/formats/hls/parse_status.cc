@@ -70,7 +70,7 @@ std::string_view ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kUnsupportedEncryptionMethod);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #undef PARSE_STATUS_CODE_CASE

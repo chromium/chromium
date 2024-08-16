@@ -72,7 +72,7 @@ BlockingCopyFromString(const std::string& source_str,
         destination->BeginWriteData(size_hint, MOJO_WRITE_DATA_FLAG_NONE, dest);
     if (result == MOJO_RESULT_OK) {
       size_t copy_size = std::min(source.size(), dest.size());
-      dest.first(copy_size).copy_from(source.first(copy_size));
+      dest.copy_prefix_from(source.first(copy_size));
       destination->EndWriteData(copy_size);
       source = source.subspan(copy_size);
     } else if (result == MOJO_RESULT_SHOULD_WAIT) {

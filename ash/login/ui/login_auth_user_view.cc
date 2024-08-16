@@ -90,6 +90,7 @@ namespace ash {
 namespace {
 
 constexpr const char kLoginAuthUserViewClassName[] = "LoginAuthUserView";
+constexpr int kMinimiumLoginAuthUserViewHeightDp = 346;
 
 // Distance between the user view (ie, the icon and name) and other elements
 const int kDistanceBetweenUserViewAndPasswordDp = 24;
@@ -1036,7 +1037,7 @@ gfx::Size LoginAuthUserView::CalculatePreferredSize(
   gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Make sure we are at least as big as the user view. If we do not do this
   // the view will be below minimum size when no auth methods are displayed.
-  size.SetToMax(user_view_->GetPreferredSize());
+  size.set_height(std::max(kMinimiumLoginAuthUserViewHeightDp, size.height()));
   return size;
 }
 
@@ -1478,9 +1479,7 @@ std::u16string LoginAuthUserView::GetMultiUserSignInDisableAuthMessage() const {
       message_id = IDS_ASH_LOGIN_MULTI_USER_SIGN_IN_NOT_ALLOWED_POLICY_MSG;
       break;
     case user_manager::MultiUserSignInPolicy::kUnrestricted:
-      NOTREACHED_IN_MIGRATION();
-      message_id = 0;
-      break;
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(message_id);
 }

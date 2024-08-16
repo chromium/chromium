@@ -21,10 +21,12 @@ enum class MigrationStatus {
   kSucceeded = 0,
   // The migration failed.
   kFailed,
-  // The migration is not supported due to no location..
+  // The migration is not supported due to no location.
   kNotSupportedNoLocation,
+  // The migration is not supported due to no collection.
+  kNotSupportedNoCollection,
 
-  kMaxValue = kNotSupportedNoLocation,
+  kMaxValue = kNotSupportedNoCollection,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

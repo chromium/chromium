@@ -70,8 +70,11 @@ SuggestionFiltrationResult FilterSuggestions(
   std::u16string filter_lowercased = base::i18n::ToLower(*filter);
   for (size_t i = 0; i < suggestions.size(); ++i) {
     const Suggestion& suggestion = suggestions[i];
-    // Footer suggestions cannot be filtered out.
-    if (IsFooterItem(suggestions, i)) {
+    if (suggestion.filtration_policy ==
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter) {
+      continue;
+    } else if (suggestion.filtration_policy ==
+               Suggestion::FiltrationPolicy::kStatic) {
       result.first.push_back(suggestion);
       result.second.emplace_back();
     } else if (size_t pos = base::i18n::ToLower(suggestion.main_text.value)
@@ -114,6 +117,7 @@ bool ShouldLogPopupInteractionShown(
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return false;
   }
 }
@@ -323,6 +327,11 @@ void AutofillPopupControllerImpl::PinView() {
   is_view_pinned_ = true;
 }
 
+bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()
+    const {
+  return !disable_threshold_for_testing_;
+}
+
 void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   // If the reason for hiding is only stale data or a user interacting with
   // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
@@ -517,7 +526,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
           AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
           break;
         case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
       break;
     case FillingProduct::kAutocomplete:
@@ -538,6 +547,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
       break;
   }
 

@@ -1085,7 +1085,7 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
     case kUninitialized:
     case kInitializing:
     case kFlushing:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case kFlushed:
       DCHECK(!pending_read_);
@@ -1423,7 +1423,7 @@ void AudioRendererImpl::HandleAbortedReadOrDecodeError(PipelineStatus status) {
   switch (state_) {
     case kUninitialized:
     case kInitializing:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kFlushing:
       ChangeState_Locked(kFlushed);
       if (status == PIPELINE_OK) {

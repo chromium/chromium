@@ -22,18 +22,18 @@ mojom("mojo_bindings") {
 build_webui("build") {
   grd_prefix = "cr_components_searchbox"
   web_component_files = [
-    "realbox.ts",
-    "realbox_action.ts",
-    "realbox_dropdown.ts",
-    "realbox_icon.ts",
-    "realbox_match.ts",
-    "realbox_thumbnail.ts",
+    "searchbox.ts",
+    "searchbox_action.ts",
+    "searchbox_dropdown.ts",
+    "searchbox_icon.ts",
+    "searchbox_match.ts",
+    "searchbox_thumbnail.ts",
   ]
   non_web_component_files = [
-    "realbox_browser_proxy.ts",
+    "searchbox_browser_proxy.ts",
     "utils.ts",
   ]
-  css_files = [ "realbox_dropdown_shared_style.css" ]
+  css_files = [ "searchbox_dropdown_shared_style.css" ]
 
   mojo_files_deps = [
     ":mojo_bindings_ts__generator",

@@ -23,6 +23,13 @@ typedef struct SECItemStr SECItem;
 
 namespace net::x509_util {
 
+// Returns a span containing the DER encoded certificate data for `nss_cert`.
+NET_EXPORT base::span<const uint8_t> CERTCertificateAsSpan(
+    const CERTCertificate* nss_cert);
+
+// Returns a span containing the data pointed to by SECItem `item`.
+NET_EXPORT base::span<const uint8_t> SECItemAsSpan(const SECItem& item);
+
 // Returns true if two certificate handles refer to identical certificates.
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, CERTCertificate* b);
 NET_EXPORT bool IsSameCertificate(CERTCertificate* a, const X509Certificate* b);
@@ -67,7 +74,7 @@ CreateCERTCertificateListFromX509Certificate(
 // certificates may have been serialized as. If an error occurs, an empty
 // collection will be returned.
 NET_EXPORT ScopedCERTCertificateList
-CreateCERTCertificateListFromBytes(const char* data, size_t length, int format);
+CreateCERTCertificateListFromBytes(base::span<const uint8_t> data, int format);
 
 // Increments the refcount of |cert| and returns a handle for that reference.
 NET_EXPORT ScopedCERTCertificate DupCERTCertificate(CERTCertificate* cert);

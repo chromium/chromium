@@ -155,7 +155,7 @@ TEST_F(BinderTest, ReadWriteEmptyByteArray) {
         EXPECT_TRUE(reader
                         .ReadByteArray([](size_t size) -> uint8_t* {
                           // We don't call the allocator for empty arrays.
-                          NOTREACHED_NORETURN();
+                          NOTREACHED();
                         })
                         .has_value());
       });
@@ -420,7 +420,7 @@ class MathService : public SupportsBinder<MathInterface::Class> {
       }
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     return base::ok();
   }

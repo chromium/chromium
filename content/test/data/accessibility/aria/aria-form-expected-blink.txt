@@ -14,7 +14,7 @@ rootWebArea
 ++++++++genericContainer
 ++++++++++staticText name='Named ARIA form#2 gets the form role.'
 ++++++++++++inlineTextBox name='Named ARIA form#2 gets the form role.'
-++++++form name='Named form'
+++++++form name='Named form' nameFrom=title
 ++++++++staticText name='Named ARIA form#3 gets the form role.'
 ++++++++++inlineTextBox name='Named ARIA form#3 gets the form role.'
 ++++++form roleDescription='form'

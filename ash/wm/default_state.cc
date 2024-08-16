@@ -270,7 +270,7 @@ void DefaultState::HandleWorkspaceEvents(WindowState* window_state,
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown event:" << event->type();
+      NOTREACHED() << "Unknown event:" << event->type();
   }
 }
 
@@ -344,8 +344,7 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
       CycleSnap(window_state, event->type());
       return;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown event:" << event->type();
-      break;
+      NOTREACHED() << "Unknown event:" << event->type();
   }
 }
 
@@ -358,8 +357,7 @@ void DefaultState::HandleBoundsEvents(WindowState* window_state,
       SetBounds(window_state, set_bounds_event);
     } break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown event:" << event->type();
-      break;
+      NOTREACHED() << "Unknown event:" << event->type();
   }
 }
 

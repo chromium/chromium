@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">isilayida</translation>
 <translation id="1211441953136645838">inothi lokugcina</translation>
 <translation id="1281252709823657822">ingxoxo</translation>
+<translation id="1306460908038601864">Valiwe</translation>
 <translation id="1335095011850992622">amakhredithi</translation>
 <translation id="1342835525016946179">i-athikili</translation>
 <translation id="1359897965706325498">isibhengezo</translation>
+<translation id="1480676835519562650">i-multiselectable, okungu-<ph name="SELECTED" /> kokukhethiwe okungu-<ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">isifunda</translation>
 <translation id="1650423536718072820">i-pullquote</translation>
+<translation id="1681022320378710418">isikhathi samanje</translation>
+<translation id="1727839386348365796">I-Eyedropper</translation>
 <translation id="1821985195704844674">igridi yesihlahla</translation>
 <translation id="1823704031293214298">phansi ekhasini</translation>
 <translation id="1838681052457320736">ibhokisi lesexwayiso</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ukususwa</translation>
 <translation id="1907737156431278478">isibonelo</translation>
 <translation id="1930711995431081526">isimo</translation>
+<translation id="2031987842108996681">Isiteshi esibomvu</translation>
 <translation id="2158401438286456825">uhlu lwekhasi</translation>
 <translation id="2291999235780842123">chofoza</translation>
 <translation id="2311842470354187719">ukuhlukana kwekhasi</translation>
 <translation id="2335594187091864976">isikhi sedethi nesesikhathi</translation>
 <translation id="2508569020611168319">uhlu lwethebhu</translation>
+<translation id="2530182415807757784">i-multiselectable, akukho okukhethiwe.</translation>
+<translation id="2634240155926812724">Isiteshi esiluhlaza kotshani</translation>
 <translation id="2657045182931379222">into yamagrafikhi</translation>
 <translation id="2674318244760992338">unyaweni</translation>
 <translation id="2723001399770238859">umsindo</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">inothi</translation>
 <translation id="3175736971608411871">isibali sesikhathi</translation>
 <translation id="3199563858620722075">ibhokisi lekhombo</translation>
+<translation id="3220661731597678625">isinyathelo samanje</translation>
+<translation id="3329013043687509092">Gcwalisa isikhala</translation>
 <translation id="3486220673238053218">incazelo</translation>
 <translation id="3557673793733683882">isihloko se-<ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">isikhethi seviki</translation>
 <translation id="3706100364254443312">shintsha</translation>
 <translation id="3808586225841795776">itemu</translation>
+<translation id="3914173277599553213">Kuyadingeka</translation>
 <translation id="3920932319529768807">isiphetho</translation>
 <translation id="3924558731517983934">uhlelo lokusebenza</translation>
 <translation id="3944740393230681990">isandulela</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">ikhava</translation>
 <translation id="4757246831282535685">iphaneli yethebhu</translation>
 <translation id="479989351350248267">sesha</translation>
+<translation id="4912200001568447310">into yamanje</translation>
 <translation id="4912536737030637138">ukufakwa kwe-bibliography</translation>
 <translation id="492244087561876220">amazwana</translation>
+<translation id="4924138096460353083">okunganqunyelwe</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" />okukhethiwe</translation>
 <translation id="5022314756875057021">iqembu lomugqa</translation>
 <translation id="5034860022980953847">isikhombi sokuqhubeka</translation>
 <translation id="5093189678851173835">i-epigraph</translation>
+<translation id="509897012892853729">Isiteshi esiluhlaza okwesibhakabhaka</translation>
 <translation id="512758898067543763">isihloko serowu</translation>
 <translation id="5143125788380636750">i-epilogue</translation>
 <translation id="5406322316791861025">izibalo</translation>
+<translation id="5425179576310518467">idethi yamanje</translation>
 <translation id="5453733299334684579">into yesihlahla</translation>
 <translation id="546643433018805598">i-subscript</translation>
 <translation id="5476505524087279545">ungathikhi</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">inkinobho</translation>
 <translation id="5693537480074347398">i-superscript</translation>
 <translation id="576709008726043716">isingeniso</translation>
+<translation id="5860033963881614850">Valiwe</translation>
 <translation id="591047860372322273">ibhokisi lokusesha</translation>
+<translation id="5916664084637901428">Vuliwe</translation>
 <translation id="5987525920412732405">inkinobho yokujikelezisa</translation>
 <translation id="6023896073578205740">ibhokisi lohlu</translation>
 <translation id="6119846243427417423">yenza kusebenze</translation>
 <translation id="6150588977291308318">i-bibliography</translation>
 <translation id="6164829606128959761">imitha</translation>
 <translation id="6166809985690652833">amazwi angemuva</translation>
+<translation id="6212595056017402527">ikhasi lamanje</translation>
 <translation id="6213469881011901533">iglosari</translation>
+<translation id="6281588256137006900">Ukukhanya</translation>
 <translation id="6281763101136022427">i-url</translation>
 <translation id="6453774872122745852">izivumo</translation>
 <translation id="648732519525291180">isikhi sesikhathi</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">i-blockquote</translation>
 <translation id="693476918119313863">isihloko</translation>
 <translation id="6981594929165378967">ukufaka</translation>
+<translation id="698788488269350478">inwetshiwe.</translation>
 <translation id="7034405885550056553">isiphakamiso</translation>
+<translation id="7102274145889307184">indawo yamanje</translation>
 <translation id="7139483182332611405">isingeniso</translation>
 <translation id="7198226213493847604">inkinobho yokwesikhashana kwemenyu</translation>
 <translation id="7214187073215825913">ulwazi lokuqukethwe</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">inkomba</translation>
 <translation id="7740050170769002709">Okuqukethwe kwe-HTML</translation>
 <translation id="7802800022689234070">unxantanthu wokuveza ulwazi</translation>
+<translation id="7852167693871241274">Isilayida se-Hue</translation>
 <translation id="7891486169920085145">idabula</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> akukhethiwe</translation>
 <translation id="8034303206267677282">kunamandla</translation>
 <translation id="8053789581856978548">inkambu yokusesha umbhalo</translation>
 <translation id="8057695513531652401">isaziso</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">isahluko</translation>
 <translation id="8851136666856101339">enkulu</translation>
 <translation id="8861621546968757188">inkinobho yokwesikhashana yebhokisi</translation>
+<translation id="8889402386540077796">I-Hue</translation>
+<translation id="894736920926684893">Ifomethi ye-toggler</translation>
 <translation id="9002566407876343676">vula</translation>
 <translation id="901834265349196618">i-imeyili</translation>
 <translation id="9048119486235211610">ukuzulazula</translation>

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"

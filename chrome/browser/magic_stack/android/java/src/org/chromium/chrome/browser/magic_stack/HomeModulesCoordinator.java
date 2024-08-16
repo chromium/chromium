@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,6 +39,7 @@ import java.util.Set;
 /** Root coordinator which is responsible for showing modules on home surfaces. */
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
     public static int MAXIMUM_MODULE_SIZE = 5;
+    private final Context mContext;
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
@@ -80,6 +83,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             @NonNull HomeModulesConfigManager homeModulesConfigManager,
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ModuleRegistry moduleRegistry) {
+        mContext = activity;
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesConfigManager = homeModulesConfigManager;
         mHomeModulesStateListener = this::onModuleConfigChanged;
@@ -353,6 +357,12 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         ModuleProvider moduleProvider = getModuleProvider(moduleType);
         assert moduleProvider != null;
 
+        LayoutParams layoutParams = group.getLayoutParams();
+        layoutParams.height =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.magic_stack.R.dimen.home_module_height);
+        group.setLayoutParams(layoutParams);
         group.setOnLongClickListener(
                 view -> {
                     Point offset = mHomeModulesContextMenuManager.getContextMenuOffset();

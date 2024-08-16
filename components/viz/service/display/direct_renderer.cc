@@ -64,6 +64,21 @@ BASE_FEATURE(kAllowSkipEmptyNonrootRenderPassDraws,
              "AllowSkipEmptyNonrootRenderPassDraws",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enum used for UMA histogram. These enum values must not be changed or
+// reused.
+enum class RenderPassDrawRectAssign {
+  // New assignment. The output was empty before this point.
+  kNewOutputRect = 0,
+  // Assignment to a drawn rect that already has been set. This is likely an
+  // expansion of the 'output_rect' of a render pass.
+  kReassign = 1,
+  //  Output rects match. No re-assignment was done.
+  kNoAssign = 2,
+  // Assigned 'output_rect' to drawn rect but it was full damage regardless.
+  kFullDamage = 3,
+  kMaxValue = kFullDamage,
+};
+
 }  // namespace
 
 DirectRenderer::DrawingFrame::DrawingFrame() = default;
@@ -176,7 +191,7 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // If a previous frame fell out of delegated compositing we want to make
     // sure that we deallocate its backing when switching back to delegated
     // compositing.
-    if (is_root && output_surface_->IsDisplayedAsOverlayPlane() &&
+    if (is_root && output_surface_->capabilities().renderer_allocates_images &&
         !current_frame()->output_surface_plane) {
       // We expect to be in delegated compositing mode, which means the root
       // damage rect has been cleared.
@@ -301,7 +316,9 @@ void DirectRenderer::DrawFrame(
     // overlay setup can be handled, we need to set up the primary plane.
     OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
         nullptr;
-    if (output_surface_->IsDisplayedAsOverlayPlane()) {
+    if (output_surface_->capabilities().renderer_allocates_images) {
+      // TODO(crbug.com/40224327): `output_surface_plane` can be changed to an
+      // OverlayCandidate now.
       current_frame()->output_surface_plane =
           overlay_processor_->ProcessOutputSurfaceAsOverlay(
               device_viewport_size, surface_resource_size, frame_si_format,
@@ -373,7 +390,7 @@ void DirectRenderer::DrawFrame(
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
     if (current_frame()->output_surface_plane ||
-        !output_surface_->IsDisplayedAsOverlayPlane()) {
+        !output_surface_->capabilities().renderer_allocates_images) {
       needs_full_frame_redraw = true;
     }
 #else
@@ -785,9 +802,26 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
 
   if (use_render_pass_drawn_rect_ && !is_root_render_pass) {
     const gfx::Rect drawn_rect = GetRenderPassBackingDrawnRect(render_pass->id);
-    if (drawn_rect.IsEmpty()) {
+    constexpr char kDrawnRectAssignmentType[] =
+        "Compositing.DirectRenderer.DrawnRectAssignmentType";
+    if (drawn_rect != render_pass->output_rect) {
       CHECK_EQ(render_pass->output_rect, render_pass_scissor_in_draw_space);
+      CHECK_EQ(surface_rect_in_draw_space, render_pass_scissor_in_draw_space);
+      CHECK(!render_pass_is_clipped);
+      if (render_pass->output_rect == render_pass->damage_rect) {
+        UMA_HISTOGRAM_ENUMERATION(kDrawnRectAssignmentType,
+                                  RenderPassDrawRectAssign::kFullDamage);
+      } else {
+        UMA_HISTOGRAM_ENUMERATION(kDrawnRectAssignmentType,
+                                  drawn_rect.IsEmpty()
+                                      ? RenderPassDrawRectAssign::kNewOutputRect
+                                      : RenderPassDrawRectAssign::kReassign);
+      }
+
       SetRenderPassBackingDrawnRect(render_pass->id, render_pass->output_rect);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(kDrawnRectAssignmentType,
+                                RenderPassDrawRectAssign::kNoAssign);
     }
   }
 }

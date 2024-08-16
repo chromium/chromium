@@ -220,7 +220,7 @@ class TraceableState : public TraceableVariable, private StateTracer<category> {
 
  private:
   void Trace() {
-    if (UNLIKELY(mock_trace_for_test_)) {
+    if (mock_trace_for_test_) [[unlikely]] {
       mock_trace_for_test_(converter_(state_));
       return;
     }

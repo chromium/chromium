@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 
 #include <memory>
@@ -51,6 +56,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -139,6 +145,10 @@ WebUILoginView::WebUILoginView(base::WeakPtr<LoginDisplayHostWebUI> controller)
     LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
     observing_system_tray_focus_ = true;
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
 WebUILoginView::~WebUILoginView() {
@@ -377,12 +387,6 @@ void WebUILoginView::OnLoginPromptVisible() {
   }
 
   webui_visible_ = true;
-}
-
-void WebUILoginView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kWindow;
-  node_data->SetName(
-      l10n_util::GetStringUTF16(IDS_OOBE_ACCESSIBLE_SCREEN_NAME));
 }
 
 BEGIN_METADATA(WebUILoginView)

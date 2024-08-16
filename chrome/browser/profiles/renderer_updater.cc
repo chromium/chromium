@@ -131,7 +131,7 @@ void RendererUpdater::InitializeRenderer(
   content_settings::ContentSettingsManagerImpl::Create(
       render_process_host,
       content_settings_manager.InitWithNewPipeAndPassReceiver(),
-      std::make_unique<chrome::ContentSettingsManagerDelegate>());
+      std::make_unique<ContentSettingsManagerDelegate>());
   mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
       bound_session_request_throttled_handler;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

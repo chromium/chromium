@@ -134,7 +134,7 @@ size_t GetRowBytesForColorType(int width, SkColorType color_type) {
       row_bytes *= 4;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return row_bytes;
 }
@@ -598,7 +598,7 @@ TEST_P(ReadbackPixelTestRGBA, ExecutesCopyRequest) {
     }
 #endif
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::FilePath expected_path = GetExpectedPath();

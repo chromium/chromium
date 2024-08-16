@@ -350,6 +350,9 @@ class KeyboardCapability : public InputDeviceEventObserver {
   // LauncherRefresh.
   ui::mojom::MetaKey GetMetaKeyToDisplay() const;
 
+  // Whether or not to use the updated icons for the keyboard.
+  bool UseRefreshedIcons() const;
+
   // Finds the keyboard with the corresponding  `device_id` and checks its
   // `DeviceType` to determine if it's a split modifier keyboard.
   bool IsSplitModifierKeyboard(const KeyboardDevice& keyboard) const;

@@ -39,6 +39,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -157,9 +158,7 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
                           anchor, std::move(params)));
                     }),
         std::move(WaitForShow(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)),
-        // Prevent direct chaining off the show event.
-        FlushEvents());
+                      .SetTransitionOnlyOnEvent(true)));
   }
 
   // Closes the current help bubble and waits for it to hide.
@@ -168,9 +167,7 @@ class HelpBubbleViewInteractiveUiTest : public InteractiveBrowserTest {
         WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                  [](HelpBubbleView* bubble) { bubble->GetWidget()->Close(); }),
         std::move(WaitForHide(HelpBubbleView::kHelpBubbleElementIdForTesting)
-                      .SetTransitionOnlyOnEvent(true)),
-        // Prevent direct chaining off the hide event.
-        FlushEvents());
+                      .SetTransitionOnlyOnEvent(true)));
   }
 
   user_education::HelpBubbleFactoryRegistry& factories() { return factories_; }
@@ -225,10 +222,14 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
   HelpBubbleParams params;
   params.body_text = u"foo";
 
+  // gfx::NativeView help_bubble_native_view = gfx::NativeView();
+
   RunTestSequence(
       SetOnIncompatibleAction(
           OnIncompatibleAction::kSkipTest,
           "Programmatic window activation doesn't work on all platforms."),
+      ObserveState(views::test::kCurrentWidgetFocus),
+
       // Trigger the tab group editor.
       AfterShow(kTabGroupHeaderElementId,
                 [](ui::TrackedElement* element) {
@@ -239,19 +240,38 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
                       ui::MenuSourceType::MENU_SOURCE_KEYBOARD);
                 }),
       WaitForShow(kTabGroupEditorBubbleId),
+
       // Display a help bubble attached to the tab group editor.
       ShowHelpBubble(kTabGroupEditorBubbleId, std::move(params)),
+      // WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
+      //          [&help_bubble_native_view](HelpBubbleView* bubble) {
+      //            help_bubble_native_view =
+      //            bubble->GetWidget()->GetNativeView();
+      //          }),
+
       // Activate the help bubble. This should not cause the editor to close.
       ActivateSurface(HelpBubbleView::kHelpBubbleElementIdForTesting),
+      EnsurePresent(kTabGroupEditorBubbleId),
+
       // Close the help bubble.
       CloseHelpBubble(),
+
+      // Wait for focus to get reset to a valid surface.
+      //
+      // There's a race condition on at least Linux where the focus update
+      // happens later than expected, on an OS message callback, which can kill
+      // the tab editor bubble while we're trying to reactivate it below.
+      // WaitForState(views::test::kCurrentWidgetFocus,
+      //              testing::Ne(std::ref(help_bubble_native_view))),
       // Re-Activate the dialog. It may or may not receive activation when the
       // help bubble closes.
       ActivateSurface(kTabGroupEditorBubbleId),
+
       // Now that the help bubble is gone, locate the editor again and transfer
       // activation to its primary window widget (the browser window) - this
       // should close the editor as it is no longer pinned by the help bubble.
       ActivateSurface(kToolbarAppMenuButtonElementId),
+
       // Verify that the editor bubble closes now that it has lost focus.
       WaitForHide(kTabGroupEditorBubbleId));
 }

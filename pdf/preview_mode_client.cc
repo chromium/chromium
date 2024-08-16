@@ -126,7 +126,7 @@ std::unique_ptr<UrlLoader> PreviewModeClient::CreateUrlLoader() {
 }
 
 v8::Isolate* PreviewModeClient::GetIsolate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::vector<PDFiumEngineClient::SearchStringResult>

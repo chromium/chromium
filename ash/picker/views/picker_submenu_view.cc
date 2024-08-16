@@ -11,6 +11,7 @@
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_style.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -31,7 +32,8 @@ constexpr int kSubmenuHorizontalOverlap = 4;
 
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::LEFT_TOP,
+      base::i18n::IsRTL() ? views::BubbleBorder::Arrow::RIGHT_TOP
+                          : views::BubbleBorder::Arrow::LEFT_TOP,
       views::BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW);
   border->SetCornerRadius(kPickerContainerBorderRadius);
   border->SetColor(SK_ColorTRANSPARENT);

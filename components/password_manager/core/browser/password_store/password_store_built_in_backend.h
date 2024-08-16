@@ -103,7 +103,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   void RecordAddLoginAsyncCalledFromTheStore() override;
@@ -131,15 +131,12 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       LoginsResultOrError forms_or_error);
 
   void OnEncryptorReceived(
-      base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
-                                   bool)> remote_form_changes_received,
+      RemoteChangesReceived remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb,
       base::OnceCallback<void(bool)> completion,
       std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
-  void WritePasswordRemovalReasonPrefs(
-      IsAccountStore is_account_store,
-      metrics_util::PasswordManagerCredentialRemovalReason removal_reason);
+  void WritePasswordRemovalReasonPrefs(IsAccountStore is_account_store);
 
   void OnInitComplete(base::OnceCallback<void(bool)> completion, bool result);
 
@@ -147,7 +144,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   // Sets the pref responsible for maintaining groups population in
   // the kClearUndecryptablePasswords experiment.
   // TODO(b/40286735): Remove after this feature is launched.
-  void SetClearingUndecryptablePasswordsIsEnabledPref(bool value);
+  void SetClearingUndecryptablePasswordsIsEnabledPref();
 #endif
 
   // Ensures that all methods are called on the main sequence.

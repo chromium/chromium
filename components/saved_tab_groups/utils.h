@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/saved_tab_groups/types.h"
+#include "url/gurl.h"
 
 namespace tab_groups {
 
@@ -20,6 +21,14 @@ bool AreLocalIdsPersisted();
 std::string LocalTabGroupIDToString(const LocalTabGroupID& local_tab_group_id);
 std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
     const std::string& local_tab_group_id);
+
+// Returns whether the tab's URL is viable for saving in a saved tab
+// group.
+bool IsURLValidForSavedTabGroups(const GURL& gurl);
+
+// Returns a default URL and default title. Should be invoked when
+// IsURLValidForSavedTabGroups() returns false.
+std::pair<GURL, std::u16string> GetDefaultUrlAndTitle();
 
 }  // namespace tab_groups
 

@@ -32,15 +32,6 @@ namespace storage {
 
 class UsageTracker;
 
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// "InvalidOriginReason" in src/tools/metrics/histograms/enums.xml.
-enum class InvalidOriginReason {
-  kIsOpaque = 0,
-  kIsEmpty = 1,
-  kMaxValue = kIsEmpty
-};
-
 // Holds per-client usage tracking information and caches bucket usage data.
 //
 // A UsageTracker object will own one ClientUsageTracker instance per client.

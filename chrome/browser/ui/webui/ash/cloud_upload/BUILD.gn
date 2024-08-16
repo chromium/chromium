@@ -41,6 +41,7 @@ static_library("cloud_upload") {
   public_deps = [
     ":mojo_bindings",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
@@ -77,7 +78,6 @@ static_library("cloud_upload") {
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/file_manager/virtual_tasks",
@@ -88,6 +88,7 @@ static_library("cloud_upload") {
     "//chrome/browser/resources/chromeos/cloud_upload:resources",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/constants",
@@ -112,6 +113,7 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/skyvault",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 }
 

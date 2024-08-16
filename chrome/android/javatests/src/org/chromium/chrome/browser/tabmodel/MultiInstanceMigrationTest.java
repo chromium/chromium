@@ -92,6 +92,7 @@ public class MultiInstanceMigrationTest {
                             new TabbedModeTabPersistencePolicy(0, false, true);
                     TabPersistentStore store =
                             new TabPersistentStore(
+                                    TabPersistentStore.CLIENT_TAG_REGULAR,
                                     persistencePolicy,
                                     selector,
                                     null,

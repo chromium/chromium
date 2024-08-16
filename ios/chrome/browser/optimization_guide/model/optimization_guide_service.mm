@@ -87,7 +87,8 @@ OptimizationGuideService::OptimizationGuideService(
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }
-  optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
+  optimization_guide_logger_ = OptimizationGuideLogger::GetInstance();
+  DCHECK(optimization_guide_logger_);
   hints_manager_ = std::make_unique<optimization_guide::IOSChromeHintsManager>(
       off_the_record_, application_locale, pref_service, hint_store,
       top_host_provider_.get(), tab_url_provider_.get(), url_loader_factory,

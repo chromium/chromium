@@ -328,7 +328,7 @@ ScrollNode& CreateScrollNode(LayerImpl* layer,
   return node;
 }
 
-ScrollNode& CreateScrollNodeForUncompositedScroller(
+ScrollNode& CreateScrollNodeForNonCompositedScroller(
     PropertyTrees* property_trees,
     int parent_id,
     ElementId element_id,

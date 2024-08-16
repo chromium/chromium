@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -24,6 +25,7 @@ public class LocalTileView extends LinearLayout {
     private TextView mTitle;
     @Nullable private TabThumbnailView mTabThumbnail;
     @Nullable private TextView mUrl;
+    @Nullable private TextView mReason;
 
     /** Default constructor needed to inflate via XML. */
     public LocalTileView(Context context, AttributeSet attrs) {
@@ -38,6 +40,7 @@ public class LocalTileView extends LinearLayout {
         mTitle = findViewById(R.id.tab_title_view);
         mTabThumbnail = findViewById(R.id.tab_thumbnail);
         mUrl = findViewById(R.id.tab_url_view);
+        mReason = findViewById(R.id.tab_show_reason);
 
         mTabThumbnail.setScaleType(ScaleType.MATRIX);
         mTabThumbnail.updateThumbnailPlaceholder(/* isIncognito= */ false, /* isSelected= */ false);
@@ -97,6 +100,18 @@ public class LocalTileView extends LinearLayout {
      */
     public void setUrl(String url) {
         mUrl.setText(url);
+    }
+
+    /** Sets the reason why the tile is shown. */
+    public void setShowReason(String reason) {
+        mReason.setText(reason);
+        boolean showReason = !TextUtils.isEmpty(reason);
+        mReason.setVisibility(showReason ? VISIBLE : GONE);
+    }
+
+    /** Sets the maximum lines of the mTitle View. */
+    public void setMaxLinesForTitle(int maxLines) {
+        mTitle.setMaxLines(maxLines);
     }
 
     private void updateThumbnailMatrix(Bitmap thumbnail) {

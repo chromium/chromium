@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/common/hardware_display_controller_info.h"
 
 #include <stdint.h>
@@ -52,6 +57,11 @@ void HardwareDisplayControllerInfo::AcquireNonprimaryTileInfo(
 
 const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
 HardwareDisplayControllerInfo::nonprimary_tile_infos() const {
+  return nonprimary_tile_infos_;
+}
+
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+HardwareDisplayControllerInfo::nonprimary_tile_infos() {
   return nonprimary_tile_infos_;
 }
 

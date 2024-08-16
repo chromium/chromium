@@ -66,6 +66,7 @@
 #define CONFIG_SIZE_LIMIT 1
 #define CONFIG_SPATIAL_RESAMPLING 1
 #define CONFIG_SPEED_STATS 0
+#define CONFIG_SVT_AV1 1
 #define CONFIG_TFLITE 0
 #define CONFIG_THREE_PASS 0
 #define CONFIG_TUNE_BUTTERAUGLI 0
@@ -94,6 +95,5 @@
 #define HAVE_UNISTD_H 1
 #define HAVE_VSX 0
 #define HAVE_WXWIDGETS 0
-#define INLINE inline
 #define STATIC_LINK_JXL 0
 #endif  // AOM_CONFIG_H_

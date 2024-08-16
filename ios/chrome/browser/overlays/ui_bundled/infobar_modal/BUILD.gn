@@ -14,10 +14,10 @@ source_set("coordinators") {
     "//base",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
-    "//ios/chrome/browser/ui/infobars/modals",
-    "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled:util",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/presentation",
   ]
 }
 
@@ -32,9 +32,9 @@ source_set("mediators") {
     "//components/infobars/core",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/modals:public",
-    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
   ]
 }
 
@@ -54,11 +54,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/overlays/ui_bundled:coordinators",
-    "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",

@@ -63,6 +63,12 @@ class CustomizeChromePageHandler
       public TemplateURLServiceObserver,
       public ui::SelectFileDialog::Listener {
  public:
+  // Returns whether the page handler can be constructed. Used to decide whether
+  // the sidepanel should be allowed to show.
+  static bool IsSupported(
+      NtpCustomBackgroundService* ntp_custom_background_service,
+      Profile* profile);
+
   CustomizeChromePageHandler(
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
           pending_page_handler,
@@ -84,6 +90,10 @@ class CustomizeChromePageHandler
 
   // Passes AttachedTabStateUpdated calls to the CustomizeChromePage.
   void AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+
+  // Helper method to determine if the search engine is overriding the first
+  // party NTP.
+  bool IsNtpManagedByThirdPartySearchEngine() const;
 
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
@@ -110,7 +120,7 @@ class CustomizeChromePageHandler
   void OpenChromeWebStoreCollectionPage(
       side_panel::mojom::ChromeWebStoreCollection collection) override;
   void OpenChromeWebStoreHomePage() override;
-  void OpenSettingsSearchEnginePage() override;
+  void OpenNtpManagedByPage() override;
   void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetModulesVisible(bool visible) override;

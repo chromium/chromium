@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 
+#import <optional>
 #import <utility>
 #import <vector>
 
@@ -13,6 +14,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -253,9 +255,8 @@ ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/40164489): Respect SaveAddressProfilePromptOptions.
   for (infobars::InfoBar* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
         AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
@@ -284,7 +285,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
       profile, original_profile, GetUserEmail(),
-      GetApplicationContext()->GetApplicationLocale(), options,
+      GetApplicationContext()->GetApplicationLocale(), is_migration_to_account,
       std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
@@ -295,17 +296,13 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
     const AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
     const AutofillProfile& profile,
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_NORETURN();
-}
-
-void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChromeAutofillClientIOS::ShowAutofillSuggestions(
@@ -420,22 +417,53 @@ ChromeAutofillClientIOS::ClassifyAsPasswordForm(AutofillManager& manager,
   if (!form_structure) {
     return {};
   }
-  // There is no form flattening on iOS (yet) - we can assume that the form here
-  // consists of a single renderer form.
+
   FormDataAndServerPredictions form_and_predictions =
       GetFormDataAndServerPredictions(*form_structure);
-  const FormData& form = form_and_predictions.form_data;
+
+  // Gets the renderer form corresponding to `field_id` when Autofill across
+  // iframes is enabled.
+  const auto GetRendererForm = [&]() -> std::optional<FormData> {
+    const AutofillDriverRouter& router =
+        AutofillDriverIOSFactory::FromWebState(web_state_)->router();
+
+    std::vector<FormData> renderer_forms =
+        router.GetRendererForms(form_and_predictions.form_data);
+
+    // Find the form to which `field_id` belongs.
+    auto renderer_forms_it =
+        base::ranges::find_if(renderer_forms, [field_id](const FormData& form) {
+          return base::ranges::find(form.fields(), field_id,
+                                    &FormFieldData::global_id) !=
+                 form.fields().end();
+        });
+    if (renderer_forms_it == renderer_forms.end()) {
+      return std::nullopt;
+    }
+    return *renderer_forms_it;
+  };
+
+  const std::optional<FormData> renderer_form =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)
+          ? GetRendererForm()
+          : std::move(form_and_predictions.form_data);
+
+  if (!renderer_form) {
+    return {};
+  }
 
   password_manager::FormDataParser parser;
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
   parser.set_predictions(password_manager::ConvertToFormPredictions(
-      /*driver_id=*/0, form, form_and_predictions.predictions));
+      /*driver_id=*/0, *renderer_form, form_and_predictions.predictions));
+
   // The parser can use stored usernames to identify a filled username field by
   // the value it contains. Here it remains empty.
-  std::unique_ptr<password_manager::PasswordForm> pw_form =
-      parser.Parse(form, password_manager::FormDataParser::Mode::kFilling,
-                   /*stored_usernames=*/{});
+  std::unique_ptr<password_manager::PasswordForm> pw_form = parser.Parse(
+      *renderer_form, password_manager::FormDataParser::Mode::kFilling,
+      /*stored_usernames=*/{});
   if (!pw_form) {
     return {};
   }
@@ -457,6 +485,16 @@ ChromeAutofillClientIOS::GetAutofillSaveCardInfoBarDelegateIOS() {
              ? AutofillSaveCardInfoBarDelegateIOS::FromInfobarDelegate(
                    (*save_card_infobar)->delegate())
              : nullptr;
+}
+
+void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
+  const auto save_card_infobar = base::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_CC_INFOBAR_DELEGATE_MOBILE,
+      &infobars::InfoBar::GetIdentifier);
+  if (save_card_infobar != infobar_manager_->infobars().cend()) {
+    infobar_manager_->RemoveInfoBar(*save_card_infobar);
+  }
 }
 
 }  // namespace autofill

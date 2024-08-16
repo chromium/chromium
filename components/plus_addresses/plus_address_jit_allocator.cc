@@ -63,7 +63,7 @@ void PlusAddressJitAllocator::AllocatePlusAddress(
       return;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PlusAddressJitAllocator::IsRefreshingSupported(
@@ -79,6 +79,12 @@ bool PlusAddressJitAllocator::IsRefreshingSupported(
     return false;
   }
   return base::FeatureList::IsEnabled(features::kPlusAddressRefresh);
+}
+
+void PlusAddressJitAllocator::RemoveAllocatedPlusAddress(
+    std::string_view plus_address) {
+  // This is a no-op for the JIT allocator - if the plus address was created,
+  // the backend will ensure that it does not show up again.
 }
 
 void PlusAddressJitAllocator::HandleRefreshResponse(

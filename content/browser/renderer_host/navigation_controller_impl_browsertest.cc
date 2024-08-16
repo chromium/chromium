@@ -22460,12 +22460,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   GURL site_url = contents()->GetSiteInstance()->GetSiteURL();
   if (AreAllSitesIsolatedForTesting()) {
-    if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
-      EXPECT_EQ(site_url.spec(),
-                "data:" + origin_to_commit->GetNonceForTesting()->ToString());
-    } else {
-      EXPECT_EQ(site_url, data_url);
-    }
+    EXPECT_EQ(site_url.spec(),
+              "data:" + origin_to_commit->GetNonceForTesting()->ToString());
   } else {
     // Without site isolation, the data: URL ends up in the default
     // SiteInstance.

@@ -1396,10 +1396,12 @@ void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
 
 void AuthorizeKAnonReporting(const blink::InterestGroup::Ad& ad,
                              const char* url,
-                             StorageInterestGroup& group) {
+                             StorageInterestGroup& group,
+                             base::optional_ref<const std::string>
+                                 selected_buyer_and_seller_reporting_id) {
   DCHECK_EQ(url, ad.render_url());
-  group.hashed_kanon_keys.emplace(
-      blink::HashedKAnonKeyForAdNameReporting(group.interest_group, ad));
+  group.hashed_kanon_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
+      group.interest_group, ad, selected_buyer_and_seller_reporting_id));
 }
 
 void AuthorizeKAnonAdComponent(const blink::InterestGroup::Ad& ad,
@@ -1671,8 +1673,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    auction_nonce_manager_ =
-        std::make_unique<SynchronousAuctionNonceManager>(GetFrame());
+    auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
     ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
         web_contents()->GetPrimaryPage());
   }
@@ -7898,9 +7899,6 @@ TEST_F(AuctionRunnerTest, PromiseSignals4) {
 // An auction that passes empty additionalBids via a promise (in that headers
 // are never observed carrying them).
 TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
   auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
@@ -8128,10 +8126,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
 //
 // See https://crbug.com/1488417
 TEST_F(AuctionRunnerTest, PromiseAndNetworkErrors) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
                                     /*bidder2_seller=*/kComponentSeller1,
                                     /*bid_from_component_auction_wins=*/true,
@@ -8657,9 +8651,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionId6) {
 }
 
 TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -8700,11 +8691,9 @@ TEST_F(AuctionRunnerTest, PromiseSignalsBadAuctionIdAdditionalBids) {
 // An auction where the winning additional bid claims to be from an IG the user
 // is already in.
 TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting,
-       blink::features::kBiddingAndScoringDebugReportingAPI},
-      {});
+  base::test::ScopedFeatureList debug_reporting_api_on;
+  debug_reporting_api_on.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -8958,11 +8947,9 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
 // An auction where the winning additional bid claims to be from an IG the user
 // is not in.
 TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitWithFeatures(
-      {blink::features::kFledgeNegativeTargeting,
-       blink::features::kBiddingAndScoringDebugReportingAPI},
-      {});
+  base::test::ScopedFeatureList debug_reporting_api_on;
+  debug_reporting_api_on.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
 
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
@@ -9918,8 +9905,10 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
   ad_auction_page_data_->AddAuctionResultWitnessForOrigin(kSeller,
                                                           witnessed_hash);
 
-  AdAuctionRequestContext context(kSeller, {}, std::move(client_context),
-                                  base::TimeTicks::Now());
+  AdAuctionRequestContext context(kSeller, /*group_names=*/{},
+                                  std::move(client_context),
+                                  base::TimeTicks::Now(),
+                                  /*group_pagg_coordinators=*/{});
   ad_auction_page_data_->RegisterAdAuctionRequestContext(request_id,
                                                          std::move(context));
 
@@ -10001,10 +9990,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromise9) {
 
 // Trying to update additionalBids twice.
 TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   // Have two kind of promises so we don't just finish after first
   // additionalBids update
   use_promise_for_per_buyer_signals_ = true;
@@ -10047,49 +10032,6 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
   task_environment()->RunUntilIdle();
   EXPECT_EQ("ResolvedAdditionalBids updating non-promise", TakeBadMessage());
-}
-
-// Trying to update additionalBids when the negative targeting feature is off.
-TEST_F(AuctionRunnerTest, PromiseSignalsUpdateAdditionalBidsFeatureOff) {
-  base::test::ScopedFeatureList additional_bids_off;
-  additional_bids_off.InitAndDisableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
-  pass_promise_for_additional_bids_ = true;
-
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
-                    kBidder1, kBidder1Name));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
-                    kBidder2, kBidder2Name));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         MakeAuctionScript());
-
-  std::vector<StorageInterestGroup> bidders;
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder1, kBidder1Name, kBidder1Url,
-      /*trusted_bidding_signals_url=*/std::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
-      /*ad_component_urls=*/std::nullopt));
-  bidders.emplace_back(MakeInterestGroup(
-      kBidder2, kBidder2Name, kBidder2Url,
-      /*trusted_bidding_signals_url=*/std::nullopt,
-      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com"),
-      /*ad_component_urls=*/std::nullopt));
-  StartAuction(kSellerUrl, std::move(bidders));
-
-  // Can't complete yet.
-  task_environment()->RunUntilIdle();
-  EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
-
-  abortable_ad_auction_->ResolvedAdditionalBids(
-      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0));
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ("ResolvedAdditionalBids with FledgeNegativeTargeting off",
-            TakeBadMessage());
 }
 
 // Trying to update directFromSellerSignalsHeaderAdSlot twice.
@@ -21495,14 +21437,16 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
   auction_run_loop_->Run();
   // Have to spin all message loops to flush any k-anon set join events.
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
-              testing::UnorderedElementsAre(
-                  blink::HashedKAnonKeyForAdBid(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url()),
-                  blink::HashedKAnonKeyForAdNameReporting(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0])));
+  EXPECT_THAT(
+      interest_group_manager_->TakeJoinedKAnonSets(),
+      testing::UnorderedElementsAre(
+          blink::HashedKAnonKeyForAdBid(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0].render_url()),
+          blink::HashedKAnonKeyForAdNameReporting(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
   switch (kanon_mode()) {
@@ -21589,14 +21533,16 @@ TEST_P(AuctionRunnerKAnonTest, SingleKAnon) {
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   // Have to spin all message loops to flush any k-anon set join events.
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
-              testing::UnorderedElementsAre(
-                  blink::HashedKAnonKeyForAdBid(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url()),
-                  blink::HashedKAnonKeyForAdNameReporting(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0])));
+  EXPECT_THAT(
+      interest_group_manager_->TakeJoinedKAnonSets(),
+      testing::UnorderedElementsAre(
+          blink::HashedKAnonKeyForAdBid(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0].render_url()),
+          blink::HashedKAnonKeyForAdNameReporting(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
   EXPECT_THAT(result_.errors, testing::ElementsAre());
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon",
@@ -21669,7 +21615,8 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
       blink::HashedKAnonKeyForAdComponentBid(
           bidders[0].interest_group.ad_components.value()[0].render_url()),
       blink::HashedKAnonKeyForAdComponentBid(
@@ -21681,7 +21628,8 @@ TEST_P(AuctionRunnerKAnonTest, ComponentURLs) {
           bidders[1].interest_group,
           bidders[1].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[1].interest_group, bidders[1].interest_group.ads.value()[0]),
+          bidders[1].interest_group, bidders[1].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
       blink::HashedKAnonKeyForAdComponentBid(
           bidders[1].interest_group.ad_components.value()[0].render_url()),
       blink::HashedKAnonKeyForAdComponentBid(
@@ -21952,14 +21900,16 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
   std::vector<std::string> ad2_k_anon_keys = {
       blink::HashedKAnonKeyForAdBid(
           bidders[1].interest_group,
           bidders[1].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[1].interest_group, bidders[1].interest_group.ads.value()[0]),
+          bidders[1].interest_group, bidders[1].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
 
   for (bool run_as_component : {false, true}) {
@@ -22194,7 +22144,8 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
 
   StartAuction(kSellerUrl, bidders);
@@ -22339,14 +22290,16 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[0].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[0],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
   std::vector<std::string> ad2_k_anon_keys = {
       blink::HashedKAnonKeyForAdBid(
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[1].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[1]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[1],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
 
   StartAuction(kSellerUrl, bidders);
@@ -22492,14 +22445,16 @@ TEST_P(AuctionRunnerKAnonTest, MultiBid) {
           bidders[0].interest_group,
           bidders[0].interest_group.ads.value()[2].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[0].interest_group, bidders[0].interest_group.ads.value()[2]),
+          bidders[0].interest_group, bidders[0].interest_group.ads.value()[2],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
   std::vector<std::string> bd3_k_anon_keys = {
       blink::HashedKAnonKeyForAdBid(
           bidders[1].interest_group,
           bidders[1].interest_group.ads.value()[2].render_url()),
       blink::HashedKAnonKeyForAdNameReporting(
-          bidders[1].interest_group, bidders[1].interest_group.ads.value()[2]),
+          bidders[1].interest_group, bidders[1].interest_group.ads.value()[2],
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
   };
 
   base::flat_set<std::string> expected_k_anon_keys_to_join;
@@ -22781,7 +22736,9 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
                    browserSignals.buyerReportingId + "/" +
                    ("buyerReportingId" in browserSignals) + "/" +
                    browserSignals.buyerAndSellerReportingId + "/" +
-                   ("buyerAndSellerReportingId" in browserSignals));
+                   ("buyerAndSellerReportingId" in browserSignals) + "/" +
+                   browserSignals.selectedBuyerAndSellerReportingId + "/" +
+                   ("selectedBuyerAndSellerReportingId" in browserSignals));
     }
   )";
 
@@ -22789,7 +22746,9 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
     function reportResult(auctionConfig, browserSignals) {
       sendReportTo("https://seller.example.org/?" +
                    browserSignals.buyerAndSellerReportingId + "/" +
-                   ("buyerAndSellerReportingId" in browserSignals));
+                   ("buyerAndSellerReportingId" in browserSignals) + "/" +
+                   browserSignals.selectedBuyerAndSellerReportingId + "/" +
+                   ("selectedBuyerAndSellerReportingId" in browserSignals));
     }
   )";
 
@@ -22802,6 +22761,9 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
 
   for (bool authorize_reporting_kanon : {false, true}) {
     SCOPED_TRACE(authorize_reporting_kanon);
+    // TODO(crbug.com/334053709): Add
+    // ReportingIdField::kSelectedBuyerAndSellerReportingId when generateBid
+    // can return the provided selectedBuyerAndSellerReportingId.
     for (auto field_to_test :
          {auction_worklet::mojom::ReportingIdField::kInterestGroupName,
           auction_worklet::mojom::ReportingIdField::kBuyerReportingId,
@@ -22813,6 +22775,7 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
           kBidder1, kBidder1Name, kBidder1Url,
           /*trusted_bidding_signals_url=*/std::nullopt,
           /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+      std::optional<std::string> selected_buyer_and_seller_reporting_id;
       if (field_to_test ==
           auction_worklet::mojom::ReportingIdField::kBuyerReportingId) {
         bidders[0].interest_group.ads.value()[0].buyer_reporting_id = "buyid1";
@@ -22824,12 +22787,21 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
         bidders[0].interest_group.ads.value()[0].buyer_and_seller_reporting_id =
             "commonid1";
       }
+      if (field_to_test == auction_worklet::mojom::ReportingIdField::
+                               kSelectedBuyerAndSellerReportingId) {
+        // buyer-only ID should be ignored.
+        bidders[0].interest_group.ads.value()[0].buyer_reporting_id = "buyid1";
+        bidders[0].interest_group.ads.value()[0].buyer_and_seller_reporting_id =
+            "commonid1";
+        selected_buyer_and_seller_reporting_id = "selectableid1";
+      }
 
       AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
                        "https://ad1.com/", bidders[0]);
       if (authorize_reporting_kanon) {
         AuthorizeKAnonReporting(bidders[0].interest_group.ads.value()[0],
-                                "https://ad1.com/", bidders[0]);
+                                "https://ad1.com/", bidders[0],
+                                selected_buyer_and_seller_reporting_id);
       }
 
       StartAuction(kSellerUrl, bidders);
@@ -22839,39 +22811,52 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
       if (kanon_mode() == KAnonMode::kEnforce && !authorize_reporting_kanon) {
         // In case the k-anon check fails, seller worklet gets nothing, and
         // bidder worklet gets nothing.
-        EXPECT_THAT(result_.report_urls,
-                    testing::UnorderedElementsAre(
-                        "https://seller.example.org/?undefined/false",
-                        "https://example.org/?undefined/false/"
-                        "undefined/false/undefined/false"));
+        EXPECT_THAT(
+            result_.report_urls,
+            testing::UnorderedElementsAre(
+                "https://seller.example.org/?undefined/false/undefined/false",
+                "https://example.org/?undefined/false/"
+                "undefined/false/undefined/false/undefined/false"));
       } else {
         switch (field_to_test) {
           case auction_worklet::mojom::ReportingIdField::kInterestGroupName:
             // IG name in bidder, nothing in seller.
             EXPECT_THAT(result_.report_urls,
                         testing::UnorderedElementsAre(
-                            "https://seller.example.org/?undefined/false",
+                            "https://seller.example.org/?undefined/false/"
+                            "undefined/false",
                             "https://example.org/?Ad%20Platform/true/"
-                            "undefined/false/undefined/false"));
+                            "undefined/false/undefined/false/undefined/false"));
             break;
           case auction_worklet::mojom::ReportingIdField::kBuyerReportingId:
             // Buyer ID in bidder, nothing in seller.
             EXPECT_THAT(result_.report_urls,
                         testing::UnorderedElementsAre(
-                            "https://seller.example.org/?undefined/false",
+                            "https://seller.example.org/?undefined/false/"
+                            "undefined/false",
                             "https://example.org/?undefined/false/buyid1/true/"
-                            "undefined/false"));
+                            "undefined/false/undefined/false"));
             break;
-
           case auction_worklet::mojom::ReportingIdField::
               kBuyerAndSellerReportingId:
             // Shared ID in both.
             EXPECT_THAT(
                 result_.report_urls,
                 testing::UnorderedElementsAre(
-                    "https://seller.example.org/?commonid1/true",
+                    "https://seller.example.org/?commonid1/true/undefined/"
+                    "false",
                     "https://example.org/?undefined/false/undefined/false/"
-                    "commonid1/true"));
+                    "commonid1/true/undefined/false"));
+            break;
+          case auction_worklet::mojom::ReportingIdField::
+              kSelectedBuyerAndSellerReportingId:
+            // Selected ID, Shared ID, AND Buyer ID in bidder;
+            // Selected ID and Shared ID in the seller.
+            EXPECT_THAT(result_.report_urls,
+                        testing::UnorderedElementsAre(
+                            "https://seller.example.org/?commonid1/true",
+                            "https://example.org/?undefined/false/buyid/true/"
+                            "commonid1/true/selectedid1/true"));
             break;
           default:
             NOTREACHED_IN_MIGRATION();
@@ -22882,10 +22867,6 @@ TEST_P(AuctionRunnerKAnonTest, ReportingId) {
 }
 
 TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
-  base::test::ScopedFeatureList additional_bids_on;
-  additional_bids_on.InitAndEnableFeature(
-      blink::features::kFledgeNegativeTargeting);
-
   const char kAdditionalBidUrl[] =
       "https://adplatform.com/offers-contextual.js";
 
@@ -23010,14 +22991,16 @@ TEST_P(AuctionRunnerKAnonTest, CookieDeprecationFacilitatedTestingExcluded) {
   auction_run_loop_->Run();
   // Have to spin all message loops to flush any k-anon set join events.
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(interest_group_manager_->TakeJoinedKAnonSets(),
-              testing::UnorderedElementsAre(
-                  blink::HashedKAnonKeyForAdBid(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0].render_url()),
-                  blink::HashedKAnonKeyForAdNameReporting(
-                      bidders[0].interest_group,
-                      bidders[0].interest_group.ads.value()[0])));
+  EXPECT_THAT(
+      interest_group_manager_->TakeJoinedKAnonSets(),
+      testing::UnorderedElementsAre(
+          blink::HashedKAnonKeyForAdBid(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0].render_url()),
+          blink::HashedKAnonKeyForAdNameReporting(
+              bidders[0].interest_group,
+              bidders[0].interest_group.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
   histogram_tester_->ExpectUniqueSample(
       "Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", false, 1);
 
@@ -23200,8 +23183,9 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
           witnessed_hash);
     }
 
-    AdAuctionRequestContext context(kSeller, {}, std::move(client_context),
-                                    base::TimeTicks::Now());
+    AdAuctionRequestContext context(
+        kSeller, /*group_names=*/{}, std::move(client_context),
+        base::TimeTicks::Now(), /*group_pagg_coordinators=*/{});
     ad_auction_page_data_->RegisterAdAuctionRequestContext(request_id,
                                                            std::move(context));
 
@@ -23230,7 +23214,9 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
   }
 }
 
-TEST_F(AuctionRunnerTest, MatcheReportingIdsInServerResponse) {
+// TODO(crbug.com/334053709): Add selected_buyer_and_seller_reporting_id when
+// it's added to the B&A response.
+TEST_F(AuctionRunnerTest, MatchedReportingIdsInServerResponse) {
   const struct {
     std::string test_name;
     std::string winner_name;
@@ -23406,7 +23392,8 @@ TEST_F(AuctionRunnerTest, MatcheReportingIdsInServerResponse) {
         kSeller,
         {{kBidder1,
           {"NoReportingIds", "BuyerReportingId", "BuyerAndSellerReportingId"}}},
-        std::move(client_context), base::TimeTicks::Now());
+        std::move(client_context), base::TimeTicks::Now(),
+        /*group_pagg_coordinators=*/{});
     ad_auction_page_data_->RegisterAdAuctionRequestContext(request_id,
                                                            std::move(context));
 
@@ -23451,52 +23438,7 @@ TEST_F(AuctionRunnerTest, MatcheReportingIdsInServerResponse) {
   }
 }
 
-TEST_F(AuctionRunnerTest,
-       TrustedBiddingSignalsAdSlotParamGroupingFeatureDisabled) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndDisableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeConstBidScript(1, "https://ad1.com/"));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         kMinimumDecisionScript);
-
-  requested_size_ = blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
-                                  blink::AdSize::LengthUnit::kPixels);
-  all_slots_requested_sizes_ = {
-      blink::AdSize(10, blink::AdSize::LengthUnit::kPixels, 20,
-                    blink::AdSize::LengthUnit::kPixels),
-      blink::AdSize(30, blink::AdSize::LengthUnit::kPixels, 40,
-                    blink::AdSize::LengthUnit::kPixels)};
-
-  StartAuction(kSellerUrl, CreateTrustedBiddingSignalsSlotSizeModeBidders());
-
-  // Wait for bidding signals network requests to be made.
-  task_environment()->RunUntilIdle();
-
-  std::vector<GURL> pending_request_urls;
-  for (const auto& pending_request : *url_loader_factory_.pending_requests()) {
-    pending_request_urls.push_back(pending_request.request.url);
-  }
-
-  // When kFledgeTrustedBiddingSignalsSlotSize is disabled, all requests should
-  // be merged, regardless of kFledgeTrustedBiddingSignalsSlotSize.
-  EXPECT_THAT(pending_request_urls,
-              testing::ElementsAre(GURL(
-                  kBidder1TrustedSignalsUrl.spec() +
-                  "?hostname=publisher1.com&keys=k1,k2,k3,k4,k5,k6"
-                  "&interestGroupNames=name1,name2,name3,name4,name5,name6")));
-
-  // No need to finish the auction.
-}
-
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeConstBidScript(1, "https://ad1.com/"));
@@ -23539,10 +23481,6 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGrouping) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedBiddingSignalsAdSlotParamGroupingNoSizes) {
-  base::test::ScopedFeatureList debug_features;
-  debug_features.InitAndEnableFeature(
-      blink::features::kFledgeTrustedBiddingSignalsSlotSize);
-
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeConstBidScript(1, "https://ad1.com/"));

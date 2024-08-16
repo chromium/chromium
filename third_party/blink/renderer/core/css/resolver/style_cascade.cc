@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 
 #include <bit>
+#include <optional>
 
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -220,33 +222,54 @@ std::optional<CSSParserToken> GetAttrSubstitutionValue(
     const String& attribute_value,
     const CSSAttrType& attribute_type,
     const CSSParserContext& context) {
-  if (attribute_value.IsNull()) {
+  // Unknown attr() types should be handled during parse time.
+  DCHECK(attribute_type.category != CSSAttrType::Category::kUnknown);
+
+  if (attribute_value.IsNull() ||
+      attribute_type.category == CSSAttrType::Category::kFrequency) {
+    // TODO(crbug.com/40320391): <frequency> is not yet supported in chrome.
     return std::nullopt;
   }
 
+  // For kString, the substitution value is the literal attribute value
+  // without any parsing or other processing.
+  // https://drafts.csswg.org/css-values-5/#attr-types
   if (attribute_type.category == CSSAttrType::Category::kString) {
     return CSSParserToken(kStringToken, attribute_value);
-  }
-
-  std::optional<CSSSyntaxDefinition> syntax_definition =
-      attribute_type.ConvertToCSSSyntaxDefinition();
-  if (!syntax_definition.has_value()) {
-    return std::nullopt;
   }
 
   CSSTokenizer tokenizer(attribute_value);
   auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
-                                context, false)) {
-    return std::nullopt;
+
+  std::optional<CSSSyntaxDefinition> syntax_definition =
+      attribute_type.ConvertToCSSSyntaxDefinition();
+  if (syntax_definition.has_value()) {
+    if (!syntax_definition->Parse(CSSTokenizedValue{range, attribute_value},
+                                  context, false)) {
+      return std::nullopt;
+    }
+  } else {
+    // <flex> has special handling because it's not supported
+    // by CSSSyntaxDefinition.
+    CHECK_EQ(attribute_type.category, CSSAttrType::Category::kFlex);
+    range.ConsumeWhitespace();
+    CSSParserToken token = range.ConsumeIncludingWhitespace();
+    if (!range.AtEnd() || token.GetType() != kDimensionToken ||
+        token.GetUnitType() != CSSPrimitiveValue::UnitType::kFlex) {
+      return std::nullopt;
+    }
+    return token;
   }
 
   range.ConsumeWhitespace();
   CSSParserToken token = range.ConsumeIncludingWhitespace();
   if (!range.AtEnd()) {
+    // Only single token is allowed, see
+    // https://drafts.csswg.org/css-values-5/#attr-notation.
     return std::nullopt;
   }
+
   if (attribute_type.category == CSSAttrType::Category::kDimensionUnit) {
     token.ConvertToDimensionWithUnit(
         CSSPrimitiveValue::UnitTypeToString(attribute_type.dimension_unit));
@@ -271,18 +294,6 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
-  ProcessPendingSignals();
-
-  // Invisible rules are not supposed to have any effect on the observable
-  // result, so we cascade again if any invisible rules were seen.
-  //
-  // We do this *after* processing signals, because some of the signals may
-  // come from invisible rules.
-  if (has_invisible_rules_) {
-    allow_invisible_rules_ = false;
-    Reanalyze();
-  }
-
   state_.UpdateLengthConversionData();
 
   CascadeResolver resolver(filter, ++generation_);
@@ -376,8 +387,6 @@ void StyleCascade::Reset() {
   interpolations_.Reset();
   generation_ = 0;
   depends_on_cascade_affecting_property_ = false;
-  allow_invisible_rules_ = true;
-  has_invisible_rules_ = false;
 }
 
 const CSSValue* StyleCascade::Resolve(const CSSPropertyName& name,
@@ -481,22 +490,6 @@ void StyleCascade::AnalyzeMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
-    // We expect signals to be very rare, so to avoid the cost of checking
-    // against Signal::kNone for every *declaration*, we check once for
-    // every declaration *block* (i.e. rule), and then use a separate call to
-    // ExpandCascade (via ExpandSignals) to handle the signals.
-    if (Signal signal = static_cast<Signal>(properties.types_.signal);
-        signal != Signal::kNone) {
-      ExpandSignals(properties, index, signal);
-    }
-    if (properties.types_.is_invisible) {
-      if (!allow_invisible_rules_) {
-        ++index;
-        continue;
-      }
-      has_invisible_rules_ = true;
-    }
-
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,
@@ -609,7 +602,6 @@ void StyleCascade::Reanalyze() {
   map_.Reset();
   generation_ = 0;
   depends_on_cascade_affecting_property_ = false;
-  has_invisible_rules_ = false;
 
   needs_match_result_analyze_ = true;
   needs_interpolations_analyze_ = true;
@@ -702,9 +694,8 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
       LookupAndApply(webkit_border_image, resolver);
 
       const auto& shorthand = borderImageShorthand();
-      const CSSProperty** longhands = shorthand.properties();
-      for (unsigned i = 0; i < shorthand.length(); ++i) {
-        maybe_skip(*longhands[i], *priority);
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        maybe_skip(*longhand, *priority);
       }
     }
   }
@@ -991,8 +982,7 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
     return false;
   }
 
-  base::span<const CSSParserToken> other_tokens(sequence.tokens_.begin(),
-                                                sequence.tokens_.end());
+  auto other_tokens = base::span<const CSSParserToken>(sequence.tokens_);
   StringView other_text = sequence.original_text_;
   other_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(other_text);
@@ -1009,8 +999,7 @@ bool StyleCascade::TokenSequence::AppendFallback(const TokenSequence& sequence,
       NeedsInsertedComment(tokens_.back(), other_tokens.front())) {
     original_text_.Append("/**/");
   }
-  tokens_.Append(other_tokens.data(),
-                 static_cast<wtf_size_t>(other_tokens.size()));
+  tokens_.AppendSpan(other_tokens);
   original_text_.Append(other_text);
 
   is_animation_tainted_ |= sequence.is_animation_tainted_;
@@ -1750,6 +1739,8 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
+    stream.ConsumeWhitespace();
+
     TokenSequence fallback;
     if (!ResolveTokensInto(stream, resolver, parent_tokenizer, context,
                            FunctionContext{}, fallback)) {
@@ -1898,77 +1889,6 @@ void StyleCascade::CountUse(WebFeature feature) {
 void StyleCascade::MaybeUseCountRevert(const CSSValue& value) {
   if (value.IsRevertValue()) {
     CountUse(WebFeature::kCSSKeywordRevert);
-  }
-}
-
-void StyleCascade::ExpandSignals(const MatchedProperties& properties,
-                                 int index,
-                                 Signal signal) {
-  ExpandCascade(
-      properties, GetDocument(), index,
-      [this, signal](CascadePriority cascade_priority,
-                     const AtomicString& custom_property_name) {
-        MaybeAddPendingSignal(CSSPropertyName(custom_property_name),
-                              cascade_priority, signal);
-      },
-      [this, signal](CascadePriority cascade_priority,
-                     CSSPropertyID property_id) {
-        if (kSurrogateProperties.Has(property_id)) {
-          const CSSProperty& property =
-              ResolveSurrogate(CSSProperty::Get(property_id));
-          MaybeAddPendingSignal(property.GetCSSPropertyName(), cascade_priority,
-                                signal);
-        } else {
-          MaybeAddPendingSignal(CSSPropertyName(property_id), cascade_priority,
-                                signal);
-        }
-      });
-}
-
-void StyleCascade::MaybeAddPendingSignal(const CSSPropertyName& name,
-                                         CascadePriority priority,
-                                         Signal signal) {
-  CHECK_NE(signal, Signal::kNone);
-
-  const CascadePriority* existing_priority = map_.Find(name);
-
-  bool add_would_change_value =
-      !existing_priority ||
-      (ValueAt(match_result_, existing_priority->GetPosition()) !=
-       ValueAt(match_result_, priority.GetPosition()));
-
-  // We only add a pending signal if the declaration actually makes
-  // a difference to the cascade. The pending signals then either get
-  // converted to actual use-counting during `ProcessPendingSignals`
-  // if they end up winning the cascade, or they just get ignored.
-  if (add_would_change_value) {
-    wtf_size_t index = static_cast<wtf_size_t>(signal) - 1;
-    CHECK_LT(index, static_cast<wtf_size_t>(Signal::kMax));
-    pending_signals_[index].Set(name, priority);
-  }
-}
-
-void StyleCascade::ProcessPendingSignals() {
-  static_assert(static_cast<int>(Signal::kBareDeclarationShift) == 1);
-  static_assert(static_cast<int>(Signal::kNestedGroupRuleSpecificity) == 2);
-  static_assert(static_cast<int>(Signal::kMax) == 2);
-  ProcessPendingSignals(WebFeature::kCSSBareDeclarationShift,
-                        pending_signals_[0]);
-  pending_signals_[0].clear();
-  ProcessPendingSignals(WebFeature::kCSSNestedGroupRuleSpecificity,
-                        pending_signals_[1]);
-  pending_signals_[1].clear();
-}
-
-void StyleCascade::ProcessPendingSignals(
-    WebFeature feature,
-    const HashMap<CSSPropertyName, CascadePriority>& signals) {
-  for (const auto& [name, signal_priority] : signals) {
-    // Only trigger the use-counter if the signaling declaration
-    // won the cascade.
-    if (signal_priority == map_.At(name)) {
-      CountUse(feature);
-    }
   }
 }
 

@@ -95,7 +95,7 @@ class ExpandButton : public views::ImageView {
   void OnFocus() override;
   void OnBlur() override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void SetTooltipText(const std::u16string& tooltip) override;
 
  private:
   std::unique_ptr<views::Painter> focus_painter_;
@@ -103,6 +103,12 @@ class ExpandButton : public views::ImageView {
 
 ExpandButton::ExpandButton() {
   SetFocusBehavior(FocusBehavior::ALWAYS);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+
+  if (GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(
+        GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 ExpandButton::~ExpandButton() = default;
@@ -131,11 +137,13 @@ void ExpandButton::OnThemeChanged() {
       gfx::Insets::TLBR(0, 0, 1, 1));
 }
 
-void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kButton;
+void ExpandButton::SetTooltipText(const std::u16string& tooltip) {
+  views::ImageView::SetTooltipText(tooltip);
 
-  if (GetTooltipText().empty())
-    node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  if (GetTooltipText().empty()) {
+    GetViewAccessibility().SetName(
+        GetTooltipText(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 BEGIN_METADATA(ExpandButton)
@@ -236,6 +244,8 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   UpdateExpandedCollapsedAccessibleState();
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+
   if (app_name_view_->GetText().empty()) {
     GetViewAccessibility().SetName(
         app_name_view_->GetText(),
@@ -243,6 +253,14 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   } else {
     GetViewAccessibility().SetName(app_name_view_->GetText());
   }
+
+  OnTextChanged();
+  summary_text_changed_callback_ =
+      summary_text_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
+  timestamp_changed_callback_ =
+      timestamp_view_->AddTextChangedCallback(base::BindRepeating(
+          &NotificationHeaderView::OnTextChanged, base::Unretained(this)));
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
@@ -306,14 +324,6 @@ void NotificationHeaderView::SetOverflowIndicator(int count) {
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
   UpdateSummaryTextAndTimestampVisibility();
-}
-
-void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-
-  node_data->role = ax::mojom::Role::kGenericContainer;
-  node_data->SetDescription(summary_text_view_->GetText() + u" " +
-                            timestamp_view_->GetText());
 }
 
 void NotificationHeaderView::OnThemeChanged() {
@@ -491,6 +501,11 @@ void NotificationHeaderView::UpdateExpandedCollapsedAccessibleState() const {
   } else {
     GetViewAccessibility().SetIsCollapsed();
   }
+}
+
+void NotificationHeaderView::OnTextChanged() {
+  GetViewAccessibility().SetDescription(summary_text_view_->GetText() + u" " +
+                                        timestamp_view_->GetText());
 }
 
 BEGIN_METADATA(NotificationHeaderView)

@@ -45,7 +45,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -423,8 +423,8 @@ public class PasswordSettingsTest {
                             .thenReturn(
                                     CollectionUtil.newHashSet(
                                             syncingPasswords
-                                                    ? ModelType.PASSWORDS
-                                                    : ModelType.AUTOFILL));
+                                                    ? DataType.PASSWORDS
+                                                    : DataType.AUTOFILL));
                 });
     }
 }

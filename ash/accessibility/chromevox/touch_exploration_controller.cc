@@ -212,9 +212,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
 
     touch_locations_[*it] = gfx::PointF(location);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected event type received: " << event.GetName();
-    return SendEvent(continuation, &event);
+    NOTREACHED() << "Unexpected event type received: " << event.GetName();
   }
   VLOG_EVENT(touch_event);
 
@@ -285,8 +283,7 @@ ui::EventDispatchDetails TouchExplorationController::RewriteEvent(
     case TWO_FINGER_TAP:
       return InTwoFingerTap(touch_event_dip, continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InNoFingersDown(
@@ -294,9 +291,7 @@ ui::EventDispatchDetails TouchExplorationController::InNoFingersDown(
     const Continuation continuation) {
   const ui::EventType type = event.type();
   if (type != ui::EventType::kTouchPressed) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected event type received: " << event.GetName();
-    return SendEvent(continuation, &event);
+    NOTREACHED() << "Unexpected event type received: " << event.GetName();
   }
 
   initial_press_ = std::make_unique<ui::TouchEvent>(event);
@@ -364,8 +359,7 @@ ui::EventDispatchDetails TouchExplorationController::InSingleTapPressed(
     SET_STATE(TOUCH_EXPLORATION);
     return InTouchExploration(event, continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails
@@ -445,8 +439,7 @@ ui::EventDispatchDetails TouchExplorationController::InDoubleTapPending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
@@ -465,8 +458,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchReleasePending(
     SET_STATE(NO_FINGERS_DOWN);
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
@@ -489,8 +481,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploration(
     MaybeSendSimulatedTapInLiftActivationBounds(event, continuation);
     SET_STATE(TOUCH_EXPLORE_RELEASED);
   } else if (type != ui::EventType::kTouchMoved) {
-    NOTREACHED_IN_MIGRATION();
-    return SendEvent(continuation, &event);
+    NOTREACHED();
   }
 
   // |location| is in window DIP coordinates.
@@ -580,9 +571,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
                initial_press_->pointer_details().id) {
       original_touch = initial_press_.get();
     } else {
-      NOTREACHED_IN_MIGRATION();
-      SET_STATE(WAIT_FOR_NO_FINGERS);
-      return DiscardEvent(continuation);
+      NOTREACHED();
     }
     // Check the distance between the current finger location and the original
     // location. The slop for this is a bit more generous since keeping two
@@ -617,8 +606,7 @@ ui::EventDispatchDetails TouchExplorationController::InTouchExploreSecondPress(
     EnterTouchToMouseMode();
     return DiscardEvent(continuation);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SendEvent(continuation, &event);
+  NOTREACHED();
 }
 
 ui::EventDispatchDetails TouchExplorationController::InTouchExploreLongPress(

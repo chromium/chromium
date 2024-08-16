@@ -104,7 +104,7 @@ std::string CdmStatusToString(cdm::Status status) {
       return "kDeferredInitialization";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 inline std::ostream& operator<<(std::ostream& out, cdm::Status status) {
@@ -143,8 +143,8 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
     case cdm::Host_11::kVersion:
       return static_cast<cdm::Host_11*>(cdm_adapter);
   }
-  NOTREACHED_NORETURN() << "Unexpected host interface version "
-                        << host_interface_version;
+  NOTREACHED() << "Unexpected host interface version "
+               << host_interface_version;
 }
 
 void ReportSystemCodeUMA(const std::string& key_system, uint32_t system_code) {
@@ -997,7 +997,7 @@ void CdmAdapter::OnDeferredInitializationDone(cdm::StreamType stream_type,
       return;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected cdm::StreamType " << stream_type;
+  NOTREACHED() << "Unexpected cdm::StreamType " << stream_type;
 }
 
 cdm::FileIO* CdmAdapter::CreateFileIO(cdm::FileIOClient* client) {

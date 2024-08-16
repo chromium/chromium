@@ -42,7 +42,7 @@ mojom::TypefaceSlant ConvertToMojomFontStyle(SkFontStyle::Slant slant) {
     case SkFontStyle::Slant::kOblique_Slant:
       return mojom::TypefaceSlant::kOblique;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -57,21 +57,21 @@ FontDataManager::FontDataManager()
 FontDataManager::~FontDataManager() = default;
 
 int FontDataManager::onCountFamilies() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FontDataManager::onGetFamilyName(int index,
                                       SkString* requested_family_name) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 sk_sp<SkFontStyleSet> FontDataManager::onCreateStyleSet(int index) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 sk_sp<SkFontStyleSet> FontDataManager::onMatchFamily(
     const char requested_family_name[]) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyle(
@@ -180,7 +180,7 @@ sk_sp<SkTypeface> FontDataManager::onMatchFamilyStyleCharacter(
     const char* bcp47[],
     int bcp47_count,
     SkUnichar character) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 sk_sp<SkTypeface> FontDataManager::onMakeFromData(sk_sp<SkData> data,

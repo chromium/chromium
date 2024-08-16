@@ -7,13 +7,13 @@
 #include <utility>
 
 SharingMessageModelTypeController::SharingMessageModelTypeController(
-    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+    std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_full_sync_mode,
-    std::unique_ptr<syncer::ModelTypeControllerDelegate>
+    std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode)
-    : syncer::ModelTypeController(syncer::SHARING_MESSAGE,
-                                  std::move(delegate_for_full_sync_mode),
-                                  std::move(delegate_for_transport_mode)) {}
+    : syncer::DataTypeController(syncer::SHARING_MESSAGE,
+                                 std::move(delegate_for_full_sync_mode),
+                                 std::move(delegate_for_transport_mode)) {}
 
 SharingMessageModelTypeController::~SharingMessageModelTypeController() =
     default;
@@ -26,6 +26,6 @@ void SharingMessageModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
   // SharingMessageBridgeImpl uses the processor's IsTrackingMetadata() bit to
   // determine whether sharing messages can be sent (they can't if sync is
   // paused).
-  ModelTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
-                            std::move(callback));
+  DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
+                           std::move(callback));
 }

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -38,15 +39,17 @@ bool CreateTruncatedModule(const base::FilePath& location) {
 
   const size_t kSizeOfTruncatedDll = 256;
   char buffer[kSizeOfTruncatedDll];
-  if (file_exe.Read(0, buffer, kSizeOfTruncatedDll) != kSizeOfTruncatedDll)
+  if (UNSAFE_TODO(file_exe.Read(0, buffer, kSizeOfTruncatedDll)) !=
+      kSizeOfTruncatedDll) {
     return false;
+  }
 
   base::File target_file(location,
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!target_file.IsValid())
     return false;
 
-  return target_file.Write(0, buffer, kSizeOfTruncatedDll) ==
+  return UNSAFE_TODO(target_file.Write(0, buffer, kSizeOfTruncatedDll)) ==
          kSizeOfTruncatedDll;
 }
 

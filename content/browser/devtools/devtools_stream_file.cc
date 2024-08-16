@@ -5,6 +5,7 @@
 #include "content/browser/devtools/devtools_stream_file.h"
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -118,7 +119,8 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
   max_size =
       std::min(max_size, static_cast<size_t>(last_written_pos_ - position));
   buffer.resize(max_size);
-  int size_got = file_.ReadNoBestEffort(position, &*buffer.begin(), max_size);
+  int size_got =
+      UNSAFE_TODO(file_.ReadNoBestEffort(position, &*buffer.begin(), max_size));
 
   if (size_got < 0) {
     LOG(ERROR) << "Failed to read temporary file";
@@ -149,7 +151,8 @@ void DevToolsStreamFile::AppendOnFileSequence(
     std::unique_ptr<std::string> data) {
   if (!InitOnFileSequenceIfNeeded())
     return;
-  int size_written = file_.WriteAtCurrentPos(&*data->begin(), data->length());
+  int size_written =
+      UNSAFE_TODO(file_.WriteAtCurrentPos(&*data->begin(), data->length()));
   if (size_written != static_cast<int>(data->length())) {
     LOG(ERROR) << "Failed to write temporary file";
     had_errors_ = true;

@@ -2589,10 +2589,6 @@ String Internals::layerTreeAsText(Document* document,
   return document->GetFrame()->GetLayerTreeAsTextForTesting(flags);
 }
 
-String Internals::scrollingStateTreeAsText(Document*) const {
-  return String();
-}
-
 String Internals::mainThreadScrollingReasons(
     Document* document,
     ExceptionState& exception_state) const {
@@ -2606,47 +2602,6 @@ String Internals::mainThreadScrollingReasons(
   document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 
   return document->GetFrame()->View()->MainThreadScrollingReasonsAsText();
-}
-
-DOMRectList* Internals::nonFastScrollableRects(
-    Document* document,
-    ExceptionState& exception_state) const {
-  DCHECK(document);
-  const LocalFrame* frame = document->GetFrame();
-  if (!frame) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "The document provided is invalid.");
-    return nullptr;
-  }
-
-  frame->View()->UpdateAllLifecyclePhasesForTest();
-
-  auto* pac = document->View()->GetPaintArtifactCompositor();
-  auto* layer_tree_host = pac->RootLayer()->layer_tree_host();
-  // Ensure |cc::TransformTree| has updated the correct ToScreen transforms.
-  layer_tree_host->UpdateLayers();
-
-  Vector<gfx::Rect> layer_non_fast_scrollable_rects;
-  for (auto* layer : *layer_tree_host) {
-    const cc::Region& non_fast_region = layer->non_fast_scrollable_region();
-    for (gfx::Rect non_fast_rect : non_fast_region) {
-      gfx::RectF layer_rect(non_fast_rect);
-
-      // Map |layer_rect| into screen space.
-      layer_rect.Offset(layer->offset_to_transform_parent());
-      auto& transform_tree =
-          layer->layer_tree_host()->property_trees()->transform_tree_mutable();
-      transform_tree.UpdateTransforms(layer->transform_tree_index());
-      const gfx::Transform& to_screen =
-          transform_tree.ToScreen(layer->transform_tree_index());
-      gfx::Rect screen_rect =
-          gfx::ToEnclosingRect(to_screen.MapRect(layer_rect));
-
-      layer_non_fast_scrollable_rects.push_back(screen_rect);
-    }
-  }
-
-  return MakeGarbageCollected<DOMRectList>(layer_non_fast_scrollable_rects);
 }
 
 void Internals::evictAllResources() const {

@@ -10,6 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,8 +35,8 @@ DialogDelegate::DialogDelegate(CreateOptions* create_options)
 
 DialogDelegate::~DialogDelegate() = default;
 
-ui::ModalType DialogDelegate::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType DialogDelegate::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 std::u16string DialogDelegate::GetDialogTitle() const {

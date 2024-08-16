@@ -33,11 +33,13 @@ class ViewTransitionStyleBuilder {
   void AddAnimations(AnimationType type,
                      const String& tag,
                      const ContainerProperties& source_properties,
-                     const CapturedCssProperties& animated_css_properties);
+                     const CapturedCssProperties& animated_css_properties,
+                     const gfx::Transform& parent_inverse_transform);
 
   void AddContainerStyles(const String& tag,
                           const ContainerProperties& properties,
-                          const CapturedCssProperties& captured_css_properites);
+                          const CapturedCssProperties& captured_css_properites,
+                          const gfx::Transform& parent_inverse_transform);
 
   String Build();
 
@@ -45,7 +47,8 @@ class ViewTransitionStyleBuilder {
   // Adds the needed keyframes and returns the animation name to use.
   String AddKeyframes(const String& tag,
                       const ContainerProperties& source_properties,
-                      const CapturedCssProperties& captured_css_properties);
+                      const CapturedCssProperties& captured_css_properties,
+                      const gfx::Transform& parent_inverse_transform);
   void AddRules(const String& selector, const String& tag, const String& rules);
   void AddSelector(const String& name, const String& tag);
 

@@ -40,7 +40,12 @@ class ASH_EXPORT ScrollArrowButton : public views::Button {
   void OnDeskHoverEnd();
 
  private:
+  friend class DesksTestApi;
+
   void OnStateChanged();
+
+  static base::AutoReset<base::TimeDelta> SetScrollTimeIntervalForTest(
+      base::TimeDelta interval);
 
   // The callback of bar scroll method.
   base::RepeatingClosure on_scroll_;

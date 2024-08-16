@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -21,7 +22,7 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
-    scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
+    const TransformPaintPropertyNode* scroll_translation,
     CompositorElementId element_id,
     cc::HitTestOpaqueness hit_test_opaqueness,
     RasterEffectOutset outset,
@@ -32,8 +33,8 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
                   outset,
                   paint_invalidation_reason,
                   /*draws_content*/ true),
-      data_(new Data{std::move(scrollbar), std::move(scroll_translation),
-                     element_id, hit_test_opaqueness}) {
+      data_(new Data{std::move(scrollbar), scroll_translation, element_id,
+                     hit_test_opaqueness}) {
   DCHECK(IsScrollbar());
   CHECK(!data_->scroll_translation_ ||
         data_->scroll_translation_->ScrollNode());
@@ -73,7 +74,8 @@ bool ScrollbarDisplayItem::NeedsUpdateDisplay() const {
 }
 
 scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
-    cc::ScrollbarLayerBase* existing_layer) const {
+    cc::ScrollbarLayerBase* existing_layer,
+    gfx::Vector2dF offset_of_decomposited_transforms) const {
   DCHECK(!IsTombstone());
   // This function is called when the scrollbar is composited. We don't need
   // record_ which is for non-composited scrollbars.
@@ -90,7 +92,8 @@ scoped_refptr<cc::ScrollbarLayerBase> ScrollbarDisplayItem::CreateOrReuseLayer(
           ? data_->scroll_translation_->ScrollNode()->GetCompositorElementId()
           : CompositorElementId());
   layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(VisualRect().OffsetFromOrigin()));
+      gfx::Vector2dF(VisualRect().OffsetFromOrigin()) +
+      offset_of_decomposited_transforms);
   layer->SetBounds(VisualRect().size());
 
   // TODO(crbug.com/1414885): This may be duplicate with
@@ -123,7 +126,7 @@ bool ScrollbarDisplayItem::EqualsForUnderInvalidationImpl(
 #if DCHECK_IS_ON()
 void ScrollbarDisplayItem::PropertiesAsJSONImpl(JSONObject& json) const {
   json.SetString("scrollTranslation",
-                 String::Format("%p", data_->scroll_translation_.get()));
+                 String::Format("%p", data_->scroll_translation_.Get()));
 }
 #endif
 
@@ -133,7 +136,7 @@ void ScrollbarDisplayItem::Record(
     DisplayItem::Type type,
     scoped_refptr<cc::Scrollbar> scrollbar,
     const gfx::Rect& visual_rect,
-    scoped_refptr<const TransformPaintPropertyNode> scroll_translation,
+    const TransformPaintPropertyNode* scroll_translation,
     CompositorElementId element_id,
     cc::HitTestOpaqueness hit_test_opaqueness) {
   PaintController& paint_controller = context.GetPaintController();
@@ -143,8 +146,8 @@ void ScrollbarDisplayItem::Record(
   CHECK(IsScrollbarElementId(element_id));
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
-      client, type, std::move(scrollbar), visual_rect,
-      std::move(scroll_translation), element_id, hit_test_opaqueness,
+      client, type, std::move(scrollbar), visual_rect, scroll_translation,
+      element_id, hit_test_opaqueness,
       client.VisualRectOutsetForRasterEffects(),
       client.GetPaintInvalidationReason());
 }

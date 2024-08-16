@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 
 #include <stdint.h>
@@ -33,7 +38,6 @@
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_item.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
-#include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -41,6 +45,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/icu/source/common/unicode/uloc.h"

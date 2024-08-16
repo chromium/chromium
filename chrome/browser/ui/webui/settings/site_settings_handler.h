@@ -18,6 +18,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -32,6 +33,10 @@
 
 class BrowsingDataModel;
 class PrefChangeRegistrar;
+
+namespace system_permission_settings {
+class ScopedObservation;
+}
 
 namespace settings {
 
@@ -113,14 +118,18 @@ class SiteSettingsHandler
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
+  // SystemPermissionSettingsObserver:
+  void OnSystemPermissionChanged(ContentSettingsType content_settings_type,
+                                 bool is_blocked);
+
   void ServicePendingRequests();
 
   // Asynchronously fetches the usage for a given origin. Replies back with
   // OnGetUsageInfo above.
   void HandleFetchUsageTotal(const base::Value::List& args);
 
-  // Asynchronously fetches the fps membership information label.
-  void HandleGetFpsMembershipLabel(const base::Value::List& args);
+  // Asynchronously fetches the rws membership information label.
+  void HandleGetRwsMembershipLabel(const base::Value::List& args);
 
   // Deletes the storage being used for a given host.
   void HandleClearUnpartitionedUsage(const base::Value::List& args);
@@ -210,6 +219,12 @@ class SiteSettingsHandler
   // Clear web storage data and cookies for a site group.
   void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
 
+  // Gets warning strings for content types that are blocked at the OS level.
+  void HandleGetOSGlobalPermissionStatus(const base::Value::List& args);
+
+  // Attempts to open the the OS permission settings.
+  void HandleOpenSystemPermissionSettings(const base::Value::List& args);
+
   void ClearAllSitesMapForTesting();
 
   void SetModelForTesting(
@@ -287,6 +302,9 @@ class SiteSettingsHandler
   // Sends the list of notification permissions to review to the WebUI.
   void SendNotificationPermissionReviewList();
 
+  // Fetches the OS global permission status.
+  base::Value GetOSGlobalPermissionStatus();
+
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
@@ -331,6 +349,13 @@ class SiteSettingsHandler
 
   // Whether to send site detail data on model update.
   bool update_site_details_ = false;
+
+  // Maintains observation of OS level permissions.
+  std::unique_ptr<system_permission_settings::ScopedObservation>
+      system_permission_settings_observation_;
+
+  // Used to listen to OS level changes to permissions
+  // std::unique_ptr<permissions::OSPermissionObserver> os_permission_observer_;
 
   base::WeakPtrFactory<SiteSettingsHandler> weak_ptr_factory_{this};
 };

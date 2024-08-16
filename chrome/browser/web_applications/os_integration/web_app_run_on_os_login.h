@@ -25,8 +25,10 @@ namespace internals {
 
 // Registers the app with the OS to run on OS login. Platform specific
 // implementations are required for this.
+// Invoke `callback` on the Shortcut IO thread when the work is complete.
 // See web_app_run_on_os_login_win.cc for Windows implementation as example.
-bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info);
+void RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info,
+                          ResultCallback callback);
 
 // Unregisters the app with the OS from running on startup. Platform specific
 // implementations are required for this.
@@ -38,8 +40,8 @@ Result UnregisterRunOnOsLogin(const std::string& app_id,
 }  // namespace internals
 
 // Schedules a call to |RegisterRunOnOsLogin| on the Shortcut IO thread and
-// invokes |callback| when complete. This function must be called from the UI
-// thread.
+// invokes |callback| on the UI thread when complete. This function must be
+// called from the UI thread.
 void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
                                   ResultCallback callback);
 

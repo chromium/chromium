@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
@@ -125,6 +126,7 @@ public class StripLayoutHelperTest {
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private PrefService mPrefService;
+    @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
 
     private Activity mActivity;
@@ -132,7 +134,6 @@ public class StripLayoutHelperTest {
     private TestTabModel mModel = new TestTabModel();
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
-
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
     private static final String TEST_GROUP_TITLE = "Group";
     private static final String EXPECTED_MARGIN = "The tab should have a trailing margin.";
@@ -525,7 +526,7 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length == TEST_TAB_TITLES.length);
 
         // Close all tabs
-        mModel.closeAllTabs();
+        mModel.closeTabs(TabClosureParams.closeAllTabs().build());
 
         // Notify strip of tab closure
         mStripLayoutHelper.willCloseAllTabs();
@@ -1261,6 +1262,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Feature("Advanced Peripherals Support")
     public void testCloseButtonHoverOnDown() {
         // Setup
@@ -1789,7 +1791,10 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
+    })
     public void testOnLongPress_OnTab() {
         onLongPress_OnTab();
         // Verify we directly enter reorder mode.SS
@@ -1799,7 +1804,36 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @Feature("Tab Group Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU,
+        ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_INDICATORS
+    })
+    public void testOnLongPress_OnGroupTitle() {
+        // Initialize.
+        initializeTest(false, false, 0);
+        groupTabs(0, 1);
+        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
+        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+
+        // Set up tabModel and menu coordinator.
+        MockTabModel tabModel = new MockTabModel(mProfile, null);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        tabModel.setActive(true);
+        mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
+                mTabGroupContextMenuCoordinator);
+
+        // Long press on group title
+        mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
+
+        // Verify tab group context menu is showing.
+        verify(mTabGroupContextMenuCoordinator).showMenu(any(), anyInt());
+    }
+
+    @Test
     @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OnTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -1852,13 +1886,17 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures({
+        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
+        ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU
+    })
     public void testOnLongPress_OffTab() {
         onLongPress_OffTab();
     }
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     public void testOnLongPress_WithDragDrop_OffTab() {
         // Extra setup for DragDrop
         setTabDragSourceMock();
@@ -2453,7 +2491,7 @@ public class StripLayoutHelperTest {
 
         // Verify fourth tab was dragged out of group, but not reordered.
         assertEquals("Fourth tab should not have moved.", fourthTab, tabs[3]);
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fourthTab.getId(), true);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fourthTab.getTabId(), true);
     }
 
     @Test
@@ -2476,7 +2514,7 @@ public class StripLayoutHelperTest {
 
         // Verify first tab was dragged out of group, but not reordered.
         assertEquals("First tab should not have moved.", firstTab, tabs[0]);
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(firstTab.getId(), false);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(firstTab.getTabId(), false);
     }
 
     @Test
@@ -2499,7 +2537,7 @@ public class StripLayoutHelperTest {
 
         // Verify fifth tab was dragged out of group, but not reordered.
         assertEquals("Fifth tab should not have moved.", fifthTab, tabs[4]);
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fifthTab.getId(), true);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(fifthTab.getTabId(), true);
     }
 
     @Test
@@ -2526,7 +2564,8 @@ public class StripLayoutHelperTest {
         dragDistance = 650f;
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
         // Verify reordering, since we have dragged past the tab group.
-        assertEquals("First tab should now be the fourth tab.", firstTab.getId(), tabs[3].getId());
+        assertEquals(
+                "First tab should now be the fourth tab.", firstTab.getTabId(), tabs[3].getTabId());
     }
 
     @Test
@@ -2538,7 +2577,7 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
-        int oldSecondTabId = tabs[1].getId();
+        int oldSecondTabId = tabs[1].getTabId();
         groupTabs(0, 2);
 
         // Start reorder mode on third tab. Drag between tabs in group.
@@ -2565,7 +2604,7 @@ public class StripLayoutHelperTest {
         tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         assertEquals("Third tab should now be second tab.", thirdTab, tabs[1]);
         verify(mTabGroupModelFilter)
-                .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2577,7 +2616,7 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
-        int oldSecondTabId = tabs[1].getId();
+        int oldSecondTabId = tabs[1].getTabId();
         groupTabs(0, 2);
 
         // Start reorder mode on third tab. Drag between tabs in group.
@@ -2589,7 +2628,7 @@ public class StripLayoutHelperTest {
 
         // Verify interacting tab was merged into group.
         verify(mTabGroupModelFilter)
-                .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2635,7 +2674,7 @@ public class StripLayoutHelperTest {
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
         groupTabs(0, 2);
-        int oldSecondTabId = tabs[1].getId();
+        int oldSecondTabId = tabs[1].getTabId();
 
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -2664,7 +2703,7 @@ public class StripLayoutHelperTest {
 
         // Verify interacting tab was merged into group.
         verify(mTabGroupModelFilter)
-                .mergeTabsToGroup(eq(thirdTab.getId()), eq(oldSecondTabId), eq(true));
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
         mStripLayoutHelper.maybeMergeToGroupForTabGroupIndicators(
                 -expectedThreshold - 1, 2, false, expectedThreshold, groupTitle);
         assertEquals(
@@ -2710,7 +2749,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify third tab was dragged out of group.
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(thirdTab.getId(), true);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(thirdTab.getTabId(), true);
 
         // Act: End the animations to apply final values.
         Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
@@ -3014,8 +3053,8 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(1, 3);
-        int firstTabId = tabs[0].getId();
-        int secondTabId = tabs[1].getId();
+        int firstTabId = tabs[0].getTabId();
+        int secondTabId = tabs[1].getTabId();
 
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3055,7 +3094,7 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(1, 3);
-        int secondTabId = tabs[1].getId();
+        int secondTabId = tabs[1].getTabId();
 
         // Assert: first view should be group title.
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3104,7 +3143,7 @@ public class StripLayoutHelperTest {
 
         // Verify tab is moved out of group as user chooses delete tab group without showing the
         // dialog.
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
 
         // Verify group title is removed from the tab strip
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3131,7 +3170,7 @@ public class StripLayoutHelperTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Verify tab is moved out of group as user confirms tab group delete.
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
 
         // Verify group title is removed from the tab strip
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3158,7 +3197,8 @@ public class StripLayoutHelperTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Verify tab is not moved out of group as user cancels tab group delete.
-        verify(mTabGroupModelFilter, never()).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+        verify(mTabGroupModelFilter, never())
+                .moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
 
         // Verify group title is restored back on the tab strip
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3181,7 +3221,8 @@ public class StripLayoutHelperTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
         // Verify tab is not moved out of group for unhandled drops.
-        verify(mTabGroupModelFilter, never()).moveTabOutOfGroupInDirection(tabs[0].getId(), false);
+        verify(mTabGroupModelFilter, never())
+                .moveTabOutOfGroupInDirection(tabs[0].getTabId(), false);
 
         // Assume the drop is unsuccessful; the tab and the tab group will be restored to its
         // original position.
@@ -3212,7 +3253,7 @@ public class StripLayoutHelperTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
 
         // Verify tab is moved out of group as user confirms tab group delete.
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getId(), false);
+        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(tabs[0].getTabId(), false);
 
         // Verify group title is removed from the tab strip
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3239,7 +3280,8 @@ public class StripLayoutHelperTest {
         mConfirmationResultCaptor.getValue().onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
 
         // Verify tab is not moved out of group as user cancels tab group delete.
-        verify(mTabGroupModelFilter, never()).moveTabOutOfGroupInDirection(tabs[0].getId(), true);
+        verify(mTabGroupModelFilter, never())
+                .moveTabOutOfGroupInDirection(tabs[0].getTabId(), true);
 
         // Verify group title is restored back on the tab strip
         views = mStripLayoutHelper.getStripLayoutViewsForTesting();
@@ -3409,7 +3451,7 @@ public class StripLayoutHelperTest {
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
-        mModel.closeTab(mModel.getTabAt(closedTabId), false, true);
+        mModel.closeTabs(TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build());
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,
@@ -3685,7 +3727,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tab at position 2 should be the same from the mock.",
                 expectedActiveTabId,
-                stripTabs[2].getId());
+                stripTabs[2].getTabId());
         assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
         assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
     }
@@ -3719,7 +3761,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tab at position 2 should be the same from the mock.",
                 expectedActiveTabId,
-                stripTabs[2].getId());
+                stripTabs[2].getTabId());
         assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
         assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
     }
@@ -3757,14 +3799,14 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tab at position 0 should be the same from the mock.",
                 expectedRestoredTabId,
-                stripTabs[0].getId());
+                stripTabs[0].getTabId());
         assertTrue("Tab at position 1 should be a placeholder.", stripTabs[1].getIsPlaceholder());
         assertFalse(
                 "Tab at position 2 should not be a placeholder.", stripTabs[2].getIsPlaceholder());
         assertEquals(
                 "Tab at position 2 should be the same from the mock.",
                 expectedActiveTabId,
-                stripTabs[2].getId());
+                stripTabs[2].getTabId());
         assertTrue("Tab at position 3 should be a placeholder.", stripTabs[3].getIsPlaceholder());
         assertTrue("Tab at position 4 should be a placeholder.", stripTabs[4].getIsPlaceholder());
     }
@@ -3892,7 +3934,7 @@ public class StripLayoutHelperTest {
         assertEquals(
                 "Tab at position 4 should be the same from the mock.",
                 expectedCreatedTabId,
-                stripTabs[4].getId());
+                stripTabs[4].getTabId());
     }
 
     private void setupForAnimations() {
@@ -4047,7 +4089,7 @@ public class StripLayoutHelperTest {
     private StripLayoutTab mockStripTab(int id, float tabWidth, float drawX) {
         StripLayoutTab tab = mock(StripLayoutTab.class);
         when(tab.getWidth()).thenReturn(tabWidth);
-        when(tab.getId()).thenReturn(id);
+        when(tab.getTabId()).thenReturn(id);
         when(tab.getDrawX()).thenReturn(drawX);
         return tab;
     }
@@ -4141,6 +4183,7 @@ public class StripLayoutHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.
@@ -4908,7 +4951,7 @@ public class StripLayoutHelperTest {
         TestTabModel tabModel = spy(mModel);
         when(tabModel.getProfile()).thenReturn(mProfile);
         mStripLayoutHelper.setTabModel(tabModel, null, false);
-        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getId());
+        mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getTabId());
         mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
 
         return controller;

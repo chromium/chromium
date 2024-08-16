@@ -13,7 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -40,11 +40,11 @@ class SyncCycle {
     virtual void OnThrottled(const base::TimeDelta& throttle_duration) = 0;
 
     // Some of the client's types were throttled.
-    virtual void OnTypesThrottled(ModelTypeSet types,
+    virtual void OnTypesThrottled(DataTypeSet types,
                                   const base::TimeDelta& throttle_duration) = 0;
 
     // Some of the client's types were backed off.
-    virtual void OnTypesBackedOff(ModelTypeSet types) = 0;
+    virtual void OnTypesBackedOff(DataTypeSet types) = 0;
 
     // Silenced intervals can be out of phase with individual cycles, so the
     // delegate is the only thing that can give an authoritative answer for
@@ -63,7 +63,7 @@ class SyncCycle {
 
     // The client has been instructed to change a nudge delay.
     virtual void OnReceivedCustomNudgeDelays(
-        const std::map<ModelType, base::TimeDelta>& nudge_delays) = 0;
+        const std::map<DataType, base::TimeDelta>& nudge_delays) = 0;
 
     // Called for the syncer to respond to the error sent by the server.
     virtual void OnSyncProtocolError(
@@ -73,7 +73,7 @@ class SyncCycle {
     virtual void OnReceivedGuRetryDelay(const base::TimeDelta& delay) = 0;
 
     // Called when server requests a migration.
-    virtual void OnReceivedMigrationRequest(ModelTypeSet types) = 0;
+    virtual void OnReceivedMigrationRequest(DataTypeSet types) = 0;
 
     // Called when server wants to change the parameters for commit quotas of
     // data types that can receive commits via extension APIs. Empty optional

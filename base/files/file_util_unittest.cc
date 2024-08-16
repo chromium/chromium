@@ -18,6 +18,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/features.h"
 #include "base/files/file.h"
@@ -3120,7 +3121,7 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_ZeroOffset) {
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
   char data_read[32] = {};
-  int bytes_read = file.Read(0, data_read, kExtendedFileLength);
+  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
@@ -3146,7 +3147,7 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
   char data_read[32] = {};
-  int bytes_read = file.Read(0, data_read, kExtendedFileLength);
+  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
@@ -3444,9 +3445,8 @@ TEST_F(FileUtilTest, ReadFile) {
 
   // Read the file with smaller buffer.
   EXPECT_EQ(ReadFile(file_path, small_buffer), small_buffer.size());
-  EXPECT_EQ(
-      std::string(kTestData.begin(), kTestData.begin() + small_buffer.size()),
-      std::string(small_buffer.begin(), small_buffer.end()));
+  EXPECT_EQ(kTestData.substr(0, small_buffer.size()),
+            std::string(small_buffer.begin(), small_buffer.end()));
 
   // Read the file with buffer which have exactly same size.
   EXPECT_EQ(ReadFile(file_path, exact_buffer), kTestData.size());
@@ -4437,7 +4437,8 @@ TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
   File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
   auto buffer = std::make_unique<char[]>(image_size);
-  EXPECT_TRUE(file.ReadAtCurrentPos(buffer.get(), image_size));
+  // SAFETY: required for test.
+  EXPECT_TRUE(UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size)));
 
   // We should be able to open the file as writable.
   file = OpenContentUri(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);

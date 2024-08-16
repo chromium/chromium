@@ -241,7 +241,6 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
                     std::move(inputs_info), std::move(outputs_info)));
 
   return resolver->Promise();
-  ;
 }
 
 void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
@@ -268,7 +267,7 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
 
   // The inputs and outputs were already verified in the base class so we can
   // pass the buffer directly with the input and output tensors.
-  HashMap<String, base::UnguessableToken> mojo_inputs;
+  HashMap<String, blink::WebNNBufferToken> mojo_inputs;
   for (const auto& [name, input_buffer] : inputs) {
     if (!input_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -279,7 +278,7 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
     mojo_inputs.insert(name, input_buffer->handle());
   }
 
-  HashMap<String, base::UnguessableToken> mojo_outputs;
+  HashMap<String, blink::WebNNBufferToken> mojo_outputs;
   for (const auto& [name, output_buffer] : outputs) {
     if (!output_buffer->IsValid()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -353,7 +352,7 @@ void MLGraph::OnConnectionError() {
   remote_graph_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
                                      "Context is lost.");
   }
   pending_resolvers_.clear();

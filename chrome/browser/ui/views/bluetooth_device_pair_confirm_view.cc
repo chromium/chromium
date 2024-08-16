@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -37,7 +38,7 @@ BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
     BluetoothDelegate::PairPromptCallback close_callback)
     : close_callback_(std::move(close_callback)),
       display_pin_(pin.has_value()) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kText));
   SetAcceptCallback(

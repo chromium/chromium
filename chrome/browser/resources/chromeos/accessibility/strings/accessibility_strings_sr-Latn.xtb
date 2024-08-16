@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Braonružičasta</translation>
 <translation id="249330843868392562">Otvori podešavanja pretvaranja teksta u govor</translation>
 <translation id="2497706219848005458">Zelenožuta</translation>
+<translation id="2512979179176933762">pregledajte prozore</translation>
 <translation id="2523609930580546572">Vodič za ChromeVox</translation>
 <translation id="2525706221823668172">Tasterske prečice za Chromebook</translation>
 <translation id="2553108862507765288">gramatička greška</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Čeličnoplava</translation>
 <translation id="4253168017788158739">Napomena</translation>
 <translation id="4254798249533888099">Stablo</translation>
+<translation id="4259220820964911921">Želite da omogućite kontrolu licem?</translation>
 <translation id="4271220233568730077">Sledeći matematički izraz</translation>
 <translation id="4275397969489577657">Omogući evidentiranje strima događaja</translation>
 <translation id="4278486392851938658">Nema prethodnog posećenog linka</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Dodatak</translation>
 <translation id="5761219715606611783">Odlično! Naučili ste osnove ChromeVox dodira. Možete da pokrenete vodič ispočetka ili da izađete iz njega pomoću dugmadi u nastavku.</translation>
 <translation id="5776001898637896684">Google dodatak za pretvaranje teksta u govor za poboljšanu mrežu</translation>
+<translation id="5783252477644995371">Kontrola licem vam pruža kontrolu nad kursorom pomoću usmeravanja lica i mogućnosti da obavljate radnje, na primer, klik levim tasterom pomoću pokreta licem poput osmeha</translation>
 <translation id="5805940204952508776">Dodirnite pomoću dva prsta</translation>
 <translation id="5819072574982403430">Stavka stabla</translation>
 <translation id="5822819874379903994">Tamnotirkizna</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">Nema sledećeg polja za potvrdu</translation>
 <translation id="8473540203671727883">Izgovaraj tekst pod mišem</translation>
 <translation id="8476408756881832830">Pauziraj reprodukciju dok ChromeVox govori</translation>
-<translation id="8476508772960940536">pregled prozora</translation>
 <translation id="8480873377842220259">Sada ćete naučiti osnove kretanja. Možete da zadržite taster za pretragu i pristiskate tastere sa strelicama da biste se kretali po ekranu. Da biste nastavili, pritisnite taster za pretragu + strelica nadesno.</translation>
 <translation id="8503360654911991865">Smanjivanje granularnosti navigacije</translation>
 <translation id="8520472399088452386">Dugme za promenu vrednosti</translation>

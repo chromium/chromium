@@ -403,7 +403,7 @@ gfx::Rect GetHitTestRectForFineTunePosition(
       return gfx::Rect(gfx::Point(vertical_x, vertical_y), vertical_size);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -701,7 +701,7 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK(window);
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
-  MaybeChangeRoot(window->GetRootWindow());
+  MaybeChangeRoot(window->GetRootWindow(), /*root_window_will_shutdown=*/false);
   capture_window_observer_->SetSelectedWindow(window, /*a11y_alert_again=*/true,
                                               /*bar_anchored_to_window=*/false);
 }
@@ -1143,7 +1143,8 @@ void CaptureModeSession::MaybeDismissUserNudgeForever() {
   user_nudge_controller_.reset();
 }
 
-void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                         bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
 
   if (new_root == current_root_) {
@@ -1161,8 +1162,10 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   Observe(ColorUtil::GetColorProviderSourceForWindow(current_root_));
   // Update the bounds of the widgets after setting the new root. For region
   // capture, the capture bar will move at a later time, when the mouse is
-  // released.
-  if (controller_->source() != CaptureModeSource::kRegion) {
+  // released. If the root change is because of a display removal, the mouse
+  // will not be released at a later point.
+  if (root_window_will_shutdown ||
+      controller_->source() != CaptureModeSource::kRegion) {
     RefreshBarWidgetBounds();
   }
 
@@ -1828,8 +1831,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const bool can_change_root =
       !is_bar_anchored_to_window && (!is_capture_region || is_press_event);
 
-  if (can_change_root)
-    MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));
+  if (can_change_root) {
+    MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location),
+                    /*root_window_will_shutdown=*/false);
+  }
 
   // The root may have switched while pressing the mouse down. Move the capture
   // bar to the current display if that is the case and make sure it is stacked
@@ -2658,7 +2663,7 @@ void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
       }
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const bool horizontal =

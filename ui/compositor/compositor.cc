@@ -354,9 +354,7 @@ void Compositor::SetLayerTreeFrameSink(
       display_private_->SetDisplayVSyncParameters(vsync_timebase_,
                                                   vsync_interval_);
     }
-    if (max_vrr_interval_.has_value()) {
-      display_private_->SetMaxVrrInterval(max_vrr_interval_);
-    }
+    display_private_->SetMaxVSyncAndVrr(max_vsync_interval_, vrr_state_);
   }
 
   MaybeUpdateObserveBeginFrame();
@@ -616,12 +614,14 @@ void Compositor::AddVSyncParameterObserver(
     display_private_->AddVSyncParameterObserver(std::move(observer));
 }
 
-void Compositor::SetMaxVrrInterval(
-    const std::optional<base::TimeDelta>& max_vrr_interval) {
-  max_vrr_interval_ = max_vrr_interval;
+void Compositor::SetMaxVSyncAndVrr(
+    const std::optional<base::TimeDelta>& max_vsync_interval,
+    display::VariableRefreshRateState vrr_state) {
+  max_vsync_interval_ = max_vsync_interval;
+  vrr_state_ = vrr_state;
 
   if (display_private_) {
-    display_private_->SetMaxVrrInterval(max_vrr_interval);
+    display_private_->SetMaxVSyncAndVrr(max_vsync_interval, vrr_state);
   }
 }
 

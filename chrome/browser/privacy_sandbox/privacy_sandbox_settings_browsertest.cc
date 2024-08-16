@@ -274,7 +274,7 @@ std::string ConvertAttestedApiStatusToString(
     case AttestedApiStatus::kNone:
       return "None";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -309,7 +309,7 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
       case AttestedApiStatus::kNone:
         return {};
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

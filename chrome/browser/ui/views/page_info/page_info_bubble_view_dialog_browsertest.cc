@@ -779,12 +779,12 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     cookie_info.controls_visible = controls_visible_;
     cookie_info.blocking_status = blocking_status_;
     cookie_info.features = features_;
-    // TODO(crbug.com/40854087): Add fps enforcement info when finished
+    // TODO(crbug.com/40854087): Add rws enforcement info when finished
     // implementing it.
-    if (fps_enabled_) {
+    if (rws_enabled_) {
       const std::u16string kSiteOrigin = u"example.com";
-      cookie_info.fps_info = {PageInfoUI::CookiesFpsInfo(kSiteOrigin)};
-      cookie_info.fps_info->is_managed = fps_managed_;
+      cookie_info.rws_info = {PageInfoUI::CookiesRwsInfo(kSiteOrigin)};
+      cookie_info.rws_info->is_managed = rws_managed_;
     }
     if (is_temporary_exception_) {
       cookie_info.expiration = GetReferenceTime() + base::Days(30);
@@ -836,8 +836,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       {FeatureType::kThirdPartyCookies,
        CookieControlsEnforcement::kNoEnforcement, Status::kAllowed}};
 
-  bool fps_enabled_ = false;
-  bool fps_managed_ = false;
+  bool rws_enabled_ = false;
+  bool rws_managed_ = false;
   bool is_temporary_exception_ = false;
 
  private:
@@ -860,16 +860,16 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_FpsOn) {
-  fps_enabled_ = true;
+                       InvokeUi_RwsOn) {
+  rws_enabled_ = true;
   features_ = GetTrackingProtectionFeatures();
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_ManagedFpsOn) {
-  fps_enabled_ = true;
-  fps_managed_ = true;
+                       InvokeUi_ManagedRwsOn) {
+  rws_enabled_ = true;
+  rws_managed_ = true;
   features_ = GetTrackingProtectionFeatures();
   ShowAndVerifyUi();
 }

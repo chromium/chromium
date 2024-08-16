@@ -145,7 +145,7 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
             case StringSetError::kSetTooLong:
               return FilterValuesError::kListTooLong;
           }
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         });
 
     filter_values.emplace_back(filter, std::move(values).extract());
@@ -382,7 +382,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
       case FilterValuesError::kKeyTooLong:
       case FilterValuesError::kListTooLong:
       case FilterValuesError::kValueTooLong:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
 
@@ -402,12 +402,13 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
     std::optional<base::TimeDelta> lookback_window;
     if (std::optional<base::Value> lookback_window_value =
             dict->Extract(FilterConfig::kLookbackWindowKey)) {
-      if (std::optional<int> int_val = lookback_window_value->GetIfInt()) {
-        lookback_window = base::Seconds(*int_val);
-        if (!lookback_window->is_positive()) {
-          return base::unexpected(lookback_window_error);
-        }
-      } else {
+      ASSIGN_OR_RETURN(int int_val, ParseInt(*lookback_window_value),
+                       [lookback_window_error](ParseError) {
+                         return lookback_window_error;
+                       });
+
+      lookback_window = base::Seconds(int_val);
+      if (!lookback_window->is_positive()) {
         return base::unexpected(lookback_window_error);
       }
     }

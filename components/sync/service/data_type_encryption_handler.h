@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_SERVICE_DATA_TYPE_ENCRYPTION_HANDLER_H_
 #define COMPONENTS_SYNC_SERVICE_DATA_TYPE_ENCRYPTION_HANDLER_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -22,7 +22,7 @@ class DataTypeEncryptionHandler {
   virtual bool HasCryptoError() const = 0;
 
   // Returns the current set of encrypted data types.
-  virtual ModelTypeSet GetAllEncryptedDataTypes() const = 0;
+  virtual DataTypeSet GetAllEncryptedDataTypes() const = 0;
 };
 
 }  // namespace syncer

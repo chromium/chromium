@@ -39,17 +39,8 @@ BASE_FEATURE(kNearbySharingRestrictToContacts,
              "NearbySharingRestrictToContacts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Quick Share v2, which defaults Quick Share to 'Your Devices'
-// visibility, removes the 'Selected Contacts' visibility, removes the Quick
-// Share On/Off toggle.
-BASE_FEATURE(kQuickShareV2, "QuickShareV2", base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsNameEnabled() {
   return base::FeatureList::IsEnabled(kIsNameEnabled);
-}
-
-bool IsQuickShareV2Enabled() {
-  return base::FeatureList::IsEnabled(kQuickShareV2);
 }
 
 bool IsRestrictToContactsEnabled() {

@@ -3,10 +3,8 @@
   "manifest_version": 2,
   "name": "Image Writer Private",
   "version": "0.1",
-  "app": {
-    "background": {
-      "scripts": ["test.js"]
-    }
+  "background": {
+    "service_worker": "test.js"
   },
   "permissions": ["imageWriterPrivate"]
 }

@@ -333,7 +333,9 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             }
         }
         if gtest_filter:
-            module_data['CommandLineArguments'] = ['--gtest_filter='+gtest_filter]
+            module_data['CommandLineArguments'] = [
+                '--gtest_filter=' + gtest_filter
+            ]
         return {test: module_data}
 
     def xcuitest(binary_dir, test):
@@ -347,6 +349,7 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
         target_app_path = os.path.join(test_path, test + '.app')
         module_data = {
             'IsUITestBundle': True,
+            'SystemAttachmentLifetime': 'deleteOnSuccess',
             'IsXCTRunnerHostedTestBundle': True,
             'TestBundlePath': bundle_path,
             'TestHostPath': runner_path,
@@ -376,7 +379,7 @@ def _RunOnIOSTarget(binary_dir, test, is_xcuitest=False, gtest_filter=None):
             '-xctestrun',
             xctestrun_path,
             '-destination',
-            'platform=iOS Simulator,OS=15.5,name=iPhone 13',
+            'platform=iOS Simulator,OS=17.4,name=iPhone 15',
         ]
         with open(xctestrun_path, 'wb') as fp:
             if is_xcuitest:

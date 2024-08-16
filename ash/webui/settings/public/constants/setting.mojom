@@ -203,6 +203,7 @@ enum Setting {
   kCrostiniContainerUpgrade = 807,
   kBruschettaMicAccess = 808,
   kGuestUsbNotification = 809,
+  kGuestUsbPersistentPassthrough = 810,
 
   // Note: Plugin VM section is omitted (see https://crbug.com/1074101).
 
@@ -331,6 +332,7 @@ enum Setting {
   kCaretBrowsing = 1548,
   kMagnifierFollowsChromeVox = 1549,
   kMainNodeAnnotationsEnabled = 1550,
+  kFlashNotifications = 1551,
 
   // Reset section.
   kPowerwash = 1600,

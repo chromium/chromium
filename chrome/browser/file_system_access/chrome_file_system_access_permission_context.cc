@@ -39,7 +39,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/file_system_access_dialogs.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_dangerous_file_dialog.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_dialogs.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_restricted_directory_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -1152,7 +1154,12 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
   auto origin_it = active_permissions_map_.find(origin);
   if (origin_it != active_permissions_map_.end()) {
     OriginState& origin_state = origin_it->second;
-    for (auto& grant : origin_state.read_grants) {
+    for (auto grant_iter = origin_state.read_grants.begin(),
+              grant_end = origin_state.read_grants.end();
+         grant_iter != grant_end;) {
+      // The grant may be removed from `read_grants`, so increase the iterator
+      // before continuing.
+      auto& grant = *(grant_iter++);
       if (file_path.empty() || grant.first == file_path) {
         if (grant.second) {
           grant.second->SetStatus(
@@ -1162,7 +1169,12 @@ bool ChromeFileSystemAccessPermissionContext::RevokeActiveGrants(
         }
       }
     }
-    for (auto& grant : origin_state.write_grants) {
+    for (auto grant_iter = origin_state.write_grants.begin(),
+              grant_end = origin_state.write_grants.end();
+         grant_iter != grant_end;) {
+      // The grant may be removed from `write_grants`, so increase the iterator
+      // before continuing.
+      auto& grant = *(grant_iter++);
       if (file_path.empty() || grant.first == file_path) {
         if (grant.second) {
           grant.second->SetStatus(

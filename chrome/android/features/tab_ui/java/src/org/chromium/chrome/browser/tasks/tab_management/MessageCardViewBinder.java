@@ -23,9 +23,6 @@ class MessageCardViewBinder {
             itemView.setActionButtonOnClickListener(getConfirmationOnClickListener(model));
         } else if (MessageCardViewProperties.DESCRIPTION_TEXT == propertyKey) {
             itemView.setDescriptionText(model.get(MessageCardViewProperties.DESCRIPTION_TEXT));
-        } else if (MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE == propertyKey) {
-            itemView.setDescriptionTextTemplate(
-                    model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
         } else if (MessageCardViewProperties.ICON_PROVIDER == propertyKey) {
             updateIconDrawable(model, itemView);
         } else if (MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION == propertyKey) {

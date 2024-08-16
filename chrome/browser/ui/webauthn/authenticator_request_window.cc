@@ -255,7 +255,7 @@ class AuthenticatorRequestWindow
         break;
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     content::NavigationController::LoadURLParams load_params(url);

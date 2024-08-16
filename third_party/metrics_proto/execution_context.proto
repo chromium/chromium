@@ -108,6 +108,11 @@ enum Thread {
   // Display Compositor thread (in GPU process).
   DISPLAY_COMPOSITOR_THREAD = 28;
 
+  // Codec worker thread.
+  // Spawned at
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/base/codec_worker_impl.h;drc=923a33e9d5e24f4fb64f40dd2ffc182b2de93b0f;l=41.
+  CODEC_WORKER_THREAD = 29;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.

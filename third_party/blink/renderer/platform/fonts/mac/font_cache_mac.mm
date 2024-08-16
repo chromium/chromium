@@ -138,7 +138,20 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   CFRange range = CFRangeMake(0, CFStringGetLength(string.get()));
 
   ScopedCFTypeRef<CTFontRef> substitute_font;
-  if (!ct_font) {
+  // System API might return colored "Apple Color Emoji" font for some emoji
+  // codepoints. But if emoji codepoint was requested and
+  // fallback_priority != kEmojiEmoji, it means that we need a monochromatic
+  // (text) presentation of emoji. For that we use hardcoded monochromatic emoji
+  // font.
+  if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
+      Character::IsEmoji(character)) {
+    ScopedCFTypeRef<CTFontRef> emoji_font(
+        CTFontCreateWithName(CFSTR("Apple Symbols"), size, nullptr));
+    if (emoji_font) {
+      substitute_font.reset(
+          CTFontCreateForString(emoji_font.get(), string.get(), range));
+    }
+  } else if (!ct_font) {
     // For some web fonts for which we use FreeType backend (for instance some
     // color fonts), `ct_font` is null. For these fonts we still want to have a
     // substitute font for a character. We are using the default value of

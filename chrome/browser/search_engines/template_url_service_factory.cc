@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
@@ -62,8 +63,10 @@ std::unique_ptr<KeyedService> TemplateURLServiceFactory::BuildInstanceFor(
 #endif
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile),
+      CHECK_DEREF(profile->GetPrefs()),
+      CHECK_DEREF(
+          search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+              profile)),
       std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),

@@ -145,22 +145,24 @@ bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
     case blink::mojom::FormControlType::kSelectList:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns true if the given id is one generated for autofill context menu.
 bool IsAutofillCustomCommandId(
     AutofillContextMenuManager::CommandId command_id) {
-  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>(
-      {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS});
+  static constexpr auto kAutofillCommands = base::MakeFixedFlatSet<int>({
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PLUS_ADDRESS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+  });
   return kAutofillCommands.contains(command_id.value());
 }
 
@@ -268,6 +270,12 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
+  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) {
+    ExecutePredictionImprovementsCommand(autofill_driver->GetFrameToken(),
+                                         *autofill_driver);
+    return;
+  }
+
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
     ExecuteAutofillFeedbackCommand(autofill_driver->GetFrameToken(),
                                    autofill_driver->GetAutofillManager());
@@ -364,10 +372,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   bool add_address_fallback = false;
   bool add_payments_fallback = false;
   bool add_passwords_fallback = false;
+  bool add_prediction_improvements = false;
 
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
+    add_prediction_improvements = ShouldAddPredictionImprovementsItem();
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
     add_address_fallback = ShouldAddAddressManualFallbackItem(*autofill_driver);
@@ -389,11 +399,21 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
   }
 
   if (!add_plus_address_fallback && !add_address_fallback &&
-      !add_payments_fallback && !add_passwords_fallback) {
+      !add_payments_fallback && !add_passwords_fallback &&
+      !add_prediction_improvements) {
     return;
   }
   menu_model_->AddTitle(
       l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
+
+  if (add_prediction_improvements) {
+    menu_model_->AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+        ui::ImageModel::FromVectorIcon(
+            vector_icons::kLocationOnChromeRefreshIcon, ui::kColorIcon,
+            kContextMenuIconSize));
+  }
 
   if (add_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
@@ -473,6 +493,12 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
 
+bool AutofillContextMenuManager::ShouldAddPredictionImprovementsItem() {
+  // Only show the entry point if the corresponding feature is enabled.
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillPredictionImprovementsEnabled);
+}
+
 bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
     ContentAutofillDriver& autofill_driver) {
   if (!personal_data_manager_->address_data_manager()
@@ -486,8 +512,7 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
   // cleaned up. At that point, we can only check whether a profile exists or if
   // the user is not in incognito mode. Whether the field can be filled will be
   // irrelevant.
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   if (field && FieldTypeGroupToFormType(field->Type().group()) ==
                    FormType::kAddressForm) {
     // Show the context menu entry for address fields, which can be filled
@@ -592,8 +617,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
 
 void AutofillContextMenuManager::LogAddressManualFallbackContextMenuEntryShown(
     ContentAutofillDriver& autofill_driver) {
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   const bool address_option_shown_for_field_not_classified_as_address =
       !IsAddressType(field ? field->Type().GetStorableType() : UNKNOWN_TYPE);
 
@@ -614,8 +638,7 @@ void AutofillContextMenuManager::LogAddressManualFallbackContextMenuEntryShown(
 
 void AutofillContextMenuManager::LogPaymentsManualFallbackContextMenuEntryShown(
     ContentAutofillDriver& autofill_driver) {
-  AutofillField* field = GetAutofillField(autofill_driver.GetAutofillManager(),
-                                          autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   const bool payments_option_shown_for_field_not_classified_as_payments =
       !field || !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
                                     FieldTypeGroup::kStandaloneCvcField})
@@ -643,22 +666,21 @@ void AutofillContextMenuManager::
         AutofillDriver& autofill_driver) {
   BrowserAutofillManager& manager = static_cast<BrowserAutofillManager&>(
       autofill_driver.GetAutofillManager());
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
 
-      const bool is_address_field =
-          field && IsAddressType(field->Type().GetStorableType());
-      if (is_address_field) {
-        // Address manual fallback was triggered from a classified address
-        // field.
-        manager.GetAutocompleteUnrecognizedFallbackEventLogger()
-            .ContextMenuEntryAccepted(
-                /*address_field_has_ac_unrecognized=*/field
-                    ->ShouldSuppressSuggestionsAndFillingByDefault());
-      } else {
-        manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
-            FillingProduct::kAddress);
-      }
+  const bool is_address_field =
+      field && IsAddressType(field->Type().GetStorableType());
+  if (is_address_field) {
+    // Address manual fallback was triggered from a classified address
+    // field.
+    manager.GetAutocompleteUnrecognizedFallbackEventLogger()
+        .ContextMenuEntryAccepted(
+            /*address_field_has_ac_unrecognized=*/field
+                ->ShouldSuppressSuggestionsAndFillingByDefault());
+  } else {
+    manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
+        FillingProduct::kAddress);
+  }
 }
 
 void AutofillContextMenuManager::
@@ -666,8 +688,7 @@ void AutofillContextMenuManager::
         AutofillDriver& autofill_driver) {
   BrowserAutofillManager& manager = static_cast<BrowserAutofillManager&>(
       autofill_driver.GetAutofillManager());
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
 
   if (!field || !FieldTypeGroupSet{FieldTypeGroup::kCreditCard,
                                    FieldTypeGroup::kStandaloneCvcField}
@@ -692,6 +713,14 @@ void AutofillContextMenuManager::
                                   IsPasswordFormField(*password_manager_driver,
                                                       params_));
   }
+}
+
+void AutofillContextMenuManager::ExecutePredictionImprovementsCommand(
+    const LocalFrameToken& frame_token,
+    ContentAutofillDriver& autofill_driver) {
+  autofill_driver.browser_events().RendererShouldTriggerSuggestions(
+      FieldGlobalId(frame_token, FieldRendererId(params_.field_renderer_id)),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
@@ -753,9 +782,7 @@ void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(
 
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
     ContentAutofillDriver& autofill_driver) {
-  AutofillManager& manager = autofill_driver.GetAutofillManager();
-  AutofillField* field =
-      GetAutofillField(manager, autofill_driver.GetFrameToken());
+  AutofillField* field = GetAutofillField(autofill_driver);
   if (!field && !base::FeatureList::IsEnabled(
                     features::kAutofillForUnclassifiedFieldsAvailable)) {
     // The field should generally exist, since the fallback option is only shown
@@ -839,12 +866,11 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
       features::kAutofillForUnclassifiedFieldsAvailable);
 }
 
-// TODO(crbug.com/321678141): Pass the driver instead of the manager.
 AutofillField* AutofillContextMenuManager::GetAutofillField(
-    AutofillManager& manager,
-    const LocalFrameToken& frame_token) const {
+    AutofillDriver& autofill_driver) const {
   CHECK(ShouldShowAutofillContextMenu(params_));
-  FormStructure* form = manager.FindCachedFormById(
+  const LocalFrameToken frame_token = autofill_driver.GetFrameToken();
+  FormStructure* form = autofill_driver.GetAutofillManager().FindCachedFormById(
       {frame_token, FormRendererId(params_.form_renderer_id)});
   return form ? form->GetFieldById(
                     {frame_token, FieldRendererId(params_.field_renderer_id)})

@@ -103,9 +103,8 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     const ui::ImageModel icon =
         valid_identity ? PageInfoViewFactory::GetValidCertificateIcon()
                        : PageInfoViewFactory::GetInvalidCertificateIcon();
-    const int title_id = valid_identity
-                             ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
-                             : IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID;
+    const int title_id = valid_identity ? IDS_PAGE_INFO_CERTIFICATE_IS_VALID
+                                        : IDS_PAGE_INFO_CERTIFICATE_DETAILS;
 
     std::u16string subtitle_text;
     // Only show the EV certificate details if there are no errors or mixed

@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Одбаците и прегледајте следећу доступну радњу</translation>
 <translation id="3744111561329211289">Синхронизација у позадини</translation>
 <translation id="3763247130972274048">Двапут додирните видео лево или десно да бисте прескочили 10 сек</translation>
+<translation id="3779154269823594982">Промените лозинке</translation>
 <translation id="3797520601150691162">Не примењујте тамну тему за одређени сајт</translation>
 <translation id="3803367742635802571">Сајтови које посећујете могу да престану са радом како је замишљено</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Дозволи звук за одређени сајт.</translation>
 <translation id="789180354981963912">Блокирајте колачиће трећих страна у режиму без архивирања:</translation>
 <translation id="7940722705963108451">Подсети ме</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="FPS_OWNER" /> која може да види ваше активности у групи}one{<ph name="FPS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="FPS_OWNER" /> која може да види ваше активности у групи}few{<ph name="FPS_MEMBERS_COUNT" /> сајта у групи сајтова власника <ph name="FPS_OWNER" /> која може да види ваше активности у групи}other{<ph name="FPS_MEMBERS_COUNT" /> сајтова у групи сајтова власника <ph name="FPS_OWNER" /> која може да види ваше активности у групи}}</translation>
 <translation id="7986741934819883144">Изаберите контакт</translation>
 <translation id="7990211076305263060">Када је укључено, сајтови могу да траже да користе микрофон. Кад је искључено, сајтови не могу да користе микрофон.</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="8541410041357371550">Овај сајт прима податке о вашим темама огласа из Chrome-а да би вам приказивао релевантније огласе.</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}one{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}few{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајта}other{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајтова}}</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>
 <translation id="8609465669617005112">Премести нагоре</translation>
 <translation id="8617611086246832542">Када је укључено, види се приказ веб-сајтова за рачунаре. Када је искључено, види се приказ веб-сајтова за мобилне уређаје.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Овим управљају твоји родитељи</translation>
 <translation id="9039697262778250930">Можда ћете бити одјављени са ових сајтова</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Овај сајт је у групи која може да види ваше активности. Групу дефинише <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Желите да избришете колачиће?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Укључите дозволе за апликацију <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>

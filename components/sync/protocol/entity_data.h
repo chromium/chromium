@@ -19,7 +19,7 @@ namespace syncer {
 
 // A light-weight container for sync entity data which represents either
 // local data created on the local model side or remote data created on
-// ModelTypeWorker.
+// DataTypeWorker.
 // EntityData is supposed to be wrapped and passed by reference.
 struct EntityData {
  public:
@@ -37,7 +37,7 @@ struct EntityData {
   // a temporary client sync ID.
   std::string id;
 
-  // A hash based on the client tag and model type.
+  // A hash based on the client tag and data type.
   // Used for various map lookups. Should always be available for all data types
   // except bookmarks (for bookmarks it depends on the version of the client
   // that originally created the bookmark).
@@ -62,7 +62,7 @@ struct EntityData {
   // Entity name, used mostly for Debug purposes.
   std::string name;
 
-  // Model type specific sync data.
+  // Data type specific sync data.
   sync_pb::EntitySpecifics specifics;
 
   // Entity creation and modification timestamps.

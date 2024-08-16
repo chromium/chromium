@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# The executables in this directory are used for post-processing benchmark data.
+
+import("//testing/test.gni")
+
+group("confidence") {
+  deps = [ ":pinpoint_ci" ]
+}
+
+static_library("ratio_bootstrap_estimator") {
+  sources = [ "ratio_bootstrap_estimator.cc" ]
+}
+
+executable("pinpoint_ci") {
+  sources = [ "pinpoint_ci.cc" ]
+
+  deps = [
+    ":ratio_bootstrap_estimator",
+    "//base",
+  ]
+}
+
+executable("compare_blink_perf") {
+  sources = [ "compare_blink_perf.cc" ]
+
+  deps = [
+    ":ratio_bootstrap_estimator",
+    "//base",
+  ]
+}

@@ -6,7 +6,6 @@
 
 #include <jni.h>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -40,30 +39,19 @@ jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(
     JNIEnv* env,
     PrefService* pref_service,
     syncer::SyncService* sync_service) {
-  return IsGmsCoreUpdateRequired(
-      pref_service, sync_service,
-      base::android::BuildInfo::GetInstance()->gms_version_code());
+  return IsGmsCoreUpdateRequired(pref_service, sync_service);
 }
 
 jboolean JNI_PasswordManagerUtilBridge_AreMinUpmRequirementsMet(JNIEnv* env) {
   return password_manager_android_util::AreMinUpmRequirementsMet();
 }
 
-jboolean
-JNI_PasswordManagerUtilBridge_IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled(
-    JNIEnv* env) {
-  return password_manager::features::
-      IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
-}
-
 jint JNI_PasswordManagerUtilBridge_GetPasswordAccessLossWarningType(
     JNIEnv* env,
     PrefService* pref_service) {
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
   return static_cast<int>(
       password_manager_android_util::GetPasswordAccessLossWarningType(
-          gms_version_str, pref_service));
+          pref_service));
 }
 
 namespace password_manager_android_util {

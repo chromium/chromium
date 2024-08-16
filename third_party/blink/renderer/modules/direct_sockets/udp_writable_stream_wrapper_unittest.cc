@@ -42,7 +42,7 @@ class FakeRestrictedUDPSocket
       public network::mojom::blink::RestrictedUDPSocket {
  public:
   void Send(base::span<const uint8_t> data, SendCallback callback) override {
-    data_.Append(data.data(), static_cast<uint32_t>(data.size_bytes()));
+    data_.AppendSpan(data);
     std::move(callback).Run(net::Error::OK);
   }
 

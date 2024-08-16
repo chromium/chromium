@@ -23,6 +23,8 @@ enum WindowClass {
   kBrowser,
   // NativeWidgetMacFramelessNSWindow
   kFrameless,
+  // NativeWidgetMacOverlayNSWindow
+  kOverlay,
 };
 
 // Parameters used to described creation of an NSWindow.

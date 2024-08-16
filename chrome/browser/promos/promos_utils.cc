@@ -57,7 +57,7 @@ std::string IOSDesktopPromoHistogramType(IOSPromoType promo_type) {
       return "AddressPromo";
     // TODO(crbug.com/340269648): Add IOS Payment Promo for Desktop.
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -122,7 +122,7 @@ void RecordIOSPasswordPromoShownHistogram(int impression_count) {
         "IOS.DesktopPasswordPromo.Shown",
         promos_utils::DesktopIOSPasswordPromoImpression::kSecondImpression);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -143,7 +143,7 @@ void RecordIOSDesktopPromoShownHistogram(IOSPromoType promo_type,
       promo_impression = DesktopIOSPromoImpression::kThirdImpression;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(
       "IOS.Desktop." + promo_histogram_type + ".Shown", promo_impression);
@@ -181,7 +181,7 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       break;
     // TODO(crbug.com/340269648): Add IOS Payment Promo for Desktop.
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -219,7 +219,7 @@ void RecordIOSPasswordPromoUserInteractionHistogram(
     base::UmaHistogramEnumeration(
         "IOS.DesktopPasswordPromo.SecondImpression.Action", action);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -243,7 +243,7 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
         "IOS.Desktop." + promo_histogram_type + ".ThirdImpression.Action",
         action);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

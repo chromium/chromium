@@ -233,7 +233,6 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         MoveMouseTo(kActiveTab, kPathToBody), ClickMouse(ui_controls::RIGHT),
         WaitForShow(RenderViewContextMenu::kRegionSearchItem),
         FlushEvents(),  // Required to fully render the menu before selection.
-
         SelectMenuItem(RenderViewContextMenu::kRegionSearchItem,
                        InputType::kMouse));
   }
@@ -297,6 +296,26 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         FlushEvents(),  // Required to fully render the menu before selection.
         SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
                        InputType::kMouse));
+  }
+
+  InteractiveTestApi::MultiStep WaitForScreenshotRendered(
+      ui::ElementIdentifier overlayId) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kScreenshotIsRendered);
+
+    const DeepQuery kPathToSelectionOverlay{"lens-overlay-app",
+                                            "lens-selection-overlay"};
+    constexpr char kSelectionOverlayHasBounds[] =
+        "(el) => { return el.getBoundingClientRect().width > 0 && "
+        "el.getBoundingClientRect().height > 0; }";
+
+    StateChange screenshot_is_rendered;
+    screenshot_is_rendered.event = kScreenshotIsRendered;
+    screenshot_is_rendered.where = kPathToSelectionOverlay;
+    screenshot_is_rendered.test_function = kSelectionOverlayHasBounds;
+
+    return Steps(EnsurePresent(overlayId),
+                 WaitForStateChange(overlayId, screenshot_is_rendered),
+                 FlushEvents());
   }
 
  private:
@@ -446,6 +465,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // flakiness.
       InSameContext(Steps(
           FlushEvents(), WaitForShow(LensOverlayController::kOverlayId),
+          WaitForScreenshotRendered(kOverlayId),
           EnsurePresent(kOverlayId, kPathToWord),
           MoveMouseTo(kOverlayId, kPathToWord), ClickMouse(ui_controls::LEFT))),
 
@@ -538,6 +558,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
       // flakiness.
       InSameContext(Steps(FlushEvents(),
                           WaitForShow(LensOverlayController::kOverlayId),
+                          WaitForScreenshotRendered(kOverlayId),
                           EnsurePresent(kOverlayId, kPathToRegionSelection),
                           MoveMouseTo(LensOverlayController::kOverlayId),
                           DragMouseTo(off_center_point))),
@@ -609,6 +630,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, MAYBE_SelectManualRegion) {
       // flakiness.
       InSameContext(Steps(FlushEvents(),
                           WaitForShow(LensOverlayController::kOverlayId),
+                          WaitForScreenshotRendered(kOverlayId),
                           EnsurePresent(kOverlayId, kPathToRegionSelection),
                           MoveMouseTo(LensOverlayController::kOverlayId),
                           DragMouseTo(off_center_point))),
@@ -779,6 +801,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, MAYBE_ShowsPromo) {
       // flakiness.
       InSameContext(Steps(FlushEvents(),
                           WaitForShow(LensOverlayController::kOverlayId),
+                          WaitForScreenshotRendered(kOverlayId),
                           EnsurePresent(kOverlayId, kPathToRegionSelection),
                           MoveMouseTo(LensOverlayController::kOverlayId),
                           DragMouseTo(off_center_point))),

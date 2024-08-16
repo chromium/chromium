@@ -247,15 +247,10 @@ void HotspotDetailedView::UpdateSubText(const HotspotInfoPtr& hotspot_info) {
       return;
     }
     // Set color for the subtext that shows hotspot is connected.
-    if (chromeos::features::IsJellyEnabled()) {
-      entry_row_->sub_text_label()->SetEnabledColorId(
-          cros_tokens::kCrosSysPositive);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *entry_row_->sub_text_label());
-    } else {
-      entry_row_->sub_text_label()->SetEnabledColorId(
-          kColorAshTextColorPositive);
-    }
+    entry_row_->sub_text_label()->SetEnabledColorId(
+        cros_tokens::kCrosSysPositive);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *entry_row_->sub_text_label());
     return;
   }
   // If no subtext is set, previous subtext should be hidden.

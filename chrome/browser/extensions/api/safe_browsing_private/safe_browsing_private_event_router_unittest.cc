@@ -37,7 +37,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"

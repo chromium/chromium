@@ -183,7 +183,7 @@ FetchLaterResult* GlobalFetch::ScopedFetcher::FetchLater(
     const V8RequestInfo* input,
     const DeferredRequestInit* init,
     ExceptionState& exception_state) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 GlobalFetch::ScopedFetcher* GlobalFetch::ScopedFetcher::From(

@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/switches.h"
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -1143,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       /* mask_length */ kDisplayFeatureLength};
   {
     view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-    host()->SynchronizeVisualProperties();
+    host()->SynchronizeVisualPropertiesIgnoringPendingAck();
   }
 
   EXPECT_EQ(
@@ -1393,6 +1394,11 @@ class RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderWidgetHostBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
   }
 
  private:

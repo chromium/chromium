@@ -448,6 +448,10 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoTulipWebm) {
   PlayVideo("tulip2.webm");
 }
 
+IN_PROC_BROWSER_TEST_P(MediaTest, VideoEbu3213Primary) {
+  PlayVideo("ebu-3213-e-vp9.mp4");
+}
+
 IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorMissingResource) {
   RunErrorMessageTest("video", "nonexistent_file.webm",
                       "MEDIA_ELEMENT_ERROR: Format error");

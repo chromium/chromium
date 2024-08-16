@@ -144,7 +144,7 @@ void MergeSamplesToExistingHistogram(
 
   if (!histograms_match) {
     // If the histograms do not match, then the call to AddSamples() below might
-    // trigger a NOTREACHED_IN_MIGRATION(). Include the histogram name here for
+    // trigger a NOTREACHED(). Include the histogram name here for
     // debugging purposes. This is not done in
     // GetOrCreateStatisticsRecorderHistogram() directly, since that could
     // incorrectly create crash reports for enum histograms that have newly
@@ -743,7 +743,7 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
 GlobalHistogramAllocator::~GlobalHistogramAllocator() {
   // GlobalHistogramAllocator should never be destroyed because Histogram
   // objects may keep pointers to its memory.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static
@@ -1043,15 +1043,12 @@ bool GlobalHistogramAllocator::MovePersistentFile(const FilePath& dir) {
 bool GlobalHistogramAllocator::WriteToPersistentLocation() {
 #if BUILDFLAG(IS_NACL)
   // NACL doesn't support file operations, including ImportantFileWriter.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 #else
   // Stop if no destination is set.
   if (!HasPersistentLocation()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Could not write \"" << Name() << "\" persistent histograms"
-        << " to file because no location was set.";
-    return false;
+    NOTREACHED() << "Could not write \"" << Name() << "\" persistent histograms"
+                 << " to file because no location was set.";
   }
 
   std::string_view contents(static_cast<const char*>(data()), used());
@@ -1070,7 +1067,7 @@ void GlobalHistogramAllocator::DeletePersistentLocation() {
   memory_allocator()->SetMemoryState(PersistentMemoryAllocator::MEMORY_DELETED);
 
 #if BUILDFLAG(IS_NACL)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   if (!HasPersistentLocation()) {
     return;

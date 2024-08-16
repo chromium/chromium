@@ -2045,7 +2045,7 @@ void PasswordAutofillAgent::FireHostSubmitEvent(
     mojom::SubmissionSource source) {
   switch (source) {
     case mojom::SubmissionSource::NONE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case mojom::SubmissionSource::FORM_SUBMISSION:
       OnFormSubmitted(GetFormByRendererId(form_id));
       return;
@@ -2061,7 +2061,7 @@ void PasswordAutofillAgent::FireHostSubmitEvent(
       }
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
@@ -2097,7 +2097,7 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     case mojom::SubmissionSource::NONE:
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
     case mojom::SubmissionSource::FORM_SUBMISSION:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case mojom::SubmissionSource::FRAME_DETACHED:
       // If a sub frame has been destroyed while the user was entering
       // information into a password form, try to save the data. See

@@ -13,7 +13,11 @@ namespace set_up_list_utils {
 // been since the user finished the FRE, and whether it has been disabled via
 // a local state pref. The check excludes the disabled pref if
 // `include_disable_pref` is false.
-bool IsSetUpListActive(PrefService* local_state,
+// The `local_prefs` indicate whether this device is eligible to show the set up
+// list, while the `user_prefs` indicates the module's selected visibility.
+// TODO(crbug.com/350990359): Update comment when Home Customization launches.
+bool IsSetUpListActive(PrefService* local_prefs,
+                       PrefService* user_prefs = nullptr,
                        bool include_disable_pref = true);
 
 // true if the Set Up List should be shown in a compacted layout in the Magic

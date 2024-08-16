@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <ostream>
 
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
 #include "components/cbor/reader.h"
@@ -195,10 +196,14 @@ std::optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
   if (ciphertext_it == map.end() || !ciphertext_it->second.is_bytestring()) {
     return std::nullopt;
   }
-  auto nonce_it =
-      map.find(cbor::Value(static_cast<int>(LargeBlobDataKeys::kNonce)));
-  if (nonce_it == map.end() || !nonce_it->second.is_bytestring() ||
-      nonce_it->second.GetBytestring().size() != kLargeBlobArrayNonceLength) {
+  const auto* nonce = base::FindOrNull(
+      map, cbor::Value(static_cast<int>(LargeBlobDataKeys::kNonce)));
+  if (!nonce || !nonce->is_bytestring()) {
+    return std::nullopt;
+  }
+  auto sized_nonce_span = base::span(nonce->GetBytestring())
+                              .to_fixed_extent<kLargeBlobArrayNonceLength>();
+  if (!sized_nonce_span) {
     return std::nullopt;
   }
   auto orig_size_it =
@@ -206,9 +211,7 @@ std::optional<LargeBlobData> LargeBlobData::Parse(const cbor::Value& value) {
   if (orig_size_it == map.end() || !orig_size_it->second.is_unsigned()) {
     return std::nullopt;
   }
-  return LargeBlobData(ciphertext_it->second.GetBytestring(),
-                       base::make_span<kLargeBlobArrayNonceLength>(
-                           nonce_it->second.GetBytestring()),
+  return LargeBlobData(ciphertext_it->second.GetBytestring(), *sized_nonce_span,
                        orig_size_it->second.GetUnsigned());
 }
 

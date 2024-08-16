@@ -445,7 +445,7 @@ def register_builder_config(
         builder_group,
         builder_spec,
         mirrors,
-        settings,
+        bc_settings,
         targets,
         targets_settings,
         additional_exclusions,
@@ -461,7 +461,7 @@ def register_builder_config(
         builder_group: The name of the group the builder belongs to.
         builder_spec: The spec describing the configuration for the builder.
         mirrors: References to the builders that the builder should mirror.
-        settings: The object determining the additional settings applied to
+        bc_settings: The object determining the additional settings applied to
             builder_config.
         targets: The targets to be built/run by the builder.
         targets_settings: The settings to use when expanding the targets for the
@@ -472,6 +472,9 @@ def register_builder_config(
         description_html: A string of html representing the description of the builder.
     """
     if not builder_spec and not mirrors:
+        if bc_settings and settings.project.startswith("chrome"):
+            fail("bc_settings specified without builder_spec or mirrors")
+
         # TODO(gbeaty) Eventually make this a failure for the chromium
         # family of recipes
         return
@@ -485,8 +488,8 @@ def register_builder_config(
 
     include_all_triggered_testers = None
     settings_fields = {}
-    if settings:
-        settings_fields = structs.to_proto_properties(settings)
+    if bc_settings:
+        settings_fields = structs.to_proto_properties(bc_settings)
         include_all_triggered_testers = settings_fields.pop(
             "include_all_triggered_testers",
             None,
@@ -512,6 +515,9 @@ def register_builder_config(
     else:
         for m in mirrors or []:
             _BUILDER_CONFIG_MIRROR.link(builder_config_key, m)
+
+    if targets and settings.project.startswith("chrome"):
+        fail("Defining targets in starlark is not yet supported in src-internal")
 
     if targets:
         # Register the bundle under the qualified builder name, this allows for

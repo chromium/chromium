@@ -106,7 +106,7 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::ReportResult(
            installed_version->GetString()});
       break;
     case IsolatedInstallabilityCheckResult::kShutdown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   GetMutableDebugValue().Set("result", message);

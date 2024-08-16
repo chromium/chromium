@@ -2,8 +2,8 @@
   "name": "Scrollbar Regression",
   "description": "Should not show a vertical scrollbar",
   "version": "1",
-  "manifest_version": 2,
-  "permissions": [
+  "manifest_version": 3,
+  "host_permissions": [
     "*://*.facebook.com/*"
   ]
 }

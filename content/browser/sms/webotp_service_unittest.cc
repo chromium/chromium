@@ -571,13 +571,13 @@ class ServiceWithPrompt : public Service {
 
   void ExpectRequestUserConsent() {
     EXPECT_CALL(*mock_handler_, RequestUserConsent(_, _))
-        .WillOnce(
-            Invoke([=](const std::string&, CompletionCallback on_complete) {
+        .WillOnce(Invoke(
+            [=, this](const std::string&, CompletionCallback on_complete) {
               on_complete_callback_ = std::move(on_complete);
             }));
 
     EXPECT_CALL(*mock_handler_, is_async()).WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly(Invoke([=]() {
+    EXPECT_CALL(*mock_handler_, is_active()).WillRepeatedly(Invoke([=, this]() {
       return !on_complete_callback_.is_null();
     }));
   }

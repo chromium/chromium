@@ -211,21 +211,21 @@ void SupervisionMixin::SignIn(SignInMode mode) {
 }
 
 std::ostream& operator<<(std::ostream& stream,
-                         const SupervisionMixin::SignInMode& sign_in_mode) {
+                         SupervisionMixin::SignInMode sign_in_mode) {
+  stream << SignInModeAsString(sign_in_mode);
+  return stream;
+}
+std::string SignInModeAsString(SupervisionMixin::SignInMode sign_in_mode) {
   switch (sign_in_mode) {
     case SupervisionMixin::SignInMode::kSignedOut:
-      stream << "SignedOut";
-      break;
+      return "SignedOut";
     case SupervisionMixin::SignInMode::kRegular:
-      stream << "Regular";
-      break;
+      return "Regular";
     case SupervisionMixin::SignInMode::kSupervised:
-      stream << "Supervised";
-      break;
+      return "Supervised";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  return stream;
 }
 
 }  // namespace supervised_user

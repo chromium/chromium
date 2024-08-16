@@ -45,14 +45,15 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
 
         // Ordering: Log all the features ordered by enum, when they apply.
         if (getCustomTabMode() == CustomTabProfileType.EPHEMERAL) {
-            featureUsage.log(CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_OPEN_NEW_EPHEMERAL_TAB);
+            featureUsage.log(
+                    CustomTabsFeatureUsage.CustomTabsFeature.EXTRA_ENABLE_EPHEMERAL_BROWSING);
         }
     }
 
     private static boolean isEphemeralTabRequested(Intent intent) {
         if (!ChromeFeatureList.sCctEphemeralMode.isEnabled()) return false;
         return IntentUtils.safeGetBooleanExtra(
-                intent, IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, false);
+                intent, IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, false);
     }
 
     public @IntentHandler.IncognitoCCTCallerId int getFeatureIdForMetricsCollection() {

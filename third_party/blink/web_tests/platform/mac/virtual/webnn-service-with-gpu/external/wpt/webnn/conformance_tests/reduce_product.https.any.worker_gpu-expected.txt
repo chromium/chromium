@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] reduceProduct float32 0D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceProduct float32 actual -68.75 should be close enough to expected -68.75911712646484 by the acceptable 1 ULP distance, but they have 1195 ULP distance expected true got false
+[FAIL] reduceProduct float32 0D constant tensor empty axes
+  assert_true: assert_array_approx_equals_ulp: test reduceProduct float32 actual -68.75 should be close enough to expected -68.75911712646484 by the acceptable 1 ULP distance, but they have 1195 ULP distance expected true got false
+[FAIL] reduceProduct float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceProduct float32 actual 1.5725944736131119e+37 should be close enough to expected 1.5855958784642327e+37 by the acceptable 24 ULP distance, but they have 102563 ULP distance expected true got false
+Harness: the test ran to completion.
+

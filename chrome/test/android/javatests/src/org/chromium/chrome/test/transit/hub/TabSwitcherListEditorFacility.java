@@ -12,13 +12,17 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+
+import android.view.View;
 
 import androidx.test.espresso.Espresso;
 
+import org.hamcrest.Matcher;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -29,10 +33,9 @@ import java.util.List;
 /** The 3-dot menu "Select Tabs" UI for the {@link TabSwitcherStation} panes. */
 // TODO(crbug/324919909): Migrate TabListEditorTestingRobot to here.
 public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> {
-    public static final ViewElement TAB_LIST_EDITOR_LAYOUT =
-            scopedViewElement(withId(R.id.selectable_list));
-    public static final ViewElement TAB_LIST_EDITOR_RECYCLER_VIEW =
-            scopedViewElement(
+    public static final ViewSpec TAB_LIST_EDITOR_LAYOUT = viewSpec(withId(R.id.selectable_list));
+    public static final ViewSpec TAB_LIST_EDITOR_RECYCLER_VIEW =
+            viewSpec(
                     allOf(
                             isDescendantOfA(withId(R.id.selectable_list)),
                             withId(R.id.tab_list_recycler_view)));
@@ -47,12 +50,12 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     public void declareElements(Elements.Builder elements) {
         elements.declareView(TAB_LIST_EDITOR_LAYOUT);
         elements.declareView(TAB_LIST_EDITOR_RECYCLER_VIEW);
-        elements.declareView(
-                scopedViewElement(
-                        allOf(
-                                withText(getSelectionModeNumberText()),
-                                withId(R.id.down),
-                                withParent(withId(R.id.selection_mode_number)))));
+        Matcher<View> viewMatcher =
+                allOf(
+                        withText(getSelectionModeNumberText()),
+                        withId(R.id.down),
+                        withParent(withId(R.id.selection_mode_number)));
+        elements.declareView(viewSpec(viewMatcher));
     }
 
     private String getSelectionModeNumberText() {
@@ -95,7 +98,6 @@ public class TabSwitcherListEditorFacility extends Facility<TabSwitcherStation> 
     /** Open the app menu, which looks different while selecting tabs. */
     public TabListEditorAppMenu openAppMenuWithEditor() {
         return mHostStation.enterFacilitySync(
-                new TabListEditorAppMenu(this),
-                () -> HubBaseStation.HUB_MENU_BUTTON.perform(click()));
+                new TabListEditorAppMenu(this), HubBaseStation.HUB_MENU_BUTTON::click);
     }
 }

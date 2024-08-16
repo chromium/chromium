@@ -121,6 +121,7 @@
 <translation id="2915996080311180594">稍後再重新啟動</translation>
 <translation id="2928420929544864228">安裝完成。</translation>
 <translation id="2945997411976714835">安裝錯誤：無法啟動安裝程式程序。</translation>
+<translation id="2970426615109535079">Chromium 是由貴機構管理</translation>
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能</translation>
 <translation id="2987208172821108655">Chromium 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
@@ -221,6 +222,7 @@
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614">Chromium 是由「<ph name="MANAGER" />」管理</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
 <translation id="4501471624619070934">安裝失敗，因為這個國家/地區設有存取限制。</translation>
 <translation id="4510853178268397146">這項擴充功能尚未發布隱私權實務規範 (例如擴充功能如何收集和使用資料)，因此 Chromium 建議你移除。</translation>
@@ -490,6 +492,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
+<translation id="8576826849825683917">Chromium 是由多個機構管理</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Google 如何使用這些資料：<ph name="END_BOLD" />網站可以將你的興趣喜好相關資訊儲存在 Chromium 中。舉例來說，如果你造訪某個網站想購買適合馬拉松活動的慢跑鞋，網站可能會判斷你的興趣是跑馬拉松。在此之後，如果你造訪另一個網站報名參加比賽，該網站就可以根據你的興趣喜好向你顯示慢跑鞋的廣告。</translation>
 <translation id="8619360774459241877">正在啟動 Chromium…</translation>

@@ -7,7 +7,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "crypto/aead.h"
+#include "crypto/hkdf.h"
 #include "crypto/random.h"
 #include "crypto/symmetric_key.h"
 
@@ -15,19 +17,24 @@ namespace enterprise_obfuscation {
 
 namespace {
 
-// Default key size, nonce length and max tag length in BoringSSL's
-// implementation of AES-256 GCM used by the crypto library.
+// Default key and derived key size, nonce length and max tag length in
+// BoringSSL's implementation of AES-256 GCM used by the crypto library.
 // TODO(b/356473947): Consider switching to 128-bit key for performance.
 static constexpr size_t kKeySize = 32u;
 static constexpr size_t kNonceSize = 12u;
 static constexpr size_t kAuthTagSize = 16u;
 
+// Nonce prefix and header size based on Tink streaming AEAD implementation
+// (https://developers.google.com/tink/streaming-aead/aes_gcm_hkdf_streaming).
+static constexpr size_t kNoncePrefixSize = 7u;
+static constexpr size_t kSaltSize = kKeySize;
+static constexpr size_t kHeaderSize = 1u + kSaltSize + kNoncePrefixSize;
+
 // Maximum size of a data chunk for obfuscation/deobfuscation.
 //
 // This size is chosen to be the default buffer size in bytes used for downloads
-// (kDefaultDownloadFileBufferSize = 524288) plus the nonce and auth tag
-// lengths.
-static constexpr size_t kChunkSize = kNonceSize + 512 * 1024 + kAuthTagSize;
+// (kDefaultDownloadFileBufferSize = 524288) plus the auth tag length.
+static constexpr size_t kChunkSize = 512 * 1024 + kAuthTagSize;
 
 // Generates a random 256 bit AES key.
 const std::vector<uint8_t>& GetSymmetricKey() {
@@ -40,6 +47,25 @@ const std::vector<uint8_t>& GetSymmetricKey() {
   return *kSymmetricKey;
 }
 
+// Computes nonce. The structure is: noncePrefix | counter (4 bytes) | b (1
+// byte). The last byte is to ensure that the ciphertext is different for the
+// last chunk of a file.
+const std::vector<uint8_t> ComputeNonce(
+    const std::vector<uint8_t>& nonce_prefix,
+    uint32_t counter,
+    bool is_last_chunk) {
+  std::array<uint8_t, sizeof(uint32_t)> encoded_counter =
+      base::U32ToBigEndian(counter);
+
+  std::vector<uint8_t> nonce;
+  nonce.reserve(kNonceSize);
+  nonce.insert(nonce.end(), nonce_prefix.begin(), nonce_prefix.end());
+  nonce.insert(nonce.end(), encoded_counter.begin(), encoded_counter.end());
+  nonce.push_back(is_last_chunk ? 0x01 : 0x00);
+
+  return nonce;
+}
+
 }  // namespace
 
 BASE_FEATURE(kEnterpriseFileObfuscation,
@@ -50,52 +76,119 @@ bool IsFileObfuscationEnabled() {
   return base::FeatureList::IsEnabled(kEnterpriseFileObfuscation);
 }
 
-base::expected<std::vector<uint8_t>, Error> ObfuscateDataChunk(
-    base::span<const uint8_t> data) {
+base::expected<std::vector<uint8_t>, Error> CreateHeader(
+    std::vector<uint8_t>* derived_key,
+    std::vector<uint8_t>* nonce_prefix) {
   if (!IsFileObfuscationEnabled()) {
     return base::unexpected(Error::kDisabled);
   }
+
+  if (!derived_key || !nonce_prefix) {
+    return base::unexpected(Error::kObfuscationFailed);
+  }
+
+  // Create header and allocate space.
+  std::vector<uint8_t> header;
+  header.reserve(kHeaderSize);
+  header.push_back(kHeaderSize);
+
+  // Generate salt.
+  std::vector<uint8_t> salt = crypto::RandBytesAsVector(kSaltSize);
+  header.insert(header.end(), salt.begin(), salt.end());
+
+  // Generate file-specific key.
+  *derived_key = crypto::HkdfSha256(GetSymmetricKey(), salt,
+                                    base::span<uint8_t>(), kKeySize);
+
+  // Generate nonce prefix.
+  *nonce_prefix = crypto::RandBytesAsVector(kNoncePrefixSize);
+  header.insert(header.end(), nonce_prefix->begin(), nonce_prefix->end());
+
+  if (header.size() != kHeaderSize) {
+    return base::unexpected(Error::kObfuscationFailed);
+  }
+
+  return base::ok(std::move(header));
+}
+
+base::expected<std::vector<uint8_t>, Error> ObfuscateDataChunk(
+    base::span<const uint8_t> data,
+    const std::vector<uint8_t>& derived_key,
+    const std::vector<uint8_t>& nonce_prefix,
+    uint32_t counter,
+    bool is_last_chunk) {
+  if (!IsFileObfuscationEnabled()) {
+    return base::unexpected(Error::kDisabled);
+  }
+
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  const std::vector<uint8_t>& key = GetSymmetricKey();
-  aead.Init(key);
+  aead.Init(derived_key);
 
-  // Random nonce generation.
-  CHECK_EQ(aead.NonceLength(), kNonceSize);
-  uint8_t nonce[kNonceSize];
-  crypto::RandBytes(nonce);
+  // Compute nonce.
+  if (aead.NonceLength() != kNonceSize) {
+    return base::unexpected(Error::kSchemeError);
+  }
+  std::vector<uint8_t> nonce =
+      ComputeNonce(nonce_prefix, counter, is_last_chunk);
 
-  // WARNING INSECURE:
-  // This scheme doesn't use an additional data value. This means that chunks
-  // can be reordered by an attacker, dropped from a file, and moved between
-  // files. That is deemed acceptable in this context but may not be in others.
-  // Please check with security before using this pattern elsewhere.
-  std::vector<uint8_t> ciphertext =
-      aead.Seal(data, nonce, base::span<uint8_t>());
+  return base::ok(aead.Seal(data, nonce, base::span<uint8_t>()));
+}
 
-  // Prepend nonce to output data.
-  // TODO(b/356473947): Consider changing prepend operation for performance.
-  ciphertext.insert(ciphertext.begin(), std::begin(nonce), std::end(nonce));
-  return base::ok(std::move(ciphertext));
+base::expected<std::pair</*derived key*/ std::vector<uint8_t>,
+                         /*nonce prefix*/ std::vector<uint8_t>>,
+               Error>
+GetHeaderData(const std::vector<uint8_t>& header) {
+  if (!IsFileObfuscationEnabled()) {
+    return base::unexpected(Error::kDisabled);
+  }
+
+  if (header.size() != kHeaderSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+
+  const uint8_t stored_header_size = header[0];
+  if (stored_header_size != header.size()) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+
+  // Extract salt.
+  base::span<const uint8_t> salt = base::span(header).subspan(1, kSaltSize);
+
+  // Extract nonce_prefix.
+  const std::vector<uint8_t> nonce_prefix(header.begin() + 1 + kSaltSize,
+                                          header.end());
+
+  // Generate file-specific key.
+  const std::vector<uint8_t> derived_key = crypto::HkdfSha256(
+      GetSymmetricKey(), salt, base::span<uint8_t>(), kKeySize);
+
+  return base::ok(std::pair(std::move(derived_key), std::move(nonce_prefix)));
 }
 
 base::expected<std::vector<uint8_t>, Error> DeobfuscateDataChunk(
-    base::span<const uint8_t> data) {
+    base::span<const uint8_t> data,
+    const std::vector<uint8_t>& derived_key,
+    const std::vector<uint8_t>& nonce_prefix,
+    uint32_t counter,
+    bool is_last_chunk) {
   if (!IsFileObfuscationEnabled()) {
     return base::unexpected(Error::kDisabled);
   }
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  const std::vector<uint8_t>& key = GetSymmetricKey();
-  aead.Init(key);
+  aead.Init(derived_key);
 
-  // Get nonce at the head of data.
-  CHECK_EQ(aead.NonceLength(), kNonceSize);
-  if (data.size() < kNonceSize + kAuthTagSize) {
+  if (data.size() < kAuthTagSize) {
     return base::unexpected(Error::kDeobfuscationFailed);
   }
-  base::span<const uint8_t> nonce = data.first(kNonceSize);
 
-  auto plaintext =
-      aead.Open(data.subspan(kNonceSize), nonce, base::span<uint8_t>());
+  // Construct nonce.
+  if (aead.NonceLength() != kNonceSize) {
+    return base::unexpected(Error::kSchemeError);
+  }
+  std::vector<uint8_t> nonce =
+      ComputeNonce(nonce_prefix, counter, is_last_chunk);
+
+  auto plaintext = aead.Open(data, nonce, base::span<uint8_t>());
   if (!plaintext) {
     return base::unexpected(Error::kDeobfuscationFailed);
   }
@@ -124,38 +217,56 @@ base::expected<void, Error> DeobfuscateFileInPlace(
 
   std::vector<uint8_t> ciphertext(kChunkSize);
 
+  // Get header data
+  if (static_cast<size_t>(file.GetLength()) < kHeaderSize) {
+    return base::unexpected(Error::kDeobfuscationFailed);
+  }
+  std::vector<uint8_t> header(kHeaderSize);
+  std::optional<size_t> header_read = file.ReadAtCurrentPos(header);
+  if (!header_read || header_read != kHeaderSize) {
+    return base::unexpected(Error::kFileOperationError);
+  }
+  auto header_data = GetHeaderData(header);
+  if (!header_data.has_value()) {
+    return base::unexpected(header_data.error());
+  }
+
   // Initialize cipher.
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  const std::vector<uint8_t>& key = GetSymmetricKey();
-  aead.Init(key);
-  CHECK_EQ(aead.NonceLength(), kNonceSize);
+  aead.Init(header_data.value().first);
+  if (aead.NonceLength() != kNonceSize) {
+    return base::unexpected(Error::kSchemeError);
+  }
+  uint32_t counter = 0;
+  size_t total_bytes_read = header_read.value();
+
+  int64_t file_length = file.GetLength();
+  if (file_length < 0) {
+    return base::unexpected(Error::kFileOperationError);
+  }
+  const size_t file_size = static_cast<size_t>(file_length);
 
   // Deobfuscate to temporary file.
-  while (true) {
-    std::optional<size_t> bytes_read =
-        file.ReadAtCurrentPos(base::make_span(ciphertext));
+  while (total_bytes_read < file_size) {
+    std::optional<size_t> bytes_read = file.ReadAtCurrentPos(ciphertext);
     if (!bytes_read) {
       return base::unexpected(Error::kFileOperationError);
     }
 
-    if (bytes_read.value() == 0) {
-      break;  // Reached end of file
-    }
-
-    // The size of the data being smaller than the nonce + auth tag means that
+    // The size of the data being smaller than the auth tag means that
     // it wasn't obfuscated.
-    if (bytes_read.value() < kNonceSize + kAuthTagSize) {
+    if (bytes_read.value() < kAuthTagSize) {
       return base::unexpected(Error::kDeobfuscationFailed);
     }
 
     // Resize ciphertext to the actual number of bytes read.
     ciphertext.resize(bytes_read.value());
+    total_bytes_read += bytes_read.value();
 
-    base::span<const uint8_t> nonce =
-        base::make_span(ciphertext).first(kNonceSize);
+    std::vector<uint8_t> nonce = ComputeNonce(
+        header_data.value().second, counter++, total_bytes_read == file_size);
 
-    auto plaintext = aead.Open(base::make_span(ciphertext).subspan(kNonceSize),
-                               nonce, base::span<uint8_t>());
+    auto plaintext = aead.Open(ciphertext, nonce, base::span<uint8_t>());
     if (!plaintext) {
       return base::unexpected(Error::kDeobfuscationFailed);
     }

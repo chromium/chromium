@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/config/gpu_preferences.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,8 +52,7 @@ class SchedulerDfsTest : public testing::WithParamInterface<bool>,
     }
     // Create the scheduler after setting up the feature flags.
     sync_point_manager_ = std::make_unique<SyncPointManager>();
-    scheduler_ = std::make_unique<Scheduler>(sync_point_manager_.get(),
-                                             GpuPreferences());
+    scheduler_ = std::make_unique<Scheduler>(sync_point_manager_.get());
     CHECK_EQ(GetParam(), sync_point_manager_->graph_validation_enabled());
   }
 

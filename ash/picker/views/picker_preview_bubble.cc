@@ -80,6 +80,8 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   // Ignore this bubble for accessibility purposes. The contents of the preview
   // bubble are announced via the item view that triggered the bubble.
   SetAccessibleWindowRole(ax::mojom::Role::kNone);
+  // Highlighting of the anchor is done by the anchor itself.
+  set_highlight_button_when_shown(false);
 
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
@@ -99,11 +101,6 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
               .CopyAddressTo(&box_layout_view_)
               .AddChildren(views::Builder<views::Label>(
                                ash::bubble_utils::CreateLabel(
-                                   TypographyToken::kCrosAnnotation2, u"",
-                                   cros_tokens::kCrosSysOnSurfaceVariant))
-                               .CopyAddressTo(&eyebrow_label_),
-                           views::Builder<views::Label>(
-                               ash::bubble_utils::CreateLabel(
                                    TypographyToken::kCrosBody2, u"",
                                    cros_tokens::kCrosSysOnSurface))
                                .CopyAddressTo(&main_label_)))
@@ -121,23 +118,22 @@ void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
   image_view_->SetImage(std::move(image));
 }
 
-bool PickerPreviewBubbleView::GetLabelsVisibleForTesting() const {
+bool PickerPreviewBubbleView::GetLabelVisibleForTesting() const {
   return box_layout_view_->GetVisible();
-}
-
-std::u16string_view PickerPreviewBubbleView::GetEyebrowTextForTesting() const {
-  return eyebrow_label_->GetText();
 }
 
 std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() const {
   return main_label_->GetText();
 }
 
-void PickerPreviewBubbleView::SetText(const std::u16string& eyebrow_text,
-                                      const std::u16string& main_text) {
-  eyebrow_label_->SetText(eyebrow_text);
+void PickerPreviewBubbleView::SetText(const std::u16string& main_text) {
   main_label_->SetText(main_text);
   box_layout_view_->SetVisible(true);
+}
+
+void PickerPreviewBubbleView::ClearText() {
+  main_label_->SetText(u"");
+  box_layout_view_->SetVisible(false);
 }
 
 void PickerPreviewBubbleView::OnThemeChanged() {

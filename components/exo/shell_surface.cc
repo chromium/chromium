@@ -848,7 +848,7 @@ gfx::Rect ShellSurface::ComputeAdjustedBounds(const gfx::Rect& bounds) const {
   gfx::Size size = bounds.size();
   // use `minimum_size_` as the GetMinimumSize always return min size
   // bigger or equal to 1x1.
-  if (!minimum_size_.IsEmpty() && !min_size.IsEmpty()) {
+  if (!requested_minimum_size_.IsEmpty() && !min_size.IsEmpty()) {
     size.SetToMax(min_size);
   }
   if (!max_size.IsEmpty()) {
@@ -1097,7 +1097,8 @@ void ShellSurface::Configure(bool ends_drag) {
 bool ShellSurface::GetCanResizeFromSizeConstraints() const {
   // Both the default min and max sizes are empty and windows must be resizable
   // in that case.
-  return (minimum_size_.IsEmpty() || minimum_size_ != maximum_size_);
+  return (requested_minimum_size_.IsEmpty() ||
+          requested_minimum_size_ != requested_maximum_size_);
 }
 
 bool ShellSurface::AttemptToStartDrag(int component) {

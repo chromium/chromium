@@ -22,7 +22,7 @@ std::string AlgorithmName(MeasurementAlgorithm algorithm) {
     case MeasurementAlgorithm::kSum:
       return "Sum";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

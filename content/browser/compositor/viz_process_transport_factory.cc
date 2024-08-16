@@ -127,6 +127,12 @@ class HostDisplayClient : public viz::HostDisplayClient {
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetPreferredRefreshRate(float refresh_rate) override {
+    NOTIMPLEMENTED();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
  private:
   [[maybe_unused]] const raw_ptr<ui::Compositor> compositor_;
 };
@@ -415,9 +421,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     root_params->disable_frame_rate_limit = true;
 
 #if BUILDFLAG(IS_WIN)
-  root_params->set_present_duration_allowed =
-      features::ShouldUseSetPresentDuration();
-
   const bool using_direct_composition = GpuDataManagerImpl::GetInstance()
                                             ->GetGPUInfo()
                                             .overlay_info.direct_composition;
@@ -489,26 +492,22 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   DCHECK(!is_gpu_compositing_disabled_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!gpu_channel_host) {
+  if (!gpu_channel_host && base::FeatureList::IsEnabled(
+                               features::kShutdownForFailedChannelCreation)) {
     // If passed in `gpu_channel_host` is null, the previous EstablishGpuChannel
     // have failed. It means the gpu process have died but the browser UI thread
     // have not received child process disconnect signal. Manually remove it
     // before EstablishGpuChannel again. More in crbug.com/322909915.
-    // TODO(crbug.com/322909915): Observe `GPU.EstablishGpuChannelSyncRetry`
-    // metrics, and consider extending this behavior to other platforms.
     auto* gpu_process_host = GpuProcessHost::Get();
     if (gpu_process_host) {
       gpu_process_host->GpuProcessHost::ForceShutdown();
     }
 
-    // If it fails with the new gpu process, we return kFatalFailure.
     gpu_channel_host =
         gpu_channel_establish_factory_->EstablishGpuChannelSync();
     UMA_HISTOGRAM_BOOLEAN("GPU.EstablishGpuChannelSyncRetry",
                           !!gpu_channel_host);
   }
-#endif
 
   if (!gpu_channel_host) {
     // Fallback to software compositing if there is no IPC channel.

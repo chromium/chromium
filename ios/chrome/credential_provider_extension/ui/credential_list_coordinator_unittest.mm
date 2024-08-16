@@ -26,6 +26,7 @@ NSData* StringToData(std::string str) {
 
 ArchivableCredential* TestPasswordCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:nil
+                                                  gaia:nil
                                               password:@"qwerty123"
                                                   rank:1
                                       recordIdentifier:@"recordIdentifier"
@@ -38,6 +39,7 @@ ArchivableCredential* TestPasswordCredential() {
 ArchivableCredential* TestPasskeyCredential() {
   return
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"

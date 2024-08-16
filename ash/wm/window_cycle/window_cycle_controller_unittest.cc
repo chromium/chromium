@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 
 #include <algorithm>
@@ -65,6 +70,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -403,7 +409,8 @@ TEST_F(WindowCycleControllerTest, HandleCycleWindow) {
       Shell::GetPrimaryRootWindow(), kShellWindowId_SystemModalContainer);
   std::unique_ptr<Window> modal_window(
       CreateTestWindowWithId(-2, modal_container));
-  modal_window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  modal_window->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kSystem);
   wm::ActivateWindow(modal_window.get());
   EXPECT_TRUE(wm::IsActiveWindow(modal_window.get()));
   controller->HandleCycleWindow(

@@ -33,6 +33,7 @@ export class GestureHandler {
   private mouseController_: MouseController;
   private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
+  private toggleInfoListener_: (enabled: boolean) => void;
   // The most recently detected gestures. We track this to know when a gesture
   // has ended.
   private previousGestures_: FacialGesture[] = [];
@@ -42,17 +43,24 @@ export class GestureHandler {
   constructor(mouseController: MouseController) {
     this.mouseController_ = mouseController;
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
+    this.toggleInfoListener_ = enabled =>
+        GestureDetector.toggleSendGestureDetectionInfo(enabled);
   }
 
   start(): void {
     this.paused_ = false;
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
+
+    chrome.accessibilityPrivate.onToggleGestureInfoForSettings.addListener(
+        this.toggleInfoListener_);
   }
 
   stop(): void {
     this.paused_ = false;
     chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
+    chrome.accessibilityPrivate.onToggleGestureInfoForSettings.removeListener(
+        this.toggleInfoListener_);
     this.previousGestures_ = [];
     this.gestureLastRecognized_.clear();
     // Executing these macros clears their state, so that we aren't left in a

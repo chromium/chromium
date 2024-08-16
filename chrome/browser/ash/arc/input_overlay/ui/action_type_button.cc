@@ -144,12 +144,6 @@ void ActionTypeButton::OnThemeChanged() {
   RefreshColors();
 }
 
-void ActionTypeButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  ash::OptionButtonBase::GetAccessibleNodeData(node_data);
-  node_data->SetCheckedState(selected() ? ax::mojom::CheckedState::kTrue
-                                        : ax::mojom::CheckedState::kFalse);
-}
-
 bool ActionTypeButton::OnKeyPressed(const ui::KeyEvent& event) {
   if (auto* button_group = views::AsViewClass<ActionTypeButtonGroup>(parent());
       button_group && selected()) {

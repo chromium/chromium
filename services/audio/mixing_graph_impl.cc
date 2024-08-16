@@ -32,7 +32,7 @@ void SanitizeOutput(media::AudioBus* bus) {
     float* data = bus->channel(channel);
     for (int frame = 0; frame < bus->frames(); frame++) {
       float value = data[frame];
-      if (LIKELY(value * value <= 1.0f)) {
+      if (value * value <= 1.0f) [[likely]] {
         continue;
       }
       // The sample is out of range. Negative values are clamped to -1. Positive

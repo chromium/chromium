@@ -38,8 +38,8 @@ static_library("arc") {
     "arc_fast_app_reinstall_starter.h",
     "arc_package_install_priority_handler.cc",
     "arc_package_install_priority_handler.h",
-    "arc_package_sync_model_type_controller.cc",
-    "arc_package_sync_model_type_controller.h",
+    "arc_package_sync_data_type_controller.cc",
+    "arc_package_sync_data_type_controller.h",
     "arc_package_syncable_service.cc",
     "arc_package_syncable_service.h",
     "arc_package_syncable_service_factory.cc",
@@ -121,8 +121,6 @@ source_set("unit_tests") {
     "arc_package_install_priority_handler_unittest.cc",
     "arc_vpn_provider_unittest.cc",
     "intent_unittest.cc",
-    "mock_arc_app_list_prefs_observer.cc",
-    "mock_arc_app_list_prefs_observer.h",
   ]
 
   deps = [
@@ -145,7 +143,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/test:test_support",
@@ -207,6 +204,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
@@ -248,6 +246,7 @@ static_library("test_support") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/concierge",
     "//components/arc",

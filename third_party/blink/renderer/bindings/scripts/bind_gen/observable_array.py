@@ -227,6 +227,7 @@ def make_handler_template_function(cg_context):
           "${per_isolate_data}->FindV8Template(${world}, template_key);"),
         CxxLikelyIfNode(
             cond="!v8_template.IsEmpty()",
+            attribute=None,
             body=T("return v8_template.As<v8::FunctionTemplate>();")),
         EmptyNode(),
         T("v8::Local<v8::FunctionTemplate> constructor_template = "

@@ -42,11 +42,11 @@ SyncFeatureStatusForMigrationsRecorder::SyncFeatureStatusForMigrationsRecorder(
   base::UmaHistogramEnumeration("Sync.FeatureStatusForSyncToSigninMigration",
                                 old_status);
   if (old_status == SyncFeatureStatusForSyncToSigninMigration::kActive) {
-    for (ModelType type : ProtocolTypes()) {
-      bool type_status = prefs->GetBoolean(GetModelTypeStatusPrefName(type));
+    for (DataType type : ProtocolTypes()) {
+      bool type_status = prefs->GetBoolean(GetDataTypeStatusPrefName(type));
       base::UmaHistogramBoolean(
           base::StrCat({"Sync.DataTypeActiveForSyncToSigninMigration.",
-                        ModelTypeToHistogramSuffix(type)}),
+                        DataTypeToHistogramSuffix(type)}),
           type_status);
     }
   }
@@ -70,8 +70,8 @@ void SyncFeatureStatusForMigrationsRecorder::RegisterProfilePrefs(
       prefs::internal::kSyncFeatureStatusForSyncToSigninMigration,
       static_cast<int>(SyncFeatureStatusForSyncToSigninMigration::kUndefined));
 
-  for (ModelType type : ProtocolTypes()) {
-    registry->RegisterBooleanPref(GetModelTypeStatusPrefName(type), false);
+  for (DataType type : ProtocolTypes()) {
+    registry->RegisterBooleanPref(GetDataTypeStatusPrefName(type), false);
   }
 }
 
@@ -86,8 +86,8 @@ SyncFeatureStatusForMigrationsRecorder::
 // static
 bool SyncFeatureStatusForMigrationsRecorder::
     GetSyncDataTypeActiveForSyncToSigninMigration(const PrefService* prefs,
-                                                  ModelType type) {
-  return prefs->GetBoolean(GetModelTypeStatusPrefName(type));
+                                                  DataType type) {
+  return prefs->GetBoolean(GetDataTypeStatusPrefName(type));
 }
 
 void SyncFeatureStatusForMigrationsRecorder::OnStateChanged(SyncService* sync) {
@@ -102,9 +102,9 @@ void SyncFeatureStatusForMigrationsRecorder::OnStateChanged(SyncService* sync) {
   // feature is active) and persist to prefs.
   bool feature_is_active =
       (status == SyncFeatureStatusForSyncToSigninMigration::kActive);
-  ModelTypeSet active_types = sync->GetActiveDataTypes();
-  for (ModelType type : ProtocolTypes()) {
-    prefs_->SetBoolean(GetModelTypeStatusPrefName(type),
+  DataTypeSet active_types = sync->GetActiveDataTypes();
+  for (DataType type : ProtocolTypes()) {
+    prefs_->SetBoolean(GetDataTypeStatusPrefName(type),
                        feature_is_active && active_types.Has(type));
   }
 }
@@ -114,11 +114,11 @@ void SyncFeatureStatusForMigrationsRecorder::OnSyncShutdown(SyncService* sync) {
 }
 
 // static
-std::string SyncFeatureStatusForMigrationsRecorder::GetModelTypeStatusPrefName(
-    ModelType type) {
+std::string SyncFeatureStatusForMigrationsRecorder::GetDataTypeStatusPrefName(
+    DataType type) {
   return base::StrCat(
       {prefs::internal::kSyncDataTypeStatusForSyncToSigninMigrationPrefix, ".",
-       GetModelTypeLowerCaseRootTag(type)});
+       GetDataTypeLowerCaseRootTag(type)});
 }
 
 SyncFeatureStatusForSyncToSigninMigration
@@ -141,7 +141,7 @@ SyncFeatureStatusForMigrationsRecorder::DetermineSyncFeatureStatus(
       return SyncFeatureStatusForSyncToSigninMigration::kActive;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace syncer

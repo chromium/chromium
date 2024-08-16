@@ -314,13 +314,18 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   // Return the amount of clearance that we have to add after the fragment. This
   // is used for BR clear elements.
   std::optional<LayoutUnit> ClearanceAfterLine() const {
-    return UNLIKELY(rare_data_) ? rare_data_->ClearanceAfterLine()
-                                : std::nullopt;
+    if (rare_data_) [[unlikely]] {
+      return rare_data_->ClearanceAfterLine();
+    }
+    return std::nullopt;
   }
 
   // Return the amount to trim the block size by the `text-box-trim` property.
   std::optional<LayoutUnit> TrimBlockEndBy() const {
-    return UNLIKELY(rare_data_) ? rare_data_->TrimBlockEndBy() : std::nullopt;
+    if (rare_data_) [[unlikely]] {
+      return rare_data_->TrimBlockEndBy();
+    }
+    return std::nullopt;
   }
 
   std::optional<LayoutUnit> MinimalSpaceShortage() const {
@@ -830,14 +835,16 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       return data ? data->line_data.get() : nullptr;
     }
     LineSmallData* EnsureLineSmallData() {
-      return UNLIKELY(HasData(kLineData))
-                 ? EnsureLineData()
-                 : EnsureData(&line_small_data, kLineSmallData);
+      if (HasData(kLineData)) [[unlikely]] {
+        return EnsureLineData();
+      }
+      return EnsureData(&line_small_data, kLineSmallData);
     }
     const LineSmallData* GetLineSmallData() const {
-      return UNLIKELY(HasData(kLineData))
-                 ? GetLineData()
-                 : GetData(&line_small_data, kLineSmallData);
+      if (HasData(kLineData)) [[unlikely]] {
+        return GetLineData();
+      }
+      return GetData(&line_small_data, kLineSmallData);
     }
     MathData* EnsureMathData() {
       return EnsureData<MathData>(&math_data, kMathData);

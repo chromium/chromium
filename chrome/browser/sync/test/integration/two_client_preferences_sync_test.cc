@@ -59,13 +59,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   }
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
   // Client 0 may or may not see its own reflection during the test, but at
   // least client 1 should have received one update.
   EXPECT_NE(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteNonInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteNonInitialUpdate));
 
   EXPECT_NE(
       0U, histogram_tester

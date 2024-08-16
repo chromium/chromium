@@ -25,7 +25,7 @@ EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::ToMojom(
     case gl::kGLImplementationEGLANGLE:
       return gl::mojom::GLImplementation::kGLImplementationEGLANGLE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -52,7 +52,7 @@ bool EnumTraits<gl::mojom::GLImplementation, gl::GLImplementation>::FromMojom(
       *out = gl::kGLImplementationEGLANGLE;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -81,7 +81,7 @@ EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::ToMojom(
     case gl::ANGLEImplementation::kDefault:
       return gl::mojom::ANGLEImplementation::kDefault;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -120,7 +120,7 @@ bool EnumTraits<gl::mojom::ANGLEImplementation, gl::ANGLEImplementation>::
       *out = gl::ANGLEImplementation::kDefault;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

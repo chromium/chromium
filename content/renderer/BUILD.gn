@@ -407,10 +407,7 @@ target(link_target_type, "renderer") {
         deps += [ "//chromecast/media/audio:audio_renderer" ]
       }
 
-      deps += [
-        "//media/remoting:remoting_constants",
-        "//media/remoting:remoting_renderer",
-      ]
+      deps += [ "//media/remoting:remoting_renderer" ]
     }
   }
 

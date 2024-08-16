@@ -107,6 +107,8 @@ suite('<settings-nearby-share-subpage>', () => {
   /**
    * Sets up Quick Share v2 tests which require the QuickShareV2 flag to be
    * enabled on page load.
+   * - Quick Share is on by default
+   * - Visibility is set to Your devices
    */
   async function setupQuickShareV2() {
     subpage.remove();
@@ -160,6 +162,38 @@ suite('<settings-nearby-share-subpage>', () => {
     assertEquals(isDisabled, editDeviceNameButton.hasAttribute('disabled'));
     assertEquals(isDisabled, editVisibilityButton.hasAttribute('disabled'));
     assertEquals(isDisabled, editDataUsageButton.hasAttribute('disabled'));
+  }
+
+  function getDeviceVisibleToggle(): CrToggleElement {
+    const deviceVisibleToggle =
+        subpage.shadowRoot!.querySelector<CrToggleElement>(
+            '#visibilityBoxTitle cr-toggle');
+    assertTrue(!!deviceVisibleToggle);
+    return deviceVisibleToggle;
+  }
+
+  function getYourDevicesButton(): CrRadioButtonElement {
+    const yourDevicesButton =
+        subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#yourDevicesVisibility');
+    assertTrue(!!yourDevicesButton);
+    return yourDevicesButton;
+  }
+
+  function getContactsButton(): CrRadioButtonElement {
+    const contactsButton =
+        subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#contactsVisibility');
+    assertTrue(!!contactsButton);
+    return contactsButton;
+  }
+
+  function getEveryoneButton(): CrRadioButtonElement {
+    const everyoneButton =
+        subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#everyoneVisibility');
+    assertTrue(!!everyoneButton);
+    return everyoneButton;
   }
 
   test('feature toggle button controls preference', () => {
@@ -784,10 +818,7 @@ suite('<settings-nearby-share-subpage>', () => {
         await waitAfterNextRender(subpage);
         assertNotEquals(subpage.settings.visibility, Visibility.kYourDevices);
 
-        const yourDevicesButton =
-            subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
-                '#yourDevicesVisibility');
-        assertTrue(!!yourDevicesButton);
+        const yourDevicesButton = getYourDevicesButton();
         yourDevicesButton.click();
 
         await waitAfterNextRender(subpage);
@@ -802,10 +833,7 @@ suite('<settings-nearby-share-subpage>', () => {
         await waitAfterNextRender(subpage);
         assertNotEquals(subpage.settings.visibility, Visibility.kAllContacts);
 
-        const contactsButton =
-            subpage.shadowRoot!.querySelector<CrRadioButtonElement>(
-                '#contactsVisibility');
-        assertTrue(!!contactsButton);
+        const contactsButton = getContactsButton();
         contactsButton.click();
 
         await waitAfterNextRender(subpage);
@@ -828,22 +856,128 @@ suite('<settings-nearby-share-subpage>', () => {
         subpage.set('settings.visibility', Visibility.kAllContacts);
         await waitAfterNextRender(subpage);
 
-        let deviceVisibleToggle =
-            subpage.shadowRoot!.querySelector<CrToggleElement>(
-                '#visibilityBoxTitle cr-toggle');
+        let deviceVisibleToggle = getDeviceVisibleToggle();
         assertTrue(!!deviceVisibleToggle);
         deviceVisibleToggle.click();
         await waitAfterNextRender(subpage);
 
         assertEquals(subpage.settings.visibility, Visibility.kNoOne);
 
-        deviceVisibleToggle =
-            subpage.shadowRoot!.querySelector<CrToggleElement>(
-                '#visibilityBoxTitle cr-toggle');
+        deviceVisibleToggle = getDeviceVisibleToggle();
         assertTrue(!!deviceVisibleToggle);
         deviceVisibleToggle.click();
         await waitAfterNextRender(subpage);
 
+        const contactsButton = getContactsButton();
+        assertTrue(contactsButton.checked);
         assertEquals(subpage.settings.visibility, Visibility.kAllContacts);
+      });
+
+  test(
+      'QuickShareV2: Everyone visibility set when high visibility enabled',
+      async () => {
+        setupQuickShareV2();
+        fakeReceiveManager.setInHighVisibilityForTest(true);
+
+        const everyoneButton = getEveryoneButton();
+        assertTrue(everyoneButton.checked);
+      });
+
+  test(
+      'QuickShareV2: High visibility enabled on select Everyone button',
+      async () => {
+        setupQuickShareV2();
+        fakeReceiveManager.setInHighVisibilityForTest(false);
+
+        const everyoneButton = getEveryoneButton();
+        everyoneButton.click();
+
+        assertTrue(
+            await fakeReceiveManager.isInHighVisibility().then((result) => {
+              return result.inHighVisibility;
+            }));
+      });
+
+  test(
+      'QuickShareV2: High visibility disabled on select visibility button from Everyone visibility',
+      async () => {
+        setupQuickShareV2();
+        fakeReceiveManager.setInHighVisibilityForTest(true);
+
+        const everyoneButton = getEveryoneButton();
+        assertTrue(everyoneButton.checked);
+
+        const yourDevicesButton = getYourDevicesButton();
+        yourDevicesButton.click();
+
+        assertFalse(
+            await fakeReceiveManager.isInHighVisibility().then((result) => {
+              return result.inHighVisibility;
+            }));
+
+        test(
+            'QuickShareV2: Former visibility restored on Everyone button selected and failure to register receive surface',
+            async () => {
+              setupQuickShareV2();
+              fakeReceiveManager.setNextResultForTest(false);
+
+              const everyoneButton = getEveryoneButton();
+              everyoneButton.click();
+
+              assertFalse(everyoneButton.checked);
+              const yourDevicesButton = getYourDevicesButton();
+              assertTrue(yourDevicesButton.checked);
+            });
+
+        test(
+            'QuickShareV2: Everyone visibility restored on Your devices button selected and failure to de-register receive surface',
+            async () => {
+              setupQuickShareV2();
+              const everyoneButton = getEveryoneButton();
+              everyoneButton.click();
+
+              fakeReceiveManager.setNextResultForTest(false);
+              const yourDevicesButton = getYourDevicesButton();
+              yourDevicesButton.click();
+
+              assertFalse(yourDevicesButton.checked);
+              assertTrue(everyoneButton.checked);
+            });
+
+        test(
+            'QuickShareV2: Your devices visibility enabled on Quick Share enabled, Everyone button previously selected and failure to register receive surface',
+            async () => {
+              setupQuickShareV2();
+              fakeReceiveManager.setInHighVisibilityForTest(true);
+              const deviceVisibleToggle = getDeviceVisibleToggle();
+              deviceVisibleToggle.click();
+              assertFalse(await fakeReceiveManager.isInHighVisibility().then(
+                  (result) => {
+                    return result.inHighVisibility;
+                  }));
+
+              fakeReceiveManager.setNextResultForTest(false);
+              deviceVisibleToggle.click();
+              const everyoneButton = getEveryoneButton();
+              assertFalse(everyoneButton.checked);
+              const yourDevicesButton = getYourDevicesButton();
+              assertTrue(yourDevicesButton.checked);
+            });
+
+        test(
+            'QuickShareV2: Everyone visibility restored on Quick Share disabled and failure to de-register receive surface',
+            async () => {
+              setupQuickShareV2();
+              fakeReceiveManager.setInHighVisibilityForTest(true);
+              fakeReceiveManager.setNextResultForTest(false);
+              const deviceVisibileToggle = getDeviceVisibleToggle();
+              deviceVisibileToggle.click();
+              const everyoneButton = getEveryoneButton();
+              assertTrue(everyoneButton.checked);
+              assertTrue(await fakeReceiveManager.isInHighVisibility().then(
+                  (result) => {
+                    return result.inHighVisibility;
+                  }));
+            });
       });
 });

@@ -16,13 +16,19 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  mojo_files_deps =
-      [ "//chrome/browser/ui/webui/data_sharing:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/data_sharing/data_sharing.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/data_sharing:mojo_bindings_ts__generator",
+    "//components/data_sharing/public/protocol:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/data_sharing/data_sharing.mojom-webui.ts",
+    "$root_gen_dir/components/data_sharing/public/protocol/group_data.mojom-webui.ts",
+  ]
 
   static_files = [
     "data_sharing.html",
     "data_sharing_api.html",
+    "data_sharing_dev.css",
   ]
 
   non_web_component_files = [

@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">協助改善 Chrome 的功能和效能</translation>
 <translation id="1333745675627230582">暢玩 Chrome 恐龍遊戲</translation>
 <translation id="1352919863522755794">「Google 密碼管理工具」無法檢查您的密碼。請檢查互聯網連線。</translation>
+<translation id="1380565463006545725">發揮「Chrome 購物」功能的威力</translation>
 <translation id="139623527619433858">預設使用 iPad 版 Chrome</translation>
 <translation id="1407843355326180937">登入此網站和 Chrome，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="1436059927646026729">在 Chrome 中開啟「我的最新分頁」</translation>
@@ -35,6 +36,7 @@
 <translation id="1554731936187952550">Chrome 最強大的安全功能可協助防範有害網站</translation>
 <translation id="1615715390546812898">在 Chrome 中使用語音搜尋。</translation>
 <translation id="1657395063736185342">在 Chrome 中搜尋影像內容</translation>
+<translation id="1670609221633730681">Chrome 提示：選擇網址列位置</translation>
 <translation id="1675955119303651351">部分 Chrome 資料尚未儲存至 Google 帳戶。
         請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="1682483655351012182">同步處理 Chromium 資料</translation>
@@ -113,12 +115,14 @@
 <translation id="3984746313391923992">您的機構要求您保持登出 Chrome。</translation>
 <translation id="3988789688219830639">Google Chrome 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="4064699917955374540">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請驗證身分。</translation>
+<translation id="4066411101507716142">從 iPad 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="4067858366537947361">開啟 Chrome 無痕式分頁</translation>
 <translation id="4093042601582616698">要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="417201473131094001">Chrome Canary 上不支援此功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4251174643044751591">使用 Chrome 開啟「付款方法設定」頁面。</translation>
 <translation id="4286914711740227883">刪除 Chrome 中的瀏覽資料</translation>
+<translation id="430839890088895017">Chrome 提示：將 Chrome 移至 Dock</translation>
 <translation id="4453284704333523777">管理 Chrome 設定</translation>
 <translation id="4523886039239821078">部份外掛程式造成 Chrome 當機。請解除安裝以下程式：</translation>
 <translation id="4633328489441962921">Chrome 無法檢查更新</translation>
@@ -182,6 +186,7 @@
 <translation id="6272822675004864999">如要接收 Chrome 通知，請在 iOS 設定開啟通知功能。</translation>
 <translation id="630693926528731525">系統沒有分享你的密碼。請檢查互聯網連線，並確保你已登入 Chrome，然後再試一次。</translation>
 <translation id="6348855835728304880">此裝置的其他應用程式亦可使用儲存在 Chrome 中的密碼和其他資料。</translation>
+<translation id="6373751563207403289">「安全檢查」能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。你可以在 Chrome 偵測到任何私隱或安全問題時接收快訊。</translation>
 <translation id="6374691158439235563">完成 Chrome 設定</translation>
 <translation id="6389317667633680932">瞭解新功能，充分發揮 Chrome 的效用。</translation>
 <translation id="6412673304250309937">使用儲存在 Chrome 中的不安全網站清單來檢查網址。如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chrome 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能。</translation>
@@ -234,8 +239,10 @@
 <translation id="746684838091935575">3. 選取 [Chrome]</translation>
 <translation id="7492574581995589075">你的機構已關閉在 Google 帳戶中使用及儲存 Chrome 資料的功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
 <translation id="7581063337314642333">在 Chrome 中瀏覽分頁網格</translation>
+<translation id="7642373780953416937">在 Chrome 自動偵測到任何私隱或安全問題時接收快訊。</translation>
 <translation id="7662994914830945754">如要在任何使用 Chrome 的裝置上查看分頁，請登入並開啟同步功能</translation>
 <translation id="7669869107155339016">前往 Chrome 設定。</translation>
+<translation id="7683540977001394271">從 iPhone 主畫面 Dock 更快存取 Chrome。</translation>
 <translation id="769104993356536261">在 iOS 上使用「Chrome 操作」</translation>
 <translation id="7693590760643069321">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
@@ -249,6 +256,7 @@
 <translation id="8006014511203279255">隨時使用 Chrome 開啟訊息或其他應用程式中的連結。</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
+<translation id="804756029368067824">將 Chrome 設為預設瀏覽器，輕鬆追蹤價格及取得心水物品的價格分析。</translation>
 <translation id="8065292699993359127">在 Chrome 中以無痕模式開啟網址</translation>
 <translation id="8069507567842347179">你已使用 Chrome 追蹤此包裹。</translation>
 <translation id="8136856065410661948">系統會透過此操作，在 Chrome 和「Google 智能鏡頭」的「Apple 日曆」中建立活動。</translation>
@@ -276,6 +284,7 @@
   2. 輕按 [預設瀏覽器應用程式]
   3. 選取 [Chrome]。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">在 Chrome 偵測到任何私隱或安全問題時接收快訊。</translation>
 <translation id="8558480467877843976">您現在隨時可使用 Chrome 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="8603022514504485810">「Google 密碼管理工具」無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>
 <translation id="8727043961453758442">充分運用 Chrome 的功能</translation>

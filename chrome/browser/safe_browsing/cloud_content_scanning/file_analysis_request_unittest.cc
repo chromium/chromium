@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -18,7 +19,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
@@ -277,7 +278,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesDigest) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request = MakeRequest(file_path, file_path.BaseName(),
                              /*delay_opening_file*/ false);
@@ -302,7 +303,7 @@ TEST_F(FileAnalysisRequestTest, PopulatesFilename) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request = MakeRequest(file_path, file_path.BaseName(),
                              /*delay_opening_file*/ false);
@@ -386,7 +387,7 @@ TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   auto request =
       MakeRequest(file_path, file_path.BaseName(), /*delay_opening_file*/ true);

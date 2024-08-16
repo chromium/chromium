@@ -59,6 +59,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
       const PickerSearchResult& result,
       PickerPreviewBubbleController* preview_controller,
       PickerAssetFetcher* asset_fetcher,
+      int available_width,
       SelectResultCallback select_result_callback);
 
   void AddTitleLabel(const std::u16string& title_text);

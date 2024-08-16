@@ -372,12 +372,8 @@
   base::WeakPtr<ContextualPanelItemConfiguration> config =
       contextualPanelTabHelper->GetFirstCachedConfig();
 
-  if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
-    return;
-  }
-
   // Show the large entrypoint instead if the IPH can't be shown.
-  if (!_engagementTracker->WouldTriggerHelpUI(*config->iph_feature)) {
+  if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
     [self setupAndTransitionToLargeEntrypoint];
     return;
   }
@@ -393,6 +389,8 @@
     [self setupAndTransitionToLargeEntrypoint];
     return;
   }
+
+  [self.consumer setEntrypointColored:YES];
 
   std::optional<ContextualPanelTabHelper::EntrypointMetricsData>& metricsData =
       [self metricsData];
@@ -450,6 +448,7 @@
 
 - (void)dismissEntrypointIPHAnimated:(BOOL)animated {
   [_entrypointHelpHandler dismissContextualPanelEntrypointIPHAnimated:animated];
+  [self.consumer setEntrypointColored:NO];
 }
 
 - (BOOL)canShowLargeEntrypointWithConfig:
@@ -461,7 +460,8 @@
 - (BOOL)canShowEntrypointIPHWithConfig:
     (base::WeakPtr<ContextualPanelItemConfiguration>)config {
   return [self canShowLoudEntrypointMoment] && config &&
-         config->CanShowEntrypointIPH();
+         config->CanShowEntrypointIPH() &&
+         _engagementTracker->WouldTriggerHelpUI(*config->iph_feature);
 }
 
 - (BOOL)canShowLoudEntrypointMoment {

@@ -78,7 +78,7 @@ bool CanvasResourceHost::IsComposited() const {
     return false;
   }
 
-  if (UNLIKELY(!resource_provider_)) {
+  if (!resource_provider_) [[unlikely]] {
     return false;
   }
 
@@ -159,7 +159,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
   if (!IsComposited()) {
     return nullptr;
   }
-  if (UNLIKELY(!cc_layer_)) {
+  if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::CreateForMailbox(this);
     cc_layer_->SetIsDrawable(true);
     cc_layer_->SetHitTestable(true);

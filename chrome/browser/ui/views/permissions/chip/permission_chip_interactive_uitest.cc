@@ -322,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_TRUE(GetChip()->GetText() ==
               l10n_util::GetStringUTF16(
                   IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            PermissionChipTheme::kNormalVisibility);
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kNormalVisibility);
 
   // Check collapse timer is running and fast forward fire callback. Then,
   // fast forward animation to trigger callback and wait until it completes.
@@ -350,8 +349,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
   EXPECT_EQ(GetChip()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION));
-  EXPECT_EQ(GetChip()->get_theme_for_testing(),
-            PermissionChipTheme::kLowVisibility);
+  EXPECT_EQ(GetChip()->theme(), PermissionChipTheme::kLowVisibility);
 }
 
 IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,

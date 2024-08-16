@@ -15,6 +15,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -33,7 +34,7 @@ WebauthnDialogView::WebauthnDialogView(WebauthnDialogController* controller,
       AddChildView(CreateSheetViewForAutofillWebAuthn(std::move(model)));
   sheet_view_->ReInitChildViews();
 
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -79,7 +80,7 @@ void WebauthnDialogView::OnDialogStateChanged() {
       break;
     case WebauthnDialogState::kUnknown:
     case WebauthnDialogState::kOffer:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

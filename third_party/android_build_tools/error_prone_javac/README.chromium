@@ -1,0 +1,14 @@
+Name: Error Prone Javac
+Short Name: Error Prone Javac
+Version: 9+181-r4173-1
+License: GPLv2
+License File: LICENSE
+Security Critical: No
+Shipped: no
+URL: https://github.com/google/error-prone-javac
+
+Description:
+A copy of javac's APIs to be used when writing custom Error Prone checks.
+
+Local Modifications:
+None

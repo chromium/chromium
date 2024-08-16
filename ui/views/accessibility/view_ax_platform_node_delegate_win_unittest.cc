@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -554,33 +553,6 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
   EXPECT_UIA_BOOL_EQ(textfield_provider, UIA_IsControlElementPropertyId, true);
 }
 
-TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
-  auto widget = std::make_unique<Widget>();
-  Widget::InitParams init_params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
-  widget->Init(std::move(init_params));
-
-  View* content = widget->SetContentsView(std::make_unique<View>());
-
-  Textfield* text_field = new Textfield();
-  text_field->SetReadOnly(true);
-  content->AddChildView(text_field);
-
-  ComPtr<IRawElementProviderSimple> textfield_provider =
-      GetIRawElementProviderSimple(text_field);
-  ScopedVariant actual;
-  base::HistogramTester histogram_tester;
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.WinAPIs.Views.UMA_API_GET_PROPERTY_VALUE", 0);
-
-  ASSERT_HRESULT_SUCCEEDED(textfield_provider->GetPropertyValue(
-      UIA_IsControlElementPropertyId, actual.Receive()));
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.Performance.WinAPIs.Views.UMA_API_GET_PROPERTY_VALUE", 1);
-}
-
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
@@ -707,14 +679,18 @@ TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {
 
   // These strings should NOT contain rowindex or colindex, since those
   // imply an ARIA override.
-  EXPECT_EQ(get_attributes(1, 1),
-            L"explicit-name:true;sort:none;class:AXVirtualView;");
-  EXPECT_EQ(get_attributes(1, 2),
-            L"explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(
+      get_attributes(1, 1),
+      L"name-from:attribute;explicit-name:true;sort:none;class:AXVirtualView;");
+  EXPECT_EQ(
+      get_attributes(1, 2),
+      L"name-from:attribute;explicit-name:true;sort:none;class:AXVirtualView;");
   EXPECT_EQ(get_attributes(2, 1),
-            L"hidden:true;explicit-name:true;class:AXVirtualView;");
+            L"hidden:true;name-from:attribute;explicit-name:true;class:"
+            L"AXVirtualView;");
   EXPECT_EQ(get_attributes(2, 2),
-            L"hidden:true;explicit-name:true;class:AXVirtualView;");
+            L"hidden:true;name-from:attribute;explicit-name:true;class:"
+            L"AXVirtualView;");
 }
 
 }  // namespace test

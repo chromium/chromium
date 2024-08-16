@@ -89,8 +89,9 @@ class ImageLoaderTest : public ExtensionsTest {
     std::unique_ptr<base::Value> valid_value =
         deserializer.Deserialize(&error_code, &error);
     EXPECT_EQ(0, error_code) << error;
-    if (error_code != 0)
+    if (error_code != 0) {
       return nullptr;
+    }
 
     EXPECT_TRUE(valid_value.get());
     EXPECT_TRUE(valid_value->is_dict());

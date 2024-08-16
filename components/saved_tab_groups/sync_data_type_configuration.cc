@@ -4,15 +4,15 @@
 
 #include "components/saved_tab_groups/sync_data_type_configuration.h"
 
-#include "components/sync/model/model_type_change_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 
 namespace tab_groups {
 
 SyncDataTypeConfiguration::SyncDataTypeConfiguration(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory model_type_store_factory)
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory data_type_store_factory)
     : change_processor(std::move(change_processor)),
-      model_type_store_factory(std::move(model_type_store_factory)) {}
+      data_type_store_factory(std::move(data_type_store_factory)) {}
 
 SyncDataTypeConfiguration::~SyncDataTypeConfiguration() = default;
 

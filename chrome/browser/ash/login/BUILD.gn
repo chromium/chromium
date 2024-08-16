@@ -2,17 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 
 assert(is_chromeos_ash)
 
 static_library("login") {
-  defines = []
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   sources = [
     "challenge_response_auth_keys_loader.cc",
     "challenge_response_auth_keys_loader.h",
@@ -42,6 +38,7 @@ static_library("login") {
     "login_auth_recorder.h",
     "login_client_cert_usage_observer.cc",
     "login_client_cert_usage_observer.h",
+    "login_constants.h",
     "login_pref_names.h",
     "login_screen_extensions_storage_cleaner.cc",
     "login_screen_extensions_storage_cleaner.h",
@@ -146,6 +143,7 @@ static_library("login") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/optin",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/customization",
@@ -319,14 +317,15 @@ static_library("test_support") {
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [
       "login_integration_test.cc",
       "supervised_user_login_integration_test.cc",
+    ]
+
+    sources_metadata = [
+      "login_integration_test.yaml",
+      "supervised_user_login_integration_test.yaml",
     ]
 
     deps = [
@@ -403,7 +402,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps",
     "//chrome/browser/apps/app_discovery_service/recommended_arc_apps:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_mode:test_support",
     "//chrome/browser/ash/arc",
@@ -470,6 +468,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/geolocation",
     "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/language_preferences",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
@@ -549,7 +548,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/login/demo_mode",

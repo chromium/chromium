@@ -257,6 +257,10 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
 
   void OnQuicBroken() override {}
 
+  void OnSwitchesToHttpStreamPool(
+      HttpStreamKey stream_key,
+      quic::ParsedQuicVersion quic_version) override {}
+
  private:
   raw_ptr<base::RunLoop> loop_;
 };

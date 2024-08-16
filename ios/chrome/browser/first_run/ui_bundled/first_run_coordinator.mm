@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/screen/screen_provider.h"
 #import "ios/chrome/browser/ui/screen/screen_type.h"
@@ -141,11 +140,6 @@
           initForFirstRunWithBaseNavigationController:self.navigationController
                                               browser:self.browser
                                      firstRunDelegate:self];
-    case kOmniboxPosition:
-      return [[OmniboxPositionChoiceCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
-                                  delegate:self];
     case kDockingPromo:
       return [[DockingPromoCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

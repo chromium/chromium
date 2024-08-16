@@ -13,16 +13,18 @@
   padding: 0 8px;
 }
 
-.row {
+.row,
+.divider {
   background-color: var(--color-new-tab-page-module-item-background);
   box-sizing: border-box;
   display: block;
   width: 100%;
 }
 
-ntp-calendar-event:first-of-type,
-.row[double-booked] + .row,
-.row[expanded] + .row {
+.row:first-child,
+.row[expanded] + .row:not([double-booked]),
+.row[double-booked] + .row:not([double-booked]),
+.row[expanded] {
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
   margin-top: 8px;
@@ -30,7 +32,8 @@ ntp-calendar-event:first-of-type,
 }
 
 .row:last-child,
-.row:has(+ .row[double-booked]),
+.row[double-booked]:has(+ .row:not([double-booked])),
+.row[expanded]:has(+ .row),
 .row:has(+ .row[expanded]) {
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
@@ -38,11 +41,23 @@ ntp-calendar-event:first-of-type,
   padding-bottom: var(--calendar-event-group-gutter-size);
 }
 
-.row[double-booked],
 .row[expanded] {
-  border-radius: 12px;
-  margin: 8px 0;
-  padding: var(--calendar-event-group-gutter-size) 0;
+  padding-bottom: var(--calendar-event-group-gutter-size);
+}
+
+.divider + .row[double-booked] {
+  padding-top: var(--calendar-event-group-gutter-size);
+}
+
+.divider {
+  padding: 0 16px;
+}
+
+hr {
+  background: var(--color-side-panel-divider);
+  border: none;
+  height: 1px;
+  margin: 0;
 }
 
 #seeMore a {

@@ -95,7 +95,7 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path,
   DCHECK(!cdm_base_path.empty());
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED_NORETURN() << "Lacros should not be updating the hint file.";
+  NOTREACHED() << "Lacros should not be updating the hint file.";
 #else
   base::FilePath hint_file_path;
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,

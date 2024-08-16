@@ -165,6 +165,10 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            TwoWatchAdvertisementsReqFail);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            SecWatchAdvertisementsReqAfterFirstSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTestWithBaseAdapter,
+                           EmulatedAdapterRemovalRestoresOriginalAdapter);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           ServiceDestroyedDuringAdapterAcquisition);
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
@@ -175,6 +179,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   friend class FrameConnectedBluetoothDevicesTest;
   friend class WebBluetoothServiceImplTest;
+  friend class WebBluetoothServiceImplTestWithBaseAdapter;
+
   using PrimaryServicesRequestCallback =
       base::OnceCallback<void(device::BluetoothDevice*)>;
   using ScanFilters = std::vector<blink::mojom::WebBluetoothLeScanFilterPtr>;

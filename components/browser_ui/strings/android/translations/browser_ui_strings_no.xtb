@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Avvis, og vis neste tilgjengelige handling</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
+<translation id="3779154269823594982">Endre passordene</translation>
 <translation id="3797520601150691162">Ikke bruk mørkt tema for et bestemt nettsted</translation>
 <translation id="3803367742635802571">Nettsteder du besøker, kan slutte å fungere som de skal</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
 <translation id="789180354981963912">Blokker informasjonskapsler fra tredjeparter i Inkognito:</translation>
 <translation id="7940722705963108451">Minn meg på det senere</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="FPS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="FPS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="FPS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
 <translation id="7986741934819883144">Velg en kontakt</translation>
 <translation id="7990211076305263060">Når dette er på, kan nettsteder be om å få bruke mikrofonen din. Når dette er av, kan ikke nettsteder bruke mikrofonen din.</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Blokkér at nettsteder kobler til enheter</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
 <translation id="8541410041357371550">Dette nettstedet henter annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Informasjonskapsler er tillatt for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-nettsted}other{Informasjonskapsler er tillatt for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />-nettsteder}}</translation>
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8617611086246832542">Når dette er på, vises datamaskinvisningen av nettsteder. Når dette er av, vises mobilvisningen av nettsteder.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Administrert av foreldrene dine</translation>
 <translation id="9039697262778250930">Du kan være logget av disse nettstedene</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Dette nettstedet er med i en gruppe som kan se aktiviteten din. Gruppen er definert av <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vil du slette informasjonskapslene?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til}}</translation>
 <translation id="913657688200966289">Slå på tillatelser for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>

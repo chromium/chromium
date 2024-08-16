@@ -51,8 +51,6 @@ source_set("backend") {
     "android_backend_with_double_deletion.h",
     "built_in_backend_to_android_backend_migrator.cc",
     "built_in_backend_to_android_backend_migrator.h",
-    "legacy_password_store_backend_migration_decorator.cc",
-    "legacy_password_store_backend_migration_decorator.h",
     "password_manager_lifecycle_helper.cc",
     "password_manager_lifecycle_helper.h",
     "password_manager_lifecycle_helper_impl.cc",
@@ -137,6 +135,7 @@ android_library("java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/notifications/android:java",
     "//components/browser_ui/settings/android:java",
@@ -147,6 +146,7 @@ android_library("java") {
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
+    "//components/strings:components_strings_grd",
     "//components/sync/android:sync_java",
     "//components/sync/protocol:protocol_java",
     "//components/user_prefs/android:java",
@@ -187,11 +187,22 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/ExportErrorDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/ExportFlow.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/ExportFlowInterface.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/ExportWarningDialogFragment.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/NonCancelableProgressBar.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordListObserver.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandler.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordManagerHandlerProvider.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragment.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordsPreference.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/ProgressBarDialogFragment.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/SavedPasswordEntry.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/SingleThreadBarrierClosure.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/TimedCallbackDelayer.java",
   ]
@@ -215,6 +226,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
   ]
 }
 
@@ -230,6 +242,7 @@ robolectric_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessLossExportDialogFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakeCredentialManagerLauncherTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/FakePasswordManagerBackendSupportHelperTest.java",
@@ -284,6 +297,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/test/android:test_support_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
@@ -296,6 +310,7 @@ robolectric_binary("password_manager_junit_tests") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
@@ -312,6 +327,8 @@ android_resources("java_resources") {
     "java/res/drawable/ic_key_error.xml",
     "java/res/drawable/ic_vpn_key_blue.xml",
     "java/res/layout/confirmation_dialog_view.xml",
+    "java/res/layout/password_access_loss_export_dialog_view.xml",
+    "java/res/layout/passwords_error_dialog.xml",
     "java/res/layout/passwords_progress_dialog.xml",
   ]
   deps = [
@@ -526,7 +543,6 @@ source_set("unit_tests") {
     "fake_password_manager_lifecycle_helper.cc",
     "fake_password_manager_lifecycle_helper.h",
     "generated_password_saved_message_delegate_unittest.cc",
-    "legacy_password_store_backend_migration_decorator_unittest.cc",
     "mock_password_checkup_launcher_helper.cc",
     "mock_password_checkup_launcher_helper.h",
     "mock_password_manager_error_message_helper_bridge.cc",

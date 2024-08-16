@@ -57,7 +57,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
         }
         if (navigation.isDownload()) {
             // If this is an inline pdf page, don't show interstitial.
-            if (PdfUtils.shouldOpenPdfInline()
+            if (PdfUtils.shouldOpenPdfInline(tab.isIncognito())
                     && TextUtils.equals(navigation.getMimeType(), MimeTypeUtils.PDF_MIME_TYPE)) {
                 unregister();
                 return;

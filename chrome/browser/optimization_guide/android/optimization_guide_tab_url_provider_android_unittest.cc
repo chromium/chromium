@@ -89,23 +89,23 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents.get());
   web_contents_tester->SetLastCommittedURL(GURL("https://example.com/a"));
-  web_contents_tester->SetLastActiveTime(base::TimeTicks::Now() -
-                                         base::Days(3));
+  web_contents_tester->SetLastActiveTimeTicks(base::TimeTicks::Now() -
+                                              base::Days(3));
   std::unique_ptr<content::WebContents> web_contents2 =
       content::WebContentsTester::CreateTestWebContents(
           browser_context(), content::SiteInstance::Create(browser_context()));
   content::WebContentsTester* web_contents_tester2 =
       content::WebContentsTester::For(web_contents2.get());
   web_contents_tester2->SetLastCommittedURL(GURL("https://example.com/b"));
-  web_contents_tester2->SetLastActiveTime(base::TimeTicks::Now() -
-                                          base::Days(2));
+  web_contents_tester2->SetLastActiveTimeTicks(base::TimeTicks::Now() -
+                                               base::Days(2));
   std::unique_ptr<content::WebContents> stale_web_contents =
       content::WebContentsTester::CreateTestWebContents(
           browser_context(), content::SiteInstance::Create(browser_context()));
   content::WebContentsTester* stale_web_contents_tester =
       content::WebContentsTester::For(stale_web_contents.get());
-  stale_web_contents_tester->SetLastActiveTime(base::TimeTicks::Now() -
-                                               base::Days(100));
+  stale_web_contents_tester->SetLastActiveTimeTicks(base::TimeTicks::Now() -
+                                                    base::Days(100));
   stale_web_contents_tester->SetLastCommittedURL(GURL("https://stale.com"));
   TestTabModel tab_model(profile());
   tab_model.SetWebContentsList({web_contents.get(), web_contents2.get(),

@@ -45,8 +45,8 @@ public class TriStateCookieSettingsPreference extends Preference
 
         // Whether third-party blocking is enforced.
         public boolean cookieControlsModeEnforced;
-        // Whether First Party Sets are enabled.
-        public boolean isFirstPartySetsDataAccessEnabled;
+        // Whether Related Website Sets are enabled.
+        public boolean isRelatedWebsiteSetsDataAccessEnabled;
     }
 
     public static final String TP_LEARN_MORE_URL =
@@ -169,18 +169,18 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
-        if (params.isFirstPartySetsDataAccessEnabled) {
+        if (params.isRelatedWebsiteSetsDataAccessEnabled) {
             mBlockThirdPartyButton.setDescriptionText(
                     getResources()
                             .getString(
                                     R.string
-                                            .website_settings_third_party_cookies_page_block_radio_sub_label_fps_enabled));
+                                            .website_settings_third_party_cookies_page_block_radio_sub_label_rws_enabled));
         } else {
             mBlockThirdPartyButton.setDescriptionText(
                     getResources()
                             .getString(
                                     R.string
-                                            .website_settings_third_party_cookies_page_block_radio_sub_label_fps_disabled));
+                                            .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled));
         }
     }
 

@@ -59,6 +59,27 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   BOOL _loadingDismissedByUser;
 }
 
+- (instancetype)initWithRequest:(OverlayRequest*)request {
+  self = [super initWithRequest:request];
+  if (self) {
+    DefaultInfobarOverlayRequestConfig* config =
+        request ? request->GetConfig<DefaultInfobarOverlayRequestConfig>()
+                : nullptr;
+
+    if (config) {
+      autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+          static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
+              config->delegate());
+      __weak __typeof__(self) weakSelf = self;
+      delegate->SetCreditCardUploadCompletionCallback(
+          base::BindOnce(^(BOOL card_saved) {
+            [weakSelf creditCardUploadCompleted:card_saved];
+          }));
+    }
+  }
+  return self;
+}
+
 #pragma mark - Accessors
 
 - (DefaultInfobarOverlayRequestConfig*)config {
@@ -67,10 +88,13 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
              : nullptr;
 }
 
-// Returns the delegate attached to the config.
+// Returns the delegate attached to the config or `nullptr` if there is no
+// config.
 - (autofill::AutofillSaveCardInfoBarDelegateIOS*)saveCardDelegate {
-  return static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
-      self.config->delegate());
+  return self.config
+             ? static_cast<autofill::AutofillSaveCardInfoBarDelegateIOS*>(
+                   self.config->delegate())
+             : nullptr;
 }
 
 - (void)setConsumer:(id<InfobarSaveCardModalConsumer>)consumer {
@@ -87,6 +111,8 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   if (!delegate) {
     return;
   }
+
+  delegate->SetInfobarIsPresenting(YES);
 
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
   NSString* cardNumber = [NSString
@@ -121,13 +147,14 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
   };
   [_consumer setupModalViewControllerWithPrefs:prefs];
 
-  if (base::FeatureList::IsEnabled(
+  if (delegate->is_for_upload() && infobar->accepted() &&
+      base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    // If modal has been accepted and card is being uploaded, show modal in
-    // loading state with an activity indicator.
-    if (delegate->is_for_upload() && infobar->accepted()) {
-      [self.consumer showProgressWithUploadCompleted:NO];
-    }
+    // If the infobar has been accepted and the card upload is in progress or
+    // complete, display the appropriate progress state (loading or
+    // confirmation).
+    [self.consumer
+        showProgressWithUploadCompleted:delegate->IsCreditCardUploadComplete()];
   }
 }
 
@@ -181,12 +208,9 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
       self.saveCardDelegate;
   InfoBarIOS* infobar = GetOverlayRequestInfobar(self.request);
 
-  __weak __typeof__(self) weakSelf = self;
   infobar->set_accepted(delegate->UpdateAndAccept(
       base::SysNSStringToUTF16(cardholderName), base::SysNSStringToUTF16(month),
-      base::SysNSStringToUTF16(year), base::BindOnce(^(BOOL card_saved) {
-        [weakSelf creditCardUploadCompleted:card_saved];
-      })));
+      base::SysNSStringToUTF16(year)));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
@@ -256,7 +280,19 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
           : autofill::autofill_metrics::SaveCardPromptResult::kClosed,
       /*is_card_uploaded=*/true);
   _autoCloseConfirmationTimer.Stop();
+  if (!self.saveCardDelegate) {
+    return;
+  }
   self.saveCardDelegate->OnConfirmationClosed();
+}
+
+- (void)dismissOverlay {
+  if (self.saveCardDelegate) {
+    self.saveCardDelegate->SetCreditCardUploadCompletionCallback(
+        base::NullCallback());
+    self.saveCardDelegate->SetInfobarIsPresenting(NO);
+  }
+  [super dismissOverlay];
 }
 
 @end

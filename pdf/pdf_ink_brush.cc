@@ -25,6 +25,15 @@ std::string CreateBrushUri() {
   return "ink://ink/texture:test-texture";
 }
 
+float GetCornerRounding(PdfInkBrush::Type type) {
+  switch (type) {
+    case PdfInkBrush::Type::kHighlighter:
+      return 0.0f;
+    case PdfInkBrush::Type::kPen:
+      return 1.0f;
+  }
+}
+
 float GetOpacity(PdfInkBrush::Type type) {
   switch (type) {
     case PdfInkBrush::Type::kHighlighter:
@@ -40,7 +49,7 @@ std::unique_ptr<InkBrush> CreateInkBrush(PdfInkBrush::Type type,
 
   // TODO(crbug.com/353942923): Use real values here.
   InkBrushTip tip;
-  tip.corner_rounding = 0;
+  tip.corner_rounding = GetCornerRounding(type);
   tip.opacity_multiplier = GetOpacity(type);
 
   InkBrushPaint::TextureLayer layer;
@@ -89,6 +98,12 @@ std::optional<PdfInkBrush::Type> PdfInkBrush::StringToType(
     return Type::kPen;
   }
   return std::nullopt;
+}
+
+// static
+void PdfInkBrush::CheckToolSizeIsInRange(float size) {
+  CHECK_GE(size, 1);
+  CHECK_LE(size, 16);
 }
 
 PdfInkBrush::PdfInkBrush(Type brush_type, Params brush_params)

@@ -114,6 +114,11 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
 
   network::ResourceRequest resource_request;
   resource_request.url = GURL("https://example.com/test.sxg");
+  auto origin = url::Origin::Create(resource_request.url);
+  resource_request.trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request.trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
 
   auto response = network::mojom::URLResponseHead::New();
   std::string headers("HTTP/1.1 200 OK\nnContent-type: foo/bar\n\n");
@@ -140,7 +145,6 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
           false /* should_redirect_to_fallback */, nullptr /* devtools_proxy */,
           nullptr /* reporter */, nullptr /* url_loader_factory */,
           SignedExchangeLoader::URLLoaderThrottlesGetter(),
-          net::NetworkAnonymizationKey(),
           FrameTreeNode::kFrameTreeNodeInvalidId,
           std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);

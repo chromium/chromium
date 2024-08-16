@@ -36,7 +36,8 @@ mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
   return mojom::blink::InterestGroupAd::New(
       url, /*size_group=*/String(),
       /*buyer_reporting_id=*/String(),
-      /*buyer_and_seler_reporting_id=*/String(),
+      /*buyer_and_seller_reporting_id=*/String(),
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*metadata=*/String(), /*ad_render_id=*/String(),
       /*allowed_reporting_origins=*/std::nullopt);
 }
@@ -1067,7 +1068,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
         KURL("https://origin.test/foo?bar"),
         /*size_group=*/test_case.ad_size_group,
         /*buyer_reporting_id=*/String(),
-        /*buyer_and_seler_reporting_id=*/String(),
+        /*buyer_and_seller_reporting_id=*/String(),
+        /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
         /*metadata=*/String(), /*ad_render_id=*/String(),
         /*allowed_reporting_origins=*/std::nullopt));
     blink_interest_group->ad_sizes.emplace();
@@ -1109,7 +1111,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
             KURL("https://origin.test/foo?bar"),
             /*size_group=*/test_case.ad_component_size_group,
             /*buyer_reporting_id=*/String(),
-            /*buyer_and_seler_reporting_id=*/String(),
+            /*buyer_and_seller_reporting_id=*/String(),
+            /*selectable_buyer_and_seller_reporting_id=*/std::nullopt,
             /*metadata=*/String(), /*ad_render_id=*/String(),
             /*allowed_reporting_origins=*/std::nullopt));
     blink_interest_group->ad_sizes.emplace();

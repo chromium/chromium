@@ -31,6 +31,7 @@
 #include "components/user_manager/user_manager.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace apps {
@@ -44,14 +45,7 @@ std::optional<QueryError::Type> VerifyAppInstallData(
     if (data->package_id != expected_package_id) {
       return QueryError::kBadResponse;
     }
-    if (expected_package_id.package_type() == PackageType::kWeb &&
-        !absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
-      return QueryError::kBadResponse;
-    }
-    // For all package types other than Web, there must be an Install URL for us
-    // to launch.
-    if (expected_package_id.package_type() != PackageType::kWeb &&
-        !data->install_url.is_valid()) {
+    if (!data->IsValidForInstallation()) {
       return QueryError::kBadResponse;
     }
     return std::nullopt;
@@ -305,7 +299,12 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
     return;
   }
 
-  if (expected_package_id.package_type() != PackageType::kWeb) {
+  bool show_install_dialog =
+      expected_package_id.package_type() == PackageType::kWeb ||
+      expected_package_id.package_type() == PackageType::kWebsite;
+
+  // If we can't show the install dialog, we must have an install URL to open.
+  if (!show_install_dialog) {
     // This is checked by VerifyAppInstallData:
     CHECK(data->install_url.is_valid());
     LaunchUrlInInstalledAppOrBrowser(&*profile_, data->install_url,
@@ -315,9 +314,21 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
   }
 
   // The install dialog is only used for web apps currently.
-  CHECK_EQ(expected_package_id.package_type(), PackageType::kWeb);
+  CHECK(absl::holds_alternative<WebAppInstallData>(data->app_type_data));
   const WebAppInstallData& web_app_data =
       absl::get<WebAppInstallData>(data->app_type_data);
+
+  if (expected_package_id.package_type() == PackageType::kWebsite) {
+    // kWebsite packages will end up installed as a regular kWeb app. Pass a
+    // kWeb package ID to the Install Dialog so that it can look for the correct
+    // installed app.
+    // An alternative would be to set the installer_package_id for shortcut web
+    // apps as kWebsite in App Service. However, this is difficult to manage
+    // correctly, as the user could already have a non-shortcut web app
+    // installed with the same identifier.
+    expected_package_id =
+        PackageId(PackageType::kWeb, expected_package_id.identifier());
+  }
 
   std::vector<ash::app_install::mojom::ScreenshotPtr> screenshots;
   for (auto& screenshot : data->screenshots) {

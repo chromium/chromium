@@ -86,7 +86,7 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       // Should not be used for this entry point.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -199,7 +199,8 @@ class ProfileCreationSignedInFlowController
     is_finishing_ = true;
   }
 
-  void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
+  void FinishAndOpenBrowserInternal(PostHostClearedCallback callback,
+                                    bool is_continue_callback) override {
     // Do nothing if the sign-in flow is aborted or if this has already been
     // called. Note that this can get called first time from a special case
     // handling (such as the Settings link) and than second time when the
@@ -208,14 +209,16 @@ class ProfileCreationSignedInFlowController
       return;
     }
     is_finishing_ = true;
-
-    bool is_continue_callback = !callback->is_null();
-    if (callback->is_null()) {
-      // No custom callback is specified, we can schedule a profile-related
-      // experience to be shown in context of the opened fresh profile.
-      callback = CreateFreshProfileExperienceCallback();
-    }
-    DCHECK(callback.value());
+    callback =
+        callback->is_null()
+            ? CreateFreshProfileExperienceCallback()
+            : PostHostClearedCallback(base::BindOnce(
+                  [](PostHostClearedCallback cb1, PostHostClearedCallback cb2,
+                     Browser* browser) {
+                    std::move(*cb1).Run(browser);
+                    std::move(*cb2).Run(browser);
+                  },
+                  std::move(callback), CreateFreshProfileExperienceCallback()));
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationSignedInFlowController::FinishFlow,
@@ -493,7 +496,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
     case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";
   }
 }

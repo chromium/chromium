@@ -360,6 +360,7 @@ void WebRemoteFrameImpl::InitializeFrameVisualProperties(
     WebView* web_view) {
   FrameVisualProperties visual_properties;
   visual_properties.zoom_level = ancestor_widget->GetZoomLevel();
+  visual_properties.css_zoom_factor = ancestor_widget->GetCSSZoomFactor();
   visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
   visual_properties.is_pinch_gesture_active =
       ancestor_widget->PinchGestureActiveInMainFrame();

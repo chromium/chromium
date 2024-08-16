@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -81,7 +82,7 @@ void WidgetExample::CreateDialogWidget(View* sender, bool modal) {
   dialog->AddChildView(std::make_unique<Label>(
       GetStringUTF16(IDS_WIDGET_DIALOG_CONTENTS_LABEL)));
   if (modal)
-    dialog->SetModalType(ui::MODAL_TYPE_WINDOW);
+    dialog->SetModalType(ui::mojom::ModalType::kWindow);
   DialogDelegate::CreateDialogWidget(dialog.release(), nullptr,
                                      sender->GetWidget()->GetNativeView())
       ->Show();

@@ -44,10 +44,6 @@ enum class MediaStreamType;
 }  // namespace mojom
 }  // namespace blink
 
-namespace ui {
-enum ModalType;
-}  // namespace ui
-
 /**
  * Implementation of the CameraAppUIDelegate interface. Provides the camera app
  * code in ash/ with functions that only exist in chrome/.

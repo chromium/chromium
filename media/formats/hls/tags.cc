@@ -87,7 +87,7 @@ constexpr std::string_view GetAttributeName(XDefineTagAttribute attribute) {
       return "VALUE";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-MEDIA` tag contents.
@@ -139,7 +139,7 @@ constexpr std::string_view GetAttributeName(XMediaTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-STREAM-INF` tag contents.
@@ -179,7 +179,7 @@ constexpr std::string_view GetAttributeName(XStreamInfTagAttribute attribute) {
       return "SCORE";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-SKIP` tag contents.
@@ -197,7 +197,7 @@ constexpr std::string_view GetAttributeName(XSkipTagAttribute attribute) {
     case XSkipTagAttribute::kSkippedSegments:
       return "SKIPPED-SEGMENTS";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class XRenditionReportTagAttribute {
@@ -216,7 +216,7 @@ constexpr std::string_view GetAttributeName(XRenditionReportTagAttribute attr) {
     case XRenditionReportTagAttribute::kLastPart:
       return "LAST-PART";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-MAP` tag contents.
@@ -235,7 +235,7 @@ constexpr std::string_view GetAttributeName(XMapTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-PART` tag contents.
@@ -277,7 +277,7 @@ constexpr std::string_view GetAttributeName(XPartInfTagAttribute attribute) {
       return "PART-TARGET";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Attributes expected in `EXT-X-SERVER-CONTROL` tag contents.
@@ -306,7 +306,7 @@ constexpr std::string_view GetAttributeName(
       return "PART-HOLD-BACK";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class XKeyTagAttribute {
@@ -331,7 +331,7 @@ constexpr std::string_view GetAttributeName(XKeyTagAttribute attribute) {
     case XKeyTagAttribute::kUri:
       return "URI";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 template <typename T, size_t kLast>

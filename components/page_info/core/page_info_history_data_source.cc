@@ -59,7 +59,7 @@ std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
 }
 
 void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
-    base::OnceCallback<void(base::Time)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   // TODO(crbug.com/40808038): Use the data source in Android implementation.
   base::Time now = base::Time::Now();
   history_service_->GetLastVisitToHost(
@@ -74,10 +74,10 @@ void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
 void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
     const std::string& host_name,
     base::Time query_start_time,
-    base::OnceCallback<void(base::Time)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     history::HistoryLastVisitResult result) {
   if (!result.success || result.last_visit.is_null()) {
-    std::move(callback).Run(base::Time());
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -94,9 +94,13 @@ void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete(
 }
 
 void PageInfoHistoryDataSource::OnLastVisitBeforeRecentNavigationsComplete2(
-    base::OnceCallback<void(base::Time)> callback,
+    base::OnceCallback<void(std::optional<base::Time>)> callback,
     history::HistoryLastVisitResult result) {
-  std::move(callback).Run(result.last_visit);
+  // Checks that the result is still valid.
+  CHECK(result.success);
+  base::Time last_visit = result.last_visit;
+  std::move(callback).Run(last_visit.is_null() ? std::nullopt
+                                               : std::optional(last_visit));
 }
 
 }  // namespace page_info

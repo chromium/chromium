@@ -41,15 +41,13 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(SlotSpanMetadata* slot_span) {
   // Maintain the doubly-linked list of all direct mappings.
   if (extent->prev_extent) {
     PA_DCHECK(extent->prev_extent->next_extent == extent);
-    extent->prev_extent->ToWritable(root->ShadowPoolOffset())->next_extent =
-        extent->next_extent;
+    extent->prev_extent->ToWritable(root)->next_extent = extent->next_extent;
   } else {
     root->direct_map_list = extent->next_extent;
   }
   if (extent->next_extent) {
     PA_DCHECK(extent->next_extent->prev_extent == extent);
-    extent->next_extent->ToWritable(root->ShadowPoolOffset())->prev_extent =
-        extent->prev_extent;
+    extent->next_extent->ToWritable(root)->prev_extent = extent->prev_extent;
   }
 
   // The actual decommit is deferred below after releasing the lock.
@@ -90,7 +88,9 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::RegisterEmpty() {
   root->empty_slot_spans_dirty_bytes +=
       base::bits::AlignUp(GetProvisionedSize(), SystemPageSize());
 
-  ToSuperPageExtent()->DecrementNumberOfNonemptySlotSpans();
+  // TODO(crbug.com/40238514): SlotSpanMetadata::RegisterEmpty() will be
+  // WritableSlotSpanMetadata::RegisterEmpty(). So ToWritable() will be removed.
+  ToSuperPageExtent()->ToWritable(root)->DecrementNumberOfNonemptySlotSpans();
 
   // If the slot span is already registered as empty, don't do anything. This
   // prevents continually reusing a slot span from decommitting a bunch of other
@@ -180,7 +180,7 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
     // chances of it being filled up again. The old current slot span will be
     // the next slot span.
     PA_DCHECK(!next_slot_span);
-    if (PA_LIKELY(bucket->active_slot_spans_head != get_sentinel_slot_span())) {
+    if (bucket->active_slot_spans_head != get_sentinel_slot_span()) [[likely]] {
       next_slot_span = bucket->active_slot_spans_head;
     }
     bucket->active_slot_spans_head = this;
@@ -188,9 +188,9 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
     --bucket->num_full_slot_spans;
   }
 
-  if (PA_LIKELY(num_allocated_slots == 0)) {
+  if (num_allocated_slots == 0) [[likely]] {
     // Slot span became fully unused.
-    if (PA_UNLIKELY(bucket->is_direct_mapped())) {
+    if (bucket->is_direct_mapped()) [[unlikely]] {
       PartitionDirectUnmap(this);
       return;
     }
@@ -203,7 +203,7 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
 
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
-    if (PA_LIKELY(this == bucket->active_slot_spans_head)) {
+    if (this == bucket->active_slot_spans_head) [[likely]] {
       bucket->SetNewActiveSlotSpan();
     }
     PA_DCHECK(bucket->active_slot_spans_head != this);
@@ -311,6 +311,18 @@ void SlotSpanMetadata::SortFreelist() {
   }
 
   freelist_is_sorted_ = true;
+}
+
+void SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() {
+  // TODO(crbug.com/40238514):
+  // SlotSpanMetadata::IncrementNumberOfNonemptySlotSpans() will be
+  // WritableSlotSpanMetadata::IncrementNumberOfNonemptySlotSpans(). So
+  // we will remove |root| and |ToWritable()| after introducing
+  // WritableSlotSpanMetadata.
+  auto* root = PartitionRoot::FromSlotSpanMetadata(this);
+  WritablePartitionSuperPageExtentEntry* extent =
+      ToSuperPageExtent()->ToWritable(root);
+  extent->IncrementNumberOfNonemptySlotSpans();
 }
 
 namespace {

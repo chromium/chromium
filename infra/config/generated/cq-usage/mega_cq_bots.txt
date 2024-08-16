@@ -77,12 +77,7 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/lacros-amd64-generic-rel-gtest
-chromium/try/lacros-amd64-generic-rel-gtest-and-tast
-chromium/try/lacros-amd64-generic-rel-non-skylab
 chromium/try/lacros-arm-generic-rel
-chromium/try/lacros-arm-generic-rel-skylab
-chromium/try/lacros-arm64-generic-rel-skylab
 chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
@@ -100,6 +95,7 @@ chromium/try/linux-chromeos-dbg
 chromium/try/linux-chromeos-rel
 chromium/try/linux-clobber-rel
 chromium/try/linux-dawn-intel-exp-rel
+chromium/try/linux-dawn-nvidia-1660-exp-rel
 chromium/try/linux-dawn-rel
 chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel

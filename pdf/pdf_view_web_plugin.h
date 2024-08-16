@@ -42,6 +42,7 @@
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -240,7 +241,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
                    mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
-                   const blink::WebPluginParams& params);
+                   blink::WebPluginParams params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
   PdfViewWebPlugin& operator=(const PdfViewWebPlugin& other) = delete;
 
@@ -402,13 +403,14 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
                           int32_t page_object_index) override;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // PdfInkModule:
+  // PdfInkModule::Client:
   PageOrientation GetOrientation() const override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Vector2dF GetViewportOriginOffset() override;
   float GetZoom() const override;
   bool IsPageVisible(int index) override;
   void StrokeFinished() override;
+  void UpdateInkCursorImage(SkBitmap bitmap) override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
 #endif
 
@@ -668,7 +670,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   base::OnceCallback<void(const std::string&)> password_callback_;
 
   // The current cursor type.
-  ui::mojom::CursorType cursor_type_ = ui::mojom::CursorType::kPointer;
+  ui::Cursor cursor_ = ui::mojom::CursorType::kPointer;
 
   blink::WebTextInputType text_input_type_ =
       blink::WebTextInputType::kWebTextInputTypeNone;

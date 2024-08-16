@@ -248,19 +248,17 @@ void ProcessAdAuctionResponseHeaders(
   }
   headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 
-  if (base::FeatureList::IsEnabled(blink::features::kFledgeNegativeTargeting)) {
-    std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
-    size_t iter = 0;
-    std::string header_line;
-    while (headers->EnumerateHeader(
-        &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
-      ParseAdAuctionAdditionalBidResponseHeader(header_line,
-                                                nonce_additional_bids_map);
-    }
-    if (!nonce_additional_bids_map.empty()) {
-      ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
-          request_origin, nonce_additional_bids_map);
-    }
+  std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
+  size_t iter = 0;
+  std::string header_line;
+  while (headers->EnumerateHeader(
+      &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
+    ParseAdAuctionAdditionalBidResponseHeader(header_line,
+                                              nonce_additional_bids_map);
+  }
+  if (!nonce_additional_bids_map.empty()) {
+    ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
+        request_origin, nonce_additional_bids_map);
   }
   headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }

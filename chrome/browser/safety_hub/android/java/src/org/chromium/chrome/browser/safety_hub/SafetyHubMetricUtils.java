@@ -45,6 +45,7 @@ public class SafetyHubMetricUtils {
         ExternalInteractions.OPEN_FROM_SETTINGS_PAGE,
         ExternalInteractions.OPEN_FROM_MAGIC_STACK,
         ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK,
+        ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK,
         ExternalInteractions.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -52,7 +53,8 @@ public class SafetyHubMetricUtils {
         int OPEN_FROM_SETTINGS_PAGE = 0;
         int OPEN_FROM_MAGIC_STACK = 1;
         int OPEN_SAFE_BROWSING_FROM_MAGIC_STACK = 2;
-        int MAX_VALUE = OPEN_SAFE_BROWSING_FROM_MAGIC_STACK;
+        int OPEN_GPM_FROM_MAGIC_STACK = 3;
+        int MAX_VALUE = OPEN_GPM_FROM_MAGIC_STACK;
     }
 
     /**

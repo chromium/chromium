@@ -95,6 +95,12 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
       components_sharing_message::SharingMessage message,
       SharingMessageSender::ResponseCallback callback);
 
+  // Unencrypted message counterpart to the above function.
+  virtual base::OnceClosure SendUnencryptedMessageToDevice(
+      const SharingTargetDeviceInfo& device,
+      sync_pb::UnencryptedSharingMessage message,
+      SharingMessageSender::ResponseCallback callback);
+
   // Register SharingMessageHandler for |payload_cases|.
   void RegisterSharingHandler(
       std::unique_ptr<SharingMessageHandler> handler,

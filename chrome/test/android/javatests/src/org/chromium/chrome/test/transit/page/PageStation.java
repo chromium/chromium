@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
@@ -23,6 +22,7 @@ import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -146,13 +146,9 @@ public class PageStation extends Station {
     protected final String mExpectedUrlSubstring;
     protected final String mExpectedTitle;
 
-    // TODO(crbug.com/41497463): These should be shared, not unscoped, but for now they need to be
-    // unscoped since they unintentionally still exist in the non-Hub tab switcher. They are mostly
-    // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still visible.
-    public static final ViewElement HOME_BUTTON = unscopedViewElement(withId(R.id.home_button));
-    public static final ViewElement TAB_SWITCHER_BUTTON =
-            unscopedViewElement(withId(R.id.tab_switcher_button));
-    public static final ViewElement MENU_BUTTON = unscopedViewElement(withId(R.id.menu_button));
+    public static final ViewSpec HOME_BUTTON = viewSpec(withId(R.id.home_button));
+    public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
+    public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
 
     protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected Supplier<Tab> mActivityTabSupplier;
@@ -208,9 +204,14 @@ public class PageStation extends Station {
     @Override
     public void declareElements(Elements.Builder elements) {
         mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-        elements.declareView(HOME_BUTTON);
-        elements.declareView(TAB_SWITCHER_BUTTON);
-        elements.declareView(MENU_BUTTON);
+
+        // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
+        // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
+        // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
+        // visible.
+        elements.declareView(HOME_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(TAB_SWITCHER_BUTTON, ViewElement.unscopedOption());
+        elements.declareView(MENU_BUTTON, ViewElement.unscopedOption());
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(
@@ -317,8 +318,7 @@ public class PageStation extends Station {
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(
-                new PageAppMenuFacility<PageStation>(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
@@ -326,7 +326,7 @@ public class PageStation extends Station {
         assert !mIncognito;
         return travelToSync(
                 RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                () -> TAB_SWITCHER_BUTTON.perform(click()));
+                TAB_SWITCHER_BUTTON::click);
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
@@ -334,7 +334,7 @@ public class PageStation extends Station {
         assert mIncognito;
         return travelToSync(
                 IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                () -> TAB_SWITCHER_BUTTON.perform(click()));
+                TAB_SWITCHER_BUTTON::click);
     }
 
     /** Loads a |url| in the same tab and waits to transition. */

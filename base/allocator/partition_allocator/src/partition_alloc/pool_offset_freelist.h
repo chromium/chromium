@@ -213,9 +213,9 @@ class PoolOffsetFreelistEntry {
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
-    if (PA_UNLIKELY(entry &&
-                    (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
-                        (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))) {
+    if (entry && (SlotStartPtr2Addr(this) & kSuperPageBaseMask) !=
+                     (SlotStartPtr2Addr(entry) & kSuperPageBaseMask))
+        [[unlikely]] {
       FreelistCorruptionDetected(0);
     }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -257,7 +257,7 @@ class PoolOffsetFreelistEntry {
     // which is meant to prevent from breaking out of the pool in face of
     // a corruption (see PoolOffsetFreelistEntry class-level comment).
     auto* ret = encoded_next_.Decode(pool_info);
-    if (PA_UNLIKELY(!IsWellFormed<for_thread_cache>(pool_info, this, ret))) {
+    if (!IsWellFormed<for_thread_cache>(pool_info, this, ret)) [[unlikely]] {
       if constexpr (crash_on_corruption) {
         // Put the corrupted data on the stack, it may give us more information
         // about what kind of corruption that was.

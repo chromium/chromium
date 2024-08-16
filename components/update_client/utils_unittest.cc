@@ -13,9 +13,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
+#include "base/process/process.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/update_client/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -216,6 +222,42 @@ TEST(UpdateClientUtils, GetArchitecture) {
   EXPECT_TRUE(arch == kArchIntel || arch == kArchAmd64 || arch == kArchArm64)
       << arch;
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+namespace {
+#if BUILDFLAG(IS_WIN)
+base::FilePath CopyCmdExe(const base::FilePath& under_dir) {
+  constexpr wchar_t kCmdExe[] = L"cmd.exe";
+
+  base::FilePath system_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
+
+  const base::FilePath cmd_exe_path = under_dir.Append(kCmdExe);
+  EXPECT_TRUE(base::CopyFile(system_path.Append(kCmdExe), cmd_exe_path));
+  return cmd_exe_path;
+}
+#endif  // BUILDFLAG(IS_WIN)
+}  // namespace
+
+TEST(UpdateClientUtils, RetryDeletePathRecursively) {
+  base::FilePath tempdir;
+  ASSERT_TRUE(base::CreateNewTempDirectory(
+      FILE_PATH_LITERAL("Test_RetryDeletePathRecursively"), &tempdir));
+
+#if BUILDFLAG(IS_WIN)
+  // Launch a process that runs for 3 seconds.
+  ASSERT_TRUE(
+      base::LaunchProcess(
+          base::StrCat({CopyCmdExe(tempdir).value(), L" /c \"timeout 3\""}), {})
+          .IsValid());
+
+  // Trying to delete once fails, because the process is running within
+  // `tempdir`.
+  ASSERT_FALSE(RetryDeletePathRecursivelyCustom(tempdir, 1, base::Seconds(1)));
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Deleting with retries works.
+  ASSERT_TRUE(RetryDeletePathRecursively(tempdir));
 }
 
 }  // namespace update_client

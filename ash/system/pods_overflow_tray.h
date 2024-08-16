@@ -33,7 +33,7 @@ class ASH_EXPORT PodsOverflowTray : public TrayBackgroundView {
   // TrayBackgroundView:
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

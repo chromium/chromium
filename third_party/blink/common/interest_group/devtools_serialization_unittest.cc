@@ -75,7 +75,8 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
 }
 )";
 
-  EXPECT_THAT(SerializeAuctionConfigForDevtools(config), base::test::IsJson(kExpected));
+  EXPECT_THAT(SerializeAuctionConfigForDevtools(config),
+              base::test::IsJson(kExpected));
 }
 
 TEST(SerializeAuctionConfigTest, FullConfig) {
@@ -198,7 +199,8 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
 }
 )";
 
-  EXPECT_THAT(SerializeAuctionConfigForDevtools(config), base::test::IsJson(kExpected));
+  EXPECT_THAT(SerializeAuctionConfigForDevtools(config),
+              base::test::IsJson(kExpected));
 }
 
 TEST(SerializeAuctionConfigTest, PendingPromise) {
@@ -262,7 +264,8 @@ TEST(SerializeInterestGroupTest, Basic) {
   ig.ads = {
       {blink::InterestGroup::Ad(
            GURL("https://example.com/train"), "metadata", "sizegroup", "bid",
-           "bsid", "ad_render_id",
+           "bsid", std::vector<std::string>{"selectable_id1", "selectable_id2"},
+           "ad_render_id",
            {{url::Origin::Create(GURL("https://reporting.example.org"))}}),
        blink::InterestGroup::Ad(GURL("https://example.com/plane"), "meta2")}};
   ig.ad_components = {{
@@ -304,6 +307,7 @@ TEST(SerializeInterestGroupTest, Basic) {
       "adRenderId": "ad_render_id",
       "allowedReportingOrigins": [ "https://reporting.example.org" ],
       "buyerAndSellerReportingId": "bsid",
+      "selectableBuyerAndSellerReportingIds": [ "selectable_id1", "selectable_id2" ],
       "buyerReportingId": "bid",
       "metadata": "metadata",
       "renderURL": "https://example.com/train"

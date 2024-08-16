@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/trust_token_store.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -396,6 +397,10 @@ bool TrustTokenStore::DeleteStoredTrustTokens(
 base::flat_map<SuitableTrustTokenOrigin, int>
 TrustTokenStore::GetStoredTrustTokenCounts() {
   return persister_->GetStoredTrustTokenCounts();
+}
+
+IssuerRedemptionRecordMap TrustTokenStore::GetRedemptionRecords() {
+  return persister_->GetRedemptionRecords();
 }
 
 }  // namespace network

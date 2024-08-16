@@ -97,6 +97,8 @@ android_library("unit_device_javatests") {
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/styles/android:java",

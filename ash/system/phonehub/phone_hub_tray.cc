@@ -428,7 +428,7 @@ void PhoneHubTray::SetEcheIconActivationCallback(
   eche_icon_callback_ = std::move(callback);
 }
 
-void PhoneHubTray::CloseBubble() {
+void PhoneHubTray::CloseBubbleInternal() {
   if (!bubble_)
     return;
 
@@ -500,7 +500,7 @@ void PhoneHubTray::ExecuteCommand(int command_id, int event_flags) {
     phone_hub_manager_->GetOnboardingUiTracker()->DismissSetupUi();
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {

@@ -10,6 +10,8 @@ static_library("events") {
   sources = [
     "event_rewriter_delegate_impl.cc",
     "event_rewriter_delegate_impl.h",
+    "shortcut_mapping_pref_service.cc",
+    "shortcut_mapping_pref_service.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -20,14 +22,17 @@ static_library("events") {
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/extensions",
     "//chrome/common",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//components/prefs",
     "//components/user_manager",
     "//ui/aura",
+    "//ui/base",
     "//ui/events",
     "//ui/events/ash",
     "//ui/message_center",
@@ -50,9 +55,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/notifications",
+    "//chrome/browser/ash/preferences",
     "//chrome/test:test_support_unit",
     "//components/prefs",
     "//components/sync_preferences:test_support",

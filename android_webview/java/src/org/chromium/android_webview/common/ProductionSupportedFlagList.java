@@ -177,6 +177,9 @@ public final class ProductionSupportedFlagList {
                 VizFeatures.WEBVIEW_ENABLE_ADPF_RENDERER_MAIN,
                 "Include Renderer Main into ADPF session"),
         Flag.baseFeature(
+                VizFeatures.WEBVIEW_FRAME_RATE_HINTS,
+                "Provide frame rate hints to View system if supported by OS"),
+        Flag.baseFeature(
                 VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                 "Enable optimization for skipping undamaged nonroot render passes."),
         Flag.baseFeature(
@@ -391,10 +394,6 @@ public final class ProductionSupportedFlagList {
                 NetworkServiceFeatures.PRIVATE_STATE_TOKENS,
                 "Enables the prototype Private State Tokens API."),
         Flag.baseFeature(
-                NetworkServiceFeatures.COOKIE_ACCESS_DETAILS_NOTIFICATION_DE_DUPING,
-                "Enables de-duplicating cookie access details that are sent to observers via"
-                        + " OnCookiesAccessed."),
-        Flag.baseFeature(
                 NetworkServiceFeatures.MASKED_DOMAIN_LIST,
                 "When enabled, the masked domain list required for IP Protection is loaded."),
         Flag.commandLine(
@@ -406,9 +405,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_FORCE_DARK_MODE_MATCH_THEME,
                 "Automatically darken page if"
                         + " WebView is set to FORCE_DARK_AUTO and the app has dark theme"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_FRAME_RATE_HINTS,
-                "Provide frame rate hints to View system if supported by OS"),
         Flag.baseFeature(
                 ContentFeatures.VERIFY_DID_COMMIT_PARAMS,
                 "Enables reporting of browser and renderer navigation inconsistencies on"
@@ -787,10 +783,6 @@ public final class ProductionSupportedFlagList {
                 "Enables extending the loading phase by some buffer time after "
                         + "First Meaningful Paint is signaled."),
         Flag.baseFeature(
-                BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES_HIGH_USAGE,
-                "This flag allows non-standard CSS appearance values with page load "
-                        + "usage >= 0.001% and shows a deprecation warning."),
-        Flag.baseFeature(
                 BlinkFeatures.DISCARD_INPUT_EVENTS_TO_RECENTLY_MOVED_FRAMES,
                 "Enables a browser intervention which silently ignores input events "
                         + "targeting a cross-origin iframe which has moved within its "
@@ -932,6 +924,9 @@ public final class ProductionSupportedFlagList {
                 "If enabled, non-render-blocking style loading tasks have higher priority on"
                         + " visible pages"),
         Flag.baseFeature(
+                MediaFeatures.BUILT_IN_HLS_PLAYER,
+                "Switches the HLS demuxer implementation from MediaPlayer to an internal one"),
+        Flag.baseFeature(
                 MediaFeatures.LIBVPX_USE_CHROME_THREADS,
                 "Attaches libvpx threads to the chromium thread system."),
         Flag.baseFeature(
@@ -977,6 +972,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.BLINK_SCHEDULER_PRIORITIZE_NAVIGATION_IP_CS,
                 "If enabled, main frame navigation IPCs have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BLINK_SCHEDULER_DISCRETE_INPUT_MATCHES_RESPONSIVENESS_METRICS,
+                "If enabled, the scheduler filters discrete input based on responsivness metrics"
+                        + " definitions"),
         Flag.baseFeature(
                 BlinkFeatures.CURSOR_ANCHOR_INFO_MOJO_PIPE,
                 "If enabled, CursorAnchorInfo is sent from Blink to the browser using a single"
@@ -1078,6 +1077,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("MojoUseBinder"),
         Flag.baseFeature(
                 ContentFeatures.WEB_PERMISSIONS_API, "Enables navigator.permissions.query()"),
+        Flag.baseFeature(
+                MediaFeatures.BUILT_IN_H264_DECODER, "Controls use of FFmpeg for H.264 decoding"),
+        Flag.baseFeature(
+                BlinkFeatures.DEFER_RENDERER_TASKS_AFTER_INPUT,
+                "If enabled, some renderer tasks will be deferred after discrete input events, e.g."
+                        + " keypress, and the subsequent frame"),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

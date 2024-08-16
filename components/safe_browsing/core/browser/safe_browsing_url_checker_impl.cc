@@ -65,7 +65,7 @@ std::string GetPerformedCheckSuffix(
       return "HashRealTime";
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -92,7 +92,7 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
       threat_source_name = "Remote";
       break;
     case ThreatSource::CLIENT_SIDE_DETECTION:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ThreatSource::URL_REAL_TIME_CHECK:
       threat_source_name = "UrlRealTimeCheck";
       break;

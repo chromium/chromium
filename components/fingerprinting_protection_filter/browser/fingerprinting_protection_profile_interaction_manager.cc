@@ -57,9 +57,11 @@ ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   }
 
   // We enable fingerprinting protection if the user has turned the feature on
-  // in settings.
+  // in settings or if the feature flags are enabled.
   bool enable_fp =
-      tracking_protection_settings_->IsFingerprintingProtectionEnabled();
+      tracking_protection_settings_->IsFingerprintingProtectionEnabled() ||
+      features::IsFingerprintingProtectionFeatureEnabled();
+
   if (features::kEnableOn3pcBlocked.Get()) {
     // The value of prefs::kCookieControlsMode reflects the state of third-party
     // cookies being disabled, i.e. 3PCD is on or user blocks 3PC.

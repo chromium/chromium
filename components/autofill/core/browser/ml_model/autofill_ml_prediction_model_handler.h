@@ -27,8 +27,8 @@ namespace autofill {
 // predictions with the FormStructure.
 class AutofillMlPredictionModelHandler
     : public optimization_guide::ModelHandler<
-          AutofillModelExecutor::ModelOutput,
-          const AutofillModelExecutor::ModelInput&>,
+          AutofillModelEncoder::ModelOutput,
+          const AutofillModelEncoder::ModelInput&>,
       public KeyedService {
  public:
   // The version of the input, based on which the relevant model
@@ -44,8 +44,9 @@ class AutofillMlPredictionModelHandler
   // using `HeuristicSource::kMachineLearning`. Once done, the `callback` is
   // triggered on the UI sequence and returns the `form_structure`.
   // If `form_structure` has more than
-  // `AutofillModelExecutor::kMaxNumberOfFields` fields, it sets predictions for
-  // the first `AutofillModelExecutor::kMaxNumberOfFields` fields in the form.
+  // `AutofillModelEncoder::kModelMaxNumberOfFields` fields, it sets predictions
+  // for the first `AutofillModelEncoder::kModelMaxNumberOfFields` fields in the
+  // form.
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);
@@ -69,7 +70,7 @@ class AutofillMlPredictionModelHandler
   // asssigns it to the corresponding field of the `form`.
   void AssignMostLikelyTypes(
       FormStructure& form,
-      const AutofillModelExecutor::ModelOutput& output) const;
+      const AutofillModelEncoder::ModelOutput& output) const;
 
   // Given the confidences returned by the ML model, returns the most likely
   // type. This is currently just the argmax of `model_output`, mapped to the

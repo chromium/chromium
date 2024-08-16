@@ -42,9 +42,9 @@ rust_static_library("bridge_rust_side") {
   cxx_bindings = skia_fontations_bridge_sources
   deps = [
     ":path_bridge",
-    "//third_party/rust/font_types/v0_5:lib",
-    "//third_party/rust/read_fonts/v0_19:lib",
-    "//third_party/rust/skrifa/v0_19:lib",
+    "//third_party/rust/font_types/v0_6:lib",
+    "//third_party/rust/read_fonts/v0_20:lib",
+    "//third_party/rust/skrifa/v0_20:lib",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -65,6 +65,8 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_TEXTURE_INFO_FUNCS",
     "SK_DISABLE_LEGACY_BACKEND_SEMAPHORE_FUNCS",
     "SK_DISABLE_LEGACY_GRAPHITE_IMAGES",
+    "SK_DISABLE_LEGACY_DAWN_TEXTURE_INFO_FUNCS",
+    "SK_DISABLE_LEGACY_DAWN_BACKEND_TEXTURE_FUNCS",
   ]
 
   include_dirs = [

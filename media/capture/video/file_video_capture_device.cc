@@ -96,8 +96,8 @@ void ParseY4MTags(const std::string& file_header,
          std::string::npos) {
     // Every token is supposed to have an identifier letter and a bunch of
     // information immediately after, which we extract into a |token| here.
-    token =
-        std::string_view(&file_header[index + 1], blank_position - index - 1);
+    token = std::string_view(file_header)
+                .substr(index + 1, blank_position - index - 1);
     CHECK(!token.empty());
     switch (file_header[index]) {
       case 'W':

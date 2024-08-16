@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
@@ -22,9 +23,12 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -32,6 +36,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -74,18 +79,25 @@ std::unique_ptr<KeyedService> BuildSidePanelService(
 
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
+  SidePanelCoordinatorTest() {
+    scoped_feature_list_.InitWithFeatures({features::kSidePanelResizing}, {});
+  }
   void SetUp() override {
     TestWithBrowserView::SetUp();
 
     AddTabToBrowser(GURL("http://foo1.com"));
     AddTabToBrowser(GURL("http://foo2.com"));
 
+    // Note that every tab has read anything added automatically.
+    //
     // Add a kCustomizeChrome entry to the contextual registry for the first
     // tab.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-    content::WebContents* active_contents =
-        browser_view()->GetActiveWebContents();
-    auto* registry = SidePanelRegistry::Get(active_contents);
+    auto* registry = browser_view()
+                         ->browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kCustomizeChrome,
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
@@ -93,12 +105,19 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
 
     // Add a kLens entry to the contextual registry for the second tab.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-    active_contents = browser_view()->GetActiveWebContents();
-    registry = SidePanelRegistry::Get(active_contents);
+    registry = browser_view()
+                   ->browser()
+                   ->GetActiveTabInterface()
+                   ->GetTabFeatures()
+                   ->side_panel_registry();
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLens,
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
-    contextual_registries_.push_back(SidePanelRegistry::Get(active_contents));
+    contextual_registries_.push_back(browser_view()
+                                         ->browser()
+                                         ->GetActiveTabInterface()
+                                         ->GetTabFeatures()
+                                         ->side_panel_registry());
 
     // Add a kCustomizeChrome entry to the contextual registry for the second
     // tab.
@@ -106,27 +125,37 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
         SidePanelEntry::Id::kCustomizeChrome,
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
-    coordinator_ = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    coordinator_ = browser()->GetFeatures().side_panel_coordinator();
     coordinator_->SetNoDelaysForTesting(true);
-    global_registry_ = coordinator_->global_registry_;
+    global_registry_ = coordinator_->window_registry_.get();
 
-    // Verify the first tab has one entry, kCustomizeChrome.
+    // Verify the first tab has two entries, kReadAnything and kCustomizeChrome.
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-    active_contents = browser_view()->GetActiveWebContents();
-    SidePanelRegistry* contextual_registry =
-        SidePanelRegistry::Get(active_contents);
-    EXPECT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kCustomizeChrome);
-
-    // Verify the second tab has 2 entries, kLens and kCustomizeChrome.
-    browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
-    active_contents = browser_view()->GetActiveWebContents();
-    contextual_registry = SidePanelRegistry::Get(active_contents);
+    auto* contextual_registry = browser_view()
+                                    ->browser()
+                                    ->GetActiveTabInterface()
+                                    ->GetTabFeatures()
+                                    ->side_panel_registry();
     EXPECT_EQ(contextual_registry->entries().size(), 2u);
     EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
-              SidePanelEntry::Id::kLens);
+              SidePanelEntry::Id::kReadAnything);
     EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
+              SidePanelEntry::Id::kCustomizeChrome);
+
+    // Verify the second tab has 3 entries, kReadAnything, kLens and
+    // kCustomizeChrome.
+    browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+    contextual_registry = browser_view()
+                              ->browser()
+                              ->GetActiveTabInterface()
+                              ->GetTabFeatures()
+                              ->side_panel_registry();
+    EXPECT_EQ(contextual_registry->entries().size(), 3u);
+    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
+              SidePanelEntry::Id::kReadAnything);
+    EXPECT_EQ(contextual_registry->entries()[1]->key().id(),
+              SidePanelEntry::Id::kLens);
+    EXPECT_EQ(contextual_registry->entries()[2]->key().id(),
               SidePanelEntry::Id::kCustomizeChrome);
 
     extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
@@ -152,7 +181,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   void SetUpPinningTest() {
     content::WebContents* const web_contents =
         browser_view()->browser()->tab_strip_model()->GetWebContentsAt(0);
-    auto* const registry = SidePanelRegistry::Get(web_contents);
+    auto* const registry = SidePanelRegistry::GetDeprecated(web_contents);
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kAboutThisSite,
         base::BindRepeating([]() { return std::make_unique<views::View>(); })));
@@ -184,12 +213,10 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   void AddTabToBrowser(const GURL& tab_url) {
     AddTab(browser_view()->browser(), tab_url);
     // Remove the companion entry if it present.
-    auto* registry =
-        SidePanelRegistry::Get(browser_view()->GetActiveWebContents());
+    auto* registry = SidePanelRegistry::GetDeprecated(
+        browser_view()->GetActiveWebContents());
     registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
-    registry->Deregister(
-        SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   }
 
  protected:
@@ -278,6 +305,7 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
   raw_ptr<SidePanelRegistry, DanglingUntriaged> global_registry_;
   std::vector<raw_ptr<SidePanelRegistry, DanglingUntriaged>>
       contextual_registries_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MockSidePanelViewStateObserver : public SidePanelViewStateObserver {
@@ -576,16 +604,18 @@ TEST_F(SidePanelCoordinatorTest, SwapBetweenTabsWithReadingListOpen) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregistered) {
-  // Verify the first tab has one entry, kCustomizeChrome.
+  // Verify the first tab has two entries, kReadAnything and kCustomizeChrome.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 2u);
   EXPECT_EQ(contextual_registries_[0]->entries()[0]->key().id(),
+            SidePanelEntry::Id::kReadAnything);
+  EXPECT_EQ(contextual_registries_[0]->entries()[1]->key().id(),
             SidePanelEntry::Id::kCustomizeChrome);
 
   // Deregister kCustomizeChrome from the first tab.
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 }
 
 TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
@@ -610,7 +640,7 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 
   // Verify the panel defaults back to the last visible global entry or the
   // reading list.
@@ -637,7 +667,7 @@ TEST_F(
   // Deregister kCustomizeChrome from the first tab.
   contextual_registries_[0]->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  EXPECT_EQ(contextual_registries_[0]->entries().size(), 0u);
+  EXPECT_EQ(contextual_registries_[0]->entries().size(), 1u);
 
   // Verify the panel closes.
   EXPECT_FALSE(browser_view()->unified_side_panel()->GetVisible());
@@ -1111,6 +1141,72 @@ TEST_F(SidePanelCoordinatorTest,
   VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
                                SidePanelEntry::Id::kCustomizeChrome);
   EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+}
+
+// Verify that side panels maintain individual widths when the
+// #side-panel-resizing flag is enabled. In this case, the bookmarks and reading
+// list side panels should be able to have independent widths.
+TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
+  ASSERT_TRUE(browser_view());
+  SidePanel* side_panel = browser_view()->unified_side_panel();
+  ASSERT_TRUE(side_panel);
+
+  PrefService* prefs = browser_view()->browser()->profile()->GetPrefs();
+  auto& dict = prefs->GetDict(prefs::kSidePanelIdToWidth);
+  const std::string bookmarks_side_panel_id =
+      SidePanelEntryIdToString(SidePanelEntry::Id::kBookmarks);
+  const std::string reading_list_side_panel_id =
+      SidePanelEntryIdToString(SidePanelEntry::Id::kReadingList);
+
+  // Verify both side panels do not have a default value.
+  EXPECT_FALSE(dict.FindInt(bookmarks_side_panel_id).has_value());
+  EXPECT_FALSE(dict.FindInt(reading_list_side_panel_id).has_value());
+
+  coordinator_->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+  views::test::RunScheduledLayout(browser_view());
+  const int initial_bookmark_width = side_panel->width();
+  const int expected_bookmark_width = initial_bookmark_width + 100;
+
+  // Resize the bookmarks side panel.
+  side_panel->OnResize(-100, false);
+
+  // Ensure the bookmark width is updated accordingly after resizing.
+  views::test::RunScheduledLayout(browser_view());
+  EXPECT_EQ(side_panel->width(), expected_bookmark_width);
+
+  // Verify the preference value is updated after resize
+  EXPECT_EQ(expected_bookmark_width, prefs->GetDict(prefs::kSidePanelIdToWidth)
+                                         .FindInt(bookmarks_side_panel_id));
+
+  // Show the reading list side panel.
+  coordinator_->Show(SidePanelEntry::Id::kReadingList);
+  views::test::RunScheduledLayout(browser_view());
+
+  // Verify the side panel keeps the bookmarks resized width since it doesn't
+  // have a default value yet.
+  EXPECT_EQ(expected_bookmark_width, side_panel->width());
+  const int initial_reading_list_width = side_panel->width();
+  const int expected_reading_list_width = initial_reading_list_width - 50;
+
+  // Resize the reading list side panel.
+  side_panel->OnResize(-50, false);
+  views::test::RunScheduledLayout(browser_view());
+
+  // Ensure the reading list width is updated accordingly after resizing.
+  EXPECT_EQ(side_panel->width(), expected_reading_list_width);
+
+  // Verify the preference value is updated after resize
+  EXPECT_EQ(expected_reading_list_width,
+            prefs->GetDict(prefs::kSidePanelIdToWidth)
+                .FindInt(reading_list_side_panel_id));
+
+  // Show the bookmarks side panel again to verify we use the correct width.
+  coordinator_->Show(SidePanelEntry::Id::kBookmarks);
+  views::test::RunScheduledLayout(browser_view());
+
+  EXPECT_NE(expected_reading_list_width, side_panel->width());
+  EXPECT_EQ(expected_bookmark_width, side_panel->width());
 }
 
 class TestSidePanelObserver : public SidePanelEntryObserver {
@@ -1595,9 +1691,8 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
     AddTabToBrowser(GURL("http://foo1.com"));
     AddTabToBrowser(GURL("http://foo2.com"));
 
-    coordinator_ = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
-    global_registry_ = SidePanelCoordinator::GetGlobalSidePanelRegistry(
-        browser_view()->browser());
+    coordinator_ = browser()->GetFeatures().side_panel_coordinator();
+    global_registry_ = coordinator_->GetWindowRegistry();
 
     // Add a kCustomizeChrome entry to the global registry with loading content
     // not available.

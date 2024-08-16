@@ -31,6 +31,7 @@ static_library("quick_pair") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/pages/bluetooth",
     "//components/cross_device/logging",
     "//components/image_fetcher/core",
     "//components/services/app_service/public/cpp:app_types",
@@ -39,4 +40,7 @@ static_library("quick_pair") {
     "//google_apis",
     "//services/network/public/cpp",
   ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/webui/ash/settings/pages/bluetooth" ]
 }

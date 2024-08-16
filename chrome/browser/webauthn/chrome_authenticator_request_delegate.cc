@@ -24,6 +24,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -120,6 +121,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/base64.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
@@ -410,6 +412,27 @@ bool EnclaveCanBeDefault(Profile* profile) {
 
 #endif
 
+bool SkipGpmPasskeyCreationForOwnAccount(
+    device::FidoRequestType request_type,
+    const std::string& rp_id,
+    std::string_view user_name,
+    const CoreAccountInfo& primary_account_info) {
+  // Don't let GPM create a passkey for its own account within itself.
+  //
+  // The request username is either the full email address (GAIA users) or just
+  // the local part (google.com users).
+  //
+  // Note that if the string does not contain an '@', `substr(0, npos)` will
+  // return the whole string.
+  const std::string account_email_local_part =
+      primary_account_info.email.substr(0,
+                                        primary_account_info.email.find('@'));
+  return request_type == device::FidoRequestType::kMakeCredential &&
+         rp_id == kGoogleRpId &&
+         (user_name == primary_account_info.email ||
+          user_name == account_email_local_part);
+}
+
 }  // namespace
 
 // ---------------------------------------------------------------------
@@ -622,7 +645,6 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 
-  CHECK(passkey_store);
   std::string credential_id(passkey_credential_id.begin(),
                             passkey_credential_id.end());
   std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
@@ -633,6 +655,57 @@ void ChromeWebAuthenticationDelegate::DeletePasskey(
         PasswordsClientUIDelegateFromWebContents(web_contents);
     if (manage_passwords_ui_controller) {
       manage_passwords_ui_controller->OnPasskeyDeleted();
+    }
+  }
+}
+
+void ChromeWebAuthenticationDelegate::DeleteUnacceptedPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    const std::vector<uint8_t>& user_id,
+    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  for (auto passkey :
+       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+    if (std::vector<uint8_t>(passkey.user_id().begin(),
+                             passkey.user_id().end()) == user_id &&
+        !base::Contains(all_accepted_credentials_ids,
+                        std::vector<uint8_t>(passkey.credential_id().begin(),
+                                             passkey.credential_id().end()))) {
+      passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
+    }
+  }
+}
+
+void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
+    content::WebContents* web_contents,
+    const std::string& relying_party_id,
+    std::vector<uint8_t>& user_id,
+    const std::string& name,
+    const std::string& display_name) {
+  webauthn::PasskeyModel* passkey_store =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  bool is_passkey_updated = false;
+  for (const auto& passkey :
+       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+    if (std::vector<uint8_t>(passkey.user_id().begin(),
+                             passkey.user_id().end()) == user_id &&
+        (passkey.user_name() != name ||
+         passkey.user_display_name() != display_name)) {
+      passkey_store->UpdatePasskey(
+          passkey.credential_id(),
+          {.user_name = name, .user_display_name = display_name});
+      is_passkey_updated = true;
+    }
+  }
+  if (is_passkey_updated) {
+    PasswordsClientUIDelegate* manage_passwords_ui_controller =
+        PasswordsClientUIDelegateFromWebContents(web_contents);
+    if (manage_passwords_ui_controller) {
+      manage_passwords_ui_controller->OnPasskeyUpdated();
     }
   }
 }
@@ -798,10 +871,11 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
 ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
-      dialog_model_(std::make_unique<AuthenticatorRequestDialogModel>(
+      dialog_model_(base::MakeRefCounted<AuthenticatorRequestDialogModel>(
           GetRenderFrameHost())),
       dialog_controller_(std::make_unique<AuthenticatorRequestDialogController>(
-          dialog_model_.get())) {
+          dialog_model_.get(),
+          GetRenderFrameHost())) {
   dialog_model_->observers.AddObserver(this);
   if (g_observer) {
     g_observer->Created(this);
@@ -933,6 +1007,9 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
             base::UnlocalizedTimeFormatWithPattern(
                 base::Time::Now(), "yyyy-MM-dd", icu::TimeZone::getGMT()));
   }
+  if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {
+    webauthn::user_actions::RecordICloudSuccess();
+  }
 
   dialog_controller_->RecordMacOsSuccessHistogram(request_type,
                                                   authenticator_type);
@@ -1047,14 +1124,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
       const auto consent = signin::ConsentLevel::kSignin;
       if (identity_manager->HasPrimaryAccount(consent)) {
-        std::string account_name =
-            identity_manager->GetPrimaryAccountInfo(consent).email;
-        // The enclave should not allow a credential to be created within it for
-        // the same Google account.
-        if (rp_id != kGoogleRpId ||
-            request_type != device::FidoRequestType::kMakeCredential ||
-            user_name.value_or("") != account_name) {
-          dialog_model_->account_name = std::move(account_name);
+        CoreAccountInfo account_info =
+            identity_manager->GetPrimaryAccountInfo(consent);
+        if (SkipGpmPasskeyCreationForOwnAccount(
+                request_type, rp_id, user_name.value_or(""), account_info)) {
+          FIDO_LOG(EVENT)
+              << "Creation in GPM not offered (same primary account)";
+        } else {
+          dialog_model_->account_name = std::move(account_info.email);
           enclave_controller_ = std::make_unique<GPMEnclaveController>(
               GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
               user_verification_requirement,
@@ -1100,15 +1177,12 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   const bool cablev2_extension_provided =
       base::Contains(pairings, device::CableDiscoveryData::Version::V2,
                      &device::CableDiscoveryData::version);
-  const bool ignore_linked_cable_devices =
-      origin.DomainIs("google.com") && discovery_factory->no_cable_linking;
 
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
       contact_phone_callback;
-  if (!ignore_linked_cable_devices &&
-      (!cable_extension_provided ||
-       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
+  if (!cable_extension_provided ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
     std::unique_ptr<cablev2::KnownDevices> known_devices =
         cablev2::KnownDevices::FromProfile(profile);
     if (g_observer) {
@@ -1593,8 +1667,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
 
 void ChromeAuthenticatorRequestDelegate::FilterRecognizedCredentials(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnFilterGooglePasskeys) &&
-      dialog_model()->relying_party_id == kGoogleRpId &&
+  if (dialog_model()->relying_party_id == kGoogleRpId &&
       base::ranges::any_of(tai->recognized_credentials,
                            IsCredentialFromPlatformAuthenticator)) {
     // Regrettably, Chrome will create webauthn credentials for things other

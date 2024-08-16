@@ -864,6 +864,8 @@ void SchedulerStateMachine::WillPerformImplSideInvalidationInternal() {
 
   needs_impl_side_invalidation_ = false;
   has_pending_tree_ = true;
+  activate_reasons_.PutAll(impl_side_invalidation_reasons_);
+  impl_side_invalidation_reasons_.Clear();
   did_perform_impl_side_invalidation_ = true;
   pending_tree_needs_first_draw_on_activation_ =
       next_invalidation_needs_first_draw_on_activation_;
@@ -974,6 +976,7 @@ void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
 
     // We have a new pending tree.
     has_pending_tree_ = true;
+    activate_reasons_.Put(RedrawReason::kUntracked);
     pending_tree_needs_first_draw_on_activation_ = true;
     pending_tree_is_ready_for_activation_ = false;
     if (!active_tree_needs_first_draw_ ||
@@ -1023,6 +1026,8 @@ void SchedulerStateMachine::WillActivate() {
     did_update_display_tree_ = false;
   } else {
     needs_redraw_ = true;
+    redraw_reasons_.PutAll(activate_reasons_);
+    activate_reasons_.Clear();
     active_tree_needs_first_draw_ =
         pending_tree_needs_first_draw_on_activation_;
     pending_tree_needs_first_draw_on_activation_ = false;
@@ -1071,10 +1076,15 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       }
       break;
     case DrawResult::kAbortedDrainingPipeline:
+      consecutive_checkerboard_animations_ = 0;
+      consecutive_cant_draw_count_ = 0;
+      forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
+      break;
     case DrawResult::kSuccess:
       consecutive_checkerboard_animations_ = 0;
       consecutive_cant_draw_count_ = 0;
       forced_redraw_state_ = ForcedRedrawOnTimeoutState::IDLE;
+      redraw_reasons_.Clear();
       break;
     case DrawResult::kAbortedCheckerboardAnimations:
       DCHECK(!did_submit_in_last_frame_);
@@ -1128,6 +1138,7 @@ void SchedulerStateMachine::SetNeedsImplSideInvalidation(
   needs_impl_side_invalidation_ = true;
   next_invalidation_needs_first_draw_on_activation_ |=
       needs_first_draw_on_activation;
+  impl_side_invalidation_reasons_.Put(reason);
 }
 
 void SchedulerStateMachine::SetMainThreadWantsBeginMainFrameNotExpectedMessages(
@@ -1553,6 +1564,11 @@ void SchedulerStateMachine::SetSkipDraw(bool skip_draw) {
 
 void SchedulerStateMachine::SetNeedsRedraw(RedrawReason reason) {
   needs_redraw_ = true;
+  redraw_reasons_.Put(reason);
+}
+
+RedrawReasonSet SchedulerStateMachine::GetRedrawReasons() const {
+  return redraw_reasons_;
 }
 
 void SchedulerStateMachine::SetNeedsUpdateDisplayTree() {

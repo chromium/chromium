@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MEMBER_H_
 
@@ -231,15 +226,15 @@ class MemberConstructTraits {
     blink::WriteBarrier::DispatchForObject(element);
   }
 
-  static void NotifyNewElements(T* array, size_t len) {
+  static void NotifyNewElements(base::span<T> members) {
     // Checking the first element is sufficient for determining whether a
     // marking or generational barrier is required.
-    if (LIKELY((len == 0) || !blink::WriteBarrier::IsWriteBarrierNeeded(array)))
+    if (members.empty() ||
+               !blink::WriteBarrier::IsWriteBarrierNeeded(&members.front())) [[likely]] {
       return;
-
-    while (len-- > 0) {
-      blink::WriteBarrier::DispatchForObject(array);
-      array++;
+    }
+    for (auto& member : members) {
+      blink::WriteBarrier::DispatchForObject(&member);
     }
   }
 };

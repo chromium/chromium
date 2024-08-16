@@ -59,7 +59,7 @@ export class CanvasDrawer {
 
   // The fixed maximum value in line chart. If this value is null, the maximum
   // value of unit label will be set from the real maximum value of data series.
-  private maxValue: number|null = null;
+  private fixedMaxValue: number|null = null;
 
   // The width and height of the graph for drawing line chart, excluding the
   // bottom labels.
@@ -72,8 +72,8 @@ export class CanvasDrawer {
   }
 
   // Overwrite the maximum value of this chart.
-  setMaxValue(maxValue: number|null) {
-    this.maxValue = maxValue;
+  setFixedMaxValue(maxValue: number|null) {
+    this.fixedMaxValue = maxValue;
   }
 
   // Return true if there is any data series in this chart.
@@ -102,10 +102,11 @@ export class CanvasDrawer {
 
     this.renderChartGrid(context);
     this.renderTimeLabels(context, visibleStartTime, timeScale);
-    this.renderUnitLabels(context);
 
-    const stepSize = getStepSize(timeScale);
-    this.updateMaxValue(visibleStartTime, visibleEndTime, stepSize);
+    const stepSize: number = getStepSize(timeScale);
+    const maxValue: number =
+        this.getVisibleMaxValue(visibleStartTime, visibleEndTime, stepSize);
+    this.renderUnitLabel(context, maxValue);
     this.renderLines(
         context, visibleStartTime, visibleEndTime, timeScale, stepSize);
   }
@@ -212,7 +213,9 @@ export class CanvasDrawer {
   }
 
   // Render the unit label on the right side of line chart.
-  private renderUnitLabels(context: CanvasRenderingContext2D) {
+  private renderUnitLabel(context: CanvasRenderingContext2D, maxValue: number) {
+    this.unitLabel.setMaxValue(maxValue);
+
     // Cannot draw the line at the top and the bottom pixel.
     const labelHeight: number = this.graphHeight - 2;
     this.unitLabel.setLayout(labelHeight, /* precision */ 2);
@@ -234,16 +237,15 @@ export class CanvasDrawer {
   }
 
   // Calculate the max value for the current layout of unit label.
-  private updateMaxValue(startTime: number, endTime: number, stepSize: number) {
-    const dataSeriesList: DataSeries[] = this.dataSeriesList;
-    if (this.maxValue != null) {
-      this.unitLabel.setMaxValue(this.maxValue);
-      return;
+  private getVisibleMaxValue(
+      startTime: number, endTime: number, stepSize: number): number {
+    if (this.fixedMaxValue != null) {
+      return this.fixedMaxValue;
     }
-    const valueList: number[] = dataSeriesList.map((dataSeries: DataSeries) => {
-      return dataSeries.getDisplayedMaxValue(startTime, endTime, stepSize);
-    });
-    this.unitLabel.setMaxValue(Math.max(...valueList));
+    return this.dataSeriesList.reduce(
+        (maxValue, item) => Math.max(
+            maxValue, item.getDisplayedMaxValue(startTime, endTime, stepSize)),
+        0);
   }
 
   // Render the tick line for the unit label.

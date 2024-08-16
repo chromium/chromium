@@ -59,8 +59,6 @@ class ExceptionState;
 class ExecutionContext;
 
 class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
-  DISALLOW_NEW();
-
  public:
   struct PLATFORM_EXPORT Line {
     gfx::PointF start;

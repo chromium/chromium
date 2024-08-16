@@ -54,7 +54,6 @@
 #include "chrome/browser/enterprise/util/jni_headers/ManagedBrowserUtils_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-namespace chrome {
 namespace enterprise_util {
 
 namespace {
@@ -346,4 +345,3 @@ void GetManagementIcon(const GURL& url,
 }
 
 }  // namespace enterprise_util
-}  // namespace chrome

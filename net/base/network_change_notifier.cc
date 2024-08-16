@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/network_change_notifier.h"
 
 #include <limits>
@@ -503,13 +498,20 @@ bool NetworkChangeNotifier::IsDefaultNetworkActive() {
 }
 
 // static
-const char* NetworkChangeNotifier::ConnectionTypeToString(
+base::cstring_view NetworkChangeNotifier::ConnectionTypeToString(
     ConnectionType type) {
-  static const char* const kConnectionTypeNames[] = {
-      "CONNECTION_UNKNOWN", "CONNECTION_ETHERNET",  "CONNECTION_WIFI",
-      "CONNECTION_2G",      "CONNECTION_3G",        "CONNECTION_4G",
-      "CONNECTION_NONE",    "CONNECTION_BLUETOOTH", "CONNECTION_5G",
-  };
+  static constexpr auto kConnectionTypeNames =
+      std::to_array<base::cstring_view>({
+          "CONNECTION_UNKNOWN",
+          "CONNECTION_ETHERNET",
+          "CONNECTION_WIFI",
+          "CONNECTION_2G",
+          "CONNECTION_3G",
+          "CONNECTION_4G",
+          "CONNECTION_NONE",
+          "CONNECTION_BLUETOOTH",
+          "CONNECTION_5G",
+      });
   static_assert(std::size(kConnectionTypeNames) ==
                     NetworkChangeNotifier::CONNECTION_LAST + 1,
                 "ConnectionType name count should match");

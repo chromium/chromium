@@ -4,6 +4,7 @@
 
 import("//build/config/arm.gni")
 import("//build/config/mips.gni")
+import("//build/config/loongarch64.gni")
 
 if (build_with_chromium) {
   import("//testing/libfuzzer/fuzzer_test.gni")
@@ -90,6 +91,11 @@ source_set("libpng_sources") {
       "mips/filter_mmi_inline_assembly.c",
       "mips/filter_msa_intrinsics.c",
       "mips/mips_init.c",
+    ]
+  } else if (current_cpu == "loong64" && loongarch64_use_lsx) {
+    sources += [
+      "loongarch/filter_lsx_intrinsics.c",
+      "loongarch/loongarch_lsx_init.c",
     ]
   }
 

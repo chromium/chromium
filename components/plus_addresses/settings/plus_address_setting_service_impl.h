@@ -11,7 +11,7 @@
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace plus_addresses {
@@ -31,7 +31,7 @@ class PlusAddressSettingServiceImpl : public PlusAddressSettingService {
   bool GetIsPlusAddressesEnabled() const override;
   bool GetHasAcceptedNotice() const override;
   void SetHasAcceptedNotice() override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegate() override;
 
  private:

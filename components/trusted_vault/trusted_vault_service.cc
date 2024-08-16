@@ -47,7 +47,7 @@ trusted_vault::TrustedVaultClient* TrustedVaultService::GetTrustedVaultClient(
       return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace trusted_vault

@@ -306,6 +306,7 @@ All changes to this list should go through Blink's feature review process: http:
     pointer-events
     position
     position-anchor
+    position-area
     position-try-fallbacks
     position-try-order
     position-visibility

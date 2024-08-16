@@ -211,6 +211,10 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
   bool IsRepeatStyleValue() const { return class_type_ == kRepeatStyleClass; }
 
+  bool IsRelativeColorValue() const {
+    return class_type_ == kRelativeColorClass;
+  }
+
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
@@ -256,6 +260,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kScrollClass,
     kViewClass,
     kRatioClass,
+    kRelativeColorClass,
 
     // Basic shape classes.
     // TODO(sashab): Represent these as a single subclass, BasicShapeClass.

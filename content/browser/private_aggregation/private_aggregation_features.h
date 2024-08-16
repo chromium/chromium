@@ -19,6 +19,12 @@ namespace content {
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateAggregationApiDebugModeRequires3pcEligibility);
 
+// Controls whether contributions in a report with the same bucket and the same
+// filtering ID should be merged into a single contribution before truncating
+// (if necessary) and embedding into the report. Also drops contributions with a
+// value of zero.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApiContributionMerging);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_FEATURES_H_

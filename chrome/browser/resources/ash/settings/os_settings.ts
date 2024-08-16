@@ -93,6 +93,7 @@ export {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 export {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 export {CrA11yAnnouncerElement} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 export {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+export {CrAutoImgElement} from 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 export {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 export {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
@@ -221,6 +222,7 @@ export {NearbyShareHighVisibilityPageElement} from './nearby_share_page/nearby_s
 export {getReceiveManager, observeReceiveManager, setReceiveManagerForTesting} from './nearby_share_page/nearby_share_receive_manager.js';
 export {dataUsageStringToEnum, NearbyShareDataUsage} from './nearby_share_page/types.js';
 export {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './os_a11y_page/chromevox_subpage_browser_proxy.js';
+export {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './os_a11y_page/facegaze_subpage_browser_proxy.js';
 export {OsSettingsA11yPageElement} from './os_a11y_page/os_a11y_page.js';
 export {OsA11yPageBrowserProxy, OsA11yPageBrowserProxyImpl} from './os_a11y_page/os_a11y_page_browser_proxy.js';
 export {SelectToSpeakSubpageBrowserProxy, SelectToSpeakSubpageBrowserProxyImpl} from './os_a11y_page/select_to_speak_subpage_browser_proxy.js';

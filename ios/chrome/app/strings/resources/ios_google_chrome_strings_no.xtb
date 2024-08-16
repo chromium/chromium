@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Bidra til å gjøre Chrome bedre og raskere</translation>
 <translation id="1333745675627230582">Spill Chrome Dino-spillet</translation>
 <translation id="1352919863522755794">Google Passordlagring kunne ikke sjekke passordene dine. Se om du er koblet til internett.</translation>
+<translation id="1380565463006545725">Dra nytte av Chrome Shopping</translation>
 <translation id="139623527619433858">Bruk Chrome for iPad som standard</translation>
 <translation id="1407843355326180937">Logg på dette nettstedet og Chrome for å få bokmerkene dine med mer på alle enhetene dine.</translation>
 <translation id="1436059927646026729">Åpne den nyligste fanen min i Chrome</translation>
@@ -35,6 +36,7 @@ Du bør tenke på følgende:
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
 <translation id="1615715390546812898">Søk med stemmen i Chrome.</translation>
 <translation id="1657395063736185342">Søk i visuelle elementer i Chrome</translation>
+<translation id="1670609221633730681">Chrome-tips: Velg plassering for adressefeltet</translation>
 <translation id="1675955119303651351">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
         Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
@@ -113,12 +115,14 @@ Du bør tenke på følgende:
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4064699917955374540">For å bruke og lagre Chrome-data i Google-kontoen din, bekreft at det er deg.</translation>
+<translation id="4066411101507716142">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPad.</translation>
 <translation id="4067858366537947361">Åpne en inkognitofane i Chrome</translation>
 <translation id="4093042601582616698">Vil du gjøre Chrome til standardnettleseren din?</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251174643044751591">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
 <translation id="4286914711740227883">Slett nettlesingsdata i Chrome</translation>
+<translation id="430839890088895017">Chrome-tips: Flytt Chrome til dokken</translation>
 <translation id="4453284704333523777">Administrer Chrome-innstillinger</translation>
 <translation id="4523886039239821078">Noen tillegg fører til at Chrome krasjer. Avinstaller:</translation>
 <translation id="4633328489441962921">Chrome kan ikke se etter oppdateringer</translation>
@@ -182,6 +186,7 @@ Du bør tenke på følgende:
 <translation id="6272822675004864999">For å motta varsler fra Chrome, slå på varsler i iOS-innstillingene.</translation>
 <translation id="630693926528731525">Passordet ble ikke delt. Sjekk internettilkoblingen, og kontroller at du er logget på Chrome. Prøv deretter på nytt.</translation>
 <translation id="6348855835728304880">Få tilgang til Chrome-passord med mer i andre apper på denne enheten.</translation>
+<translation id="6373751563207403289">Sikkerhetssjekken beskytter deg mot databrudd, utrygge nettsteder med mer. Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome oppdager for deg.</translation>
 <translation id="6374691158439235563">Fullfør konfigureringen av Chrome</translation>
 <translation id="6389317667633680932">Utforsk nye funksjoner som hjelper deg med å få mest mulig ut av Chrome.</translation>
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
@@ -234,8 +239,10 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="746684838091935575">3. Velg Chrome.</translation>
 <translation id="7492574581995589075">Organisasjonen din har slått av muligheten til å bruke og lagre Chrome-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
 <translation id="7581063337314642333">Gå til fanerutenettet i Chrome</translation>
+<translation id="7642373780953416937">Motta varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome automatisk oppdager for deg.</translation>
 <translation id="7662994914830945754">For å se fanene dine overalt hvor du bruker Chrome, logg på og slå på synkronisering</translation>
 <translation id="7669869107155339016">Gå til Chrome-innstillingene.</translation>
+<translation id="7683540977001394271">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen på iPhone.</translation>
 <translation id="769104993356536261">Bruk Chrome-handlinger i iOS</translation>
 <translation id="7693590760643069321">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
@@ -249,6 +256,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="8006014511203279255">Bruk Chrome hver gang du trykker på linker i meldinger og andre apper.</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="804638182476029347">Tillat at Chrome-varsler mottar varsler om prisavslag</translation>
+<translation id="804756029368067824">Angi Chrome som standardnettleser, slik at du enkelt kan spore priser og få prisstatistikk for ting du vil kjøpe.</translation>
 <translation id="8065292699993359127">Åpne nettadresser i Chrome i inkognitomodus</translation>
 <translation id="8069507567842347179">Denne pakken blir allerede sporet i Chrome.</translation>
 <translation id="8136856065410661948">Dette brukes til å opprette aktiviteter i Apple-kalenderen din fra Chrome og Google Lens.</translation>
@@ -276,6 +284,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
   2. Trykk på Standard nettleserapp.
   3. Velg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Varsler om eventuelle personvern- eller sikkerhetsproblemer som Chrome oppdager for deg.</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="8603022514504485810">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Få mest mulig ut av Chrome</translation>

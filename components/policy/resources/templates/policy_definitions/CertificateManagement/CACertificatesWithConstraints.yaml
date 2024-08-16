@@ -37,9 +37,6 @@ schema:
             type: array
             items:
               type: string
-# Supported platforms should be kept in sync with the
-# chrome_certificate_policies_supported build flag in
-# chrome/common/features.gni
 future_on:
 - chrome.linux
 - chrome.mac

@@ -281,6 +281,12 @@ class OptimizationGuideKeyedService
 
   bool ComponentUpdatesEnabledProvider() const;
 
+  // Records synthetic field trial for `feature` with trial name appended with
+  // `feature_name`.
+  void RecordModelExecutionFeatureSyntheticFieldTrial(
+      optimization_guide::UserVisibleFeatureKey feature,
+      const std::string_view feature_name);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   // The store of hints.
@@ -288,7 +294,7 @@ class OptimizationGuideKeyedService
 
   // The logger that plumbs the debug logs to the optimization guide
   // internals page. Must outlive `prediction_manager_` and `hints_manager_`.
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Keep a reference to this so it stays alive.
   scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>

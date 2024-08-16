@@ -699,8 +699,7 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
                                 SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
     return;
   }
-  if (!for_browse_url && base::FeatureList::IsEnabled(
-                             kSafeBrowsingNewGmsApiForSubresourceFilterCheck)) {
+  if (!for_browse_url) {
     StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
                                 SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
     return;

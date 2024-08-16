@@ -21,7 +21,7 @@ TEST(PasswordsDirectoryUtilTest, Deletion) {
   ASSERT_TRUE(password_manager::GetPasswordsDirectory(&dir));
   ASSERT_TRUE(CreateDirectory(dir));
   base::FilePath file = dir.Append(FILE_PATH_LITERAL("TestPasswords.csv"));
-  EXPECT_EQ(0, WriteFile(file, "", 0));
+  EXPECT_TRUE(WriteFile(file, ""));
 
   // Verify that the file was created in the passwords directory.
   ASSERT_TRUE(base::PathExists(file));

@@ -63,18 +63,6 @@ inline constexpr char kTrackingProtectionSilentEligibleSince[] =
 inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
     "tracking_protection.tracking_protection_silent_onboarded_since";
 
-// Tracking Protection Reminder Prefs.
-
-// Unsynced pref that indicates the reminder status for a profile.
-inline constexpr char kTrackingProtectionReminderStatus[] =
-    "tracking_protection.reminder_status";
-
-// Tracking Protection Survey Prefs.
-
-// Unsynced pref that indicates the start time of the survey window.
-inline constexpr char kTrackingProtectionSurveyWindowStartTime[] =
-    "tracking_protection.survey_window_start_time";
-
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the
@@ -102,6 +90,11 @@ inline constexpr char kTrackingProtection3pcdEnabled[] =
 // using either the UI setting or enterprise policy.
 inline constexpr char kIpProtectionEnabled[] =
     "tracking_protection.ip_protection_enabled";
+
+// Synced boolean that indicates whether the user has had their IP protection
+// pref initialized. Used ONLY for Google dogfood.
+inline constexpr char kIpProtectionInitializedByDogfood[] =
+    "tracking_protection.ip_protection_initialized_by_dogfood";
 
 // Synced boolean that indicates whether the user has enabled the
 // fingerprinting protection setting.
@@ -153,17 +146,6 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
-};
-
-// Tracking protection reminder statues.
-enum class TrackingProtectionReminderStatus {
-  kUnset = 0,
-  kInvalid = 1,
-  kPendingReminder = 2,
-  kExperiencedReminder = 3,
-  kModeBUserSkipped = 4,
-  kFeatureDisabledSkipped = 5,
-  kMaxValue = kFeatureDisabledSkipped,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

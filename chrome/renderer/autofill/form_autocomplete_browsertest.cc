@@ -293,59 +293,6 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
                                        GetFieldsForFilling({form_data}));
   }
 
-  // Simulates receiving a message from the browser to fill a form with an
-  // additional non-autofillable field.
-  void SimulateFillFormWithNonFillableFields() {
-    WebDocument document = GetMainFrame()->GetDocument();
-    WebFormControlElement fname_element =
-        document.GetElementById(WebString::FromUTF8("fname"))
-            .To<WebFormControlElement>();
-    ASSERT_TRUE(fname_element);
-    WebFormControlElement mname_element =
-        document.GetElementById(WebString::FromUTF8("mname"))
-            .To<WebFormControlElement>();
-    ASSERT_TRUE(mname_element);
-    WebFormControlElement lname_element =
-        document.GetElementById(WebString::FromUTF8("lname"))
-            .To<WebFormControlElement>();
-    ASSERT_TRUE(lname_element);
-
-    // TODO(crbug.com/41495779): Update.
-    FormData form;
-    form.set_name(u"name");
-    form.set_url(GURL("http://example.com/"));
-    form.set_action(GURL("http://example.com/blade.php"));
-    form.set_renderer_id(test::MakeFormRendererId());  // Default value.
-
-    FormFieldData field;
-    field.set_name(u"fname");
-    field.set_value(u"John");
-    field.set_is_autofilled(true);
-    field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-    test_api(form).Append(field);
-
-    field.set_name(u"lname");
-    field.set_value(u"Smith");
-    field.set_is_autofilled(true);
-    field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-    test_api(form).Append(field);
-
-    // Additional non-autofillable field.
-    field.set_name(u"mname");
-    field.set_value(u"James");
-    field.set_is_autofilled(false);
-    field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
-    test_api(form).Append(field);
-
-    // This call is necessary to setup the autofill agent appropriate for the
-    // user selection; simulates the menu actually popping up.
-    SimulateElementClick(fname_element);
-
-    autofill_agent_->ApplyFieldsAction(mojom::FormActionType::kFill,
-                                       mojom::ActionPersistence::kFill,
-                                       GetFieldsForFilling({form}));
-  }
-
   // This triggers a layout update to apply JS changes like display = 'none'.
   void ForceLayoutUpdate() {
     GetWebFrameWidget()->UpdateAllLifecyclePhases(
@@ -377,7 +324,7 @@ TEST_F(FormAutocompleteTest, VerifyFocusAndBlurEventsAfterAutofill) {
   focus_test_utils_->FocusElement("fname");
 
   // Simulate filling the form using Autofill.
-  SimulateFillFormWithNonFillableFields();
+  SimulateFillForm();
   base::RunLoop().RunUntilIdle();
 
   // Expected Result in order:

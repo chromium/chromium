@@ -24,7 +24,7 @@ InterpolableScrollbarColor::InterpolableScrollbarColor(
     : thumb_color_(thumb_color), track_color_(track_color) {}
 
 InterpolableScrollbarColor* InterpolableScrollbarColor::Create(
-    StyleScrollbarColor scrollbar_color) {
+    const StyleScrollbarColor& scrollbar_color) {
   InterpolableScrollbarColor* result =
       MakeGarbageCollected<InterpolableScrollbarColor>();
   result->thumb_color_ =

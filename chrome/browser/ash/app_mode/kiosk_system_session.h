@@ -36,8 +36,6 @@ class KioskSystemSession {
   KioskSystemSession& operator=(const KioskSystemSession&) = delete;
   ~KioskSystemSession();
 
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
   // Destroys ash observers.
   void ShuttingDown();
 

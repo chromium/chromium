@@ -12,6 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -57,7 +58,7 @@ void CardExpirationDateFixFlowControllerImpl::OnAccepted(
           EXPIRATION_DATE_FIX_FLOW_PROMPT_ACCEPTED);
   LogSaveCreditCardPromptResult(
       autofill_metrics::SaveCreditCardPromptResult::kAccepted, true,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_expiration_date_from_user(true));
   had_user_interaction_ = true;
   std::move(upload_save_card_callback_).Run(month, year);
@@ -69,7 +70,7 @@ void CardExpirationDateFixFlowControllerImpl::OnDismissed() {
           EXPIRATION_DATE_FIX_FLOW_PROMPT_DISMISSED);
   LogSaveCreditCardPromptResult(
       autofill_metrics::SaveCreditCardPromptResult::kDenied, true,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_should_request_expiration_date_from_user(true));
   had_user_interaction_ = true;
 }
@@ -139,7 +140,7 @@ void CardExpirationDateFixFlowControllerImpl::
     LogSaveCreditCardPromptResult(
         autofill_metrics::SaveCreditCardPromptResult::kInteractedAndIgnored,
         true,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_should_request_expiration_date_from_user(true));
   }
   card_expiration_date_fix_flow_view_ = nullptr;

@@ -99,6 +99,8 @@ if (is_chromeos_ash) {
       "//chromeos/ash/components/install_attributes",
       "//components/account_id",
     ]
+
+    deps = [ "//chromeos/ash/components/settings" ]
   }
 
   source_set("unit_tests") {

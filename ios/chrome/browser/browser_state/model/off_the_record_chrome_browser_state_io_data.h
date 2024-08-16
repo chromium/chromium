@@ -11,8 +11,8 @@
 #include "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "ios/chrome/browser/browser_state/model/chrome_browser_state_io_data.h"
 #include "ios/chrome/browser/net/model/net_types.h"
+#include "ios/chrome/browser/profile/model/profile_ios_io_data.h"
 
 class ChromeBrowserState;
 class IOSChromeURLRequestContextGetter;

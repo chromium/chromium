@@ -25,7 +25,8 @@ class ChromeLabsViewController {
  public:
   ChromeLabsViewController(const ChromeLabsModel* model,
                            ChromeLabsBubbleView* chrome_labs_bubble_view,
-                           Browser* browser, flags_ui::FlagsState* flags_state,
+                           Browser* browser,
+                           flags_ui::FlagsState* flags_state,
                            flags_ui::FlagsStorage* flags_storage);
   ~ChromeLabsViewController() = default;
 

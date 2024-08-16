@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -48,6 +47,7 @@ class Autofill_CreditCardFill;
 
 namespace autofill {
 
+class AutofillClient;
 class AutofillField;
 
 namespace autofill_metrics {
@@ -98,10 +98,10 @@ class AutofillMetrics {
     AUTOCOMPLETE_SUGGESTIONS_SHOWN = 0,
 
     // An Autocomplete suggestion was selected.
-    AUTOCOMPLETE_SUGGESTION_SELECTED,
+    AUTOCOMPLETE_SUGGESTION_SELECTED = 1,
 
     // An Autocomplete suggestion was deleted. Added in M113.
-    AUTOCOMPLETE_SUGGESTION_DELETED,
+    AUTOCOMPLETE_SUGGESTION_DELETED = 2,
 
     NUM_AUTOCOMPLETE_EVENTS
   };
@@ -127,13 +127,13 @@ class AutofillMetrics {
   // numeric values should never be reused.
   enum SubmittedCardStateMetric {
     // Submitted card has valid card number and expiration date.
-    HAS_CARD_NUMBER_AND_EXPIRATION_DATE,
+    HAS_CARD_NUMBER_AND_EXPIRATION_DATE = 0,
     // Submitted card has a valid card number but an invalid or missing
     // expiration date.
-    HAS_CARD_NUMBER_ONLY,
+    HAS_CARD_NUMBER_ONLY = 1,
     // Submitted card has a valid expiration date but an invalid or missing card
     // number.
-    HAS_EXPIRATION_DATE_ONLY,
+    HAS_EXPIRATION_DATE_ONLY = 2,
     NUM_SUBMITTED_CARD_STATE_METRICS,
   };
 
@@ -146,17 +146,17 @@ class AutofillMetrics {
     // The submitted card and the unmasked server card had the same expiration
     // date.
     // DEPRECATED: Full server cards are no longer supported.
-    FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED,
+    FULL_SERVER_CARD_EXPIRATION_DATE_MATCHED = 0,
     // The submitted card and the unmasked server card had different expiration
     // dates.
     // DEPRECATED: Full server cards are no longer supported.
-    FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH,
+    FULL_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH = 1,
     // The submitted card and the masked server card had the same expiration
     // date.
-    MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED,
+    MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED = 2,
     // The submitted card and the masked server card had different expiration
     // dates.
-    MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH,
+    MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH = 3,
     NUM_SUBMITTED_SERVER_CARD_EXPIRATION_STATUS_METRICS,
   };
 
@@ -176,9 +176,9 @@ class AutofillMetrics {
   // numeric values should never be reused.
   enum UploadOfferedCardOriginMetric {
     // Credit card upload was offered for a local card already on the device.
-    OFFERING_UPLOAD_OF_LOCAL_CARD,
+    OFFERING_UPLOAD_OF_LOCAL_CARD = 0,
     // Credit card upload was offered for a newly-seen credit card.
-    OFFERING_UPLOAD_OF_NEW_CARD,
+    OFFERING_UPLOAD_OF_NEW_CARD = 1,
     NUM_UPLOAD_OFFERED_CARD_ORIGIN_METRICS,
   };
 
@@ -188,9 +188,9 @@ class AutofillMetrics {
   // numeric values should never be reused.
   enum UploadAcceptedCardOriginMetric {
     // The user accepted upload of a local card already on the device.
-    USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD,
+    USER_ACCEPTED_UPLOAD_OF_LOCAL_CARD = 0,
     // The user accepted upload of a newly-seen credit card.
-    USER_ACCEPTED_UPLOAD_OF_NEW_CARD,
+    USER_ACCEPTED_UPLOAD_OF_NEW_CARD = 1,
     NUM_UPLOAD_ACCEPTED_CARD_ORIGIN_METRICS,
   };
 
@@ -247,21 +247,21 @@ class AutofillMetrics {
     //
     // This is captured as an aggregate (non-type-specific) log entry. It is
     // NOT captured by type-specific logging.
-    TRUE_NEGATIVE_AMBIGUOUS,
+    TRUE_NEGATIVE_AMBIGUOUS = 1,
 
     // The field type is UNKNOWN and autofill made no prediction.
     // i.e. actual_type == UNKNOWN and predicted type == UNKNOWN|NO_SERVER_DATA.
     //
     // This is captured as an aggregate (non-type-specific) log entry. It is
     // NOT captured by type-specific logging.
-    TRUE_NEGATIVE_UNKNOWN,
+    TRUE_NEGATIVE_UNKNOWN = 2,
 
     // The field type is EMPTY and autofill predicted UNKNOWN
     // i.e. actual_type == EMPTY and predicted type == UNKNOWN|NO_SERVER_DATA.
     //
     // This is captured as an aggregate (non-type-specific) log entry. It is
     // NOT captured by type-specific logging.
-    TRUE_NEGATIVE_EMPTY,
+    TRUE_NEGATIVE_EMPTY = 3,
 
     // Autofill predicted type T, but the field actually had a different type.
     // i.e., actual_type == T, predicted_type = U, T != U,
@@ -270,7 +270,7 @@ class AutofillMetrics {
     // This is captured as a type-specific log entry for U. It is NOT captured
     // as an aggregate (non-type-specific) entry as this would double count with
     // FALSE_NEGATIVE_MISMATCH logging captured for T.
-    FALSE_POSITIVE_MISMATCH,
+    FALSE_POSITIVE_MISMATCH = 4,
 
     // Autofill predicted type T, but the field actually matched multiple
     // pieces of autofill data, none of which are T.
@@ -279,28 +279,28 @@ class AutofillMetrics {
     //
     // This is captured as a type-specific log entry for T. It is also captured
     // as an aggregate (non-type-specific) log entry.
-    FALSE_POSITIVE_AMBIGUOUS,
+    FALSE_POSITIVE_AMBIGUOUS = 5,
 
     // The field type is UNKNOWN, but autofill predicted it to be of type T.
     // i.e., actual_type == UNKNOWN, predicted_type = T, T != UNKNOWN
     //
     // This is captured as a type-specific log entry for T. Is is also captured
     // as an aggregate (non-type-specific) log entry.
-    FALSE_POSITIVE_UNKNOWN,
+    FALSE_POSITIVE_UNKNOWN = 6,
 
     // The field type is EMPTY, but autofill predicted it to be of type T.
     // i.e., actual_type == EMPTY, predicted_type = T, T != UNKNOWN
     //
     // This is captured as a type-specific log entry for T. Is is also captured
     // as an aggregate (non-type-specific) log entry.
-    FALSE_POSITIVE_EMPTY,
+    FALSE_POSITIVE_EMPTY = 7,
 
     // The field is of type T, but autofill did not make a type prediction.
     // i.e., actual_type == T, predicted_type = UNKNOWN, T != UNKNOWN.
     //
     // This is captured as a type-specific log entry for T. Is is also captured
     // as an aggregate (non-type-specific) log entry.
-    FALSE_NEGATIVE_UNKNOWN,
+    FALSE_NEGATIVE_UNKNOWN = 8,
 
     // The field is of type T, but autofill predicted it to be of type U.
     // i.e., actual_type == T, predicted_type = U, T != U,
@@ -308,7 +308,7 @@ class AutofillMetrics {
     //
     // This is captured as a type-specific log entry for T. Is is also captured
     // as an aggregate (non-type-specific) log entry.
-    FALSE_NEGATIVE_MISMATCH,
+    FALSE_NEGATIVE_MISMATCH = 9,
 
     // This must be last.
     NUM_FIELD_TYPE_QUALITY_METRICS
@@ -336,16 +336,16 @@ class AutofillMetrics {
   enum RationalizationQualityMetric {
     // Rationalization did make it better for the user. Most commonly, user
     // have left it empty as rationalization predicted.
-    RATIONALIZATION_GOOD,
+    RATIONALIZATION_GOOD = 0,
 
     // Rationalization did not make it better or worse. Meaning user have
     // input some value that would not be filled correctly automatically.
-    RATIONALIZATION_OK,
+    RATIONALIZATION_OK = 1,
 
     // Rationalization did make it worse, user has to fill
     // in a value that would have been automatically filled
     // if there was no rationalization at all.
-    RATIONALIZATION_BAD,
+    RATIONALIZATION_BAD = 2,
 
     // This must be last.
     NUM_RATIONALIZATION_QUALITY_METRICS
@@ -354,19 +354,26 @@ class AutofillMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum QualityMetricPredictionSource {
-    PREDICTION_SOURCE_UNKNOWN,    // Not used. The prediction source is unknown.
-    PREDICTION_SOURCE_HEURISTIC,  // Local heuristic field-type prediction.
-    PREDICTION_SOURCE_SERVER,     // Crowd-sourced server field type prediction.
-    PREDICTION_SOURCE_OVERALL,    // Overall field-type prediction seen by user.
+    // Not used. The prediction source is unknown.
+    PREDICTION_SOURCE_UNKNOWN = 0,
+    // Local heuristic field-type prediction.
+    PREDICTION_SOURCE_HEURISTIC = 1,
+    // Crowd-sourced server field type prediction.
+    PREDICTION_SOURCE_SERVER = 2,
+    // Overall field-type prediction seen by user.
+    PREDICTION_SOURCE_OVERALL = 3,
     NUM_QUALITY_METRIC_SOURCES
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum QualityMetricType {
-    TYPE_SUBMISSION = 0,      // Logged based on user's submitted data.
-    TYPE_NO_SUBMISSION,       // Logged based on user's entered data.
-    TYPE_AUTOCOMPLETE_BASED,  // Logged based on the value of autocomplete attr.
+    // Logged based on user's submitted data.
+    TYPE_SUBMISSION = 0,
+    // Logged based on user's entered data.
+    TYPE_NO_SUBMISSION = 1,
+    // Logged based on the value of autocomplete attr.
+    TYPE_AUTOCOMPLETE_BASED = 2,
     NUM_QUALITY_METRIC_TYPES,
   };
 
@@ -375,21 +382,21 @@ class AutofillMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum ServerQueryMetric {
-    QUERY_SENT = 0,           // Sent a query to the server.
-    QUERY_RESPONSE_RECEIVED,  // Received a response.
-    QUERY_RESPONSE_PARSED,    // Successfully parsed the server response.
+    QUERY_SENT = 0,               // Sent a query to the server.
+    QUERY_RESPONSE_RECEIVED = 1,  // Received a response.
+    QUERY_RESPONSE_PARSED = 2,    // Successfully parsed the server response.
 
     // The response was parseable, but provided no improvements relative to our
     // heuristics.
-    QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS,
+    QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS = 3,
 
     // Our heuristics detected at least one auto-fillable field, and the server
     // response overrode the type of at least one field.
-    QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS,
+    QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS = 4,
 
     // Our heuristics did not detect any auto-fillable fields, but the server
     // response did detect at least one.
-    QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS,
+    QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS = 5,
     NUM_SERVER_QUERY_METRICS,
   };
 
@@ -398,11 +405,11 @@ class AutofillMetrics {
   // numeric values should never be reused.
   enum ScanCreditCardPromptMetric {
     // "Scan card" was presented to the user.
-    SCAN_CARD_ITEM_SHOWN,
+    SCAN_CARD_ITEM_SHOWN = 0,
     // "Scan card" was selected by the user.
-    SCAN_CARD_ITEM_SELECTED,
+    SCAN_CARD_ITEM_SELECTED = 1,
     // The user selected something in the dropdown besides "scan card".
-    SCAN_CARD_OTHER_ITEM_SELECTED,
+    SCAN_CARD_OTHER_ITEM_SELECTED = 2,
     NUM_SCAN_CREDIT_CARD_PROMPT_METRICS,
   };
 
@@ -413,11 +420,11 @@ class AutofillMetrics {
     // The prompt was shown.
     CARDHOLDER_NAME_FIX_FLOW_PROMPT_SHOWN = 0,
     // The prompt was accepted by user.
-    CARDHOLDER_NAME_FIX_FLOW_PROMPT_ACCEPTED,
+    CARDHOLDER_NAME_FIX_FLOW_PROMPT_ACCEPTED = 1,
     // The prompt was dismissed by user.
-    CARDHOLDER_NAME_FIX_FLOW_PROMPT_DISMISSED,
+    CARDHOLDER_NAME_FIX_FLOW_PROMPT_DISMISSED = 2,
     // The prompt was closed without user interaction.
-    CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+    CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION = 3,
     NUM_CARDHOLDER_NAME_FIXFLOW_PROMPT_EVENTS,
   };
 
@@ -428,9 +435,9 @@ class AutofillMetrics {
     // The prompt was accepted by user.
     EXPIRATION_DATE_FIX_FLOW_PROMPT_ACCEPTED = 0,
     // The prompt was dismissed by user.
-    EXPIRATION_DATE_FIX_FLOW_PROMPT_DISMISSED,
+    EXPIRATION_DATE_FIX_FLOW_PROMPT_DISMISSED = 1,
     // The prompt was closed without user interaction.
-    EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+    EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION = 2,
     kMaxValue = EXPIRATION_DATE_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
   };
 
@@ -503,12 +510,12 @@ class AutofillMetrics {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum WalletApiCallMetric {
-    UNKNOWN_API_CALL,  // Catch all. Should never be used.
-    ACCEPT_LEGAL_DOCUMENTS,
-    AUTHENTICATE_INSTRUMENT,
-    GET_FULL_WALLET,
-    GET_WALLET_ITEMS,
-    SAVE_TO_WALLET,
+    UNKNOWN_API_CALL = 0,  // Catch all. Should never be used.
+    ACCEPT_LEGAL_DOCUMENTS = 1,
+    AUTHENTICATE_INSTRUMENT = 2,
+    GET_FULL_WALLET = 3,
+    GET_WALLET_ITEMS = 4,
+    SAVE_TO_WALLET = 5,
     NUM_WALLET_API_CALLS
   };
 
@@ -521,36 +528,36 @@ class AutofillMetrics {
     WALLET_ERROR_BASELINE_ISSUED_REQUEST = 0,
     // A fatal error occurred while communicating with the Wallet server. This
     // value has been deprecated.
-    WALLET_FATAL_ERROR_DEPRECATED,
+    WALLET_FATAL_ERROR_DEPRECATED = 1,
     // Received a malformed response from the Wallet server.
-    WALLET_MALFORMED_RESPONSE,
+    WALLET_MALFORMED_RESPONSE = 2,
     // A network error occurred while communicating with the Wallet server.
-    WALLET_NETWORK_ERROR,
+    WALLET_NETWORK_ERROR = 3,
     // The request was malformed.
-    WALLET_BAD_REQUEST,
+    WALLET_BAD_REQUEST = 4,
     // Risk deny, unsupported country, or account closed.
-    WALLET_BUYER_ACCOUNT_ERROR,
+    WALLET_BUYER_ACCOUNT_ERROR = 5,
     // Unknown server side error.
-    WALLET_INTERNAL_ERROR,
+    WALLET_INTERNAL_ERROR = 6,
     // API call had missing or invalid parameters.
-    WALLET_INVALID_PARAMS,
+    WALLET_INVALID_PARAMS = 7,
     // Online Wallet is down.
-    WALLET_SERVICE_UNAVAILABLE,
+    WALLET_SERVICE_UNAVAILABLE = 8,
     // User needs make a cheaper transaction or not use Online Wallet.
-    WALLET_SPENDING_LIMIT_EXCEEDED,
+    WALLET_SPENDING_LIMIT_EXCEEDED = 9,
     // The server API version of the request is no longer supported.
-    WALLET_UNSUPPORTED_API_VERSION,
+    WALLET_UNSUPPORTED_API_VERSION = 10,
     // Catch all error type.
-    WALLET_UNKNOWN_ERROR,
+    WALLET_UNKNOWN_ERROR = 11,
     // The merchant has been blocked for Online Wallet due to some manner of
     // compliance violation.
-    WALLET_UNSUPPORTED_MERCHANT,
+    WALLET_UNSUPPORTED_MERCHANT = 12,
     // Buyer Legal Address has a country which is unsupported by Wallet.
-    WALLET_BUYER_LEGAL_ADDRESS_NOT_SUPPORTED,
+    WALLET_BUYER_LEGAL_ADDRESS_NOT_SUPPORTED = 13,
     // Wallet's Know Your Customer(KYC) action is pending/failed for this user.
-    WALLET_UNVERIFIED_KNOW_YOUR_CUSTOMER_STATUS,
+    WALLET_UNVERIFIED_KNOW_YOUR_CUSTOMER_STATUS = 14,
     // Chrome version is unsupported or provided API key not allowed.
-    WALLET_UNSUPPORTED_USER_AGENT_OR_API_KEY,
+    WALLET_UNSUPPORTED_USER_AGENT_OR_API_KEY = 15,
     NUM_WALLET_ERROR_METRICS
   };
 
@@ -564,24 +571,24 @@ class AutofillMetrics {
     // Baseline metric: Issued a request to the Wallet server.
     WALLET_REQUIRED_ACTION_BASELINE_ISSUED_REQUEST = 0,
     // Values from the wallet::RequiredAction enum:
-    UNKNOWN_REQUIRED_ACTION,  // Catch all type.
-    GAIA_AUTH,
-    PASSIVE_GAIA_AUTH,
-    SETUP_WALLET,
-    ACCEPT_TOS,
-    UPDATE_EXPIRATION_DATE,
-    UPGRADE_MIN_ADDRESS,
-    CHOOSE_ANOTHER_INSTRUMENT_OR_ADDRESS,
-    VERIFY_CVV,
-    INVALID_FORM_FIELD,
-    REQUIRE_PHONE_NUMBER,
+    UNKNOWN_REQUIRED_ACTION = 1,  // Catch all type.
+    GAIA_AUTH = 2,
+    PASSIVE_GAIA_AUTH = 3,
+    SETUP_WALLET = 4,
+    ACCEPT_TOS = 5,
+    UPDATE_EXPIRATION_DATE = 6,
+    UPGRADE_MIN_ADDRESS = 7,
+    CHOOSE_ANOTHER_INSTRUMENT_OR_ADDRESS = 8,
+    VERIFY_CVV = 9,
+    INVALID_FORM_FIELD = 10,
+    REQUIRE_PHONE_NUMBER = 11,
     NUM_WALLET_REQUIRED_ACTIONS
   };
 
   // To record whether the upload event was sent.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
+  enum class UploadEventStatus { kNotSent = 0, kSent = 1, kMaxValue = kSent };
 
   // To record if the value in an autofilled field was edited by the user.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -893,7 +900,7 @@ class AutofillMetrics {
   static void LogCreditCardInfoBarMetric(
       InfoBarMetric metric,
       bool is_uploading,
-      AutofillClient::SaveCreditCardOptions options);
+      payments::PaymentsAutofillClient::SaveCreditCardOptions options);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,
@@ -1161,12 +1168,6 @@ class AutofillMetrics {
       FormInteractionsUkmLogger* form_interactions_ukm_logger,
       const FormStructure& form,
       const AutofillField& field);
-
-  // Records if the page was translated upon form submission.
-  static void LogFieldParsingPageTranslationStatusMetric(bool metric);
-
-  // Records the visible page language upon form submission.
-  static void LogFieldParsingTranslatedFormLanguageMetric(std::string_view);
 
   static const char* GetMetricsSyncStateSuffix(PaymentsSigninState sync_state);
 

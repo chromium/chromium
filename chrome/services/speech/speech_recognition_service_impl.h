@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -66,6 +67,17 @@ class SpeechRecognitionServiceImpl
           client,
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
+  void BindWebSpeechRecognizer(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          session_client,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+          audio_forwarder,
+      int channel_count,
+      int sample_rate,
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      bool continuous) override;
 
   // media::mojom::AudioSourceSpeechRecognitionContext:
   void BindAudioSourceFetcher(
@@ -84,6 +96,13 @@ class SpeechRecognitionServiceImpl
  protected:
   // Returns whether the binary and config paths exist.
   bool FilePathsExist();
+
+  // Returns whether the recognizer was successfully created.
+  bool CreateRecognizer(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+          client,
+      media::mojom::SpeechRecognitionOptionsPtr options);
 
   mojo::Receiver<media::mojom::SpeechRecognitionService> receiver_;
 

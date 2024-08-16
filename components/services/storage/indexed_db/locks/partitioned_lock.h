@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 
-#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 
@@ -18,7 +17,7 @@ namespace content {
 // |is_locked()| can be used to inquire locked status. Also, |Release()| can
 // be called to manually release the lock, which appropriately updates the
 // |is_locked()| result.
-class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
+class PartitionedLock {
  public:
   using LockReleasedCallback =
       base::OnceCallback<void(PartitionedLockId lock_id)>;
@@ -59,17 +58,13 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLock {
 };
 
 // Logging support.
-COMPONENT_EXPORT(LOCK_MANAGER)
 std::ostream& operator<<(std::ostream& out, const PartitionedLock& lock_id);
 
 // Equality doesn't take into account whether the lock 'is_locked()' or not,
 // only the partition and the lock_id.
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator==(const PartitionedLock& x, const PartitionedLock& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator!=(const PartitionedLock& x, const PartitionedLock& y);
 // Comparison operator to allow sorting for locking / unlocking order.
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 
 }  // namespace content

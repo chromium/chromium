@@ -271,12 +271,6 @@ void TestingProfileManager::DeleteProfileAttributesStorage() {
   profile_manager_->profile_attributes_storage_.reset(nullptr);
 }
 
-void TestingProfileManager::UpdateLastUser(Profile* last_active) {
-#if !BUILDFLAG(IS_ANDROID)
-  profile_manager_->UpdateLastUser(last_active);
-#endif
-}
-
 base::FilePath TestingProfileManager::GetProfilePath(
     const std::string& profile_name) {
   // Create a path for the profile based on the name.

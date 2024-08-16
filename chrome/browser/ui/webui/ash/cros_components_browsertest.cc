@@ -53,15 +53,10 @@ class CrosComponentsUI : public content::WebUIController {
   ~CrosComponentsUI() override = default;
 };
 
-class CrosComponentsUIConfig : public content::WebUIConfig {
+class CrosComponentsUIConfig
+    : public content::DefaultWebUIConfig<CrosComponentsUI> {
  public:
-  CrosComponentsUIConfig() : WebUIConfig("chrome", kTestHost) {}
-
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override {
-    return std::make_unique<CrosComponentsUI>(web_ui);
-  }
+  CrosComponentsUIConfig() : DefaultWebUIConfig("chrome", kTestHost) {}
 };
 
 struct ComponentTestData {
@@ -283,6 +278,18 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
             "chrome://resources/cros_components/accordion/accordion_item.js",
         .component_name = "cros-accordion-item",
         .gtest_name = "CrosAccordionItem",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/icon_dropdown/icon-dropdown.js",
+        .component_name = "cros-icon-dropdown",
+        .gtest_name = "CrosIconDropdown",
+    },
+    {
+        .script_src = "chrome://resources/cros_components/icon_dropdown/"
+                      "icon-dropdown-option.js",
+        .component_name = "cros-icon-dropdown-option",
+        .gtest_name = "CrosIconDropdownOption",
     },
     // TODO(b:332970280): Bring orca-feedback back once we can support safeHTML
     // properly.

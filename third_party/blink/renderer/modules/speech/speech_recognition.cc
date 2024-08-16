@@ -44,6 +44,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -113,6 +116,27 @@ void SpeechRecognition::abort() {
     stopping_ = true;
     session_->Abort();
   }
+}
+
+ScriptPromise<IDLBoolean> SpeechRecognition::onDeviceWebSpeechAvailable(
+    ScriptState* script_state,
+    String lang,
+    ExceptionState& exception_state) {
+  if (!controller_ || !GetExecutionContext()) {
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
+      script_state, exception_state.GetContext());
+  auto result = resolver->Promise();
+
+  controller_->OnDeviceWebSpeechAvailable(
+      lang, WTF::BindOnce([](SpeechRecognition*,
+                             ScriptPromiseResolver<IDLBoolean>* resolver,
+                             bool available) { resolver->Resolve(available); },
+                          WrapPersistent(this), WrapPersistent(resolver)));
+
+  return result;
 }
 
 void SpeechRecognition::ResultRetrieved(

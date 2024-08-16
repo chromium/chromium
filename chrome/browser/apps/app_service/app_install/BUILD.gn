@@ -116,7 +116,10 @@ source_set("navigation_throttle") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "app_install_navigation_throttle_unittest.cc" ]
+  sources = [
+    "app_install_navigation_throttle_unittest.cc",
+    "app_install_types_unittest.cc",
+  ]
 
   deps = [
     ":app_install",
@@ -145,8 +148,8 @@ source_set("unit_tests") {
       "//chrome/browser/apps/almanac_api_client/proto",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
       "//components/arc:arc_test_support",
       "//services/network:test_support",
     ]
@@ -157,6 +160,7 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [ "app_install_navigation_throttle_browsertest.cc" ]
+
   if (is_chromeos_ash) {
     sources += [
       "app_install_service_ash_browsertest.cc",

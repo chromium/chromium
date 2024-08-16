@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -129,12 +130,16 @@ constexpr char kValueValidationMessage[] = "fake-value-validation-message";
 constexpr char kRobotAuthCode[] = "fake-robot-auth-code";
 constexpr char kApiAuthScope[] = "fake-api-auth-scope";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+constexpr base::TimeDelta kDefaultOidcRegistrationTimeout = base::Seconds(30);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 constexpr int64_t kAgeOfCommand = 123123123;
 constexpr int64_t kLastCommandId = 123456789;
 constexpr int64_t kTimestamp = 987654321;
 
-constexpr em::PolicyFetchRequest::SignatureType kSignatureType =
-    em::PolicyFetchRequest::SHA256_RSA;
+constexpr em::PolicyFetchRequest::SignatureType
+    kRemoteCommandsFetchSignatureType = em::PolicyFetchRequest::SHA256_RSA;
 
 constexpr PolicyFetchReason kReason = PolicyFetchReason::kTest;
 constexpr auto kProtoReason = enterprise_management::DevicePolicyRequest::TEST;
@@ -920,7 +925,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -931,7 +937,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetch) {
               Not(Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken))));
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(base::Seconds(0), timeout_);
+  EXPECT_EQ(kDefaultOidcRegistrationTimeout, timeout_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
@@ -965,7 +971,8 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
   register_parameters.oidc_state = kOidcState;
 
   client_->RegisterWithOidcResponse(register_parameters, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type_);
@@ -976,7 +983,7 @@ TEST_F(CloudPolicyClientTest, RegistrationWithOidcAndPolicyFetchWithOidcState) {
               Not(Contains(Pair(dm_protocol::kParamOAuthToken, kOAuthToken))));
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(base::Seconds(0), timeout_);
+  EXPECT_EQ(kDefaultOidcRegistrationTimeout, timeout_);
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
   ExpectAndCaptureJob(policy_response);
@@ -1004,7 +1011,8 @@ TEST_F(CloudPolicyClientTest, OidcRegistrationFailure) {
       em::DeviceRegisterRequest::USER,
       em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   client_->RegisterWithOidcResponse(register_user, kOAuthToken, kIdToken,
-                                    std::string() /* no client_id*/);
+                                    std::string() /* no client_id*/,
+                                    kDefaultOidcRegistrationTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_OIDC_REGISTRATION,
             job_type);
@@ -1419,6 +1427,52 @@ TEST_F(CloudPolicyClientTest, PolicyUpdate) {
     EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
     CheckPolicyResponse(policy_response);
   }
+}
+
+TEST_F(CloudPolicyClientTest, PolicyFetchSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(policy::kPolicyFetchWithSha256);
+  RegisterClient();
+  const em::DeviceManagementResponse policy_response = GetPolicyResponse();
+  ExpectAndCaptureJob(policy_response);
+  EXPECT_CALL(observer_, OnPolicyFetched);
+
+  client_->FetchPolicy(kReason);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  em::DeviceManagementRequest policy_request = GetPolicyRequest();
+  policy_request.mutable_policy_request()
+      ->mutable_requests(0)
+      ->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            policy_request.SerializePartialAsString());
+  CheckPolicyResponse(policy_response);
+}
+
+TEST_F(CloudPolicyClientTest, PolicyFetchDisabledSHA256) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(policy::kPolicyFetchWithSha256);
+  RegisterClient();
+  const em::DeviceManagementResponse policy_response = GetPolicyResponse();
+  ExpectAndCaptureJob(policy_response);
+  EXPECT_CALL(observer_, OnPolicyFetched);
+
+  client_->FetchPolicy(kReason);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  em::DeviceManagementRequest policy_request = GetPolicyRequest();
+  policy_request.mutable_policy_request()
+      ->mutable_requests(0)
+      ->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            policy_request.SerializePartialAsString());
+  CheckPolicyResponse(policy_response);
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
@@ -2619,8 +2673,8 @@ TEST_F(CloudPolicyClientTest, ShouldRejectUnsignedCommands) {
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      kSignatureType, dm_protocol::kChromeUserRemoteCommandType,
-      std::move(callback));
+      kRemoteCommandsFetchSignatureType,
+      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2649,8 +2703,8 @@ TEST_F(CloudPolicyClientTest,
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      kSignatureType, dm_protocol::kChromeUserRemoteCommandType,
-      std::move(callback));
+      kRemoteCommandsFetchSignatureType,
+      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2676,8 +2730,8 @@ TEST_F(CloudPolicyClientTest, ShouldNotFailIfRemoteCommandResponseIsEmpty) {
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      kSignatureType, dm_protocol::kChromeUserRemoteCommandType,
-      std::move(callback));
+      kRemoteCommandsFetchSignatureType,
+      dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2687,7 +2741,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   RegisterClient();
 
   em::DeviceManagementRequest remote_command_request =
-      GetRemoteCommandRequest(kSignatureType);
+      GetRemoteCommandRequest(kRemoteCommandsFetchSignatureType);
 
   em::DeviceManagementResponse remote_command_response;
   em::SignedData* signed_command =
@@ -2722,7 +2776,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
       1, remote_command_request.remote_command_request().command_results(0));
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId),
-      command_results, kSignatureType,
+      command_results, kRemoteCommandsFetchSignatureType,
       dm_protocol::kChromeUserRemoteCommandType, std::move(callback));
   run_loop.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,

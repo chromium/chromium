@@ -258,7 +258,7 @@ void SignData(const std::string& data,
     default:
       // `em::PolicyFetchRequest::NONE` indicates unsigned blobs.
       // Crash is OK here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   std::unique_ptr<crypto::SignatureCreator> signature_creator(

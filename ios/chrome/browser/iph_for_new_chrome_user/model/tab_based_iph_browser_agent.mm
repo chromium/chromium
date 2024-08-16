@@ -39,7 +39,8 @@ void TabBasedIPHBrowserAgent::RootViewForInProductHelpDidAppear() {
   web::WebState* current_web_state = web_state_list_->GetActiveWebState();
   if (tapped_adjacent_tab_ && current_web_state &&
       !current_web_state->IsLoading()) {
-    [HelpHandler() presentToolbarSwipeGestureInProductHelp];
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
     tapped_adjacent_tab_ = false;
   }
 }
@@ -102,7 +103,8 @@ void TabBasedIPHBrowserAgent::TabDidLoadUrl(
   if (current_web_state) {
     if ((transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
         (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK)) {
-      [HelpHandler() presentNewTabToolbarItemBubble];
+      [HelpHandler()
+          presentInProductHelpWithType:InProductHelpType::kNewTabToolbarItem];
     }
     GURL visible = current_web_state->GetLastCommittedURL();
     if (url == visible &&
@@ -116,7 +118,8 @@ void TabBasedIPHBrowserAgent::TabDidLoadUrl(
 void TabBasedIPHBrowserAgent::NewTabDidLoadUrl(const GURL& url,
                                                bool user_initiated) {
   if (user_initiated) {
-    [HelpHandler() presentTabGridToolbarItemBubble];
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kTabGridToolbarItem];
   }
 }
 
@@ -181,13 +184,16 @@ void TabBasedIPHBrowserAgent::PageLoaded(
     return;
   }
   if (multi_gesture_refresh_) {
-    [HelpHandler() presentPullToRefreshGestureInProductHelp];
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kPullToRefresh];
     multi_gesture_refresh_ = false;
   } else if (back_forward_button_tapped_) {
-    [HelpHandler() presentBackForwardSwipeGestureInProductHelp];
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kBackForwardSwipe];
     back_forward_button_tapped_ = false;
   } else if (tapped_adjacent_tab_) {
-    [HelpHandler() presentToolbarSwipeGestureInProductHelp];
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
     tapped_adjacent_tab_ = false;
   }
 }

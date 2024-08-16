@@ -94,12 +94,10 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return gfx::kNoneIcon;
+  NOTREACHED();
 }
 
 }  // namespace

@@ -120,6 +120,7 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
       (const std::string& device_key,
        base::OnceCallback<void(const std::optional<std::string>&)> callback),
       (override));
+  MOCK_METHOD(void, ResetNotificationDeviceTracking, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };

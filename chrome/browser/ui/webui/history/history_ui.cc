@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/history/history_ui.h"
 
 #include <memory>
@@ -95,6 +100,13 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"clearBrowsingDataLinkTooltip", IDS_SETTINGS_OPENS_IN_NEW_TAB},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"collapseSessionButton", IDS_HISTORY_OTHER_SESSIONS_COLLAPSE_SESSION},
+      {"compareHistoryEmpty", IDS_COMPARE_HISTORY_EMPTY},
+      {"compareHistoryRemove", IDS_COMPARE_HISTORY_REMOVE},
+      {"compareHistoryHeader", IDS_COMPARE_HISTORY_HEADER},
+      {"compareHistoryInfo", IDS_COMPARE_HISTORY_INFO},
+      {"compareHistoryListsMenuItem", IDS_COMPARE_HISTORY_MENU_ITEM},
+      {"compareHistoryRow", IDS_COMPARE_HISTORY_ROW},
+      {"compareHistoryMenuAriaLabel", IDS_COMPARE_HISTORY_MENU_ARIA_LABEL},
       {"delete", IDS_HISTORY_DELETE},
       {"deleteSuccess", IDS_HISTORY_REMOVE_PAGE_SUCCESS},
       {"deleteConfirm", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
@@ -115,16 +127,6 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"noResults", IDS_HISTORY_NO_RESULTS},
       {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
-      {"productSpecificationsEmpty", IDS_PRODUCT_SPECIFICATIONS_EMPTY},
-      {"productSpecificationsHistoryRemove",
-       IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE},
-      {"productSpecificationsHeader", IDS_PRODUCT_SPECIFICATIONS_HEADER},
-      {"productSpecificationsInfo", IDS_PRODUCT_SPECIFICATIONS_INFO},
-      {"productSpecificationsListsMenuItem",
-       IDS_PRODUCT_SPECIFICATIONS_HISTORY_MENU_ITEM},
-      {"productSpecificationsRow", IDS_PRODUCT_SPECIFICATIONS_ROW},
-      {"productSpecificationsMenuAriaLabel",
-       IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL},
       {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
       {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
@@ -188,8 +190,12 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
+      {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
+      {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
       {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
       {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
+      {"historyEmbeddingsShowByLabel",
+       IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL},
       {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
       {"historyEmbeddingsShowByGroup", IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP},
       {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
@@ -216,8 +222,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                                  chrome::kHistorySearchSettingURL));
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
                      history_embeddings::kSearchQueryMinimumWordCount.Get());
-  source->AddString("historyEmbeddingsHelpArticleUrl",
-                    chrome::kHistorySearchLearnMorePageURL);
+  source->AddString("historyEmbeddingsLearnMoreUrl",
+                    chrome::kHistorySearchSettingURL);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);
@@ -233,9 +239,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   // Product specifications:
   commerce::ShoppingService* service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  source->AddBoolean(
-      "productSpecificationsListsEnabled",
-      commerce::IsProductSpecificationsEnabled(service->GetAccountChecker()));
+  source->AddBoolean("compareHistoryEnabled",
+                     commerce::CanManageProductSpecificationsSets(
+                         service->GetAccountChecker(),
+                         service->GetProductSpecificationsService()));
 
   return source;
 }

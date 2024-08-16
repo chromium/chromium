@@ -8,12 +8,13 @@ import 'chrome://resources/mwc/@material/web/icon/icon.js';
 import 'chrome://resources/mwc/@material/web/iconbutton/icon-button.js';
 import '../components/audio-waveform.js';
 import '../components/cra/cra-image.js';
-import '../components/cra/cra-menu.js';
 import '../components/cra/cra-menu-item.js';
+import '../components/cra/cra-menu.js';
 import '../components/delete-recording-dialog.js';
 import '../components/export-dialog.js';
-import '../components/recording-title.js';
 import '../components/recording-file-list.js';
+import '../components/recording-info-dialog.js';
+import '../components/recording-title.js';
 import '../components/secondary-button.js';
 import '../components/summarization-view.js';
 import '../components/transcription-view.js';
@@ -35,6 +36,7 @@ import {
 import {CraMenu} from '../components/cra/cra-menu.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
 import {ExportDialog} from '../components/export-dialog.js';
+import {RecordingInfoDialog} from '../components/recording-info-dialog.js';
 import {i18n} from '../core/i18n.js';
 import {
   AnimationFrameController,
@@ -217,10 +219,13 @@ export class PlaybackPage extends ReactiveLitElement {
     }
 
     #volume-controls {
-      align-items: center;
-      display: flex;
       left: 0;
       position: absolute;
+    }
+
+    #inline-slider {
+      align-items: center;
+      display: flex;
 
       & > cra-icon-button {
         margin-right: 0;
@@ -229,13 +234,45 @@ export class PlaybackPage extends ReactiveLitElement {
       & > cros-slider {
         min-inline-size: initial;
         width: 180px;
+      }
 
-        /*
-         * TODO: b/336963138 - Slider should be in a separate layer when
-         * viewpoint is small.
-         */
-        @container style(--small-viewport: 1) {
-          display: none;
+      @container style(--small-viewport: 1) {
+        display: none;
+      }
+    }
+
+    #floating-slider-base {
+      display: none;
+
+      @container style(--small-viewport: 1) {
+        display: block;
+      }
+
+      & > cra-icon-button {
+        anchor-name: --volume-button;
+        margin: 0;
+        padding: 4px;
+      }
+
+      /* TODO(pihsun): Animate the opening/closing */
+      & > [popover]:popover-open {
+        align-items: center;
+        background: var(--cros-sys-base_elevated);
+        border: none;
+        border-radius: 8px;
+        box-shadow: var(--cros-sys-app_elevation3);
+        display: flex;
+        flex-flow: row;
+        inset-area: center span-right;
+        margin: initial;
+        overflow: initial;
+        padding: 0;
+        position: absolute;
+        position-anchor: --volume-button;
+
+        & > cros-slider {
+          min-inline-size: initial;
+          width: 180px;
         }
       }
     }
@@ -308,6 +345,8 @@ export class PlaybackPage extends ReactiveLitElement {
 
   private readonly exportDialog = createRef<ExportDialog>();
 
+  private readonly recordingInfoDialog = createRef<RecordingInfoDialog>();
+
   private readonly recordingDataManager = useRecordingDataManager();
 
   private readonly playbackSpeed = signal(1);
@@ -315,6 +354,8 @@ export class PlaybackPage extends ReactiveLitElement {
   private readonly playbackSpeedMenu = createRef<CraMenu>();
 
   private readonly playbackSpeedMenuOpened = signal(false);
+
+  private readonly floatingVolume = createRef<HTMLElement>();
 
   // TODO(pihsun): Loading spinner when loading metadata.
   private readonly recordingMetadata = computed(() => {
@@ -442,6 +483,7 @@ export class PlaybackPage extends ReactiveLitElement {
       <audio-waveform
         .values=${this.powers.value}
         .currentTime=${this.currentTime.value}
+        .transcription=${this.transcription.value}
       >
       </audio-waveform>
     `;
@@ -510,6 +552,10 @@ export class PlaybackPage extends ReactiveLitElement {
     this.exportDialog.value?.show();
   }
 
+  private onShowDetailClick() {
+    this.recordingInfoDialog.value?.show();
+  }
+
   private renderMenu() {
     // TODO: b/344789992 - Implements show detail.
     return html`
@@ -520,6 +566,7 @@ export class PlaybackPage extends ReactiveLitElement {
         ></cra-menu-item>
         <cra-menu-item
           headline=${i18n.playbackMenuShowDetailOption}
+          @cros-menu-item-triggered=${this.onShowDetailClick}
         ></cra-menu-item>
         <cros-menu-separator></cros-menu-separator>
         <cra-menu-item
@@ -527,6 +574,10 @@ export class PlaybackPage extends ReactiveLitElement {
           @cros-menu-item-triggered=${this.onDeleteClick}
         ></cra-menu-item>
       </cra-menu>
+      <recording-info-dialog
+        ${ref(this.recordingInfoDialog)}
+        .recordingId=${this.recordingId}
+      ></recording-info-dialog>
       <export-dialog ${ref(this.exportDialog)} .recordingId=${this.recordingId}>
       </export-dialog>
       <delete-recording-dialog
@@ -566,7 +617,6 @@ export class PlaybackPage extends ReactiveLitElement {
           id="show-menu"
           @click=${this.toggleMenu}
         >
-          <!-- TODO: b/336963138 - Implements more menu -->
           <cra-icon slot="icon" name="more_vertical"></cra-icon>
         </cra-icon-button>
       </div>
@@ -656,6 +706,94 @@ export class PlaybackPage extends ReactiveLitElement {
     `;
   }
 
+  private onVolumeInput(ev: Event) {
+    const slider = assertInstanceof(ev.target, CrosSlider);
+    this.audio.muted = false;
+    this.audio.volume = slider.value / 100;
+    this.requestUpdate();
+  }
+
+  private toggleMuted() {
+    this.audio.muted = !this.audio.muted;
+    this.requestUpdate();
+  }
+
+  private renderVolumeIcon() {
+    const {muted, volume} = this.audio;
+    const iconName = (() => {
+      if (muted) {
+        return 'volume_mute';
+      }
+      if (volume === 0) {
+        return 'volume_off';
+      }
+      return volume < 0.5 ? 'volume_down' : 'volume_up';
+    })();
+    return html`<cra-icon slot="icon" .name=${iconName}></cra-icon>`;
+  }
+
+  private renderVolumeSlider() {
+    const {muted, volume} = this.audio;
+    const volumeDisplay = muted ? 0 : Math.round(volume * 100);
+    return html`
+      <cros-slider
+        withlabel
+        .value=${volumeDisplay}
+        min="0"
+        max="100"
+        @input=${this.onVolumeInput}
+      ></cros-slider>
+    `;
+  }
+
+  private showFloatingVolume() {
+    this.floatingVolume.value?.showPopover();
+  }
+
+  private hideFloatingVolume(ev: FocusEvent) {
+    const newTarget = ev.relatedTarget;
+    if (newTarget !== null && newTarget instanceof Node &&
+        this.floatingVolume.value?.contains(newTarget)) {
+      return;
+    }
+    this.floatingVolume.value?.hidePopover();
+  }
+
+  private renderVolumeControl(): RenderResult {
+    return html`
+      <div id="inline-slider">
+        <cra-icon-button buttonstyle="floating" @click=${this.toggleMuted}>
+          ${this.renderVolumeIcon()}
+        </cra-icon-button>
+        ${this.renderVolumeSlider()}
+      </div>
+      <div id="floating-slider-base">
+        <cra-icon-button
+          buttonstyle="floating"
+          @click=${this.showFloatingVolume}
+        >
+          ${this.renderVolumeIcon()}
+        </cra-icon-button>
+        <div
+          popover
+          ${ref(this.floatingVolume)}
+          @focusout=${this.hideFloatingVolume}
+        >
+          <cra-icon-button buttonstyle="floating" @click=${this.toggleMuted}>
+            ${this.renderVolumeIcon()}
+          </cra-icon-button>
+          ${this.renderVolumeSlider()}
+          <cra-icon-button
+            buttonstyle="floating"
+            @click=${this.hideFloatingVolume}
+          >
+            <cra-icon slot="icon" name="close"></cra-icon>
+          </cra-icon-button>
+        </div>
+      </div>
+    `;
+  }
+
   override render(): RenderResult {
     const mainSectionClasses = {
       'show-transcription': this.showTranscription.value,
@@ -675,18 +813,7 @@ export class PlaybackPage extends ReactiveLitElement {
       <div id="footer">
         ${this.renderAudioTimeline()}
         <div id="actions">
-          <div id="volume-controls">
-            <cra-icon-button buttonstyle="floating">
-              <!-- TODO: b/336963138 - Implements volume button -->
-              <!--
-                TODO: b/336963138 - The icon should change based on current
-                volume.
-              -->
-              <cra-icon slot="icon" name="volume_up"></cra-icon>
-            </cra-icon-button>
-            <!-- TODO: b/336963138 - Implements volume slider -->
-            <cros-slider withlabel value="50" min="0" max="100"></cros-slider>
-          </div>
+          <div id="volume-controls">${this.renderVolumeControl()}</div>
           <div id="middle-controls">
             <secondary-button @click=${this.onRewind10Secs}>
               <cra-icon slot="icon" name="replay_10"></cra-icon>

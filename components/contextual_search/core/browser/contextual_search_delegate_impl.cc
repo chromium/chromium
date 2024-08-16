@@ -183,13 +183,19 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
   // search term resolution request.
   resource_request->headers = GetDiscourseContext(*context);
 
-  // Disable cookies for this request.
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  // Disable cookies for this request. The credentials mode should be omit by
+  // default, only change to include for debug purpose.
+  resource_request->credentials_mode =
+      base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)
+          ? network::mojom::CredentialsMode::kInclude
+          : network::mojom::CredentialsMode::kOmit;
 
   // Semantic details for this "Resolve" request:
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("contextual_search_resolve",
-                                          R"(
+      base::FeatureList::IsEnabled(kContextualSearchWithCredentialsForDebug)
+          ? net::DefineNetworkTrafficAnnotation(
+                "contextual_search_resolve_debug",
+                R"(
           semantics {
             sender: "Contextual Search"
             description:
@@ -203,6 +209,61 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
             data:
               "The URL and some page content from the current tab."
             destination: GOOGLE_OWNED_SERVICE
+            user_data {
+              type: SENSITIVE_URL
+              type: WEB_CONTENT
+            }
+            internal {
+              contacts {
+                email: "gangwu@chromium.org"
+              }
+              contacts {
+                email: "contextual-search-dev@chromium.org"
+              }
+            }
+            last_reviewed: "2024-08-12"
+          }
+          policy {
+            cookies_allowed: YES
+            cookies_store: "user"
+            setting:
+              "This feature can be disabled by turning off 'Touch to Search' "
+              "in Chrome for Android settings."
+            chrome_policy {
+              ContextualSearchEnabled {
+                  policy_options {mode: MANDATORY}
+                  ContextualSearchEnabled: false
+              }
+            }
+          })")
+          : net::DefineNetworkTrafficAnnotation("contextual_search_resolve",
+                                                R"(
+          semantics {
+            sender: "Contextual Search"
+            description:
+              "Chromium can determine the best search term to apply for any "
+               "section of plain text for almost any page.  This sends page "
+               "data to Google and the response identifies what to search for "
+               "plus additional actionable information."
+            trigger:
+              "Triggered by an unhandled tap or touch and hold gesture on "
+              "plain text on most pages."
+            data:
+              "The URL and some page content from the current tab."
+            destination: GOOGLE_OWNED_SERVICE
+            user_data {
+              type: SENSITIVE_URL
+              type: WEB_CONTENT
+            }
+            internal {
+              contacts {
+                email: "gangwu@chromium.org"
+              }
+              contacts {
+                email: "contextual-search-dev@chromium.org"
+              }
+            }
+            last_reviewed: "2024-08-12"
           }
           policy {
             cookies_allowed: NO

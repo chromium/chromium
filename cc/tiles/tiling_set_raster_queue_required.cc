@@ -8,16 +8,17 @@
 
 #include <utility>
 
+#include "cc/base/features.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 
 namespace cc {
 
-TilingSetRasterQueueRequired::TilingSetRasterQueueRequired(
-    PictureLayerTilingSet* tiling_set,
-    RasterTilePriorityQueue::Type type)
-    : type_(type) {
+// static
+std::unique_ptr<TilingSetRasterQueueRequired>
+TilingSetRasterQueueRequired::Create(PictureLayerTilingSet* tiling_set,
+                                     RasterTilePriorityQueue::Type type) {
   DCHECK_NE(static_cast<int>(type),
             static_cast<int>(RasterTilePriorityQueue::Type::ALL));
 
@@ -40,11 +41,23 @@ TilingSetRasterQueueRequired::TilingSetRasterQueueRequired(
     tiling = tiling_set->FindTilingWithResolution(HIGH_RESOLUTION);
   }
 
-  // If we don't have a tiling, then this queue will yield no tiles. See
-  // PictureLayerImpl::CanHaveTilings for examples of when a HIGH_RESOLUTION
-  // tiling would not be generated.
-  if (!tiling || tiling->all_tiles_done())
-    return;
+  if (!tiling || tiling->all_tiles_done()) {
+    if (features::IsCCSlimmingEnabled()) {
+      return nullptr;
+    }
+    return base::WrapUnique(new TilingSetRasterQueueRequired());
+  }
+  return base::WrapUnique(new TilingSetRasterQueueRequired(tiling, type));
+}
+
+TilingSetRasterQueueRequired::TilingSetRasterQueueRequired() = default;
+
+TilingSetRasterQueueRequired::TilingSetRasterQueueRequired(
+    PictureLayerTiling* tiling,
+    RasterTilePriorityQueue::Type type)
+    : type_(type) {
+  DCHECK(tiling);
+  DCHECK(!tiling->all_tiles_done());
 
   if (type == RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION) {
     iterator_ = TilingIterator(tiling, &tiling->tiling_data_,

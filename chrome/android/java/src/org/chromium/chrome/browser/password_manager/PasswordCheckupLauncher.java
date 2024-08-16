@@ -45,8 +45,7 @@ public class PasswordCheckupLauncher {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
         // Force instantiation of GMSCore password check if GMSCore update is required. Password
         // check launch will fail and instead show the blocking dialog with the suggestion to
-        // update. This is the desired behavior with the feature
-        // UnifiedPasswordManagerSyncOnlyInGMSCore.
+        // update.
         if (passwordManagerHelper.canUseUpm()
                 || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                         UserPrefs.get(profile), SyncServiceFactory.getForProfile(profile))) {

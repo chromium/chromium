@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 
 #include "base/strings/stringprintf.h"
@@ -122,16 +127,20 @@ class LensOverlayImageHelperTest : public testing::Test {
 
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, 2, client_logs);
+      lens::DownscaleAndEncodeBitmap(bitmap, 2, ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeight, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(1, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(6239, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(6239, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(0)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -139,16 +148,20 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
 
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapSmallSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, 2, client_logs);
+      lens::DownscaleAndEncodeBitmap(bitmap, 2, ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(bitmap.width(), image_data.image_metadata().width());
   ASSERT_EQ(bitmap.height(), image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(1, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(359, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(359, ref_counted_logs->client_logs()
+                     .phase_latencies_metadata()
                      .phase(0)
                      .image_encode_data()
                      .encoded_image_size_bytes());
@@ -158,9 +171,10 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapLargeSize) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth * scale, kImageMaxHeight * scale);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, 2, client_logs);
+      lens::DownscaleAndEncodeBitmap(bitmap, 2, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
@@ -170,18 +184,22 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapLargeSize) {
   ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeight, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight * scale * scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
-  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight,
-            client_logs.phase_latencies_metadata()
-                .phase(0)
-                .image_downscale_data()
-                .downscaled_image_size());
-  ASSERT_EQ(6239, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight, ref_counted_logs->client_logs()
+                                                  .phase_latencies_metadata()
+                                                  .phase(0)
+                                                  .image_downscale_data()
+                                                  .downscaled_image_size());
+  ASSERT_EQ(6239, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -191,9 +209,10 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapHeightTooLarge) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight * scale);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, 2, client_logs);
+      lens::DownscaleAndEncodeBitmap(bitmap, 2, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth / scale, kImageMaxHeight);
@@ -209,9 +228,10 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapWidthTooLarge) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth * scale, kImageMaxHeight);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, 2, client_logs);
+      lens::DownscaleAndEncodeBitmap(bitmap, 2, ref_counted_logs);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / scale);
@@ -221,18 +241,23 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapWidthTooLarge) {
   ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeight / scale, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight * scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight / scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(3309, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(3309, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -262,21 +287,25 @@ TEST_F(LensOverlayImageHelperTest,
        DownscaleAndEncodeBitmapRegionNonRegionRequest) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
   lens::mojom::CenterRotatedBoxPtr region;
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap, std::move(region),
-                                                   std::nullopt, client_logs);
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, std::move(region), std::nullopt, ref_counted_logs);
   ASSERT_FALSE(image_crop.has_value());
-  ASSERT_EQ(0, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      0,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
 }
 
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
   gfx::Rect region(0, 0, kImageMaxWidth, kImageMaxHeight);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().parent_width());
@@ -290,18 +319,21 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight,
-            client_logs.phase_latencies_metadata()
-                .phase(0)
-                .image_downscale_data()
-                .original_image_size());
-  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight,
-            client_logs.phase_latencies_metadata()
-                .phase(0)
-                .image_downscale_data()
-                .downscaled_image_size());
-  ASSERT_EQ(6239, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight, ref_counted_logs->client_logs()
+                                                  .phase_latencies_metadata()
+                                                  .phase(0)
+                                                  .image_downscale_data()
+                                                  .original_image_size());
+  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight, ref_counted_logs->client_logs()
+                                                  .phase_latencies_metadata()
+                                                  .phase(0)
+                                                  .image_downscale_data()
+                                                  .downscaled_image_size());
+  ASSERT_EQ(6239, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -310,10 +342,11 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionSmallSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
   gfx::Rect region(10, 10, 50, 50);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(/*width=*/50, /*height=*/50);
@@ -330,16 +363,21 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionSmallSize) {
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(10000, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(10000, ref_counted_logs->client_logs()
+                       .phase_latencies_metadata()
                        .phase(0)
                        .image_downscale_data()
                        .original_image_size());
-  ASSERT_EQ(2500, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(2500, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(0)
                       .image_downscale_data()
                       .downscaled_image_size());
-  ASSERT_EQ(309, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(309, ref_counted_logs->client_logs()
+                     .phase_latencies_metadata()
                      .phase(1)
                      .image_encode_data()
                      .encoded_image_size_bytes());
@@ -352,10 +390,11 @@ TEST_F(LensOverlayImageHelperTest,
       CreateNonEmptyBitmap(kImageMaxWidth * scale, kImageMaxHeight * scale);
 
   gfx::Rect region(10, 10, 50, 50);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(/*width=*/50, /*height=*/50);
@@ -372,17 +411,22 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight * scale * scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
-  ASSERT_EQ(2500, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(2500, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(0)
                       .image_downscale_data()
                       .downscaled_image_size());
-  ASSERT_EQ(309, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(309, ref_counted_logs->client_logs()
+                     .phase_latencies_metadata()
                      .phase(1)
                      .image_encode_data()
                      .encoded_image_size_bytes());
@@ -397,10 +441,11 @@ TEST_F(LensOverlayImageHelperTest,
   const int region_scale = 2;
   gfx::Rect region(10, 10, kImageMaxWidth * region_scale,
                    kImageMaxHeight * region_scale);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
@@ -421,19 +466,23 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(
       kImageMaxWidth * kImageMaxHeight * full_image_scale * full_image_scale,
-      client_logs.phase_latencies_metadata()
+      ref_counted_logs->client_logs()
+          .phase_latencies_metadata()
           .phase(0)
           .image_downscale_data()
           .original_image_size());
-  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight,
-            client_logs.phase_latencies_metadata()
-                .phase(0)
-                .image_downscale_data()
-                .downscaled_image_size());
-  ASSERT_EQ(6239, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(kImageMaxWidth * kImageMaxHeight, ref_counted_logs->client_logs()
+                                                  .phase_latencies_metadata()
+                                                  .phase(0)
+                                                  .image_downscale_data()
+                                                  .downscaled_image_size());
+  ASSERT_EQ(6239, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -447,10 +496,11 @@ TEST_F(LensOverlayImageHelperTest,
 
   const int region_scale = 2;
   gfx::Rect region(10, 10, kImageMaxWidth * region_scale, kImageMaxHeight);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / region_scale);
@@ -471,19 +521,24 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(
       kImageMaxWidth * kImageMaxHeight * full_image_scale * full_image_scale,
-      client_logs.phase_latencies_metadata()
+      ref_counted_logs->client_logs()
+          .phase_latencies_metadata()
           .phase(0)
           .image_downscale_data()
           .original_image_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight / region_scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(3309, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(3309, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -497,10 +552,11 @@ TEST_F(LensOverlayImageHelperTest,
 
   const int region_scale = 2;
   gfx::Rect region(10, 10, kImageMaxWidth, kImageMaxHeight * region_scale);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
-          bitmap, CenterBoxForRegion(region), std::nullopt, client_logs);
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth / region_scale, kImageMaxHeight);
@@ -521,19 +577,24 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(2, client_logs.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(
       kImageMaxWidth * kImageMaxHeight * full_image_scale * full_image_scale,
-      client_logs.phase_latencies_metadata()
+      ref_counted_logs->client_logs()
+          .phase_latencies_metadata()
           .phase(0)
           .image_downscale_data()
           .original_image_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight / region_scale,
-            client_logs.phase_latencies_metadata()
+            ref_counted_logs->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(3309, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(3309, ref_counted_logs->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -545,11 +606,12 @@ TEST_F(LensOverlayImageHelperTest,
   SkBitmap region_bitmap = CreateNonEmptyBitmap(300, 300);
   region_bitmap.setAlphaType(kOpaque_SkAlphaType);
   gfx::Rect region(0, 0, 100, 100);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
           image_bitmap, CenterBoxForRegion(region),
-          std::make_optional<SkBitmap>(region_bitmap), client_logs);
+          std::make_optional<SkBitmap>(region_bitmap), ref_counted_logs);
   std::string expected_output = GetJpegBytesForBitmap(region_bitmap);
 
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
@@ -563,8 +625,11 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(1, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(827, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(827, ref_counted_logs->client_logs()
+                     .phase_latencies_metadata()
                      .phase(0)
                      .image_encode_data()
                      .encoded_image_size_bytes());
@@ -575,11 +640,12 @@ TEST_F(LensOverlayImageHelperTest,
   const SkBitmap image_bitmap = CreateNonEmptyBitmap(1000, 1000);
   const SkBitmap region_bitmap = CreateNonEmptyBitmap(300, 300);
   gfx::Rect region(0, 0, 100, 100);
-  lens::LensOverlayClientLogs client_logs;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   std::optional<lens::ImageCrop> image_crop =
       lens::DownscaleAndEncodeBitmapRegionIfNeeded(
           image_bitmap, CenterBoxForRegion(region),
-          std::make_optional<SkBitmap>(region_bitmap), client_logs);
+          std::make_optional<SkBitmap>(region_bitmap), ref_counted_logs);
   std::string expected_output = GetWebpBytesForBitmap(region_bitmap);
 
   ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
@@ -593,8 +659,11 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());
   ASSERT_EQ(expected_output, image_crop->image().image_content());
-  ASSERT_EQ(1, client_logs.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(280, client_logs.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(280, ref_counted_logs->client_logs()
+                     .phase_latencies_metadata()
                      .phase(0)
                      .image_encode_data()
                      .encoded_image_size_bytes());
@@ -819,9 +888,10 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier3) {
   int ui_scale = 1;
   const SkBitmap bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier3 * image_scale, kImageMaxHeightTier3);
-  lens::LensOverlayClientLogs client_logs_scale1;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale1 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale1);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale1);
 
   SkBitmap expected_bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier3, kImageMaxHeightTier3 / image_scale);
@@ -833,26 +903,32 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier3) {
   ASSERT_EQ(kImageMaxHeightTier3 / image_scale,
             image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale1.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale1->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier3 * kImageMaxHeightTier3 * image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidthTier3 * kImageMaxHeightTier3 / image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(26793, client_logs_scale1.phase_latencies_metadata()
+  ASSERT_EQ(26793, ref_logs_scale1->client_logs()
+                       .phase_latencies_metadata()
                        .phase(1)
                        .image_encode_data()
                        .encoded_image_size_bytes());
 
   ui_scale = 2;
-  lens::LensOverlayClientLogs client_logs_scale2;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale2 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale2);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale2);
 
   expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / image_scale);
@@ -864,18 +940,23 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier3) {
   ASSERT_EQ(kImageMaxHeight / image_scale,
             image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale2.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale2->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier3 * kImageMaxHeightTier3 * image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight / image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(3309, client_logs_scale2.phase_latencies_metadata()
+  ASSERT_EQ(3309, ref_logs_scale2->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -888,9 +969,10 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier2) {
   int ui_scale = 1;
   const SkBitmap bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier2, kImageMaxHeightTier2 * image_scale);
-  lens::LensOverlayClientLogs client_logs_scale1;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale1 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale1);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale1);
 
   SkBitmap expected_bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier2 / image_scale, kImageMaxHeightTier2);
@@ -902,26 +984,32 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier2) {
             image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeightTier2, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale1.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale1->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier2 * kImageMaxHeightTier2 * image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidthTier2 * kImageMaxHeightTier2 / image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(6912, client_logs_scale1.phase_latencies_metadata()
+  ASSERT_EQ(6912, ref_logs_scale1->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
 
   ui_scale = 2;
-  lens::LensOverlayClientLogs client_logs_scale2;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale2 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale2);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale2);
 
   expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth / image_scale, kImageMaxHeight);
@@ -932,18 +1020,23 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier2) {
   ASSERT_EQ(kImageMaxWidth / image_scale, image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeight, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale2.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale2->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier2 * kImageMaxHeightTier2 * image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidth * kImageMaxHeight / image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(3309, client_logs_scale2.phase_latencies_metadata()
+  ASSERT_EQ(3309, ref_logs_scale2->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -956,9 +1049,10 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier1) {
   int ui_scale = 1;
   const SkBitmap bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier1, kImageMaxHeightTier1 * image_scale);
-  lens::LensOverlayClientLogs client_logs_scale1;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale1 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale1);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale1);
 
   SkBitmap expected_bitmap = CreateNonEmptyBitmap(
       kImageMaxWidthTier1 / image_scale, kImageMaxHeightTier1);
@@ -970,26 +1064,32 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier1) {
             image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeightTier1, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale1.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale1->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier1 * kImageMaxHeightTier1 * image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidthTier1 * kImageMaxHeightTier1 / image_scale,
-            client_logs_scale1.phase_latencies_metadata()
+            ref_logs_scale1->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(1053, client_logs_scale1.phase_latencies_metadata()
+  ASSERT_EQ(1053, ref_logs_scale1->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
 
   ui_scale = 2;
-  lens::LensOverlayClientLogs client_logs_scale2;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale2 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale2);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale2);
 
   // Downscales to Tier 1 when UI scale is less than finch defined UI scaling
   // factor threshold (kImageDownscaleUIScalingFactor). Essentially verify that
@@ -998,18 +1098,23 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier1) {
             image_data.image_metadata().width());
   ASSERT_EQ(kImageMaxHeightTier1, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(2, client_logs_scale2.phase_latencies_metadata().phase_size());
+  ASSERT_EQ(
+      2,
+      ref_logs_scale2->client_logs().phase_latencies_metadata().phase_size());
   ASSERT_EQ(kImageMaxWidthTier1 * kImageMaxHeightTier1 * image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .original_image_size());
   ASSERT_EQ(kImageMaxWidthTier1 * kImageMaxHeightTier1 / image_scale,
-            client_logs_scale2.phase_latencies_metadata()
+            ref_logs_scale2->client_logs()
+                .phase_latencies_metadata()
                 .phase(0)
                 .image_downscale_data()
                 .downscaled_image_size());
-  ASSERT_EQ(1053, client_logs_scale2.phase_latencies_metadata()
+  ASSERT_EQ(1053, ref_logs_scale2->client_logs()
+                      .phase_latencies_metadata()
                       .phase(1)
                       .image_encode_data()
                       .encoded_image_size_bytes());
@@ -1020,9 +1125,10 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingNoCompression) {
 
   int ui_scale = 1;
   const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
-  lens::LensOverlayClientLogs client_logs_scale1;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale1 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   lens::ImageData image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale1);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale1);
 
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
@@ -1030,23 +1136,30 @@ TEST_F(LensOverlayImageHelperTest, TieredDownscalingNoCompression) {
   ASSERT_EQ(100, image_data.image_metadata().width());
   ASSERT_EQ(100, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(1, client_logs_scale1.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(359, client_logs_scale1.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_logs_scale1->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(359, ref_logs_scale1->client_logs()
+                     .phase_latencies_metadata()
                      .phase(0)
                      .image_encode_data()
                      .encoded_image_size_bytes());
 
   ui_scale = 2;
-  lens::LensOverlayClientLogs client_logs_scale2;
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_logs_scale2 =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
   image_data =
-      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, client_logs_scale2);
+      lens::DownscaleAndEncodeBitmap(bitmap, ui_scale, ref_logs_scale2);
 
   // Verify that UI Scale does not change no compression flow
   ASSERT_EQ(100, image_data.image_metadata().width());
   ASSERT_EQ(100, image_data.image_metadata().height());
   ASSERT_EQ(expected_output, image_data.payload().image_bytes());
-  ASSERT_EQ(1, client_logs_scale2.phase_latencies_metadata().phase_size());
-  ASSERT_EQ(359, client_logs_scale2.phase_latencies_metadata()
+  ASSERT_EQ(
+      1,
+      ref_logs_scale2->client_logs().phase_latencies_metadata().phase_size());
+  ASSERT_EQ(359, ref_logs_scale2->client_logs()
+                     .phase_latencies_metadata()
                      .phase(0)
                      .image_encode_data()
                      .encoded_image_size_bytes());

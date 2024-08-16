@@ -11,31 +11,9 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-exception.h"
 
 namespace blink {
-
-enum class ExceptionContextType : int16_t {
-  kUnknown,  // TODO(crbug.com/270033): Remove this item.
-  // IDL Interface, IDL Namespace
-  kAttributeGet,
-  kAttributeSet,
-  kConstructorOperationInvoke,
-  kOperationInvoke,
-  kIndexedPropertyGetter,
-  kIndexedPropertyDescriptor,
-  kIndexedPropertySetter,
-  kIndexedPropertyDefiner,
-  kIndexedPropertyDeleter,
-  kNamedPropertyGetter,
-  kNamedPropertyDescriptor,
-  kNamedPropertySetter,
-  kNamedPropertyDefiner,
-  kNamedPropertyDeleter,
-  kNamedPropertyQuery,
-  kNamedPropertyEnumerator,
-  // IDL Dictionary
-  kDictionaryMemberGet,
-};
 
 // ExceptionContext stores context information about what Web API throws an
 // exception.
@@ -47,51 +25,51 @@ class PLATFORM_EXPORT ExceptionContext final {
 
  public:
   // Note `class_name` and `property_name` accept only string literals.
-  ExceptionContext(ExceptionContextType type,
+  ExceptionContext(v8::ExceptionContext type,
                    const char* class_name,
                    const char* property_name)
       : type_(type), class_name_(class_name), property_name_(property_name) {
 #if DCHECK_IS_ON()
     switch (type) {
-      case ExceptionContextType::kAttributeGet:
-      case ExceptionContextType::kAttributeSet:
-      case ExceptionContextType::kOperationInvoke:
-      case ExceptionContextType::kDictionaryMemberGet:
+      case v8::ExceptionContext::kAttributeGet:
+      case v8::ExceptionContext::kAttributeSet:
+      case v8::ExceptionContext::kOperation:
         DCHECK(class_name);
         DCHECK(property_name);
         break;
-      case ExceptionContextType::kConstructorOperationInvoke:
-      case ExceptionContextType::kNamedPropertyEnumerator:
+      case v8::ExceptionContext::kConstructor:
+      case v8::ExceptionContext::kNamedEnumerator:
         DCHECK(class_name);
         break;
-      case ExceptionContextType::kIndexedPropertyGetter:
-      case ExceptionContextType::kIndexedPropertyDescriptor:
-      case ExceptionContextType::kIndexedPropertySetter:
-      case ExceptionContextType::kIndexedPropertyDefiner:
-      case ExceptionContextType::kIndexedPropertyDeleter:
-      case ExceptionContextType::kNamedPropertyGetter:
-      case ExceptionContextType::kNamedPropertyDescriptor:
-      case ExceptionContextType::kNamedPropertySetter:
-      case ExceptionContextType::kNamedPropertyDefiner:
-      case ExceptionContextType::kNamedPropertyDeleter:
-      case ExceptionContextType::kNamedPropertyQuery:
+      case v8::ExceptionContext::kIndexedGetter:
+      case v8::ExceptionContext::kIndexedDescriptor:
+      case v8::ExceptionContext::kIndexedSetter:
+      case v8::ExceptionContext::kIndexedDefiner:
+      case v8::ExceptionContext::kIndexedDeleter:
+      case v8::ExceptionContext::kIndexedQuery:
+      case v8::ExceptionContext::kNamedGetter:
+      case v8::ExceptionContext::kNamedDescriptor:
+      case v8::ExceptionContext::kNamedSetter:
+      case v8::ExceptionContext::kNamedDefiner:
+      case v8::ExceptionContext::kNamedDeleter:
+      case v8::ExceptionContext::kNamedQuery:
         // Named and indexed property interceptors go through the constructor
         // variant that takes a const String&, never this one.
         NOTREACHED_IN_MIGRATION();
         break;
-      case ExceptionContextType::kUnknown:
+      case v8::ExceptionContext::kUnknown:
         break;
     }
 #endif  // DCHECK_IS_ON()
   }
 
-  ExceptionContext(ExceptionContextType type, const char* class_name)
+  ExceptionContext(v8::ExceptionContext type, const char* class_name)
       : ExceptionContext(type, class_name, nullptr) {}
 
   // Named and indexed property interceptors have a dynamic property name. This
   // variant ensures that the string backing that property name remains alive
   // for the lifetime of the ExceptionContext.
-  ExceptionContext(ExceptionContextType type,
+  ExceptionContext(v8::ExceptionContext type,
                    const char* class_name,
                    const String& property_name)
       : type_(type),
@@ -105,7 +83,7 @@ class PLATFORM_EXPORT ExceptionContext final {
 
   ~ExceptionContext() = default;
 
-  ExceptionContextType GetType() const { return type_; }
+  v8::ExceptionContext GetType() const { return type_; }
   const char* GetClassName() const { return class_name_; }
   String GetPropertyName() const {
     DCHECK(!property_name_ || property_name_string_.IsNull());
@@ -123,7 +101,7 @@ class PLATFORM_EXPORT ExceptionContext final {
   }
 
  private:
-  ExceptionContextType type_;
+  v8::ExceptionContext type_;
   int16_t argument_index_ = 0;
   const char* class_name_ = nullptr;
   const char* property_name_ = nullptr;

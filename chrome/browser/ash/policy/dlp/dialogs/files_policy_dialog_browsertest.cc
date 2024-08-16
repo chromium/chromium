@@ -33,6 +33,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textarea/textarea.h"
@@ -132,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
                 PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId),
             nullptr);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Proceed.
   EXPECT_CALL(cb_, Run(/*user_justification=*/std::optional<std::u16string>(),
                        /*should_proceed=*/true))
@@ -167,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Cancel.
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
 
   EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Proceed.
   EXPECT_CALL(cb_, Run({valid_justification}, /*should_proceed=*/true))
       .Times(1);
@@ -333,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, NoParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kSystem);
   // Accept -> dismiss.
   dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
 
-  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_WINDOW);
+  EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
             files_app->window()->GetNativeWindow());
   // Accept -> dismiss.

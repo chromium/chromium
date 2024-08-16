@@ -18,6 +18,7 @@
 #include "components/live_caption/views/caption_bubble.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
@@ -53,7 +54,7 @@ bool HasTransientParentWindow(const aura::Window* window) {
 
 aura::Window* GetSystemModalContainer(aura::Window* root,
                                       aura::Window* window) {
-  DCHECK_EQ(ui::MODAL_TYPE_SYSTEM,
+  DCHECK_EQ(ui::mojom::ModalType::kSystem,
             window->GetProperty(aura::client::kModalKey));
 
   // If |window| is already in a system modal container in |root|, re-use it.
@@ -150,7 +151,7 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
     case aura::client::WINDOW_TYPE_NORMAL:
     case aura::client::WINDOW_TYPE_POPUP:
       if (window->GetProperty(aura::client::kModalKey) ==
-          ui::MODAL_TYPE_SYSTEM) {
+          ui::mojom::ModalType::kSystem) {
         return GetSystemModalContainer(target_root, window);
       }
       if (HasTransientParentWindow(window)) {
@@ -165,11 +166,9 @@ aura::Window* GetDefaultParentForWindow(aura::Window* window,
       return target_root->GetChildById(
           kShellWindowId_DragImageAndTooltipContainer);
     default:
-      NOTREACHED_IN_MIGRATION() << "Window " << window->GetId()
-                                << " has unhandled type " << window->GetType();
-      break;
+      NOTREACHED() << "Window " << window->GetId() << " has unhandled type "
+                   << window->GetType();
   }
-  return nullptr;
 }
 
 aura::Window::Windows GetContainersForAllRootWindows(

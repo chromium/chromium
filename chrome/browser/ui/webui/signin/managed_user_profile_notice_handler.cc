@@ -391,7 +391,7 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
               ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
               : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE);
       dict.Set("showEnterpriseBadge",
-               !chrome::enterprise_util::IsKnownConsumerDomain(domain_name_));
+               !enterprise_util::IsKnownConsumerDomain(domain_name_));
       subtitle = GetManagedAccountTitleWithEmail(Profile::FromWebUI(web_ui()),
                                                  entry, domain_name_, email_);
       enterprise_info = l10n_util::GetStringUTF8(

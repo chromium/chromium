@@ -522,7 +522,13 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
       internal::kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, SubresourceCountUMA) {
+// TODO(crbug.com/360158408): The test is flaky on mac bots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubresourceCountUMA DISABLED_SubresourceCountUMA
+#else
+#define MAYBE_SubresourceCountUMA SubresourceCountUMA
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUMA) {
   base::HistogramTester histogram_tester;
 
   WriteFile(FILE_PATH_LITERAL("fallback.css"), "");

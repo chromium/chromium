@@ -73,6 +73,17 @@ class MockOnDeviceWebSpeechRecognitionService
           client,
       media::mojom::SpeechRecognitionOptionsPtr options,
       BindRecognizerCallback callback) override;
+  void BindWebSpeechRecognizer(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+          session_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+          session_client,
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+          audio_forwarder,
+      int channel_count,
+      int sample_rate,
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      bool continuous) override;
 
   // media::mojom::SpeechRecognitionRecognizer:
   MOCK_METHOD(void,

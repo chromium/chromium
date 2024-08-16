@@ -69,14 +69,16 @@ export class ProductSpecificationsItemElement extends PolymerElement {
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   private onLinkClick_() {
-    this.shoppingApi_.showProductSpecificationsSetForUuid(this.item.uuid);
+    this.shoppingApi_.showProductSpecificationsSetForUuid(
+        this.item.uuid, /*inNewTab=*/ true);
   }
 
   private onLinkKeydown_(event: KeyboardEvent) {
     if (event.key !== 'Enter') {
       return;
     }
-    this.shoppingApi_.showProductSpecificationsSetForUuid(this.item.uuid);
+    this.shoppingApi_.showProductSpecificationsSetForUuid(
+        this.item.uuid, /*inNewTab=*/ true);
   }
 
   // This is necessary for shift-checkbox detection: preventing the mousedown
@@ -109,12 +111,12 @@ export class ProductSpecificationsItemElement extends PolymerElement {
 
   private getItemTitle_(): string {
     return loadTimeData.getStringF(
-        'productSpecificationsRow', this.item.name, this.item.urls.length);
+        'compareHistoryRow', this.item.name, this.item.urls.length);
   }
 
   private getMenuAriaLabel_(): string {
     return loadTimeData.getStringF(
-        'productSpecificationsMenuAriaLabel', this.item.name);
+        'compareHistoryMenuAriaLabel', this.item.name);
   }
 
   private getUrl_(): string {

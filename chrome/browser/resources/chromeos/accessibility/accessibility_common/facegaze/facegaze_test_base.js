@@ -189,6 +189,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(FaceGazeConstants);
     assertNotNullNorUndefined(FacialGesture);
     assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
+    assertNotNullNorUndefined(GestureDetector);
     assertNotNullNorUndefined(GestureHandler);
     assertNotNullNorUndefined(MacroName);
     assertNotNullNorUndefined(MediapipeFacialGesture);
@@ -292,6 +293,15 @@ FaceGazeTestBase = class extends E2ETestBase {
     await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, config.actionsEnabled);
     assertEquals(faceGaze.actionsEnabled_, config.actionsEnabled);
 
+    if (config.cursorControlEnabled) {
+      // The MouseController gets constructed and started before this test
+      // fixture gets created. To make these tests work, we need to explicitly
+      // restart the MouseController so that we can insert custom hooks for the
+      // set/clearInterval functions, which is necessary to control timing of
+      // these tests.
+      await this.restartMouseController();
+    }
+
     return new Promise(resolve => {
       faceGaze.setOnInitCallbackForTest(resolve);
     });
@@ -301,8 +311,11 @@ FaceGazeTestBase = class extends E2ETestBase {
     const intervalId = this.getFaceGaze().mouseController_.mouseInterval_;
     if (this.getFaceGaze().cursorControlEnabled_ &&
         !this.getFaceGaze().mouseController_.paused_) {
-      assertNotEquals(-1, intervalId);
-      assertNotNullNorUndefined(this.intervalCallbacks_[intervalId]);
+      assertNotEquals(
+          -1, intervalId, 'Expected valid MouseController interval');
+      assertNotNullNorUndefined(
+          this.intervalCallbacks_[intervalId],
+          'Expected valid MouseController callback');
       this.intervalCallbacks_[intervalId]();
     } else {
       // No work to do.
@@ -391,6 +404,12 @@ FaceGazeTestBase = class extends E2ETestBase {
   /** @return {!Array<!chrome.accessibilityPrivate.SyntheticKeyboardEvent>} */
   getKeyEvents() {
     return this.mockAccessibilityPrivate.syntheticKeyEvents_;
+  }
+
+  async restartMouseController() {
+    this.getFaceGaze().mouseController_.stop();
+    await this.getFaceGaze().mouseController_.start();
+    await this.waitForValidMouseInterval();
   }
 
   /** Waits for the mouse controller to initialize its interval function. */

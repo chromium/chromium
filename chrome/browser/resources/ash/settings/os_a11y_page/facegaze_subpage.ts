@@ -39,13 +39,24 @@ export class SettingsFaceGazeSubpageElement extends
   }
 
   static get properties() {
-    return {};
+    return {
+      toggleLabel_: {
+        type: String,
+        computed:
+            'getToggleLabel_(prefs.settings.a11y.face_gaze.enabled.value)',
+      },
+    };
+  }
+
+  private getToggleLabel_(): string {
+    return this.getPref('settings.a11y.face_gaze.enabled').value ?
+        this.i18n('deviceOn') :
+        this.i18n('deviceOff');
   }
 
   static get observers() {
     return [];
   }
-
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

@@ -8,6 +8,7 @@ import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
+import "skia/public/mojom/bitmap.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -32,6 +33,7 @@ enum UserAction {
   kSendFeedback = 8,
   kTapRegionSelection = 9,
 };
+
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
 // Factory method for creating a new WebUI page handler.
@@ -140,17 +142,16 @@ interface LensPageHandler {
   // When called, the C++ coordinator closes the preselection toast bubble.
   ClosePreselectionBubble();
 
-  // Records UKM metric for lens overlay interactions.
-  RecordUkmLensOverlayInteraction(UserAction user_action);
+  // Records UKM metrics and task completion for lens overlay interactions.
+  RecordUkmAndTaskCompletionForLensOverlayInteraction(
+      UserAction user_action);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
-  // TODO(b/335214602): This should pass something other than a data URI as
-  // encoding/decoding base64 could be very slow. Large data should instead
-  // use something like a blob URL.
-  // Pass screenshot data URL string to WebUI.
-  ScreenshotDataUriReceived(mojo_base.mojom.BigString screenshot_data_uri);
+  // Pass screenshot data to WebUI.
+  ScreenshotDataReceived(
+      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
 
   // Notifies the WebUI that our results panel is opening.
   NotifyResultsPanelOpened();

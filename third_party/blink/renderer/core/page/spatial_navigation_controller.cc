@@ -92,6 +92,17 @@ bool IsSkippableCandidate(const Element* element) {
   return true;
 }
 
+bool IsEqualDistanceAndContainsBestCandidate(
+    const FocusCandidate& candidate,
+    const FocusCandidate& best_candidate,
+    const double& candidate_distance,
+    const double& best_distance) {
+  return std::fabs(candidate_distance - best_distance) <
+             std::numeric_limits<double>::epsilon() &&
+         candidate.rect_in_root_frame.Contains(
+             best_candidate.rect_in_root_frame);
+}
+
 // Determines whether the given candidate is closer to the current interested
 // node (in the given direction) than the current best. If so, it'll replace
 // the current best.
@@ -136,7 +147,12 @@ static void ConsiderForBestCandidate(SpatialNavigationDirection direction,
     previous_best_distance = kMaxDistance;
   }
 
-  if (distance < best_distance && IsUnobscured(candidate)) {
+  // In case of a tie, we must prefer a container to a contained element since
+  // interest moves from outside in (e.g. see ComputeDistanceDataForNode)
+  if ((distance < best_distance ||
+       IsEqualDistanceAndContainsBestCandidate(candidate, *best_candidate,
+                                               distance, best_distance)) &&
+      IsUnobscured(candidate)) {
     *previous_best_candidate = *best_candidate;
     previous_best_distance = best_distance;
     *best_candidate = candidate;

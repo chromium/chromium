@@ -24,8 +24,11 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/image_view.h"
@@ -656,6 +659,40 @@ TEST_F(GlanceablesTaskViewTest, DisplaysOriginSurfaceType) {
           base::to_underlying(GlanceablesViewId::kAssignedTaskNotice))));
     }
   }
+}
+
+TEST_F(GlanceablesTaskViewTest,
+       CheckButtonAccessibleDefaultActionVerbAndCheckedState) {
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
+                              /*has_subtasks=*/false, /*has_email_link=*/false,
+                              /*has_notes=*/false, /*updated=*/base::Time(),
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
+  const auto widget = CreateFramelessTestWidget();
+  widget->SetFullscreen(true);
+  auto* view = widget->SetContentsView(std::make_unique<GlanceablesTaskView>(
+      &task, /*mark_as_completed_callback=*/base::DoNothing(),
+      /*save_callback=*/base::DoNothing(),
+      /*edit_in_browser_callback=*/base::DoNothing(),
+      /*show_error_message_callback=*/base::DoNothing()));
+  auto* check_button = view->GetCheckButtonForTest();
+  ui::AXNodeData data;
+  check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+
+  view->SetCheckedForTest(true);
+  data = ui::AXNodeData();
+  check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+  EXPECT_EQ(data.GetDefaultActionVerb(),
+            ax::mojom::DefaultActionVerb::kUncheck);
+
+  view->SetCheckedForTest(false);
+  data = ui::AXNodeData();
+  check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
 }
 
 }  // namespace ash

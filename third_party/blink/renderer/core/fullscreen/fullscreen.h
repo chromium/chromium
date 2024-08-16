@@ -195,8 +195,11 @@ class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
 };
 
 inline bool Fullscreen::IsFullscreenElement(const Element& element) {
-  return UNLIKELY(HasFullscreenElements()) &&
-         FullscreenElementFrom(element.GetDocument()) == &element;
+  if (HasFullscreenElements() &&
+      FullscreenElementFrom(element.GetDocument()) == &element) [[unlikely]] {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace blink

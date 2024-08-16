@@ -27,6 +27,7 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -171,7 +172,9 @@ class AllPasswordsBottomSheetControllerTest
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
     return std::make_unique<FakePlusAddressService>(
-        identity_test_env_.identity_manager(), &setting_service_);
+        &plus_environment_.pref_service(),
+        plus_environment_.identity_env().identity_manager(),
+        &plus_environment_.setting_service());
   }
 
   void TearDown() override {
@@ -213,7 +216,7 @@ class AllPasswordsBottomSheetControllerTest
   }
 
  protected:
-  signin::IdentityTestEnvironment identity_test_env_;
+  plus_addresses::test::PlusAddressTestEnvironment plus_environment_;
 
   MockPasswordManagerDriver driver_;
   scoped_refptr<TestPasswordStore> profile_store_;
@@ -230,7 +233,6 @@ class AllPasswordsBottomSheetControllerTest
   base::MockCallback<
       AllPasswordsBottomSheetController::ShowMigrationWarningCallback>
       show_migration_warning_callback_;
-  FakePlusAddressSettingService setting_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

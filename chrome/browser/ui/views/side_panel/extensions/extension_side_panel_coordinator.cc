@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -101,9 +102,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   }
 }
 
-ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() {
-  DeregisterEntry();
-}
+ExtensionSidePanelCoordinator::~ExtensionSidePanelCoordinator() = default;
 
 content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {
@@ -322,7 +321,7 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
   Browser* browser = GetBrowser();
   DCHECK(browser);
 
-  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  auto* coordinator = browser->GetFeatures().side_panel_coordinator();
 
   // If the SidePanelEntry for this extension is showing when window.close() is
   // called, close the side panel. Otherwise, clear the entry's cached view.

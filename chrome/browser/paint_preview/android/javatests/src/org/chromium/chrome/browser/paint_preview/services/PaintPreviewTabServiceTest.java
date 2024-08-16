@@ -22,6 +22,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -114,7 +115,7 @@ public class PaintPreviewTabServiceTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabModel.closeTab(mTab);
+                    mTabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
                 });
 
         CriteriaHelper.pollUiThread(

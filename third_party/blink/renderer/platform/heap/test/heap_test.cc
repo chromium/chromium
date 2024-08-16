@@ -1683,7 +1683,7 @@ class RefCountedAndGarbageCollected final
   ~RefCountedAndGarbageCollected() { ++destructor_calls_; }
 
   void AddRef() {
-    if (UNLIKELY(!ref_count_)) {
+    if (!ref_count_) [[unlikely]] {
       keep_alive_ = this;
     }
     ++ref_count_;

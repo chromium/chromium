@@ -58,7 +58,7 @@ const char* MessageSourceToString(blink::mojom::ConsoleMessageSource source) {
     case blink::mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace content

@@ -331,8 +331,6 @@ void TabGroupSyncMetricsLogger::RecordMetricsOnStartup(
     }
   }
 
-  DCHECK_EQ(total_group_count, open_group_count + closed_group_count);
-
   base::UmaHistogramCounts10000("TabGroups.Sync.TotalTabGroupCount",
                                 total_group_count);
   base::UmaHistogramCounts10000("TabGroups.Sync.OpenTabGroupCount",

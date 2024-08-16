@@ -68,8 +68,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
         HostContentSettingsMapFactory::GetForProfile(profile()));
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
     blocked_content::PopupBlockerTabHelper::CreateForWebContents(
         web_contents());
 #if BUILDFLAG(IS_ANDROID)

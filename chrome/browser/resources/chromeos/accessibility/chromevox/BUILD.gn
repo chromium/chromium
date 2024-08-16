@@ -15,8 +15,6 @@ import("//tools/typescript/ts_library.gni")
 
 group("build") {
   deps = [
-    ":chromevox_background_script",
-    ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
     ":copied_files",
     "//third_party/chromevox:chromevox_third_party_resources",
@@ -52,6 +50,7 @@ ts_modules = [
   "background/braille/braille_interface.ts",
   "background/braille/braille_key_event_rewriter.ts",
   "background/braille/cursor_dots.ts",
+  "background/braille/expanding_braille_translator.ts",
   "background/braille/liblouis.ts",
   "background/braille/pan_strategy.ts",
   "background/chromevox_range.ts",
@@ -71,6 +70,7 @@ ts_modules = [
   "background/event/pointer_handler.ts",
   "background/event/range_automation_handler.ts",
   "background/forced_action_path.ts",
+  "background/injected_script_loader.ts",
   "background/input/background_keyboard_handler.ts",
   "background/input/clipboard_handler.ts",
   "background/input/command_handler_interface.ts",
@@ -82,13 +82,13 @@ ts_modules = [
   "background/logging/log_manager.ts",
   "background/logging/log_url_watcher.ts",
   "background/logging/log_store.ts",
+  "background/output/braille_output.ts",
+  "background/output/output.ts",
   "background/output/output_ancestry_info.ts",
   "background/output/output_format_parser.ts",
   "background/output/output_format_tree.ts",
   "background/output/output_formatter.ts",
   "background/output/output_role_info.ts",
-  "background/injected_script_loader.ts",
-  "background/output/output.ts",
   "background/output/output_interface.ts",
   "background/output/output_logger.ts",
   "background/output/output_types.ts",
@@ -148,7 +148,6 @@ js_modules = [
   "background/auto_scroll_handler.js",
   "background/braille/braille_input_handler.js",
   "background/braille/braille_translator_manager.js",
-  "background/braille/expanding_braille_translator.js",
   "background/braille/spans.js",
   "background/chromevox.js",
   "background/color.js",
@@ -231,9 +230,6 @@ ts_library("ts_build") {
   tsconfig_base = "../tsconfig.base.json"
 }
 
-chromevox_background_script_loader_file = "background/loader.js"
-chromevox_panel_script_loader_file = "panel/panel_loader.js"
-
 generate_message_formatting_data("i18n_data") {
   inputs = [ "//third_party/cldr/src/common/supplemental/plurals.xml" ]
   output_dir = "$chromevox_out_dir"
@@ -264,6 +260,7 @@ run_jsbundler("copied_files") {
 
   sources = [
     "background/background.html",
+    "common/closure_loader.js",
     "earcons/chromevox_loaded.ogg",
     "earcons/chromevox_loading.ogg",
     "earcons/control.wav",
@@ -289,6 +286,7 @@ run_jsbundler("copied_files") {
     "tutorial/practice_areas/selects.html",
   ]
   sources += js_modules
+  sources += closure_library_modules
   sources += filter_include(get_target_outputs(":ts_build"), [ "*.js" ])
 
   rewrite_rules = [
@@ -349,28 +347,6 @@ action("chromevox_phonetic_dictionaries_js") {
            "-o",
            rebase_path(output_file, root_build_dir),
          ] + rebase_path(src_dir, root_build_dir)
-}
-
-template("compress_js") {
-  run_jsbundler(target_name) {
-    assert(defined(invoker.output_file))
-    mode = "compressed_bundle"
-    modules = closure_library_modules
-    sources = invoker.sources
-    output_file = invoker.output_file
-  }
-}
-
-# TODO once these loaders are all empty, we will need to re-work the entry points.
-
-compress_js("chromevox_background_script") {
-  sources = [ chromevox_background_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
-}
-
-compress_js("chromevox_panel_script") {
-  sources = [ chromevox_panel_script_loader_file ]
-  output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
 }
 
 if (is_chromeos_ash) {

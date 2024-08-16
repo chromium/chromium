@@ -141,8 +141,7 @@ uint32_t PersistentHash(span<const uint8_t> data) {
   // This hash function must not change, since it is designed to be persistable
   // to disk.
   if (data.size() > size_t{std::numeric_limits<int>::max()}) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   auto chars = as_chars(data);
   return ::SuperFastHash(chars.data(), checked_cast<int>(chars.size()));

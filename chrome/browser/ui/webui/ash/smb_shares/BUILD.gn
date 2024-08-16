@@ -18,7 +18,10 @@ static_library("smb_shares") {
     "smb_shares_localized_strings_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/webui/ash" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash",
+  ]
 
   deps = [
     "//ash/webui/common:trusted_types_util",
@@ -55,6 +58,19 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/common",
     "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "smb_handler_unittest.cc" ]
+
+  deps = [
+    ":smb_shares",
+    "//base/test:test_support",
+    "//chrome/browser/ash/smb_client:test_support",
     "//content/test:test_support",
   ]
 }

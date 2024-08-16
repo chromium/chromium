@@ -68,9 +68,10 @@ class TestDnsSdRegistry : public DnsSdRegistry {
 
 class MockDnsSdObserver : public DnsSdRegistry::DnsSdObserver {
  public:
-  MOCK_METHOD2(OnDnsSdEvent,
-               void(const std::string&,
-                    const DnsSdRegistry::DnsSdServiceList&));
+  MOCK_METHOD(void,
+              OnDnsSdEvent,
+              (const std::string&, const DnsSdRegistry::DnsSdServiceList&));
+  MOCK_METHOD(void, OnDnsSdPermissionRejected, ());
 };
 
 class DnsSdRegistryTest : public testing::Test {

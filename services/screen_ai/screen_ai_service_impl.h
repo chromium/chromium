@@ -130,7 +130,10 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
       const SkBitmap& image,
       bool a11y_tree_request);
 
-  void ReceiverDisconnected();
+  void OcrReceiverDisconnected();
+
+  // Calls `ShutDownIfNoClients` after a short delay.
+  void CheckIdleStateAfterDelay();
 
   // Last time the feature is used. A null value means never, it is set when the
   // feature is initialized, and each time it is used.
@@ -161,7 +164,7 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   // The set of receivers used to receive messages from main content
   // extractors.
   mojo::ReceiverSet<mojom::Screen2xMainContentExtractor>
-      screen_2x_main_content_extractors_;
+      screen2x_main_content_extractors_;
 
   base::WeakPtrFactory<ScreenAIService> weak_ptr_factory_{this};
 };

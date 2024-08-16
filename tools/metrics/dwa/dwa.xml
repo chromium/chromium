@@ -1,0 +1,38 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome DWA metrics
+along with a detailed description for each metric.
+
+Events may be marked with the attribute singular="True" to indicate that
+the event will only occur once per source, and multiple entries will just
+be describing additional metrics about the same event.
+-->
+
+<dwa-configuration>
+
+<event name="DwaTestMetric">
+  <owner>zhouzj@google.com</owner>
+  <summary>
+    A test DWA metric.
+  </summary>
+  <study name="ACTStudy"/>
+  <study name="LegacyStudy" expires_after="M135"/>
+  <study name="ModeBStudy"/>
+  <metric name="HasVideo" enum="Boolean">
+    <summary>
+      True if the page contains a video.
+    </summary>
+  </metric>
+  <metric name="Latency" expires_after="2025-07-25">
+    <summary>
+      The latency in ms.
+    </summary>
+  </metric>
+</event>
+
+</dwa-configuration>

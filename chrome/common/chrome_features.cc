@@ -454,27 +454,6 @@ BASE_FEATURE(kHaTSDesktopDevToolsIssuesCSP,
              "HaTSDesktopDevToolsIssuesCSP",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the Happiness Tracking System for Chrome extensions page.
-BASE_FEATURE(kHappinessTrackingSurveysExtensionsSafetyHub,
-             "HappinessTrackingSurveysExtensionsSafetyHub",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<ExtensionsSafetyHubHaTSArms>::Option survey_arms[] = {
-    {ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, "0"},
-    {ExtensionsSafetyHubHaTSArms::kReviewPanelShown, "1"},
-    {ExtensionsSafetyHubHaTSArms::kReviewPanelInteraction, "2"}};
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysExtensionsSafetyHubTime{
-        &kHappinessTrackingSurveysExtensionsSafetyHub, "settings-time",
-        base::Seconds(15)};
-extern const base::FeatureParam<std::string>
-    kHappinessTrackingSurveysExtensionsSafetyHubTriggerId{
-        &kHappinessTrackingSurveysExtensionsSafetyHub,
-        "extension-page-trigger-id", ""};
-extern const base::FeatureParam<ExtensionsSafetyHubHaTSArms>
-    kHappinessTrackingSurveysExtensionsSurveyArm{
-        &kHappinessTrackingSurveysExtensionsSafetyHub, "extension-survey-arm",
-        ExtensionsSafetyHubHaTSArms::kReviewPanelNotShown, &survey_arms};
-
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
              "HappinessTrackingSurveysForDesktopPrivacyGuide",
@@ -538,6 +517,14 @@ constexpr base::FeatureParam<int>
     kHappinessTrackingSurveysForDesktopWhatsNewJpActivationPercentage{
         &kHappinessTrackingSurveysForDesktopWhatsNew,
         "jp_activation_percentage", 80};
+// Enables or disables the Happiness Tracking System for Chrome What's New v2.
+BASE_FEATURE(kHappinessTrackingSurveysForDesktopWhatsNewV2,
+             "HappinessTrackingSurveysForDesktopWhatsNewV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForDesktopWhatsNewV2Time{
+        &kHappinessTrackingSurveysForDesktopWhatsNewV2, "whats-new-v2-time",
+        base::Seconds(20)};
 
 // Happiness tracking surveys for the M1 Privacy Sandbox settings.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
@@ -724,9 +711,20 @@ BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Automatically enables HTTPS-First Mode in a balanced configuration when
+// possible.
+BASE_FEATURE(kHttpsFirstBalancedModeAutoEnable,
+             "HttpsFirstBalancedModeAutoEnable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a dialog-based UI for HTTPS-First Mode.
 BASE_FEATURE(kHttpsFirstDialogUi,
              "HttpsFirstDialogUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the new interstitial UI for HTTPS-First Mode.
+BASE_FEATURE(kHttpsFirstModeInterstitialAugust2024Refresh,
+             "HttpsFirstModeInterstitialAugust2024Refresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for crbug.com/1414633.
@@ -1132,6 +1130,11 @@ BASE_FEATURE(kSafetyHub,
 BASE_FEATURE(kSafetyHubMagicStack,
              "SafetyHubMagicStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Safety Hub followup work.
+BASE_FEATURE(kSafetyHubFollowup,
+             "SafetyHubFollowup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
@@ -1292,6 +1295,12 @@ BASE_FEATURE(kSitePerProcess,
 // kProcessPerSiteUpToMainFrameThreshold.
 BASE_FEATURE(kProcessPerSiteSkipDevtoolsUsers,
              "ProcessPerSiteSkipDevtoolsUsers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// The default behavior to opt enterprise users out of
+// kProcessPerSiteUpToMainFrameThreshold.
+BASE_FEATURE(kProcessPerSiteSkipEnterpriseUsers,
+             "ProcessPerSiteSkipEnterpriseUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1646,7 +1655,7 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
 // which makes blink expose IWA APIs to be used by the web app.
 BASE_FEATURE(kWebKioskEnableIwaApis,
              "WebKioskEnableIwaApis",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1672,6 +1681,17 @@ BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables Web Share (navigator.share) for macOS
 BASE_FEATURE(kWebShare, "WebShare", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+// Restricts the WebUI scripts able to use the generated code cache according to
+// embedder-specified heuristics.
+BASE_FEATURE(kRestrictedWebUICodeCache,
+             "RestrictedWebUICodeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Defines a comma-separated list of resource names able to use the generated
+// code cache when RestrictedWebUICodeCache is enabled.
+extern const base::FeatureParam<std::string> kRestrictedWebUICodeCacheResources{
+    &kRestrictedWebUICodeCache, "RestrictedWebUICodeCacheResources", ""};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Populates storage dimensions in UMA log if enabled. Requires diagnostics

@@ -199,7 +199,7 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
           IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
       break;
     case permissions::PermissionAction::NUM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   chip_text_ = delegate_->Requests()[0]

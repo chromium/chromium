@@ -10,6 +10,12 @@ std::string RedrawReasonToString(RedrawReason reason) {
   switch (reason) {
     case RedrawReason::kUntracked:
       return "kUntracked";
+    case RedrawReason::kAnimatedImage:
+      return "kAnimatedImage";
+    case RedrawReason::kScrollbarFadeOutAnimation:
+      return "kScrollbarFadeOutAnimation";
+    case RedrawReason::kVideoLayer:
+      return "kVideoLayer";
   }
 }
 

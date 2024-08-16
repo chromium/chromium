@@ -26,12 +26,14 @@
 namespace speech {
 
 class SodaSpeechRecognizerImplTest
-    : public media::mojom::SpeechRecognitionSessionClient,
+    : public media::mojom::SpeechRecognitionRecognizer,
+      public media::mojom::SpeechRecognitionSessionClient,
       public testing::TestWithParam<bool> {
  public:
   SodaSpeechRecognizerImplTest() {
     recognizer_ = std::make_unique<SodaSpeechRecognizerImpl>(
-        /*continuous=*/GetParam(), /*sample_rate=*/48000, mojo::NullRemote(),
+        /*continuous=*/GetParam(), /*sample_rate=*/48000,
+        speech_recognition_recognizer_.BindNewPipeAndPassRemote(),
         mojo::NullReceiver(), session_client_.BindNewPipeAndPassRemote(),
         mojo::NullReceiver());
   }
@@ -55,6 +57,13 @@ class SodaSpeechRecognizerImplTest
     EXPECT_FALSE(audio_started_ ^ audio_ended_);
     EXPECT_FALSE(sound_started_ ^ sound_ended_);
   }
+
+  // media::mojom::SpeechRecognitionRecognizer implementation.
+  void SendAudioToSpeechRecognitionService(
+      media::mojom::AudioDataS16Ptr buffer) override {}
+  void OnLanguageChanged(const std::string& language) override {}
+  void OnMaskOffensiveWordsChanged(bool mask_offensive_words) override {}
+  void MarkDone() override {}
 
   // media::mojom::SpeechRecognitionSessionClient implementation.
   void ResultRetrieved(std::vector<media::mojom::WebSpeechRecognitionResultPtr>
@@ -120,6 +129,8 @@ class SodaSpeechRecognizerImplTest
   base::test::TaskEnvironment environment_;
   mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> session_client_{
       this};
+  mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>
+      speech_recognition_recognizer_{this};
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<SodaSpeechRecognizerImpl> recognizer_;

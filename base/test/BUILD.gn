@@ -257,6 +257,8 @@ static_library("test_support") {
 
   if (is_android) {
     sources += [
+      "android/content_uri_test_utils.cc",
+      "android/content_uri_test_utils.h",
       "android/java_handler_thread_helpers.cc",
       "android/java_handler_thread_helpers.h",
       "android/url_utils.cc",
@@ -480,7 +482,11 @@ if (is_android) {
   android_library("test_support_java") {
     testonly = true
 
+    mergeable_android_manifests =
+        [ "android/java/AndroidManifest_file_provider.xml" ]
+
     deps = [
+      ":file_provider_resources",
       "//base:base_java",
       "//base:process_launcher_java",
       "//testing/android/native_test:native_main_runner_java",
@@ -519,6 +525,11 @@ if (is_android) {
       "android/java/src/org/chromium/base/ITestController.aidl",
     ]
   }
+
+  android_resources("file_provider_resources") {
+    testonly = true
+    sources = [ "android/java/res/xml/file_paths_file_provider.xml" ]
+  }
 }
 
 if (is_ios) {
@@ -545,6 +556,7 @@ if (enable_base_tracing) {
   perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
     descriptor_name = "chrome_track_event.descriptor"
     descriptor_target = "//base/tracing/protos:chrome_track_event"
+    namespace = "base::testing"
   }
 
   import("//base/tracing/stdlib/chrome/perfetto_sql_files.gni")
@@ -663,8 +675,9 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/ConditionWaiter.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionWithResult.java",
       "android/javatests/src/org/chromium/base/test/transit/ConditionalState.java",
+      "android/javatests/src/org/chromium/base/test/transit/DisplayedPortion.java",
+      "android/javatests/src/org/chromium/base/test/transit/Element.java",
       "android/javatests/src/org/chromium/base/test/transit/ElementFactory.java",
-      "android/javatests/src/org/chromium/base/test/transit/ElementInState.java",
       "android/javatests/src/org/chromium/base/test/transit/Elements.java",
       "android/javatests/src/org/chromium/base/test/transit/EntryPointSentinelStation.java",
       "android/javatests/src/org/chromium/base/test/transit/Facility.java",
@@ -686,7 +699,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/test/transit/UiThreadCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewConditions.java",
       "android/javatests/src/org/chromium/base/test/transit/ViewElement.java",
-      "android/javatests/src/org/chromium/base/test/transit/ViewElementInState.java",
+      "android/javatests/src/org/chromium/base/test/transit/ViewSpec.java",
     ]
   }
 

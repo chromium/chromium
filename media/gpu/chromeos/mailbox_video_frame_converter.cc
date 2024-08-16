@@ -65,7 +65,7 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     default:
       DLOG(WARNING) << "Unsupported buffer_format: "
                     << static_cast<int>(buffer_format);
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // If format is true multiplanar format, we prefer external sampler on

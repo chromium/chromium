@@ -25,7 +25,6 @@
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/display_scheduler.h"
-#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/overdraw_tracker.h"
@@ -50,12 +49,14 @@ class ScopedAllowScheduleGpuTask;
 struct SwapBuffersCompleteParams;
 class SharedImageManager;
 class SyncPointManager;
+class Scheduler;
 }
 
 namespace viz {
 class DirectRenderer;
 class DisplayClient;
 class DisplayResourceProvider;
+class FrameIntervalDecider;
 class OutputSurface;
 class RendererSettings;
 class SharedBitmapManager;
@@ -79,8 +80,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
                                    public ContextLostObserver,
                                    public LatestLocalSurfaceIdLookupDelegate,
                                    public SoftwareOutputDeviceClient,
-                                   public FrameRateDecider::Client,
-                                   public FrameIntervalDecider::Client {
+                                   public FrameRateDecider::Client {
  public:
   // The |begin_frame_source| and |scheduler| may be null (together). In that
   // case, DrawAndSwap must be called externally when needed.
@@ -92,6 +92,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       SharedBitmapManager* bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
       gpu::SyncPointManager* sync_point_manager,
+      gpu::Scheduler* gpu_scheduler,
       const RendererSettings& settings,
       const DebugRendererSettings* debug_settings,
       const FrameSinkId& frame_sink_id,
@@ -113,6 +114,11 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void Initialize(DisplayClient* client,
                   SurfaceManager* surface_manager,
                   bool hw_support_for_multiple_refresh_rates = false);
+
+  // May be null depending on if kUseFrameIntervalDecider is enabled.
+  FrameIntervalDecider* frame_interval_decider() const {
+    return frame_interval_decider_.get();
+  }
 
   void AddObserver(DisplayObserver* observer);
   void RemoveObserver(DisplayObserver* observer);
@@ -183,10 +189,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       const FrameSinkId& id,
       mojom::CompositorFrameSinkType* type) override;
 
-  // FrameRateDecider::Client implementation
-  void SetFrameInterval(FrameIntervalDecider::Result result,
-                        FrameIntervalMatcherType matcher_type) override;
-
   bool has_scheduler() const { return !!scheduler_; }
   bool visible() const { return visible_; }
   const RendererSettings& settings() const { return settings_; }
@@ -202,6 +204,11 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   void SetSupportedFrameIntervals(base::flat_set<base::TimeDelta> intervals);
 
   void SetHwSupportForMultipleRefreshRates(bool support);
+
+#if BUILDFLAG(IS_ANDROID)
+  bool OutputSurfaceSupportsSetFrameRate();
+  void SetFrameIntervalOnOutputSurface(base::TimeDelta interval);
+#endif
 
   void PreserveChildSurfaceControls();
 
@@ -280,14 +287,13 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   void InitializeRenderer();
 
-  void UpdateFrameIntervalDeciderSettings();
-
   // ContextLostObserver implementation.
   void OnContextLost() override;
 
   const raw_ptr<SharedBitmapManager> bitmap_manager_;
   const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
   const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  const raw_ptr<gpu::Scheduler> gpu_scheduler_;
   const RendererSettings settings_;
 
   // Points to the viz-global singleton.
@@ -327,14 +333,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
 
   // Replaces `frame_rate_decider_` behind a feature.
   std::unique_ptr<FrameIntervalDecider> frame_interval_decider_;
-  // If true, `OutputSurface::SetFrameRate` is supported. On Android, this also
-  // skips over updating `DisplayClient::SetPreferredFrameInterval`.
-  bool output_surface_supports_set_frame_rate_ = false;
-  // On supported platform / configuration, this contains the set of fixed frame
-  // rates that are supported by the display.
-  base::flat_set<base::TimeDelta> fixed_supported_intervals_;
-  // The current interval that display wants to use.
-  base::TimeDelta current_interval_;
 
   // This may be null if the Display is on a thread without a MessageLoop.
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;

@@ -21,9 +21,13 @@ std::unique_ptr<InkBrushFamily> InkBrushFamily::Create(
 }
 
 InkBrushFamilyStub::InkBrushFamilyStub(InkBrushTip tip)
-    : opacity_(tip.opacity_multiplier) {}
+    : corner_rounding_(tip.corner_rounding), opacity_(tip.opacity_multiplier) {}
 
 InkBrushFamilyStub::~InkBrushFamilyStub() = default;
+
+float InkBrushFamilyStub::GetCornerRoundingForTesting() const {
+  return corner_rounding_;
+}
 
 float InkBrushFamilyStub::GetOpacityForTesting() const {
   return opacity_;

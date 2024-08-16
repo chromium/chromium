@@ -142,6 +142,11 @@ class DesktopMediaList {
   // important when IsSourceDelegated() returns true, as it helps to notify the
   // delegated source list when it should be hidden.
   virtual void HideList() = 0;
+
+  // Show the delegated source list. This is intended to be used for delegated
+  // source lists that need to be displayed independently from when the
+  // DesktopMediaList gains focus.
+  virtual void ShowDelegatedList() = 0;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_MEDIA_LIST_H_

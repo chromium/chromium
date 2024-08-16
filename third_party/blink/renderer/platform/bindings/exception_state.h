@@ -105,7 +105,7 @@ class PLATFORM_EXPORT ExceptionState {
       : main_context_(std::move(context)), isolate_(isolate) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const char* property_name)
       : ExceptionState(
@@ -113,7 +113,7 @@ class PLATFORM_EXPORT ExceptionState {
             ExceptionContext(context_type, interface_name, property_name)) {}
 
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name)
       : ExceptionState(isolate,
                        ExceptionContext(context_type, interface_name)) {}
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT ExceptionState {
   // which is only needed for named and indexed interceptors.
   enum ForInterceptor { kForInterceptor };
   ExceptionState(v8::Isolate* isolate,
-                 ExceptionContextType context_type,
+                 v8::ExceptionContext context_type,
                  const char* interface_name,
                  const AtomicString& property_name,
                  ExceptionState::ForInterceptor)
@@ -134,7 +134,7 @@ class PLATFORM_EXPORT ExceptionState {
   ExceptionState& operator=(const ExceptionState&) = delete;
 
   ~ExceptionState() {
-    if (UNLIKELY(!exception_.IsEmpty())) {
+    if (!exception_.IsEmpty()) [[unlikely]] {
       PropagateException();
     }
   }
@@ -172,6 +172,9 @@ class PLATFORM_EXPORT ExceptionState {
 
   // Rethrows a v8::Value as an exception.
   NOINLINE void RethrowV8Exception(v8::Local<v8::Value>);
+  // Report the given value as the exception being thrown, but rethrow it
+  // immediately via the v8::TryCatch instead of in the destructor.
+  NOINLINE void RethrowV8Exception(v8::TryCatch&);
 
   // Returns true if there is a pending exception.
   //
@@ -246,6 +249,7 @@ class PLATFORM_EXPORT ExceptionState {
   // The exception is empty when it was thrown through
   // DummyExceptionStateForTesting.
   TraceWrapperV8Reference<v8::Value> exception_;
+  bool thrown_via_v8_trycatch_ = false;
 
   friend class ContextScope;
 };
@@ -275,6 +279,27 @@ class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
   const int line_;
 };
 
+class PLATFORM_EXPORT TryRethrowScope {
+  STACK_ALLOCATED();
+
+ public:
+  TryRethrowScope(v8::Isolate* isolate, ExceptionState& exception_state)
+      : try_catch_(isolate), exception_state_(exception_state) {}
+
+  ~TryRethrowScope() {
+    if (try_catch_.HasCaught()) [[unlikely]] {
+      exception_state_.RethrowV8Exception(try_catch_);
+    }
+  }
+
+  bool HasCaught() { return try_catch_.HasCaught(); }
+  void SwallowException() { return try_catch_.Reset(); }
+  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
+
+  v8::TryCatch try_catch_;
+  ExceptionState& exception_state_;
+};
+
 // Syntax sugar for NonThrowableExceptionState.
 // This can be used as a default value of an ExceptionState parameter like this:
 //
@@ -296,7 +321,7 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
  public:
   DummyExceptionStateForTesting()
       : ExceptionState(nullptr,
-                       ExceptionContextType::kUnknown,
+                       v8::ExceptionContext::kUnknown,
                        nullptr,
                        nullptr) {}
   ~DummyExceptionStateForTesting() {

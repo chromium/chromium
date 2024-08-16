@@ -257,7 +257,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
     container_builder_.SetPreviousBreakAfter(row_break_after);
   }
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     BreakStatus status = FinishFragmentation(
         /*trailing_border_padding=*/LayoutUnit(), &container_builder_);
 

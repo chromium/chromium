@@ -56,7 +56,10 @@ mojom("mojom") {
   }
 
   if (is_android) {
-    sources += [ "android_overlay.mojom" ]
+    sources += [
+      "android_overlay.mojom",
+      "mediadrm_support.mojom",
+    ]
   } else {
     sources += [ "speech_recognition_service.mojom" ]
   }
@@ -915,7 +918,8 @@ mojom("web_speech_recognition") {
     "speech_recognizer.mojom",
   ]
 
-  public_deps = [
+  deps = [
+    ":speech_recognition_audio_forwarder",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

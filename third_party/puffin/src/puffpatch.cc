@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "zucchini/patch_reader.h"
 #include "zucchini/zucchini.h"
@@ -75,8 +76,8 @@ Status DecodePatch(const uint8_t* patch,
       // TODO(crbug.com/40284755): This span construction is unsound as we can't
       // know the length of the patch allocation. The function should be
       // accepting a span instead of a pointer.
-      UNSAFE_BUFFERS(base::make_span<sizeof(header_size)>(
-          patch + offset, sizeof(header_size))));
+      UNSAFE_TODO(*base::span(patch + offset, sizeof(header_size))
+                       .to_fixed_extent<sizeof(header_size)>()));
   offset += sizeof(header_size);
   TEST_AND_RETURN_VALUE(header_size <= (patch_length - offset),
                         Status::P_BAD_PUFFIN_HEADER);

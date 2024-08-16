@@ -78,7 +78,7 @@ void OfferNotificationBubbleViews::Init() {
       return;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

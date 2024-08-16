@@ -5,10 +5,6 @@
 #ifndef UI_DISPLAY_MAC_DISPLAY_LINK_MAC_H_
 #define UI_DISPLAY_MAC_DISPLAY_LINK_MAC_H_
 
-#include <memory>
-#include <set>
-#include <vector>
-
 #include "base/apple/scoped_typeref.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -17,9 +13,6 @@
 #include "ui/display/display_export.h"
 
 namespace ui {
-
-class DisplayLinkMac;
-class DisplayLinkMacSharedState;
 
 // VSync parameters parsed from CVDisplayLinkOutputCallback's parameters.
 struct DISPLAY_EXPORT VSyncParamsMac {
@@ -41,28 +34,29 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   using Callback = base::RepeatingCallback<void(VSyncParamsMac)>;
   ~VSyncCallbackMac();
 
+  // To prevent constantly switching VSync on and off, allow this max number of
+  // extra CVDisplayLink VSync running before stopping CVDisplayLink.
+  static constexpr int kMaxExtraVSyncs = 12;
+
  private:
-  friend class DisplayLinkMac;
+  friend class CVDisplayLinkMac;
+  friend class CADisplayLinkMac;
+  friend class Wrapper;
   friend class DisplayLinkMacSharedState;
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
 
-  VSyncCallbackMac(UnregisterCallback unregister_callback,
-                   Callback callback,
-                   bool do_callback_on_ctor_thread);
+  explicit VSyncCallbackMac(UnregisterCallback unregister_callback,
+                            Callback callback,
+                            bool do_callback_on_ctor_thread);
 
   // The callback to unregister `this` with its DisplayLinkMac.
   UnregisterCallback unregister_callback_;
 
-  // The callback that will be run on the CVDisplayLink thread. If `this` was
-  // created with `do_callback_on_ctor_thread`, then this callback will post a
-  // task to the creating thread,
-  Callback callback_for_cvdisplaylink_thread_;
+  Callback callback_for_displaylink_thread_;
 
-  base::WeakPtrFactory<VSyncCallbackMac> weak_factory_;
+  base::WeakPtrFactory<VSyncCallbackMac> weak_factory_{this};
 };
 
-// DisplayLinkMac indirectly owns a CVDisplayLink (via
-// DisplayLinkMacSharedState), and may be used to create VSync callbacks.
 class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
  public:
   // Create a DisplayLinkMac for the specified display.
@@ -73,44 +67,32 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   //   returned VSyncCallbackMac object is destroyed.
   // * The resulting VSyncCallbackMac object must be destroyed on the same
   //   thread on which it was created.
-  // * If `do_callback_on_register_thread` is true, then the callback is
-  //   guaranteed to be made on the calling thread and is guaranteed to be made
-  //   only if the resulting VSyncCallbackMac has not been destroyed.
-  // * If `do_callback_on_register_thread` is false then the callback may come
-  //   from any thread, and may happen after the resulting VSyncCallbackMac is
-  //   destroyed.
-  std::unique_ptr<VSyncCallbackMac> RegisterCallback(
-      VSyncCallbackMac::Callback callback,
-      bool do_callback_on_register_thread = true);
+  // * The callback is guaranteed to be made on the register thread.
+  virtual std::unique_ptr<VSyncCallbackMac> RegisterCallback(
+      VSyncCallbackMac::Callback callback) = 0;
 
   // Get the panel/monitor refresh rate
-  double GetRefreshRate() const;
-  void GetRefreshIntervalRange(base::TimeDelta& min_interval,
-                               base::TimeDelta& max_interval,
-                               base::TimeDelta& granularity) const;
+  virtual double GetRefreshRate() const = 0;
+  virtual void GetRefreshIntervalRange(base::TimeDelta& min_interval,
+                                       base::TimeDelta& max_interval,
+                                       base::TimeDelta& granularity) const = 0;
 
-  void SetPreferredInterval(base::TimeDelta interval);
-  void SetPreferredIntervalRange(base::TimeDelta min_interval,
-                                 base::TimeDelta max_interval,
-                                 base::TimeDelta preferred_interval);
+  virtual void SetPreferredInterval(base::TimeDelta interval) = 0;
+  virtual void SetPreferredIntervalRange(
+      base::TimeDelta min_interval,
+      base::TimeDelta max_interval,
+      base::TimeDelta preferred_interval) = 0;
 
   // Retrieves the current (“now”) time of a given display link. Returns
   // base::TimeTicks() if the current time is not available.
-  base::TimeTicks GetCurrentTime() const;
+  virtual base::TimeTicks GetCurrentTime() const = 0;
 
- private:
+ protected:
   friend class base::RefCounted<DisplayLinkMac>;
+  friend class CVDisplayLinkMac;
+  friend class CADisplayLinkMac;
 
-  DisplayLinkMac(DisplayLinkMacSharedState* shared_state);
-  virtual ~DisplayLinkMac();
-
-  // This is called by VSyncCallbackMac's destructor.
-  void UnregisterCallback(VSyncCallbackMac* callback);
-
-  // A single DisplayLinkMacSharedState is shared between all DisplayLinkMac
-  // instances that have same display ID. This is manually retained and
-  // released.
-  raw_ptr<DisplayLinkMacSharedState> shared_state_;
+  virtual ~DisplayLinkMac() = default;
 };
 
 }  // namespace ui

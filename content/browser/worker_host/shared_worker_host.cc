@@ -562,6 +562,7 @@ void SharedWorkerHost::CreateBucketManagerHost(
   GetProcessHost()->BindBucketManagerHost(AsWeakPtr(), std::move(receiver));
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void SharedWorkerHost::BindPressureService(
     mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -611,6 +612,7 @@ void SharedWorkerHost::BindPressureService(
 
   pressure_service_->BindReceiver(std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
@@ -763,6 +765,7 @@ void SharedWorkerHost::AddClient(
   // there is a mismatch between security levels.
   remote_client->OnCreated(instance_.creation_context_type());
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   // Stop delivering Compute Pressure data if the added client is not allowed
   // to use the policy-controlled feature.
   // see https://www.w3.org/TR/compute-pressure/#policy-control
@@ -794,6 +797,7 @@ void SharedWorkerHost::AddClient(
 
     pressure_service_.reset();
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   clients_.emplace_back(std::move(remote_client), next_connection_request_id_++,
                         client_render_frame_host_id);

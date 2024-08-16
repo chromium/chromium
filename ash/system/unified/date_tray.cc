@@ -89,7 +89,7 @@ void DateTray::ShowBubble() {
   }
 }
 
-void DateTray::CloseBubble() {
+void DateTray::CloseBubbleInternal() {
   if (!is_active()) {
     return;
   }

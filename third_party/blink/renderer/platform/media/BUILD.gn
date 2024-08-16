@@ -101,7 +101,6 @@ component("media") {
     deps += [
       "//cc",
       "//media/learning/mojo/public/cpp",
-      "//media/remoting:remoting_constants",
       "//third_party/blink/public/strings:strings_grit",
     ]
   }

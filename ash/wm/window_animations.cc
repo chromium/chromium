@@ -52,6 +52,8 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/shadow_types.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -666,8 +668,7 @@ bool AnimateShowWindow(aura::Window* window) {
       AnimateShowWindow_StepEnd(window);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -691,8 +692,7 @@ bool AnimateHideWindow(aura::Window* window) {
       AnimateHideWindow_StepEnd(window);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -811,8 +811,11 @@ gfx::Rect GetMinimizeAnimationTargetBoundsInScreen(aura::Window* window) {
     case ShelfAlignment::kRight:
       return gfx::Rect(work_area.right(), work_area.y(), 0, 0);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
+}
+
+void BounceWindow(aura::Window* window) {
+  wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
 }
 
 }  // namespace ash

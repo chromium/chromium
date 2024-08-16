@@ -6,7 +6,7 @@ import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mo
 import type {Uuid} from '//resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, ProductSpecificationsSet, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications, ProductSpecificationsDisclosureVersion, ProductSpecificationsFeatureState, ProductSpecificationsSet, UrlInfo, UserFeedback} from './shopping_service.mojom-webui.js';
 import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
@@ -32,7 +32,7 @@ export interface BrowserProxy {
   switchToOrOpenTab(url: Url): void;
   getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
   showBookmarkEditorForCurrentUrl(): void;
-  showProductSpecificationsSetForUuid(uuid: Uuid): void;
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean): void;
   showFeedbackForPriceInsights(): void;
   getCallbackRouter(): PageCallbackRouter;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
@@ -52,6 +52,12 @@ export interface BrowserProxy {
   setProductSpecificationsUserFeedback(feedback: UserFeedback): void;
   setProductSpecificationDisclosureAcceptVersion(
       version: ProductSpecificationsDisclosureVersion): void;
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string):
+      Promise<{disclosureShown: boolean}>;
+  declineProductSpecificationDisclosure(): void;
+  showSyncSetupFlow(): void;
+  getProductSpecificationsFeatureState():
+      Promise<{state: ProductSpecificationsFeatureState | null}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -67,6 +73,10 @@ export class BrowserProxyImpl implements BrowserProxy {
     factory.createShoppingServiceHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
+  showSyncSetupFlow() {
+    this.handler.showSyncSetupFlow();
   }
 
   getAllPriceTrackedBookmarkProductInfo() {
@@ -150,8 +160,8 @@ export class BrowserProxyImpl implements BrowserProxy {
     this.handler.showBookmarkEditorForCurrentUrl();
   }
 
-  showProductSpecificationsSetForUuid(uuid: Uuid) {
-    this.handler.showProductSpecificationsSetForUuid(uuid);
+  showProductSpecificationsSetForUuid(uuid: Uuid, inNewTab: boolean) {
+    this.handler.showProductSpecificationsSetForUuid(uuid, inNewTab);
   }
 
   showFeedbackForPriceInsights() {
@@ -184,6 +194,18 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   setProductSpecificationsUserFeedback(feedback: UserFeedback) {
     this.handler.setProductSpecificationsUserFeedback(feedback);
+  }
+
+  maybeShowProductSpecificationDisclosure(urls: Url[], name: string) {
+    return this.handler.maybeShowProductSpecificationDisclosure(urls, name);
+  }
+
+  declineProductSpecificationDisclosure() {
+    this.handler.declineProductSpecificationDisclosure();
+  }
+
+  getProductSpecificationsFeatureState() {
+    return this.handler.getProductSpecificationsFeatureState();
   }
 
   getCallbackRouter() {

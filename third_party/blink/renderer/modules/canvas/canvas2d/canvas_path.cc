@@ -73,15 +73,14 @@
 namespace blink {
 
 void CanvasPath::closePath() {
-  if (UNLIKELY(IsEmpty())) {
+  if (IsEmpty()) [[unlikely]] {
     return;
   }
   // If the current path is a zero lengthed path (ex: moveTo p1 and lineTo p1),
   // then closePath is no op.
-  if (UNLIKELY(path_.BoundingRect().height() == 0 &&
-               path_.BoundingRect().width() == 0 &&
-               (IsLine() && line_builder_.BoundingRect().height() == 0 &&
-                line_builder_.BoundingRect().width() == 0))) {
+  if (path_.BoundingRect().height() == 0 && path_.BoundingRect().width() == 0 &&
+      (IsLine() && line_builder_.BoundingRect().height() == 0 &&
+       line_builder_.BoundingRect().width() == 0)) [[unlikely]] {
     if (!path_.HasCurrentPoint()) {
       Clear();
       return;
@@ -92,7 +91,7 @@ void CanvasPath::closePath() {
     return;
   }
 
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
   }
   if (IsArc()) {
@@ -110,14 +109,15 @@ void CanvasPath::closePath() {
 void CanvasPath::moveTo(double double_x, double double_y) {
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
+  if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
                                                 double_y);
   }
   gfx::PointF point(x, y);
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     point = GetTransform().MapPoint(point);
   }
   if (IsEmpty()) {
@@ -131,19 +131,20 @@ void CanvasPath::moveTo(double double_x, double double_y) {
 void CanvasPath::lineTo(double double_x, double double_y) {
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y)))
+  if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  }
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
                                                 double_y);
   }
   gfx::PointF p1(x, y);
 
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     p1 = GetTransform().MapPoint(p1);
   }
 
-  if (UNLIKELY(IsEmpty())) {
+  if (IsEmpty()) [[unlikely]] {
     line_builder_.MoveTo(p1);
   }
 
@@ -168,11 +169,12 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
 
-  if (UNLIKELY(!std::isfinite(cpx) || !std::isfinite(cpy) ||
-               !std::isfinite(x) || !std::isfinite(y)))
+  if (!std::isfinite(cpx) || !std::isfinite(cpy) || !std::isfinite(x) ||
+      !std::isfinite(y)) [[unlikely]] {
     return;
+  }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
                                                 double_cpx, double_cpy,
                                                 double_x, double_y);
@@ -180,12 +182,12 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
   gfx::PointF p1(x, y);
   gfx::PointF cp(cpx, cpy);
 
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     p1 = GetTransform().MapPoint(p1);
     cp = GetTransform().MapPoint(cp);
   }
 
-  if (UNLIKELY(!path_.HasCurrentPoint())) {
+  if (!path_.HasCurrentPoint()) [[unlikely]] {
     path_.MoveTo(gfx::PointF(cpx, cpy));
   }
 
@@ -204,12 +206,13 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
   float cp2y = base::saturated_cast<float>(double_cp2y);
   float x = base::saturated_cast<float>(double_x);
   float y = base::saturated_cast<float>(double_y);
-  if (UNLIKELY(!std::isfinite(cp1x) || !std::isfinite(cp1y) ||
-               !std::isfinite(cp2x) || !std::isfinite(cp2y) ||
-               !std::isfinite(x) || !std::isfinite(y)))
+  if (!std::isfinite(cp1x) || !std::isfinite(cp1y) || !std::isfinite(cp2x) ||
+      !std::isfinite(cp2y) || !std::isfinite(x) || !std::isfinite(y))
+      [[unlikely]] {
     return;
+  }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
         double_cp2y, double_x, double_y);
@@ -219,12 +222,12 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
   gfx::PointF cp1(cp1x, cp1y);
   gfx::PointF cp2(cp2x, cp2y);
 
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     p1 = GetTransform().MapPoint(p1);
     cp1 = GetTransform().MapPoint(cp1);
     cp2 = GetTransform().MapPoint(cp2);
   }
-  if (UNLIKELY(!path_.HasCurrentPoint())) {
+  if (!path_.HasCurrentPoint()) [[unlikely]] {
     path_.MoveTo(gfx::PointF(cp1x, cp1y));
   }
 
@@ -242,18 +245,19 @@ void CanvasPath::arcTo(double double_x1,
   float x2 = base::saturated_cast<float>(double_x2);
   float y2 = base::saturated_cast<float>(double_y2);
   float r = base::saturated_cast<float>(double_r);
-  if (UNLIKELY(!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(x2) ||
-               !std::isfinite(y2) || !std::isfinite(r)))
+  if (!std::isfinite(x1) || !std::isfinite(y1) || !std::isfinite(x2) ||
+      !std::isfinite(y2) || !std::isfinite(r)) [[unlikely]] {
     return;
+  }
 
-  if (UNLIKELY(r < 0)) {
+  if (r < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         "The radius provided (" + String::Number(r) + ") is negative.");
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
                                                 double_y1, double_x2, double_y2,
                                                 double_r);
@@ -262,14 +266,14 @@ void CanvasPath::arcTo(double double_x1,
   gfx::PointF p1(x1, y1);
   gfx::PointF p2(x2, y2);
 
-  if (UNLIKELY(!IsTransformInvertible())) {
+  if (!IsTransformInvertible()) [[unlikely]] {
     p1 = GetTransform().MapPoint(p1);
     p2 = GetTransform().MapPoint(p2);
   }
 
-  if (UNLIKELY(!path_.HasCurrentPoint())) {
+  if (!path_.HasCurrentPoint()) [[unlikely]] {
     path_.MoveTo(p1);
-  } else if (UNLIKELY(p1 == path_.CurrentPoint() || p1 == p2 || !r)) {
+  } else if (p1 == path_.CurrentPoint() || p1 == p2 || !r) [[unlikely]] {
     lineTo(x1, y1);
   } else {
     path_.AddArcTo(p1, p2, r);
@@ -410,8 +414,9 @@ void DegenerateEllipse(CanvasPath* path,
                             .MapPoint(GetPointOnEllipse(radius_x, radius_y,
                                                         start_angle))
                             .OffsetFromOrigin());
-  if (UNLIKELY((!radius_x && !radius_y) || start_angle == end_angle))
+  if ((!radius_x && !radius_y) || start_angle == end_angle) [[unlikely]] {
     return;
+  }
 
   if (!anticlockwise) {
     // start_angle - fmodf(start_angle, kPiOverTwoFloat) + kPiOverTwoFloat is
@@ -455,29 +460,30 @@ void CanvasPath::arc(double double_x,
   float radius = base::saturated_cast<float>(double_radius);
   float start_angle = base::saturated_cast<float>(double_start_angle);
   float end_angle = base::saturated_cast<float>(double_end_angle);
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
-               !std::isfinite(radius) || !std::isfinite(start_angle) ||
-               !std::isfinite(end_angle)))
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius) ||
+      !std::isfinite(start_angle) || !std::isfinite(end_angle)) [[unlikely]] {
     return;
+  }
 
-  if (UNLIKELY(radius < 0)) {
+  if (radius < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         "The radius provided (" + String::Number(radius) + ") is negative.");
     return;
   }
 
-  if (UNLIKELY(!IsTransformInvertible()))
+  if (!IsTransformInvertible()) [[unlikely]] {
     return;
+  }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
         double_end_angle, anticlockwise);
   }
 
-  if (UNLIKELY(!radius || start_angle == end_angle)) {
+  if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
     lineTo(x + radius * cosf(start_angle), y + radius * sinf(start_angle));
     return;
@@ -515,20 +521,20 @@ void CanvasPath::ellipse(double double_x,
   float rotation = base::saturated_cast<float>(double_rotation);
   float start_angle = base::saturated_cast<float>(double_start_angle);
   float end_angle = base::saturated_cast<float>(double_end_angle);
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
-               !std::isfinite(radius_x) || !std::isfinite(radius_y) ||
-               !std::isfinite(rotation) || !std::isfinite(start_angle) ||
-               !std::isfinite(end_angle)))
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(radius_x) ||
+      !std::isfinite(radius_y) || !std::isfinite(rotation) ||
+      !std::isfinite(start_angle) || !std::isfinite(end_angle)) [[unlikely]] {
     return;
+  }
 
-  if (UNLIKELY(radius_x < 0)) {
+  if (radius_x < 0) [[unlikely]] {
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       "The major-axis radius provided (" +
                                           String::Number(radius_x) +
                                           ") is negative.");
     return;
   }
-  if (UNLIKELY(radius_y < 0)) {
+  if (radius_y < 0) [[unlikely]] {
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       "The minor-axis radius provided (" +
                                           String::Number(radius_y) +
@@ -536,11 +542,12 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  if (UNLIKELY(!IsTransformInvertible()))
+  if (!IsTransformInvertible()) [[unlikely]] {
     return;
+  }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kEllipse, double_x, double_y, double_radius_x,
         double_radius_y, double_rotation, double_start_angle, double_end_angle,
@@ -550,7 +557,8 @@ void CanvasPath::ellipse(double double_x,
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
       AdjustEndAngle(start_angle, end_angle, anticlockwise);
-  if (UNLIKELY(!radius_x || !radius_y || start_angle == adjusted_end_angle)) {
+  if (!radius_x || !radius_y || start_angle == adjusted_end_angle)
+      [[unlikely]] {
     // The ellipse is empty but we still need to draw the connecting line to
     // start point.
     DegenerateEllipse(this, x, y, radius_x, radius_y, rotation, start_angle,
@@ -570,19 +578,21 @@ void CanvasPath::rect(double double_x,
   float y = base::saturated_cast<float>(double_y);
   float width = base::saturated_cast<float>(double_width);
   float height = base::saturated_cast<float>(double_height);
-  if (UNLIKELY(!IsTransformInvertible()))
+  if (!IsTransformInvertible()) [[unlikely]] {
     return;
+  }
 
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
-               !std::isfinite(width) || !std::isfinite(height)))
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
+      !std::isfinite(height)) [[unlikely]] {
     return;
+  }
 
   if (width == 0 && height == 0) {
     moveTo(x, y);
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(
         CanvasOps::kRect, double_x, double_y, double_width, double_height);
   }
@@ -601,7 +611,7 @@ void CanvasPath::roundRect(
                     WebFeature::kCanvasRenderingContext2DRoundRect);
   constexpr int kMaxRadii = 4;
   const int num_radii = radii.size();
-  if (UNLIKELY(num_radii < 1 || num_radii > kMaxRadii)) {
+  if (num_radii < 1 || num_radii > kMaxRadii) [[unlikely]] {
     exception_state.ThrowRangeError(
         String::Number(num_radii) +
         " radii provided. Between one and four radii are necessary.");
@@ -612,12 +622,14 @@ void CanvasPath::roundRect(
   float y = base::saturated_cast<float>(double_y);
   float width = base::saturated_cast<float>(double_width);
   float height = base::saturated_cast<float>(double_height);
-  if (UNLIKELY(!IsTransformInvertible()))
+  if (!IsTransformInvertible()) [[unlikely]] {
     return;
+  }
 
-  if (UNLIKELY(!std::isfinite(x) || !std::isfinite(y) ||
-               !std::isfinite(width) || !std::isfinite(height)))
+  if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(width) ||
+      !std::isfinite(height)) [[unlikely]] {
     return;
+  }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
@@ -630,14 +642,15 @@ void CanvasPath::roundRect(
         DOMPointInit* p = radii[i]->GetAsDOMPointInit();
         float r_x = base::saturated_cast<float>(p->x());
         float r_y = base::saturated_cast<float>(p->y());
-        if (UNLIKELY(!std::isfinite(r_x)) || UNLIKELY(!std::isfinite(r_y)))
+        if (!std::isfinite(r_x) || !std::isfinite(r_y)) [[unlikely]] {
           return;
-        if (UNLIKELY(r_x < 0.0f)) {
+        }
+        if (r_x < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
               "X-radius value " + String::Number(r_x) + " is negative.");
           return;
         }
-        if (UNLIKELY(r_y < 0.0f)) {
+        if (r_y < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
               "Y-radius value " + String::Number(r_y) + " is negative.");
           return;
@@ -650,9 +663,10 @@ void CanvasPath::roundRect(
           kUnrestrictedDouble: {
         float a =
             base::saturated_cast<float>(radii[i]->GetAsUnrestrictedDouble());
-        if (UNLIKELY(!std::isfinite(a)))
+        if (!std::isfinite(a)) [[unlikely]] {
           return;
-        if (UNLIKELY(a < 0.0f)) {
+        }
+        if (a < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError("Radius value " + String::Number(a) +
                                           " is negative.");
           return;
@@ -663,7 +677,7 @@ void CanvasPath::roundRect(
     }
   }
 
-  if (UNLIKELY(width == 0) || UNLIKELY(height == 0)) {
+  if (width == 0 || height == 0) [[unlikely]] {
     // AddRoundRect does not handle flat rects, correctly.  But since there are
     // no rounded corners on a flat rect, we can just use AddRect.
     path_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
@@ -693,7 +707,7 @@ void CanvasPath::roundRect(
   }
 
   bool clockwise = true;
-  if (UNLIKELY(width < 0)) {
+  if (width < 0) [[unlikely]] {
     // Horizontal flip
     clockwise = false;
     x += width;
@@ -703,7 +717,7 @@ void CanvasPath::roundRect(
     swap(corner_radii[2], corner_radii[3]);
   }
 
-  if (UNLIKELY(height < 0)) {
+  if (height < 0) [[unlikely]] {
     // Vertical flip
     clockwise = !clockwise;
     y += height;

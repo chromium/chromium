@@ -10,8 +10,10 @@ from flake_suppressor_common import common_typing as ct
 TagUtils = None
 
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 def SetTagUtilsImplementation(impl: Type['BaseTagUtils']) -> None:
-  global TagUtils
+  global TagUtils  # pylint: disable=global-statement
   assert issubclass(impl, BaseTagUtils)
   TagUtils = impl()
 

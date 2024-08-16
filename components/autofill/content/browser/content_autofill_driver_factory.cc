@@ -121,24 +121,22 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 3. `SomeOtherWebContentsObserver::RenderFrameDeleted(render_frame_host)`
     //    calls `DriverForFrame(render_frame_host)`.
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
-    if (render_frame_host->IsRenderFrameLive()) {
-      driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
-      DCHECK_EQ(driver->GetLifecycleState(), LifecycleState::kInactive);
-      for (auto& observer : observers()) {
-        observer.OnAutofillDriverCreated(*this, *driver);
-      }
-      // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
-      // prerendered CADs are deferred.
-      SetLifecycleStateAndNotifyObservers(
-          *driver, driver->IsActive() ? LifecycleState::kActive
-                                      : LifecycleState::kInactive);
-      DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
-                driver.get());
-    } else {
+    if (!render_frame_host->IsRenderFrameLive()) {
       driver_map_.erase(iter);
       DCHECK_EQ(driver_map_.count(render_frame_host), 0u);
       return nullptr;
     }
+    driver = std::make_unique<ContentAutofillDriver>(render_frame_host, this);
+    DCHECK_EQ(driver->GetLifecycleState(), LifecycleState::kInactive);
+    for (auto& observer : observers()) {
+      observer.OnAutofillDriverCreated(*this, *driver);
+    }
+    // TODO: crbug.com/342132628 - `driver->IsActive()` is guaranteed once
+    // prerendered CADs are deferred.
+    SetLifecycleStateAndNotifyObservers(
+        *driver, driver->IsActive() ? LifecycleState::kActive
+                                    : LifecycleState::kInactive);
+    DCHECK_EQ(&driver_map_[render_frame_host], &driver);
   }
   DCHECK(driver.get());
   max_drivers_ = std::max(max_drivers_, driver_map_.size());
@@ -194,7 +192,7 @@ void ContentAutofillDriverFactory::RenderFrameHostStateChanged(
       case RFH::kPendingDeletion:  // Handled in RenderFrameDeleted().
         return std::nullopt;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }();
   if (state) {
     SetLifecycleStateAndNotifyObservers(*driver, *state);

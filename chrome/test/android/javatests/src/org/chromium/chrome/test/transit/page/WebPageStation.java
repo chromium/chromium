@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -16,6 +15,7 @@ import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
@@ -24,9 +24,7 @@ import org.chromium.content_public.browser.test.util.Coordinates;
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends PageStation {
 
-    // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists in the
-    // tab switcher and it is not completely occluded.
-    public static final ViewElement URL_BAR = unscopedViewElement(withId(R.id.url_bar));
+    public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
 
     protected Supplier<WebContents> mWebContentsSupplier;
 
@@ -47,21 +45,21 @@ public class WebPageStation extends PageStation {
                         new WebContentsPresentCondition(mPageLoadedSupplier));
         elements.declareEnterCondition(new FrameInfoUpdatedCondition(mWebContentsSupplier));
 
-        elements.declareView(URL_BAR);
+        // TODO(crbug.com/41497463): This should be shared, not unscoped, but the toolbar exists in
+        // the tab switcher and it is not completely occluded.
+        elements.declareView(URL_BAR, ViewElement.unscopedOption());
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public RegularWebPageAppMenuFacility openRegularTabAppMenu() {
         assert !mIncognito;
-        return enterFacilitySync(
-                new RegularWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new RegularWebPageAppMenuFacility(), MENU_BUTTON::click);
     }
 
     /** Opens the web page app menu by pressing the toolbar "..." button */
     public IncognitoWebPageAppMenuFacility openIncognitoTabAppMenu() {
         assert mIncognito;
-        return enterFacilitySync(
-                new IncognitoWebPageAppMenuFacility(), () -> MENU_BUTTON.perform(click()));
+        return enterFacilitySync(new IncognitoWebPageAppMenuFacility(), MENU_BUTTON::click);
     }
 
     private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {

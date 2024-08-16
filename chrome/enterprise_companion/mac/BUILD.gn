@@ -1,0 +1,54 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/mac/rules.gni")
+import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/enterprise_companion/mac/pkgbuild.gni")
+import("//chrome/process_version_rc_template.gni")
+
+group("mac") {
+  deps = []
+
+  if (host_os == "mac") {
+    deps += [ ":enterprise_companion_installer_unsigned" ]
+  }
+}
+
+tweak_info_plist("enterprise_companion_plist") {
+  info_plist = "Info.plist"
+}
+
+mac_app_bundle("enterprise_companion_bundle") {
+  info_plist_target = ":enterprise_companion_plist"
+  output_name = enterprise_companion_product_full_name
+  extra_substitutions =
+      [ "MAC_BUNDLE_IDENTIFIER=$mac_enterprise_companion_bundle_identifier" ]
+
+  sources = [ "//chrome/enterprise_companion/main.cc" ]
+  deps = [
+    "//chrome/enterprise_companion:base",
+    "//chrome/updater:constants_prod",
+  ]
+}
+
+process_version("postinstall") {
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$enterprise_companion_product_full_name\"",
+  ]
+  executable = true
+  process_only = true
+  template_file = "postinstall.in"
+  output = "$root_out_dir/enterprise_companion_postinstall"
+}
+
+if (host_os == "mac") {
+  mac_pkg_installer("enterprise_companion_installer_unsigned") {
+    bundle_target = ":enterprise_companion_bundle"
+    bundle_identifier = mac_enterprise_companion_bundle_identifier
+    install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
+    postinstall_script_target = ":postinstall"
+  }
+}

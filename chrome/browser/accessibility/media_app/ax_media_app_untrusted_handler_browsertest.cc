@@ -7,12 +7,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
@@ -21,46 +23,33 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
-#include "services/screen_ai/buildflags/buildflags.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_data.h"
-#include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/ax_tree_manager.h"
-#include "ui/display/display_switches.h"
-#include "ui/gfx/geometry/rect.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include <vector>
-
-#include "base/strings/escape.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/accessibility_notification_waiter.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
+#include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace ash::test {
 
@@ -107,8 +96,7 @@ constexpr std::string_view kLoadingMessage =
 
 class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
  public:
-  AXMediaAppUntrustedHandlerTest()
-      : feature_list_(ash::features::kMediaAppPdfA11yOcr) {}
+  AXMediaAppUntrustedHandlerTest() {}
   AXMediaAppUntrustedHandlerTest(
       const AXMediaAppUntrustedHandlerTest&) = delete;
   AXMediaAppUntrustedHandlerTest& operator=(
@@ -136,11 +124,9 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
     // TODO(b/309860428): Delete MediaApp interface - after we implement all
     // Mojo APIs, it should not be needed any more.
     handler_->SetMediaAppForTesting(&fake_media_app_);
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     handler_->SetIsOcrServiceEnabledForTesting();
     handler_->CreateFakeOpticalCharacterRecognizerForTesting(
         /*return_empty=*/false);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
 
   void TearDownOnMainThread() override {
@@ -159,9 +145,6 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 std::vector<PageMetadataPtr>
@@ -226,7 +209,6 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
   EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        OcrServiceInitializedFailed) {
   handler_->OnOCRServiceInitialized(/*successful*/ false);
@@ -996,8 +978,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   ASSERT_TRUE(load_waiter.WaitForNotification());
   EXPECT_EQ(
       "rootWebArea htmlTag='#document'\n"
-      "++genericContainer htmlTag='html'\n"
-      "++++genericContainer htmlTag='body'\n"
+      "++genericContainer\n"
+      "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
       "++++++++staticText name='Text that is not replaced by child tree.'\n"
@@ -1026,8 +1008,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, StitchDocumentTree) {
   ASSERT_TRUE(child_tree_added_waiter.WaitForNotification());
   ASSERT_EQ(
       "rootWebArea htmlTag='#document'\n"
-      "++genericContainer htmlTag='html'\n"
-      "++++genericContainer htmlTag='body'\n"
+      "++genericContainer\n"
+      "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
       "++++++++staticText name='Text that is not replaced by child tree.'\n"
@@ -1963,6 +1945,5 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PostamblePage) {
       "0)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace ash::test

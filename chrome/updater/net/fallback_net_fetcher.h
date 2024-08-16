@@ -55,6 +55,10 @@ class FallbackNetFetcher : public update_client::NetworkFetcher {
           download_to_file_complete_callback) override;
 
  private:
+  void ResponseStarted(update_client::NetworkFetcher::ResponseStartedCallback
+                           response_started_callback,
+                       int32_t http_status_code,
+                       int64_t content_length);
   void PostRequestDone(
       const GURL& url,
       const std::string& post_data,
@@ -85,6 +89,7 @@ class FallbackNetFetcher : public update_client::NetworkFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<update_client::NetworkFetcher> impl_;
   std::unique_ptr<update_client::NetworkFetcher> next_;
+  int32_t http_status_code_ = 200;
   scoped_refptr<update_client::Cancellation> cancellation_ =
       base::MakeRefCounted<update_client::Cancellation>();
 };

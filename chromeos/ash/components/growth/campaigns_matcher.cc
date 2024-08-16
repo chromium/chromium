@@ -10,6 +10,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -62,6 +64,21 @@ inline constexpr char kEventGroupDismissalParam[] =
 
 inline constexpr char kUserPrefName[] = "name";
 inline constexpr char kUserPrefValue[] = "value";
+
+base::Time GetDeviceCurrentTimeForScheduling() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch)) {
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsCurrentTimeSecondsSinceUnixEpoch);
+
+    double seconds_since_epoch;
+    CHECK(base::StringToDouble(value, &seconds_since_epoch));
+    return base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch);
+  }
+
+  return base::Time::Now();
+}
 
 bool MatchPref(const base::Value::List* criterias,
                std::string_view pref_path,
@@ -116,7 +133,7 @@ bool MatchSchedulings(const std::vector<std::unique_ptr<TimeWindowTargeting>>&
     return true;
   }
 
-  const auto now = base::Time::Now();
+  const auto now = GetDeviceCurrentTimeForScheduling();
   for (const auto& scheduling_targeting : scheduling_targetings) {
     if (MatchTimeWindow(*scheduling_targeting, now)) {
       return true;

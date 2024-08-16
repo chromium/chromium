@@ -495,7 +495,7 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
 // static
 std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
     const password_manager::PasswordForm& password_form,
-    base::RepeatingClosure on_back_clicked_callback) {
+    std::optional<base::RepeatingClosure> on_back_clicked_callback) {
   const auto* const layout_provider = ChromeLayoutProvider::Get();
   auto header = std::make_unique<views::BoxLayoutView>();
   // Set the space between the icon and title similar to the space in the row
@@ -510,11 +510,14 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
       layout_provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON)
           .right());
 
-  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      on_back_clicked_callback, vector_icons::kArrowBackIcon);
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  views::InstallCircleHighlightPathGenerator(back_button.get());
-  header->AddChildView(std::move(back_button));
+  if (on_back_clicked_callback) {
+    auto back_button = views::CreateVectorImageButtonWithNativeTheme(
+        *on_back_clicked_callback, vector_icons::kArrowBackIcon);
+    back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+    views::InstallCircleHighlightPathGenerator(back_button.get());
+    back_button->SetProperty(views::kElementIdentifierKey, kBackButton);
+    header->AddChildView(std::move(back_button));
+  }
 
   std::string shown_origin = password_manager::GetShownOrigin(
       password_manager::CredentialUIEntry(password_form));
@@ -525,6 +528,7 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
 ManagePasswordsDetailsView::ManagePasswordsDetailsView(
     password_manager::PasswordForm password_form,
+    bool allow_empty_username_edit,
     base::RepeatingCallback<bool(const std::u16string&)>
         username_exists_callback,
     base::RepeatingClosure switched_to_edit_mode_callback,
@@ -559,7 +563,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
-  } else {
+  } else if (allow_empty_username_edit) {
     read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
         kAccountCircleIcon, std::move(username_label), vector_icons::kEditIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
@@ -574,6 +578,9 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
             base::BindRepeating(&ManagePasswordsDetailsView::OnUserInputChanged,
                                 base::Unretained(this))));
     edit_username_row_->SetVisible(false);
+  } else {
+    AddChildView(
+        CreateDetailsRow(kAccountCircleIcon, std::move(username_label)));
   }
 
   std::unique_ptr<views::Label> password_label =
@@ -761,6 +768,7 @@ void ManagePasswordsDetailsView::OnUserInputChanged() {
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kTopView);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsDetailsView, kBackButton);
 
 BEGIN_METADATA(ManagePasswordsDetailsView)
 END_METADATA

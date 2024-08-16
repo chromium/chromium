@@ -30,12 +30,15 @@
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/sharing_message/sharing_message_bridge.h"
+#import "components/sharing_message/sharing_message_model_type_controller.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/model/forwarding_model_type_controller_delegate.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
+#import "components/sync/model/forwarding_data_type_controller_delegate.h"
 #import "components/sync/service/sync_engine_factory.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -65,12 +68,13 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
@@ -104,7 +108,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       this,
       DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_)
           ->GetDeviceInfoTracker(),
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state_)
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state_)
           ->GetSyncDataPath());
 }
 
@@ -124,8 +128,8 @@ base::FilePath IOSChromeSyncClient::GetLocalSyncBackendFolder() {
   return base::FilePath();
 }
 
-syncer::ModelTypeController::TypeVector
-IOSChromeSyncClient::CreateModelTypeControllers(
+syncer::DataTypeController::TypeVector
+IOSChromeSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
@@ -163,8 +167,8 @@ IOSChromeSyncClient::CreateModelTypeControllers(
   builder.SetHistoryService(ios::HistoryServiceFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::EXPLICIT_ACCESS));
   builder.SetIdentityManager(GetIdentityManager());
-  builder.SetModelTypeStoreService(
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state_));
+  builder.SetDataTypeStoreService(
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state_));
 #if !BUILDFLAG(IS_ANDROID)
   builder.SetPasskeyModel(
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
@@ -199,24 +203,39 @@ IOSChromeSyncClient::CreateModelTypeControllers(
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForBrowserState(browser_state_));
 
-  syncer::ModelTypeController::TypeVector controllers = builder.Build(
+  syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
 
   if (IsTabGroupSyncEnabled()) {
-    syncer::ModelTypeControllerDelegate* delegate =
+    syncer::DataTypeControllerDelegate* delegate =
         tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
             browser_state_)
             ->GetSavedTabGroupControllerDelegate()
             .get();
     // TODO(crbug.com/344893270): Move this controller to
-    // CreateCommonModelTypeControllers().
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+    // CreateCommonDataTypeControllers().
+    controllers.push_back(std::make_unique<syncer::DataTypeController>(
         syncer::SAVED_TAB_GROUP, /*delegate_for_full_sync_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate),
         /*delegate_for_transport_mode=*/
-        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
             delegate)));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    syncer::DataTypeControllerDelegate* sharing_message_delegate =
+        IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_)
+            ->GetControllerDelegate()
+            .get();
+    controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+            sharing_message_delegate)));
   }
 
   return controllers;

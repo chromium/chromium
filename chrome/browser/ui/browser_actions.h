@@ -41,9 +41,8 @@ class BrowserActions {
 
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<TranslateBrowserActionListener>
-      translate_browser_action_listener_ = nullptr;
-  std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_ =
-      nullptr;
+      translate_browser_action_listener_;
+  std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
   const raw_ref<Browser> browser_;
 };
 

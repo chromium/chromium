@@ -128,3 +128,7 @@ ZoomBubbleDialogTest.*
 #
 # # TODO(crbug.com/xxx): Fix xyz and re-enable.
 # -MyTestSuite.InvokeUi_MyTestCase
+
+# TODO(crbug.com/359386795): Failing on Win10 Tests x64, linux-win-cross-rel
+-AppMenuBrowserTest.InvokeUi_main
+-AppMenuBrowserTestRefreshOnly.InvokeUi_main*

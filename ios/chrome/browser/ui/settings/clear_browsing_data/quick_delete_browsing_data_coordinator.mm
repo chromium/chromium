@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
 
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
@@ -17,6 +19,7 @@
 
 @interface QuickDeleteBrowsingDataCoordinator () <
     QuickDeleteBrowsingDataViewControllerDelegate,
+    SignoutActionSheetCoordinatorDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -24,6 +27,7 @@
   QuickDeleteBrowsingDataViewController* _viewController;
   UINavigationController* _navigationController;
   QuickDeleteMediator* _mediator;
+  SignoutActionSheetCoordinator* _signoutCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -48,7 +52,8 @@
               browsingDataCounterWrapperProducer:producer
                                  identityManager:identityManager
                              browsingDataRemover:browsingDataRemover
-                             discoverFeedService:discoverFeedService];
+                             discoverFeedService:discoverFeedService
+                  canPerformTabsClosureAnimation:NO];
 
   _viewController = [[QuickDeleteBrowsingDataViewController alloc] init];
   _viewController.delegate = self;
@@ -66,6 +71,9 @@
 }
 
 - (void)stop {
+  _signoutCoordinator.delegate = nil;
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
   [_navigationController dismissViewControllerAnimated:YES completion:nil];
   _viewController.delegate = nil;
   _viewController.mutator = nil;
@@ -82,11 +90,62 @@
   [self.delegate stopBrowsingDataPage];
 }
 
+- (void)signOutAndShowActionSheet {
+  Browser* browser = self.browser;
+  if (!browser) {
+    // The C++ model has been destroyed, return early.
+    return;
+  }
+
+  if (_signoutCoordinator) {
+    // An action is already in progress, ignore user's request.
+    return;
+  }
+
+  signin_metrics::ProfileSignout signout_source_metric = signin_metrics::
+      ProfileSignout::kUserClickedSignoutFromClearBrowsingDataPage;
+  _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:browser
+                            rect:_viewController.view.frame
+                            view:_viewController.view
+                      withSource:signout_source_metric];
+  _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
+  __weak __typeof(self) weakSelf = self;
+  _signoutCoordinator.completion = ^(BOOL success) {
+    [weakSelf handleAuthenticationOperationDidFinish];
+  };
+  _signoutCoordinator.delegate = self;
+  [_signoutCoordinator start];
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  _viewController.view.userInteractionEnabled = NO;
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  _viewController.view.userInteractionEnabled = YES;
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissBrowsingDataPage];
+}
+
+#pragma mark - Private
+
+// Stops the signout coordinator.
+- (void)handleAuthenticationOperationDidFinish {
+  DCHECK(_signoutCoordinator);
+  _signoutCoordinator.delegate = nil;
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
 }
 
 @end

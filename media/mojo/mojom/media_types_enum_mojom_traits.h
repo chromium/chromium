@@ -35,7 +35,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return media::mojom::CdmEvent::kHardwareContextReset;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -57,7 +57,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 #endif  // BUILDFLAG(IS_WIN)
@@ -80,7 +80,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return media::mojom::CdmSessionClosedReason::kResourceEvicted;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -105,7 +105,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -123,7 +123,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return media::mojom::EncryptionType::kEncryptedWithClearLead;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -145,7 +145,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -212,7 +212,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::SVCScalabilityMode::kL3T1h:
       case media::SVCScalabilityMode::kL3T2h:
       case media::SVCScalabilityMode::kL3T3h:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -220,7 +220,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
                         media::SVCScalabilityMode* output) {
     switch (input) {
       case media::mojom::SVCScalabilityMode::kUnsupportedMode:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case media::mojom::SVCScalabilityMode::kL1T1:
         *output = media::SVCScalabilityMode::kL1T1;
         return true;
@@ -286,7 +286,7 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -303,7 +303,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
       case media::SVCInterLayerPredMode::kOnKeyPic:
         return media::mojom::SVCInterLayerPredMode::kOnKeyPic;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(media::mojom::SVCInterLayerPredMode input,
@@ -319,7 +319,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
         *output = media::SVCInterLayerPredMode::kOnKeyPic;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -337,7 +337,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return media::mojom::VideoRotation::kVideoRotation270;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -359,7 +359,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -391,7 +391,7 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kTest;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -434,7 +434,7 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -486,7 +486,7 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -559,7 +559,7 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1300115153046603471">এপিএন ডিফ’ল্ট প্ৰকাৰৰ আৰু <ph name="ATTACH" />।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">তাৰিখ সৃষ্টি কৰা হ’ল</translation>
 <translation id="1308754910631152188">আপডে’ট কৰি থকা হৈছে (<ph name="PERCENTAGE_VALUE" />% সম্পূৰ্ণ হৈছে)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="1310380015393971138">কোনো <ph name="NETWORK_NAME" /> নেটৱৰ্ক উপলব্ধ নহয়</translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">আর্ট গেলাৰী</translation>
 <translation id="1836553715834333258">ছিষ্টেমৰ ৰং</translation>
 <translation id="183675228220305365">বাস্তৱবাদী</translation>
-<translation id="1837537071599385610">প্ৰম্প্‌টিঙৰ গাইড</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1840474674287087346">ডেস্কটপৰ ৰং</translation>
 <translation id="184095011128924488">সৃষ্টিশীল</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">নিয়ন্ত্ৰণ</translation>
 <translation id="2652403576514495859">সক্ষম কৰক অথবা শ্ৰুতলিপি ট’গল কৰক</translation>
 <translation id="2653659639078652383">দাখিল কৰক</translation>
-<translation id="2653807227758181366">আপুনি সৃষ্টি কৰিব বিচৰা ৱালপেপাৰখন বৰ্ণনা কৰক বা এটা আৰ্হি প্ৰম্প্‌ট ব্যৱহাৰ কৰক</translation>
 <translation id="2654647726140493436">আপডে’ট প্ৰক্ৰিয়াটো চলি থাকোঁতে আপোনাৰ <ph name="DEVICE_TYPE" /> অফ নকৰিব বা <ph name="DEVICE_TYPE" />ৰ পাৱাৰ কে’বলডাল আনপ্লাগ নকৰিব</translation>
 <translation id="2656001153562991489">Chromebook Plusৰ বাবে বিশেষ</translation>
 <translation id="2665671725390405060">উচ্চাৰণটো শুনক</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AIএ সঞ্চালন কৰা শেহতীয়া পৃষ্ঠভূমি</translation>
 <translation id="2783010256799387990">পাছ কৰিছে</translation>
 <translation id="2786429550992142861">লিনেন</translation>
+<translation id="2787237339470862294">এই মুহূৰ্তত এই ভাষাটো সমৰ্থিত নহয়</translation>
 <translation id="2787435249130282949">কীব’ৰ্ড অধিক উজ্জ্বল কৰি তোলা</translation>
 <translation id="2805756323405976993">এপ্</translation>
 <translation id="28232023175184696">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰিবলৈ ক্লিক কৰক।</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">নথি ফীডাৰ (দুফাল থকা)</translation>
 <translation id="3201315366910775591">শ্বেয়াৰ কৰা এলবামসমূহ অন্য লোকসকলে আপডে’ট কৰিব পাৰে</translation>
 <translation id="3211671540163313381">কীমেপিং D-পেড</translation>
-<translation id="3224812403568276799">আপুনি এইটোৰ অনুমতি দিলে, Recorderএ নিৰ্দিষ্ট ভইচ স্বয়ংক্ৰিয়াভৱে চিনাক্ত কৰিবলৈ উচ্চখাপৰ অডিঅ’ৰ বিশ্লেষণ ব্যৱহাৰ কৰিব আৰু প্ৰতিটোকে এটাকৈ স্পীকাৰ ১ আৰু স্পীকাৰ ২ৰ দৰে সাধাৰণ লেবেল দিব।
-
-আপুনি যিকোনো সময়তে ছেটিঙত এইটো অফ কৰিব পাৰে।</translation>
 <translation id="3226405216343213872">স্কেনাৰ বিচাৰি থকা হৈছে</translation>
 <translation id="3226657629376379887">লে’আউট সম্পৰ্কীয় কাৰ্যৰ মেনু</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
@@ -465,6 +462,7 @@
 <translation id="346423161771747987">বৈদ্যুতিক প্ৰবাহ</translation>
 <translation id="346539236881580388">অন্য এখন ফট' লওক</translation>
 <translation id="3484914941826596830">ফাৰ্মৱেৰটো আপডে’ট হৈ থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এই আপডে’টটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
+<translation id="3485555238092220889">সাধ্য সুবিধাৰ কাৰ্য</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3487866404496702283">mahi সুবিধাৰ বাবে মতামত</translation>
 <translation id="3488065109653206955">আংশিকভাৱে সক্ৰিয় কৰা হৈছে</translation>
@@ -509,6 +507,7 @@
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
 <translation id="3715651196924935218">ওপঙা স্থিতিৰ পৰা বাহিৰ হওক</translation>
 <translation id="3716250181321371108">নিয়ন্ত্ৰণ সৃষ্টি কৰক</translation>
+<translation id="3716830479327464973">যেতিয়া আপুনি ইয়াৰ অনুমতি দিয়ে, Recorderএ এই উদ্দেশ্যৰে আপোনাৰ অডিঅ’ ৰেকৰ্ডিঙসমূহ বিশ্লেষণ কৰিব:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> টা পৰ্যালোচনা)</translation>
 <translation id="3748026146096797577">সংযোগ কৰা হোৱা নাই</translation>
 <translation id="3749289110408117711">ফাইলৰ নাম</translation>
@@ -535,6 +534,7 @@
 <translation id="3869314628814282185">টুল</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
 <translation id="3877066159641251281">অনুবাদটো শুনক</translation>
+<translation id="3880601782712134623">স্বয়ংক্ৰিয়ভাৱে ভইচ চিনাক্ত কৰক আৰু প্ৰতিগৰাকী স্পীকাৰত এটা সাধাৰণ লেবেল যোগ দিয়ক, যেনে, স্পীকাৰ ১ আৰু স্পীকাৰ ২</translation>
 <translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
 <translation id="3889914174935857450">ৰিছেট কৰাৰ তাৰিখ</translation>
 <translation id="3897092660631435901">মেনু</translation>
@@ -638,6 +638,7 @@
 <translation id="4422041425070339732">তললৈ নিৰ্দেশ কৰা কাঁড় চিহ্ন</translation>
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> অফ কৰা আছে</translation>
+<translation id="4428840632568803690">বক্তা <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos টিকেটৰ ম্যাদ শীঘ্ৰেই উকলি যাব</translation>
 <translation id="4431821876790500265">ৰিপ’ৰ্ট চাওক</translation>
 <translation id="4443192710976771874">ৰঙা</translation>
@@ -673,6 +674,7 @@
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4594021849294327751">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰক</translation>
+<translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4627232916386272576"><ph name="TOTAL_PAGE_NUMBER" />ৰ ভিতৰত <ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />। প্ৰিণ্টৰ কাৰ্যটো বাতিল কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="463791356324567266">স্কেন বাতিল কৰি থকা হৈছে…</translation>
@@ -759,6 +761,7 @@
 <translation id="5049856988445523908">ছিম লক কৰা হ’ল (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">গোটৰ নাম</translation>
 <translation id="5051044138948155788">এইখনেই একমাত্ৰ পৃষ্ঠা। এইটোৱে আপোনাক স্কেন আৰম্ভ হোৱা পৃষ্ঠাখনলৈ লৈ যাব।</translation>
+<translation id="5078711626843651677">স্পীকাৰত লেবেল যোগ দিয়াটো সম্পূৰ্ণ নোহোৱালৈকে ভইচ মডেলসমূহ অস্থায়ীভাৱে ডিভাইচত ৰখা হয়। আপুনি যিকোনো সময়তে ছেটিঙত এইটো অফ কৰিব পাৰে।</translation>
 <translation id="5078983345702708852">অত্যাধুনিক</translation>
 <translation id="5087864757604726239">উভতি যাওক</translation>
 <translation id="5088172560898466307">ছার্ভাৰ হ‘ষ্টনে‘ম</translation>
@@ -813,9 +816,11 @@
 <translation id="5318334351163689047">বিফল TCP অনুৰোধসমূহ</translation>
 <translation id="53196409393069519">ট্ৰান্সক্ৰিপশ্বন অন কৰিবনে?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">নাম</translation>
 <translation id="5332948983412042822">এতিয়া নতুন এটা বাছনি কৰক</translation>
 <translation id="5333530671332546086">অজ্ঞাত প’ৰ্টেলৰ স্থিতি</translation>
 <translation id="5335373365677455232">গুলপীয়া</translation>
+<translation id="5344619683981067131">বাছনি কৰা পাঠৰ ঠাইত পৰামৰ্শটো ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="5346687412805619883">স্থানীয় নেটৱৰ্ক</translation>
 <translation id="5358174242040570474">কিবা ভুল হ’ল। পুনৰ এখন ৱালপেপাৰ বাছনি কৰি অথবা পুনৰ এপ্‌টো খুলি চেষ্টা কৰি চাওক।</translation>
 <translation id="5372659122375744710">ৱাই-ফাইৰ নেটৱৰ্কটো সুৰক্ষিত নহয়</translation>
@@ -867,6 +872,7 @@
 <translation id="5662240986744577912">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">আপুনি সৃষ্টি কৰিব বিচৰা ৱালপেপাৰখন বৰ্ণনা কৰক</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" />ৰ সৈতে এটা অধিৱাস্তৱ <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">চেৰী</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
@@ -974,7 +980,6 @@
 <translation id="6231648282154119906">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে আপুনি বাছনি কৰা বৰ্ধিত সুৰক্ষাৰ অংশ হিচাপে সন্দেহজনক ফাইলসমূহ স্বয়ংক্ৰিয়ভাৱে স্কেন কৰিব</translation>
 <translation id="6232017090690406397">বেটাৰী</translation>
 <translation id="6234024205316847054">ৰূপৰেখা দেখুৱাওক</translation>
-<translation id="6235460611964961764">ডেটাৰ ব্যৱহাৰ মেনুৱেলভাৱে ৰিছেট কৰক</translation>
 <translation id="6243280677745499710">বর্তমান ছেট কৰা ৱালপেপাৰ</translation>
 <translation id="6250316632541035980">বেকন আৰু কণী</translation>
 <translation id="6265268291107409527">বাছনি কৰা কীটো <ph name="KEYS" />। <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@
 <translation id="680983167891198932">কী</translation>
 <translation id="6816797338148849397">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য উপলব্ধ। এক্সেছ কৰিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="6853312040151791195">চাৰ্জ খৰচ হোৱাৰ হাৰ</translation>
+<translation id="6862416241246624313">মতামত দাখিল কৰা হৈছে</translation>
 <translation id="6866732840889595464">ডেইজী</translation>
 <translation id="6871256179359663621">পাতল বেঙুনীয়া</translation>
 <translation id="6889786074662672253">ৰিষ্টাৰ্ট কৰি থকাৰ সময়ত, এই বাহ্যিক ডিভাইচটো আনপ্লাগ অথবা আপোনাৰ কম্পিউটাৰটো শ্বাট ডাউন নকৰিব। আপুনি এই ৱিণ্ড’খন মিনিমাইজ কৰিব পাৰে। এইটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে আৰু এই সময়খিনিত আপোনাৰ বাহ্যিক ডিভাইচটোৱে কাম নকৰিব পাৰে।</translation>
@@ -1108,7 +1114,9 @@
 <translation id="6905163627763043954">ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />লৈ উভতি যাওক</translation>
 <translation id="6910312834584889076">স্কেনাৰৰ ঢাকনীখন খোলা আছে। ঢাকনীখন বন্ধ কৰি পুনৰ চেষ্টা কৰি চাওক।</translation>
+<translation id="6910845598686542904">ৰেকৰ্ডিঙত চিনাক্ত কৰা ভইচৰ মডেলসমূহ গণনা কৰে</translation>
 <translation id="6911383237894364323">মিডিয়া ছাৰ্ভাৰৰ সৈতে সংযোগ কৰিব পৰা নগ’ল</translation>
+<translation id="6930242544192836755">সময়ৰ পৰিসৰ</translation>
 <translation id="6930597342185648547">পৃষ্ঠভূমিৰ বিষয়ে</translation>
 <translation id="6939667434404433010">ৰেকৰ্ডিঙৰ নাম সলনি কৰক</translation>
 <translation id="6939766318048400022">কেফে</translation>
@@ -1291,6 +1299,7 @@
 <translation id="7802764839223122985">কী নাই। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
+<translation id="7811024689617730980">১ৰ পৰা ৩১ৰ পৰিসৰৰ পৰা এটা স্বয়ংক্ৰিয়ভাৱে ৰিছেট হোৱা দিন বাছনি কৰক</translation>
 <translation id="7813073042185856802">পৰ্বত</translation>
 <translation id="7819857487979277519">PSK (WPA বা RSN)</translation>
 <translation id="7824219488248240180">প’ষ্ট-ইম্প্ৰেশ্বনিষ্ট</translation>
@@ -1329,6 +1338,7 @@
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="8017679124341497925">শ্বৰ্টকাটত সাল-সলনি কৰা হ’ল</translation>
 <translation id="802154636333426148">ডাউনল’ড কৰিব পৰা নগ’ল</translation>
+<translation id="8028993641010258682">আকাৰ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">স্বয়ংক্ৰিয় ৰঙৰ ম'ডটো সক্ষম কৰক</translation>
 <translation id="8041089156583427627">মতামত পঠিয়াওক</translation>
@@ -1365,6 +1375,7 @@
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8226628635270268143">আপোনাৰ প্ৰিয় ফট’ আৰু এলবামসমূহ বাছনি কৰক</translation>
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
+<translation id="8227488649450500937">এই প্ৰম্প্‌টসমূহৰ এটা ব্যৱহাৰ কৰি চাওক বা <ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্প্‌ট সম্পৰ্কীয় নিৰ্দেশনা<ph name="END_LINK_PROMPTING_GUIDE" /> চাওক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8238771987802558562">কোনো এপিএন বাছনি কৰক</translation>
 <translation id="8246209727385807362">অজ্ঞাত বাহক</translation>
@@ -1570,6 +1581,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">মতামত পঠিয়াওক</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" />ৰ বাবে কী নাই। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">সমগ্ৰ ৰেকৰ্ডিংটোৰ ভইচসমূহ তুলনা কৰক, যাতে ট্ৰেন্সক্ৰিপ্টটোৱে প্ৰতিগৰাকী স্পীকাৰে কেতিয়া কি কৈছিল সেয়া প্ৰতিফলিত কৰে</translation>
 <translation id="952992212772159698">সক্ৰিয় কৰা হোৱা নাই</translation>
 <translation id="95718197892796296">আলতীয়া মাটি</translation>
 <translation id="960719561871045870">অপাৰেটৰ ক’ড</translation>

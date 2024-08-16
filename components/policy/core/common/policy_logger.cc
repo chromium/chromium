@@ -47,6 +47,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Device Trust";
     case PolicyLogger::Log::Source::kOidcEnrollment:
       return "OIDC Enrollment";
+    case PolicyLogger::Log::Source::kExtensibleSSO:
+      return "Extensible SSO";
   }
 }
 

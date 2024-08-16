@@ -31,7 +31,7 @@ size_t GetFormatPlaneCount(DXGI_FORMAT format) {
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return 1;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

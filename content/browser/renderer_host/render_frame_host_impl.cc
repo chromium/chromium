@@ -1373,13 +1373,17 @@ WindowProxyFrameContext GetWindowProxyFrameContext(RenderFrameHostImpl* frame) {
 enum class WindowProxyPageContext {
   kWindow,
   kPopup,
+  kPartitionedPopin,
 };
 
 WindowProxyPageContext GetWindowProxyPageContext(RenderFrameHostImpl* frame) {
-  if (frame->delegate()->IsPopup()) {
+  if (frame->delegate()->IsPartitionedPopin()) {
+    return WindowProxyPageContext::kPartitionedPopin;
+  } else if (frame->delegate()->IsPopup()) {
     return WindowProxyPageContext::kPopup;
+  } else {
+    return WindowProxyPageContext::kWindow;
   }
-  return WindowProxyPageContext::kWindow;
 }
 
 // These are directly cast to UKM enums of the same name and logged,
@@ -1926,7 +1930,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
   site_instance_->group()->AddObserver(this);
   auto* process = GetProcess();
-  process->RegisterRenderFrameHost(GetGlobalId());
+  process->RegisterRenderFrameHost(GetGlobalId(), IsOutermostMainFrame());
   GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   if (parent_) {
@@ -2135,7 +2139,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "sig_exists", !!site_instance_->group());
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "process_exists", !!process);
   site_instance_->group()->RemoveObserver(this);
-  process->UnregisterRenderFrameHost(GetGlobalId());
+  process->UnregisterRenderFrameHost(GetGlobalId(), IsOutermostMainFrame());
 
   const bool was_created = is_render_frame_created();
   SCOPED_CRASH_KEY_BOOL("Bug1407526", "was_created", !!was_created);
@@ -6210,13 +6214,13 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
 void RenderFrameHostImpl::MaybeStartOutermostMainFrameNavigation(
     const std::vector<GURL>& urls) {
-  const bool kStartupEnabled =
+  static const bool kStartupEnabled =
       base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerStartup);
-  const bool kWarmUpEnabled =
+  static const bool kWarmUpEnabled =
       base::FeatureList::IsEnabled(
           blink::features::kSpeculativeServiceWorkerWarmUp) &&
       !blink::features::kSpeculativeServiceWorkerWarmUpDryRun.Get();
-  const bool kHttpDiskCachePrewarmingEnabled =
+  static const bool kHttpDiskCachePrewarmingEnabled =
       base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
       !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
 
@@ -7404,12 +7408,6 @@ void RenderFrameHostImpl::DidChangeBackgroundColor(
   // TODO(crbug.com/40188381): Consider moving this to PageImpl.
   DCHECK(is_main_frame());
   GetPage().DidChangeBackgroundColor(background_color, color_adjust);
-  NavigationEntryImpl* entry =
-      frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id_);
-  if (entry) {
-    entry->navigation_transition_data().set_main_frame_background_color(
-        background_color);
-  }
 }
 
 void RenderFrameHostImpl::SetCommitCallbackInterceptorForTesting(
@@ -8437,13 +8435,6 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     bad_message::ReceivedBadMessage(
         GetProcess(),
         bad_message::RFH_RECEIVED_INVALID_BROWSING_TOPICS_ATTRIBUTE);
-    return;
-  }
-
-  if (attributes->ad_auction_headers &&
-      !base::FeatureList::IsEnabled(
-          blink::features::kFledgeNegativeTargeting)) {
-    mojo::ReportBadMessage("Unexpected iframe.adAuctionHeaders value");
     return;
   }
 
@@ -11389,6 +11380,8 @@ void RenderFrameHostImpl::CommitNavigation(
               this);
     const base::UnguessableToken& navigation_token =
         commit_params->navigation_token;
+    commit_params->has_ua_visual_transition =
+        navigation_request->was_initiated_by_animated_transition();
     DCHECK(GetSameDocumentNavigationRequest(navigation_token));
     bool should_replace_current_entry =
         common_params->should_replace_current_entry;
@@ -14322,12 +14315,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                                ukm::SourceIdType::NAVIGATION_ID));
   }
 
-  if (is_same_document_navigation &&
-      same_document_params->navigation_entry_screenshot_destination
-          .has_value()) {
+  if (is_same_document_navigation) {
     NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
         *(navigation_request.get()),
-        same_document_params->navigation_entry_screenshot_destination.value());
+        same_document_params->navigation_entry_screenshot_destination);
   }
 
   // TODO(crbug.com/40150370): Do not pass |params| to DidNavigate().
@@ -16369,17 +16360,18 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin,
     bool is_payment_credential_creation,
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback) {
-  bool unused_is_cross_origin;
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+        callback) {
+  bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
   WebAuthRequestSecurityChecker::RequestType request_type =
       is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
-          effective_origin, request_type, &unused_is_cross_origin);
+          effective_origin, request_type, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    std::move(callback).Run(status);
+    std::move(callback).Run(status, is_cross_origin);
     return;
   }
 
@@ -16387,7 +16379,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
            ->browser()
            ->IsSecurityLevelAcceptableForWebAuthn(this, effective_origin)) {
     std::move(callback).Run(
-        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+        blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR, is_cross_origin);
     return;
   }
 
@@ -16399,7 +16391,7 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
               base::BindOnce(&RenderFrameHostImpl::
                                  OnMakeCredentialWebAuthSecurityChecksCompleted,
                              weak_ptr_factory_.GetWeakPtr(),
-                             std::move(callback)));
+                             std::move(callback), is_cross_origin));
 
   // If `remote_validation` is nullptr then this object may already have been
   // destroyed.
@@ -16409,10 +16401,11 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
 }
 
 void RenderFrameHostImpl::OnMakeCredentialWebAuthSecurityChecksCompleted(
-    base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
+    base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)> callback,
+    bool is_cross_origin,
     blink::mojom::AuthenticatorStatus status) {
   webauthn_remote_rp_id_validation_.reset();
-  std::move(callback).Run(status);
+  std::move(callback).Run(status, is_cross_origin);
 }
 #endif
 
@@ -16847,7 +16840,7 @@ void RenderFrameHostImpl::OnCookiesAccessed(
                           details_vector.size());
   size_t access_sum = 0;
   for (auto& details : details_vector) {
-    access_sum += details->count * details->cookie_list.size();
+    access_sum += details->cookie_list.size();
     EmitCookieWarningsAndMetrics(/*rfh=*/this, /*navigation_request=*/nullptr,
                                  details);
 

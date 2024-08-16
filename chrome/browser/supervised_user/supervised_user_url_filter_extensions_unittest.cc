@@ -20,9 +20,24 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS), "For Enabled extensions only");
 
+namespace {
+
+// URL filter delegate that verifies url extensions support.
+class FakeURLFilterDelegate
+    : public supervised_user::SupervisedUserURLFilter::Delegate {
+ public:
+  bool SupportsWebstoreURL(const GURL& url) const override {
+    return supervised_user::IsSupportedChromeExtensionURL(url);
+  }
+};
+
+}  // namespace
+
 class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  public:
   SupervisedUserURLFilterExtensionsTest() {
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
     filter_.SetDefaultFilteringBehavior(
         supervised_user::FilteringBehavior::kBlock);
   }
@@ -30,12 +45,10 @@ class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
-  // Test with the real method for url extensions support.
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
+          std::make_unique<FakeURLFilterDelegate>());
 };
 
 TEST_F(SupervisedUserURLFilterExtensionsTest,

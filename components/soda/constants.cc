@@ -13,7 +13,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -22,11 +21,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
-const constexpr char* const kDefaultEnabledLanguages[] = {
-    "en-US", "fr-FR", "it-IT", "de-DE",       "es-ES",
-    "ja-JP", "hi-IN", "pt-BR", "ko-KR",       "pl-PL",
-    "th-TH", "tr-TR", "id-ID", "cmn-Hans-CN", "cmn-Hant-TW"};
-
 const char kUsEnglishLocale[] = "en-US";
 
 const char kEnglishLocaleNoCountry[] = "en";
@@ -257,19 +251,6 @@ const std::string GetInstallationResultMetricForLanguage(
     const std::string& language) {
   return base::StrCat(
       {"SodaInstaller.Language.", language, ".InstallationResult"});
-}
-
-std::vector<std::string> GetLiveCaptionEnabledLanguages() {
-  std::vector<std::string> enabled_languages = base::SplitString(
-      base::GetFieldTrialParamValueByFeature(
-          media::kLiveCaptionExperimentalLanguages, "available_languages"),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-
-  for (const char* const enabled_language : kDefaultEnabledLanguages) {
-    enabled_languages.push_back(enabled_language);
-  }
-
-  return enabled_languages;
 }
 
 }  // namespace speech

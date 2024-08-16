@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] sigmoid float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+[FAIL] sigmoid float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test sigmoid float32 actual 0.40673828125 should be close enough to expected 0.4068518280982971 by the acceptable 34 ULP distance, but they have 3810 ULP distance expected true got false
+Harness: the test ran to completion.
+

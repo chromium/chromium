@@ -131,7 +131,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         port._xvfb_supports_maxclients = True
         self.assertEqual(port.xvfb_flags(), [
             '-screen', '0', '1280x800x24', '-ac', '-dpi', '96', '-maxclients',
-            '512'
+            '1024'
         ])
 
     def test_setup_test_run_starts_xvfb(self):

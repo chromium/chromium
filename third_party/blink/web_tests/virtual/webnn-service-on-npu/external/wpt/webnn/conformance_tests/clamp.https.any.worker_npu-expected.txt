@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] clamp float32 0D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 1D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 1D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 3D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 5D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 4D tensor default options.maxValue and specified negative options.minValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 9.5234375 should be close enough to expected 9.524681091308594 by the acceptable 0 ULP distance, but they have 1304 ULP distance expected true got false
+[FAIL] clamp float32 3D tensor default options.maxValue and specified options.minValue=0.0
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 9.5234375 should be close enough to expected 9.524681091308594 by the acceptable 0 ULP distance, but they have 1304 ULP distance expected true got false
+[FAIL] clamp float32 2D tensor default options.maxValue and specified positive options.minValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 9.5234375 should be close enough to expected 9.524681091308594 by the acceptable 0 ULP distance, but they have 1304 ULP distance expected true got false
+[FAIL] clamp float32 5D tensor default options.minValue and specified negative options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 3D tensor default options.minValue and specified positive options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -9.8125 should be close enough to expected -9.817828178405762 by the acceptable 0 ULP distance, but they have 5587 ULP distance expected true got false
+[FAIL] clamp float32 5D tensor specified both negative options.minValue and options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -6.0234375 should be close enough to expected -6.024064064025879 by the acceptable 0 ULP distance, but they have 1314 ULP distance expected true got false
+[FAIL] clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual -4.0703125 should be close enough to expected -4.0725626945495605 by the acceptable 0 ULP distance, but they have 4719 ULP distance expected true got false
+[FAIL] clamp float32 3D tensor specified negative options.minValue and positive options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 3.728515625 should be close enough to expected 3.7292487621307373 by the acceptable 0 ULP distance, but they have 3075 ULP distance expected true got false
+[FAIL] clamp float32 2D tensor specified options.minValue=0.0 and positive options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 3.728515625 should be close enough to expected 3.7292487621307373 by the acceptable 0 ULP distance, but they have 3075 ULP distance expected true got false
+[FAIL] clamp float32 1D tensor specified both positive options.minValue and options.maxValue
+  assert_true: assert_array_approx_equals_ulp: test clamp float32 actual 3.728515625 should be close enough to expected 3.7292487621307373 by the acceptable 0 ULP distance, but they have 3075 ULP distance expected true got false
+Harness: the test ran to completion.
+

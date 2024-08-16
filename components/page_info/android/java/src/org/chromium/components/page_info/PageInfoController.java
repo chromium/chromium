@@ -276,7 +276,7 @@ public class PageInfoController
                         mDelegate,
                         pageInfoHighlight.getHighlightedPermission());
         mSubpageControllers.add(mPermissionsController);
-        if (mDelegate.showTrackingProtectionLaunchUI()) {
+        if (mDelegate.showTrackingProtectionACTFeaturesUI()) {
             mTrackingProtectionLaunchController =
                     new PageInfoTrackingProtectionLaunchController(
                             this, mView.getCookiesRowView(), mDelegate);
@@ -293,7 +293,7 @@ public class PageInfoController
         }
 
         if (source == OpenedFromSource.WEBAPK_SNACKBAR
-                && mDelegate.showTrackingProtectionLaunchUI()) {
+                && mDelegate.showTrackingProtectionACTFeaturesUI()) {
             mContainer.showPage(
                     mTrackingProtectionLaunchController.createViewForSubpage(mContainer),
                     null,

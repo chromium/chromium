@@ -35,10 +35,16 @@ const char kExceptionMessageUnableToCreateSession[] =
     "The session cannot be created.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
+const char kExceptionMessageRequestAborted[] = "The request has been aborted.";
 
 void ThrowInvalidContextException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     kExceptionMessageExecutionContextInvalid);
+}
+
+void ThrowSessionDestroyedException(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    kExceptionMessageSessionDestroyed);
 }
 
 void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver) {
@@ -112,7 +118,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     case ModelStreamingResponseStatus::kComplete:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // LINT.IfChange(ConvertModelAvailabilityCheckResultToDebugString)
@@ -160,7 +166,7 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
         kNoModelAdaptationNotAvailable:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 // LINT.ThenChange(//third_party/blink/public/mojom/ai_manager.mojom:ModelAvailabilityCheckResult)
 

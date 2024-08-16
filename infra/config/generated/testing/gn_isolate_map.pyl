@@ -1317,10 +1317,6 @@
     "label": "//chrome/test:performance_test_suite",
     "type": "generated_script",
   },
-  "performance_test_suite_android_clank_monochrome_64_32_bundle": {
-    "label": "//chrome/test:performance_test_suite_android_clank_monochrome_64_32_bundle",
-    "type": "generated_script",
-  },
   "performance_test_suite_android_clank_trichrome_bundle": {
     "label": "//chrome/test:performance_test_suite_android_clank_trichrome_bundle",
     "type": "generated_script",
@@ -1614,10 +1610,6 @@
       "--chrome-root",
       "../../",
     ],
-  },
-  "test_ash_chrome_cipd_yaml": {
-    "label": "//chrome/test:test_ash_chrome_cipd_yaml",
-    "type": "additional_compile_target",
   },
   "test_cpp_including_rust_unittests": {
     "label": "//build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests",

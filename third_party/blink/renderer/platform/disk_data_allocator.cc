@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
@@ -192,7 +193,7 @@ void DiskDataAllocator::Discard(std::unique_ptr<DiskDataMetadata> metadata) {
 }
 
 int DiskDataAllocator::DoWrite(int64_t offset, const char* data, int size) {
-  int rv = file_.Write(offset, data, size);
+  int rv = UNSAFE_TODO(file_.Write(offset, data, size));
 
   // No PCHECK(), since a file writing error is recoverable.
   if (rv != size) {
@@ -208,7 +209,7 @@ void DiskDataAllocator::DoRead(int64_t offset, char* data, int size) {
   // pressure, in which case writing to/reading from disk is better than
   // swapping out random parts of the memory. See crbug.com/1029320 for details.
   base::ScopedAllowBlocking allow_blocking;
-  int rv = file_.Read(offset, data, size);
+  int rv = UNSAFE_TODO(file_.Read(offset, data, size));
   // Can only crash, since we cannot continue without the data.
   PCHECK(rv == size) << "Likely file corruption.";
 }

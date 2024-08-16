@@ -11,11 +11,14 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
 #include "components/media_message_center/mock_media_notification_item.h"
+#include "components/strings/grit/components_strings.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -209,6 +212,15 @@ TEST_F(MediaItemUIDetailedViewTest, ChevronIconVisibilityCheck) {
 
   view = CreateLockScreenMediaView();
   EXPECT_EQ(view->GetChevronIconForTesting(), nullptr);
+}
+
+TEST_F(MediaItemUIDetailedViewTest, AccessibleProperties) {
+  auto view = CreateView(MediaDisplayPage::kQuickSettingsMediaView);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kListItem);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(
+                IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 }
 
 TEST_F(MediaItemUIDetailedViewTest, DeviceSelectorViewCheck) {

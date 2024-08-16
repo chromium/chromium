@@ -125,7 +125,6 @@ BASE_DECLARE_FEATURE(kMlUrlScoreCaching);
 BASE_DECLARE_FEATURE(kMlUrlScoring);
 BASE_DECLARE_FEATURE(kMlUrlSearchBlending);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
-BASE_DECLARE_FEATURE(kEnableForceSkipMlScoring);
 
 // Actions in Suggest - Action Chips for Entity Suggestions.
 // Data driven feature; flag helps tune behavior.

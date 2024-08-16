@@ -1,0 +1,105 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("device") {
+  sources = [
+    "device_display_handler.cc",
+    "device_display_handler.h",
+    "device_keyboard_handler.cc",
+    "device_keyboard_handler.h",
+    "device_pointer_handler.cc",
+    "device_pointer_handler.h",
+    "device_section.cc",
+    "device_section.h",
+    "device_stylus_handler.cc",
+    "device_stylus_handler.h",
+    "inputs_section.cc",
+    "inputs_section.h",
+  ]
+
+  public_deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/system",
+    "//chrome/browser/ui/webui/ash/settings/pages/power",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing",
+    "//chromeos/crosapi/mojom",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//ui/base/ime/ash",
+    "//ui/events/devices",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/webui/common:shortcut_input_key_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/login/demo_mode",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/constants",
+    "//components/spellcheck/browser",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//media",
+    "//ui/base",
+    "//ui/display",
+    "//ui/display:display_features",
+    "//ui/display/manager",
+    "//ui/display/types",
+    "//ui/events/ash",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_keyboard_handler_unittest.cc",
+    "device_section_unittest.cc",
+    "inputs_section_unittest.cc",
+  ]
+
+  deps = [
+    ":device",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/constants",
+    "//components/prefs:test_support",
+    "//components/spellcheck/browser",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//device/udev_linux:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+    "//ui/events/devices",
+    "//ui/events/devices:test_support",
+  ]
+}

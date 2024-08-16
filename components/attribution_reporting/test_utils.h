@@ -29,9 +29,11 @@ class DestinationSet;
 class EventReportWindows;
 class MaxEventLevelReports;
 class RandomizedResponseData;
+class SourceAggregatableDebugReportingConfig;
 class SuitableOrigin;
 class SummaryBuckets;
 
+struct AggregatableDebugReportingConfig;
 struct AggregatableDedupKey;
 struct EventTriggerData;
 struct FakeEventLevelReport;
@@ -97,6 +99,12 @@ std::ostream& operator<<(std::ostream&, const ParseError&);
 std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
 
 std::ostream& operator<<(std::ostream& out, const RandomizedResponseData&);
+
+std::ostream& operator<<(std::ostream& out,
+                         const AggregatableDebugReportingConfig&);
+
+std::ostream& operator<<(std::ostream& out,
+                         const SourceAggregatableDebugReportingConfig&);
 
 }  // namespace attribution_reporting
 

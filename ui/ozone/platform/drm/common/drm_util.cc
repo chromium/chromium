@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/common/drm_util.h"
 
 #include <drm_fourcc.h>
@@ -615,18 +620,18 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
     const DrmWrapper& drm,
     HardwareDisplayControllerInfo* info) {
   if (!IsVrrCapable(drm, info->connector())) {
-    return display::kVrrNotCapable;
+    return display::VariableRefreshRateState::kVrrNotCapable;
   }
   if (!info->edid_parser()->vsync_rate_min().has_value() ||
       info->edid_parser()->vsync_rate_min().value() == 0) {
-    return display::kVrrNotCapable;
+    return display::VariableRefreshRateState::kVrrNotCapable;
   }
 
   if (IsVrrEnabled(drm, info->crtc())) {
-    return display::kVrrEnabled;
+    return display::VariableRefreshRateState::kVrrEnabled;
   }
 
-  return display::kVrrDisabled;
+  return display::VariableRefreshRateState::kVrrDisabled;
 }
 
 std::pair<std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>,

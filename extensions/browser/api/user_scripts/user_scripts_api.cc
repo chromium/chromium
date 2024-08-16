@@ -195,11 +195,10 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
       [](api::extension_types::ExecutionWorld world) {
         switch (world) {
           case api::extension_types::ExecutionWorld::kNone:
-            NOTREACHED_NORETURN()
+            NOTREACHED()
                 << "Execution world should always be present in serialization.";
           case api::extension_types::ExecutionWorld::kIsolated:
-            NOTREACHED_NORETURN()
-                << "ISOLATED worlds are not supported in this API.";
+            NOTREACHED() << "ISOLATED worlds are not supported in this API.";
           case api::extension_types::ExecutionWorld::kUserScript:
             return api::user_scripts::ExecutionWorld::kUserScript;
           case api::extension_types::ExecutionWorld::kMain:

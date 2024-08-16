@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -40,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -1027,6 +1029,9 @@ public class TabGroupModelFilter extends TabModelFilter {
         RecordHistogram.recordCount1000Histogram(
                 "TabGroups.NumberOfRootIdsFixed", fixedRootIdCount);
 
+        // There's an assertion being hit where archived/restored tabs are being counted as part of
+        // a tab group. See crbug.com/356330532 for more details.
+        resetFilterState();
         addTabGroupIdsForAllTabGroups();
     }
 
@@ -1045,7 +1050,14 @@ public class TabGroupModelFilter extends TabModelFilter {
 
             if (rootId == lastRootId) {
                 // The tab is part of previous tab's group it should get the tab group ID from it.
-                assert lastTabGroupId != null;
+                assert lastTabGroupId != null
+                        : String.format(
+                                Locale.getDefault(),
+                                "Expected tab group id for matching root id=%d, tab index=%d, tab"
+                                        + " count=%d",
+                                rootId,
+                                i,
+                                model.getCount());
                 tabGroupId = lastTabGroupId;
                 tab.setTabGroupId(tabGroupId);
             } else if (tabGroupId == null && group.size() > 1) {
@@ -1569,58 +1581,32 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     /**
-     * Close all tabs in the filter.
+     * A wrapper around {@link TabModel#closeTabs} that sets hiding state for tab groups correctly.
      *
-     * @param uponExit Whether the tabs are being closed when exiting Chrome see {@link
-     *     TabModel#closeAllTabs(boolean)}.
-     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
+     * @param tabClosureParams The params to use when closing tabs.
      */
-    public void closeAllTabs(boolean uponExit, boolean hideTabGroups) {
+    public boolean closeTabs(TabClosureParams tabClosureParams) {
         TabModel tabModel = getTabModel();
-        if (hideTabGroups && canHideTabGroups()) {
-            for (Token token : getAllTabGroupIds()) {
-                setTabGroupHiding(token);
-            }
-        }
-        tabModel.closeAllTabs(uponExit);
-    }
+        if (tabClosureParams.hideTabGroups && canHideTabGroups()) {
+            if (tabClosureParams.isAllTabs) {
+                for (Token token : getAllTabGroupIds()) {
+                    setTabGroupHiding(token);
+                }
+            } else {
+                Set<Integer> closingTabIds =
+                        tabClosureParams.tabs.stream().map(Tab::getId).collect(Collectors.toSet());
+                for (int rootId : getAllTabGroupRootIds()) {
+                    TabGroup group = mRootIdToGroupMap.get(rootId);
+                    if (group == null) continue;
 
-    /**
-     * Close multiple tabs.
-     *
-     * @param tabsToClose The list of tabs to close.
-     * @param canUndo Whether the operation can be undone.
-     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
-     */
-    public void closeMultipleTabs(List<Tab> tabsToClose, boolean canUndo, boolean hideTabGroups) {
-        closeMultipleTabs(tabsToClose, canUndo, hideTabGroups, /* canRestore= */ true);
-    }
-
-    /**
-     * Close multiple tabs.
-     *
-     * @param tabsToClose The list of tabs to close.
-     * @param canUndo Whether the operation can be undone.
-     * @param hideTabGroups Whether to hide the tab groups rather than deleting them.
-     * @param canRestore Whether the tabs can be restored to TabRestoreService after closure.
-     */
-    public void closeMultipleTabs(
-            List<Tab> tabsToClose, boolean canUndo, boolean hideTabGroups, boolean canRestore) {
-        TabModel tabModel = getTabModel();
-        if (hideTabGroups && canHideTabGroups()) {
-            Set<Integer> closingTabIds =
-                    tabsToClose.stream().map(Tab::getId).collect(Collectors.toSet());
-            for (int rootId : getAllTabGroupRootIds()) {
-                TabGroup group = mRootIdToGroupMap.get(rootId);
-                if (group == null) continue;
-
-                if (closingTabIds.containsAll(group.getTabIdList())) {
-                    Tab tab = tabModel.getTabById(group.getLastShownTabId());
-                    setTabGroupHiding(tab.getTabGroupId());
+                    if (closingTabIds.containsAll(group.getTabIdList())) {
+                        Tab tab = tabModel.getTabById(group.getLastShownTabId());
+                        setTabGroupHiding(tab.getTabGroupId());
+                    }
                 }
             }
         }
-        tabModel.closeMultipleTabs(tabsToClose, canUndo, canRestore);
+        return tabModel.closeTabs(tabClosureParams);
     }
 
     /** Returns whether the tab group is being hidden. */

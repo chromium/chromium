@@ -24,9 +24,6 @@ class PopupSeparatorView : public views::View {
 
   PopupSeparatorView(const PopupSeparatorView&) = delete;
   PopupSeparatorView& operator=(const PopupSeparatorView&) = delete;
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace autofill

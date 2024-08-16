@@ -30,6 +30,7 @@ import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.LoadingView.Observer;
@@ -284,7 +285,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
-                        if (isDefaultLogo || newLogoHeight == oldLogoHeight) return;
+                        if (!ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()
+                                || newLogoHeight == oldLogoHeight) return;
 
                         float animationValue = (Float) animation.getAnimatedValue();
                         if (animationValue <= 0.5f) {
@@ -293,19 +295,19 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
                         // Interpolate height
                         int logoHeight =
-                                (int)
+                                Math.round(
                                         (oldLogoHeight
                                                 + (newLogoHeight - oldLogoHeight)
                                                         * 2
-                                                        * (animationValue - 0.5f));
+                                                        * (animationValue - 0.5f)));
 
                         // Interpolate top margin
                         int logoTopMargin =
-                                (int)
+                                Math.round(
                                         (oldLogoTopMargin
                                                 + (newLogoTopMargin - oldLogoTopMargin)
                                                         * 2
-                                                        * (animationValue - 0.5f));
+                                                        * (animationValue - 0.5f)));
 
                         LogoUtils.setLogoViewLayoutParams(LogoView.this, logoHeight, logoTopMargin);
                     }
@@ -327,8 +329,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         mNewLogoMatrix = null;
                         mTransitionAmount = 0f;
                         mFadeAnimation = null;
-                        LogoUtils.setLogoViewLayoutParams(
-                                LogoView.this, newLogoHeight, newLogoTopMargin);
+                        if (newLogoHeight != oldLogoHeight) {
+                            LogoUtils.setLogoViewLayoutParams(
+                                    LogoView.this, newLogoHeight, newLogoTopMargin);
+                        }
                         setContentDescription(contentDescription);
                         setClickable(isClickable);
                         setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
@@ -436,7 +440,11 @@ public class LogoView extends FrameLayout implements OnClickListener {
             }
 
             if (mNewLogo != null && mTransitionAmount > 0.5f) {
-                mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
+                if (ChromeFeatureList.sLogoPolishAnimationKillSwitch.isEnabled()) {
+                    mPaint.setAlpha((int) (255 * Math.pow(2 * (mTransitionAmount - 0.5f), 3)));
+                } else {
+                    mPaint.setAlpha((int) (255 * 2 * (mTransitionAmount - 0.5f)));
+                }
                 canvas.save();
                 canvas.concat(mNewLogoMatrix);
                 canvas.drawBitmap(mNewLogo, 0, 0, mPaint);

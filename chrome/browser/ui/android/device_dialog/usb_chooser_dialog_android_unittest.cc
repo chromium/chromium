@@ -8,7 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"
@@ -43,7 +43,7 @@ TEST_F(UsbChooserDialogAndroidTest, FrameTree) {
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
       ui::WindowAndroid::CreateForTesting();
   window.get()->get()->AddChild(web_contents->GetNativeView());
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
 
   base::MockCallback<UsbChooserDialogAndroid::CreateJavaDialogCallback>
       mock_callback;

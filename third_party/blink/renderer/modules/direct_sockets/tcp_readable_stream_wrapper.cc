@@ -110,7 +110,7 @@ void TCPReadableStreamWrapper::Pull() {
         DOMArrayPiece view(request->view().Get());
         data_buffer =
             data_buffer.first(std::min(data_buffer.size(), view.ByteLength()));
-        view.ByteSpan().first(data_buffer.size()).copy_from(data_buffer);
+        view.ByteSpan().copy_prefix_from(data_buffer);
         request->respond(script_state, data_buffer.size(), exception_state);
       } else {
         auto buffer = NotShared(DOMUint8Array::Create(data_buffer));

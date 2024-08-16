@@ -14,7 +14,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -29,13 +29,13 @@
 namespace {
 
 struct BulkUploadModelItem {
-  syncer::ModelType model_type;
+  syncer::DataType data_type;
   BulkUploadType bulk_upload_type;
   int title_string_id;
   NSString* const view_accessibility_id;
 };
 
-// List of model type to display for the bulk upload. The order will be used
+// List of data type to display for the bulk upload. The order will be used
 // in the table view.
 
 const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
@@ -77,11 +77,11 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
       _identityObserverBridge;
   // The sync service.
   raw_ptr<syncer::SyncService> _syncService;
-  // Set of BulkModelType whose item is selected.
+  // Set of BulkUploadType whose item is selected.
   std::set<BulkUploadType> _selectedTypes;
   // Map returned by syncServer::GetLocalDataDescriptions, associating to each
   // type the descripton of the elements to upload.
-  std::map<syncer::ModelType, syncer::LocalDataDescription> _map;
+  std::map<syncer::DataType, syncer::LocalDataDescription> _map;
   // Provides the face id or password authentication. It is required to bulk
   // upload passwords.
   // _reauthenticationModule needs to be retained until the callback is called.
@@ -118,14 +118,14 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     return;
   }
   __weak BulkUploadMediator* weakSelf = self;
-  syncer::ModelTypeSet modelTypeSet;
+  syncer::DataTypeSet dataTypeSet;
   for (auto& modelItem : GetUploadModelItems()) {
-    modelTypeSet.Put(modelItem.model_type);
+    dataTypeSet.Put(modelItem.data_type);
   }
   _syncService->GetLocalDataDescriptions(
-      modelTypeSet,
+      dataTypeSet,
       base::BindOnce(
-          ^(std::map<syncer::ModelType, syncer::LocalDataDescription> map) {
+          ^(std::map<syncer::DataType, syncer::LocalDataDescription> map) {
             [weakSelf updateConsumer:map];
           }));
 }
@@ -133,12 +133,12 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 #pragma mark - Private
 
 - (void)save {
-  syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  _syncService->TriggerLocalDataMigration(selectedModelTypes);
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  _syncService->TriggerLocalDataMigration(selectedDataTypes);
   int count = 0;
   // Count items for the selected types.
-  for (syncer::ModelType model_type : selectedModelTypes) {
-    count += _map[model_type].item_count;
+  for (syncer::DataType data_type : selectedDataTypes) {
+    count += _map[data_type].item_count;
   }
   const std::string email =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -158,12 +158,12 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 // The map is assumed to contain data for all types the batch upload process can
 // work with.
 - (void)updateConsumer:
-    (std::map<syncer::ModelType, syncer::LocalDataDescription>)map {
+    (std::map<syncer::DataType, syncer::LocalDataDescription>)map {
   _map = map;
   NSMutableArray<BulkUploadViewItem*>* viewItems = [NSMutableArray array];
   for (auto& modelItem : GetUploadModelItems()) {
-    if (!_map.contains(modelItem.model_type) ||
-        _map.at(modelItem.model_type).item_count == 0) {
+    if (!_map.contains(modelItem.data_type) ||
+        _map.at(modelItem.data_type).item_count == 0) {
       continue;
     }
     _selectedTypes.insert(modelItem.bulk_upload_type);
@@ -182,9 +182,9 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 // `consumerUpdater` is the block that update the number and text of the view
 - (BulkUploadViewItem*)generateBulkUploadItemWithModelItem:
     (BulkUploadModelItem)modelItem {
-  syncer::LocalDataDescription description = _map[modelItem.model_type];
+  syncer::LocalDataDescription description = _map[modelItem.data_type];
   CHECK_GT(description.domains.size(), 0ul)
-      << "model type: " << static_cast<int>(modelItem.model_type);
+      << "data type: " << static_cast<int>(modelItem.data_type);
   NSString* subtitle =
       base::SysUTF16ToNSString(syncer::GetDomainsDisplayText(description));
   BulkUploadViewItem* bulkUploadViewItem = [[BulkUploadViewItem alloc] init];
@@ -201,8 +201,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 
 // Updates the enabled state of the Save in Account button
 - (void)updateButtonEnabledState {
-  syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  [self.consumer setValidationButtonEnabled:selectedModelTypes.size() > 0];
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  [self.consumer setValidationButtonEnabled:selectedDataTypes.size() > 0];
 }
 
 #pragma mark - BulkUploadMutator
@@ -220,8 +220,8 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 - (void)requestSave {
   base::RecordAction(base::UserMetricsAction("Signin_BulkUpload_Save"));
   // The user must authenticate if and only if they request to upload passwords.
-  syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
-  if (!selectedModelTypes.Has(syncer::ModelType::PASSWORDS)) {
+  syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
+  if (!selectedDataTypes.Has(syncer::DataType::PASSWORDS)) {
     [self save];
     return;
   }
@@ -238,7 +238,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   // don’t formally require authentication. This is because, if the
   // authentication fails, those other types are not saved either.
   int authentification_identifier =
-      (selectedModelTypes.size() == 1)
+      (selectedDataTypes.size() == 1)
           ? IDS_IOS_BULK_UPLOAD_PASSWORD_AUTHENTIFY_MESSAGE
           : IDS_IOS_BULK_UPLOAD_PASSWORD_AND_OTHER_TYPE_AUTHENTIFY_MESSAGE;
   [_reauthenticationModule
@@ -264,16 +264,16 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 
 #pragma mark - Private
 
-// Returns model type set of the selected data types.
-- (syncer::ModelTypeSet)selectedModelTypeEnumSet {
-  syncer::ModelTypeSet modelTypeSet;
+// Returns data type set of the selected data types.
+- (syncer::DataTypeSet)selectedDataTypeEnumSet {
+  syncer::DataTypeSet dataTypeSet;
   for (auto& modelItem : GetUploadModelItems()) {
     if (base::Contains(_selectedTypes, modelItem.bulk_upload_type) &&
-        _map[modelItem.model_type].item_count > 0) {
-      modelTypeSet.Put(modelItem.model_type);
+        _map[modelItem.data_type].item_count > 0) {
+      dataTypeSet.Put(modelItem.data_type);
     }
   }
-  return modelTypeSet;
+  return dataTypeSet;
 }
 
 // Called when `_reauthenticationModule` is finished.
@@ -296,7 +296,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     }
     case ReauthenticationResult::kSkipped: {
       // This should not happens since `canReusePreviousAuth` is set to `NO`.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

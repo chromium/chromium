@@ -97,7 +97,7 @@ void ContactCenterInsightsExtensionManager::Delegate::UninstallExtension(
 
 bool ContactCenterInsightsExtensionManager::Delegate::IsProfileAffiliated(
     Profile* profile) const {
-  return ::chrome::enterprise_util::IsProfileAffiliated(profile);
+  return ::enterprise_util::IsProfileAffiliated(profile);
 }
 
 bool ContactCenterInsightsExtensionManager::Delegate::IsExtensionInstalled(

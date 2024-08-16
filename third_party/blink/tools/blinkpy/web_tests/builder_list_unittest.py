@@ -40,9 +40,6 @@ class BuilderListTest(unittest.TestCase):
                 'specifiers': ['C', 'Release'],
                 'steps': {
                     'wpt_tests_suite': {},
-                    'wpt_tests_suite_chrome': {
-                        'product': 'chrome',
-                    },
                 },
                 'is_try_builder': True,
             },
@@ -188,7 +185,7 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['chrome', 'port-a', 'port-b', 'port-c'],
+        self.assertEqual(['port-a', 'port-b', 'port-c'],
                          builders.all_port_names())
 
     def test_all_flag_specific_options(self):
@@ -293,29 +290,3 @@ class BuilderListTest(unittest.TestCase):
         self.assertEqual('B',
                          builders.version_specifier_for_port_name('port-b'))
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))
-
-    def test_version_specifier_for_chrome_port_name(self):
-        builders = BuilderList({
-            'linux-blink-rel': {
-                'port_name': 'linux',
-                'specifiers': ['Linux', 'Release'],
-                'steps': {
-                    'webdriver_wpt_tests': {
-                        'product': 'chrome',
-                    },
-                },
-                'is_try_builder': True,
-            }
-        })
-        self.assertEqual('Chrome',
-                         builders.version_specifier_for_port_name('chrome'))
-
-    def test_product_for_build_step(self):
-        builders = self.sample_builder_list()
-        self.assertEqual(
-            builders.product_for_build_step('some-wpt-bot', 'wpt_tests_suite'),
-            'content_shell')
-        self.assertEqual(
-            builders.product_for_build_step('some-wpt-bot',
-                                            'wpt_tests_suite_chrome'),
-            'chrome')

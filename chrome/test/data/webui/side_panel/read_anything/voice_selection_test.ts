@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
@@ -34,7 +34,7 @@ suite('Automatic voice selection', () => {
   ];
 
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let app: ReadAnythingElement;
+  let app: AppElement;
 
   setup(() => {
     suppressInnocuousErrors();

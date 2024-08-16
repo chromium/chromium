@@ -39,7 +39,7 @@ std::string WallpaperTypeToString(WallpaperType type) {
     case WallpaperType::kSeaPen:
       return "SeaPen";
     case WallpaperType::kCount:
-      NOTREACHED_NORETURN() << " Unhandled type=" << base::to_underlying(type);
+      NOTREACHED() << " Unhandled type=" << base::to_underlying(type);
   }
 }
 

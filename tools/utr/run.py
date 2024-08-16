@@ -150,10 +150,21 @@ def parse_args(args=None):
   add_compile_args(compile_and_test_subp)
   add_test_args(compile_and_test_subp)
 
+  rr_subp = subparsers.add_parser(
+      'rr',
+      aliases=['rr-record', 'record'],
+      help='Compile, run tests with rr tool and upload recorded traces. '
+      'WARNING: this mode is not yet supported.')
+  add_compile_args(rr_subp)
+  add_test_args(rr_subp)
+
   args = parser.parse_args(args)
   if not args.run_mode:
     parser.print_help()
     parser.error('Please select a run_mode: compile,test,compile-and-test')
+  if args.run_mode == 'rr':
+    parser.print_help()
+    parser.error('The rr mode is not yet supported in UTR')
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')

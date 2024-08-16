@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 
 @class TabGridBottomToolbar;
+@class TabGridModeHolder;
 @class TabGridTopToolbar;
 class WebStateList;
 
@@ -25,6 +26,11 @@ class WebStateList;
 // The WebStateList that this mediator listens for any changes on the total
 // number of Webstates.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// Init with the `modeHolder`.
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Stops observing all objects.
 - (void)disconnect;

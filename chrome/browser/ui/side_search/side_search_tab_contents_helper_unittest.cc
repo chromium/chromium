@@ -190,36 +190,6 @@ TEST_F(SideSearchTabContentsHelperTest, ClearsSidePanelContentsWhenAsked) {
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
 }
 
-TEST_F(SideSearchTabContentsHelperTest,
-       SidePanelProcessGoneResetsSideContents) {
-  EXPECT_NE(nullptr, helper()->side_panel_contents_for_testing());
-  helper()->SidePanelProcessGone();
-  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
-}
-
-TEST_F(SideSearchTabContentsHelperTest, ClearsInternalStateWhenConfigChanges) {
-  // When a tab is first opened there should be no last encountered search URL.
-  EXPECT_FALSE(helper()->last_search_url().has_value());
-  EXPECT_TRUE(!GetLastCommittedSideContentsEntry() ||
-              GetLastCommittedSideContentsEntry()->IsInitialEntry());
-
-  // Navigate to a search URL.
-  LoadURL(kSearchMatchUrl1);
-  EXPECT_EQ(kSearchMatchUrl1, helper()->last_search_url());
-  EXPECT_EQ(kSearchMatchUrl1, GetLastCommittedSideContentsEntry()->GetURL());
-
-  // Set the toggled bit to true.
-  helper()->set_toggled_open(true);
-
-  // Reset config state and notify observers that the config has changed.
-  GetConfig()->ResetStateAndNotifyConfigChanged();
-
-  // Check to make sure state has been reset.
-  EXPECT_FALSE(helper()->last_search_url().has_value());
-  EXPECT_FALSE(helper()->toggled_open());
-  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
-}
-
 // TODO(crbug.com/40878321): Update this test to pass and re-enable.
 TEST_F(SideSearchTabContentsHelperTest, DISABLED_EmitsReturnedToSRPMetrics) {
   // Navigating to a matching search. Then navigate to a non-matching URL and

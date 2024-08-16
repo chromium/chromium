@@ -133,7 +133,8 @@ class WillCreateURLLoaderFactoryParams final {
 
   static WillCreateURLLoaderFactoryParams ForWorkerMainScript(
       DevToolsAgentHostImpl* agent_host,
-      const base::UnguessableToken& worker_token);
+      const base::UnguessableToken& worker_token,
+      RenderFrameHostImpl& ancestor_render_frame_host);
 
   // Calls devtools hooks so that they can add interceptors.
   bool Run(bool is_navigation,

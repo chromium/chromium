@@ -19,6 +19,12 @@ namespace visitedlink {
 //   - `frame_origin` is frame where the link url was visited from represented
 //   as an origin.
 struct VisitedLink {
+  // Returns the "self-link" version of a VisitedLink, i.e. a link with the
+  // following triple key: <link_url, link_url, link_url>. If the resulting
+  // triple-key is not valid, will return std::nullopt. We only support
+  // self-links for top-level frames and same-origin subframes. If the top-level
+  // origin and frame origin are not equal, we return std::nullopt.
+  std::optional<VisitedLink> MaybeCreateSelfLink() const;
   // A VisitedLink is valid if its components are valid and not opaque.
   bool IsValid() const;
 

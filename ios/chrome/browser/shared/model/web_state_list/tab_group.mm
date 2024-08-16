@@ -76,7 +76,7 @@ UIColor* TabGroup::ColorForTabGroupColorId(
     case tab_groups::TabGroupColorId::kOrange:
       return [UIColor colorNamed:kOrange600Color];
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 }
 
@@ -99,7 +99,7 @@ UIColor* TabGroup::ForegroundColorForTabGroupColorId(
       // Those colors are always using black.
       return UIColor.blackColor;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED_NORETURN() << "kNumEntries is not a supported color enum.";
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 }
 

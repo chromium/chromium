@@ -281,7 +281,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       case MediaCodecResult::Codes::kOk:
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -328,7 +328,7 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
       owned_input_buffer_ = input_buffer;
       return QueueStatus::Codes::kNoKey;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -427,7 +427,7 @@ CodecWrapperImpl::DequeueStatus CodecWrapperImpl::DequeueOutputBuffer(
         continue;
       }
       case MediaCodecResult::Codes::kNoKey: {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
     }
   }

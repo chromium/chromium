@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 
 #include <cstdint>
@@ -182,7 +187,7 @@ std::string GetModifierKeyName(ui::mojom::ModifierKey modifier_key) {
       return modifier.key_name;
     }
   }
-  NOTREACHED_NORETURN() << "MODIFIER KEY: " << (int)modifier_key;
+  NOTREACHED() << "MODIFIER KEY: " << (int)modifier_key;
 }
 
 int GetNumberOfNonDefaultRemappings(
@@ -234,7 +239,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackKeyModifier(
     case ui::VKEY_NEXT:
       return keyboard.settings->six_pack_key_remappings->page_down;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 std::string GetSixPackKeyMetricName(const std::string& prefix,
@@ -262,7 +267,7 @@ std::string GetSixPackKeyMetricName(const std::string& prefix,
       key_name = "PageDown";
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return base::StrCat({prefix, "SixPackKeys.", key_name,
                        is_initial_value ? ".Initial" : ".Changed"});
@@ -1312,6 +1317,40 @@ void InputDeviceSettingsMetricsManager::RecordNewButtonRegisteredMetrics(
       {"ChromeOS.Settings.Device.", ToMetricsString(peripheral_kind),
        ".ButtonRemapping.Registered."});
   RecordButtonMetrics(button, &metric_name_prefix);
+}
+
+void InputDeviceSettingsMetricsManager::RecordCompanionAppAvailable(
+    const std::string& device_key) {
+  // Only record the metrics once per device.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_companion_app_available_device_keys_.find(account_id);
+  if (iter != recorded_companion_app_available_device_keys_.end() &&
+      base::Contains(iter->second, device_key)) {
+    return;
+  }
+
+  recorded_companion_app_available_device_keys_[account_id].insert(device_key);
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kAvailable);
+}
+
+void InputDeviceSettingsMetricsManager::RecordCompanionAppInstalled(
+    const std::string& device_key) {
+  // Only record the metrics once per device.
+  const auto account_id =
+      Shell::Get()->session_controller()->GetActiveAccountId();
+  auto iter = recorded_companion_app_installed_device_keys_.find(account_id);
+  if (iter != recorded_companion_app_installed_device_keys_.end() &&
+      base::Contains(iter->second, device_key)) {
+    return;
+  }
+
+  recorded_companion_app_installed_device_keys_[account_id].insert(device_key);
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kInstalled);
 }
 
 }  // namespace ash

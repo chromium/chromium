@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mutator.h"
 
 @protocol AccountsConsumer;
 class AuthenticationService;
@@ -20,10 +22,14 @@ class SyncService;
 }  // namespace syncer
 
 // Mediator for the Accounts TableView Controller.
-@interface AccountsMediator : NSObject <AccountsModelIdentityDataSource>
+@interface AccountsMediator
+    : NSObject <AccountsModelIdentityDataSource, AccountsMutator>
 
 // Consumer.
 @property(nonatomic, weak) id<AccountsConsumer> consumer;
+
+// Delegate.
+@property(nonatomic, weak) id<AccountsMediatorDelegate> delegate;
 
 // Designated initializer.
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService

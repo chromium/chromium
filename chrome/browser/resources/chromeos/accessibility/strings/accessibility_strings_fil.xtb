@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rosy Brown</translation>
 <translation id="249330843868392562">Buksan ang mga setting ng text-to-speech</translation>
 <translation id="2497706219848005458">Green Yellow</translation>
+<translation id="2512979179176933762">ipakita ang mga window</translation>
 <translation id="2523609930580546572">Tutorial sa ChromeVox</translation>
 <translation id="2525706221823668172">Mga keyboard shortcut sa Chromebook</translation>
 <translation id="2553108862507765288">pagkakamali sa grammar</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4259220820964911921">I-enable ang pagkontrol gamit ang mukha?</translation>
 <translation id="4271220233568730077">Susunod na math</translation>
 <translation id="4275397969489577657">I-enable ang pag-log ng stream ng event</translation>
 <translation id="4278486392851938658">Walang nakaraang binisitang link</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Appendix</translation>
 <translation id="5761219715606611783">Magaling! Natutunan mo na ang mga pangunahing kaalaman ng pagpindot sa ChromeVox. Puwede mong ulitin ang tutorial o lumabas dito gamit ang mga button sa ibaba.</translation>
 <translation id="5776001898637896684">Google Enhanced Network text-to-speech extension</translation>
+<translation id="5783252477644995371">Ang pagkontrol gamit ang mukha ay nagbibigay sa iyo ng pagkontrol sa cursor sa pamamagitan ng pagtutok sa mukha at kakayahang gumawa ng mga aksyon, gaya ng pag-click sa kaliwa gamit ang mga galaw ng mukha gaya ng ngiti</translation>
 <translation id="5805940204952508776">Mag-tap gamit ang dalawang daliri</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">Walang susunod na checkbox</translation>
 <translation id="8473540203671727883">Bigkasin ang text na hino-hover ng cursor</translation>
 <translation id="8476408756881832830">I-pause ang pag-playback kapag nagsasalita ang ChromeVox</translation>
-<translation id="8476508772960940536">pangkalahatang-ideya ng window</translation>
 <translation id="8480873377842220259">Ngayon, matuto ka ng ilang basic na pag-navigate. Puwede mong pindutin nang matagal ang Search at pindutin ang mga arrow key para gumalaw-galaw sa screen. Para magpatuloy, pindutin ang Search + Pakanang arrow.</translation>
 <translation id="8503360654911991865">Bawasan ang granularity ng navigation</translation>
 <translation id="8520472399088452386">Spin button</translation>

@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
@@ -77,6 +78,11 @@ AutofillPlusAddressDelegate* AutofillClient::GetPlusAddressDelegate() {
   return nullptr;
 }
 
+AutofillPredictionImprovementsDelegate*
+AutofillClient::GetAutofillPredictionImprovementsDelegate() {
+  return nullptr;
+}
+
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {}
@@ -122,12 +128,6 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
   return nullptr;
 }
 #endif
-
-bool AutofillClient::ShowTouchToFillIban(
-    base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::Iban> ibans_to_suggest) {
-  return false;
-}
 
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;

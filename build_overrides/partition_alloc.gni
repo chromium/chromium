@@ -97,7 +97,9 @@ if (is_ios) {
 #     the default system allocators, e.g. with PartitionAlloc.
 if ((is_linux || is_chromeos || is_android || is_apple ||
      (is_fuchsia && !_disable_partition_alloc_everywhere) ||
-     (is_win && !is_component_build && !is_debug)) && !_is_using_sanitizers) {
+     (is_win && !is_debug &&
+      (!is_component_build || (use_custom_libcxx && !libcxx_is_shared)))) &&
+    !_is_using_sanitizers) {
   _default_use_allocator_shim = true
 } else {
   _default_use_allocator_shim = false

@@ -130,8 +130,8 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
     intermediates.reserve(nss_intermediates.size());
     for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
-      intermediates.push_back(x509_util::CreateCryptoBuffer(base::make_span(
-          nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
+      intermediates.push_back(x509_util::CreateCryptoBuffer(
+          x509_util::CERTCertificateAsSpan(nss_intermediate.get())));
     }
 
     // Retain a copy of the intermediates. Some deployments expect the client to

@@ -16,10 +16,6 @@ class FakeTrustedVaultClientBackend final : public TrustedVaultClientBackend {
   ~FakeTrustedVaultClientBackend() final;
 
   // TrustedVaultClientBackend implementation.
-  void AddObserver(Observer* observer,
-                   const std::string& security_domain_path) final;
-  void RemoveObserver(Observer* observer,
-                      const std::string& security_domain_path) final;
   void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,

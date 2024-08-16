@@ -228,46 +228,4 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithAdTagging,
   EXPECT_EQ(RulesetVerificationStatus::kIntact, dealer_status);
 }
 
-class SubresourceFilterBrowserTestFingerprintingProtectionDisabled
-    : public SubresourceFilterBrowserTest {
- public:
-  SubresourceFilterBrowserTestFingerprintingProtectionDisabled() {
-    feature_list_.InitAndDisableFeature(
-        fingerprinting_protection_filter::features::
-            kEnableFingerprintingProtectionFilter);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SubresourceFilterBrowserTestFingerprintingProtectionDisabled,
-    RulesetServiceNotCreated) {
-  EXPECT_EQ(g_browser_process->fingerprinting_protection_ruleset_service(),
-            nullptr);
-}
-
-class SubresourceFilterBrowserTestFingerprintingProtectionEnabled
-    : public SubresourceFilterBrowserTest {
- public:
-  SubresourceFilterBrowserTestFingerprintingProtectionEnabled() {
-    feature_list_.InitAndEnableFeature(
-        fingerprinting_protection_filter::features::
-            kEnableFingerprintingProtectionFilter);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SubresourceFilterBrowserTestFingerprintingProtectionEnabled,
-    RulesetServiceCreated) {
-  RulesetService* service =
-      g_browser_process->fingerprinting_protection_ruleset_service();
-  ASSERT_NE(service, nullptr);
-  EXPECT_NE(service->GetRulesetDealer(), nullptr);
-}
-
 }  // namespace subresource_filter

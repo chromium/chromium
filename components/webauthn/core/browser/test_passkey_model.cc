@@ -32,8 +32,8 @@ void TestPasskeyModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-TestPasskeyModel::GetModelTypeControllerDelegate() {
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+TestPasskeyModel::GetDataTypeControllerDelegate() {
   NOTIMPLEMENTED();
   return nullptr;
 }

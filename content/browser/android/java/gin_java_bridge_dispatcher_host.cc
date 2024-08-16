@@ -143,7 +143,7 @@ GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
   // AddNamedObject, and from the background thread, when injected Java
   // object's method returns a Java object.
   JNIEnv* env = base::android::AttachCurrentThread();
-  JavaObjectWeakGlobalRef ref(env, object);
+  JavaObjectWeakGlobalRef ref(env, object.obj());
   scoped_refptr<GinJavaBoundObject> new_object =
       !holder ? GinJavaBoundObject::CreateNamed(ref, safe_annotation_clazz)
               : GinJavaBoundObject::CreateTransient(ref, safe_annotation_clazz,

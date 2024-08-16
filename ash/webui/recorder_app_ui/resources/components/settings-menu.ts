@@ -9,7 +9,7 @@ import './cra/cra-dialog.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
 import './settings-row.js';
-import './speaker-id-consent-dialog.js';
+import './speaker-label-consent-dialog.js';
 import './transcription-consent-dialog.js';
 
 import {
@@ -26,11 +26,10 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {
   settings,
-  SpeakerIdEnableState,
+  SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
@@ -41,7 +40,7 @@ import {
 } from '../core/utils/assert.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
-import {SpeakerIdConsentDialog} from './speaker-id-consent-dialog.js';
+import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
 /**
@@ -148,7 +147,8 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
 
-  private readonly speakerIdConsentDialog = createRef<SpeakerIdConsentDialog>();
+  private readonly speakerLabelConsentDialog =
+    createRef<SpeakerLabelConsentDialog>();
 
   show(): void {
     this.dialog.value?.show();
@@ -162,12 +162,9 @@ export class SettingsMenu extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
-    this.platformHandler.downloadModel(ModelId.SUMMARY);
+    this.platformHandler.summaryModelLoader.download();
     // The settings download both the model for summary and title suggestion.
-    // TODO(pihsun): Rename the summary-related settings and functions to be
-    // more accurate that it controls both settings for summary and title
-    // suggestion.
-    this.platformHandler.downloadModel(ModelId.GEMINI_XXS_IT_BASE);
+    this.platformHandler.titleSuggestionModelLoader.download();
   }
 
   private onSummaryToggle(ev: Event) {
@@ -179,7 +176,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelDescriptionAndAction() {
-    const state = this.platformHandler.getModelState(ModelId.SUMMARY).value;
+    const state = this.platformHandler.summaryModelLoader.state.value;
     if (state.kind === 'notInstalled') {
       // Shows the "download" button when the summary model is not installed,
       // even if it's already enabled by user. This shouldn't happen in normal
@@ -247,7 +244,7 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderSummaryModelSettings() {
-    if (this.platformHandler.getModelState(ModelId.SUMMARY).value.kind ===
+    if (this.platformHandler.summaryModelLoader.state.value.kind ===
         'unavailable') {
       return nothing;
     }
@@ -259,27 +256,27 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
-  private onSpeakerIdToggle() {
-    switch (settings.value.speakerIdEnabled) {
-      case SpeakerIdEnableState.ENABLED:
+  private onSpeakerLabelToggle() {
+    switch (settings.value.speakerLabelEnabled) {
+      case SpeakerLabelEnableState.ENABLED:
         settings.mutate((s) => {
-          s.speakerIdEnabled = SpeakerIdEnableState.DISABLED;
+          s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED;
         });
         return;
-      case SpeakerIdEnableState.DISABLED:
+      case SpeakerLabelEnableState.DISABLED:
         settings.mutate((s) => {
-          s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+          s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
         });
         return;
-      case SpeakerIdEnableState.UNKNOWN:
-      case SpeakerIdEnableState.DISABLED_FIRST:
-        this.speakerIdConsentDialog.value?.show();
+      case SpeakerLabelEnableState.UNKNOWN:
+      case SpeakerLabelEnableState.DISABLED_FIRST:
+        this.speakerLabelConsentDialog.value?.show();
         // This force the switch to be re-rendered so it'll catch the "live"
         // value and set selected back to false.
         this.requestUpdate();
         return;
       default:
-        assertExhaustive(settings.value.speakerIdEnabled);
+        assertExhaustive(settings.value.speakerLabelEnabled);
     }
   }
 
@@ -288,18 +285,18 @@ export class SettingsMenu extends ReactiveLitElement {
         this.platformHandler.sodaState.value.kind === 'notInstalled') {
       return nothing;
     }
-    const speakerIdEnabled =
-      settings.value.speakerIdEnabled === SpeakerIdEnableState.ENABLED;
+    const speakerLabelEnabled =
+      settings.value.speakerLabelEnabled === SpeakerLabelEnableState.ENABLED;
     return html`
       <settings-row>
-        <span slot="label">${i18n.settingsOptionsSpeakerIdLabel}</span>
+        <span slot="label">${i18n.settingsOptionsSpeakerLabelLabel}</span>
         <span slot="description">
-          ${i18n.settingsOptionsSpeakerIdDescription}
+          ${i18n.settingsOptionsSpeakerLabelDescription}
         </span>
         <cros-switch
           slot="action"
-          .selected=${live(speakerIdEnabled)}
-          @change=${this.onSpeakerIdToggle}
+          .selected=${live(speakerLabelEnabled)}
+          @change=${this.onSpeakerLabelToggle}
         ></cros-switch>
       </settings-row>
       <!-- TODO: b/336963138 - Add transcription language. -->
@@ -448,9 +445,47 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
+  private onDoNotDisturbToggle() {
+    this.platformHandler.quietMode.update((s) => !s);
+  }
+
+  private renderDoNotDisturbSettingsRow() {
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsDoNotDisturbLabel}</span>
+        <span slot="description">
+          ${i18n.settingsOptionsDoNotDisturbDescription}
+        </span>
+        <cros-switch
+          slot="action"
+          .selected=${live(this.platformHandler.quietMode.value)}
+          @change=${this.onDoNotDisturbToggle}
+        ></cros-switch>
+      </settings-row>
+    `;
+  }
+
+  private onKeepScreenOnToggle() {
+    settings.mutate((s) => {
+      s.keepScreenOn = !s.keepScreenOn;
+    });
+  }
+
+  private renderKeepScreenOnSettingsRow() {
+    return html`
+      <settings-row>
+        <span slot="label">${i18n.settingsOptionsKeepScreenOnLabel}</span>
+        <cros-switch
+          slot="action"
+          .selected=${live(settings.value.keepScreenOn)}
+          @change=${this.onKeepScreenOnToggle}
+        ></cros-switch>
+      </settings-row>
+    `;
+  }
+
   override render(): RenderResult {
-    // TODO: b/354109582 - Implement actual functionality of DnD and keep
-    // screen on.
+    // TODO: b/354109582 - Implement actual functionality of keep screen on.
     return html`<cra-dialog ${ref(this.dialog)}>
         <div slot="content">
           <div id="header">
@@ -468,21 +503,8 @@ export class SettingsMenu extends ReactiveLitElement {
             <div class="section">
               <div class="title">${i18n.settingsSectionGeneralHeader}</div>
               <div class="body">
-                <settings-row>
-                  <span slot="label">
-                    ${i18n.settingsOptionsDoNotDisturbLabel}
-                  </span>
-                  <span slot="description">
-                    ${i18n.settingsOptionsDoNotDisturbDescription}
-                  </span>
-                  <cros-switch slot="action"></cros-switch>
-                </settings-row>
-                <settings-row>
-                  <span slot="label">
-                    ${i18n.settingsOptionsKeepScreenOnLabel}
-                  </span>
-                  <cros-switch slot="action"></cros-switch>
-                </settings-row>
+                ${this.renderDoNotDisturbSettingsRow()}
+                ${this.renderKeepScreenOnSettingsRow()}
               </div>
             </div>
             ${this.renderTranscriptionSection()}
@@ -491,8 +513,8 @@ export class SettingsMenu extends ReactiveLitElement {
       </cra-dialog>
       <transcription-consent-dialog ${ref(this.transcriptionConsentDialog)}>
       </transcription-consent-dialog>
-      <speaker-id-consent-dialog ${ref(this.speakerIdConsentDialog)}>
-      </speaker-id-consent-dialog>`;
+      <speaker-label-consent-dialog ${ref(this.speakerLabelConsentDialog)}>
+      </speaker-label-consent-dialog>`;
   }
 }
 

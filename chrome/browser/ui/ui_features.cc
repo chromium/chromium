@@ -300,6 +300,14 @@ bool IsTabOrganization() {
   return base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
+BASE_FEATURE(kTabstripDeclutter,
+             "TabstripDeclutter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabstripDeclutter() {
+  return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
+}
+
 BASE_FEATURE(kMultiTabOrganization,
              "MultiTabOrganization",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -394,9 +402,15 @@ BASE_FEATURE(kEnterpriseProfileBadging,
              "EnterpriseProfileBadging",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the management button on the toolbar.
+// Enables the management button on the toolbar for all managed browsers.
 BASE_FEATURE(kManagementToolbarButton,
              "ManagementToolbarButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the management button on the toolbar by default for browser managed
+// by trusted sources.
+BASE_FEATURE(kManagementToolbarButtonForTrustedManagementSources,
+             "ManagementToolbarButtonForTrustedManagementSources",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnterpriseUpdatedProfileCreationScreen,

@@ -109,7 +109,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void AddChangeCallback(base::OnceClosure callback);
 
   // AutofillWebDataServiceObserverOnUISequence:
-  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
+  void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(

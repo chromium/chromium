@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/extensions/autotest_private/autotest_private_api.h"
 
 #include <deque>
@@ -965,6 +970,8 @@ class DisplaySmoothnessTracker {
       return false;
     }
 
+    start_time_ = base::TimeTicks::Now();
+
     DCHECK(root_window_tracker_.windows().empty());
     root_window_tracker_.Add(root_window);
 
@@ -992,6 +999,7 @@ class DisplaySmoothnessTracker {
 
   bool stopping() const { return stopping_; }
   bool has_error() const { return has_error_; }
+  base::TimeTicks start_time() const { return start_time_; }
 
  private:
   void OnThroughputTimerFired() {
@@ -1018,6 +1026,7 @@ class DisplaySmoothnessTracker {
   ReportCallback callback_;
   bool stopping_ = false;
   bool has_error_ = false;
+  base::TimeTicks start_time_;
 
   base::RepeatingTimer throughtput_timer_;
   std::vector<int> throughput_;
@@ -5870,13 +5879,14 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
                             base::NumberToString(display_id)})));
   }
 
-  if (it->second->stopping()) {
+  auto& [_, tracker] = *it;
+  if (tracker->stopping()) {
     return RespondNow(Error(
         base::StrCat({"stopSmoothnessTracking already called for display: ",
                       base::NumberToString(display_id)})));
   }
 
-  const bool has_error = it->second->has_error();
+  const bool has_error = tracker->has_error();
 
 #if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
@@ -5895,9 +5905,9 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
       base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
                      this, display_id));
 
-  if (!it->second->Stop(base::BindOnce(
-          &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData,
-          this))) {
+  if (!tracker->Stop(base::BindOnce(
+          &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this,
+          tracker->start_time()))) {
     timeout_timer_.AbandonAndStop();
     trackers->erase(it);
     return RespondNow(
@@ -5919,6 +5929,7 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
 }
 
 void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
+    base::TimeTicks start_time,
     const cc::FrameSequenceMetrics::CustomReportData& frame_data,
     std::vector<int>&& throughput) {
   if (did_respond()) {
@@ -5927,10 +5938,15 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
 
   timeout_timer_.AbandonAndStop();
 
-  std::vector<double> jank_durations;  // In milliseconds.
-  jank_durations.reserve(frame_data.jank_durations.size());
-  for (base::TimeDelta duration : frame_data.jank_durations) {
-    jank_durations.push_back(duration.InMillisecondsF());
+  std::vector<int> jank_timestamps;  // In milliseconds.
+  std::vector<int> jank_durations;   // In milliseconds.
+  jank_timestamps.reserve(frame_data.janks.size());
+  jank_durations.reserve(frame_data.janks.size());
+
+  for (auto jank : frame_data.janks) {
+    jank_timestamps.emplace_back(
+        (jank.start_time - start_time).InMilliseconds());
+    jank_durations.emplace_back(jank.duration.InMilliseconds());
   }
 
   api::autotest_private::DisplaySmoothnessData result_data;
@@ -5939,6 +5955,7 @@ void AutotestPrivateStopSmoothnessTrackingFunction::OnReportData(
       frame_data.frames_expected_v3 - frame_data.frames_dropped_v3;
   result_data.jank_count = frame_data.jank_count_v3;
   result_data.throughput = std::move(throughput);
+  result_data.jank_timestamps = std::move(jank_timestamps);
   result_data.jank_durations = std::move(jank_durations);
 
   Respond(ArgumentList(
@@ -6590,9 +6607,9 @@ AutotestPrivateStartFrameCountingFunction::Run() {
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
-      ->StartFrameCountingForTest(  // IN-TEST
-          base::TimeTicks::Now(),
-          base::Seconds(params->bucket_size_in_seconds));
+      ->GetFrameSinksMetricsRecorderForTest()  // IN-TEST
+      .StartFrameCounting(base::TimeTicks::Now(),
+                          base::Seconds(params->bucket_size_in_seconds));
   return RespondNow(NoArguments());
 }
 
@@ -6613,7 +6630,8 @@ AutotestPrivateStopFrameCountingFunction::Run() {
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
-      ->StopFrameCountingForTest(std::move(callback));  // IN-TEST
+      ->GetFrameSinksMetricsRecorderForTest()  // IN-TEST
+      .StopFrameCounting(std::move(callback));
   return RespondLater();
 }
 
@@ -6728,9 +6746,9 @@ AutotestPrivateStartOverdrawTrackingFunction::Run() {
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
-      ->StartOverdrawTrackingForTest(
-          compositor->frame_sink_id(),
-          base::Seconds(params->bucket_size_in_seconds));  // IN-TEST
+      ->GetFrameSinksMetricsRecorderForTest()  // IN-TEST
+      .StartOverdrawTracking(compositor->frame_sink_id(),
+                             base::Seconds(params->bucket_size_in_seconds));
 
   return RespondNow(NoArguments());
 }
@@ -6786,8 +6804,8 @@ AutotestPrivateStopOverdrawTrackingFunction::Run() {
   aura::Env::GetInstance()
       ->context_factory()
       ->GetHostFrameSinkManager()
-      ->StopOverdrawTrackingForTest(compositor->frame_sink_id(),
-                                    std::move(callback));  // IN-TEST
+      ->GetFrameSinksMetricsRecorderForTest()  // IN-TEST
+      .StopOverdrawTracking(compositor->frame_sink_id(), std::move(callback));
 
   return RespondLater();
 }

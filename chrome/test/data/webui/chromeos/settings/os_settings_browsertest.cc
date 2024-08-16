@@ -228,6 +228,19 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampMochaTestCaretBlinkSettingEnabled::DescribeParams);
 
+class OSSettingsRevampMochaTestFlashNotificationsEnabled
+    : public OSSettingsRevampMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityFlashScreenFeature};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestFlashNotificationsEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestFlashNotificationsEnabled::DescribeParams);
+
 class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
  protected:
   OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
@@ -1281,6 +1294,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFlashNotificationsEnabled,
+                       OsA11yPageAudioAndCaptionsPage) {
+  RunSettingsTest("os_a11y_page/audio_and_captions_page_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageChromeVoxSubpage) {
   RunSettingsTest("os_a11y_page/chromevox_subpage_test.js");
 }
@@ -1298,6 +1316,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestMouseKeysEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverscrollFeatureEnabled,
                        OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
+                       OsA11yPageFaceGazeSubpage) {
+  RunSettingsTest("os_a11y_page/facegaze_subpage_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestFaceGazeEnabled,
@@ -1991,8 +2014,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsSettingsUiPrefSync) {
   RunSettingsTest("os_settings_ui/os_settings_ui_pref_sync_test.js");
 }
 
+// TODO(b/354464273) Fix this flaky test.
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
-                       OsSettingsUiScrollRestoration) {
+                       DISABLED_OsSettingsUiScrollRestoration) {
   RunSettingsTest("os_settings_ui/scroll_restoration_test.js");
 }
 

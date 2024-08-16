@@ -26,6 +26,7 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
     content::WebContents* web_contents,
     const std::string& email_to_reauth,
     const GURL& request_url,
+    VerificationPurpose verification_purpose,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -34,7 +35,8 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
           request_url,
           std::move(controller_client)),
       email_to_reauth_(email_to_reauth),
-      request_url_(request_url) {}
+      request_url_(request_url),
+      verification_purpose_(verification_purpose) {}
 
 SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
@@ -46,21 +48,42 @@ SupervisedUserVerificationPage::GetTypeForTesting() {
 void SupervisedUserVerificationPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
   PopulateStringsForSharedHTML(load_time_data);
-  load_time_data.Set("tabTitle", l10n_util::GetStringUTF16(
-                                     IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
   load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
                                       IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
   load_time_data.Set(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
-  load_time_data.Set("heading", l10n_util::GetStringUTF16(
-                                    IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
-  load_time_data.Set("primaryParagraph",
+
+  switch (verification_purpose_) {
+    case VerificationPurpose::REAUTH_REQUIRED_SITE:
+      load_time_data.Set(
+          "tabTitle",
+          l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_PAGE_TAB_TITLE));
+      load_time_data.Set("heading",
+                         l10n_util::GetStringUTF16(
+                             IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING));
+      load_time_data.Set(
+          "primaryParagraph",
+          l10n_util::GetStringUTF16(
+              IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH));
+      break;
+    case VerificationPurpose::BLOCKED_SITE:
+      load_time_data.Set(
+          "tabTitle", l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
+      load_time_data.Set("heading", l10n_util::GetStringUTF16(
+                                        IDS_CHILD_BLOCK_INTERSTITIAL_HEADER));
+      load_time_data.Set(
+          "primaryParagraph",
+          l10n_util::GetStringUTF16(
+              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN));
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  load_time_data.Set("primaryButtonText",
                      l10n_util::GetStringUTF16(
-                         IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_PARAGRAPH));
-  load_time_data.Set(
-      "primaryButtonText",
-      l10n_util::GetStringUTF16(IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU));
+                         IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_BUTTON));
 }
 
 void SupervisedUserVerificationPage::OnInterstitialClosing() {}
@@ -120,6 +143,6 @@ void SupervisedUserVerificationPage::CommandReceived(
       // Commands are for testing.
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

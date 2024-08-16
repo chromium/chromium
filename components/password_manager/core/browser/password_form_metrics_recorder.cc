@@ -595,7 +595,7 @@ void PasswordFormMetricsRecorder::RecordMatchedFormType(
       break;
     case password_manager_util::GetLoginMatchType::kGrouped:
       // Grouped credentials are never filled on page load.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   UMA_HISTOGRAM_ENUMERATION("PasswordManager.MatchedFormType", match_type);
 }
@@ -785,7 +785,7 @@ void PasswordFormMetricsRecorder::
   // fill, (2) when there is manual fill, and (3) when there is automatic fill.
   // The check here is to make sure that all states are handled to calculate the
   // filling assistance metric.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
@@ -929,6 +929,10 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::AUTOMATIC_PASSKEY_SAVED_CONFIRMATION:
     case metrics_util::AUTOMATIC_PASSKEY_DELETED_CONFIRMATION:
     case metrics_util::MANUAL_PASSKEY_DELETED_CONFIRMATION:
+    case metrics_util::AUTOMATIC_PASSKEY_UPDATED_CONFIRMATION:
+    case metrics_util::MANUAL_PASSKEY_UPDATED_CONFIRMATION:
+    case metrics_util::AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE:
+    case metrics_util::MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE:
       // Do nothing.
       return;
 
@@ -1010,7 +1014,7 @@ PasswordFormMetricsRecorder::FillingAssinstanceToHatsInProductDataString() {
              "too often, meaning that they won't be asked to save credentials "
              "anymore.";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace password_manager

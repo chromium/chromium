@@ -82,7 +82,7 @@ class TestTrayBackgroundView : public TrayBackgroundView,
     SetIsActive(true);
   }
 
-  void CloseBubble() override {
+  void CloseBubbleInternal() override {
     bubble_.reset();
     SetIsActive(false);
   }

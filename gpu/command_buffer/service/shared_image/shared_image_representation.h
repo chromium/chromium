@@ -75,10 +75,6 @@ namespace gfx {
 class NativePixmap;
 }  // namespace gfx
 
-namespace media {
-class VASurface;
-}  // namespace media
-
 namespace gpu {
 class TextureBase;
 
@@ -735,6 +731,8 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;
 
+  std::string WrappedTextureDebugLabel(int plane) const;
+
   // Begin the write access. Returns an empty vector on failure.
   //
   // update_rect is a hint to the backend about the portion of the image that
@@ -972,71 +970,6 @@ class GPU_GLES2_EXPORT MemoryImageRepresentation
   virtual SkPixmap BeginReadAccess() = 0;
 };
 
-// An interface that allows a SharedImageBacking to hold a reference to VA-API
-// surface without depending on //media/gpu/vaapi targets.
-class VaapiDependencies {
- public:
-  virtual ~VaapiDependencies() = default;
-  virtual const media::VASurface* GetVaSurface() const = 0;
-  virtual bool SyncSurface() = 0;
-};
-
-// Interface that allows a SharedImageBacking to create VaapiDependencies from a
-// NativePixmap without depending on //media/gpu/vaapi targets.
-class VaapiDependenciesFactory {
- public:
-  virtual ~VaapiDependenciesFactory() = default;
-  // Returns a VaapiDependencies or nullptr on failure.
-  virtual std::unique_ptr<VaapiDependencies> CreateVaapiDependencies(
-      scoped_refptr<gfx::NativePixmap> pixmap) = 0;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-// VaapiImageRepresentation
-
-// Representation of a SharedImageBacking as a VA-API surface.
-// This representation is currently only supported by OzoneImageBacking.
-//
-// Synchronized access is currently not required in this representation because:
-//
-// For reads:
-// We will be using this for the destination of decoding work, so no read access
-// synchronization is needed from the point of view of the VA-API.
-//
-// For writes:
-// Because of the design of the current video pipeline, we don't start the
-// decoding work until we're sure that the destination buffer is not being used
-// by the rest of the pipeline. However, we still need to keep track of write
-// accesses so that other representations can synchronize with the decoder.
-class GPU_GLES2_EXPORT VaapiImageRepresentation
-    : public SharedImageRepresentation {
- public:
-  class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<VaapiImageRepresentation> {
-   public:
-    ScopedWriteAccess(base::PassKey<VaapiImageRepresentation> pass_key,
-                      VaapiImageRepresentation* representation);
-
-    ~ScopedWriteAccess();
-
-    const media::VASurface* va_surface();
-  };
-  VaapiImageRepresentation(SharedImageManager* manager,
-                           SharedImageBacking* backing,
-                           MemoryTypeTracker* tracker,
-                           VaapiDependencies* vaapi_dependency);
-  ~VaapiImageRepresentation() override;
-
-  std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
-
- private:
-  friend class WrappedVaapiRepresentation;
-
-  raw_ptr<VaapiDependencies> vaapi_deps_;
-  virtual void EndAccess() = 0;
-  virtual void BeginAccess() = 0;
-};
-
 ///////////////////////////////////////////////////////////////////////////////
 // RasterImageRepresentation
 
@@ -1117,16 +1050,16 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// VideoDecodeImageRepresentation
+// VideoImageRepresentation
 
-class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
+class GPU_GLES2_EXPORT VideoImageRepresentation
     : public SharedImageRepresentation {
  public:
   class GPU_GLES2_EXPORT ScopedWriteAccess
-      : public ScopedAccessBase<VideoDecodeImageRepresentation> {
+      : public ScopedAccessBase<VideoImageRepresentation> {
    public:
-    ScopedWriteAccess(base::PassKey<VideoDecodeImageRepresentation> pass_key,
-                      VideoDecodeImageRepresentation* representation);
+    ScopedWriteAccess(base::PassKey<VideoImageRepresentation> pass_key,
+                      VideoImageRepresentation* representation);
     ~ScopedWriteAccess();
 
 #if BUILDFLAG(IS_WIN)
@@ -1136,12 +1069,27 @@ class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
 #endif  // BUILDFLAG(IS_WIN)
   };
 
-  VideoDecodeImageRepresentation(SharedImageManager* manager,
-                                 SharedImageBacking* backing,
-                                 MemoryTypeTracker* tracker);
-  ~VideoDecodeImageRepresentation() override;
+  class GPU_GLES2_EXPORT ScopedReadAccess
+      : public ScopedAccessBase<VideoImageRepresentation> {
+   public:
+    ScopedReadAccess(base::PassKey<VideoImageRepresentation> pass_key,
+                     VideoImageRepresentation* representation);
+    ~ScopedReadAccess();
+
+#if BUILDFLAG(IS_WIN)
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+      return representation()->GetD3D11Texture();
+    }
+#endif  // BUILDFLAG(IS_WIN)
+  };
+
+  VideoImageRepresentation(SharedImageManager* manager,
+                           SharedImageBacking* backing,
+                           MemoryTypeTracker* tracker);
+  ~VideoImageRepresentation() override;
 
   virtual std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
+  virtual std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess();
 
  protected:
 #if BUILDFLAG(IS_WIN)
@@ -1149,6 +1097,8 @@ class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
 #endif  // BUILDFLAG(IS_WIN)
   virtual bool BeginWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
+  virtual bool BeginReadAccess() = 0;
+  virtual void EndReadAccess() = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

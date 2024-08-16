@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kWebFileHandlersFileLaunchDialogCheckbox);
@@ -135,7 +136,7 @@ void ShowWebFileHandlersFileLaunchDialog(
 
   std::unique_ptr<views::BubbleDialogModelHost> dialog =
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::MODAL_TYPE_WINDOW);
+                                                ui::mojom::ModalType::kWindow);
   dialog->SetOwnedByWidget(true);
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       std::move(dialog), /*context=*/nullptr, /*parent=*/nullptr);

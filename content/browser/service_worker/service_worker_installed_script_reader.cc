@@ -46,7 +46,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
     // It isn't necessary to handle MojoResult here since WriteDataRaw()
     // returns an equivalent error.
     base::span<const uint8_t> bytes_to_write =
-        base::as_bytes(meta_data_->span()).subspan(bytes_sent_);
+        meta_data_->span().subspan(bytes_sent_);
     size_t actually_written_bytes = 0;
     TRACE_EVENT2(
         "ServiceWorker",

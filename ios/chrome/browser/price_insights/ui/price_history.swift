@@ -120,14 +120,6 @@ struct HistoryGraph: View {
   /// The width of the entire chart.
   @State private var chartWidth: CGFloat?
 
-  /// If the user is currently dragging on the graph. This lets the hover code
-  /// know if the user is also dragging for any necessary adjustments.
-  @State private var dragging = false
-
-  //. If the user is currently hovering over the graph. This lets the drag code
-  /// know if the user is also hovering for any necessary adjustments.
-  @State private var hovering = false
-
   /// Color scheme environment value .
   @Environment(\.colorScheme) var colorScheme
 
@@ -154,6 +146,23 @@ struct HistoryGraph: View {
     /// TODO(b/333894542): Configure audio graph for accessibility and ensure labels
     /// for line marks and rule marks are accessible.
     Chart {
+      ForEach(sortedHistoryDates, id: \.key) { date, price in
+        /// Displaying the area mark under the line mark.
+        AreaMark(
+          x: .value("Date", date),
+          yStart: .value("Minimun price in range", axisTicksY.first ?? 0),
+          yEnd: .value("Price", price.doubleValue)
+        )
+        .foregroundStyle(linearGradient)
+
+        // Displaying the line mark on the graph.
+        LineMark(
+          x: .value("Date", date),
+          y: .value("Price", price.doubleValue)
+        ).foregroundStyle(Color(uiColor: Self.blue600))
+      }
+      .interpolationMethod(.stepEnd)
+
       /// Displaying the dashed line and point mark for selected date on the graph.
       if let selectedDate = selectedDate, let selectedPrice = history[selectedDate] {
         RuleMark(
@@ -164,25 +173,17 @@ struct HistoryGraph: View {
           x: .value("Date", selectedDate),
           y: .value("Price", selectedPrice.doubleValue)
         )
+        .symbol {
+          Circle()
+            .fill(Color(uiColor: Self.blue600))
+            .frame(width: 8, height: 8)
+            .overlay(
+              Circle()
+                .stroke(Color(uiColor: Self.backgroundColor), lineWidth: 2)
+            )
+        }
         .foregroundStyle(Color(uiColor: Self.blue600))
       }
-
-      ForEach(sortedHistoryDates, id: \.key) { date, price in
-        // Displaying the line mark on the graph.
-        LineMark(
-          x: .value("Date", date),
-          y: .value("Price", price.doubleValue)
-        ).foregroundStyle(Color(uiColor: Self.blue600))
-
-        /// Displaying the area mark under the line mark.
-        AreaMark(
-          x: .value("Date", date),
-          yStart: .value("Minimun price in range", axisTicksY.first ?? 0),
-          yEnd: .value("Price", price.doubleValue)
-        )
-        .foregroundStyle(linearGradient)
-      }
-      .interpolationMethod(.stepEnd)
     }
     .chartBackground { chartProxy in
       Color(uiColor: Self.backgroundColor)
@@ -216,28 +217,15 @@ struct HistoryGraph: View {
           .onContinuousHover(perform: { phase in
             switch phase {
             case .active(let location):
-              hovering = true
               updateSelectionData(location: location, geometry: geometry, chart: proxy)
             case .ended:
-              hovering = false
-              if dragging {
-                return
-              }
-              selectedDate = nil
+              break
             }
           })
           .gesture(
             DragGesture()
               .onChanged { value in
-                dragging = true
                 updateSelectionData(location: value.location, geometry: geometry, chart: proxy)
-              }
-              .onEnded { _ in
-                dragging = false
-                if hovering {
-                  return
-                }
-                selectedDate = nil
               }
           )
       }
@@ -258,6 +246,11 @@ struct HistoryGraph: View {
       }
     )
     .edgesIgnoringSafeArea(.all)
+    .onAppear {
+      if selectedDate == nil {
+        selectedDate = sortedHistoryDates.last?.key
+      }
+    }
   }
 
   /// Updates the selected data when the given `location` is selected inside the given

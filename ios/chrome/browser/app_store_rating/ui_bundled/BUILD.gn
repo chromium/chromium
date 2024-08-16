@@ -45,8 +45,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "app_store_rating_scene_agent_unittest.mm" ]
   deps = [
-    ":ui_bundled",
     ":features",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser",

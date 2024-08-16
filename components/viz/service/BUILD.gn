@@ -143,7 +143,6 @@ viz_component("service") {
     "display_embedder/image_context_impl.h",
     "display_embedder/in_process_gpu_memory_buffer_manager.cc",
     "display_embedder/in_process_gpu_memory_buffer_manager.h",
-    "display_embedder/output_presenter.cc",
     "display_embedder/output_presenter.h",
     "display_embedder/output_presenter_gl.cc",
     "display_embedder/output_presenter_gl.h",
@@ -269,6 +268,7 @@ viz_component("service") {
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
+    "//components/input",
     "//components/startup_metric_utils",
 
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
@@ -450,7 +450,6 @@ viz_component("service") {
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.
     sources -= [
-      "display_embedder/output_presenter.cc",
       "display_embedder/output_presenter.h",
       "display_embedder/output_presenter_gl.cc",
       "display_embedder/output_presenter_gl.h",

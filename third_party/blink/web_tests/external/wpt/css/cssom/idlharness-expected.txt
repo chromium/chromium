@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] CSSStyleRule interface: existence and properties of interface object
   assert_equals: prototype of CSSStyleRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
 [FAIL] CSSStyleRule interface: existence and properties of interface prototype object
@@ -40,7 +40,9 @@ Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageDescriptors interface: attribute size
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
-[FAIL] CSSPageDescriptors interface: attribute orientation
+[FAIL] CSSPageDescriptors interface: attribute pageOrientation
+  assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
+[FAIL] CSSPageDescriptors interface: attribute page-orientation
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing
 [FAIL] CSSPageDescriptors interface: attribute marks
   assert_own_property: self does not have own property "CSSPageDescriptors" expected property "CSSPageDescriptors" missing

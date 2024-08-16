@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -59,31 +60,28 @@ class MockCancelableSyncSocket : public base::CancelableSyncSocket {
   MockCancelableSyncSocket(const MockCancelableSyncSocket&) = delete;
   MockCancelableSyncSocket& operator=(const MockCancelableSyncSocket&) = delete;
 
-  size_t Send(const void* buffer, size_t length) override {
-    EXPECT_EQ(length, sizeof(uint32_t));
+  size_t Send(base::span<const uint8_t> buffer) override {
+    EXPECT_EQ(buffer.size(), sizeof(uint32_t));
 
     ++writes_;
     EXPECT_LE(NumberOfBuffersFilled(), buffer_size_);
-    return length;
+    return buffer.size();
   }
 
-  size_t Receive(void* buffer, size_t length) override {
-    EXPECT_EQ(0u, length % sizeof(uint32_t));
+  size_t Receive(base::span<uint8_t> buffer) override {
+    EXPECT_EQ(0u, buffer.size() % sizeof(uint32_t));
 
     if (in_failure_mode_)
       return 0;
     if (receives_ == reads_)
       return 0;
 
-    uint32_t* ptr = static_cast<uint32_t*>(buffer);
-    size_t received = 0;
-    for (; received < length / sizeof(uint32_t) && receives_ < reads_;
-         ++received, ++ptr) {
+    base::SpanWriter writer(buffer);
+    while (receives_ < reads_ && writer.remaining()) {
       ++receives_;
-      EXPECT_LE(receives_, reads_);
-      *ptr = ++read_buffer_index_;
+      writer.WriteU32LittleEndian(++read_buffer_index_);
     }
-    return received * sizeof(uint32_t);
+    return writer.num_written();
   }
 
   size_t Peek() override { return (reads_ - receives_) * sizeof(uint32_t); }

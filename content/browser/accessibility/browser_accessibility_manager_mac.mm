@@ -455,7 +455,7 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
       case ax::mojom::AriaNotificationPriority::kImportant:
         return NSAccessibilityPriorityHigh;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
 
   PostAnnouncementNotification(base::SysUTF8ToNSString(announcement),

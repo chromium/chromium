@@ -74,10 +74,7 @@ bool GLTexturePassthroughOzoneImageRepresentation::BeginAccess(GLenum mode) {
       gl_fence->ServerWait();
     }
   }
-
-  // We must call VaapiWrapper::SyncSurface() to ensure all VA-API work is done
-  // prior to using the buffer in a graphics API.
-  return ozone_backing->VaSync();
+  return true;
 }
 
 void GLTexturePassthroughOzoneImageRepresentation::EndAccess() {

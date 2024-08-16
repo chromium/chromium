@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -51,6 +52,7 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void SetupWindowObserver();
   void OnOwnershipDetermined(bool is_user_owner);
   void OnLoadCampaignsCompleted();
+  void StartDelayedTimer();
 
   void CacheAppOpenContext(const apps::InstanceUpdate& update, const GURL& url);
   void ClearAppOpenContext();
@@ -85,6 +87,9 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   // Dangling when executing
   // AudioSettingsInteractiveUiTest.LaunchAudioSettingDisabledOnLockScreen:
   raw_ptr<aura::Window, DanglingUntriaged> opened_window_ = nullptr;
+
+  // A timer to trigger campaigns after the campaigns loaded.
+  base::OneShotTimer delayed_timer_;
 
   base::WeakPtrFactory<CampaignsManagerSession> weak_ptr_factory_{this};
 };

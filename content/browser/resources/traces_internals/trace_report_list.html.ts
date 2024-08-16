@@ -25,18 +25,20 @@ function getReportHtml(this: TraceReportListElement) {
 export function getHtml(this: TraceReportListElement) {
   // clang-format off
   return html`
-  <div class="traces-header">
+  <div class="header">
     <h1>Traces
       <span class="trace-counter" ?hidden="${!this.hasTraces_()}">
         ${this.traces_.length}
       </span>
     </h1>
-    ${this.hasTraces_() ? html`<div class="utility-bar">
-    <cr-button class="floating-button" ?disabled="${!this.hasTraces_()}"
-        @click="${this.onDeleteAllTracesClick_}">
-      <cr-icon icon="cr:delete" aria-hidden="true"></cr-icon>
-      Delete All Traces
-    </cr-button>` : nothing}
+    ${this.hasTraces_() ? html`
+    <div class="utility-bar">
+      <cr-button class="tonal-button" ?disabled="${!this.hasTraces_()}"
+          @click="${this.onDeleteAllTracesClick_}">
+        <cr-icon icon="cr:delete" slot="prefix-icon"></cr-icon>
+        Delete All Traces
+      </cr-button>
+    </div>` : nothing}
   </div>
   ${this.isLoading_ ? html`
   <div class="loading-spinner"><div class="spinner"></div></div>` :
@@ -47,9 +49,7 @@ export function getHtml(this: TraceReportListElement) {
   <cr-toast id="toast" duration="5000" ?hidden="${!this.notification_}">
     <div id="notification-card">
       <div class="icon-container ${this.getNotificationStyling_()}">
-        <cr-icon icon="${this.getNotificationIcon_()}"
-            aria-hidden="true">
-        </cr-icon>
+        <cr-icon icon="${this.getNotificationIcon_()}"></cr-icon>
       </div>
       <div class="notification-message">
         <h4 class="notification-type ${this.getNotificationStyling_()}">

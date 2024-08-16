@@ -3,31 +3,32 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import './icons.html.js';
 import './language_menu.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {openMenu, ToolbarEvent} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
 import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
-import {getTemplate} from './voice_selection_menu.html.js';
+import {getCss} from './voice_selection_menu.css.js';
+import {getHtml} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
   $: {
-    voiceSelectionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    voiceSelectionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     languageMenu: LanguageMenuElement,
   };
 }
@@ -47,72 +48,82 @@ interface VoiceDropdownItem {
   id: string;
 }
 
-const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
+const VoiceSelectionMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
-  voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
-  selectedVoice: SpeechSynthesisVoice;
-  localeToDisplayName: {[lang: string]: string} = {};
-  previewVoicePlaying: SpeechSynthesisVoice|null;
-  enabledLangs: string[];
-  availableVoices: SpeechSynthesisVoice[];
-
-  // If Read Aloud is playing speech. This is set from the parent element via
-  // one way data binding.
-  private readonly isSpeechActive: boolean;
-  private voicePlayingWhenMenuOpened_: boolean = false;
-  private enabledVoices_: SpeechSynthesisVoice[];
-  private showLanguageMenuDialog_: boolean = false;
-
-  // Events emitted from the voice selection menu to the app
-  private readonly spBodyPadding: string =
-      window.getComputedStyle(document.body)
-          .getPropertyValue('--sp-body-padding');
-
-  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-
   static get is() {
     return 'voice-selection-menu';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      selectedVoice: Object,
-      availableVoices: Array,
-      enabledLangs: Array,
-      previewVoicePlaying: Object,
-      voicePackInstallStatus: Object,
-      paused: Boolean,
-      localeToDisplayName: Object,
-      lastDownloadedLang: String,
-      showLanguageMenuDialog_: Boolean,
-      downloadingMessages_: {
-        type: Boolean,
-        computed: 'computeDownloadingMessages_(voicePackInstallStatus)',
-      },
-      enabledVoices_: {
-        type: Object,
-        computed: 'computeEnabledVoices_(availableVoices, enabledLangs)',
-      },
-      voiceSelectionOptions_: {
-        type: Object,
-        computed: 'computeVoiceDropdown_(selectedVoice, enabledVoices_,' +
-            ' previewVoicePlaying, localeToDisplayName)',
-      },
+      selectedVoice: {type: Object},
+      availableVoices: {type: Array},
+      enabledLangs: {type: Array},
+      previewVoicePlaying: {type: Object},
+      voicePackInstallStatus: {type: Object},
+      isSpeechActive: {type: Boolean},
+      localeToDisplayName: {type: Object},
+      lastDownloadedLang: {type: String},
+      showLanguageMenuDialog_: {type: Boolean},
+      downloadingMessages_: {type: Boolean},
+      voiceGroups_: {type: Object},
     };
   }
 
-  onVoiceSelectionMenuClick(event: MouseEvent) {
+  voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode} = {};
+  selectedVoice?: SpeechSynthesisVoice;
+  localeToDisplayName: {[lang: string]: string} = {};
+  previewVoicePlaying?: SpeechSynthesisVoice;
+  enabledLangs: string[] = [];
+  availableVoices: SpeechSynthesisVoice[] = [];
+  isSpeechActive: boolean = false;
+  lastDownloadedLang?: string;
+
+  protected downloadingMessages_: string[] = [];
+  protected voiceGroups_: VoiceDropdownGroup[] = [];
+  protected showLanguageMenuDialog_: boolean = false;
+
+  private voicePlayingWhenMenuOpened_: boolean = false;
+  private readonly spBodyPadding_ = Number.parseInt(
+      window.getComputedStyle(document.body)
+          .getPropertyValue('--sp-body-padding'),
+      10);
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('voicePackInstallStatus')) {
+      this.downloadingMessages_ = this.computeDownloadingMessages_();
+    }
+
+    if (changedProperties.has('selectedVoice') ||
+        changedProperties.has('availableVoices') ||
+        changedProperties.has('enabledLangs') ||
+        changedProperties.has('previewVoicePlaying') ||
+        changedProperties.has('localeToDisplayName')) {
+      this.voiceGroups_ = this.computeVoiceDropdown_();
+    }
+  }
+
+
+  onVoiceSelectionMenuClick(targetElement: HTMLElement) {
     this.voicePlayingWhenMenuOpened_ = this.isSpeechActive;
-    const target = event.target as HTMLElement;
+
     const menu = this.$.voiceSelectionMenu.get();
-    openMenu(menu, target, {
-      minX: parseInt(this.spBodyPadding, 10),
-      maxX: document.body.clientWidth - parseInt(this.spBodyPadding, 10),
+    openMenu(menu, targetElement, {
+      minX: this.spBodyPadding_,
+      maxX: document.body.clientWidth - this.spBodyPadding_,
     });
 
     // Scroll to the selected voice.
@@ -139,11 +150,12 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private computeVoiceDropdown_(): VoiceDropdownGroup[] {
-    if (!this.enabledVoices_) {
+    const enabledVoices = this.computeEnabledVoices_();
+    if (!enabledVoices) {
       return [];
     }
     const languageToVoices =
-        this.enabledVoices_.reduce((languageToDropdownItems, voice) => {
+        enabledVoices.reduce((languageToDropdownItems, voice) => {
           const dropdownItem: VoiceDropdownItem = {
             title: voice.name,
             voice,
@@ -178,47 +190,41 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     return s.replace(/\s/g, '-').replace(/[()]/g, '');
   }
 
-  private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
+  protected onVoiceSelectClick_(e: Event) {
     this.logger_.logSpeechSettingsChange(
         ReadAloudSettingsChange.VOICE_NAME_CHANGE);
-    const selectedVoice = event.model.item.voice;
 
-    this.dispatchEvent(new CustomEvent(ToolbarEvent.VOICE, {
-      bubbles: true,
-      composed: true,
-      detail: {
-        selectedVoice,
-      },
-    }));
+    const selectedVoice = this.getVoiceItemForEvent_(e).voice;
+    this.fire(ToolbarEvent.VOICE, {selectedVoice});
   }
 
-  private onVoicePreviewClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
+  protected onVoicePreviewClick_(e: Event) {
     // Because the preview button is layered onto the voice-selection button,
     // the onVoiceSelectClick_() listener is also subscribed to this event. This
     // line is to make sure that the voice-selection callback is not triggered.
-    event.stopImmediatePropagation();
+    e.stopImmediatePropagation();
 
-    const previewVoice = event.model.item.voice;
-    this.dispatchEvent(new CustomEvent(ToolbarEvent.PLAY_PREVIEW, {
-      bubbles: true,
-      composed: true,
-      detail: event.model.item.previewPlaying ? null : {previewVoice},
-    }));
+    const dropdownItem = this.getVoiceItemForEvent_(e);
+    this.fire(
+        ToolbarEvent.PLAY_PREVIEW,
+        // If preview is currently playing, we pass null to indicate the audio
+        // should be paused.
+        dropdownItem.previewPlaying ? null :
+                                      {previewVoice: dropdownItem.voice});
   }
 
-  private openLanguageMenu_() {
+  protected openLanguageMenu_() {
     this.showLanguageMenuDialog_ = true;
   }
 
-  private onLanguageMenuClose_(event: CustomEvent) {
+  protected onLanguageMenuClose_(event: CustomEvent) {
     event.preventDefault();
     event.stopPropagation();
 
     this.showLanguageMenuDialog_ = false;
-    openMenu(this.$.voiceSelectionMenu.get(), this.$.voiceSelectionMenu);
   }
 
-  private onClose_() {
+  protected onClose_() {
     this.dispatchEvent(new CustomEvent('voice-menu-close', {
       bubbles: true,
       composed: true,
@@ -228,7 +234,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     }));
   }
 
-  private onVoiceMenuKeyDown_(e: KeyboardEvent) {
+  protected onVoiceMenuKeyDown_(e: KeyboardEvent) {
     const currentElement = e.target as HTMLElement;
     assert(currentElement, 'no key target');
     const targetIsVoiceOption =
@@ -269,7 +275,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     currentElement.parentElement!.focus();
   }
 
-  private previewLabel_(previewPlaying: boolean): string {
+  protected previewLabel_(previewPlaying: boolean): string {
     if (previewPlaying) {
       return loadTimeData.getString('stopLabel');
     } else {
@@ -277,7 +283,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     }
   }
 
-  private previewAriaLabel_(previewPlaying: boolean, voiceName: string):
+  protected previewAriaLabel_(previewPlaying: boolean, voiceName: string):
       string {
     let nameSuffix = '';
     if (voiceName.length > 0) {
@@ -291,12 +297,21 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     }
   }
 
-  private previewIcon_(previewPlaying: boolean): string {
+  protected previewIcon_(previewPlaying: boolean): string {
     if (previewPlaying) {
       return 'read-anything-20:stop-circle';
     } else {
       return 'read-anything-20:play-circle';
     }
+  }
+
+  private getVoiceItemForEvent_(e: Event): VoiceDropdownItem {
+    const groupIndex = Number.parseInt(
+        (e.currentTarget as HTMLElement).dataset['groupIndex']!);
+    const voiceIndex = Number.parseInt(
+        (e.currentTarget as HTMLElement).dataset['voiceIndex']!);
+
+    return this.voiceGroups_[groupIndex].voices[voiceIndex];
   }
 
   private computeDownloadingMessages_(): string[] {
@@ -347,4 +362,4 @@ declare global {
   }
 }
 
-customElements.define('voice-selection-menu', VoiceSelectionMenuElement);
+customElements.define(VoiceSelectionMenuElement.is, VoiceSelectionMenuElement);

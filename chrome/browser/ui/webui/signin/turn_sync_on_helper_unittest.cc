@@ -1313,7 +1313,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountAbortAlreadyManaged) {
                                    kPreviousGaiaId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   WaitUntilFlowCompletion();
@@ -1367,7 +1367,7 @@ TEST_F(TurnSyncOnHelperTest, CrossAccountContinueAlreadyManaged) {
                                    kPreviousGaiaId);
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   EXPECT_EQ(0, delegate_destroyed());
@@ -1528,7 +1528,7 @@ TEST_F(TurnSyncOnHelperTest, LoadPolicyBeforeShowingSyncConfirmation) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();
@@ -1546,7 +1546,7 @@ TEST_F(TurnSyncOnHelperTest, LoadPolicyBeforeShowingSyncConfirmation_Timeout) {
   // Configure the test.
   user_policy_signin_service()->set_dm_token("foo");
   user_policy_signin_service()->set_client_id("bar");
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   // Signin flow.
   CreateTurnOnSyncHelper(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
   base::RunLoop().RunUntilIdle();

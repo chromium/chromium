@@ -27,6 +27,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -109,7 +110,7 @@ class DragWindowResizerTest : public AshTestBase {
     system_modal_window_ = std::make_unique<aura::Window>(&delegate3_);
     system_modal_window_->SetType(aura::client::WINDOW_TYPE_NORMAL);
     system_modal_window_->SetProperty(aura::client::kModalKey,
-                                      ui::MODAL_TYPE_SYSTEM);
+                                      ui::mojom::ModalType::kSystem);
     system_modal_window_->Init(ui::LAYER_NOT_DRAWN);
     ParentWindowInPrimaryRootWindow(system_modal_window_.get());
     system_modal_window_->SetId(3);

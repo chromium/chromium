@@ -132,7 +132,7 @@ class NodeOutput {
 // output.
 class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
  public:
-  explicit GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice> device);
+  explicit GraphBuilderDml(Microsoft::WRL::ComPtr<IDMLDevice1> device);
 
   GraphBuilderDml(const GraphBuilderDml& other) = delete;
   GraphBuilderDml& operator=(const GraphBuilderDml& other) = delete;
@@ -182,7 +182,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
       DML_EXECUTION_FLAGS flags) const;
 
  private:
-  Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
+  Microsoft::WRL::ComPtr<IDMLDevice1> dml_device_;
 
   std::vector<DML_INPUT_GRAPH_EDGE_DESC> dml_input_edges_;
   std::vector<DML_INTERMEDIATE_GRAPH_EDGE_DESC> dml_intermediate_edges_;

@@ -16,9 +16,11 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.gesturenav"

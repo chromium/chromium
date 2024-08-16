@@ -26,12 +26,19 @@
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/process/process_iterator.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -565,6 +572,23 @@ void ExpectTagArgsEqual(const updater::tagging::TagArgs& actual,
   }
 
   EXPECT_EQ(actual.runtime_mode, expected.runtime_mode);
+}
+
+int WaitForProcess(base::Process& process) {
+  int exit_code = -1;
+  bool process_exited = false;
+  base::RunLoop wait_for_process_exit_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(
+          FROM_HERE, base::BindLambdaForTesting([&] {
+            base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+            process_exited = base::WaitForMultiprocessTestChildExit(
+                process, TestTimeouts::action_timeout(), &exit_code);
+          }),
+          wait_for_process_exit_loop.QuitClosure());
+  wait_for_process_exit_loop.Run();
+  EXPECT_TRUE(process_exited);
+  return exit_code;
 }
 
 }  // namespace updater::test

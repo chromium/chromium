@@ -16,8 +16,8 @@ namespace syncer {
 struct EntityData;
 
 // Interface implemented by Nigori model to receive Nigori updates from sync via
-// a ModelTypeChangeProcessor. Provides a way for sync to update the data and
-// metadata for Nigori entities, as well as the model type state.
+// a DataTypeLocalChangeProcessor. Provides a way for sync to update the data
+// and metadata for Nigori entities, as well as the data type state.
 class NigoriSyncBridge {
  public:
   NigoriSyncBridge() = default;

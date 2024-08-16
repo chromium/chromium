@@ -151,7 +151,7 @@ ash::assistant::LauncherSearchIphQueryType GetQueryType(
   if (query == u"50+94/5") {
     return ash::assistant::LauncherSearchIphQueryType::kCalculation;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -12,8 +12,7 @@ namespace internal {
 
 DWORD ModifyCode(void* destination, const void* source, size_t length) {
   if ((nullptr == destination) || (nullptr == source) || (0 == length)) {
-    NOTREACHED_IN_MIGRATION();
-    return ERROR_INVALID_PARAMETER;
+    NOTREACHED();
   }
 
   // Change the page protection so that we can write.

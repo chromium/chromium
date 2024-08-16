@@ -121,7 +121,7 @@ void ClickSignOutInAccountSettings() {
 
   // Verify the "manage accounts" view is popped.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsAccountsTableViewId)]
+                                          kSettingsLegacyAccountsTableViewId)]
       assertWithMatcher:grey_notVisible()];
 
   // Verify the "manage sync" view is popped.

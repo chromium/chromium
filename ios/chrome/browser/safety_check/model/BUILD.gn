@@ -16,6 +16,8 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/prefs",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/upgrade/model",
+    "//ios/chrome/browser/upgrade/model:public",
   ]
   deps = [
     "//components/password_manager/core/browser",
@@ -27,11 +29,10 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
-    "//ios/chrome/browser/upgrade/model",
-    "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
   ]
   frameworks = [ "Foundation.framework" ]

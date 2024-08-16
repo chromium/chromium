@@ -66,9 +66,7 @@ class DataProtectionNavigationController : public content::WebContentsObserver {
   // Clear data protections once the page loads.
   // TODO(b/330960313): These bools can be removed once FCP is used as the
   // signal to set the data protections for the current tab.
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   bool clear_watermark_text_on_page_load_ = false;
-#endif
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   bool clear_screenshot_protection_on_page_load_ = false;
 #endif

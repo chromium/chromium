@@ -62,11 +62,6 @@ class SessionImpl : public OnDeviceModel::Session {
     std::move(on_complete).Run();
   }
 
-  bool ClearContext() override {
-    context_.clear();
-    return true;
-  }
-
   void SizeInTokens(const std::string& text,
                     base::OnceCallback<void(uint32_t)> callback) override {
     std::move(callback).Run(text.size());
@@ -102,13 +97,16 @@ class OnDeviceModelImpl : public OnDeviceModel {
     return std::make_unique<SessionImpl>(std::move(adaptation_id));
   }
 
-  mojom::SafetyInfoPtr ClassifyTextSafety(const std::string& text) override {
-    return nullptr;
+  void ClassifyTextSafety(
+      const std::string& text,
+      mojom::OnDeviceModel::ClassifyTextSafetyCallback callback) override {
+    std::move(callback).Run(nullptr);
   }
 
-  mojom::LanguageDetectionResultPtr DetectLanguage(
-      const std::string& text) override {
-    return nullptr;
+  void DetectLanguage(
+      const std::string& text,
+      mojom::OnDeviceModel::DetectLanguageCallback callback) override {
+    std::move(callback).Run(nullptr);
   }
 
   base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(

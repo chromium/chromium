@@ -783,6 +783,16 @@ def _MergeAssets(all_assets):
   return create_list(compressed), create_list(uncompressed), locale_paks
 
 
+def _SuffixAssets(suffix_names, suffix, assets):
+  new_assets = []
+  for x in assets:
+    src_path, apk_subpath = x.split(':', 1)
+    if apk_subpath in suffix_names:
+      apk_subpath += suffix
+    new_assets.append(f'{src_path}:{apk_subpath}')
+  return new_assets
+
+
 def _ResolveGroupsAndPublicDeps(config_paths):
   """Returns a list of configs with all groups inlined."""
 
@@ -1179,6 +1189,10 @@ def main(argv):
   parser.add_option('--incremental-install-json-path',
                     help="Path to the target's generated incremental install "
                     "json.")
+  parser.add_option(
+      '--suffix-apk-assets-used-by',
+      help='Path to the build config of the apk whose asset list should be '
+      'suffixed.')
   parser.add_option(
       '--tested-apk-config',
       help='Path to the build config of the tested apk (for an instrumentation '
@@ -2123,10 +2137,30 @@ def main(argv):
     manifests_from_deps.sort(key=lambda p: (os.path.basename(p), p))
     deps_info['extra_android_manifests'] += manifests_from_deps
 
-    config['assets'], config['uncompressed_assets'], locale_paks = (
-        _MergeAssets(deps.All('android_assets')))
+    assets, uncompressed_assets, locale_paks = _MergeAssets(
+        deps.All('android_assets'))
+    deps_info['assets'] = assets
+    deps_info['uncompressed_assets'] = uncompressed_assets
     deps_info['locales_java_list'] = _CreateJavaLocaleListFromAssets(
-        config['uncompressed_assets'], locale_paks)
+        uncompressed_assets, locale_paks)
+    if options.suffix_apk_assets_used_by:
+      if options.suffix_apk_assets_used_by == options.build_config:
+        target_config = deps_info
+      else:
+        target_config = GetDepConfig(options.suffix_apk_assets_used_by)
+      all_assets = (target_config['assets'] +
+                    target_config['uncompressed_assets'])
+      suffix = '+' + target_config['package_name'] + '+'
+      suffix_names = {
+          x.split(':', 1)[1].replace(suffix, '')
+          for x in all_assets
+      }
+      deps_info['assets'] = _SuffixAssets(suffix_names, suffix, assets)
+      deps_info['uncompressed_assets'] = _SuffixAssets(suffix_names, suffix,
+                                                       uncompressed_assets)
+      config['apk_assets_suffixed_list'] = ','.join(
+          f'"assets/{x}"' for x in sorted(suffix_names))
+      config['apk_assets_suffix'] = suffix
 
   if options.java_resources_jar_path:
     deps_info['java_resources_jar'] = options.java_resources_jar_path

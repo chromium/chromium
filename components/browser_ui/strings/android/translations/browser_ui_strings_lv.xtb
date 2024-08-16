@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
+<translation id="1500473259453106018">Paslēpt kartīti “Cenu kritums cilnēs”</translation>
 <translation id="1510341833810331442">Vietnēm nav atļauts saglabāt datus jūsu ierīcē</translation>
 <translation id="1547123415014299762">Trešo pušu sīkfaili ir atļauti</translation>
 <translation id="1568470248891039841">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs, piemēram, attēli, reklāmas un teksts. Šīs citas vietnes var lūgt atļauju izmantot par jums saglabāto informāciju, kamēr pārlūkojat vietni. <ph name="BEGIN_LINK" />Uzziniet vairāk par iegultu saturu<ph name="END_LINK" />.</translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofons</translation>
 <translation id="3232293466644486101">Dzēst pārlūkošanas datus…</translation>
 <translation id="3242646949159196181">Kad šis slēdzis ir ieslēgts, vietnēs var atskaņot skaņu. Kad šis slēdzis ir izslēgts, vietnēs nevar atskaņot skaņu.</translation>
+<translation id="3273479183583863618">Cenu kritums cilnēs</translation>
 <translation id="3277252321222022663">Atļaut vietnēm piekļūt sensoriem (ieteicams)</translation>
 <translation id="3285500645985761267">Atļaut saistīto vietņu īpašniekiem skatīt jūsu darbības grupā</translation>
 <translation id="3295019059349372795">11. nodaļa: Oza zemes brīnumainā Smaragda pilsēta</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Noraidīt un rādīt nākamo pieejamo darbību</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3763247130972274048">Divreiz pieskarieties videoklipam pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
+<translation id="3779154269823594982">Mainīt paroles</translation>
 <translation id="3797520601150691162">Varat tumšo motīvu nelietot konkrētās vietnēs</translation>
 <translation id="3803367742635802571">Apmeklētās vietnes var pārtraukt pienācīgi darboties</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Vienumu atlase</translation>
 <translation id="6840760312327750441">Lai sagrupētu cilnes, pieskarieties cilnei un turiet to. Pēc tam velciet to uz citas cilnes.</translation>
 <translation id="6864395892908308021">Šī ierīce nevar lasīt NFC</translation>
+<translation id="6870169401250095575">Paslēpt drošības pārbaudes kartīti</translation>
 <translation id="6912998170423641340">Bloķēt vietņu piekļuvi teksta un attēlu lasīšanai no starpliktuves</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6950072572526089586">Apmeklētā vietne var saglabāt informāciju par jūsu veiktajām darbībām, lai nodrošinātu pienācīgu tās darbību, piemēram, pierakstīšanos vietnē vai iepirkumu grozā ievietoto preču saglabāšanu. Bieži vien vietnes šo informāciju jūsu ierīcē saglabā īslaicīgi.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
 <translation id="789180354981963912">Bloķēt trešo pušu sīkfailus inkognito režīmā:</translation>
 <translation id="7940722705963108451">Atgādināt</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> vietne domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="FPS_MEMBERS_COUNT" /> vietņu domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="FPS_MEMBERS_COUNT" /> vietne domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="FPS_MEMBERS_COUNT" /> vietnes domēna <ph name="FPS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
 <translation id="7990211076305263060">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot jūsu mikrofonu. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot mikrofonu.</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Paslēpt kartīti “Turpināt šajā cilnē”}zero{Paslēpt kartīti “Turpināt šajās cilnēs”}one{Paslēpt kartīti “Turpināt šajās cilnēs”}other{Paslēpt kartīti “Turpināt šajās cilnēs”}}</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Neļaut vietnēm izveidot savienojumu ar ierīci</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8541410041357371550">Šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnē ir atļauti sīkfaili.}zero{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnēs ir atļauti sīkfaili.}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnē ir atļauti sīkfaili.}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> vietnēs ir atļauti sīkfaili.}}</translation>
 <translation id="857943718398505171">Atļauta (ieteicams)</translation>
 <translation id="8609465669617005112">Virziet uz augšu</translation>
 <translation id="8617611086246832542">Kad šis slēdzis ir ieslēgts, tiek rādīts vietņu skats datorā. Kad šis slēdzis ir izslēgts, tiek rādīts vietņu skats mobilajā ierīcē.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Pārvalda jūsu vecāki</translation>
 <translation id="9039697262778250930">Iespējams, automātiski izrakstīsieties no šīm vietnēm.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Šī vietne ir grupā, un visu grupas vietņu īpašnieki var skatīt jūsu darbības. Grupa ir definēta atbilstoši domēnam <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vai dzēst sīkfailus?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļaujas lietotnei <ph name="APP_NAME" />.</translation>

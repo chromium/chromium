@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/growth/campaigns_model.h"
 
 class PrefService;
+class PrefRegistrySimple;
 
 namespace growth {
 
@@ -42,6 +43,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Static.
   static CampaignsManager* Get();
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -111,6 +113,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
+  std::optional<base::Time> GetRegisteredTimeForTesting();
 
  private:
   // Triggred when campaigns component loaded.

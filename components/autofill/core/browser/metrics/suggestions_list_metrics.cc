@@ -7,10 +7,42 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
+
+SuggestionRankingContext::SuggestionRankingContext() = default;
+SuggestionRankingContext::SuggestionRankingContext(
+    const SuggestionRankingContext&) = default;
+SuggestionRankingContext& SuggestionRankingContext::operator=(
+    const SuggestionRankingContext&) = default;
+SuggestionRankingContext::~SuggestionRankingContext() = default;
+
+// static
+SuggestionRankingContext::RelativePosition
+SuggestionRankingContext::GetRelativePositionEnum(size_t legacy_index,
+                                                  size_t new_index) {
+  // A lower index means that the suggestion was ranked higher.
+  if (new_index < legacy_index) {
+    return autofill_metrics::SuggestionRankingContext::RelativePosition::
+        kRankedHigher;
+  } else if (new_index > legacy_index) {
+    return autofill_metrics::SuggestionRankingContext::RelativePosition::
+        kRankedLower;
+  }
+  return autofill_metrics::SuggestionRankingContext::RelativePosition::
+      kRankedSame;
+}
+
+bool SuggestionRankingContext::RankingsAreDifferent() const {
+  return base::ranges::any_of(
+      suggestion_rankings_difference_map, [](const auto& pair) {
+        return pair.second != RelativePosition::kRankedSame;
+      });
+}
 
 void LogSuggestionsCount(size_t num_suggestions,
                          FillingProduct filling_product) {
@@ -30,8 +62,9 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kStandaloneCvc:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -63,9 +96,10 @@ void LogSuggestionAcceptedIndex(int index,
     case FillingProduct::kIban:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kMerchantPromoCode:
       // It is NOTREACHED because all other types should be handled separately.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::RecordAction(base::UserMetricsAction("Autofill_SelectedSuggestion"));
@@ -79,6 +113,13 @@ void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
   base::UmaHistogramEnumeration(
       "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents",
       event);
+}
+
+void LogAutofillRankingSuggestionDifference(
+    SuggestionRankingContext::RelativePosition ranking_difference) {
+  base::UmaHistogramEnumeration(
+      "Autofill.SuggestionAccepted.SuggestionRankingDifference.CreditCard",
+      ranking_difference);
 }
 
 }  // namespace autofill::autofill_metrics

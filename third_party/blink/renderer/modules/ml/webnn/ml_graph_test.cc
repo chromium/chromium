@@ -399,7 +399,7 @@ class WebNNContextHelper {
   WebNNContextHelper() = default;
   ~WebNNContextHelper() = default;
 
-  void ConnectWebNNBufferImpl(const base::UnguessableToken& handle,
+  void ConnectWebNNBufferImpl(const blink::WebNNBufferToken& handle,
                               std::unique_ptr<FakeWebNNBuffer> buffer) {
     const auto it = buffer_impls_.find(handle);
     ASSERT_TRUE(it == buffer_impls_.end());
@@ -407,12 +407,12 @@ class WebNNContextHelper {
   }
 
   void DisconnectAndDestroyWebNNBufferImpl(
-      const base::UnguessableToken& handle) {
+      const blink::WebNNBufferToken& handle) {
     buffer_impls_.erase(handle);
   }
 
  private:
-  std::map<base::UnguessableToken, std::unique_ptr<FakeWebNNBuffer>>
+  std::map<blink::WebNNBufferToken, std::unique_ptr<FakeWebNNBuffer>>
       buffer_impls_;
 
   mojo::UniqueAssociatedReceiverSet<blink_mojom::WebNNGraphBuilder> builders_;
@@ -443,8 +443,8 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
 
   // Just return for testing the validation of inputs and outputs.
   void Dispatch(
-      const HashMap<WTF::String, base::UnguessableToken>& named_inputs,
-      const HashMap<WTF::String, base::UnguessableToken>& named_outputs)
+      const HashMap<WTF::String, blink::WebNNBufferToken>& named_inputs,
+      const HashMap<WTF::String, blink::WebNNBufferToken>& named_outputs)
       override {}
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.
@@ -456,7 +456,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   FakeWebNNBuffer(
       WebNNContextHelper& helper,
       mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
-      const base::UnguessableToken& buffer_handle,
+      const blink::WebNNBufferToken& buffer_handle,
       blink_mojom::BufferInfoPtr buffer_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
@@ -471,7 +471,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
   FakeWebNNBuffer(const FakeWebNNBuffer&) = delete;
   FakeWebNNBuffer(FakeWebNNBuffer&&) = delete;
 
-  const base::UnguessableToken& handle() const { return handle_; }
+  const blink::WebNNBufferToken& handle() const { return handle_; }
 
  private:
   void ReadBuffer(ReadBufferCallback callback) override {
@@ -483,7 +483,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   void WriteBuffer(mojo_base::BigBuffer src_buffer) override {
     ASSERT_LE(src_buffer.size(), buffer_.size());
-    base::span(buffer_).first(src_buffer.size()).copy_from(src_buffer);
+    base::span(buffer_).copy_prefix_from(src_buffer);
   }
 
   void OnConnectionError() {
@@ -495,7 +495,7 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
 
   mojo::AssociatedReceiver<blink_mojom::WebNNBuffer> receiver_;
 
-  const base::UnguessableToken handle_;
+  const blink::WebNNBufferToken handle_;
 
   mojo_base::BigBuffer buffer_;
 };
@@ -547,7 +547,7 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
                     CreateBufferCallback callback) override {
     mojo::PendingAssociatedRemote<blink_mojom::WebNNBuffer> blink_remote;
     auto blink_receiver = blink_remote.InitWithNewEndpointAndPassReceiver();
-    base::UnguessableToken buffer_handle = base::UnguessableToken::Create();
+    blink::WebNNBufferToken buffer_handle;
     context_helper_.ConnectWebNNBufferImpl(
         buffer_handle, std::make_unique<FakeWebNNBuffer>(
                            context_helper_, std::move(blink_receiver),
@@ -605,6 +605,33 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          webnn::SupportedDataTypes::All(),
          /*concat_inputs=*/
          webnn::SupportedDataTypes::All(),
+         /*add_input=*/webnn::SupportedDataTypes::All(),
+         /*sub_input=*/webnn::SupportedDataTypes::All(),
+         /*mul_input=*/webnn::SupportedDataTypes::All(),
+         /*div_input=*/webnn::SupportedDataTypes::All(),
+         /*max_input=*/webnn::SupportedDataTypes::All(),
+         /*min_input=*/webnn::SupportedDataTypes::All(),
+         /*pow_input=*/webnn::SupportedDataTypes::All(),
+         /*equal_input=*/webnn::SupportedDataTypes::All(),
+         /*greater_input=*/webnn::SupportedDataTypes::All(),
+         /*greater_or_equal_input=*/webnn::SupportedDataTypes::All(),
+         /*lesser_input=*/webnn::SupportedDataTypes::All(),
+         /*lesser_or_equal_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_not_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_output=*/webnn::SupportedDataTypes::All(),
+         /*abs_input=*/webnn::SupportedDataTypes::All(),
+         /*ceil_input=*/webnn::SupportedDataTypes::All(),
+         /*cos_input=*/webnn::SupportedDataTypes::All(),
+         /*erf_input=*/webnn::SupportedDataTypes::All(),
+         /*exp_input=*/webnn::SupportedDataTypes::All(),
+         /*floor_input=*/webnn::SupportedDataTypes::All(),
+         /*identity_input=*/webnn::SupportedDataTypes::All(),
+         /*log_input=*/webnn::SupportedDataTypes::All(),
+         /*neg_input=*/webnn::SupportedDataTypes::All(),
+         /*reciprocal_input=*/webnn::SupportedDataTypes::All(),
+         /*sin_input=*/webnn::SupportedDataTypes::All(),
+         /*sqrt_input=*/webnn::SupportedDataTypes::All(),
+         /*tan_input=*/webnn::SupportedDataTypes::All(),
          /*elu_input=*/webnn::SupportedDataTypes::All(),
          /*gather_input=*/webnn::SupportedDataTypes::All(),
          /*gather_indices=*/
@@ -624,7 +651,7 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          webnn::SupportedDataTypes::All()});
     auto success = blink_mojom::CreateContextSuccess::New(
         std::move(blink_remote), std::move(context_properties),
-        base::UnguessableToken::Create());
+        blink::WebNNContextToken());
     std::move(callback).Run(
         blink_mojom::CreateContextResult::NewSuccess(std::move(success)));
   }
@@ -698,7 +725,7 @@ bool IsBufferDataEqual(DOMArrayBuffer* array_buffer,
 MaybeShared<DOMArrayBufferView> CreateArrayBufferViewFromBytes(
     DOMArrayBuffer* array_buffer,
     base::span<const uint8_t> data) {
-  array_buffer->ByteSpan().first(data.size()).copy_from(data);
+  array_buffer->ByteSpan().copy_prefix_from(data);
   return MaybeShared<DOMArrayBufferView>(
       blink::DOMUint8Array::Create(array_buffer, /*byte_offset=*/0,
                                    /*length=*/array_buffer->ByteLength()));
@@ -1433,11 +1460,9 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
 
   ml_buffer->destroy();
 
-  ScriptPromiseTester read_buffer_tester(
-      script_state, ml_context->readBuffer(script_state, ml_buffer,
-                                           scope.GetExceptionState()));
-  read_buffer_tester.WaitUntilSettled();
-  EXPECT_TRUE(read_buffer_tester.IsRejected());
+  ScriptPromise<DOMArrayBuffer> read_promise = ml_context->readBuffer(
+      script_state, ml_buffer, scope.GetExceptionState());
+  EXPECT_TRUE(read_promise.IsEmpty());
 }
 
 TEST_F(MLGraphTest, WebNNGraphDispatchTest) {

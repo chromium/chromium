@@ -147,7 +147,8 @@ void ShowCreateChromeAppShortcutsDialog(
   provider->scheduler().SynchronizeOsIntegration(
       app_id, base::BindOnce(std::move(close_callback), true),
       web_app::ConvertShortcutLocationsToSynchronizeOptions(
-          web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER));
+          web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER),
+      /*upgrade_to_fully_installed_if_installed=*/true);
 }
 
 }  // namespace chrome

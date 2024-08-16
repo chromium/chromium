@@ -123,7 +123,7 @@ NSString* FormatElapsedTimeSinceLastCheck(
     // The title case format is only used in the Password Checkup Homepage as of
     // now and it is currently not possible to reach this page if no check has
     // yet been completed. There is therefore no need for now to have a title
-    // case version of "Check never run."
+    // case version of "Check never run"
     return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
   }
 
@@ -174,7 +174,7 @@ std::vector<CredentialUIEntry> GetPasswordsForWarningType(
                             std::mem_fn(&CredentialUIEntry::IsMuted));
       break;
     case WarningType::kNoInsecurePasswordsWarning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return filtered_credentials;

@@ -34,7 +34,9 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
       const FrameSinkId& frame_sink_id,
       std::optional<FrameSinkBundleId> bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+      std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
+          rir_client);
 
   CompositorFrameSinkImpl(const CompositorFrameSinkImpl&) = delete;
   CompositorFrameSinkImpl& operator=(const CompositorFrameSinkImpl&) = delete;

@@ -55,7 +55,6 @@ class SkiaOutputDeviceDComp : public SkiaOutputDevice {
   SkSurface* BeginPaint(
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
-  bool IsPrimaryPlaneOverlay() const override;
 
  private:
   class OverlayData;

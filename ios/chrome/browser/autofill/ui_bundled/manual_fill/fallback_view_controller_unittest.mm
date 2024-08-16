@@ -185,15 +185,17 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessage) {
   // section. When disabled, it is displayed as a regular table view item in the
   // data items section.
   if (IsKeyboardAccessoryUpgradeEnabled()) {
-    // Only the actions section should be present in the table view.
-    EXPECT_EQ(NumberOfSections(), 1);
+    // Only the actions section and no data item section should be present in
+    // the table view.
+    EXPECT_EQ(NumberOfSections(), 2);
 
     // The actions section should have a header and an item.
     EXPECT_TRUE(GetHeaderItem(/*section=*/0));
-    EXPECT_EQ(NumberOfItemsInSection(0), 1);
+    EXPECT_EQ(NumberOfItemsInSection(0), 0);
+    EXPECT_EQ(NumberOfItemsInSection(1), 1);
 
     EXPECT_EQ(GetHeaderItemType(/*section=*/0), ItemTypeSampleOne);
-    EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0),
+    EXPECT_EQ(GetTableViewItemType(/*section=*/1, /*item=*/0),
               ItemTypeSampleThree);
   } else {
     // Both the data items and the actions sections should be present in the
@@ -269,11 +271,16 @@ TEST_P(FallbackViewControllerTest, CheckNoDataItemsMessageRemoved) {
   [fallback_view_controller presentActionItems:@[ action_item ]];
 
   // Make sure that the table view content is as expected.
-  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfSections(), IsKeyboardAccessoryUpgradeEnabled() ? 2 : 1);
   EXPECT_TRUE(GetHeaderItem(/*section=*/0));
-  EXPECT_EQ(NumberOfItemsInSection(0), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), !IsKeyboardAccessoryUpgradeEnabled());
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    EXPECT_EQ(NumberOfItemsInSection(1), 1);
+  }
   EXPECT_EQ(GetHeaderItemType(/*section=*/0), ItemTypeSampleOne);
-  EXPECT_EQ(GetTableViewItemType(/*section=*/0, /*item=*/0), ItemTypeSampleTwo);
+  EXPECT_EQ(GetTableViewItemType(
+                /*section=*/IsKeyboardAccessoryUpgradeEnabled(), /*item=*/0),
+            ItemTypeSampleTwo);
 
   // Second, add a data item. This should have the effect of removing the "no
   // data items to show" message.

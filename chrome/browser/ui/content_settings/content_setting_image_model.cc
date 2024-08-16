@@ -335,8 +335,8 @@ void GetIconChromeRefresh(ContentSettingsType type,
                       : &vector_icons::kFileDownloadChromeRefreshIcon;
       return;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
-      *icon = blocked ? &vector_icons::kContentPasteOffChromeRefreshIcon
-                      : &vector_icons::kContentPasteChromeRefreshIcon;
+      *icon = blocked ? &vector_icons::kContentPasteOffIcon
+                      : &vector_icons::kContentPasteIcon;
       return;
     case ContentSettingsType::MEDIASTREAM_MIC:
       *icon = blocked ? &vector_icons::kMicOffChromeRefreshIcon
@@ -692,8 +692,7 @@ ContentSettingRPHImageModel::ContentSettingRPHImageModel()
 bool ContentSettingRPHImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   auto* content_settings_delegate =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents);
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
   if (!content_settings_delegate)
     return false;
   if (content_settings_delegate->pending_protocol_handler().IsEmpty())

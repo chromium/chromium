@@ -47,8 +47,7 @@ void WriteMessage(uint64_t identifier,
   base::File file(path,
                   base::File::FLAG_WRITE | base::File::FLAG_CREATE_ALWAYS);
 
-  file.WriteAtCurrentPos(reinterpret_cast<const char*>(entry.data_bytes.data()),
-                         static_cast<int>(entry.data_bytes.size()));
+  file.WriteAtCurrentPos(entry.data_bytes);
 }
 
 }  // namespace

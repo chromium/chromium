@@ -44,7 +44,7 @@ struct ProposedCandidateKeyHasher {
     static_assert(sizeof(ProposedCandidateKey) ==
                   sizeof(decltype(k.strategy_id)) +
                       sizeof(decltype(k.tracking_id)));
-    return base::FastHash(base::as_bytes(base::span_from_ref(k)));
+    return base::FastHash(base::byte_span_from_ref(k));
   }
 };
 

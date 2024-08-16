@@ -138,14 +138,6 @@ void ConstVectorDeducesAsConstSpan() {
   span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
-// make_span<N>() should CHECK whether N matches the actual size.
-void MakeSpanChecksSize() {
-  constexpr std::string_view str = "Foo";
-  constexpr auto made_span1 = make_span<2>(str.begin(), 3u);         // expected-error {{constexpr variable 'made_span1' must be initialized by a constant expression}}
-  constexpr auto made_span2 = make_span<2>(str.begin(), str.end());  // expected-error {{constexpr variable 'made_span2' must be initialized by a constant expression}}
-  constexpr auto made_span3 = make_span<2>(str);                     // expected-error {{constexpr variable 'made_span3' must be initialized by a constant expression}}
-}
-
 // EXTENT should not result in |dynamic_extent|, it should be a compile-time
 // error.
 void ExtentNoDynamicExtent() {

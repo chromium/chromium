@@ -24,6 +24,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/pref_names.h"  // nogncheck
@@ -258,8 +260,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   }
 
   void TryDisablingNotAshKeeplistedExtension(bool expect_extension_disabled) {
-    if (expect_extension_disabled)
+    if (expect_extension_disabled) {
       EXPECT_CALL(delegate_, PostDeactivateExtension(extension_));
+    }
 
     // Disable extension because it is not in the ash keep list.
     registrar_->DisableExtension(extension_->id(),
@@ -552,6 +555,9 @@ TEST_F(ExtensionRegistrarTest,
        DisableNotAshKeeplistedForceInstalledExtensionIfAshDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
       fake_user_manager->AddUser(AccountId::FromUserEmail("test@test"));

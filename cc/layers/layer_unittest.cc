@@ -1120,7 +1120,8 @@ TEST_F(LayerTest, CheckPropertyChangeCausesCorrectBehavior) {
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
       test_layer->SetScrollOffset(gfx::PointF(10, 10)));
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
-      test_layer->SetNonFastScrollableRegion(Region(gfx::Rect(1, 1, 2, 2))));
+      test_layer->SetMainThreadScrollHitTestRegion(
+          Region(gfx::Rect(1, 1, 2, 2))));
   EXPECT_SET_NEEDS_COMMIT_WAS_CALLED(
       test_layer->SetTransform(gfx::Transform::MakeScale(0.0)));
   TouchActionRegion touch_action_region;

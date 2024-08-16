@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
@@ -184,7 +185,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   }
 
   SidePanelCoordinator* GetSidePanelCoordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   LensSidePanelCoordinator* GetLensSidePanelCoordinator() {
@@ -342,7 +343,10 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
       GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting();
   EXPECT_EQ(last_active_entry, nullptr);
   EXPECT_EQ(
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser())
+      browser()
+          ->browser_window_features()
+          ->side_panel_coordinator()
+          ->GetWindowRegistry()
           ->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kLens)),
       nullptr);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kCloseAction));

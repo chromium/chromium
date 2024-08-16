@@ -192,17 +192,21 @@ void RecentModel::GetRecentFiles(
     volume_filter.emplace(restriction.volume_type);
   }
 
-  size_t source_count = 0;
+  // filtered_sources is a copy of active_sources. However, as active_sources
+  // is modified, we need to create a copy that is not going to be altered
+  // while we are iterating over it.
+  std::vector<RecentSource*> filtered_sources;
+  filtered_sources.reserve(sources_.size());
   for (const auto& source : sources_) {
     auto it = volume_filter.find(source->volume_type());
     if (it != volume_filter.end()) {
       context->active_sources.insert(source.get());
-      ++source_count;
+      filtered_sources.emplace_back(source.get());
     }
   }
   context_map_.AddWithID(std::move(context), this_call_id);
 
-  if (source_count == 0) {
+  if (filtered_sources.empty()) {
     OnSearchCompleted(this_call_id);
     return;
   }
@@ -232,10 +236,10 @@ void RecentModel::GetRecentFiles(
   const RecentSource::Params params(file_system_context, this_call_id, origin,
                                     query, options.max_files, cutoff_time,
                                     end_time, options.file_type);
-  for (const auto& source : sources_) {
+  for (const auto& source : filtered_sources) {
     source->GetRecentFiles(
         params, base::BindOnce(&RecentModel::OnGotRecentFiles,
-                               weak_ptr_factory_.GetWeakPtr(), source.get(),
+                               weak_ptr_factory_.GetWeakPtr(), source,
                                cutoff_time, this_call_id));
   }
 }

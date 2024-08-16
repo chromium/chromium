@@ -1636,8 +1636,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   read_headers_since_ = TimeTicks::Now();
 
   if (result != read_buf_->size() ||
-      !HttpCache::ParseResponseInfo(base::as_bytes(read_buf_->span()),
-                                    &response_, &truncated_)) {
+      !HttpCache::ParseResponseInfo(read_buf_->span(), &response_,
+                                    &truncated_)) {
     return OnCacheReadError(result, true);
   }
 
@@ -1683,7 +1683,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   }
 
   if (response_.restricted_prefetch &&
-      !(request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH)) {
+      !(request_->load_flags &
+        LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME)) {
     TransitionToState(STATE_SEND_REQUEST);
     return OK;
   }
@@ -1691,7 +1692,7 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
   // When a restricted prefetch is reused, we lift its reuse restriction.
   bool restricted_prefetch_reuse =
       response_.restricted_prefetch &&
-      request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH;
+      request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   DCHECK(!restricted_prefetch_reuse || response_.unused_since_prefetch);
 
   if (response_.unused_since_prefetch !=
@@ -1704,7 +1705,8 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
     updated_prefetch_response_->unused_since_prefetch =
         !response_.unused_since_prefetch;
     if (response_.restricted_prefetch &&
-        request_->load_flags & LOAD_CAN_USE_RESTRICTED_PREFETCH) {
+        request_->load_flags &
+            LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
       updated_prefetch_response_->restricted_prefetch = false;
     }
 
@@ -3161,10 +3163,13 @@ bool HttpCache::Transaction::ComputeUnusablePerCachingHeaders() {
     return false;
   }
 
-  // If none of the above is true and the entry has zero freshness, then it
-  // won't be usable absent load flag override.
-  return response_.headers->GetFreshnessLifetimes(response_.response_time)
-      .freshness.is_zero();
+  // If none of the above is true and the entry has zero freshness and
+  // no stale-while-revaliate, then it won't be usable absent load flag
+  // override.
+  auto freshness_lifetimes =
+      response_.headers->GetFreshnessLifetimes(response_.response_time);
+  return freshness_lifetimes.freshness.is_zero() &&
+         freshness_lifetimes.staleness.is_zero();
 }
 
 // We just received some headers from the server. We may have asked for a range,

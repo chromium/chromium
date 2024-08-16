@@ -8,11 +8,12 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package babelorca;
+package ash.babelorca;
 
 message IdType {
   enum Type {
     UNSET = 0;
+    GROUP_ID = 2;
     EMAIL = 16;
   }
 }
@@ -35,5 +36,12 @@ message Platform {
   enum Type {
     UNKNOWN = 0;
     DESKTOP = 6;
+  }
+}
+
+message MessageFanout {
+  enum SenderDevice {
+    DEFAULT_NO_SENDER_DEVICE = 0;
+    OTHER_SENDER_DEVICES = 1;
   }
 }

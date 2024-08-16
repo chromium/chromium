@@ -139,7 +139,10 @@ void ScrollMetricsTest::SetUpHtml(const char* html_content) {
 TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   SetUpHtml(R"HTML(
     <style>
-     .box { overflow:scroll; width: 100px; height: 100px; }
+     .box { overflow:scroll; width: 100px; height: 100px;
+            /* Make the box not opaque to hit test, so that not eligible for
+               fast scroll hit test. */
+            border-radius: 5px; }
      .spacer { height: 1000px; }
     </style>
     <div id='box' class='box'>
@@ -156,7 +159,9 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
 
   // The below reasons are reported because #box is not composited.
   EXPECT_TOUCH_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+      BucketIndex(
+          cc::MainThreadScrollingReason::kMainThreadScrollHitTestRegion),
+      1);
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_TOUCH_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
@@ -175,7 +180,9 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
 
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+      BucketIndex(
+          cc::MainThreadScrollingReason::kMainThreadScrollHitTestRegion),
+      1);
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
@@ -191,10 +198,13 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   SetUpHtml(R"HTML(
     <style>
      .box { overflow:scroll; width: 100px; height: 100px; }
-     .composited { will-change: transform; }
+     /* Make the box not opaque to hit test, so that not eligible for fast
+        scroll hit test. */
+     .border-radius { border-radius: 5px; }
+     .composited { will-change: transform; border-radius: 0; }
      .spacer { height: 1000px; }
     </style>
-    <div id='box' class='box'>
+    <div id='box' class='box border-radius'>
      <div class='spacer'></div>
     </div>
   )HTML");
@@ -207,7 +217,9 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
 
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+      BucketIndex(
+          cc::MainThreadScrollingReason::kMainThreadScrollHitTestRegion),
+      1);
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
@@ -233,7 +245,11 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
 
 TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   SetUpHtml(R"HTML(
-    <style>.box { overflow:scroll; width: 100px; height: 100px; }
+    <style>
+     .box { overflow:scroll; width: 100px; height: 100px;
+            /* Make the box not opaque to hit test, so that not eligible for
+               fast scroll hit test. */
+            border-radius: 5px; }
      .hidden { overflow: hidden; }
      .spacer { height: 1000px; }
     </style>
@@ -250,7 +266,9 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
 
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+      BucketIndex(
+          cc::MainThreadScrollingReason::kMainThreadScrollHitTestRegion),
+      1);
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     EXPECT_WHEEL_BUCKET(
         BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
@@ -271,13 +289,15 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
 
   // The overflow: hidden element is still a non-fast scroll region, so cc
   // reports the following for the second scroll:
-  //   kNonFastScrollableRegion
+  //   kMainThreadScrollHitTestRegion
   //   kScrollingOnMainForAnyReason
   //
   // Since #box is overflow: hidden, the hit test returns the viewport, and
   // so we do not log kNoScrollingLayer again.
   EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
+      BucketIndex(
+          cc::MainThreadScrollingReason::kMainThreadScrollHitTestRegion),
+      1);
   EXPECT_WHEEL_BUCKET(
       cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
   EXPECT_WHEEL_TOTAL(2);

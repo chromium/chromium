@@ -1,0 +1,6 @@
+Tests that Bluetooth.simulateCentral is executed in the given world
+true
+[
+    [0] : 0000180d-0000-1000-8000-00805f9b34fb
+]
+

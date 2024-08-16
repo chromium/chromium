@@ -1044,6 +1044,9 @@ protocol::Response InspectorCSSAgent::getLocationForSelector(
       if (selector->SelectorText() == selector_text) {
         const CSSRuleSourceData* source_data =
             style_sheet->SourceDataForRule(css_style_rule);
+        if (source_data == nullptr) {
+          continue;
+        }
         std::unique_ptr<protocol::CSS::SourceRange> range =
             style_sheet->BuildSourceRangeObject(source_data->rule_header_range);
 

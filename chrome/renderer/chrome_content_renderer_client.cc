@@ -43,6 +43,7 @@
 #include "chrome/common/secure_origin_allowlist.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/common/webui_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/renderer_resources.h"
@@ -118,9 +119,11 @@
 #include "components/web_cache/renderer/web_cache_impl.h"
 #include "components/webapps/renderer/web_page_metadata_agent.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
@@ -140,6 +143,7 @@
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -590,7 +594,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       std::make_unique<ChromeContentSettingsAgentDelegate>(render_frame);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   content_settings_delegate->SetExtensionDispatcher(
-      ChromeExtensionsRendererClient::GetInstance()->extension_dispatcher());
+      ChromeExtensionsRendererClient::GetInstance()->dispatcher());
 #endif
   content_settings::ContentSettingsAgentImpl* content_settings =
       new content_settings::ContentSettingsAgentImpl(
@@ -758,8 +762,9 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif  // BUILDFLAG(HAS_SPELLCHECK_PANEL)
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  if (render_frame->IsMainFrame() &&
-      feed::IsWebFeedEnabledForLocale(country_codes::GetCurrentCountryCode())) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(feed::switches::kEnableRssLinkReader) &&
+      render_frame->IsMainFrame()) {
     new feed::RssLinkReader(render_frame, registry);
   }
 #endif
@@ -860,6 +865,25 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
 #else   // !(BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS))
   return false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_PLUGINS)
+}
+
+bool ChromeContentRendererClient::IsDomStorageDisabled() const {
+  if (!base::FeatureList::IsEnabled(features::kPdfEnforcements)) {
+    return false;
+  }
+
+#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_EXTENSIONS)
+  // PDF renderers shouldn't need to access DOM storage interfaces. Note that
+  // it's still possible to access localStorage or sessionStorage in a PDF
+  // document's context via DevTools; returning false here ensures that these
+  // objects are just seen as null by JavaScript (similarly to what happens for
+  // opaque origins). This avoids a renderer kill by the browser process which
+  // isn't expecting PDF renderer processes to ever use DOM storage
+  // interfaces. See https://crbug.com/357014503.
+  return pdf::IsPdfRenderer();
+#else
+  return false;
+#endif
 }
 
 v8::Local<v8::Object> ChromeContentRendererClient::GetScriptableObject(
@@ -1578,6 +1602,14 @@ ChromeContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
       browser_interface_broker_.get());
 }
 
+bool ChromeContentRendererClient::ShouldUseCodeCacheWithHashing(
+    const blink::WebURL& request_url) const {
+  if (content::HasWebUIScheme(request_url)) {
+    return chrome::ShouldUseCodeCacheForWebUIUrl(GURL(request_url));
+  }
+  return true;
+}
+
 std::unique_ptr<media::KeySystemSupportRegistration>
 ChromeContentRendererClient::GetSupportedKeySystems(
     content::RenderFrame* render_frame,
@@ -1708,7 +1740,7 @@ void ChromeContentRendererClient::
         const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->DidInitializeServiceWorkerContextOnWorkerThread(
           context_proxy, service_worker_scope, script_url);
 #endif
@@ -1719,13 +1751,14 @@ void ChromeContentRendererClient::WillEvaluateServiceWorkerOnWorkerThread(
     v8::Local<v8::Context> v8_context,
     int64_t service_worker_version_id,
     const GURL& service_worker_scope,
-    const GURL& script_url) {
+    const GURL& script_url,
+    const blink::ServiceWorkerToken& service_worker_token) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->WillEvaluateServiceWorkerOnWorkerThread(
           context_proxy, v8_context, service_worker_version_id,
-          service_worker_scope, script_url);
+          service_worker_scope, script_url, service_worker_token);
 #endif
 }
 
@@ -1735,7 +1768,7 @@ void ChromeContentRendererClient::DidStartServiceWorkerContextOnWorkerThread(
     const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->DidStartServiceWorkerContextOnWorkerThread(
           service_worker_version_id, service_worker_scope, script_url);
 #endif
@@ -1748,7 +1781,7 @@ void ChromeContentRendererClient::WillDestroyServiceWorkerContextOnWorkerThread(
     const GURL& script_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ChromeExtensionsRendererClient::GetInstance()
-      ->extension_dispatcher()
+      ->dispatcher()
       ->WillDestroyServiceWorkerContextOnWorkerThread(
           context, service_worker_version_id, service_worker_scope, script_url);
 #endif

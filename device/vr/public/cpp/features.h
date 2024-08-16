@@ -45,7 +45,11 @@ COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrEnabled();
 // and should be checked instead of a direct query on the kOpenXR feature being
 // enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrArEnabled();
+
 #endif  // ENABLE_OPENXR
+COMPONENT_EXPORT(VR_FEATURES) bool HasImmersiveFeature();
+
+COMPONENT_EXPORT(VR_FEATURES) bool IsHandTrackingEnabled();
 
 }  // namespace device::features
 

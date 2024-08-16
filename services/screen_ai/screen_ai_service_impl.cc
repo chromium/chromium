@@ -11,13 +11,16 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "components/crash/core/common/crash_key.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -42,6 +45,10 @@ namespace {
 
 // How often it would be checked that the service is idle and can be shutdown.
 constexpr base::TimeDelta kIdleCheckingDelay = base::Minutes(10);
+
+// How long after all clients are disconnected, it is checked if service is
+// idle.
+constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -137,7 +144,7 @@ class ModelDataHolder {
 
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
-    CHECK_EQ(model_file->Read(0, buffer, length), length);
+    CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
@@ -164,13 +171,12 @@ ScreenAIService::ScreenAIService(
     : factory_receiver_(this, std::move(receiver)),
       ocr_receiver_(this),
       main_content_extraction_receiver_(this) {
-  // Monitor client disconnections for shutdown.
-  screen_2x_main_content_extractors_.set_disconnect_handler(base::BindRepeating(
-      &ScreenAIService::ShutDownIfNoClients, weak_ptr_factory_.GetWeakPtr()));
-  // `ReceiverDisconnected` will also call `ShutDownIfNoClients`.
-  screen_ai_annotators_.set_disconnect_handler(base::BindRepeating(
-      &ScreenAIService::ReceiverDisconnected, weak_ptr_factory_.GetWeakPtr()));
-
+  screen2x_main_content_extractors_.set_disconnect_handler(
+      base::BindRepeating(&ScreenAIService::CheckIdleStateAfterDelay,
+                          weak_ptr_factory_.GetWeakPtr()));
+  screen_ai_annotators_.set_disconnect_handler(
+      base::BindRepeating(&ScreenAIService::OcrReceiverDisconnected,
+                          weak_ptr_factory_.GetWeakPtr()));
   model_data_holder_ = std::make_unique<ModelDataHolder>();
   idle_checking_timer_ = std::make_unique<base::RepeatingTimer>();
   idle_checking_timer_->Start(FROM_HERE, kIdleCheckingDelay, this,
@@ -293,8 +299,8 @@ void ScreenAIService::BindAnnotator(
 void ScreenAIService::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
         main_content_extractor) {
-  screen_2x_main_content_extractors_.Add(this,
-                                         std::move(main_content_extractor));
+  screen2x_main_content_extractors_.Add(this,
+                                        std::move(main_content_extractor));
 }
 
 std::optional<chrome_screen_ai::VisualAnnotation>
@@ -420,8 +426,26 @@ bool ScreenAIService::ExtractMainContentInternal(
 
   // Deserialize the snapshot and reserialize it to a view hierarchy proto.
   CHECK(tree.Unserialize(snapshot));
-  std::string serialized_snapshot = SnapshotToViewHierarchy(&tree);
-  content_node_ids = library_->ExtractMainContent(serialized_snapshot);
+  std::optional<ViewHierarchyAndTreeSize> converted_snapshot =
+      SnapshotToViewHierarchy(tree);
+  if (!converted_snapshot) {
+    VLOG(0) << "Proto not generated.";
+    return false;
+  }
+
+  // Report request specifications in case the call crashes.
+  static crash_reporter::CrashKeyString<95> crash_info(
+      "main_content_extraction_info");
+  crash_info.Set(base::StringPrintf(
+      "TD:%i, TR:%i, SNC:%10zu, SBS:%10zu, TS:%10i, TW:%6i, TH:%6i, SS:%10zu",
+      snapshot.has_tree_data, snapshot.root_id != ui::kInvalidAXNodeID,
+      snapshot.nodes.size(), snapshot.ByteSize(), tree.size(),
+      static_cast<int>(converted_snapshot->tree_dimensions.width()),
+      static_cast<int>(converted_snapshot->tree_dimensions.height()),
+      converted_snapshot->serialized_proto.size()));
+
+  content_node_ids =
+      library_->ExtractMainContent(converted_snapshot->serialized_proto);
   base::UmaHistogramBoolean(
       "Accessibility.ScreenAI.MainContentExtraction.Successful",
       content_node_ids.has_value());
@@ -466,19 +490,28 @@ void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
   }
 }
 
-void ScreenAIService::ReceiverDisconnected() {
+void ScreenAIService::OcrReceiverDisconnected() {
   auto entry = ocr_client_types_.find(screen_ai_annotators_.current_receiver());
   if (entry != ocr_client_types_.end()) {
     ocr_client_types_.erase(entry);
   }
 
-  ShutDownIfNoClients();
+  CheckIdleStateAfterDelay();
+}
+
+void ScreenAIService::CheckIdleStateAfterDelay() {
+  // Check if service is idle, a little after the client disconnects.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ScreenAIService::ShutDownIfNoClients,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kCoolDownTime);
 }
 
 void ScreenAIService::ShutDownIfNoClients() {
   bool ocr_has_clients = screen_ai_annotators_.size();
   bool main_content_extraction_has_clients =
-      screen_2x_main_content_extractors_.size();
+      screen2x_main_content_extractors_.size();
   if (!ocr_has_clients && !main_content_extraction_has_clients) {
     VLOG(2) << "Shutting down since no client.";
     base::Process::TerminateCurrentProcessImmediately(0);

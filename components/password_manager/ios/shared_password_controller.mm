@@ -18,6 +18,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/ranges/algorithm.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -33,6 +34,7 @@
 #import "components/autofill/core/common/signatures.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_manager_observer_bridge.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion_provider_query.h"
@@ -455,25 +457,51 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-  web::WebFrame* frame = driver.web_frame();
-  if (!frame) {
-    return;
-  }
-
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
   if (!form_structure) {
     return;
   }
   autofill::FormDataAndServerPredictions forms_and_predictions =
       autofill::GetFormDataAndServerPredictions(*form_structure);
-  // `GetFormDataAndServerPredictions` returns the same number of `FormData` as
-  // `FormStructure` that are passed to it, i.e. one in this case. Therefore
-  // take the front.
-  _passwordManager->ProcessAutofillPredictions(
-      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                               frame),
-      forms_and_predictions.form_data, forms_and_predictions.predictions);
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    // Process the predictions for each renderer form that composes the browser
+    // form when Autofill across frames is enabled.
+
+    // Split the browser form into renderer forms.
+    const autofill::AutofillDriverRouter& router =
+        autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
+    std::vector<FormData> renderer_forms =
+        router.GetRendererForms(forms_and_predictions.form_data);
+
+    // Process predictions for each renderer form.
+    web::WebFramesManager* webFramesManager = [self webFramesManager];
+    for (const FormData& renderer_form : renderer_forms) {
+      web::WebFrame* child_frame = webFramesManager->GetFrameWithId(
+          renderer_form.host_frame().ToString());
+      if (!child_frame) {
+        continue;
+      }
+      _passwordManager->ProcessAutofillPredictions(
+          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                                   child_frame),
+          renderer_form, forms_and_predictions.predictions);
+    }
+  } else {
+    auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+    web::WebFrame* frame = driver.web_frame();
+    if (!frame) {
+      return;
+    }
+    // `GetFormDataAndServerPredictions` returns the same number of `FormData`
+    // as `FormStructure` that are passed to it, i.e. one in this case.
+    // Therefore take the front.
+    _passwordManager->ProcessAutofillPredictions(
+        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                                 frame),
+        forms_and_predictions.form_data, forms_and_predictions.predictions);
+  }
 }
 
 #pragma mark - FormSuggestionProvider
@@ -872,6 +900,105 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   return nullptr;
 }
 
+- (void)formDataCompletionForForm:(const autofill::FormData&)form
+               formSignatureFound:(BOOL)found
+              isManuallyTriggered:(BOOL)isManuallyTriggered
+                   formIdentifier:(FormRendererId)formIdentifier
+                  fieldIdentifier:(FieldRendererId)fieldIdentifier
+                            frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+  if (!_webState) {
+    // Stop here if the '_webState' was deleted before handling the decision for
+    // the generated password. Doing anything further is unsafe.
+    return;
+  }
+  web::WebFrame* frame = weakFrame.get();
+  if (!frame) {
+    // The frame has been destroyed, probably due to a
+    // navigation or closing the tab, ignore the event.
+    return;
+  }
+
+  autofill::FormSignature formSignature =
+      found ? CalculateFormSignature(form) : autofill::FormSignature(0);
+  autofill::FieldSignature fieldSignature = autofill::FieldSignature(0);
+  uint64_t maxLength = 0;
+
+  if (found) {
+    for (const autofill::FormFieldData& field : form.fields()) {
+      if (field.renderer_id() == fieldIdentifier) {
+        fieldSignature = CalculateFieldSignatureForField(field);
+        maxLength = field.max_length();
+        break;
+      }
+    }
+  }
+
+  std::u16string generatedPassword =
+      [_driverHelper PasswordGenerationHelper:frame]->GeneratePassword(
+          [self lastCommittedURL],
+          isManuallyTriggered ? PasswordGenerationType::kManual
+                              : PasswordGenerationType::kAutomatic,
+          formSignature, fieldSignature, maxLength);
+
+  self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
+
+  __weak SharedPasswordController* weakSelf = self;
+  [self.delegate sharedPasswordController:self
+           showGeneratedPotentialPassword:self.generatedPotentialPassword
+                                proactive:self.proactivePasswordGeneration
+                          decisionHandler:^(BOOL accept) {
+                            [weakSelf
+                                onPasswordGenerationAccepted:accept
+                                         isManuallyTriggered:isManuallyTriggered
+                                              formIdentifier:formIdentifier
+                                                       frame:weakFrame];
+                          }];
+}
+
+- (void)onPasswordGenerationAccepted:(BOOL)accepted
+                 isManuallyTriggered:(BOOL)isManuallyTriggered
+                      formIdentifier:(FormRendererId)formIdentifier
+                               frame:(base::WeakPtr<web::WebFrame>)weakFrame {
+  if (!_webState) {
+    // Stop here if the '_webState' was deleted before handling the decision for
+    // the generated password. Doing anything further is unsafe.
+    return;
+  }
+  web::WebFrame* frame = weakFrame.get();
+  if (!frame) {
+    // The frame has been destroyed, probably due to a
+    // navigation or closing the tab, ignore the event.
+    return;
+  }
+
+  [self logUserChoice:accepted
+            proactive:self.proactivePasswordGeneration
+               manual:isManuallyTriggered];
+  if (accepted) {
+    LogPasswordGenerationEvent(
+        autofill::password_generation::PASSWORD_ACCEPTED);
+
+    __weak SharedPasswordController* weakSelf = self;
+    [self injectGeneratedPasswordForFormId:formIdentifier
+                                   inFrame:frame
+                         generatedPassword:self.generatedPotentialPassword
+                         completionHandler:^{
+                           [weakSelf clearGeneratedPotentialPassword];
+                         }];
+  } else {
+    [self cancelPasswordGeneration];
+  }
+}
+
+- (void)clearGeneratedPotentialPassword {
+  self.generatedPotentialPassword = nil;
+}
+
+- (void)cancelPasswordGeneration {
+  [self clearGeneratedPotentialPassword];
+  _passwordManager->OnPasswordNoLongerGenerated();
+}
+
 - (void)generatePasswordForFormId:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier
                           inFrame:(web::WebFrame*)frame
@@ -894,73 +1021,18 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   }
 
   __weak SharedPasswordController* weakSelf = self;
-  auto formDataCompletion = ^(BOOL found, const autofill::FormData& form) {
-    autofill::FormSignature formSignature =
-        found ? CalculateFormSignature(form) : autofill::FormSignature(0);
-    autofill::FieldSignature fieldSignature = autofill::FieldSignature(0);
-    uint64_t maxLength = 0;
-
-    if (found) {
-      for (const autofill::FormFieldData& field : form.fields()) {
-        if (field.renderer_id() == fieldIdentifier) {
-          fieldSignature = CalculateFieldSignatureForField(field);
-          maxLength = field.max_length();
-          break;
-        }
-      }
-    }
-
-    std::u16string generatedPassword =
-        [self->_driverHelper PasswordGenerationHelper:frame]->GeneratePassword(
-            [self lastCommittedURL],
-            isManuallyTriggered ? PasswordGenerationType::kManual
-                                : PasswordGenerationType::kAutomatic,
-            formSignature, fieldSignature, maxLength);
-
-    self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
-
-    auto clearPotentialPassword = ^{
-      weakSelf.generatedPotentialPassword = nil;
-    };
-
-    [self.delegate
-              sharedPasswordController:self
-        showGeneratedPotentialPassword:self.generatedPotentialPassword
-                             proactive:self.proactivePasswordGeneration
-                       decisionHandler:^(BOOL accept) {
-                         SharedPasswordController* strongSelf = weakSelf;
-                         if (!strongSelf) {
-                           return;
-                         }
-
-                         [strongSelf
-                             logUserChoice:accept
-                                 proactive:self.proactivePasswordGeneration
-                                    manual:isManuallyTriggered];
-
-                         if (accept) {
-                           LogPasswordGenerationEvent(
-                               autofill::password_generation::
-                                   PASSWORD_ACCEPTED);
-                           [strongSelf
-                               injectGeneratedPasswordForFormId:formIdentifier
-                                                        inFrame:frame
-                                              generatedPassword:
-                                                  weakSelf
-                                                      .generatedPotentialPassword
-                                              completionHandler:
-                                                  clearPotentialPassword];
-                         } else {
-                           clearPotentialPassword();
-                           strongSelf->_passwordManager
-                               ->OnPasswordNoLongerGenerated();
-                         }
-                       }];
-  };
-
-  [self.formHelper extractPasswordFormData:formIdentifier
-                                   inFrame:frame
-                         completionHandler:formDataCompletion];
+  base::WeakPtr<web::WebFrame> weakFrame = frame->AsWeakPtr();
+  [self.formHelper
+      extractPasswordFormData:formIdentifier
+                      inFrame:frame
+            completionHandler:^(BOOL found, const autofill::FormData& form) {
+              [weakSelf formDataCompletionForForm:form
+                               formSignatureFound:found
+                              isManuallyTriggered:isManuallyTriggered
+                                   formIdentifier:formIdentifier
+                                  fieldIdentifier:fieldIdentifier
+                                            frame:weakFrame];
+            }];
 
   IOSPasswordManagerDriver* driver =
       [_driverHelper PasswordManagerDriver:frame];

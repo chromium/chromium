@@ -33,7 +33,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/process_snapshot_server.h"
+#include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace arc {

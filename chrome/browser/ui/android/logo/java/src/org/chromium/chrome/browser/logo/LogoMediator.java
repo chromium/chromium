@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator.VisibilityObserver;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -122,11 +121,16 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     /**
      * Initialize the mediator with the components that had native initialization dependencies, i.e.
      * Profile..
+     *
+     * @param profile The Profile associated with this Logo component.
      */
-    void initWithNative() {
-        if (mProfile != null) return;
+    void initWithNative(Profile profile) {
+        if (mProfile != null) {
+            assert false : "Attempting to initialize LogoMediator twice";
+            return;
+        }
 
-        mProfile = ProfileManager.getLastUsedRegularProfile();
+        mProfile = profile;
         updateVisibility();
 
         if (mShouldShowLogo) {

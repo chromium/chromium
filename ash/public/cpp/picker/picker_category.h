@@ -16,7 +16,8 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kEditorRewrite,
   // General categories:
   kLinks,
-  kExpressions,
+  kEmojisGifs,
+  kEmojis,
   kClipboard,
   kDriveFiles,
   kLocalFiles,

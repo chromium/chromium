@@ -13,10 +13,12 @@ import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//mojo/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -732,6 +734,8 @@ static_library("test_support") {
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.h",
       "../browser/renderer_host/test_render_widget_host_view_mac_factory.mm",
       "../public/test/browser_test_utils_mac.mm",
+      "../public/test/system_media_controls_bridge_test_utils.cc",
+      "../public/test/system_media_controls_bridge_test_utils.h",
       "../public/test/text_input_test_utils_mac.mm",
     ]
     deps += [
@@ -1826,9 +1830,9 @@ test("content_browsertests") {
     "//storage/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/angle:includes",
     "//third_party/blink/public:blink",
     "//third_party/leveldatabase",
-    "//third_party/mesa_headers",
     "//third_party/re2",
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils",
@@ -2097,7 +2101,6 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
-      "../browser/compute_pressure/pressure_service_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_udp_browsertest.cc",
@@ -2121,6 +2124,11 @@ test("content_browsertests") {
       "//media/mojo/mojom:web_speech_recognition",
       "//ui/base/clipboard:clipboard_test_support",
     ]
+
+    if (enable_compute_pressure) {
+      sources +=
+          [ "../browser/compute_pressure/pressure_service_browsertest.cc" ]
+    }
 
     if (is_chromeos_ash) {
       deps += [ "//ash/constants:constants" ]
@@ -2205,7 +2213,8 @@ test("content_browsertests") {
     deps += [ "//device/vr:vr_fakes" ]
   }
 
-  if ((is_win || is_chromeos || is_linux) && !is_tsan) {
+  if ((is_win || is_chromeos || is_linux) && !is_tsan &&
+      mojo_support_legacy_core) {
     # NOTE: We don't bother to build these tests when TSan is enabled, because
     # they can't properly launch a child content_shell in that environment.
     sources += [ "../browser/launch_as_mojo_client_browsertest.cc" ]
@@ -2464,6 +2473,7 @@ test("content_unittests") {
     "../browser/file_system_access/file_system_access_handle_base_unittest.cc",
     "../browser/file_system_access/file_system_access_lock_manager_unittest.cc",
     "../browser/file_system_access/file_system_access_manager_impl_unittest.cc",
+    "../browser/file_system_access/file_system_access_observer_observation_unittest.cc",
     "../browser/file_system_access/file_system_access_safe_move_helper_unittest.cc",
     "../browser/file_system_access/file_system_access_watch_scope_unittest.cc",
     "../browser/file_system_access/file_system_access_watcher_manager_unittest.cc",
@@ -2519,6 +2529,7 @@ test("content_unittests") {
     "../browser/interest_group/test_interest_group_private_aggregation_manager.cc",
     "../browser/interest_group/test_interest_group_private_aggregation_manager.h",
     "../browser/interest_group/trusted_signals_cache_impl_unittest.cc",
+    "../browser/interest_group/trusted_signals_fetcher_unittest.cc",
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
     "../browser/loader/file_url_loader_factory_unittest.cc",
     "../browser/loader/keep_alive_attribution_request_helper_unittest.cc",
@@ -2930,10 +2941,12 @@ test("content_unittests") {
     ]
   }
 
-  if (!is_android) {
+  if (enable_compute_pressure) {
     sources += [
       "../browser/compute_pressure/pressure_service_for_frame_unittest.cc",
       "../browser/compute_pressure/pressure_service_for_worker_unittest.cc",
+      "../browser/webid/digital_credentials/cross_device_request_dispatcher_unittest.cc",
+      "../browser/webid/digital_credentials/cross_device_transaction_impl_unittest.cc",
     ]
   }
 
@@ -3328,7 +3341,8 @@ test("content_unittests") {
       "../browser/android/message_payload_unittest.cc",
       "../browser/android/overscroll_controller_android_unittest.cc",
       "../browser/android/scoped_surface_request_manager_unittest.cc",
-      "../browser/font_unique_name_lookup/font_unique_name_lookup_unittest.cc",
+      "../browser/font_unique_name_lookup/font_unique_name_lookup_android_unittest.cc",
+      "../browser/media/key_system_support_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
       "../browser/sms/sms_provider_gms_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",
@@ -3370,6 +3384,8 @@ test("content_unittests") {
     ]
     deps += [
       "//components/speech:speech",
+      "//device/fido:cablev2_authenticator",
+      "//device/fido:cablev2_test_util",
       "//media/mojo/mojom:web_speech_recognition",
     ]
 

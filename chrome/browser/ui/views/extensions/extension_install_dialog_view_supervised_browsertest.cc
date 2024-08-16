@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
-
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
@@ -16,8 +13,10 @@
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/extensions/extension_install_dialog_view.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_icon_manager.h"
 #include "extensions/common/extension.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -86,7 +85,7 @@ ExtensionInstallDialogViewTestSupervised::CreatePrompt() {
   prompt->set_requires_parent_permission(true);
   prompt->AddObserver(supervised_user_extensions_metrics_recorder());
 
-  auto icon_manager = std::make_unique<ExtensionIconManager>();
+  auto icon_manager = std::make_unique<extensions::ExtensionIconManager>();
   prompt->set_icon(icon_manager->GetIcon(extension_->id()));
 
   return prompt;

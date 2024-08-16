@@ -605,15 +605,15 @@ void ShowPaymentMethods(Browser* browser) {
   ShowSettingsSubPage(browser, kPaymentsSubPage);
 }
 
-void ShowAllSitesSettingsFilteredByFpsOwner(
+void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
-    const std::string& fps_owner_host_name) {
+    const std::string& rws_owner_host_name) {
   GURL url = GetSettingsUrl(kAllSitesSettingsSubpage);
-  if (!fps_owner_host_name.empty()) {
+  if (!rws_owner_host_name.empty()) {
     GURL::Replacements replacements;
     std::string query("searchSubpage=");
     query += base::EscapeQueryParamValue(
-        base::StrCat({"related:", fps_owner_host_name}),
+        base::StrCat({"related:", rws_owner_host_name}),
         /*use_plus=*/false);
     replacements.SetQueryStr(query);
     url = url.ReplaceComponents(replacements);

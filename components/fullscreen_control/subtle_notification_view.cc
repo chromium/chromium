@@ -16,6 +16,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -200,6 +201,8 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::VH(outer_padding_vert, outer_padding_horiz),
       kMiddlePaddingPx));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 }
 
 SubtleNotificationView::~SubtleNotificationView() {}
@@ -257,7 +260,6 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
 }
 
 void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlert;
   std::u16string accessible_name;
   base::RemoveChars(instruction_view_->GetText(), kKeyNameDelimiter,
                     &accessible_name);

@@ -15,6 +15,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -22,8 +23,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -153,19 +156,16 @@ TEST_P(AppListItemViewTest, NewInstallDot) {
   ASSERT_TRUE(new_install_dot);
   EXPECT_FALSE(new_install_dot->GetVisible());
   EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz");
-  item_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(
-      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-      "");
+  EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(), u"");
 
   // When the app is a new install the dot is visible and the tooltip changes.
   item->SetIsNewInstall(true);
   EXPECT_TRUE(new_install_dot->GetVisible());
   EXPECT_EQ(item_view->GetTooltipText({}), u"Google Buzz\nNew install");
-  item_view->GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(
-      node_data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-      "New install");
+
+  EXPECT_EQ(item_view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(
+                IDS_APP_LIST_NEW_INSTALL_ACCESSIBILE_DESCRIPTION));
 }
 
 TEST_P(AppListItemViewTest, LabelInsetWithNewInstallDot) {
@@ -504,6 +504,49 @@ TEST_P(AppListItemViewTest, AppStatusReflectsOnProgressIndicator) {
   item->SetAppStatus(AppStatus::kInstallSuccess);
 
   // No crash.
+}
+
+TEST_P(AppListItemViewTest, AccessibleDescription) {
+  AppListItem* item = CreatePromiseAppListItem("TestItem 1");
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(), u"");
+
+  // Promise apps are created with app_status kPending.
+  ProgressIndicator* progress_indicator = view->GetProgressIndicatorForTest();
+  ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.0f);
+
+  item->SetAppStatus(AppStatus::kBlocked);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_BLOCKED_APP));
+
+  item->SetAppStatus(AppStatus::kPaused);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_PAUSED_APP));
+
+  item->SetAppStatus(AppStatus::kInstalling);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(), u"");
+}
+
+TEST_P(AppListItemViewTest, FolderItemAccessibleDescription) {
+  AppListItem* item = CreateFolderItem(2);
+
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  auto* apps_grid_view = helper->GetScrollableAppsGridView();
+  AppListItemView* view = apps_grid_view->GetItemViewAt(0);
+
+  item->SetAppStatus(AppStatus::kInstalling);
+  item->SetProgress(0.3f);
+  EXPECT_EQ(view->GetViewAccessibility().GetCachedDescription(),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_APP_LIST_FOLDER_NUMBER_OF_APPS_ACCESSIBILE_DESCRIPTION, 2));
 }
 
 TEST_P(AppListItemViewTest, UpdateProgressOnPromiseIcon) {

@@ -28,7 +28,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -78,8 +78,8 @@ class TabRemoveObserver : public TabStripModelObserver {
       : browser_(browser), event_generator_(event_generator) {
     browser_->tab_strip_model()->AddObserver(this);
   }
-  TabRemoveObserver(const TabStripObserver&) = delete;
-  TabRemoveObserver& operator=(const TabStripObserver&) = delete;
+  TabRemoveObserver(const TabRemoveObserver&) = delete;
+  TabRemoveObserver& operator=(const TabRemoveObserver&) = delete;
   ~TabRemoveObserver() override {
     browser_->tab_strip_model()->RemoveObserver(this);
   }
@@ -268,7 +268,8 @@ class SnapGroupBrowserTest : public InProcessBrowserTest {
   SnapGroupBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kSnapGroup,
-                              ash::features::kForestFeature},
+                              ash::features::kForestFeature,
+                              ash::features::kSavedDeskUiRevamp},
         /*disabled_features=*/{});
   }
   SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;

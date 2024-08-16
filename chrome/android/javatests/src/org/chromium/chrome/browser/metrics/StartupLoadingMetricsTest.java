@@ -21,12 +21,14 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -73,6 +75,8 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstNavigationCommit3";
+    private static final String MAIN_INTENT_COLD_START_HISTOGRAM =
+            "Startup.Android.MainIntentIsColdStart";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -153,6 +157,12 @@ public class StartupLoadingMetricsTest {
                         "Startup.Android.Cold.TimeToForegroundSessionStart"));
     }
 
+    private void assertMainIntentLaunchColdStartHistogramRecorded(int expectedCount) {
+        Assert.assertEquals(
+                expectedCount,
+                RecordHistogram.getHistogramTotalCountForTesting(MAIN_INTENT_COLD_START_HISTOGRAM));
+    }
+
     private void assertHistogramsRecordedAsExpected(int expectedCount, String histogramSuffix) {
         boolean isTabbedSuffix = histogramSuffix.equals(TABBED_SUFFIX);
 
@@ -221,6 +231,26 @@ public class StartupLoadingMetricsTest {
         }
     }
 
+    /** Tests cold start metrics for main icon launches recorded correctly. */
+    @Test
+    @LargeTest
+    public void testStartWithMainLauncerIconRecorded() throws Exception {
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> mTabbedActivityTestRule.startMainActivityFromLauncher());
+        assertMainIntentLaunchColdStartHistogramRecorded(1);
+    }
+
+    /** Tests cold start metrics for main icon shortcut launches recorded correctly. */
+    @Test
+    @LargeTest
+    public void testStartWithMainLauncerShortcutRecorded() throws Exception {
+        Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB);
+        intent.setClass(ContextUtils.getApplicationContext(), LauncherShortcutActivity.class);
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> mTabbedActivityTestRule.startMainActivityFromIntent(intent, null));
+        assertMainIntentLaunchColdStartHistogramRecorded(1);
+    }
+
     /**
      * Tests that the startup loading histograms are recorded only once on startup. Tabbed Activity
      * version.
@@ -231,8 +261,10 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(getTestPage()));
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
     }
 
     /**
@@ -244,7 +276,9 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(getTestPage()));
         assertHistogramsRecordedWithForegroundStart(1, WEB_APK_SUFFIX);
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(1, WEB_APK_SUFFIX);
     }
 
@@ -259,10 +293,12 @@ public class StartupLoadingMetricsTest {
                 () ->
                         mTabbedActivityTestRule.startMainActivityFromExternalApp(
                                 getTestPage(), null));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
 
         // Check that no new histograms were recorded on the second navigation.
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
     }
 
@@ -274,8 +310,10 @@ public class StartupLoadingMetricsTest {
     public void testNtpNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
     }
 
@@ -288,8 +326,10 @@ public class StartupLoadingMetricsTest {
     public void testBlankPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityOnBlankPage());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
     }
 
@@ -302,8 +342,10 @@ public class StartupLoadingMetricsTest {
     public void testErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(getServerURL(ERROR_PAGE)));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
     }
 
@@ -316,8 +358,10 @@ public class StartupLoadingMetricsTest {
     public void testWebApkErrorPageNotRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mWebApkActivityTestRule.startWebApkActivity(getServerURL(ERROR_PAGE)));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, WEB_APK_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mWebApkActivityTestRule, getTestPage2());
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(0, WEB_APK_SUFFIX);
     }
 
@@ -350,6 +394,7 @@ public class StartupLoadingMetricsTest {
                     Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
                     ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
                 });
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
 
         runAndWaitForPageLoadMetricsRecorded(
@@ -359,6 +404,7 @@ public class StartupLoadingMetricsTest {
                             ApplicationProvider.getApplicationContext());
                     mTabbedActivityTestRule.loadUrl(getTestPage());
                 });
+        assertMainIntentLaunchColdStartHistogramRecorded(1);
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
     }
 
@@ -385,6 +431,7 @@ public class StartupLoadingMetricsTest {
         Assert.assertEquals(
                 0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
 
         // The metric based on early foreground notification should be recorded.
         Assert.assertEquals(
@@ -454,6 +501,7 @@ public class StartupLoadingMetricsTest {
         Assert.assertEquals(getTestPage(), ChromeTabUtils.getUrlStringOnUiThread(tab));
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
 
         // Pretend that it is a cold start to ensure in the following checks that the foreground
         // session is discarded when the CCT hides.
@@ -464,6 +512,7 @@ public class StartupLoadingMetricsTest {
         // recorded.
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(TEST_PAGE_2));
+        assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
         assertHistogramsRecordedAsExpected(0, WEB_APK_SUFFIX);
     }

@@ -9,11 +9,14 @@
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -32,9 +35,8 @@ class WebAppInstallerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    https_server_.RegisterRequestHandler(
-        base::BindRepeating(&WebAppInstallerBrowserTest::HandleRequest,
-                            base::Unretained(this)));
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &WebAppInstallerBrowserTest::HandleRequest, base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
     ASSERT_TRUE(https_server_.Start());
@@ -163,8 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneOemApp) {
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallOneDefaultApp) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneDefaultApp) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({
@@ -205,8 +206,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallMultipleOemApps) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallMultipleOemApps) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({
@@ -266,8 +266,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kSuccessNewInstall, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       InstallWithManifestId) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWithManifestId) {
   WebAppInstaller installer(profile());
 
   SetManifestResponse(AddIconToManifest(R"({
@@ -368,8 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kExpectedAppIdCheckFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       ManifestFileIsNotJSON) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestFileIsNotJSON) {
   WebAppInstaller installer(profile());
 
   SetManifestResponse("INVALID");
@@ -423,8 +421,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       webapps::InstallResultCode::kNotValidManifestForWebApp, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
-                       ManifestWithFailingIcons) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, ManifestWithFailingIcons) {
   WebAppInstaller installer(profile());
 
   constexpr char kManifestTemplate[] = R"({
@@ -462,6 +459,76 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
       "AppPreloadServiceOem",
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallWebsite) {
+  WebAppInstaller installer(profile());
+  SetManifestResponse(AddIconToManifest(R"({
+    "name": "Example App",
+    "start_url": "/",
+    "icons": $1
+  })"));
+
+  AppInstallData data = CreateInstallData(
+      "Example App", "website:https://www.example.com/",
+      "https://www.example.com/manifest.json", "/manifest.json");
+  // Unset user_window_override to request UserDisplayMode::kBrowser.
+  absl::get<WebAppInstallData>(data.app_type_data).open_as_window = false;
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,
+                       result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // Verify that the app is set to open in a browser in App Service.
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.example.com/"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.WindowMode(), apps::WindowMode::kBrowser);
+      });
+  ASSERT_TRUE(found);
+
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
+                       InstallWebsiteWithOpenInWindowOverride) {
+  WebAppInstaller installer(profile());
+
+  constexpr char kManifestTemplate[] = R"({
+    "name": "Example App",
+    "start_url": "/",
+    "scope": "/",
+    "icons": $1
+  })";
+  SetManifestResponse(AddIconToManifest(kManifestTemplate));
+
+  AppInstallData data = CreateInstallData(
+      "Example App", "website:https://www.example.com/",
+      "https://www.example.com/manifest.json", "/manifest.json");
+  // Unset user_window_override to request UserDisplayMode::kStandalone.
+  absl::get<WebAppInstallData>(data.app_type_data).open_as_window = true;
+
+  base::test::TestFuture<bool> result;
+  installer.InstallApp(AppInstallSurface::kAppInstallUriUnknown, data,
+                       result.GetCallback());
+  ASSERT_TRUE(result.Get());
+
+  // Verify that the app is set to open in a window in App Service.
+  auto app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://www.example.com/"));
+  bool found =
+      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
+        EXPECT_EQ(update.WindowMode(), apps::WindowMode::kWindow);
+      });
+  ASSERT_TRUE(found);
+
+  EXPECT_TRUE(web_app::WebAppProvider::GetForWebApps(profile())
+                  ->registrar_unsafe()
+                  .IsDiyApp(app_id));
 }
 
 }  // namespace apps

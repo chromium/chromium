@@ -8,7 +8,6 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses::test {
 
@@ -44,10 +43,18 @@ PlusProfile CreatePlusProfileWithFacet(const affiliations::FacetURI& facet);
 
 // Used in testing the GetOrCreate, Reserve, and Create network requests.
 std::string MakeCreationResponse(const PlusProfile& profile);
+
 // Used in testing the List network requests.
 std::string MakeListResponse(const std::vector<PlusProfile>& profiles);
+
+// Returns the server responses that is equivalent to returning `addresses` as
+// pre-allocated paddresses.
+std::string MakePreallocateResponse(
+    const std::vector<PreallocatedPlusAddress>& addresses);
+
 // Converts a PlusProfile to an equivalent JSON string.
 std::string MakePlusProfile(const PlusProfile& profile);
+
 // Creates a response mimicking the plus address server.
 std::unique_ptr<net::test_server::HttpResponse>
 HandleRequestToPlusAddressWithSuccess(

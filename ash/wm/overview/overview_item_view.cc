@@ -103,6 +103,11 @@ OverviewItemView::OverviewItemView(
   // Call this last as it triggers layout, which relies on some of the other
   // elements existing.
   SetShowPreview(show_preview);
+
+  // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
+  // to allow |this| as well as the title and close button.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+  UpdateAccessibleDescription();
 }
 
 OverviewItemView::~OverviewItemView() = default;
@@ -263,25 +268,6 @@ bool OverviewItemView::CanAcceptEvent(const ui::Event& event) {
   return accept_events && views::View::CanAcceptEvent(event);
 }
 
-void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  WindowMiniView::GetAccessibleNodeData(node_data);
-
-  // TODO: This doesn't allow |this| to be navigated by ChromeVox, find a way
-  // to allow |this| as well as the title and close button.
-  node_data->role = ax::mojom::Role::kGenericContainer;
-  const bool is_group_item = [&]() {
-    auto* snap_group_controller = SnapGroupController::Get();
-    return snap_group_controller &&
-           snap_group_controller->GetSnapGroupForGivenWindow(source_window());
-  }();
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kDescription,
-      l10n_util::GetStringUTF8(
-          is_group_item
-              ? IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION
-              : IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
-}
-
 bool OverviewItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   if (accelerator.IsCtrlDown() && accelerator.key_code() == ui::VKEY_W) {
     if (overview_item_) {
@@ -302,6 +288,23 @@ bool OverviewItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 bool OverviewItemView::CanHandleAccelerators() const {
   return HasFocus() && WindowMiniView::CanHandleAccelerators();
+}
+
+void OverviewItemView::OnWindowDestroying(aura::Window* window) {
+  WindowMiniView::OnWindowDestroying(window);
+  UpdateAccessibleDescription();
+}
+
+void OverviewItemView::UpdateAccessibleDescription() {
+  const bool is_group_item = [&]() {
+    auto* snap_group_controller = SnapGroupController::Get();
+    return snap_group_controller &&
+           snap_group_controller->GetSnapGroupForGivenWindow(source_window());
+  }();
+
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF8(
+      is_group_item ? IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION
+                    : IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP));
 }
 
 BEGIN_METADATA(OverviewItemView)

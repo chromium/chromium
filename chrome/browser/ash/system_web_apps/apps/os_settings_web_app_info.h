@@ -26,7 +26,6 @@ class OSSettingsSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
-  bool PreferManifestBackgroundColor() const override;
   bool ShouldAnimateThemeChanges() const override;
 };
 

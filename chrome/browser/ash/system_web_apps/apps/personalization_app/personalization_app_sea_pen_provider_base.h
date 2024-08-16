@@ -69,6 +69,7 @@ class PersonalizationAppSeaPenProviderBase
                            GetSeaPenThumbnailsCallback callback) override;
 
   void SelectSeaPenThumbnail(uint32_t id,
+                             bool preview_mode,
                              SelectSeaPenThumbnailCallback callback) override;
 
   void SelectRecentSeaPenImage(
@@ -119,6 +120,7 @@ class PersonalizationAppSeaPenProviderBase
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,
+      bool preview_mode,
       base::OnceCallback<void(bool success)> callback) = 0;
 
   manta::proto::FeatureName feature_name_;
@@ -145,6 +147,7 @@ class PersonalizationAppSeaPenProviderBase
 
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
                             const mojom::SeaPenQueryPtr& query,
+                            bool preview_mode,
                             std::optional<SeaPenImage> image);
 
   void OnRecentSeaPenImageSelected(bool success);

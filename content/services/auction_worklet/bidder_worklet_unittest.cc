@@ -327,7 +327,7 @@ class BidderWorkletTest : public testing::Test {
     interest_group_name_ = "Fred";
     is_for_additional_bid_ = false;
     reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
-    reporting_id_ = interest_group_name_;
+    interest_group_name_reporting_id_ = interest_group_name_;
     interest_group_enable_bidding_signals_prioritization_ = false;
     interest_group_priority_vector_.reset();
     interest_group_user_bidding_signals_ = std::nullopt;
@@ -596,9 +596,10 @@ class BidderWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
-        is_for_additional_bid_, reporting_id_field_, reporting_id_,
-        auction_signals_, per_buyer_signals_,
-        direct_from_seller_per_buyer_signals_,
+        is_for_additional_bid_, interest_group_name_reporting_id_,
+        buyer_reporting_id_, buyer_and_seller_reporting_id_,
+        selected_buyer_and_seller_reporting_id_, auction_signals_,
+        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -1018,7 +1019,10 @@ class BidderWorkletTest : public testing::Test {
   bool is_for_additional_bid_ = false;
   auction_worklet::mojom::ReportingIdField reporting_id_field_ =
       auction_worklet::mojom::ReportingIdField::kInterestGroupName;
-  std::string reporting_id_;
+  std::optional<std::string> interest_group_name_reporting_id_;
+  std::optional<std::string> buyer_reporting_id_;
+  std::optional<std::string> buyer_and_seller_reporting_id_;
+  std::optional<std::string> selected_buyer_and_seller_reporting_id_;
 
   // Use a single constant start time. Only delta times are provided to scripts,
   // relative to the time of the auction, so no need to vary the auction time.
@@ -5488,6 +5492,79 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
 }
 
+// Verify generateBid can see the reporting Ids when
+// `selectable_buyer_and_seller_reporting_ids` is present.
+TEST_F(BidderWorkletTest, GenerateBidAdsWithAllReportingIds) {
+  // Ad with all reporting ids.
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response2.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"buyer_reporting_id",
+      /*buyer_and_seller_reporting_id=*/"buyer_and_seller_reporting_id",
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+          "[{\"renderURL\":\"https://response2.test/\","
+          "\"renderUrl\":\"https://response2.test/\","
+          "\"buyerReportingId\":\"buyer_reporting_id\","
+          "\"buyerAndSellerReportingId\":\"buyer_and_seller_reporting_id\","
+          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+          "\"selectable_id2\"]}]",
+          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+
+  // Ad with only selectable reporting ids.
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response2.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/
+      std::vector<std::string>{"selectable_id1", "selectable_id2"});
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+          "[{\"renderURL\":\"https://response2.test/\","
+          "\"renderUrl\":\"https://response2.test/\","
+          "\"selectableBuyerAndSellerReportingIds\":[\"selectable_id1\","
+          "\"selectable_id2\"]}]",
+          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
+// Verify generateBid cannot see the reporting Ids when
+// `selectable_buyer_and_seller_reporting_ids` is not present.
+TEST_F(BidderWorkletTest, GenerateBidAdsWithoutReportingIds) {
+  // Ads without selectable should not see any reporting ids in generate bid.
+  interest_group_ads_.clear();
+  interest_group_ads_.emplace_back(
+      GURL("https://response2.test/"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/"buyer_reporting_id",
+      /*buyer_and_seller_reporting_id=*/"buyer_and_seller_reporting_id",
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt);
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"({ad: interestGroup.ads, bid:1, render:"https://response2.test/"})",
+      mojom::BidderWorkletBid::New(
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+          "[{\"renderURL\":\"https://response2.test/\","
+          "\"renderUrl\":\"https://response2.test/\"}]",
+          1, /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
+          blink::AdDescriptor(GURL("https://response2.test/")),
+          /*ad_component_descriptors=*/std::nullopt,
+          /*modeling_signals=*/std::nullopt, base::TimeDelta()));
+}
+
 TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
   // Basic test with an adComponent URL.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -5690,7 +5767,9 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
 
   base::RunLoop run_loop;
   bidder_worklet->ReportWin(
-      is_for_additional_bid_, reporting_id_field_, reporting_id_,
+      is_for_additional_bid_, interest_group_name_reporting_id_,
+      buyer_reporting_id_, buyer_and_seller_reporting_id_,
+      selected_buyer_and_seller_reporting_id_,
       /*auction_signals_json=*/"0", per_buyer_signals_,
       direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
@@ -7304,8 +7383,7 @@ TEST_F(BidderWorkletTest, SendReportToLongUrl) {
   channel->ExpectNoMoreConsoleEvents();
 }
 
-// Trying to "enforce" permission policy on contributeToHistogramOnEvent.
-// Currently this produces no report and a warning (plus a metric).
+// Turn enforcement of permission policy on contributeToHistogramOnEvent on.
 TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -7341,19 +7419,12 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionEnforced) {
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/false,
-      /*expected_errors=*/{}, run_loop.QuitClosure());
+      /*expected_errors=*/
+      {"https://url.test/:12 Uncaught TypeError: The \"private-aggregation\" "
+       "Permissions Policy denied the method contributeToHistogramOnEvent on "
+       "privateAggregation."},
+      run_loop.QuitClosure());
   run_loop.Run();
-
-  const char kWarning[] =
-      "The \\\"private-aggregation\\\" Permissions Policy denied "
-      "contributeToHistogramOnEvent. Ignoring for backwards compatibility but "
-      "this will eventually throw an exception.";
-
-  channel->WaitForAndValidateConsoleMessage(
-      "warning", /*json_args=*/
-      base::StrCat({"[{\"type\":\"string\", \"value\":\"", kWarning, "\"}]"}),
-      /*stack_trace_size=*/1, /*function=*/"reportWin",
-      interest_group_bidding_url_, /*line_number=*/11);
 
   channel->ExpectNoMoreConsoleEvents();
   histogram_tester.ExpectUniqueSample(
@@ -7417,8 +7488,8 @@ TEST_F(BidderWorkletTest, ContributeToHistogramOnEventPermissionNotEnforced) {
   const char kWarning[] =
       "privateAggregation.contributeToHistogramOnEvent called without "
       "appropriate \\\"private-aggregation\\\" Permissions Policy approval; "
-      "accepting for backwards compatibility but this will be shortly "
-      "ignored and eventually will throw an exception";
+      "accepting for backwards compatibility but this will be shortly throwing "
+      "an exception";
 
   channel->WaitForAndValidateConsoleMessage(
       "warning", /*json_args=*/
@@ -7472,9 +7543,10 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
   bidder_worklet->ReportWin(
-      is_for_additional_bid_, reporting_id_field_, reporting_id_,
-      auction_signals_, per_buyer_signals_,
-      direct_from_seller_per_buyer_signals_,
+      is_for_additional_bid_, interest_group_name_reporting_id_,
+      buyer_reporting_id_, buyer_and_seller_reporting_id_,
+      selected_buyer_and_seller_reporting_id_, auction_signals_,
+      per_buyer_signals_, direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -7527,7 +7599,9 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
     size_t num_report_win_calls = 0;
     for (size_t i = 0; i < kNumReportWinCalls; ++i) {
       bidder_worklet->ReportWin(
-          is_for_additional_bid_, reporting_id_field_, reporting_id_,
+          is_for_additional_bid_, interest_group_name_reporting_id_,
+          buyer_reporting_id_, buyer_and_seller_reporting_id_,
+          selected_buyer_and_seller_reporting_id_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_per_buyer_signals_header_ad_slot_,
@@ -7583,7 +7657,9 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
 
   for (size_t i = 0; i < 10; ++i) {
     bidder_worklet->ReportWin(
-        is_for_additional_bid_, reporting_id_field_, reporting_id_,
+        is_for_additional_bid_, interest_group_name_reporting_id_,
+        buyer_reporting_id_, buyer_and_seller_reporting_id_,
+        selected_buyer_and_seller_reporting_id_,
         /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
@@ -7649,32 +7725,62 @@ TEST_F(BidderWorkletTest, ReportWinIsForAdditionalBid) {
       kScript, GURL("https://report-additional-bid-win.test/"));
 }
 
-TEST_F(BidderWorkletTest, ReportWinReportingId) {
+TEST_F(BidderWorkletTest, ReportWinContainsInterestGroupName) {
+  const char kScriptBody[] = R"(
+    sendReportTo("https://example.test/?" +
+                 browserSignals.interestGroupName);
+  )";
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody, GURL("https://example.test/?Fred"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinContainsBuyerReportingId) {
+  const char kScriptBody[] = R"(
+    sendReportTo("https://example.test/?" +
+                 browserSignals.buyerReportingId);
+  )";
+
+  buyer_reporting_id_ = "reporting_id";
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody, GURL("https://example.test/?reporting_id"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinContainsBuyerAndSellerReportingId) {
+  const char kScriptBody[] = R"(
+    sendReportTo("https://example.test/?" +
+                 browserSignals.buyerAndSellerReportingId);
+  )";
+
+  buyer_and_seller_reporting_id_ = "reporting_id";
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody, GURL("https://example.test/?reporting_id"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinContainsSelectedBuyerAndSellerReportingId) {
+  const char kScriptBody[] = R"(
+    sendReportTo("https://example.test/?" +
+                 browserSignals.selectedBuyerAndSellerReportingId);
+  )";
+
+  selected_buyer_and_seller_reporting_id_ = "reporting_id";
+  RunReportWinWithFunctionBodyExpectingResult(
+      kScriptBody, GURL("https://example.test/?reporting_id"));
+}
+
+TEST_F(BidderWorkletTest, ReportWinContainsNoReportingId) {
   const char kScriptBody[] = R"(
     sendReportTo("https://example.test/?" +
                  browserSignals.interestGroupName + "/" +
                  browserSignals.buyerReportingId + "/" +
-                 browserSignals.buyerAndSellerReportingId);
+                 browserSignals.buyerAndSellerReportingId + "/" +
+                 browserSignals.selectedBuyerAndSellerReportingId);
   )";
-  reporting_id_ = "reporting_id";
-  reporting_id_field_ = mojom::ReportingIdField::kInterestGroupName;
+
+  interest_group_name_reporting_id_ = std::nullopt;
   RunReportWinWithFunctionBodyExpectingResult(
       kScriptBody,
-      GURL("https://example.test/?reporting_id/undefined/undefined"));
-
-  reporting_id_field_ = mojom::ReportingIdField::kBuyerReportingId;
-  RunReportWinWithFunctionBodyExpectingResult(
-      kScriptBody,
-      GURL("https://example.test/?undefined/reporting_id/undefined"));
-
-  reporting_id_field_ = mojom::ReportingIdField::kBuyerAndSellerReportingId;
-  RunReportWinWithFunctionBodyExpectingResult(
-      kScriptBody,
-      GURL("https://example.test/?undefined/undefined/reporting_id"));
-
-  reporting_id_field_ = mojom::ReportingIdField::kNone;
-  RunReportWinWithFunctionBodyExpectingResult(
-      kScriptBody, GURL("https://example.test/?undefined/undefined/undefined"));
+      GURL("https://example.test/?undefined/undefined/undefined/undefined"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinDataVersion) {
@@ -8136,9 +8242,10 @@ TEST_P(BidderWorkletMultiThreadingTest, ScriptIsolation) {
   for (int i = 0; i < 3; ++i) {
     base::RunLoop run_loop;
     bidder_worklet->ReportWin(
-        is_for_additional_bid_, reporting_id_field_, reporting_id_,
-        auction_signals_, per_buyer_signals_,
-        direct_from_seller_per_buyer_signals_,
+        is_for_additional_bid_, interest_group_name_reporting_id_,
+        buyer_reporting_id_, buyer_and_seller_reporting_id_,
+        selected_buyer_and_seller_reporting_id_, auction_signals_,
+        per_buyer_signals_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_per_buyer_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
         direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -9460,9 +9567,10 @@ TEST_F(BidderWorkletTest, CancelationDtor) {
 
   GenerateBid(bidder_worklet.get());
   bidder_worklet->ReportWin(
-      is_for_additional_bid_, reporting_id_field_, reporting_id_,
-      auction_signals_, per_buyer_signals_,
-      direct_from_seller_per_buyer_signals_,
+      is_for_additional_bid_, interest_group_name_reporting_id_,
+      buyer_reporting_id_, buyer_and_seller_reporting_id_,
+      selected_buyer_and_seller_reporting_id_, auction_signals_,
+      per_buyer_signals_, direct_from_seller_per_buyer_signals_,
       direct_from_seller_per_buyer_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
       direct_from_seller_auction_signals_header_ad_slot_, seller_signals_,
@@ -10131,27 +10239,39 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
   }
 
   {
@@ -10218,27 +10338,39 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderReportWin},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderReportWin},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderReportWin},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderReportWin},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderReportWin}));
   }
 
   {
@@ -10342,10 +10474,13 @@ TEST_F(BidderWorkletTwoThreadsSharedStorageAPIEnabledTest,
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
   EXPECT_THAT(test_shared_storage_host0.observed_requests(),
-              testing::ElementsAre(Request{.type = RequestType::kSet,
-                                           .key = u"a",
-                                           .value = u"b",
-                                           .ignore_if_present = false}));
+              testing::ElementsAre(Request{
+                  .type = RequestType::kSet,
+                  .key = u"a",
+                  .value = u"b",
+                  .ignore_if_present = false,
+                  .source_auction_worklet_function =
+                      mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 }
 
 class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {

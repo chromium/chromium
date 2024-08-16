@@ -177,6 +177,7 @@ message SyncEnums {
     TYPE_TABBED = 1;      // A normal tabbed window.
     TYPE_POPUP = 2;       // A popup window.
     TYPE_CUSTOM_TAB = 3;  // A custom tab within an app.
+    TYPE_AUTH_TAB = 4;    // A auth-dedicated custom tab within an app.
   }
 
   // The "password state" is the presence/absence of a password field on a

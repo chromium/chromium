@@ -83,6 +83,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   MOCK_CONST_METHOD0(UsedColorSchemeScrollbars, mojom::blink::ColorScheme());
   MOCK_CONST_METHOD0(UsesCompositedScrolling, bool());
 
+  PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
   bool UserInputScrollable(ScrollbarOrientation) const override { return true; }
   bool ScrollbarsCanBeActive() const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return false; }

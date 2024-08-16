@@ -38,6 +38,7 @@
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/developer_private.h"
@@ -46,7 +47,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -3163,8 +3163,7 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
   base::FilePath path = data_dir().AppendASCII("simple_with_popup");
 
   if (extensions_permissions_for_supervised_users_on_desktop()) {
-    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
-        *profile()->GetPrefs()));
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3173,8 +3172,7 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
   } else {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(
-        *profile()->GetPrefs()));
+    EXPECT_TRUE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
     auto function =
         base::MakeRefCounted<api::DeveloperPrivateLoadUnpackedFunction>();
     function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
@@ -3182,8 +3180,7 @@ TEST_P(DeveloperPrivateApiSupervisedUserUnitTest,
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 #else
-    EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(
-        *profile()->GetPrefs()));
+    EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
 #endif
   }
 }

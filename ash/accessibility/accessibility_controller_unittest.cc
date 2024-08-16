@@ -31,6 +31,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -123,7 +124,8 @@ class AccessibilityControllerTest : public AshTestBase {
                               ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
                               ::features::
-                                  kAccessibilityCaretBlinkIntervalSetting},
+                                  kAccessibilityCaretBlinkIntervalSetting,
+                              ::features::kAccessibilityFlashScreenFeature},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
   }
@@ -151,7 +153,7 @@ TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
   // Test all possible sizes
   for (int size = 25; size <= 128; ++size) {
     prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize, size);
-    auto bounds = cursor_window_controller->GetBoundsForTest();
+    auto bounds = cursor_window_controller->GetCursorBoundsInScreenForTest();
     EXPECT_EQ(bounds.height(), size);
     EXPECT_EQ(bounds.width(), size);
   }
@@ -286,6 +288,10 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityFaceGazeAdjustSpeedSeparately));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityFlashNotificationsColor));
 }
 
 TEST_F(AccessibilityControllerTest, SetAutoclickEnabled) {
@@ -1311,8 +1317,10 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
 
   // Cursor compositing should be enabled and the size should be 48 dip.
   EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().width(),
+            48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().height(),
+            48);
 
   // Turning off large cursor does not reset the size to the default.
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, false);
@@ -1324,8 +1332,10 @@ TEST_F(AccessibilityControllerTest, DisableLargeCursorDoesNotResetSize) {
   prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
   EXPECT_EQ(48, prefs->GetInteger(prefs::kAccessibilityLargeCursorDipSize));
   EXPECT_TRUE(cursor_window_controller->is_cursor_compositing_enabled());
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().width(), 48);
-  EXPECT_EQ(cursor_window_controller->GetBoundsForTest().height(), 48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().width(),
+            48);
+  EXPECT_EQ(cursor_window_controller->GetCursorBoundsInScreenForTest().height(),
+            48);
 }
 
 TEST_F(AccessibilityControllerTest, ChangingCursorColorPrefChangesCursorColor) {
@@ -1704,6 +1714,71 @@ TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
   EXPECT_EQ(expected_interval, native_theme_dark->GetCaretBlinkInterval());
   EXPECT_EQ(expected_interval, native_theme_web->GetCaretBlinkInterval());
   EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
+}
+
+TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->flash_notifications().SetEnabled(true);
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  // Show a normal notification. Flashing should occur.
+  // Use dictation notification as an easy way to show any notification.
+  accessibility_controller->ShowNotificationForDictation(
+      DictationNotificationType::kAllDlcsDownloaded, u"en-us");
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    EXPECT_TRUE(matrix);
+  }
+
+  accessibility_controller->flash_notifications().SetEnabled(false);
+}
+
+TEST_F(AccessibilityControllerTest, FlashNotificationsPreview) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->flash_notifications().SetEnabled(true);
+  EXPECT_TRUE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  // Preview flash notifications.
+  accessibility_controller->PreviewFlashNotification();
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    EXPECT_TRUE(matrix);
+  }
+
+  accessibility_controller->flash_notifications().SetEnabled(false);
+}
+
+TEST_F(AccessibilityControllerTest, DoesNotFlashNotificationsWhenNotEnabled) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_FALSE(
+      prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
+
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->ShowNotificationForDictation(
+      DictationNotificationType::kAllDlcsDownloaded, u"en-us");
+  // A custom color matrix has been shown.
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+    const cc::FilterOperation::Matrix* matrix =
+        root_window->layer()->GetLayerCustomColorMatrix();
+    EXPECT_FALSE(matrix);
+  }
 }
 
 TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {

@@ -321,7 +321,7 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryUIWithVariant) {
       GetLabelFromIdentifier(kPriceHistoryTitleIdentifier, cell_.contentView);
   EXPECT_TRUE(
       [title.text isEqualToString:l10n_util::GetNSString(
-                                      IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION)]);
+                                      IDS_PRICE_HISTORY_TITLE_WITH_VARIANTS)]);
   UILabel* primary_subtitle = GetLabelFromIdentifier(
       kPriceHistoryPrimarySubtitleIdentifier, cell_.contentView);
   EXPECT_TRUE([primary_subtitle.text isEqualToString:item.variants]);

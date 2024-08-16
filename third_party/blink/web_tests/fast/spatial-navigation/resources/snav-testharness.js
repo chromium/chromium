@@ -65,6 +65,13 @@
     return null;
   }
 
+  function focusedElement() {
+    let focused_document = focusedDocument();
+    if (focused_document)
+      return focused_document.activeElement;
+    return null;
+  }
+
   // Allows us to query element ids also in iframes' documents.
   function findElement(searchString) {
     let searchPath = searchString.split(",");
@@ -100,7 +107,7 @@
     let receivingDoc = wanted.ownerDocument;
     let verifyAndAdvance = gAsyncTest.step_func(function() {
       clearTimeout(failureTimer);
-      let focused = focusedDocument().activeElement;
+      let focused = focusedElement();
       assert_equals(focused, wanted,
                     'step ' + step + ' ' + JSON.stringify(move) + ':');
 
@@ -117,7 +124,7 @@
     // Start a timer to catch the failure of missing keyup event.
     failureTimer = setTimeout(gAsyncTest.step_func(function() {
       assert_unreached('step ' + step + ': timeout when waiting for focus on ' + expectedId +
-                       ', actual focus on ' + focusedDocument().activeElement.id);
+                       ', actual focus on ' + (focusedElement() ? focusedElement().id : '<null>'));
       gAsyncTest.done();
     }), 1000);
     triggerMove(direction);
@@ -149,6 +156,10 @@
 
       // All iframes must be loaded before trying to navigate to them.
       window.addEventListener('load', gAsyncTest.step_func(() => {
+        // Some test pages give focus to arbitrary element as start point.
+        // Otherwise, ensure root document as start point.
+        if (!focusedElement())
+          document.focus();
         stepAndAssertMoves(expectedMoves);
       }));
     }

@@ -91,8 +91,10 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
 
   void ReportWin(
       bool is_for_additional_bid,
-      mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -1589,6 +1591,7 @@ TEST_F(AuctionV8HelperTest, SerializeDeserialize) {
       ASSERT_FALSE(deserialized.IsEmpty());
       std::string deserialized_as_json;
       ASSERT_EQ(helper_->ExtractJson(context, deserialized.ToLocalChecked(),
+                                     /*script_timeout=*/nullptr,
                                      &deserialized_as_json),
                 AuctionV8Helper::Result::kSuccess);
       EXPECT_EQ(R"({"a":false,"b":42,"c":{"d":[1,2,3]}})",
@@ -1598,14 +1601,22 @@ TEST_F(AuctionV8HelperTest, SerializeDeserialize) {
 }
 
 TEST_F(AuctionV8HelperTest, ExtractJsonTimeout) {
-  // While it's tempting to use a shorter timeout since this is a
-  // non-termination test, that flakes occasionally, and even more so under
-  // *SAN, for which the default is auto-adjusted.
-  auto time_limit = helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
-  auto time_limit_scope =
-      std::make_unique<AuctionV8Helper::TimeLimitScope>(time_limit.get());
+  // Test both with and without a TimeLimitScope already created; to make sure
+  // that AuctionV8Helper::ExtractJson makes one.
+  for (bool have_external_time_scope : {false, true}) {
+    // While it's tempting to use a shorter timeout since this is a
+    // non-termination test, that flakes occasionally, and even more so under
+    // *SAN, for which the default is auto-adjusted.
+    auto time_limit = helper_->CreateTimeLimit(/*script_timeout=*/std::nullopt);
 
-  const char kScript[] = R"(
+    SCOPED_TRACE(have_external_time_scope);
+    std::unique_ptr<AuctionV8Helper::TimeLimitScope> time_limit_scope;
+    if (have_external_time_scope) {
+      time_limit_scope =
+          std::make_unique<AuctionV8Helper::TimeLimitScope>(time_limit.get());
+    }
+
+    const char kScript[] = R"(
     function make() {
       return {
         get field() { while(true); }
@@ -1613,37 +1624,39 @@ TEST_F(AuctionV8HelperTest, ExtractJsonTimeout) {
     }
   )";
 
-  {
-    v8::Local<v8::Context> context = helper_->CreateContext();
-    v8::Context::Scope context_scope(context);
+    {
+      v8::Local<v8::Context> context = helper_->CreateContext();
+      v8::Context::Scope context_scope(context);
 
-    v8::Local<v8::UnboundScript> script;
-    std::optional<std::string> compile_error;
-    ASSERT_TRUE(helper_
-                    ->Compile(kScript, GURL("https://foo.test/"),
-                              /*debug_id=*/nullptr, compile_error)
-                    .ToLocal(&script));
-    EXPECT_EQ(compile_error, std::nullopt);
+      v8::Local<v8::UnboundScript> script;
+      std::optional<std::string> compile_error;
+      ASSERT_TRUE(helper_
+                      ->Compile(kScript, GURL("https://foo.test/"),
+                                /*debug_id=*/nullptr, compile_error)
+                      .ToLocal(&script));
+      EXPECT_EQ(compile_error, std::nullopt);
 
-    std::vector<std::string> error_msgs;
-    v8::Local<v8::Value> result;
-    v8::MaybeLocal<v8::Value> maybe_result;
-    ASSERT_TRUE(helper_->RunScript(context, script,
-                                   /*debug_id=*/nullptr,
-                                   /*script_timeout=*/nullptr, error_msgs) ==
-                    AuctionV8Helper::Result::kSuccess &&
-                helper_->CallFunction(context, /*debug_id=*/nullptr,
-                                      helper_->FormatScriptName(script), "make",
-                                      base::span<v8::Local<v8::Value>>(),
-                                      /*script_timeout=*/nullptr, maybe_result,
-                                      error_msgs) ==
-                    AuctionV8Helper::Result::kSuccess &&
-                maybe_result.ToLocal(&result));
-    EXPECT_TRUE(error_msgs.empty());
+      std::vector<std::string> error_msgs;
+      v8::Local<v8::Value> result;
+      v8::MaybeLocal<v8::Value> maybe_result;
+      ASSERT_TRUE(helper_->RunScript(context, script,
+                                     /*debug_id=*/nullptr,
+                                     /*script_timeout=*/nullptr, error_msgs) ==
+                      AuctionV8Helper::Result::kSuccess &&
+                  helper_->CallFunction(
+                      context, /*debug_id=*/nullptr,
+                      helper_->FormatScriptName(script), "make",
+                      base::span<v8::Local<v8::Value>>(),
+                      /*script_timeout=*/nullptr, maybe_result,
+                      error_msgs) == AuctionV8Helper::Result::kSuccess &&
+                  maybe_result.ToLocal(&result));
+      EXPECT_TRUE(error_msgs.empty());
 
-    std::string deserialized_as_json;
-    ASSERT_EQ(helper_->ExtractJson(context, result, &deserialized_as_json),
-              AuctionV8Helper::Result::kTimeout);
+      std::string deserialized_as_json;
+      ASSERT_EQ(helper_->ExtractJson(context, result, time_limit.get(),
+                                     &deserialized_as_json),
+                AuctionV8Helper::Result::kTimeout);
+    }
   }
 }
 

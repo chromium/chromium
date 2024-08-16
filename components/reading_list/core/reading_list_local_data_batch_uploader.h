@@ -6,14 +6,14 @@
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_LOCAL_DATA_BATCH_UPLOADER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/service/model_type_local_data_batch_uploader.h"
+#include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace reading_list {
 
 class DualReadingListModel;
 
 class ReadingListLocalDataBatchUploader
-    : public syncer::ModelTypeLocalDataBatchUploader {
+    : public syncer::DataTypeLocalDataBatchUploader {
  public:
   // `dual_reading_list_model` must either be null or non-null and outlive this
   // object.
@@ -27,7 +27,7 @@ class ReadingListLocalDataBatchUploader
 
   ~ReadingListLocalDataBatchUploader() override = default;
 
-  // syncer::ModelTypeLocalDataBatchUploader implementation.
+  // syncer::DataTypeLocalDataBatchUploader implementation.
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;

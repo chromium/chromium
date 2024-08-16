@@ -82,6 +82,10 @@ struct CORE_EXPORT PhysicalRect {
     return {offset + other, size};
   }
 
+  PhysicalRect operator-(const PhysicalOffset& other) const {
+    return {offset - other, size};
+  }
+
   // Returns the distance to |target| in horizontal and vertical directions.
   // Each distance is zero if |this| contains |target| in that direction.
   PhysicalSize DistanceAsSize(PhysicalOffset target) const;
@@ -179,10 +183,6 @@ struct CORE_EXPORT PhysicalRect {
   // logical/physical distinctions.
   constexpr explicit PhysicalRect(const DeprecatedLayoutRect& r)
       : offset(r.X(), r.Y()), size(r.Width(), r.Height()) {}
-  constexpr DeprecatedLayoutRect ToLayoutRect() const {
-    return DeprecatedLayoutRect(offset.left, offset.top, size.width,
-                                size.height);
-  }
 
   constexpr explicit operator gfx::RectF() const {
     return gfx::RectF(offset.left, offset.top, size.width, size.height);

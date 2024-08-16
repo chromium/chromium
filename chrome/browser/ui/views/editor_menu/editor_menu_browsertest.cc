@@ -25,6 +25,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
@@ -453,4 +454,21 @@ IN_PROC_BROWSER_TEST_F(
                 ->title_for_testing()
                 ->GetDisplayTextForTesting(),
             u"Write faster and with more confidence");
+}
+
+IN_PROC_BROWSER_TEST_F(EditorMenuBrowserI18nDisabledTest,
+                       EditorMenuPromoCardViewAccessibleProperties) {
+  ASSERT_THAT(GetControllerImpl(), Not(IsNull()));
+
+  GetControllerImpl()->OnGetAnchorBoundsAndEditorContextForTesting(
+      kAnchorBounds,
+      CreateTestEditorPanelContext(EditorMode::kPromoCard,
+                                   /*consent_status_settled=*/false));
+  auto* promo_card =
+      views::AsViewClass<EditorMenuPromoCardView>(GetEditorMenuView());
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(promo_card);
+  promo_card->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kDialog, data.role);
 }

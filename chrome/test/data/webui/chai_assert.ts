@@ -89,6 +89,16 @@ export function assertNotEquals(expected: any, actual: any,
 }
 
 /**
+ * @param expected The expected value.
+ * @param actual The actual value.
+ * @param message Additional error message.
+ */
+export function assertNotDeepEquals(
+    expected: any, actual: any, message?: string) {
+  chai.assert.notDeepEqual(actual, expected, message);
+}
+
+/**
  * @param message Additional error message.
  */
 export function assertNotReached(message?: string): never {

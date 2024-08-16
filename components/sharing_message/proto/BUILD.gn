@@ -16,6 +16,7 @@ proto_library("proto") {
     "remote_copy_message.proto",
     "shared_clipboard_message.proto",
     "sharing_message.proto",
+    "sharing_message_type.proto",
     "sms_fetch_message_test_proto3_optional.proto",
   ]
 }

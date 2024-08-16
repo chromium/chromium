@@ -4,6 +4,8 @@
 
 #include "content/browser/web_package/signed_exchange_cert_fetcher.h"
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -34,6 +36,7 @@
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -87,14 +90,15 @@ SignedExchangeCertFetcher::CreateAndStart(
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
-    net::IsolationInfo isolation_info) {
+    net::IsolationInfo isolation_info,
+    const std::optional<url::Origin>& initiator) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::CreateAndStart");
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher(
       new SignedExchangeCertFetcher(
           std::move(shared_url_loader_factory), std::move(throttles), cert_url,
           force_fetch, std::move(callback), devtools_proxy,
-          throttling_profile_id, std::move(isolation_info)));
+          throttling_profile_id, std::move(isolation_info), initiator));
   cert_fetcher->Start();
   return cert_fetcher;
 }
@@ -108,7 +112,8 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
     CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
-    net::IsolationInfo isolation_info)
+    net::IsolationInfo isolation_info,
+    const std::optional<url::Origin>& initiator)
     : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       throttles_(std::move(throttles)),
       resource_request_(std::make_unique<network::ResourceRequest>()),
@@ -116,13 +121,11 @@ SignedExchangeCertFetcher::SignedExchangeCertFetcher(
       devtools_proxy_(devtools_proxy) {
   // TODO(crbug.com/40558902): Revisit more ResourceRequest flags.
   resource_request_->url = cert_url;
-  // |request_initiator| is used for cookie checks, but cert requests don't use
-  // cookies. So just set an opaque Origin.
-  resource_request_->request_initiator = url::Origin();
+  resource_request_->request_initiator = initiator;
   resource_request_->resource_type =
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   resource_request_->destination = network::mojom::RequestDestination::kEmpty;
-  // Cert requests should not send credential informartion, because the default
+  // Cert requests should not send credential information, because the default
   // credentials mode of Fetch is "omit".
   resource_request_->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,

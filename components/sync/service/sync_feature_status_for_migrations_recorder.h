@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service_observer.h"
 
 class PrefRegistrySimple;
@@ -56,14 +56,14 @@ class SyncFeatureStatusForMigrationsRecorder : public SyncServiceObserver {
 
   static bool GetSyncDataTypeActiveForSyncToSigninMigration(
       const PrefService* prefs,
-      ModelType type);
+      DataType type);
 
   // SyncServiceObserver implementation.
   void OnStateChanged(SyncService* sync) override;
   void OnSyncShutdown(SyncService* sync) override;
 
  private:
-  static std::string GetModelTypeStatusPrefName(ModelType type);
+  static std::string GetDataTypeStatusPrefName(DataType type);
 
   SyncFeatureStatusForSyncToSigninMigration DetermineSyncFeatureStatus(
       const SyncService* sync) const;

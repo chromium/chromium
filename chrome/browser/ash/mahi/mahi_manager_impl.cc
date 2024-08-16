@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
+#include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -114,7 +115,7 @@ class OnConsentStateUpdateClosureRunner
         magic_boost_state_observation_.Reset();
         std::move(on_declined_closure_).Run();
         return;
-      case chromeos::HMRConsentStatus::kPending:
+      case chromeos::HMRConsentStatus::kPendingDisclaimer:
       case chromeos::HMRConsentStatus::kUnset:
         return;
     }
@@ -470,7 +471,8 @@ void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
 
 bool MahiManagerImpl::IsEnabled() {
   return chromeos::features::IsMahiEnabled() &&
-         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
+         chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false) &&
+         CanUseMahiService();
 }
 
 void MahiManagerImpl::SetMediaAppPDFFocused() {
@@ -497,7 +499,7 @@ void MahiManagerImpl::SetMediaAppPDFFocused() {
       /*page_id=*/media_app_client_id_,
       GURL{base::StrCat({"file:///media-app/", file_name.value()})},
       /*title=*/base::UTF8ToUTF16(file_name.value()), gfx::ImageSkia(),
-      /*distillable=*/true);
+      /*distillable=*/true, /*is_incognito=*/false);
 
   // To avoid refresh banner flicker. This could happen when a new PDF file is
   // opened from file picker dialog in media app.
@@ -660,13 +662,15 @@ void MahiManagerImpl::OnGetPageContentForSummary(
 
   // Add page content to the cache.
   // TODO(b:338140794): consider adding the QA to the cache.
-  cache_manager_->AddCacheForUrl(
-      request_page_info->url.spec(),
-      MahiCacheManager::MahiData(
-          request_page_info->url.spec(), request_page_info->title,
-          current_panel_content_->page_content,
-          request_page_info->favicon_image, /*summary=*/std::nullopt,
-          /*previous_qa=*/{}));
+  if (!request_page_info->is_incognito) {
+    cache_manager_->AddCacheForUrl(
+        request_page_info->url.spec(),
+        MahiCacheManager::MahiData(
+            request_page_info->url.spec(), request_page_info->title,
+            current_panel_content_->page_content,
+            request_page_info->favicon_image, /*summary=*/std::nullopt,
+            /*previous_qa=*/{}));
+  }
 
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
@@ -695,13 +699,16 @@ void MahiManagerImpl::OnGetPageContentForQA(
   // Add page content to the cache. The summary would be the summary that
   // is already in the cache (if any).
   // TODO(b:338140794): consider adding the QA to the cache.
-  cache_manager_->AddCacheForUrl(
-      request_page_info->url.spec(),
-      MahiCacheManager::MahiData(
-          request_page_info->url.spec(), request_page_info->title,
-          current_panel_content_->page_content,
-          request_page_info->favicon_image,
-          cache_manager_->GetSummaryForUrl(request_page_info->url.spec()), {}));
+  if (!request_page_info->is_incognito) {
+    cache_manager_->AddCacheForUrl(
+        request_page_info->url.spec(),
+        MahiCacheManager::MahiData(
+            request_page_info->url.spec(), request_page_info->title,
+            current_panel_content_->page_content,
+            request_page_info->favicon_image,
+            cache_manager_->GetSummaryForUrl(request_page_info->url.spec()),
+            {}));
+  }
 
   mahi_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
@@ -768,6 +775,19 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
   }
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
+
+// Repeating answers are not allowed for Mahi as all questions must only return
+// one answer.
+bool MahiManagerImpl::AllowRepeatingAnswers() {
+  return false;
+}
+
+// This function will never be called as consecutive answers are not allowed for
+// Mahi.
+void MahiManagerImpl::AnswerQuestionRepeating(
+    const std::u16string& question,
+    bool current_panel_content,
+    MahiAnswerQuestionCallbackRepeating callback) {}
 
 // ScopedMahiBrowserDelegateOverrider----------------------------------------
 

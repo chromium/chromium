@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
+#include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
@@ -47,10 +47,14 @@
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
+
 namespace {
 
 using ::base::test::TestFuture;
 using ::testing::_;
+
+using kiosk::LoadProfile;
+using kiosk::LoadProfileResult;
 
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
@@ -59,7 +63,7 @@ std::optional<Profile*> LoadKioskProfile(const AccountId& account_id) {
   TestFuture<std::optional<Profile*>> profile_future;
   auto profile_loader = LoadProfile(
       account_id, KioskAppType::kWebApp,
-      base::BindOnce([](KioskProfileLoader::Result result) {
+      base::BindOnce([](LoadProfileResult result) {
         return result.has_value() ? std::make_optional(result.value())
                                   : std::nullopt;
       }).Then(profile_future.GetCallback()));
@@ -450,4 +454,5 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
 }
 
 }  // namespace
+
 }  // namespace ash

@@ -302,11 +302,13 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer);
 
-  // Sets and caches the maximum vsync interval, to be applied to the
-  // |display_private_| when possible, for use with variable refresh rates. An
-  // absent value indicates that VRR is not enabled.
-  void SetMaxVrrInterval(
-      const std::optional<base::TimeDelta>& max_vrr_interval);
+  // Sets and caches the |max_vsync_interval| and |vrr_state|, to be applied to
+  // the |display_private_| when possible, for use with variable refresh rates
+  // and/or virtual modes. An absent |max_vsync_interval| value indicates that
+  // the display is not capable of utilizing such features.
+  void SetMaxVSyncAndVrr(
+      const std::optional<base::TimeDelta>& max_vsync_interval,
+      display::VariableRefreshRateState vrr_state);
 
   // Sets the widget for the compositor to render into.
   void SetAcceleratedWidget(gfx::AcceleratedWidget widget);
@@ -510,8 +512,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void RemoveSimpleBeginFrameObserver(
       ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
 
-  const std::optional<base::TimeDelta>& max_vrr_interval_for_testing() const {
-    return max_vrr_interval_;
+  const std::optional<base::TimeDelta>& max_vsync_interval_for_testing() const {
+    return max_vsync_interval_;
+  }
+
+  display::VariableRefreshRateState vrr_state_for_testing() const {
+    return vrr_state_;
   }
 
  private:
@@ -581,7 +587,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_ = viz::BeginFrameArgs::DefaultInterval();
   bool has_vsync_params_ = false;
-  std::optional<base::TimeDelta> max_vrr_interval_ = std::nullopt;
+  std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
+  display::VariableRefreshRateState vrr_state_ =
+      display::VariableRefreshRateState::kVrrNotCapable;
 
   const bool use_external_begin_frame_control_;
   const bool force_software_compositor_;

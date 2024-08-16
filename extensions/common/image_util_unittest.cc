@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -225,8 +226,8 @@ TEST(ImageUtilTest, DISABLED_AnalyzeAllDownloadedIcons) {
     ASSERT_TRUE(image_util::LoadPngFromFile(icon_path, &current_icon));
     if (!image_util::IsRenderedIconSufficientlyVisible(current_icon,
                                                        SK_ColorWHITE)) {
-      output_file.WriteAtCurrentPos(url.data(), url.length());
-      output_file.WriteAtCurrentPos("\n", 1);
+      output_file.WriteAtCurrentPos(base::as_byte_span(url));
+      output_file.WriteAtCurrentPos(base::byte_span_from_cstring("\n"));
       WriteRenderedIcon(current_icon, SK_ColorWHITE,
                         rendered_icon_path.AppendASCII(file_name + ".png"));
     }

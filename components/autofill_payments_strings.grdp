@@ -679,7 +679,7 @@
     Manage payment methods
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER" desc="Title text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
-    Save IBAN to Google Account?
+    Save IBAN?
   </message>
   <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
     To autofill this IBAN next time, save it in your Google account
@@ -885,6 +885,12 @@
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option." formatter_data="android_java">
       Merchant doesn't accept this virtual card
+  </message>
+  <message name="IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble for disabled and grayed out virtual card suggestions on Chrome Desktop.">
+      Cards not accepted by this merchant are disabled
+  </message>
+  <message name="IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for the `In-Product Help(IPH)` bubble for grayed out virtual card suggestions on Chrome Desktop.">
+      Cards not accepted by this merchant are disabled such as virtual cards.
   </message>
   <!-- virtual cards related strings - end -->
   <message name="IDS_AUTOFILL_CARD_AUTH_SELECTION_DIALOG_TITLE_MULTIPLE_OPTIONS" desc="Title for the credit card unmasking dialog for multiple challenge options. Used in VCN authentication, and once a challenge option is selected a new dialog is rendered where the user authenticates with the selected challenge option." formatter_data="android_java">
@@ -1196,6 +1202,12 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after save card upload to the server was unsuccessful.">
     Card saved to device only
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server.">
+    IBAN saved
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after upload save IBAN attempt was failed and and it was not uploaded to the server.">
+    IBAN saved to device only
+  </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after virtual card enrollment is successful.">
     Virtual card turned on
   </message>
@@ -1208,6 +1220,15 @@
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
     This card couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server.">
+    This IBAN is saved in your Google Account so you can use it across Google services.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was failed and and it was not uploaded to the server.">
+    This IBAN couldn't be saved in your Google Account. It's saved to Chrome on this device instead. Chrome will ask you again the next time you use this IBAN.
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_FAILURE_HIT_MAX_STRIKE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after upload save IBAN attempt was failed and and it was not uploaded to the server. Other than that, the number of offer-to-upload has hit the max strike.">
+    This IBAN couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after virtual card enrollment is successful.">
     You can now use a virtual card to check out more securely with autofill.

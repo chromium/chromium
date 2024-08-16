@@ -59,12 +59,6 @@ LiveTranslateController::LiveTranslateController(
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(profile_prefs_);
   pref_change_registrar_->Add(
-      prefs::kLiveCaptionEnabled,
-      base::BindRepeating(
-          &LiveTranslateController::OnLiveCaptionEnabledChanged,
-          // Unretained is safe because |this| owns |pref_change_registrar_|.
-          base::Unretained(this)));
-  pref_change_registrar_->Add(
       prefs::kLiveTranslateEnabled,
       base::BindRepeating(
           &LiveTranslateController::OnLiveTranslateEnabledChanged,
@@ -213,11 +207,6 @@ void LiveTranslateController::OnResponseJsonParsed(
   if (!error.empty()) {
     LOG(ERROR) << std::move(error);
   }
-}
-
-void LiveTranslateController::OnLiveCaptionEnabledChanged() {
-  if (!profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled))
-    profile_prefs_->SetBoolean(prefs::kLiveTranslateEnabled, false);
 }
 
 void LiveTranslateController::OnLiveTranslateEnabledChanged() {

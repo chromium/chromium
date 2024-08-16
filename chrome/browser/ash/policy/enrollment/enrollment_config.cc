@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -105,7 +106,7 @@ std::string_view ToStringView(EnrollmentConfig::Mode mode) {
     CASE(MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 
@@ -121,7 +122,7 @@ std::string_view ToStringView(EnrollmentConfig::AuthMechanism auth) {
     CASE(AUTH_MECHANISM_TOKEN_PREFERRED);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 
@@ -199,6 +200,20 @@ EnrollmentConfig GetPrescribedRecoveryConfig(
   return recovery_config;
 }
 
+OOBEConfigSource ConvertToOOBEConfigSource(
+    const std::string* oobe_config_source) {
+  if (!oobe_config_source || oobe_config_source->empty()) {
+    return OOBEConfigSource::kNone;
+  }
+  if (*oobe_config_source == "REMOTE_DEPLOYMENT") {
+    return OOBEConfigSource::kRemoteDeployment;
+  }
+  if (*oobe_config_source == "PACKAGING_TOOL") {
+    return OOBEConfigSource::kPackagingTool;
+  }
+  return OOBEConfigSource::kUnknown;
+}
+
 }  // namespace
 
 struct EnrollmentConfig::PrescribedConfig {
@@ -206,6 +221,7 @@ struct EnrollmentConfig::PrescribedConfig {
   EnrollmentConfig::AuthMechanism auth_mechanism;
   std::string management_domain;
   std::string enrollment_token;
+  OOBEConfigSource oobe_config_source;
 
   static PrescribedConfig GetPrescribedConfig(
       PrefService* local_state,
@@ -265,10 +281,14 @@ EnrollmentConfig::PrescribedConfig::GetPrescribedConfig(
     // TODO(b/329271128): CHECK to ensure enrollment_token always has value
     // after this bug is fixed.
     if (enrollment_token.has_value()) {
+      const std::string* oobe_config_source =
+          oobe_configuration->configuration().FindString(
+              ash::configuration::kSource);
       return {
           .mode = EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED,
           .auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED,
-          .enrollment_token = std::move(enrollment_token.value())};
+          .enrollment_token = std::move(enrollment_token.value()),
+          .oobe_config_source = ConvertToOOBEConfigSource(oobe_config_source)};
     } else {
       return {.mode = EnrollmentConfig::MODE_NONE,
               .auth_mechanism = GetPrescribedAuthMechanism(local_state)};
@@ -390,7 +410,8 @@ EnrollmentConfig::EnrollmentConfig(PrescribedConfig prescribed_config,
           prescribed_license.is_license_packaged_with_device),
       license_type(prescribed_license.license_type),
       assigned_upgrade_type(prescribed_license.assigned_upgrade_type),
-      enrollment_token(std::move(prescribed_config.enrollment_token)) {}
+      enrollment_token(std::move(prescribed_config.enrollment_token)),
+      oobe_config_source(prescribed_config.oobe_config_source) {}
 
 // static
 EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig() {

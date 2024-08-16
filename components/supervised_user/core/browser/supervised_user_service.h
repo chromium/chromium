@@ -59,6 +59,14 @@ class SupervisedUserService : public KeyedService,
    public:
     virtual ~PlatformDelegate() {}
 
+    // Returns the country code stored for this client.
+    // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example:
+    // us, br, in.
+    virtual std::string GetCountryCode() const = 0;
+
+    // Returns the channel for the installation.
+    virtual version_info::Channel GetChannel() const = 0;
+
     // Close all incognito tabs for this service. Called the profile becomes
     // supervised.
     virtual void CloseIncognitoTabs() = 0;
@@ -114,8 +122,9 @@ class SupervisedUserService : public KeyedService,
   // up to 2 custodians, and this returns true if they have at least 1.
   bool HasACustodian() const;
 
-  // Returns true if the url is blocked for the primary account user.
-  bool IsBlockedURL(GURL url) const;
+  // Returns true if the url is blocked due to supervision restrictions on the
+  // primary account user.
+  bool IsBlockedURL(const GURL& url) const;
 
   void AddObserver(SupervisedUserServiceObserver* observer);
   void RemoveObserver(SupervisedUserServiceObserver* observer);
@@ -152,7 +161,6 @@ class SupervisedUserService : public KeyedService,
       PrefService& user_prefs,
       supervised_user::SupervisedUserSettingsService& settings_service,
       syncer::SyncService* sync_service,
-      ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<supervised_user::SupervisedUserURLFilter::Delegate>
           url_filter_delegate,
       std::unique_ptr<supervised_user::SupervisedUserService::PlatformDelegate>
@@ -173,6 +181,14 @@ class SupervisedUserService : public KeyedService,
                            BlockedMatureSitesRecordedInBlockSafeSitesBucket);
   FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
                            BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsFasterThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ClassificationIsSlowerThanHttp);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           ShortCircuitsSynchronousBlock);
+  FRIEND_TEST_ALL_PREFIXES(ClassifyUrlNavigationThrottleTest,
+                           HandlesLateAsynchronousBlock);
 
   // Method used in testing to set the given test_filter as the url_filter_
   void SetURLFilterForTesting(

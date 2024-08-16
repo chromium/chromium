@@ -1838,10 +1838,11 @@ TEST_P(SpdyNetworkTransactionTest, ChunkedPost) {
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
 
   // These chunks get merged into a single frame when being sent.
-  const int kFirstChunkSize = kUploadDataSize/2;
-  upload_chunked_data_stream()->AppendData(kUploadData, kFirstChunkSize, false);
-  upload_chunked_data_stream()->AppendData(
-      kUploadData + kFirstChunkSize, kUploadDataSize - kFirstChunkSize, true);
+  const size_t kFirstChunkSize = kUploadDataSize / 2;
+  auto [first_chunk, second_chunk] =
+      base::byte_span_from_cstring(kUploadData).split_at(kFirstChunkSize);
+  upload_chunked_data_stream()->AppendData(first_chunk, false);
+  upload_chunked_data_stream()->AppendData(second_chunk, true);
 
   helper.RunToCompletion(&data);
   TransactionHelperResult out = helper.output();
@@ -1873,16 +1874,19 @@ TEST_P(SpdyNetworkTransactionTest, DelayedChunkedPost) {
   UseChunkedPostRequest();
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
 
-  upload_chunked_data_stream()->AppendData(kUploadData, kUploadDataSize, false);
+  upload_chunked_data_stream()->AppendData(
+      base::byte_span_from_cstring(kUploadData), false);
 
   helper.RunPreTestSetup();
   helper.AddData(&data);
   ASSERT_TRUE(helper.StartDefaultTest());
 
   base::RunLoop().RunUntilIdle();
-  upload_chunked_data_stream()->AppendData(kUploadData, kUploadDataSize, false);
+  upload_chunked_data_stream()->AppendData(
+      base::byte_span_from_cstring(kUploadData), false);
   base::RunLoop().RunUntilIdle();
-  upload_chunked_data_stream()->AppendData(kUploadData, kUploadDataSize, true);
+  upload_chunked_data_stream()->AppendData(
+      base::byte_span_from_cstring(kUploadData), true);
 
   helper.FinishDefaultTest();
   helper.VerifyDataConsumed();
@@ -2003,7 +2007,8 @@ TEST_P(SpdyNetworkTransactionTest, ResponseBeforePostCompletes) {
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
 
   // Finish sending the request body.
-  upload_chunked_data_stream()->AppendData(kUploadData, kUploadDataSize, true);
+  upload_chunked_data_stream()->AppendData(
+      base::byte_span_from_cstring(kUploadData), true);
   helper.WaitForCallbackToComplete();
   EXPECT_THAT(helper.output().rv, IsOk());
 

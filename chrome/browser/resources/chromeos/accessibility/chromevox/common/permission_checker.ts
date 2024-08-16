@@ -36,8 +36,7 @@ export class PermissionChecker {
       return true;
     }
 
-    return !CommandStore.COMMAND_DATA[command] ||
-        !CommandStore.COMMAND_DATA[command].denySignedOut;
+    return !CommandStore.denySignedOut(command);
   }
 
   private async fetchState_(): Promise<void> {

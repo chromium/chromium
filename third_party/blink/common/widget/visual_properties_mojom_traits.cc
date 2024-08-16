@@ -39,6 +39,7 @@ bool StructTraits<
   out->display_mode = data.display_mode();
   out->capture_sequence_number = data.capture_sequence_number();
   out->zoom_level = data.zoom_level();
+  out->css_zoom_factor = data.css_zoom_factor();
   out->page_scale_factor = data.page_scale_factor();
   out->compositing_scale_factor = data.compositing_scale_factor();
   out->cursor_accessibility_scale_factor =

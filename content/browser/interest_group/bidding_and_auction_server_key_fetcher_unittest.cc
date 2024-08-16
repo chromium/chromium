@@ -68,15 +68,6 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
   }
 
  protected:
-  network::TestURLLoaderFactory url_loader_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
-  data_decoder::test::InProcessDataDecoder decoder_;
-  base::ScopedTempDir temp_directory_;
-  std::unique_ptr<InterestGroupManagerImpl> manager_;
-
   std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
   GetDBStoredKeysWithExpiration(const url::Origin& coordinator) {
     std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
@@ -101,8 +92,18 @@ class BiddingAndAuctionServerKeyFetcherTest : public testing::Test {
   }
 
   content::BiddingAndAuctionServerKeyFetcher CreateFetcher() {
-    return BiddingAndAuctionServerKeyFetcher(manager_.get());
+    return BiddingAndAuctionServerKeyFetcher(manager_.get(),
+                                             shared_url_loader_factory_);
   }
+
+  network::TestURLLoaderFactory url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList feature_list_;
+  data_decoder::test::InProcessDataDecoder decoder_;
+  base::ScopedTempDir temp_directory_;
+  std::unique_ptr<InterestGroupManagerImpl> manager_;
 };
 
 TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
@@ -116,7 +117,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, UnknownCoordinator) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, url::Origin(),
+      url::Origin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -136,7 +137,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoURL) {
 
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -175,7 +176,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, BadResponses) {
     base::RunLoop run_loop;
     // AddResponse overwrites the previous response.
     url_loader_factory_.AddResponse(kDefaultGCPKeyURL, response);
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -193,14 +194,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, FailsAll) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
       }));
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
@@ -219,12 +220,12 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringFailure) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_FALSE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+        fetcher.GetOrFetchKey(CoordinatorOrigin(),
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -251,7 +252,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, GoodResponse) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
@@ -274,12 +275,12 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, RequestDuringSuccess) {
   int completed = 0;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
         completed++;
-        fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+        fetcher.GetOrFetchKey(CoordinatorOrigin(),
                               base::BindLambdaForTesting(
                                   [&](base::expected<BiddingAndAuctionServerKey,
                                                      std::string> maybe_key) {
@@ -304,7 +305,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -321,7 +322,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -358,7 +359,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
   {
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -382,7 +383,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ReadsValuesCachedInDBIfEnabled) {
     // This should make a new request to the network now.
     content::BiddingAndAuctionServerKey returned_key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -413,7 +414,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, WritesValuesToDBIfEnabled) {
   content::BiddingAndAuctionServerKey key;
   {
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -444,13 +445,13 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
 
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
 
   {
     url_loader_factory_.AddResponse(kDefaultGCPKeyURL, "", net::HTTP_NOT_FOUND);
     bool completed = false;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -472,7 +473,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
         }]})");
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -492,7 +493,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
 
   content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   // MaybePrefetchKeys will try to fetch all keys in the
   // FledgeBiddingAndAuctionKeyConfig.
@@ -510,7 +511,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -531,7 +532,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, MaybePrefetchKeysCachesValue) {
   }
 
   // Keys should not be fetched a second time.
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
   EXPECT_FALSE(
@@ -558,7 +559,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -578,7 +579,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
   task_environment_.FastForwardBy(base::Days(7) + base::Seconds(1));
   url_loader_factory_.ClearResponses();
 
-  fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+  fetcher.MaybePrefetchKeys();
   task_environment_.RunUntilIdle();
   // We should still try fetching all the keys, including for kDefaultGCPKeyURL.
   EXPECT_TRUE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
@@ -600,7 +601,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
     feature_list.InitAndDisableFeature(features::kFledgePrefetchBandAKeys);
 
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
-    fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+    fetcher.MaybePrefetchKeys();
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
     EXPECT_FALSE(url_loader_factory_.IsPending(kCoordinator1KeyURL));
@@ -615,7 +616,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest,
         {features::kFledgePrefetchBandAKeys},
         {blink::features::kFledgeBiddingAndAuctionServer});
     content::BiddingAndAuctionServerKeyFetcher fetcher = CreateFetcher();
-    fetcher.MaybePrefetchKeys(shared_url_loader_factory_);
+    fetcher.MaybePrefetchKeys();
     task_environment_.RunUntilIdle();
     EXPECT_FALSE(url_loader_factory_.IsPending(kDefaultGCPKeyURL));
     EXPECT_FALSE(url_loader_factory_.IsPending(kCoordinator1KeyURL));
@@ -635,14 +636,14 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, CoalescesRequests) {
   {
     content::BiddingAndAuctionServerKey key1, key2;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
                                 EXPECT_TRUE(maybe_key.has_value());
                                 key1 = *maybe_key;
                               }));
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -675,7 +676,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -690,7 +691,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, ChoosesRandomKey) {
   while (ids.size() < 2) {
     content::BiddingAndAuctionServerKey key;
     base::RunLoop run_loop;
-    fetcher.GetOrFetchKey(shared_url_loader_factory_, CoordinatorOrigin(),
+    fetcher.GetOrFetchKey(CoordinatorOrigin(),
                           base::BindLambdaForTesting(
                               [&](base::expected<BiddingAndAuctionServerKey,
                                                  std::string> maybe_key) {
@@ -731,7 +732,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, OverridesConfig) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
@@ -762,7 +763,7 @@ TEST_F(BiddingAndAuctionServerKeyFetcherTest, NoConfigOnlyURL) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, CoordinatorOrigin(),
+      CoordinatorOrigin(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());
@@ -789,7 +790,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return url::Origin::Create(GURL(kCoordinator2));
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string GetURL() {
@@ -801,7 +802,7 @@ class BiddingAndAuctionServerKeyFetcherCoordinatorTest
       case 2:
         return kCoordinator2KeyURL;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -817,7 +818,7 @@ TEST_P(BiddingAndAuctionServerKeyFetcherCoordinatorTest, GoodResponse) {
   content::BiddingAndAuctionServerKey key;
   base::RunLoop run_loop;
   fetcher.GetOrFetchKey(
-      shared_url_loader_factory_, GetCoordinator(),
+      GetCoordinator(),
       base::BindLambdaForTesting([&](base::expected<BiddingAndAuctionServerKey,
                                                     std::string> maybe_key) {
         EXPECT_TRUE(maybe_key.has_value());

@@ -30,6 +30,33 @@
 using autofill::FillingProduct;
 using manual_fill::ManualFillDataType;
 
+namespace {
+
+// Logs the right user action when the manual fallback menu is opened from the
+// keyboard accessory's expand icon.
+void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type) {
+  switch (data_type) {
+    case ManualFillDataType::kPassword:
+      base::RecordAction(
+          base::UserMetricsAction("ManualFallback_ExpandIcon_OpenPassword"));
+      break;
+    case ManualFillDataType::kPaymentMethod:
+      base::RecordAction(base::UserMetricsAction(
+          "ManualFallback_ExpandIcon_OpenPaymentMethod"));
+      break;
+    case ManualFillDataType::kAddress:
+      base::RecordAction(
+          base::UserMetricsAction("ManualFallback_ExpandIcon_OpenAddress"));
+      break;
+    case manual_fill::ManualFillDataType::kOther:
+      // The expand icon should only be available if the mapped `data_type` is
+      // either associated with passwords, payment methods or addresses.
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
+
 @interface FormInputAccessoryViewController () <
     FormSuggestionViewDelegate,
     ManualFillAccessoryViewControllerDelegate>
@@ -168,7 +195,9 @@ using manual_fill::ManualFillDataType;
 #pragma mark - FormInputAccessoryConsumer
 
 - (void)showAccessorySuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  BOOL hasSingleManualFillButton = suggestions.count > 0;
+  BOOL hasSingleManualFillButton =
+      suggestions.count > 0 &&
+      (_mainFillingProduct != FillingProduct::kAutocomplete);
   self.formInputAccessoryView.manualFillButton.hidden =
       !hasSingleManualFillButton;
   self.formInputAccessoryView.passwordManualFillButton.hidden =
@@ -198,23 +227,26 @@ using manual_fill::ManualFillDataType;
 }
 
 - (void)manualFillButtonPressed:(UIButton*)button {
-  [self manualFillButtonPressed:button
-                    forDataType:[ManualFillUtil
-                                    manualFillDataTypeFromFillingProduct:
-                                        _mainFillingProduct]];
+  ManualFillDataType dataType =
+      [ManualFillUtil manualFillDataTypeFromFillingProduct:_mainFillingProduct];
+  LogManualFallbackEntryThroughExpandIcon(dataType);
+  [self manualFillButtonPressed:button forDataType:dataType];
 }
 
 - (void)passwordManualFillButtonPressed:(UIButton*)button {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kPassword];
 }
 
 - (void)creditCardManualFillButtonPressed:(UIButton*)button {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_OpenCreditCard"));
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kPaymentMethod];
 }
 
 - (void)addressManualFillButtonPressed:(UIButton*)button {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_OpenProfile"));
   [self manualFillButtonPressed:button
                     forDataType:ManualFillDataType::kAddress];
 }
@@ -444,10 +476,11 @@ using manual_fill::ManualFillDataType;
         break;
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kCompose:
+      case FillingProduct::kPredictionImprovements:
       case FillingProduct::kNone:
         // `kMerchantPromoCode` and `kCompose` cases are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // VoiceOver message setup with

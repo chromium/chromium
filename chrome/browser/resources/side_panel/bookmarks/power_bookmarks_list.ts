@@ -42,6 +42,7 @@ import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util.js';
+import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -289,6 +290,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private hasShownBookmarks_: boolean;
   private sectionVisibility_: SectionVisibility = {};
   private shoppingCollectionFolderId_: string;
+  private recordCountMetricsOnNextUpdate_: boolean = false;
 
   constructor() {
     super();
@@ -671,6 +673,20 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.displayLists_.forEach(
         list => this.bookmarksService_.refreshDataForBookmarks(list));
     this.updateListScrollOffset_();
+
+    if (this.recordCountMetricsOnNextUpdate_) {
+      this.recordBookmarkCountMetrics_();
+      this.recordCountMetricsOnNextUpdate_ = false;
+    }
+
+    // After the lists are updated and all children updates are complete,
+    // notify iron-list to resize.
+    const children = [...this.shadowRoot!.querySelectorAll<CrLitElement>(
+        'power-bookmark-row')];
+    if (children.length > 0) {
+      Promise.all(children.map(el => el.updateComplete))
+          .then(() => this.notifyBookmarksListResize_());
+    }
   }
 
   private updateListScrollOffset_() {
@@ -709,6 +725,15 @@ export class PowerBookmarksListElement extends PolymerElement {
     chrome.metricsPrivate.recordEnumerationValue(
         'PowerBookmarks.SidePanel.Search.CTR', SearchAction.SHOWN,
         SearchAction.COUNT);
+    this.recordCountMetricsOnNextUpdate_ = true;
+  }
+
+  private recordBookmarkCountMetrics_() {
+    const count =
+        this.displayLists_.reduce((prev, curr) => prev + curr.length, 0);
+    const metricName = `PowerBookmarks.SidePanel${
+        this.hasSomeActiveFilter_ ? '.SearchOrFilter' : ''}.BookmarksShown`;
+    chrome.metricsPrivate.recordMediumCount(metricName, count);
   }
 
   private canAddCurrentUrl_(): boolean {
@@ -741,6 +766,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     if (!this.editing_) {
       if (event.detail.bookmark.children) {
+        this.recordCountMetricsOnNextUpdate_ = true;
         this.push('activeFolderPath_', event.detail.bookmark);
         // Cancel search when changing active folder.
         this.$.searchField.setValue('');
@@ -886,10 +912,12 @@ export class PowerBookmarksListElement extends PolymerElement {
    * Moves the displayed folders up one level when the back button is clicked.
    */
   private onBackClicked_() {
+    this.recordCountMetricsOnNextUpdate_ = true;
     this.pop('activeFolderPath_');
   }
 
   private onSearchChanged_(e: CustomEvent<string>) {
+    this.recordCountMetricsOnNextUpdate_ = true;
     this.searchQuery_ = e.detail.toLocaleLowerCase();
   }
 

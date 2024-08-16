@@ -8,8 +8,7 @@
 namespace password_manager {
 
 PasswordStoreBackendError::PasswordStoreBackendError(
-    PasswordStoreBackendErrorType error_type,
-    PasswordStoreBackendErrorRecoveryType recovery_type)
-    : type(error_type), recovery_type(recovery_type) {}
+    PasswordStoreBackendErrorType error_type)
+    : type(error_type) {}
 
 }  // namespace password_manager

@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/ax_event_counter.h"
 
 namespace ui {
@@ -41,6 +42,17 @@ TEST_F(AnnouncementViewTest, MakesAnnouncement) {
   announcement_view_->Announce(u"test");
   task_environment()->FastForwardBy(base::Milliseconds(200));
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kLiveRegionChanged));
+}
+
+TEST_F(AnnouncementViewTest, HeaderAccessibilityProperties) {
+  EXPECT_EQ(announcement_view_->announcement_label_->GetViewAccessibility()
+                .GetCachedDescription(),
+            u"");
+  announcement_view_->Announce(u"test");
+  task_environment()->FastForwardBy(base::Milliseconds(200));
+  EXPECT_EQ(announcement_view_->announcement_label_->GetViewAccessibility()
+                .GetCachedDescription(),
+            u"test");
 }
 
 }  // namespace ime

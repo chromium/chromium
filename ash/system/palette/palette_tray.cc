@@ -459,7 +459,6 @@ void PaletteTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 }
 
 void PaletteTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   UpdateTrayIcon();
 }
 
@@ -630,7 +629,7 @@ void PaletteTray::Initialize() {
   InitializeWithLocalState();
 }
 
-void PaletteTray::CloseBubble() {
+void PaletteTray::CloseBubbleInternal() {
   HidePalette();
 }
 
@@ -714,14 +713,9 @@ void PaletteTray::InitializeWithLocalState() {
 
 void PaletteTray::UpdateTrayIcon() {
   SkColor color;
-  if (chromeos::features::IsJellyEnabled()) {
-    color = GetColorProvider()->GetColor(
-        is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface);
-  } else {
-    color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-  }
+  color = GetColorProvider()->GetColor(
+      is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysOnSurface);
   icon_->SetImage(CreateVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),

@@ -60,7 +60,7 @@ std::u16string GetLabelForConfigureNetworkEntry(NetworkType type) {
     case NetworkType::kMobile:
       return l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_ADD_ESIM);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -79,7 +79,7 @@ std::optional<std::u16string> GetTooltipForConfigureNetworkEntry(
     case NetworkType::kMobile:
       return l10n_util::GetStringUTF16(GetAddESimTooltipMessageId());
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -97,7 +97,7 @@ int GetViewIDForConfigureNetworkEntry(NetworkType type) {
     case NetworkType::kMobile:
       return VIEW_ID_ADD_ESIM_ENTRY;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -262,7 +262,7 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
     default:
       return scroll_content();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkDetailedNetworkViewImpl::ReorderFirstListView(size_t index) {

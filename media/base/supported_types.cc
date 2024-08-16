@@ -90,10 +90,6 @@ bool IsSupportedHdrMetadata(const VideoType& type) {
 
 bool IsColorSpaceSupported(const VideoColorSpace& color_space) {
   switch (color_space.primaries) {
-    case VideoColorSpace::PrimaryID::EBU_3213_E:
-    case VideoColorSpace::PrimaryID::INVALID:
-      return false;
-
     // Transfers supported before color management.
     case VideoColorSpace::PrimaryID::BT709:
     case VideoColorSpace::PrimaryID::UNSPECIFIED:
@@ -109,7 +105,12 @@ bool IsColorSpaceSupported(const VideoColorSpace& color_space) {
     case VideoColorSpace::PrimaryID::SMPTEST428_1:
     case VideoColorSpace::PrimaryID::SMPTEST431_2:
     case VideoColorSpace::PrimaryID::SMPTEST432_1:
+    case VideoColorSpace::PrimaryID::EBU_3213_E:
       break;
+
+    // Never supported.
+    case VideoColorSpace::PrimaryID::INVALID:
+      return false;
   }
 
   switch (color_space.transfer) {

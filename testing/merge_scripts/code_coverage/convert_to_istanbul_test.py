@@ -5,12 +5,12 @@
 
 import json
 import os
+from pathlib import Path
 import shutil
 import tempfile
 import unittest
 
 import merge_js_lib as merger
-from pathlib import Path
 import node
 
 _HERE_DIR = Path(__file__).parent.resolve()
@@ -33,16 +33,16 @@ function subtract(a, b) {
 subtract(5, 2);
 """
   _INVALID_MAPPING_A = (
-      "//# sourceMappingURL=data:application/json;base64,"
-      "eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby50cyJdLCJuYW1lcyI6W10sIm1hcHBpb"
-      "mdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Oz"
-      "s7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUN"
-      "BIiwiZmlsZSI6Ii91c3IvbG9jYWwvZ29vZ2xlL2hvbWUvc3Jpbml2YXNoZWdkZS9jaHJv"
-      "bWl1bS9zcmMvZm9vX3ByZS50cyIsInNvdXJjZVJvb3QiOiIvdXNyL2xvY2FsL2dvb2dsZ"
-      "S9ob21lL3NyaW5pdmFzaGVnZGUvY2hyb21pdW0vc3JjIiwic291cmNlc0NvbnRlbnQiOl"
-      "siZnVuY3Rpb24gYWRkKGEsIGIpIHtcbiAgcmV0dXJuIGEgKyBiO1xufVxuXG5mdW5jdGl"
-      "vbiBzdWJ0cmFjdChhLCBiKSB7XG4gIHJldHVybiBhIC0gYjtcbn1cblxuc3VidHJhY3Qo"
-      "NSwgMik7XG4iXX0=")
+      '//# sourceMappingURL=data:application/json;base64,'
+      'eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby50cyJdLCJuYW1lcyI6W10sIm1hcHBpb'
+      'mdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Oz'
+      's7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUN'
+      'BIiwiZmlsZSI6Ii91c3IvbG9jYWwvZ29vZ2xlL2hvbWUvc3Jpbml2YXNoZWdkZS9jaHJv'
+      'bWl1bS9zcmMvZm9vX3ByZS50cyIsInNvdXJjZVJvb3QiOiIvdXNyL2xvY2FsL2dvb2dsZ'
+      'S9ob21lL3NyaW5pdmFzaGVnZGUvY2hyb21pdW0vc3JjIiwic291cmNlc0NvbnRlbnQiOl'
+      'siZnVuY3Rpb24gYWRkKGEsIGIpIHtcbiAgcmV0dXJuIGEgKyBiO1xufVxuXG5mdW5jdGl'
+      'vbiBzdWJ0cmFjdChhLCBiKSB7XG4gIHJldHVybiBhIC0gYjtcbn1cblxuc3VidHJhY3Qo'
+      'NSwgMik7XG4iXX0=')
 
   _TEST_COVERAGE_A = """{
   "result": [
@@ -320,11 +320,11 @@ subtract(5, 2);
     output_file = os.path.join(out_dir, output_file_name)
     node.RunNode([
         str(_SOURCE_MAP_PROCESSOR),
-        "--originals={}".format(" ".join([original_file])),
-        "--inputs={}".format(" ".join([input_file])),
-        "--outputs={}".format(" ".join([output_file])),
-        "--inline-sourcemaps",
-        "--sourceRoot={}".format(self.sourceRoot),
+        '--originals={}'.format(' '.join([original_file])),
+        '--inputs={}'.format(' '.join([input_file])),
+        '--outputs={}'.format(' '.join([output_file])),
+        '--inline-sourcemaps',
+        '--sourceRoot={}'.format(self.sourceRoot),
     ])
 
   def write_sources(self, *file_path_contents):
@@ -435,7 +435,7 @@ subtract(5, 2);
   def test_original_source_missing(self):
     self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
     self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
-    os.remove(os.path.join(self.source_dir, "file.js"))
+    os.remove(os.path.join(self.source_dir, 'file.js'))
 
     merger.convert_raw_coverage_to_istanbul([self.coverage_dir], self.out_dir,
                                             self.task_output_dir)

@@ -70,15 +70,9 @@ std::vector<base::FilePath> GetVersionExecutablePaths(UpdaterScope scope) {
 
         const base::FilePath version_executable_path =
             version_folder_path.Append(GetExecutableRelativePath());
-
-        if (base::PathExists(version_executable_path)) {
-          version_executable_paths.push_back(version_executable_path);
-          VLOG(1) << __func__ << " : added to version_executable_paths: "
-                  << version_executable_path;
-        } else {
-          VLOG(1) << __func__
-                  << " : File does not exist: " << version_executable_path;
-        }
+        version_executable_paths.push_back(version_executable_path);
+        VLOG(1) << __func__ << " : added to version_executable_paths: "
+                << version_executable_path;
       });
 
   return version_executable_paths;

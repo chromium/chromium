@@ -144,7 +144,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kUndo:
       return std::u16string();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<ui::ImageModel> ImageModelFromImageSkia(
@@ -282,7 +282,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {

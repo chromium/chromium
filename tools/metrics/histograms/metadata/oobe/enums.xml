@@ -191,6 +191,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="HTTP error"/>
 </enum>
 
+<enum name="PerksDiscoveryErrorReason">
+  <int value="0" label="No Campaign Manager found"/>
+  <int value="1" label="No Campaign found"/>
+  <int value="2" label="No Campaign ID found"/>
+  <int value="3" label="No payload found"/>
+  <int value="4" label="Malformed payload"/>
+  <int value="5" label="No user profile found"/>
+  <int value="6" label="No action found"/>
+</enum>
+
 <enum name="PinSetupScreenUserAction">
   <summary>Actions which happen on the screen.</summary>
   <int value="0" label="Done button clicked"/>

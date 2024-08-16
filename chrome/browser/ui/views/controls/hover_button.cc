@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
@@ -115,9 +116,11 @@ HoverButton::HoverButton(PressedCallback callback, const std::u16string& text)
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(
-      views::TypographyProvider::Get().GetColorId(
-          views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
+  views::InkDrop::Get(this)->SetBaseColorId(kColorHoverButtonBackgroundHovered);
+  // kColorHoverButtonBackgroundHovered has its own opacity.
+  // sets the opacity to 100% * opacity(kColorHoverButtonBackgroundHovered).
+  views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
+  views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);

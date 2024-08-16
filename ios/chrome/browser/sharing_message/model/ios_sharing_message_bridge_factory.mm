@@ -9,7 +9,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
-#import "components/sync/model/client_tag_based_model_type_processor.h"
+#import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -51,7 +51,7 @@ IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(
   }
 
   auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SHARING_MESSAGE,
           base::BindRepeating(&syncer::ReportUnrecoverableError, GetChannel()));
   return std::make_unique<SharingMessageBridgeImpl>(

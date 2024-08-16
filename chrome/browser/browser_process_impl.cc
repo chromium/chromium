@@ -120,6 +120,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/sessions/core/session_id_generator.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/subresource_filter/content/browser/safe_browsing_ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -272,6 +273,9 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
                                     ->TakeChromeBrowserPolicyConnector()),
       local_state_(
           startup_data->chrome_feature_list_creator()->TakePrefService()),
+      active_primary_accounts_metrics_recorder_(
+          std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
+              *local_state_)),
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   CHECK(!g_browser_process);
   g_browser_process = this;
@@ -820,6 +824,12 @@ PrefService* BrowserProcessImpl::local_state() {
   return local_state_.get();
 }
 
+signin::ActivePrimaryAccountsMetricsRecorder*
+BrowserProcessImpl::active_primary_accounts_metrics_recorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return active_primary_accounts_metrics_recorder_.get();
+}
+
 variations::VariationsService* BrowserProcessImpl::variations_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto* metrics_services_manager = GetMetricsServicesManager();
@@ -1159,8 +1169,8 @@ subresource_filter::RulesetService*
 BrowserProcessImpl::fingerprinting_protection_ruleset_service() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!created_fingerprinting_protection_ruleset_service_ &&
-      base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
-                                       kEnableFingerprintingProtectionFilter)) {
+      fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     CreateFingerprintingProtectionRulesetService();
   }
   return fingerprinting_protection_ruleset_service_.get();
@@ -1314,7 +1324,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if !BUILDFLAG(IS_ANDROID)
   screen_ai_download_ = screen_ai::ScreenAIInstallState::Create();
 #endif
 
@@ -1495,7 +1505,8 @@ void BrowserProcessImpl::CreateFingerprintingProtectionRulesetService() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
-  // TODO(https://crbug.com/347304498): Use FP publisher when implemented.
+  // TODO(https://crbug.com/347304498): Use FP publisher once
+  // UnverifiedRulesetDealer is used.
   fingerprinting_protection_ruleset_service_ =
       subresource_filter::RulesetService::Create(
           fingerprinting_protection_filter::

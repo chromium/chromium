@@ -20,11 +20,13 @@
   <cr-input id="certhash" class="input-field cert-hash"
       value="[[sha256hashHex]]" readonly>
     <cr-icon-button id="copy" class="icon-copy-content"
-        slot="inline-suffix" aria-label="Copy hash to clipboard"
+        slot="inline-suffix"
+        aria-label="[[i18n('certificateManagerV2CertHashCopyAriaLabel', displayName)]]"
         on-click="onCopyHash_">
     </cr-icon-button>
   </cr-input>
   <cr-icon-button id="view" class="icon-visibility"
+      aria-label="[[i18n('certificateManagerV2CertEntryViewAriaLabel', displayName)]]"
       on-click="onViewCertificate_" aria-label="View certificate details">
   </cr-icon-button>
 </div>

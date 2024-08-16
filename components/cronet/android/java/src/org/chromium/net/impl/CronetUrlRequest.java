@@ -9,6 +9,7 @@ import static java.lang.Math.max;
 import android.os.Build;
 import android.os.Process;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -101,6 +102,10 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
     private final VersionSafeCallbacks.RequestFinishedInfoListener mRequestFinishedListener;
+    // See {@link org.chromium.net.UrlRequest.Builder#setRawCompressionDictionary}.
+    private byte[] mDictionarySha256Hash;
+    private ByteBuffer mDictionary;
+    private final String mDictionaryId;
     private final long mNetworkHandle;
     private final CronetLogger mLogger;
 
@@ -173,10 +178,15 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor) {
+            Executor uploadDataProviderExecutor,
+            byte[] dictionarySha256Hash,
+            ByteBuffer dictionary,
+            @NonNull String dictionaryId) {
         Objects.requireNonNull(url, "URL is required");
         Objects.requireNonNull(callback, "Listener is required");
         Objects.requireNonNull(executor, "Executor is required");
+        Objects.requireNonNull(
+                dictionaryId, "Dictionary ID is expect to be an empty string if not specified");
 
         mAllowDirectExecutor = allowDirectExecutor;
         mRequestContext = requestContext;
@@ -198,6 +208,9 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                         ? new VersionSafeCallbacks.RequestFinishedInfoListener(
                                 requestFinishedListener)
                         : null;
+        mDictionarySha256Hash = dictionarySha256Hash;
+        mDictionary = dictionary;
+        mDictionaryId = dictionaryId;
         mIdempotency = convertIdempotency(idempotency);
         mNetworkHandle = networkHandle;
         mInitialMethod = method;
@@ -229,6 +242,11 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                                         mTrafficStatsUidSet,
                                         mTrafficStatsUid,
                                         mIdempotency,
+                                        mDictionarySha256Hash,
+                                        mDictionary,
+                                        mDictionary != null ? mDictionary.position() : 0,
+                                        mDictionary != null ? mDictionary.limit() : 0,
+                                        mDictionaryId,
                                         mNetworkHandle);
                 mRequestContext.onRequestStarted();
                 if (!CronetUrlRequestJni.get()
@@ -1112,6 +1130,12 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 boolean trafficStatsUidSet,
                 int trafficStatsUid,
                 int idempotency,
+                byte[] dictionarySha256Hash,
+                ByteBuffer dictionary,
+                // TODO(b/358568022): Stop passing position and capacity via JNI.
+                int dictionaryPosition,
+                int dictionaryCapacity,
+                String dictionaryId,
                 long networkHandle);
 
         @NativeClassQualifiedName("CronetURLRequestAdapter")
@@ -1132,6 +1156,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 long nativePtr,
                 CronetUrlRequest caller,
                 ByteBuffer byteBuffer,
+                // TODO(b/358568022): Stop passing position and capacity via JNI.
                 int position,
                 int capacity);
 

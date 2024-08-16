@@ -17,12 +17,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_client_impl.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
@@ -71,7 +71,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -93,7 +93,7 @@ KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       profile->GetPrefs(), base::DefaultClock::GetInstance());
 
   return new syncer::DeviceInfoSyncServiceImpl(
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client),
       SyncInvalidationsServiceFactory::GetForProfile(profile));

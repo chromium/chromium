@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_snapshotter.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
@@ -88,8 +87,7 @@ class ReadAnythingUntrustedPageHandler :
     public read_anything::mojom::UntrustedPageHandler,
     public ReadAnythingCoordinator::Observer,
     public ReadAnythingSidePanelController::Observer,
-    public translate::TranslateDriver::LanguageDetectionObserver,
-    public TabStripModelObserver {
+    public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
@@ -154,6 +152,8 @@ class ReadAnythingUntrustedPageHandler :
                              const GURL& image_url,
                              const std::vector<SkBitmap>& bitmaps,
                              const std::vector<gfx::Size>& sizes);
+  void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,
+                          ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
                          ui::AXNodeID anchor_node_id,
                          int anchor_offset,
@@ -174,22 +174,6 @@ class ReadAnythingUntrustedPageHandler :
   // ReadAnythingSidePanelController::Observer:
   void OnSidePanelControllerDestroyed() override;
 
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
-
-  // When the active web contents changes (or the UI becomes active):
-  // 1. Begins observing the web contents of the active tab and enables web
-  //    contents-only accessibility on that web contents. This causes
-  //    AXTreeSerializer to reset and send accessibility events of the AXTree
-  //    when it is re-serialized. The WebUI receives these events and stores a
-  //    copy of the web contents' AXTree.
-  // 2. Notifies the model that the AXTreeID has changed.
-  void OnActiveWebContentsChanged();
-
   void SetUpPdfObserver();
 
   void OnActiveAXTreeIDChanged();
@@ -198,15 +182,13 @@ class ReadAnythingUntrustedPageHandler :
   void LogTextStyle();
 
   // Adds this as an observer of the ReadAnythingSidePanelController tied to a
-  // WebContents.
-  void ObserveWebContentsSidePanelController(
-      content::WebContents* web_contents);
+  // tab.
+  void ObserveWebContentsSidePanelController(tabs::TabInterface* tab);
 
-  void PerformActionInTargetTree(const ui::AXTreeID& target_tree_id,
-                                 const ui::AXActionData& data);
+  void PerformActionInTargetTree(const ui::AXActionData& data);
 
-  raw_ptr<ReadAnythingTabHelper> tab_helper_;
-  const base::WeakPtr<Browser> browser_;
+  raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
+  const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;

@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -24,8 +25,13 @@ class VideoFrame;
 
 namespace gpu {
 
+namespace gles2 {
+class GLES2Interface;
+}  // namespace gles2
+
 class ClientSharedImageInterface;
 class GpuChannelSharedImageInterface;
+class SharedImageTexture;
 class TestSharedImageInterface;
 
 struct ExportedSharedImage;
@@ -193,8 +199,14 @@ class GPU_EXPORT ClientSharedImage
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       int importance);
 
+  // Creates a GL Texture from the current SharedImage for the provided
+  // GLES2Interface.
+  std::unique_ptr<SharedImageTexture> CreateGLTexture(
+      gles2::GLES2Interface* gl);
+
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
+  friend class SharedImageTexture;
   ~ClientSharedImage();
 
   // This constructor is used only when importing an owned ClientSharedImage,
@@ -238,6 +250,11 @@ class GPU_EXPORT ClientSharedImage
            gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
   }
 
+  // This pair of functions are used by SharedImageTexture to notify
+  // ClientSharedImage of the beginning and the end of a scoped access.
+  void BeginAccess(bool readonly);
+  void EndAccess(bool readonly);
+
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
@@ -247,6 +264,12 @@ class GPU_EXPORT ClientSharedImage
 
   // The texture target returned by `GetTextureTarget()`.
   uint32_t texture_target_ = 0;
+
+  // The number of active scoped read accesses.
+  unsigned int num_readers_ = 0;
+
+  // Whether there exists an active scoped write access.
+  bool has_writer_ = false;
 };
 
 struct GPU_EXPORT ExportedSharedImage {
@@ -271,6 +294,58 @@ struct GPU_EXPORT ExportedSharedImage {
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
   uint32_t texture_target_ = 0;
+};
+
+class GPU_EXPORT SharedImageTexture {
+ public:
+  class GPU_EXPORT ScopedAccess {
+   public:
+    ScopedAccess(const ScopedAccess&) = delete;
+    ScopedAccess& operator=(const ScopedAccess&) = delete;
+    ScopedAccess(ScopedAccess&&) = delete;
+    ScopedAccess& operator=(ScopedAccess&&) = delete;
+
+    ~ScopedAccess();
+
+    unsigned int texture_id() { return texture_->id(); }
+
+    static SyncToken EndAccess(
+        std::unique_ptr<ScopedAccess> scoped_shared_image);
+
+   private:
+    friend class SharedImageTexture;
+    ScopedAccess(SharedImageTexture* texture,
+                 const SyncToken& sync_token,
+                 bool readonly);
+    void DidEndAccess();
+
+    const raw_ptr<SharedImageTexture> texture_;
+    const bool readonly_;
+    bool is_access_ended_ = false;
+  };
+
+  SharedImageTexture(const SharedImageTexture&) = delete;
+  SharedImageTexture& operator=(const SharedImageTexture&) = delete;
+  SharedImageTexture(SharedImageTexture&&) = delete;
+  SharedImageTexture& operator=(SharedImageTexture&&) = delete;
+
+  ~SharedImageTexture();
+
+  std::unique_ptr<ScopedAccess> BeginAccess(const SyncToken& sync_token,
+                                            bool readonly);
+
+  void DidEndAccess(bool readonly);
+  unsigned int id() { return id_; }
+
+ private:
+  friend class ClientSharedImage;
+  SharedImageTexture(gles2::GLES2Interface* gl,
+                     ClientSharedImage* shared_image);
+
+  const raw_ptr<gles2::GLES2Interface> gl_;
+  const raw_ptr<gpu::ClientSharedImage> shared_image_;
+  unsigned int id_ = 0;
+  bool has_active_access_ = false;
 };
 
 }  // namespace gpu

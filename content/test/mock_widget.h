@@ -68,7 +68,9 @@ class MockWidget : public blink::mojom::Widget,
       override;
   void CancelSuccessfulPresentationTimeRequest() override;
   void SetupRenderInputRouterConnections(
-      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> request)
+      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+          browser_request,
+      mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_request)
       override;
 
  private:

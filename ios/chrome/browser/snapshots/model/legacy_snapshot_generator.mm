@@ -64,25 +64,31 @@ struct SnapshotInfo {
       willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                              initWithWebState:_webState.get()]];
 
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return nil;
+  }
   // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
   // however, it generates a black image when the size of `baseView` is larger
   // than `frameInBaseView`. So this is a workaround to generate an UIImage by
   // dividing the step into 2 steps; 1) convert an UIView to an UIImage 2) crop
   // an UIImage with `frameInBaseView`.
-  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.baseView];
+  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.value().baseView];
   return [self cropImage:baseImage
-         frameInBaseView:snapshotInfo.snapshotFrameInBaseView];
+         frameInBaseView:snapshotInfo.value().snapshotFrameInBaseView];
 }
 
 - (UIImage*)generateUIViewSnapshotWithOverlays {
   if (![self canTakeSnapshot]) {
     return nil;
   }
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return nil;
+  }
   return [self addOverlays:[self overlays]
                  baseImage:[self generateUIViewSnapshot]
-             frameInWindow:snapshotInfo.snapshotFrameInWindow];
+             frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
 }
 
 #pragma mark - Private methods
@@ -110,7 +116,10 @@ struct SnapshotInfo {
       willUpdateSnapshotWithWebStateInfo:[[WebStateSnapshotInfo alloc]
                                              initWithWebState:_webState.get()]];
 
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  std::optional<SnapshotInfo> snapshotInfo = [self snapshotInfo];
+  if (!snapshotInfo) {
+    return;
+  }
   auto wrappedCompletion =
       ^(__weak LegacySnapshotGenerator* generator, UIImage* image) {
         if (!generator) {
@@ -119,14 +128,14 @@ struct SnapshotInfo {
         UIImage* snapshot =
             [generator addOverlays:[generator overlays]
                          baseImage:image
-                     frameInWindow:snapshotInfo.snapshotFrameInWindow];
+                     frameInWindow:snapshotInfo.value().snapshotFrameInWindow];
         if (completion) {
           completion(snapshot);
         }
       };
 
   __weak LegacySnapshotGenerator* weakSelf = self;
-  _webState->TakeSnapshot(snapshotInfo.snapshotFrameInBaseView,
+  _webState->TakeSnapshot(snapshotInfo.value().snapshotFrameInBaseView,
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
@@ -203,16 +212,7 @@ struct SnapshotInfo {
   if (!baseImage) {
     return nil;
   }
-  if (CGRectIsEmpty(frameInBaseView)) {
-    // TODO(crbug.com/345153432): This should not be empty but we have observed
-    // `frameInBaseView` being empty.
-    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_base_view_height",
-                            frameInBaseView.size.height);
-    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_base_view_width",
-                            frameInBaseView.size.width);
-    base::debug::DumpWithoutCrashing();
-    return nil;
-  }
+  DCHECK(!CGRectIsEmpty(frameInBaseView));
 
   // Scale `frameInBaseView` to handle an image with 2x scale.
   CGFloat scale = baseImage.scale;
@@ -307,7 +307,7 @@ struct SnapshotInfo {
 }
 
 // Retrieves information needed for snapshotting.
-- (SnapshotInfo)snapshotInfo {
+- (std::optional<SnapshotInfo>)snapshotInfo {
   CHECK(_webState);
   SnapshotInfo snapshotInfo;
   snapshotInfo.baseView = [_delegate
@@ -320,19 +320,15 @@ struct SnapshotInfo {
                                              initWithWebState:_webState.get()]];
   snapshotInfo.snapshotFrameInBaseView =
       UIEdgeInsetsInsetRect(snapshotInfo.baseView.bounds, baseViewInsets);
-  DCHECK(!CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView));
+  if (CGRectIsEmpty(snapshotInfo.snapshotFrameInBaseView)) {
+    return std::nullopt;
+  }
 
   snapshotInfo.snapshotFrameInWindow =
       [snapshotInfo.baseView convertRect:snapshotInfo.snapshotFrameInBaseView
                                   toView:nil];
   if (CGRectIsEmpty(snapshotInfo.snapshotFrameInWindow)) {
-    // TODO(crbug.com/345153432): This should not be empty but we have observed
-    // `snapshotInfo.snapshotFrameInWindow` being empty.
-    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_window_height",
-                            snapshotInfo.snapshotFrameInWindow.size.height);
-    SCOPED_CRASH_KEY_NUMBER("Snapshots", "frame_in_window_width",
-                            snapshotInfo.snapshotFrameInWindow.size.width);
-    base::debug::DumpWithoutCrashing();
+    return std::nullopt;
   }
   return snapshotInfo;
 }

@@ -50,18 +50,17 @@ GURL GetCardArtUrl(const CreditCard& card) {
 }
 
 std::u16string GetTitle(bool has_suggestions) {
-  return l10n_util::GetStringUTF16(
-      has_suggestions ? IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_TITLE
-                      : IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
+  return has_suggestions
+             ? std::u16string()
+             : l10n_util::GetStringUTF16(
+                   IDS_MANUAL_FILLING_CREDIT_CARD_SHEET_EMPTY_MESSAGE);
 }
 
-void AddSimpleField(const std::u16string& data,
-                    UserInfo* user_info,
-                    bool enabled) {
-  user_info->add_field(AccessorySheetField(
-      /*display_text=*/data, /*text_to_fill=*/data, /*a11y_description=*/data,
-      /*id=*/std::string(),
-      /*is_password=*/false, enabled));
+void AddSimpleField(std::u16string data, UserInfo* user_info, bool enabled) {
+  user_info->add_field(AccessorySheetField::Builder()
+                           .SetDisplayText(std::move(data))
+                           .SetSelectable(enabled)
+                           .Build());
 }
 
 void AddCardDetailsToUserInfo(const CreditCard& card,
@@ -94,9 +93,11 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   // The `text_to_fill` field is set to an empty string as we're populating the
   // `id` of the `UserInfoField` which would be used to determine the type of
   // the card and fill the form accordingly.
-  user_info.add_field(AccessorySheetField(
-      obfuscated_number, /*text_to_fill=*/std::u16string(), obfuscated_number,
-      data->guid(), /*is_password=*/false, enabled));
+  user_info.add_field(AccessorySheetField::Builder()
+                          .SetDisplayText(obfuscated_number)
+                          .SetId(data->guid())
+                          .SetSelectable(enabled)
+                          .Build());
   AddCardDetailsToUserInfo(*data, &user_info, std::u16string(), enabled);
 
   return user_info;
@@ -108,9 +109,12 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   const CreditCard& card = data->card;
   UserInfo user_info(card.network(), GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
-  user_info.add_field(AccessorySheetField(
-      card.FullDigitsForDisplay(), card_number, card_number,
-      /*id=*/std::string(), /*is_password=*/false, enabled));
+  user_info.add_field(AccessorySheetField::Builder()
+                          .SetDisplayText(card.FullDigitsForDisplay())
+                          .SetTextToFill(card_number)
+                          .SetA11yDescription(card_number)
+                          .SetSelectable(enabled)
+                          .Build());
   AddCardDetailsToUserInfo(card, &user_info, data->cvc, enabled);
 
   return user_info;
@@ -254,7 +258,7 @@ void PaymentMethodAccessoryControllerImpl::OnFillingTriggered(
     return;
   }
 
-  NOTREACHED_NORETURN() << "Neither fillable value nor known ID.";
+  NOTREACHED() << "Neither fillable value nor known ID.";
 }
 
 void PaymentMethodAccessoryControllerImpl::OnPasskeySelected(

@@ -26,8 +26,8 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -194,7 +194,7 @@ sync_pb::EntityMetadata CreateMetadata(std::string collaboration_id) {
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
  public:
   SharedTabGroupDataSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   // Creates the bridges and initializes the model. Returns true when succeeds.
   bool InitializeBridgeAndModel() {
@@ -207,7 +207,7 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         saved_tab_group_model_.get(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_,
         base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
                        base::Unretained(saved_tab_group_model_.get())));
@@ -227,12 +227,12 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   size_t GetNumEntriesInStore() {
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+    std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
     base::RunLoop run_loop;
     store_->ReadAllData(base::BindLambdaForTesting(
         [&run_loop, &entries](
             const std::optional<syncer::ModelError>& error,
-            std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+            std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
           entries = std::move(data);
           run_loop.Quit();
         }));
@@ -241,23 +241,24 @@ class SharedTabGroupDataSyncBridgeTest : public testing::Test {
   }
 
   SharedTabGroupDataSyncBridge* bridge() { return bridge_.get(); }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
     return processor_;
   }
   SavedTabGroupModel* model() { return saved_tab_group_model_.get(); }
   testing::NiceMock<MockTabGroupModelObserver>& mock_model_observer() {
     return mock_model_observer_;
   }
-  syncer::ModelTypeStore& store() { return *store_; }
+  syncer::DataTypeStore& store() { return *store_; }
 
  private:
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   testing::NiceMock<MockTabGroupModelObserver> mock_model_observer_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SharedTabGroupDataSyncBridge> bridge_;
   std::unique_ptr<ModelObserverForwarder> observer_forwarder_;
@@ -880,7 +881,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
   // Simulate sync metadata which is normally created by the change processor.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store().CreateWriteBatch();
   syncer::MetadataChangeList* metadata_change_list =
       write_batch->GetMetadataChangeList();

@@ -21,17 +21,18 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
+extern AllocatorDispatch g_allocator_dispatch;
+
 // By being implemented as a global with inline method definitions, method calls
 // and member accesses are inlined and as efficient as possible in the
 // performance-sensitive allocation hot-path.
 SamplingState<LIGHTWEIGHTDETECTOR> sampling_state;
 
-bool MaybeQuarantine(const AllocatorDispatch* self,
-                     void* address,
+bool MaybeQuarantine(void* address,
                      std::optional<size_t> maybe_size,
                      void* context,
                      FreeFunctionKind kind) {
-  if (LIKELY(!sampling_state.Sample())) {
+  if (!sampling_state.Sample()) [[likely]] {
     return false;
   }
 
@@ -43,59 +44,52 @@ bool MaybeQuarantine(const AllocatorDispatch* self,
   DCHECK_EQ(context, nullptr);
 #endif
   base::CheckedNumeric<size_t> size = maybe_size.value_or(
-      self->next->get_size_estimate_function(self->next, address, context));
+      g_allocator_dispatch.next->get_size_estimate_function(address, context));
   info.free_fn_kind = kind;
-  if (UNLIKELY(!size.AssignIfValid(&info.size))) {
+  if (!size.AssignIfValid(&info.size)) [[unlikely]] {
     return false;
   }
 
   return RandomEvictionQuarantine::Get()->Add(info);
 }
 
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+void FreeFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kFree)) {
     return;
   }
 
-  MUSTTAIL return self->next->free_function(self->next, address, context);
+  MUSTTAIL return g_allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
-  if (MaybeQuarantine(self, address, size, context,
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+  if (MaybeQuarantine(address, size, context,
                       FreeFunctionKind::kFreeDefiniteSize)) {
     return;
   }
 
-  MUSTTAIL return self->next->free_definite_size_function(self->next, address,
-                                                          size, context);
+  MUSTTAIL return g_allocator_dispatch.next->free_definite_size_function(
+      address, size, context);
 }
 
-void TryFreeDefaultFn(const AllocatorDispatch* self,
-                      void* address,
-                      void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+void TryFreeDefaultFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kTryFreeDefault)) {
     return;
   }
 
-  MUSTTAIL return self->next->try_free_default_function(self->next, address,
-                                                        context);
+  MUSTTAIL return g_allocator_dispatch.next->try_free_default_function(address,
+                                                                       context);
 }
 
-static void AlignedFreeFn(const AllocatorDispatch* self,
-                          void* address,
-                          void* context) {
-  if (MaybeQuarantine(self, address, std::nullopt, context,
+static void AlignedFreeFn(void* address, void* context) {
+  if (MaybeQuarantine(address, std::nullopt, context,
                       FreeFunctionKind::kAlignedFree)) {
     return;
   }
 
-  MUSTTAIL return self->next->aligned_free_function(self->next, address,
-                                                    context);
+  MUSTTAIL return g_allocator_dispatch.next->aligned_free_function(address,
+                                                                   context);
 }
 
 AllocatorDispatch g_allocator_dispatch = {
@@ -149,20 +143,20 @@ void FinishFree(const AllocationInfo& allocation) {
 
   switch (allocation.free_fn_kind) {
     case FreeFunctionKind::kFree:
-      next->free_function(next, allocation.address, context);
+      next->free_function(allocation.address, context);
       break;
     case FreeFunctionKind::kFreeDefiniteSize:
-      next->free_definite_size_function(next, allocation.address,
-                                        allocation.size, context);
+      next->free_definite_size_function(allocation.address, allocation.size,
+                                        context);
       break;
     case FreeFunctionKind::kTryFreeDefault:
-      next->try_free_default_function(next, allocation.address, context);
+      next->try_free_default_function(allocation.address, context);
       break;
     case FreeFunctionKind::kAlignedFree:
-      next->aligned_free_function(next, allocation.address, context);
+      next->aligned_free_function(allocation.address, context);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

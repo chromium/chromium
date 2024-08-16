@@ -84,7 +84,7 @@ export interface AllSitesElement {
 const AllSitesElementBase = GlobalScrollTargetMixin(RouteObserverMixin(
     WebUiListenerMixin(I18nMixin(SiteSettingsMixin(PolymerElement)))));
 
-const FPS_RELATED_SEARCH_PREFIX: string = 'related:';
+const RWS_RELATED_SEARCH_PREFIX: string = 'related:';
 
 export class AllSitesElement extends AllSitesElementBase {
   static get is() {
@@ -302,12 +302,12 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
     for (const [_groupingKey, siteGroup] of siteGroupMap) {
-      if (this.isFpsFiltered_()) {
-        const fpsOwnerFilter =
+      if (this.isRwsFiltered_()) {
+        const rwsOwnerFilter =
             this.filter.substring(this.filter.indexOf(':') + 1);
-        // Checking `siteGroup.fpsOwner` to ensure that we're not matching with
-        // site entries that are not a member of a first party set.
-        if (siteGroup.fpsOwner && siteGroup.fpsOwner === fpsOwnerFilter) {
+        // Checking `siteGroup.rwsOwner` to ensure that we're not matching with
+        // site entries that are not a member of a related website set.
+        if (siteGroup.rwsOwner && siteGroup.rwsOwner === rwsOwnerFilter) {
           result.push(siteGroup);
         }
       } else {
@@ -460,8 +460,8 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.filteredList_.length > 0;
   }
 
-  private shouldShowFpsLearnMore_(): boolean {
-    return this.isFpsFiltered_() && this.filteredList_ &&
+  private shouldShowRwsLearnMore_(): boolean {
+    return this.isRwsFiltered_() && this.filteredList_ &&
         this.filteredList_.length > 0;
   }
 
@@ -471,7 +471,7 @@ export class AllSitesElement extends AllSitesElementBase {
     const siteGroup = this.filteredList_[this.actionMenuModel_!.index];
     const searchParams = new URLSearchParams(
         'searchSubpage=' +
-        encodeURIComponent(FPS_RELATED_SEARCH_PREFIX + siteGroup.fpsOwner!));
+        encodeURIComponent(RWS_RELATED_SEARCH_PREFIX + siteGroup.rwsOwner!));
     const currentRoute = Router.getInstance().getCurrentRoute();
     Router.getInstance().navigateTo(currentRoute, searchParams);
   }
@@ -509,8 +509,8 @@ export class AllSitesElement extends AllSitesElementBase {
       displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: siteGroupToUpdate.numCookies,
-      fpsOwner: siteGroupToUpdate.fpsOwner,
-      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
+      rwsOwner: siteGroupToUpdate.rwsOwner,
+      rwsNumMembers: siteGroupToUpdate.rwsNumMembers,
       origins: [],
     };
 
@@ -553,8 +553,8 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupToUpdate.origins.forEach(originEntry => {
         this.resetPermissionsForOrigin_(originEntry.origin);
       });
-      if (updatedSiteGroup.fpsOwner) {
-        this.decrementFpsNumMembers_(updatedSiteGroup.fpsOwner);
+      if (updatedSiteGroup.rwsOwner) {
+        this.decrementRwsNumMembers_(updatedSiteGroup.rwsOwner);
       }
     }
 
@@ -574,17 +574,17 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Checks if a first party set search filter is applied.
-   * @return True if filter starts with `FPS_RELATED_SEARCH_PREFIX`.
+   * Checks if a related website set search filter is applied.
+   * @return True if filter starts with `RWS_RELATED_SEARCH_PREFIX`.
    */
-  private isFpsFiltered_(): boolean {
-    return this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX);
+  private isRwsFiltered_(): boolean {
+    return this.filter.startsWith(RWS_RELATED_SEARCH_PREFIX);
   }
 
-  private getFpsLearnMoreLabel_() {
-    const fpsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
+  private getRwsLearnMoreLabel_() {
+    const rwsOwner = this.filter.substring(this.filter.indexOf(':') + 1);
     return loadTimeData.getStringF(
-        'siteSettingsFirstPartySetsLearnMore', fpsOwner);
+        'siteSettingsRelatedWebsiteSetsLearnMore', rwsOwner);
   }
   /**
    * Selects the appropriate string to display for clear button based on whether
@@ -771,15 +771,15 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Decrements the number of fps members for a given owner eTLD+1 by 1.
-   * @param fpsOwner The first party set owner.
+   * Decrements the number of rws members for a given owner eTLD+1 by 1.
+   * @param rwsOwner The related website set owner.
    */
-  private decrementFpsNumMembers_(fpsOwner: string) {
+  private decrementRwsNumMembers_(rwsOwner: string) {
     this.filteredList_.forEach((siteGroup, index) => {
-      if (siteGroup.fpsOwner === fpsOwner) {
+      if (siteGroup.rwsOwner === rwsOwner) {
         this.set(
-            'filteredList_.' + index + '.fpsNumMembers',
-            siteGroup.fpsNumMembers! - 1);
+            'filteredList_.' + index + '.rwsNumMembers',
+            siteGroup.rwsNumMembers! - 1);
       }
     });
   }
@@ -804,8 +804,8 @@ export class AllSitesElement extends AllSitesElementBase {
       displayName: siteGroupToUpdate.displayName,
       hasInstalledPWA: siteGroupToUpdate.hasInstalledPWA,
       numCookies: 0,
-      fpsOwner: siteGroupToUpdate.fpsOwner,
-      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
+      rwsOwner: siteGroupToUpdate.rwsOwner,
+      rwsNumMembers: siteGroupToUpdate.rwsNumMembers,
       origins: [],
     };
 
@@ -852,7 +852,7 @@ export class AllSitesElement extends AllSitesElementBase {
     this.recordUserAction_([...scopes, installed, 'Confirm']);
     this.metricsBrowserProxy.recordDeleteBrowsingDataAction(
         DeleteBrowsingDataAction.SITES_SETTINGS_PAGE);
-    if (this.isFpsFiltered_()) {
+    if (this.isRwsFiltered_()) {
       this.browserProxy.recordAction(AllSitesAction2.DELETE_FOR_ENTIRE_FPS);
     }
     for (let index = this.filteredList_.length - 1; index >= 0; index--) {

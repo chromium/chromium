@@ -22,11 +22,12 @@
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -76,7 +77,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   syncer::SyncService* sync_service() {

@@ -77,6 +77,9 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
   AutofillBubbleBase* ShowSaveCardConfirmationBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller) override;
+  AutofillBubbleBase* ShowSaveIbanConfirmationBubble(
+      content::WebContents* web_contents,
+      IbanBubbleController* controller) override;
 
  private:
   std::unique_ptr<TestAutofillBubble> local_card_migration_bubble_view_;
@@ -93,6 +96,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       virtual_card_enroll_confirmation_bubble_view_;
   std::unique_ptr<TestAutofillBubble> mandatory_reauth_bubble_view_;
   std::unique_ptr<TestAutofillBubble> save_card_confirmation_bubble_view_;
+  std::unique_ptr<TestAutofillBubble> save_iban_confirmation_bubble_view_;
 
   int save_card_confirmation_bubble_shown_count_ = 0;
 };

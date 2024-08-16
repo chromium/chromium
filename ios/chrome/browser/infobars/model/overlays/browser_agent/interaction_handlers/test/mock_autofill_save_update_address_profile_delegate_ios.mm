@@ -19,7 +19,7 @@ MockAutofillSaveUpdateAddressProfileDelegateIOS::
           original_profile,
           /*syncing_user_email=*/std::nullopt,
           locale,
-          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
+          /*is_migration_to_account=*/false,
           std::move(callback)) {}
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::

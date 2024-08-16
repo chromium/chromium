@@ -14,17 +14,14 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
 
     private final View mViewToPad;
     private final int mDefaultBottomPadding;
-    private final boolean mAccountForBrowserControls;
 
-    public SimpleEdgeToEdgePadAdjuster(View view, boolean accountForBrowserControls) {
+    public SimpleEdgeToEdgePadAdjuster(View view) {
         mViewToPad = view;
         mDefaultBottomPadding = mViewToPad.getPaddingBottom();
-        mAccountForBrowserControls = accountForBrowserControls;
     }
 
     @Override
-    public void overrideBottomInset(int defaultInset, int insetWithBrowserControls) {
-        int inset = mAccountForBrowserControls ? insetWithBrowserControls : defaultInset;
+    public void overrideBottomInset(int inset) {
         mViewToPad.setPadding(
                 mViewToPad.getPaddingLeft(),
                 mViewToPad.getPaddingTop(),

@@ -320,15 +320,6 @@ void AuthSessionAuthenticator::DoCompleteLogin(
         steps.push_back(base::BindOnce(
             &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
             weak_factory_.GetWeakPtr()));
-      } else if (!ash::features::AreLocalPasswordsEnabledForConsumers()) {
-        CHECK(has_password)
-            << "Empty passwords are not supported during user creation";
-        steps.push_back(
-            base::BindOnce(&AuthFactorEditor::AddContextKnowledgeKey,
-                           auth_factor_editor_->AsWeakPtr()));
-        steps.push_back(base::BindOnce(
-            &AuthSessionAuthenticator::RecordFirstAuthFactorAdded,
-            weak_factory_.GetWeakPtr()));
       } else if (ephemeral) {
         // Short-terms fix for b/344603210:
         // Ephemeral users don't have active authsession in onboarding
@@ -346,16 +337,15 @@ void AuthSessionAuthenticator::DoCompleteLogin(
   } else {  // existing user
     if (!challenge_response_auth) {
       // Password-based login
-      if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-        const auto& factors = context->GetAuthFactorsData();
-        if (!factors.FindOnlinePasswordFactor()) {
-          // User has knowledge factor other than online password need
-          // to go through custom flow.
-          NotifyOnlinePasswordUnusable(std::move(context),
-                                       /*online_password_mismatch=*/false);
-          return;
-        }
+      const auto& factors = context->GetAuthFactorsData();
+      if (!factors.FindOnlinePasswordFactor()) {
+        // User has knowledge factor other than online password need
+        // to go through custom flow.
+        NotifyOnlinePasswordUnusable(std::move(context),
+                                     /*online_password_mismatch=*/false);
+        return;
       }
+
       // We are sure that password is correct, so intercept authentication
       // failure events and treat them as password change signals.
       error_callback = base::BindOnce(

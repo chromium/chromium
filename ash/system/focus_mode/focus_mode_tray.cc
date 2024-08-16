@@ -120,10 +120,14 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                            ? cros_tokens::kCrosSysPrimary
                                            : cros_tokens::kCrosSysDisabled,
                                        kIconSize));
-    radio_button_->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
-    radio_button_->SetTooltipText(
-        radio_button_->GetViewAccessibility().GetCachedName());
+
+    const std::u16string radio_text = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON);
+    views::ViewAccessibility& radio_button_view_a11y =
+        radio_button_->GetViewAccessibility();
+    radio_button_view_a11y.SetName(radio_text);
+    radio_button_view_a11y.SetDescription(title);
+    radio_button_->SetTooltipText(radio_text);
     radio_button_->SetEnabled(is_network_connected);
 
     task_title_ = AddChildView(std::make_unique<views::Label>());
@@ -149,8 +153,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   bool GetWasCompleted() const { return was_completed_; }
 
   void UpdateTitle(const std::u16string& title) {
-    radio_button_->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
+    radio_button_->GetViewAccessibility().SetDescription(title);
     task_title_->SetText(title);
     task_title_->SetTooltipText(title);
   }
@@ -326,7 +329,7 @@ TrayBubbleView* FocusModeTray::GetBubbleView() {
   return bubble_ ? bubble_->bubble_view() : nullptr;
 }
 
-void FocusModeTray::CloseBubble() {
+void FocusModeTray::CloseBubbleInternal() {
   CloseBubbleAndMaybeReset(/*should_reset=*/true);
 }
 

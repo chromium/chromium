@@ -1,0 +1,167 @@
+<style include="cr-shared-style cr-hidden-style">
+  :host {
+    display: block;
+    margin: auto;
+    max-width: 800px;
+    padding: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      color: var(--google-grey-200);
+    }
+  }
+
+  .throbber {
+    background: url(chrome://resources/images/throbber_small.svg) no-repeat;
+    display: block;
+    height: 20px;
+    margin: auto;
+    width: 20px;
+  }
+
+  #textInput {
+    --cr-input-error-display: none;
+    margin: 0 0 20px 0;
+  }
+
+  .output-options {
+    margin-top: 20px;
+  }
+
+  .output-options cr-input {
+    display: inline-block;
+    vertical-align: middle;
+    margin-inline-end: 20px;
+    width: 100px;
+  }
+
+  .performance-class {
+    padding-bottom: 20px;
+    text-align: center;
+  }
+
+  .model-text {
+    margin: 0 5px 20px 5px;
+  }
+
+  .session {
+    margin-top: 10px;
+  }
+
+  .text,
+  .response {
+    background-color: var(--google-grey-300);
+    border-radius: 15px;
+    color: var(--google-grey-800);
+    margin: 10px 5px 5px 5px;
+    padding: 15px 20px;
+    white-space: pre-wrap;
+  }
+
+  .response {
+    background-color: var(--google-blue-200);
+    margin-bottom: 30px;
+    margin-inline-start: 50px;
+  }
+
+  .retracted, .error {
+    background-color: var(--google-red-100);
+  }
+
+  .text {
+    margin-inline-end: 50px;
+  }
+
+  #modelInput {
+    max-width: 400px;
+  }
+
+  cr-collapse {
+    padding: 10px var(--cr-section-padding);
+  }
+
+  cr-textarea {
+    margin-bottom: 10px;
+  }
+
+  cr-collapse,
+  cr-expand-button {
+    background-color: var(--cr-card-background-color);
+  }
+
+  cr-expand-button:hover {
+    background-color: var(--cr-hover-background-color);
+  }
+</style>
+<div class="performance-class">
+  Device performance class: <strong>[[performanceClassText_]]</strong>
+</div>
+<cr-input id="modelInput" label="Model directory" placeholder="/tmp/model"
+    disabled="[[isLoading_(loadModelStart_)]]"
+    on-change="onModelSelected_" error-message="[[error_]]"
+    invalid="[[error_.length]]" autofocus>
+  <cr-button slot="suffix" disabled="[[isLoading_(loadModelStart_)]]"
+      on-click="onLoadClick_">
+    Load
+  </cr-button>
+</cr-input>
+<div class="model-text">
+  [[getModelText_(modelPath_, loadModelDuration_)]]
+  <div class="throbber" hidden$="[[!isLoading_(loadModelStart_)]]"></div>
+</div>
+
+<cr-expand-button class="cr-row first" expanded="{{contextExpanded_}}"
+    disabled="[[!model_]]">
+  Context options (current size: [[contextLength_]] words)
+</cr-expand-button>
+<cr-collapse id="expandedContent" opened="[[contextExpanded_]]">
+  <cr-textarea type="text" label="Context" value="{{contextText_}}">
+  </cr-textarea>
+  <cr-button on-click="onAddContextClick_">
+    Add
+  </cr-button>
+  <cr-button class="cr-button-gap" on-click="startNewSession_">
+    New session
+  </cr-button>
+</cr-collapse>
+<div class="output-options">
+  <cr-input id="topKInput" type="number" min="1" max="128" label="Top K"
+    error-message="Top K must be between 1 and 128" auto-validate
+    value="{{topK_}}">
+  </cr-input>
+  <cr-input id="temperatureInput" type="number" min="0" max="2"
+    label="Temperature" auto-validate
+    error-message="Temperature must be between 0 and 2"
+    value="{{temperature_}}">
+  </cr-input>
+</div>
+<cr-input id="textInput" disabled="[[!canExecute_(currentResponse_, model_)]]"
+    label="Input" placeholder="What is 2+2?" on-change="onExecute_"
+    value="{{text_}}">
+  <cr-button slot="suffix"
+      disabled="[[!canExecute_(currentResponse_, model_)]]"
+      on-click="onExecuteClick_">
+    Execute
+  </cr-button>
+  <cr-button slot="suffix"
+      disabled="[[!currentResponse_]]"
+      on-click="onCancelClick_">
+    Cancel
+  </cr-button>
+</cr-input>
+
+<div class="session" hidden="[[!currentResponse_]]">
+  <div class="text">[[currentResponse_.text]]</div>
+  <div hidden$="[[!currentResponse_.response.length]]"
+      class$="[[currentResponse_.responseClass]]"
+      >[[currentResponse_.response]]</div>
+  <div class="throbber"
+      hidden$="[[currentResponse_.response.length]]"></div>
+</div>
+<template is="dom-repeat" items="[[responses_]]">
+  <div class="session">
+    <div class="text">[[item.text]]</div>
+    <div class$="[[item.responseClass]]">[[item.response]]</div>
+  </div>
+</template>

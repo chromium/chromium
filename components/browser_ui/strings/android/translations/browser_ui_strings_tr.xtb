@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL kısaltıldı</translation>
 <translation id="1448064542941920355">Yakınlaştırmayı azalt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> site}}</translation>
+<translation id="1500473259453106018">Sekmelerdeki fiyat düşüşleri kartını gizle</translation>
 <translation id="1510341833810331442">Sitelerin cihazınıza veri kaydetmesine izin verilmiyor</translation>
 <translation id="1547123415014299762">Üçüncü taraf çerezlerine izin verilir</translation>
 <translation id="1568470248891039841">Ziyaret ettiğiniz siteler, diğer sitelerdeki resim, reklam ve metin gibi içerikleri yerleştirebilir. Bu diğer siteler, sitede gezinirken hakkınızda kaydettikleri bilgileri kullanmak için izin isteyebilir. <ph name="BEGIN_LINK" />Yerleştirilmiş içerik hakkında daha fazla bilgi<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Tarama verilerini silme</translation>
 <translation id="3242646949159196181">Bu düğme açıkken siteler ses çalabilir. Düğme kapalıyken siteler ses çalamaz.</translation>
+<translation id="3273479183583863618">Sekmelerdeki fiyat düşüşleri</translation>
 <translation id="3277252321222022663">Sitelerin sensörlere erişmesine izin ver (önerilen)</translation>
 <translation id="3285500645985761267">İlgili sitelerin gruptaki etkinliğimi görmesine izin ver</translation>
 <translation id="3295019059349372795">11. Bölüm: Oz'un Muhteşem Zümrüt Kenti</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Kapat ve sonraki mevcut işlemi göster</translation>
 <translation id="3744111561329211289">Arka plan senkronizasyonu</translation>
 <translation id="3763247130972274048">10 sn. atlamak için videoda sola veya sağa iki kez dokunun</translation>
+<translation id="3779154269823594982">Şifreleri değiştir</translation>
 <translation id="3797520601150691162">Belirli bir siteye koyu tema uygulama</translation>
 <translation id="3803367742635802571">Ziyaret ettiğiniz siteler tasarlandığı şekilde çalışmayabilir</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Öğe seçin</translation>
 <translation id="6840760312327750441">Sekmeleri gruplamak için bir sekmeye dokunup basılı tutun. Ardından başka bir sekmenin üzerine sürükleyin.</translation>
 <translation id="6864395892908308021">Bu cihaz NFC'yi okuyamıyor</translation>
+<translation id="6870169401250095575">Güvenlik Kontrolü kartını gizle</translation>
 <translation id="6912998170423641340">Sitelerin panodaki metni ve resimleri okumasını engelle</translation>
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6950072572526089586">Ziyaret ettiğiniz bir site, yaptığınız işlemlerle ilgili bilgileri kaydedebilir. Bu bilgileri, beklendiği gibi çalışmak, örneğin bir sitede oturumunuzu açık tutmak veya alışveriş sepetinizdeki öğeleri kaydetmek için kullanabilir. Genellikle siteler bu bilgileri geçici olarak cihazınıza kaydeder.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Belirli bir site için sese izin verin.</translation>
 <translation id="789180354981963912">Gizli modda üçüncü taraf çerezlerini engelle:</translation>
 <translation id="7940722705963108451">Bana hatırlat</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}other{<ph name="FPS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="FPS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="7986741934819883144">Kişi seçin</translation>
 <translation id="7990211076305263060">Bu düğme açıkken siteler mikrofonunuzu kullanmak isteyebilir. Düğme kapalıyken siteler mikrofonunuzu kullanamaz.</translation>
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Bu sekmeyle devam et kartını gizle}other{Bu sekmelerle devam et kartını gizle}}</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8042586301629853791">Sıralama ölçütü:</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Sitelerin cihazlara bağlanmasını engelle</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8541410041357371550">Bu site, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı öğrenir</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sitesi için çerezlere izin veriliyor}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sitesi için çerezlere izin veriliyor}}</translation>
 <translation id="857943718398505171">İzin verildi (önerilir)</translation>
 <translation id="8609465669617005112">Yukarı taşı</translation>
 <translation id="8617611086246832542">Bu düğme açıkken web sitelerinin masaüstü görünümü gösterilir. Düğme kapalıyken web sitelerinin mobil cihaz görünümü gösterilir.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Ebeveynleriniz tarafından yönetiliyor</translation>
 <translation id="9039697262778250930">Bu sitelerdeki oturumunuz kapatılabilir</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Bu site, etkinliğinizi görebilen bir grupta bulunuyor. Grup, <ph name="FPS_OWNER" /> tarafından tanımlanmıştır.</translation>
 <translation id="9106233582039520022">Çerezler silinsin mi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="NUM_MORE" /> tane daha}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> için izinleri açmak üzere <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda izinleri açın.</translation>

@@ -7,17 +7,17 @@
 
 #include <memory>
 
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 
 // Controls syncing of SHARING_MESSAGE.
-class SharingMessageModelTypeController : public syncer::ModelTypeController {
+class SharingMessageModelTypeController : public syncer::DataTypeController {
  public:
   // |delegate_for_full_sync_mode| and |delegate_for_transport_mode| must not be
   // null.
   SharingMessageModelTypeController(
-      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+      std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_full_sync_mode,
-      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+      std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode);
   ~SharingMessageModelTypeController() override;
   SharingMessageModelTypeController(const SharingMessageModelTypeController&) =
@@ -25,7 +25,7 @@ class SharingMessageModelTypeController : public syncer::ModelTypeController {
   SharingMessageModelTypeController& operator=(
       const SharingMessageModelTypeController&) = delete;
 
-  // ModelTypeController overrides.
+  // DataTypeController overrides.
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 };
 

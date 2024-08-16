@@ -16,6 +16,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -114,7 +115,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

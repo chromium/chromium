@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/safe_browsing/incident_reporting/environment_data_collection_win.h"
 
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
@@ -40,16 +36,16 @@ namespace {
 const REGSAM kKeyReadNoNotify = (KEY_READ) & ~(KEY_NOTIFY);
 
 // The modules on which we will run VerifyModule.
-const wchar_t* const kModulesToVerify[] = {
+constexpr std::array<const wchar_t*, 3> kModulesToVerify = {{
     L"chrome.dll",
     L"chrome_elf.dll",
     L"ntdll.dll",
-};
+}};
 
 // The registry keys to collect data from.
-const RegistryKeyInfo kRegKeysToCollect[] = {
+const std::array<RegistryKeyInfo, 1> kRegKeysToCollect = {{
     {HKEY_CURRENT_USER, L"Software\\CSAStats"},
-};
+}};
 
 // Helper function to convert HKEYs to strings.
 std::wstring HKEYToString(HKEY key) {
@@ -221,18 +217,16 @@ void RecordLspFeature(ClientIncidentReport_EnvironmentData_Process* process) {
 }
 
 void CollectModuleVerificationData(
-    const wchar_t* const modules_to_verify[],
-    size_t num_modules_to_verify,
+    base::span<const wchar_t* const> modules_to_verify,
     ClientIncidentReport_EnvironmentData_Process* process) {
 #if !defined(_WIN64)
   using ModuleState = ClientIncidentReport_EnvironmentData_Process_ModuleState;
 
-  for (size_t i = 0; i < num_modules_to_verify; ++i) {
+  for (const wchar_t* const module_name : modules_to_verify) {
     auto module_state = std::make_unique<ModuleState>();
 
     int num_bytes_different = 0;
-    VerifyModule(modules_to_verify[i], module_state.get(),
-                 &num_bytes_different);
+    VerifyModule(module_name, module_state.get(), &num_bytes_different);
 
     if (module_state->modified_state() == ModuleState::MODULE_STATE_UNMODIFIED)
       continue;
@@ -243,13 +237,11 @@ void CollectModuleVerificationData(
 }
 
 void CollectRegistryData(
-    const RegistryKeyInfo* keys_to_collect,
-    size_t num_keys_to_collect,
+    base::span<const RegistryKeyInfo> keys_to_collect,
     google::protobuf::RepeatedPtrField<
         ClientIncidentReport_EnvironmentData_OS_RegistryKey>* key_data) {
   using RegistryKeyProto = ClientIncidentReport_EnvironmentData_OS_RegistryKey;
-  for (size_t i = 0; i < num_keys_to_collect; ++i) {
-    const RegistryKeyInfo& key_info = keys_to_collect[i];
+  for (const RegistryKeyInfo& key_info : keys_to_collect) {
     base::win::RegKey reg_key(key_info.rootkey, key_info.subkey,
                               kKeyReadNoNotify);
     if (reg_key.Valid()) {
@@ -272,13 +264,11 @@ void CollectPlatformProcessData(
     ClientIncidentReport_EnvironmentData_Process* process) {
   CollectDlls(process);
   RecordLspFeature(process);
-  CollectModuleVerificationData(kModulesToVerify, std::size(kModulesToVerify),
-                                process);
+  CollectModuleVerificationData(kModulesToVerify, process);
 }
 
 void CollectPlatformOSData(ClientIncidentReport_EnvironmentData_OS* os_data) {
-  CollectRegistryData(kRegKeysToCollect, std::size(kRegKeysToCollect),
-                      os_data->mutable_registry_key());
+  CollectRegistryData(kRegKeysToCollect, os_data->mutable_registry_key());
   CollectDomainEnrollmentData(os_data);
 }
 }  // namespace safe_browsing

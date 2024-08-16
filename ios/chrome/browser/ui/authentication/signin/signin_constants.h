@@ -97,7 +97,7 @@ extern const int kDefaultWebSignInDismissalCount;
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. When you add a new entry or when you
 // deprecate an existing one, also update SSOPromoUserAction in enums.xml and
-// SyncModelType suffix in histograms.xml.
+// SyncDataType suffix in histograms.xml.
 typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
   PromoActionDismissed = 0,
   PromoActionEnabledSSOAccount = 1,

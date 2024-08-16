@@ -1506,6 +1506,22 @@ TEST(SpanTest, Subspan) {
   }
 }
 
+TEST(SpanTest, ToFixedExtent) {
+  {
+    const int kArray[] = {1, 2, 3};
+    const span<const int> s(kArray);
+
+    auto static_span = s.to_fixed_extent<3>();
+    ASSERT_TRUE(static_span.has_value());
+    static_assert(std::same_as<typename decltype(static_span)::value_type,
+                               span<const int, 3>>);
+    EXPECT_EQ(s.data(), static_span->data());
+    EXPECT_EQ(s.size(), static_span->size());
+
+    EXPECT_EQ(std::nullopt, s.to_fixed_extent<4>());
+  }
+}
+
 TEST(SpanTest, Size) {
   {
     span<int> span;
@@ -1754,14 +1770,6 @@ TEST(SpanTest, AsByteSpan) {
     EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
   }
   {
-    const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
-    auto byte_span = as_byte_span<6u * sizeof(int)>(kVec);
-    static_assert(std::is_same_v<decltype(byte_span),
-                                 span<const uint8_t, 6u * sizeof(int)>>);
-    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kVec.data()));
-    EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
-  }
-  {
     int kMutArray[] = {2, 3, 5, 7};
     auto byte_span = as_byte_span(kMutArray);
     static_assert(std::is_same_v<decltype(byte_span),
@@ -1777,15 +1785,6 @@ TEST(SpanTest, AsByteSpan) {
               reinterpret_cast<const uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
-  {
-    std::vector<int> kMutVec({2, 3, 5, 7});
-    auto byte_span = as_byte_span<4u * sizeof(int)>(kMutVec);
-    static_assert(std::is_same_v<decltype(byte_span),
-                                 span<const uint8_t, 4u * sizeof(int)>>);
-    EXPECT_EQ(byte_span.data(),
-              reinterpret_cast<const uint8_t*>(kMutVec.data()));
-    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
-  }
   // Rvalue input.
   {
     [](auto byte_span) {
@@ -1796,15 +1795,6 @@ TEST(SpanTest, AsByteSpan) {
       EXPECT_EQ(byte_span[0u], 2);
     }(as_byte_span({2, 3, 5, 7, 11, 13}));
   }
-}
-
-TEST(SpanDeathTest, AsByteSpan) {
-  // Constructing a fixed-size span of the wrong size will terminate.
-  const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
-  EXPECT_CHECK_DEATH({
-    auto byte_span = as_byte_span<6u>(kVec);  // 6 bytes is the wrong size.
-    base::debug::Alias(&byte_span);
-  });
 }
 
 TEST(SpanTest, AsWritableByteSpan) {
@@ -1823,14 +1813,6 @@ TEST(SpanTest, AsWritableByteSpan) {
     EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
-  {
-    std::vector<int> kMutVec({2, 3, 5, 7});
-    auto byte_span = as_writable_byte_span<4u * sizeof(int)>(kMutVec);
-    static_assert(
-        std::is_same_v<decltype(byte_span), span<uint8_t, 4u * sizeof(int)>>);
-    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
-    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
-  }
   // Rvalue input.
   {
     [](auto byte_span) {
@@ -1841,16 +1823,6 @@ TEST(SpanTest, AsWritableByteSpan) {
       EXPECT_EQ(byte_span[0u], 2);
     }(as_writable_byte_span({2, 3, 5, 7, 11, 13}));
   }
-}
-
-TEST(SpanDeathTest, AsWritableByteSpan) {
-  // Constructing a fixed-size span of the wrong size will terminate.
-  std::vector<int> kVec({2, 3, 5, 7, 11, 13});
-  EXPECT_CHECK_DEATH({
-    auto byte_span =
-        as_writable_byte_span<6u>(kVec);  // 6 bytes is the wrong size.
-    base::debug::Alias(&byte_span);
-  });
 }
 
 TEST(SpanTest, AsStringView) {
@@ -1954,19 +1926,6 @@ TEST(SpanTest, MakeSpanFromConstContainer) {
                 "the type of made_span differs from expected_span!");
 }
 
-TEST(SpanTest, MakeStaticSpanFromConstContainer) {
-  const std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<const int, 5> UNSAFE_BUFFERS(
-      expected_span(vector.data(), vector.size()));
-  auto made_span = make_span<5>(vector);
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
 TEST(SpanTest, MakeSpanFromContainer) {
   std::vector<int> vector = {-1, -2, -3, -4, -5};
   span<int> expected_span(vector);
@@ -1976,30 +1935,6 @@ TEST(SpanTest, MakeSpanFromContainer) {
   static_assert(decltype(made_span)::extent == dynamic_extent, "");
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<int, 5> UNSAFE_BUFFERS(expected_span(vector.data(), vector.size()));
-  auto made_span = make_span<5>(vector);
-  EXPECT_EQ(expected_span.data(), make_span<5>(vector).data());
-  EXPECT_EQ(expected_span.size(), make_span<5>(vector).size());
-  static_assert(decltype(make_span<5>(vector))::extent == 5, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromConstexprContainer) {
-  constexpr std::string_view str = "Hello, World";
-  constexpr auto made_span = make_span<12>(str);
-  static_assert(str.data() == made_span.data(), "Error: data() does not match");
-  static_assert(str.size() == made_span.size(), "Error: size() does not match");
-  static_assert(std::is_same_v<decltype(str)::value_type,
-                               decltype(made_span)::value_type>,
-                "Error: value_type does not match");
-  static_assert(str.size() == decltype(made_span)::extent,
-                "Error: extent does not match");
 }
 
 TEST(SpanTest, MakeSpanFromRValueContainer) {
@@ -2013,23 +1948,6 @@ TEST(SpanTest, MakeSpanFromRValueContainer) {
   EXPECT_EQ(expected_span.data(), made_span.data());
   EXPECT_EQ(expected_span.size(), made_span.size());
   static_assert(decltype(made_span)::extent == dynamic_extent, "");
-  static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
-                "the type of made_span differs from expected_span!");
-}
-
-TEST(SpanTest, MakeStaticSpanFromRValueContainer) {
-  std::vector<int> vector = {-1, -2, -3, -4, -5};
-  // SAFETY: `vector.size()` describes valid portion of `vector.data()`.
-  span<const int, 5> UNSAFE_BUFFERS(
-      expected_span(vector.data(), vector.size()));
-  // Note: While static_cast<T&&>(foo) is effectively just a fancy spelling of
-  // std::move(foo), make_span does not actually take ownership of the passed in
-  // container. Writing it this way makes it more obvious that we simply care
-  // about the right behavour when passing rvalues.
-  auto made_span = make_span<5>(static_cast<std::vector<int>&&>(vector));
-  EXPECT_EQ(expected_span.data(), made_span.data());
-  EXPECT_EQ(expected_span.size(), made_span.size());
-  static_assert(decltype(made_span)::extent == 5, "");
   static_assert(std::is_same_v<decltype(expected_span), decltype(made_span)>,
                 "the type of made_span differs from expected_span!");
 }
@@ -2289,7 +2207,7 @@ TEST(SpanTest, CopyFrom) {
 
   // Handle empty cases gracefully.
   // Dynamic size to static size requires an explicit conversion.
-  empty_static_span.copy_from(make_span<0u>(empty_dynamic_span));
+  empty_static_span.copy_from(*empty_dynamic_span.to_fixed_extent<0>());
   empty_dynamic_span.copy_from(empty_static_span);
   static_span.first(empty_static_span.size()).copy_from(empty_static_span);
   dynamic_span.first(empty_dynamic_span.size()).copy_from(empty_dynamic_span);
@@ -3098,6 +3016,55 @@ TEST(SpanTest, GMockMacroCompatibility) {
   EXPECT_THAT(dynamic_span1, ElementsAreArray(static_span2));
   EXPECT_THAT(dynamic_span1, ElementsAreArray(dynamic_span2));
   EXPECT_THAT(dynamic_span1, ElementsAreArray(vec2));
+}
+
+TEST(SpanTest, GTestMacroCompatibility) {
+  int arr1[] = {1, 3, 5};
+  int arr2[] = {1, 3, 5};
+  int arr3[] = {2, 4, 6, 8};
+  std::vector vec1(std::begin(arr1), std::end(arr1));
+  std::vector vec2(std::begin(arr2), std::end(arr2));
+  std::vector vec3(std::begin(arr3), std::end(arr3));
+  span<int, 3> static_span1(arr1);
+  span<int, 3> static_span2(arr2);
+  span<int, 4> static_span3(arr3);
+  span<int> dynamic_span1(vec1);
+  span<int> dynamic_span2(vec2);
+  span<int> dynamic_span3(vec3);
+
+  // Alas, many desirable comparisions are still not possible. They
+  // are commented out below.
+  EXPECT_EQ(arr1, static_span2);
+  EXPECT_EQ(arr1, dynamic_span2);
+
+  // EXPECT_EQ(vec1, static_span2);
+  EXPECT_EQ(vec1, dynamic_span2);
+
+  EXPECT_EQ(static_span1, arr2);
+  EXPECT_EQ(static_span1, static_span2);
+  EXPECT_EQ(static_span1, dynamic_span2);
+  // EXPECT_EQ(static_span1, vec2);
+
+  EXPECT_EQ(dynamic_span1, arr2);
+  EXPECT_EQ(dynamic_span1, static_span2);
+  EXPECT_EQ(dynamic_span1, dynamic_span2);
+  EXPECT_EQ(dynamic_span1, vec2);
+
+  // EXPECT_NE(arr1, static_span3);
+  EXPECT_NE(arr1, dynamic_span3);
+
+  // EXPECT_NE(vec1, static_span3);
+  EXPECT_NE(vec1, dynamic_span3);
+
+  // EXPECT_NE(static_span1, arr3);
+  // EXPECT_NE(static_span1, static_span3);
+  EXPECT_NE(static_span1, dynamic_span3);
+  // EXPECT_NE(static_span1, vec3);
+
+  EXPECT_NE(dynamic_span1, arr3);
+  EXPECT_NE(dynamic_span1, static_span3);
+  EXPECT_NE(dynamic_span1, dynamic_span3);
+  EXPECT_NE(dynamic_span1, vec3);
 }
 
 // These are all examples from //docs/unsafe_buffers.md, copied here to ensure

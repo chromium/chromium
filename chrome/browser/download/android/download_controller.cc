@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -39,12 +40,15 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/download/content/public/context_menu_download.h"
 #include "components/download/public/common/android/auto_resumption_handler.h"
 #include "components/download/public/common/download_item.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/pdf/common/constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -189,8 +193,8 @@ class DownloadBlocklistChecker
           g_browser_process->safe_browsing_service()->database_manager();
     }
 
-    if (!database_manager_ ||
-        database_manager_->CheckDownloadUrl(url_chain_, this)) {
+    if (!database_manager ||
+        database_manager->CheckDownloadUrl(url_chain_, this)) {
       Log(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE);
     } else {
       // Add a reference to this object to prevent it from being destroyed
@@ -219,7 +223,6 @@ class DownloadBlocklistChecker
   }
 
   std::vector<GURL> url_chain_;
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 };
 
 void RecordDownloadBlocklistState(download::DownloadItem* item) {
@@ -232,6 +235,40 @@ void RecordDownloadBlocklistState(download::DownloadItem* item) {
 
   auto checker = base::MakeRefCounted<DownloadBlocklistChecker>(item);
   checker->Start();
+}
+
+void CleanupAppVerificationTimestamps(download::DownloadItem* item) {
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kDownloadAppVerificationPromptTimestamps);
+  update->EraseIf([](const base::Value& timestamp) {
+    constexpr base::TimeDelta kImpressionWindow = base::Days(90);
+
+    std::optional<base::Time> parsed_timestamp = base::ValueToTime(timestamp);
+    if (!parsed_timestamp.has_value()) {
+      return true;
+    }
+
+    return base::Time::Now() - parsed_timestamp.value() > kImpressionWindow;
+  });
+}
+
+bool HasSeenTooManyAppVerificationPrompts(download::DownloadItem* item) {
+  constexpr size_t kMaxImpressions = 3;
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  return profile->GetPrefs()
+             ->GetList(prefs::kDownloadAppVerificationPromptTimestamps)
+             .size() >= kMaxImpressions;
+}
+
+void LogAppVerificationPromptToPrefs(download::DownloadItem* item) {
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(item));
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kDownloadAppVerificationPromptTimestamps);
+  update->Append(base::TimeToValue(base::Time::Now()));
 }
 
 }  // namespace
@@ -502,18 +539,15 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
   }
 
   if (item->GetState() == DownloadItem::COMPLETE) {
-    if (base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt) &&
-        item->GetDangerType() ==
-            download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
-        !has_seen_app_verification_dialog_) {
-      has_seen_app_verification_dialog_ = true;
+    if (ShouldShowAppVerificationPrompt(item)) {
+      LogAppVerificationPromptToPrefs(item);
       app_verification_prompt_download_ = item;
       safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
           .StartEnableVerifyApps(base::BindOnce(
               &DownloadController::EnableVerifyAppsDone,
               // base::Unretained is safe because `this` is a singleton.
-              base::Unretained(this)));
-    } else if (item != app_verification_prompt_download_) {
+              base::Unretained(this), item));
+    } else if (app_verification_prompt_download_ != item) {
       OnDownloadComplete(item);
     }
   }
@@ -521,7 +555,7 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
 
 void DownloadController::OnDownloadDestroyed(download::DownloadItem* item) {
   item->RemoveObserver(this);
-  if (item == app_verification_prompt_download_) {
+  if (app_verification_prompt_download_ == item) {
     app_verification_prompt_download_ = nullptr;
   }
 }
@@ -552,12 +586,14 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
 }
 
 void DownloadController::EnableVerifyAppsDone(
+    download::DownloadItem* item,
     safe_browsing::VerifyAppsEnabledResult result) {
   base::UmaHistogramEnumeration(
       "SBClientDownload.AndroidAppVerificationPromptResult", result);
 
   if (app_verification_prompt_download_ != nullptr) {
-    OnDownloadComplete(app_verification_prompt_download_);
+    app_verification_prompt_download_ = nullptr;
+    OnDownloadComplete(item);
   }
 }
 
@@ -616,4 +652,26 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
     profile_key = ProfileKeyStartupAccessor::GetInstance()->profile_key();
 
   return profile_key;
+}
+
+bool DownloadController::ShouldShowAppVerificationPrompt(
+    download::DownloadItem* item) {
+  if (!base::FeatureList::IsEnabled(safe_browsing::kGooglePlayProtectPrompt)) {
+    return false;
+  }
+
+  if (item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    return false;
+  }
+
+  if (app_verification_prompt_download_ != nullptr) {
+    return false;
+  }
+
+  CleanupAppVerificationTimestamps(item);
+  if (HasSeenTooManyAppVerificationPrompts(item)) {
+    return false;
+  }
+
+  return true;
 }

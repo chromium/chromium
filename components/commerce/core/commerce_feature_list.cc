@@ -206,6 +206,12 @@ BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Sync title (in addition to all other attributes) in
+// ProductComparisonSpecifics.
+BASE_FEATURE(kProductSpecificationsSyncTitle,
+             "ProductSpecificationsSyncTitle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Kill switch for unsupported fields becoming supported in the event of a
 // browser upgrade.
 BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
@@ -473,6 +479,11 @@ const char kProductSpecificationsUseServerClusteringParam[] =
 const base::FeatureParam<bool> kProductSpecificationsUseServerClustering{
     &commerce::kProductSpecifications,
     kProductSpecificationsUseServerClusteringParam, false};
+const char kProductSpecificationsEnableQualityLoggingParam[] =
+    "enable-quality-logging";
+const base::FeatureParam<bool> kProductSpecificationsEnableQualityLogging{
+    &commerce::kProductSpecifications,
+    kProductSpecificationsEnableQualityLoggingParam, false};
 
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";

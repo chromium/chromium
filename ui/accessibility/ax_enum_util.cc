@@ -2380,6 +2380,8 @@ const char* ToString(ax::mojom::NameFrom name_from) {
       return "placeholder";
     case ax::mojom::NameFrom::kProhibited:
       return "prohibited";
+    case ax::mojom::NameFrom::kProhibitedAndRedundant:
+      return "prohibitedAndRedundant";
     case ax::mojom::NameFrom::kRelatedElement:
       return "relatedElement";
     case ax::mojom::NameFrom::kTitle:
@@ -2556,7 +2558,7 @@ const char* ToString(ax::mojom::AriaNotificationInterrupt interrupt) {
     case ax::mojom::AriaNotificationInterrupt::kPending:
       return "pending";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* ToString(ax::mojom::AriaNotificationPriority priority) {
@@ -2566,7 +2568,7 @@ const char* ToString(ax::mojom::AriaNotificationPriority priority) {
     case ax::mojom::AriaNotificationPriority::kImportant:
       return "important";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ui

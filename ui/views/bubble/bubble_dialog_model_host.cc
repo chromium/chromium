@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -61,10 +62,10 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kTitleItem:
       // No need to handle titles.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ui::DialogModelField::kSection:
       // TODO(pbos): Handle nested/multiple sections.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ui::DialogModelField::kSeparator:
       return BubbleDialogModelHost::FieldType::kMenuItem;
     case ui::DialogModelField::kCustom:
@@ -348,10 +349,10 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         break;
       case ui::DialogModelField::kTitleItem:
         // No need to handle titles.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case ui::DialogModelField::kSection:
         // TODO(pbos): Handle nested/multiple sections.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case ui::DialogModelField::kSeparator:
         AddOrUpdateSeparator(field);
         break;
@@ -692,7 +693,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
         return info;
       }
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:
@@ -752,7 +753,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
                             std::move(model),
                             anchor_view,
                             arrow,
-                            ui::ModalType::MODAL_TYPE_NONE,
+                            ui::mojom::ModalType::kNone,
                             autosize) {}
 
 BubbleDialogModelHost::BubbleDialogModelHost(
@@ -760,7 +761,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     std::unique_ptr<ui::DialogModel> model,
     View* anchor_view,
     BubbleBorder::Arrow arrow,
-    ui::ModalType modal_type,
+    ui::mojom::ModalType modal_type,
     bool autosize)
     : BubbleDialogDelegate(anchor_view,
                            arrow,
@@ -912,9 +913,9 @@ BubbleDialogModelHost::~BubbleDialogModelHost() {
 
 std::unique_ptr<BubbleDialogModelHost> BubbleDialogModelHost::CreateModal(
     std::unique_ptr<ui::DialogModel> model,
-    ui::ModalType modal_type,
+    ui::mojom::ModalType modal_type,
     bool autosize) {
-  DCHECK_NE(modal_type, ui::MODAL_TYPE_NONE);
+  DCHECK_NE(modal_type, ui::mojom::ModalType::kNone);
   return std::make_unique<BubbleDialogModelHost>(
       base::PassKey<BubbleDialogModelHost>(), std::move(model), nullptr,
       BubbleBorder::Arrow::NONE, modal_type, autosize);
@@ -1163,7 +1164,7 @@ void BubbleDialogModelHost::UpdateDialogButtons() {
 }
 
 bool BubbleDialogModelHost::IsModalDialog() const {
-  return GetModalType() != ui::MODAL_TYPE_NONE;
+  return GetModalType() != ui::mojom::ModalType::kNone;
 }
 
 }  // namespace views

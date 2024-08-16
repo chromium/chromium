@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -230,6 +231,10 @@ class StarboardDecryptorCast : public CastCdm {
   void* drm_system_ = nullptr;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<::media::ProvisionFetcher> provision_fetcher_;
+
+  // Tracks all sessions that have had at least one key created. Used to clean
+  // up keys in StarboardDrmKeyTracker on destruction.
+  base::flat_set<std::string> session_ids_;
 
   // This must be destructed first, to invalidate any remaining weak ptrs.
   base::WeakPtrFactory<StarboardDecryptorCast> weak_factory_{this};

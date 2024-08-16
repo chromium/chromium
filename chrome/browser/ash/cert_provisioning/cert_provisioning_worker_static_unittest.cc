@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker_static.h"
 
 #include <stdint.h>
@@ -582,7 +587,6 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
       ProtocolVersion::kStatic);
   const std::string process_id = GenerateCertProvisioningId();
   const std::string listener_type = MakeInvalidationListenerType(process_id);
-  EXPECT_LE(listener_type.size(), 128u);
   const CertProvisioningClient::ProvisioningProcess provisioning_process(
       process_id, CertScope::kUser, kCertProfileId, kCertProfileVersion,
       GetPublicKeyBin());

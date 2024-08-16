@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 class MigrationWatcher;
 
@@ -19,7 +19,7 @@ class MigrationWaiter : public StatusChangeChecker {
  public:
   // Initialize a waiter that will wait until |watcher|'s migrated types
   // match the provided |exptected_types|.
-  MigrationWaiter(syncer::ModelTypeSet expected_types,
+  MigrationWaiter(syncer::DataTypeSet expected_types,
                   MigrationWatcher* watcher);
 
   MigrationWaiter(const MigrationWaiter&) = delete;
@@ -38,7 +38,7 @@ class MigrationWaiter : public StatusChangeChecker {
   const raw_ptr<MigrationWatcher> watcher_;
 
   // The set of data types that are expected to eventually undergo migration.
-  const syncer::ModelTypeSet expected_types_;
+  const syncer::DataTypeSet expected_types_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WAITER_H_

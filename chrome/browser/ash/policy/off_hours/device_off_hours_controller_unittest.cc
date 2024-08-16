@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 
 #include <string>
@@ -15,9 +20,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
 
 namespace policy::off_hours {
@@ -263,6 +270,9 @@ TEST_F(DeviceOffHoursControllerSimpleTest, NoNetworkSynchronization) {
 
 TEST_F(DeviceOffHoursControllerSimpleTest,
        IsCurrentSessionAllowedOnlyForOffHours) {
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager> user_manager{
+      std::make_unique<ash::FakeChromeUserManager>()};
+
   system_clock_client()->SetServiceIsAvailable(true);
   EXPECT_FALSE(
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());
@@ -281,8 +291,8 @@ TEST_F(DeviceOffHoursControllerSimpleTest,
   EXPECT_FALSE(
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());
 
-  user_manager_->AddGuestUser();
-  user_manager_->LoginUser(user_manager::GuestAccountId());
+  user_manager->AddGuestUser();
+  user_manager->LoginUser(user_manager::GuestAccountId());
 
   EXPECT_TRUE(
       device_off_hours_controller()->IsCurrentSessionAllowedOnlyForOffHours());

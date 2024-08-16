@@ -26,6 +26,18 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlusAddressBlocklistDataParsingResult">
+  <summary>
+    Possible states of parsing the response body when a fetch completes in
+    `PlusAddressBlocklistData`.
+  </summary>
+  <int value="0" label="Failure: The response body was empty."/>
+  <int value="1"
+      label="Failure: The response body could not be parsed as
+             `CompactPlusAddressBlockedFacets` proto message."/>
+  <int value="2" label="Success: Parsing was successful."/>
+</enum>
+
 <enum name="PlusAddressModalEvent2">
   <int value="0" label="Modal shown"/>
   <int value="1" label="Modal canceled"/>

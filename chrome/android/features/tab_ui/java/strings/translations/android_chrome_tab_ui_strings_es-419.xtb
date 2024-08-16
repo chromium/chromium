@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Naranja</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
 <translation id="1273910660700874265">Opciones de los grupos de pestañas de <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Abandonar grupo</translation>
 <translation id="1419023007528516122">Esta acción borrará el grupo de tu dispositivo de forma permanente</translation>
 <translation id="1486715732399361704">Aquí puedes encontrar todos tus grupos de pestañas</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Se creó hace <ph name="NUM_MINS_ONE" /> minuto}other{Se creó hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>
@@ -39,8 +40,10 @@
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Se creó hace <ph name="NUM_HOURS_ONE" /> hora}other{Se creó hace <ph name="NUM_HOURS_MANY" /> horas}}</translation>
 <translation id="2801787514987684416">¿Deseas ver información de la tienda?</translation>
+<translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2928243913527329289">Google | Acerca de esta tienda</translation>
 <translation id="2977480621796371840">Quitar del grupo</translation>
+<translation id="29919168204617356">Las pestañas inactivas se cerrarán automáticamente. Puedes encontrarlas en el Historial en cualquier momento.</translation>
 <translation id="3008554597174452548">Dejar de seguir el precio del producto</translation>
 <translation id="3026391124054406831">Crea grupos para organizar tus pestañas.</translation>
 <translation id="3051031624272448591">Puedes recuperarlas desde el historial en cualquier momento</translation>
@@ -51,6 +54,7 @@
 <translation id="3322827343001922122">Abrir el menú de acciones del grupo de pestañas <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
 <translation id="3547352561153509682">Esta acción borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Ocultar el diálogo de pestañas inactivas</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Hoja de compartir en miniatura.</translation>
 <translation id="381219490185664296">¿Quieres borrar el grupo de pestañas?</translation>
@@ -120,6 +124,7 @@
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mover la pestaña a la izquierda</translation>
 <translation id="6615455863669487791">Mostrarme</translation>
+<translation id="6694634756612002311">Administrar el uso compartido</translation>
 <translation id="6744956528665271406">Editar el color del grupo</translation>
 <translation id="6856809498882026482">Ocultar el modo de selección múltiple</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Compartir pestaña}other{Compartir pestañas}}</translation>
@@ -137,11 +142,13 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> opinión de Google}other{<ph name="REVIEWS_COUNT_MANY" /> opiniones de Google}}</translation>
 <translation id="7559245342362162951">Muestra las pestañas del grupo en la cuadrícula de pantalla completa</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7688386659311034820">Diálogo de pestañas inactivas</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Compartir <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Compartir <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
 <translation id="7773714564112603605">Quitar pestaña y borrar grupo</translation>
 <translation id="7792771145871471484">Revisa las sugerencias.</translation>
 <translation id="7825973332242257878">Grupos de pestañas</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> pestaña seleccionada}other{Agrupar <ph name="TABS_COUNT_MANY" /> pestañas seleccionadas}}</translation>
+<translation id="7853202427316060426">Actividad</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> opinión}other{Calificación: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> opiniones}}</translation>
 <translation id="7885132941432959125">Mover la pestaña a la derecha</translation>
 <translation id="7939917283308035850">No se seleccionó <ph name="COLOR_NAME" /></translation>
@@ -159,6 +166,7 @@
 <translation id="8398929769197326728">Nueva carpeta - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8631711675211020168">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se borrará de todos los dispositivos</translation>
+<translation id="8633025649649592204">Actividad reciente</translation>
 <translation id="870736955561925754">¿Quieres cerrar la pestaña y borrar el grupo?</translation>
 <translation id="8714939927607906138">Precio más bajo</translation>
 <translation id="8730621377337864115">Listo</translation>
@@ -170,6 +178,7 @@
 <translation id="8926389886865778422">No volver a preguntar</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Expandir el grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
 <translation id="9090098097337832354">La hoja de información sobre esta tienda está cerrada</translation>
+<translation id="9111228330448174435">Mostrar diálogo cuando se crea un grupo nuevo de pestañas</translation>
 <translation id="9150694013019234766">Alterna entre las pestañas que aparecen en el grupo de pestañas cerca de la parte inferior de la pantalla</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
 <translation id="9216898458513705996">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" /></translation>

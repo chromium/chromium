@@ -239,7 +239,7 @@ class ReplaceTrackRequest : public RTCVoidRequest {
   void RequestFailed(const webrtc::RTCError& error) override {
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "replaceTrack");
     ThrowExceptionFromRTCError(error, exception_state);
     resolver_->Reject(exception_state);
@@ -273,7 +273,7 @@ class SetParametersRequest : public RTCVoidRequest {
     sender_->ClearLastReturnedParameters();
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "setParameters");
     ThrowExceptionFromRTCError(error, exception_state);
     resolver_->Reject(exception_state);
@@ -705,7 +705,7 @@ ScriptPromise<IDLUndefined> RTCRtpSender::replaceTrack(
 
   if (with_track && kind_ != with_track->kind()) {
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "RTCRtpSender", "replaceTrack");
     exception_state.ThrowTypeError("Track kind does not match Sender kind");
     resolver->Reject(exception_state);
@@ -1012,6 +1012,7 @@ void RTCRtpSender::Trace(Visitor* visitor) const {
   visitor->Trace(last_returned_parameters_);
   visitor->Trace(transceiver_);
   visitor->Trace(encoded_streams_);
+  visitor->Trace(transform_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -1087,7 +1088,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
 
 void RTCRtpSender::MaybeShortCircuitEncodedStreams() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!encoded_streams_) {
+  if (!encoded_streams_ && !transform_) {
     transform_shortcircuited_ = true;
     LogMessage("Starting short circuiting of encoded transform");
     if (kind_ == "video") {
@@ -1361,6 +1362,39 @@ RTCInsertableStreams* RTCRtpSender::CreateEncodedVideoStreams(
 
   encoded_streams_->setWritable(writable_stream);
   return encoded_streams_;
+}
+
+void RTCRtpSender::setTransform(RTCRtpScriptTransform* transform,
+                                ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // TODO(crbug.com/354881878): Allow changing from one transform to another, or
+  // clearing the transform.
+  if (transform_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Transform already set");
+    return;
+  }
+  if (transform->IsAttached()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Transform is already in use");
+    return;
+  }
+  transform_ = transform;
+  transform_->Attach();
+  if (kind_ == "audio") {
+    transform_->CreateAudioUnderlyingSourceAndSink(
+        WTF::CrossThreadBindOnce(
+            &RTCRtpSender::UnregisterEncodedAudioStreamCallback,
+            WrapCrossThreadWeakPersistent(this)),
+        encoded_audio_transformer_);
+    return;
+  }
+  CHECK_EQ(kind_, "video");
+  transform_->CreateVideoUnderlyingSourceAndSink(
+      WTF::CrossThreadBindOnce(
+          &RTCRtpSender::UnregisterEncodedVideoStreamCallback,
+          WrapCrossThreadWeakPersistent(this)),
+      encoded_video_transformer_);
 }
 
 void RTCRtpSender::OnVideoFrameFromEncoder(

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] softsign positive float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual 0.61279296875 should be close enough to expected 0.6129152178764343 by the acceptable 3 ULP distance, but they have 2051 ULP distance expected true got false
+[FAIL] softsign positive float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual 0.61279296875 should be close enough to expected 0.6129152178764343 by the acceptable 3 ULP distance, but they have 2051 ULP distance expected true got false
+[FAIL] softsign negative float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.7216796875 should be close enough to expected -0.7220557928085327 by the acceptable 3 ULP distance, but they have 6310 ULP distance expected true got false
+[FAIL] softsign positive float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual 0.61279296875 should be close enough to expected 0.6129152178764343 by the acceptable 3 ULP distance, but they have 2051 ULP distance expected true got false
+[FAIL] softsign negative float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.7216796875 should be close enough to expected -0.7220557928085327 by the acceptable 3 ULP distance, but they have 6310 ULP distance expected true got false
+[FAIL] softsign float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.892578125 should be close enough to expected -0.8929736614227295 by the acceptable 3 ULP distance, but they have 6636 ULP distance expected true got false
+[FAIL] softsign float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.892578125 should be close enough to expected -0.8929736614227295 by the acceptable 3 ULP distance, but they have 6636 ULP distance expected true got false
+[FAIL] softsign float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.892578125 should be close enough to expected -0.8929736614227295 by the acceptable 3 ULP distance, but they have 6636 ULP distance expected true got false
+[FAIL] softsign float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test softsign float32 actual -0.892578125 should be close enough to expected -0.8929736614227295 by the acceptable 3 ULP distance, but they have 6636 ULP distance expected true got false
+Harness: the test ran to completion.
+

@@ -145,6 +145,7 @@ Checkbox::Checkbox(const std::u16string& label,
       ->SetBaseColorId(ui::kColorCheckboxForegroundUnchecked);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
+  SetAndUpdateAccessibleDefaultActionVerb();
 }
 
 Checkbox::~Checkbox() = default;
@@ -157,6 +158,7 @@ void Checkbox::SetChecked(bool checked) {
   UpdateImage();
   OnPropertyChanged(&checked_, kPropertyEffectsNone);
   NotifyViewControllerCallback();
+  SetAndUpdateAccessibleDefaultActionVerb();
 }
 
 bool Checkbox::GetChecked() const {
@@ -191,11 +193,6 @@ void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       GetChecked() ? ax::mojom::CheckedState::kTrue
                    : ax::mojom::CheckedState::kFalse;
   node_data->SetCheckedState(checked_state);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(GetChecked()
-                                        ? ax::mojom::DefaultActionVerb::kUncheck
-                                        : ax::mojom::DefaultActionVerb::kCheck);
-  }
 }
 
 gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
@@ -289,6 +286,12 @@ ui::NativeTheme::Part Checkbox::GetThemePart() const {
 void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   LabelButton::GetExtraParams(params);
   absl::get<ui::NativeTheme::ButtonExtraParams>(*params).checked = GetChecked();
+}
+
+void Checkbox::SetAndUpdateAccessibleDefaultActionVerb() {
+  SetDefaultActionVerb(checked_ ? ax::mojom::DefaultActionVerb::kUncheck
+                                : ax::mojom::DefaultActionVerb::kCheck);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 CheckboxActionViewInterface::CheckboxActionViewInterface(Checkbox* action_view)

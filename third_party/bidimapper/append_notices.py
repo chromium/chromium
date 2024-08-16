@@ -124,7 +124,9 @@ class ThirdPartyNoticeParser:
             name_value = f'{path_name_value}_{index}'
         self._seen_names.add(name_value)
         license_path = self._license_dir.joinpath(f'LICENSE.{name_value}')
-        print(f'License File: {license_path}', file=self._readme_file)
+        relative_license_path = license_path.relative_to(
+            self._readme_path.parent)
+        print(f'License File: {relative_license_path}', file=self._readme_file)
 
         while self._license_begin < self._license_end and lines[
             self._license_begin] == '':

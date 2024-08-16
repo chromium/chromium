@@ -21,6 +21,7 @@
 #include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
@@ -180,27 +181,52 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
       [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
   const auto& isolation_data = *iwa.isolation_data();
   base::Version currently_installed_version = isolation_data.version;
-
   debug_log_.Set("currently_installed_version",
                  currently_installed_version.GetString());
 
-  if (isolation_data.pending_update_info() &&
-      isolation_data.pending_update_info()->version ==
-          latest_version_entry->version()) {
-    // If we already have a pending update for this version, stop. However, we
-    // do allow overwriting a pending update with a different pending update
-    // version.
+  const auto& pending_update = isolation_data.pending_update_info();
+
+  bool same_version_update_allowed_by_key_rotation = false;
+  bool pending_info_overwrite_allowed_by_key_rotation = false;
+  switch (LookupRotatedKey(url_info_.web_bundle_id(), debug_log_)) {
+    case KeyRotationLookupResult::kNoKeyRotation:
+      break;
+    case KeyRotationLookupResult::kKeyFound: {
+      KeyRotationData data =
+          GetKeyRotationData(url_info_.web_bundle_id(), isolation_data);
+      if (!data.current_installation_has_rk) {
+        same_version_update_allowed_by_key_rotation = true;
+      }
+      if (!data.pending_update_has_rk) {
+        pending_info_overwrite_allowed_by_key_rotation = true;
+      }
+    } break;
+    case KeyRotationLookupResult::kKeyBlocked: {
+      FailWith(Error::kUpdateManifestNoApplicableVersion);
+      return;
+    }
+  }
+
+  if (pending_update &&
+      pending_update->version == latest_version_entry->version() &&
+      !pending_info_overwrite_allowed_by_key_rotation) {
+    // If we already have a pending update for this version, stop. However,
+    // we do allow overwriting a pending update with a different pending
+    // update version or if there's a chance that this will yield a bundle
+    // signed by a rotated key.
     SucceedWith(Success::kUpdateAlreadyPending);
     return;
   }
 
   // Since this task is not holding any `WebAppLock`s, there is no guarantee
-  // that the installed version of the IWA won't change in the time between now
-  // and when we schedule the `IsolatedWebAppUpdatePrepareAndStoreCommand`. This
-  // is not an issue, as `IsolatedWebAppUpdatePrepareAndStoreCommand` will
-  // re-check that the new version is indeed newer than the currently installed
-  // version.
-  if (currently_installed_version >= latest_version_entry->version()) {
+  // that the installed version of the IWA won't change in the time between
+  // now and when we schedule the
+  // `IsolatedWebAppUpdatePrepareAndStoreCommand`. This is not an issue, as
+  // `IsolatedWebAppUpdatePrepareAndStoreCommand` will re-check that the new
+  // version is indeed newer than the currently installed version.
+  if (currently_installed_version > latest_version_entry->version() ||
+      (currently_installed_version == latest_version_entry->version() &&
+       !same_version_update_allowed_by_key_rotation)) {
     // Never downgrade apps for now.
     SucceedWith(Success::kNoUpdateFound);
     return;

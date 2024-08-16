@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_visibility_consumer.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
@@ -353,7 +352,6 @@ enum HeaderBehaviour {
     _sideSwipeMediator = dependencies.sideSwipeMediator;
     [_sideSwipeMediator setSwipeDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
-    self.bubblePresenter = dependencies.bubblePresenter;
     self.toolbarAccessoryPresenter = dependencies.toolbarAccessoryPresenter;
     self.ntpCoordinator = dependencies.ntpCoordinator;
     self.popupMenuCoordinator = dependencies.popupMenuCoordinator;
@@ -1008,12 +1006,11 @@ enum HeaderBehaviour {
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-#if defined(__IPHONE_17_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_17_0
-  if (base::ios::IsRunningOnIOS17OrLater() &&
-      base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
-    [self updateTraitsIfNeeded];
+  if (@available(iOS 17.0, *)) {
+    if (base::FeatureList::IsEnabled(kEnableTraitCollectionWorkAround)) {
+      [self updateTraitsIfNeeded];
+    }
   }
-#endif
 
   // After `-shutdown` is called, browserState is invalid and will cause a
   // crash.
@@ -1315,6 +1312,8 @@ enum HeaderBehaviour {
       _fakeStatusBarView.overrideUserInterfaceStyle =
           _isOffTheRecord ? UIUserInterfaceStyleDark
                           : UIUserInterfaceStyleUnspecified;
+      const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
+      _fakeStatusBarView.hidden = !canShowTabStrip;
     } else {
       _fakeStatusBarView.backgroundColor = UIColor.blackColor;
     }
@@ -1611,7 +1610,7 @@ enum HeaderBehaviour {
       self.browserContainerViewController.contentView = nil;
       self.browserContainerViewController.contentViewController =
           viewController;
-      [NTPCoordinator constrainFeedHeaderManagementButtonNamedGuide];
+      [NTPCoordinator constrainNamedGuideForFeedIPH];
     } else {
       self.browserContainerViewController.contentView = view;
     }

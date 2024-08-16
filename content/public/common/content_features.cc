@@ -125,11 +125,6 @@ BASE_FEATURE(kBackForwardCacheMemoryControls,
 #endif
 );
 
-// If enabled, makes battery saver request render process tuning.
-BASE_FEATURE(kBatterySaverModeRenderTuning,
-             "BatterySaverModeRenderTuning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, makes battery saver request heavy align wake ups.
 BASE_FEATURE(kBatterySaverModeAlignWakeUps,
              "BatterySaverModeAlignWakeUps",
@@ -669,6 +664,15 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
+// processes, including blocking storage and cookie access for them.
+//
+// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
+// enforcements are verified not to cause problems.
+BASE_FEATURE(kPdfEnforcements,
+             "PdfEnforcements",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
@@ -873,6 +877,25 @@ constexpr base::FeatureParam<bool>
     kProcessPerSiteMainFrameAllowDevToolsAttached{
         &kProcessPerSiteUpToMainFrameThreshold,
         "ProcessPerSiteMainFrameAllowDevToolsAttached", false};
+
+// Specifies the scaling factor for `kProcessPerSiteUpToMainFrameThreshold`
+// feature. This factor will be multiplied to the calculated size of a top
+// level frame in the process and ensure there is more than that enough
+// space in the process. For example if the expected size of a top level frame
+// was 100K, and the factor was 1.5, the process must have 150K left in its
+// allocation limit.
+constexpr base::FeatureParam<double> kProcessPerSiteMainFrameSiteScalingFactor{
+    &kProcessPerSiteUpToMainFrameThreshold,
+    "ProcessPerSiteMainFrameSiteScalingFactor", 1.5f};
+
+// Specifies the total memory limit for `kProcessPerSiteUpToMainFrameThreshold`
+// feature. This is a limit of the private memory footprint calculation, if
+// adding an additional top level frame would take us over this limit the
+// addition will be denied. An application may indeed allocate more than this
+// but we use this limit as a heuristic only.
+constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
+    &kProcessPerSiteUpToMainFrameThreshold,
+    "ProcessPerSiteMainFrameTotalMemoryLimit", 2 * 1024 * 1024 * 1024u};
 
 // Enables ServiceWorker static routing API.
 // https://github.com/WICG/service-worker-static-routing-api

@@ -5,7 +5,7 @@
 import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../tab_resumption/page_favicon.js';
+import './page_favicon.js';
 import '../icons.html.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';

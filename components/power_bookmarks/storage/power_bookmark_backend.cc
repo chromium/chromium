@@ -11,7 +11,7 @@
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 namespace power_bookmarks {
 
@@ -45,7 +45,7 @@ void PowerBookmarkBackend::Init(bool use_database) {
     // TODO(crbug.com/40247772): Plumb in syncer::ReportUnrecoverableError as
     // the dump_stack callback.
     auto change_processor =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
             syncer::POWER_BOOKMARK, /*dump_stack=*/base::RepeatingClosure());
 
     bridge_ = std::make_unique<PowerBookmarkSyncBridge>(
@@ -63,7 +63,7 @@ void PowerBookmarkBackend::Init(bool use_database) {
   }
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 PowerBookmarkBackend::GetSyncControllerDelegate() {
   // When the current method is called, the bridge is expected to exist
   // (`use_database` in the Init() method is set iff the PowerBookmarkBackend

@@ -65,11 +65,6 @@ BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
              "WebViewForceDarkModeMatchTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable WebView providing frame rate hints to View system.
-BASE_FEATURE(kWebViewFrameRateHints,
-             "WebViewFrameRateHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebViewHitTestInBlinkOnTouchStart,
              "WebViewHitTestInBlinkOnTouchStart",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -43,8 +43,9 @@ static_library("kcer") {
     "//chrome/browser/ash/kcer/nssdb_migration",
 
     # TODO(crbug.com/351347146): Remove the dependency on crosapi from Kcer and
-    # then this line.
+    # then these lines.
     "//chrome/browser/ash/platform_keys:platform_keys",
+    "//chrome/browser/ash/crosapi",
   ]
 }
 
@@ -62,9 +63,9 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/chromeos/kcer",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",

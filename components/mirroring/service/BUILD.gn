@@ -15,6 +15,8 @@ component("mirroring_service") {
     "mirror_settings.h",
     "mirroring_features.cc",
     "mirroring_features.h",
+    "mirroring_logger.cc",
+    "mirroring_logger.h",
     "mirroring_service.cc",
     "mirroring_service.h",
     "openscreen_message_port.cc",

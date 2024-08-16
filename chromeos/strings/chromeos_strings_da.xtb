@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Svagt signal</translation>
 <translation id="1300115153046603471">APN er typestandard og <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Dato for oprettelse</translation>
 <translation id="1308754910631152188">Opdaterer (<ph name="PERCENTAGE_VALUE" /> % gennemført)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutter</translation>
 <translation id="1310380015393971138">Der er ikke noget tilgængeligt <ph name="NETWORK_NAME" />-netværk</translation>
@@ -74,7 +75,7 @@
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
 <translation id="1343442362630695901">saltsø</translation>
 <translation id="1367951781824006909">Vælg en fil</translation>
-<translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Googles AI</translation>
+<translation id="1371650399987522809">Feedback til baggrunde, der er baseret på Google AI</translation>
 <translation id="1387854245479784695">Dette er den aggregerede værdi for alle kerner</translation>
 <translation id="1393206549145430405">et slot</translation>
 <translation id="1394661041439318933">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri i etuiet.</translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="1836553715834333258">Systemfarve</translation>
 <translation id="183675228220305365">realisme</translation>
-<translation id="1837537071599385610">Vejledning i prompter</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1840474674287087346">Computerfarve</translation>
 <translation id="184095011128924488">kreativt</translation>
@@ -301,7 +301,7 @@
 <translation id="242825218556404975">Der blev ikke registreret indtaling</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Googles AI</translation>
+<translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI</translation>
 <translation id="2480572840229215612">krabber</translation>
 <translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
 <translation id="2486301288428798846">træ</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Styring</translation>
 <translation id="2652403576514495859">aktivér eller deaktiver diktering</translation>
 <translation id="2653659639078652383">Send</translation>
-<translation id="2653807227758181366">Beskriv den baggrund, du vil oprette, eller brug en eksempelprompt</translation>
 <translation id="2654647726140493436">Sluk ikke din <ph name="DEVICE_TYPE" />, og tag ikke strømkablet ud af din <ph name="DEVICE_TYPE" />, mens opdateringen er i gang</translation>
 <translation id="2656001153562991489">Eksklusivt til Chromebook Plus</translation>
 <translation id="2665671725390405060">Hør udtale</translation>
@@ -356,9 +355,10 @@
 <translation id="2744221223678373668">Delte</translation>
 <translation id="2751739896257479635">EAP fase 2-godkendelse</translation>
 <translation id="2754757901767760034">en lampe</translation>
-<translation id="2780756493585863768">Seneste baggrunde baseret på Googles AI</translation>
+<translation id="2780756493585863768">Seneste baggrunde baseret på Google AI</translation>
 <translation id="2783010256799387990">GENNEMFØRT</translation>
 <translation id="2786429550992142861">linned</translation>
+<translation id="2787237339470862294">Dette sprog understøttes ikke i øjeblikket</translation>
 <translation id="2787435249130282949">lysere tastatur</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Der kunne ikke oprettes forbindelse til internettet. Klik for at prøve igen.</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
 <translation id="3201315366910775591">Delte album kan opdateres af andre personer</translation>
 <translation id="3211671540163313381">Tastaturtilknytning for D-pad</translation>
-<translation id="3224812403568276799">Når du tillader dette, bruger Lydoptager avanceret lydanalyse til automatisk at registrere forskellige stemmer og give hver stemme et generisk navn som f.eks. Taler 1 og Taler 2.
-
-Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="3226405216343213872">Søger efter scannere</translation>
 <translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
@@ -465,6 +462,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="346423161771747987">Strøm</translation>
 <translation id="346539236881580388">Tag igen</translation>
 <translation id="3484914941826596830">Du må ikke frakoble den eksterne enhed eller slukke din computer, mens firmwaren opdaterer. Du kan minimere dette vindue. Denne opdatering kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
+<translation id="3485555238092220889">hjælpefunktionshandling</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3487866404496702283">Feedback til mahi-funktionen</translation>
 <translation id="3488065109653206955">Delvist aktiveret</translation>
@@ -509,6 +507,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
 <translation id="3715651196924935218">Afslut svævetilstand</translation>
 <translation id="3716250181321371108">Opret styringselement</translation>
+<translation id="3716830479327464973">Når du giver tilladelse til dette, analyserer Lydoptager dine lydoptagelser for at:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -535,6 +534,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
 <translation id="3877066159641251281">Lyt til oversættelse</translation>
+<translation id="3880601782712134623">Registrer automatisk forskellige stemmer, og giv hver person, der taler, et generisk navn som f.eks. Taler 1 og Taler 2</translation>
 <translation id="3885327323343477505">Skift pauseskærm</translation>
 <translation id="3889914174935857450">Nulstil dato</translation>
 <translation id="3897092660631435901">Menu</translation>
@@ -617,7 +617,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="4297501883039923494">Stoppet – Ukendt fejl</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> billeder</translation>
 <translation id="430786093962686457">chiffon</translation>
-<translation id="4310735698903592804">Nyeste baggrunde fra Googles AI</translation>
+<translation id="4310735698903592804">Nyeste baggrunde fra Google AI</translation>
 <translation id="4320904097188876154">neonlyserød</translation>
 <translation id="4333390807948134856">Du har trykket på tasten <ph name="KEY_NAME" /></translation>
 <translation id="4334293042716981313">Du kan også <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />skrive din egen prompt<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
@@ -638,6 +638,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="4422041425070339732">pil ned</translation>
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> er deaktiveret</translation>
+<translation id="4428840632568803690">Taler <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="4431821876790500265">Se rapport</translation>
 <translation id="4443192710976771874">rød</translation>
@@ -673,6 +674,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4594021849294327751">Opret transskription</translation>
+<translation id="4607282946861182308">Der kan ikke oprettes billeder for denne forespørgsel. Prøv en anden prompt.</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
@@ -759,6 +761,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenavn</translation>
 <translation id="5051044138948155788">Dette er den eneste side. Du videreføres til startsiden for scanning.</translation>
+<translation id="5078711626843651677">Stemmemodeller gemmes midlertidigt på enheden, indtil navngivningen af dem, der taler, er fuldført. Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="5078983345702708852">futuristisk</translation>
 <translation id="5087864757604726239">tilbage</translation>
 <translation id="5088172560898466307">Serverens hostname</translation>
@@ -813,9 +816,11 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="5318334351163689047">Mislykkede TCP-anmodninger</translation>
 <translation id="53196409393069519">Vil du aktivere transskription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Navn</translation>
 <translation id="5332948983412042822">Vælg en ny adgangskode nu</translation>
 <translation id="5333530671332546086">Ukendt portaltilstand</translation>
 <translation id="5335373365677455232">lyserød</translation>
+<translation id="5344619683981067131">Erstatter den markerede tekst med forslaget</translation>
 <translation id="5346687412805619883">Lokalt netværk</translation>
 <translation id="5358174242040570474">Noget gik galt. Prøv at vælge en baggrund igen eller genåbne appen.</translation>
 <translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
@@ -867,6 +872,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="5662240986744577912">slå privatlivsfilter til/fra</translation>
 <translation id="5669267381087807207">Aktiverer</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Beskriv den baggrund, du vil oprette</translation>
 <translation id="5680504961595602662">Surrealistisk <ph name="SURREAL_LANDSCAPE" /> med <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">kirsebær</translation>
 <translation id="5691511426247308406">Familie</translation>
@@ -974,7 +980,6 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="6231648282154119906">Mistænkelige filer scannes automatisk af Google Beskyttet browsing som en del af den forbedrede beskyttelse, du har valgt</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6234024205316847054">Vis oversigt</translation>
-<translation id="6235460611964961764">Nulstil dataforbrug manuelt</translation>
 <translation id="6243280677745499710">Nuværende</translation>
 <translation id="6250316632541035980">bacon og æg</translation>
 <translation id="6265268291107409527">Den valgte tast er <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="680983167891198932">Nøgle</translation>
 <translation id="6816797338148849397">Du kan få oplysninger om det, du har markeret. Tryk på pil op for at se oplysningerne.</translation>
 <translation id="6853312040151791195">Afladningshastighed</translation>
+<translation id="6862416241246624313">Din feedback blev sendt</translation>
 <translation id="6866732840889595464">marguerit</translation>
 <translation id="6871256179359663621">lyselilla</translation>
 <translation id="6889786074662672253">Når du genstarter, må du ikke frakoble denne eksterne enhed eller slukke din computer. Du kan minimere dette vindue. Genstarten kan tage et par minutter, og din eksterne enhed fungerer muligvis ikke under opdateringen.</translation>
@@ -1108,7 +1114,9 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="6905163627763043954">Prøv det</translation>
 <translation id="6905724422583748843">Tilbage til <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Scannerens er åben. Luk den, og prøv igen.</translation>
+<translation id="6910845598686542904">Skab modeller af de stemmer, der registreres i optagelsen</translation>
 <translation id="6911383237894364323">Der kunne ikke oprettes forbindelse til medieservere</translation>
+<translation id="6930242544192836755">Varighed</translation>
 <translation id="6930597342185648547">Om baggrunden</translation>
 <translation id="6939667434404433010">Søg efter navnet på optagelsen</translation>
 <translation id="6939766318048400022">Café</translation>
@@ -1130,7 +1138,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
           Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Googles AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Google AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generativ AI er eksperimentel, under udvikling og har i øjeblikket begrænset tilgængelighed.</translation>
@@ -1207,7 +1215,7 @@ Du kan til enhver tid deaktivere dette under Indstillinger.</translation>
 <translation id="7331297744262591636">Du skal være mindst 18 år gammel, og du skal acceptere, at din brug af AI-baggrunde er underlagt <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles servicevilkår<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> og <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Yderligere servicevilkår for generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Du kan kun oprette baggrunde med AI til personlig og ikke-kommerciel brug. Når du får hjælp til baggrunde, sendes teksten til Googles AI-servere for at generere forslag til baggrunde i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
+          Du kan kun oprette baggrunde med AI til personlig og ikke-kommerciel brug. Når du får hjælp til baggrunde, sendes teksten til Google AI-servere for at generere forslag til baggrunde i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tryk på søgetasten og mellemrumstasten for at se resultater i Google Søgning.</translation>
 <translation id="7343649194310845056">Netværksenheder</translation>
 <translation id="7344788170842919262">jordfarvede</translation>
@@ -1291,6 +1299,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7802764839223122985">Du mangler at angive en tast. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7811024689617730980">Vælg en dag (fra 1 til 31) til automatisk nulstilling, inklusiv</translation>
 <translation id="7813073042185856802">et bjerg</translation>
 <translation id="7819857487979277519">PSK (WPA eller RSN)</translation>
 <translation id="7824219488248240180">postimpressionisme</translation>
@@ -1300,7 +1309,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7849030488395653706">nordlys</translation>
 <translation id="7849737607196682401">blonde</translation>
 <translation id="7850320739366109486">Vil ikke forstyrres</translation>
-<translation id="7850847810298646851">Baggrund fra Googles AI</translation>
+<translation id="7850847810298646851">Baggrund fra Google AI</translation>
 <translation id="785170686607360576">tulipan</translation>
 <translation id="7856267634822906833">Bluetooth-touchskærm</translation>
 <translation id="7859006200041800233">kaktusblomst</translation>
@@ -1329,6 +1338,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8017679124341497925">Genvejen blev redigeret</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
+<translation id="8028993641010258682">Størrelse</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Aktivér tilstanden med automatisk farve</translation>
 <translation id="8041089156583427627">Send feedback</translation>
@@ -1356,15 +1366,16 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magisk</translation>
 <translation id="8162776280680283326">ræve</translation>
-<translation id="8167413449582155132">Baggrund baseret på Googles AI</translation>
-<translation id="8171020708598805594">Opret automatisk transskriptioner, få oversigter over optagelser ved hjælp af Googles AI, og søg efter lyd. Opret optagelser, selv når du ikke har forbindelse til internettet.</translation>
+<translation id="8167413449582155132">Baggrund baseret på Google AI</translation>
+<translation id="8171020708598805594">Opret automatisk transskriptioner, få oversigter over optagelser ved hjælp af Google AI, og søg efter lyd. Opret optagelser, selv når du ikke har forbindelse til internettet.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">en strand</translation>
-<translation id="819278132617411009">Brug Googles AI til at blive mere produktiv</translation>
+<translation id="819278132617411009">Brug Google AI til at blive mere produktiv</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
+<translation id="8227488649450500937">Prøv én af disse prompter, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vejledningen i prompter<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8238771987802558562">Vælg et APN</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
@@ -1409,7 +1420,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8431300646573772016">Nyt i ChromeOS</translation>
 <translation id="843568408673868420">Internetforbindelse</translation>
 <translation id="844521431886043384">DNS er ikke konfigureret</translation>
-<translation id="8456200178779628126">Brug Googles AI for at få hjælp til at læse og skrive</translation>
+<translation id="8456200178779628126">Brug Google AI for at få hjælp til at læse og skrive</translation>
 <translation id="8456761643544401578">Automatisk mørk tilstand</translation>
 <translation id="8461329675984532579">Navn på udbyder til hjem</translation>
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
@@ -1428,7 +1439,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8522687886059337719">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pauseskærme<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
-<translation id="8538236298648811558">Baseret på Googles AI</translation>
+<translation id="8538236298648811558">Baseret på Google AI</translation>
 <translation id="8550364285433943656">Placer styringselementer på spilhandlinger, så du kan spille ved hjælp af tasterne</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
@@ -1570,6 +1581,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="950520315903467048">Du mangler at angive tasten til handlingen <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">Sammenlign stemmer i optagelsen, så det fremgår af transskriptionen, hvad hver person sagde, og hvornår de sagde det</translation>
 <translation id="952992212772159698">Ikke aktiveret</translation>
 <translation id="95718197892796296">ler</translation>
 <translation id="960719561871045870">Operatørkode</translation>

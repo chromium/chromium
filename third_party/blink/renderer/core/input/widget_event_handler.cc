@@ -17,25 +17,6 @@
 
 namespace blink {
 
-namespace {
-// The list of eligible event types should match with
-// the corresponding blink event types in IsEventTypeForInteractionId
-// (window_performance.cc) and EventTiming::IsEventTypeForEventTiming
-// (event_timing.cc)
-bool IsWebInteractionEvent(WebInputEvent::Type event_type) {
-  return event_type == WebInputEvent::Type::kMouseDown ||
-         event_type == WebInputEvent::Type::kMouseUp ||
-         event_type == WebInputEvent::Type::kKeyDown ||
-         event_type == WebInputEvent::Type::kRawKeyDown ||
-         event_type == WebInputEvent::Type::kKeyUp ||
-         event_type == WebInputEvent::Type::kChar ||
-         event_type == WebInputEvent::Type::kGestureTapDown ||
-         event_type == WebInputEvent::Type::kGestureTap ||
-         event_type == WebInputEvent::Type::kPointerDown ||
-         event_type == WebInputEvent::Type::kPointerUp;
-}
-}  // namespace
-
 WebInputEventResult WidgetEventHandler::HandleInputEvent(
     const WebCoalescedInputEvent& coalesced_event,
     LocalFrame* root) {
@@ -45,7 +26,7 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     DCHECK(document);
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyInput(event);
-    if (IsWebInteractionEvent(event.GetType())) {
+    if (WebInputEvent::IsWebInteractionEvent(event.GetType())) {
       WindowPerformance* performance =
           DOMWindowPerformance::performance(*root->DomWindow());
       performance->GetResponsivenessMetrics()

@@ -12,7 +12,7 @@
 
 namespace partition_alloc::internal {
 
-struct PartitionSuperPageExtentEntry;
+struct WritablePartitionSuperPageExtentEntry;
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
@@ -38,12 +38,8 @@ void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span)
     PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 
 PA_EXPORT_IF_DCHECK_IS_ON()
-void DCheckIsWithInSuperPagePayload(uintptr_t address)
-    PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
-
-PA_EXPORT_IF_DCHECK_IS_ON()
 void DCheckNumberOfPartitionPagesInSuperPagePayload(
-    const PartitionSuperPageExtentEntry* entry,
+    WritablePartitionSuperPageExtentEntry* entry,
     const PartitionRoot* root,
     size_t number_of_nonempty_slot_spans) PA_EMPTY_BODY_IF_DCHECK_IS_OFF();
 

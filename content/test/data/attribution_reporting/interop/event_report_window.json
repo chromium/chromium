@@ -16,8 +16,9 @@
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "123",
-                // Clamped to one hour (3600 seconds).
-                "event_report_window": 3590,
+                // Clamped to one hour (3600 seconds). Trailing zero included
+                // to demonstrate validity.
+                "event_report_window": 3590.0,
                 "aggregation_keys": {
                   "a": "0x1"
                 }
@@ -234,7 +235,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "7199",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -256,7 +256,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "7200",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -102,7 +103,8 @@ WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
       adapter_resources_(
-          new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
+          base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+              gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       feedback_callback_(std::move(feedback_callback)),

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 26 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test driver for asyncInitTransports
   assert_unreached: Failed to run asyncInitTransports: ReferenceError: RTCIceCandidatePair is not defined Reached unreachable code
 [FAIL] RTCSessionDescription interface object length
@@ -44,8 +44,6 @@ Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: wrong typeof object expected "object" but got "undefined"
 [FAIL] RTCIceCandidatePair interface: idlTestObjects.iceCandidatePair must inherit property "remote" with the proper type
   assert_equals: wrong typeof object expected "object" but got "undefined"
-[FAIL] RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "binaryType" with the proper type
-  Right-hand side of 'instanceof' is not an object
 [FAIL] RTCDTMFToneChangeEvent interface object length
   assert_equals: wrong value for RTCDTMFToneChangeEvent.length expected 1 but got 2
 [FAIL] RTCErrorEvent must be primary interface of new RTCErrorEvent('error')

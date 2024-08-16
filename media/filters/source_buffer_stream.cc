@@ -84,7 +84,7 @@ std::string StatusToString(const SourceBufferStreamStatus& status) {
     case SourceBufferStreamStatus::kEndOfStream:
       return "kEndOfStream";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Helper method for logging, converts a range into a readable string.
@@ -1992,7 +1992,7 @@ std::string SourceBufferStream::GetStreamTypeName() const {
     case SourceBufferStreamType::kVideo:
       return "VIDEO";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SourceBufferStreamType SourceBufferStream::GetType() const {

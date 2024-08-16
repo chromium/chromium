@@ -40,8 +40,10 @@ void FlashScreenController::FlashOn() {
   if (!::features::IsAccessibilityFlashScreenFeatureEnabled()) {
     return;
   }
-  // TODO(b/341554143): Add a user-facing pref and check its value here;
-  // don't flash if the pref is disabled.
+  if (!enabled_) {
+    // Don't flash if the pref is disabled.
+    return;
+  }
 
   // Don't start a flash if already flashing.
   if (notification_timer_.IsRunning()) {
@@ -49,7 +51,8 @@ void FlashScreenController::FlashOn() {
   }
   auto* color_enhancement_controller =
       Shell::Get()->color_enhancement_controller();
-  color_enhancement_controller->FlashScreenForNotification(/*show_flash=*/true);
+  color_enhancement_controller->FlashScreenForNotification(/*show_flash=*/true,
+                                                           color_);
   notification_timer_.Start(FROM_HERE, kNotificationTimerDelay, this,
                             &FlashScreenController::FlashOff);
 }
@@ -59,7 +62,7 @@ void FlashScreenController::FlashOff() {
   auto* color_enhancement_controller =
       Shell::Get()->color_enhancement_controller();
   color_enhancement_controller->FlashScreenForNotification(
-      /*show_flash=*/false);
+      /*show_flash=*/false, color_);
 
   num_completed_flashes_++;
 

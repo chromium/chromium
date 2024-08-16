@@ -1,3 +1,4 @@
+# TODO(https://crbug.com/40280666): Split DEPS by component subdirectory.
 include_rules = [
   "+components/content_settings/browser",
   "+components/content_settings/core",
@@ -12,7 +13,11 @@ include_rules = [
   "+components/ukm",
   "+components/url_pattern_index/proto",
   "+content/public/browser",
+  "+content/public/renderer",
   "+content/public/test",
+  "+ipc/ipc_channel_proxy.h",
+  "+mojo/public/cpp",
   "+net/base",
   "+services/metrics/public/cpp",
+  "+third_party/blink/public/common/associated_interfaces",
 ]

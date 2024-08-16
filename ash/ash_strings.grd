@@ -663,6 +663,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP" desc="The tooltip text to notify that bluetooth is disabled.">
         Bluetooth is off
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP" desc="The tooltip text to notify that bluetooth is unavailable.">
+        Bluetooth is unavailable
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP_LEGACY" desc="The tooltip text to notify that multiple bluetooth devices are connected. [ICU Syntax]">
         {NUM_DEVICES, plural,
          =1 {Connected to a device}
@@ -691,6 +694,9 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is disabled. [CHAR_LIMIT=14]">
         Off
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_SHORT" desc="Bluetooth button label in the status tray popup." meaning="Bluetooth is unavailable. [CHAR_LIMIT=14]">
+        Unavailable
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERING" desc="The label used in the tray popup to show bluetooth is discovering devices.">
         Scanning for devices...
@@ -787,14 +793,14 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER" desc="The text used for the placeholder for the textfield in the task section of the focus mode detailed view.">
         What would you like to focus on?
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON" desc="The accessible name for the radio button of a selected task view in contextual panel.">
-        Mark task as completed: <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph>
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON" desc="The accessible name for the radio button of a selected task view in focus panel.">
         Mark task as completed
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_DESELECT_BUTTON" desc="The text used for the deselect button accessible name for a selected task view.">
         Stop focusing on task
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_SUGGESTED_TASKS" desc="The text used for the accessible name of the list item among suggested tasks.">
+        Suggested task to focus on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON" desc="The text on the label slider button used for showing music playlists that help users relax and improve focus.">
         Focus sounds
@@ -816,6 +822,15 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_TWO" desc="The text shown to the user in the second line of the sounds view when they are offline.">
         Check your connection and try again.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_ACCESSIBLE_NAME" desc="The accessible name for a playlist image button on the focus panel">
+        Playlist: <ph name="PLAYLIST_TITLE">$1<ex>Nature</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_SELECTED_ACCESSIBLE_DESCRIPTION" desc="The accessible description for a selected playlist image button on the focus panel">
+        Selected
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION" desc="The accessible description for a unselected playlist image button on the focus panel">
+        Unselected
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB" desc="The label text shown on the left side of do not disturb button in Focus mode settings panel.">
         Do Not Disturb while in Focus
@@ -1804,6 +1819,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY" desc="The body of the bubble when the active device doesn't support sidetone.">
         To avoid echo, you can listen to your mic only with wired headphone.
       </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT" desc="Accessibility announcement that notifies whether sidetone is supported after user presses the toggle.">
+        <ph name="TITLE">$1<ex>Listen to your mic sound</ex></ph>. <ph name="DESCRIPTION">$2<ex>You can monitor your microphone sound from wired headphones. Close panel to stop.</ex></ph>
+      </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_DISMISS_BUTTON" desc="The dismiss button of the bubble when sidetone is enabled.">
         Dismiss
       </message>
@@ -2756,7 +2774,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_DESK_NAME_COMMIT" desc="Alert when the desk name is committed">
         Desk name was changed to <ph name="DESK_NAME">$1</ph>
       </message>
-      <message name="IDS_ASH_DESKS_CONTEXT_MENU_DESCRIPTION" translateable="false" desc="The tooltip that describes the action of opening the context menu for a desk.">
+      <message name="IDS_ASH_DESKS_CONTEXT_MENU_DESCRIPTION" desc="The tooltip that describes the action of opening the context menu for a desk.">
         Open context menu
       </message>
       <message name="IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and moving its windows to another desk.">
@@ -3809,6 +3827,9 @@ No devices connected.
       <message name="IDS_ASH_STATUS_TRAY_NO_NETWORKS" desc="The message to display in the network info bubble when it is otherwise empty.">
         No network information available
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_UPDATING" desc="The message to display in the network info bubble when modem firmware is updating.">
+        Updating
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS" desc="The message to display in the network list when no mobile networks are available.">
         No mobile networks set up
       </message>
@@ -4124,6 +4145,10 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT" desc="Label for accelerator action - Sign out.">
         Sign out
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_ACCESSIBILITY_SETTINGS" desc="Label for accelerator action - Open accessibility quick settings.">
+        Open accessibility quick settings
+      </message>
+
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
         Focus on the camera preview
       </message>
@@ -5320,6 +5345,12 @@ No devices connected.
       <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
         Learn more
       </message>
+      <message name="IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME" desc="The accessible name of the loading image in the mahi panel while waiting for the summary text or outline to load">
+        Results loading
+      </message>
+      <message name="IDS_ASH_MAHI_LOADED_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the results for Mahi panel is loaded">
+        Results loaded
+      </message>
       <message name="IDS_ASH_MAHI_THUMBS_UP_FEEDBACK_BUTTON_ACCESSIBLE_NAME" desc="The tooltip of the thumbs up feedback button in the mahi panel">
         Good output
       </message>
@@ -5349,6 +5380,15 @@ No devices connected.
       </message>
       <message name="IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT" desc="Text for the link that user can retry their previous Mahi request">
         Try again
+      </message>
+      <message name="IDS_ASH_MAHI_RETRY_LINK_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the retry link is clicked">
+        Retry link activated
+      </message>
+      <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is focused">
+        Learn more link. Redirect to the browser when activated
+      </message>
+      <message name="IDS_ASH_MAHI_LEARN_MORE_CLICK_ACTIVATION_ACCESSIBLE_NAME" desc="Text for the accessible name that announced when the learn more button is clicked">
+        Opened learn more link in the browser
       </message>
       <message name="IDS_ASH_MAHI_EDUCATIONAL_NUDGE_TITLE" desc="Title for the educational nudge used to discover the Mahi feature">
         Right-click to summarize
@@ -7338,194 +7378,264 @@ New install
       </message>
 
       <!-- Picker -->
-      <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
-      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis and GIFs, including symbols and emoticons.">
         Emojis, GIFs, and more
       </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_LABEL"
+        desc="This string appears in a selectable menu item in a menu. When selected, it opens the ChromeOS emoji picker. The term 'more' indicates that it has more than just emojis, including symbols and emoticons.">
+        Emojis and more
+      </message>
+      <message name="IDS_PICKER_LINKS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recent browsing history. Browsing history refers to recent websites that the user has visited.">
         Browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recently viewed Google Drive files.">
         Google Drive
       </message>
-      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
+      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL"
+        desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the user's recently modified files.">
         Files
       </message>
-      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter date-related phrases (e.g. 'two weeks from now') and it converts the phrase into a specific date (e.g. 'Feb 05'). The translation should only mean 'date' and not 'time', since this does not support time-related phrases.">
         Date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page where users can enter mathematical calculations or unit conversions (e.g. '1 + 1' or '1 meter to feet').">
-        Calculator
+        Calculations
       </message>
-      <message name="IDS_PICKER_CAPS_ON_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu. When selected, it turns on the user's keyboard Caps Lock.">
         Turn on Caps Lock
       </message>
-      <message name="IDS_PICKER_CAPS_OFF_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL"
         desc="This string appears a selectable menu item in a menu. When selected, it turns off the user's keyboard Caps Lock.">
         Turn off Caps Lock
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL" translateable="false"
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_LABEL"
         desc="This string appears in a selectable menu item in a menu. When selected, it navigates to another page showing the items in the user's clipboard.">
         Clipboard
       </message>
-      <message name="IDS_PICKER_UPPER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to upper case.">
+      <message name="IDS_PICKER_UPPER_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to uppercase. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         UPPERCASE
       </message>
-      <message name="IDS_PICKER_LOWER_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to lower case.">
+      <message name="IDS_PICKER_LOWER_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to lowercase. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         lowercase
       </message>
-      <message name="IDS_PICKER_TITLE_CASE_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to transform the selected text to title case.">
+      <message name="IDS_PICKER_TITLE_CASE_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'Change capitalization'. When selected, this item converts the selected text to title case. The casing for this string is used to illustrate the effect of this menu item, so retain the casing for languages where this makes sense.">
         Title Case
       </message>
-      <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
+      <message name="IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their browsing history.">
         Search browsing history
       </message>
-      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Google Drive.">
+      <message name="IDS_PICKER_DRIVE_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Google Drive. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
         Search Google Drive
       </message>
-      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Chromebook.">
-        Search Files app
+      <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches files from their Chromebook. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
+        Search Files
       </message>
-      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the date and times category is selected.">
+      <message name="IDS_PICKER_DATES_TIMES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type phrases like 'today' to convert it into a date.">
         Search date
       </message>
-      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type mathematical formulas or unit conversions to calculate the resutl (e.g. '1 + 1' or '1 meter to feet').">
+      <message name="IDS_PICKER_UNITS_MATHS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type mathematical formulas or unit conversions to calculate the result (e.g. '1 + 1' or '1 meter to feet').">
         Search to calculate
       </message>
-      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false"
-        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard.">
+      <message name="IDS_PICKER_CLIPBOARD_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that it only searches items from the their clipboard. 'Clipboard' is a product name and the correct localized version of the product name should be used.">
         Search Clipboard
       </message>
-      <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains general categories, i.e. expressions, browsing history, files.">
+      <message name="IDS_PICKER_SEARCH_FIELD_NO_SELECTION_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for links or files to insert into the document.">
+        Search to insert
+      </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for ways to edit some text in the document.">
+        Search to edit text
+      </message>
+      <message name="IDS_PICKER_SEARCH_FIELD_NO_FOCUS_PLACEHOLDER_TEXT"
+        desc="This string appears as the placeholder text in a search field. This placeholder only appears when the search field is empty. It lets the user know that they can type in this search field to search for links or files to open in a new window.">
+        Search to open
+      </message>
+      <message name="IDS_PICKER_GENERAL_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. The section contains several selectable menu items that are related to inserting or opening content, such as links, emojis, or files.">
         Content
       </message>
-      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the length of the highlighted text in various ways. For example, an option might shorten the text by deleting redundant words.">
         Change length
       </message>
-      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to reword the highlighted text. The submenu options can change the tone of the highlighted text in various ways. For example, an option might make the text more casual by using a different vocabulary.">
         Change tone
       </message>
-      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL"
         desc="This string appears as a selectable menu item in a menu, when the user has highlighted some text. When the user hovers over this item, it opens a submenu with various options to change the capitalization of the text. For example, one of the submenu options might convert the text into uppercase.">
         Change capitalization
       </message>
-      <message name="IDS_PICKER_NEW_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_MENU_LABEL"
+        meaning="Creates new documents or windows"
         desc="This string appears as a selectable menu item in a menu. When the user hovers over this item, it opens a submenu with various options to create new documents or Chrome tabs. The submenu options are: 'Google Doc', 'Google Sheet', 'Google Slide', and 'Chrome window'.">
         New
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Doc.">
         Google Doc
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Sheet.">
         Google Sheet
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL" translateable="false"
+      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL"
         desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a blank Google Slide.">
         Google Slide
       </message>
-      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL" translateable="false"
-        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new window with a new Chrome tab.">
+      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL"
+        desc="This string appears as a selectable menu item in a submenu. The parent menu item is labeled 'New'. When selected, this item opens a new Chrome window.">
         Chrome window
       </message>
-      <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
+      <message name="IDS_PICKER_MORE_CATEGORY_TYPE_SECTION_TITLE"
+        meaning="Heading text in a section for items that do not belong to other sections, in the sense of 'Additional' or 'Other'"
+        desc="This string appears as the heading text of a section. This section contains several selectable menu items. This section is the last section on page, and contains menu items that do not belong to the previous sections.">
         More
       </message>
-      <message name="IDS_PICKER_CASE_TRANSFORMATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains case transformation actions.">
+      <message name="IDS_PICKER_EXAMPLES_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains a list of example queries that the user can do.">
+        A few things to try
+      </message>
+      <message name="IDS_PICKER_EDIT_TEXT_CATEGORY_TYPE_SECTION_TITLE"
+        desc="This string appears as the heading text of a section. This section contains several selectable menu items related to editing the user's selected text, such as changing the capitalization of the text.">
         Edit text
       </message>
-      <message name="IDS_PICKER_HTML_CONTENT" translateable="false" desc="Display text for the clipboard html item.">
-        Html content
-      </message>
-      <message name="IDS_PICKER_FROM_CLIPBOARD_TEXT" translateable="false" desc="Secondary text of the suggested items from the clipboard history.">
-        From clipboard
-      </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT" translateable="false" desc="Button text shown in a section when there are more results.">
+      <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT"
+        desc="This string appears as the label text of a button. The button is part of a truncated list of search results. Clicking the button will show all the search results.">
         Show all
       </message>
-      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button that shows all results for a section.">
-        Show all <ph name="SECTION_NAME">$1<ex>Drive Files</ex></ph>
+      <message name="IDS_PICKER_SEE_MORE_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a button. The button is part of a truncated list of search results of a particular category (e.g. Google Drive files). The placeholder is the name of the category. Clicking the button will show all the search results for that particular category of results.">
+        Show all <ph name="CATEGORY_NAME">$1<ex>Drive Files</ex></ph>
       </message>
-      <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for a button which opens a panel with more emojis, symbols and emoticons.">
-        Open emojis and more
+      <message name="IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis.">
+        Show more emojis
       </message>
-      <message name="IDS_PICKER_GIFS_BUTTON_LABEL" translateable="false" desc="The label of a button that opens a panel of GIFs.">
-        GIFs
+      <message name="IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME"
+        desc="This string is appears as the tooltip of a button. The button is part of a row of emojis. Clicking the button will show more emojis and GIFs.">
+        Show more emojis and GIFs
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_TEXT" translateable="false" desc="Label of the view showing that there are no search results.">
-        No results found.
+      <message name="IDS_PICKER_NO_RESULTS_TEXT"
+        desc="This string appears a label inside a list of search results. It indicates that there are no search results found for the given query.">
+        No results found
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_INSERT" translateable="false" desc="Label of the badge in a result that can be inserted.">
+      <message name="IDS_PICKER_INSERT_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will insert it into the current page. For example, this badge might appear in a search result for an image, which would insert the image into the page. Try to limit translations to 10 characters.">
         Insert
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_OPEN" translateable="false" desc="Label of the badge in a result that can be opened.">
+      <message name="IDS_PICKER_OPEN_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will open it in a new window. For example, this badge might appear in a search result for an image, which would open the image in a new window. Try to limit translations to 10 characters.">
         Open
       </message>
-      <message name="IDS_PICKER_RESULT_BADGE_LABEL_CREATE" translateable="false" desc="Label of the badge in a result that can be created.">
+      <message name="IDS_PICKER_CREATE_RESULT_BADGE_LABEL"
+        desc="This string appears as the label for a badge in a search result. It indicates that selecting the search result will create it. For example, this badge might appear in a search result labeled 'Note', which would create a new note. Try to limit translations to 10 characters.">
         Create
       </message>
-      <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to learn more about Picker.">
+      <message name="IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL"
+        desc="This string appears as the label of a button in a feature tour dialog. When selected, this button opens a help center article explaining the feature.">
         Learn more
       </message>
-      <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL" translateable="false" desc="Button label in feature tour dialog to start using Picker.">
+      <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL"
+        desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
         Get started
       </message>
-      <message name="IDS_PICKER_SEARCH_FIELD_CLEAR_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that clears all text from the Picker search field.">
-        Clear searchbox text
-      </message>
-      <message name="IDS_PICKER_SEARCH_FIELD_BACK_BUTTON_TOOLTIP_TEXT" translateable="false" desc="Tooltip text for the button that goes back to the Picker zero state page.">
-        Back
-      </message>
-      <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a search result containing primary and secondary text. The commas are significant as they will introduce a pause in the spoken text.">
+      <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. The search result contains two lines of text: a primary text (e.g. the title of a page) and a secondary text (e.g. the URL of a page). The commas are significant as they will introduce a pause in the spoken text. This string is used inside the placeholder of another message.">
         <ph name="PRIMARY_TEXT">$1<ex>The Chromium Projects</ex></ph>, <ph name="SECONDARY_TEXT">$2<ex>www.chromium.org</ex></ph>
       </message>
-      <message name="IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to insert a search result.">
-        Insert <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      <message name="IDS_PICKER_LIST_ITEM_WITH_SHORTCUT_ACCESSIBLE_NAME" desc="Text for screenreaders describing a search result with an action description and a shortcut hint which shows a keyboard shortcut for performing the action. The commas are significant as they will introduce a pause in the spoken text.">
+        <ph name="ACTION_DESCRIPTION">$1<ex>Turn on caps lock</ex></ph>, <ph name="SHORTCUT_HINT">$2<ex>alt + search</ex></ph>
       </message>
-      <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME" translateable="false" desc="Text for screenreaders describing a button to open a search result.">
-        Open <ph name="ITEM_TEXT">$1<ex>The Chromium Projects</ex></ph>
+      <message name="IDS_PICKER_LIST_ITEM_INSERT_ACTION_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. 'Insert' indicates that selecting this search result will insert the contents of the result into a textfield. The placeholder contains the contents of the search result.">
+        Insert <ph name="SEARCH_RESULT_TEXT">$1<ex>The Chromium Projects, www.chromium.org</ex></ph>
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for browsing history.">
+      <message name="IDS_PICKER_LIST_ITEM_OPEN_ACTION_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader to describe a search result. 'Open' indicates that selecting this search result will open the result in a separate window. The placeholder contains the contents of the search result.">
+        Open <ph name="SEARCH_RESULT_TEXT">$1<ex>The Chromium Projects, www.chromium.org</ex></ph>
+      </message>
+      <message name="IDS_PICKER_NO_RESULTS_FOR_BROWSING_HISTORY_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's browsing history. The string is shown below an illustration banner. It indicates that there are no suggested browsing history results available.">
         No browsing history
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for clipboard.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_CLIPBOARD_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's clipboard. The string is shown below an illustration banner. It indicates that there the user's clipboard is empty. 'Clipboard' is a product name and the correct localized version of the product name should be used.">
         No items copied to your Clipboard
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for Drive files.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_DRIVE_FILES_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested results from the user's Google Drive. The string is shown below an illustration banner. It indicates that there are no suggested Google Drive results available. 'Google Drive' is a product name and the correct localized version of the product name should be used.">
         No Google Drive files
       </message>
-      <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT" translateable="false" desc="Label in the Picker results page indicating there's no suggested results for local files.">
+      <message name="IDS_PICKER_NO_RESULTS_FOR_LOCAL_FILES_LABEL_TEXT"
+        desc="This string appears on a page that shows suggested image results from the user's Files app. The string is shown below an illustration banner. It indicates that there are no suggested images results available. 'Files' is the ChromeOS Files app product name and the correct localized version of the product name should be used.">
         No images in Files
       </message>
-      <message name="IDS_PICKER_CAPS_LOCK_ON_TEXT" translateable="false" desc="Tooltip text for the bubble shown when Caps Lock is enabled.">
+      <message name="IDS_PICKER_CAPS_LOCK_ON_TEXT"
+        desc="This string appears in a popup bubble to indicate that the user just turned on their keyboard's Caps Lock.">
         Caps Lock on
       </message>
-      <message name="IDS_PICKER_CAPS_LOCK_OFF_TEXT" translateable="false" desc="Tooltip text for the bubble shown when Caps Lock is disabled.">
+      <message name="IDS_PICKER_CAPS_LOCK_OFF_TEXT"
+        desc="This string appears in a popup bubble to indicate that the user just turned off their keyboard's Caps Lock.">
         Caps Lock off
       </message>
-      <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME" translateable="false" desc="The accessible text for the emoji bar grid.">
+      <message name="IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader for a grid of emojis.">
+        Emojis
+      </message>
+      <message name="IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME"
+        desc="This string is read out by a screen reader for a grid of emojis and GIFs.">
         Emojis and GIFs
       </message>
-      <message name="IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoji result.">
-        <ph name="ITEM_TEXT">$1<ex>Face with Tears of Joy</ex></ph> emoji
+      <message name="IDS_PICKER_EMOJI_ITEM_ACCESSIBLE_NAME"
+        desc="This string appears as the tooltip of an emoji. The placeholder is the official name of the emoji. The 'emoji' part is important in order to distinguish between this emoji and an emoticon of the same name.">
+        <ph name="EMOJI_NAME">$1<ex>Face with Tears of Joy</ex></ph> emoji
       </message>
-      <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME" translateable="false" desc="The tooltip text for an emoticon result.">
-        <ph name="ITEM_TEXT">$1<ex>sparkles</ex></ph> emoticon
+      <message name="IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME"
+        desc="This string appears as the tooltip of an emoticon. The placeholder is the official name of the emoticon. The 'emoticon' part is important in order to distinguish between this emoticon and an emoji of the same name.">
+        <ph name="EMOTICON_NAME">$1<ex>sparkles</ex></ph> emoticon
       </message>
-      <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT" translateable="false" desc="The accessibility announcement when there are no results in the main section but there are emoji results.">
-        <ph name="NUM_RESULTS">$1<ex>5</ex></ph> emojis. No other results.
+      <message name="IDS_PICKER_EMOJI_SEARCH_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_TEXT"
+        desc="This string is read out by a screen reader when a search query has no other search results except emojis. The emoji results are displayed elsewhere. [ICU Syntax]">
+        {NUM_RESULTS, plural,
+         =1 {1 emoji. No other results.}
+         other {# emojis. No other results.}}
+      </message>
+      <message name="IDS_PICKER_INSERTION_ANNOUNCEMENT_TEXT"
+        desc="This string is read out by a screen reader when the user selects a search result to insert into an input field. The contents are the search results are read out before this announcement.">
+        Inserting selected result
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the future. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the upcoming Monday (6 days from now), as opposed to the Monday that just passed (1 day ago). The whole string (including placeholder) should be in sentence case.">
+        This coming <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph>
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the past. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday that just passed (1 day ago), as opposed to upcoming Monday (6 days from now).">
+        This past <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph>
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_NEXT_WEEK"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Wednesday) and is capitalized when appropriate for the locale. This string indicates that the date is in the next week. For example, suppose today is Tuesday. If the placeholder is Wednesday, then this string refers to the Wednesday next week (8 days from now), as opposed to upcoming Wednesday in this week (1 day from now).">
+        <ph name="DAY_OF_WEEK">$1<ex>Wednesday</ex></ph> next week
+      </message>
+      <message name="IDS_PICKER_DATE_DISAMBIGUATION_LAST_WEEK"
+        desc="In sentence case: This string appears as a subtitle to a calendar date. The placeholder is the name of a day of the week (e.g. Monday) and is capitalized when appropriate for the locale. This string indicates that the date is in the previous week. For example, suppose today is Tuesday. If the placeholder is Monday, then this string refers to the Monday last week (8 days from ago), as opposed to the Monday that just passed (1 day from now).">
+        <ph name="DAY_OF_WEEK">$1<ex>Monday</ex></ph> last week
       </message>
 
       <!-- WM -->
@@ -8261,28 +8371,25 @@ To shut down the device, press and hold the power button on the device again.
         Use your fn Key
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
-        To access F keys, hold Fn key and press corresponding top row key
+        To access F keys, press fn key + top row keys
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
-        Looking for Caps Lock? Try
+        Trying to use Caps Lock? Use
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_UP_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus up arrow key.">
-        Looking for Page Up? Try
+        Trying to use Page Up? Use
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_DOWN_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus down arrow key.">
-        Looking for Page Down? Try
+        Trying to use Page Down? Use
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_HOME_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus left arrow key.">
-        Looking for Home? Try
+        Trying to use Home? Use
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_END_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus right arrow key.">
-        Looking for End? Try
+        Trying to use End? Use
       </message>
       <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus backspace key.">
-        Looking for Delete? Try
-      </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus shift backspace key.">
-        Looking for Insert? Try
+        Trying to Delete? Use
       </message>
       <!-- Modifier key names -->
       <message name="IDS_ASH_SETTINGS_SHORTCUT_MODIFIER_LAUNCHER" desc="Name of the [Launcher] key. This key has a different name and keyboard glyph/icon depending on the device. This is the string for when it is called Launcher and has a circle/launcher icon.">
@@ -8438,6 +8545,9 @@ To shut down the device, press and hold the power button on the device again.
          =1 {In 1 min}
          other {In # mins}}
       </message>
+      <message name="IDS_ASH_BIRCH_CALENDAR_NO_TITLE" desc="Placeholder title text for a calendar event that has no title">
+        (No title)
+      </message>
       <message name="IDS_ASH_BIRCH_CALENDAR_TOMORROW" desc="Subtitle text for a calendar event that occurs tomorrow">
         Tomorrow
       </message>
@@ -8502,16 +8612,25 @@ To shut down the device, press and hold the power button on the device again.
         Frequently opened
       </message>
       <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" desc="Title for the suggestion chip that links to release notes">
-        See what's new
+        Chromebook Updated
       </message>
       <message name="IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE" desc="Subtitle for the suggestion chip that links to release notes">
-        Explore the latest features
+        See what's new
       </message>
       <message name="IDS_ASH_BIRCH_LOST_MEDIA_MEDIA_TAB_SUBTITLE" desc="The subtitle for a suggestion chip for a media tab that is currently playing. Note: The 'Playing' is supposed to indicate the status of the tab, not the identity of the tab. 'Switch to tab' is an action/verb that switches to the tab if the item is pressed.">
       Playing &#x00B7; Switch to tab
       </message>
       <message name="IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE" desc="The subtitle for a suggestion chip for a video conference tab that is currently ongoing. Note: The 'Ongoing' is supposed to indicate the status of the tab, not the identity of the tab. 'Switch to tab' is an action/verb that switches to the tab if the item is pressed.">
       Ongoing &#x00B7; Switch to tab
+      </message>
+      <message name="IDS_ASH_BIRCH_WEATHER_SUBTITLE" desc="The subtitle for a weather suggestion chip">
+        Current weather
+      </message>
+      <message name="IDS_ASH_BIRCH_WEATHER_FAHREHEIT_SYMBOL" desc="The symbol of Fahrenheit degree.">
+        °F
+      </message>
+      <message name="IDS_ASH_BIRCH_WEATHER_CELSIUS_SYMBOL" desc="The symbol of Celsius degree.">
+        °C
       </message>
       <message name="IDS_ASH_BIRCH_MENU_SHOW_SUGGESTIONS" desc="Context menu item that toggles the list of suggestion actions in informed restore/overview UI">
         Show suggestions
@@ -8561,8 +8680,11 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS" desc="Context menu item that opens the submenu to customize suggestions in informed restore/overview UI">
         Customize suggestions
       </message>
-      <message name="IDS_ASH_BIRCH_TOGGLE_TEMPERATURE_UNITS" desc="Context menu item that toggles temperature units (F vs. C) for the weather suggestion in informed restore/overview UI">
-        Toggle temperature units (F vs. C)
+      <message name="IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS" desc="Context menu item that sets the temperature units to Celsius for the weather suggestion in informed restore/overview UI">
+        Show temperature in Celsius
+      </message>
+      <message name="IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT" desc="Context menu item that sets the temperature units to Fahrenheit for the weather suggestion in informed restore/overview UI">
+        Show temperature in Fahrenheit
       </message>
       <message name="IDS_ASH_BIRCH_SEND_FEEDBACK" desc="Context menu item that sends feedback about suggestions in informed restore/overview UI">
         Send feedback

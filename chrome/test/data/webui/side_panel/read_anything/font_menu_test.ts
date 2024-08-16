@@ -20,7 +20,7 @@ suite('FontMenu', () => {
   let toolbar: ReadAnythingToolbarElement;
   let menuButton: CrIconButtonElement|null;
   let fontSelect: HTMLSelectElement|null;
-  let fontEmitted: string;
+  let fontEmitted: boolean;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -30,10 +30,8 @@ suite('FontMenu', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.supportedFonts = [];
-    fontEmitted = '';
-    document.addEventListener(ToolbarEvent.FONT, event => {
-      fontEmitted = (event as CustomEvent).detail.fontName;
-    });
+    fontEmitted = false;
+    document.addEventListener(ToolbarEvent.FONT, () => fontEmitted = true);
   });
 
   function createToolbar(): void {
@@ -143,10 +141,11 @@ suite('FontMenu', () => {
 
       test('propagates font', () => {
         fontMenuOptions.forEach((option, index) => {
+          fontEmitted = false;
           option.click();
           const expectedFont = chrome.readingMode.supportedFonts[index]!;
           assertFontsEqual(chrome.readingMode.fontName, expectedFont);
-          assertFontsEqual(fontEmitted, expectedFont);
+          assertTrue(fontEmitted);
         });
       });
 
@@ -212,10 +211,11 @@ suite('FontMenu', () => {
 
       test('propagates font', () => {
         chrome.readingMode.supportedFonts.forEach((expectedFont, index) => {
+          fontEmitted = false;
           fontSelect!.selectedIndex = index;
           fontSelect!.dispatchEvent(new Event('change'));
           assertFontsEqual(chrome.readingMode.fontName, expectedFont);
-          assertFontsEqual(fontEmitted, expectedFont);
+          assertTrue(fontEmitted);
         });
       });
 

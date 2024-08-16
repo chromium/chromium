@@ -129,8 +129,7 @@ class HotseatWidgetAnimationMetricsReporter {
         }
         break;
       case HotseatState::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -183,8 +182,7 @@ class ASH_EXPORT NavigationWidgetAnimationMetricsReporter {
             smoothness);
         break;
       case HotseatState::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -553,8 +551,7 @@ bool IsHorizontalAlignment(ShelfAlignment alignment) {
     case ShelfAlignment::kRight:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool Shelf::IsHorizontalAlignment() const {
@@ -702,8 +699,7 @@ gfx::Rect Shelf::GetSystemTrayAnchorRect() const {
       return gfx::Rect(work_area.right() - kShelfDisplayOffset,
                        work_area.bottom() - kShelfDisplayOffset, 0, 0);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 bool Shelf::ShouldHideOnSecondaryDisplay(session_manager::SessionState state) {

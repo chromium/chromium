@@ -4,9 +4,9 @@
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import type {GroupData, GroupMember} from './data_sharing_internals.mojom-webui.js';
-import {RoleType} from './data_sharing_internals.mojom-webui.js';
 import {DataSharingInternalsBrowserProxy} from './data_sharing_internals_browser_proxy.js';
+import type {GroupData, GroupMember} from './group_data.mojom-webui.js';
+import {MemberRole} from './group_data.mojom-webui.js';
 
 function getProxy(): DataSharingInternalsBrowserProxy {
   return DataSharingInternalsBrowserProxy.getInstance();
@@ -18,15 +18,15 @@ function appendTextChildToList(textToShow: string, element: HTMLUListElement) {
   element.appendChild(textElement);
 }
 
-function roleTypeToString(role: RoleType): string {
+function roleTypeToString(role: MemberRole): string {
   switch (role) {
-    case RoleType.UNKNOWN:
+    case MemberRole.kUnspecified:
       return 'Unknown';
-    case RoleType.OWNER:
+    case MemberRole.kOwner:
       return 'Owner';
-    case RoleType.MEMBER:
+    case MemberRole.kMember:
       return 'Member';
-    case RoleType.INVITEE:
+    case MemberRole.kInvitee:
       return 'Invitee';
   }
 }
@@ -54,7 +54,7 @@ function displayGroups(isSuccess: boolean, groupData: GroupData[]) {
     const listItem = document.createElement('li');
     const groupItem = document.createElement('ul');
     appendTextChildToList(group.groupId, groupItem);
-    appendTextChildToList(group.name, groupItem);
+    appendTextChildToList(group.displayName, groupItem);
     group.members.forEach((member) => {
       addMemberToGroup(member, groupItem);
     });

@@ -6,13 +6,11 @@
 Also probably a good example of how to *not* write HTML.
 """
 
-from __future__ import print_function
-
 import collections
 import logging
 import sys
 import tempfile
-from typing import Any, Dict, IO, List, Optional, OrderedDict, Set, Tuple, Union
+from typing import Any, Dict, IO, List, Optional, Set, Union
 
 import six
 
@@ -328,7 +326,7 @@ def OutputResults(stale_dict: data_types.TestExpectationMap,
       _RecursiveHtmlToFile(active_str_dict, file_handle)
 
     if unused_expectations_str_list:
-      file_handle.write('\n<h1>' + SECTION_UNUSED + "</h1>\n")
+      file_handle.write('\n<h1>' + SECTION_UNUSED + '</h1>\n')
       _RecursiveHtmlToFile(unused_expectations_str_list, file_handle)
     if unmatched_results_str_dict:
       file_handle.write('\n<h1>' + SECTION_UNMATCHED + '</h1>\n')
@@ -619,9 +617,9 @@ def _OutputAffectedUrls(affected_urls: List[str],
     orphaned_urls: A list of strings containing URLs to output as closable.
     file_handle: A file handle to write the string to. Defaults to stdout.
   """
-  _OutputUrlsForCommandLine(affected_urls, "Affected bugs", file_handle)
+  _OutputUrlsForCommandLine(affected_urls, 'Affected bugs', file_handle)
   if orphaned_urls:
-    _OutputUrlsForCommandLine(orphaned_urls, "Closable bugs", file_handle)
+    _OutputUrlsForCommandLine(orphaned_urls, 'Closable bugs', file_handle)
 
 
 def _OutputUrlsForCommandLine(urls: List[str],

@@ -638,16 +638,7 @@ void NativeThemeBase::PaintCheckbox(
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
-    if (button.indeterminate) {
-      // Draw the dash.
-      flags.setColor(
-          ControlsBorderColorForState(state, color_scheme, color_provider));
-      const auto indeterminate =
-          skrect.makeInset(skrect.width() * kIndeterminateInsetWidthRatio,
-                           skrect.height() * kIndeterminateInsetHeightRatio);
-      flags.setStyle(cc::PaintFlags::kFill_Style);
-      canvas->drawRoundRect(indeterminate, border_radius, border_radius, flags);
-    } else if (button.checked) {
+    if (button.indeterminate || button.checked) {
       // Draw the accent background.
       flags.setStyle(cc::PaintFlags::kFill_Style);
       if (accent_color && state != kDisabled) {
@@ -659,18 +650,27 @@ void NativeThemeBase::PaintCheckbox(
       }
       canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
 
-      // Draw the checkmark.
-      SkPath check;
-      check.moveTo(skrect.x() + skrect.width() * 0.2, skrect.centerY());
-      check.rLineTo(skrect.width() * 0.2, skrect.height() * 0.2);
-      check.lineTo(skrect.right() - skrect.width() * 0.2,
-                   skrect.y() + skrect.height() * 0.2);
-      flags.setStyle(cc::PaintFlags::kStroke_Style);
-      flags.setStrokeWidth(SkFloatToScalar(skrect.height() * 0.16));
-      SkColor checkmark_color =
-          ControlsBackgroundColorForState(state, color_scheme, color_provider);
-      flags.setColor(checkmark_color);
-      canvas->drawPath(check, flags);
+      if (button.indeterminate) {
+        // Draw the dash.
+        flags.setColor(ControlsBackgroundColorForState(state, color_scheme,
+                                                       color_provider));
+        skrect.inset(skrect.width() * kIndeterminateInsetWidthRatio,
+                     skrect.height() * kIndeterminateInsetHeightRatio);
+        canvas->drawRoundRect(skrect, border_radius, border_radius, flags);
+      } else if (button.checked) {
+        // Draw the checkmark.
+        SkPath check;
+        check.moveTo(skrect.x() + skrect.width() * 0.2, skrect.centerY());
+        check.rLineTo(skrect.width() * 0.2, skrect.height() * 0.2);
+        check.lineTo(skrect.right() - skrect.width() * 0.2,
+                     skrect.y() + skrect.height() * 0.2);
+        flags.setStyle(cc::PaintFlags::kStroke_Style);
+        flags.setStrokeWidth(SkFloatToScalar(skrect.height() * 0.16));
+        SkColor checkmark_color = ControlsBackgroundColorForState(
+            state, color_scheme, color_provider);
+        flags.setColor(checkmark_color);
+        canvas->drawPath(check, flags);
+      }
     }
   }
 }
@@ -731,16 +731,16 @@ SkRect NativeThemeBase::PaintCheckboxRadioCommon(
   flags.setStyle(cc::PaintFlags::kFill_Style);
   canvas->drawRoundRect(background_rect, border_radius, border_radius, flags);
 
-  // For checkbox the border is drawn only when it is unchecked or
-  // indeterminate. For radio the border is always drawn.
-  if (!(is_checkbox && button.checked && !button.indeterminate)) {
+  // For checkbox the border is drawn only when it is unchecked.
+  // For radio the border is always drawn.
+  if (!is_checkbox || (!button.checked && !button.indeterminate)) {
     // Shrink half border width so the final pixels of the border will be
     // within the rectangle.
     const auto border_rect =
         skrect.makeInset(kBorderWidth / 2, kBorderWidth / 2);
 
     SkColor border_color;
-    if (button.checked && !button.indeterminate) {
+    if (button.checked) {
       if (accent_color && state != kDisabled) {
         border_color =
             CustomAccentColorForState(*accent_color, state, color_scheme);
@@ -1708,7 +1708,7 @@ SkColor NativeThemeBase::GetControlColorFromColorProvider(
     default:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void NativeThemeBase::PaintLightenLayer(cc::PaintCanvas* canvas,

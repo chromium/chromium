@@ -12,19 +12,19 @@ cargo_crate("lib") {
   crate_name = "winapi_util"
   epoch = "0.1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/console.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/file.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/sysinfo.rs",
-    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/src/win.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/console.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/file.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/sysinfo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.9/src/win.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.1.8"
+  cargo_pkg_version = "0.1.9"
   cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
   cargo_pkg_name = "winapi-util"
   cargo_pkg_description =

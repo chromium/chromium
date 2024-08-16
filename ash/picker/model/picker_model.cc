@@ -41,19 +41,36 @@ ui::TextInputType GetTextInputType(ui::TextInputClient* client) {
                 : ui::TextInputType::TEXT_INPUT_TYPE_NONE;
 }
 
+bool GetIsGifsEnabled(PrefService* prefs) {
+  // prefs can be null in some tests.
+  if (prefs == nullptr) {
+    return false;
+  }
+
+  if (const PrefService::Preference* pref =
+          prefs->FindPreference(prefs::kEmojiPickerGifSupportEnabled)) {
+    return pref->GetValue()->GetBool();
+  }
+  return false;
+}
+
 }  // namespace
 
-PickerModel::PickerModel(ui::TextInputClient* focused_client,
+PickerModel::PickerModel(PrefService* prefs,
+                         ui::TextInputClient* focused_client,
                          input_method::ImeKeyboard* ime_keyboard,
                          EditorStatus editor_status)
     : has_focus_(focused_client != nullptr &&
                  focused_client->GetTextInputType() !=
                      ui::TextInputType::TEXT_INPUT_TYPE_NONE),
       selected_text_(GetSelectedText(focused_client)),
+      should_do_learning_(focused_client == nullptr ||
+                          focused_client->ShouldDoLearning()),
       selection_range_(GetSelectionRange(focused_client)),
       is_caps_lock_enabled_(CHECK_DEREF(ime_keyboard).IsCapsLockEnabled()),
       editor_status_(editor_status),
-      text_input_type_(GetTextInputType(focused_client)) {}
+      text_input_type_(GetTextInputType(focused_client)),
+      is_gifs_enabled_(GetIsGifsEnabled(prefs)) {}
 
 std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
   switch (GetMode()) {
@@ -77,7 +94,8 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       }
       categories.push_back(PickerCategory::kLinks);
       if (text_input_type_ != ui::TextInputType::TEXT_INPUT_TYPE_URL) {
-        categories.push_back(PickerCategory::kExpressions);
+        categories.push_back(is_gifs_enabled_ ? PickerCategory::kEmojisGifs
+                                              : PickerCategory::kEmojis);
       }
       categories.insert(categories.end(), {
                                               PickerCategory::kClipboard,
@@ -111,6 +129,10 @@ std::u16string_view PickerModel::selected_text() const {
   return selected_text_;
 }
 
+bool PickerModel::should_do_learning() const {
+  return should_do_learning_;
+}
+
 bool PickerModel::is_caps_lock_enabled() const {
   return is_caps_lock_enabled_;
 }
@@ -130,12 +152,8 @@ PickerModeType PickerModel::GetMode() const {
              : PickerModeType::kHasSelection;
 }
 
-bool PickerModel::IsGifsEnabled(PrefService* prefs) const {
-  if (const PrefService::Preference* pref =
-          prefs->FindPreference(prefs::kEmojiPickerGifSupportEnabled)) {
-    return pref->GetValue()->GetBool();
-  }
-  return false;
+bool PickerModel::IsGifsEnabled() const {
+  return is_gifs_enabled_;
 }
 
 }  // namespace ash

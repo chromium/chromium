@@ -10,6 +10,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -61,7 +62,7 @@ class NotifyingMockRenderProcessHost : public content::MockRenderProcessHost {
 std::string ReadFileContentsToString(base::File* file) {
   size_t length = base::checked_cast<size_t>(file->GetLength());
   std::string contents(length, 0);
-  file->Read(0, &contents[0], base::checked_cast<int>(length));
+  file->Read(0, base::as_writable_byte_span(contents));
   return contents;
 }
 

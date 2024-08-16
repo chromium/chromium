@@ -1,9 +1,10 @@
 monorail: {
-  component: "Blink>Layout"
+  component: "Blink>Paint"
 }
+team_email: "paint-dev@chromium.org"
 wpt: {
   notify: YES
 }
 buganizer_public: {
-  component_id: 1456721
+  component_id: 1456440
 }

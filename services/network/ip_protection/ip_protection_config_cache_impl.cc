@@ -4,13 +4,13 @@
 
 #include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
+#include <string>
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "ip_protection_proxy_list_manager.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -25,7 +25,6 @@
 namespace network {
 
 namespace {
-
 // Rewrite the proxy list to use SCHEME_QUIC. In order to fall back to HTTPS
 // quickly if QUIC is broken, the first chain is included once with
 // SCHEME_QUIC and once with SCHEME_HTTPS. The remaining chains are included
@@ -66,7 +65,9 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     std::unique_ptr<IpProtectionConfigGetter> config_getter)
-    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()) {
+    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
+      enable_token_caching_by_geo_(
+          net::features::kIpPrivacyCacheTokensByGeo.Get()) {
   // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
 
@@ -77,8 +78,8 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     config_getter_ = std::move(config_getter);
 
     ipp_proxy_list_manager_ =
-        std::make_unique<IpProtectionProxyListManagerImpl>(
-            config_getter_.get());
+        std::make_unique<IpProtectionProxyListManagerImpl>(this,
+                                                           *config_getter_);
 
     ipp_token_cache_managers_[IpProtectionProxyLayer::kProxyA] =
         std::make_unique<IpProtectionTokenCacheManagerImpl>(
@@ -97,10 +98,16 @@ IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() {
 }
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
-  // Verify there is at least one cache manager and all have available tokens.
-  bool all_caches_have_tokens = !ipp_token_cache_managers_.empty();
+  // If proxy list is not available, tokens cannot be available. Also if there
+  // are no token cache managers, there are no tokens.
+  if (!IsProxyListAvailable() || ipp_token_cache_managers_.empty()) {
+    return false;
+  }
+
+  bool all_caches_have_tokens = true;
   for (const auto& manager : ipp_token_cache_managers_) {
-    if (!manager.second->IsAuthTokenAvailable()) {
+    if (!manager.second->IsAuthTokenAvailable(
+            ipp_proxy_list_manager_->CurrentGeo())) {
       base::UmaHistogramEnumeration(
           "NetworkService.IpProtection.EmptyTokenCache", manager.first);
       all_caches_have_tokens = false;
@@ -113,10 +120,17 @@ bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
 std::optional<BlindSignedAuthToken> IpProtectionConfigCacheImpl::GetAuthToken(
     size_t chain_index) {
   std::optional<BlindSignedAuthToken> result;
+
+  // If the proxy list is empty, there cannot be any matching tokens.
+  if (!IsProxyListAvailable() || ipp_token_cache_managers_.empty()) {
+    return result;
+  }
+
   auto proxy_layer = chain_index == 0 ? IpProtectionProxyLayer::kProxyA
                                       : IpProtectionProxyLayer::kProxyB;
   if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
-    result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken();
+    result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken(
+        ipp_proxy_list_manager_->CurrentGeo());
   }
   return result;
 }
@@ -150,7 +164,7 @@ IpProtectionConfigCacheImpl::GetIpProtectionProxyListManagerForTesting() {
 }
 
 bool IpProtectionConfigCacheImpl::IsProxyListAvailable() {
-  return (ipp_proxy_list_manager_ != nullptr)
+  return ipp_proxy_list_manager_ != nullptr
              ? ipp_proxy_list_manager_->IsProxyListAvailable()
              : false;
 }
@@ -181,10 +195,15 @@ void IpProtectionConfigCacheImpl::RequestRefreshProxyList() {
   }
 }
 
-void IpProtectionConfigCacheImpl::GeoChangeObserved(const std::string& geo_id) {
+void IpProtectionConfigCacheImpl::GeoObserved(const std::string& geo_id) {
+  // If token caching by geo is disabled, short-circuit and don't do anything.
+  if (!enable_token_caching_by_geo_) {
+    return;
+  }
+
   if (ipp_proxy_list_manager_ != nullptr &&
-      ipp_proxy_list_manager_->GeoId() != geo_id) {
-    RequestRefreshProxyList();
+      ipp_proxy_list_manager_->CurrentGeo() != geo_id) {
+    ipp_proxy_list_manager_->RefreshProxyListForGeoChange();
   }
 
   for (auto& [_, token_manager] : ipp_token_cache_managers_) {
@@ -192,8 +211,6 @@ void IpProtectionConfigCacheImpl::GeoChangeObserved(const std::string& geo_id) {
       token_manager->SetCurrentGeo(geo_id);
     }
   }
-
-  current_geo_id_ = geo_id;
 }
 
 void IpProtectionConfigCacheImpl::OnNetworkChanged(

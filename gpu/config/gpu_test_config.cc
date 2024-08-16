@@ -49,8 +49,6 @@ GPUTestConfig::OS GetCurrentOS() {
   switch (major_version) {
     case 10:
       switch (minor_version) {
-        case 5:
-          return GPUTestConfig::kOsMacLeopard;
         case 6:
           return GPUTestConfig::kOsMacSnowLeopard;
         case 7:
@@ -81,6 +79,8 @@ GPUTestConfig::OS GetCurrentOS() {
       return GPUTestConfig::kOsMacVentura;
     case 14:
       return GPUTestConfig::kOsMacSonoma;
+    case 15:
+      return GPUTestConfig::kOsMacSequoia;
   }
   return GPUTestConfig::kOsUnknown;
 #elif BUILDFLAG(IS_ANDROID)
@@ -211,7 +211,6 @@ bool GPUTestBotConfig::SetGPUInfo(const GPUInfo& gpu_info) {
 bool GPUTestBotConfig::IsValid() const {
   switch (os()) {
     case kOsWin10:
-    case kOsMacLeopard:
     case kOsMacSnowLeopard:
     case kOsMacLion:
     case kOsMacMountainLion:
@@ -226,6 +225,7 @@ bool GPUTestBotConfig::IsValid() const {
     case kOsMacMonterey:
     case kOsMacVentura:
     case kOsMacSonoma:
+    case kOsMacSequoia:
     case kOsLinux:
     case kOsChromeOS:
     case kOsAndroid:

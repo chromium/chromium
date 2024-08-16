@@ -19,8 +19,7 @@ EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
     case storage::WatcherManager::DELETED:
       return arc::mojom::ChangeType::DELETED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return arc::mojom::ChangeType::CHANGED;
+  NOTREACHED();
 }
 
 // static
@@ -35,8 +34,7 @@ bool EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
       *type = storage::WatcherManager::DELETED;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

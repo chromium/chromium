@@ -27,7 +27,7 @@ std::unique_ptr<LogFileWriter::Factory> CreateLogFileWriterFactory(
           std::make_unique<GzipLogCompressorFactory>(
               std::make_unique<PerfectGzipEstimator::Factory>()));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_POSIX)

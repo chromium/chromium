@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
-import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -100,7 +99,6 @@ public final class SubresourceFilterTest {
     @Before
     public void setUp() throws Exception {
         mTestServer = mTestServerRule.getServer();
-        SafeBrowsingApiBridge.setSafetyNetApiHandler(new MockSafetyNetApiHandler());
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         mActivityTestRule.startMainActivityOnBlankPage();
 
@@ -110,7 +108,6 @@ public final class SubresourceFilterTest {
 
     @After
     public void tearDown() {
-        MockSafetyNetApiHandler.clearMockResponses();
         MockSafeBrowsingApiHandler.clearMockResponses();
         SafeBrowsingApiBridge.clearHandlerForTesting();
     }
@@ -131,7 +128,6 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
     public void resourceFilteredClose_InfobarUI() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
@@ -156,7 +152,6 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
     public void resourceFilteredClickLearnMore_InfobarUI() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
@@ -204,10 +199,7 @@ public final class SubresourceFilterTest {
     @Test
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({
-        ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED,
-        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK
-    })
+    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
     public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnPhoneOnBackPress()
             throws Exception {
         testResourceFilteredClickLearnMore_MessagesUIFlow();
@@ -216,10 +208,7 @@ public final class SubresourceFilterTest {
     @Test
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    @EnableFeatures({
-        ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED,
-        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK
-    })
+    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
     public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnTabletOnBackPress()
             throws Exception {
         testResourceFilteredClickLearnMore_MessagesUIFlow();
@@ -227,7 +216,6 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
     public void resourceFilteredReload_InfobarUI() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
@@ -250,10 +238,7 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @EnableFeatures({
-        ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED,
-        ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK
-    })
+    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
     public void resourceFilteredReload_MessagesUI() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
@@ -275,20 +260,7 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
     public void resourceNotFilteredWithWarning() throws Exception {
-        String url = mTestServer.getURL(PAGE_WITH_JPG);
-        Assert.assertTrue(loadPageWithBlockableContentAndTestIfBlocked(url, true));
-
-        // Check that the infobar is not showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.isEmpty());
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)
-    public void resourceNotFilteredWithWarning_NewGmsApiDisabled() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertTrue(loadPageWithBlockableContentAndTestIfBlocked(url, true));
 
@@ -365,18 +337,12 @@ public final class SubresourceFilterTest {
 
     private boolean loadPageWithBlockableContentAndTestIfBlocked(String url, boolean isForWarning)
             throws TimeoutException {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SAFE_BROWSING_NEW_GMS_API_FOR_SUBRESOURCE_FILTER_CHECK)) {
-            int[] threatAttribute =
-                    isForWarning
-                            ? new int[] {MockSafeBrowsingApiHandler.THREAT_ATTRIBUTE_CANARY_CODE}
-                            : new int[0];
-            MockSafeBrowsingApiHandler.addMockResponse(
-                    url, MockSafeBrowsingApiHandler.BETTER_ADS_VIOLATION_CODE, threatAttribute);
-        } else {
-            String metadata = isForWarning ? METADATA_FOR_WARNING : METADATA_FOR_ENFORCEMENT;
-            MockSafetyNetApiHandler.addMockResponse(url, metadata);
-        }
+        int[] threatAttribute =
+                isForWarning
+                        ? new int[] {MockSafeBrowsingApiHandler.THREAT_ATTRIBUTE_CANARY_CODE}
+                        : new int[0];
+        MockSafeBrowsingApiHandler.addMockResponse(
+                url, MockSafeBrowsingApiHandler.BETTER_ADS_VIOLATION_CODE, threatAttribute);
         mActivityTestRule.loadUrl(url);
         return Boolean.parseBoolean(mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded"));
     }

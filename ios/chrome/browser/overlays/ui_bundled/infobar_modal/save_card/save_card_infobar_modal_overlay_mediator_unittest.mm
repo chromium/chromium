@@ -33,6 +33,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using ::testing::A;
+using ::testing::Return;
 
 namespace {
 // Time duration to wait before auto-closing modal in save card success
@@ -113,6 +114,10 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
     request_ =
         OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
             infobar_.get(), InfobarOverlayType::kModal);
+
+    EXPECT_CALL(*delegate_,
+                SetCreditCardUploadCompletionCallback(
+                    A<base::OnceCallback<void(BOOL card_saved)>>()));
     mediator_ = [[SaveCardInfobarModalOverlayMediator alloc]
         initWithRequest:request_.get()];
     mediator_.delegate = mediator_delegate_;
@@ -140,6 +145,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
   FakeSaveCardModalConsumer* consumer =
       [[FakeSaveCardModalConsumer alloc] init];
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(YES));
   mediator_.consumer = consumer;
 
   NSString* cardNumber = [NSString
@@ -163,6 +169,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
 // Tests that calling saveCardWithCardholderName:expirationMonth:expirationYear:
 // calls UpdateAndAccept().
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, MainAction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   NSString* cardholderName = @"name";
   NSString* month = @"3";
   NSString* year = @"23";
@@ -170,8 +179,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, MainAction) {
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
                               base::SysNSStringToUTF16(month),
-                              base::SysNSStringToUTF16(year),
-                              A<base::OnceCallback<void(BOOL card_saved)>>()));
+                              base::SysNSStringToUTF16(year)));
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ saveCardWithCardholderName:cardholderName
                         expirationMonth:month
@@ -185,20 +195,35 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadURL) {
       [[FakeSaveCardMediatorDelegate alloc] init];
   mediator_.save_card_delegate = delegate;
   GURL url("https://testurl.com");
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissModalAndOpenURL:url];
   EXPECT_NSEQ(base::SysUTF8ToNSString(url.spec()),
               base::SysUTF8ToNSString(delegate.pendingURLToLoad.spec()));
 }
 
+// Tests that when modal is dismissed, mediator reset the callback passed to the
+// delegate and informs that infobar is not presenting.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnInfoBarDismissed) {
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
+  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
+  [mediator_ dismissInfobarModal:nil];
+}
+
 // Tests metrics for loading view not shown when loading and confirmation is not
 // enabled.
 TEST_F(SaveCardInfobarModalOverlayMediatorTest, LoadingViewNotShown_Metrics) {
   base::HistogramTester histogramTester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
   NSString* cardholderName = @"name";
   NSString* month = @"3";
   NSString* year = @"23";
 
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ saveCardWithCardholderName:cardholderName
                         expirationMonth:month
@@ -260,8 +285,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(cardholderName),
                               base::SysNSStringToUTF16(month),
-                              base::SysNSStringToUTF16(year),
-                              A<base::OnceCallback<void(BOOL card_saved)>>()));
+                              base::SysNSStringToUTF16(year)));
   [mediator_ saveCardWithCardholderName:cardholderName
                         expirationMonth:month
                          expirationYear:year];
@@ -282,6 +306,24 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   EXPECT_TRUE(consumer.currentCardSaveAccepted);
   EXPECT_FALSE(consumer.supportsEditing);
   EXPECT_TRUE(consumer.inLoadingState);
+}
+
+// Tests that when credit card upload is completed and modal is reshown
+// SaveCardInfobarModalOverlayMediator shows modal in confirmation state when
+// loading and confirmation flag is enabled.
+TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
+       ReShowConfirmationStateForUploadCompletedInfobar) {
+  ON_CALL(*delegate_, IsCreditCardUploadComplete)
+      .WillByDefault(testing::Return(true));
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+  infobar_->set_accepted(true);
+  mediator_.consumer = consumer;
+
+  EXPECT_TRUE(consumer.currentCardSaveAccepted);
+  EXPECT_FALSE(consumer.supportsEditing);
+  EXPECT_FALSE(consumer.inLoadingState);
+  EXPECT_TRUE(consumer.showingSuccess);
 }
 
 // Tests that calling creditCardUploadCompleted with `card_saved` as true shows
@@ -305,6 +347,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
       [[FakeSaveCardModalConsumer alloc] init];
   mediator_.consumer = consumer;
 
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
 
@@ -322,6 +366,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
 
   // Verify the modal is dismissed and call is made to
   // `OnConfirmationClosed` on timeout.
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO));
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   EXPECT_CALL(*delegate_, OnConfirmationClosed);
   task_environment()->FastForwardBy(kConfirmationStateDuration);
@@ -338,6 +384,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
 
   // Verify the modal is not yet dismissed and call is not made to
   // `OnConfirmationClosed` before timer times out.
+  EXPECT_CALL(*delegate_, SetInfobarIsPresenting(NO)).Times(0);
   OCMReject([mediator_delegate_ stopOverlayForMediator:mediator_]);
   EXPECT_CALL(*delegate_, OnConfirmationClosed).Times(0);
 
@@ -367,23 +414,13 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   // receiving server response, `dismissInfobarModal` is called. Verify
   // `Autofill.CreditCardUpload.LoadingResult` metrics is logged with reason for
   // dismissal as `kClosed`.
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
       autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
-
-  // On receving server response, `creditCardUploadCompleted` is called, that
-  // records loading view was not interacted with, if not already dismissed.
-  // Verify `Autofill.CreditCardUpload.LoadingResult` metrics is not logged
-  // again since it was already dismissed by the user.
-  OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
-  [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
-
-  histogramTester.ExpectBucketCount(
-      "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 0);
 }
 
 // Tests metrics for loading view shown and dismissed on receiving result from
@@ -405,6 +442,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   // On receving server response if loading result is showing, it will be
   // dismissed by the mediator. Verify `Autofill.CreditCardUpload.LoadingResult`
   // metrics is logged with reason for dismissal as `kNotInteracted`.
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ creditCardUploadCompleted:/*card_saved=*/false];
 
@@ -431,6 +469,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   // before the modal is auto-closed, `dismissInfobarModal` is called. Verify
   // `Autofill.CreditCardUpload.ConfirmationResult` metrics is logged with
   // reason for dismissal as `kClosed`.
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissInfobarModal:nil];
   task_environment()->FastForwardBy(kConfirmationStateDuration);
@@ -458,6 +497,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLoadingAndConfirmationTest,
   // When confirmation view is auto-closed on timeout, verify
   // `Autofill.CreditCardUpload.ConfirmationResult` metrics is logged with
   // reason for dismissal as `kNotInteracted`.
+  EXPECT_CALL(*delegate_, SetCreditCardUploadCompletionCallback);
   OCMExpect([mediator_delegate_ stopOverlayForMediator:mediator_]);
   task_environment()->FastForwardBy(kConfirmationStateDuration);
 

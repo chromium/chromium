@@ -44,7 +44,7 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
 signin::ConsentLevel GetProfileConsentLevelToVerify(Profile* profile) {
   // TODO(crbug.com/40280466): Condition to remove when we decide to
   // align requirements for Managed vs Consumer accounts.
-  return chrome::enterprise_util::UserAcceptedAccountManagement(profile)
+  return enterprise_util::UserAcceptedAccountManagement(profile)
              ? signin::ConsentLevel::kSignin
              : signin::ConsentLevel::kSync;
 }

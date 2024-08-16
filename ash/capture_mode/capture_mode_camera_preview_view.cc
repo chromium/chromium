@@ -130,6 +130,10 @@ CameraPreviewView::CameraPreviewView(
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
   RefreshResizeButtonVisibility();
   UpdateResizeButtonTooltip();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kVideo);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED));
 }
 
 CameraPreviewView::~CameraPreviewView() {
@@ -354,13 +358,6 @@ void CameraPreviewView::Layout(PassKey) {
   // Refocus the camera preview to relayout the focus ring on it.
   if (has_focus())
     PseudoFocus();
-}
-
-void CameraPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kVideo;
-  node_data->SetName(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED));
 }
 
 views::View* CameraPreviewView::GetView() {

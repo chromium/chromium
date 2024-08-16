@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
 
 #import "base/apple/foundation_util.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
@@ -27,9 +27,11 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -48,7 +50,6 @@
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
   raw_ptr<AuthenticationService> _authService;
-  raw_ptr<signin::IdentityManager> _identityManager;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   raw_ptr<syncer::SyncService> _syncService;
@@ -71,10 +72,9 @@
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
     _authService = authService;
-    _identityManager = identityManager;
     _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            _identityManager, self);
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
@@ -87,15 +87,15 @@
   _accountManagerServiceObserver.reset();
   _authService = nullptr;
   _identityManagerObserver.reset();
-  _identityManager = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
 }
 
 #pragma mark - AccountsModelIdentityDataSource
 
-- (id<SystemIdentity>)identityForAccount:(CoreAccountInfo)account {
-  return _accountManagerService->GetIdentityWithGaiaID(account.gaia);
+- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID {
+  return _accountManagerService->GetIdentityWithGaiaID(
+      base::SysNSStringToUTF8(gaiaID));
 }
 
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
@@ -115,14 +115,32 @@
   return GetAccountErrorUIInfo(_syncService);
 }
 
-- (std::vector<CoreAccountInfo>)accountsWithRefreshTokens {
-  return _identityManager->GetAccountsWithRefreshTokens();
+- (IdentityViewItem*)primaryIdentityViewItem {
+  return [self identityViewItemForIdentity:_authService->GetPrimaryIdentity(
+                                               signin::ConsentLevel::kSignin)];
+}
+
+- (std::vector<IdentityViewItem*>)identityViewItems {
+  std::vector<IdentityViewItem*> identityViewItemsForAccounts;
+  for (id<SystemIdentity> identity in _accountManagerService
+           ->GetAllIdentities()) {
+    identityViewItemsForAccounts.push_back(
+        [self identityViewItemForIdentity:identity]);
+  }
+  return identityViewItemsForAccounts;
+}
+
+#pragma mark - AccountsMutator
+
+- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID {
+  [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  [self.consumer updateAccountIdentity:identity];
+  [self.consumer
+      updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
@@ -152,6 +170,22 @@
 
 - (void)onSyncStateChanged {
   [self.consumer updateErrorSectionModelAndReloadViewIfNeeded:YES];
+}
+
+#pragma mark - Private
+
+- (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
+  IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
+  identityViewItem.userEmail = identity.userEmail;
+  identityViewItem.gaiaID = identity.gaiaID;
+  IdentityAvatarSize avatarSize =
+      base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+          ? IdentityAvatarSize::Regular
+          : IdentityAvatarSize::TableViewIcon;
+  identityViewItem.avatar = [self identityAvatarWithSizeForIdentity:identity
+                                                               size:avatarSize];
+  identityViewItem.accessibilityIdentifier = identity.userEmail;
+  return identityViewItem;
 }
 
 @end

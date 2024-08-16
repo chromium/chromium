@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -82,7 +83,7 @@ class ChromeBrowserState : public web::BrowserState {
   // null, `delegate` will be notified when the creation starts and completes.
   static std::unique_ptr<ChromeBrowserState> CreateBrowserState(
       const base::FilePath& path,
-      const std::string& browser_state_name,
+      std::string_view browser_state_name,
       CreationMode creation_mode,
       Delegate* delegate);
 
@@ -174,7 +175,7 @@ class ChromeBrowserState : public web::BrowserState {
  protected:
   explicit ChromeBrowserState(
       const base::FilePath& state_path,
-      const std::string& browser_state_name,
+      std::string_view browser_state_name,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
  private:

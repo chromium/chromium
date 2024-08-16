@@ -8,10 +8,12 @@ source_set("manage_accounts") {
     "accounts_coordinator.mm",
     "accounts_mediator.h",
     "accounts_mediator.mm",
+    "accounts_mediator_delegate.h",
   ]
   deps = [
     ":constants",
     ":manage_accounts_ui",
+    ":protocols",
     "//base",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
@@ -39,6 +41,7 @@ source_set("manage_accounts") {
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signout_action_sheet",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/sync",
@@ -53,11 +56,17 @@ source_set("manage_accounts_ui") {
   sources = [
     "accounts_consumer.h",
     "accounts_model_identity_data_source.h",
+    "accounts_mutator.h",
+    "accounts_table_view_controller.h",
+    "accounts_table_view_controller.mm",
+    "identity_view_item.h",
+    "identity_view_item.mm",
     "legacy_accounts_table_view_controller.h",
     "legacy_accounts_table_view_controller.mm",
   ]
   deps = [
     ":constants",
+    ":protocols",
     "//base",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
@@ -97,6 +106,11 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
+}
+
+source_set("protocols") {
+  sources = [ "with_overridable_model_identity_data_source.h" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("constants") {

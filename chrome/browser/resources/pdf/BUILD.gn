@@ -99,9 +99,22 @@ build_webui("build") {
     "elements/pdf_shared.css",
     "elements/pdf_shared_lit.css",
     "elements/shared_vars.css",
+    "elements/viewer_attachment.css",
+    "elements/viewer_attachment_bar.css",
+    "elements/viewer_bookmark.css",
+    "elements/viewer_document_outline.css",
     "elements/viewer_download_controls.css",
     "elements/viewer_page_selector.css",
+    "elements/viewer_password_dialog.css",
+    "elements/viewer_properties_dialog.css",
+    "elements/viewer_thumbnail.css",
+    "elements/viewer_thumbnail_bar.css",
     "pdf_viewer_shared_style.css",
+
+    # Files only used in Print Preview's PDF Viewer UI.
+    "elements/viewer_page_indicator.css",
+    "elements/viewer_zoom_button.css",
+    "elements/viewer_zoom_toolbar.css",
   ]
 
   if (enable_pdf_ink2) {

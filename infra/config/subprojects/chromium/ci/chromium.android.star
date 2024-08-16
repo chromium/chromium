@@ -12,6 +12,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/targets.star", "targets")
+load("//project.star", "settings")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -2058,6 +2059,9 @@ ci.builder(
             "webview_shell",
         ],
     ),
+    # TODO(crbug.com/355704916): Revert back to builderless after compile OOM
+    # issue is resolved.
+    builderless = not settings.is_main,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "on_cq|x86",

@@ -840,7 +840,8 @@ gfx::Size TabContainerImpl::GetMinimumSize() const {
     // that would be spanned by our children after animations complete. This
     // allows tabs to resize directly with window resizes instead of mediating
     // that through animation.
-    minimum_width = layout_helper_->CalculateMinimumWidth();
+    minimum_width = override_available_width_for_tabs_.value_or(
+        layout_helper_->CalculateMinimumWidth());
   }
 
   return gfx::Size(minimum_width.value(), GetLayoutConstant(TAB_STRIP_HEIGHT));
@@ -885,51 +886,8 @@ views::View* TabContainerImpl::GetTooltipHandlerForPoint(
   return this;
 }
 
-namespace {
-
-enum class InsertionLocation {
-  kInsertToLeft,
-  kReplace,
-  kInsertToRight,
-};
-
-// Returns the insertion location for a drop over `tab` if replacement is
-// allowed. `drop_location` is the x coordinate of the proposed drop.
-InsertionLocation InsertionLocationReplacementAllowed(Tab* const tab,
-                                                      int drop_location) {
-  // When hovering over the left or right quarter of a tab, the drop
-  // indicator will point between tabs. Otherwise, it will point at the tab.
-  const int hot_width = tab->width() / 4;
-
-  if (drop_location >= (tab->x() + tab->width() - hot_width)) {
-    return InsertionLocation::kInsertToRight;
-  } else if (drop_location < tab->x() + hot_width) {
-    return InsertionLocation::kInsertToLeft;
-  } else {
-    return InsertionLocation::kReplace;
-  }
-}
-
-// Returns the insertion location for a drop over `tab` if replacement is not
-// allowed. `drop_location` is the x coordinate of the proposed drop.
-InsertionLocation InsertionLocationReplacementNotAllowed(Tab* const tab,
-                                                         int drop_location) {
-  // When replacement is not allowed, the drop indicator will point to the side
-  // of the tab it is on.
-  const int hot_width = tab->width() / 2;
-
-  if (drop_location >= (tab->x() + tab->width() - hot_width)) {
-    return InsertionLocation::kInsertToRight;
-  } else {
-    return InsertionLocation::kInsertToLeft;
-  }
-}
-
-}  // namespace
-
 std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
-    const ui::DropTargetEvent& event,
-    bool allow_replacement) {
+    const ui::DropTargetEvent& event) {
   // Force animations to stop, otherwise it makes the index calculation tricky.
   CompleteAnimationAndLayout();
 
@@ -966,15 +924,26 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
       // must be avoided since it will become O(n^2).
       const int model_index = GetModelIndexOf(tab).value();
 
-      InsertionLocation location;
-      if (allow_replacement) {
-        location = InsertionLocationReplacementAllowed(tab, x);
+      enum {
+        kInsertToLeft,
+        kReplace,
+        kInsertToRight,
+      } location;
+
+      // When hovering over the left or right quarter of a tab, the drop
+      // indicator will point between tabs. Otherwise, it will point at the tab.
+      const int hot_width = tab->width() / 4;
+
+      if (x >= (tab->x() + tab->width() - hot_width)) {
+        location = kInsertToRight;
+      } else if (x < tab->x() + hot_width) {
+        location = kInsertToLeft;
       } else {
-        location = InsertionLocationReplacementNotAllowed(tab, x);
+        location = kReplace;
       }
 
       switch (location) {
-        case InsertionLocation::kInsertToLeft: {
+        case kInsertToLeft: {
           const bool first_in_group =
               tab->group().has_value() &&
               model_index ==
@@ -986,15 +955,14 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
                   first_in_group ? kIncludeInGroup : kDontIncludeInGroup};
         }
 
-        case InsertionLocation::kReplace: {
-          CHECK(allow_replacement);
+        case kReplace: {
           return BrowserRootView::DropIndex{
               .index = model_index,
               .relative_to_index = kReplaceIndex,
               .group_inclusion = kDontIncludeInGroup};
         }
 
-        case InsertionLocation::kInsertToRight: {
+        case kInsertToRight: {
           return BrowserRootView::DropIndex{
               .index = model_index + 1,
               .relative_to_index = kInsertBeforeIndex,

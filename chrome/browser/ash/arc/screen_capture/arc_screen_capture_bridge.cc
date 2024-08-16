@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_session.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 namespace {
 constexpr char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
@@ -99,7 +100,7 @@ void ArcScreenCaptureBridge::RequestPermission(
       DesktopMediaPicker::Params::RequestSource::kArcScreenCapture};
   picker_params.context = ash::Shell::GetRootWindowForDisplayId(
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  picker_params.modality = ui::ModalType::MODAL_TYPE_SYSTEM;
+  picker_params.modality = ui::mojom::ModalType::kSystem;
   picker_params.app_name = display_name16;
   picker_params.target_name = display_name16;
   if (pending_permissions_map_.find(package_name) !=

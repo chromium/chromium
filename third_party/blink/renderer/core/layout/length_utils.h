@@ -61,6 +61,9 @@ LayoutUnit BlockSizeFromAspectRatio(const BoxStrut& border_padding,
                                     EBoxSizing box_sizing,
                                     LayoutUnit inline_size);
 
+// Used to distinguish between the different length classes.
+enum class LengthTypeInternal { kMin, kMain, kMax };
+
 // Resolve means translate a Length to a LayoutUnit.
 //  - |ConstraintSpace| the information given by the parent, e.g. the
 //    available-size.
@@ -78,8 +81,9 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             MinMaxSizesFunctionRef,
                             const Length&,
                             const Length* auto_length,
+                            LengthTypeInternal length_type,
                             LayoutUnit override_available_size,
-                            LayoutUnit unresolvable_length_result);
+                            CalcSizeKeywordBehavior calc_size_keyword_behavior);
 
 // Same as ResolveInlineLengthInternal, except here |intrinsic_size| roughly
 // plays the part of |MinMaxSizes|.
@@ -89,10 +93,10 @@ CORE_EXPORT LayoutUnit ResolveBlockLengthInternal(
     const BoxStrut& border_padding,
     const Length&,
     const Length* auto_length,
+    LengthTypeInternal length_type,
     LayoutUnit override_available_size,
     const LayoutUnit* override_percentage_resolution_size,
-    BlockSizeFunctionRef block_size_func,
-    LayoutUnit unresolvable_length_result);
+    BlockSizeFunctionRef block_size_func);
 
 // Used for resolving min inline lengths, (|ComputedStyle::MinLogicalWidth|).
 inline LayoutUnit ResolveMinInlineLength(
@@ -101,11 +105,13 @@ inline LayoutUnit ResolveMinInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
+    const Length* auto_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  return ResolveInlineLengthInternal(
+  const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      border_padding.InlineSum());
+      auto_length, LengthTypeInternal::kMin, override_available_size,
+      CalcSizeKeywordBehavior::kAsSpecified);
+  return result == kIndefiniteSize ? border_padding.InlineSum() : result;
 }
 
 // Used for resolving max inline lengths, (|ComputedStyle::MaxLogicalWidth|).
@@ -116,11 +122,11 @@ inline LayoutUnit ResolveMaxInlineLength(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  // TODO(https://crbug.com/313072): Ensure that we don't do math on
-  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
-  return ResolveInlineLengthInternal(
+  const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ nullptr, override_available_size, LayoutUnit::Max());
+      /* auto_length */ nullptr, LengthTypeInternal::kMax,
+      override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
+  return result == kIndefiniteSize ? LayoutUnit::Max() : result;
 }
 
 // Used for resolving main inline lengths, (|ComputedStyle::LogicalWidth|).
@@ -131,10 +137,13 @@ inline LayoutUnit ResolveMainInlineLength(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     const Length* auto_length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
-  return ResolveInlineLengthInternal(constraint_space, style, border_padding,
-                                     min_max_sizes_func, length, auto_length,
-                                     override_available_size, kIndefiniteSize);
+    LayoutUnit override_available_size = kIndefiniteSize,
+    CalcSizeKeywordBehavior calc_size_keyword_behavior =
+        CalcSizeKeywordBehavior::kAsSpecified) {
+  return ResolveInlineLengthInternal(
+      constraint_space, style, border_padding, min_max_sizes_func, length,
+      auto_length, LengthTypeInternal::kMain, override_available_size,
+      calc_size_keyword_behavior);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -144,38 +153,28 @@ inline LayoutUnit ResolveInitialMinBlockLength(
     const BoxStrut& border_padding,
     const Length& length,
     LayoutUnit override_available_size = kIndefiniteSize) {
-  return ResolveBlockLengthInternal(
+  const LayoutUnit result = ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
+      /* auto_length */ &Length::Auto(), LengthTypeInternal::kMin,
+      override_available_size,
       /* override_percentage_resolution_size */ nullptr,
-      [](SizeType) { return kIndefiniteSize; }, border_padding.BlockSum());
+      [](SizeType) { return kIndefiniteSize; });
+  return result == kIndefiniteSize ? border_padding.BlockSum() : result;
 }
 inline LayoutUnit ResolveMinBlockLength(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const Length& length,
     BlockSizeFunctionRef block_size_func,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size, block_size_func,
-      border_padding.BlockSum());
-}
-inline LayoutUnit ResolveMinBlockLengthDeprecated(
-    const ConstraintSpace& constraint_space,
-    const ComputedStyle& style,
-    const BoxStrut& border_padding,
     const Length& length,
+    const Length* auto_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size,
-      [](SizeType) { return kIndefiniteSize; }, border_padding.BlockSum());
+  const LayoutUnit result = ResolveBlockLengthInternal(
+      constraint_space, style, border_padding, length, auto_length,
+      LengthTypeInternal::kMin, override_available_size,
+      override_percentage_resolution_size, block_size_func);
+  return result == kIndefiniteSize ? border_padding.BlockSum() : result;
 }
 
 // Used for resolving max block lengths, (|ComputedStyle::MaxLogicalHeight|).
@@ -184,14 +183,13 @@ inline LayoutUnit ResolveInitialMaxBlockLength(
     const ComputedStyle& style,
     const BoxStrut& border_padding,
     const Length& length) {
-  // TODO(https://crbug.com/313072): Ensure that we don't do math on
-  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
-  return ResolveBlockLengthInternal(
+  const LayoutUnit result = ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(),
+      /* auto_length */ &Length::Auto(), LengthTypeInternal::kMax,
       /* override_available_size */ kIndefiniteSize,
       /* override_percentage_resolution_size */ nullptr,
-      [](SizeType) { return kIndefiniteSize; }, LayoutUnit::Max());
+      [](SizeType) { return kIndefiniteSize; });
+  return result == kIndefiniteSize ? LayoutUnit::Max() : result;
 }
 inline LayoutUnit ResolveMaxBlockLength(
     const ConstraintSpace& constraint_space,
@@ -201,27 +199,12 @@ inline LayoutUnit ResolveMaxBlockLength(
     BlockSizeFunctionRef block_size_func,
     LayoutUnit override_available_size = kIndefiniteSize,
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  // TODO(https://crbug.com/313072): Ensure that we don't do math on
-  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
-  return ResolveBlockLengthInternal(
+  const LayoutUnit result = ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size, block_size_func, LayoutUnit::Max());
-}
-inline LayoutUnit ResolveMaxBlockLengthDeprecated(
-    const ConstraintSpace& constraint_space,
-    const ComputedStyle& style,
-    const BoxStrut& border_padding,
-    const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
-  // TODO(https://crbug.com/313072): Ensure that we don't do math on
-  // this LayoutUnit::Max that we pass to ResolveInlineLengthInternal.
-  return ResolveBlockLengthInternal(
-      constraint_space, style, border_padding, length,
-      /* auto_length */ &Length::Auto(), override_available_size,
-      override_percentage_resolution_size,
-      [](SizeType) { return kIndefiniteSize; }, LayoutUnit::Max());
+      /* auto_length */ &Length::Auto(), LengthTypeInternal::kMax,
+      override_available_size, override_percentage_resolution_size,
+      block_size_func);
+  return result == kIndefiniteSize ? LayoutUnit::Max() : result;
 }
 
 // Used for resolving main block lengths, (|ComputedStyle::LogicalHeight|).
@@ -236,8 +219,9 @@ inline LayoutUnit ResolveMainBlockLength(
     const LayoutUnit* override_percentage_resolution_size = nullptr) {
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, auto_length,
-      override_available_size, override_percentage_resolution_size,
-      [intrinsic_size](SizeType) { return intrinsic_size; }, kIndefiniteSize);
+      LengthTypeInternal::kMain, override_available_size,
+      override_percentage_resolution_size,
+      [intrinsic_size](SizeType) { return intrinsic_size; });
 }
 
 inline LayoutUnit ResolveMainBlockLength(
@@ -250,9 +234,8 @@ inline LayoutUnit ResolveMainBlockLength(
     LayoutUnit override_available_size = kIndefiniteSize) {
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, auto_length,
-      override_available_size,
-      /* override_percentage_resolution_size */ nullptr, block_size_func,
-      kIndefiniteSize);
+      LengthTypeInternal::kMain, override_available_size,
+      /* override_percentage_resolution_size */ nullptr, block_size_func);
 }
 
 // Computes the min-block-size and max-block-size values for a node.
@@ -266,12 +249,8 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const BlockNode&,
     const BoxStrut& border_padding,
+    const Length* auto_min_length,
     BlockSizeFunctionRef,
-    LayoutUnit override_available_size = kIndefiniteSize);
-MinMaxSizes ComputeMinMaxBlockSizesDeprecated(
-    const ConstraintSpace&,
-    const BlockNode&,
-    const BoxStrut& border_padding,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 MinMaxSizes ComputeTransferredMinMaxInlineSizes(
@@ -298,8 +277,8 @@ MinMaxSizes ComputeMinMaxInlineSizes(
     const ConstraintSpace& space,
     const BlockNode& node,
     const BoxStrut& border_padding,
+    const Length* auto_min_length,
     MinMaxSizesFunctionRef min_max_sizes_func,
-    const Length* opt_min_length = nullptr,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Returns block size of the node's border box by resolving the computed value
@@ -319,11 +298,6 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     LayoutUnit intrinsic_size,
     LayoutUnit inline_size,
     LayoutUnit override_available_size = kIndefiniteSize);
-
-CORE_EXPORT LayoutUnit
-ComputeInlineSizeFromAspectRatio(const ConstraintSpace& space,
-                                 const BlockNode&,
-                                 const BoxStrut& border_padding);
 
 LayoutUnit ComputeInlineSizeForFragmentInternal(
     const ConstraintSpace& space,
@@ -349,7 +323,7 @@ inline LayoutUnit ComputeInlineSizeForFragment(
     const BoxStrut& border_padding,
     const MinMaxSizes* override_min_max_sizes_for_test = nullptr) {
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
-    if (UNLIKELY(override_min_max_sizes_for_test)) {
+    if (override_min_max_sizes_for_test) [[unlikely]] {
       return MinMaxSizesResult(*override_min_max_sizes_for_test,
                                /* depends_on_block_constraints */ false);
     }

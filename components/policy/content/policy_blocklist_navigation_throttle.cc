@@ -42,7 +42,7 @@ PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
 
 PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() {
   base::UmaHistogramEnumeration(
-      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction",
+      "Navigation.Throttles.PolicyBlocklist.RequestThrottleAction2",
       request_throttle_action_);
   base::UmaHistogramTimes(
       "Navigation.Throttles.PolicyBlocklist.DeferDurationTime",
@@ -147,7 +147,8 @@ void PolicyBlocklistNavigationThrottle::UpdateRequestThrottleAction(
   switch (action) {
     case PROCEED:
       request_throttle_action_ =
-          request_throttle_action_ == RequestThrottleAction::kNoRequest
+          (request_throttle_action_ == RequestThrottleAction::kNoRequest ||
+           request_throttle_action_ == RequestThrottleAction::kProceed)
               ? RequestThrottleAction::kProceed
               : RequestThrottleAction::kProceedAfterDefer;
       break;
@@ -161,7 +162,8 @@ void PolicyBlocklistNavigationThrottle::UpdateRequestThrottleAction(
     case BLOCK_REQUEST_AND_COLLAPSE:
     case BLOCK_RESPONSE:
       request_throttle_action_ =
-          request_throttle_action_ == RequestThrottleAction::kNoRequest
+          (request_throttle_action_ == RequestThrottleAction::kNoRequest ||
+           request_throttle_action_ == RequestThrottleAction::kProceed)
               ? RequestThrottleAction::kBlock
               : RequestThrottleAction::kBlockAfterDefer;
       break;

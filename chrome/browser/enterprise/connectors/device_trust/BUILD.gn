@@ -31,7 +31,8 @@ source_set("test_support") {
 
   deps = [
     ":features",
-    "//components/enterprise/connectors",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/device_trust",
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",

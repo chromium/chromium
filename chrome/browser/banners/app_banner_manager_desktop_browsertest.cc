@@ -504,4 +504,25 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTestForPasswordManagerPage,
             manager->GetInstallableWebAppCheckResult());
 }
 
+IN_PROC_BROWSER_TEST_F(AppBannerManagerDesktopBrowserTest,
+                       PipelineRunsAfterStop) {
+  TestAppBannerManagerDesktop* manager =
+      TestAppBannerManagerDesktop::FromWebContents(
+          browser()->tab_strip_model()->GetActiveWebContents());
+
+  {
+    base::RunLoop run_loop;
+    manager->PrepareDone(run_loop.QuitClosure());
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/web_apps/stop-loading-early.html")));
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(InstallableWebAppCheckResult::kYes_Promotable,
+            manager->GetInstallableWebAppCheckResult())
+      << manager->debug_log();
+}
+
 }  // namespace webapps

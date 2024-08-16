@@ -21,6 +21,11 @@ UserVerifyingKeyProvider::Config& UserVerifyingKeyProvider::Config::operator=(
 UserVerifyingKeyProvider::Config::~Config() = default;
 
 UserVerifyingSigningKey::~UserVerifyingSigningKey() = default;
+
+bool UserVerifyingSigningKey::IsHardwareBacked() const {
+  return false;
+}
+
 UserVerifyingKeyProvider::~UserVerifyingKeyProvider() = default;
 
 RefCountedUserVerifyingSigningKey::RefCountedUserVerifyingSigningKey(

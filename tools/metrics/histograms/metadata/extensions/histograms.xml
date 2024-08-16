@@ -113,7 +113,7 @@ of interesting buckets, such as "internal + external".
 <!--
 This is emitted for two scenarios when a worker may be unregistered:
 
-  1. due to an extension update to potentially unregister the old worker or
+  1. due to an extension update to potentially unregistering the old worker or
 
   2. due to the extension being deactivated (due to disable, uninstall, or
   terminate)
@@ -144,9 +144,7 @@ This is emitted for two scenarios when a worker may be unregistered:
                to prepare for the updated version's worker to be registered."/>
   <variant name="_DeactivateExtension"
       summary="This metric is only emitted in the #2 (deactivate extension)
-               scenario when the worker is the current worker activation.
-               This means the worker was not deactivated by the
-               ServiceWorkerTaskQueue when this was emitted."/>
+               scenario when the worker is the current worker activation."/>
 </variants>
 
 <variants name="VerifiedFileType">
@@ -224,7 +222,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2024-12-08">
+    units="Extension Count" expires_after="2025-02-09">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -516,7 +514,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2"
-    enum="Boolean" expires_after="2024-12-01">
+    enum="Boolean" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -542,7 +540,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3"
-    enum="Boolean" expires_after="2024-12-01">
+    enum="Boolean" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -614,7 +612,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV2{VerifiedFileType}"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -644,7 +642,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV3{VerifiedFileType}"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -658,7 +656,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV2"
-    enum="VerifiedFileType" expires_after="2024-12-01">
+    enum="VerifiedFileType" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -680,7 +678,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV3"
-    enum="VerifiedFileType" expires_after="2024-12-01">
+    enum="VerifiedFileType" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -702,7 +700,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV2"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -726,7 +724,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV3"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
+    enum="ContentVerifyJobResult" expires_after="2025-02-02">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -982,12 +980,12 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeContentActionCreated"
-    enum="DeclarativeContentActionType" expires_after="2024-09-20">
+    enum="DeclarativeContentActionType" expires_after="2025-09-20">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Number of times a declarative content action is created within an extension.
-    Emitted when a new declarative content action is created.
+    Number of times declarative content actions types are created. Emitted each
+    time a new declarative content action type is created for an extension.
   </summary>
 </histogram>
 
@@ -1005,7 +1003,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateBeforeRequestTime.SingleExtension2"
-    units="microseconds" expires_after="2024-12-08">
+    units="microseconds" expires_after="2025-02-10">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1031,7 +1029,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.EvaluateRequestTime.AllExtensions3"
-    units="microseconds" expires_after="2024-12-04">
+    units="microseconds" expires_after="2025-02-02">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1845,7 +1843,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Events.ServiceWorkerDispatchFailed.Event"
-    enum="ExtensionEvents" expires_after="2024-12-08">
+    enum="ExtensionEvents" expires_after="2025-02-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1856,7 +1854,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestOk"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1871,7 +1869,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.Events.ServiceWorkerDispatchFailed.StartExternalRequestResult"
-    enum="ServiceWorkerExternalRequestResult" expires_after="2024-12-08">
+    enum="ServiceWorkerExternalRequestResult" expires_after="2025-02-10">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2566,7 +2564,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.DidSandboxedExtensionAPICall"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>wjmaclean@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -2622,7 +2620,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.Functions.ExtractJSCallStackElapsedTime"
-    units="microseconds" expires_after="2024-11-28">
+    units="microseconds" expires_after="2025-02-02">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -4531,14 +4529,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2024-12-08">
+<histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus2"
+    enum="ServiceWorkerStatusCode" expires_after="2025-02-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks when a background service worker fails to register what is the
     ServiceWorkerStatusCode that occurred. Logged each time a service worker
     fails to register.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could change the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4558,7 +4559,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated"
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2"
     enum="Boolean" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4567,13 +4568,13 @@ This is emitted for two scenarios when a worker may be unregistered:
     missing registration issue succeeded. The attempt is performed during
     extension load.
 
-    Note: this histogram expired between 2023-08 and 2024-04, it will be missing
-    data between those dates.
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could increase the number of emits of this metric.
   </summary>
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus"
+    name="Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_FailStatus2"
     enum="ServiceWorkerStatusCode" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4585,6 +4586,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Emitted when
     Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated is false.
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which could increase the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4697,7 +4701,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterAdd"
-    units="registered workers" expires_after="2024-12-08">
+    units="registered workers" expires_after="2025-02-10">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4708,7 +4712,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerCountAfterRemove"
-    units="registered workers" expires_after="2024-12-08">
+    units="registered workers" expires_after="2025-02-10">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4718,13 +4722,34 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
+<histogram
+    name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult"
+    enum="Boolean" expires_after="2025-02-06">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When an extension requests that its service worker be registered with the
+    content layer it can fail due to
+    blink::ServiceWorkerStatusCode::kErrorTimeout. When this happens we retry
+    multiple times to try to make the registration succeed.
+
+    Emits true if the retry results in a successful registration. Emits false if
+    either all retry attempts have been exhausted without success or a retry
+    resulted in a status code that is not
+    blink::ServiceWorkerStatusCode::kErrorTimeout.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState2"
     enum="Boolean" expires_after="2024-12-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Tracks whether background service worker registration succeeded or not. It
     is emitted whenever an extension is enabled (including updates).
+
+    Note: incremented Aug, 2024 due to the implementation of worker registration
+    retries which will likely increase the number of emits of this metric.
   </summary>
 </histogram>
 
@@ -4743,26 +4768,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension_NotCurrentActivation"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}3"
     enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
-    Emitted at the same time as
-    Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_DeactivateExtension,
-    however it is for when the worker is not the current activation. Not the
-    current activation means the worker was deactivated in the
-    ServiceWorkerTaskQueue when this metric is emitted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus{UnregistrationType}"
-    enum="ServiceWorkerStatusCode" expires_after="2025-03-25">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The ServiceWorkerStatusCode when unregister a worker for an extension fails.
+    The ServiceWorkerStatusCode when unregistering a worker for an extension
+    fails.
 
     Emitted when Extensions.ServiceWorkerBackground.WorkerRegistrationState is
     false.
@@ -4780,12 +4792,17 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 due to the #2 case no longer
+    emitting the not found error if there was no previous worker registered. The
+    logic for #2 does not check if a worker was previously registered before
+    attempting to unregister it so the error is not considered a failure.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
 </histogram>
 
 <histogram
-    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}"
+    name="Extensions.ServiceWorkerBackground.WorkerUnregistrationState{UnregistrationType}2"
     enum="Boolean" expires_after="2025-01-15">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4805,8 +4822,32 @@ This is emitted for two scenarios when a worker may be unregistered:
     #2 can occur independently outside of an extension update.
 
     {UnregistrationType}
+
+    Note: This metric was incremented Aug, 2024 due to the #2 case emitting true
+    if the error status is not found and there was no previous worker registered
+    (instead of the previous false). The logic for #2 does not check if a worker
+    was previously registered before attempting to unregister it so the error is
+    considered an unregistration success.
   </summary>
   <token key="UnregistrationType" variants="UnregistrationType"/>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerRenderer.ExtensionLoadStatusInWorkerScriptEvaluation"
+    enum="ExtensionLoadStatusOnScriptEval" expires_after="2025-02-15">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    This records the state of the extension loading in the (renderer) extension
+    registry during the process of service worker script evaluation. Loaded
+    means the extension is in the extension registry. Unloaded means the
+    extension was loaded, but is now unloaded (disabled). Unknown means that
+    there is no record of the extension in the renderer.
+
+    It is emitted potentially after the worker thread is started and the worker
+    script will soon or already is evaluating, but it is before the worker's
+    extension bindings sytem is created.
+  </summary>
 </histogram>
 
 <histogram

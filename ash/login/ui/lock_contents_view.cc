@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/login/ui/lock_contents_view.h"
 
 #include <algorithm>
@@ -386,6 +391,8 @@ LockContentsView::LockContentsView(
             ->enterprise_domain()
             ->management_device_mode() == ManagementDeviceMode::kKioskSku;
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
 }
 
 LockContentsView::~LockContentsView() {
@@ -622,7 +629,6 @@ void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfWidget* shelf_widget = shelf->shelf_widget();
   GetViewAccessibility().SetNextFocus(shelf_widget);
   GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
-  node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(
       l10n_util::GetStringUTF16(screen_type_ == LockScreen::ScreenType::kLogin
                                     ? IDS_ASH_LOGIN_SCREEN_ACCESSIBLE_NAME
@@ -770,6 +776,48 @@ void LockContentsView::OnUserAvatarChanged(const AccountId& account_id,
   if (user) {
     user->UpdateForUser(replace(user->current_user()), false /*animate*/);
     return;
+  }
+}
+
+void LockContentsView::OnUserAuthFactorsChanged(
+    const AccountId& user,
+    cryptohome::AuthFactorsSet auth_factors) {
+  UserState* state = FindStateForUser(user);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user when updating auth factors";
+    return;
+  }
+
+  const bool enable_password =
+      auth_factors.Has(cryptohome::AuthFactorType::kPassword);
+  const bool enable_pin = auth_factors.Has(cryptohome::AuthFactorType::kPin);
+  const bool enable_smart_card =
+      auth_factors.Has(cryptohome::AuthFactorType::kSmartCard);
+
+  if (!enable_password && !enable_pin && !enable_smart_card) {
+    LOG(ERROR) << "Unable to update auth factors, neither password, PIN or "
+                  "smart card auth is configured";
+    return;
+  }
+  if (state->show_password == enable_password &&
+      state->show_pin == enable_pin &&
+      state->show_challenge_response_auth == enable_smart_card) {
+    LOG(WARNING)
+        << "Unexpected call to OnUserAuthFactorsChanged; state unchanged.";
+    return;
+  }
+
+  state->show_password = enable_password;
+  state->show_pin = enable_pin;
+  state->autosubmit_pin_length =
+      user_manager::KnownUser(Shell::Get()->local_state())
+          .GetUserPinLength(user);
+  state->show_challenge_response_auth = enable_smart_card;
+
+  LoginBigUserView* big_user =
+      TryToFindBigUser(user, true /*require_auth_active*/);
+  if (big_user && big_user->auth_user()) {
+    LayoutAuth(big_user, nullptr /*opt_to_hide*/, true /*animate*/);
   }
 }
 
@@ -1878,7 +1926,15 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // with the password or PIN based one.
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
       } else {
-        to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
+        if (features::IsAllowPasswordlessSetupEnabled()) {
+          CHECK(state->show_password || state->show_pin);
+          to_update_auth = LoginAuthUserView::AUTH_NONE;
+        } else {
+          to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
+        }
+        if (state->show_password) {
+          to_update_auth |= LoginAuthUserView::AUTH_PASSWORD;
+        }
         // Need to check |GetKeyboardControllerForView| as the keyboard may be
         // visible, but the keyboard is in a different root window or the view
         // has not been added to the widget. In these cases, the keyboard does

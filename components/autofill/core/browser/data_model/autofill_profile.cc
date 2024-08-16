@@ -450,9 +450,11 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-double AutofillProfile::GetRankingScore(base::Time current_time) const {
+double AutofillProfile::GetRankingScore(base::Time current_time,
+                                        bool use_frecency) const {
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableRankingFormulaAddressProfiles)) {
+          features::kAutofillEnableRankingFormulaAddressProfiles) &&
+      !use_frecency) {
     // Exponentially decay the use count by the days since the data model was
     // last used.
     return log10(use_count() + 1) *
@@ -462,6 +464,16 @@ double AutofillProfile::GetRankingScore(base::Time current_time) const {
   }
   // Default to legacy frecency scoring.
   return AutofillDataModel::GetRankingScore(current_time);
+}
+
+bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
+                                            base::Time comparison_time,
+                                            bool use_frecency) const {
+  const double score = GetRankingScore(comparison_time, use_frecency);
+  const double other_score =
+      other->GetRankingScore(comparison_time, use_frecency);
+  return AutofillDataModel::CompareRankingScores(score, other_score,
+                                                 other->use_date());
 }
 
 void AutofillProfile::GetMatchingTypes(const std::u16string& text,
@@ -710,9 +722,7 @@ bool AutofillProfile::IsStrictSupersetOf(
 }
 
 AddressCountryCode AutofillProfile::GetAddressCountryCode() const {
-  std::string country_code =
-      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  return AddressCountryCode(country_code);
+  return GetAddress().GetAddressCountryCode();
 }
 
 void AutofillProfile::OverwriteDataFromForLegacySync(
@@ -1287,9 +1297,9 @@ AutofillType AutofillProfile::GetFillingType(AutofillType field_type) const {
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kIban:
     case FieldTypeGroup::kStandaloneCvcField:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

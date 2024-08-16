@@ -122,6 +122,7 @@
 <translation id="2915996080311180594">Reinicia més tard</translation>
 <translation id="2928420929544864228">La instal·lació s'ha completat.</translation>
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
+<translation id="2970426615109535079">La teva organització gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="2987208172821108655">Chromium pot desactivar aquestes pestanyes per millorar la teva experiència de navegació i alliberar recursos.</translation>
@@ -222,6 +223,7 @@
 <translation id="4423735387467980091">Personalitza i controla Chromium</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> gestiona Chromium</translation>
 <translation id="4447409407328223819">Sobre Chrome for Testing</translation>
 <translation id="4501471624619070934">La instal·lació ha fallat perquè l'accés està restringit en aquest país.</translation>
 <translation id="4510853178268397146">Aquesta extensió no ha publicat les seves pràctiques de privadesa, per exemple, la manera com recull i utilitza les dades. Chromium et recomana que la suprimeixis.</translation>
@@ -490,6 +492,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8550334526674375523">Aquest perfil de treball és completament independent del teu perfil personal.</translation>
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium pot comprovar les teves contrasenyes quan inicies la sessió amb el Compte de Google</translation>
+<translation id="8576826849825683917">Diverses organitzacions gestionen Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Com utilitzem aquestes dades<ph name="END_BOLD" />: els llocs web poden emmagatzemar informació a Chromium sobre els teus interessos. Per exemple, si visites un lloc web per comprar sabatilles per a una marató, és possible que el lloc web defineixi que t'interessa córrer maratons. Més endavant, si visites un altre lloc web per inscriure't a una cursa, aquest altre lloc web et pot mostrar un anunci de sabatilles de curses basant-se en els teus interessos.</translation>
 <translation id="8619360774459241877">S'està iniciant Chromium...</translation>

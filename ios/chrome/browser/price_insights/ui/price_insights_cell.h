@@ -28,8 +28,8 @@
 // Configures the UICollectionViewCell with `PriceInsightsitem`.
 - (void)configureWithItem:(PriceInsightsItem*)item;
 
-// Updates the track button's state based on page tracking status.
-- (void)updateTrackButton:(BOOL)isTracking;
+// Updates the item tracking status in the cell.
+- (void)updateTrackStatus:(BOOL)isTracking;
 
 @end
 

@@ -266,7 +266,7 @@ std::unique_ptr<AnimationCurve> KeyframedColorAnimationCurve::Clone() const {
 
 SkColor KeyframedColorAnimationCurve::GetValue(base::TimeDelta t) const {
   // Use GetTransformedValue instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkColor KeyframedColorAnimationCurve::GetTransformedValue(
@@ -339,7 +339,7 @@ std::unique_ptr<AnimationCurve> KeyframedFloatAnimationCurve::Retarget(
 
 float KeyframedFloatAnimationCurve::GetValue(base::TimeDelta t) const {
   // Use GetTransformedValue instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 float KeyframedFloatAnimationCurve::GetTransformedValue(
@@ -394,7 +394,7 @@ std::unique_ptr<AnimationCurve> KeyframedTransformAnimationCurve::Clone()
 gfx::TransformOperations KeyframedTransformAnimationCurve::GetValue(
     base::TimeDelta t) const {
   // Use GetTransformedValue instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::TransformOperations KeyframedTransformAnimationCurve::GetTransformedValue(
@@ -476,7 +476,7 @@ std::unique_ptr<AnimationCurve> KeyframedSizeAnimationCurve::Clone() const {
 
 gfx::SizeF KeyframedSizeAnimationCurve::GetValue(base::TimeDelta t) const {
   // Use GetTransformedValue instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::SizeF KeyframedSizeAnimationCurve::GetTransformedValue(
@@ -539,7 +539,7 @@ std::unique_ptr<AnimationCurve> KeyframedRectAnimationCurve::Clone() const {
 
 gfx::Rect KeyframedRectAnimationCurve::GetValue(base::TimeDelta t) const {
   // Use GetTransformedValue instead.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Rect KeyframedRectAnimationCurve::GetTransformedValue(

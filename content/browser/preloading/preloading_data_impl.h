@@ -60,7 +60,7 @@ class CONTENT_EXPORT PreloadingDataImpl
   // any NoVarySearch query using `PrefetchService` if No-Vary-Search feature is
   // enabled.
   static PreloadingURLMatchCallback GetPrefetchServiceMatcher(
-      PrefetchService* prefetch_service,
+      PrefetchService& prefetch_service,
       const PrefetchContainer::Key& predicted);
 
   // Disallow copy and assign.

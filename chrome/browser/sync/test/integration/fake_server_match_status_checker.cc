@@ -20,7 +20,7 @@ FakeServerMatchStatusChecker::~FakeServerMatchStatusChecker() {
 }
 
 void FakeServerMatchStatusChecker::OnCommit(
-    syncer::ModelTypeSet committed_model_types) {
+    syncer::DataTypeSet committed_data_types) {
   CheckExitCondition();
 }
 

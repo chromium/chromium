@@ -41,7 +41,6 @@
 #include "components/onc/onc_constants.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 // Testing the CACertificates policy
 class CertVerifierServiceCACertificatesPolicyTest
     : public policy::PolicyTest,
@@ -855,4 +854,3 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceNewAndOncCertificatePoliciesTest,
                          ::testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)

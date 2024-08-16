@@ -15,6 +15,7 @@ source_set("tab_grid") {
 
   deps = [
     ":tab_grid_metrics",
+    ":tab_grid_mode",
     ":tab_grid_page_mutator",
     ":tab_grid_paging",
     ":tab_grid_ui",
@@ -79,6 +80,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator_delegate",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito:incognito_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular",
@@ -144,6 +146,15 @@ source_set("tab_grid_ui_constants") {
 source_set("tab_grid_paging") {
   sources = [ "tab_grid_paging.h" ]
   deps = [ "//base" ]
+}
+
+source_set("tab_grid_mode") {
+  sources = [
+    "tab_grid_mode_holder.h",
+    "tab_grid_mode_holder.mm",
+    "tab_grid_mode_observing.h",
+  ]
+  deps = [ ":tab_grid_paging" ]
 }
 
 source_set("tab_grid_ui") {

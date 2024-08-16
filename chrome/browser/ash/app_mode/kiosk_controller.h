@@ -12,6 +12,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "content/public/browser/web_contents.h"
 
 class Profile;
 
@@ -63,6 +66,9 @@ class KioskController {
 
   virtual bool HandleAccelerator(LoginAcceleratorAction action) = 0;
 
+  // Notify Kiosk that a new guest web content was added.
+  virtual void OnGuestAdded(content::WebContents* guest_web_contents) = 0;
+
   // Returns the `KioskSystemSession`. Can be `nullptr` if called outside a
   // Kiosk session, or before `InitializeSystemSession`.
   virtual KioskSystemSession* GetKioskSystemSession() = 0;
@@ -85,6 +91,12 @@ class KioskController {
   // * When the internals page feature flag is disabled.
   virtual kiosk_vision::InternalsPageProcessor*
   GetKioskVisionInternalsPageProcessor() = 0;
+
+  // Registers local state prefs relevant for Kiosk.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  // Registers profile prefs relevant for Kiosk.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 };
 
 }  // namespace ash

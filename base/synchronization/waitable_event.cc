@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include "base/check.h"
@@ -75,13 +70,14 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
   return result;
 }
 
-size_t WaitableEvent::WaitMany(WaitableEvent** events, size_t count) {
-  DCHECK(count) << "Cannot wait on no events";
+size_t WaitableEvent::WaitMany(base::span<WaitableEvent*> waitables) {
+  DCHECK(!waitables.empty()) << "Cannot wait on no events";
+
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
 
-  const size_t signaled_id = WaitManyImpl(events, count);
-  WaitableEvent* const signaled_event = events[signaled_id];
+  const size_t signaled_id = WaitManyImpl(waitables);
+  WaitableEvent* const signaled_event = waitables[signaled_id];
   if (!signaled_event->only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                         "WaitableEvent::WaitMany Complete",

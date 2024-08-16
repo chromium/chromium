@@ -15,6 +15,7 @@ static_library("default_user_image") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//ui/base",
     "//url",
   ]

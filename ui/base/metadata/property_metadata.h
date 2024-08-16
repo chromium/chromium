@@ -42,7 +42,7 @@ struct ClassPropertyMetaDataTypeHelper<const ui::ClassProperty<TKValue_>* const,
     if constexpr (std::same_as<TKValue, TValue>) {
       return value;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

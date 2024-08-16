@@ -5,7 +5,6 @@
 
 import logging
 
-from devil import base_error
 from devil.utils import parallelizer
 from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
@@ -60,17 +59,16 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
                    enable_network=self._emulator_enable_network,
                    require_fast_start=True,
                    retries=2)
+      except avd.AvdStartException as e:
+        exception_recorder.register(e)
+        # The emulator is probably not responding so stop it forcely.
+        logging.info("Force stop the emulator %s", inst)
+        inst.Stop(force=True)
+        raise
       except avd.AvdException as e:
         exception_recorder.register(e)
         logging.exception('Failed to start emulator instance.')
         return None
-      except base_error.BaseError as e:
-        exception_recorder.register(e)
-        # Timeout error usually indicates the emulator is not responding.
-        # In this case, we should stop it forcely.
-        logging.info("Force stop the emulator %s", inst)
-        inst.Stop(force=True)
-        raise
       return inst
 
     parallel_emulators = parallelizer.SyncParallelizer(emulator_instances)

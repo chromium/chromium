@@ -21,8 +21,7 @@ std::u16string GetTextForModifier(ui::EventFlags modifier) {
     case ui::EF_COMMAND_DOWN:
       return u"meta";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetTextForDelimiter(TextAcceleratorDelimiter delimiter) {

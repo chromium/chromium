@@ -86,8 +86,8 @@ source_set("password_store_impl") {
   if (is_android) {
     sources += [
       "android_backend_error.h",
-      "password_model_type_controller_delegate_android.cc",
-      "password_model_type_controller_delegate_android.h",
+      "password_data_type_controller_delegate_android.cc",
+      "password_data_type_controller_delegate_android.h",
       "split_stores_and_local_upm.cc",
       "split_stores_and_local_upm.h",
     ]

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -22,7 +23,10 @@
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace growth {
 
@@ -106,7 +110,12 @@ base::Time GetOobeTimestampBackground() {
     return file_info.creation_time;
   }
 
-  return base::Time::Min();
+  // If the Oobe complete file is not found and there's no owner, assume that
+  // the user campaigns is matching during Oobe flow and return the current time
+  // as a close indicator of register time.
+  const AccountId& owner_account_id =
+      user_manager::UserManager::Get()->GetOwnerAccountId();
+  return owner_account_id.is_valid() ? base::Time::Min() : base::Time::Now();
 }
 
 }  // namespace
@@ -115,6 +124,11 @@ base::Time GetOobeTimestampBackground() {
 CampaignsManager* CampaignsManager::Get() {
   DCHECK(g_instance);
   return g_instance;
+}
+
+// static
+void CampaignsManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(ash::prefs::kGrowthPerksInterested);
 }
 
 CampaignsManager::CampaignsManager(CampaignsManagerClient* client,
@@ -299,9 +313,9 @@ void CampaignsManager::OnCampaignsComponentLoaded(
     return;
   }
 
-  if (!oobe_complete_time_for_test_.is_null()) {
+  if (const auto registered_time = GetRegisteredTimeForTesting()) {
     OnOobeTimestampLoaded(std::move(load_callback), path,
-                          oobe_complete_time_for_test_);
+                          registered_time.value());
     return;
   }
 
@@ -385,6 +399,25 @@ void CampaignsManager::SetTrackerInitializedForTesting() {
 const Campaigns* CampaignsManager::GetCampaignsBySlotForTesting(
     Slot slot) const {
   return GetCampaignsBySlot(&campaigns_, slot);
+}
+
+std::optional<base::Time> CampaignsManager::GetRegisteredTimeForTesting() {
+  if (!oobe_complete_time_for_test_.is_null()) {
+    return oobe_complete_time_for_test_;
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch)) {
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsRegisteredTimeSecondsSinceUnixEpoch);
+
+    double seconds_since_epoch;
+    CHECK(base::StringToDouble(value, &seconds_since_epoch));
+    return base::Time::FromSecondsSinceUnixEpoch(seconds_since_epoch);
+  }
+
+  return std::nullopt;
 }
 
 void CampaignsManager::RegisterTrialForCampaign(

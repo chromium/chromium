@@ -78,8 +78,7 @@ int PowerSourceToMessageID(
     case power_manager::PowerSupplyProperties_PowerSource_Port_BACK_RIGHT:
       return IDS_ASH_POWER_SOURCE_PORT_BACK_RIGHT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 SkColor GetDefaultAlertColor(const ui::ColorProvider* color_provider) {
@@ -274,6 +273,12 @@ PowerStatus::BatteryImageInfo PowerStatus::GenerateBatteryImageInfo(
 }
 
 void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
+  if (!proto_initialized_) {
+    info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
+    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    return;
+  }
+
   // We only alert if we are on battery, and battery saver mode is disabled.
   if (features::IsBatterySaverAvailable()) {
     info->alert_if_low = !IsLinePowerConnected() && !IsBatterySaverActive();

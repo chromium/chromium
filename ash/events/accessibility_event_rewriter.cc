@@ -297,8 +297,7 @@ void AccessibilityEventRewriter::OnMagnifierKeyPressed(
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveRight);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected keyboard_code:" << event->key_code();
+      NOTREACHED() << "Unexpected keyboard_code:" << event->key_code();
   }
 }
 

@@ -541,26 +541,24 @@ void ProfileMenuView::BuildIdentity() {
     std::u16string management_label;
     ui::ImageModel badge_image_model;
 
-    if (chrome::enterprise_util::CanShowEnterpriseBadging(
-            browser()->profile())) {
+    if (enterprise_util::CanShowEnterpriseBadging(browser()->profile())) {
       management_label =
           account_manager
               ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,
                                            base::UTF8ToUTF16(*account_manager))
               : std::u16string();
 
-      auto management_environment =
-          chrome::enterprise_util::GetManagementEnvironment(
-              profile, identity_manager->FindExtendedAccountInfoByAccountId(
-                           identity_manager->GetPrimaryAccountId(
-                               signin::ConsentLevel::kSignin)));
+      auto management_environment = enterprise_util::GetManagementEnvironment(
+          profile, identity_manager->FindExtendedAccountInfoByAccountId(
+                       identity_manager->GetPrimaryAccountId(
+                           signin::ConsentLevel::kSignin)));
 
       if (management_environment !=
-          chrome::enterprise_util::ManagementEnvironment::kNone) {
-          badge_image_model = ui::ImageModel::FromVectorIcon(
-              vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
-        }
+          enterprise_util::ManagementEnvironment::kNone) {
+        badge_image_model = ui::ImageModel::FromVectorIcon(
+            vector_icons::kBusinessIcon, ui::kColorMenuIcon, 16);
       }
+    }
 
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
@@ -735,7 +733,7 @@ void ProfileMenuView::BuildSyncInfo() {
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // There is always an account on ChromeOS.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #else
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
@@ -847,7 +845,7 @@ void ProfileMenuView::BuildFeatureButtons() {
       !profile->IsGuestSession() && has_sync_consent;
 
   bool hide_signout_button_for_managed_profiles =
-      chrome::enterprise_util::UserAcceptedAccountManagement(profile) &&
+      enterprise_util::UserAcceptedAccountManagement(profile) &&
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout);
 
   bool add_sign_out_button = has_unconsented_account && !has_primary_account &&
@@ -997,8 +995,7 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
     }
     if (profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeatureButton(
-          vector_icons::kAddChromeRefreshIcon,
-          l10n_util::GetStringUTF16(IDS_ADD),
+          vector_icons::kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
           base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                               base::Unretained(this)));
     }

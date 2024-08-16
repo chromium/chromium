@@ -98,7 +98,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const autofill::AutofillProfile& profile,
@@ -106,7 +106,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ShowDeleteAddressProfileDialog(
       const autofill::AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;

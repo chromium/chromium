@@ -40,6 +40,8 @@ class ProfileReportGeneratorDelegateBase
   bool Init(const base::FilePath& path) final;
   void GetSigninUserInfo(
       enterprise_management::ChromeUserProfileInfo* report) final;
+  void GetAffiliationInfo(
+      enterprise_management::ChromeUserProfileInfo* report) final;
   std::unique_ptr<policy::PolicyConversionsClient> MakePolicyConversionsClient(
       bool is_machine_scope) final;
   policy::CloudPolicyManager* GetCloudPolicyManager(

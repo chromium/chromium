@@ -4,30 +4,34 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss as getCrHiddenStyleLitCss} from 'chrome://resources/cr_elements/cr_hidden_style_lit.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './viewer_error_dialog.html.js';
+import {getHtml} from './viewer_error_dialog.html.js';
 
-export class ViewerErrorDialogElement extends PolymerElement {
+export class ViewerErrorDialogElement extends CrLitElement {
   static get is() {
     return 'viewer-error-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCrHiddenStyleLitCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      reloadFn: Function,
+      reloadFn: {type: Object},
     };
   }
 
   reloadFn: (() => void)|null;
 
-  private onReload_() {
+  protected onReload_() {
     if (this.reloadFn) {
       this.reloadFn();
     }

@@ -76,7 +76,6 @@ namespace blink {
 struct SameSizeAsStyleRuleBase final
     : public GarbageCollected<SameSizeAsStyleRuleBase> {
   uint8_t field;
-  bool has_signal;
 };
 
 ASSERT_SIZE(StyleRuleBase, SameSizeAsStyleRuleBase);
@@ -93,17 +92,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
                                            bool trigger_use_counters) const {
   return CreateCSSOMWrapper(position_hint, nullptr, parent_rule,
                             trigger_use_counters);
-}
-
-bool StyleRuleBase::IsInvisible() const {
-  auto* style_rule = DynamicTo<StyleRule>(this);
-  return style_rule && style_rule->FirstSelector()->IsInvisible();
-}
-
-bool StyleRuleBase::IsSignaling() const {
-  auto* style_rule = DynamicTo<StyleRule>(this);
-  return style_rule && (style_rule->FirstSelector()->GetSignal() !=
-                        CSSSelector::Signal::kNone);
 }
 
 void StyleRuleBase::Trace(Visitor* visitor) const {
@@ -438,59 +426,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
   return rule;
 }
 
-StyleRuleBase::ChildRuleVector* StyleRuleBase::ChildRuleVector::Copy() const {
-  auto* child_rule_vector = MakeGarbageCollected<ChildRuleVector>();
-  child_rule_vector->rules_.ReserveInitialCapacity(rules_.size());
-  for (const StyleRuleBase* rule : rules_) {
-    child_rule_vector->AddChildRule(rule->Copy());
-  }
-  return child_rule_vector;
-}
-
-void StyleRuleBase::ChildRuleVector::Iterator::operator++() {
-  ++position_;
-  // Skip invisible rules.
-  while (position_ != end_ && position_->Get()->IsInvisible()) {
-    ++position_;
-  }
-}
-
-void StyleRuleBase::ChildRuleVector::AddChildRule(StyleRuleBase* rule) {
-  if (rule->IsInvisible()) {
-    // Note that invisible rules can not be removed.
-    ++num_invisible_rules_;
-  }
-  rules_.push_back(rule);
-}
-
-void StyleRuleBase::ChildRuleVector::WrapperInsertRule(unsigned index,
-                                                       StyleRuleBase* rule) {
-  CHECK(!rule->IsInvisible());
-  rules_.insert(AdjustedIndex(index), rule);
-}
-
-void StyleRuleBase::ChildRuleVector::WrapperRemoveRule(unsigned index) {
-  rules_.erase(rules_.begin() + AdjustedIndex(index));
-}
-
-wtf_size_t StyleRuleBase::ChildRuleVector::AdjustedIndex(
-    wtf_size_t index) const {
-  if (num_invisible_rules_ == 0) {
-    return index;
-  }
-  for (wtf_size_t i = 0; i < rules_.size(); ++i) {
-    if (rules_[i]->IsInvisible()) {
-      continue;
-    }
-    if (index == 0) {
-      return i;
-    }
-    --index;
-  }
-  // All invisible rules, or no rules at all.
-  return rules_.size();
-}
-
 unsigned StyleRule::AverageSizeInBytes() {
   return sizeof(StyleRule) + sizeof(CSSSelector) +
          CSSPropertyValueSet::AverageSizeInBytes();
@@ -522,7 +457,7 @@ StyleRule::StyleRule(base::PassKey<StyleRule>,
     : StyleRuleBase(kStyle),
       properties_(other.properties_),
       lazy_property_parser_(other.lazy_property_parser_),
-      child_rule_vector_(std::move(other.child_rule_vector_)) {
+      child_rules_(std::move(other.child_rules_)) {
   CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
@@ -539,14 +474,17 @@ StyleRule::StyleRule(const StyleRule& other, size_t flattened_size)
   for (unsigned i = 0; i < flattened_size; ++i) {
     new (&SelectorArray()[i]) CSSSelector(other.SelectorArray()[i]);
   }
-  if (other.child_rule_vector_ != nullptr) {
+  if (other.child_rules_ != nullptr) {
     // Since we are getting copied, we also need to copy any child rules
     // so that both old and new can be freely mutated. This also
     // parses them eagerly (see comment in StyleSheetContents'
     // copy constructor).
-    child_rule_vector_ = other.child_rule_vector_->Copy();
+    child_rules_ = MakeGarbageCollected<HeapVector<Member<StyleRuleBase>>>();
+    child_rules_->ReserveInitialCapacity(other.child_rules_->size());
+    for (const StyleRuleBase* child_rule : *other.child_rules_) {
+      child_rules_->push_back(child_rule->Copy());
+    }
   }
-  SetHasSignalingChildRule(other.HasSignalingChildRule());
 }
 
 StyleRule::~StyleRule() {
@@ -575,14 +513,6 @@ bool StyleRule::PropertiesHaveFailedOrCanceledSubresources() const {
   return properties_ && properties_->HasFailedOrCanceledSubresources();
 }
 
-void StyleRule::AddChildRule(StyleRuleBase* child) {
-  EnsureChildRules();
-  if (child->IsSignaling()) {
-    SetHasSignalingChildRule(true);
-  }
-  child_rule_vector_->AddChildRule(child);
-}
-
 bool StyleRule::HasParsedProperties() const {
   // StyleRule should only have one of {lazy_property_parser_, properties_} set.
   DCHECK(lazy_property_parser_ || properties_);
@@ -593,7 +523,7 @@ bool StyleRule::HasParsedProperties() const {
 void StyleRule::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   visitor->Trace(lazy_property_parser_);
-  visitor->Trace(child_rule_vector_);
+  visitor->Trace(child_rules_);
 
   const CSSSelector* current = SelectorArray();
   do {
@@ -751,26 +681,19 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
 
 StyleRuleGroup::StyleRuleGroup(RuleType type,
                                HeapVector<Member<StyleRuleBase>> rules)
-    : StyleRuleBase(type),
-      child_rule_vector_(MakeGarbageCollected<ChildRuleVector>()) {
-  for (StyleRuleBase* rule : rules) {
-    if (rule->IsSignaling()) {
-      SetHasSignalingChildRule(true);
-    }
-    child_rule_vector_->AddChildRule(rule);
-  }
-}
+    : StyleRuleBase(type), child_rules_(std::move(rules)) {}
 
 StyleRuleGroup::StyleRuleGroup(const StyleRuleGroup& group_rule)
-    : StyleRuleBase(group_rule),
-      child_rule_vector_(group_rule.child_rule_vector_->Copy()) {
-  SetHasSignalingChildRule(group_rule.HasSignalingChildRule());
+    : StyleRuleBase(group_rule), child_rules_(group_rule.child_rules_.size()) {
+  for (unsigned i = 0; i < child_rules_.size(); ++i) {
+    child_rules_[i] = group_rule.child_rules_[i]->Copy();
+  }
 }
 
 void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,
                                        unsigned index,
                                        StyleRuleBase* rule) {
-  child_rule_vector_->WrapperInsertRule(index, rule);
+  child_rules_.insert(index, rule);
   if (parent_sheet) {
     parent_sheet->Contents()->NotifyRuleChanged(rule);
   }
@@ -779,13 +702,13 @@ void StyleRuleGroup::WrapperInsertRule(CSSStyleSheet* parent_sheet,
 void StyleRuleGroup::WrapperRemoveRule(CSSStyleSheet* parent_sheet,
                                        unsigned index) {
   if (parent_sheet) {
-    parent_sheet->Contents()->NotifyRuleChanged((*child_rule_vector_)[index]);
+    parent_sheet->Contents()->NotifyRuleChanged(child_rules_[index]);
   }
-  child_rule_vector_->WrapperRemoveRule(index);
+  child_rules_.EraseAt(index);
 }
 
 void StyleRuleGroup::TraceAfterDispatch(blink::Visitor* visitor) const {
-  visitor->Trace(child_rule_vector_);
+  visitor->Trace(child_rules_);
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 

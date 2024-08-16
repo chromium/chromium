@@ -276,8 +276,7 @@ uint32_t SystemSnapshotLinux::CPUX86Signature() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return cpuid_.Signature();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -286,8 +285,7 @@ uint64_t SystemSnapshotLinux::CPUX86Features() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return cpuid_.Features();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -296,8 +294,7 @@ uint64_t SystemSnapshotLinux::CPUX86ExtendedFeatures() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return cpuid_.ExtendedFeatures();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -306,8 +303,7 @@ uint32_t SystemSnapshotLinux::CPUX86Leaf7Features() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return cpuid_.Leaf7Features();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 
@@ -316,8 +312,7 @@ bool SystemSnapshotLinux::CPUX86SupportsDAZ() const {
 #if defined(ARCH_CPU_X86_FAMILY)
   return cpuid_.SupportsDAZ();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 #endif  // ARCH_CPU_X86_FMAILY
 }
 

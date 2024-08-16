@@ -284,7 +284,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void RemoveAdapter();
 
   void PopulateInitialDevices();
-  void ClearAllDevices();
 
   // floss::FlossAdapterClient::Observer override.
   void DiscoverableChanged(bool discoverable) override;

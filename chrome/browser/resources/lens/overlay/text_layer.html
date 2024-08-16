@@ -28,7 +28,7 @@
   }
 </style>
 <template id="wordsContainer" is="dom-repeat" items="[[renderedWords]]">
-  <div style$="[[getWordStyle(item)]]" class="word"
+  <div style$="[[getWordStyle(item, parentHeight, parentWidth)]]" class="word"
     on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
   </div>
 </template>

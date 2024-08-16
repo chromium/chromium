@@ -26,6 +26,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -145,6 +146,71 @@ TEST_F(PickerSectionViewTest, AddsResults) {
   ASSERT_THAT(items, SizeIs(2));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[0]));
   EXPECT_TRUE(views::IsViewClass<PickerListItemView>(items[1]));
+}
+
+TEST_F(PickerSectionViewTest,
+       BrowsingHistoryResultsWithTitleShowsTitleAsPrimary) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
+                                          u"Example Foo", /*icon=*/{}),
+      &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_TRUE(list_item);
+  EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"Example Foo");
+  EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
+}
+
+TEST_F(PickerSectionViewTest,
+       BrowsingHistoryResultsWithoutTitleShowsUrlAsPrimary) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerSearchResult::BrowsingHistory(GURL("https://www.example.com/foo"),
+                                          /*title=*/u"", /*icon=*/{}),
+      &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_TRUE(list_item);
+  EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"example.com/foo");
+  EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
+}
+
+TEST_F(PickerSectionViewTest, CapsLockResultShowsShortcutHint) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerSearchResult::CapsLock(
+          /*enabled=*/true,
+          PickerSearchResult::CapsLockData::Shortcut::kAltSearch),
+      &preview_controller, base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_TRUE(list_item);
+  EXPECT_NE(list_item->shortcut_hint_view_for_testing(), nullptr);
 }
 
 TEST_F(PickerSectionViewTest, ClearsItems) {

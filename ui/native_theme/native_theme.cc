@@ -87,7 +87,7 @@ ColorProviderKey NativeTheme::GetColorProviderKey(
                            : ColorProviderKey::ColorMode::kLight;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   key.contrast_mode = UserHasContrastPreference()
                           ? ColorProviderKey::ContrastMode::kHigh
@@ -388,14 +388,6 @@ bool NativeTheme::UpdateContrastRelatedStates(
       CHECK_LE(page_colors, ui::NativeTheme::PageColors::kWhite);
       forced_colors = true;
       preferred_contrast = PreferredContrast::kMore;
-      bool is_dark_color =
-          page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
-      PreferredColorScheme page_colors_theme_scheme =
-          is_dark_color ? PreferredColorScheme::kDark
-                        : PreferredColorScheme::kLight;
-      set_use_dark_colors(is_dark_color);
-      set_preferred_color_scheme(page_colors_theme_scheme);
-      states_updated = true;
     }
   }
 
@@ -405,6 +397,17 @@ bool NativeTheme::UpdateContrastRelatedStates(
   }
   if (GetPageColors() != page_colors) {
     set_page_colors(page_colors);
+    // Only update the color scheme if page colors is a selected theme.
+    if (page_colors != PageColors::kOff &&
+        page_colors != PageColors::kHighContrast) {
+      bool is_dark_color =
+          page_colors == PageColors::kBlack || page_colors == PageColors::kDusk;
+      PreferredColorScheme page_colors_theme_scheme =
+          is_dark_color ? PreferredColorScheme::kDark
+                        : PreferredColorScheme::kLight;
+      set_use_dark_colors(is_dark_color);
+      set_preferred_color_scheme(page_colors_theme_scheme);
+    }
     states_updated = true;
   }
   if (GetPreferredContrast() != preferred_contrast) {
@@ -432,7 +435,7 @@ SkColor4f NativeTheme::GetScrollbarThumbColor(
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
   // A native theme using solid color scrollbar thumb must override this method.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ui

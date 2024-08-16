@@ -93,8 +93,7 @@ std::string ToString(ItemAction action) {
     case ItemAction::kViewDetailsInBrowser:
       return "ViewDetailsInBrowser";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Records the counts of the specified holding space `items` to the item count

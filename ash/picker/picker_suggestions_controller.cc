@@ -7,6 +7,7 @@
 #include "ash/picker/model/picker_mode_type.h"
 #include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
+#include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/search/picker_date_search.h"
 #include "ash/picker/search/picker_math_search.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -17,7 +18,7 @@ namespace ash {
 namespace {
 
 constexpr int kMaxRecentFiles = 10;
-
+constexpr int kMaxRecentLinks = 10;
 }
 
 PickerSuggestionsController::PickerSuggestionsController(PickerClient* client)
@@ -50,7 +51,8 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   if (model.GetMode() == PickerModeType::kUnfocused ||
       model.GetMode() == PickerModeType::kNoSelection) {
-    callback.Run({PickerSearchResult::CapsLock(!model.is_caps_lock_enabled())});
+    callback.Run({PickerSearchResult::CapsLock(
+        !model.is_caps_lock_enabled(), GetPickerShortcutForCapsLock())});
   }
 
   if (base::Contains(model.GetAvailableCategories(),
@@ -72,25 +74,46 @@ void PickerSuggestionsController::GetSuggestions(const PickerModel& model,
 
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model.GetRecentResultsCategories()) {
-    GetSuggestionsForCategory(
-        model, category,
-        base::BindRepeating(&GetMostRecentResult).Then(callback));
+    // Special case certain categories where we can save computation by only
+    // asking for 1 result.
+    // TODO: b/357740941: Request only one Drive file once directory filtering
+    // is implemented inside DriveFS.
+    switch (category) {
+      case PickerCategory::kLinks:
+        client_->GetSuggestedLinkResults(
+            /*max_results=*/1,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+      case PickerCategory::kLocalFiles:
+        client_->GetRecentLocalFileResults(
+            /*max_results=*/1,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+      case PickerCategory::kDriveFiles:
+        client_->GetRecentDriveFileResults(
+            /*max_results=*/5,
+            base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+      default:
+        GetSuggestionsForCategory(
+            category, base::BindRepeating(&GetMostRecentResult).Then(callback));
+        break;
+    }
   }
 }
 
 void PickerSuggestionsController::GetSuggestionsForCategory(
-    const PickerModel& model,
     PickerCategory category,
     SuggestionsCallback callback) {
-  std::vector<ash::PickerSearchResult> recent_results;
   switch (category) {
     case PickerCategory::kEditorWrite:
     case PickerCategory::kEditorRewrite:
       NOTREACHED_NORETURN();
     case PickerCategory::kLinks:
-      client_->GetSuggestedLinkResults(std::move(callback));
+      client_->GetSuggestedLinkResults(kMaxRecentLinks, std::move(callback));
       return;
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       NOTREACHED_NORETURN();
     case PickerCategory::kDriveFiles:
       client_->GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));

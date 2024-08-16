@@ -111,7 +111,7 @@ ui::ImageModel GetTabAlertIndicatorImageForPressedState(
       return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
                                                              button_color);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -455,7 +455,7 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
       return AlertIndicatorButton::GetTabAlertIndicatorImage(
           alert_state, kColorHoverCardTabAlertAudioPlayingIcon);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AlertIndicatorButton::UpdateIconForAlertState(TabAlertState state) {

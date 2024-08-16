@@ -691,7 +691,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       net::FirstPartySetsContextConfig(),
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
         return true;
       }));
 

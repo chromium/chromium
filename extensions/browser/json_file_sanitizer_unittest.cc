@@ -73,8 +73,9 @@ class JsonFileSanitizerTest : public testing::Test {
                         const std::string& error_msg) {
     last_status_ = status;
     last_error_ = error_msg;
-    if (done_callback_)
+    if (done_callback_) {
       std::move(done_callback_).Run();
+    }
   }
 
   content::BrowserTaskEnvironment task_environment_;

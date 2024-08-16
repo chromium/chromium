@@ -52,10 +52,10 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/ios_chrome_sync_client.h"
 #import "ios/chrome/browser/sync/model/ios_user_event_service_factory.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
@@ -98,7 +98,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
   auto sync_service =
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize(
-      client_ptr->CreateModelTypeControllers(sync_service.get()));
+      client_ptr->CreateDataTypeControllers(sync_service.get()));
 
   // TODO(crbug.com/40250371): Remove the workaround below once
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
@@ -204,6 +204,7 @@ SyncServiceFactory::SyncServiceFactory()
   // actually plumbed in IOSChromeSyncClient, which this factory constructs.
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(ConsentAuditorFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
@@ -225,7 +226,6 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(ReadingListModelFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());

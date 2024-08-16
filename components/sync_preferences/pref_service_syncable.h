@@ -106,7 +106,7 @@ class PrefServiceSyncable : public PrefService,
   void AddObserver(PrefServiceSyncableObserver* observer);
   void RemoveObserver(PrefServiceSyncableObserver* observer);
 
-  syncer::SyncableService* GetSyncableService(const syncer::ModelType& type);
+  syncer::SyncableService* GetSyncableService(const syncer::DataType& type);
 
   // Do not call this after having derived an incognito or per tab pref service.
   void UpdateCommandLinePrefStore(PrefStore* cmd_line_store) override;

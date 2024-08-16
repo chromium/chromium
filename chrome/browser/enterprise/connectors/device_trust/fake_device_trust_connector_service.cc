@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "components/enterprise/connectors/device_trust/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 

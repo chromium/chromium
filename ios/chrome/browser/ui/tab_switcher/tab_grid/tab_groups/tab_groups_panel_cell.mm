@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -14,8 +17,6 @@ const CGFloat kCornerRadius = 16;
 const CGFloat kMargin = 16;
 const CGFloat kSpacing = 8;
 const CGFloat kDotSize = 14;
-const CGFloat kHighlightAlpha = 0.6;
-const CGFloat kHighlightBackgroundColorAlpha = 0.3;
 
 }  // namespace
 
@@ -26,6 +27,8 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
   if (self) {
     self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _faviconsGrid = [[TabGroupsPanelFaviconGrid alloc] init];
     _faviconsGrid.translatesAutoresizingMaskIntoConstraints = NO;
@@ -90,14 +93,9 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
 
 - (void)setHighlighted:(BOOL)highlighted {
   [super setHighlighted:highlighted];
-  if (highlighted) {
-    self.backgroundColor = [UIColor.whiteColor
-        colorWithAlphaComponent:kHighlightBackgroundColorAlpha];
-    self.contentView.alpha = kHighlightAlpha;
-  } else {
-    self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-    self.contentView.alpha = 1;
-  }
+  NSString* colorName =
+      highlighted ? kSecondaryBackgroundColor : kPrimaryBackgroundColor;
+  self.backgroundColor = [UIColor colorNamed:colorName];
 }
 
 - (void)prepareForReuse {
@@ -111,6 +109,16 @@ const CGFloat kHighlightBackgroundColorAlpha = 0.3;
   _faviconsGrid.favicon3 = nil;
   _faviconsGrid.favicon4 = nil;
   self.item = nil;
+}
+
+- (NSString*)accessibilityLabel {
+  NSString* numberOfTabsString = l10n_util::GetPluralNSStringF(
+      IDS_IOS_TAB_GROUP_TABS_NUMBER, _faviconsGrid.numberOfTabs);
+  return l10n_util::GetNSStringF(
+      IDS_IOS_TAB_GROUPS_PANEL_CELL_ACCESSIBILITY_LABEL_FORMAT,
+      base::SysNSStringToUTF16(_titleLabel.text),
+      base::SysNSStringToUTF16(numberOfTabsString),
+      base::SysNSStringToUTF16(_subtitleLabel.text));
 }
 
 @end

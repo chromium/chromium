@@ -36,5 +36,5 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, MediaTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchTest, Organization) {
-  RunTest("tab_search/tab_organization_page_test.js", "mocha.run()");
+  RunTest("tab_search/auto_tab_groups_page_test.js", "mocha.run()");
 }

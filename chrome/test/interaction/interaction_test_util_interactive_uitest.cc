@@ -110,6 +110,13 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
                        .SetElementID(TabMenuModel::kAddToNewGroupItemIdentifier)
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetStartCallback(std::move(click_menu_item))
+#if BUILDFLAG(IS_MAC)
+                       // On Mac, we are trapped in a system-owned run loop
+                       // where tasks can't be posted, so any response to a
+                       // native context menu showing must be immediate.
+                       .SetStepStartMode(
+                           ui::InteractionSequence::StepStartMode::kImmediate)
+#endif
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetElementID(TabMenuModel::kAddToNewGroupItemIdentifier)

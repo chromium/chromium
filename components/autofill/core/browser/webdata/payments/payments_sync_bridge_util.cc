@@ -50,8 +50,10 @@ sync_pb::WalletMaskedCreditCard::WalletCardType WalletCardTypeFromCardNetwork(
     return sync_pb::WalletMaskedCreditCard::MASTER_CARD;
   if (network == kUnionPay)
     return sync_pb::WalletMaskedCreditCard::UNIONPAY;
-  if (network == kVerveCard)
+  if (network == kVerveCard &&
+      base::FeatureList::IsEnabled(features::kAutofillEnableVerveCardSupport)) {
     return sync_pb::WalletMaskedCreditCard::VERVE;
+  }
   if (network == kVisaCard)
     return sync_pb::WalletMaskedCreditCard::VISA;
 
@@ -75,7 +77,11 @@ const char* CardNetworkFromWalletCardType(
     case sync_pb::WalletMaskedCreditCard::UNIONPAY:
       return kUnionPay;
     case sync_pb::WalletMaskedCreditCard::VERVE:
-      return kVerveCard;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableVerveCardSupport)) {
+        return kVerveCard;
+      }
+      return kGenericCard;
     case sync_pb::WalletMaskedCreditCard::VISA:
       return kVisaCard;
 
@@ -334,7 +340,6 @@ Iban IbanFromSpecifics(const sync_pb::PaymentInstrument& payment_instrument) {
   Iban result{Iban::InstrumentId(payment_instrument.instrument_id())};
   result.set_prefix(base::UTF8ToUTF16(payment_instrument.iban().prefix()));
   result.set_suffix(base::UTF8ToUTF16(payment_instrument.iban().suffix()));
-  result.set_length(payment_instrument.iban().length());
   result.set_nickname(base::UTF8ToUTF16(payment_instrument.nickname()));
   return result;
 }
@@ -554,7 +559,6 @@ void SetAutofillWalletSpecificsFromMaskedIban(
       wallet_payment_instrument->mutable_iban();
   masked_iban->set_prefix(base::UTF16ToUTF8(iban.prefix()));
   masked_iban->set_suffix(base::UTF16ToUTF8(iban.suffix()));
-  masked_iban->set_length(iban.length());
 }
 
 void SetAutofillWalletSpecificsFromCardBenefit(

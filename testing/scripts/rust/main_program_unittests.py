@@ -7,10 +7,10 @@
 import argparse
 import json
 import os
-from pyfakefs import fake_filesystem_unittest
-import sys
 import tempfile
 import unittest
+
+from pyfakefs import fake_filesystem_unittest
 
 from test_results import TestResult
 

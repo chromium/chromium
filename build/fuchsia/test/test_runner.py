@@ -7,7 +7,6 @@ import os
 import subprocess
 
 from abc import ABC, abstractmethod
-from argparse import Namespace
 from typing import Dict, List, Optional
 
 from common import read_package_paths
@@ -18,7 +17,7 @@ class TestRunner(ABC):
 
     def __init__(self,
                  out_dir: str,
-                 test_args: Namespace,
+                 test_args: List[str],
                  packages: List[str],
                  target_id: Optional[str],
                  package_deps: Optional[List[str]] = None) -> None:
@@ -28,7 +27,7 @@ class TestRunner(ABC):
         self._packages = packages
         self._package_deps = None
         if package_deps:
-            self._package_deps = TestRunner._build_package_deps(package_deps)
+            self._package_deps = self._build_package_deps(package_deps)
 
     # TODO(crbug.com/42050366): Remove when all tests are converted to CFv2.
     @staticmethod
@@ -52,11 +51,11 @@ class TestRunner(ABC):
             self._populate_package_deps()
         return self._package_deps
 
-    @staticmethod
-    def _build_package_deps(package_paths: List[str]) -> Dict[str, str]:
+    def _build_package_deps(self, package_paths: List[str]) -> Dict[str, str]:
         """Retrieve information for all packages listed in |package_paths|."""
         package_deps = {}
         for path in package_paths:
+            path = os.path.join(self._out_dir, path)
             package_name = os.path.basename(path).replace('.far', '')
             if package_name in package_deps:
                 assert path == package_deps[package_name]
@@ -71,7 +70,7 @@ class TestRunner(ABC):
         for package in self._packages:
             package_paths.extend(read_package_paths(self._out_dir, package))
 
-        self._package_deps = TestRunner._build_package_deps(package_paths)
+        self._package_deps = self._build_package_deps(package_paths)
 
     @abstractmethod
     def run_test(self) -> subprocess.Popen:

@@ -12,12 +12,13 @@ namespace content {
 class BrowserContext;
 }
 
-class DIPSService;
+class DIPSServiceImpl;
 
 class DIPSServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static DIPSServiceFactory* GetInstance();
-  static DIPSService* GetForBrowserContext(content::BrowserContext* context);
+  static DIPSServiceImpl* GetForBrowserContext(
+      content::BrowserContext* context);
 
   static ProfileSelections CreateProfileSelections();
 

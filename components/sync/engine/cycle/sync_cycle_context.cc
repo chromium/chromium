@@ -14,7 +14,7 @@ SyncCycleContext::SyncCycleContext(
     ExtensionsActivity* extensions_activity,
     const std::vector<SyncEngineEventListener*>& listeners,
     DebugInfoGetter* debug_info_getter,
-    ModelTypeRegistry* model_type_registry,
+    DataTypeRegistry* data_type_registry,
     const std::string& cache_guid,
     const std::string& birthday,
     const std::string& bag_of_chips,
@@ -25,7 +25,7 @@ SyncCycleContext::SyncCycleContext(
       birthday_(birthday),
       bag_of_chips_(bag_of_chips),
       debug_info_getter_(debug_info_getter),
-      model_type_registry_(model_type_registry),
+      data_type_registry_(data_type_registry),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;
@@ -35,8 +35,8 @@ SyncCycleContext::SyncCycleContext(
 
 SyncCycleContext::~SyncCycleContext() = default;
 
-ModelTypeSet SyncCycleContext::GetConnectedTypes() const {
-  return model_type_registry_->GetConnectedTypes();
+DataTypeSet SyncCycleContext::GetConnectedTypes() const {
+  return data_type_registry_->GetConnectedTypes();
 }
 
 void SyncCycleContext::set_birthday(const std::string& birthday) {

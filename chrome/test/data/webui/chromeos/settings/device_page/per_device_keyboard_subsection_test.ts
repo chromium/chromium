@@ -603,4 +603,66 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     assertEquals(
         2, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
   });
+
+  test('Observe lid state change for internal keyboard', async () => {
+    // Set keyboard to internal state.
+    await changeIsExternalState(false);
+    let subsectionHeader =
+        subsection.shadowRoot!.querySelector<HTMLElement>('#subsectionHeader');
+    let subsectionBody =
+        subsection.shadowRoot!.querySelector<HTMLElement>('.subsection');
+
+    // Subsection header and body should be present.
+    assertTrue(!!subsectionHeader);
+    assertTrue(!!subsectionBody);
+
+    // Simulate lid close.
+    provider.setLidStateClosed();
+    await flushTasks();
+
+    // Subsection header and body should be hidden.
+    subsectionHeader =
+        subsection.shadowRoot!.querySelector<HTMLElement>('#subsectionHeader');
+    subsectionBody =
+        subsection.shadowRoot!.querySelector<HTMLElement>('.subsection');
+    assertFalse(!!subsectionHeader);
+    assertFalse(!!subsectionBody);
+
+    // Simulate lid open.
+    provider.setLidStateOpen();
+    await flushTasks();
+
+    // Subsection header and body should be visible again.
+    subsectionHeader =
+        subsection.shadowRoot!.querySelector<HTMLElement>('#subsectionHeader');
+    subsectionBody =
+        subsection.shadowRoot!.querySelector<HTMLElement>('.subsection');
+    assertTrue(!!subsectionHeader);
+    assertTrue(!!subsectionBody);
+  });
+
+  test('Observe lid state change for external keyboard', async () => {
+    // Set keyboard to external state.
+    await changeIsExternalState(true);
+
+    // Subsection header and body should be present.
+    let subsectionHeader =
+        subsection.shadowRoot!.querySelector<HTMLElement>('#subsectionHeader');
+    let subsectionBody =
+        subsection.shadowRoot!.querySelector<HTMLElement>('.subsection');
+    assertTrue(!!subsectionHeader);
+    assertTrue(!!subsectionBody);
+
+    // Simulate lid close.
+    provider.setLidStateClosed();
+    await flushTasks();
+
+    // Subsection header and body should still be present.
+    subsectionHeader =
+        subsection.shadowRoot!.querySelector<HTMLElement>('#subsectionHeader');
+    subsectionBody =
+        subsection.shadowRoot!.querySelector<HTMLElement>('.subsection');
+    assertTrue(!!subsectionHeader);
+    assertTrue(!!subsectionBody);
+  });
 });

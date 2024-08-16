@@ -11,7 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/url_formatter/elide_url.h"
 #import "components/url_formatter/url_formatter.h"
@@ -1281,7 +1281,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     }
     id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler showQuickDelete];
+    [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:NO];
     return;
   }
 

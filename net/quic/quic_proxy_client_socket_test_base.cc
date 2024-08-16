@@ -193,7 +193,8 @@ void QuicProxyClientSocketTestBase::InitializeSession() {
       base::DefaultTickClock::GetInstance(),
       base::SingleThreadTaskRunner::GetCurrentDefault().get(),
       /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-      /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+      /*report_ecn=*/true, /*enable_origin_frame=*/true,
+      NetLogWithSource::Make(NetLogSourceType::NONE));
 
   writer->set_delegate(session_.get());
 

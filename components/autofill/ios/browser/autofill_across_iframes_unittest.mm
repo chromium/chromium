@@ -303,10 +303,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
          FormUtilJavaScriptFeature::GetInstance(),
          FormHandlersJavaScriptFeature::GetInstance()});
 
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            web_state());
-
     // We need an AutofillAgent to exist or else the form will never get parsed.
     prefs_ = autofill::test::PrefServiceForTesting();
     autofill_agent_ = [[AutofillAgent alloc] initWithPrefService:prefs_.get()
@@ -321,6 +317,10 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     // Password autofill agent needs to exist before any call to fill data.
     autofill::PasswordAutofillAgent::CreateForWebState(web_state(),
                                                        &delegate_mock_);
+
+    autofill_manager_injector_ =
+        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
+            web_state());
   }
 
   web::WebFrame* WaitForMainFrame() {
@@ -712,7 +712,7 @@ TEST_F(AutofillAcrossIframesTest, TriggerExtractionInFrame) {
     manager.ResetTestState();
 
     // Manually retrigger extraction, and wait for a fresh FormsSeen event.
-    driver->TriggerFormExtractionInDriverFrame();
+    test_api(*driver).TriggerFormExtractionInDriverFrame();
     EXPECT_TRUE(manager.WaitForFormsSeen(1));
   }
 }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 
 #include <dwmapi.h>
@@ -40,6 +45,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/win/hwnd_metrics.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/display/win/dpi.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/canvas.h"
@@ -659,7 +665,8 @@ void BrowserFrameViewWin::TabletModeChanged() {
 void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
   CHECK(SystemTitlebarCanUseMicaMaterial());
 
-  const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
+  const BOOL dark_titlebar_enabled =
+      frame()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
   DwmSetWindowAttribute(views::HWNDForWidget(frame()),
                         DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
                         sizeof(dark_titlebar_enabled));

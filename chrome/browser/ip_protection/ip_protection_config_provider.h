@@ -9,15 +9,16 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
-#include "components/ip_protection/common/ip_protection_config_http.h"
-#include "components/ip_protection/ip_protection_config_provider_helper.h"
-#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
-#include "components/ip_protection/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_retriever.h"
+#include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -30,12 +31,13 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 class Profile;
 
 namespace quiche {
 class BlindSignAuthInterface;
-class BlindSignAuth;
+enum class ProxyLayer;
 struct BlindSignToken;
 }  // namespace quiche
 
@@ -133,13 +135,14 @@ class IpProtectionConfigProvider
     return remotes_.Get(remote_id_for_testing_);
   }
 
-  // Like `SetUp()`, but providing values for each of the member variables.
+  // Like `SetUp()`, but providing values for each of the member variables. Note
+  // `bsa` is moved onto a separate sequence when initializing
+  // `ip_protection_token_fetcher_`.
   void SetUpForTesting(
       std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
           ip_protection_proxy_config_retriever,
-      std::unique_ptr<ip_protection::IpProtectionConfigHttp>
-          ip_protection_config_http,
-      quiche::BlindSignAuthInterface* bsa);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<quiche::BlindSignAuthInterface> bsa);
 
  private:
   friend class IpProtectionConfigProviderTest;
@@ -149,24 +152,26 @@ class IpProtectionConfigProvider
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderUserSettingBrowserTest,
                            OnIpProtectionEnabledChanged);
 
-  // Set up `ip_protection_config_http_`, `ip_protection_proxy_config_retriever`
-  // and `bsa_`, if not already initialized.
-  // This accomplishes lazy loading of these components to break dependency
-  // loops in browser startup.
+  // Set up `ip_protection_proxy_config_fetcher_`,
+  // `ip_protection_token_fetcher_` and `url_loader_factory_`, if not already
+  // initialized. This accomplishes lazy loading of these components to break
+  // dependency loops in browser startup.
   void SetUp();
 
-  // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
-  // request a blind-signed auth token for use at the IP Protection proxies.
+  // `FetchBlindSignedToken()` uses the `ip_protection_token_fetcher_` to make
+  // an async call on the bound sequence into the `quiche::BlindSignAuth`
+  // library to request a blind-signed auth token for use at the IP Protection
+  // proxies.
   void FetchBlindSignedToken(
       std::optional<signin::AccessTokenInfo> access_token_info,
       uint32_t batch_size,
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      quiche::ProxyLayer quiche_proxy_layer,
       TryGetAuthTokensCallback callback);
 
   void OnFetchBlindSignedTokenCompleted(
       base::TimeTicks bsa_get_tokens_start_time,
       TryGetAuthTokensCallback callback,
-      absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
+      absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens);
 
   // Finish a call to `TryGetAuthTokens()` by recording the result and invoking
   // its callback.
@@ -200,7 +205,7 @@ class IpProtectionConfigProvider
 
   void OnRequestOAuthTokenCompletedForTryGetAuthTokens(
       uint32_t batch_size,
-      network::mojom::IpProtectionProxyLayer proxy_layer,
+      quiche::ProxyLayer quiche_proxy_layer,
       TryGetAuthTokensCallback callback,
       base::TimeTicks oauth_token_fetch_start_time,
       GoogleServiceAuthError error,
@@ -247,20 +252,20 @@ class IpProtectionConfigProvider
   // TrackingProtectionSettingsObserver:
   void OnIpProtectionEnabledChanged() override;
 
-  // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
-  // raw pointer to `url_loader_factory_` gets passed to
-  // `ip_protection_config_http_`, so we ensure it stays alive by storing its
-  // scoped_refptr here.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ip_protection::IpProtectionConfigHttp>
-      ip_protection_config_http_;
   std::unique_ptr<ip_protection::IpProtectionProxyConfigFetcher>
       ip_protection_proxy_config_fetcher_;
-  std::unique_ptr<quiche::BlindSignAuth> blind_sign_auth_;
 
-  // For testing, BlindSignAuth is accessed via its interface. In production,
-  // this is the same pointer as `blind_sign_auth_`.
-  raw_ptr<quiche::BlindSignAuthInterface> bsa_ = nullptr;
+  // The thread pool task runner on which async calls are made to
+  // `ip_protection_token_fetcher_` to fetch blind signed tokens. This is needed
+  // to move some of the expensive token generation work off the UI thread.
+  scoped_refptr<base::SequencedTaskRunner> token_fetcher_task_runner_;
+
+  // An IpProtectionTokenFetcher instance that is bound to the given sequenced
+  // `task_runner_` on which all calls to the `quiche::BlindSignAuth` library
+  // will happen on.
+  base::SequenceBound<ip_protection::IpProtectionTokenFetcher>
+      ip_protection_token_fetcher_;
 
   // Whether `Shutdown()` has been called.
   bool is_shutting_down_ = false;

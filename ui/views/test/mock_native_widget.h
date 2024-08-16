@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/widget/native_widget_private.h"
 
 namespace views {
@@ -68,7 +69,10 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               (override));
   MOCK_METHOD(const gfx::ImageSkia*, GetWindowIcon, (), (override));
   MOCK_METHOD(const gfx::ImageSkia*, GetWindowAppIcon, (), (override));
-  MOCK_METHOD(void, InitModalType, (ui::ModalType modal_type), (override));
+  MOCK_METHOD(void,
+              InitModalType,
+              (ui::mojom::ModalType modal_type),
+              (override));
   MOCK_METHOD(gfx::Rect, GetWindowBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetClientAreaBoundsInScreen, (), (const override));
   MOCK_METHOD(gfx::Rect, GetRestoredBounds, (), (const override));

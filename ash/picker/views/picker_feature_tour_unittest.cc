@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/test_future.h"
+#include "build/branding_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
@@ -36,7 +37,8 @@ TEST_F(PickerFeatureTourTest, ShowShowsDialogForFirstTime) {
   PickerFeatureTour feature_tour;
 
   EXPECT_TRUE(feature_tour.MaybeShowForFirstUse(
-      pref_service(), base::DoNothing(), base::DoNothing()));
+      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), base::DoNothing()));
   views::Widget* widget = feature_tour.widget_for_testing();
   EXPECT_NE(widget, nullptr);
   views::test::WidgetVisibleWaiter(widget).Wait();
@@ -46,8 +48,9 @@ TEST_F(PickerFeatureTourTest,
        ClickingCompleteButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
-  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
-                                    completed_future.GetRepeatingCallback());
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
   const views::Button* button = feature_tour.complete_button_for_testing();
@@ -63,9 +66,9 @@ TEST_F(PickerFeatureTourTest,
        ClickingLearnMoreButtonClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> learn_more_future;
-  feature_tour.MaybeShowForFirstUse(pref_service(),
-                                    learn_more_future.GetRepeatingCallback(),
-                                    base::DoNothing());
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      learn_more_future.GetRepeatingCallback(), base::DoNothing());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
   const views::Button* button = feature_tour.learn_more_button_for_testing();
@@ -80,8 +83,9 @@ TEST_F(PickerFeatureTourTest,
 TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
   PickerFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
-  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
-                                    completed_future.GetRepeatingCallback());
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
@@ -93,12 +97,14 @@ TEST_F(PickerFeatureTourTest, PressingEnterClosesWidgetAndTriggersCallback) {
 
 TEST_F(PickerFeatureTourTest, ShouldNotShowDialogSecondTime) {
   PickerFeatureTour feature_tour;
-  feature_tour.MaybeShowForFirstUse(pref_service(), base::DoNothing(),
-                                    base::DoNothing());
+  feature_tour.MaybeShowForFirstUse(pref_service(),
+                                    PickerFeatureTour::EditorStatus::kEligible,
+                                    base::DoNothing(), base::DoNothing());
   feature_tour.widget_for_testing()->CloseNow();
 
   EXPECT_FALSE(feature_tour.MaybeShowForFirstUse(
-      pref_service(), base::DoNothing(), base::DoNothing()));
+      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), base::DoNothing()));
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }
 

@@ -144,6 +144,7 @@ class AdsPageLoadMetricsObserver
   void OnSubFrameDeleted(int frame_tree_node_id) override;
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
+  void OnAdAuctionComplete() override;
 
   void SetHeavyAdThresholdNoiseProviderForTesting(
       std::unique_ptr<HeavyAdThresholdNoiseProvider> noise_provider) {

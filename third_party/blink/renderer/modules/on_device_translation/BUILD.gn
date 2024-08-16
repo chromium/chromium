@@ -8,6 +8,8 @@ blink_modules_sources("on_device_translation") {
   sources = [
     "dom_translation.cc",
     "dom_translation.h",
+    "language_detector.cc",
+    "language_detector.h",
     "language_translator.cc",
     "language_translator.h",
     "translation.cc",
@@ -15,4 +17,5 @@ blink_modules_sources("on_device_translation") {
   ]
 
   public_deps = [ "//third_party/blink/public/mojom:mojom_modules_blink" ]
+  deps = [ "//third_party/blink/renderer/platform" ]
 }

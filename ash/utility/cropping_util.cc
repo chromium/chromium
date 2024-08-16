@@ -45,10 +45,9 @@ SkBitmap CenterCropImage(const SkBitmap& image, const gfx::Size& target_size) {
   cropped_rect.ClampToCenteredSize(cropped_size);
   SkBitmap sub_image;
   if (!image.extractSubset(&sub_image, gfx::RectToSkIRect(cropped_rect))) {
-    NOTREACHED_IN_MIGRATION()
-        << "Cropping image with dimensions "
-        << gfx::Size(orig_width, orig_height).ToString() << " to "
-        << cropped_rect.ToString() << " failed.";
+    NOTREACHED() << "Cropping image with dimensions "
+                 << gfx::Size(orig_width, orig_height).ToString() << " to "
+                 << cropped_rect.ToString() << " failed.";
   }
   return sub_image;
 }

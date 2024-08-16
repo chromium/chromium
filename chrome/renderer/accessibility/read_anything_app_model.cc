@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
 
 #include <cstddef>
@@ -29,6 +34,11 @@
 #include "url/gurl.h"
 
 namespace {
+
+base::TimeDelta kTimeElapsedSincePageLoadForDataCollectionSeconds =
+    base::Seconds(30);
+base::TimeDelta kTimeElapsedSinceTreeChangedForDataCollectionSeconds =
+    base::Seconds(10);
 
 bool GetIsGoogleDocs(const GURL& url) {
   // A Google Docs URL is in the form of "https://docs.google.com/document*" or
@@ -75,8 +85,8 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     bool links_enabled,
     bool images_enabled,
     read_anything::mojom::Colors color) {
-  line_spacing_ = GetLineSpacingValue(line_spacing);
-  letter_spacing_ = GetLetterSpacingValue(letter_spacing);
+  line_spacing_ = static_cast<size_t>(line_spacing);
+  letter_spacing_ = static_cast<size_t>(letter_spacing);
   font_name_ = font;
   font_size_ = font_size;
   links_enabled_ = links_enabled;
@@ -529,6 +539,10 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
     if (distillation_in_progress_ || speech_playing) {
       AddPendingUpdates(tree_id, updates);
       ProcessNonGeneratedEvents(events);
+      if (timer_since_tree_changed_for_data_collection_.IsRunning()) {
+        CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+        timer_since_tree_changed_for_data_collection_.Reset();
+      }
       return;
     } else {
       // We need to unserialize old updates before we can unserialize the new
@@ -554,12 +568,12 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // TODO(crbug.com/40802192): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
-    set_ukm_source_id(ukm::kInvalidSourceId);
+    SetUkmSourceId(ukm::kInvalidSourceId);
   }
   EraseTree(tree_id);
 }
 
-const ukm::SourceId& ReadAnythingAppModel::ukm_source_id() {
+const ukm::SourceId& ReadAnythingAppModel::UkmSourceId() {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -570,8 +584,7 @@ const ukm::SourceId& ReadAnythingAppModel::ukm_source_id() {
   return ukm::kInvalidSourceId;
 }
 
-void ReadAnythingAppModel::set_ukm_source_id(
-    const ukm::SourceId ukm_source_id) {
+void ReadAnythingAppModel::SetUkmSourceId(const ukm::SourceId ukm_source_id) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }
@@ -587,7 +600,7 @@ void ReadAnythingAppModel::set_ukm_source_id(
   }
 }
 
-int32_t ReadAnythingAppModel::num_selections() {
+int32_t ReadAnythingAppModel::NumSelections() {
   if (base::Contains(tree_infos_, active_tree_id_)) {
     ReadAnythingAppModel::AXTreeInfo* tree_info =
         tree_infos_.at(active_tree_id_).get();
@@ -598,8 +611,7 @@ int32_t ReadAnythingAppModel::num_selections() {
   return 0;
 }
 
-void ReadAnythingAppModel::set_num_selections(
-    const int32_t& num_selections) {
+void ReadAnythingAppModel::SetNumSelections(const int32_t& num_selections) {
   if (!base::Contains(tree_infos_, active_tree_id_)) {
     return;
   }
@@ -722,6 +734,23 @@ void ReadAnythingAppModel::OnSelection(ax::mojom::EventFrom event_from) {
   }
 }
 
+void ReadAnythingAppModel::SetActiveTreeId(const ui::AXTreeID& active_tree_id) {
+  active_tree_id_ = active_tree_id;
+  // If data collection mode for screen2x is enabled, begin
+  // `timer_since_page_load_for_data_collection_` from here. This is a
+  // one-shot timer which times 30 seconds from when the active AXTree changes.
+  // This is one of two timers associated with the data collection flow. When
+  // either of these timers expires, this triggers the screen2x distillation
+  // data collection flow.
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    timer_since_page_load_for_data_collection_.Start(
+        FROM_HERE, kTimeElapsedSincePageLoadForDataCollectionSeconds,
+        base::BindOnce(
+            &ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection,
+            weak_ptr_factory_.GetWeakPtr(), true));
+  }
+}
+
 void ReadAnythingAppModel::ProcessNonGeneratedEvents(
     const std::vector<ui::AXEvent>& events) {
   // Note that this list of events may overlap with generated events in the
@@ -733,8 +762,19 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
         page_finished_loading_ = true;
+        // If data collection mode for screen2x is enabled, begin
+        // `timer_since_tree_changed_for_data_collection_` from here. This is a
+        // repeating one-shot timer which times 10 seconds from page load and
+        // resets every time the accessibility tree changes. This is one of two
+        // timers associated with the data collection flow. When either of these
+        // timers expires, this triggers the screen2x distillation data
+        // collection flow.
         if (features::IsDataCollectionModeForScreen2xEnabled()) {
-          page_finished_loading_for_data_collection_ = true;
+          timer_since_tree_changed_for_data_collection_.Start(
+              FROM_HERE, kTimeElapsedSinceTreeChangedForDataCollectionSeconds,
+              base::BindRepeating(&ReadAnythingAppModel::
+                                      SetPageFinishedLoadingForDataCollection,
+                                  weak_ptr_factory_.GetWeakPtr(), true));
         }
 
         // TODO(accessibility): Some pages may never completely load; use a
@@ -804,7 +844,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
       case ax::mojom::Event::kMenuListValueChangedDeprecated:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -927,6 +967,45 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
         break;
     }
+  }
+}
+
+bool ReadAnythingAppModel::ScreenAIServiceReadyForDataColletion() const {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  return ScreenAIServiceReadyForDataColletion_;
+}
+
+void ReadAnythingAppModel::SetScreenAIServiceReadyForDataColletion(bool value) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  ScreenAIServiceReadyForDataColletion_ = value;
+  MaybeRunDataCollectionForScreen2xCallback();
+}
+
+bool ReadAnythingAppModel::PageFinishedLoadingForDataCollection() const {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  return PageFinishedLoadingForDataCollection_;
+}
+
+void ReadAnythingAppModel::SetPageFinishedLoadingForDataCollection(bool value) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  PageFinishedLoadingForDataCollection_ = value;
+  timer_since_page_load_for_data_collection_.Stop();
+  timer_since_tree_changed_for_data_collection_.Stop();
+  MaybeRunDataCollectionForScreen2xCallback();
+}
+
+void ReadAnythingAppModel::SetDataCollectionForScreen2xCallback(
+    base::RepeatingCallback<void()> callback) {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  data_collection_for_screen2x_callback_ = std::move(callback);
+}
+
+void ReadAnythingAppModel::MaybeRunDataCollectionForScreen2xCallback() {
+  CHECK(features::IsDataCollectionModeForScreen2xEnabled());
+  if (PageFinishedLoadingForDataCollection_ &&
+      ScreenAIServiceReadyForDataColletion_) {
+    CHECK(data_collection_for_screen2x_callback_);
+    data_collection_for_screen2x_callback_.Run();
   }
 }
 

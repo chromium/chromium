@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Rule applied [<string>, 'foo bar', false]
+  assert_equals: expected "\\"foo bar\\"" but got ""
+[FAIL] Rule applied [<string>,  'foo bar' , false]
+  assert_equals: expected "\\"foo bar\\"" but got ""
+[FAIL] Rule applied [<string>, '"foo" bar', false]
+  assert_equals: expected "\\"\\\\\\"foo\\\\\\" bar\\"" but got ""
+[FAIL] Rule applied [<string>, "bar baz", false]
+  assert_equals: expected "\\"bar baz\\"" but got ""
+[FAIL] Rule applied [<string>, "bar 'baz'", false]
+  assert_equals: expected "\\"bar 'baz'\\"" but got ""
+[FAIL] Rule applied [<string>+, 'foo' 'bar', false]
+  assert_equals: expected "\\"foo\\" \\"bar\\"" but got ""
+[FAIL] Rule applied [<string>#, 'foo', 'bar', false]
+  assert_equals: expected "\\"foo\\", \\"bar\\"" but got ""
+[FAIL] Rule applied [<string>+ | <string>#, 'foo' 'bar', false]
+  assert_equals: expected "\\"foo\\" \\"bar\\"" but got ""
+[FAIL] Rule applied [<string>+ | <string>#,  'foo' 'bar', false]
+  assert_equals: expected "\\"foo\\" \\"bar\\"" but got ""
+[FAIL] Rule applied [<string>+ | <string>#, 'foo' "bar", false]
+  assert_equals: expected "\\"foo\\" \\"bar\\"" but got ""
+[FAIL] Rule applied [<string># | <string>+, 'foo', 'bar', false]
+  assert_equals: expected "\\"foo\\", \\"bar\\"" but got ""
+[FAIL] Rule applied [<string># | <string>+, 'foo', 'bar' , false]
+  assert_equals: expected "\\"foo\\", \\"bar\\"" but got ""
+[FAIL] Rule applied [<string># | <string>+, "foo", 'bar', false]
+  assert_equals: expected "\\"foo\\", \\"bar\\"" but got ""
+Harness: the test ran to completion.
+

@@ -55,16 +55,6 @@ source_set("chromeos") {
     "extensions/system_log/system_log_api.h",
     "extensions/web_file_handlers/intent_util.cc",
     "extensions/web_file_handlers/intent_util.h",
-    "mahi/mahi_browser_client_impl.cc",
-    "mahi/mahi_browser_client_impl.h",
-    "mahi/mahi_browser_util.cc",
-    "mahi/mahi_browser_util.h",
-    "mahi/mahi_content_extraction_delegate.cc",
-    "mahi/mahi_content_extraction_delegate.h",
-    "mahi/mahi_tab_helper.cc",
-    "mahi/mahi_tab_helper.h",
-    "mahi/mahi_web_contents_manager.cc",
-    "mahi/mahi_web_contents_manager.h",
     "policy/dlp/clipboard_bubble.cc",
     "policy/dlp/clipboard_bubble.h",
     "policy/dlp/data_transfer_dlp_controller.cc",
@@ -183,6 +173,7 @@ source_set("chromeos") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/profiles",
@@ -380,6 +371,7 @@ source_set("chromeos") {
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/ui/ash/network",
       "//chrome/browser/ui/webui/ash/cloud_upload",
+      "//chrome/browser/ui/webui/ash/settings/pages/files",
     ]
     public_deps += [
       "//ash/constants",
@@ -432,6 +424,7 @@ source_set("chromeos") {
       "//chrome/browser/ui/ash/shelf",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/cloud_upload",
+      "//chrome/browser/ui/webui/ash/settings/pages/files",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util",
       "//chromeos/ash/components/login/auth/public:authpublic",
@@ -499,17 +492,10 @@ source_set("chromeos") {
 
 static_library("test_support") {
   testonly = true
+
   sources = [
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.cc",
     "extensions/login_screen/login/cleanup/mock_cleanup_handler.h",
-    "mahi/test/fake_mahi_web_contents_manager.cc",
-    "mahi/test/fake_mahi_web_contents_manager.h",
-    "mahi/test/mock_mahi_crosapi.cc",
-    "mahi/test/mock_mahi_crosapi.h",
-    "mahi/test/mock_mahi_web_contents_manager.cc",
-    "mahi/test/mock_mahi_web_contents_manager.h",
-    "mahi/test/scoped_mahi_web_contents_manager_for_testing.cc",
-    "mahi/test/scoped_mahi_web_contents_manager_for_testing.h",
     "policy/dlp/dialogs/mock_dlp_warn_notifier.cc",
     "policy/dlp/dialogs/mock_dlp_warn_notifier.h",
     "policy/dlp/test/dlp_content_manager_test_helper.cc",
@@ -531,6 +517,7 @@ static_library("test_support") {
     "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.cc",
     "printing/print_preview/test/scoped_print_preview_webcontents_manager_for_testing.h",
   ]
+
   public_deps = [
     ":chromeos",
     "//base",
@@ -554,8 +541,8 @@ static_library("test_support") {
   if (is_chromeos_ash) {
     public_deps += [
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_mode:test_support",
+      "//chrome/browser/ash/login/users:test_support",
     ]
     deps += [ "//chrome/browser/ash/policy/dlp" ]
   }
@@ -573,7 +560,6 @@ source_set("unit_tests") {
     "extensions/login_screen/login/external_logout_request/external_logout_request_event_handler_unittest.cc",
     "extensions/login_screen/login_state/login_state_api_unittest.cc",
     "extensions/odfs_config_private/odfs_config_private_api_unittest.cc",
-    "mahi/mahi_tab_helper_unittest.cc",
     "policy/dlp/data_transfer_dlp_controller_unittest.cc",
     "policy/dlp/dlp_clipboard_notifier_unittest.cc",
     "policy/dlp/dlp_confidential_contents_unittest.cc",
@@ -605,6 +591,7 @@ source_set("unit_tests") {
     "../../common/extensions/api/file_browser_handlers/file_browser_handler_manifest_unittest.cc",
     "../../common/extensions/api/file_system_provider/file_system_provider_handler_unittest.cc",
   ]
+
   deps = [
     ":chromeos",
     ":system_stack_sampled_metrics_status_proto",
@@ -623,6 +610,8 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/chromeos",
+    "//chrome/browser/ui/chromeos:test_support",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -680,6 +669,7 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
     "//chrome/browser/chromeos/launcher_search:unit_tests",
+    "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
@@ -697,15 +687,17 @@ source_set("unit_tests") {
       "reporting/websites/website_metrics_retriever_ash_unittest.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_ash_unittest.cc",
     ]
+
     deps += [
       "//ash:test_support",
       "//ash/constants",
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crosapi:test_support",
       "//chrome/browser/ash/login/ui:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/printing:test_support",
+      "//chrome/browser/ash/printing/history:test_support",
       "//chrome/browser/ash/printing/print_management",
       "//chrome/browser/ash/system_web_apps/test_support:test_support",
       "//chrome/browser/chromeos/tablet_mode:unit_tests",
@@ -735,7 +727,6 @@ source_set("unit_tests") {
       sources +=
           [ "extensions/printing_metrics/printing_metrics_api_unittest.cc" ]
       deps += [
-        "//chrome/browser/ash:test_support",
         "//chrome/browser/ash/printing/history:print_job_info_proto",
         "//chrome/browser/chromeos/extensions/printing_metrics",
         "//chrome/common/extensions/api",
@@ -753,6 +744,7 @@ source_set("unit_tests") {
       "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_lacros_unittest.cc",
     ]
+
     deps += [
       "//chromeos/lacros",
       "//chromeos/startup",
@@ -775,6 +767,8 @@ group("browser_tests") {
   if (is_chromeos_ash) {
     deps += [
       # Browser tests from subdirectories.
+      "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
+      "//chrome/browser/chromeos/mahi:browser_tests",
       "//chrome/browser/chromeos/network:browser_tests",
       "//chrome/browser/chromeos/smart_reader:browser_tests",
       "//chrome/browser/chromeos/video_conference:browser_tests",

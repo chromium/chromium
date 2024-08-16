@@ -220,7 +220,7 @@ void IOSSystemDataCollector::OrientationDidChangeNotification() {
 
 void IOSSystemDataCollector::ApplicationDidChangeActiveNotification() {
 #if defined(CRASHPAD_IS_IOS_APP_EXTENSION)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   dispatch_assert_queue_debug(dispatch_get_main_queue());
   bool old_active = active_;

@@ -1255,9 +1255,6 @@ class PasswordControllerTestSimple : public PlatformTest {
         {autofill::FormUtilJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
-
     web::ContentWorld content_world =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance()
             ->GetSupportedContentWorld();
@@ -1266,6 +1263,9 @@ class PasswordControllerTestSimple : public PlatformTest {
     web_frames_manager_ = web_frames_manager.get();
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
+
+    autofill::AutofillDriverIOSFactory::CreateForWebState(
+        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);

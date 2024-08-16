@@ -95,7 +95,7 @@ uint64_t CalculateDMLBufferTensorSize(
       element_size = 8;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Calculate the total size of the tensor in bytes. It should be rounded up to
@@ -119,14 +119,14 @@ std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
   return strides;
 }
 
-Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice* dml_device) {
+Microsoft::WRL::ComPtr<ID3D12Device> GetD3D12Device(IDMLDevice1* dml_device) {
   CHECK(dml_device);
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
   CHECK_EQ(dml_device->GetParentDevice(IID_PPV_ARGS(&d3d12_device)), S_OK);
   return d3d12_device;
 }
 
-DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice* dml_device) {
+DML_FEATURE_LEVEL GetMaxSupportedDMLFeatureLevel(IDMLDevice1* dml_device) {
   CHECK(dml_device);
 
   // WebNN targets DML_FEATURE_LEVEL_4_0 for GPU and DML_FEATURE_LEVEL_6_4 for

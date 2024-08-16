@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] averagePool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] l2Pool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] maxPool2d float32 4D tensor options.dilations
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported dilations."
+[FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+Harness: the test ran to completion.
+

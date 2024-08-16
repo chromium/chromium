@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 
 void ThumbnailCapturer::SetMaxFrameRate(uint32_t max_frame_rate) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 webrtc::DelegatedSourceListController*
@@ -16,14 +16,14 @@ ThumbnailCapturer::GetDelegatedSourceListController() {
 }
 
 void ThumbnailCapturer::CaptureFrame() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ThumbnailCapturer::SelectSource(SourceId id) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ThumbnailCapturer::SelectSources(const std::vector<SourceId>& ids,
                                       gfx::Size thumbnail_size) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

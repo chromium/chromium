@@ -27,7 +27,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
-#include "chrome/browser/ash/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"

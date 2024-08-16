@@ -10,6 +10,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace network {
 
@@ -50,6 +51,10 @@ void TestSharedURLLoaderFactory::CreateLoaderAndStart(
 void TestSharedURLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   NOTIMPLEMENTED();
+}
+
+mojom::NetworkContext* TestSharedURLLoaderFactory::network_context() {
+  return network_context_.get();
 }
 
 // PendingSharedURLLoaderFactory implementation

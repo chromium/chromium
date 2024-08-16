@@ -12,7 +12,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace sync_pb {
 class EntitySpecifics;
@@ -48,7 +48,7 @@ class SyncData {
   // |non_unique_title| is primarily for debug purposes, and will be overwritten
   // if the datatype is encrypted.
   static SyncData CreateLocalDelete(std::string_view client_tag_unhashed,
-                                    ModelType datatype);
+                                    DataType datatype);
   static SyncData CreateLocalData(std::string_view client_tag_unhashed,
                                   std::string_view non_unique_title,
                                   const sync_pb::EntitySpecifics& specifics);
@@ -64,7 +64,7 @@ class SyncData {
 
   // Return the datatype we're holding information about. Derived from the sync
   // datatype specifics.
-  ModelType GetDataType() const;
+  DataType GetDataType() const;
 
   // Return the value of the unique client tag hash.
   ClientTagHash GetClientTagHash() const;

@@ -48,6 +48,18 @@ FixedIntervalSettings BuildDefaultFixedIntervalSettings() {
   return fixed_interval_settings;
 }
 
+// Returns a list of fixed intervals settings where the supported intervals are
+// extremely close in value. Some displays (usually desktop) can support this.
+// 60Hz & 59.94Hz are a real example.
+FixedIntervalSettings BuildDenseFixedIntervalSettings() {
+  FixedIntervalSettings fixed_interval_settings;
+  fixed_interval_settings.supported_intervals.insert(base::Hertz(60));
+  fixed_interval_settings.supported_intervals.insert(base::Hertz(59.94));
+  fixed_interval_settings.default_interval =
+      *fixed_interval_settings.supported_intervals.begin();
+  return fixed_interval_settings;
+}
+
 Inputs BuildDefaultInputs(Settings& settings, uint32_t num_sinks) {
   Inputs inputs(settings);
 
@@ -201,6 +213,53 @@ TEST(FrameIntervalMatchersTest, VideoConferenceFixedInterval) {
   interval_inputs2.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(24)});
   ExpectResult(matcher.Match(inputs), base::Milliseconds(16));
+}
+
+TEST(FrameIntervalMatchersTest, VideoConferenceDenseFixedInterval) {
+  Settings settings;
+  settings.fixed_intervals = BuildDenseFixedIntervalSettings();
+  VideoConferenceMatcher matcher;
+
+  base::TimeDelta input1_interval = base::Hertz(59.95);
+  base::TimeDelta input2_interval = base::Hertz(59.99);
+  // Assert that each input interval is within epsilon to each supported
+  // interval.
+  for (base::TimeDelta supported_interval :
+       settings.fixed_intervals->supported_intervals) {
+    ASSERT_LE((supported_interval - input1_interval).magnitude(),
+              settings.epsilon);
+    ASSERT_LE((supported_interval - input2_interval).magnitude(),
+              settings.epsilon);
+  }
+
+  // Verify that the closest supported interval is chosen when there are
+  // multiple options within epsilon.
+  {
+    Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/3u);
+    FrameIntervalInputs& interval_inputs1 =
+        inputs.inputs_map[FrameSinkId(0, 1)];
+    interval_inputs1.content_interval_info.push_back(
+        {ContentFrameIntervalType::kVideo, input1_interval});
+    FrameIntervalInputs& interval_inputs2 =
+        inputs.inputs_map[FrameSinkId(0, 2)];
+    interval_inputs2.content_interval_info.push_back(
+        {ContentFrameIntervalType::kVideo, input1_interval});
+    ExpectResult(matcher.Match(inputs), base::Hertz(59.94));
+  }
+
+  // Verify the same when the input interval is closer to the other side.
+  {
+    Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/3u);
+    FrameIntervalInputs& interval_inputs1 =
+        inputs.inputs_map[FrameSinkId(0, 1)];
+    interval_inputs1.content_interval_info.push_back(
+        {ContentFrameIntervalType::kVideo, input2_interval});
+    FrameIntervalInputs& interval_inputs2 =
+        inputs.inputs_map[FrameSinkId(0, 2)];
+    interval_inputs2.content_interval_info.push_back(
+        {ContentFrameIntervalType::kVideo, input2_interval});
+    ExpectResult(matcher.Match(inputs), base::Hertz(60));
+  }
 }
 
 TEST(FrameIntervalMatchersTest, VideoConferenceDuplicateCount) {

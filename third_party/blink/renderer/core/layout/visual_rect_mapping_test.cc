@@ -1288,8 +1288,6 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
 }
 
 TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
-  ScopedCSSAnchorPositioningForTest enabled_scope(true);
-
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));
   SetBodyInnerHTML(R"HTML(
     <style>

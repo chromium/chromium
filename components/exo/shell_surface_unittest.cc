@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/exo/shell_surface.h"
 
 #include <sstream>
@@ -43,6 +48,7 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/surface_tree_host_test_util.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
@@ -57,6 +63,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -69,9 +76,11 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -129,6 +138,15 @@ std::unique_ptr<ShellSurface> CreateX11TransientShellSurface(
       .SetParent(parent)
       .SetOrigin(origin)
       .BuildShellSurface();
+}
+
+const viz::CompositorFrame& GetFrameFromSurface(ShellSurface* shell_surface,
+                                                viz::SurfaceManager* manager) {
+  viz::SurfaceId surface_id =
+      *shell_surface->host_window()->layer()->GetSurfaceId();
+  const viz::CompositorFrame& frame =
+      manager->GetSurfaceForId(surface_id)->GetActiveFrame();
+  return frame;
 }
 
 struct ConfigureData {
@@ -1744,6 +1762,35 @@ TEST_F(ShellSurfaceTest, SetMaximumSize) {
   }
 }
 
+TEST_F(ShellSurfaceTest, MinimumSizeAlwaysEqualOrSmallerThanMaximumSize) {
+  constexpr gfx::Size kBufferSize(256, 256);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).BuildShellSurface();
+  auto* surface = shell_surface->root_surface();
+
+  constexpr gfx::Size kMinSize = {300, 300};
+  constexpr gfx::Size kMaxSize = {100, 100};
+  ConfigureData config_data;
+  shell_surface->set_configure_callback(
+      base::BindRepeating(&Configure, base::Unretained(&config_data)));
+
+  shell_surface->SetMinimumSize(kMinSize);
+  shell_surface->SetMaximumSize(kMaxSize);
+  surface->Commit();
+
+  // The maximum size smaller than the minimum size is ignored and the minimum
+  // size is returned by GetMaximumSize() instead.
+  EXPECT_EQ(kMinSize, shell_surface->GetMaximumSize());
+  EXPECT_EQ(kMinSize, shell_surface->GetMinimumSize());
+
+  // Reset minimum size
+  shell_surface->SetMinimumSize(gfx::Size(0, 0));
+  surface->Commit();
+  // Previously ignored maximum size is restored automatically because it's
+  // stored in |pending_maximum_size_|.
+  EXPECT_EQ(kMaxSize, shell_surface->GetMaximumSize());
+}
+
 void PreClose(int* pre_close_count, int* close_count) {
   EXPECT_EQ(*pre_close_count, *close_count);
   (*pre_close_count)++;
@@ -3194,8 +3241,11 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   constexpr gfx::Point kOrigin(20, 20);
   constexpr int kWindowCornerRadius = 12;
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kRoundedWindows);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {chromeos::features::kRoundedWindows,
+       chromeos::features::kFeatureManagementRoundedWindows},
+      /*disabled_features=*/{});
 
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})
@@ -3233,6 +3283,82 @@ TEST_F(ShellSurfaceTest, ShadowRoundedCorners) {
   shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
   EXPECT_EQ(shadow->rounded_corner_radius_for_testing(), 0);
+}
+
+TEST_F(ShellSurfaceTest, RoundedWindows) {
+  constexpr gfx::Point kOrigin(20, 20);
+  constexpr int kWindowCornerRadius = 12;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {chromeos::features::kRoundedWindows,
+       chromeos::features::kFeatureManagementRoundedWindows},
+      /*disabled_features=*/{});
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetOrigin(kOrigin)
+          .SetWindowState(chromeos::WindowStateType::kNormal)
+          .SetFrame(SurfaceFrameType::NORMAL)
+          .BuildShellSurface();
+
+  Surface* root_surface = shell_surface->root_surface();
+
+  // Add a sub-surface.
+  constexpr gfx::Size kChildBufferSize(32, 32);
+  auto child_buffer1 = test::ExoTestHelper::CreateBuffer(kChildBufferSize);
+  auto child_surface1 = std::make_unique<Surface>();
+  child_surface1->Attach(child_buffer1.get());
+  auto subsurface1 = std::make_unique<SubSurface>(
+      child_surface1.get(), shell_surface->root_surface());
+  subsurface1->SetPosition(gfx::PointF(kOrigin));
+  child_surface1->SetRoundedCorners(
+      gfx::RRectF({32, 32}, gfx::RoundedCornersF(1)),
+      /*commit_override=*/false);
+  child_surface1->Commit();
+
+  root_surface->Commit();
+
+  shell_surface->SetWindowCornersRadii(
+      gfx::RoundedCornersF(kWindowCornerRadius));
+  root_surface->Commit();
+
+  auto mask_filter_info_at([](int index, const viz::CompositorFrame& frame) {
+    return frame.render_pass_list.back()
+        ->quad_list.ElementAt(index)
+        ->shared_quad_state->mask_filter_info;
+  });
+
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get(), GetSurfaceManager());
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->quad_list.size());
+
+    gfx::RRectF expected_bounds({256, 256}, gfx::RoundedCornersF(0, 0, 12, 12));
+    EXPECT_EQ(mask_filter_info_at(0, frame).rounded_corner_bounds(),
+              expected_bounds);
+
+    // `SetWindowCornersRadii` overrides the window rounded corner bounds of the
+    // either surface tree rooted at `root_surface()`.
+    EXPECT_EQ(mask_filter_info_at(1, frame).rounded_corner_bounds(),
+              expected_bounds);
+  }
+
+  shell_surface->SetWindowCornersRadii(gfx::RoundedCornersF(0));
+  root_surface->Commit();
+
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get(), GetSurfaceManager());
+
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(2u, frame.render_pass_list.back()->quad_list.size());
+    EXPECT_TRUE(mask_filter_info_at(0, frame).IsEmpty());
+    EXPECT_TRUE(mask_filter_info_at(1, frame).IsEmpty());
+  }
 }
 
 // Make sure that resize shadow does not update until commit when the window
@@ -3592,6 +3718,14 @@ TEST_F(ShellSurfaceTest, OverlayOverlapsFrame) {
                                 ->GetWindowBoundsInScreen()
                                 .size());
   }
+}
+
+TEST_F(ShellSurfaceTest, AccessibleProperties) {
+  auto shell_surface = test::ShellSurfaceBuilder({100, 100})
+                           .SetFrame(SurfaceFrameType::NORMAL)
+                           .BuildShellSurface();
+  EXPECT_EQ(shell_surface->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kClient);
 }
 
 TEST_F(ShellSurfaceTest, OverlayCanResize) {
@@ -4087,7 +4221,7 @@ TEST_F(ShellSurfaceTest, SetSystemModal) {
   shell_surface->SetSystemModal(true);
   shell_surface->root_surface()->Commit();
 
-  EXPECT_EQ(ui::MODAL_TYPE_SYSTEM, shell_surface->GetModalType());
+  EXPECT_EQ(ui::mojom::ModalType::kSystem, shell_surface->GetModalType());
   EXPECT_FALSE(shell_surface->frame_enabled());
 }
 

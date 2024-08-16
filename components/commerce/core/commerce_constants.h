@@ -13,6 +13,10 @@ inline constexpr char kChromeUICommerceInternalsHost[] = "commerce-internals";
 // The host for compare.
 inline constexpr char kChromeUICompareHost[] = "compare";
 
+// The URL for managing compare entities.
+inline constexpr char kChromeUICompareListsUrl[] =
+    "chrome://history/comparisonTables";
+
 // The URL for compare.
 inline constexpr char kChromeUICompareUrl[] = "chrome://compare";
 
@@ -39,6 +43,10 @@ inline constexpr char kEmptyPostData[] = "";
 
 // Http GET method.
 inline constexpr char kGetHttpMethod[] = "GET";
+
+// The maximum enforced interval (in days) between two triggers of the product
+// specifications entry point.
+inline constexpr int kProductSpecMaxEntryPointTriggeringInterval = 64;
 
 // OAuth name used for network request.
 inline constexpr char kOAuthName[] = "chromememex_svc";

@@ -171,6 +171,7 @@ class FakeDecoderClient : public DecoderClient {
   void ScheduleGrContextCleanup() override;
   void SetActiveURL(GURL url) override;
   void HandleReturnData(base::span<const uint8_t> data) override;
+  bool ShouldYield() override;
 };
 
 }  // namespace gpu

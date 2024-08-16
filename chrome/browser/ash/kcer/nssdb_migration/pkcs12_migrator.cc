@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/kcer/nssdb_migration/pkcs12_migrator.h"
 
 #include <stdint.h>
@@ -24,6 +29,7 @@
 #include "chromeos/components/kcer/cert_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/nss_cert_database.h"
+#include "net/cert/x509_util_nss.h"
 
 namespace kcer {
 namespace {
@@ -206,8 +212,8 @@ void Pkcs12Migrator::MigrateCertsWithKcerCerts(
   net::ScopedCERTCertificateList nss_certs_to_migrate;
 
   for (net::ScopedCERTCertificate& nss_cert : nss_certs) {
-    const base::span<const uint8_t> cert_span(nss_cert->derCert.data,
-                                              nss_cert->derCert.len);
+    const base::span<const uint8_t> cert_span(
+        net::x509_util::CERTCertificateAsSpan(nss_cert.get()));
     if (!kcer_cert_cache.FindCert(cert_span)) {
       nss_certs_to_migrate.push_back(std::move(nss_cert));
     }

@@ -162,12 +162,11 @@ using base::UserMetricsAction;
                                accessPoint:self.accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
-    case kOmniboxPosition:
     case kDockingPromo:
     case kStepsCompleted:
       break;
   }
-  NOTREACHED_NORETURN() << static_cast<int>(type);
+  NOTREACHED() << static_cast<int>(type);
 }
 
 // Calls the completion callback with the given `result` and a

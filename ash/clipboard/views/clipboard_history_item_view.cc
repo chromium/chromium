@@ -66,7 +66,7 @@ const gfx::Insets GetDeleteButtonMargins(
 
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return ClipboardHistoryViews::kTextItemDeleteButtonMargins;
@@ -237,7 +237,7 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
   std::unique_ptr<ClipboardHistoryItemView> item_view;
   switch (display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       item_view = std::make_unique<ClipboardHistoryTextItemView>(
@@ -263,6 +263,7 @@ ClipboardHistoryItemView::ClipboardHistoryItemView(
     : item_id_(item_id),
       clipboard_history_(clipboard_history),
       container_(container) {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 }
 
 bool ClipboardHistoryItemView::AdvancePseudoFocus(bool reverse) {
@@ -366,8 +367,7 @@ void ClipboardHistoryItemView::MaybeHandleGestureEventFromMainButton(
         DCHECK(delete_button_->GetVisible());
         break;
       case PseudoFocus::kMaxValue:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     event->SetHandled();
   }
@@ -415,13 +415,6 @@ gfx::Size ClipboardHistoryItemView::CalculatePreferredSize(
   return gfx::Size(
       preferred_width,
       GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width));
-}
-
-void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
-  // A valid role must be set in the AXNodeData prior to setting the name
-  // via AXNodeData::SetName.
-  View::GetAccessibleNodeData(data);
-  data->role = ax::mojom::Role::kMenuItem;
 }
 
 void ClipboardHistoryItemView::Init() {

@@ -18,8 +18,9 @@
 // Delegate for communicating back to the Home surface.
 @property(nonatomic, weak) id<HomeCustomizationDelegate> delegate;
 
-// Opens the customization menu as a sheet.
-- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page;
+// Opens the customization menu at a specific `page`.
+- (void)presentCustomizationMenuAtPage:(CustomizationMenuPage)page
+                              animated:(BOOL)animated;
 
 @end
 

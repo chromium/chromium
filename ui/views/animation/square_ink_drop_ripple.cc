@@ -215,8 +215,7 @@ std::string SquareInkDropRipple::ToLayerName(PaintedShape painted_shape) {
     case VERTICAL_RECT:
       return "VERTICAL_RECT";
     case PAINTED_SHAPE_COUNT:
-      NOTREACHED_NORETURN()
-          << "The PAINTED_SHAPE_COUNT value should never be used.";
+      NOTREACHED() << "The PAINTED_SHAPE_COUNT value should never be used.";
   }
   return "UNKNOWN";
 }
@@ -567,8 +566,7 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
       delegate = rect_layer_delegate_.get();
       break;
     case PAINTED_SHAPE_COUNT:
-      NOTREACHED_NORETURN()
-          << "PAINTED_SHAPE_COUNT is not an actual shape type.";
+      NOTREACHED() << "PAINTED_SHAPE_COUNT is not an actual shape type.";
   }
 
   ui::Layer* layer = new ui::Layer();

@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -40,6 +41,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
   SectionIdentifierBulkMovePasswordsToAccount,
   SectionIdentifierPasswordsInOtherApps,
+  SectionIdentifierAutomaticPasskeyUpgradesSwitch,
+  SectionIdentifierGooglePasswordManagerPin,
   SectionIdentifierOnDeviceEncryption,
   SectionIdentifierExportPasswordsButton,
 };
@@ -47,15 +50,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Items within the password settings UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSavePasswordsSwitch = kItemTypeEnumZero,
+  ItemTypeManagedSavePasswords,
   ItemTypeBulkMovePasswordsToAccountDescription,
   ItemTypeBulkMovePasswordsToAccountButton,
-  ItemTypeManagedSavePasswords,
   ItemTypePasswordsInOtherApps,
-  ItemTypeExportPasswordsButton,
+  ItemTypeAutomaticPasskeyUpgradesSwitch,
+  ItemTypeChangeGooglePasswordManagerPinDescription,
+  ItemTypeChangeGooglePasswordManagerPinButton,
   ItemTypeOnDeviceEncryptionOptInDescription,
   ItemTypeOnDeviceEncryptionOptedInDescription,
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
   ItemTypeOnDeviceEncryptionSetUp,
+  ItemTypeExportPasswordsButton,
 };
 
 // Indicates whether the model has not started loading, is in the process of
@@ -65,6 +71,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   ModelIsLoading,
   ModelLoadComplete,
 };
+
+bool SyncingWebauthnCredentialsEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
+}
 
 }  // namespace
 
@@ -112,6 +122,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 // The item related to the switch for the password manager setting.
 @property(nonatomic, readonly) TableViewSwitchItem* savePasswordsItem;
 
+// The item related to the enterprise managed save password setting.
+@property(nonatomic, readonly)
+    TableViewInfoButtonItem* managedSavePasswordsItem;
+
 // The item related to the description of bulk moving passwords to the user's
 // account.
 @property(nonatomic, readonly)
@@ -122,14 +136,23 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @property(nonatomic, readonly)
     TableViewTextItem* bulkMovePasswordsToAccountButtonItem;
 
-// The item related to the enterprise managed save password setting.
-@property(nonatomic, readonly)
-    TableViewInfoButtonItem* managedSavePasswordsItem;
-
 // The item showing the current status of Passwords in Other Apps (i.e.,
 // credential provider).
 @property(nonatomic, readonly)
     TableViewDetailIconItem* passwordsInOtherAppsItem;
+
+// The item related to the switch for the automatic passkey upgrades setting.
+@property(nonatomic, readonly)
+    TableViewSwitchItem* automaticPasskeyUpgradesSwitchItem;
+
+// Descriptive text shown when the user has an option of changing their Google
+// Password Manager PIN.
+@property(nonatomic, readonly)
+    TableViewImageItem* changeGooglePasswordManagerPinDescriptionItem;
+
+// A button which triggers the change Google Password Manager PIN flow.
+@property(nonatomic, readonly)
+    TableViewTextItem* changeGooglePasswordManagerPinItem;
 
 // Descriptive text shown when the user has the option of enabling on-device
 // encryption.
@@ -154,12 +177,18 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @implementation PasswordSettingsViewController
 
 @synthesize savePasswordsItem = _savePasswordsItem;
+@synthesize managedSavePasswordsItem = _managedSavePasswordsItem;
 @synthesize bulkMovePasswordsToAccountDescriptionItem =
     _bulkMovePasswordsToAccountDescriptionItem;
 @synthesize bulkMovePasswordsToAccountButtonItem =
     _bulkMovePasswordsToAccountButtonItem;
-@synthesize managedSavePasswordsItem = _managedSavePasswordsItem;
 @synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
+@synthesize automaticPasskeyUpgradesSwitchItem =
+    _automaticPasskeyUpgradesSwitchItem;
+@synthesize changeGooglePasswordManagerPinDescriptionItem =
+    _changeGooglePasswordManagerPinDescriptionItem;
+@synthesize changeGooglePasswordManagerPinItem =
+    _changeGooglePasswordManagerPinItem;
 @synthesize onDeviceEncryptionOptInDescriptionItem =
     _onDeviceEncryptionOptInDescriptionItem;
 @synthesize onDeviceEncryptionOptedInDescription =
@@ -219,6 +248,23 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
+  if (SyncingWebauthnCredentialsEnabled()) {
+    // TODO(crbug.com/358343061): Add item for the policy enforced toggle.
+    [model addSectionWithIdentifier:
+               SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+    [model addItem:[self automaticPasskeyUpgradesSwitchItem]
+        toSectionWithIdentifier:
+            SectionIdentifierAutomaticPasskeyUpgradesSwitch];
+
+    // TODO(crbug.com/358342483): Add this section only if the device is
+    // bootstrapped for using passkeys.
+    [model addSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model addItem:[self changeGooglePasswordManagerPinDescriptionItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+    [model addItem:[self changeGooglePasswordManagerPinItem]
+        toSectionWithIdentifier:SectionIdentifierGooglePasswordManagerPin];
+  }
+
   if (self.onDeviceEncryptionState !=
       PasswordSettingsOnDeviceEncryptionStateNotShown) {
     [self updateOnDeviceEncryptionSectionWithOldState:
@@ -263,6 +309,14 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
                     action:@selector(didTapManagedUIInfoButton:)
           forControlEvents:UIControlEventTouchUpInside];
       break;
+    }
+    case ItemTypeAutomaticPasskeyUpgradesSwitch: {
+      TableViewSwitchCell* switchCell =
+          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
+      [switchCell.switchView
+                 addTarget:self
+                    action:@selector(automaticPasskeyUpgradesSwitchChanged)
+          forControlEvents:(UIControlEvents)UIControlEventValueChanged];
     }
   }
   return cell;
@@ -338,6 +392,25 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   return _savePasswordsItem;
 }
 
+// Creates the row which replaces `savePasswordsItem` when this preference is
+// being managed by enterprise policy.
+- (TableViewInfoButtonItem*)managedSavePasswordsItem {
+  if (_managedSavePasswordsItem) {
+    return _managedSavePasswordsItem;
+  }
+
+  _managedSavePasswordsItem = [[TableViewInfoButtonItem alloc]
+      initWithType:ItemTypeManagedSavePasswords];
+  _managedSavePasswordsItem.text =
+      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  _managedSavePasswordsItem.accessibilityHint =
+      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  _managedSavePasswordsItem.accessibilityIdentifier =
+      kPasswordSettingsManagedSavePasswordSwitchTableViewId;
+  [self updateManagedSavePasswordsItem];
+  return _managedSavePasswordsItem;
+}
+
 // Creates and returns the move passwords to account description item.
 - (TableViewImageItem*)bulkMovePasswordsToAccountDescriptionItem {
   if (_bulkMovePasswordsToAccountDescriptionItem) {
@@ -388,25 +461,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   return _bulkMovePasswordsToAccountButtonItem;
 }
 
-// Creates the row which replaces `savePasswordsItem` when this preference is
-// being managed by enterprise policy.
-- (TableViewInfoButtonItem*)managedSavePasswordsItem {
-  if (_managedSavePasswordsItem) {
-    return _managedSavePasswordsItem;
-  }
-
-  _managedSavePasswordsItem = [[TableViewInfoButtonItem alloc]
-      initWithType:ItemTypeManagedSavePasswords];
-  _managedSavePasswordsItem.text =
-      l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
-  _managedSavePasswordsItem.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
-  _managedSavePasswordsItem.accessibilityIdentifier =
-      kPasswordSettingsManagedSavePasswordSwitchTableViewId;
-  [self updateManagedSavePasswordsItem];
-  return _managedSavePasswordsItem;
-}
-
 - (TableViewDetailIconItem*)passwordsInOtherAppsItem {
   if (_passwordsInOtherAppsItem) {
     return _passwordsInOtherAppsItem;
@@ -423,6 +477,39 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       kPasswordSettingsPasswordsInOtherAppsRowId;
   [self updatePasswordsInOtherAppsItem];
   return _passwordsInOtherAppsItem;
+}
+
+- (TableViewSwitchItem*)automaticPasskeyUpgradesSwitchItem {
+  _automaticPasskeyUpgradesSwitchItem = [[TableViewSwitchItem alloc]
+      initWithType:ItemTypeAutomaticPasskeyUpgradesSwitch];
+  _automaticPasskeyUpgradesSwitchItem.text =
+      l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES);
+  _automaticPasskeyUpgradesSwitchItem.detailText =
+      l10n_util::GetNSString(IDS_IOS_ALLOW_AUTOMATIC_PASSKEY_UPGRADES_SUBTITLE);
+  return _automaticPasskeyUpgradesSwitchItem;
+}
+
+- (TableViewImageItem*)changeGooglePasswordManagerPinDescriptionItem {
+  _changeGooglePasswordManagerPinDescriptionItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeChangeGooglePasswordManagerPinDescription];
+  _changeGooglePasswordManagerPinDescriptionItem.title = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_TITLE);
+  _changeGooglePasswordManagerPinDescriptionItem.detailText =
+      l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION);
+  return _changeGooglePasswordManagerPinDescriptionItem;
+}
+
+- (TableViewTextItem*)changeGooglePasswordManagerPinItem {
+  _changeGooglePasswordManagerPinItem = [[TableViewTextItem alloc]
+      initWithType:ItemTypeChangeGooglePasswordManagerPinButton];
+  _changeGooglePasswordManagerPinItem.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN);
+  _changeGooglePasswordManagerPinItem.textColor =
+      [UIColor colorNamed:kBlueColor];
+  _changeGooglePasswordManagerPinItem.accessibilityTraits =
+      UIAccessibilityTraitButton;
+  return _changeGooglePasswordManagerPinItem;
 }
 
 - (TableViewImageItem*)onDeviceEncryptionOptInDescriptionItem {
@@ -629,6 +716,12 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   buttonView.enabled = NO;
 }
 
+// Called when the user changes the state of the automatic passkey upgrades
+// switch.
+- (void)automaticPasskeyUpgradesSwitchChanged {
+  // TODO(crbug.com/358343061): Handle changing the switch value.
+}
+
 #pragma mark - Private
 
 // Adds the appropriate content to the Save Passwords Switch section depending
@@ -778,8 +871,11 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   } else {
     // Find the section that's supposed to be before On-Device Encryption, and
     // insert after that.
-    NSInteger priorSectionIndex = [self.tableViewModel
-        sectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+    NSInteger priorSectionIndex =
+        [self.tableViewModel sectionForSectionIdentifier:
+                                 SyncingWebauthnCredentialsEnabled()
+                                     ? SectionIdentifierGooglePasswordManagerPin
+                                     : SectionIdentifierPasswordsInOtherApps];
     NSInteger onDeviceEncryptionSectionIndex = priorSectionIndex + 1;
     [self.tableViewModel
         insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption

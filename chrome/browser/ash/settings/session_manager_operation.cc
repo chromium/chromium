@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -26,6 +27,12 @@ using ownership::PublicKey;
 namespace em = enterprise_management;
 
 namespace ash {
+
+namespace {
+
+constexpr char kEmptyAccountId[] = "";
+
+}  // namespace
 
 using RetrievePolicyResponseType =
     SessionManagerClient::RetrievePolicyResponseType;
@@ -131,15 +138,21 @@ void SessionManagerOperation::StorePublicKey(base::OnceClosure callback,
 }
 
 void SessionManagerOperation::RetrieveDeviceSettings() {
-  session_manager_client()->RetrieveDevicePolicy(
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
+  session_manager_client()->RetrievePolicy(
+      descriptor,
       base::BindOnce(&SessionManagerOperation::ValidateDeviceSettings,
                      weak_factory_.GetWeakPtr()));
 }
 
 void SessionManagerOperation::BlockingRetrieveDeviceSettings() {
   std::string policy_blob;
+  login_manager::PolicyDescriptor descriptor = ash::MakeChromePolicyDescriptor(
+      login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
   RetrievePolicyResponseType response =
-      session_manager_client()->BlockingRetrieveDevicePolicy(&policy_blob);
+      session_manager_client()->BlockingRetrievePolicy(descriptor,
+                                                       &policy_blob);
   ValidateDeviceSettings(response, policy_blob);
 }
 

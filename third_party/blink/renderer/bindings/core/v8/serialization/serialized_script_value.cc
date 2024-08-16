@@ -292,7 +292,7 @@ String SerializedScriptValue::ToWireString() const {
   auto backing =
       // TODO(crbug.com/40284755): CreateUninitialized should return a span
       // pointing to the string backing, instead of a pointer.
-      UNSAFE_BUFFERS(base::span(backing_ptr, wire_string.length()));
+      UNSAFE_TODO(base::span(backing_ptr, wire_string.length()));
   auto [content, padding] =
       base::as_writable_bytes(backing).split_at(data_buffer_.size());
   content.copy_from(data_buffer_);

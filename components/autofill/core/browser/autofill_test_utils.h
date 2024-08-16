@@ -389,6 +389,10 @@ Suggestion CreateAutofillSuggestion(
     const std::u16string& main_text_value = std::u16string(),
     const Suggestion::Payload& payload = Suggestion::Payload());
 
+Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+                                    const std::u16string& minor_text_value,
+                                    bool apply_deactivated_style);
+
 // Returns a bank account enabled for Pix with fake data.
 BankAccount CreatePixBankAccount(int64_t instrument_id);
 

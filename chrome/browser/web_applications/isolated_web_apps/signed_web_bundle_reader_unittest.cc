@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
@@ -334,6 +335,10 @@ class SignedWebBundleReaderTest : public testing::Test {
     signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
         base::make_span(kEd25519Signature));
 
+    auto signed_web_bundle_id =
+        web_package::SignedWebBundleId::CreateForPublicKey(
+            signature_info_ed25519->public_key);
+
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =
             web_package::mojom::BundleIntegrityBlockSignatureStackEntry::New();
@@ -348,6 +353,9 @@ class SignedWebBundleReaderTest : public testing::Test {
     integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
     integrity_block_->size = 123;
     integrity_block_->signature_stack = std::move(signature_stack);
+    integrity_block_->attributes =
+        web_package::test::GetAttributesForSignedWebBundleId(
+            signed_web_bundle_id.id());
   }
 
   void TearDown() override {

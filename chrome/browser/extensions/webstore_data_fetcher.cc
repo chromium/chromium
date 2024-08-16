@@ -18,6 +18,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -171,11 +172,10 @@ void WebstoreDataFetcher::FetchItemSnippet(
   resource_request->headers.SetHeader("X-HTTP-Method-Override", "GET");
 
 // The endpoint does not require an API key, but one will be provided if it's
-// called from a branded build (i.e. Chrome) so the API can distinguish if's
+// called from a branded build (i.e. Chrome) so the API can distinguish if it's
 // called from Chrome or another Chromium browser.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  resource_request->headers.SetHeader("X-Goog-Api-Key",
-                                      google_apis::GetAPIKey());
+  google_apis::AddAPIKeyToRequest(*resource_request, google_apis::GetAPIKey());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   InitializeSimpleLoaderForRequest(

@@ -117,7 +117,8 @@
   _reauthAgent =
       [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];
 
-  _mediator = [[IncognitoGridMediator alloc] init];
+  _mediator =
+      [[IncognitoGridMediator alloc] initWithModeHolder:self.modeHolder];
   _mediator.incognitoDelegate = self;
   _mediator.reauthSceneAgent = _reauthAgent;
 

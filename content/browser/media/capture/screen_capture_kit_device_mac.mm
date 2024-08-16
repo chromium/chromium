@@ -143,8 +143,10 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     : public IOSurfaceCaptureDeviceBase,
       public ScreenCaptureKitResetStreamInterface {
  public:
-  explicit ScreenCaptureKitDeviceMac(const DesktopMediaID& source)
+  explicit ScreenCaptureKitDeviceMac(const DesktopMediaID& source,
+                                     SCContentFilter* filter)
       : source_(source),
+        filter_(filter),
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
     SampleCallback sample_callback = base::BindPostTask(
         device_task_runner_,
@@ -173,41 +175,43 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       return;
     }
 
-    SCContentFilter* filter;
-    switch (source_.type) {
-      case DesktopMediaID::TYPE_SCREEN:
-        for (SCDisplay* display in content.displays) {
-          // There's currently no support for stitching desktops together as
-          // requested by kFullDesktopScreenId. Capture the first display as a
-          // fallback. See https://crbug.com/325530044.
-          if (source_.id == display.displayID ||
-              source_.id == webrtc::kFullDesktopScreenId) {
-            filter = [[SCContentFilter alloc] initWithDisplay:display
-                                             excludingWindows:@[]];
-            stream_config_content_size_ =
-                gfx::Size(display.width, display.height);
-            break;
-          }
-        }
-        break;
-      case DesktopMediaID::TYPE_WINDOW:
-        for (SCWindow* window in content.windows) {
-          if (source_.id == window.windowID) {
-            filter = [[SCContentFilter alloc]
-                initWithDesktopIndependentWindow:window];
-            CGRect frame = window.frame;
-            stream_config_content_size_ = gfx::Size(frame.size);
-            if (!fullscreen_module_) {
-              fullscreen_module_ = MaybeCreateScreenCaptureKitFullscreenModule(
-                  device_task_runner_, *this, window);
+    SCContentFilter* filter = filter_;
+    if (!filter) {
+      switch (source_.type) {
+        case DesktopMediaID::TYPE_SCREEN:
+          for (SCDisplay* display in content.displays) {
+            // There's currently no support for stitching desktops together as
+            // requested by kFullDesktopScreenId. Capture the first display as a
+            // fallback. See https://crbug.com/325530044.
+            if (source_.id == display.displayID ||
+                source_.id == webrtc::kFullDesktopScreenId) {
+              filter = [[SCContentFilter alloc] initWithDisplay:display
+                                               excludingWindows:@[]];
+              stream_config_content_size_ =
+                  gfx::Size(display.width, display.height);
+              break;
             }
-            break;
           }
-        }
-        break;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+          break;
+        case DesktopMediaID::TYPE_WINDOW:
+          for (SCWindow* window in content.windows) {
+            if (source_.id == window.windowID) {
+              filter = [[SCContentFilter alloc]
+                  initWithDesktopIndependentWindow:window];
+              CGRect frame = window.frame;
+              stream_config_content_size_ = gfx::Size(frame.size);
+              if (!fullscreen_module_) {
+                fullscreen_module_ =
+                    MaybeCreateScreenCaptureKitFullscreenModule(
+                        device_task_runner_, *this, window);
+              }
+            }
+          }
+          break;
+        default:
+          NOTREACHED_IN_MIGRATION();
+          break;
+      }
     }
     if (!filter) {
       client()->OnError(
@@ -424,8 +428,9 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
           [stream_ removeStreamOutput:helper_
                                  type:SCStreamOutputTypeScreen
                                 error:&error];
-      if (!remove_stream_output_result)
+      if (!remove_stream_output_result) {
         DLOG(ERROR) << "Failed removeStreamOutput";
+      }
     }
 
     weak_factory_.InvalidateWeakPtrs();
@@ -462,6 +467,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
  private:
   const DesktopMediaID source_;
+  SCContentFilter* const filter_;
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
 
   // The actual format of the video frames that are sent to `client`.
@@ -491,42 +497,41 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
 }  // namespace
 
+// Although ScreenCaptureKit is available in 12.3 there were some bugs that
+// were not fixed until 13.2.
+API_AVAILABLE(macos(13.2))
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
-    const DesktopMediaID& source) {
-  // Although ScreenCaptureKit is available in 12.3 there were some bugs that
-  // were not fixed until 13.2.
-  if (@available(macOS 13.2, *)) {
-    switch (source.type) {
-      case DesktopMediaID::TYPE_SCREEN:
-        // ScreenCaptureKitDeviceMac only supports a single display at a time.
-        // It will not stitch desktops together. If
-        // kScreenCaptureKitFullDesktopFallback is enabled, we will fallback to
-        // capturing the first display in the list returned from
-        // getShareableContent. https://crbug.com/1178360 and
-        // https://crbug.com/325530044
-        if ((source.id == webrtc::kFullDesktopScreenId &&
-             !base::FeatureList::IsEnabled(
-                 kScreenCaptureKitFullDesktopFallback)) ||
-            source.id == webrtc::kInvalidScreenId) {
-          return nullptr;
-        }
-        break;
-      case DesktopMediaID::TYPE_WINDOW:
-        break;
-      default:
-        // ScreenCaptureKitDeviceMac supports only TYPE_SCREEN and TYPE_WINDOW.
-        // https://crbug.com/1176900
+    const DesktopMediaID& source,
+    SCContentFilter* filter) {
+  switch (source.type) {
+    case DesktopMediaID::TYPE_SCREEN:
+      // ScreenCaptureKitDeviceMac only supports a single display at a time.
+      // It will not stitch desktops together. If
+      // kScreenCaptureKitFullDesktopFallback is enabled, we will fallback to
+      // capturing the first display in the list returned from
+      // getShareableContent. https://crbug.com/1178360 and
+      // https://crbug.com/325530044
+      if ((source.id == webrtc::kFullDesktopScreenId &&
+           !base::FeatureList::IsEnabled(
+               kScreenCaptureKitFullDesktopFallback)) ||
+          source.id == webrtc::kInvalidScreenId) {
         return nullptr;
-    }
-
-    IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
-    IncrementDesktopCaptureCounter(source.audio_share
-                                       ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
-                                       : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
-
-    return std::make_unique<ScreenCaptureKitDeviceMac>(source);
+      }
+      break;
+    case DesktopMediaID::TYPE_WINDOW:
+      break;
+    default:
+      // ScreenCaptureKitDeviceMac supports only TYPE_SCREEN and TYPE_WINDOW.
+      // https://crbug.com/1176900
+      return nullptr;
   }
-  return nullptr;
+
+  IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
+  IncrementDesktopCaptureCounter(source.audio_share
+                                     ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
+                                     : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+
+  return std::make_unique<ScreenCaptureKitDeviceMac>(source, filter);
 }
 
 }  // namespace content

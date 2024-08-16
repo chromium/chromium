@@ -185,7 +185,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
     const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  // TODO(crbug.com/351775835): Flesh out for various link click use-cases.
   std::optional<std::pair<Browser*, int>> navigation_result =
       web_app::MaybeHandleAppNavigation(profile, params);
   if (navigation_result.has_value()) {
@@ -578,6 +577,13 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
   DCHECK(params->initiating_profile);
 
+  // If the created window is a partitioned popin, a valid source exists, and
+  // the disposition is NEW_POPUP then the resulting popup should be tab-modal.
+  // See: https://explainers-by-googlers.github.io/partitioned-popins/
+  params->is_tab_modal_popup |=
+      params->window_features.is_partitioned_popin && params->source_contents &&
+      params->disposition == WindowOpenDisposition::NEW_POPUP;
+
 #if BUILDFLAG(IS_CHROMEOS)
   if (params->initiating_profile->IsOffTheRecord() &&
       params->initiating_profile->GetOTRProfileID().IsCaptivePortal() &&
@@ -585,12 +591,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
-    // captive portal signin window should open from the original profile.
-    params->initiating_profile =
-        params->initiating_profile->GetOriginalProfile();
-    params->browser =
-        GetOrCreateBrowser(params->initiating_profile, params->user_gesture);
-    source_browser = params->browser;
+    // captive portal signin window should be prevented.
+    params->disposition = WindowOpenDisposition::CURRENT_TAB;
   }
 #endif
 
@@ -642,17 +644,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 
   if (!AdjustNavigateParamsForURL(params)) {
     return nullptr;
-  }
-
-  // Trying to open a background tab when in a non-tabbed app browser results in
-  // focusing a regular browser window and opening a tab in the background
-  // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
-  // the new tab is focused.
-  if (source_browser && source_browser->is_type_app() &&
-      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      !(source_browser->app_controller() &&
-        source_browser->app_controller()->has_tab_strip())) {
-    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 
   // Middle clicking a link to the home tab in a tabbed web app should open the
@@ -737,6 +728,18 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (!params->browser) {
     return nullptr;
   }
+
+  // Trying to open a background tab when in a non-tabbed app browser results in
+  // focusing a regular browser window and opening a tab in the background
+  // of that window. Change the disposition to NEW_FOREGROUND_TAB so that
+  // the new tab is focused.
+  if (source_browser && source_browser->is_type_app() &&
+      params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
+      !(source_browser->app_controller() &&
+        source_browser->app_controller()->has_tab_strip())) {
+    params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   if (singleton_index != -1) {
     contents_to_navigate_or_insert =
         params->browser->tab_strip_model()->GetWebContentsAt(singleton_index);
@@ -830,7 +833,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   if (params->contents_to_insert) {
     tab_to_insert =
         std::make_unique<tabs::TabModel>(std::move(params->contents_to_insert),
-                                         params->browser->is_type_normal());
+                                         params->browser->tab_strip_model());
   }
 
   // If no target WebContents was specified (and we didn't seek and find a
@@ -841,7 +844,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     if (params->disposition != WindowOpenDisposition::CURRENT_TAB) {
       tab_to_insert = std::make_unique<tabs::TabModel>(
           CreateTargetContents(*params, params->url),
-          params->browser->is_type_normal());
+          params->browser->tab_strip_model());
       contents_to_navigate_or_insert = tab_to_insert->contents();
     } else {
       // ... otherwise if we're loading in the current tab, the target is the

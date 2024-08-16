@@ -94,7 +94,6 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -1608,7 +1607,6 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_confirmed() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1654,7 +1652,6 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     @DisabledTest(message = "Broken and/or flake on different bots, see b/40944120.")
     public void testManagedAccount_failedSignin() throws Exception {
         mChromeActivityTestRule.startMainActivityOnBlankPage();

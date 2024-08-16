@@ -30,8 +30,8 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -53,16 +53,16 @@ using testing::NotNull;
 using user_prefs::PrefRegistrySyncable;
 
 sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     sync_pb::EntitySpecifics& specifics) {
-  switch (model_type) {
-    case syncer::ModelType::PREFERENCES:
+  switch (data_type) {
+    case syncer::DataType::PREFERENCES:
       return specifics.mutable_preference();
-    case syncer::ModelType::PRIORITY_PREFERENCES:
+    case syncer::DataType::PRIORITY_PREFERENCES:
       return specifics.mutable_priority_preference()->mutable_preference();
-    case syncer::ModelType::OS_PREFERENCES:
+    case syncer::DataType::OS_PREFERENCES:
       return specifics.mutable_os_preference()->mutable_preference();
-    case syncer::ModelType::OS_PRIORITY_PREFERENCES:
+    case syncer::DataType::OS_PRIORITY_PREFERENCES:
       return specifics.mutable_os_priority_preference()->mutable_preference();
     default:
       NOTREACHED_IN_MIGRATION();
@@ -115,12 +115,12 @@ class SingleClientPreferencesSyncTest : public SyncTest {
   ~SingleClientPreferencesSyncTest() override = default;
 
  protected:
-  void InjectPreferenceToFakeServer(syncer::ModelType model_type,
+  void InjectPreferenceToFakeServer(syncer::DataType data_type,
                                     const char* name,
                                     const base::Value& value) {
     sync_pb::EntitySpecifics specifics;
     sync_pb::PreferenceSpecifics* preference_specifics =
-        GetPreferenceSpecifics(model_type, specifics);
+        GetPreferenceSpecifics(data_type, specifics);
     preference_specifics->set_name(name);
     preference_specifics->set_value(ConvertPrefValueToValueInSpecifics(value));
 
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
 // Regression test to verify that pagination during GetUpdates() contributes
 // properly to UMA histograms.
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
-                       EmitModelTypeEntityChangeToUma) {
+                       EmitDataTypeEntityChangeToUma) {
   const int kNumEntities = 17;
 
   fake_server_->SetMaxGetUpdatesBatchSize(7);
@@ -165,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(kNumEntities,
             histogram_tester.GetBucketCount(
-                "Sync.ModelTypeEntityChange3.PREFERENCE",
-                syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                "Sync.DataTypeEntityChange.PREFERENCE",
+                syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 // TODO(crbug.com/40200835): PRE_ tests are not supported on Android.
@@ -185,8 +185,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(1, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
@@ -211,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   EXPECT_EQ(0, histogram_tester.GetBucketCount(
-                   "Sync.ModelTypeEntityChange3.PREFERENCE",
-                   syncer::ModelTypeEntityChange::kRemoteInitialUpdate));
+                   "Sync.DataTypeEntityChange.PREFERENCE",
+                   syncer::DataTypeEntityChange::kRemoteInitialUpdate));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Change is synced to account.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
                   ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
 
   // Change is synced to account.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncablePrefForTesting,
                   ConvertPrefValueToValueInSpecifics(base::Value("new value")))
                   .Wait());
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   // synced to the new value.
   EXPECT_TRUE(
       FakeServerPrefMatchesValueChecker(
-          syncer::ModelType::PREFERENCES, kNonSyncablePref,
+          syncer::DataType::PREFERENCES, kNonSyncablePref,
           ConvertPrefValueToValueInSpecifics(base::Value("account value")))
           .Wait());
 }
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   // New value is synced to account.
   EXPECT_TRUE(
       FakeServerPrefMatchesValueChecker(
-          syncer::ModelType::PREFERENCES,
+          syncer::DataType::PREFERENCES,
           sync_preferences::kSyncableHistorySensitiveListPrefForTesting,
           ConvertPrefValueToValueInSpecifics(base::Value(new_value.Clone())))
           .Wait());
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
                                   .Set("facebook.com", "allow")
                                   .Set("microsoft.com", "deny");
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncableMergeableDictPrefForTesting,
                   ConvertPrefValueToValueInSpecifics(
                       base::Value(updated_server_value.Clone())))
@@ -1140,7 +1140,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   // No standard unmerging logic exists for list prefs and hence, updated value
   // is written to the account store and the local store.
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES,
+                  syncer::DataType::PREFERENCES,
                   sync_preferences::kSyncableMergeableListPrefForTesting,
                   ConvertPrefValueToValueInSpecifics(
                       base::Value(updated_value.Clone())))

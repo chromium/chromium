@@ -84,12 +84,13 @@ CommerceUiTabHelper::CommerceUiTabHelper(
     content::WebContents* content,
     ShoppingService* shopping_service,
     bookmarks::BookmarkModel* model,
-    image_fetcher::ImageFetcher* image_fetcher)
+    image_fetcher::ImageFetcher* image_fetcher,
+    SidePanelRegistry* side_panel_registry)
     : content::WebContentsObserver(content),
-      content::WebContentsUserData<CommerceUiTabHelper>(*content),
       shopping_service_(shopping_service),
       bookmark_model_(model),
-      image_fetcher_(image_fetcher) {
+      image_fetcher_(image_fetcher),
+      side_panel_registry_(side_panel_registry) {
   if (!image_fetcher_) {
     CHECK_IS_TEST();
   }
@@ -396,9 +397,9 @@ void CommerceUiTabHelper::SetPriceTrackingState(
 
 void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
   auto* side_panel_ui = GetSidePanelUI();
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  DCHECK(side_panel_ui && registry->GetEntryForKey(SidePanelEntry::Key(
-                              SidePanelEntry::Id::kShoppingInsights)));
+  DCHECK(side_panel_ui &&
+         side_panel_registry_->GetEntryForKey(
+             SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
   if (side_panel_ui->IsSidePanelShowing() &&
       side_panel_ui->GetCurrentEntryId() ==
@@ -457,17 +458,12 @@ void CommerceUiTabHelper::UpdateProductSpecificationsIconView() {
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  if (!registry) {
-    return;
-  }
-
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kShoppingInsights,
       base::BindRepeating(
           &CommerceUiTabHelper::CreateShoppingInsightsWebView,
           base::Unretained(this)));
-  registry->Register(std::move(entry));
+  side_panel_registry_->Register(std::move(entry));
 }
 
 void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
@@ -480,11 +476,7 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
         "Commerce.PriceInsights.NavigationClosedSidePanel"));
   }
 
-  auto* registry = SidePanelRegistry::Get(web_contents());
-  if (!registry) {
-    return;
-  }
-  registry->Deregister(
+  side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
 }
 
@@ -547,12 +539,13 @@ bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
 }
 
 void CommerceUiTabHelper::ComputePageActionToExpand() {
-  CHECK(!page_action_icon_compute_start_time_.is_null());
-  base::UmaHistogramTimes(
-      "Commerce.IconComputationTime",
-      base::TimeTicks::Now() - page_action_icon_compute_start_time_);
+  if (!page_action_icon_compute_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "Commerce.IconComputationTime",
+        base::TimeTicks::Now() - page_action_icon_compute_start_time_);
+    page_action_to_expand_ = std::nullopt;
+  }
 
-  page_action_to_expand_ = std::nullopt;
   page_action_icon_compute_start_time_ = base::TimeTicks();
 
   if (!web_contents() || !web_contents()->GetBrowserContext()) {
@@ -773,7 +766,5 @@ void CommerceUiTabHelper::SetPriceTrackingControllerForTesting(
     std::unique_ptr<PriceTrackingPageActionController> controller) {
   price_tracking_controller_.reset(controller.release());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceUiTabHelper);
 
 }  // namespace commerce

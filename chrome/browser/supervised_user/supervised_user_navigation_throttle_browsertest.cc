@@ -100,7 +100,7 @@ class ThrottleTestParam {
       case FeatureStatus::kEnabled:
         return "ClassifyUrlNavigationThrottle";
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   static void InitFeatureList(base::test::ScopedFeatureList& feature_list,
@@ -268,12 +268,12 @@ class SupervisedUserNavigationThrottleTestBase
   void BlockHost(const std::string& host) {
     supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
                                                       host,
-                                                      /* allowlist */ false);
+                                                      /*allowlist=*/false);
   }
 
   void AllowlistHost(const std::string& host) {
-    supervised_user_test_util::SetManualFilterForHost(
-        browser()->profile(), host, /* allowlist */ true);
+    supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
+                                                      host, /*allowlist=*/true);
   }
 
   bool IsInterstitialBeingShownInMainFrame(Browser* browser);
@@ -877,9 +877,17 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 // Tests that the trivial www-subdomain stripping is applied on the url
 // of the interstitial. Blocked urls without further conflicts will be
 // unblocked by a remote approval.
+// TODO(crbug.com/356676072): flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval \
+  DISABLED_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval
+#else
+#define MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval \
+  BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval
+#endif
 IN_PROC_BROWSER_TEST_P(
     SupervisedUserIframeFilterTest,
-    BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
+    MAYBE_BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
   // Classify url blocks the navigation to the target url.
   // No matching blocklist entry exists for the host of the target url.
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
@@ -1064,7 +1072,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
-                       IframesWithSameDomainAsMainFrameAllowed) {
+                       IFramesWithSameDomainAsMainFrameAllowed) {
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
   supervised_user::SupervisedUserURLFilter* filter = service->GetURLFilter();
@@ -1336,16 +1344,25 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class SupervisedUserNavigationThrottleNotSupervisedTest
+class SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers
     : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
+      public testing::WithParamInterface<
+          std::tuple<supervised_user::SupervisionMixin::SignInMode,
+                     ThrottleTestParam::FeatureStatus>> {
  protected:
-  SupervisedUserNavigationThrottleNotSupervisedTest()
-      : SupervisedUserNavigationThrottleTestBase(
-            supervised_user::SupervisionMixin::SignInMode::kRegular) {
-    ThrottleTestParam::InitFeatureList(scoped_feature_list_, GetParam());
+  static supervised_user::SupervisionMixin::SignInMode GetSignInMode() {
+    return std::get<0>(GetParam());
   }
-  ~SupervisedUserNavigationThrottleNotSupervisedTest() override = default;
+  static ThrottleTestParam::FeatureStatus GetThrottleStatus() {
+    return std::get<1>(GetParam());
+  }
+  SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers()
+      : SupervisedUserNavigationThrottleTestBase(GetSignInMode()) {
+    ThrottleTestParam::InitFeatureList(scoped_feature_list_,
+                                       GetThrottleStatus());
+  }
+  ~SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers() override =
+      default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1353,23 +1370,115 @@ class SupervisedUserNavigationThrottleNotSupervisedTest
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    SupervisedUserNavigationThrottleNotSupervisedTest,
-    ThrottleTestParam::Values(),
-    [](const testing::TestParamInfo<ThrottleTestParam::FeatureStatus>& info) {
+    SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
+    testing::Combine(
+        testing::Values(
+            supervised_user::SupervisionMixin::SignInMode::kRegular,
+            supervised_user::SupervisionMixin::SignInMode::kSupervised),
+        ThrottleTestParam::Values()),
+    [](const testing::TestParamInfo<
+        std::tuple<supervised_user::SupervisionMixin::SignInMode,
+                   ThrottleTestParam::FeatureStatus>>& info) {
       return base::StrCat(
-          {"WithThrottle", ThrottleTestParam::ToString(info.param)});
+          {"WithSignInMode", SignInModeAsString(std::get<0>(info.param)),
+           "WithThrottle",
+           ThrottleTestParam::ToString(std::get<1>(info.param))});
     });
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationThrottleNotSupervisedTest,
-                       DontBlock) {
-  BlockHost(kExampleHost);
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
+    CheckAgainstBlocklist) {
+  BlockHost(kExampleHost2);
+
+  // Classify url is never called - if ever, a static blocklist should be used.
+  EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+              ClassifyUrl(testing::_))
+      .Times(0);
 
   GURL blocked_url = embedded_test_server()->GetURL(
-      kExampleHost, "/supervised_user/simple.html");
+      kExampleHost2, "/supervised_user/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
-  // Even though the URL is marked as blocked, the load should go through, since
-  // the user isn't supervised.
-  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  // Only supervised users should experience the interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
+}
+
+// TODO(crbug.com/359268574): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CheckAgainstClassifyUrlRPC DISABLED_CheckAgainstClassifyUrlRPC
+#else
+#define MAYBE_CheckAgainstClassifyUrlRPC CheckAgainstClassifyUrlRPC
+#endif
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
+    MAYBE_CheckAgainstClassifyUrlRPC) {
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+
+  // Only supervised users should call the backend
+  if (GetSignInMode() ==
+      supervised_user::SupervisionMixin::SignInMode::kSupervised) {
+    // TODO(b/358283493): Explain why throttles check the URL twice.
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(::testing::AtLeast(1));
+  } else {
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(0);
+  }
+
+  GURL url = embedded_test_server()->GetURL(kExampleHost2,
+                                            "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Only supervised users should experience the
+  // interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SupervisedUserNavigationThrottleOnlyEnabledForSupervisedUsers,
+    CheckSameDocumentNavigationAgainstClassifyUrlRPC) {
+  kids_management_api_mock().RestrictSubsequentClassifyUrl();
+
+  // Only supervised users should call the backend
+  if (GetSignInMode() ==
+      supervised_user::SupervisionMixin::SignInMode::kSupervised) {
+    // TODO(b/358283493): Explain why throttles check the URL twice.
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(::testing::AtLeast(1));
+  } else {
+    EXPECT_CALL(kids_management_api_mock().classify_url_mock(),
+                ClassifyUrl(testing::_))
+        .Times(0);
+  }
+
+  GURL url = embedded_test_server()->GetURL(kExampleHost2,
+                                            "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Only supervised users should experience the
+  // interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
+
+  // Simulate a same document navigation by navigating to #test.
+  GURL::Replacements replace_ref;
+  replace_ref.SetRefStr("test");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           url.ReplaceComponents(replace_ref)));
+
+  // Only supervised users should experience the
+  // interstitial
+  EXPECT_EQ(IsInterstitialBeingShownInMainFrame(browser()),
+            GetSignInMode() ==
+                supervised_user::SupervisionMixin::SignInMode::kSupervised);
 }
 
 class SupervisedUserNavigationThrottleFencedFramesTest

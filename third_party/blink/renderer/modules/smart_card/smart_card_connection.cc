@@ -96,7 +96,7 @@ class TransactionFulfilledFunction : public ScriptFunction::Callable {
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     ExceptionState exception_state(script_state->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    "SmartCardConnection", "startTransaction");
 
     if (value.IsUndefined()) {

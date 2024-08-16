@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -256,6 +257,7 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
+  CHECK(gpu_memory_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
       metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
 }
@@ -331,6 +333,34 @@ void ClientSharedImage::OnMemoryDump(
   pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
 }
 
+void ClientSharedImage::BeginAccess(bool readonly) {
+  if (readonly) {
+    CHECK(!has_writer_ ||
+          usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
+    num_readers_++;
+  } else {
+    CHECK(!has_writer_);
+    CHECK(num_readers_ == 0 ||
+          usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
+    has_writer_ = true;
+  }
+}
+
+void ClientSharedImage::EndAccess(bool readonly) {
+  if (readonly) {
+    CHECK(num_readers_ > 0);
+    num_readers_--;
+  } else {
+    CHECK(has_writer_);
+    has_writer_ = false;
+  }
+}
+
+std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
+    gles2::GLES2Interface* gl) {
+  return base::WrapUnique(new SharedImageTexture(gl, this));
+}
+
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
   return CreateForTesting(GL_TEXTURE_2D);
@@ -359,5 +389,66 @@ ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
       metadata_(metadata),
       creation_sync_token_(sync_token),
       texture_target_(texture_target) {}
+
+SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
+                                               const SyncToken& sync_token,
+                                               bool readonly)
+    : texture_(texture), readonly_(readonly) {
+  texture_->gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  texture_->gl_->BeginSharedImageAccessDirectCHROMIUM(
+      texture->id(), (readonly_)
+                         ? GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM
+                         : GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+}
+
+SharedImageTexture::ScopedAccess::~ScopedAccess() {
+  CHECK(is_access_ended_);
+}
+
+void SharedImageTexture::ScopedAccess::DidEndAccess() {
+  is_access_ended_ = true;
+  texture_->DidEndAccess(readonly_);
+}
+
+// static
+SyncToken SharedImageTexture::ScopedAccess::EndAccess(
+    std::unique_ptr<SharedImageTexture::ScopedAccess> scoped_shared_image) {
+  gles2::GLES2Interface* gl = scoped_shared_image->texture_->gl_;
+  gl->EndSharedImageAccessDirectCHROMIUM(scoped_shared_image->texture_->id());
+  scoped_shared_image->DidEndAccess();
+  SyncToken sync_token;
+  gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+  return sync_token;
+}
+
+SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
+                                       ClientSharedImage* shared_image)
+    : gl_(gl), shared_image_(shared_image) {
+  CHECK(gl_);
+  CHECK(shared_image_);
+  gl_->WaitSyncTokenCHROMIUM(
+      shared_image_->creation_sync_token().GetConstData());
+  id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
+      shared_image_->mailbox().name);
+}
+
+SharedImageTexture::~SharedImageTexture() {
+  CHECK(!has_active_access_);
+  gl_->DeleteTextures(1, &id_);
+}
+
+std::unique_ptr<SharedImageTexture::ScopedAccess>
+SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
+  CHECK(!has_active_access_);
+  has_active_access_ = true;
+  shared_image_->BeginAccess(readonly);
+  return base::WrapUnique(
+      new SharedImageTexture::ScopedAccess(this, sync_token, readonly));
+}
+
+void SharedImageTexture::DidEndAccess(bool readonly) {
+  has_active_access_ = false;
+  shared_image_->EndAccess(readonly);
+}
 
 }  // namespace gpu

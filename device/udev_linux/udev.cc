@@ -151,17 +151,6 @@ udev* udev_new() {
   return UdevLoader::Get()->udev_new();
 }
 
-void udev_set_log_fn(
-    struct udev* udev,
-    void (*log_fn)(struct udev* udev, int priority, const char* file, int line,
-                   const char* fn, const char* format, va_list args)) {
-  return UdevLoader::Get()->udev_set_log_fn(udev, log_fn);
-}
-
-void udev_set_log_priority(struct udev* udev, int priority) {
-  return UdevLoader::Get()->udev_set_log_priority(udev, priority);
-}
-
 void udev_unref(udev* udev) {
   UdevLoader::Get()->udev_unref(udev);
 }

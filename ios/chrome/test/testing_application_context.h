@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace network {
@@ -70,10 +70,15 @@ class TestingApplicationContext : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
+  // TODO(crbug.com/358299872): After all usage has changed to
+  // GetProfileManager(), remove this method.
   ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
+  ChromeBrowserStateManager* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
   net::NetLog* GetNetLog() override;
@@ -88,14 +93,14 @@ class TestingApplicationContext : public ApplicationContext {
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
-  segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() override;
+  AccountProfileMapper* GetAccountProfileMapper() override;
+  IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
   UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
 
  private:
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
   std::string application_locale_;
   std::string application_country_;
   raw_ptr<PrefService> local_state_;
@@ -116,6 +121,7 @@ class TestingApplicationContext : public ApplicationContext {
       test_network_connection_tracker_;
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   __strong UpgradeCenter* upgrade_center_ = nil;

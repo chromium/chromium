@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/window_or_worker_global_scope.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
@@ -216,6 +217,15 @@ class CORE_EXPORT WorkerGlobalScope
       RejectCoepUnsafeNone reject_coep_unsafe_none) = 0;
 
   void ReceiveMessage(BlinkTransferableMessage);
+  Event* ReceiveCustomEventInternal(
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>,
+      CrossThreadFunction<Event*(ScriptState*)>,
+      CustomEventMessage);
+  void ReceiveCustomEvent(
+      CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+          event_factory_callback,
+      CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
+      CustomEventMessage);
   base::TimeTicks TimeOrigin() const { return time_origin_; }
   WorkerSettings* GetWorkerSettings() const { return worker_settings_.get(); }
 

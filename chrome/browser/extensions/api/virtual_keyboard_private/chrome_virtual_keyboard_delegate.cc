@@ -463,6 +463,14 @@ bool ChromeVirtualKeyboardDelegate::IsSettingsEnabled() {
 }
 
 void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated() {
+  // Clipboard history is only used for multipaste in the virtual keyboard, so
+  // there is no need to act on clipboard history events when the virtual
+  // keyboard is disabled.
+  if (!ChromeKeyboardControllerClient::HasInstance() ||
+      !ChromeKeyboardControllerClient::Get()->is_keyboard_enabled()) {
+    return;
+  }
+
   EventRouter* router = GetRouterForEventName(
       browser_context_, keyboard_api::OnClipboardHistoryChanged::kEventName);
   if (!router)

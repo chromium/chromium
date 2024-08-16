@@ -58,6 +58,7 @@ static_library("app_mode") {
     "//base",
     "//build:buildflag_header_h",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chromeos/crosapi/mojom",
@@ -160,6 +161,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/ui/apps",
       "//chrome/browser/ui/ash/system_web_apps",
       "//components/services/app_service/public/cpp:instance_update",
     ]

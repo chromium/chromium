@@ -31,14 +31,10 @@
 #include "net/base/features.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/ui_base_features.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "ui/accessibility/accessibility_features.h"
-#endif
+#include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/companion/visual_query/features.h"
@@ -181,10 +177,8 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     // clang-format off
     feature_list_.InitWithFeatures(
         {
-#if !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
           companion::visual_query::features::kVisualQuerySuggestions,
-#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
@@ -193,9 +187,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           net::features::kTopLevelTpcdOriginTrial,
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
           features::kPdfOcr,
-#endif
           features::kPersistentOriginTrials,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
@@ -352,7 +344,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SystemIndicatorManager",
     "WebAppProvider",
 #endif
-    "AboutThisSiteServiceFactory",
     "AccountReconcilor",
     "ActivityLog",
     "ActivityLogPrivateAPI",
@@ -412,6 +403,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "CookieSettings",
     "CookiesAPI",
     "CWSInfoService",
+    "DataTypeStoreService",
     "DeveloperPrivateAPI",
     "DeviceInfoSyncService",
     "DownloadCoreService",
@@ -486,7 +478,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "MediaRouter",
     "MediaRouterUIService",
     "MenuManager",
-    "ModelTypeStoreService",
     "NavigationPredictorKeyedService",
     "NetworkingPrivateEventRouter",
     "NotificationDisplayService",

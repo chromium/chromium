@@ -99,6 +99,12 @@ class MagicBoostBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+  }
+
  protected:
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
@@ -300,7 +306,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(chromeos::HMRConsentStatus::kUnset,
                         chromeos::HMRConsentStatus::kApproved,
                         chromeos::HMRConsentStatus::kDeclined,
-                        chromeos::HMRConsentStatus::kPending)));
+                        chromeos::HMRConsentStatus::kPendingDisclaimer)));
 
 IN_PROC_BROWSER_TEST_P(MagicBoostBrowserTest, AcceptOptInFromReadOnlyContent) {
   EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));

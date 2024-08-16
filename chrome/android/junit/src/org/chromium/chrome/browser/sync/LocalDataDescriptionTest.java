@@ -15,7 +15,7 @@ import org.chromium.components.sync.LocalDataDescription;
 @RunWith(BaseRobolectricTestRunner.class)
 public class LocalDataDescriptionTest {
     @Test
-    public void testConstructorAndModelType() {
+    public void testConstructorAndDataType() {
         int itemCount = 123;
         String[] domains = {"example.com", "test.org"};
         int domainCount = 2;

@@ -138,43 +138,58 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper) {
 bool TestAuctionSharedStorageHost::Request::operator==(
     const Request& rhs) const {
   return type == rhs.type && key == rhs.key && value == rhs.value &&
-         ignore_if_present == rhs.ignore_if_present;
+         ignore_if_present == rhs.ignore_if_present &&
+         source_auction_worklet_function == rhs.source_auction_worklet_function;
 }
 
 TestAuctionSharedStorageHost::TestAuctionSharedStorageHost() = default;
 
 TestAuctionSharedStorageHost::~TestAuctionSharedStorageHost() = default;
 
-void TestAuctionSharedStorageHost::Set(const std::u16string& key,
-                                       const std::u16string& value,
-                                       bool ignore_if_present) {
-  observed_requests_.emplace_back(
-      Request{.type = RequestType::kSet,
-              .key = key,
-              .value = value,
-              .ignore_if_present = ignore_if_present});
+void TestAuctionSharedStorageHost::Set(
+    const std::u16string& key,
+    const std::u16string& value,
+    bool ignore_if_present,
+    mojom::AuctionWorkletFunction source_auction_worklet_function) {
+  observed_requests_.emplace_back(Request{
+      .type = RequestType::kSet,
+      .key = key,
+      .value = value,
+      .ignore_if_present = ignore_if_present,
+      .source_auction_worklet_function = source_auction_worklet_function});
 }
 
-void TestAuctionSharedStorageHost::Append(const std::u16string& key,
-                                          const std::u16string& value) {
-  observed_requests_.emplace_back(Request{.type = RequestType::kAppend,
-                                          .key = key,
-                                          .value = value,
-                                          .ignore_if_present = false});
+void TestAuctionSharedStorageHost::Append(
+    const std::u16string& key,
+    const std::u16string& value,
+    mojom::AuctionWorkletFunction source_auction_worklet_function) {
+  observed_requests_.emplace_back(Request{
+      .type = RequestType::kAppend,
+      .key = key,
+      .value = value,
+      .ignore_if_present = false,
+      .source_auction_worklet_function = source_auction_worklet_function});
 }
 
-void TestAuctionSharedStorageHost::Delete(const std::u16string& key) {
-  observed_requests_.emplace_back(Request{.type = RequestType::kDelete,
-                                          .key = key,
-                                          .value = std::u16string(),
-                                          .ignore_if_present = false});
+void TestAuctionSharedStorageHost::Delete(
+    const std::u16string& key,
+    mojom::AuctionWorkletFunction source_auction_worklet_function) {
+  observed_requests_.emplace_back(Request{
+      .type = RequestType::kDelete,
+      .key = key,
+      .value = std::u16string(),
+      .ignore_if_present = false,
+      .source_auction_worklet_function = source_auction_worklet_function});
 }
 
-void TestAuctionSharedStorageHost::Clear() {
-  observed_requests_.emplace_back(Request{.type = RequestType::kClear,
-                                          .key = std::u16string(),
-                                          .value = std::u16string(),
-                                          .ignore_if_present = false});
+void TestAuctionSharedStorageHost::Clear(
+    mojom::AuctionWorkletFunction source_auction_worklet_function) {
+  observed_requests_.emplace_back(Request{
+      .type = RequestType::kClear,
+      .key = std::u16string(),
+      .value = std::u16string(),
+      .ignore_if_present = false,
+      .source_auction_worklet_function = source_auction_worklet_function});
 }
 
 void TestAuctionSharedStorageHost::ClearObservedRequests() {

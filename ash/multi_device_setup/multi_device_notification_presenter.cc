@@ -60,7 +60,7 @@ MultiDeviceNotificationPresenter::GetNotificationDescriptionForLogging(
     case Status::kNoNotificationVisible:
       return "no notification";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static
@@ -75,8 +75,7 @@ MultiDeviceNotificationPresenter::GetMetricValueForNotification(
     case Status::kExistingUserNewChromebookNotificationVisible:
       return NotificationType::kExistingUserNewChromebookAdded;
     case Status::kNoNotificationVisible:
-      NOTREACHED_IN_MIGRATION();
-      return NotificationType::kErrorUnknown;
+      NOTREACHED();
   }
 }
 
@@ -281,7 +280,7 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
           ->ShowConnectedDevicesSettings();
       break;
     case Status::kNoNotificationVisible:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   RemoveMultiDeviceSetupNotification();
 }

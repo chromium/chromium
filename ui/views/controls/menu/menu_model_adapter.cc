@@ -78,6 +78,10 @@ std::optional<SkColor> MenuModelAdapter::GetLabelColor(int command_id) const {
              : std::nullopt;
 }
 
+bool MenuModelAdapter::IsTearingDown() const {
+  return !menu_model_;
+}
+
 // Static.
 MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        size_t model_index,

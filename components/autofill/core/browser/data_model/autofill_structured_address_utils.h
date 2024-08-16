@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_rewriter.h"
@@ -239,9 +240,9 @@ std::string CaptureTypeWithPattern(
     const std::string& pattern,
     const CaptureOptions options = CaptureOptions());
 
-// Normalizes and rewrites |text| using the rules for |country_code|.
-// If |country_code| is empty, it defaults to US.
-std::u16string NormalizeAndRewrite(const std::u16string& country_code,
+// Normalizes and rewrites `text` using the rules for `country_code`.
+// If `country_code` is empty, it defaults to US.
+std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    const std::u16string& text,
                                    bool keep_white_space);
 

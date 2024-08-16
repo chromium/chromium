@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import argparse
+import datetime
+import hashlib
+import json
+import os
+import pathlib
+import shutil
+import sys
+import tarfile
+import urllib
+import urllib.parse
+import urllib.request
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+import bidimapper.append_notices as notices
+
+_ALLOWED_LICENSES = [
+    # Regular valid open source licenses supported by Google.
+    'MIT',
+    'Apache-2.0',
+    'Apache 2.0',
+    'ISC',
+]
+
+_DEPENDENCY_DIVIDER = '-------------------- DEPENDENCY DIVIDER --------------------'
+
+class RollerException(Exception):
+    pass
+
+def get_chromium_dir() -> pathlib.Path:
+    return pathlib.Path(__file__).parent.parent.parent
+
+
+def get_pinned_version(bidimapper_dir : pathlib.Path):
+    readme_path = bidimapper_dir / 'README.chromium'
+
+    if not readme_path.exists():
+        raise RollerException(f'File not found: {readme_path}')
+
+    with pathlib.Path(readme_path).open('r') as f:
+        for line in f.readlines():
+            prefix = 'Version:'
+            if line.startswith(_DEPENDENCY_DIVIDER):
+                # Avoid picking the version from a dependency
+                break
+            if not line.startswith(prefix):
+                continue
+            return line[len(prefix):].strip()
+
+    raise RollerException(f'Version not found in {readme_path}')
+
+
+def main(chromium_src_dir: pathlib.Path, version: str):
+    bidimapper_dir = chromium_src_dir / 'third_party' / 'bidimapper'
+
+    readme_template_path = bidimapper_dir / 'README.chromium.in'
+    if not readme_template_path.exists():
+        print(f'File not found: {readme_template_path}', file=sys.stderr)
+        return 1
+
+    package_json = json.load(
+        urllib.request.urlopen(
+            f'https://registry.npmjs.org/chromium-bidi/{version}'))
+    git_revision = package_json['gitHead']
+    tarball_url = package_json['dist']['tarball']
+    # The script allows 'latest' as the valid value for the version argument.
+    # The line below obtains the actual version of the package.
+    version = package_json['version']
+    expected_sha1 = package_json['dist']['shasum']
+
+    pinned_version = get_pinned_version(bidimapper_dir)
+    if version == pinned_version:
+        print('BiDiMapper is already of the latest version', file=sys.stderr)
+        return 0
+
+    bidimapper_checkout_dir = bidimapper_dir / 'src'
+    if bidimapper_checkout_dir.exists():
+        shutil.rmtree(bidimapper_checkout_dir)
+    bidimapper_checkout_dir.mkdir()
+
+    tar_path = bidimapper_checkout_dir / 'chromium-bidi.tgz'
+    urllib.request.urlretrieve(url=tarball_url, filename=tar_path)
+
+    sha1 = hashlib.sha1()
+    sha1.update(tar_path.read_bytes())
+    actual_sha1 = sha1.hexdigest()
+    if actual_sha1 != expected_sha1:
+        print(
+            f'The NPM package checksum mismatch {actual_sha1} vs. {expected_sha1}',
+            file=sys.stderr)
+        return 1
+
+    with tarfile.open(tar_path) as tar:
+        tar.extract('package/lib/iife/mapperTab.js', path=bidimapper_checkout_dir)
+        tar.extract('package/lib/THIRD_PARTY_NOTICES', path=bidimapper_checkout_dir)
+
+    src_mapper_path = bidimapper_checkout_dir/ 'package' / 'lib' / 'iife' / 'mapperTab.js'
+    if not src_mapper_path.exists():
+        print(f'File not found: {src_mapper_path}', file=sys.stderr)
+        return 1
+    dest_mapper_path = bidimapper_dir / 'mapper.js'
+    try:
+        shutil.copy(src_mapper_path, dest_mapper_path)
+    except Exception as err:
+        print(
+            f'Error while copying {src_mapper_path} to {dest_mapper_path}: {err}'
+        )
+        return 1
+
+    sha512 = hashlib.sha512()
+    sha512.update(pathlib.Path(dest_mapper_path).read_bytes())
+    sha512sum = sha512.hexdigest()
+
+    src_notices_path = bidimapper_checkout_dir / 'package' / 'lib' / 'THIRD_PARTY_NOTICES'
+    if not src_notices_path.exists():
+        print(f'File not found: {src_notices_path}', file=sys.stderr)
+        return 1
+    with src_notices_path.open('r') as f:
+        for line in f.readlines():
+            prefix = 'License:'
+            if not line.startswith(prefix):
+                continue
+            license = line[len(prefix):].strip()
+            if license not in _ALLOWED_LICENSES:
+                print(f'Unsupported license type: {license}', file=sys.stderr)
+                return 1
+
+    readme_template = readme_template_path.read_text()
+    readme_template = readme_template.replace('${VERSION}', version)
+    readme_template = readme_template.replace('${URL}', tarball_url)
+    readme_template = readme_template.replace(
+        '${DATE}',
+        datetime.date.today().isoformat())
+    readme_template = readme_template.replace('${REVISION}', git_revision)
+    readme_template = readme_template.replace('${TAR-SHA512}', sha512sum)
+
+    readme_path = bidimapper_dir / 'README.chromium'
+    with pathlib.Path(readme_path).open('w') as readme_out:
+        readme_out.write(readme_template)
+
+    license_dir = bidimapper_dir / 'licenses'
+    try:
+        notice_parser = notices.ThirdPartyNoticeParser(src_notices_path,
+                                                       readme_path=readme_path,
+                                                       license_dir=license_dir)
+        notice_parser.parse_and_append_notices()
+    except Exception as ex:
+        print('Failed to append notices: %s' % (ex), file=sys.stderr)
+        return 1
+
+    return 0
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Switch ChromeDriver to a different BiDiMapper version')
+    parser.add_argument('--chromium-source-dir',
+                        type=pathlib.Path,
+                        default=get_chromium_dir(),
+                        help='Directory with Chromium repository checkout')
+    parser.add_argument('--version',
+                        metavar='VERSION',
+                        default='latest',
+                        help='BiDiMapper version (default: latest)')
+    args = parser.parse_args()
+    sys.exit(main(args.chromium_source_dir, args.version))

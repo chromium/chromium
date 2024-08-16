@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
@@ -19,7 +19,7 @@ namespace syncer {
 
 class SyncChangeProcessor;
 
-// DEPRECATED: new code should use ModelTypeSyncBridge instead.
+// DEPRECATED: new code should use DataTypeSyncBridge instead.
 // See https://www.chromium.org/developers/design-documents/sync/model-api/ for
 // background.
 class SyncableService {
@@ -40,10 +40,10 @@ class SyncableService {
   // 2) You want remote data to be visible immediately; for example if the
   // history page is open, you want remote sessions data to be available there.
   // 3) You want to signal to sync that it's safe to start now that the
-  // browser's IO-intensive startup process is over. The ModelType parameter is
-  // included so that the recieving end can track usage and timing statistics,
+  // browser's IO-intensive startup process is over. The DataType parameter is
+  // included so that the receiving end can track usage and timing statistics,
   // make optimizations or tradeoffs by type, etc.
-  using StartSyncFlare = base::RepeatingCallback<void(ModelType)>;
+  using StartSyncFlare = base::RepeatingCallback<void(DataType)>;
 
   // Allows the SyncableService to delay sync events (all below) until the model
   // becomes ready to sync. Callers must ensure there is no previous ongoing
@@ -59,17 +59,17 @@ class SyncableService {
   // Returns: std::nullopt if no error was encountered while merging the two
   //          models, otherwise a std::optional filled with such error.
   virtual std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      ModelType type,
+      DataType type,
       const SyncDataList& initial_sync_data,
       std::unique_ptr<SyncChangeProcessor> sync_processor) = 0;
 
   // Stop syncing the specified type and reset state.
-  virtual void StopSyncing(ModelType type) = 0;
+  virtual void StopSyncing(DataType type) = 0;
 
   // Notifies the syncable service to stop syncing on browser shutdown. This is
   // a separate method from StopSyncing() to let implementations do something
   // different in case of shutdown.
-  virtual void OnBrowserShutdown(ModelType type);
+  virtual void OnBrowserShutdown(DataType type);
 
   // SyncChangeProcessor interface.
   // Process a list of new SyncChanges and update the local data as necessary.

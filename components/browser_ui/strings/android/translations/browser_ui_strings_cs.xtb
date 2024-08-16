@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
+<translation id="1500473259453106018">Skrýt kartu Poklesy cen na kartách</translation>
 <translation id="1510341833810331442">Weby nemohou ukládat data do vašeho zařízení</translation>
 <translation id="1547123415014299762">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="1568470248891039841">Navštívené weby mohou zahrnovat vložený obsah z jiných webů, například obrázky, reklamy a text. Tyto další weby mohou při procházení webu žádat o povolení používat informace, které o vás uložily. <ph name="BEGIN_LINK" />Další informace o vloženém obsahu<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Vymazat údaje o prohlížení…</translation>
 <translation id="3242646949159196181">Když je tato možnost zapnutá, weby mohou přehrávat zvuk. Když je vypnutá, weby zvuk přehrávat nemohou.</translation>
+<translation id="3273479183583863618">Poklesy cen na kartách</translation>
 <translation id="3277252321222022663">Povolit webům přístup k senzorům (doporučeno)</translation>
 <translation id="3285500645985761267">Povolit souvisejícím webům sledovat vaši aktivitu ve skupině</translation>
 <translation id="3295019059349372795">Kapitola 11: Smaragdové město v zemi Oz</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Zavřít a zobrazit další dostupnou akci</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
+<translation id="3779154269823594982">Změnit hesla</translation>
 <translation id="3797520601150691162">Nepoužívat tmavý motiv pro konkrétní web</translation>
 <translation id="3803367742635802571">Navštívené weby mohou přestat fungovat podle očekávání</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6840760312327750441">Chcete-li karty seskupit, podržte některou kartu. Potom ji přetáhněte na jinou kartu.</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
+<translation id="6870169401250095575">Skrýt kartu Bezpečnostní kontrola</translation>
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6950072572526089586">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
 <translation id="789180354981963912">V anonymním režimu blokovat soubory cookie třetích stran:</translation>
 <translation id="7940722705963108451">Připomenout</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="FPS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="FPS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="FPS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="FPS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
 <translation id="7990211076305263060">Když je tato možnost zapnutá, weby mohou žádat o použití mikrofonu. Když je vypnutá, weby mikrofon používat nemohou.</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrýt kartu Pokračovat s touto kartou}few{Skrýt kartu Pokračovat s těmito kartami}many{Skrýt kartu Pokračovat s těmito kartami}other{Skrýt kartu Pokračovat s těmito kartami}}</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
 <translation id="8042586301629853791">Řadit podle:</translation>
 <translation id="8067883171444229417">Přehrát video</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8541410041357371550">Tento web získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> web <ph name="FPS_OWNER" />}few{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> weby <ph name="FPS_OWNER" />}many{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webu <ph name="FPS_OWNER" />}other{Soubory cookie jsou povoleny pro <ph name="FPS_MEMBERS_COUNT" /> webů <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
 <translation id="8609465669617005112">Posunout nahoru</translation>
 <translation id="8617611086246832542">Když je tato možnost zapnutá, zobrazuje se verze webů pro počítače. Když je vypnutá, zobrazuje se verze webů pro mobilní zařízení.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Spravováno vašimi rodiči</translation>
 <translation id="9039697262778250930">Z těchto webů můžete být odhlášeni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Tento web je ve skupině, která může sledovat vaši aktivitu. Skupinu definoval vlastník <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Smazat soubory cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="913657688200966289">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>

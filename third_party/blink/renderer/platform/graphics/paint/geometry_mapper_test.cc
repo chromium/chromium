@@ -85,10 +85,29 @@ class GeometryMapperTest : public testing::Test,
   void CheckSourceToDestinationProjection();
   void CheckCachedClip();
 
+  PropertyTreeStateOrAlias LocalState() const {
+    return PropertyTreeStateOrAlias(*local_transform, *local_clip,
+                                    *local_effect);
+  }
+  PropertyTreeStateOrAlias AncestorState() const {
+    return PropertyTreeStateOrAlias(*ancestor_transform, *ancestor_clip,
+                                    *ancestor_effect);
+  }
+
   // Variables required by CheckMappings(). The tests should set these
   // variables with proper values before calling CheckMappings().
-  PropertyTreeStateOrAlias local_state = PropertyTreeState::Root();
-  PropertyTreeStateOrAlias ancestor_state = PropertyTreeState::Root();
+  Persistent<const TransformPaintPropertyNodeOrAlias> local_transform =
+      &TransformPaintPropertyNode::Root();
+  Persistent<const ClipPaintPropertyNodeOrAlias> local_clip =
+      &ClipPaintPropertyNode::Root();
+  Persistent<const EffectPaintPropertyNodeOrAlias> local_effect =
+      &EffectPaintPropertyNode::Root();
+  Persistent<const TransformPaintPropertyNodeOrAlias> ancestor_transform =
+      &TransformPaintPropertyNode::Root();
+  Persistent<const ClipPaintPropertyNodeOrAlias> ancestor_clip =
+      &ClipPaintPropertyNode::Root();
+  Persistent<const EffectPaintPropertyNodeOrAlias> ancestor_effect =
+      &EffectPaintPropertyNode::Root();
   gfx::RectF input_rect;
   FloatClipRect expected_visual_rect;
   std::optional<FloatClipRect> expected_visual_rect_expanded_for_compositing;
@@ -117,12 +136,12 @@ INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   FloatClipRect actual_visual_rect(input_rect);
-  LocalToAncestorVisualRectInternal(local_state, ancestor_state,
+  LocalToAncestorVisualRectInternal(LocalState(), AncestorState(),
                                     actual_visual_rect);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect, actual_visual_rect);
 
   actual_visual_rect = FloatClipRect(input_rect);
-  LocalToAncestorVisualRectForCompositingOverlap(local_state, ancestor_state,
+  LocalToAncestorVisualRectForCompositingOverlap(LocalState(), AncestorState(),
                                                  actual_visual_rect);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_compositing
                           ? *expected_visual_rect_expanded_for_compositing
@@ -132,21 +151,20 @@ void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
 
 void GeometryMapperTest::CheckLocalToAncestorClipRect() {
   FloatClipRect actual_clip_rect =
-      GeometryMapper::LocalToAncestorClipRect(local_state, ancestor_state);
+      GeometryMapper::LocalToAncestorClipRect(LocalState(), AncestorState());
   EXPECT_CLIP_RECT_EQ(expected_clip, actual_clip_rect);
 }
 
 void GeometryMapperTest::CheckSourceToDestinationRect() {
   auto actual_transformed_rect = input_rect;
-  GeometryMapper::SourceToDestinationRect(local_state.Transform(),
-                                          ancestor_state.Transform(),
+  GeometryMapper::SourceToDestinationRect(*local_transform, *ancestor_transform,
                                           actual_transformed_rect);
   EXPECT_EQ(expected_transformed_rect, actual_transformed_rect);
 }
 
 void GeometryMapperTest::CheckSourceToDestinationProjection() {
   gfx::Transform projection = GeometryMapper::SourceToDestinationProjection(
-      local_state.Transform(), ancestor_state.Transform());
+      *local_transform, *ancestor_transform);
   if (expected_transform) {
     EXPECT_EQ(*expected_transform, projection);
   } else {
@@ -156,13 +174,15 @@ void GeometryMapperTest::CheckSourceToDestinationProjection() {
 }
 
 void GeometryMapperTest::CheckCachedClip() {
-  if (&ancestor_state.Effect() != &local_state.Effect())
+  if (ancestor_effect != local_effect) {
     return;
-  const auto& local_clip = local_state.Clip().Unalias();
-  const auto* cached_clip = GetCachedClip(local_clip, ancestor_state.Unalias());
-  if (&ancestor_state.Clip() == &local_clip ||
-      (&ancestor_state.Clip() == local_clip.Parent() &&
-       &ancestor_state.Transform() == &local_clip.LocalTransformSpace())) {
+  }
+  const auto& unaliased_local_clip = local_clip->Unalias();
+  const auto* cached_clip =
+      GetCachedClip(unaliased_local_clip, AncestorState().Unalias());
+  if (ancestor_clip == &unaliased_local_clip ||
+      (ancestor_clip == unaliased_local_clip.Parent() &&
+       ancestor_transform == &unaliased_local_clip.LocalTransformSpace())) {
     EXPECT_EQ(nullptr, cached_clip);
     return;
   }
@@ -249,8 +269,7 @@ TEST_P(GeometryMapperTest, Root) {
 }
 
 TEST_P(GeometryMapperTest, IdentityTransform) {
-  auto transform = Create2DTranslation(t0(), 0, 0);
-  local_state.SetTransform(*transform);
+  local_transform = Create2DTranslation(t0(), 0, 0);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -260,8 +279,7 @@ TEST_P(GeometryMapperTest, IdentityTransform) {
 
 TEST_P(GeometryMapperTest, TranslationTransform) {
   expected_translation_2d = gfx::Vector2dF(20, 10);
-  auto transform = Create2DTranslation(t0(), 20, 10);
-  local_state.SetTransform(*transform);
+  local_transform = Create2DTranslation(t0(), 20, 10);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -270,15 +288,14 @@ TEST_P(GeometryMapperTest, TranslationTransform) {
   CheckMappings();
 
   gfx::RectF rect = expected_transformed_rect;
-  GeometryMapper::SourceToDestinationRect(t0(), local_state.Transform(), rect);
+  GeometryMapper::SourceToDestinationRect(t0(), *local_transform, rect);
   EXPECT_EQ(input_rect, rect);
 }
 
 TEST_P(GeometryMapperTest, TranslationTransformWithAlias) {
   expected_translation_2d = gfx::Vector2dF(20, 10);
-  auto real_transform = Create2DTranslation(t0(), 20, 10);
-  auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
-  local_state.SetTransform(*transform);
+  auto* real_transform = Create2DTranslation(t0(), 20, 10);
+  local_transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -287,15 +304,14 @@ TEST_P(GeometryMapperTest, TranslationTransformWithAlias) {
   CheckMappings();
 
   gfx::RectF rect = expected_transformed_rect;
-  GeometryMapper::SourceToDestinationRect(t0(), local_state.Transform(), rect);
+  GeometryMapper::SourceToDestinationRect(t0(), *local_transform, rect);
   EXPECT_EQ(input_rect, rect);
 }
 
 TEST_P(GeometryMapperTest, RotationAndScaleTransform) {
   expected_transform = MakeRotationMatrix(45);
   expected_transform->Scale(2, 2);
-  auto transform = CreateTransform(t0(), *expected_transform);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -307,9 +323,8 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransform) {
 TEST_P(GeometryMapperTest, RotationAndScaleTransformWithAlias) {
   expected_transform = MakeRotationMatrix(45);
   expected_transform->Scale(2, 2);
-  auto real_transform = CreateTransform(t0(), *expected_transform);
-  auto transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
-  local_state.SetTransform(*transform);
+  auto* real_transform = CreateTransform(t0(), *expected_transform);
+  local_transform = TransformPaintPropertyNodeAlias::Create(*real_transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -321,9 +336,8 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransformWithAlias) {
 TEST_P(GeometryMapperTest, RotationAndScaleTransformWithTransformOrigin) {
   expected_transform = MakeRotationMatrix(45);
   expected_transform->Scale(2, 2);
-  auto transform =
+  local_transform =
       CreateTransform(t0(), *expected_transform, gfx::Point3F(50, 50, 0));
-  local_state.SetTransform(*transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transform->ApplyTransformOrigin(50, 50, 0);
@@ -335,11 +349,10 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransformWithTransformOrigin) {
 
 TEST_P(GeometryMapperTest, NestedTransforms) {
   auto rotate_transform = MakeRotationMatrix(45);
-  auto transform1 = CreateTransform(t0(), rotate_transform);
+  auto* transform1 = CreateTransform(t0(), rotate_transform);
 
   auto scale_transform = MakeScaleMatrix(2);
-  auto transform2 = CreateTransform(*transform1, scale_transform);
-  local_state.SetTransform(*transform2);
+  local_transform = CreateTransform(*transform1, scale_transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transform = rotate_transform * scale_transform;
@@ -351,14 +364,13 @@ TEST_P(GeometryMapperTest, NestedTransforms) {
 
 TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
   auto rotate_transform = MakeRotationMatrix(45, 0, 0);
-  auto transform1 = CreateTransform(t0(), rotate_transform);
+  auto* transform1 = CreateTransform(t0(), rotate_transform);
 
   auto inverse_rotate_transform = MakeRotationMatrix(-45, 0, 0);
   TransformPaintPropertyNode::State inverse_state{{inverse_rotate_transform}};
   inverse_state.flattens_inherited_transform = true;
-  auto transform2 =
+  local_transform =
       TransformPaintPropertyNode::Create(*transform1, std::move(inverse_state));
-  local_state.SetTransform(*transform2);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   rotate_transform.Flatten();
@@ -372,11 +384,10 @@ TEST_P(GeometryMapperTest, NestedTransformsFlattening) {
 
 TEST_P(GeometryMapperTest, NestedTransformsScaleAndTranslation) {
   auto scale_transform = MakeScaleMatrix(2);
-  auto transform1 = CreateTransform(t0(), scale_transform);
+  auto* transform1 = CreateTransform(t0(), scale_transform);
 
   auto translate_transform = MakeTranslationMatrix(100, 0);
-  auto transform2 = CreateTransform(*transform1, translate_transform);
-  local_state.SetTransform(*transform2);
+  local_transform = CreateTransform(*transform1, translate_transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   // Note: unlike NestedTransforms, the order of these transforms matters. This
@@ -390,13 +401,10 @@ TEST_P(GeometryMapperTest, NestedTransformsScaleAndTranslation) {
 
 TEST_P(GeometryMapperTest, NestedTransformsIntermediateDestination) {
   auto translate_transform = MakeTranslationMatrix(10, 20);
-  auto transform1 = CreateTransform(t0(), translate_transform);
+  ancestor_transform = CreateTransform(t0(), translate_transform);
 
   auto scale_transform = MakeScaleMatrix(3);
-  auto transform2 = CreateTransform(*transform1, scale_transform);
-
-  local_state.SetTransform(*transform2);
-  ancestor_state.SetTransform(*transform1);
+  local_transform = CreateTransform(*ancestor_transform, scale_transform);
 
   expected_transform = scale_transform;
   input_rect = gfx::RectF(0, 0, 100, 100);
@@ -407,8 +415,8 @@ TEST_P(GeometryMapperTest, NestedTransformsIntermediateDestination) {
 }
 
 TEST_P(GeometryMapperTest, SimpleClip) {
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
+  auto* clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;  // not clipped.
@@ -418,9 +426,9 @@ TEST_P(GeometryMapperTest, SimpleClip) {
 }
 
 TEST_P(GeometryMapperTest, UsesLayoutClipRect) {
-  auto clip = CreateClip(c0(), t0(), gfx::RectF(10, 10, 50.5, 50.5),
-                         FloatRoundedRect(10, 10, 50, 51));
-  local_state.SetClip(*clip);
+  auto* clip = CreateClip(c0(), t0(), gfx::RectF(10, 10, 50.5, 50.5),
+                          FloatRoundedRect(10, 10, 50, 51));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;  // not clipped.
@@ -432,9 +440,9 @@ TEST_P(GeometryMapperTest, UsesLayoutClipRect) {
 }
 
 TEST_P(GeometryMapperTest, SimpleClipWithAlias) {
-  auto real_clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  auto clip = ClipPaintPropertyNodeAlias::Create(*real_clip);
-  local_state.SetClip(*clip);
+  auto* real_clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
+  auto* clip = ClipPaintPropertyNodeAlias::Create(*real_clip);
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;  // not clipped.
@@ -444,18 +452,17 @@ TEST_P(GeometryMapperTest, SimpleClipWithAlias) {
 }
 
 TEST_P(GeometryMapperTest, SimpleClipOverlayScrollbars) {
-  ClipPaintPropertyNode::State clip_state(&t0(), gfx::RectF(10, 10, 50, 50),
+  ClipPaintPropertyNode::State clip_state(t0(), gfx::RectF(10, 10, 50, 50),
                                           FloatRoundedRect(10, 10, 50, 50));
   clip_state.layout_clip_rect_excluding_overlay_scrollbars =
       FloatClipRect(gfx::RectF(10, 10, 45, 43));
-  auto clip = ClipPaintPropertyNode::Create(c0(), std::move(clip_state));
-  local_state.SetClip(*clip);
+  local_clip = ClipPaintPropertyNode::Create(c0(), std::move(clip_state));
 
   input_rect = gfx::RectF(0, 0, 100, 100);
 
   FloatClipRect actual_visual_rect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_visual_rect,
+      LocalState(), AncestorState(), actual_visual_rect,
       kExcludeOverlayScrollbarSizeForHitTesting);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(10, 10, 45, 43)),
                       actual_visual_rect);
@@ -463,32 +470,31 @@ TEST_P(GeometryMapperTest, SimpleClipOverlayScrollbars) {
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_visual_rect = FloatClipRect(input_rect);
-  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+  GeometryMapper::LocalToAncestorVisualRect(LocalState(), AncestorState(),
                                             actual_visual_rect,
                                             kIgnoreOverlayScrollbarSize);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(10, 10, 50, 50)),
                       actual_visual_rect);
 
   FloatClipRect actual_clip_rect = GeometryMapper::LocalToAncestorClipRect(
-      local_state, ancestor_state, kExcludeOverlayScrollbarSizeForHitTesting);
+      LocalState(), AncestorState(), kExcludeOverlayScrollbarSizeForHitTesting);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(10, 10, 45, 43)),
                       actual_clip_rect);
 
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_clip_rect = GeometryMapper::LocalToAncestorClipRect(
-      local_state, ancestor_state, kIgnoreOverlayScrollbarSize);
+      LocalState(), AncestorState(), kIgnoreOverlayScrollbarSize);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(10, 10, 50, 50)),
                       actual_clip_rect);
 }
 
 TEST_P(GeometryMapperTest, SimpleClipInclusiveIntersect) {
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
+  local_clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
 
   FloatClipRect actual_clip_rect(gfx::RectF(60, 10, 10, 10));
   GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_clip_rect,
+      LocalState(), AncestorState(), actual_clip_rect,
       kIgnoreOverlayScrollbarSize, kEdgeInclusive);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(60, 10, 0, 10)),
                       actual_clip_rect);
@@ -496,36 +502,30 @@ TEST_P(GeometryMapperTest, SimpleClipInclusiveIntersect) {
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_clip_rect.SetRect(gfx::RectF(60, 10, 10, 10));
-  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+  GeometryMapper::LocalToAncestorVisualRect(LocalState(), AncestorState(),
                                             actual_clip_rect);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF()), actual_clip_rect);
 }
 
 TEST_P(GeometryMapperTest, SimpleClipPlusOpacity) {
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
-
-  auto opacity = CreateOpacityEffect(e0(), 0.99);
-  local_state.SetEffect(*opacity);
+  local_clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
+  local_effect = CreateOpacityEffect(e0(), 0.99);
 
   FloatClipRect actual_clip_rect(gfx::RectF(60, 10, 10, 10));
   auto intersects = GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_clip_rect);
+      LocalState(), AncestorState(), actual_clip_rect);
 
   EXPECT_TRUE(actual_clip_rect.Rect().IsEmpty());
   EXPECT_FALSE(intersects);
 }
 
 TEST_P(GeometryMapperTest, SimpleClipPlusOpacityInclusiveIntersect) {
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
-
-  auto opacity = CreateOpacityEffect(e0(), 0.99);
-  local_state.SetEffect(*opacity);
+  local_clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
+  local_effect = CreateOpacityEffect(e0(), 0.99);
 
   FloatClipRect actual_clip_rect(gfx::RectF(10, 10, 10, 0));
   auto intersects = GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_clip_rect,
+      LocalState(), AncestorState(), actual_clip_rect,
       kIgnoreOverlayScrollbarSize, kEdgeInclusive);
 
   EXPECT_TRUE(actual_clip_rect.Rect().IsEmpty());
@@ -536,8 +536,8 @@ TEST_P(GeometryMapperTest, RoundedClip) {
   FloatRoundedRect rect(gfx::RectF(10, 10, 50, 50),
                         FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(),
                                                 gfx::SizeF(), gfx::SizeF()));
-  auto clip = CreateClip(c0(), t0(), rect);
-  local_state.SetClip(*clip);
+  auto* clip = CreateClip(c0(), t0(), rect);
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -551,8 +551,8 @@ TEST_P(GeometryMapperTest, ClipPath) {
   FloatRoundedRect rect(gfx::RectF(10, 10, 50, 50),
                         FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(),
                                                 gfx::SizeF(), gfx::SizeF()));
-  auto clip = CreateClipPathClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
+  auto* clip = CreateClipPathClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -568,9 +568,9 @@ TEST_P(GeometryMapperTest, TwoClips) {
       FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(), gfx::SizeF(),
                               gfx::SizeF()));
 
-  auto clip1 = CreateClip(c0(), t0(), clip_rect1);
-  auto clip2 = CreateClip(*clip1, t0(), FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip2);
+  auto* clip1 = CreateClip(c0(), t0(), clip_rect1);
+  auto* clip2 = CreateClip(*clip1, t0(), FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip2;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -579,23 +579,24 @@ TEST_P(GeometryMapperTest, TwoClips) {
   expected_visual_rect = expected_clip;
   CheckMappings();
 
-  ancestor_state.SetClip(*clip1);
+  ancestor_clip = clip1;
   expected_clip = clip2->LayoutClipRect();
   expected_visual_rect = expected_clip;
   CheckMappings();
 }
 
 TEST_P(GeometryMapperTest, TwoClipsTransformAbove) {
-  auto transform = Create2DTranslation(t0(), 0, 0);
+  auto* transform = Create2DTranslation(t0(), 0, 0);
 
   FloatRoundedRect clip_rect1(
       gfx::RectF(10, 10, 50, 50),
       FloatRoundedRect::Radii(gfx::SizeF(1, 1), gfx::SizeF(), gfx::SizeF(),
                               gfx::SizeF()));
 
-  auto clip1 = CreateClip(c0(), *transform, clip_rect1);
-  auto clip2 = CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 30, 40));
-  local_state.SetClip(*clip2);
+  auto* clip1 = CreateClip(c0(), *transform, clip_rect1);
+  auto* clip2 =
+      CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 30, 40));
+  local_clip = clip2;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -606,17 +607,17 @@ TEST_P(GeometryMapperTest, TwoClipsTransformAbove) {
 
   expected_clip = clip1->LayoutClipRect();
   EXPECT_TRUE(expected_clip.HasRadius());
-  local_state.SetClip(*clip1);
+  local_clip = clip1;
   expected_visual_rect = expected_clip;
   CheckMappings();
 }
 
 TEST_P(GeometryMapperTest, ClipBeforeTransform) {
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateTransform(t0(), *expected_transform);
-  auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform);
+  auto* clip =
+      CreateClip(c0(), *local_transform, FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_visual_rect = FloatClipRect(input_rect);
@@ -632,10 +633,10 @@ TEST_P(GeometryMapperTest, ClipBeforeTransform) {
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateAnimatingTransform(t0(), *expected_transform);
-  auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateAnimatingTransform(t0(), *expected_transform);
+  auto* clip =
+      CreateClip(c0(), *local_transform, FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_visual_rect = FloatClipRect(input_rect);
@@ -654,11 +655,11 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeAnimatingTransform) {
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
   expected_transform = MakeTranslationMatrix(0, 100);
-  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                   CompositingReason::kStickyPosition);
-  auto clip = CreateClip(c0(), *transform, FloatRoundedRect(10, 10, 50, 50));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                    CompositingReason::kStickyPosition);
+  auto* clip =
+      CreateClip(c0(), *local_transform, FloatRoundedRect(10, 10, 50, 50));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_visual_rect = FloatClipRect(input_rect);
@@ -677,10 +678,9 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipBeforeSticky) {
 
 TEST_P(GeometryMapperTest, ClipAfterTransform) {
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateTransform(t0(), *expected_transform);
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform);
+  auto* clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -695,10 +695,9 @@ TEST_P(GeometryMapperTest, ClipAfterTransform) {
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateAnimatingTransform(t0(), *expected_transform);
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateAnimatingTransform(t0(), *expected_transform);
+  auto* clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -717,11 +716,10 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterAnimatingTransform) {
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
   expected_transform = MakeTranslationMatrix(0, 100);
-  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                   CompositingReason::kStickyPosition);
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                    CompositingReason::kStickyPosition);
+  auto* clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -739,13 +737,12 @@ TEST_P(GeometryMapperTest, ExpandVisualRectWithClipAfterSticky) {
 }
 
 TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
-  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateTransform(t0(), *expected_transform);
-  auto clip2 =
-      CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip2);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform);
+  auto* clip2 =
+      CreateClip(*clip1, *local_transform, FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip2;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -768,13 +765,12 @@ TEST_P(GeometryMapperTest, TwoClipsWithTransformBetween) {
 
 TEST_P(GeometryMapperTest,
        ExpandVisualRectWithTwoClipsWithAnimatingTransformBetween) {
-  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = MakeRotationMatrix(45);
-  auto transform = CreateAnimatingTransform(t0(), *expected_transform);
-  auto clip2 =
-      CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip2);
-  local_state.SetTransform(*transform);
+  local_transform = CreateAnimatingTransform(t0(), *expected_transform);
+  auto* clip2 =
+      CreateClip(*clip1, *local_transform, FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip2;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -797,14 +793,13 @@ TEST_P(GeometryMapperTest,
 }
 
 TEST_P(GeometryMapperTest, ExpandVisualRectWithTwoClipsWithStickyBetween) {
-  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   expected_transform = MakeTranslationMatrix(0, 100);
-  auto transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
-                                   CompositingReason::kStickyPosition);
-  auto clip2 =
-      CreateClip(*clip1, *transform, FloatRoundedRect(10, 10, 200, 200));
-  local_state.SetClip(*clip2);
-  local_state.SetTransform(*transform);
+  local_transform = CreateTransform(t0(), *expected_transform, gfx::Point3F(),
+                                    CompositingReason::kStickyPosition);
+  auto* clip2 =
+      CreateClip(*clip1, *local_transform, FloatRoundedRect(10, 10, 200, 200));
+  local_clip = clip2;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = expected_transform->MapRect(input_rect);
@@ -830,10 +825,10 @@ TEST_P(GeometryMapperTest, SiblingTransforms) {
   // These transforms are siblings. Thus mapping from one to the other requires
   // going through the root.
   auto rotate_transform1 = MakeRotationMatrix(45);
-  auto transform1 = CreateTransform(t0(), rotate_transform1);
+  auto* transform1 = CreateTransform(t0(), rotate_transform1);
 
   auto rotate_transform2 = MakeRotationMatrix(-45);
-  auto transform2 = CreateTransform(t0(), rotate_transform2);
+  auto* transform2 = CreateTransform(t0(), rotate_transform2);
 
   auto transform1_state = PropertyTreeState::Root();
   transform1_state.SetTransform(*transform1);
@@ -870,12 +865,12 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   // These transforms are siblings. Thus mapping from one to the other requires
   // going through the root.
   auto rotate_transform1 = MakeRotationMatrix(45);
-  auto transform1 = CreateTransform(t0(), rotate_transform1);
+  auto* transform1 = CreateTransform(t0(), rotate_transform1);
 
   auto rotate_transform2 = MakeRotationMatrix(-45);
-  auto transform2 = CreateTransform(t0(), rotate_transform2);
+  auto* transform2 = CreateTransform(t0(), rotate_transform2);
 
-  auto clip = CreateClip(c0(), *transform2, FloatRoundedRect(10, 20, 30, 40));
+  auto* clip = CreateClip(c0(), *transform2, FloatRoundedRect(10, 20, 30, 40));
 
   auto transform1_state = PropertyTreeState::Root();
   transform1_state.SetTransform(*transform1);
@@ -904,27 +899,28 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
 }
 
 TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
-  auto transform_above_effect = Create2DTranslation(t0(), 40, 50);
-  auto transform_below_effect =
+  auto* transform_above_effect = Create2DTranslation(t0(), 40, 50);
+  auto* transform_below_effect =
       Create2DTranslation(*transform_above_effect, 20, 30);
 
   // This clip is between transformAboveEffect and the effect.
-  auto clip_above_effect = CreateClip(c0(), *transform_above_effect,
-                                      FloatRoundedRect(-100, -100, 200, 200));
+  auto* clip_above_effect = CreateClip(c0(), *transform_above_effect,
+                                       FloatRoundedRect(-100, -100, 200, 200));
 
   CompositorFilterOperations filters;
   filters.AppendBlurFilter(20);
-  auto effect = CreateFilterEffect(e0(), *transform_above_effect,
-                                   clip_above_effect.get(), filters);
-  auto clip_expander =
+  auto* effect = CreateFilterEffect(e0(), *transform_above_effect,
+                                    clip_above_effect, filters);
+  auto* clip_expander =
       CreatePixelMovingFilterClipExpander(*clip_above_effect, *effect);
 
   // This clip is between the effect and transform_below_effect.
-  auto clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
-                                      FloatRoundedRect(10, 10, 100, 100));
+  auto* clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
+                                       FloatRoundedRect(10, 10, 100, 100));
 
-  local_state =
-      PropertyTreeState(*transform_below_effect, *clip_below_effect, *effect);
+  local_transform = transform_below_effect;
+  local_clip = clip_below_effect;
+  local_effect = effect;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transform_below_effect
@@ -955,28 +951,27 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
 }
 
 TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
-  auto transform_above_effect = Create2DTranslation(t0(), 40, 50);
-  auto transform_below_effect =
+  auto* transform_above_effect = Create2DTranslation(t0(), 40, 50);
+  auto* transform_below_effect =
       Create2DTranslation(*transform_above_effect, 20, 30);
+  local_transform = transform_below_effect;
 
   // This clip is between transformAboveEffect and the effect.
-  auto clip_above_effect = CreateClip(c0(), *transform_above_effect,
-                                      FloatRoundedRect(-100, -100, 200, 200));
+  auto* clip_above_effect = CreateClip(c0(), *transform_above_effect,
+                                       FloatRoundedRect(-100, -100, 200, 200));
 
   CompositorFilterOperations filters;
   filters.AppendBlurFilter(20);
-  auto real_effect = CreateFilterEffect(e0(), *transform_above_effect,
-                                        clip_above_effect.get(), filters);
-  auto clip_expander =
+  auto* real_effect = CreateFilterEffect(e0(), *transform_above_effect,
+                                         clip_above_effect, filters);
+  auto* clip_expander =
       CreatePixelMovingFilterClipExpander(*clip_above_effect, *real_effect);
-  auto effect = EffectPaintPropertyNodeAlias::Create(*real_effect);
+  local_effect = EffectPaintPropertyNodeAlias::Create(*real_effect);
 
   // This clip is between the effect and transformBelowEffect.
-  auto clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
-                                      FloatRoundedRect(10, 10, 100, 100));
-
-  local_state = PropertyTreeStateOrAlias(*transform_below_effect,
-                                         *clip_below_effect, *effect);
+  auto* clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
+                                       FloatRoundedRect(10, 10, 100, 100));
+  local_clip = clip_below_effect;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   // 1. transformBelowEffect
@@ -1008,15 +1003,15 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
 
 TEST_P(GeometryMapperTest,
        ExpandVisualRectWithTwoClipsWithAnimatingFilterBetween) {
-  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
-  auto effect = CreateAnimatingFilterEffect(e0(), CompositorFilterOperations(),
-                                            clip1.get());
-  auto clip_expander = CreatePixelMovingFilterClipExpander(*clip1, *effect);
+  auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
+  auto* effect =
+      CreateAnimatingFilterEffect(e0(), CompositorFilterOperations(), clip1);
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(*clip1, *effect);
 
-  auto clip2 =
+  auto* clip2 =
       CreateClip(*clip_expander, t0(), FloatRoundedRect(50, 0, 200, 50));
-  local_state.SetClip(*clip2);
-  local_state.SetEffect(*effect);
+  local_clip = clip2;
+  local_effect = effect;
 
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
@@ -1041,11 +1036,11 @@ TEST_P(GeometryMapperTest, Reflection) {
   CompositorFilterOperations filters;
   filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
       BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
-  auto effect = CreateFilterEffect(e0(), filters);
-  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
+  auto* effect = CreateFilterEffect(e0(), filters);
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
 
-  local_state.SetEffect(*effect);
-  local_state.SetClip(*clip_expander);
+  local_effect = effect;
+  local_clip = clip_expander;
 
   input_rect = gfx::RectF(100, 100, 50, 50);
   expected_transformed_rect = input_rect;
@@ -1061,15 +1056,15 @@ TEST_P(GeometryMapperTest, IgnoreFilters) {
   CompositorFilterOperations filters;
   filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
       BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
-  auto effect = CreateFilterEffect(e0(), filters);
-  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
+  auto* effect = CreateFilterEffect(e0(), filters);
+  auto* clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
 
-  local_state.SetEffect(*effect);
-  local_state.SetClip(*clip_expander);
+  local_effect = effect;
+  local_clip = clip_expander;
 
   // Test with filters to ensure test is correctly set up.
   FloatClipRect actual_clip_rect(gfx::RectF(100, 100, 50, 50));
-  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+  GeometryMapper::LocalToAncestorVisualRect(LocalState(), AncestorState(),
                                             actual_clip_rect);
   FloatClipRect expected_with_filter(gfx::RectF(-150, 100, 300, 50));
   expected_with_filter.ClearIsTight();
@@ -1078,7 +1073,7 @@ TEST_P(GeometryMapperTest, IgnoreFilters) {
   // Test with filters ignored.
   actual_clip_rect.SetRect(gfx::RectF(100, 100, 50, 50));
   GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_clip_rect,
+      LocalState(), AncestorState(), actual_clip_rect,
       kIgnoreOverlayScrollbarSize, kIgnoreFilters);
   FloatClipRect expected_without_filter(gfx::RectF(100, 100, 50, 50));
   // We still conservatively clear the tight flag.
@@ -1087,10 +1082,10 @@ TEST_P(GeometryMapperTest, IgnoreFilters) {
 }
 
 TEST_P(GeometryMapperTest, Precision) {
-  auto t1 = CreateTransform(t0(), MakeScaleMatrix(32767));
-  auto t2 = CreateTransform(*t1, MakeRotationMatrix(1));
-  auto t3 = Create2DTranslation(*t2, 0, 0);
-  auto t4 = Create2DTranslation(*t3, 0, 0);
+  auto* t1 = CreateTransform(t0(), MakeScaleMatrix(32767));
+  auto* t2 = CreateTransform(*t1, MakeRotationMatrix(1));
+  auto* t3 = Create2DTranslation(*t2, 0, 0);
+  auto* t4 = Create2DTranslation(*t3, 0, 0);
   EXPECT_TRUE(
       GeometryMapper::SourceToDestinationProjection(*t4, *t4).IsIdentity());
   EXPECT_TRUE(
@@ -1108,9 +1103,9 @@ TEST_P(GeometryMapperTest, Precision) {
 }
 
 TEST_P(GeometryMapperTest, MightOverlap) {
-  auto t2 = Create2DTranslation(t0(), 99, 0);
-  auto t3 = Create2DTranslation(t0(), 100, 0);
-  auto t4 = CreateAnimatingTransform(t0(), MakeTranslationMatrix(100, 0));
+  auto* t2 = Create2DTranslation(t0(), 99, 0);
+  auto* t3 = Create2DTranslation(t0(), 100, 0);
+  auto* t4 = CreateAnimatingTransform(t0(), MakeTranslationMatrix(100, 0));
 
   gfx::RectF r(0, 0, 100, 100);
   PropertyTreeState s1 = PropertyTreeState::Root();
@@ -1125,12 +1120,13 @@ TEST_P(GeometryMapperTest, MightOverlap) {
 }
 
 TEST_P(GeometryMapperTest, MightOverlapCommonClipAncestor) {
-  auto common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 100, 101, 99));
-  auto c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
-  auto c2 = CreateClip(*common_clip, t0(), FloatRoundedRect(50, 150, 100, 100));
-  auto c3 =
+  auto* common_clip = CreateClip(c0(), t0(), FloatRoundedRect(0, 100, 101, 99));
+  auto* c1 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 100, 100, 100));
+  auto* c2 =
+      CreateClip(*common_clip, t0(), FloatRoundedRect(50, 150, 100, 100));
+  auto* c3 =
       CreateClip(*common_clip, t0(), FloatRoundedRect(100, 100, 100, 100));
-  auto c4 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 200, 100, 100));
+  auto* c4 = CreateClip(*common_clip, t0(), FloatRoundedRect(0, 200, 100, 100));
 
   gfx::RectF r(0, 100, 200, 100);
   PropertyTreeState s1(t0(), *c1, e0());
@@ -1146,11 +1142,11 @@ TEST_P(GeometryMapperTest, MightOverlapCommonClipAncestor) {
 }
 
 TEST_P(GeometryMapperTest, MightOverlapFixed) {
-  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto* viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state1 = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
-  auto fixed_transform = CreateFixedPositionTranslation(
+  auto* fixed_transform = CreateFixedPositionTranslation(
       *viewport, 100, 200, scroll_state1.Transform());
   PropertyTreeState fixed_state(*fixed_transform, scroll_state1.Clip(), e0());
 
@@ -1160,112 +1156,108 @@ TEST_P(GeometryMapperTest, MightOverlapFixed) {
   {
     SCOPED_TRACE("fixed_state and scroll_state1");
     CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
-                 gfx::RectF(100, 200, 1700, 1300),
-                 scroll_state1.GetPropertyTreeState());
+                 gfx::RectF(100, 200, 1700, 1300), scroll_state1);
   }
 
   {
     SCOPED_TRACE("fixed_state and scroll_state2");
     auto scroll_state2 = CreateScrollTranslationState(
-        scroll_state1.GetPropertyTreeState(), -2345, -678,
-        gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
+        scroll_state1, -2345, -678, gfx::Rect(20, 10, 200, 100),
+        gfx::Size(3000, 2000));
     // The result is false because the container rect of scroll_state2 doesn't
     // intersect with the expanded fixed-position rect in scroll_state1.
-    EXPECT_FALSE(MightOverlapForCompositing(
-        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
-        scroll_state2.GetPropertyTreeState()));
+    EXPECT_FALSE(MightOverlapForCompositing(gfx::RectF(0, 0, 100, 100),
+                                            fixed_state, gfx::RectF(1, 2, 3, 4),
+                                            scroll_state2));
     EXPECT_FALSE(MightOverlapForCompositing(
         gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(0, 0, 1000, 1000),
-        scroll_state2.GetPropertyTreeState()));
+        scroll_state2));
   }
   {
     SCOPED_TRACE("fixed_state and scroll_state3");
     auto scroll_state3 = CreateScrollTranslationState(
-        scroll_state1.GetPropertyTreeState(), -234, -567,
-        gfx::Rect(0, 300, 500, 500), gfx::Size(1000, 2000));
-    EXPECT_FALSE(MightOverlapForCompositing(
-        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(1, 2, 3, 4),
-        scroll_state3.GetPropertyTreeState()));
-    EXPECT_TRUE(MightOverlapForCompositing(
-        gfx::RectF(0, 0, 100, 100), fixed_state, gfx::RectF(0, 0, 500, 500),
-        scroll_state3.GetPropertyTreeState()));
+        scroll_state1, -234, -567, gfx::Rect(0, 300, 500, 500),
+        gfx::Size(1000, 2000));
+    EXPECT_FALSE(MightOverlapForCompositing(gfx::RectF(0, 0, 100, 100),
+                                            fixed_state, gfx::RectF(1, 2, 3, 4),
+                                            scroll_state3));
+    EXPECT_TRUE(
+        MightOverlapForCompositing(gfx::RectF(0, 0, 100, 100), fixed_state,
+                                   gfx::RectF(0, 0, 500, 500), scroll_state3));
   }
 }
 
 TEST_P(GeometryMapperTest, MightOverlapFixedWithScale) {
-  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto* viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
-  auto fixed_transform = CreateFixedPositionTranslation(
+  auto* fixed_transform = CreateFixedPositionTranslation(
       *viewport, 100, 200, scroll_state.Transform());
-  auto scale = CreateTransform(*fixed_transform, MakeScaleMatrix(2, 3));
+  auto* scale = CreateTransform(*fixed_transform, MakeScaleMatrix(2, 3));
   PropertyTreeState fixed_state(*scale, scroll_state.Clip(), e0());
 
   // Similar to the first case in MightOverlapFixed, but the fixed-position
   // visual rect is scaled first.
   CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
-               gfx::RectF(100, 200, 1800, 1500),
-               scroll_state.GetPropertyTreeState());
+               gfx::RectF(100, 200, 1800, 1500), scroll_state);
 }
 
 TEST_P(GeometryMapperTest, MightOverlapWithScrollingClip) {
-  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto* viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
-  auto fixed_transform = CreateFixedPositionTranslation(
+  auto* fixed_transform = CreateFixedPositionTranslation(
       *viewport, 100, 200, scroll_state.Transform());
-  auto scrolling_clip =
+  auto* scrolling_clip =
       CreateClip(scroll_state.Clip(), scroll_state.Transform(),
                  FloatRoundedRect(0, 1000, 100, 100));
   PropertyTreeState fixed_state(*fixed_transform, *scrolling_clip, e0());
 
   // Same as the first case in MightOverlapFixed. The scrolling clip is ignored.
   CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
-               gfx::RectF(100, 200, 1700, 1300),
-               scroll_state.GetPropertyTreeState());
+               gfx::RectF(100, 200, 1700, 1300), scroll_state);
 }
 
 TEST_P(GeometryMapperTest, MightOverlapWithScrollingClipAndScale) {
-  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto* viewport = CreateTransform(t0(), gfx::Transform());
   auto scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(0, 0, 800, 600), gfx::Size(2400, 1800));
-  auto fixed_transform = CreateFixedPositionTranslation(
+  auto* fixed_transform = CreateFixedPositionTranslation(
       *viewport, 100, 200, scroll_state.Transform());
-  auto scale = CreateTransform(*fixed_transform, MakeScaleMatrix(2, 3));
-  auto scrolling_clip =
+  auto* scale = CreateTransform(*fixed_transform, MakeScaleMatrix(2, 3));
+  auto* scrolling_clip =
       CreateClip(scroll_state.Clip(), scroll_state.Transform(),
                  FloatRoundedRect(0, 1000, 100, 100));
   PropertyTreeState fixed_state(*scale, *scrolling_clip, e0());
 
   // Same as MightOverlapFixedWithScale. The scrolling clip is ignored.
   CheckOverlap(gfx::RectF(0, 0, 100, 100), fixed_state,
-               gfx::RectF(100, 200, 1800, 1500),
-               scroll_state.GetPropertyTreeState());
+               gfx::RectF(100, 200, 1800, 1500), scroll_state);
 }
 
 TEST_P(GeometryMapperTest, MightOverlapScroll) {
-  auto viewport = CreateTransform(t0(), gfx::Transform());
+  auto* viewport = CreateTransform(t0(), gfx::Transform());
   // The scroll offsets are arbitrary and should not affect the test result.
   auto outer_scroll_state = CreateScrollTranslationState(
       PropertyTreeState(*viewport, c0(), e0()), -1234, -567,
       gfx::Rect(10, 20, 100, 200), gfx::Size(150, 300));
   auto inner_scroll_state = CreateScrollTranslationState(
-      outer_scroll_state.GetPropertyTreeState(), -2345, -678,
-      gfx::Rect(20, 10, 200, 100), gfx::Size(3000, 2000));
+      outer_scroll_state, -2345, -678, gfx::Rect(20, 10, 200, 100),
+      gfx::Size(3000, 2000));
 
-  auto transform_outside = Create2DTranslation(*viewport, 100, 200);
+  auto* transform_outside = Create2DTranslation(*viewport, 100, 200);
   PropertyTreeState state_outside(*transform_outside, c0(), e0());
 
-  auto transform_under_outer_scroll =
+  auto* transform_under_outer_scroll =
       Create2DTranslation(outer_scroll_state.Transform(), 34, 56);
   PropertyTreeState state_under_outer_scroll(*transform_under_outer_scroll,
                                              outer_scroll_state.Clip(),
                                              outer_scroll_state.Effect());
 
-  auto transform_under_inner_scroll =
+  auto* transform_under_inner_scroll =
       Create2DTranslation(inner_scroll_state.Transform(), 45, 67);
   PropertyTreeState state_under_inner_scroll(*transform_under_inner_scroll,
                                              inner_scroll_state.Clip(),
@@ -1283,13 +1275,12 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
     // clipped by the container rect: (20, 20, 53, 64),
     EXPECT_EQ(gfx::RectF(20, 20, 53, 64),
               MapVisualRectAboveScrollForCompositingOverlap(
-                  outer_scroll_state.Transform(), rect,
-                  outer_scroll_state.GetPropertyTreeState()));
+                  outer_scroll_state.Transform(), rect, outer_scroll_state));
     // Then mapped into state_outside. Other rects in other
     // SCOPED_TRACE() blocks are computed similarly.
     gfx::RectF rect_mapped_in_state_outside(-80, -180, 53, 64);
-    CheckOverlap(rect, outer_scroll_state.GetPropertyTreeState(),
-                 rect_mapped_in_state_outside, state_outside);
+    CheckOverlap(rect, outer_scroll_state, rect_mapped_in_state_outside,
+                 state_outside);
   }
   {
     // The difference from the first case is that `rect` is mapped with the
@@ -1305,8 +1296,8 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
   {
     // `rect` is mapped through two scroll translations.
     SCOPED_TRACE("inner_scroll_state and state_outside");
-    CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
-                 gfx::RectF(-90, -180, 63, 64), state_outside);
+    CheckOverlap(rect, inner_scroll_state, gfx::RectF(-90, -180, 63, 64),
+                 state_outside);
   }
   {
     // `rect` is mapped by local transform, then through two scroll
@@ -1317,14 +1308,13 @@ TEST_P(GeometryMapperTest, MightOverlapScroll) {
   }
   {
     SCOPED_TRACE("inner_scroll_state and outer_scroll_state");
-    CheckOverlap(rect, inner_scroll_state.GetPropertyTreeState(),
-                 gfx::RectF(20, 20, 53, 64),
-                 outer_scroll_state.GetPropertyTreeState());
+    CheckOverlap(rect, inner_scroll_state, gfx::RectF(20, 20, 53, 64),
+                 outer_scroll_state);
   }
   {
     SCOPED_TRACE("state_under_inner_scroll and outer_scroll_state");
     CheckOverlap(rect, state_under_inner_scroll, gfx::RectF(20, 20, 98, 90),
-                 outer_scroll_state.GetPropertyTreeState());
+                 outer_scroll_state);
   }
   {
     SCOPED_TRACE("state_under_inner_scroll and state_under_outer_scroll");

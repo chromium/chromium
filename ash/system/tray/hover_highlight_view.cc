@@ -87,6 +87,7 @@ void HoverHighlightView::AddRightView(views::View* view,
   GetViewAccessibility().SetName(GetViewAccessibility().GetCachedName());
   GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
+  SetAndUpdateAccessibleDefaultAction();
 }
 
 void HoverHighlightView::AddAdditionalRightView(views::View* view) {
@@ -110,6 +111,7 @@ void HoverHighlightView::SetRightViewVisible(bool visible) {
   }
 
   DeprecatedLayoutImmediately();
+  SetAndUpdateAccessibleDefaultAction();
 }
 
 void HoverHighlightView::SetSubText(const std::u16string& sub_text) {
@@ -250,6 +252,7 @@ void HoverHighlightView::Reset() {
   tri_view_ = nullptr;
 
   RemoveAllChildViews();
+  SetAndUpdateAccessibleDefaultAction();
 
   is_populated_ = false;
 }
@@ -273,17 +276,6 @@ void HoverHighlightView::PerformAction() {
   }
 
   listener_->OnViewClicked(this);
-}
-
-void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (right_view_ && right_view_->GetVisible() &&
-      std::string(right_view_->GetClassName()).find("Button") !=
-          std::string::npos) {
-    // Include "press search plus space to activate" when announcing.
-    node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
-  } else {
-    views::Button::GetAccessibleNodeData(node_data);
-  }
 }
 
 gfx::Size HoverHighlightView::CalculatePreferredSize(
@@ -318,6 +310,7 @@ void HoverHighlightView::AddSubRowContainer() {
 }
 
 void HoverHighlightView::OnEnabledChanged() {
+  views::Button::OnEnabledChanged();
   if (left_view_) {
     left_view_->SetEnabled(GetEnabled());
   }
@@ -327,6 +320,16 @@ void HoverHighlightView::OnEnabledChanged() {
   if (right_view_) {
     right_view_->SetEnabled(GetEnabled());
   }
+}
+
+void HoverHighlightView::SetAndUpdateAccessibleDefaultAction() {
+  SetDefaultActionVerb(
+      (right_view_ && right_view_->GetVisible() &&
+       std::string(right_view_->GetClassName()).find("Button") !=
+           std::string::npos)
+          ? ax::mojom::DefaultActionVerb::kClick
+          : ax::mojom::DefaultActionVerb::kPress);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 BEGIN_METADATA(HoverHighlightView)

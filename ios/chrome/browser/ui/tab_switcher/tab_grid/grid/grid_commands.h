@@ -9,6 +9,8 @@
 
 #import <set>
 
+#import "components/saved_tab_groups/types.h"
+
 class TabGroup;
 
 namespace web {
@@ -23,9 +25,11 @@ class WebStateID;
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made.
 - (BOOL)isItemWithIDSelected:(web::WebStateID)itemID;
-// Tells the receiver to close the items with the identifiers in `itemIDs`.
-// ItemIDs which are not associated with any item are ignored.
-- (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs;
+// Tells the receiver to close the items with the`tabIDs` and `groupIDs`.
+// IDs which are not associated with any item are ignored.
+- (void)closeItemsWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                    groupIDs:(const std::set<tab_groups::TabGroupId>&)groupIDs
+                    tabCount:(int)tabCount;
 // Tells the receiver to close all items.
 - (void)closeAllItems;
 // Tells the receiver to save all items for an undo operation, then close all
@@ -45,11 +49,6 @@ class WebStateID;
 // Tells the receiver to reset grid to contain all the items and select the
 // active item.
 - (void)resetToAllItems;
-
-// Tells the receiver to fetch the search history results count for `searchText`
-// and provide it to the `completion` block.
-- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
-                                   completion:(void (^)(size_t))completion;
 
 // Tells the receiver to select the item with identifier `itemID`. If there is
 // no item with that identifier, no change in selection should be made. `pinned`

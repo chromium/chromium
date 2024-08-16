@@ -102,6 +102,18 @@ const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
     &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
 
+// Whether the DevTools resource explainer assistant is enabled.
+BASE_FEATURE(kDevToolsExplainThisResourceDogfood,
+             "DevToolsExplainThisResourceDogfood",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string>
+    kDevToolsExplainThisResourceDogfoodModelId{
+        &kDevToolsExplainThisResourceDogfood, "aida_model_id",
+        /*default_value=*/""};
+const base::FeatureParam<double> kDevToolsExplainThisResourceDogfoodTemperature{
+    &kDevToolsExplainThisResourceDogfood, "aida_temperature",
+    /*default_value=*/0};
+
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
              "DevToolsSharedProcessInfobar",
@@ -198,7 +210,7 @@ BASE_FEATURE(kNetworkAnnotationMonitoring,
 // crbug.com/1462832 for more details of New Tab Page triggered prerendering.
 BASE_FEATURE(kNewTabPageTriggerForPrerender2,
              "NewTabPageTriggerForPrerender2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
@@ -392,4 +404,10 @@ BASE_FEATURE(kReportPakFileIntegrity,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// This flag enables the removal of IWAs surface captures from Chrome Tabs
+// category in getDisplayMedia() API. When disabled, IWAs surface captures
+// show both in Chrome Tabs and Windows.
+BASE_FEATURE(kRemovalOfIWAsFromTabCapture,
+             "RemovalOfIWAsFromTabCapture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features

@@ -6,17 +6,20 @@
 
 #include <algorithm>
 #include <array>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -66,6 +69,9 @@ struct CompressedInterestGroups {
   size_t uncompressed_size;
   // `num_groups` is the number of interest groups included in the `data`.
   size_t num_groups;
+  // `group_pagg_coordinators` maps from interest group key to an aggregation
+  // coordinator origin, if the interest group has a not null coordinator.
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 struct SerializedBiddersMap {
@@ -88,6 +94,9 @@ struct SerializedBiddersMap {
   // `bidders_elements_size` is the running size estimate for serializing the
   // `bidders` map.
   base::CheckedNumeric<size_t> bidders_elements_size;  // bytes
+  // `group_pagg_coordinators` maps from interest group key to an aggregation
+  // coordinator origin, if the interest group has a not null coordinator.
+  base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
 constexpr std::size_t constexpr_strlen(const char* s) {
@@ -141,8 +150,15 @@ constexpr base::CheckedNumeric<size_t> TaggedStringLength(size_t length) {
   return 1 + LengthOfLength(length) + length;
 }
 
-constexpr base::CheckedNumeric<size_t> TaggedIntLength(size_t value) {
+constexpr base::CheckedNumeric<size_t> TaggedUIntLength(uint64_t value) {
   return 1 + LengthOfLength(value);
+}
+
+constexpr base::CheckedNumeric<size_t> TaggedSIntLength(int64_t value) {
+  if (value < 0) {
+    return TaggedUIntLength(-value - 1);
+  }
+  return TaggedUIntLength(value);
 }
 
 // Array is serialized with a tag then the number of elements in the array.
@@ -262,18 +278,23 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
       cbor::Value(group->bidding_browser_signals->bid_count);
   browser_signals_elements_size +=
       TaggedStringLength(constexpr_strlen("bidCount")) +
-      TaggedIntLength(group->bidding_browser_signals->bid_count);
+      TaggedSIntLength(group->bidding_browser_signals->bid_count);
   // joinCount and recency are noised and binned on the server.
   browser_signals[cbor::Value("joinCount")] =
       cbor::Value(group->bidding_browser_signals->join_count);
   browser_signals_elements_size +=
       TaggedStringLength(constexpr_strlen("joinCount")) +
-      TaggedIntLength(group->bidding_browser_signals->join_count);
+      TaggedSIntLength(group->bidding_browser_signals->join_count);
   int32_t recency = (start_time - group->join_time).InSeconds();
+  if (recency < 0) {
+    // It doesn't make sense to say that the browser joined the interest group
+    // in the future, so just truncate to the present.
+    recency = 0;
+  }
   browser_signals[cbor::Value("recency")] = cbor::Value(recency);
   browser_signals_elements_size +=
       TaggedStringLength(constexpr_strlen("recency")) +
-      TaggedIntLength(recency);
+      TaggedSIntLength(recency);
 
   cbor::Value::ArrayValue prev_wins;
   base::CheckedNumeric<size_t> prev_wins_elements_size = 0;
@@ -281,7 +302,12 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
     cbor::Value::ArrayValue tuple;
     base::CheckedNumeric<size_t> tuple_elements_size = 0;
     int32_t prev_win_time = (start_time - prev_win->time).InSeconds();
-    tuple_elements_size += TaggedIntLength(prev_win_time);
+    if (prev_win_time < 0) {
+      // It doesn't make sense to say that the interest group won an auction
+      // in the future, so just truncate to the present.
+      prev_win_time = 0;
+    }
+    tuple_elements_size += TaggedSIntLength(prev_win_time);
     tuple.emplace_back(prev_win_time);
     // We trust this ad_json because we wrote it ourselves.
     // Currently it's probably not worth it to deserialize this at the same time
@@ -310,7 +336,7 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
           case base::Value::Type::INTEGER:
             obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetInt());
             obj_elements_size += TaggedStringLength(kv.first.size()) +
-                                 TaggedIntLength(kv.second.GetInt());
+                                 TaggedSIntLength(kv.second.GetInt());
             break;
           case base::Value::Type::STRING:
             obj[cbor::Value(kv.first)] = cbor::Value(kv.second.GetString());
@@ -356,6 +382,7 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
 }
 
 CompressedInterestGroups CompressInterestGroups(
+    const url::Origin& owner,
     const std::vector<SingleStorageInterestGroup>& groups,
     base::Time start_time,
     std::optional<uint32_t> target_uncompressed_size) {
@@ -376,6 +403,12 @@ CompressedInterestGroups CompressInterestGroups(
     }
     groups_array.emplace_back(std::move(serialized_group.value));
     result.group_names.push_back(group->interest_group.name);
+    std::optional<url::Origin> maybe_coordinator =
+        group->interest_group.aggregation_coordinator_origin;
+    if (maybe_coordinator.has_value()) {
+      result.group_pagg_coordinators[blink::InterestGroupKey(
+          owner, group->interest_group.name)] = *maybe_coordinator;
+    }
     groups_elements_size += serialized_group.size;
     result.num_groups++;
   }
@@ -420,14 +453,14 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
   all_bidders_full_compressed_groups.reserve(bidders_and_groups.size());
   for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
     const auto& bidder_groups = bidders_and_groups[idx];
-    all_bidders_full_compressed_groups.emplace_back(
-        CompressInterestGroups(bidder_groups.second, start_time, std::nullopt));
+    all_bidders_full_compressed_groups.emplace_back(CompressInterestGroups(
+        bidder_groups.first, bidder_groups.second, start_time, std::nullopt));
     estimator.UpdatePerBuyerMaxSize(
         bidder_groups.first,
         all_bidders_full_compressed_groups[idx].data.size());
   }
 
-  SerializedBiddersMap result{{}, {}, 0, 0, 0, 0};
+  SerializedBiddersMap result{{}, {}, 0, 0, 0, 0, {}};
   result.bidders.reserve(bidders_and_groups.size());
   result.group_names.reserve(bidders_and_groups.size());
   for (size_t idx = 0; idx < bidders_and_groups.size(); ++idx) {
@@ -491,7 +524,8 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
             (current_uncompressed_target_size * 15) / 16;
 
         compressed_groups = CompressInterestGroups(
-            bidder_groups.second, start_time, current_uncompressed_target_size);
+            bidder_groups.first, bidder_groups.second, start_time,
+            current_uncompressed_target_size);
       }
 
       // Only record iteration count if we were trying to fit within a
@@ -514,6 +548,11 @@ SerializedBiddersMap SerializeBidderGroupsWithConfig(
         TaggedStringLength(compressed_groups.data.size());
     result.group_names.emplace(bidder_groups.first,
                                std::move(compressed_groups.group_names));
+    result.group_pagg_coordinators.insert(
+        std::make_move_iterator(
+            compressed_groups.group_pagg_coordinators.begin()),
+        std::make_move_iterator(
+            compressed_groups.group_pagg_coordinators.end()));
     result.bidders[cbor::Value(bidder_origin)] = cbor::Value(
         std::move(compressed_groups.data), cbor::Value::Type::BYTE_STRING);
   }
@@ -813,9 +852,7 @@ void BiddingAndAuctionSerializer::TargetSizeEstimator::UpdateUnsizedGroupSizes(
   }
 }
 
-BiddingAndAuctionSerializer::BiddingAndAuctionSerializer() {
-  start_time_ = base::Time::Now();
-}
+BiddingAndAuctionSerializer::BiddingAndAuctionSerializer() = default;
 BiddingAndAuctionSerializer::BiddingAndAuctionSerializer(
     BiddingAndAuctionSerializer&& other) = default;
 BiddingAndAuctionSerializer::~BiddingAndAuctionSerializer() = default;
@@ -858,7 +895,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   base::CheckedNumeric<size_t> message_elements_size = 0;
   message_obj[cbor::Value("version")] = cbor::Value(0);
   message_elements_size +=
-      TaggedStringLength(constexpr_strlen("version")) + TaggedIntLength(0);
+      TaggedStringLength(constexpr_strlen("version")) + TaggedUIntLength(0);
   // "gzip" is the default so we don't need to specify the compression.
   // message_obj[cbor::Value("compression")] = cbor::Value("gzip");
   DCHECK(generation_id_.is_valid());
@@ -898,6 +935,11 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
     message_obj[cbor::Value("consentedDebugConfig")] =
         cbor::Value(std::move(debug_map));
   }
+  int64_t timestamp = (timestamp_ - base::Time::UnixEpoch()).InMilliseconds();
+  message_obj[cbor::Value("requestTimestampMs")] = cbor::Value(timestamp);
+  message_elements_size +=
+      TaggedStringLength(constexpr_strlen("requestTimestampMs")) +
+      TaggedSIntLength(timestamp);
 
   // Add a dummy element that we will overwrite later to help us estimate the
   // size of the message.
@@ -934,7 +976,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   SerializedBiddersMap groups = SerializeBidderGroupsWithConfig(
       accumulated_groups_, *config, total_size_before_groups.ValueOrDie(),
-      start_time_);
+      timestamp_);
 
   // If we have no groups and the buyers weren't specified, don't send anything.
   // We still need to provide a non-empty request if the buyers are specified in
@@ -1011,6 +1053,7 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
 
   data.request = std::move(request);
   data.group_names = std::move(groups.group_names);
+  data.group_pagg_coordinators = std::move(groups.group_pagg_coordinators);
   return data;
 }
 

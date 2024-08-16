@@ -2,15 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 assert(is_chromeos_ash)
 
 static_library("boca") {
   sources = [
+    "boca_app_client.cc",
+    "boca_app_client.h",
     "boca_role_util.cc",
     "boca_role_util.h",
   ]
   deps = [
     "//ash",
     "//ash/constants",
+    "//chromeos/ash/components/boca/proto",
   ]
 }

@@ -65,7 +65,7 @@ class FakeSessionSyncService : public sync_sessions::SessionSyncService {
     return subscriber_list_.Add(cb);
   }
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
     return nullptr;
   }

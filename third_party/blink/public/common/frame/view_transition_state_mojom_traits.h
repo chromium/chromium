@@ -64,6 +64,11 @@ struct BLINK_COMMON_EXPORT
     return r.class_list;
   }
 
+  static const std::string& containing_group_name(
+      const blink::ViewTransitionElement& r) {
+    return r.containing_group_name;
+  }
+
   static bool Read(blink::mojom::ViewTransitionElementDataView r,
                    blink::ViewTransitionElement* out);
 };

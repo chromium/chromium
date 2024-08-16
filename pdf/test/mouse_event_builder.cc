@@ -32,7 +32,7 @@ blink::WebMouseEvent MouseEventBuilder::Build() const {
         actual_modifiers |= blink::WebInputEvent::Modifiers::kRightButtonDown;
         break;
       default:
-        NOTREACHED_NORETURN();  // Implement more `button_` types as-needed.
+        NOTREACHED();  // Implement more `button_` types as-needed.
     }
   }
   return blink::WebMouseEvent(

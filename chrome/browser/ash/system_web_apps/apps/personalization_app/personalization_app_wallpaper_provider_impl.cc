@@ -46,7 +46,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

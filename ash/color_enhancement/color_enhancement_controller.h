@@ -55,7 +55,7 @@ class ASH_EXPORT ColorEnhancementController : public ShellObserver {
                                       float severity);
 
   // Flashes the display when a notification occurs..
-  void FlashScreenForNotification(bool show_flash);
+  void FlashScreenForNotification(bool show_flash, const SkColor& color);
 
   // ShellObserver:
   void OnRootWindowAdded(aura::Window* root_window) override;

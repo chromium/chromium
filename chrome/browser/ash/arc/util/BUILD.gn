@@ -12,6 +12,8 @@ static_library("util") {
     "arc_window_watcher.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/public/cpp",
     "//base",

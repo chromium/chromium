@@ -66,12 +66,12 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   // PaymentsAutofillClient:
   void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       LocalSaveCardPromptCallback callback) override;
   void ConfirmSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
-      AutofillClient::SaveCreditCardOptions options,
+      SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>

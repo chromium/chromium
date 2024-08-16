@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/ime/text_input_client.h"
@@ -28,7 +29,8 @@ class DummyTextInputClient : public TextInputClient {
 
   ~DummyTextInputClient() override;
 
-  // Overriden from TextInputClient.
+  // Overridden from TextInputClient.
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -129,6 +131,8 @@ class DummyTextInputClient : public TextInputClient {
   std::vector<GrammarFragment> grammar_fragments_;
   gfx::Range cursor_range_ = gfx::Range::InvalidRange();
   bool autocorrect_enabled_;
+
+  base::WeakPtrFactory<DummyTextInputClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

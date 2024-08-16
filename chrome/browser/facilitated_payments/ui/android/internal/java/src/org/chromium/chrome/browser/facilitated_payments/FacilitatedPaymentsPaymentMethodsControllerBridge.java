@@ -31,6 +31,11 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
                 nativeFacilitatedPaymentsController);
     }
 
+    @CalledByNative
+    private void onNativeDestroyed() {
+        mNativeFacilitatedPaymentsController = 0;
+    }
+
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
     @Override
     public void onDismissed() {
@@ -56,6 +61,16 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         SettingsLauncherFactory.createSettingsLauncher()
                 .launchSettingsActivity(
                         context, SettingsLauncher.SettingsFragment.FINANCIAL_ACCOUNTS);
+        return true;
+    }
+
+    @Override
+    public boolean showManagePaymentMethodsSettings(Context context) {
+        if (context == null) {
+            return false;
+        }
+        SettingsLauncherFactory.createSettingsLauncher()
+                .launchSettingsActivity(context, SettingsLauncher.SettingsFragment.PAYMENT_METHODS);
         return true;
     }
 

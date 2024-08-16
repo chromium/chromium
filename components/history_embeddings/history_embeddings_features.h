@@ -61,6 +61,9 @@ extern const base::FeatureParam<bool> kEnableAnswers;
 // Specifies whether to use the ML Answerer (if false, the mock is used).
 extern const base::FeatureParam<bool> kUseMlAnswerer;
 
+// Specifies the min score for generated answer from the ML answerer.
+extern const base::FeatureParam<double> kMlAnswererMinScore;
+
 // Specifies whether to use the ML Embedder to embed passages and queries.
 extern const base::FeatureParam<bool> kUseMlEmbedder;
 
@@ -112,6 +115,10 @@ extern const base::FeatureParam<bool> kUseUrlFilter;
 // The amount of time in seconds that the passage embeddings service will idle
 // for before being torn down to reduce memory usage.
 extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
+
+// Comma-separated list, all ASCII, expected to be lowercased; may contain a mix
+// of words and phrases.
+extern const base::FeatureParam<std::string> kFilterTerms;
 
 // Whether the history embeddings feature is enabled. This only checks if the
 // feature flags are enabled and does not check the user's opt-in preference.

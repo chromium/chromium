@@ -153,6 +153,18 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
       OnDeviceModelEligibilityReason reason) = 0;
 };
 
+// The model's configured limits on tokens.
+struct TokenLimits {
+  // The full combined limit for input and output tokens.
+  uint32_t max_tokens = 0;
+  // The maximum number of tokens that can be used by AddContext.
+  uint32_t max_context_tokens = 0;
+  // The maximum number of tokens that can be used by ExecuteModel.
+  uint32_t max_execute_tokens = 0;
+  // The maximum number of tokens that can be generated as output.
+  uint32_t max_output_tokens = 0;
+};
+
 // Interface for model execution.
 class OptimizationGuideModelExecutor {
  public:
@@ -162,6 +174,8 @@ class OptimizationGuideModelExecutor {
   class Session {
    public:
     virtual ~Session() = default;
+
+    virtual const TokenLimits& GetTokenLimits() const = 0;
 
     // Adds context to this session. This will be saved for future Execute()
     // calls. Calling multiple times will replace previous calls to

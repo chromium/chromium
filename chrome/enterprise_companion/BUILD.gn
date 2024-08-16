@@ -32,7 +32,11 @@ process_version("branding_header") {
     "-e",
     "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
     "-e",
+    "ENTERPRISE_COMPANION_APPID=\"$enterprise_companion_appid\"",
+    "-e",
     "ENTERPRISE_COMPANION_EVENT_LOGGING_URL=\"$enterprise_companion_event_logging_url\"",
+    "-e",
+    "KEYSTONE_NAME=\"$keystone_app_name\"",
     "-e",
     "MAC_BUNDLE_IDENTIFIER_STRING=\"$mac_enterprise_companion_bundle_identifier\"",
     "-e",
@@ -49,6 +53,9 @@ source_set("base") {
   sources = [
     "app/app.cc",
     "app/app.h",
+    "app/app_client_base.cc",
+    "app/app_client_base.h",
+    "app/app_fetch_policies.cc",
     "app/app_install.cc",
     "app/app_server.cc",
     "app/app_shutdown.cc",
@@ -67,6 +74,7 @@ source_set("base") {
     "event_logger.cc",
     "event_logger.h",
     "installer.h",
+    "ipc_security.h",
     "ipc_support.cc",
     "ipc_support.h",
     "lock.cc",
@@ -83,6 +91,7 @@ source_set("base") {
     "//base",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/proto",
+    "//chrome/updater:public_sources",
     "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
     "//components/policy/core/common",
@@ -96,12 +105,32 @@ source_set("base") {
     "//third_party/crashpad/crashpad/handler",
   ]
 
+  if (is_posix) {
+    sources += [
+      "installer_posix.cc",
+      "installer_posix.h",
+    ]
+  }
+
   if (is_linux) {
-    sources += [ "installer_linux.cc" ]
+    sources += [
+      "installer_linux.cc",
+      "ipc_security_linux.cc",
+    ]
   } else if (is_mac) {
-    sources += [ "installer_mac.mm" ]
+    sources += [
+      "app/app_net_worker.cc",
+      "installer_mac.mm",
+      "ipc_security_mac.cc",
+      "mac/mac_utils.h",
+      "mac/mac_utils.mm",
+    ]
   } else if (is_win) {
-    sources += [ "installer_win.cc" ]
+    sources += [
+      "installer_win.cc",
+      "ipc_security_win.cc",
+    ]
+    deps += [ "//chrome/installer/util:work_item" ]
   }
 }
 
@@ -133,9 +162,13 @@ test("enterprise_companion_tests") {
     "enterprise_companion_status_unittest.cc",
     "event_logger_unittest.cc",
     "test/run_all_unittests.cc",
+    "test/test_utils.cc",
+    "test/test_utils.h",
+    "url_loader_factory_provider_unittest.cc",
   ]
   deps = [
     ":base",
+    ":branding_header",
     ":client",
     "mojom/",
     "//base",
@@ -147,10 +180,48 @@ test("enterprise_companion_tests") {
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
+    "//net:test_support",
     "//services/network:test_support",
     "//testing/gtest",
   ]
   data_deps = [ ":test_crashpad_embedder" ]
+
+  if (is_mac) {
+    sources += [ "app/app_net_worker_unittest.cc" ]
+  }
+}
+
+test("enterprise_companion_integration_tests") {
+  testonly = true
+
+  sources = [
+    "test/run_all_integration_tests.cc",
+    "test/test_utils.cc",
+    "test/test_utils.h",
+  ]
+  deps = [
+    ":base",
+    ":branding_header",
+    ":installer_paths",
+    ":version_header",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/updater:constants_test",
+    "//chrome/updater:public_sources",
+    "//testing/gtest",
+  ]
+
+  # The MacOS integration tests require the pkg installer to be built, which is
+  # only possible on MacOS hosts.
+  if (is_mac && host_os == "mac") {
+    sources += [ "test/integration_tests_mac.cc" ]
+    data_deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_installer_unsigned" ]
+  }
+
+  if (is_win) {
+    sources += [ "test/integration_tests_win.cc" ]
+    data_deps = [ ":enterprise_companion_test" ]
+  }
 }
 
 static_library("client") {
@@ -178,6 +249,7 @@ static_library("installer_paths") {
   visibility = [
     ":base",
     ":client",
+    ":enterprise_companion_integration_tests",
   ]
 
   if (is_linux) {
@@ -204,14 +276,34 @@ if (!is_official_build) {
   }
 }
 
+# Enterprise Companion application used by integration tests. Eventually, this
+# should be linked against test constants.
+executable("enterprise_companion_test") {
+  testonly = true
+  sources = [ "main.cc" ]
+  deps = [
+    ":base",
+    "//chrome/updater:constants_prod",
+  ]
+
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
+  }
+}
+
 group("all") {
   testonly = true
 
   deps = [
     ":client",
+    ":enterprise_companion_integration_tests",
     ":enterprise_companion_tests",
   ]
   if (!is_official_build) {
     deps += [ ":enterprise_companion" ]
+
+    if (is_mac) {
+      deps += [ "//chrome/enterprise_companion/mac" ]
+    }
   }
 }

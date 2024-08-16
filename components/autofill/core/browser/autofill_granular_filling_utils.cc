@@ -43,7 +43,7 @@ FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type) {
     case SuggestionType::kFillFullEmail:
       return FillingMethod::kGroupFillingEmail;
     default:
-      NOTREACHED_NORETURN();  // Unrelated SuggestionTypes.
+      NOTREACHED();  // Unrelated SuggestionTypes.
   }
 }
 
@@ -75,7 +75,7 @@ FieldTypeSet GetTargetFieldTypesFromFillingMethod(
       return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
     case FillingMethod::kFieldByFieldFilling:
     case FillingMethod::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

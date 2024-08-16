@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_provider.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
@@ -48,6 +49,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -200,6 +202,9 @@ class CloudExternalDataPolicyObserverTest : public ash::DeviceSettingsTestBase {
 
   ExternalDataFetcher::FetchCallback fetch_callback_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+
   TestingProfileManager profile_manager_;
   session_manager::SessionManager session_manager_;
 };
@@ -267,7 +272,7 @@ void CloudExternalDataPolicyObserverTest::CreateObserver() {
   delegate_ = delegate.get();
   observer_ = std::make_unique<CloudExternalDataPolicyObserver>(
       ash::CrosSettings::Get(), device_local_account_policy_service_.get(),
-      key::kUserAvatarImage, user_manager_.get(), std::move(delegate));
+      key::kUserAvatarImage, user_manager_.Get(), std::move(delegate));
   observer_->Init();
 }
 

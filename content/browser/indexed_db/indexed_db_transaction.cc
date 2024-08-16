@@ -631,7 +631,6 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
   } else {
     const base::TimeDelta active_time =
         base::Time::Now() - diagnostics_.start_time;
-    uint64_t size_kb = backing_store_transaction_->GetTransactionSize() / 1024;
 
     s = backing_store_transaction_->CommitPhaseTwo();
 
@@ -641,15 +640,12 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
     const base::TimeDelta active_time2 =
         base::Time::Now() - diagnostics_.start_time;
 
-    // SizeOnCommit2 histograms record 1KB to 1GB.
     switch (mode_) {
       case blink::mojom::IDBTransactionMode::ReadOnly:
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive", active_time);
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time2);
-        UMA_HISTOGRAM_COUNTS_1M(
-            "WebCore.IndexedDB.Transaction.ReadOnly.SizeOnCommit2", size_kb);
         break;
       case blink::mojom::IDBTransactionMode::ReadWrite:
         UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -657,8 +653,6 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
             active_time2);
-        UMA_HISTOGRAM_COUNTS_1M(
-            "WebCore.IndexedDB.Transaction.ReadWrite.SizeOnCommit2", size_kb);
         break;
       case blink::mojom::IDBTransactionMode::VersionChange:
         UMA_HISTOGRAM_MEDIUM_TIMES(
@@ -667,9 +661,6 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2",
             active_time2);
-        UMA_HISTOGRAM_COUNTS_1M(
-            "WebCore.IndexedDB.Transaction.VersionChange.SizeOnCommit2",
-            size_kb);
         break;
       default:
         NOTREACHED_IN_MIGRATION();

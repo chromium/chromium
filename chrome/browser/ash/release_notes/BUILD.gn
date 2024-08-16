@@ -51,10 +51,12 @@ static_library("release_notes") {
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "release_notes_notification_unittest.cc",
     "release_notes_storage_unittest.cc",
   ]
+
   deps = [
     "//ash/constants",
     "//base",
@@ -62,7 +64,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/release_notes",
     "//chrome/common:constants",

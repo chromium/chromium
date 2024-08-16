@@ -15,10 +15,10 @@
 #include "components/user_prefs/user_prefs.h"
 #include "testing/platform_test.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
-#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+#endif  // BUILDFLAG(USE_BLINK)
 
 namespace safe_browsing {
 
@@ -37,9 +37,9 @@ class RealTimePolicyEngineTest : public PlatformTest {
 
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
     enterprise_connectors::RegisterProfilePrefs(pref_service_.registry());
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_.registry());
   }
@@ -182,7 +182,7 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
         /*has_valid_dm_token=*/false, /*is_off_the_record=*/false));
   }
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
   // Policy disabled.
   {
     pref_service_.SetUserPref(
@@ -201,7 +201,7 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup) {
     EXPECT_TRUE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/false));
   }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 }
 
 TEST_F(RealTimePolicyEngineTest, TestIsInExcludedCountry) {

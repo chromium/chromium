@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
@@ -18,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -733,6 +735,8 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
         {ash::features::kEnforceAshExtensionKeeplist});
     ash::standalone_browser::migrator_util::SetProfileMigrationCompletedForTest(
         true);
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;
@@ -756,6 +760,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
 };

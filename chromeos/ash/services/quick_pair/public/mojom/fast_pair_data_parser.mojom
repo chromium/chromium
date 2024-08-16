@@ -24,6 +24,12 @@ struct DecryptedResponse {
   array<uint8, 6> address_bytes;
   // Random value.
   array<uint8, 9> salt;
+  // Flags.
+  uint8? flags;
+  // Number of the Provider's addresses.
+  uint8? num_addresses;
+  // Bondable address of the secondary.
+  array<uint8, 6>? secondary_address_bytes;
 };
 
 // Decrypted passkey value.

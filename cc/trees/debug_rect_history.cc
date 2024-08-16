@@ -12,6 +12,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/layers/render_surface_impl.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/trees/damage_tracker.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -38,35 +39,41 @@ void DebugRectHistory::SaveDebugRectsForCurrentFrame(
   // store all debug rects for a history of many frames.
   debug_rects_.clear();
 
-  if (debug_state.show_touch_event_handler_rects)
+  if (debug_state.show_touch_event_handler_rects) {
     SaveTouchEventHandlerRects(tree_impl);
-
-  if (debug_state.show_wheel_event_handler_rects)
+  }
+  if (debug_state.show_wheel_event_handler_rects) {
     SaveWheelEventHandlerRects(tree_impl);
-
-  if (debug_state.show_scroll_event_handler_rects)
+  }
+  if (debug_state.show_scroll_event_handler_rects) {
     SaveScrollEventHandlerRects(tree_impl);
-
-  if (debug_state.show_non_fast_scrollable_rects)
-    SaveNonFastScrollableRects(tree_impl);
-
-  if (debug_state.show_main_thread_scrolling_reason_rects)
-    SaveMainThreadScrollingReasonRects(tree_impl);
-
-  if (debug_state.show_layout_shift_regions)
+  }
+  if (debug_state.show_main_thread_scroll_hit_test_rects) {
+    SaveMainThreadScrollHitTestRects(tree_impl);
+  }
+  if (debug_state.show_main_thread_scroll_repaint_rects) {
+    SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+        tree_impl, DebugRectType::kMainThreadScrollRepaint);
+  }
+  if (debug_state.show_raster_inducing_scroll_rects) {
+    SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+        tree_impl, DebugRectType::kRasterInducingScroll);
+  }
+  if (debug_state.show_layout_shift_regions) {
     SaveLayoutShiftRects(hud_layer);
-
-  if (debug_state.show_paint_rects)
+  }
+  if (debug_state.show_paint_rects) {
     SavePaintRects(tree_impl);
-
-  if (debug_state.show_property_changed_rects)
+  }
+  if (debug_state.show_property_changed_rects) {
     SavePropertyChangedRects(tree_impl, hud_layer);
-
-  if (debug_state.show_surface_damage_rects)
+  }
+  if (debug_state.show_surface_damage_rects) {
     SaveSurfaceDamageRects(render_surface_list);
-
-  if (debug_state.show_screen_space_rects)
+  }
+  if (debug_state.show_screen_space_rects) {
     SaveScreenSpaceRects(render_surface_list);
+  }
 }
 
 void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
@@ -76,9 +83,9 @@ void DebugRectHistory::SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud) {
     return;
 
   for (gfx::Rect rect : hud->LayoutShiftRects()) {
-    debug_rects_.push_back(DebugRect(
-        LAYOUT_SHIFT_RECT_TYPE,
-        MathUtil::MapEnclosingClippedRect(hud->ScreenSpaceTransform(), rect)));
+    debug_rects_.emplace_back(
+        DebugRectType::kLayoutShift,
+        MathUtil::MapEnclosingClippedRect(hud->ScreenSpaceTransform(), rect));
   }
   hud->ClearLayoutShiftRects();
 }
@@ -94,9 +101,9 @@ void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
       continue;
 
     for (gfx::Rect rect : invalidation_region) {
-      debug_rects_.push_back(
-          DebugRect(PAINT_RECT_TYPE, MathUtil::MapEnclosingClippedRect(
-                                         layer->ScreenSpaceTransform(), rect)));
+      debug_rects_.emplace_back(DebugRectType::kPaint,
+                                MathUtil::MapEnclosingClippedRect(
+                                    layer->ScreenSpaceTransform(), rect));
     }
   }
 }
@@ -110,10 +117,10 @@ void DebugRectHistory::SavePropertyChangedRects(LayerTreeImpl* tree_impl,
     if (!layer->LayerPropertyChanged())
       continue;
 
-    debug_rects_.push_back(DebugRect(
-        PROPERTY_CHANGED_RECT_TYPE,
+    debug_rects_.emplace_back(
+        DebugRectType::kPropertyChanged,
         MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                          gfx::Rect(layer->bounds()))));
+                                          gfx::Rect(layer->bounds())));
   }
 }
 
@@ -124,10 +131,10 @@ void DebugRectHistory::SaveSurfaceDamageRects(
     RenderSurfaceImpl* render_surface = render_surface_list[surface_index];
     DCHECK(render_surface);
 
-    debug_rects_.push_back(DebugRect(
-        SURFACE_DAMAGE_RECT_TYPE, MathUtil::MapEnclosingClippedRect(
-                                      render_surface->screen_space_transform(),
-                                      render_surface->GetDamageRect())));
+    debug_rects_.emplace_back(DebugRectType::kSurfaceDamage,
+                              MathUtil::MapEnclosingClippedRect(
+                                  render_surface->screen_space_transform(),
+                                  render_surface->GetDamageRect()));
   }
 }
 
@@ -138,30 +145,27 @@ void DebugRectHistory::SaveScreenSpaceRects(
     RenderSurfaceImpl* render_surface = render_surface_list[surface_index];
     DCHECK(render_surface);
 
-    debug_rects_.push_back(DebugRect(
-        SCREEN_SPACE_RECT_TYPE, MathUtil::MapEnclosingClippedRect(
-                                    render_surface->screen_space_transform(),
-                                    render_surface->content_rect())));
+    debug_rects_.emplace_back(DebugRectType::kScreenSpace,
+                              MathUtil::MapEnclosingClippedRect(
+                                  render_surface->screen_space_transform(),
+                                  render_surface->content_rect()));
   }
 }
 
 void DebugRectHistory::SaveTouchEventHandlerRects(LayerTreeImpl* tree_impl) {
-  for (auto* layer : *tree_impl)
-    SaveTouchEventHandlerRectsCallback(layer);
-}
-
-void DebugRectHistory::SaveTouchEventHandlerRectsCallback(LayerImpl* layer) {
-  const TouchActionRegion& touch_action_region = layer->touch_action_region();
-  for (int touch_action_index = static_cast<int>(TouchAction::kNone);
-       touch_action_index != static_cast<int>(TouchAction::kMax);
-       ++touch_action_index) {
-    auto touch_action = static_cast<TouchAction>(touch_action_index);
-    Region region = touch_action_region.GetRegionForTouchAction(touch_action);
-    for (gfx::Rect rect : region) {
-      debug_rects_.emplace_back(TOUCH_EVENT_HANDLER_RECT_TYPE,
-                                MathUtil::MapEnclosingClippedRect(
-                                    layer->ScreenSpaceTransform(), rect),
-                                touch_action);
+  for (auto* layer : *tree_impl) {
+    const TouchActionRegion& touch_action_region = layer->touch_action_region();
+    for (int touch_action_index = static_cast<int>(TouchAction::kNone);
+         touch_action_index != static_cast<int>(TouchAction::kMax);
+         ++touch_action_index) {
+      auto touch_action = static_cast<TouchAction>(touch_action_index);
+      Region region = touch_action_region.GetRegionForTouchAction(touch_action);
+      for (gfx::Rect rect : region) {
+        debug_rects_.emplace_back(DebugRectType::kTouchEventHandler,
+                                  MathUtil::MapEnclosingClippedRect(
+                                      layer->ScreenSpaceTransform(), rect),
+                                  touch_action);
+      }
     }
   }
 }
@@ -173,54 +177,53 @@ void DebugRectHistory::SaveWheelEventHandlerRects(LayerTreeImpl* tree_impl) {
   for (auto* layer : *tree_impl) {
     const Region& region = layer->wheel_event_handler_region();
     for (gfx::Rect rect : region) {
-      debug_rects_.emplace_back(
-          DebugRect(WHEEL_EVENT_HANDLER_RECT_TYPE,
-                    MathUtil::MapEnclosingClippedRect(
-                        layer->ScreenSpaceTransform(), rect)));
+      debug_rects_.emplace_back(DebugRectType::kWheelEventHandler,
+                                MathUtil::MapEnclosingClippedRect(
+                                    layer->ScreenSpaceTransform(), rect));
     }
   }
 }
 
 void DebugRectHistory::SaveScrollEventHandlerRects(LayerTreeImpl* tree_impl) {
-  for (auto* layer : *tree_impl)
-    SaveScrollEventHandlerRectsCallback(layer);
-}
-
-void DebugRectHistory::SaveScrollEventHandlerRectsCallback(LayerImpl* layer) {
-  if (!layer->layer_tree_impl()->have_scroll_event_handlers())
-    return;
-
-  debug_rects_.push_back(
-      DebugRect(SCROLL_EVENT_HANDLER_RECT_TYPE,
-                MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                                  gfx::Rect(layer->bounds()))));
-}
-
-void DebugRectHistory::SaveNonFastScrollableRects(LayerTreeImpl* tree_impl) {
-  for (auto* layer : *tree_impl)
-    SaveNonFastScrollableRectsCallback(layer);
-}
-
-void DebugRectHistory::SaveNonFastScrollableRectsCallback(LayerImpl* layer) {
-  for (gfx::Rect rect : layer->non_fast_scrollable_region()) {
-    debug_rects_.push_back(DebugRect(NON_FAST_SCROLLABLE_RECT_TYPE,
-                                     MathUtil::MapEnclosingClippedRect(
-                                         layer->ScreenSpaceTransform(), rect)));
+  for (auto* layer : *tree_impl) {
+    if (!layer->layer_tree_impl()->have_scroll_event_handlers()) {
+      continue;
+    }
+    debug_rects_.emplace_back(
+        DebugRectType::kScrollEventHandler,
+        MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
+                                          gfx::Rect(layer->bounds())));
   }
 }
 
-void DebugRectHistory::SaveMainThreadScrollingReasonRects(
+void DebugRectHistory::SaveMainThreadScrollHitTestRects(
     LayerTreeImpl* tree_impl) {
-  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree();
   for (auto* layer : *tree_impl) {
-    if (const auto* scroll_node =
-            scroll_tree.FindNodeFromElementId(layer->element_id())) {
-      if (auto reasons = scroll_node->main_thread_scrolling_reasons) {
-        debug_rects_.push_back(DebugRect(
-            MAIN_THREAD_SCROLLING_REASON_RECT_TYPE,
-            MathUtil::MapEnclosingClippedRect(layer->ScreenSpaceTransform(),
-                                              gfx::Rect(layer->bounds())),
-            TouchAction::kNone, reasons));
+    for (gfx::Rect rect : layer->main_thread_scroll_hit_test_region()) {
+      debug_rects_.emplace_back(DebugRectType::kMainThreadScrollHitTest,
+                                MathUtil::MapEnclosingClippedRect(
+                                    layer->ScreenSpaceTransform(), rect));
+    }
+  }
+}
+
+void DebugRectHistory::SaveMainThreadScrollRepaintOrRasterInducingScrollRects(
+    LayerTreeImpl* tree_impl,
+    DebugRectType type) {
+  const auto& scroll_tree = tree_impl->property_trees()->scroll_tree();
+  const auto& transform_tree = tree_impl->property_trees()->transform_tree();
+  for (auto& node : scroll_tree.nodes()) {
+    if (type == DebugRectType::kMainThreadScrollRepaint
+            ? scroll_tree.ShouldRealizeScrollsOnMain(node)
+            : scroll_tree.CanRealizeScrollsOnPendingTree(node)) {
+      if (const auto* transform_node = transform_tree.Node(node.transform_id);
+          transform_node && transform_tree.Node(transform_node->parent_id)) {
+        debug_rects_.emplace_back(
+            type, MathUtil::MapEnclosingClippedRect(
+                      // Skip the scroll translation node.
+                      transform_tree.ToScreen(transform_node->parent_id),
+                      gfx::Rect(node.container_origin,
+                                scroll_tree.container_bounds(node.id))));
       }
     }
   }

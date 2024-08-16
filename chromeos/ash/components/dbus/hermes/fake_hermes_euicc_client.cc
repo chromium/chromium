@@ -17,9 +17,9 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
-#include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
@@ -715,6 +715,8 @@ void FakeHermesEuiccClient::CreateCellularService(
   service_test->SetServiceProperty(
       service_path, shill::kActivationStateProperty,
       base::Value(shill::kActivationStateActivated));
+  service_test->SetServiceProperty(service_path, shill::kAutoConnectProperty,
+                                   base::Value(true));
   service_test->SetServiceProperty(service_path, shill::kConnectableProperty,
                                    base::Value(false));
   service_test->SetServiceProperty(service_path, shill::kVisibleProperty,
@@ -731,23 +733,14 @@ void FakeHermesEuiccClient::CreateDefaultModbApn(
     const std::string& service_path) {
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
-  auto apn_value =
-      base::Value::Dict()
-          .Set(shill::kApnProperty, kFakeDefaultApn)
-          .Set(shill::kApnNameProperty, kFakeDefaultApn)
-          .Set(shill::kApnLocalizedNameProperty, "localized test apn")
-          .Set(shill::kApnUsernameProperty, "user name")
-          .Set(shill::kApnPasswordProperty, "password")
-          .Set(shill::kApnAuthenticationProperty, "chap")
-          .Set(shill::kApnTypesProperty, shill::kApnTypeDefault)
-          .Set(shill::kApnSourceProperty, shill::kApnSourceMoDb);
-  service_test->SetServiceProperty(service_path,
-                                   shill::kCellularLastGoodApnProperty,
-                                   base::Value(apn_value.Clone()));
-  service_test->SetServiceProperty(service_path, shill::kCellularApnProperty,
-                                   base::Value(apn_value.Clone()));
+  service_test->SetServiceProperty(
+      service_path, shill::kCellularLastGoodApnProperty,
+      base::Value(service_test->GetFakeDefaultModbApnDict()));
+  service_test->SetServiceProperty(
+      service_path, shill::kCellularApnProperty,
+      base::Value(service_test->GetFakeDefaultModbApnDict()));
   base::Value::List apn_list;
-  apn_list.Append(std::move(apn_value));
+  apn_list.Append(service_test->GetFakeDefaultModbApnDict());
   ShillDeviceClient::TestInterface* device_test =
       ShillDeviceClient::Get()->GetTestInterface();
   DCHECK(device_test);

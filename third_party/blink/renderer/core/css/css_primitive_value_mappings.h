@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/inset_area.h"
+#include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
@@ -258,12 +258,17 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     // Non standard appearance values that are not listed as
     // compat-auto must be rendered as none.
     // https://drafts.csswg.org/css-ui/#appearance-switching
+    case kInnerSpinButtonPart:
     case kMediaSliderPart:
     case kMediaSliderThumbPart:
     case kMediaVolumeSliderPart:
     case kMediaVolumeSliderThumbPart:
+    case kPushButtonPart:
+    case kSearchFieldCancelButtonPart:
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
+    case kSliderHorizontalPart:
+    case kSquareButtonPart:
       value_id_ = CSSValueID::kNone;
       break;
     case kAutoPart:
@@ -275,17 +280,8 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kRadioPart:
       value_id_ = CSSValueID::kRadio;
       break;
-    case kPushButtonPart:
-      value_id_ = CSSValueID::kPushButton;
-      break;
-    case kSquareButtonPart:
-      value_id_ = CSSValueID::kSquareButton;
-      break;
     case kButtonPart:
       value_id_ = CSSValueID::kButton;
-      break;
-    case kInnerSpinButtonPart:
-      value_id_ = CSSValueID::kInnerSpinButton;
       break;
     case kListboxPart:
       value_id_ = CSSValueID::kListbox;
@@ -305,17 +301,11 @@ inline CSSIdentifierValue::CSSIdentifierValue(ControlPart e)
     case kProgressBarPart:
       value_id_ = CSSValueID::kProgressBar;
       break;
-    case kSliderHorizontalPart:
-      value_id_ = CSSValueID::kSliderHorizontal;
-      break;
     case kSliderVerticalPart:
       value_id_ = CSSValueID::kSliderVertical;
       break;
     case kSearchFieldPart:
       value_id_ = CSSValueID::kSearchfield;
-      break;
-    case kSearchFieldCancelButtonPart:
-      value_id_ = CSSValueID::kSearchfieldCancelButton;
       break;
     case kTextFieldPart:
       value_id_ = CSSValueID::kTextfield;
@@ -341,14 +331,8 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kCheckboxPart;
     case CSSValueID::kRadio:
       return kRadioPart;
-    case CSSValueID::kPushButton:
-      return kPushButtonPart;
-    case CSSValueID::kSquareButton:
-      return kSquareButtonPart;
     case CSSValueID::kButton:
       return kButtonPart;
-    case CSSValueID::kInnerSpinButton:
-      return kInnerSpinButtonPart;
     case CSSValueID::kListbox:
       return kListboxPart;
     case CSSValueID::kInternalMediaControl:
@@ -361,14 +345,10 @@ inline ControlPart CSSIdentifierValue::ConvertTo() const {
       return kMeterPart;
     case CSSValueID::kProgressBar:
       return kProgressBarPart;
-    case CSSValueID::kSliderHorizontal:
-      return kSliderHorizontalPart;
     case CSSValueID::kSliderVertical:
       return kSliderVerticalPart;
     case CSSValueID::kSearchfield:
       return kSearchFieldPart;
-    case CSSValueID::kSearchfieldCancelButton:
-      return kSearchFieldCancelButtonPart;
     case CSSValueID::kTextfield:
       return kTextFieldPart;
     case CSSValueID::kTextarea:
@@ -2158,153 +2138,153 @@ inline EScrollStartTarget CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(InsetAreaRegion region)
+inline CSSIdentifierValue::CSSIdentifierValue(PositionAreaRegion region)
     : CSSValue(kIdentifierClass) {
   switch (region) {
-    case InsetAreaRegion::kNone:
+    case PositionAreaRegion::kNone:
       value_id_ = CSSValueID::kNone;
       break;
-    case InsetAreaRegion::kAll:
+    case PositionAreaRegion::kAll:
       value_id_ = CSSValueID::kSpanAll;
       break;
-    case InsetAreaRegion::kCenter:
+    case PositionAreaRegion::kCenter:
       value_id_ = CSSValueID::kCenter;
       break;
-    case InsetAreaRegion::kStart:
+    case PositionAreaRegion::kStart:
       value_id_ = CSSValueID::kStart;
       break;
-    case InsetAreaRegion::kEnd:
+    case PositionAreaRegion::kEnd:
       value_id_ = CSSValueID::kEnd;
       break;
-    case InsetAreaRegion::kSelfStart:
+    case PositionAreaRegion::kSelfStart:
       value_id_ = CSSValueID::kSelfStart;
       break;
-    case InsetAreaRegion::kSelfEnd:
+    case PositionAreaRegion::kSelfEnd:
       value_id_ = CSSValueID::kSelfEnd;
       break;
-    case InsetAreaRegion::kInlineStart:
+    case PositionAreaRegion::kInlineStart:
       value_id_ = CSSValueID::kInlineStart;
       break;
-    case InsetAreaRegion::kInlineEnd:
+    case PositionAreaRegion::kInlineEnd:
       value_id_ = CSSValueID::kInlineEnd;
       break;
-    case InsetAreaRegion::kSelfInlineStart:
+    case PositionAreaRegion::kSelfInlineStart:
       value_id_ = CSSValueID::kSelfInlineStart;
       break;
-    case InsetAreaRegion::kSelfInlineEnd:
+    case PositionAreaRegion::kSelfInlineEnd:
       value_id_ = CSSValueID::kSelfInlineEnd;
       break;
-    case InsetAreaRegion::kBlockStart:
+    case PositionAreaRegion::kBlockStart:
       value_id_ = CSSValueID::kBlockStart;
       break;
-    case InsetAreaRegion::kBlockEnd:
+    case PositionAreaRegion::kBlockEnd:
       value_id_ = CSSValueID::kBlockEnd;
       break;
-    case InsetAreaRegion::kSelfBlockStart:
+    case PositionAreaRegion::kSelfBlockStart:
       value_id_ = CSSValueID::kSelfBlockStart;
       break;
-    case InsetAreaRegion::kSelfBlockEnd:
+    case PositionAreaRegion::kSelfBlockEnd:
       value_id_ = CSSValueID::kSelfBlockEnd;
       break;
-    case InsetAreaRegion::kTop:
+    case PositionAreaRegion::kTop:
       value_id_ = CSSValueID::kTop;
       break;
-    case InsetAreaRegion::kBottom:
+    case PositionAreaRegion::kBottom:
       value_id_ = CSSValueID::kBottom;
       break;
-    case InsetAreaRegion::kLeft:
+    case PositionAreaRegion::kLeft:
       value_id_ = CSSValueID::kLeft;
       break;
-    case InsetAreaRegion::kRight:
+    case PositionAreaRegion::kRight:
       value_id_ = CSSValueID::kRight;
       break;
-    case InsetAreaRegion::kXStart:
+    case PositionAreaRegion::kXStart:
       value_id_ = CSSValueID::kXStart;
       break;
-    case InsetAreaRegion::kXEnd:
+    case PositionAreaRegion::kXEnd:
       value_id_ = CSSValueID::kXEnd;
       break;
-    case InsetAreaRegion::kYStart:
+    case PositionAreaRegion::kYStart:
       value_id_ = CSSValueID::kYStart;
       break;
-    case InsetAreaRegion::kYEnd:
+    case PositionAreaRegion::kYEnd:
       value_id_ = CSSValueID::kYEnd;
       break;
-    case InsetAreaRegion::kXSelfStart:
+    case PositionAreaRegion::kXSelfStart:
       value_id_ = CSSValueID::kXSelfStart;
       break;
-    case InsetAreaRegion::kXSelfEnd:
+    case PositionAreaRegion::kXSelfEnd:
       value_id_ = CSSValueID::kXSelfEnd;
       break;
-    case InsetAreaRegion::kYSelfStart:
+    case PositionAreaRegion::kYSelfStart:
       value_id_ = CSSValueID::kYSelfStart;
       break;
-    case InsetAreaRegion::kYSelfEnd:
+    case PositionAreaRegion::kYSelfEnd:
       value_id_ = CSSValueID::kYSelfEnd;
       break;
   }
 }
 
 template <>
-inline InsetAreaRegion CSSIdentifierValue::ConvertTo() const {
+inline PositionAreaRegion CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kNone:
-      return InsetAreaRegion::kNone;
+      return PositionAreaRegion::kNone;
     case CSSValueID::kSpanAll:
-      return InsetAreaRegion::kAll;
+      return PositionAreaRegion::kAll;
     case CSSValueID::kCenter:
-      return InsetAreaRegion::kCenter;
+      return PositionAreaRegion::kCenter;
     case CSSValueID::kStart:
-      return InsetAreaRegion::kStart;
+      return PositionAreaRegion::kStart;
     case CSSValueID::kEnd:
-      return InsetAreaRegion::kEnd;
+      return PositionAreaRegion::kEnd;
     case CSSValueID::kSelfStart:
-      return InsetAreaRegion::kSelfStart;
+      return PositionAreaRegion::kSelfStart;
     case CSSValueID::kSelfEnd:
-      return InsetAreaRegion::kSelfEnd;
+      return PositionAreaRegion::kSelfEnd;
     case CSSValueID::kInlineStart:
-      return InsetAreaRegion::kInlineStart;
+      return PositionAreaRegion::kInlineStart;
     case CSSValueID::kInlineEnd:
-      return InsetAreaRegion::kInlineEnd;
+      return PositionAreaRegion::kInlineEnd;
     case CSSValueID::kSelfInlineStart:
-      return InsetAreaRegion::kSelfInlineStart;
+      return PositionAreaRegion::kSelfInlineStart;
     case CSSValueID::kSelfInlineEnd:
-      return InsetAreaRegion::kSelfInlineEnd;
+      return PositionAreaRegion::kSelfInlineEnd;
     case CSSValueID::kBlockStart:
-      return InsetAreaRegion::kBlockStart;
+      return PositionAreaRegion::kBlockStart;
     case CSSValueID::kBlockEnd:
-      return InsetAreaRegion::kBlockEnd;
+      return PositionAreaRegion::kBlockEnd;
     case CSSValueID::kSelfBlockStart:
-      return InsetAreaRegion::kSelfBlockStart;
+      return PositionAreaRegion::kSelfBlockStart;
     case CSSValueID::kSelfBlockEnd:
-      return InsetAreaRegion::kSelfBlockEnd;
+      return PositionAreaRegion::kSelfBlockEnd;
     case CSSValueID::kTop:
-      return InsetAreaRegion::kTop;
+      return PositionAreaRegion::kTop;
     case CSSValueID::kBottom:
-      return InsetAreaRegion::kBottom;
+      return PositionAreaRegion::kBottom;
     case CSSValueID::kLeft:
-      return InsetAreaRegion::kLeft;
+      return PositionAreaRegion::kLeft;
     case CSSValueID::kRight:
-      return InsetAreaRegion::kRight;
+      return PositionAreaRegion::kRight;
     case CSSValueID::kXStart:
-      return InsetAreaRegion::kXStart;
+      return PositionAreaRegion::kXStart;
     case CSSValueID::kXEnd:
-      return InsetAreaRegion::kXEnd;
+      return PositionAreaRegion::kXEnd;
     case CSSValueID::kYStart:
-      return InsetAreaRegion::kYStart;
+      return PositionAreaRegion::kYStart;
     case CSSValueID::kYEnd:
-      return InsetAreaRegion::kYEnd;
+      return PositionAreaRegion::kYEnd;
     case CSSValueID::kXSelfStart:
-      return InsetAreaRegion::kXSelfStart;
+      return PositionAreaRegion::kXSelfStart;
     case CSSValueID::kXSelfEnd:
-      return InsetAreaRegion::kXSelfEnd;
+      return PositionAreaRegion::kXSelfEnd;
     case CSSValueID::kYSelfStart:
-      return InsetAreaRegion::kYSelfStart;
+      return PositionAreaRegion::kYSelfStart;
     case CSSValueID::kYSelfEnd:
-      return InsetAreaRegion::kYSelfEnd;
+      return PositionAreaRegion::kYSelfEnd;
     default:
       NOTREACHED_IN_MIGRATION();
-      return InsetAreaRegion::kNone;
+      return PositionAreaRegion::kNone;
   };
 }
 

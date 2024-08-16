@@ -98,17 +98,6 @@ udev_device* udev_monitor_receive_device(udev_monitor* udev_monitor);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
 void udev_monitor_unref(udev_monitor* udev_monitor);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX) udev* udev_new();
-COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
-void udev_set_log_fn(struct udev* udev,
-                     void (*log_fn)(struct udev* udev,
-                                    int priority,
-                                    const char* file,
-                                    int line,
-                                    const char* fn,
-                                    const char* format,
-                                    va_list args));
-COMPONENT_EXPORT(DEVICE_UDEV_LINUX)
-void udev_set_log_priority(struct udev* udev, int priority);
 COMPONENT_EXPORT(DEVICE_UDEV_LINUX) void udev_unref(udev* udev);
 
 // Calls udev_device_get_property_value() and replaces missing values with

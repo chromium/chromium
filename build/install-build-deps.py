@@ -852,7 +852,7 @@ def install_packages(options):
     packages = find_missing_packages(options)
     if packages:
       quiet = ["-qq", "--assume-yes"] if options.no_prompt else []
-      subprocess.check_call(["sudo", "apt-get", "install"] + quiet + packages)
+      subprocess.check_output(["sudo", "apt-get", "install"] + quiet + packages)
       print(file=sys.stderr)
     else:
       print("No missing packages, and the packages are up to date.",

@@ -225,6 +225,7 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.max_renderbuffer_size = kMaxRenderbufferSize;
       gl_capabilities_.max_texture_image_units = kMaxTextureImageUnits;
       capabilities_.max_texture_size = kMaxTextureSize;
+      gl_capabilities_.max_texture_size = kMaxTextureSize;
       gl_capabilities_.max_varying_vectors = kMaxVaryingVectors;
       gl_capabilities_.max_vertex_attribs = kMaxVertexAttribs;
       gl_capabilities_.max_vertex_texture_image_units =
@@ -241,10 +242,11 @@ class GLES2ImplementationTest : public testing::Test {
       gl_capabilities_.bind_generates_resource_chromium =
           bind_generates_resource_service ? 1 : 0;
       capabilities_.sync_query = sync_query;
+      gl_capabilities_.sync_query = sync_query;
       gl_capabilities_.occlusion_query_boolean = occlusion_query_boolean;
       gl_capabilities_.timer_queries = timer_queries;
-      capabilities_.major_version = major_version;
-      capabilities_.minor_version = minor_version;
+      gl_capabilities_.major_version = major_version;
+      gl_capabilities_.minor_version = minor_version;
       EXPECT_CALL(*gpu_control_, GetCapabilities())
           .WillOnce(ReturnRef(capabilities_));
       EXPECT_CALL(*gpu_control_, GetGLCapabilities())

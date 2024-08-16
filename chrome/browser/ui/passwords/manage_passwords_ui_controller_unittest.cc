@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1523,6 +1524,92 @@ TEST_F(ManagePasswordsUIControllerTest,
   }
 }
 
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordDetails_OnShowPasswordIsInitialBubbleCredential) {
+  std::unique_ptr<base::AutoReset<bool>> bypass_user_auth =
+      controller()->BypassUserAuthtForTesting();
+  password_manager::PasswordForm form;
+  form.username_value = u"user";
+  form.password_value = u"passw0rd";
+  controller()->OnOpenPasswordDetailsBubble(form);
+
+  EXPECT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      form);
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordDetails_BubbleIsInactiveAfterClosingPasswordDetails) {
+  std::unique_ptr<base::AutoReset<bool>> bypass_user_auth =
+      controller()->BypassUserAuthtForTesting();
+  password_manager::PasswordForm details_form;
+  details_form.username_value = u"user";
+  details_form.password_value = u"passw0rd";
+  controller()->OnOpenPasswordDetailsBubble(details_form);
+  ASSERT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      details_form);
+
+  controller()->OnBubbleHidden();
+
+  EXPECT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      std::nullopt);
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordDetails_BubbleSwitchesToListAfterClosingPasswordDetails) {
+  std::unique_ptr<base::AutoReset<bool>> bypass_user_auth =
+      controller()->BypassUserAuthtForTesting();
+  std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+  local_credentials.emplace_back(new PasswordForm(test_local_form()));
+  controller()->OnAutoSignin(std::move(local_credentials),
+                             url::Origin::Create(test_local_form().url));
+  ASSERT_FALSE(controller()->GetCurrentForms().empty());
+
+  password_manager::PasswordForm details_form;
+  details_form.username_value = u"user";
+  details_form.password_value = u"passw0rd";
+  controller()->OnOpenPasswordDetailsBubble(details_form);
+  ASSERT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      details_form);
+
+  controller()->OnBubbleHidden();
+
+  EXPECT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      std::nullopt);
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::MANAGE_STATE);
+}
+
+// The following test is being run on platforms that support device
+// authentication, as on others the callback is stubbed to return `true`.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(ManagePasswordsUIControllerTest, PasswordDetails_IsntShownIfAuthFailed) {
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce([](const std::u16string&,
+                   device_reauth::DeviceAuthenticator::AuthenticateCallback
+                       callback) { std::move(callback).Run(false); });
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+
+  password_manager::PasswordForm form;
+  form.username_value = u"user";
+  form.password_value = u"passw0rd";
+  controller()->OnOpenPasswordDetailsBubble(form);
+
+  EXPECT_EQ(
+      controller()->GetManagePasswordsSingleCredentialDetailsModeCredential(),
+      std::nullopt);
+  EXPECT_EQ(controller()->GetState(), password_manager::ui::INACTIVE_STATE);
+}
+#endif
+
 TEST_F(ManagePasswordsUIControllerTest, AutofillDuringSignInPromo) {
   std::vector<PasswordForm> matches;
   auto test_form_manager =
@@ -1984,6 +2071,14 @@ TEST_F(ManagePasswordsUIControllerTest, InvalidPasskeyDeleted) {
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE);
+}
+
+TEST_F(ManagePasswordsUIControllerTest, OpenPasskeyUpdatedBubble) {
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasskeyUpdated();
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

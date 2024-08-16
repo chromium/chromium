@@ -1,0 +1,41 @@
+This is a testharness.js-based test.
+[FAIL] reduceSumSquare float32 0D constant tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 2760 should be close enough to expected 2762.71484375 by the acceptable 2 ULP distance, but they have 11120 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 0D constant tensor empty axes
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 2760 should be close enough to expected 2762.71484375 by the acceptable 2 ULP distance, but they have 11120 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 1D constant tensor all positive default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 1D tensor all positive default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 1D tensor all negative default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 79968.96875 should be close enough to expected 80052.015625 by the acceptable 48 ULP distance, but they have 10630 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 1D tensor all positive integers default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 71329.5 should be close enough to expected 71347 by the acceptable 48 ULP distance, but they have 2240 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 1D tensor all negative integers default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73619.4375 should be close enough to expected 73634 by the acceptable 48 ULP distance, but they have 1864 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 2D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 3D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 5D tensor default options
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 3D tensor options.axes
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 9696.140625 should be close enough to expected 9709.013671875 by the acceptable 8 ULP distance, but they have 13182 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor options.axes
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 8576.25 should be close enough to expected 8585.87109375 by the acceptable 8 ULP distance, but they have 9852 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 3D tensor options.keepDimensions=false
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 3D tensor options.keepDimensions=true
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor options.keepDimensions=false
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor options.keepDimensions=true
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 73193.703125 should be close enough to expected 73275.859375 by the acceptable 48 ULP distance, but they have 10516 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor options.axes with options.keepDimensions=false
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 12288.390625 should be close enough to expected 12302.474609375 by the acceptable 12 ULP distance, but they have 14422 ULP distance expected true got false
+[FAIL] reduceSumSquare float32 4D tensor options.axes with options.keepDimensions=true
+  assert_true: assert_array_approx_equals_ulp: test reduceSumSquare float32 actual 12288.390625 should be close enough to expected 12302.474609375 by the acceptable 12 ULP distance, but they have 14422 ULP distance expected true got false
+Harness: the test ran to completion.
+

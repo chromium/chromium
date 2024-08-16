@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -411,6 +412,12 @@ void BidirectionalStream::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
 }
 
 void BidirectionalStream::OnQuicBroken() {}
+
+void BidirectionalStream::OnSwitchesToHttpStreamPool(
+    HttpStreamKey stream_key,
+    quic::ParsedQuicVersion quic_version) {
+  NOTREACHED();
+}
 
 void BidirectionalStream::NotifyFailed(int error) {
   delegate_->OnFailed(error);

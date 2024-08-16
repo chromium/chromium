@@ -14,7 +14,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 
 namespace {
 // Name of the main pref dictionary holding the account dictionaries of the
@@ -93,15 +92,10 @@ size_t SigninPrefs::RemoveAllAccountPrefsExcept(
     }
   }
 
-  // TODO(b/355163921): This is experimental and should be removed soon. The
-  // default should be to remove prefs when clearing cookies.
-  if (switches::kClearAccountPrefsWhenClearingCookies.Get()) {
-    // Remove the account prefs that should not be kept.
-    ScopedDictPrefUpdate scoped_update(&pref_service_.get(),
-                                       kSigninAccountPrefs);
-    for (GaiaId account_prefs_to_remove : accounts_prefs_to_remove) {
-      scoped_update->Remove(account_prefs_to_remove);
-    }
+  // Remove the account prefs that should not be kept.
+  ScopedDictPrefUpdate scoped_update(&pref_service_.get(), kSigninAccountPrefs);
+  for (GaiaId account_prefs_to_remove : accounts_prefs_to_remove) {
+    scoped_update->Remove(account_prefs_to_remove);
   }
 
   return accounts_prefs_to_remove.size();

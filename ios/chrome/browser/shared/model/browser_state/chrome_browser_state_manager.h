@@ -5,50 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_
 
-#include <string>
-#include <string_view>
-#include <vector>
+// This is a forwarding header to ease the name transition of ChromeBrowserState
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
-class BrowserStateInfoCache;
-class ChromeBrowserState;
-class ChromeBrowserStateManagerObserver;
-
-// Provides methods that allow for various ways of creating non-incognito
-// ChromeBrowserState instances. Owns all instances that it creates.
-class ChromeBrowserStateManager {
- public:
-  ChromeBrowserStateManager(const ChromeBrowserStateManager&) = delete;
-  ChromeBrowserStateManager& operator=(const ChromeBrowserStateManager&) =
-      delete;
-
-  virtual ~ChromeBrowserStateManager() {}
-
-  // Registers/unregisters observers.
-  virtual void AddObserver(ChromeBrowserStateManagerObserver* observer) = 0;
-  virtual void RemoveObserver(ChromeBrowserStateManagerObserver* observer) = 0;
-
-  // Returns the ChromeBrowserState that was last used. Only use this method for
-  // the very specific purpose of finding which of the several available browser
-  // states was used last. Do *not* use it as a singleton getter to fetch "the"
-  // browser state. Always assume there could be multiple browser states and
-  // use GetLoadedBrowserStates() instead.
-  virtual ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() = 0;
-
-  // Returns the ChromeBrowserState known by `name` or nullptr if there is
-  // no loaded ChromeBrowserState with that `name`.
-  virtual ChromeBrowserState* GetBrowserStateByName(std::string_view name) = 0;
-
-  // Returns the BrowserStateInfoCache associated with this manager.
-  virtual BrowserStateInfoCache* GetBrowserStateInfoCache() = 0;
-
-  // Returns the list of loaded ChromeBrowserStates.
-  virtual std::vector<ChromeBrowserState*> GetLoadedBrowserStates() = 0;
-
-  // Loads the last active browser states.
-  virtual void LoadBrowserStates() = 0;
-
- protected:
-  ChromeBrowserStateManager() {}
-};
+#include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_H_

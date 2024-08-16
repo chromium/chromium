@@ -66,8 +66,7 @@ gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
   base::FilePath image_path = data_root.Append(path);
   std::string png_data;
   ReadFileToString(image_path, &png_data);
-  return gfx::Image::CreateFrom1xPNGBytes(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size());
+  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
 }
 
 }  // namespace

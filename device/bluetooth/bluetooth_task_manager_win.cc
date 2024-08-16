@@ -279,6 +279,10 @@ void BluetoothTaskManagerWin::PollAdapter() {
     if (handle) {
       GetKnownDevices();
       classic_wrapper_->FindRadioClose(handle);
+    } else {
+      // If `handle` is null, reset `classic_wrapper_` to avoid stale data
+      // coming from the opened radio handle in the `classic_wrapper_`.
+      classic_wrapper_ = std::make_unique<win::BluetoothClassicWrapper>();
     }
 
     PostAdapterStateToUi();

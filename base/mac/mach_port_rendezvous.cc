@@ -100,9 +100,8 @@ void MachRendezvousPort::Destroy() {
       right = MACH_PORT_RIGHT_SEND_ONCE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Leaking port name " << name_
-                                << " with disposition " << disposition_;
-      return;
+      NOTREACHED() << "Leaking port name " << name_ << " with disposition "
+                   << disposition_;
   }
   kern_return_t kr = mach_port_mod_refs(mach_task_self(), name_, right, -1);
   MACH_DCHECK(kr == KERN_SUCCESS, kr)

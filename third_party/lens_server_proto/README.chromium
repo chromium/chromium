@@ -1,8 +1,8 @@
 Name: Lens Protos
 Short Name: lens_overlay_proto
 URL: This is the canonical public repository
-Version: 651498437
-Date: 2024-07-11
+Version: 663323637
+Date: 2024-08-15
 License: BSD
 License File: LICENSE
 Shipped: yes
@@ -20,4 +20,8 @@ blaze run //lens/chrome/scripts/proto_export -- \
 
 
 Local Modifications:
-Unchanged from the output of the export script.
+The export script uses a library that migrates our protos to use editions.
+However, this is not currently supported by the proto lite runtime that is being
+used by Chrome. Thus, we need to make local modifications to remove these
+changes to prevent a failing build. See https://protobuf.dev/editions/overview/
+for more info.

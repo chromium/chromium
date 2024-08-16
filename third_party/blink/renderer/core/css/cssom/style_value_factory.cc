@@ -264,7 +264,7 @@ CSSStyleValue* CreateStyleValueWithProperty(CSSPropertyID property_id,
                                             const CSSValue& value) {
   DCHECK_NE(property_id, CSSPropertyID::kInvalid);
 
-  if (UNLIKELY(value.IsPendingSubstitutionValue())) {
+  if (value.IsPendingSubstitutionValue()) [[unlikely]] {
     return nullptr;
   }
 

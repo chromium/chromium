@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">শ্লাইডাৰ</translation>
 <translation id="1211441953136645838">এণ্ডন‘ট</translation>
 <translation id="1281252709823657822">ডায়ল’গ</translation>
+<translation id="1306460908038601864">অফ</translation>
 <translation id="1335095011850992622">ক্ৰেডিট</translation>
 <translation id="1342835525016946179">প্ৰৱন্ধ</translation>
 <translation id="1359897965706325498">বেনাৰ</translation>
+<translation id="1480676835519562650">একাধিক বাছনি কৰিব পৰা, <ph name="COUNT" />ৰ ভিতৰত <ph name="SELECTED" /> টি বাছনি কৰা হ'ল।</translation>
 <translation id="1589122976691792535">অঞ্চল</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">বৰ্তমানৰ সময়</translation>
+<translation id="1727839386348365796">আইড্ৰ’পাৰ</translation>
 <translation id="1821985195704844674">ট্ৰী গ্ৰিড</translation>
 <translation id="1823704031293214298">পৃষ্ঠাৰ ফুটাৰ</translation>
 <translation id="1838681052457320736">সতৰ্কতা সম্পৰ্কীয় ডায়লগ</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">মচা কার্য</translation>
 <translation id="1907737156431278478">উদাহৰণ</translation>
 <translation id="1930711995431081526">স্থিতি</translation>
+<translation id="2031987842108996681">ৰঙা চেনেল</translation>
 <translation id="2158401438286456825">পৃষ্ঠাৰ তালিকা</translation>
 <translation id="2291999235780842123">চেকবক্স</translation>
 <translation id="2311842470354187719">পৃষ্ঠা বিচ্ছেদ</translation>
 <translation id="2335594187091864976">তাৰিখ আৰু সময় নিৰ্বাচক</translation>
 <translation id="2508569020611168319">টেবৰ তালিকা</translation>
+<translation id="2530182415807757784">একাধিক বাছনি কৰিব পৰা, একো বাছনি কৰা নাই।</translation>
+<translation id="2634240155926812724">সেউজীয়া চেনেল</translation>
 <translation id="2657045182931379222">গ্ৰাফিক্স অৱ্‌জেক্ট</translation>
 <translation id="2674318244760992338">ফুটাৰ</translation>
 <translation id="2723001399770238859">অডিঅ’</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">টোকা</translation>
 <translation id="3175736971608411871">টাইমাৰ</translation>
 <translation id="3199563858620722075">কম্ব' বক্স</translation>
+<translation id="3220661731597678625">বৰ্তমানৰ পদক্ষেপ</translation>
+<translation id="3329013043687509092">সংপৃক্তি</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3557673793733683882">শিৰোনাম <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">সপ্তাহ বাছনিকৰ্তা</translation>
 <translation id="3706100364254443312">ছুইচ্ছ</translation>
 <translation id="3808586225841795776">শব্দ</translation>
+<translation id="3914173277599553213">বাধ্যতামূলক</translation>
 <translation id="3920932319529768807">উপসংহাৰ</translation>
 <translation id="3924558731517983934">এপ্লিকেশ্বন</translation>
 <translation id="3944740393230681990">প্ৰস্তাৱনা</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">কভাৰ</translation>
 <translation id="4757246831282535685">টেবৰ পেনেল</translation>
 <translation id="479989351350248267">সন্ধান কৰক</translation>
+<translation id="4912200001568447310">বৰ্তমানৰ বস্তু</translation>
 <translation id="4912536737030637138">গ্ৰন্থপঞ্জীৰ অন্তৰ্ভুক্তি</translation>
 <translation id="492244087561876220">মন্তব্য</translation>
+<translation id="4924138096460353083">অনিৰ্ধাৰিত</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> বাছনি কৰা হৈছে</translation>
 <translation id="5022314756875057021">শাৰীৰ গোট</translation>
 <translation id="5034860022980953847">অগ্ৰগতিৰ সূচক</translation>
 <translation id="5093189678851173835">এপিগ্ৰাফ</translation>
+<translation id="509897012892853729">নীলা চেনেল</translation>
 <translation id="512758898067543763">শাৰীৰ হে’ডাৰ</translation>
 <translation id="5143125788380636750">উপসংহাৰ</translation>
 <translation id="5406322316791861025">আকাৰ</translation>
+<translation id="5425179576310518467">বৰ্তমানৰ তাৰিখ</translation>
 <translation id="5453733299334684579">ট্ৰীত থকা বস্তু</translation>
 <translation id="546643433018805598">ছাবস্ক্ৰিপ্ট</translation>
 <translation id="5476505524087279545">আনচ্চেক কৰক</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">বুটাম</translation>
 <translation id="5693537480074347398">ছুপাৰস্ক্ৰিপ্ট</translation>
 <translation id="576709008726043716">পৰিচয়</translation>
+<translation id="5860033963881614850">অফ আছে</translation>
 <translation id="591047860372322273">সন্ধান বাকচ</translation>
+<translation id="5916664084637901428">অন আছে</translation>
 <translation id="5987525920412732405">স্পিন কৰা বুটাম</translation>
 <translation id="6023896073578205740">সূচী বাকচ</translation>
 <translation id="6119846243427417423">সক্ৰিয় কৰক</translation>
 <translation id="6150588977291308318">গ্ৰন্থপঞ্জী</translation>
 <translation id="6164829606128959761">মিটাৰ</translation>
 <translation id="6166809985690652833">উত্তৰকথন</translation>
+<translation id="6212595056017402527">বৰ্তমানৰ পৃষ্ঠা</translation>
 <translation id="6213469881011901533">পৰিভাষা</translation>
+<translation id="6281588256137006900">দৃশ্যমানতা</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">কৃতজ্ঞতা</translation>
 <translation id="648732519525291180">সময় বাছনিকৰ্তা</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">blockquote</translation>
 <translation id="693476918119313863">হে’ডাৰ</translation>
 <translation id="6981594929165378967">অন্তর্ভুক্তিকৰণ</translation>
+<translation id="698788488269350478">বিস্তাৰ কৰা হ’ল।</translation>
 <translation id="7034405885550056553">পৰামৰ্শ</translation>
+<translation id="7102274145889307184">বৰ্তমানৰ অৱস্থান</translation>
 <translation id="7139483182332611405">পাতনি</translation>
 <translation id="7198226213493847604">মেনু পপ আপ বুটাম</translation>
 <translation id="7214187073215825913">সমলৰ তথ্য</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">সূচক</translation>
 <translation id="7740050170769002709">HTML সমল</translation>
 <translation id="7802800022689234070">উন্মোক্তকৰণ ত্ৰিভুজ</translation>
+<translation id="7852167693871241274">ৰং শ্লাইডাৰ</translation>
 <translation id="7891486169920085145">ৱিণ্ড’ক দুটা অংশত ভাগ কৰোঁতা</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> বাছনি কৰা হোৱা নাই</translation>
 <translation id="8034303206267677282">শক্তিশালী</translation>
 <translation id="8053789581856978548">সন্ধান কৰিবলগীয়া পাঠৰ ক্ষেত্ৰ</translation>
 <translation id="8057695513531652401">জাননী</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">অধ্যায়</translation>
 <translation id="8851136666856101339">মুখ্য</translation>
 <translation id="8861621546968757188">ডায়লগ পপ আপ বুটাম</translation>
+<translation id="8889402386540077796">হুই</translation>
+<translation id="894736920926684893">ফৰ্মেট ট’গল কৰোঁতা</translation>
 <translation id="9002566407876343676">খোলক</translation>
 <translation id="901834265349196618">ইমেইল</translation>
 <translation id="9048119486235211610">নেভিগেশ্বন</translation>

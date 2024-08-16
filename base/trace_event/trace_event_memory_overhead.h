@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/base_export.h"
@@ -80,7 +81,7 @@ class BASE_EXPORT TraceEventMemoryOverhead {
     size_t allocated_size_in_bytes;
     size_t resident_size_in_bytes;
   };
-  ObjectCountAndSize allocated_objects_[ObjectType::kLast];
+  std::array<ObjectCountAndSize, ObjectType::kLast> allocated_objects_;
 
   void AddInternal(ObjectType object_type,
                    size_t count,

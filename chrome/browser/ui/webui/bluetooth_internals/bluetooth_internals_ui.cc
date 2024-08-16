@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 
 #include "base/functional/bind.h"
@@ -20,16 +25,10 @@
 #endif
 
 BluetoothInternalsUIConfig::BluetoothInternalsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIBluetoothInternalsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIBluetoothInternalsHost) {}
 
 BluetoothInternalsUIConfig::~BluetoothInternalsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-BluetoothInternalsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                  const GURL& url) {
-  return std::make_unique<BluetoothInternalsUI>(web_ui);
-}
 
 BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {

@@ -37,8 +37,7 @@ class BrowserTabStripModelDelegateWithEmbeddedServerTest
 
   void VerifyMute(Browser* browser, bool isMuted) {
     int active_index = browser->tab_strip_model()->active_index();
-    EXPECT_EQ(isMuted,
-              chrome::IsSiteMuted(*browser->tab_strip_model(), active_index));
+    EXPECT_EQ(isMuted, IsSiteMuted(*browser->tab_strip_model(), active_index));
   }
 };
 

@@ -217,10 +217,12 @@ class MediaCapabilitiesKeySystemAccessInitializer final
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations,
       GetPerfCallback get_perf_callback)
-      : MediaKeySystemAccessInitializerBase(context,
-                                            resolver,
-                                            key_system,
-                                            supported_configurations),
+      : MediaKeySystemAccessInitializerBase(
+            context,
+            resolver,
+            key_system,
+            supported_configurations,
+            /*is_from_media_capabilities=*/true),
         get_perf_callback_(std::move(get_perf_callback)) {}
 
   MediaCapabilitiesKeySystemAccessInitializer(
@@ -539,7 +541,7 @@ bool CheckMseSupport(const String& mime_type, const String& codec) {
 
   const std::string codec_ascii = codec.Ascii();
   if (!codec.Ascii().empty())
-    codecs = base::make_span(&codec_ascii, 1u);
+    codecs = base::span_from_ref(codec_ascii);
 
   if (media::SupportsType::kSupported !=
       media::StreamParserFactory::IsTypeSupported(mime_type.Ascii(), codecs)) {

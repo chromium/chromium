@@ -4033,14 +4033,12 @@ class MockCookieObserver : public network::mojom::CookieAccessObserver {
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override {
     for (auto& details : details_vector) {
-      for (size_t i = 0; i < details->count; ++i) {
-        if (access_type_ && access_type_ != details->type) {
-          continue;
-        }
+      if (access_type_ && access_type_ != details->type) {
+        continue;
+      }
 
-        for (const auto& cookie_with_status : details->cookie_list) {
-          observed_cookies_.emplace_back(details, cookie_with_status);
-        }
+      for (const auto& cookie_with_status : details->cookie_list) {
+        observed_cookies_.emplace_back(details, cookie_with_status);
       }
     }
     if (wait_for_cookie_count_ &&
@@ -6428,6 +6426,7 @@ INSTANTIATE_TEST_SUITE_P(WithSyncAndAsyncOperations,
 // whose Begin and Finalize steps are both successful should succeed overall.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenOperationSuccess) {
+  base::HistogramTester histogram_tester;
   ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
@@ -6452,6 +6451,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TrustTokens.OperationOutcome.Issuance",
+      mojom::TrustTokenOperationStatus::kOk, 1);
 
   EXPECT_EQ(client()->completion_status().error_code, net::OK);
   EXPECT_EQ(client()->completion_status().trust_token_operation_status,
@@ -6570,6 +6573,7 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // request itself should fail immediately.
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
        HandlesTrustTokenBeginFailure) {
+  base::HistogramTester histogram_tester;
   ResourceRequest request = CreateTrustTokenResourceRequest();
 
   base::RunLoop delete_run_loop;
@@ -6594,6 +6598,10 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.TrustTokens.OperationOutcome.Issuance",
+      mojom::TrustTokenOperationStatus::kFailedPrecondition, 1);
 
   EXPECT_EQ(client()->completion_status().error_code,
             net::ERR_TRUST_TOKEN_OPERATION_FAILED);

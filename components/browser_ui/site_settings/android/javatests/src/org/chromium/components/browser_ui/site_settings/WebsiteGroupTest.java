@@ -137,9 +137,9 @@ public class WebsiteGroupTest {
 
     @Test
     @SmallTest
-    public void testFPSInfo() {
-        var fpsInfo =
-                new FPSCookieInfo(
+    public void testRWSInfo() {
+        var rwsInfo =
+                new RWSCookieInfo(
                         "google.com",
                         Arrays.asList(
                                 new Website(null, null),
@@ -150,13 +150,13 @@ public class WebsiteGroupTest {
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);
-        origin2.setFPSCookieInfo(fpsInfo);
+        origin2.setRWSCookieInfo(rwsInfo);
         WebsiteGroup group =
                 new WebsiteGroup(
                         origin2.getAddress().getDomainAndRegistry(),
                         Arrays.asList(origin1, origin2, origin3));
 
-        Assert.assertEquals(fpsInfo, group.getFPSInfo());
+        Assert.assertEquals(rwsInfo, group.getRWSInfo());
     }
 
     @Test

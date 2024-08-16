@@ -323,8 +323,8 @@ uint64_t ChildProcessHostImpl::ChildProcessUniqueIdToTracingProcessId(
 
   // The hash value is incremented so that the tracing id is never equal to
   // MemoryDumpManager::kInvalidTracingProcessId.
-  return static_cast<uint64_t>(base::PersistentHash(
-             base::as_bytes(base::make_span(&child_process_id, 1u)))) +
+  return static_cast<uint64_t>(
+             base::PersistentHash(base::byte_span_from_ref(child_process_id))) +
          1;
 }
 

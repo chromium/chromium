@@ -73,6 +73,27 @@ constexpr char kClickElementWithTextActionJs[] = R"(
     return false;
   })";
 
+// This JavaScript defines a function "action" that returns `true` if `el`
+// has a child element that contains the expected text and matches the
+// provided selectors, and if the child element has a sibling that matches
+// the provided selectors. The sibling element is clicked before returning.
+constexpr char kClickChildOfElementWithTextActionJs[] = R"(
+  function action(el) {
+    if (!el) {
+      return false;
+    }
+    var text = el.shadowRoot.querySelector(%s);
+    if (!text || text.innerText.indexOf(%s) == -1) {
+      return false;
+    }
+    var child = el.shadowRoot.querySelector(%s);
+    if (child) {
+      child.click();
+      return true;
+    }
+    return false;
+  })";
+
 // This JavaScript is used to search for an element in the DOM. The element is
 // described in terms of a root element and the relative path provided via an
 // array of selectors, and the element will be considered "found" if it matches
@@ -263,6 +284,8 @@ InteractiveAshTest::OpenAddBuiltInVpnDialog(
       WaitForElementEnabled(element_id,
                             ash::settings::AddConnectionsExpandButton()),
       ClickElement(element_id, ash::settings::AddConnectionsExpandButton()),
+      WaitForElementExpanded(element_id,
+                             ash::settings::AddConnectionsExpandButton()),
       WaitForElementEnabled(element_id, ash::settings::AddBuiltInVpnRow()),
       ClickElement(element_id, ash::settings::AddBuiltInVpnRow()));
 }
@@ -280,42 +303,40 @@ InteractiveAshTest::NavigateToInternetDetailsPage(
     const std::string& network_name) {
   WebContentsInteractionTestUtil::DeepQuery internet_summary_row;
   WebContentsInteractionTestUtil::DeepQuery network_list;
-  WebContentsInteractionTestUtil::DeepQuery network_list_item_title;
+  WebContentsInteractionTestUtil::DeepQuery network_list_item(
+      {"network-list-item"});
+  WebContentsInteractionTestUtil::DeepQuery network_list_item_title(
+      {"div#divText"});
+  WebContentsInteractionTestUtil::DeepQuery network_list_item_subpage_arrow(
+      {"cr-icon-button#subpageButton"});
   std::string element_selector;
 
   // TODO: Add other network types.
   if (network_pattern.MatchesPattern(ash::NetworkTypePattern::Mobile())) {
     internet_summary_row = ash::settings::cellular::CellularSummaryItem();
     network_list = ash::settings::cellular::CellularNetworksList();
-    network_list_item_title = WebContentsInteractionTestUtil::DeepQuery({{
-        "network-list",
-        "network-list-item",
-        "div#divText",
-    }});
+    network_list_item = WebContentsInteractionTestUtil::DeepQuery(
+        {"network-list", "network-list-item"});
   } else if (network_pattern.MatchesPattern(ash::NetworkTypePattern::VPN())) {
     internet_summary_row = ash::settings::vpn::VpnSummaryItem();
     network_list = ash::settings::vpn::VpnNetworksList();
-    network_list_item_title = WebContentsInteractionTestUtil::DeepQuery({
-        "network-list-item",
-        "div#divText",
-    });
   } else {
     // Unsupported Network pattern.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
-  return Steps(
-      NavigateSettingsToInternetPage(element_id),
-      WaitForElementExists(element_id, internet_summary_row),
-      ScrollIntoView(element_id, internet_summary_row),
-      MoveMouseTo(element_id, internet_summary_row), ClickMouse(),
-      WaitForAnyElementTextContains(element_id, network_list,
-                                    network_list_item_title, network_name),
-      ClickAnyElementTextContains(element_id, network_list,
-                                  network_list_item_title, network_name),
-      WaitForElementTextContains(element_id,
-                                 ash::settings::InternetSettingsSubpageTitle(),
-                                 /*text=*/network_name.c_str()));
+  return Steps(NavigateSettingsToInternetPage(element_id),
+               WaitForElementExists(element_id, internet_summary_row),
+               ScrollIntoView(element_id, internet_summary_row),
+               MoveMouseTo(element_id, internet_summary_row), ClickMouse(),
+               FindElementAndDoActionOnChildren(
+                   element_id, network_list, network_list_item,
+                   ClickElementWithSiblingContainsText(
+                       network_list_item_title, network_name,
+                       network_list_item_subpage_arrow)),
+               WaitForElementTextContains(
+                   element_id, ash::settings::InternetSettingsSubpageTitle(),
+                   /*text=*/network_name.c_str()));
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -370,13 +391,13 @@ InteractiveAshTest::WaitForWindowWithTitle(aura::Env* env,
   return Steps(
       ObserveState(kTitleObserver,
                    std::make_unique<AuraWindowTitleObserver>(env, title)),
-      WaitForState(kTitleObserver, true));
+      WaitForState(kTitleObserver, true), StopObservingState(kTitleObserver));
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementExists(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
   StateChange element_exists;
   element_exists.event = kElementExists;
@@ -387,7 +408,7 @@ InteractiveAshTest::WaitForElementExists(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementDoesNotExist(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExist);
   StateChange does_not_exist;
   does_not_exist.type = StateChange::Type::kDoesNotExist;
@@ -453,6 +474,20 @@ InteractiveAshTest::WaitForElementUnchecked(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementExpanded(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExpanded);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementExpanded;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return el.expanded; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementOpened(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {
@@ -462,14 +497,28 @@ InteractiveAshTest::WaitForElementOpened(
   state_change.event = kElementOpened;
   state_change.where = element;
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
-  state_change.test_function = "(el) => { return el.opened; }";
+  state_change.test_function = "(el) => { return el.opened || el.open; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementUnopened(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementUnopened);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementUnopened;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return !el.opened && !el.open; }";
   return WaitForStateChange(element_id, state_change);
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementFocused(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementFocused);
   StateChange element_focused;
   element_focused.event = kElementFocused;
@@ -503,7 +552,7 @@ InteractiveAshTest::WaitForAnyElementTextContains(
     const WebContentsInteractionTestUtil::DeepQuery& root,
     const WebContentsInteractionTestUtil::DeepQuery& selectors,
     const std::string& expected) {
-  return FindElementWithTextAndDoAction(
+  return FindElementAndDoActionOnChildren(
       element_id, root, selectors,
       base::StringPrintf(kFindElementWithTextActionJs,
                          base::GetQuotedJSONString(expected).c_str()));
@@ -529,14 +578,14 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementDisplayNone(
     const ui::ElementIdentifier& element_id,
     WebContentsInteractionTestUtil::DeepQuery element) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasAttribute);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasDisplayNone);
 
   WebContentsInteractionTestUtil::StateChange state_change;
-  state_change.event = kElementHasAttribute;
+  state_change.event = kElementHasDisplayNone;
   state_change.where = element;
   state_change.type = StateChange::Type::kExistsAndConditionTrue;
   state_change.test_function =
-      base::StringPrintf("(el) => { return el.style.display === 'none'; }");
+      "(el) => { return el.style.display === 'none'; }";
   return WaitForStateChange(element_id, state_change);
 }
 
@@ -576,7 +625,7 @@ InteractiveAshTest::ClearInputFieldValue(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementToRender(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query) {
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
   StateChange element_renders;
   element_renders.event = kElementRenders;
@@ -588,8 +637,9 @@ InteractiveAshTest::WaitForElementToRender(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
-                                 const DeepQuery& query) {
+InteractiveAshTest::ClickElement(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query) {
   return Steps(MoveMouseTo(element_id, query), ClickMouse());
 }
 
@@ -599,7 +649,7 @@ InteractiveAshTest::ClickAnyElementTextContains(
     const WebContentsInteractionTestUtil::DeepQuery& root,
     const WebContentsInteractionTestUtil::DeepQuery& selectors,
     const std::string& expected) {
-  return FindElementWithTextAndDoAction(
+  return FindElementAndDoActionOnChildren(
       element_id, root, selectors,
       base::StringPrintf(kClickElementWithTextActionJs,
                          base::GetQuotedJSONString(expected).c_str()));
@@ -608,7 +658,7 @@ InteractiveAshTest::ClickAnyElementTextContains(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::SelectDropdownElementOption(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& query,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
     const std::string& option) {
   return Steps(
       WaitForElementExists(element_id, query),
@@ -677,12 +727,23 @@ InteractiveAshTest::SendTextAsKeyEvents(const ui::ElementIdentifier& element_id,
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
-InteractiveAshTest::FindElementWithTextAndDoAction(
+InteractiveAshTest::ClearInputAndEnterText(
+    const ui::ElementIdentifier& element_id,
+    const WebContentsInteractionTestUtil::DeepQuery& query,
+    const std::string& text) {
+  return Steps(WaitForElementExists(element_id, query),
+               ClearInputFieldValue(element_id, query),
+               ClickElement(element_id, query),
+               SendTextAsKeyEvents(element_id, text));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::FindElementAndDoActionOnChildren(
     const ui::ElementIdentifier& element_id,
     const WebContentsInteractionTestUtil::DeepQuery& root,
     const WebContentsInteractionTestUtil::DeepQuery& selectors,
     const std::string& action) {
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementWithTextFound);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementWithActionReturnTrue);
 
   WebContentsInteractionTestUtil::StateChange state_change;
   state_change.type = WebContentsInteractionTestUtil::StateChange::Type::
@@ -691,7 +752,7 @@ InteractiveAshTest::FindElementWithTextAndDoAction(
   state_change.test_function =
       base::StringPrintf(kFindElementAndDoActionJs, action.c_str(),
                          DeepQueryToSelectors(selectors).c_str());
-  state_change.event = kElementWithTextFound;
+  state_change.event = kElementWithActionReturnTrue;
   return WaitForStateChange(element_id, state_change);
 }
 
@@ -715,4 +776,14 @@ InteractiveAshTest::NavigateQuickSettingsToPage(
   return Steps(WaitForShow(ash::kQuickSettingsViewElementId),
                WaitForShow(element_id), MoveMouseTo(element_id), ClickMouse(),
                FlushEvents());
+}
+
+const std::string InteractiveAshTest::ClickElementWithSiblingContainsText(
+    const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+    const std::string& expected,
+    const WebContentsInteractionTestUtil::DeepQuery& element_to_click) {
+  return base::StringPrintf(kClickChildOfElementWithTextActionJs,
+                            DeepQueryToSelectors(element_with_text).c_str(),
+                            base::GetQuotedJSONString(expected).c_str(),
+                            DeepQueryToSelectors(element_to_click).c_str());
 }

@@ -62,13 +62,28 @@ export class DisclosureAppElement extends DisclosureAppElementBase {
     return getHtml.bind(this)();
   }
 
-  protected acceptDisclosure() {
+  protected async acceptDisclosure() {
     this.shoppingApi_.setProductSpecificationDisclosureAcceptVersion(
         ProductSpecificationsDisclosureVersion.kV1);
+
+    // On accept, continue to create and show the product spec set.
+    const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
+    const name: string = args['name'];
+    const urls: string[] = args['urls'];
+    const inNewTab: boolean = args['in_new_tab'];
+    const {createdSet} = await this.shoppingApi_.addProductSpecificationsSet(
+        name, urls.map(url => ({url})));
+    if (createdSet) {
+      this.shoppingApi_.showProductSpecificationsSetForUuid(
+          createdSet.uuid, inNewTab);
+    }
+    chrome.send('dialogClose');
   }
 
-  // TODO(b/349898403): Dismiss disclosure on decline when the host UI is done.
-  protected declineDisclosure() {}
+  protected declineDisclosure() {
+    this.shoppingApi_.declineProductSpecificationDisclosure();
+    chrome.send('dialogClose');
+  }
 }
 
 declare global {

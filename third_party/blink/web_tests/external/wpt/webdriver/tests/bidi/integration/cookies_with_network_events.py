@@ -1,12 +1,18 @@
+import os
 import pytest
+from urllib.parse import urlparse
 
 from webdriver.bidi.modules.script import ContextTarget
-from webdriver.bidi.modules.storage import BrowsingContextPartitionDescriptor
+from webdriver.bidi.modules.storage import (
+    BrowsingContextPartitionDescriptor,
+    StorageKeyPartitionDescriptor,
+)
 
 from .. import assert_cookies
 
 pytestmark = pytest.mark.asyncio
 
+BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
 PNG_BLACK_DOT = "/webdriver/tests/bidi/storage/get_cookies/support/black_dot.png"
 
 
@@ -29,7 +35,6 @@ async def test_top_context(
         context=new_tab["context"], url=url, wait="complete"
     )
 
-    BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
     network_events = await setup_network_test(events=[BEFORE_REQUEST_SENT_EVENT])
     events = network_events[BEFORE_REQUEST_SENT_EVENT]
     on_before_request_sent = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
@@ -71,7 +76,6 @@ async def test_iframe(
         context=new_tab["context"], url=iframe_url, wait="complete"
     )
 
-    BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
     network_events = await setup_network_test(events=[BEFORE_REQUEST_SENT_EVENT])
     events = network_events[BEFORE_REQUEST_SENT_EVENT]
     on_before_request_sent = wait_for_event(BEFORE_REQUEST_SENT_EVENT)
@@ -110,6 +114,7 @@ async def test_fetch(
     fetch,
     wait_for_future_safe,
     url,
+    origin,
     domain_1,
 ):
     # Clean up cookies in case some other tests failed before cleaning up.
@@ -119,14 +124,15 @@ async def test_fetch(
     await bidi_session.browsing_context.navigate(
         context=new_tab["context"],
         url=url("/webdriver/tests/bidi/network/support/empty.html"),
-        wait="complete"
+        wait="complete",
     )
 
     cookie_name = "foo"
     cookie_value = "bar"
+    path = "/webdriver/tests/support/http_handlers"
     # Add `Access-Control-Allow-Origin` header for cross-origin request to work.
     request_url = url(
-        "/webdriver/tests/support/http_handlers/headers.py?header=Access-Control-Allow-Origin:*",
+        f"{path}/headers.py?header=Access-Control-Allow-Origin:*",
         domain=domain_1,
     )
 
@@ -136,7 +142,6 @@ async def test_fetch(
         await_promise=False,
     )
 
-    BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
     network_events = await setup_network_test(events=[BEFORE_REQUEST_SENT_EVENT])
     events = network_events[BEFORE_REQUEST_SENT_EVENT]
 
@@ -145,7 +150,8 @@ async def test_fetch(
     await wait_for_future_safe(on_before_request_sent)
 
     result = await bidi_session.storage.get_cookies(
-        partition=BrowsingContextPartitionDescriptor(new_tab["context"])
+        partition=StorageKeyPartitionDescriptor(source_origin=origin(domain=domain_1)),
+        filter={"path": path},
     )
     assert_cookies(result["cookies"], events[0]["request"]["cookies"])
 
@@ -162,6 +168,7 @@ async def test_image(
     wait_for_future_safe,
     url,
     inline,
+    origin,
     domain_1,
 ):
     # Clean up cookies in case some other tests failed before cleaning up.
@@ -182,7 +189,6 @@ async def test_image(
         await_promise=False,
     )
 
-    BEFORE_REQUEST_SENT_EVENT = "network.beforeRequestSent"
     network_events = await setup_network_test(events=[BEFORE_REQUEST_SENT_EVENT])
     events = network_events[BEFORE_REQUEST_SENT_EVENT]
 
@@ -194,8 +200,10 @@ async def test_image(
     )
     await wait_for_future_safe(on_before_request_sent)
 
+    image_path = os.path.dirname(urlparse(image_url).path)
     result = await bidi_session.storage.get_cookies(
-        partition=BrowsingContextPartitionDescriptor(new_tab["context"])
+        partition=StorageKeyPartitionDescriptor(source_origin=origin(domain=domain_1)),
+        filter={"path": image_path},
     )
 
     # Find the network event which belongs to the image.

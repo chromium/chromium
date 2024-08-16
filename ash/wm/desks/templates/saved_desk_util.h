@@ -23,6 +23,11 @@ class DeskTemplate;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
 
+struct SaveDeskOptionStatus {
+  bool enabled;
+  int tooltip_id;
+};
+
 namespace saved_desk_util {
 // Registers the per-profile preferences for whether desks templates are
 // enabled.

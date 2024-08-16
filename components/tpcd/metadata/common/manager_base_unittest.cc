@@ -142,7 +142,7 @@ class ManagerBaseCohortTest
         return CONTENT_SETTING_ALLOW;
     }
 
-    NOTREACHED_NORETURN() << "Invalid enum value: " << GetCohortBeingTested();
+    NOTREACHED() << "Invalid enum value: " << GetCohortBeingTested();
   }
 
  protected:

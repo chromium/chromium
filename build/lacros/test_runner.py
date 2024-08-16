@@ -580,6 +580,7 @@ lacros_version_skew_tests_v92.0.4515.130/test_ash_chrome
         '--enable-field-trial-config',
         '--enable-logging=stderr',
         '--enable-features=LacrosSupport,LacrosPrimary,LacrosOnly',
+        '--enable-lacros-for-testing',
         '--ash-ready-file-path=%s' % ash_ready_file,
         '--wayland-server-socket=%s' % ash_wayland_socket_name,
     ]

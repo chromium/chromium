@@ -410,10 +410,10 @@ base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
           .Append(GetTestOutputFilePath())
           .Append(output_bitstream_file_base_name_.ReplaceExtension(extension));
   if (svc_enable) {
+    auto file_name_suffix =
+        base::StringPrintf(".SL%d.TL%d", spatial_idx, temporal_idx);
     output_bitstream_filepath =
-        output_bitstream_filepath.InsertBeforeExtensionASCII(
-            FILE_PATH_LITERAL(".SL") + base::NumberToString(spatial_idx) +
-            FILE_PATH_LITERAL(".TL") + base::NumberToString(temporal_idx));
+        output_bitstream_filepath.InsertBeforeExtensionASCII(file_name_suffix);
   }
 
   return output_bitstream_filepath;

@@ -133,7 +133,7 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
       for_testing ? kStartOfTextForTesting : base::android::kStartOfText;
   const size_t end =
       for_testing ? kEndOfTextForTesting : base::android::kEndOfText;
-  if (UNLIKELY(address < start || address > end)) {
+  if (address < start || address > end) [[unlikely]] {
     if (!AreAnchorsSane()) {
       // Something is really wrong with the anchors, and this is likely to be
       // triggered from within a static constructor, where logging is likely to
@@ -185,7 +185,7 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
   auto& ordered_offsets_index = g_data[index].index;
   size_t insertion_index =
       ordered_offsets_index.fetch_add(1, std::memory_order_relaxed);
-  if (UNLIKELY(insertion_index >= kMaxElements)) {
+  if (insertion_index >= kMaxElements) [[unlikely]] {
     Disable();
     LOG(FATAL) << "Too many reached offsets";
   }

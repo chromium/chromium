@@ -268,6 +268,8 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Called when the app button completes animating in from a promise app state.
   void OnAnimatedInFromPromiseApp(base::RepeatingClosure callback);
 
+  void UpdateAccessibleDescription();
+
   // The icon part of a button can be animated independently of the rest.
   raw_ptr<views::ImageView> icon_view_ = nullptr;
 

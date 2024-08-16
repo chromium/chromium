@@ -12,6 +12,11 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace policy {
+class BrowserDMTokenStorage;
+class DeviceManagementService;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 namespace test {
@@ -34,8 +39,9 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
 
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      policy::BrowserDMTokenStorage* dm_token_storage,
+      policy::DeviceManagementService* device_management_service) override;
 
  private:
   bool return_invalid_command = false;

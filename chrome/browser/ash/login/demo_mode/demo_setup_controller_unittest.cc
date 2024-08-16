@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -150,6 +151,7 @@ class DemoSetupControllerTest : public testing::Test {
 
   DemoSetupController tested_controller_;
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 
  private:
   ScopedTestingLocalState testing_local_state_;
@@ -176,6 +178,8 @@ TEST_F(DemoSetupControllerTest, OnlineSuccess) {
   EXPECT_TRUE(
       helper_.WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
+  // No DemoMode.Setup.Error metrics should be recorded on success.
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 0);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
@@ -199,6 +203,16 @@ TEST_F(DemoSetupControllerTest, OnlineErrorDefault) {
       false, DemoSetupController::DemoSetupStep::kEnrollment));
   EXPECT_FALSE(helper_.RequiresPowerwash());
   EXPECT_EQ("", GetDeviceRequisition());
+
+  // SetupDemoModeOnlineEnrollment() with DemoModeSetupResult::ERROR_DEFAULT
+  // maps to policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE,
+  // which matches to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
@@ -222,6 +236,16 @@ TEST_F(DemoSetupControllerTest, OnlineErrorPowerwashRequired) {
       false, DemoSetupController::DemoSetupStep::kEnrollment));
   EXPECT_TRUE(helper_.RequiresPowerwash());
   EXPECT_EQ("", GetDeviceRequisition());
+
+  // SetupDemoModeOnlineEnrollment() with
+  // DemoModeSetupResult::ERROR_POWERWASH_REQUIRED maps to
+  // policy::DeviceManagementStatus::LOCK_ALREADY_LOCKED, which matches to
+  // DemoSetupController::DemoSetupError::ErrorCode::kAlreadyLocked in
+  // DemoSetupController::CreateFromClientStatus().
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kAlreadyLocked, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 TEST_F(DemoSetupControllerTest, OnlineComponentError) {
@@ -248,6 +272,13 @@ TEST_F(DemoSetupControllerTest, OnlineComponentError) {
       false, DemoSetupController::DemoSetupStep::kEnrollment));
   EXPECT_FALSE(helper_.RequiresPowerwash());
   EXPECT_EQ("", GetDeviceRequisition());
+
+  // SetCrOSComponentLoadErrorForTest() will lead to
+  // DemoSetupController::DemoSetupError::ErrorCode::kOnlineComponentError.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kOnlineComponentError, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 TEST_F(DemoSetupControllerTest, EnrollTwice) {
@@ -272,6 +303,16 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
   EXPECT_FALSE(helper_.RequiresPowerwash());
   EXPECT_EQ("", GetDeviceRequisition());
 
+  // SetupDemoModeOnlineEnrollment() with DemoModeSetupResult::ERROR_DEFAULT
+  // maps to policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE,
+  // which matches to
+  // DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable in
+  // DemoSetupController::CreateFromClientStatus().
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
+
   helper_.Reset();
   Mock::VerifyAndClearExpectations(&mock_enrollment_launcher_);
 
@@ -290,6 +331,13 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
   EXPECT_TRUE(
       helper_.WaitResult(true, DemoSetupController::DemoSetupStep::kComplete));
   EXPECT_EQ("", GetDeviceRequisition());
+
+  // There should be no more error reported, other than the one from the first
+  // try.
+  histogram_tester_.ExpectBucketCount(
+      "DemoMode.Setup.Error",
+      DemoSetupController::DemoSetupError::ErrorCode::kTemporaryUnavailable, 1);
+  histogram_tester_.ExpectTotalCount("DemoMode.Setup.Error", 1);
 }
 
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {

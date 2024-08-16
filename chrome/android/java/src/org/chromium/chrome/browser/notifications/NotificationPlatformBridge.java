@@ -145,13 +145,37 @@ public class NotificationPlatformBridge {
             this.incognito = incognito;
             this.webApkPackage = webApkPackage;
         }
+
+        /** Extracts a notification's identifying attributes from `intent` extras. */
+        public static NotificationIdentifyingAttributes extractFromIntent(Intent intent) {
+            return new NotificationIdentifyingAttributes(
+                    /* notificationId= */ intent.getStringExtra(
+                            NotificationConstants.EXTRA_NOTIFICATION_ID),
+                    /* notificationType= */ intent.getIntExtra(
+                            NotificationConstants.EXTRA_NOTIFICATION_TYPE,
+                            NotificationType.WEB_PERSISTENT),
+                    /* origin= */ intent.getStringExtra(
+                            NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN),
+                    /* scopeUrl= */ Objects.requireNonNullElse(
+                            intent.getStringExtra(
+                                    NotificationConstants.EXTRA_NOTIFICATION_INFO_SCOPE),
+                            ""),
+                    /* profileId= */ intent.getStringExtra(
+                            NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_ID),
+                    /* incognito= */ intent.getBooleanExtra(
+                            NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_INCOGNITO, false),
+                    /* webApkPackage= */ Objects.requireNonNullElse(
+                            intent.getStringExtra(
+                                    NotificationConstants.EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE),
+                            ""));
+        }
     }
 
     /**
      * Creates a new instance of the NotificationPlatformBridge.
      *
      * @param nativeNotificationPlatformBridge Instance of the NotificationPlatformBridgeAndroid
-     *        class.
+     *     class.
      */
     @CalledByNative
     private static NotificationPlatformBridge create(long nativeNotificationPlatformBridge) {
@@ -237,29 +261,7 @@ public class NotificationPlatformBridge {
         recordJobNativeStartupDuration(intent);
 
         NotificationIdentifyingAttributes attributes =
-                new NotificationIdentifyingAttributes(
-                        /* notificationId= */ intent.getStringExtra(
-                                NotificationConstants.EXTRA_NOTIFICATION_ID),
-                        /* notificationType= */ intent.getIntExtra(
-                                NotificationConstants.EXTRA_NOTIFICATION_TYPE,
-                                NotificationType.WEB_PERSISTENT),
-                        /* origin= */ intent.getStringExtra(
-                                NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN),
-                        /* scopeUrl= */ Objects.requireNonNullElse(
-                                intent.getStringExtra(
-                                        NotificationConstants.EXTRA_NOTIFICATION_INFO_SCOPE),
-                                ""),
-                        /* profileId= */ intent.getStringExtra(
-                                NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_ID),
-                        /* incognito= */ intent.getBooleanExtra(
-                                NotificationConstants.EXTRA_NOTIFICATION_INFO_PROFILE_INCOGNITO,
-                                false),
-                        /* webApkPackage= */ Objects.requireNonNullElse(
-                                intent.getStringExtra(
-                                        NotificationConstants
-                                                .EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE),
-                                ""));
-
+                NotificationIdentifyingAttributes.extractFromIntent(intent);
         Log.i(
                 TAG,
                 String.format(

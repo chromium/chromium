@@ -17,9 +17,9 @@ source_set("account_picker_screen") {
   deps = [
     "//base",
     "//base:i18n",
+    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
-    "//ios/chrome/browser/account_picker/ui_bundled:account_picker_layout",
     "//ios/chrome/common/ui/util",
   ]
 }

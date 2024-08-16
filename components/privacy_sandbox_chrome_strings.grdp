@@ -2272,34 +2272,6 @@
     Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>
 
-  <!-- Tracking Protection: Onboarding -->
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_TITLE" desc="Title of the tracking protection onboarding notice" formatter_data="android_java">
-    Browse with more privacy
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_BODY" desc="Content of the tracking protection notice, informing the user that they now have their third party cookies disabled by default" formatter_data="android_java">
-    You’re one of the first to experience Tracking Protection, which limits sites from using third-party cookies to track you as you browse.
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL" desc="The user can choose to click “Settings“ to visit chrome://settings/cookies. If they do, they will find the cookie controls reflecting the new tracking protections." formatter_data="android_java">
-    Settings
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_ACK_BUTTON_LABEL" desc="Onboarding notice primary button text." formatter_data="android_java">
-    Got it
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_LABEL" desc="Onboarding notice secondary menu button text." formatter_data="android_java">
-    Learn more
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_LEARN_MORE_BUTTON_A11Y_LABEL" desc="Onboarding notice secondary menu button content accessibility text." formatter_data="android_java" is_accessibility_with_no_ui="true">
-    Learn more about Tracking Protection
-  </message>
-
-  <!-- Tracking Protection: Reminder -->
-  <message name="IDS_TRACKING_PROTECTION_REMINDER_LABEL" desc="Text on the tracking protection reminder in-product help mentioning that tracking protection is on." translateable="false" >
-    Tracking Protection is on, which means Chrome is limiting what sites can learn about you as you browse.
-  </message>
-  <message name="IDS_TRACKING_PROTECTION_REMINDER_A11Y_LABEL" desc="Text announced when the tracking protection reminder in-product is shown." translateable="false" is_accessibility_with_no_ui="true">
-    Tracking Protection is on, which means Chrome is limiting what sites can learn about you as you browse.
-  </message>
-
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_BULLET_ONE_TITLE" desc="Title of the first explanatory bullet point on the Tracking Protection settings page." formatter_data="android_java">
     Chrome automatically limits third-party cookies
   </message>

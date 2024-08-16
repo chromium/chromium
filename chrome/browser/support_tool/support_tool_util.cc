@@ -232,6 +232,28 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
         handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
             /*requested_logs=*/std::set<base::FilePath>()));
         break;
+      case support_tool::CHROMEOS_PERIODIC_LOG_UPLOAD_SYSTEM_LOGS: {
+        // For periodic log upload only a certain subset of system logs is
+        // necessary.
+        const std::set<base::FilePath> periodicLogUploadSystemLogs = {
+            base::FilePath("bios_info"),
+            base::FilePath("chrome_system_log"),
+            base::FilePath("chrome_system_log.PREVIOUS"),
+            base::FilePath("eventlog"),
+            base::FilePath("extensions.log"),
+            base::FilePath("netlog"),
+            base::FilePath("syslog"),
+            base::FilePath("ui_log"),
+            base::FilePath("update_engine.log"),
+            // TODO(b/352028256): the following log is not currently read by
+            // debugd. Don't forget to add them during the periodic log
+            // upload migration.
+            base::FilePath("extensions.1.log"),
+        };
+        handler->AddDataCollector(std::make_unique<SystemLogsDataCollector>(
+            periodicLogUploadSystemLogs));
+        break;
+      }
       case support_tool::CHROMEOS_CHROME_USER_LOGS:
         // User session must be active to read user data from Cryptohome.
         if (ash::IsUserBrowserContext(profile)) {

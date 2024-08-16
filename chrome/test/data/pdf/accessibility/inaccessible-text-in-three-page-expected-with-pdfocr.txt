@@ -9,7 +9,7 @@ pdfRoot 'PDF document containing 3 pages'
           staticText 'Start of extracted text'
         paragraph
           staticText 'Hello, world!'
-            inlineTextBox 'Hello, world! '
+            inlineTextBox 'Hello, world!'
         contentInfo
           staticText 'End of extracted text'
   region 'Page 2'
@@ -19,10 +19,10 @@ pdfRoot 'PDF document containing 3 pages'
           staticText 'Start of extracted text'
         paragraph
           staticText 'Paragraph 1 on Page 2'
-            inlineTextBox 'Paragraph 1 on Page 2 '
+            inlineTextBox 'Paragraph 1 on Page 2'
         paragraph
           staticText 'Paragraph 2 on Page 2'
-            inlineTextBox 'Paragraph 2 on Page 2 '
+            inlineTextBox 'Paragraph 2 on Page 2'
         contentInfo
           staticText 'End of extracted text'
   region 'Page 3'
@@ -32,9 +32,9 @@ pdfRoot 'PDF document containing 3 pages'
           staticText 'Start of extracted text'
         paragraph
           staticText 'Paragraph 1 on Page 3'
-            inlineTextBox 'Paragraph 1 on Page 3 '
+            inlineTextBox 'Paragraph 1 on Page 3'
         paragraph
           staticText 'Paragraph 2 on Page 3'
-            inlineTextBox 'Paragraph 2 on Page 3 '
+            inlineTextBox 'Paragraph 2 on Page 3'
         contentInfo
           staticText 'End of extracted text'

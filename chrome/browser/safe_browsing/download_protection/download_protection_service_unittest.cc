@@ -15,6 +15,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -2773,9 +2774,6 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
           });
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   download_service_->download_request_timeout_ms_ = 0;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kStrictDownloadTimeout, {{kStrictDownloadTimeoutMilliseconds.name, "0"}});
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
       GURL("http://example.com/foo"), /*initiating_frame*/ nullptr,
@@ -3573,7 +3571,7 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
@@ -4453,7 +4451,7 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
@@ -4517,7 +4515,7 @@ TEST_F(DeepScanningDownloadTest, PolicyDisabled) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
@@ -4583,7 +4581,7 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
     // Create the file.
     base::File file(file_path,
                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+    file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
     NiceMockDownloadItem item;
     PrepareBasicDownloadItemWithFullPaths(
@@ -4995,7 +4993,7 @@ TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
@@ -5043,7 +5041,7 @@ TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(
@@ -5091,7 +5089,7 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 
   // Create the file.
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
 
   NiceMockDownloadItem item;
   PrepareBasicDownloadItemWithFullPaths(

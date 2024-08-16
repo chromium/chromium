@@ -147,7 +147,7 @@ HRESULT FilterBase::GetSyncSource(IReferenceClock** clock) {
 
 // Implement from IPersistent.
 HRESULT FilterBase::GetClassID(CLSID* class_id) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Implement IUnknown.

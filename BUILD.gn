@@ -310,15 +310,12 @@ group("gn_all") {
 
     if (toolkit_views) {
       deps += [
+        "//chrome/browser/enterprise/watermark:watermark_app",
         "//ui/views:views_unittests",
         "//ui/views/examples:views_examples",
         "//ui/views/examples:views_examples_unittests",
         "//ui/views/examples:views_examples_with_content",
       ]
-    }
-
-    if (enterprise_watermark) {
-      deps += [ "//chrome/browser/enterprise/watermark:watermark_app" ]
     }
 
     if (use_aura) {
@@ -1125,9 +1122,12 @@ if (use_blink && !is_cronet_build) {
   }
 
   if (!is_chromeos_ash && !is_ios && !is_fuchsia && !is_android && !is_castos) {
+    out_dir = get_path_info(root_build_dir, "name")
     script_test("chrome_wpt_tests") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--target",
+        out_dir,
         "--product=chrome",
         "--no-show-results",
         "--zero-tests-executed-ok",
@@ -1137,10 +1137,6 @@ if (use_blink && !is_cronet_build) {
       } else {
         args += [ "--timeout-multiplier=1" ]
       }
-      data = [
-        "//third_party/blink/web_tests/platform/linux-chrome/",
-        "//third_party/blink/web_tests/ChromeTestExpectations",
-      ]
       data_deps = [
         ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
@@ -1152,6 +1148,8 @@ if (use_blink && !is_cronet_build) {
     script_test("headless_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--target",
+        out_dir,
         "--product=headless_shell",
         "--no-wpt-internal",
         "--no-show-results",
@@ -1192,13 +1190,13 @@ if (use_blink && !is_cronet_build) {
       "//services/shape_detection/public/mojom:mojom_js_data_deps",
       "//skia/public/mojom:mojom_js_data_deps",
       "//testing/buildbot/filters:blink_web_tests_filter",
+      "//third_party/angle:includes",
       "//third_party/blink/public:blink_devtools_frontend_resources_files",
       "//third_party/blink/public:blink_devtools_inspector_resources",
       "//third_party/blink/public/mojom:mojom_platform_js_data_deps",
       "//third_party/blink/renderer/core:gen_files_for_web_tests",
       "//third_party/catapult/third_party/typ",
       "//third_party/hyphenation-patterns:test_data",
-      "//third_party/mesa_headers",
       "//tools/imagediff",
       "//ui/base:goldctl",
     ]
@@ -1431,7 +1429,6 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/rootscroller/",
       "//third_party/blink/web_tests/screen_orientation/",
       "//third_party/blink/web_tests/scrollbars/",
-      "//third_party/blink/web_tests/scrollingcoordinator/",
       "//third_party/blink/web_tests/security/",
       "//third_party/blink/web_tests/handwriting/",
       "//third_party/blink/web_tests/shadow-dom/",
@@ -1502,7 +1499,9 @@ if (use_blink && !is_cronet_build) {
         "//third_party/blink/web_tests/platform/mac-mac12-arm64/",
         "//third_party/blink/web_tests/platform/mac-mac13/",
         "//third_party/blink/web_tests/platform/mac-mac13-arm64/",
+        "//third_party/blink/web_tests/platform/mac-mac14/",
         "//third_party/blink/web_tests/platform/mac-mac14-arm64/",
+        "//third_party/blink/web_tests/platform/mac-mac15-arm64/",
       ]
     }
 
@@ -1522,7 +1521,10 @@ if (use_blink && !is_cronet_build) {
     args = _common_web_test_args
 
     # Use --wpt-only to skip tests under web_tests/virtual/
-    args += [ "--wpt-only" ]
+    args += [
+      "--wpt-only",
+      "--exclude-test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+    ]
 
     data_deps = [
       ":blink_web_tests_expectations",

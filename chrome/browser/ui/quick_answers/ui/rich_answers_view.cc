@@ -83,6 +83,10 @@ RichAnswersView::RichAnswersView(
   InitLayout();
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 RichAnswersView::~RichAnswersView() = default;
@@ -165,13 +169,6 @@ void RichAnswersView::OnThemeChanged() {
 
   search_link_label_->SetEnabledColor(
       GetColorProvider()->GetColor(ui::kColorSysPrimary));
-}
-
-void RichAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-
-  node_data->SetName(
-      l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 void RichAnswersView::OnWidgetActivationChanged(views::Widget* widget,

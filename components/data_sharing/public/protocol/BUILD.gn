@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("protocol") {
@@ -23,4 +24,10 @@ if (is_android) {
       "group_data.proto",
     ]
   }
+}
+
+mojom("mojo_bindings") {
+  sources = [ "group_data.mojom" ]
+  deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = ""
 }

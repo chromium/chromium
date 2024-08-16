@@ -44,6 +44,27 @@ void RecordMigrationLatency(WallpaperType type, base::TimeDelta latency) {
       latency);
 }
 
+// Checks whether migration is supported for the online wallpaper info. If not,
+// logs the reason.
+bool IsMigrationSupportedForOnlineWallpaper(
+    const WallpaperInfo& unmigrated_info) {
+  CHECK(IsOnlineWallpaper(unmigrated_info.type));
+  if (unmigrated_info.location.empty()) {
+    LOG(WARNING) << __func__ << " Unable to migrate due to empty location";
+    RecordMigrationStatus(unmigrated_info.type,
+                          MigrationStatus::kNotSupportedNoLocation);
+    return false;
+  }
+  if (unmigrated_info.collection_id.empty()) {
+    LOG(WARNING) << __func__ << " Unable to migrate due to empty collection";
+    RecordMigrationStatus(unmigrated_info.type,
+                          MigrationStatus::kNotSupportedNoCollection);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 WallpaperInfoMigrator::WallpaperInfoMigrator() = default;
@@ -75,10 +96,7 @@ void WallpaperInfoMigrator::Migrate(const AccountId& account_id,
   migrate_start_time_ = base::Time::Now();
   DVLOG(0) << __func__ << " Applying migration for info=" << unmigrated_info;
   if (IsOnlineWallpaper(unmigrated_info.type)) {
-    if (unmigrated_info.location.empty()) {
-      LOG(WARNING) << __func__ << " Unable to migrate due to empty location";
-      RecordMigrationStatus(unmigrated_info.type,
-                            MigrationStatus::kNotSupportedNoLocation);
+    if (!IsMigrationSupportedForOnlineWallpaper(unmigrated_info)) {
       RecordMigrationLatency(unmigrated_info.type,
                              base::Time::Now() - migrate_start_time_);
       std::move(completion_callback_).Run(std::nullopt);

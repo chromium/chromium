@@ -41,6 +41,7 @@ source_set("almanac_api_client") {
     "//components/version_info",
     "//content/public/browser",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]

@@ -16,6 +16,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/views/layout/box_layout.h"
@@ -78,7 +79,7 @@ DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
 
   set_margins(gfx::Insets::TLBR(20, 0, 20, 0));
 
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, GetCancelButton());

@@ -407,11 +407,8 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
       Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
                                     filter_dirs, std::move(callback));
-  return service->GetDriveFsHost()->PerformSearch(
-      std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(on_response), drive::FileError::FILE_ERROR_ABORT,
-          std::optional<std::vector<drivefs::mojom::QueryItemPtr>>()));
+  return service->GetDriveFsHost()->PerformSearch(std::move(query),
+                                                  std::move(on_response));
 }
 
 void UmaEmitSearchOutcome(

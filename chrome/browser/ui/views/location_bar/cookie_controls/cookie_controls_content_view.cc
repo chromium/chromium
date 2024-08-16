@@ -114,7 +114,7 @@ std::u16string GetManagedSectionTitle(CookieControlsEnforcement enforcement) {
       return l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL);
     case CookieControlsEnforcement::kNoEnforcement:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

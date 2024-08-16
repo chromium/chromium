@@ -32,6 +32,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/ukm_pref_names.h"

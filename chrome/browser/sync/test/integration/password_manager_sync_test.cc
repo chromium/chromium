@@ -57,7 +57,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
@@ -1113,7 +1113,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // Make sure the password show up in the account store and on the server.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 1u);
-  ASSERT_EQ(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size(),
+  ASSERT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
             1u);
   EXPECT_TRUE(password_manager::features_util::IsOptedInForAccountStorage(
       GetProfile(0)->GetPrefs(), GetSyncService(0)));
@@ -1131,7 +1131,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
 
   // Now passwords should be removed from the client and server.
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
-  EXPECT_EQ(fake_server_->GetSyncEntitiesByModelType(syncer::PASSWORDS).size(),
+  EXPECT_EQ(fake_server_->GetSyncEntitiesByDataType(syncer::PASSWORDS).size(),
             0u);
 
   // The user is still opted in (because they are still signed in).

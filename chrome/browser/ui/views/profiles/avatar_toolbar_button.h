@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
@@ -22,6 +23,19 @@ class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
 struct AccountInfo;
+
+// Enum used for testing. It allows overriding different delay values based on
+// their usage in the `AvatarToolbarButton` through helper testing functions.
+enum class AvatarDelayType {
+  // Delay for the name to stop showing.
+  kNameGreeting,
+  // Delay for the SigninPending mode to show the "Verify it's you" text.
+  kSigninPendingText,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Delay for the Management Label transient mode to stop showing "Work".
+  kManagementLabelTransientMode,
+#endif
+};
 
 // This class takes care the Profile Avatar Button.
 // Primarily applies UI configuration.
@@ -43,11 +57,6 @@ class AvatarToolbarButton : public ToolbarButton {
     virtual void OnBlur() {}
     virtual void OnIPHPromoChanged(bool has_promo) {}
     virtual void OnIconUpdated() {}
-
-    // Helper functions for testing.
-    virtual void OnShowNameClearedForTesting() {}
-    virtual void OnShowManagementTransientTextClearedForTesting() {}
-    virtual void OnShowSigninPausedDelayEnded() {}
 
     ~Observer() override = default;
   };
@@ -117,14 +126,27 @@ class AvatarToolbarButton : public ToolbarButton {
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
-  // Overrides the duration of the avatar toolbar button text that is displayed
-  // for a specific amount of time.
-  static void SetTextDurationForTesting(base::TimeDelta duration);
 
-  // Used by the delegate when showing text timed events ended - for testing.
-  void NotifyShowNameClearedForTesting() const;
-  void NotifyManagementTransientTextClearedForTesting() const;
-  void NotifyShowSigninPausedDelayEnded() const;
+  // These helper functions allow tests to be time independent; tests that are
+  // time dependent tend to create a lot of flakiness.
+  //
+  // This function allows to set an infinite delay for time dependent parts. By
+  // default tests should have this function called for all types, and then
+  // calling `TriggerTimeoutForTesting()` when needing to force trigger the
+  // ending of the delay. This allows to properly test the behavior before and
+  // after delay expiry while controlling those events..
+  [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
+  CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
+  // Force stop any ongoing delay, this expects the proper state to be active.
+  void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+  // Specific override for the SigninPending text delay. Setting a zero value
+  // make it possible to test the creation of browser after the delay has
+  // reached.
+  // The delay start time is shared in a ProfileUserData which makes it harder
+  // to access in case no browser are visible anymore, making the
+  // `TriggerTimeoutForTesting()` not enough for testing.
+  [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
+  CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AvatarToolbarButtonTest,

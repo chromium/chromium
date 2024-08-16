@@ -78,10 +78,7 @@ class FlexItem {
            const ComputedStyle& style,
            LayoutUnit flex_base_content_size,
            MinMaxSizes min_max_main_sizes,
-           // Ignored for legacy, required for NG:
-           std::optional<MinMaxSizes> min_max_cross_sizes,
            LayoutUnit main_axis_border_padding,
-           LayoutUnit cross_axis_border_padding,
            PhysicalBoxStrut physical_margins,
            BoxStrut scrollbars,
            WritingMode baseline_writing_mode,
@@ -134,18 +131,12 @@ class FlexItem {
 
   LayoutUnit MarginBoxAscent(bool is_last_baseline, bool is_wrap_reverse) const;
 
-  LayoutUnit AvailableAlignmentSpace() const;
-
   void UpdateAutoMarginsInMainAxis(LayoutUnit auto_margin_offset);
-
-  // Computes the cross-axis size that a stretched item should have and stores
-  // it in cross_axis_size. DCHECKs if the item is not stretch aligned.
-  void ComputeStretchedSize();
 
   // Returns true if the margins were adjusted due to auto margin resolution.
   bool UpdateAutoMarginsInCrossAxis(LayoutUnit available_alignment_space);
 
-  inline const FlexLine* Line() const;
+  LayoutUnit CrossAxisOffset(const NGFlexLine&, LayoutUnit cross_axis_size);
 
   static LayoutUnit AlignmentOffset(LayoutUnit available_free_space,
                                     ItemPosition position,
@@ -156,24 +147,21 @@ class FlexItem {
   void Trace(Visitor*) const;
 
   const FlexibleBoxAlgorithm* algorithm_;
-  wtf_size_t line_number_;
   Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
-  const std::optional<MinMaxSizes> min_max_cross_sizes_;
   const LayoutUnit hypothetical_main_content_size_;
   const LayoutUnit main_axis_border_padding_;
-  const LayoutUnit cross_axis_border_padding_;
   PhysicalBoxStrut physical_margins_;
   const BoxStrut scrollbars_;
   const WritingDirectionMode baseline_writing_direction_;
   const BaselineGroup baseline_group_;
 
   LayoutUnit flexed_content_size_;
+  LayoutUnit main_axis_offset_;
 
   // When set by the caller, this should be the size pre-stretching.
   LayoutUnit cross_axis_size_;
-  FlexOffset* offset_ = nullptr;
 
   const bool is_initial_block_size_indefinite_;
   const bool is_used_flex_basis_indefinite_;
@@ -297,8 +285,6 @@ class FlexLine {
   LayoutUnit remaining_free_space_;
 
   // These get filled in by ComputeLineItemsPosition
-  LayoutUnit main_axis_offset_;
-  LayoutUnit main_axis_extent_;
   LayoutUnit cross_axis_offset_;
   LayoutUnit cross_axis_extent_;
 
@@ -391,10 +377,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   void AlignFlexLines(LayoutUnit cross_axis_content_extent,
                       HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
 
-  // Positions flex items by modifying FlexItem::offset.
-  // When lines stretch, also modifies FlexItem::cross_axis_size.
-  void AlignChildren();
-
   void FlipForWrapReverse(LayoutUnit cross_axis_start_edge,
                           LayoutUnit cross_axis_content_size,
                           HeapVector<NGFlexLine>* flex_line_outputs = nullptr);
@@ -448,10 +430,6 @@ class CORE_EXPORT FlexibleBoxAlgorithm {
   Vector<FlexLine> flex_lines_;
   wtf_size_t next_item_index_;
 };
-
-inline const FlexLine* FlexItem::Line() const {
-  return &algorithm_->FlexLines()[line_number_];
-}
 
 }  // namespace blink
 

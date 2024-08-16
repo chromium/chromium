@@ -107,7 +107,7 @@ int TableColumnAlignmentToCanvasAlignment(
     case ui::TableColumn::RIGHT:
       return gfx::Canvas::TEXT_ALIGN_RIGHT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<size_t> GetClosestVisibleColumnIndex(const TableView& table,

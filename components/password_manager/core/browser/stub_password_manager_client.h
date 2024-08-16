@@ -76,6 +76,8 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   version_info::Channel GetChannel() const override;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
+  void OpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) override;
   std::unique_ptr<
       password_manager::PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(

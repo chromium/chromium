@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "crypto/sha2.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -39,9 +40,6 @@
 namespace optimization_guide {
 
 namespace {
-
-// Header for API key.
-constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
 
 // The SHA256 hash of the public key for the Optimization Guide Server that
 // we require models to come from.
@@ -133,8 +131,8 @@ void PredictionModelDownloadManager::StartDownload(
   download_params.request_params.require_safety_checks = false;
   download_params.request_params.url = download_url;
   download_params.request_params.method = "GET";
-  download_params.request_params.request_headers.SetHeader(kGoogApiKey,
-                                                           api_key_);
+  google_apis::AddAPIKeyToRequest(
+      download_params.request_params.request_headers, api_key_);
   if (features::IsUnrestrictedModelDownloadingEnabled()) {
     // This feature param should really only be used for testing, so it is ok
     // to have this be a high priority download with no network restrictions.

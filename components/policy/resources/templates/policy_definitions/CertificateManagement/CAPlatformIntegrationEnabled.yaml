@@ -21,9 +21,6 @@ items:
   value: false
 schema:
   type: boolean
-# Supported platforms should be kept in sync with the
-# chrome_certificate_policies_supported build flag in
-# chrome/common/features.gni
 # Intentionally not supported on ChromeOS as there is no "platform" certificate
 # store to integrate with.
 future_on:

@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
+#include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -143,20 +145,6 @@ class WebContentsViewAndroid : public WebContentsView,
     device_orientation_ = orientation;
   }
 
-  // Insert `screenshot_layer` into the layer tree, as a *direct* sibling of
-  // `parent_for_web_page_widgets_`.
-  //
-  // `screenshot_layer_on_top` controls the position of `screenshot_layer`:
-  // `true` means the screenshot will be placed right above
-  // `parent_for_web_page_widgets_`; `false` means right below it.
-  //
-  // TODO(crbug.com/40283503): The boolean might not be enough if
-  // `parent_for_web_page_widgets_` has more siblings, and we need finer control
-  // of the position.
-  void AddScreenshotLayerForNavigationTransitions(
-      scoped_refptr<cc::slim::Layer> screenshot_layer,
-      bool screenshot_layer_on_top);
-
   // See the block comments above `parent_for_web_page_widgets_` for the
   // hierarchies of layers and native views. The callers can operate upon all
   // the web widgets and the web page via this getter.
@@ -167,17 +155,28 @@ class WebContentsViewAndroid : public WebContentsView,
   WebContentsImpl* web_contents() { return web_contents_; }
 
  private:
-  void OnDragEntered(const std::vector<DropData::Metadata>& metadata,
-                     const gfx::PointF& location,
+  void OnDragEntered(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void DragEnteredCallback(const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target);
   void OnDragUpdated(const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void DragUpdatedCallback(const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target,
+                           std::optional<gfx::PointF> transformed_pt);
   void OnDragExited();
-  void OnPerformDrop(DropData* drop_data,
+  void OnPerformDrop(std::unique_ptr<DropData> drop_data,
                      const gfx::PointF& location,
                      const gfx::PointF& screen_location);
+  void PerformDropCallback(std::unique_ptr<DropData> drop_data,
+                           const gfx::PointF& location,
+                           const gfx::PointF& screen_location,
+                           base::WeakPtr<RenderWidgetHostViewBase> target,
+                           std::optional<gfx::PointF> transformed_pt);
   void OnDragEnded();
-  void OnSystemDragEnded();
+  void OnSystemDragEnded(RenderWidgetHost* source_rwh);
 
   SelectPopup* GetSelectPopup();
 
@@ -227,6 +226,18 @@ class WebContentsViewAndroid : public WebContentsView,
   // Show/hide popup UI for <select> tag.
   std::unique_ptr<SelectPopup> select_popup_;
 
+  // Source RenderWidgetHost when dragging out of this WebContents.
+  base::WeakPtr<RenderWidgetHostImpl> current_source_rwh_for_drag_;
+  // base::FeatureList::IsEnabled(features::kAndroidDragDropOopif).
+  bool drag_drop_oopif_enabled_ = false;
+  // Metadata for the current drag.
+  std::vector<DropData::Metadata> drag_metadata_;
+  // We keep track of the target RenderWidgetHost we are currently over when
+  // dragging into this WebContents. If it changes during a drag, we need to
+  // re-send the DragEnter message.
+  base::WeakPtr<RenderWidgetHostImpl> current_target_rwh_for_drag_;
+  // Holds the security info for the current drag.
+  WebContentsViewDragSecurityInfo drag_security_info_;
   // Whether drag went beyond the movement threshold to be considered as an
   // intentional drag. If true, ::ShowContextMenu will be ignored.
   bool drag_exceeded_movement_threshold_ = false;
@@ -246,6 +257,8 @@ class WebContentsViewAndroid : public WebContentsView,
   // Manages the animation during a session history navigation.
   std::unique_ptr<BackForwardTransitionAnimationManagerAndroid>
       back_forward_animation_manager_;
+
+  base::WeakPtrFactory<WebContentsViewAndroid> weak_ptr_factory_{this};
 };
 
 } // namespace content

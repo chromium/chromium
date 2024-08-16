@@ -21,6 +21,7 @@
 #include "content/public/browser/web_ui.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/util/display_util.h"
@@ -59,20 +60,21 @@ views::Widget::InitParams CreateWidgetParams(
   return params;
 }
 
-ui::ModalType ModalTypeForSessionState(session_manager::SessionState state) {
+ui::mojom::ModalType ModalTypeForSessionState(
+    session_manager::SessionState state) {
   switch (state) {
     // Normally system dialogs are not modal.
     case session_manager::SessionState::UNKNOWN:
     case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
     case session_manager::SessionState::ACTIVE:
-      return ui::MODAL_TYPE_NONE;
+      return ui::mojom::ModalType::kNone;
     // These states use an overlay so dialogs must be modal.
     case session_manager::SessionState::OOBE:
     case session_manager::SessionState::LOGIN_PRIMARY:
     case session_manager::SessionState::LOCKED:
     case session_manager::SessionState::LOGIN_SECONDARY:
     case session_manager::SessionState::RMA:
-      return ui::MODAL_TYPE_SYSTEM;
+      return ui::mojom::ModalType::kSystem;
   }
 }
 
@@ -174,7 +176,7 @@ void SystemWebDialogDelegate::Focus() {
   // enable interaction. It does however remove focus from the current dialog,
   // preventing interaction with any dialog. TODO(stevenjb): Investigate and
   // fix, https://crbug.com/914133.
-  if (GetDialogModalType() == ui::MODAL_TYPE_NONE) {
+  if (GetDialogModalType() == ui::mojom::ModalType::kNone) {
     if (!dialog_window()->IsVisible()) {
       dialog_window()->Show();
     }
@@ -210,8 +212,9 @@ void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
       CreateWidgetParams(GetWebDialogFrameKind());
 
   // If unparented and not modal, keep it on top (see header comment).
-  if (!parent && GetDialogModalType() == ui::MODAL_TYPE_NONE)
+  if (!parent && GetDialogModalType() == ui::mojom::ModalType::kNone) {
     extra_params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  }
   AdjustWidgetInitParams(&extra_params);
   dialog_window_ = chrome::ShowWebDialogWithParams(
       parent, browser_context, this,

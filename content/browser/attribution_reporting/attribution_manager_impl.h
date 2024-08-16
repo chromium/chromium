@@ -32,7 +32,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 struct OsRegistrationItem;
@@ -172,7 +171,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   using ReportSentCallback =
       base::OnceCallback<void(const AttributionReport&, SendResult)>;
-  using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
   struct SourceOrTriggerRFH;
 

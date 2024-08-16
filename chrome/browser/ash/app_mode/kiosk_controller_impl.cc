@@ -89,7 +89,7 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
                       /*icon=*/gfx::ImageSkia(),
                       /*url=*/GURL()};
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -229,6 +229,14 @@ bool KioskControllerImpl::HandleAccelerator(LoginAcceleratorAction action) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return launch_controller_ && launch_controller_->HandleAccelerator(action);
+}
+
+void KioskControllerImpl::OnGuestAdded(
+    content::WebContents* guest_web_contents) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (system_session_.has_value()) {
+    system_session_->OnGuestAdded(guest_web_contents);
+  }
 }
 
 KioskSystemSession* KioskControllerImpl::GetKioskSystemSession() {

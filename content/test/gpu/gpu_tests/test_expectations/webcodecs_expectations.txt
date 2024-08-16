@@ -36,7 +36,7 @@
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
+#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -59,7 +59,8 @@
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
-#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -161,6 +162,10 @@ crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
+
+crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
+crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_2 [ Failure ]
+crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

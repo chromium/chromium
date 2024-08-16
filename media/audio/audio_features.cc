@@ -44,7 +44,7 @@ BASE_FEATURE(kAllowIAudioClient3,
 namespace media {
 
 bool IsSystemLoopbackCaptureSupported() {
-#if BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
   return true;
 #elif BUILDFLAG(IS_MAC)
   // Only supported on macOS 13.0+.
@@ -53,7 +53,7 @@ bool IsSystemLoopbackCaptureSupported() {
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_WIN) || defined(USE_CRAS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_CRAS)
 }
 
 }  // namespace media

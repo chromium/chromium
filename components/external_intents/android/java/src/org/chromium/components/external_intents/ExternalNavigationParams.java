@@ -95,6 +95,7 @@ public class ExternalNavigationParams {
     private final Callback<AsyncActionTakenParams> mAsyncActionTakenCallback;
     private boolean mIsRendererInitiated;
     private Origin mInitiatorOrigin;
+    private final long mNavigationId;
 
     // Populated when an async action is taken, ensuring the callback gets called.
     private RequiredCallback<AsyncActionTakenParams> mRequiredAsyncActionTakenCallback;
@@ -118,7 +119,8 @@ public class ExternalNavigationParams {
             @Nullable Origin initiatorOrigin,
             boolean isInitialNavigationInFrame,
             boolean isHiddenCrossFrameNavigation,
-            boolean isSandboxedMainFrame) {
+            boolean isSandboxedMainFrame,
+            long navigationId) {
         mUrl = url;
         mIsIncognito = isIncognito;
         mPageTransition = pageTransition;
@@ -138,6 +140,7 @@ public class ExternalNavigationParams {
         mIsInitialNavigationInFrame = isInitialNavigationInFrame;
         mIsHiddenCrossFrameNavigation = isHiddenCrossFrameNavigation;
         mIsSandboxedMainFrame = isSandboxedMainFrame;
+        mNavigationId = navigationId;
     }
 
     public void onAsyncActionStarted() {
@@ -253,6 +256,13 @@ public class ExternalNavigationParams {
         return mIsSandboxedMainFrame;
     }
 
+    /**
+     * @return the id for this navigation.
+     */
+    public long getNavigationId() {
+        return mNavigationId;
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         private GURL mUrl;
@@ -274,6 +284,7 @@ public class ExternalNavigationParams {
         private boolean mIsInitialNavigationInFrame;
         private boolean mIsHiddenCrossFrameNavigation;
         private boolean mIsSandboxedMainFrame;
+        private long mNavigationId;
 
         public Builder(GURL url, boolean isIncognito) {
             mUrl = url;
@@ -377,7 +388,14 @@ public class ExternalNavigationParams {
             return this;
         }
 
-        /** @return A fully constructed {@link ExternalNavigationParams} object. */
+        public Builder setNavigationId(long v) {
+            mNavigationId = v;
+            return this;
+        }
+
+        /**
+         * @return A fully constructed {@link ExternalNavigationParams} object.
+         */
         public ExternalNavigationParams build() {
             return new ExternalNavigationParams(
                     mUrl,
@@ -398,7 +416,8 @@ public class ExternalNavigationParams {
                     mInitiatorOrigin,
                     mIsInitialNavigationInFrame,
                     mIsHiddenCrossFrameNavigation,
-                    mIsSandboxedMainFrame);
+                    mIsSandboxedMainFrame,
+                    mNavigationId);
         }
     }
 }

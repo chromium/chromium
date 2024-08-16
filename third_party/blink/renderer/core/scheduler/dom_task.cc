@@ -200,10 +200,11 @@ void DOMTask::InvokeInternal(ScriptState* script_state) {
         abort_source_, priority_source_);
   } else if (RuntimeEnabledFeatures::SchedulerYieldEnabled(
                  ExecutionContext::From(script_state))) {
+    auto* task_state = MakeGarbageCollected<WebSchedulingTaskState>(
+        /*TaskAttributionInfo=*/nullptr, abort_source_, priority_source_);
     ScriptWrappableTaskState::SetCurrent(
         script_state,
-        MakeGarbageCollected<WebSchedulingTaskState>(
-            /*TaskAttributionInfo=*/nullptr, abort_source_, priority_source_));
+        MakeGarbageCollected<ScriptWrappableTaskState>(task_state));
   }
 
   ScriptValue result;

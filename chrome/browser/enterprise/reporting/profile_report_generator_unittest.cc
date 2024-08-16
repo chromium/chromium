@@ -14,6 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -48,6 +50,12 @@ constexpr char kProfile[] = "Default";
 constexpr char16_t kProfile16[] = u"Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
 constexpr char16_t kIdleProfile16[] = u"IdleProfile";
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAffiliationId1[] = "affiliation-id-1";
+constexpr char kAffiliationId2[] = "affiliation-id-2";
+#endif
+
 
 #if !BUILDFLAG(IS_ANDROID)
 const int kMaxNumberOfExtensionRequest = 1000;
@@ -289,6 +297,37 @@ TEST_F(ProfileReportGeneratorTest, PoliciesHidden) {
     }
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ProfileReportGeneratorTest, IsAffiliated) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId1});
+
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+
+  ASSERT_TRUE(report->has_affiliation());
+
+  EXPECT_TRUE(report->affiliation().is_affiliated());
+  EXPECT_FALSE(report->affiliation().has_unaffiliation_reason());
+}
+
+TEST_F(ProfileReportGeneratorTest, NotAffiliated) {
+  profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+      {kAffiliationId1});
+  g_browser_process->browser_policy_connector()
+      ->SetDeviceAffiliatedIdsForTesting({kAffiliationId2});
+
+  std::unique_ptr<em::ChromeUserProfileInfo> report = GenerateReport();
+
+  ASSERT_TRUE(report->has_affiliation());
+
+  EXPECT_FALSE(report->affiliation().is_affiliated());
+  EXPECT_EQ(em::AffiliationState_UnaffiliationReason_USER_UNMANAGED,
+            report->affiliation().unaffiliation_reason());
+}
+#endif // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ProfileReportGeneratorTest, PendingRequest) {

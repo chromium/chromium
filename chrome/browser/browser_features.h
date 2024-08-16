@@ -40,6 +40,12 @@ BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
 extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
 extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 
+BASE_DECLARE_FEATURE(kDevToolsExplainThisResourceDogfood);
+extern const base::FeatureParam<std::string>
+    kDevToolsExplainThisResourceDogfoodModelId;
+extern const base::FeatureParam<double>
+    kDevToolsExplainThisResourceDogfoodTemperature;
+
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 BASE_DECLARE_FEATURE(kDevToolsVeLogging);
@@ -81,7 +87,9 @@ const base::FeatureParam<int>
         "preconnect_start_delay_on_mouse_hover_ms", 100};
 const base::FeatureParam<bool> kPrerenderNewTabPageOnMousePressedTrigger{
     &features::kNewTabPageTriggerForPrerender2,
-    "prerender_new_tab_page_on_mouse_pressed_trigger", false};
+    "prerender_new_tab_page_on_mouse_pressed_trigger", true};
+// The hover trigger is not enabled as we're aware that this negatively
+// affects other navigations like Omnibox search.
 const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
     &features::kNewTabPageTriggerForPrerender2,
     "prerender_new_tab_page_on_mouse_hover_trigger", false};
@@ -135,6 +143,8 @@ BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
 #endif
 
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
+
+BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

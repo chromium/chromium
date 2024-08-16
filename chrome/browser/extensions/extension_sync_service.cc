@@ -49,7 +49,7 @@ BASE_FEATURE(kBookmarkAppDeletion,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if the sync type of |extension| matches |type|.
-bool IsCorrectSyncType(const Extension& extension, syncer::ModelType type) {
+bool IsCorrectSyncType(const Extension& extension, syncer::DataType type) {
   return (type == syncer::EXTENSIONS && extension.is_extension()) ||
          (type == syncer::APPS && extension.is_app());
 }
@@ -132,7 +132,7 @@ void ExtensionSyncService::SyncExtensionChangeIfNeeded(
   if (ignore_updates_ || !ShouldSync(extension))
     return;
 
-  syncer::ModelType type =
+  syncer::DataType type =
       extension.is_app() ? syncer::APPS : syncer::EXTENSIONS;
   SyncBundle* bundle = GetSyncBundle(type);
   if (bundle->IsSyncing()) {
@@ -153,12 +153,12 @@ void ExtensionSyncService::WaitUntilReadyToSync(base::OnceClosure done) {
 
 std::optional<syncer::ModelError>
 ExtensionSyncService::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   CHECK(sync_processor.get());
   LOG_IF(FATAL, type != syncer::EXTENSIONS && type != syncer::APPS)
-      << "Got " << type << " ModelType";
+      << "Got " << type << " DataType";
 
   SyncBundle* bundle = GetSyncBundle(type);
   bundle->StartSyncing(std::move(sync_processor));
@@ -194,12 +194,12 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   return std::nullopt;
 }
 
-void ExtensionSyncService::StopSyncing(syncer::ModelType type) {
+void ExtensionSyncService::StopSyncing(syncer::DataType type) {
   GetSyncBundle(type)->Reset();
 }
 
 syncer::SyncDataList ExtensionSyncService::GetAllSyncDataForTesting(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   const SyncBundle* bundle = GetSyncBundle(type);
   if (!bundle->IsSyncing())
     return syncer::SyncDataList();
@@ -319,8 +319,8 @@ void ExtensionSyncService::ApplySyncData(
   // sync data, so that we don't end up notifying ourselves.
   base::AutoReset<bool> ignore_updates(&ignore_updates_, true);
 
-  syncer::ModelType type = extension_sync_data.is_app() ? syncer::APPS
-                                                        : syncer::EXTENSIONS;
+  syncer::DataType type =
+      extension_sync_data.is_app() ? syncer::APPS : syncer::EXTENSIONS;
   SyncBundle* bundle = GetSyncBundle(type);
   DCHECK(bundle->IsSyncing());
   if (extension && !IsCorrectSyncType(*extension, type)) {
@@ -567,7 +567,7 @@ void ExtensionSyncService::OnExtensionUninstalled(
   // Possible fix: Set NeedsSync here, then in MergeDataAndStartSyncing, if
   // NeedsSync is set but the extension isn't installed, send a sync deletion.
   if (!ignore_updates_) {
-    syncer::ModelType type =
+    syncer::DataType type =
         extension->is_app() ? syncer::APPS : syncer::EXTENSIONS;
     SyncBundle* bundle = GetSyncBundle(type);
     if (bundle->IsSyncing()) {
@@ -605,18 +605,18 @@ void ExtensionSyncService::OnExtensionDisableReasonsChanged(
     SyncExtensionChangeIfNeeded(*extension);
 }
 
-SyncBundle* ExtensionSyncService::GetSyncBundle(syncer::ModelType type) {
+SyncBundle* ExtensionSyncService::GetSyncBundle(syncer::DataType type) {
   return const_cast<SyncBundle*>(
       const_cast<const ExtensionSyncService&>(*this).GetSyncBundle(type));
 }
 
 const SyncBundle* ExtensionSyncService::GetSyncBundle(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   return (type == syncer::APPS) ? &app_sync_bundle_ : &extension_sync_bundle_;
 }
 
 std::vector<ExtensionSyncData> ExtensionSyncService::GetLocalSyncDataList(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   // Collect the local state.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   std::vector<ExtensionSyncData> data;
@@ -634,7 +634,7 @@ std::vector<ExtensionSyncData> ExtensionSyncService::GetLocalSyncDataList(
 
 void ExtensionSyncService::FillSyncDataList(
     const ExtensionSet& extensions,
-    syncer::ModelType type,
+    syncer::DataType type,
     std::vector<ExtensionSyncData>* sync_data_list) const {
   for (const scoped_refptr<const Extension>& extension : extensions) {
     if (IsCorrectSyncType(*extension, type) && ShouldSync(*extension)) {

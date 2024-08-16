@@ -30,7 +30,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -240,7 +240,7 @@ public class TabGroupVisualDataDialogManager {
                 descriptionView.setVisibility(View.VISIBLE);
                 SyncService syncService = SyncServiceFactory.getForProfile(profile);
                 boolean syncingTabGroups =
-                        syncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+                        syncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
 
                 // Set description text based on if sync is enabled.
                 final @StringRes int descriptionId =

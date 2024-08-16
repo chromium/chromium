@@ -1167,8 +1167,8 @@ TEST_P(SharedDictionaryManagerTest, WriteAndReadDictionary) {
       EXPECT_EQ(GetDefaultExpiration(), dictionary_info.expiration());
       EXPECT_EQ("/testfile*", dictionary_info.match());
       EXPECT_EQ(data1.size() + data2.size(), dictionary_info.size());
-      EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(base::BindOnce(
-                             [](int) { NOTREACHED_NORETURN(); })));
+      EXPECT_EQ(net::OK, dictionary_info.dictionary()->ReadAll(
+                             base::BindOnce([](int) { NOTREACHED(); })));
       EXPECT_EQ(data1 + data2,
                 std::string(dictionary_info.dictionary()->data()->data(),
                             dictionary_info.size()));
@@ -2338,8 +2338,8 @@ TEST_P(SharedDictionaryManagerTest, PreloadSharedDictionaryInfo) {
   // available.
   auto dictionary = storage->GetDictionarySync(
       GURL("https://origin1.test/p3"), mojom::RequestDestination::kEmpty);
-  EXPECT_EQ(net::OK, dictionary->ReadAll(
-                         base::BindOnce([](int) { NOTREACHED_NORETURN(); })));
+  EXPECT_EQ(net::OK,
+            dictionary->ReadAll(base::BindOnce([](int) { NOTREACHED(); })));
 
   // Resetting `handle` must clear the preloaded shared dictionary info.
   handle.reset();

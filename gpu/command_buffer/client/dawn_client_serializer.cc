@@ -57,7 +57,7 @@ void* DawnClientSerializer::GetCmdSpace(size_t size) {
   const bool overflows_remaining_space =
       size > static_cast<size_t>(buffer_.size() - put_offset_);
 
-  if (LIKELY(buffer_.valid() && !overflows_remaining_space)) {
+  if (buffer_.valid() && !overflows_remaining_space) [[likely]] {
     // If the buffer is valid and has sufficient space, return the
     // pointer and increment the offset.
     uint8_t* ptr = static_cast<uint8_t*>(buffer_.address());

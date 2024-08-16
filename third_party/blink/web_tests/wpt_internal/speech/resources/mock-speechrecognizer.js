@@ -89,6 +89,10 @@ export class MockSpeechRecognizer {
 
     this.dispatchResult();
   }
+
+  onDeviceWebSpeechAvailable(params) {
+    return Promise.resolve(false);
+  }
 }
 
 class MockSpeechRecognitionSession {

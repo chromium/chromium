@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">graduatzailea</translation>
 <translation id="1211441953136645838">amaierako oharra</translation>
 <translation id="1281252709823657822">leihoa</translation>
+<translation id="1306460908038601864">Desaktibatuta</translation>
 <translation id="1335095011850992622">kredituak</translation>
 <translation id="1342835525016946179">artikulua</translation>
 <translation id="1359897965706325498">iragarki-banda</translation>
+<translation id="1480676835519562650">aukera anitzekoa, <ph name="COUNT" />/<ph name="SELECTED" /> haur hautatu dira.</translation>
 <translation id="1589122976691792535">lurraldea</translation>
 <translation id="1650423536718072820">aipamena</translation>
+<translation id="1681022320378710418">une honetako ordua</translation>
+<translation id="1727839386348365796">Kolore-hautatzailea</translation>
 <translation id="1821985195704844674">zuhaitz-sareta</translation>
 <translation id="1823704031293214298">orri-oina</translation>
 <translation id="1838681052457320736">alerta-leihoa</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ezabatzea</translation>
 <translation id="1907737156431278478">adibidea</translation>
 <translation id="1930711995431081526">egoera</translation>
+<translation id="2031987842108996681">Kanal gorria</translation>
 <translation id="2158401438286456825">orrien zerrenda</translation>
 <translation id="2291999235780842123">koadroa</translation>
 <translation id="2311842470354187719">orri-jauzia</translation>
 <translation id="2335594187091864976">data- eta ordu-hautatzailea</translation>
 <translation id="2508569020611168319">fitxen zerrenda</translation>
+<translation id="2530182415807757784">aukera anitzekoa, ez da bat ere hautatu.</translation>
+<translation id="2634240155926812724">Kanal berdea</translation>
 <translation id="2657045182931379222">objektu grafikoa</translation>
 <translation id="2674318244760992338">orri-oina</translation>
 <translation id="2723001399770238859">audioa</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">oharra</translation>
 <translation id="3175736971608411871">tenporizadorea</translation>
 <translation id="3199563858620722075">koadro konbinatua</translation>
+<translation id="3220661731597678625">une honetako urratsa</translation>
+<translation id="3329013043687509092">Asetasuna</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3557673793733683882"><ph name="HEADING_LEVEL" />. goiburua</translation>
 <translation id="3670698553867754311">aste-hautatzailea</translation>
 <translation id="3706100364254443312">aldatu</translation>
 <translation id="3808586225841795776">hitza</translation>
+<translation id="3914173277599553213">Nahitaezkoa</translation>
 <translation id="3920932319529768807">ondorioa</translation>
 <translation id="3924558731517983934">aplikazioa</translation>
 <translation id="3944740393230681990">hitzaurrea</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">azala</translation>
 <translation id="4757246831282535685">fitxen panela</translation>
 <translation id="479989351350248267">bilaketa</translation>
+<translation id="4912200001568447310">une honetako elementua</translation>
 <translation id="4912536737030637138">bibliografia-sarrera</translation>
 <translation id="492244087561876220">iruzkina</translation>
+<translation id="4924138096460353083">zehaztugabea</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> hautatuta</translation>
 <translation id="5022314756875057021">errenkada taldea</translation>
 <translation id="5034860022980953847">egoera-adierazlea</translation>
 <translation id="5093189678851173835">epigrafea</translation>
+<translation id="509897012892853729">Kanal urdina</translation>
 <translation id="512758898067543763">errenkadaren goiburua</translation>
 <translation id="5143125788380636750">epilogoa</translation>
 <translation id="5406322316791861025">zenbakia</translation>
+<translation id="5425179576310518467">une honetako data</translation>
 <translation id="5453733299334684579">zuhaitzeko elementua</translation>
 <translation id="546643433018805598">azpi-indizea</translation>
 <translation id="5476505524087279545">desautatu</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">botoia</translation>
 <translation id="5693537480074347398">goi-indizea</translation>
 <translation id="576709008726043716">sarrera</translation>
+<translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="591047860372322273">bilaketa-koadroa</translation>
+<translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5987525920412732405">biratze-botoia</translation>
 <translation id="6023896073578205740">zerrenda-koadroa</translation>
 <translation id="6119846243427417423">aktibatu</translation>
 <translation id="6150588977291308318">bibliografia</translation>
 <translation id="6164829606128959761">neurgailua</translation>
 <translation id="6166809985690652833">hitzatzea</translation>
+<translation id="6212595056017402527">une honetako orria</translation>
 <translation id="6213469881011901533">glosarioa</translation>
+<translation id="6281588256137006900">Ikusgaitasuna</translation>
 <translation id="6281763101136022427">urla</translation>
 <translation id="6453774872122745852">esker-emateak</translation>
 <translation id="648732519525291180">ordu-hautatzailea</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">aipamena</translation>
 <translation id="693476918119313863">goiburua</translation>
 <translation id="6981594929165378967">txertatzea</translation>
+<translation id="698788488269350478">zabalduta.</translation>
 <translation id="7034405885550056553">iradokizuna</translation>
+<translation id="7102274145889307184">oraingo kokapena</translation>
 <translation id="7139483182332611405">atarikoa</translation>
 <translation id="7198226213493847604">menuaren leiho gainerakorraren botoia</translation>
 <translation id="7214187073215825913">edukiari buruzko informazioa</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">indizea</translation>
 <translation id="7740050170769002709">HTML edukia</translation>
 <translation id="7802800022689234070">zabaltze-triangelua</translation>
+<translation id="7852167693871241274">Tonalitate-graduatzailea</translation>
 <translation id="7891486169920085145">banatzailea</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> hautatu gabe</translation>
 <translation id="8034303206267677282">garrantzitsua</translation>
 <translation id="8053789581856978548">testua bilatzeko eremua</translation>
 <translation id="8057695513531652401">oharra</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">atala</translation>
 <translation id="8851136666856101339">nagusia</translation>
 <translation id="8861621546968757188">leiho gainerakorraren botoia</translation>
+<translation id="8889402386540077796">Ñabardura</translation>
+<translation id="894736920926684893">Formatu-etengailua</translation>
 <translation id="9002566407876343676">ireki</translation>
 <translation id="901834265349196618">helbide elektronikoa</translation>
 <translation id="9048119486235211610">nabigazioa</translation>

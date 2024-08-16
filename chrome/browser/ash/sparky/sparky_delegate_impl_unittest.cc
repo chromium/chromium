@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -36,6 +38,23 @@ namespace ash {
 
 namespace {
 using SettingsPrivatePrefType = extensions::api::settings_private::PrefType;
+using ::testing::UnorderedElementsAre;
+
+MATCHER_P2(File, path, name, "File matches") {
+  return arg.path == path && arg.name == name;
+}
+
+MATCHER_P5(FileWithSummary,
+           path,
+           name,
+           summary,
+           date_modified,
+           size_in_bytes,
+           "File with summary matches") {
+  return arg.path == path && arg.name == name && arg.summary == summary &&
+         arg.date_modified == date_modified &&
+         arg.size_in_bytes == size_in_bytes;
+}
 
 // Get the path to file manager's test data directory.
 base::FilePath GetTestDataFilePath(const std::string& file_name) {
@@ -127,6 +146,9 @@ class SparkyDelegateImplTest : public testing::Test {
         storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_path));
 
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+    sparky_delegate_impl_->SetRootPathForTesting(scoped_temp_dir_.GetPath());
+
     RunUntilIdle();
   }
 
@@ -142,11 +164,28 @@ class SparkyDelegateImplTest : public testing::Test {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
+  base::FilePath Path(const std::string& filename) {
+    return scoped_temp_dir_.GetPath().Append(filename);
+  }
+
+  void WriteFile(const std::string& filename, const std::string& data) {
+    ASSERT_TRUE(base::WriteFile(Path(filename), data));
+    ASSERT_TRUE(base::PathExists(Path(filename)));
+    RunUntilIdle();
+  }
+
+  void CreateDirectory(const std::string& directory_name) {
+    ASSERT_TRUE(base::CreateDirectory(Path(directory_name)));
+    ASSERT_TRUE(base::PathExists(Path(directory_name)));
+    RunUntilIdle();
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:
   std::unique_ptr<SparkyDelegateImpl> sparky_delegate_impl_;
+  base::ScopedTempDir scoped_temp_dir_;
 };
 
 TEST_F(SparkyDelegateImplTest, SetSettings) {
@@ -260,6 +299,150 @@ TEST_F(SparkyDelegateImplTest, ObtainStorageInfo) {
         ASSERT_EQ(storage_data->total_bytes, total_size);
         quit_closure.Run();
       }));
+}
+
+TEST_F(SparkyDelegateImplTest, GetMyFiles_Simple) {
+  WriteFile("cat.txt", "I like cats");
+  WriteFile("dog.txt", "dog text");
+  WriteFile("turtle.txt", "turtle text");
+  auto quit_closure = task_environment_.QuitClosure();
+  RunUntilIdle();
+
+  std::string path1 = Path("cat.txt").MaybeAsASCII();
+  std::string path2 = Path("dog.txt").MaybeAsASCII();
+  std::string path3 = Path("turtle.txt").MaybeAsASCII();
+
+  // Simple test without bytes and with all files allowed.
+  GetSparkyDelegateImpl()->GetMyFiles(
+      base::BindLambdaForTesting([&quit_closure, path1, path2, path3](
+                                     std::vector<manta::FileData> files_data) {
+        EXPECT_EQ((int)files_data.size(), 3);
+        EXPECT_THAT(
+            files_data,
+            UnorderedElementsAre(File(path1, "cat.txt"), File(path2, "dog.txt"),
+                                 File(path3, "turtle.txt")));
+        for (manta::FileData file : files_data) {
+          EXPECT_FALSE(file.bytes.has_value());
+        }
+        quit_closure.Run();
+      }),
+      false, std::set<std::string>());
+
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(SparkyDelegateImplTest, GetMyFiles_WithFiler) {
+  WriteFile("cat.txt", "I like cats");
+  WriteFile("dog.txt", "dog text");
+  WriteFile("turtle.txt", "turtle text");
+  auto quit_closure = task_environment_.QuitClosure();
+  RunUntilIdle();
+
+  std::string path1 = Path("cat.txt").MaybeAsASCII();
+  std::string path2 = Path("dog.txt").MaybeAsASCII();
+  std::string path3 = Path("turtle.txt").MaybeAsASCII();
+
+  GetSparkyDelegateImpl()->GetMyFiles(
+      base::BindLambdaForTesting([&quit_closure, path1, path3](
+                                     std::vector<manta::FileData> files_data) {
+        EXPECT_EQ((int)files_data.size(), 2);
+        EXPECT_THAT(files_data,
+                    UnorderedElementsAre(File(path1, "cat.txt"),
+                                         File(path3, "turtle.txt")));
+        quit_closure.Run();
+      }),
+      false, std::set<std::string>({path1, path3}));
+
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(SparkyDelegateImplTest, GetMyFiles_WithBytes) {
+  WriteFile("cat.txt", "I like cats");
+  WriteFile("dog.txt", "dog text");
+  WriteFile("turtle.txt", "turtle text");
+  auto quit_closure = task_environment_.QuitClosure();
+  RunUntilIdle();
+
+  std::string path1 = Path("cat.txt").MaybeAsASCII();
+  std::string path2 = Path("dog.txt").MaybeAsASCII();
+  std::string path3 = Path("turtle.txt").MaybeAsASCII();
+
+  GetSparkyDelegateImpl()->GetMyFiles(
+      base::BindLambdaForTesting([&quit_closure, path1, path2, path3](
+                                     std::vector<manta::FileData> files_data) {
+        EXPECT_EQ((int)files_data.size(), 3);
+        EXPECT_THAT(
+            files_data,
+            UnorderedElementsAre(File(path1, "cat.txt"), File(path2, "dog.txt"),
+                                 File(path3, "turtle.txt")));
+        for (manta::FileData file : files_data) {
+          EXPECT_TRUE(file.bytes.has_value());
+        }
+        quit_closure.Run();
+      }),
+      true, std::set<std::string>());
+
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(SparkyDelegateImplTest, FilesSummary) {
+  // If no summary data has yet be inserted, then the requested file vector
+  // should be empty.
+  std::vector<manta::FileData> empty_files_summary =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+  EXPECT_TRUE(empty_files_summary.empty());
+
+  std::vector<manta::FileData> files_data;
+  auto file_1 = manta::FileData("path1", "name1.pdf", "2024");
+  file_1.summary = "file 1 summary";
+  file_1.size_in_bytes = (int64_t)8234;
+  files_data.emplace_back(file_1);
+
+  auto file_2 = manta::FileData("path2", "name2", "2023");
+  file_2.summary = "my second file";
+  file_2.size_in_bytes = (int64_t)1287;
+  files_data.emplace_back(file_2);
+
+  GetSparkyDelegateImpl()->UpdateFileSummaries(files_data);
+  std::vector<manta::FileData> files_summary =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+  EXPECT_EQ(2, (int)files_summary.size());
+
+  EXPECT_THAT(files_summary,
+              UnorderedElementsAre(
+                  FileWithSummary("path1", "name1.pdf", "file 1 summary",
+                                  "2024", (int64_t)8234),
+                  FileWithSummary("path2", "name2", "my second file", "2023",
+                                  (int64_t)1287)));
+
+  std::vector<manta::FileData> files_data_updated;
+  auto file_2_updated = manta::FileData("path2", "name2", "2024");
+  file_2_updated.summary = "my second file with extra cool stuff";
+  file_2_updated.size_in_bytes = (int64_t)1987;
+  files_data_updated.emplace_back(file_2_updated);
+
+  auto file_3 =
+      manta::FileData("my/last/path/tree.png", "tree.png", "yesterday");
+  file_3.summary = "a photo of a eucalyptus tree";
+  file_3.size_in_bytes = (int64_t)456243;
+  files_data_updated.emplace_back(file_3);
+
+  GetSparkyDelegateImpl()->UpdateFileSummaries(files_data_updated);
+  std::vector<manta::FileData> files_summary_updated =
+      GetSparkyDelegateImpl()->GetFileSummaries();
+
+  EXPECT_EQ(3, (int)files_summary_updated.size());
+
+  EXPECT_THAT(files_summary_updated,
+              UnorderedElementsAre(
+                  FileWithSummary("path1", "name1.pdf", "file 1 summary",
+                                  "2024", (int64_t)8234),
+                  FileWithSummary("path2", "name2",
+                                  "my second file with extra cool stuff",
+                                  "2024", (int64_t)1987),
+                  FileWithSummary("my/last/path/tree.png", "tree.png",
+                                  "a photo of a eucalyptus tree", "yesterday",
+                                  (int64_t)456243)));
 }
 
 }  // namespace ash

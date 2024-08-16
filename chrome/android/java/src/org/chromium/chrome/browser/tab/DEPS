@@ -73,6 +73,9 @@ specific_include_rules = {
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
   ],
+  'HistoricalTabSaver\.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
+  ],
   'HistoricalTabSaverImpl\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],
@@ -128,6 +131,7 @@ specific_include_rules = {
   'TabArchiver\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTask.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManager.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabCreator.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
@@ -136,5 +140,9 @@ specific_include_rules = {
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java"
+  ],
+  'TabHelpers\.java': [
+    "+chrome/android/java/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTabHelper.java",
+    "+chrome/browser/ui/android/edge_to_edge/internal/java/src/org/chromium/chrome/browser/ui/edge_to_edge/EdgeToEdgeControllerFactory.java"
   ]
 }

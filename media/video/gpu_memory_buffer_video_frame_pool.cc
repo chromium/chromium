@@ -482,9 +482,9 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
     case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
       return 1;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // The number of output rows to be copied in each iteration.

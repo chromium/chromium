@@ -245,7 +245,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // True if the element overflows the inset-modified containing block.
     bool overflows_containing_block = false;
 
-    HeapHashSet<Member<Element>>* display_locks_affected_by_anchors;
+    Member<HeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 
     void Trace(Visitor* visitor) const;
   };
@@ -320,8 +320,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const BlockNode& candidate,
       const LogicalAnchorQueryMap* anchor_queries) const;
 
-  ContainingBlockInfo ApplyInsetAreaOffsets(
-      const InsetAreaOffsets& offsets,
+  ContainingBlockInfo ApplyPositionAreaOffsets(
+      const PositionAreaOffsets& offsets,
       const ContainingBlockInfo& container_info) const;
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node);

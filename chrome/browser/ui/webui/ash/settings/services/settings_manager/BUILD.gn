@@ -1,0 +1,89 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("settings_manager") {
+  sources = [
+    "os_settings_manager.cc",
+    "os_settings_manager.h",
+    "os_settings_manager_factory.cc",
+    "os_settings_manager_factory.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/common/backend",
+    "//ash/webui/eche_app_ui",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/eche_app",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/ui/webui/ash/settings/pages",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/services/metrics",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/constants",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/app_list/search" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "os_settings_manager_unittest.cc" ]
+
+  deps = [
+    ":settings_manager",
+    "//ash/components/arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/constants",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/eche_app",
+    "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/multidevice_setup",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/ash/printing",
+    "//chrome/browser/ui/webui/ash/settings/constants",
+    "//chrome/browser/ui/webui/ash/settings/pages",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/local_search_service",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/system",
+    "//components/account_id",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base:test_support",
+  ]
+}

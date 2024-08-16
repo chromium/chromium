@@ -37,9 +37,8 @@ std::u16string PillButtonColorTypeFlagToString(PillButton::TypeFlag type_flag) {
     case PillButton::kAlert:
       return u"Alert";
     default:
-      NOTREACHED_IN_MIGRATION() << "unknown color type" << type_flag;
+      NOTREACHED() << "unknown color type" << type_flag;
   }
-  return u"";
 }
 
 std::u16string PillButtonSizeTypeFlagToString(

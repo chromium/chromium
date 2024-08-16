@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="1333745675627230582">Jugar a El dinosaurio de Chrome</translation>
 <translation id="1352919863522755794">El Gestor de contraseñas de Google no ha podido comprobar tus contraseñas. Revisa tu conexión a Internet.</translation>
+<translation id="1380565463006545725">Aprovecha el potencial de Chrome Shopping</translation>
 <translation id="139623527619433858">Usar Chrome para iPad de forma predeterminada</translation>
 <translation id="1407843355326180937">Inicia sesión en este sitio y en Chrome para acceder a tus marcadores y a más cosas en todos tus dispositivos.</translation>
 <translation id="1436059927646026729">Abrir Mi última pestaña en Chrome</translation>
@@ -35,6 +36,7 @@ Notas importantes:
 <translation id="1554731936187952550">Tienes el sistema de seguridad más resistente de Chrome frente a sitios web dañinos</translation>
 <translation id="1615715390546812898">Busca por voz en Chrome.</translation>
 <translation id="1657395063736185342">Buscar elementos visuales en Chrome</translation>
+<translation id="1670609221633730681">Consejo de Chrome: elige la posición de la barra de direcciones</translation>
 <translation id="1675955119303651351">Algunos de tus datos de Chrome aún no se han guardado en tu cuenta de Google.
         Prueba a esperar unos minutos antes de cerrar sesión. Si cierras sesión ahora, estos datos se eliminarán.</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
@@ -113,12 +115,14 @@ Notas importantes:
 <translation id="3984746313391923992">Tu organización requiere que mantengas tu sesión cerrada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
 <translation id="4064699917955374540">Para usar y guardar los datos de Chrome en tu cuenta de Google, debes verificar tu identidad.</translation>
+<translation id="4066411101507716142">Accede más rápido a Chrome desde el Dock de la pantalla de inicio de tu iPad.</translation>
 <translation id="4067858366537947361">Abrir pestaña de Incógnito de Chrome</translation>
 <translation id="4093042601582616698">¿Establecer Chrome como navegador predeterminado?</translation>
 <translation id="417201473131094001">No compatible con Chrome Canary</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4251174643044751591">Abre la página de configuración de métodos de pago en Chrome.</translation>
 <translation id="4286914711740227883">Eliminar datos de navegación en Chrome</translation>
+<translation id="430839890088895017">Consejo de Chrome: Mueve Chrome al Dock</translation>
 <translation id="4453284704333523777">Gestionar la configuración de Chrome</translation>
 <translation id="4523886039239821078">Algunos complementos hacen que Chrome falle. Desinstálalos.</translation>
 <translation id="4633328489441962921">Chrome no puede comprobar si hay actualizaciones</translation>
@@ -182,6 +186,7 @@ Notas importantes:
 <translation id="6272822675004864999">Para recibir notificaciones de Chrome, actívalas en los ajustes de iOS.</translation>
 <translation id="630693926528731525">No se ha compartido tu contraseña. Comprueba tu conexión a Internet y asegúrate de haber iniciado sesión en Chrome. Después, inténtalo de nuevo.</translation>
 <translation id="6348855835728304880">Accede a tus contraseñas de Chrome y más en otras aplicaciones de este dispositivo.</translation>
+<translation id="6373751563207403289">Comprobación de tu estado te protege frente a brechas de seguridad de datos, sitios web no seguros y más. Recibe alertas sobre los problemas de privacidad o seguridad detectados por Chrome.</translation>
 <translation id="6374691158439235563">Termina de configurar Chrome</translation>
 <translation id="6389317667633680932">Descubre nuevas funciones que te ayudarán a sacar el máximo partido de Chrome.</translation>
 <translation id="6412673304250309937">Comprueba las URL guardadas en Chrome con una lista de sitios que no son seguros. Si un sitio web intenta robarte la contraseña o te descargas un archivo dañino, puede que Chrome también envíe URL, así como fragmentos de contenido de la página, a Navegación segura.</translation>
@@ -234,8 +239,10 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="746684838091935575">3. Selecciona Chrome.</translation>
 <translation id="7492574581995589075">Tu organización ha desactivado la opción de usar y guardar datos de Chrome en tu cuenta de Google. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="7581063337314642333">Acceder a la cuadrícula de pestañas en Chrome</translation>
+<translation id="7642373780953416937">Recibe alertas sobre los problemas de privacidad o seguridad detectados automáticamente por Chrome.</translation>
 <translation id="7662994914830945754">Inicia sesión y activa la sincronización para ver tus pestañas dondequiera que uses Chrome</translation>
 <translation id="7669869107155339016">Ve a la configuración de Chrome.</translation>
+<translation id="7683540977001394271">Accede más rápido a Chrome desde el Dock de la pantalla de inicio de tu iPhone.</translation>
 <translation id="769104993356536261">Usa Acciones de Chrome en iOS</translation>
 <translation id="7693590760643069321">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
@@ -249,6 +256,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="8006014511203279255">Usa Chrome cada vez que toques enlaces en mensajes u otras aplicaciones.</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="804638182476029347">Permitir notificaciones de Chrome para recibir alertas de bajadas de precio</translation>
+<translation id="804756029368067824">Establece Chrome como navegador predeterminado para seguir fácilmente los precios y obtener estadísticas sobre los precios de los productos que quieres comprar.</translation>
 <translation id="8065292699993359127">Abrir URLs en Chrome en incógnito</translation>
 <translation id="8069507567842347179">Ya se está haciendo un seguimiento de este paquete en Chrome.</translation>
 <translation id="8136856065410661948">Se usará para crear eventos en tu calendario de Apple a partir de contenido de Chrome y Google Lens.</translation>
@@ -276,6 +284,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
   2. Toca Aplicación de navegador predeterminada
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Alertas sobre los problemas de privacidad o seguridad detectados por Chrome.</translation>
 <translation id="8558480467877843976">Ahora puedes usar Chrome cada vez que navegues o toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="8603022514504485810">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Sácale el máximo partido a Chrome</translation>

@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -35,7 +37,9 @@ const char kUrlB[] = "about:blank";
 class ProductSpecificationsIconViewIntegrationTest
     : public TestWithBrowserView {
  public:
-  ProductSpecificationsIconViewIntegrationTest() = default;
+  ProductSpecificationsIconViewIntegrationTest() {
+    MockCommerceUiTabHelper::ReplaceFactory();
+  }
 
   ProductSpecificationsIconViewIntegrationTest(
       const ProductSpecificationsIconViewIntegrationTest&) = delete;
@@ -54,8 +58,11 @@ class ProductSpecificationsIconViewIntegrationTest
             browser()->profile()));
     shopping_service_->SetAccountChecker(account_checker_.get());
     AddTab(browser(), GURL(kUrlA));
-    mock_tab_helper_ = AttachTabHelperToWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    mock_tab_helper_ =
+        static_cast<MockCommerceUiTabHelper*>(browser()
+                                                  ->GetActiveTabInterface()
+                                                  ->GetTabFeatures()
+                                                  ->commerce_ui_tab_helper());
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -93,13 +100,6 @@ class ProductSpecificationsIconViewIntegrationTest
   raw_ptr<MockCommerceUiTabHelper, DanglingUntriaged> mock_tab_helper_;
 
  private:
-  MockCommerceUiTabHelper* AttachTabHelperToWebContents(
-      content::WebContents* web_contents) {
-    MockCommerceUiTabHelper::CreateForWebContents(web_contents);
-    return static_cast<MockCommerceUiTabHelper*>(
-        MockCommerceUiTabHelper::FromWebContents(web_contents));
-  }
-
   base::test::ScopedFeatureList test_features_;
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       shopping_service_;

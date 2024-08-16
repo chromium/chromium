@@ -4,6 +4,9 @@
 
 #include "ash/public/cpp/accelerator_actions.h"
 
+#include "ash/constants/ash_switches.h"
+#include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/hash/md5.h"
 #include "base/hash/md5_boringssl.h"
@@ -15,9 +18,9 @@ namespace ash {
 namespace {
 
 // The total number of accelerator actions.
-constexpr int kAcceleratorActionsTotalNum = 165;
+constexpr int kAcceleratorActionsTotalNum = 166;
 // The toal number of debug accelerators, these will not be used for hashing.
-constexpr int kDebugAcceleratorActionsNum = 27;
+constexpr int kDebugAcceleratorActionsNum = 28;
 // The hash of accelerator actions. Please update this when adding a new
 // accelerator action.
 constexpr char kAcceleratorActionsHash[] = "af26f45ccfb2450d29171e3b3697a8dd";
@@ -36,7 +39,14 @@ constexpr static auto kAcceleratorActionToName =
 #undef ACCELERATOR_ACTION_ENTRY_FIXED_VALUE
     });
 
-class AcceleratorActionsTest : public testing::Test {
+struct TestParams {
+  bool use_debug_shortcuts = false;
+  bool use_dev_shortcuts = false;
+};
+
+class AcceleratorActionsTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<TestParams> {
  public:
   AcceleratorActionsTest() = default;
 
@@ -44,13 +54,27 @@ class AcceleratorActionsTest : public testing::Test {
   AcceleratorActionsTest& operator=(const AcceleratorActionsTest&) = delete;
 
   ~AcceleratorActionsTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    const TestParams& params = GetParam();
+    if (params.use_debug_shortcuts) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kAshDebugShortcuts);
+    }
+    if (params.use_dev_shortcuts) {
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          switches::kAshDeveloperShortcuts);
+    }
+    AshTestBase::SetUp();
+  }
 };
 
 }  // namespace
 
 // Tests that the AcceleratorAction enum in enums.xml exactly matches the
 // AcceleratorAction enum in C++ file.
-TEST_F(AcceleratorActionsTest, CheckHistogramEnum) {
+TEST_P(AcceleratorActionsTest, CheckHistogramEnum) {
   const auto enums =
       base::ReadEnumFromEnumsXml("AcceleratorAction", "chromeos");
   ASSERT_TRUE(enums);
@@ -67,7 +91,7 @@ TEST_F(AcceleratorActionsTest, CheckHistogramEnum) {
   }
 }
 
-TEST_F(AcceleratorActionsTest, AcceleratorActionsHash) {
+TEST_P(AcceleratorActionsTest, AcceleratorActionsHash) {
   const char kCommonMessage[] =
       "If you are adding a non-debug accelerator action, please add "
       "the new action to be bottom of the enums but before "
@@ -100,5 +124,14 @@ TEST_F(AcceleratorActionsTest, AcceleratorActionsHash) {
       << kCommonMessage << " Please update kAcceleratorActionsHash to: \n"
       << current_hash << "\n";
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AcceleratorActionsTest,
+    ::testing::Values(TestParams{false, false},  // No shortcuts
+                      TestParams{true, false},   // Debug shortcuts only
+                      TestParams{false, true},   // Dev shortcuts only
+                      TestParams{true, true}     // Both shortcuts
+                      ));
 
 }  // namespace ash

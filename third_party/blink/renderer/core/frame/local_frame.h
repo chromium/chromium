@@ -43,7 +43,6 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/history_user_activation_state.h"
-#include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
@@ -426,9 +425,6 @@ class CORE_EXPORT LocalFrame final
   bool InViewSourceMode() const;
   void SetInViewSourceMode(bool = true);
 
-  // Layout zoom factor reflects hardware device pixel ratio, browser zoom, and
-  // for embedded frames the effect of the CSS "zoom" property applied to the
-  // embedding element (e.g. <iframe>).
   void SetLayoutZoomFactor(float);
   float LayoutZoomFactor() const { return layout_zoom_factor_; }
   void SetTextZoomFactor(float);
@@ -802,14 +798,6 @@ class CORE_EXPORT LocalFrame final
   // access).
   bool CanAccessEvent(const WebInputEventAttribution&) const;
 
-  // Return true if the frame has a transient affordance to enter fullscreen.
-  bool IsTransientAllowFullscreenActive() const;
-
-  // Activate the transient affordance to enter fullscreen.
-  void ActivateTransientAllowFullscreen() {
-    transient_allow_fullscreen_.Activate();
-  }
-
   LocalFrameToken GetLocalFrameToken() const;
 
   LoaderFreezeMode GetLoaderFreezeMode();
@@ -818,6 +806,10 @@ class CORE_EXPORT LocalFrame final
   // of subframes, `Owner()->frame()`, or in the case of the main frame,
   // `GetPage()->Frame()`). Must only be called on provisional frames.
   bool SwapIn();
+
+  // Replaces the active document with an empty document to free resources,
+  // e.g. for supporting tab discard.
+  void Discard();
 
   void LoadJavaScriptURL(const KURL& url);
   void RequestExecuteScript(int32_t world_id,
@@ -1165,9 +1157,6 @@ class CORE_EXPORT LocalFrame final
   // ScrollSnapshotClients owned by elements in this frame. The clients must
   // be registered at the actual elements as the references here are weak.
   HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
-
-  // Manages a transient affordance for this frame to enter fullscreen.
-  TransientAllowFullscreen transient_allow_fullscreen_;
 
 #if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;

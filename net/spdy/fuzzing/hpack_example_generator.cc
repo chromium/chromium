@@ -4,6 +4,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,11 +64,10 @@ int main(int argc, char** argv) {
         HpackFuzzUtil::NextGeneratedHeaderSet(&context);
 
     std::string buffer = encoder.EncodeHeaderBlock(headers);
-
     std::string prefix = HpackFuzzUtil::HeaderBlockPrefix(buffer.size());
 
-    CHECK_LT(0, file_out.WriteAtCurrentPos(prefix.data(), prefix.size()));
-    CHECK_LT(0, file_out.WriteAtCurrentPos(buffer.data(), buffer.size()));
+    CHECK(file_out.WriteAtCurrentPos(base::as_byte_span(prefix)).has_value());
+    CHECK(file_out.WriteAtCurrentPos(base::as_byte_span(buffer)).has_value());
   }
   CHECK(file_out.Flush());
   DVLOG(1) << "Generated " << example_count << " blocks.";

@@ -48,6 +48,9 @@ class HardwareDisplayControllerInfo {
   const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
   nonprimary_tile_infos() const;
 
+  std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+  nonprimary_tile_infos();
+
   ScopedDrmConnectorPtr ReleaseConnector() { return std::move(connector_); }
 
   display::DisplaySnapshot::DisplayModeList GetModesOfSize(
@@ -68,7 +71,7 @@ class HardwareDisplayControllerInfo {
       nonprimary_tile_infos_;
 };
 
-// TODO(b/354749719): Add HardwareDisplayControllerInfo as an alias for
+// TODO(b/354749719): Add HardwareDisplayControllerInfoList as an alias for
 // std::vector<std::unique_ptr<HardwareDisplayControllerInfo>> after removing
 // cyclic references between HardwareDisplayControllerInfo and drm_util.h.
 

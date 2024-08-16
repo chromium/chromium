@@ -44,18 +44,15 @@
 </ul>
 <h2>Providing appearance none</h2>
 <ul>
-  <li>Check that the meter disappears but the meters content is still present: <meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter></li>
-  <li>Check that the meter still disappears when meter is initially rendered with "meter" appearance: <meter id="appearanceNoneLater" min="0" max="100" low="30" high="60" optimum="100" value="80" >80%</meter></li>
+  <li>Check that the meter renders with fallback style: <meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter></li>
+  <li>Check that the meter renders with fallback style when meter is initially rendered with "meter" appearance: <meter id="appearanceNoneLater" min="0" max="100" low="30" high="60" optimum="100" value="80" >80%</meter></li>
 </ul>
 <h2>Providing bar paddings</h2>
 <ul>
   <li>Check that meter bar gets padding: <meter id="bar-paddings" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
 </ul>
 <script>
-var noneLater = document.getElementById('appearanceNoneLater');
-noneLater.offsetLeft; // Force layout.
-noneLater.setAttribute('style', '-webkit-appearance:none');
-noneLater.offsetLeft; // Force layout.
+appearanceNoneLater.style.appearance = 'none';
 </script>
 </body>
 </html>

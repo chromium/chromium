@@ -5,7 +5,7 @@
 import './iframe.js';
 import './logo.js';
 import './strings.m.js';
-import 'chrome://resources/cr_components/searchbox/realbox.js';
+import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -209,6 +209,11 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
+      wideModulesEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       middleSlotPromoLoaded_: {type: Boolean},
       modulesLoaded_: {type: Boolean},
 
@@ -284,6 +289,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('modulesEnabled');
   protected modulesRedesignedEnabled_: boolean =
       loadTimeData.getBoolean('modulesRedesignedEnabled');
+  protected wideModulesEnabled_ = loadTimeData.getBoolean('wideModulesEnabled');
   private middleSlotPromoLoaded_: boolean = false;
   private modulesLoaded_: boolean = false;
   protected modulesShownToUser: boolean;

@@ -22,8 +22,6 @@ namespace {
 std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
   static const GURL kTestURL("https://www.example.com");
   static const GURL kTestFaviconURL("https://www.favicon.com");
-  static const ui::ImageModel kTestIcon =
-      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(20));
 
   std::vector<std::unique_ptr<BirchItem>> items;
   switch (type) {
@@ -68,13 +66,13 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*timestamp=*/base::Time(),
           /*favicon_url=*/kTestFaviconURL,
           /*session_name=*/"session",
-          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop, kTestIcon));
+          /*form_factor=*/BirchTabItem::DeviceFormFactor::kDesktop));
       break;
     case BirchItemType::kWeather:
       items.push_back(std::make_unique<BirchWeatherItem>(
           /*weather_description=*/u"cloudy",
           /*temperature=*/72.f,
-          /*icon=*/kTestIcon));
+          /*icon_url=*/GURL("http://icon.com/")));
       break;
     case BirchItemType::kReleaseNotes:
       items.push_back(std::make_unique<BirchReleaseNotesItem>(
@@ -88,38 +86,36 @@ std::vector<std::unique_ptr<BirchItem>> CreateItems(BirchItemType type) {
           /*guid=*/u"self share guid", /*title*/ u"self share tab",
           /*url=*/kTestURL,
           /*shared_time=*/base::Time(), /*device_name=*/u"my device",
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kTabFromDesktop,
           /*activation_callback=*/base::DoNothing()));
       break;
     case BirchItemType::kMostVisited:
       items.push_back(std::make_unique<BirchMostVisitedItem>(
           /*title=*/u"Most Visited",
-          /*url=*/kTestURL,
-          /*icon=*/kTestIcon));
+          /*url=*/kTestURL));
       break;
     case BirchItemType::kLastActive:
       items.push_back(std::make_unique<BirchLastActiveItem>(
           /*title=*/u"Last Active",
           /*url=*/kTestURL,
-          /*last_visit=*/base::Time(),
-          /*icon=*/kTestIcon));
+          /*last_visit=*/base::Time()));
       break;
     case BirchItemType::kLostMedia:
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
-          /*is_video_conference_tab=*/true,
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
           /*activation_callback=*/base::DoNothing()));
       items.push_back(std::make_unique<BirchLostMediaItem>(
           /*source_url=*/kTestURL,
           /*media_title=*/u"lost media",
-          /*is_video_conference_tab=*/false,
-          /*backup_icon=*/kTestIcon,
           /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideo,
           /*activation_callback=*/base::DoNothing()));
+      break;
+    case BirchItemType::kCoral:
+      items.push_back(std::make_unique<BirchCoralItem>(
+          /*coral_title=*/u"coral_title",
+          /*coral_text=*/u"coral_text"));
       break;
     case BirchItemType::kTest:
       break;

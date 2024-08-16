@@ -39,17 +39,18 @@ void PageInfoHistoryController::InitRow(views::View* container) {
       &PageInfoHistoryController::UpdateRow, weak_factory_.GetWeakPtr()));
 }
 
-void PageInfoHistoryController::UpdateRow(base::Time last_visit) {
+void PageInfoHistoryController::UpdateRow(
+    std::optional<base::Time> last_visit) {
   if (!container_tracker_.view())
     return;
 
   auto* container_view =
       static_cast<PageInfoMainView::ContainerView*>(container_tracker_.view());
   container_view->RemoveAllChildViews();
-  if (!last_visit.is_null()) {
+  if (last_visit.has_value()) {
     container_view->AddChildView(CreateHistoryButton(
         page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
-            last_visit)));
+            last_visit.value())));
     container_view->Update();
   }
 }

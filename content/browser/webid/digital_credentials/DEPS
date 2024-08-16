@@ -1,0 +1,6 @@
+# Similar to //content/browser/webauth, this code interacts with
+# external devices to implement Web Platform features.
+include_rules = [
+  "+device/fido",
+  "+components/device_event_log",
+]

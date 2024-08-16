@@ -89,18 +89,17 @@ class CommerceUiTabHelperTest : public testing::Test {
 
   void SetUp() override {
     web_contents_ = test_web_contents_factory_.CreateWebContents(&profile_);
-    CommerceUiTabHelper::CreateForWebContents(
+    side_panel_registry_ = std::make_unique<SidePanelRegistry>();
+    tab_helper_ = std::make_unique<commerce::CommerceUiTabHelper>(
         web_contents_.get(), shopping_service_.get(), bookmark_model_.get(),
-        image_fetcher_.get());
-    tab_helper_ = CommerceUiTabHelper::FromWebContents(web_contents_.get());
+        image_fetcher_.get(), side_panel_registry_.get());
   }
 
   void TestBody() override {}
 
   void TearDown() override {
     // Make sure the tab helper id destroyed before any of its dependencies are.
-    tab_helper_ = nullptr;
-    web_contents_->RemoveUserData(CommerceUiTabHelper::UserDataKey());
+    tab_helper_.reset();
   }
 
   void SetupImageFetcherForSimpleImage() {
@@ -143,10 +142,11 @@ class CommerceUiTabHelperTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<CommerceUiTabHelper> tab_helper_;
+  std::unique_ptr<CommerceUiTabHelper> tab_helper_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<image_fetcher::MockImageFetcher> image_fetcher_;
+  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
 
  private:
   TestingProfile profile_;
@@ -237,9 +237,8 @@ TEST_F(CommerceUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
 }
 
 TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
-  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
-                   ->GetEntryForKey(SidePanelEntry::Key(
-                       SidePanelEntry::Id::kShoppingInsights)));
+  ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
   shopping_service_->SetIsPriceInsightsEligible(true);
 
@@ -256,15 +255,13 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(SidePanelRegistry::Get(web_contents_.get())
-                  ->GetEntryForKey(SidePanelEntry::Key(
-                      SidePanelEntry::Id::kShoppingInsights)));
+  EXPECT_TRUE(side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 }
 
 TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
-  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
-                   ->GetEntryForKey(SidePanelEntry::Key(
-                       SidePanelEntry::Id::kShoppingInsights)));
+  ASSERT_FALSE(side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
   shopping_service_->SetIsPriceInsightsEligible(true);
@@ -273,9 +270,8 @@ TEST_F(CommerceUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(SidePanelRegistry::Get(web_contents_.get())
-                   ->GetEntryForKey(SidePanelEntry::Key(
-                       SidePanelEntry::Id::kShoppingInsights)));
+  EXPECT_FALSE(side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights)));
 }
 
 TEST_F(CommerceUiTabHelperTest,

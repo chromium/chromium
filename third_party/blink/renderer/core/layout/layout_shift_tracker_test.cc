@@ -331,6 +331,7 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
       /*has_transient_user_activation=*/false, /*initiator_origin=*/nullptr,
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
+      /*has_ua_visual_transition,=*/false,
       /*soft_navigation_heuristics_task_id=*/std::nullopt);
 
   Compositor().BeginFrame();

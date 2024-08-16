@@ -9,7 +9,6 @@
 
 #include "media/gpu/test/video_frame_file_writer.h"
 
-#include <sys/mman.h>
 #include <utility>
 #include <vector>
 
@@ -26,6 +25,10 @@
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#include <sys/mman.h>
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
@@ -156,11 +159,19 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   const gfx::Size& visible_size = video_frame->visible_rect().size();
-  base::FilePath::StringType filename =
-      base::StringPrintf(FILE_PATH_LITERAL("frame_%04zu_%dx%d"), frame_index,
-                         visible_size.width(), visible_size.height());
-  if (!output_file_prefix_.empty())
-    filename = output_file_prefix_ + FILE_PATH_LITERAL("_") + filename;
+
+  base::FilePath file_path;
+  if (!output_file_prefix_.empty()) {
+    file_path = base::FilePath(output_file_prefix_)
+                    .AppendASCII("_")
+                    .Append(base::FilePath::FromASCII(base::StringPrintf(
+                        "frame_%04zu_%dx%d", frame_index, visible_size.width(),
+                        visible_size.height())));
+  } else {
+    file_path = base::FilePath::FromASCII(
+        base::StringPrintf("frame_%04zu_%dx%d", frame_index,
+                           visible_size.width(), visible_size.height()));
+  }
 
   // Copies to |frame| in this function so that |video_frame| stays alive until
   // in the end of function.
@@ -213,10 +224,10 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   switch (output_format_) {
     case OutputFormat::kPNG:
-      WriteVideoFramePNG(frame, base::FilePath(filename));
+      WriteVideoFramePNG(frame, file_path);
       break;
     case OutputFormat::kYUV:
-      WriteVideoFrameYUV(frame, base::FilePath(filename));
+      WriteVideoFrameYUV(frame, file_path);
       break;
   }
 

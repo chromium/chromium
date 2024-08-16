@@ -19,9 +19,9 @@
 #import "components/password_manager/core/browser/sharing/password_sender_service.h"
 #import "components/plus_addresses/settings/plus_address_setting_service.h"
 #import "components/plus_addresses/webdata/plus_address_webdata_service.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/sync_util.h"
-#import "components/sync/service/model_type_controller.h"
+#import "components/sync/service/data_type_controller.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_impl.h"
 #import "components/version_info/version_info.h"
@@ -32,9 +32,9 @@
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
+#import "ios/web_view/internal/sync/web_view_data_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
-#import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_client.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -45,8 +45,8 @@
 namespace ios_web_view {
 namespace {
 
-syncer::ModelTypeSet GetDisabledTypes() {
-  syncer::ModelTypeSet disabled_types = syncer::UserTypes();
+syncer::DataTypeSet GetDisabledTypes() {
+  syncer::DataTypeSet disabled_types = syncer::UserTypes();
   disabled_types.Remove(syncer::AUTOFILL);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_DATA);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
@@ -57,7 +57,7 @@ syncer::ModelTypeSet GetDisabledTypes() {
 
 }  // namespace
 
-syncer::ModelTypeController::TypeVector CreateControllers(
+syncer::DataTypeController::TypeVector CreateControllers(
     WebViewBrowserState* browser_state,
     syncer::SyncService* sync_service) {
   scoped_refptr<autofill::AutofillWebDataService>
@@ -77,8 +77,8 @@ syncer::ModelTypeController::TypeVector CreateControllers(
       WebViewDeviceInfoSyncServiceFactory::GetForBrowserState(browser_state));
   controller_builder.SetIdentityManager(
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state));
-  controller_builder.SetModelTypeStoreService(
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state));
+  controller_builder.SetDataTypeStoreService(
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state));
   controller_builder.SetPasswordStore(
       WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS),
@@ -135,13 +135,13 @@ WebViewSyncServiceFactory::WebViewSyncServiceFactory()
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but
   // actually plumbed in WebViewSyncClient, which this factory constructs.
+  DependsOn(WebViewDataTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewDeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
   DependsOn(WebViewAccountPasswordStoreFactory::GetInstance());
   DependsOn(WebViewProfilePasswordStoreFactory::GetInstance());
   DependsOn(WebViewGCMProfileServiceFactory::GetInstance());
-  DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -159,7 +159,7 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
   init_params.sync_client = std::make_unique<WebViewSyncClient>(
       browser_state->GetPrefs(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state),
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state),
       WebViewDeviceInfoSyncServiceFactory::GetForBrowserState(browser_state),
       WebViewSyncInvalidationsServiceFactory::GetForBrowserState(
           browser_state));

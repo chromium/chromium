@@ -17,6 +17,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/timer/timer.h"
@@ -137,6 +138,12 @@ PillButton* GameDashboardContextTestApi::GetMainMenuGameControlsSetupButton() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
   return main_menu_view->GetGameControlsSetupButton();
+}
+
+TimeView* GameDashboardContextTestApi::GetMainMenuClockView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->clock_view_;
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {

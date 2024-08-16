@@ -6,7 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 
 namespace ash {
 namespace {
@@ -92,6 +94,32 @@ void EnrollmentUMA(policy::MetricEnrollment sample,
       NOTREACHED_IN_MIGRATION();
       break;
   }
+}
+
+std::string GetOOBEConfigSourceVariantString(
+    policy::OOBEConfigSource oobe_config_source) {
+  switch (oobe_config_source) {
+    case policy::OOBEConfigSource::kNone:
+      return ".None";
+    case policy::OOBEConfigSource::kUnknown:
+      return ".Unknown";
+    case policy::OOBEConfigSource::kRemoteDeployment:
+      return ".RemoteDeployment";
+    case policy::OOBEConfigSource::kPackagingTool:
+      return ".PackagingTool";
+  }
+}
+
+void TokenBasedEnrollmentOOBEConfigUMA(
+    policy::EnrollmentStatus status,
+    policy::OOBEConfigSource oobe_config_source) {
+  const bool success =
+      status.enrollment_code() == policy::EnrollmentStatus::Code::kSuccess;
+  std::string metric_name = base::StrCat(
+      {policy::kUMAPrefixEnrollmentTokenBasedOOBEConfig,
+       GetOOBEConfigSourceVariantString(oobe_config_source), ".Success"});
+
+  base::UmaHistogramBoolean(metric_name, success);
 }
 
 }  // namespace ash

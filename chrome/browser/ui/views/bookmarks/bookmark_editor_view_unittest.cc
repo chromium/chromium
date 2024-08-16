@@ -19,11 +19,14 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -567,8 +570,8 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
   // confirmation.
   const bookmarks::BookmarkNode* f11 = GetNode("f11a")->parent();
 
-  DeleteNode(
-      base::BindLambdaForTesting([=](const bookmarks::BookmarkNode* node) {
+  DeleteNode(base::BindLambdaForTesting(
+      [=, this](const bookmarks::BookmarkNode* node) {
         // Before the user confirms the deletion, something else (e.g.
         // extension) could delete the very same bookmark.
         this->model()->Remove(
@@ -627,4 +630,16 @@ TEST_F(BookmarkEditorViewTest, OnSaveCallbackRunsOnSaveIfDefined) {
   EXPECT_CALL_IN_SCOPE(
       on_save_callback, Run,
       ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get()));
+}
+
+TEST_F(BookmarkEditorViewTest, AccessibleProperties) {
+  CreateEditor(profile_.get(), nullptr,
+               BookmarkEditor::EditDetails::EditNode(GetNode("oa")),
+               BookmarkEditorView::SHOW_TREE);
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(editor());
+  editor()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE),
+            data.GetStringAttribute(ax::mojom::StringAttribute::kName));
 }

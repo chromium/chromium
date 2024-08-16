@@ -215,8 +215,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // If a dangling raw_ptr<> was detected, report it.
-    if (PA_UNLIKELY((old_count & kDanglingRawPtrDetectedBit) ==
-                    kDanglingRawPtrDetectedBit)) {
+    if ((old_count & kDanglingRawPtrDetectedBit) == kDanglingRawPtrDetectedBit)
+        [[unlikely]] {
       partition_alloc::internal::DanglingRawPtrReleased(
           reinterpret_cast<uintptr_t>(this));
     }
@@ -264,13 +264,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // detection mechanism isn't perfect, because in-slot-metadata can be
     // overwritten by the freelist pointer (or its shadow) for very small slots,
     // thus masking the error away.
-    if (PA_UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit))) {
+    if (!(old_count & kMemoryHeldByAllocatorBit)) [[unlikely]] {
       DoubleFreeOrCorruptionDetected(old_count);
     }
 
     // Release memory when no raw_ptr<> exists anymore:
     static constexpr CountType mask = kPtrCountMask | kUnprotectedPtrCountMask;
-    if (PA_LIKELY((old_count & mask) == 0)) {
+    if ((old_count & mask) == 0) [[likely]] {
       std::atomic_thread_fence(std::memory_order_acquire);
       // The allocation is about to get freed, so clear the cookie.
       ClearCookieIfSupported();
@@ -373,7 +373,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     // The `kPtrCountMask` counts the number of raw_ptr<T>. It is expected to be
     // zero when there are no unexpected dangling pointers.
-    if (PA_LIKELY((count & kPtrCountMask) == 0)) {
+    if ((count & kPtrCountMask) == 0) [[likely]] {
       return;
     }
 
@@ -408,9 +408,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     // - A raw_ptr<T, DisableDanglingPtrDetection>
     //
     // Assuming this raw_ptr is not dangling, the memory must still be held at
-    // least by the allocator, so this is PA_LIKELY true.
-    if (PA_LIKELY((count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
-                            kUnprotectedPtrCountMask)))) {
+    // least by the allocator, so this is `[[likely]]`.
+    if ((count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
+                  kUnprotectedPtrCountMask))) [[likely]] {
       return false;  // Do not release the memory.
     }
 
@@ -546,7 +546,7 @@ PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
   // the InSlotMetadata object out-of-line in this case, specifically in a
   // special table after the super page metadata (see InSlotMetadataTable in
   // partition_alloc_constants.h).
-  if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
+  if (slot_start & SystemPageOffsetMask()) [[likely]] {
     uintptr_t refcount_address =
         slot_start + slot_size - sizeof(InSlotMetadata);
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) || \

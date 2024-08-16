@@ -20,7 +20,7 @@
 #include "base/values.h"
 #include "components/prefs/transparent_unordered_string_map.h"
 #include "components/prefs/writeable_pref_store.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
@@ -56,7 +56,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // |user_prefs| is the PrefStore to be hooked up to Sync.
   PrefModelAssociator(scoped_refptr<PrefModelAssociatorClient> client,
                       scoped_refptr<WriteablePrefStore> user_prefs,
-                      syncer::ModelType type);
+                      syncer::DataType type);
 
   // The |client| is not owned and must outlive this object.
   // |user_prefs| is the PrefStore to be hooked up to Sync.
@@ -65,7 +65,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   PrefModelAssociator(
       scoped_refptr<PrefModelAssociatorClient> client,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
-      syncer::ModelType type);
+      syncer::DataType type);
 
   PrefModelAssociator(const PrefModelAssociator&) = delete;
   PrefModelAssociator& operator=(const PrefModelAssociator&) = delete;
@@ -81,17 +81,17 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // Returns the mutable preference from |specifics| for a given model |type|.
   // Exposed for testing.
   static sync_pb::PreferenceSpecifics* GetMutableSpecifics(
-      syncer::ModelType type,
+      syncer::DataType type,
       sync_pb::EntitySpecifics* specifics);
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
-  void OnBrowserShutdown(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
+  void OnBrowserShutdown(syncer::DataType type) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -163,7 +163,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
 
   // The datatype that this associator is responsible for, either PREFERENCES or
   // PRIORITY_PREFERENCES or OS_PREFERENCES or OS_PRIORITY_PREFERENCES.
-  const syncer::ModelType type_;
+  const syncer::DataType type_;
 
   scoped_refptr<PrefModelAssociatorClient> client_;
 

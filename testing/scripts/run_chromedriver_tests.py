@@ -16,18 +16,10 @@ the script, it should be a  double-colon-separated ("::") list of test names,
 to run just that subset of tests. This list is forwarded to the chrome driver
 test runner.  """
 
-import argparse
 import json
-import os
-import shutil
 import sys
-import tempfile
-import traceback
 
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
+import common
 
 
 class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
@@ -38,7 +30,7 @@ class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
   def generate_test_filter_args(self, test_filter_str):
     if any('--filter' in arg for arg in self.rest_args):
       self.parser.error(
-          'can\'t have the test call filter with the'
+          "can't have the test call filter with the"
           '--isolated-script-test-filter argument to the wrapper script')
 
     return ['--filter', test_filter_str.replace('::', ':')]

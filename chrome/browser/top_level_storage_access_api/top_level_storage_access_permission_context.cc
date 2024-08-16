@@ -236,8 +236,7 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(
       permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
-  constraints.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraints.set_decided_by_related_website_sets(true);
 
   settings_map->SetContentSettingDefaultScope(
       requesting_origin, embedding_origin,

@@ -276,11 +276,6 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    tryjob = try_.job(
-        equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
-        equivalent_builder_percentage = 100,
-        equivalent_builder_whitelist = "google/chromeos-pa@google.com",
-    ),
 )
 
 try_.orchestrator_builder(
@@ -312,9 +307,6 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-and-tast-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    tryjob = try_.job(
-        omit_from_luci_cv = True,
-    ),
 )
 
 LACROS_SHARED_CACHE = "shared_lacros_amd64_generic_rel_cache"
@@ -352,22 +344,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "lacros-amd64-generic-rel-non-skylab",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    mirrors = [
-        "ci/lacros-amd64-generic-rel-non-skylab",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/lacros-amd64-generic-rel-non-skylab",
-            "dcheck_always_on",
-        ],
-    ),
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-try_.builder(
     name = "chromeos-amd64-generic-lacros-dbg",
     branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
@@ -400,17 +376,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "lacros-arm-generic-rel-skylab",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    mirrors = [
-        "ci/lacros-arm-generic-rel-skylab",
-    ],
-    gn_args = "ci/lacros-arm-generic-rel-skylab",
-    contact_team_email = "chrome-desktop-engprod@google.com",
-    main_list_view = "try",
-)
-
-try_.builder(
     name = "lacros-arm64-generic-rel",
     branch_selector = branches.selector.CROS_BRANCHES,
     mirrors = [
@@ -422,17 +387,6 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    main_list_view = "try",
-)
-
-try_.builder(
-    name = "lacros-arm64-generic-rel-skylab",
-    branch_selector = branches.selector.CROS_BRANCHES,
-    mirrors = [
-        "ci/lacros-arm64-generic-rel-skylab",
-    ],
-    gn_args = "ci/lacros-arm64-generic-rel-skylab",
-    contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
 )
 

@@ -22,6 +22,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -30,6 +32,7 @@ import java.util.function.BiConsumer;
 
 /** Tests for {@link TabGroupRowCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.DATA_SHARING_ANDROID)
 public class TabGroupRowCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

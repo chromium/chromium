@@ -73,7 +73,7 @@ const FormData PrepareFormData(
   // assume that if there is a child iframe in the password form, it is a
   // CAPTCHA.
   if (has_captcha) {
-    form.set_child_frames({autofill::FrameTokenWithPredecessor()});
+    form.set_likely_contains_captcha(true);
   }
   return form;
 }
@@ -185,7 +185,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
              /*password_field_index=*/1,
              /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
-         SubmissionReadinessState::kHasChildFrames},
+         SubmissionReadinessState::kLikelyHasCaptcha},
 };
 
 }  // namespace

@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
@@ -37,16 +38,13 @@ class GraphImplTflite final : public WebNNGraphImpl {
   ~GraphImplTflite() override;
 
  private:
-  class GraphResources;
   class ComputeResources;
 
   using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
-  using AsyncComputeResult =
-      std::pair<mojom::ComputeResultPtr, std::unique_ptr<ComputeResources>>;
 
   GraphImplTflite(ComputeResourceInfo compute_resource_info,
-                  scoped_refptr<GraphResources> graph_resources,
-                  std::unique_ptr<ComputeResources> compute_resources,
+                  scoped_refptr<QueueableResourceState<ComputeResources>>
+                      compute_resources_state,
                   ContextImplTflite* context);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` were
@@ -55,17 +53,13 @@ class GraphImplTflite final : public WebNNGraphImpl {
   void ComputeImpl(NamedBuffers named_inputs,
                    mojom::WebNNGraph::ComputeCallback callback) override;
 
-  void OnComputeComplete(ComputeCallback callback, AsyncComputeResult result);
-
   void DispatchImpl(
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_inputs,
       const base::flat_map<std::string_view, WebNNBufferImpl*>& named_outputs)
       override;
 
-  void OnDispatchComplete(std::unique_ptr<ComputeResources> compute_resources);
-
-  scoped_refptr<GraphResources> graph_resources_;
-  std::unique_ptr<ComputeResources> compute_resources_;
+  scoped_refptr<QueueableResourceState<ComputeResources>>
+      compute_resources_state_;
   base::WeakPtrFactory<GraphImplTflite> weak_factory_{this};
 };
 

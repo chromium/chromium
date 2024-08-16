@@ -16,6 +16,7 @@
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
@@ -30,7 +31,7 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
   SetHasWindowSizeControls(true);
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   RegisterDeleteDelegateCallback(
       base::BindOnce(&ProfilePickerForceSigninDialogDelegate::OnDialogDestroyed,
                      base::Unretained(this)));

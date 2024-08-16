@@ -233,6 +233,11 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
       dasher_based, success, base::TimeTicks::Now() - policy_fetch_start_time);
   if (success) {
     VLOG_POLICY(2, OIDC_ENROLLMENT) << "Policy fetched for OIDC profile.";
+    profile_->GetPrefs()->SetBoolean(
+        enterprise_signin::prefs::kPolicyRecoveryRequired, false);
+  } else {
+    profile_->GetPrefs()->SetBoolean(
+        enterprise_signin::prefs::kPolicyRecoveryRequired, true);
   }
 
   if (success && dasher_based && !switch_to_entry) {
@@ -251,7 +256,7 @@ void UserPolicyOidcSigninService::OnPolicyFetchCompleteInNewProfile(
         OidcProfileCreationFunnelStep::kAddingPrimaryAccount, dasher_based);
 
     // User account management would be included in unified consent dialog.
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+    enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
 
     policy::CloudPolicyManager* user_policy_manager =
         profile_->GetUserCloudPolicyManager();
@@ -347,7 +352,15 @@ void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
     // be taken care of by `UserPolicySigninService`. If there's no policy yet,
     // then the first policy fetch is still in progress, and initialization will
     // be done via `FetchPolicyForSignedInUser`.
-  } else if (policy_manager()->core()->store()->has_policy() &&
+  } else if (!policy_manager()->core()->store()->is_managed() &&
+             profile_->GetPrefs()->GetBoolean(
+                 enterprise_signin::prefs::kPolicyRecoveryRequired)) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "OIDC policy is missing due to a previous fetch failure. ";
+
+    AttemptToRestorePolicy();
+
+  } else if (policy_manager()->core()->store()->is_managed() &&
              IsDasherlessProfile(profile)) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
         << "OIDC Signin Service Initializing for Dasherless Profile";

@@ -182,7 +182,8 @@ void PrefetchURLLoader::OnReceiveResponse(
   // NetworkAnonymizationKey to use when fetching the request. In the Signed
   // Exchange case, we do this after redirects from the outer response, because
   // we redirect back here for the inner response.
-  if (resource_request_.load_flags & net::LOAD_RESTRICTED_PREFETCH) {
+  if (resource_request_.load_flags &
+      net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     DCHECK(!recursive_prefetch_token_generator_.is_null());
     base::UnguessableToken recursive_prefetch_token =
         std::move(recursive_prefetch_token_generator_).Run(resource_request_);

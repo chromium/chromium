@@ -92,7 +92,6 @@ constexpr CGFloat kSpace = 8;
     } else {
       _gridViewController.theme = GridThemeDark;
     }
-    _gridViewController.mode = TabGridModeGroup;
     _gridViewController.viewDelegate = self;
 
     // This view controller has a dark background and should be considered as

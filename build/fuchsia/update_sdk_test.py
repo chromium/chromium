@@ -3,14 +3,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import argparse
+import os
+import sys
 import unittest
 from unittest import mock
 
 from parameterized import parameterized
+from subprocess import CompletedProcess
 
 from update_sdk import _GetHostArch
-from update_sdk import _GetTarballPath
 from update_sdk import GetSDKOverrideGCSPath
+from update_sdk import main as update_sdk_main
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+
+from common import SDK_ROOT
 
 
 @mock.patch('platform.machine')
@@ -48,15 +57,37 @@ class TestGetSDKOverrideGCSPath(unittest.TestCase):
     self.assertEqual(actual, 'gs://fuchsia-artifacts/development/abc123/sdk')
 
 
-@mock.patch('update_sdk._GetHostArch')
-@mock.patch('update_sdk.get_host_os')
+@mock.patch('update_sdk._GetHostArch', return_value='amd64')
+@mock.patch('update_sdk.get_host_os', return_value='linux')
+@mock.patch('subprocess.run',
+            return_value=CompletedProcess(args=['/bin'], returncode=0))
+@mock.patch('os.utime', return_value=None)
+@mock.patch('update_sdk.DownloadAndUnpackFromCloudStorage')
 class TestGetTarballPath(unittest.TestCase):
-  def testGetTarballPath(self, mock_get_host_os, mock_host_arch):
-    mock_get_host_os.return_value = 'linux'
-    mock_host_arch.return_value = 'amd64'
 
-    actual = _GetTarballPath('gs://bucket/sdk')
-    self.assertEqual(actual, 'gs://bucket/sdk/linux-amd64/core.tar.gz')
+  def setUp(self):
+    os.environ['FUCHSIA_SDK_OVERRIDE'] = 'gs://bucket/sdk'
+
+  def tearDown(self):
+    del os.environ['FUCHSIA_SDK_OVERRIDE']
+
+  @mock.patch('argparse.ArgumentParser.parse_args',
+              return_value=argparse.Namespace(version='1.1.1.1',
+                                              verbose=False,
+                                              file='core'))
+  def testGetTarballPath(self, mock_arg, mock_download, *_):
+    update_sdk_main()
+    mock_download.assert_called_with('gs://bucket/sdk/linux-amd64/core.tar.gz',
+                                     SDK_ROOT)
+
+  @mock.patch('argparse.ArgumentParser.parse_args',
+              return_value=argparse.Namespace(version='1.1.1.1',
+                                              verbose=False,
+                                              file='google'))
+  def testOverrideFile(self, mock_arg, mock_download, *_):
+    update_sdk_main()
+    mock_download.assert_called_with(
+        'gs://bucket/sdk/linux-amd64/google.tar.gz', SDK_ROOT)
 
 
 if __name__ == '__main__':

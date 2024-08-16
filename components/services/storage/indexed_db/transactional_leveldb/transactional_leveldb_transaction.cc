@@ -87,6 +87,7 @@ leveldb::Status TransactionalLevelDBTransaction::Commit(bool sync_on_commit) {
 
   finished_ = true;
   return db_->scopes()->Commit(std::move(scope_), sync_on_commit,
+                               /*on_commit_complete=*/base::OnceClosure(),
                                std::move(commit_cleanup_complete_callback_));
 }
 

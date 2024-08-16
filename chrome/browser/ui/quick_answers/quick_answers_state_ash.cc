@@ -8,7 +8,9 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -200,21 +202,30 @@ void QuickAnswersStateAsh::UpdateDefinitionEnabled() {
   auto definition_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersDefinitionEnabled);
 
-  definition_enabled_ = definition_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     definition_enabled);
 }
 
 void QuickAnswersStateAsh::UpdateTranslationEnabled() {
   auto translation_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersTranslationEnabled);
 
-  translation_enabled_ = translation_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     translation_enabled);
 }
 
 void QuickAnswersStateAsh::UpdateUnitConversionEnabled() {
   auto unit_conversion_enabled = pref_change_registrar_->prefs()->GetBoolean(
       kQuickAnswersUnitConversionEnabled);
 
-  unit_conversion_enabled_ = unit_conversion_enabled;
+  // See a comment of `QuickAnswersState::IsIntentEligible` for the reason of
+  // this is called as eligible instead of enabled.
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     unit_conversion_enabled);
 }
 
 void QuickAnswersStateAsh::OnApplicationLocaleReady() {

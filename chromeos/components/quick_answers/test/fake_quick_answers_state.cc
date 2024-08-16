@@ -6,6 +6,7 @@
 
 #include "base/observer_list.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 
 FakeQuickAnswersState::FakeQuickAnswersState() = default;
 
@@ -49,6 +50,21 @@ void FakeQuickAnswersState::OnPrefsInitialized() {
 
   MaybeNotifyEligibilityChanged();
   MaybeNotifyIsEnabledChanged();
+}
+
+void FakeQuickAnswersState::SetDefinitionEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kDefinition,
+                                     eligible);
+}
+
+void FakeQuickAnswersState::SetTranslationEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kTranslation,
+                                     eligible);
+}
+
+void FakeQuickAnswersState::SetUnitConversionEligible(bool eligible) {
+  SetIntentEligibilityAsQuickAnswers(quick_answers::Intent::kUnitConversion,
+                                     eligible);
 }
 
 void FakeQuickAnswersState::AsyncWriteConsentUiImpressionCount(int32_t count) {

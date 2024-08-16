@@ -131,6 +131,7 @@ class CONTENT_EXPORT VideoCaptureManager
                      const media::VideoCaptureParams& capture_params,
                      VideoCaptureControllerID client_id,
                      VideoCaptureControllerEventHandler* client_handler,
+                     std::optional<url::Origin> origin,
                      DoneCB done_cb,
                      BrowserContext* browser_context);
 
@@ -236,6 +237,14 @@ class CONTENT_EXPORT VideoCaptureManager
                             media::VideoCaptureError error) override;
   void OnDeviceLaunchAborted() override;
   void OnDeviceConnectionLost(VideoCaptureController* controller) override;
+
+  void OpenNativeScreenCapturePicker(
+      DesktopMediaID::Type type,
+      base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+      base::OnceCallback<void()> cancel_callback,
+      base::OnceCallback<void()> error_callback);
+
+  void CloseNativeScreenCapturePicker(DesktopMediaID device_id);
 
   bool is_idle_close_timer_running_for_testing() const {
     return idle_close_timer_.IsRunning();

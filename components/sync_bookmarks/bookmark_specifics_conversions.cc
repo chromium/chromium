@@ -172,7 +172,7 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
 
 // This is an exact copy of the same code in bookmark_update_preprocessing.cc,
 // which could be removed if eventually client tags are adapted/inferred in
-// ModelTypeWorker. The reason why this is non-trivial today is that some users
+// DataTypeWorker. The reason why this is non-trivial today is that some users
 // are known to contain corrupt data in the sense that several different
 // entities (identified by their server-provided ID) use the same client tag
 // (and UUID). Currently BookmarkModelMerger has logic to prefer folders over
@@ -508,7 +508,7 @@ bool IsValidBookmarkSpecifics(const sync_pb::BookmarkSpecifics& specifics) {
 
   switch (specifics.type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-      // Note that old data doesn't run into this because ModelTypeWorker takes
+      // Note that old data doesn't run into this because DataTypeWorker takes
       // care of backfilling the field.
       DLOG(ERROR) << "Invalid bookmark: invalid type in specifics.";
       is_valid = false;

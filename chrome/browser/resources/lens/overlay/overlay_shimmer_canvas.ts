@@ -60,6 +60,7 @@ const STEADY_STATE_EASING_FUNCTION = new CubicBezier(0.05, 0.7, 0.1, 1.0);
 // INTERACTION STATE CONSTANTS: These are the values that the circles will have
 // the circles are interacting with the interaction the user is making (via
 // their cursor, on a post selection bounding box, etc).
+// Exception: segmentations use a different opacity.
 const INTERACTION_STATE_OPACITY_PERCENT = 0.4;
 const INTERACTION_STATE_EASING_FUNCTION = new CubicBezier(0.2, 0.0, 0.0, 1.0);
 
@@ -96,6 +97,20 @@ const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
 // selection state.
 const REGION_SELECTION_TRANSITION_DURATION = 750;
 
+// SEGMENTATION STATE CONSTANTS: These are the values that are only applied when
+// the shimmer is focusing on a segmentation mask. In the segmentation state,
+// these values are in relation to the bounding box smallest size, rather than
+// the entire viewport.
+const SEGMENTATION_STATE_OPACITY_PERCENT = 0.3;
+const SEGMENTATION_STATE_RADIUS_PERCENT = 30;
+const SEGMENTATION_STATE_CIRCLE_BLUR = 1.8;
+const SEGMENTATION_STATE_RADIUS_AMPLITUDE_PERCENT = 0;
+const SEGMENTATION_STATE_CENTER_X_AMPLITUDE_PERCENT = 20;
+const SEGMENTATION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 20;
+// The time it takes in MS to transition from a different state to the
+// segmentation state.
+const SEGMENTATION_TRANSITION_DURATION = 750;
+
 // The opacity of the sparkles. The sparkles opacity also is dictated by the
 // circle pixel opacity below it. Meaning, the true opacity value is
 // SPARKLES_OPACITY * CIRCLE_OPACITY.
@@ -113,6 +128,9 @@ enum ShimmerState {
   REGION = 7,
   TRANSITION_FADE_OUT_TO_CURSOR = 8,
   TRANSITION_FADE_OUT_TO_REGION = 9,
+  TRANSITION_FADE_IN_TO_SEGMENTATION = 10,
+  SEGMENTATION = 11,
+  TRANSITION_FADE_OUT_TO_SEGMENTATION = 12,
 }
 
 // An interface representing the current values of a circle on the canvas.
@@ -520,7 +538,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.regionCenter = {x: centerX * 100, y: centerY * 100};
         this.regionWidth = width;
         this.regionHeight = height;
-        this.setTransitionState(ShimmerState.TRANSITION_FADE_OUT_TO_REGION);
+        this.setTransitionState(
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION);
         break;
       case ShimmerControlRequester.POST_SELECTION:
         this.regionCenter = {x: centerX * 100, y: centerY * 100};
@@ -751,7 +770,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       if (this.shimmerState === ShimmerState.TRANSITION_SHRINK_TO_CURSOR) {
         endCenter = structuredClone(this.cursorCenter);
       } else if (
-          this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION) {
+          this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION ||
+          this.shimmerState ===
+              ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
         const smallestLength = Math.min(this.regionHeight, this.regionWidth);
         endCenter = structuredClone(this.regionCenter);
         endCenterXAmpPrecent = endCenterXAmpPrecent * this.regionWidth;
@@ -814,7 +835,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private setWiggleFrequency(circle: ShimmerCircle) {
     if (this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION ||
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
-        this.shimmerState === ShimmerState.REGION) {
+        this.shimmerState === ShimmerState.REGION ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION ||
+        this.shimmerState ===
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION ||
+        this.shimmerState === ShimmerState.SEGMENTATION) {
       circle.radiusWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
       circle.centerXWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
       circle.centerYWiggle.setFrequency(INTERACTION_STATE_FREQ_VAL);
@@ -846,6 +871,19 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
           REGION_SELECTION_STATE_CENTER_X_AMPLITUDE_PERCENT * this.regionWidth;
       centerYAmpPercent =
           REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT * this.regionHeight;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
+      const smallestLength = Math.min(this.regionHeight, this.regionWidth);
+      centerPoint.x = this.regionCenter.x;
+      centerPoint.y = this.regionCenter.y;
+      radius = SEGMENTATION_STATE_RADIUS_PERCENT * smallestLength;
+      radiusAmpPercent =
+          SEGMENTATION_STATE_RADIUS_AMPLITUDE_PERCENT * smallestLength;
+      blur = SEGMENTATION_STATE_CIRCLE_BLUR;
+      centerXAmpPercent =
+          SEGMENTATION_STATE_CENTER_X_AMPLITUDE_PERCENT * this.regionWidth;
+      centerYAmpPercent =
+          SEGMENTATION_STATE_CENTER_Y_AMPLITUDE_PERCENT * this.regionHeight;
     }
     return {
       blur,
@@ -882,7 +920,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       keyframe.radius = CURSOR_STATE_RADIUS_PERCENT;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION) {
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
+        this.shimmerState ===
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION) {
       keyframe.opacity = FADE_OUT_STATE_OPACITY_PERCENT;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION) {
@@ -899,16 +939,32 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       keyframe.radiusAmpPercent =
           REGION_SELECTION_STATE_RADIUS_AMPLITUDE_PERCENT;
       keyframe.opacity = INTERACTION_STATE_OPACITY_PERCENT;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
+      // The centerX and centerY can change in between key frames, so we use an
+      // instance member of this component to track that end.
+      keyframe.blur = SEGMENTATION_STATE_CIRCLE_BLUR;
+      keyframe.centerXAmpPercent =
+          SEGMENTATION_STATE_CENTER_X_AMPLITUDE_PERCENT;
+      keyframe.centerYAmpPercent =
+          SEGMENTATION_STATE_CENTER_Y_AMPLITUDE_PERCENT;
+      // This radius is dependent on a instance member of this component because
+      // it can change quickly in between key frames.
+      keyframe.radius = SEGMENTATION_STATE_RADIUS_PERCENT;
+      keyframe.radiusAmpPercent = SEGMENTATION_STATE_RADIUS_AMPLITUDE_PERCENT;
+      keyframe.opacity = SEGMENTATION_STATE_OPACITY_PERCENT;
     }
     return keyframe;
   }
 
   private isShimmerInTransitionState(): boolean {
     return this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION ||
         this.shimmerState === ShimmerState.TRANSITION_TO_STEADY_STATE ||
         this.shimmerState === ShimmerState.TRANSITION_SHRINK_TO_CURSOR ||
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION;
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION;
   }
 
   private setCurrentAnimationStartTimeIfNeeded(currentTimeMs: number) {
@@ -931,7 +987,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       return STEADY_STATE_EASING_FUNCTION;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION) {
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
+        this.shimmerState ===
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION) {
       return FADE_OUT_EASING_FUNCTION;
     }
     return INTERACTION_STATE_EASING_FUNCTION;
@@ -945,7 +1003,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     this.dispatchEvent(new CustomEvent('shimmer-fade-out-complete', {
       bubbles: true,
       composed: true,
-      detail: state !== ShimmerState.TRANSITION_FADE_OUT_TO_REGION,
+      detail: state !== ShimmerState.TRANSITION_FADE_OUT_TO_REGION &&
+          state !== ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION,
     }));
     this.animationStartTime = undefined;
     this.shimmerState = state;
@@ -960,6 +1019,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION &&
         elapsed >= REGION_SELECTION_TRANSITION_DURATION) {
       this.shimmerState = ShimmerState.REGION;
+      this.didLastTransitionFinish = true;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION &&
+        elapsed >= SEGMENTATION_TRANSITION_DURATION) {
+      this.shimmerState = ShimmerState.SEGMENTATION;
       this.didLastTransitionFinish = true;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_SHRINK_TO_CURSOR &&
@@ -982,6 +1046,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       this.didLastTransitionFinish = true;
       this.shimmerState = ShimmerState.NONE;
       this.setTransitionState(ShimmerState.TRANSITION_FADE_IN_TO_REGION);
+    } else if (
+        this.shimmerState ===
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION &&
+        elapsed >= FADE_OUT_TRANSITION_DURATION) {
+      this.dispatchEvent(new CustomEvent('shimmer-fade-out-complete', {
+        bubbles: true,
+        composed: true,
+        detail: true,
+      }));
+      this.didLastTransitionFinish = true;
+      this.shimmerState = ShimmerState.NONE;
+      this.setTransitionState(ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION);
     }
   }
 
@@ -992,11 +1068,16 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION) {
       return REGION_SELECTION_TRANSITION_DURATION;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
+      return SEGMENTATION_TRANSITION_DURATION;
     } else if (this.shimmerState === ShimmerState.TRANSITION_SHRINK_TO_CURSOR) {
       return CURSOR_SHRINK_TRANSITION_DURATION;
     } else if (
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION) {
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
+        this.shimmerState ===
+            ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION) {
       return FADE_OUT_TRANSITION_DURATION;
     }
     return 0;

@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -58,6 +59,7 @@ struct VectorIcon;
 
 class AuthenticatorRequestDialogController;
 class Profile;
+class ProfileAttributesEntry;
 
 //                ┌───────┐
 //                │ View  │
@@ -323,7 +325,12 @@ class Profile;
   F(kGPMReauthForPinReset)                                                     \
   F(kGPMLockedPin)
 
-struct AuthenticatorRequestDialogModel {
+// AuthenticatorRequestDialogModel holds the UI state for a WebAuthn request.
+// This class is refcounted so that its ownership can be shared between the
+// dialog view and the request delegate, which both depend on its state, and
+// don't have coupled lifetimes.
+struct AuthenticatorRequestDialogModel
+    : public base::RefCounted<AuthenticatorRequestDialogModel> {
   enum class Step {
 #define F(x) x,
     STEPS
@@ -421,7 +428,6 @@ struct AuthenticatorRequestDialogModel {
       AuthenticatorRequestDialogModel&&) = delete;
   AuthenticatorRequestDialogModel& operator=(
       const AuthenticatorRequestDialogModel&) = delete;
-  ~AuthenticatorRequestDialogModel();
 
   // This causes the events to become methods on the Model. Views and
   // Controllers call these methods to broadcast events to all observers.
@@ -445,10 +451,8 @@ struct AuthenticatorRequestDialogModel {
 
   void DisableUiOrShowLoadingDialog();
 
-  // This can return nullptr in tests.
-  content::WebContents* GetWebContents() const;
-  // This can return nullptr in tests.
-  content::RenderFrameHost* GetRenderFrameHost() const;
+  // Returns profile attributes. May return nullptr.
+  ProfileAttributesEntry* GetProfileAttributesEntry();
 
   // generation is incremented each time the request is restarted so that events
   // from different request generations can be distinguished.
@@ -463,7 +467,6 @@ struct AuthenticatorRequestDialogModel {
   // has no UI, or a different style of UI.
   bool should_dialog_be_closed() const;
 
-  const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
   device::FidoRequestType request_type = device::FidoRequestType::kGetAssertion;
   device::ResidentKeyRequirement resident_key_requirement =
       device::ResidentKeyRequirement::kDiscouraged;
@@ -535,7 +538,11 @@ struct AuthenticatorRequestDialogModel {
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
+  friend class base::RefCounted<AuthenticatorRequestDialogModel>;
+  ~AuthenticatorRequestDialogModel();
+
   Step step_ = Step::kNotStarted;
+  const std::optional<content::GlobalRenderFrameHostId> frame_host_id;
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -557,7 +564,9 @@ class AuthenticatorRequestDialogController
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
 
-  explicit AuthenticatorRequestDialogController(Model* model);
+  AuthenticatorRequestDialogController(
+      Model* model,
+      content::RenderFrameHost* render_frame_host);
 
   AuthenticatorRequestDialogController(
       const AuthenticatorRequestDialogController&) = delete;
@@ -1005,6 +1014,10 @@ class AuthenticatorRequestDialogController
   // default. This only makes sense for a create() call.
   bool CanDefaultToEnclave(Profile* profile);
 
+  // Returns the render frame host associated with this request. The render
+  // frame host indirectly owns the controller, and so it should outlive it.
+  content::RenderFrameHost* GetRenderFrameHost() const;
+
   raw_ptr<Model> model_;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
@@ -1135,6 +1148,8 @@ class AuthenticatorRequestDialogController
 #endif
 
   bool enclave_can_be_default_ = true;
+
+  const content::GlobalRenderFrameHostId frame_host_id_;
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>

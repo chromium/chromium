@@ -18,6 +18,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace autofill_prediction_improvements {
+class AutofillPredictionImprovementsFillingEngineImpl;
+}  // namespace autofill_prediction_improvements
+
 namespace autofill {
 
 class LogBuffer;
@@ -328,6 +332,8 @@ class FormData {
     friend class FormDataAndroid;
     friend class FormFiller;
     friend class internal::FormForest;
+    friend class autofill_prediction_improvements::
+        AutofillPredictionImprovementsFillingEngineImpl;
   };
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
     return fields_;
@@ -353,7 +359,14 @@ class FormData {
   void set_is_gaia_with_skip_save_password_form(
       bool is_gaia_with_skip_save_password_form) {
     is_gaia_with_skip_save_password_form_ =
-        std::move(is_gaia_with_skip_save_password_form);
+        is_gaia_with_skip_save_password_form;
+  }
+
+  // Currently likely_contains_captcha_ is initialized only on Android platform.
+  // For all other platforms its value is always `false`.
+  bool likely_contains_captcha() const { return likely_contains_captcha_; }
+  void set_likely_contains_captcha(bool likely_contains_captcha) {
+    likely_contains_captcha_ = likely_contains_captcha;
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -382,6 +395,7 @@ class FormData {
   std::vector<FormFieldData> fields_;
   std::vector<FieldRendererId> username_predictions_;
   bool is_gaia_with_skip_save_password_form_ = false;
+  bool likely_contains_captcha_ = false;
 #if BUILDFLAG(IS_IOS)
   std::string frame_id_;
 #endif

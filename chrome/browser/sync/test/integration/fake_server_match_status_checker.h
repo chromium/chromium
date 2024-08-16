@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_MATCH_STATUS_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SERVER_MATCH_STATUS_CHECKER_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/test/fake_server.h"
 
 namespace fake_server {
@@ -24,7 +22,7 @@ class FakeServerMatchStatusChecker : public StatusChangeChecker,
   ~FakeServerMatchStatusChecker() override;
 
   // FakeServer::Observer implementation.
-  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::DataTypeSet committed_data_types) override;
   void OnSuccessfulGetUpdates() override;
 
  protected:

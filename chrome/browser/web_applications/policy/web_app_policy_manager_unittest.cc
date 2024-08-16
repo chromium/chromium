@@ -62,6 +62,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -584,6 +586,8 @@ class WebAppPolicyManagerTest : public WebAppPolicyManagerTestBase,
 
     if (LacrosEnabledParam()) {
       base::Extend(enabled_features, std::move(lacros_flags));
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       base::Extend(disabled_features, std::move(lacros_flags));
     }
@@ -593,6 +597,9 @@ class WebAppPolicyManagerTest : public WebAppPolicyManagerTestBase,
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedCommandLine scoped_command_line_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 TEST_P(WebAppPolicyManagerTest, NoPrefValues) {

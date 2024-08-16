@@ -11,7 +11,6 @@ option java_outer_classname = 'RichAnswerTemplateProto';
 package omnibox;
 
 import "answer_data.proto";
-import "types.proto";
 
 // Template to render the standard Rich Answer.
 // https://screenshot.googleplex.com/4D9edMcdf5g6jVL
@@ -30,8 +29,7 @@ message RichAnswerTemplate {
 message SuggestionEnhancements {
   repeated SuggestionEnhancement enhancements = 1;
 
-  // Header text. For example, 'See also' & 'Similar words' for rich answers.
-  optional string header = 2;
+  reserved 2;
 }
 
 message SuggestionEnhancement {
@@ -42,32 +40,8 @@ message SuggestionEnhancement {
   // formed, and not rely on its parent suggestion's suggestion.
   optional string query = 2;
 
-  // Associated suggestion subtypes to be attached to the assisted_query_info
-  // on click. Stored as the values of the SuggestSubtypes.
-  repeated int32 subtype_values = 4 [packed = true];
-
   // Extra URL params that should accompany the query.
   map<string, string> query_cgi_params = 5;
 
-  // Associated suggestion subtypes to be attached to the assisted_query_info
-  // on click.
-  repeated SuggestSubtype subtypes = 6;
-
-  // The entity id. Only set when the enhancement has entity icon.
-  optional string mid = 11;
-
-  // The second line text for this enhancement.
-  optional string annotation = 8;
-
-  // The image url. Only set when the enhancement has entity icon.
-  optional string image_url = 9;
-
-  // Only set when the enhancement has entity icon.
-  optional string dominant_color = 10;
-
-  // Only set when the enhancement has entity icon.
-  optional string search_parameters = 12 [deprecated = true];
-
-  // A11y label for enhancement.
-  optional string a11y_label = 14;
+  reserved 4, 6, 8 to 12, 14;
 }

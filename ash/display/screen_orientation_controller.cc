@@ -544,8 +544,7 @@ void ScreenOrientationController::LockRotationToOrientation(
                    display::Display::RotationSource::ACTIVE);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

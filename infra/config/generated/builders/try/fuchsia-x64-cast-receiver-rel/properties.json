@@ -46,7 +46,8 @@
           "project": "chromium"
         }
       ],
-      "retry_without_patch": false
+      "retry_without_patch": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/fuchsia-x64-cast-receiver-rel/targets"
     }
   },
   "$build/code_coverage": {

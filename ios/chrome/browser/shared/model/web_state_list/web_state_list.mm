@@ -11,7 +11,6 @@
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
 #import "base/containers/contains.h"
-#import "base/debug/alias.h"
 #import "base/memory/raw_ptr.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
@@ -359,10 +358,6 @@ void WebStateList::CloseWebStatesAtIndices(int close_flags,
   // quadratic behavior if observers iterate the WebStateList.
   std::vector<std::unique_ptr<web::WebState>> detached_web_states =
       DetachWebStatesAtIndicesImpl(removing_indexes, detach_params);
-
-  // Added to debug reported slowness in https://crbug.com/41483250.
-  const int remaining_count = count();
-  base::debug::Alias(&remaining_count);
 
   detached_web_states.clear();
 }
@@ -1237,8 +1232,7 @@ void WebStateList::OnActiveWebStateChanged() {
 
 void CloseAllWebStates(WebStateList& web_state_list, int close_flags) {
   const int count = web_state_list.count();
-  // Added to debug reported slowness in https://crbug.com/41483250.
-  base::debug::Alias(&count);
+
   const WebStateList::ScopedBatchOperation batch =
       web_state_list.StartBatchOperation();
   web_state_list.CloseWebStatesAtIndices(close_flags, RemovingIndexes({

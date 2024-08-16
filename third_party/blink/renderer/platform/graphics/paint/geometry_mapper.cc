@@ -5,6 +5,10 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
 #include "base/containers/adapters.h"
+#include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -359,10 +363,12 @@ static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node,
                                  OverlayScrollbarClipBehavior clip_behavior) {
   // TODO(crbug.com/1248598): Do we need to use PaintClipRect when mapping for
   // painting/compositing?
-  FloatClipRect clip_rect =
-      UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
-          ? clip_node.LayoutClipRectExcludingOverlayScrollbars()
-          : clip_node.LayoutClipRect();
+  FloatClipRect clip_rect;
+  if (clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting) [[unlikely]] {
+    clip_rect = clip_node.LayoutClipRectExcludingOverlayScrollbars();
+  } else {
+    clip_rect = clip_node.LayoutClipRect();
+  }
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;
@@ -388,7 +394,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   // The average number of intermediate clips is very small in the real world.
   // 16 was chosen based on the maximum size in a large, performance-intensive
   // case. Details and links to Pinpoint trials: crbug.com/1468987.
-  Vector<const ClipPaintPropertyNode*, 16> intermediate_nodes;
+  HeapVector<Member<const ClipPaintPropertyNode>, 16> intermediate_nodes;
 
   GeometryMapperClipCache::ClipAndTransform clip_and_transform(
       &ancestor_clip, &ancestor_transform, clip_behavior);
@@ -423,7 +429,7 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
 
   // Iterate down from the top intermediate node found in the previous loop,
   // computing and memoizing clip rects as we go.
-  for (auto* const node : base::Reversed(intermediate_nodes)) {
+  for (const auto& node : base::Reversed(intermediate_nodes)) {
     ExtraProjectionResult extra_result;
     bool success = false;
     gfx::Transform projection = SourceToDestinationProjectionInternal(
@@ -510,7 +516,7 @@ bool GeometryMapper::MightOverlapForCompositing(
     return true;
   }
 
-  if (LIKELY(&scroll_translation1 == &scroll_translation2)) {
+  if (&scroll_translation1 == &scroll_translation2) [[likely]] {
     return MightOverlapForCompositingInternal(common_ancestor, rect1, state1,
                                               rect2, state2);
   }

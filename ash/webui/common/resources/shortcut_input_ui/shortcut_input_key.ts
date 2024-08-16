@@ -6,6 +6,9 @@ import './icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+// <if expr="_google_chrome" >
+import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
+// </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -14,6 +17,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './shortcut_input_key.html.js';
 import {KeyInputState, KeyToIconNameMap, MetaKey} from './shortcut_utils.js';
+// <if expr="_google_chrome" >
+import {KeyToInternalIconNameMap, KeyToInternalIconNameRefreshOnlyMap} from './shortcut_utils.js';
+// </if>
 
 export const META_KEY = 'meta';
 export const LWIN_KEY = 'Meta';
@@ -103,8 +109,7 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
     if (this.key === META_KEY || this.key === LWIN_KEY) {
       switch (this.metaKey) {
         case MetaKey.kLauncherRefresh:
-          // TODO(b/338134189): Replace it with updated icon when finalized.
-          return 'shortcut-input-keys:launcher';
+          return 'ash-internal:launcher-refresh';
         case MetaKey.kSearch:
           return 'shortcut-input-keys:search';
         case MetaKey.kLauncher:
@@ -112,8 +117,26 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
           return 'shortcut-input-keys:launcher';
       }
     }
+
+    // <if expr="_google_chrome" >
+    const internalIconName = KeyToInternalIconNameMap[this.key];
+    if (internalIconName) {
+      return `ash-internal:${internalIconName}`;
+    }
+
+    const internalRefreshIconName =
+        KeyToInternalIconNameRefreshOnlyMap[this.key];
+    if (internalRefreshIconName && this.metaKey === MetaKey.kLauncherRefresh) {
+      return `ash-internal:${internalRefreshIconName}`;
+    }
+    // </if>
+
     const iconName = KeyToIconNameMap[this.key];
-    return iconName ? `shortcut-input-keys:${iconName}` : null;
+    if (iconName) {
+      return `shortcut-input-keys:${iconName}`;
+    }
+
+    return null;
   }
 
   /**
@@ -152,7 +175,19 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
   }
 
   private onKeyChanged(): void {
-    this.hasIcon = this.key in KeyToIconNameMap;
+    if (this.key in KeyToIconNameMap) {
+      this.hasIcon = true;
+      return;
+    }
+
+    // <if expr="_google_chrome" >
+    if (this.key in KeyToInternalIconNameMap) {
+      this.hasIcon = true;
+      return;
+    }
+    // </if>
+
+    this.hasIcon = false;
   }
 }
 

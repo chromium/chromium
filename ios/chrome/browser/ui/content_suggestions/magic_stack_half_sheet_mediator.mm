@@ -33,7 +33,8 @@
   if (self = [super init]) {
     CHECK(prefService);
     _prefService = prefService;
-    if (set_up_list_utils::IsSetUpListActive(_prefService, false)) {
+    if (set_up_list_utils::IsSetUpListActive(_prefService, nil /*user_prefs*/,
+                                             false)) {
       _setUpListDisabled = [[PrefBackedBoolean alloc]
           initWithPrefService:_prefService
                      prefName:set_up_list_prefs::kDisabled];

@@ -991,7 +991,7 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
     // Pepper-free PDF will reach here.
     rect = plugin_container->Plugin()->GetPluginCaretBounds();
   } else {
-    // TODO(crbug.com/702990): Remove `pepper_has_caret` once pepper is removed.
+    // TODO(crbug.com/40511450): Remove `pepper_has_caret` once PPAPI is gone.
     bool pepper_has_caret = client->GetCaretBoundsFromFocusedPlugin(rect);
     if (!pepper_has_caret) {
       // When request range is invalid we will try to obtain it from current
@@ -1326,6 +1326,10 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
 
   frame_->GetWidgetForLocalRoot()->UpdateBrowserControlsState(
       constraints, current, animate, offset_tags_info);
+}
+
+void LocalFrameMojoHandler::Discard() {
+  frame_->Discard();
 }
 
 void LocalFrameMojoHandler::SetV8CompileHints(

@@ -76,7 +76,8 @@ bool DCompPresenter::Resize(const gfx::Size& size,
     return false;
   }
 
-  return child_window_.Resize(size);
+  child_window_.Resize(size);
+  return true;
 }
 
 gfx::VSyncProvider* DCompPresenter::GetVSyncProvider() {

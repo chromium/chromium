@@ -53,7 +53,7 @@ static std::unique_ptr<syncer::DeviceInfo> CreateFakeDeviceInfo(
               sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2}),
       /*paask_info=*/std::nullopt,
       /*fcm_registration_token=*/std::string(),
-      /*interested_data_types=*/syncer::ModelTypeSet(),
+      /*interested_data_types=*/syncer::DataTypeSet(),
       /*floating_workspace_last_signin_timestamp=*/std::nullopt);
 }
 

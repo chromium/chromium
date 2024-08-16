@@ -317,10 +317,10 @@ class AppListSyncableService : public syncer::SyncableService,
   // syncer::SyncableService
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting() const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,

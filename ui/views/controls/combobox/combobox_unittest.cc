@@ -82,7 +82,7 @@ class TestComboboxModel : public ui::ComboboxModel {
       if (separators_.find(index) == separators_.end())
         return index;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void SetSeparators(const std::set<size_t>& separators) {
@@ -755,6 +755,38 @@ TEST_F(ComboboxTest, SetSizePosInSetAccessibleProperties) {
   EXPECT_EQ(2, node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
 }
 
+TEST_F(ComboboxTest, AccessibleValue) {
+  // Empty model kValue check
+  auto simple_model = std::make_unique<ui::SimpleComboboxModel>(
+      std::vector<ui::SimpleComboboxModel::Item>());
+  auto combobox = std::make_unique<Combobox>(simple_model.get());
+
+  ui::AXNodeData node_data;
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(0u, combobox->GetModel()->GetItemCount());
+  EXPECT_EQ(std::nullopt, combobox->GetSelectedIndex());
+  EXPECT_EQ("",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
+  // Non-empty model.
+  simple_model->UpdateItemList({ui::SimpleComboboxModel::Item(u"Peanut Butter"),
+                                ui::SimpleComboboxModel::Item(u"Yogurt")});
+  node_data = ui::AXNodeData();
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(2u, combobox->GetModel()->GetItemCount());
+  EXPECT_EQ(0u, combobox->GetSelectedIndex());
+  EXPECT_EQ("Peanut Butter",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+
+  // set selected index to 1.
+  node_data = ui::AXNodeData();
+  combobox->SetSelectedIndex(1);
+  EXPECT_EQ(1u, combobox->GetSelectedIndex());
+  combobox->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ("Yogurt",
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
 TEST_F(ComboboxTest, NotifyOnClickWithMouse) {
   InitCombobox(nullptr);
 
@@ -1006,6 +1038,8 @@ TEST_F(ComboboxTest, SetTooltipTextNotifiesAccessibilityEvent) {
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, ASCIIToUTF16(name));
+  EXPECT_EQ(u"PEANUT BUTTER",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kValue));
 }
 
 // Regression test for crbug.com/1264288.

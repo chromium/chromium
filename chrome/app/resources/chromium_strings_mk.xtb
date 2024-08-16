@@ -23,6 +23,8 @@
 <translation id="126567311906253476">При најавување на услуги на Google како Gmail или YouTube со <ph name="USER_EMAIL" />, може да се најавувате на Chromium автоматски со истата сметка</translation>
 <translation id="1290883685122687410">Грешка при поставувањето: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Поставете нов профил на Chromium</translation>
+<translation id="1324107359134968521">Chromium бара пристап до Bluetooth за да открива 
+ уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Избриши ги и податоците од Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Најавени сте на Chromium!</translation>
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
@@ -61,6 +63,7 @@
 <translation id="1951406923938785464">Chromium го блокираше преземањево затоа што видот датотека не се презема често и можеби е опасен</translation>
 <translation id="1953553007165777902">Се презема… Уште <ph name="MINUTE" /> мин.</translation>
 <translation id="1966382378801805537">Chromium не може да го одреди или постави стандардниот прелистувач</translation>
+<translation id="1990262977744080398">Дознајте зошто Chromium блокира некои датотеки, се отвора во нова картичка</translation>
 <translation id="2008474315282236005">Ова ќе избрише една ставка од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chromium како <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Инсталирањето не успеа. Обидете се повторно.</translation>
 <translation id="2020032459870799438">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chromium<ph name="END_LINK" />.</translation>
@@ -121,6 +124,7 @@
 <translation id="2915996080311180594">Рестартирај подоцна</translation>
 <translation id="2928420929544864228">Инсталирањето заврши.</translation>
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
+<translation id="2970426615109535079">Вашата организација управува со Chromium</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
 <translation id="2977506796191543575">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chromium може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
 <translation id="2987208172821108655">Chromium може да ги деактивира картичкиве за да го подобри вашето доживување со прелистувањето и да ослободи ресурси.</translation>
@@ -221,6 +225,7 @@
 <translation id="4423735387467980091">Приспособи го и контролирај го Chromium</translation>
 <translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4434353761996769206">Грешка на инсталаторот: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> управува со Chromium</translation>
 <translation id="4447409407328223819">За „Chrome за тестирање“</translation>
 <translation id="4501471624619070934">Не можеше да се инсталира затоа што пристапот е ограничен во земјава.</translation>
 <translation id="4510853178268397146">Екстензијава нема објавено практики за приватност, како на пример, како прибира и користи податоци. Chromium препорачува да ја отстраните.</translation>
@@ -489,6 +494,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8550334526674375523">Овој работен профил е целосно одделен од вашиот личен профил.</translation>
 <translation id="8555465886620020932">Грешка на услугата: <ph name="SERVICE_ERROR" /></translation>
 <translation id="8568283329061645092">Chromium може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google</translation>
+<translation id="8576826849825683917">Повеќе организации управуваат со Chromium</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Како ги користиме овие податоци:<ph name="END_BOLD" /> сајтовите може да ги зачувуваат податоците со Chromium за вашите интереси. На пример, ако посетите сајт за да купите патики за маратон, сајтот може да дефинира дека вашиот интерес е трчање маратони. Подоцна ако посетите друг сајт за да се регистрирате за трка, тој сајт може да ви прикаже реклама за патики за трчање според вашите интереси.</translation>
 <translation id="8619360774459241877">Се стартува Chromium…</translation>

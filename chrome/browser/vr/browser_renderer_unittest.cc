@@ -59,8 +59,8 @@ class MockGraphicsDelegate : public GraphicsDelegate {
   }
   bool PreRender() override { return true; }
   void PostRender() override {}
-  gfx::GpuMemoryBufferHandle GetTexture() override { NOTREACHED_NORETURN(); }
-  gpu::SyncToken GetSyncToken() override { NOTREACHED_NORETURN(); }
+  gfx::GpuMemoryBufferHandle GetTexture() override { NOTREACHED(); }
+  gpu::SyncToken GetSyncToken() override { NOTREACHED(); }
   void ResetMemoryBuffer() override {}
   bool BindContext() override { return true; }
   void ClearContext() override {}

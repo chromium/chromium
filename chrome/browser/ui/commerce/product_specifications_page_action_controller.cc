@@ -12,6 +12,11 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+// The maximum length of the page action title.
+constexpr int kPageActionTitleMaxLength = 24;
+}  // namespace
+
 namespace commerce {
 
 ProductSpecificationsPageActionController::
@@ -36,7 +41,7 @@ std::optional<bool>
 ProductSpecificationsPageActionController::ShouldShowForNavigation() {
   // If the user isn't eligible for the feature, don't block.
   if (!shopping_service_ || !shopping_service_->GetAccountChecker() ||
-      !commerce::IsProductSpecificationsEnabled(
+      !commerce::CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
     return false;
   }
@@ -59,7 +64,7 @@ bool ProductSpecificationsPageActionController::WantsExpandedUi() {
 void ProductSpecificationsPageActionController::ResetForNewNavigation(
     const GURL& url) {
   if (!shopping_service_ || !shopping_service_->GetAccountChecker() ||
-      !commerce::IsProductSpecificationsEnabled(
+      !commerce::CanFetchProductSpecificationsData(
           shopping_service_->GetAccountChecker())) {
     return;
   }
@@ -129,20 +134,25 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
   if (!product_specifications_set.has_value()) {
     return;
   }
-  std::vector<GURL> existing_urls = product_specifications_set->urls();
+  std::vector<UrlInfo> existing_url_infos =
+      product_specifications_set->url_infos();
   if (!is_in_recommended_set_) {
-    existing_urls.push_back(current_url_);
+    existing_url_infos.emplace_back(current_url_, std::u16string());
     is_in_recommended_set_ = true;
   } else {
-    auto it =
-        std::find(existing_urls.begin(), existing_urls.end(), current_url_);
-    if (it != existing_urls.end()) {
-      existing_urls.erase(it);
+    GURL current_url = current_url_;
+    auto it = base::ranges::find_if(
+        existing_url_infos, [&current_url](const UrlInfo& query_url_info) {
+          return query_url_info.url == current_url;
+        });
+
+    if (it != existing_url_infos.end()) {
+      existing_url_infos.erase(it);
     }
     is_in_recommended_set_ = false;
   }
   product_specifications_service_->SetUrls(product_group_for_page_->uuid,
-                                           std::move(existing_urls));
+                                           std::move(existing_url_infos));
   NotifyHost();
 }
 
@@ -153,17 +163,18 @@ bool ProductSpecificationsPageActionController::IsInRecommendedSet() {
 std::u16string
 ProductSpecificationsPageActionController::GetProductSpecificationsLabel(
     bool is_added) {
-  if (!product_group_for_page_.has_value()) {
-    return is_added ? l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED_DEFAULT)
-                    : l10n_util::GetStringUTF16(
-                          IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT);
+  if (!product_group_for_page_.has_value() ||
+      product_group_for_page_->name.size() > kPageActionTitleMaxLength) {
+    return is_added
+               ? l10n_util::GetStringUTF16(
+                     IDS_COMPARE_PAGE_ACTION_ADDED_DEFAULT)
+               : l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT);
   }
   std::u16string set_name = base::UTF8ToUTF16(product_group_for_page_->name);
-  return is_added ? l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADDED, set_name)
-                  : l10n_util::GetStringFUTF16(
-                        IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD, set_name);
+  return is_added ? l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADDED,
+                                               set_name)
+                  : l10n_util::GetStringFUTF16(IDS_COMPARE_PAGE_ACTION_ADD,
+                                               set_name);
 }
 
 void ProductSpecificationsPageActionController::HandleProductInfoResponse(

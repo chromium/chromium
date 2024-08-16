@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
 <translation id="1448064542941920355">জুম কমান</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" />টি সাইট}one{<ph name="SITE_COUNT" />টি সাইট}other{<ph name="SITE_COUNT" />টি সাইট}}</translation>
+<translation id="1500473259453106018">ট্যাবে দেখানো দাম কমার তথ্য সংক্রান্ত কার্ড লুকান</translation>
 <translation id="1510341833810331442">কোনও সাইটকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দিন</translation>
 <translation id="1547123415014299762">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
 <translation id="1568470248891039841">আপনার ভিজিট করা সাইটগুলি অন্যান্য সাইট থেকে কন্টেন্ট এম্বেড করতে পারবে, যেমন ছবি, বিজ্ঞাপন ও টেক্সট। আপনি ব্রাউজ করার সময় এই অন্যান্য সাইট আপনার সম্পর্কে যে তথ্য সেভ করেছে তা ব্যবহারের জন্য সাইটগুলি আপনার কাছ থেকে অনুমতি চাইতে পারবে। <ph name="BEGIN_LINK" />এম্বেড করা কন্টেন্ট সম্পর্কে আরও জানুন<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">মাইক্রোফোন</translation>
 <translation id="3232293466644486101">ব্রাউজ করা ডেটা মুছে দিন…</translation>
 <translation id="3242646949159196181">চালু থাকলে, সাইট সাউন্ড প্লে করতে পারে। বন্ধ থাকলে, সাইট সাউন্ড প্লে করতে পারে না।</translation>
+<translation id="3273479183583863618">ট্যাবে দেখানো দাম কমার তথ্য সংক্রান্ত কার্ড</translation>
 <translation id="3277252321222022663">সাইটকে সেন্সর অ্যাক্সেস করার অনুমতি দিন (সাজেস্ট করা হয়)</translation>
 <translation id="3285500645985761267">গ্রুপে আপনার অ্যাক্টিভিটি দেখতে সম্পর্কিত সাইটগুলিকে অনুমতি দিন</translation>
 <translation id="3295019059349372795">চ্যাপ্টার ১১: দি ওয়ান্ডারফুল এমারেল্ড সিটি অফ ওজ</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">এই অ্যাকশন বাতিল করে উপলভ্য পরবর্তী অ্যাকশন দেখুন</translation>
 <translation id="3744111561329211289">পটভূমি সিঙ্ক</translation>
 <translation id="3763247130972274048">১০ সেকেন্ড আগে পরে স্কিপ করতে বাঁদিকে অথবা ডানদিকে ডবল ট্যাপ করুন</translation>
+<translation id="3779154269823594982">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="3797520601150691162">কোনও নির্দিষ্ট সাইটের জন্য ডার্ক থিম প্রয়োগ করবেন না</translation>
 <translation id="3803367742635802571">যেমনভাবে ডিজাইন করা হয়েছে আপনার ভিজিট করা সাইট তেমনভাবে কাজ করা বন্ধ করতে পারে</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />। <ph name="TYPE_2" />।</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">আইটেম বেছে নিন</translation>
 <translation id="6840760312327750441">ট্যাব গ্রুপ করতে সেটি টাচ করে ধরে থাকুন। তারপর, সেটি টেনে অন্য ট্যাবে নিয়ে আসুন।</translation>
 <translation id="6864395892908308021">এই ডিভাইস NFC পড়তে পারছে না</translation>
+<translation id="6870169401250095575">'নিরাপত্তা সংক্রান্ত পরীক্ষা' কার্ড লুকান</translation>
 <translation id="6912998170423641340">ক্লিপবোর্ডের টেক্সট এবং ছবি পড়ার থেকে সাইটগুলিকে ব্লক করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6950072572526089586">আপনি যে সাইটটি ভিজিট করেন সেটিতে আপনি কী করছেন সেই সম্পর্কিত তথ্য সেভ করা হতে পারে যাতে এটি আপনার প্রত্যাশা অনুযায়ী কাজ করে — যেমন, আপনাকে একটি সাইটে সাইন-ইন রাখতে বা আপনার শপিং কার্টে আইটেমগুলি সেভ করতে। প্রায়শই সাইটগুলি আপনার ডিভাইসে সাময়িকভাবে এই তথ্য সেভ করে।</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
 <translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}one{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}other{<ph name="FPS_OWNER" />-এর সাইটের গ্রুপে <ph name="FPS_MEMBERS_COUNT" />টি সাইট গ্রুপে আপনার অ্যাক্টিভিটি দেখতে পারে}}</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="7990211076305263060">চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার জন্য অনুমতি চাইতে পারে। চালু থাকলে, সাইট আপনার মাইক্রোফোন ব্যবহার করার করতে পারে না।</translation>
 <translation id="8007176423574883786">এই ডিভাইসের জন্য বন্ধ করা আছে</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{'এই ট্যাবের সাহায্যে চালিয়ে যান' কার্ডটি লুকান}one{'এই ট্যাবের সাহায্যে চালিয়ে যান' কার্ডটি লুকান}other{'এই ট্যাবের সাহায্যে চালিয়ে যান' কার্ডগুলি লুকান}}</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8042586301629853791">এটি অনুযায়ী সাজান:</translation>
 <translation id="8067883171444229417">ভিডিও চালানোর বোতাম</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">সাইটকে ডিভাইসের সাথে কানেক্ট করা থেকে ব্লক করুন</translation>
 <translation id="8525306231823319788">পূর্ণ স্ক্রীণ</translation>
 <translation id="8541410041357371550">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার বিজ্ঞাপনের বিষয় নেয়</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}one{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> সাইটের জন্য কুকিজের অনুমতি আছে}}</translation>
 <translation id="857943718398505171">অনুমোদিত (প্রস্তাবিত)</translation>
 <translation id="8609465669617005112">উপরে যান</translation>
 <translation id="8617611086246832542">চালু থাকলে, ওয়েবসাইটের ডেস্কটপ ভিউ দেখানো হয়। বন্ধ থাকলে, ওয়েবসাইটের মোবাইল ভিউ দেখানো হয়।</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">আপনার পিতামাতার দ্বারা পরিচালিত</translation>
 <translation id="9039697262778250930">এই সাইটগুলি থেকে আপনি হয়ত সাইন-আউট হয়ে যাবেন</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
-<translation id="9090268041676521955">এই সাইটটি একটি গ্রুপে রয়েছে যা আপনার অ্যাক্টিভিটি দেখতে পাবে। <ph name="FPS_OWNER" /> দ্বারা গ্রুপ সংজ্ঞায়িত করা হয়</translation>
 <translation id="9106233582039520022">কুকি মুছবেন?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ও আরও <ph name="NUM_MORE" />টি সুবিধা}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতিগুলি চালু করুন।</translation>

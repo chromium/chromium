@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -62,7 +63,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
     case ManualFillDataType::kAddress:
       return 2;
     case ManualFillDataType::kOther:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -190,10 +191,9 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                      multiplier:kViewHeightMultiplier],
   ]];
 
-  UIAccessibilityPostNotification(
-      UIAccessibilityAnnouncementNotification,
-      l10n_util::GetNSString(
-          IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT));
+  // Bring focus to the expanded view by focusing on the Chrome logo.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  _chromeLogo);
 }
 
 - (void)viewDidLayoutSubviews {
@@ -294,8 +294,19 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
+  chromeLogo.contentMode = UIViewContentModeCenter;
+  chromeLogo.isAccessibilityElement = YES;
+  chromeLogo.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT);
+  chromeLogo.accessibilityTraits = UIAccessibilityTraitNone;
   chromeLogo.accessibilityIdentifier =
       manual_fill::kExpandedManualFillChromeLogoID;
+
+  [chromeLogo setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisHorizontal];
+  [chromeLogo
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   return chromeLogo;
 }
@@ -305,15 +316,28 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   ExtendedTouchTargetButton* closeButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  closeButton.contentMode = UIViewContentModeCenter;
   closeButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL);
 
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
   UIImage* buttonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonSize), @[
+      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                     symbolConfiguration),
+      @[
         [[UIColor secondaryLabelColor] colorWithAlphaComponent:0.6],
         [UIColor tertiarySystemFillColor]
       ]);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
+
+  [closeButton setContentHuggingPriority:UILayoutPriorityRequired
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+  [closeButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   [closeButton addTarget:self
                   action:@selector(onCloseButtonPressed:)
@@ -442,14 +466,6 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
   // Constraints that are common to both layouts.
   [NSLayoutConstraint activateConstraints:@[
-    // `chromeLogo` constraints.
-    [chromeLogo.heightAnchor constraintEqualToConstant:kChromeLogoSize],
-    [chromeLogo.widthAnchor constraintEqualToConstant:kChromeLogoSize],
-
-    // `closeButton` constraints.
-    [closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
-    [closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
-
     // `segmentedControl` constraints.
     [segmentedControl.heightAnchor
         constraintEqualToConstant:kSegmentedControlHeight],
@@ -490,6 +506,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 // Handles taps on the close button.
 - (void)onCloseButtonPressed:(id)sender {
+  base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
   [self.delegate expandedManualFillViewController:self
                               didPressCloseButton:sender];
 }

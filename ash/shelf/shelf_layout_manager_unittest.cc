@@ -94,6 +94,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -2135,7 +2136,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfBackgroundColor) {
             GetShelfLayoutManager()->shelf_background_type());
 
   std::unique_ptr<aura::Window> w3(CreateTestWindow());
-  w3->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w3->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::AddTransientChild(w1.get(), w3.get());
   w3->Show();
   wm::ActivateWindow(w3.get());

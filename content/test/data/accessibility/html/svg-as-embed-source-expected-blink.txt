@@ -1,5 +1,5 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
+++genericContainer ignored
 ++++genericContainer htmlTag='body'
 ++++++embeddedObject htmlTag='embed' name='object without space'
 ++++++++rootWebArea htmlTag='#document'

@@ -50,7 +50,7 @@ CompanionSidePanelController::~CompanionSidePanelController() {
 }
 
 void CompanionSidePanelController::CreateAndRegisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents_);
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   if (!browser) {
     // If no browser was found via WebContents, it is probably because the
@@ -89,7 +89,7 @@ void CompanionSidePanelController::CreateAndRegisterEntry() {
 }
 
 void CompanionSidePanelController::DeregisterEntry() {
-  auto* registry = SidePanelRegistry::Get(web_contents_);
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents_);
   if (!registry) {
     return;
   }
@@ -124,7 +124,7 @@ void CompanionSidePanelController::OnCompanionSidePanelClosed() {
 }
 
 bool CompanionSidePanelController::IsCompanionShowing() {
-  SidePanelRegistry* registry = SidePanelRegistry::Get(web_contents_);
+  SidePanelRegistry* registry = SidePanelRegistry::GetDeprecated(web_contents_);
   if (!registry) {
     return false;
   }
@@ -141,7 +141,8 @@ void CompanionSidePanelController::SetCompanionAsActiveEntry(
   companion::CompanionTabHelper::FromWebContents(contents)
       ->CreateAndRegisterEntry();
 
-  SidePanelRegistry* new_tab_registry = SidePanelRegistry::Get(contents);
+  SidePanelRegistry* new_tab_registry =
+      SidePanelRegistry::GetDeprecated(contents);
   if (!new_tab_registry) {
     return;
   }
@@ -176,14 +177,14 @@ void CompanionSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
 }
 
 void CompanionSidePanelController::AddObserver() {
-  auto* entry = SidePanelRegistry::Get(web_contents_)
+  auto* entry = SidePanelRegistry::GetDeprecated(web_contents_)
                     ->GetEntryForKey(SidePanelEntry::Key(
                         SidePanelEntry::Id::kSearchCompanion));
   entry->AddObserver(this);
 }
 
 void CompanionSidePanelController::RemoveObserver() {
-  auto* entry = SidePanelRegistry::Get(web_contents_)
+  auto* entry = SidePanelRegistry::GetDeprecated(web_contents_)
                     ->GetEntryForKey(SidePanelEntry::Key(
                         SidePanelEntry::Id::kSearchCompanion));
   entry->RemoveObserver(this);
@@ -412,7 +413,7 @@ void CompanionSidePanelController::OpenContextualLensView(
     const content::OpenURLParams& params) {
   CHECK(web_contents_);
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  auto* registry = SidePanelRegistry::Get(web_contents_);
+  auto* registry = SidePanelRegistry::GetDeprecated(web_contents_);
   if (!browser || !registry) {
     return;
   }
@@ -467,7 +468,7 @@ void CompanionSidePanelController::UpdateNewTabButtonState() {
   if (!browser) {
     return;
   }
-  auto* coordinator = SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  auto* coordinator = browser->GetFeatures().side_panel_coordinator();
   if (!coordinator) {
     return;
   }

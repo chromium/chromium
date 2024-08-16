@@ -61,7 +61,6 @@
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
@@ -78,6 +77,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -156,7 +156,7 @@ constexpr char kClientCert2Name[] = "client_2";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame()";
 constexpr char kSigninWebviewOnLockScreen[] =
-    "$('main-element').getSigninFrame_()";
+    "$('main-element').getSigninFrame()";
 constexpr char kTestCookieHost[] = "host1.com";
 constexpr char kTestCookieName[] = "TestCookie";
 constexpr char kTestCookieValue[] = "present";
@@ -178,6 +178,8 @@ constexpr test::UIPath kQuickStartButton = {
 const char kLoginRequests[] = "OOBE.GaiaScreen.LoginRequests";
 const char kPasswordIgnoredChars[] = "OOBE.GaiaScreen.PasswordIgnoredChars";
 const char kSuccessLoginRequests[] = "OOBE.GaiaScreen.SuccessLoginRequests";
+const char kPasswordlessLoginRequests[] =
+    "OOBE.GaiaScreen.PasswordlessLoginRequests";
 
 void InjectCookieDoneCallback(base::OnceClosure done_closure,
                               net::CookieAccessResult result) {
@@ -1083,7 +1085,7 @@ class ReauthWebviewLoginTest : public WebviewLoginTest {
     EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(test_user.account_id));
     // Focus triggers online signin.
     EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_user.account_id));
-    WaitForGaiaPageLoad();
+    WaitForGaiaPageLoadAndPropertyUpdate();
     EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   }
 };
@@ -1108,6 +1110,16 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest, GaiaPasswordFactor) {
   // Passwordless login is disallowed when Gaia password factor is
   // configured.
   EXPECT_TRUE(fake_gaia_.fake_gaia()->passwordless_support_level().empty());
+
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
+
+  // Passwordless login is not allowed, hence the metric is not updated.
+  histogram_tester_.ExpectUniqueSample(kPasswordlessLoginRequests,
+                                       0 /* password login */, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest,
@@ -1117,6 +1129,15 @@ IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest,
   // configured.
   EXPECT_EQ(fake_gaia_.fake_gaia()->passwordless_support_level(),
             base::ToString(GaiaView::PasswordlessSupportLevel::kConsumersOnly));
+
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword,
+                               FakeGaiaMixin::kPasswordPath);
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
+
+  histogram_tester_.ExpectUniqueSample(kPasswordlessLoginRequests,
+                                       0 /* passwordless login */, 1);
 }
 
 class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {

@@ -40,7 +40,8 @@ class BrightnessControlDelegate {
   enum class AmbientLightSensorEnabledChangeSource {
     kSettingsApp = 0,
     kRestoredFromUserPref = 1,
-    kMaxValue = kRestoredFromUserPref,
+    kSystemReenabled = 2,
+    kMaxValue = kSystemReenabled,
   };
 
   // Requests that the brightness be set to |percent|, in the range

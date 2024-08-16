@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -269,6 +270,19 @@ enum class PrimaryPointerType {
   kMaxValue = kFine
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(CrashRepHandlingOutcome)
+enum class CrashRepHandlingOutcome {
+  // Dialog wasn't suppressed and the crash report will be potentially queued.
+  kPotentiallyQueued = 0,
+  // Dialog was suppressed so the crash report was dropped.
+  kDropped = 1,
+  kMaxValue = kDropped,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:CrashRepHandlingOutcome)
+
 // The window which we dobounce load info updates in.
 constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
@@ -520,10 +534,6 @@ bool IsWindowManagementGranted(RenderFrameHost* host) {
 
 // Returns true if `host` has the Automatic Fullscreen permission granted.
 bool IsAutomaticFullscreenGranted(RenderFrameHost* host) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAutomaticFullscreenPermissionsQuery)) {
-    return false;
-  }
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller);
@@ -794,20 +804,12 @@ WebContentsImpl* WebContentsImpl::FromRenderWidgetHostImpl(
   return static_cast<WebContentsImpl*>(rwh->delegate());
 }
 
-std::optional<double> WebContentsImpl::AdjustedChildZoom(
-    const RenderWidgetHostViewChildFrame* render_widget) {
-  // <webview> permits zoom level to be set programmatically by script:
-  // https://developer.chrome.com/docs/apps/reference/webviewTag#method-setZoom
-  if (IsGuest() && GetRenderWidgetHostView() == render_widget) {
-    return GetPendingPageZoomLevel();
-  }
-
-  // Signals zoom level should be inherited from the parent
-  return std::nullopt;
-}
-
 bool WebContentsImpl::IsPopup() const {
   return is_popup_;
+}
+
+bool WebContentsImpl::IsPartitionedPopin() const {
+  return is_partitioned_popin_;
 }
 
 void WebContents::SetScreenOrientationDelegate(
@@ -1191,7 +1193,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       notify_disconnection_(false),
       dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
-      last_active_time_(base::TimeTicks::Now()),
+      last_active_time_ticks_(base::TimeTicks::Now()),
+      last_active_time_(base::Time::Now()),
       closed_by_user_gesture_(false),
       minimum_zoom_percent_(
           static_cast<int>(blink::kMinimumBrowserZoomFactor * 100)),
@@ -1897,14 +1900,6 @@ WebContentsView* WebContentsImpl::GetView() const {
 void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnScreensChange",
                         "is_multi_screen_changed", is_multi_screen_changed);
-  // Allow fullscreen requests shortly after user-generated screens changes.
-  // TODO(crbug.com/40165350): Mac should not activate this on local process
-  // display::Screen signals, but via RenderWidgetHostViewMac screen updates.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenOnScreensChange)) {
-    transient_allow_fullscreen_.Activate();
-  }
-
   // Mac display info may originate from a remote process hosting the NSWindow;
   // this local process display::Screen signal should not trigger updates.
   // TODO(crbug.com/40165350): Unify screen info plumbing, caching, etc.
@@ -2744,7 +2739,11 @@ void WebContentsImpl::OnAudioStateChanged() {
                              is_currently_audible_);
 }
 
-base::TimeTicks WebContentsImpl::GetLastActiveTime() {
+base::TimeTicks WebContentsImpl::GetLastActiveTimeTicks() {
+  return last_active_time_ticks_;
+}
+
+base::Time WebContentsImpl::GetLastActiveTime() {
   return last_active_time_;
 }
 
@@ -2782,6 +2781,14 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
     } while (web_input_event_audit_callbacks_.contains(callback_id));
     web_input_event_audit_callbacks_[callback_id] = std::move(*audit_callback);
   } else {
+#if BUILDFLAG(IS_ANDROID)
+    CHECK(ignore_input_events_count_ != 0 ||
+          !GetPrimaryMainFrame()
+               ->GetRenderWidgetHost()
+               ->GetRenderInputRouter()
+               ->IsAnyScrollGestureInProgress())
+        << "Input suppression started mid gesture";
+#endif
     ++ignore_input_events_count_;
   }
 
@@ -2796,17 +2803,23 @@ WebContents::ScopedIgnoreInputEvents WebContentsImpl::IgnoreInputEvents(
             CHECK(wc->web_input_event_audit_callbacks_.contains(*callback_id));
             wc->web_input_event_audit_callbacks_.erase(*callback_id);
           } else {
-            --wc->ignore_input_events_count_;
+#if BUILDFLAG(IS_ANDROID)
             // Reset gesture detection so that we don't continue to generate new
             // gestures from suppressed touches. These suppressed gestures would
             // otherwise confuse the event stream validator when input is
             // re-enabled.
-            if (wc->ignore_input_events_count_ == 0) {
+            //
+            // This needs to be done while input is still suppressed since
+            // resetting can generate gesture end events for a gesture sequence
+            // which was being suppressed.
+            if (wc->ignore_input_events_count_ == 1) {
               if (auto* view = wc->GetRenderWidgetHostView()) {
                 static_cast<RenderWidgetHostViewBase*>(view)
                     ->ResetGestureDetection();
               }
             }
+#endif
+            --wc->ignore_input_events_count_;
           }
         }
       },
@@ -3589,9 +3602,13 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   // it should be hidden.
   visibility_ =
       params.initially_hidden ? Visibility::HIDDEN : Visibility::VISIBLE;
+  GetController().SetActive(visibility_ == Visibility::VISIBLE);
 
   enable_wake_locks_ = params.enable_wake_locks;
 
+  if (!params.last_active_time_ticks.is_null()) {
+    last_active_time_ticks_ = params.last_active_time_ticks;
+  }
   if (!params.last_active_time.is_null()) {
     last_active_time_ = params.last_active_time;
   }
@@ -4025,7 +4042,8 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // the screen, or that it was downstream from a WebContents when UI was
   // blocked. Therefore, disqualify it from fullscreen if it or any upstream
   // WebContents has an active blocker.
-  return base::ranges::all_of(GetAllOpeningWebContents(this),
+  return delegate_ &&
+         base::ranges::all_of(GetAllOpeningWebContents(this),
                               [](auto* opener) {
                                 return opener->fullscreen_blocker_count_ == 0;
                               }) &&
@@ -4303,7 +4321,10 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
             render_view_host->SetFrameTreeVisibility(page_visibility);
           },
           page_visibility);
-  if (page_visibility != PageVisibilityState::kHidden) {
+
+  if (page_visibility == PageVisibilityState::kHidden) {
+    GetController().SetActive(false);
+  } else {
     // We cannot show a page or capture video unless there is a valid renderer
     // associated with this web contents. The navigation controller for this
     // page must be set to active (allowing navigation to complete, a renderer
@@ -4349,7 +4370,8 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   // the CrossProcessFrameConnector.
   if (new_visibility == Visibility::VISIBLE) {
     if (is_activity) {
-      last_active_time_ = base::TimeTicks::Now();
+      last_active_time_ticks_ = base::TimeTicks::Now();
+      last_active_time_ = base::Time::Now();
     }
     SetVisibilityAndNotifyObservers(new_visibility);
   }
@@ -4642,6 +4664,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     }
     web_contents_impl->is_popup_ =
         params.disposition == WindowOpenDisposition::NEW_POPUP;
+    web_contents_impl->is_partitioned_popin_ =
+        params.features->is_partitioned_popin && web_contents_impl->is_popup_;
     return &web_contents_impl->GetPrimaryFrameTree();
   }
 
@@ -4727,6 +4751,8 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   auto* new_contents_impl = new_contents.get();
   new_contents_impl->is_popup_ =
       params.disposition == WindowOpenDisposition::NEW_POPUP;
+  new_contents_impl->is_partitioned_popin_ =
+      params.features->is_partitioned_popin && new_contents_impl->is_popup_;
 
   // If the new frame has a name, make sure any SiteInstances that can find
   // this named frame have proxies for it.  Must be called after
@@ -6023,6 +6049,16 @@ void WebContentsImpl::SaveFrameWithHeaders(
   params->set_download_source(download::DownloadSource::WEB_CONTENTS_API);
   params->set_isolation_info(rfhi.ComputeIsolationInfoForNavigation(url));
 
+  FrameTreeNode* frame_tree_node = rfhi.frame_tree_node();
+  FrameNavigationEntry* frame_navigation_entry =
+      frame_tree_node->frame_tree()
+          .controller()
+          .GetLastCommittedEntry()
+          ->GetFrameEntry(frame_tree_node);
+  if (frame_navigation_entry) {
+    params->set_initiator(frame_navigation_entry->initiator_origin());
+  }
+
   GetBrowserContext()->GetDownloadManager()->DownloadUrl(std::move(params));
 }
 
@@ -6221,9 +6257,10 @@ bool WebContentsImpl::GotResponseToKeyboardLockRequest(bool allowed) {
   if (!keyboard_lock_widget_) {
     return false;
   }
+  // Exits early here if GotResponseToKeyboardLockRequest() was called from
+  // the dtor for `this`.
   if (WebContentsImpl::FromRenderWidgetHostImpl(keyboard_lock_widget_) !=
       this) {
-    NOTREACHED_IN_MIGRATION();
     return false;
   }
   // KeyboardLock is only supported when called by the top-level browsing
@@ -9313,6 +9350,14 @@ void WebContentsImpl::RendererUnresponsive(
     return;
   }
 
+  CrashRepHandlingOutcome outcome =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kNoErrorDialogs)
+          ? CrashRepHandlingOutcome::kDropped
+          : CrashRepHandlingOutcome::kPotentiallyQueued;
+  base::UmaHistogramEnumeration(
+      "ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome", outcome);
+
   if (base::FeatureList::IsEnabled(features::kCrashReporting) &&
       base::FeatureList::IsEnabled(
           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports) &&
@@ -10413,15 +10458,8 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  RenderFrameHostImpl* host = GetPrimaryMainFrame();
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWindowPlacementFullscreenOnScreensChange) &&
-      IsWindowManagementGranted(host) &&
-      transient_allow_fullscreen_.IsActive()) {
-    return false;
-  }
-
   // Require transient activation shortly after a same-origin WebContents exit.
+  RenderFrameHostImpl* host = GetPrimaryMainFrame();
   auto* last_exits = GetFullscreenUserData(GetBrowserContext())->last_exits();
   auto last_exit = last_exits->find(host->GetLastCommittedOrigin());
   constexpr base::TimeDelta kCooldown = base::Seconds(5);
@@ -10435,9 +10473,7 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  return GetContentClient()
-      ->browser()
-      ->IsTransientActivationRequiredForHtmlFullscreen(host);
+  return true;
 }
 
 bool WebContentsImpl::IsBackForwardCacheSupported() {

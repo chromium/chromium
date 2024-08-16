@@ -149,6 +149,7 @@ std::string Explain(const MatcherType& matcher, const Value& value) {
   return listener.str();
 }
 
+#if !BUILDFLAG(IS_MAC)
 inline constexpr auto HasPath = [](const base::FilePath& path) {
   return testing::Field(&Event::path, path);
 };
@@ -206,6 +207,7 @@ inline constexpr auto IsUnknownPathType = []() {
                      FilePathWatcher::FilePathType::kUnknown));
 };
 #endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 inline constexpr auto IsDeletedFile = IsFile;
@@ -220,6 +222,7 @@ inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
                      IsFile(), IsType(FilePathWatcher::ChangeType::kModified),
                      HasModifiedPath(modified_path), HasNoMovedFromPath()));
 };
+
 #elif BUILDFLAG(IS_WIN)
 // Windows figures out if a file path is a directory or file with `GetFileInfo`,
 // but since the file is deleted, it can't know.
@@ -442,9 +445,21 @@ class FilePathWatcherTest : public testing::Test {
     base::FilePath parent_dir;
     ASSERT_TRUE(base::android::GetExternalStorageDirectory(&parent_dir));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDirUnderPath(parent_dir));
-#else   // BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_MAC)
+    // Temporary files in Mac are created under /var/, which is a symlink that
+    // resolves to /private/var/. Set `temp_dir_` directly to the resolved file
+    // path, given that the expected FSEvents event paths are reported as
+    // resolved paths.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-#endif  // BUILDFLAG(IS_ANDROID)
+    base::FilePath resolved_path =
+        base::MakeAbsoluteFilePath(temp_dir_.GetPath());
+    if (!resolved_path.empty()) {
+      temp_dir_.Take();
+      ASSERT_TRUE(temp_dir_.Set(resolved_path));
+    }
+#else
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+#endif
   }
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
@@ -455,6 +470,56 @@ class FilePathWatcherTest : public testing::Test {
 
   base::FilePath test_link() {
     return temp_dir_.GetPath().AppendASCII("FilePathWatcherTest.lnk");
+  }
+
+  bool CreateDirectory(const base::FilePath& full_path) {
+    bool result = base::CreateDirectory(full_path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool WriteFile(const base::FilePath& filename, std::string_view data) {
+    bool result = base::WriteFile(filename, data);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool DeleteFile(const base::FilePath& path) {
+    bool result = base::DeleteFile(path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool DeletePathRecursively(const base::FilePath& path) {
+    bool result = base::DeletePathRecursively(path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
+  }
+
+  bool Move(const base::FilePath& from_path, const base::FilePath& to_path) {
+    bool result = base::Move(from_path, to_path);
+#if BUILDFLAG(IS_MAC)
+    // Wait so that the event for this operation is received by FSEvents before
+    // returning.
+    SpinEventLoopForABit();
+#endif
+    return result;
   }
 
   bool SetupWatch(const base::FilePath& target,
@@ -481,6 +546,10 @@ bool FilePathWatcherTest::SetupWatch(const base::FilePath& target,
                                      FilePathWatcher* watcher,
                                      TestDelegateBase* delegate,
                                      FilePathWatcher::Type watch_type) {
+#if BUILDFLAG(IS_MAC)
+  // Flush events before the watch begins.
+  SpinEventLoopForABit();
+#endif
   return watcher->Watch(target, watch_type,
                         base::BindRepeating(&TestDelegateBase::OnFileChanged,
                                             delegate->AsWeakPtr()));
@@ -491,6 +560,10 @@ bool FilePathWatcherTest::SetupWatchWithOptions(
     FilePathWatcher* watcher,
     TestDelegateBase* delegate,
     FilePathWatcher::WatchOptions watch_options) {
+#if BUILDFLAG(IS_MAC)
+  // Flush events before the watch begins.
+  SpinEventLoopForABit();
+#endif
   return watcher->WatchWithOptions(
       target, watch_options,
       base::BindRepeating(&TestDelegateBase::OnFileChanged,
@@ -502,6 +575,10 @@ bool FilePathWatcherTest::SetupWatchWithChangeInfo(
     FilePathWatcher* watcher,
     TestDelegateBase* delegate,
     FilePathWatcher::WatchOptions watch_options) {
+#if BUILDFLAG(IS_MAC)
+  // Flush events before the watch begins.
+  SpinEventLoopForABit();
+#endif
   return watcher->WatchWithChangeInfo(
       target, watch_options,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
@@ -1080,23 +1157,6 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   event_expecter.AddExpectedEventForPath(dir);
   delegate.RunUntilEventsMatch(event_expecter);
 
-// Mac and Win don't generate events for Touch.
-// TODO(crbug.com/40263777): Add explicit expectations for Mac and Win.
-// Android TouchFile returns false.
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
-  // Touch "$dir".
-  base::Time access_time;
-  ASSERT_TRUE(
-      base::Time::FromString("Wed, 16 Nov 1994, 00:00:00", &access_time));
-  ASSERT_TRUE(TouchFile(dir, access_time, access_time));
-  // TODO(crbug.com/40263766): Investigate why we're getting two events
-  // here from inotify.
-  event_expecter.AddExpectedEventForPath(dir);
-  event_expecter.AddExpectedEventForPath(dir);
-  delegate.RunUntilEventsMatch(event_expecter);
-  // TODO(crbug.com/40263777): Add a test touching `subdir`.
-#endif  // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
-
   // Create "$dir/subdir/subdir_file1".
   base::FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
   ASSERT_TRUE(WriteFile(subdir_file1, "content"));
@@ -1130,18 +1190,6 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
 #endif
   delegate.RunUntilEventsMatch(event_expecter);
 
-// Apps cannot change file attributes on Android in /sdcard as /sdcard uses the
-// "fuse" file system, while /data uses "ext4".  Running these tests in /data
-// would be preferable and allow testing file attributes and symlinks.
-// TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
-// the |temp_dir_| in /data.
-#if !BUILDFLAG(IS_ANDROID)
-  // Modify "$dir/subdir/subdir_child_dir/child_dir_file1" attributes.
-  ASSERT_TRUE(MakeFileUnreadable(child_dir_file1));
-  event_expecter.AddExpectedEventForPath(dir);
-  delegate.RunUntilEventsMatch(event_expecter);
-#endif  // !BUILDFLAG(IS_ANDROID))
-
   // Delete "$dir/subdir/subdir_file1".
   ASSERT_TRUE(DeleteFile(subdir_file1));
   event_expecter.AddExpectedEventForPath(dir);
@@ -1153,7 +1201,7 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 }
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 // Apps cannot create symlinks on Android in /sdcard as /sdcard uses the
 // "fuse" file system, while /data uses "ext4".  Running these tests in /data
 // would be preferable and allow testing file attributes and symlinks.
@@ -1161,6 +1209,9 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
 // the |temp_dir_| in /data.
 //
 // This test is disabled on Fuchsia since it doesn't support symlinking.
+//
+// This test is disabled on Mac since recursive watches aren't supported for
+// symlinks.
 TEST_F(FilePathWatcherTest, RecursiveWithSymLink) {
   if (!FilePathWatcher::RecursiveWatchAvailable()) {
     return;
@@ -1219,7 +1270,7 @@ TEST_F(FilePathWatcherTest, RecursiveWithSymLink) {
   }
   delegate.RunUntilEventsMatch(event_expecter);
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 TEST_F(FilePathWatcherTest, MoveChild) {
   FilePathWatcher file_watcher, subdir_watcher;
@@ -1282,21 +1333,24 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
 // would be preferable and allow testing file attributes and symlinks.
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
-#define FileAttributesChanged DISABLED_FileAttributesChanged
+#define FileAttributesChanged DISABLED_NoEventWhenFileAttributesChanged
 #endif  // BUILDFLAG(IS_ANDROID)
-TEST_F(FilePathWatcherTest, FileAttributesChanged) {
+
+// This test is disabled on Mac because we don't support reporting file metadata
+// changes on FSEvents.
+#if !BUILDFLAG(IS_MAC)
+TEST_F(FilePathWatcherTest, NoEventWhenFileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
   TestDelegate delegate;
-  AccumulatingEventExpecter event_expecter;
   ASSERT_TRUE(SetupWatch(test_file(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(MakeFileUnreadable(test_file()));
-  event_expecter.AddExpectedEventForPath(test_file());
-  delegate.RunUntilEventsMatch(event_expecter);
+  delegate.SpinAndExpectNoEvents();
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -2095,12 +2149,14 @@ TEST_F(FilePathWatcherTest, TrivialDirMove) {
 
 #endif  // BUILDFLAG(IS_APPLE)
 
+// TODO(b/359174510): Disabled on Mac due to flakiness. When change info is
+// reported, FSEvents sometimes does not report changes on time, before the test
+// timer times out. Re-enable this test class on Mac once the flakes are
+// resolved.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40263777): Ideally most all of the tests above would be
 // parameterized in this way.
-// TODO(crbug.com/40260973): ChangeInfo is currently only supported by
-// the inotify and Windows implementations.
 class FilePathWatcherWithChangeInfoTest
     : public FilePathWatcherTest,
       public testing::WithParamInterface<
@@ -2123,13 +2179,18 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NewFile) {
   const auto each_event_matcher = testing::Each(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
+#if BUILDFLAG(IS_MAC)
+  static_assert(kExpectedEventsForNewFileWrite == 1);
   // Match the expected change types, in this order.
-  // TODO(crbug.com/40260973): Update this when change types are
-  // supported on more platforms.
+  const auto sequence_matcher =
+      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated));
+#else
   static_assert(kExpectedEventsForNewFileWrite == 2);
   const auto sequence_matcher =
       testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
                            IsType(FilePathWatcher::ChangeType::kModified));
+#endif
+
   // Put it all together.
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
@@ -2206,11 +2267,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MovedFile) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFile) {
-  const auto matcher = testing::ElementsAre(testing::AllOf(
-      HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
-      IsType(FilePathWatcher::ChangeType::kDeleted),
-      HasModifiedPath(test_file()), HasNoMovedFromPath()));
-
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40286767): There appears to be a race condition
@@ -2227,15 +2283,15 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFile) {
                                        GetWatchOptions()));
 
   ASSERT_TRUE(DeleteFile(test_file()));
+
+  const auto matcher = testing::ElementsAre(testing::AllOf(
+      HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
+      IsType(FilePathWatcher::ChangeType::kDeleted),
+      HasModifiedPath(test_file()), HasNoMovedFromPath()));
   delegate.RunUntilEventsMatch(matcher);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
-  const auto matcher = testing::ElementsAre(testing::AllOf(
-      HasPath(test_file()), testing::Not(HasErrored()), IsDeletedDirectory(),
-      IsType(FilePathWatcher::ChangeType::kDeleted),
-      HasModifiedPath(test_file()), HasNoMovedFromPath()));
-
   ASSERT_TRUE(CreateDirectory(test_file()));
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40286767): There appears to be a race condition
@@ -2252,6 +2308,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
                                        GetWatchOptions()));
 
   ASSERT_TRUE(DeletePathRecursively(test_file()));
+
+  const auto matcher = testing::ElementsAre(testing::AllOf(
+      HasPath(test_file()), testing::Not(HasErrored()), IsDeletedDirectory(),
+      IsType(FilePathWatcher::ChangeType::kDeleted),
+      HasModifiedPath(test_file()), HasNoMovedFromPath()));
   delegate.RunUntilEventsMatch(matcher);
 }
 
@@ -2259,12 +2320,17 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
   const auto each_event_matcher = testing::Each(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  // TODO(crbug.com/40260973): Update this when change types are
-  // supported on more platforms.
+
+#if BUILDFLAG(IS_MAC)
+  static_assert(kExpectedEventsForNewFileWrite == 1);
+  const auto sequence_matcher =
+      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated));
+#else
   static_assert(kExpectedEventsForNewFileWrite == 2);
   const auto sequence_matcher =
       testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
                            IsType(FilePathWatcher::ChangeType::kModified));
+#endif
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   FilePathWatcher watcher1, watcher2;
@@ -2301,6 +2367,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   // The delegate is only watching the file. Parent directory creation should
   // not trigger an event.
   ASSERT_TRUE(CreateDirectory(dir));
+
   // It may take some time for `watcher` to re-construct its watch list, so spin
   // for a bit while we ensure that creating the parent directory does not
   // trigger an event.
@@ -2310,7 +2377,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   ASSERT_TRUE(WriteFile(file, "content"));
   ASSERT_TRUE(WriteFile(file, "content v2"));
   ASSERT_TRUE(DeleteFile(file));
-
   delegate.RunUntilEventsMatch(matcher);
 }
 
@@ -2342,12 +2408,12 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
     sub_path = sub_path.AppendASCII(dir_name);
     ASSERT_TRUE(CreateDirectory(sub_path));
   }
+
   // Allow the watcher to reconstruct its watch list.
   SpinEventLoopForABit();
 
   ASSERT_TRUE(WriteFile(file, "content"));
   ASSERT_TRUE(WriteFile(file, "content v2"));
-
   delegate.RunUntilEventsMatch(matcher);
 }
 
@@ -2387,17 +2453,26 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
+#if BUILDFLAG(IS_MAC)
+  static_assert(kExpectedEventsForNewFileWrite == 1);
   const auto each_event_matcher = testing::Each(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  // TODO(crbug.com/40260973): Update this when change types are
-  // supported on on more platforms.
+  const auto sequence_matcher =
+      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kDeleted),
+                           IsType(FilePathWatcher::ChangeType::kCreated));
+  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+#else
   static_assert(kExpectedEventsForNewFileWrite == 2);
+  const auto each_event_matcher = testing::Each(testing::AllOf(
+      HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
+      HasModifiedPath(test_file()), HasNoMovedFromPath()));
   const auto sequence_matcher =
       testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kDeleted),
                            IsType(FilePathWatcher::ChangeType::kCreated),
                            IsType(FilePathWatcher::ChangeType::kModified));
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+#endif
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 #if BUILDFLAG(IS_ANDROID)
@@ -2416,7 +2491,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
 
   ASSERT_TRUE(DeleteFile(test_file()));
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-
   delegate.RunUntilEventsMatch(matcher);
 }
 
@@ -2449,10 +2523,10 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
   ASSERT_TRUE(CreateDirectory(dir));
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40286767): There appears to be a race condition
-  // between setting up the inotify watch and the processing of the file system
-  // notifications created while setting up the file system for this test. Spin
-  // the event loop to ensure that the events have been processed by the time
-  // the inotify watch has been set up.
+  // between setting up the inotify watch and the processing of the file
+  // system notifications created while setting up the file system for this
+  // test. Spin the event loop to ensure that the events have been processed
+  // by the time the inotify watch has been set up.
   SpinEventLoopForABit();
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -2463,11 +2537,24 @@ TEST_P(FilePathWatcherWithChangeInfoTest, WatchDirectory) {
 
   ASSERT_TRUE(WriteFile(file1, "content"));
   ASSERT_TRUE(WriteFile(file1, "content v2"));
+
+  // TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+  // required to prevent the flags from the previous `WriteFile` from being
+  // automatically coalesced into the following `DeleteFile` event, by FSEvents.
+  // Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(file1));
   ASSERT_TRUE(WriteFile(file2, "content"));
   delegate.RunUntilEventsMatch(matcher);
 }
 
+// TODO(b/357118831): Re-enable once implementation for handling a rename on
+// the root dir path is complete.
+#if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath dest(temp_dir_.GetPath().AppendASCII("dest"));
@@ -2477,7 +2564,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   const auto each_event_matcher = testing::Each(testing::Not(HasErrored()));
   // TODO(crbug.com/40263766): inotify incorrectly sometimes reports
   // the first event as a directory creation... why?
-  // A moved file to the wathced scope is considered "created", with respect
+  // A moved file to the watched scope is considered "created", with respect
   // to the watched path.
   const auto file_delegate_sequence_matcher = testing::IsSupersetOf(
       {testing::AllOf(HasPath(file), IsFile(),
@@ -2524,6 +2611,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
   subdir_delegate.RunUntilEventsMatch(subdir_delegate_matcher);
 }
 
+// TODO(b/357118831): Re-enable once implementation for handling a rename on
+// the root dir path is complete.
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   base::FilePath source_dir(temp_dir_.GetPath().AppendASCII("source"));
   base::FilePath source_subdir(source_dir.AppendASCII("subdir"));
@@ -2532,7 +2621,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   base::FilePath dest_subdir(dest_dir.AppendASCII("subdir"));
   base::FilePath dest_file(dest_subdir.AppendASCII("file"));
 
-  // A moved file to the wathced scope is considered "created", with respect
+  // A moved file to the watched scope is considered "created", with respect
   // to the watched path.
   const auto each_event_matcher = testing::Each(testing::AllOf(
       testing::Not(HasErrored()), IsType(FilePathWatcher::ChangeType::kCreated),
@@ -2540,9 +2629,17 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   const auto file_delegate_sequence_matcher =
       testing::ElementsAre(testing::AllOf(HasPath(dest_file), IsMovedFile(),
                                           HasModifiedPath(dest_file)));
+#if BUILDFLAG(IS_MAC)
+  // Events for changes on the root path are always reported as 'unknown' by
+  // FSEvents.
+  const auto subdir_delegate_sequence_matcher = testing::ElementsAre(
+      testing::AllOf(HasPath(dest_subdir), IsUnknownPathType(),
+                     HasModifiedPath(dest_subdir)));
+#else
   const auto subdir_delegate_sequence_matcher =
       testing::ElementsAre(testing::AllOf(HasPath(dest_subdir), IsDirectory(),
                                           HasModifiedPath(dest_subdir)));
+#endif
   const auto file_delegate_matcher =
       testing::AllOf(each_event_matcher, file_delegate_sequence_matcher);
   const auto subdir_delegate_matcher =
@@ -2561,9 +2658,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
 
   // Move the directory into place, s.t. the watched file appears.
   ASSERT_TRUE(Move(source_dir, dest_dir));
+
   file_delegate.RunUntilEventsMatch(file_delegate_matcher);
   subdir_delegate.RunUntilEventsMatch(subdir_delegate_matcher);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -2572,6 +2671,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
 
   const auto each_event_matcher =
       testing::Each(testing::AllOf(testing::Not(HasErrored()), IsFile()));
+
   // In most cases, the first item in this set should match, as one coalesced
   // move event. Since coalescing is not guaranteed, we should also expect two
   // separate move events being reported.
@@ -2579,6 +2679,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
       testing::AllOf(HasPath(report_modified_path() ? dest_file : dir),
                      IsType(FilePathWatcher::ChangeType::kMoved),
                      HasModifiedPath(dest_file), HasMovedFromPath(src_file)));
+
   // Separate move events will be considered as created or deleted, with
   // respect to the watched scope.
   const auto separate_move_events_sequence_matcher = testing::ElementsAre(
@@ -2644,17 +2745,17 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
   ASSERT_TRUE(CreateDirectory(foo_subdir));
   ASSERT_TRUE(CreateDirectory(bar_dir));
 
-  FilePathWatcher foo_watcher, bar_wather;
+  FilePathWatcher foo_watcher, bar_watcher;
   TestDelegate foo_delegate, bar_delegate;
   ASSERT_TRUE(SetupWatchWithChangeInfo(foo_dir, &foo_watcher, &foo_delegate,
                                        GetWatchOptions()));
-  ASSERT_TRUE(SetupWatchWithChangeInfo(bar_dir, &bar_wather, &bar_delegate,
+  ASSERT_TRUE(SetupWatchWithChangeInfo(bar_dir, &bar_watcher, &bar_delegate,
                                        GetWatchOptions()));
 
-  // Moving foo/foo_subdir to bar/bar_subdir should trigger a kDeleted event for
-  // foo_dir watcher with the old file path present (since it is moving out of
-  // its watched scope), and a kCreated event for bar_dir watcher with the new
-  // file path present (since it is moving into its watched scope).
+  // Moving foo/foo_subdir to bar/bar_subdir should trigger a `kDeleted` event
+  // for foo_dir watcher with the old file path present (since it is moving
+  // out of its watched scope), and a `kCreated` event for bar_dir watcher with
+  // the new file path present (since it is moving into its watched scope).
   ASSERT_TRUE(Move(foo_subdir, bar_subdir));
   foo_delegate.RunUntilEventsMatch(foo_delegate_matcher);
   bar_delegate.RunUntilEventsMatch(bar_delegate_matcher);
@@ -2663,7 +2764,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
 #if !BUILDFLAG(IS_ANDROID)
-TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
+
+// This test is disabled on Mac because we don't support reporting file metadata
+// changes on FSEvents.
+#if !BUILDFLAG(IS_MAC)
+TEST_P(FilePathWatcherWithChangeInfoTest, NoEventWhenFileAttributesChanged) {
   const auto matcher = testing::ElementsAre(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kModified),
@@ -2678,8 +2783,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileAttributesChanged) {
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(MakeFileUnreadable(test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.SpinAndExpectNoEvents();
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_P(FilePathWatcherWithChangeInfoTest, CreateLink) {
@@ -2956,7 +3062,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFileInDirectory) {
   // directory modification.
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
-
   const auto matcher = testing::ElementsAre(testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedFile(),
       IsType(FilePathWatcher::ChangeType::kDeleted), testing::Not(HasErrored()),
@@ -2999,6 +3104,16 @@ TEST_P(FilePathWatcherWithChangeInfoTest, FileInDirectory) {
 
   ASSERT_TRUE(WriteFile(child, "contents"));
   ASSERT_TRUE(WriteFile(child, "contents v2"));
+
+// TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `DeleteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(child));
   delegate.RunUntilEventsMatch(matcher);
 }
@@ -3039,6 +3154,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
       testing::AllOf(testing::Not(HasErrored()), HasNoMovedFromPath()));
 
   EventListMatcher sequence_matcher;
+
   auto reported_child_path_created_matcher = testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedDirectory(),
       HasModifiedPath(child), IsType(FilePathWatcher::ChangeType::kCreated));
@@ -3087,7 +3203,26 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
   SpinEventLoopForABit();
 
   ASSERT_TRUE(WriteFile(grandchild, "contents"));
+
+// TODO(b/358401685): On Mac, a minimum of one additional event loop spin is
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `WriteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(WriteFile(grandchild, "contents v2"));
+
+// TODO(b/358401685): On Mac, a minimum of two additional event loop spins are
+// required to prevent the flags from the previous `WriteFile` from being
+// automatically coalesced into the following `DeleteFile` event, by FSEvents.
+// Determine if there's a way to avoid adding these extra spins.
+#if BUILDFLAG(IS_MAC)
+  SpinEventLoopForABit();
+  SpinEventLoopForABit();
+#endif
+
   ASSERT_TRUE(DeleteFile(grandchild));
   ASSERT_TRUE(DeletePathRecursively(child));
   delegate.RunUntilEventsMatch(matcher);
@@ -3113,10 +3248,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
       HasNoMovedFromPath()));
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Windows can lose some events that happen before the watched directory is
   // deleted. The only thing we can guarantee is that the watched directory will
   // be reported as deleted.
+  //
+  // Similarly on Mac, we can only guarantee that the watched directory will be
+  // reported as deleted.
   EventListMatcher sequence_matcher = testing::IsSupersetOf(
       {testing::AllOf(HasPath(parent), IsDeletedDirectory())});
 #else
@@ -3145,7 +3283,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteDirectoryRecursively) {
          testing::AllOf(HasPath(report_modified_path() ? child : parent),
                         IsDirectory(), HasModifiedPath(child))});
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   ASSERT_TRUE(CreateDirectory(parent));
@@ -3171,6 +3309,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 #else
 
+#if !BUILDFLAG(IS_MAC)
 TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   const auto matcher = testing::ElementsAre(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsUnknownPathType(),
@@ -3186,6 +3325,7 @@ TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   ASSERT_TRUE(CreateDirectory(test_file()));
   delegate.RunUntilEventsMatch(matcher);
 }
+#endif
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)

@@ -25,31 +25,43 @@ enum class TimePeriod;
 // footer string or not.
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter;
 
-// Updates the ViewController with the result of browsing data counter.
+// Updates the ViewController with the result of history counter.
 - (void)updateHistoryWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
 
-// Updates the ViewController with the result of browsing data counter.
+// Updates the ViewController with the result of cache counter.
+- (void)updateTabsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Updates the ViewController with the result of tabs counter.
+- (void)updateCacheWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result;
+
+// Updates the ViewController with the result of passwords counter.
 - (void)updatePasswordsWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
 
-// Updates the ViewController with the result of browsing data counter.
+// Updates the ViewController with the result of autofill counter.
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result;
 
 // Sets the boolean value for the history pref selection.
 - (void)setHistorySelection:(BOOL)selected;
 
+// Sets the boolean value for the tabs pref selection.
+- (void)setTabsSelection:(BOOL)selected;
+
 // Sets the boolean value for the site data pref selection.
 - (void)setSiteDataSelection:(BOOL)selected;
+
+// Sets the boolean value for the cache pref selection.
+- (void)setCacheSelection:(BOOL)selected;
 
 // Sets the boolean value for the passwords pref selection.
 - (void)setPasswordsSelection:(BOOL)selected;
 
 // Sets the boolean value for the autofill pref selection.
 - (void)setAutofillSelection:(BOOL)selected;
-
-// TODO(crbug.com/341107834): Add other browsing data type methods here.
 
 // Shows a loading UI while the deletion is in progress.
 - (void)deletionInProgress;

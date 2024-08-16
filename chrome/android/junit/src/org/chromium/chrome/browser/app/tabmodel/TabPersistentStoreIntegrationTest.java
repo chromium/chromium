@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
@@ -181,7 +182,7 @@ public class TabPersistentStoreIntegrationTest {
         assertTrue(tabStateFile.exists());
 
         // Close the tab
-        tabModel.closeTab(tab, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure
@@ -207,7 +208,7 @@ public class TabPersistentStoreIntegrationTest {
         TabModel tabModel = mTabModelSelector.getModel(false);
         Tab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        tabModel.closeTab(tab, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
 
@@ -233,7 +234,7 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close tab.
-        tabModel.closeTab(tab, false, true);
+        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure.
@@ -266,7 +267,7 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close all tabs.
-        tabModel.closeAllTabs(false);
+        tabModel.closeTabs(TabClosureParams.closeAllTabs().build());
         runAllAsyncTasks();
 
         // Step to test: Commit tabs closure.

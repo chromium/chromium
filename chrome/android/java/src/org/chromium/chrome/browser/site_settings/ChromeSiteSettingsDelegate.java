@@ -132,8 +132,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isCategoryVisible(@SiteSettingsCategory.Type int type) {
         switch (type) {
-                // TODO(csharrison): Remove this condition once the experimental UI lands. It is not
-                // great to dynamically remove the preference in this way.
+                // TODO(csharrison): Remove this condition once the experimental UI lands. It is
+                // not great to dynamically remove the preference in this way.
             case SiteSettingsCategory.Type.ADS:
                 return SiteSettingsCategory.adsCategoryEnabled();
             case SiteSettingsCategory.Type.ANTI_ABUSE:
@@ -234,9 +234,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
                         null);
     }
 
-    // TODO(crbug.com/40286347): Migrate to `HelpAndFeedbackLauncherImpl` when Chrome has migrated
-    // to
-    // Open-to-Context (OTC) and new p-links work.
+    // TODO(crbug.com/40286347): Migrate to `HelpAndFeedbackLauncherImpl` when
+    // Chrome has migrated to Open-to-Context (OTC) and new p-links work.
     @Override
     public void launchStorageAccessHelpActivity(Activity currentActivity) {
         CustomTabsIntent customTabIntent =
@@ -292,31 +291,43 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessEnabled() {
+    public boolean isRelatedWebsiteSetsDataAccessEnabled() {
         return mPrivacySandboxBridge.isFirstPartySetsDataAccessEnabled();
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessManaged() {
+    public boolean isRelatedWebsiteSetsDataAccessManaged() {
         return mPrivacySandboxBridge.isFirstPartySetsDataAccessManaged();
     }
 
     @Override
-    public boolean isPartOfManagedFirstPartySet(String origin) {
+    public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
         return mPrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
     }
 
     @Override
     public boolean shouldShowTrackingProtectionUI() {
         return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH);
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionLaunchUI() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH);
+    public boolean shouldShowTrackingProtectionACTFeaturesUI() {
+        return shouldDisplayIpProtection() || shouldDisplayFingerprintingProtection();
+    }
+
+    @Override
+    public boolean shouldDisplayIpProtection() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_USER_BYPASS)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+                && UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
+    }
+
+    @Override
+    public boolean shouldDisplayFingerprintingProtection() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_USER_BYPASS)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
+                && UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
     }
 
     @Override
@@ -325,12 +336,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
+    public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
         mPrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
     }
 
     @Override
-    public String getFirstPartySetOwner(String memberOrigin) {
+    public String getRelatedWebsiteSetOwner(String memberOrigin) {
         return mPrivacySandboxBridge.getFirstPartySetOwner(memberOrigin);
     }
 

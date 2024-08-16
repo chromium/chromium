@@ -42,8 +42,9 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_id);
   // The render process was already terminated.
-  if (!rph)
+  if (!rph) {
     return;
+  }
 
   ReceivedBadMessage(rph, reason);
 }

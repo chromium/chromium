@@ -16,12 +16,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog_test_helpers.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace apps {
 
@@ -132,13 +135,11 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
-                       InstallWebsiteOpensInstallUrl) {
-  base::HistogramTester histograms;
-  std::string test_url = "https://www.not-an-app.com/";
-  PackageId package_id(PackageType::kWebsite, test_url);
-  app_install_server()->SetUpInstallUrlResponse(package_id, GURL(test_url));
+                       InstallWebsiteShowsInstallDialog) {
+  auto [app_id, package_id] = app_install_server()->SetUpWebsiteResponse();
 
-  content::TestNavigationObserver navigation_observer((GURL(test_url)));
+  content::TestNavigationObserver navigation_observer(
+      (GURL(chrome::kChromeUIAppInstallDialogURL)));
   navigation_observer.StartWatchingNewWebContents();
 
   AppServiceProxyFactory::GetForProfile(browser()->profile())
@@ -148,9 +149,37 @@ IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
 
   navigation_observer.Wait();
 
-  histograms.ExpectUniqueSample(
-      "Apps.AppInstallService.AppInstallResult.AppInstallUriMall",
-      AppInstallResult::kUnknown, 1);
+  EXPECT_THAT(ash::app_install::GetDialogTitle(
+                  ash::app_install::GetWebContentsFromDialog()),
+              testing::StartsWith("Install app"));
+}
+
+IN_PROC_BROWSER_TEST_F(AppInstallServiceAshBrowserTest,
+                       InstallWebsiteFindsInstalledWebApp) {
+  auto [app_id, package_id] = app_install_server()->SetUpWebsiteResponse();
+
+  web_app::test::InstallDummyWebApp(browser()->profile(), "Test app",
+                                    GURL(package_id.identifier()));
+
+  content::TestNavigationObserver navigation_observer(
+      (GURL(chrome::kChromeUIAppInstallDialogURL)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  AppServiceProxyFactory::GetForProfile(browser()->profile())
+      ->AppInstallService()
+      .InstallApp(AppInstallSurface::kAppInstallUriMall, package_id,
+                  /*anchor_window=*/std::nullopt, base::DoNothing());
+
+  navigation_observer.Wait();
+
+  content::WebContents* web_contents =
+      ash::app_install::GetWebContentsFromDialog();
+
+  // The dialog should recognize that the app is already installed, even though
+  // the installed app is an "app", and we are requesting to install a
+  // "shortcut".
+  EXPECT_EQ(ash::app_install::GetDialogTitle(web_contents),
+            "App is already installed");
 }
 
 class AppInstallServiceAshGuestBrowserTest

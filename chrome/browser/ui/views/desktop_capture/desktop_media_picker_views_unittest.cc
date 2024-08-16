@@ -32,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
@@ -97,7 +98,7 @@ DesktopMediaID::Type GetSourceIdType(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
       return DesktopMediaID::Type::TYPE_NONE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
@@ -113,7 +114,7 @@ std::string GetTypeAsTestNameString(const DesktopMediaList::Type& type) {
     case DesktopMediaList::Type::kNone:
       return "None";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 struct PickerConfiguration {
@@ -800,6 +801,38 @@ TEST_F(DesktopMediaPickerViewsSingleTabPaneTest,
       0, ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_RETURN, 0));
 }
 
+// Tests accessible properties of DesktopMediaListView and
+// DesktopMediaSourceView.
+TEST_F(DesktopMediaPickerViewsSingleTabPaneTest, AccessibleProperties) {
+  ui::AXNodeData data;
+  DesktopMediaSourceViewStyle style = DesktopMediaSourceViewStyle(
+      /*columns=*/2,
+      /*item_size=*/gfx::Size(266, 224),
+      /*icon_rect=*/gfx::Rect(),
+      /*label_rect=*/gfx::Rect(8, 196, 250, 36),
+      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+      /*image_rect=*/gfx::Rect(8, 8, 250, 180));
+
+  // DesktopMediaListView accessible properties test.
+  auto list_view = std::make_unique<DesktopMediaListView>(
+      test_api_.GetSelectedController(), style, style,
+      u"Sample accessible name");
+
+  list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
+
+  // DesktopMediaSourceView accessible properties test.
+  const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                         content::DesktopMediaID::kFakeId);
+  auto source_view = std::make_unique<DesktopMediaSourceView>(list_view.get(),
+                                                              media_id, style);
+  data = ui::AXNodeData();
+
+  ASSERT_TRUE(source_view);
+  source_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+}
+
 class DesktopMediaPickerPreferredDisplaySurfaceTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<
@@ -942,6 +975,30 @@ TEST_F(DelegatedSourceListTest, EnsureFocus) {
   EXPECT_TRUE(media_lists_[DesktopMediaList::Type::kWindow]->is_focused());
 }
 
+#if BUILDFLAG(IS_MAC)
+
+// Ensures that the first (only) source from a delegated source list is
+// selected.
+TEST_F(DelegatedSourceListTest, TestSelection) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Add the one entry that is expected for a delegated source list and switch
+  // to it. Note that since this is a delegated source, we must select its pane
+  // before the observer will be set for adding items to the list.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  media_lists_[DesktopMediaList::Type::kScreen]->AddSourceByFullMediaID(
+      DesktopMediaID(GetSourceIdType(DesktopMediaList::Type::kScreen), 10));
+
+  // On MacOS, the added source is automatically selected.
+  ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
+  EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
+}
+
+#else
+
 // Ensures that the first (only) source from a delegated source list is selected
 // after being notified that it has made a selection.
 TEST_F(DelegatedSourceListTest, TestSelection) {
@@ -966,6 +1023,8 @@ TEST_F(DelegatedSourceListTest, TestSelection) {
   ASSERT_TRUE(test_api_.GetSelectedSourceId().has_value());
   EXPECT_EQ(10, test_api_.GetSelectedSourceId().value());
 }
+
+#endif  // BUILDFLAG(IS_MACOS)
 
 // Creates a single pane picker and verifies that when it gets notified that the
 // delegated source list is dismissed that it finishes without a selection.
@@ -1049,6 +1108,32 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
             test_api_.GetSelectedSourceListType());
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
 }
+
+#if BUILDFLAG(IS_MAC)
+
+// The delegated picker experience on MacOS (using SCContentSharingPicker)
+// starts the capture immediately after the user has made their choice, so
+// the reselect button is not enabled for any capture type
+TEST_F(DelegatedSourceListTest, ReselectButtonPresence) {
+  SetSourceTypes(
+      {DesktopMediaList::Type::kWebContents},
+      {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow});
+  CreatePickerViews(/*request_audio=*/false, /*exclude_system_audio=*/true);
+
+  // Ensure that we don't have a reselect button for the non-delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  EXPECT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for the screen delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+
+  // Ensure that we don't have a reselect button for window delegated type.
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWindow);
+  ASSERT_EQ(nullptr, test_api_.GetReselectButton());
+}
+
+#else
 
 // Verify that the reselect button is only present on the delegated source list
 // type panes.
@@ -1151,4 +1236,5 @@ TEST_F(DelegatedSourceListTest, ReselectTriggersShowDelegatedSourceList) {
                    ->clear_delegated_source_list_selection_count());
 }
 
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace views

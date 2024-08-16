@@ -6,11 +6,10 @@ package org.chromium.base.test.transit;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -67,7 +66,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
                         break;
                     case Presence.PRESENT_AND_ENABLED:
                     case Presence.PRESENT_AND_DISABLED:
-                        elements.declareView(item.mViewElement);
+                        elements.declareView(item.mViewSpec, item.mViewElementOptions);
                         break;
                     case Presence.MAYBE_PRESENT:
                     case Presence.MAYBE_PRESENT_STUB:
@@ -247,7 +246,8 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         protected final @Nullable Matcher<View> mOnScreenViewMatcher;
         protected final @Nullable Matcher<?> mOffScreenDataMatcher;
         protected final @Presence int mPresence;
-        protected final @Nullable ViewElement mViewElement;
+        protected final @Nullable ViewSpec mViewSpec;
+        protected final @Nullable ViewElement.Options mViewElementOptions;
         protected @Nullable Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT>
                 mSelectHandler;
 
@@ -279,20 +279,21 @@ public abstract class ScrollableFacility<HostStationT extends Station>
 
             switch (mPresence) {
                 case Presence.ABSENT, Presence.MAYBE_PRESENT_STUB:
-                    mViewElement = null;
+                    mViewSpec = null;
+                    mViewElementOptions = null;
                     break;
                 case Presence.PRESENT_AND_ENABLED:
                 case Presence.MAYBE_PRESENT:
-                    mViewElement = scopedViewElement(mOnScreenViewMatcher);
+                    mViewSpec = viewSpec(mOnScreenViewMatcher);
+                    mViewElementOptions = ViewElement.Options.DEFAULT;
                     break;
                 case Presence.PRESENT_AND_DISABLED:
-                    mViewElement =
-                            scopedViewElement(
-                                    mOnScreenViewMatcher,
-                                    ViewElement.newOptions().expectDisabled().build());
+                    mViewSpec = viewSpec(mOnScreenViewMatcher);
+                    mViewElementOptions = ViewElement.expectDisabledOption();
                     break;
                 default:
-                    mViewElement = null;
+                    mViewSpec = null;
+                    mViewElementOptions = null;
                     assert false;
             }
         }
@@ -341,8 +342,12 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             return mPresence;
         }
 
-        public ViewElement getViewElement() {
-            return mViewElement;
+        public ViewSpec getViewSpec() {
+            return mViewSpec;
+        }
+
+        public ViewElement.Options getViewElementOptions() {
+            return mViewElementOptions;
         }
 
         protected Function<ItemOnScreenFacility<SelectReturnT>, SelectReturnT> getSelectHandler() {
@@ -389,9 +394,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
         }
 
         return mHostStation.swapFacilitySync(
-                List.of(this, itemOnScreenFacility),
-                destination,
-                () -> item.getViewElement().perform(click()));
+                List.of(this, itemOnScreenFacility), destination, item.getViewSpec()::click);
     }
 
     private <DestinationStationT extends Station> DestinationStationT travelToStation(
@@ -405,7 +408,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
             throw new RuntimeException(e);
         }
 
-        return mHostStation.travelToSync(destination, () -> item.getViewElement().perform(click()));
+        return mHostStation.travelToSync(destination, item.getViewSpec()::click);
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */
@@ -428,7 +431,7 @@ public abstract class ScrollableFacility<HostStationT extends Station>
 
         @Override
         public void declareElements(Elements.Builder elements) {
-            elements.declareView(mItem.getViewElement());
+            elements.declareView(mItem.getViewSpec(), mItem.getViewElementOptions());
         }
 
         /** Select the item and trigger its |selectHandler|. */

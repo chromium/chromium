@@ -48,7 +48,7 @@ std::string_view FormTypeToStringView(FormType form_type) {
       return "VirtualCard.StandaloneCvc";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // When adding a new return value, update variants "AutofillFormType.Fillable"
@@ -73,7 +73,7 @@ std::string_view FormTypeNameForLoggingToStringView(
       return "PostalAddress";
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool FormHasAllCreditCardFields(const FormStructure& form_structure) {

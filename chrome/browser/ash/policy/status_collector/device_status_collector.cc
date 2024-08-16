@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 
 #include <stddef.h>
@@ -998,8 +1003,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               case cros_healthd::StorageDevicePurpose::kBootDevice:
                 disk_info_out->set_purpose(em::DiskInfo::PURPOSE_BOOT);
                 break;
-              case cros_healthd::StorageDevicePurpose::kSwapDevice:
+              case cros_healthd::StorageDevicePurpose::DEPRECATED_kSwapDevice:
                 disk_info_out->set_purpose(em::DiskInfo::PURPOSE_SWAP);
+                break;
+              case cros_healthd::StorageDevicePurpose::kNonBootDevice:
                 break;
             }
           }
@@ -2707,6 +2714,9 @@ bool DeviceStatusCollector::GetRunningKioskApp(
     case DeviceLocalAccountType::kWebKioskApp:
       running_kiosk_app->set_app_id(account->web_kiosk_app_info.url());
       break;
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      running_kiosk_app->set_app_id(account->kiosk_iwa_info.web_bundle_id());
+      break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
       NOTREACHED_IN_MIGRATION();
@@ -2995,6 +3005,9 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
     }
     case DeviceLocalAccountType::kWebKioskApp:
       app_status->set_app_id(account->web_kiosk_app_info.url());
+      break;
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      app_status->set_app_id(account->kiosk_iwa_info.web_bundle_id());
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:

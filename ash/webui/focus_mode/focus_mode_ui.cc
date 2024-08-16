@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/focus_mode/focus_mode_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -246,14 +251,8 @@ void FocusModeUI::BindInterface(
 WEB_UI_CONTROLLER_TYPE_IMPL(FocusModeUI)
 
 FocusModeUIConfig::FocusModeUIConfig()
-    : WebUIConfig(content::kChromeUIScheme,
-                  chrome::kChromeUIFocusModeMediaHost) {}
-
-std::unique_ptr<content::WebUIController>
-FocusModeUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                         const GURL& url) {
-  return std::make_unique<FocusModeUI>(web_ui);
-}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIFocusModeMediaHost) {}
 
 bool FocusModeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

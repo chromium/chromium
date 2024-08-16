@@ -19,6 +19,7 @@ mojom("mojo") {
   ]
 
   public_deps = [
+    "//components/system_media_controls:mojo",
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//ui/base/accelerators/mojom",

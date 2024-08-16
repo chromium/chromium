@@ -5,7 +5,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {PauseActionSource, ToolbarEvent, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -13,7 +13,7 @@ import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
 
   // root htmlTag='#document' id=1

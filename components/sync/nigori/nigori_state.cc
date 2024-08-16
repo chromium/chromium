@@ -12,8 +12,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -277,13 +277,13 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
             *custom_passphrase_key_derivation_params);
   }
   proto.set_encrypt_everything(encrypt_everything);
-  ModelTypeSet encrypted_types = AlwaysEncryptedUserTypes();
+  DataTypeSet encrypted_types = AlwaysEncryptedUserTypes();
   if (encrypt_everything) {
     encrypted_types = EncryptableUserTypes();
   }
-  for (ModelType model_type : encrypted_types) {
+  for (DataType data_type : encrypted_types) {
     proto.add_encrypted_types_specifics_field_number(
-        GetSpecificsFieldNumberFromModelType(model_type));
+        GetSpecificsFieldNumberFromDataType(data_type));
   }
   // TODO(crbug.com/41462727): we currently store keystore keys in proto only to
   // allow rollback of USS Nigori. Having keybag with all keystore keys and
@@ -409,7 +409,7 @@ bool NigoriState::NeedsKeystoreReencryption() const {
   return true;
 }
 
-ModelTypeSet NigoriState::GetEncryptedTypes() const {
+DataTypeSet NigoriState::GetEncryptedTypes() const {
   if (!encrypt_everything) {
     return AlwaysEncryptedUserTypes();
   }

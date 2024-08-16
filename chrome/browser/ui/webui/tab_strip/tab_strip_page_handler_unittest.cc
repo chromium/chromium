@@ -220,9 +220,9 @@ TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
 
   tab_strip::mojom::PageHandler::GetGroupVisualDataCallback callback =
       base::BindLambdaForTesting(
-          [=](base::flat_map<std::string,
-                             tab_strip::mojom::TabGroupVisualDataPtr>
-                  group_visual_datas) {
+          [=, this](base::flat_map<std::string,
+                                   tab_strip::mojom::TabGroupVisualDataPtr>
+                        group_visual_datas) {
             ExpectVisualData(group1_visuals,
                              *group_visual_datas[group1.ToString()]);
             ExpectVisualData(group2_visuals,
@@ -248,7 +248,8 @@ TEST_F(TabStripPageHandlerTest, GroupVisualDataChangedEvent) {
       TabGroupVisualsChanged(
           expected_group_id.ToString(),
           Truly(
-              [=](const tab_strip::mojom::TabGroupVisualDataPtr& visual_data) {
+              [=, this](
+                  const tab_strip::mojom::TabGroupVisualDataPtr& visual_data) {
                 if (visual_data->title.size() > 0) {
                   ExpectVisualData(new_visual_data, *visual_data);
                 }

@@ -1,0 +1,6 @@
+Tests DOM.getDetachedDomNodes command.
+Amount of Nodes should be 1:
+1
+Verify that the detached iframe has been obtained:
+IFRAME
+

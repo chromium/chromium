@@ -298,6 +298,15 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Report this query
       </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_DEFINITION" desc="Header text shown in a definition result card">
+        Define
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_TRANSLATION" desc="Header text shown in a translation result card">
+        Translate
+      </message>
+      <message name="IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_UNIT_CONVERSION" desc="Header text shown in a unit conversion result card">
+        Convert
+      </message>
 
       <!-- Rich Answers -->
       <message name="IDS_RICH_ANSWERS_VIEW_SETTINGS_BUTTON_A11Y_NAME_TEXT" desc="A11y name text for the settings-button in Quick-Answers related views.">
@@ -338,7 +347,6 @@
       </message>
 
       <!-- Editor Menu -->
-      <!-- TODO(b/286268215): Finalize these strings. -->
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TITLE" desc="Title text in the dialog that is shown to introduce the Editor Menu feature.">
         Write faster and with more confidence
       </message>
@@ -374,6 +382,12 @@
       </message>
       <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature.">
         Experiment
+      </message>
+      <message name="IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_FEEDBACK" desc="The announcement made when users submitted a feedback for a result received from Editor.">
+        Feedback submitted
+      </message>
+      <message name="IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_INSERTION" desc="The announcement made when users insert the text suggestion or replace the current selected text with the text suggestion from Editor.">
+        Replacing selected text with suggestion
       </message>
 
       <!-- Mahi -->
@@ -3389,7 +3403,7 @@
           Shuffle
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_INPUT_PLACEHOLDER" desc="Default text for an input field that is used to generate AI images.">
-        Describe the wallpaper you want to create or use a sample prompt
+        Describe the wallpaper you want to create
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
           Make sure you're connected to the internet and try again.
@@ -3413,7 +3427,7 @@
           More
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_PROMPTING_GUIDE" desc="A link to a guide with instructions on how to write a prompt to generate AI images.">
-          Prompting guide
+          Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE">&lt;a href="chrome://help-app/help/sub/3399710/id/1251809"&gt;</ph>prompting guide<ph name="END_LINK_PROMPTING_GUIDE">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_SEA_PEN_FREEFORM_NAVIGATION_DESCRIPTION" desc="Description shown in each template page to help users navigate to freeform page.">
           You can also <ph name="BEGIN_LINK_FREEFORM_SUBPAGE">&lt;a href="chrome://personalization/wallpaper/sea-pen/freeform"&gt;</ph>write your own prompt<ph name="END_LINK_FREEFORM_SUBPAGE">&lt;/a&gt;</ph>
@@ -4885,7 +4899,7 @@
           Reset
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
-          Manually reset data usage
+          Reset data usage
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LAST_RESET_DATE_UNAVAILABLE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to show missing last reset information">
           Date of last data reset is unavailable
@@ -4907,6 +4921,15 @@
         </message>
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_TEXT" desc="Settings > Network > Mobile data > SIM > Data usage, text explaining what happens if last day of the month is before selected day">
           If the last day of the month is before this day, data will be reset on the last day of the month
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_DROPDOWN_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text describing the reset days to choose from">
+          Select an auto reset day ranging from 1 to 31, inclusive
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_A11Y_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, accessible label for reset button help tooltip icon">
+          More info on Reset date
+        </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_BUTTON_PRESSED_A11Y_MESSAGE" desc="Settings > Network > Mobile data > SIM > Data usage, accessible message to indicate reset data usage button pressed">
+          Data usage has been reset
         </message>
 
         <!-- Bluetooth -->
@@ -5820,8 +5843,8 @@
         <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach bluetooth logs from the current session.">
           Attach bluetooth history and information. <ph name="BEGIN_LINK1">&lt;a id="bluetoothLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
         </message>
-        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
-          Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
+        <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user (Googlers only) clicks on the bluetooth logs hyperlink">
+          Include bluetooth logs which capture information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible. The information is stored for up to one year and access is restricted to the team working on this issue.&#10;&#10;Additionally, if you have consented to extended bluetooth debugging via go/fw-dump-consent: If a problem with the bluetooth controller is detected, a firmware dump will be included, which may include unencrypted bluetooth packet data, over a very short time frame. This data may be shared with the controller's (third-party) manufacturer for troubleshooting controller issues.
         </message>
         <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach Wifi debug logs from the current session.">
           Attach additional Wi-Fi information. <ph name="BEGIN_LINK1">&lt;a id="wifiDebugLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
@@ -6312,6 +6335,10 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE" desc="The text read aloud by the screen reader describing the keyboard icon 'full screen'.">
           full screen
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY" desc="The text read aloud by the screen reader describing the keyboard icon 'accessibility'.">
+          accessibility action
+        </message>
+
         <!-- End of Shortcut Customization -->
 
         <!-- APN -->

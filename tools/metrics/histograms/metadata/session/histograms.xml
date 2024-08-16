@@ -22,8 +22,20 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
+    enum="Boolean" expires_after="2025-02-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records true if the Google Search Results Page is ever visited during a
+    session for a given ChromeTabbedActivity, false otherwise.
+
+    Recorded when an UMA Session ends.
+  </summary>
+</histogram>
+
 <histogram name="Session.Background.TotalDuration" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -67,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.IsActive" enum="BooleanActive"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -86,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.OpenedTabCounts" units="operations"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>rohitrao@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -204,7 +216,53 @@ chromium-metrics-reviews@google.com.
     the case when the user did not opt in to sync, or sync is disabled due to
     another reason, e.g. enterprise policy. Note that auth errors are not
     counted here, but rather in
-    Session.TotalDuration.OptedInToSyncWithoutAccount.
+    Session.TotalDuration.NotOptedInToSyncWithAccountInAuthError.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDuration.NotOptedInToSyncWithAccountInAuthError"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram
+    Session.TotalDurationMax1Day.NotOptedInToSyncWithAccountInAuthError; the
+    only difference is the histogram bucket ranges.
+
+    The amount of active browsing time that was spent with sync disabled while
+    having a primary account with an invalid refresh token. This corresponds to
+    the case when the user did not opt in to sync, or sync is disabled due to
+    another reason, e.g. enterprise policy.
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -529,7 +587,49 @@ chromium-metrics-reviews@google.com.
     the case when the user did not opt in to sync, or sync is disabled due to
     another reason, e.g. enterprise policy. Note that auth errors are not
     counted here, but rather in
-    Session.TotalDurationMax1Day.OptedInToSyncWithoutAccount.
+    Session.TotalDurationMax1Day.NotOptedInToSyncWithAccountInAuthError.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram
+    name="Session.TotalDurationMax1Day.NotOptedInToSyncWithAccountInAuthError"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with sync disabled while
+    having a primary account with an invalid refresh token. This corresponds to
+    the case when the user did not opt in to sync, or sync is disabled due to
+    another reason, e.g. enterprise policy.
 
     This time is measured from when the user starts interacting with the browser
     until either they stopped interacting with the browser or their signin or
@@ -857,6 +957,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Session.TotalNewDefaultSearchEngineCount" units="count"
+    expires_after="2024-11-27">
+  <owner>aattar@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    The number of times a user navigates to their default search engine per
+    session, resulting in the creation of a new renderer process.
+
+    This count measures instances where a user's navigation to their default
+    search engine triggers the browser to spawn a new renderer process. It
+    specifically excludes cases where continuous searches occur within the same
+    renderer, as these do not necessitate new renderer creation. The metric is
+    emitted at the end of each session.
+
+    The primary goal of this metric is to quantify how frequently, within a
+    given session, the browser needs to create a new renderer process
+    specifically for handling default search engine interactions.
+
+    This metric is recorded on Desktop.
+
+    One potential issue to consider is that if the user has multiple profiles
+    open at once, each profile will report its navigations to its own default
+    search engine, potentially inflating the overall count.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebState.CustomWebViewSerializedSize" units="KB"
     expires_after="2024-10-08">
   <owner>justincohen@chromium.org</owner>
@@ -908,7 +1034,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreHasFetchers"
-    enum="BooleanHasFetchers" expires_after="2024-12-08">
+    enum="BooleanHasFetchers" expires_after="2025-02-10">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -918,7 +1044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-02-09">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -929,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCache"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-02-09">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -940,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionFromCacheHasData"
-    enum="BooleanHasData" expires_after="2024-12-08">
+    enum="BooleanHasData" expires_after="2025-02-09">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -951,7 +1077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.NativeRestoreSessionHasData"
-    enum="BooleanHasData" expires_after="2024-12-08">
+    enum="BooleanHasData" expires_after="2025-02-10">
   <owner>ajuma@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -962,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.ReadFromFileTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -1055,7 +1181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Session.WebStates.WriteToFileTime" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>justincohen@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

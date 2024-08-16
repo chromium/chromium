@@ -185,7 +185,6 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
       (child.Style().AnchorName() || child.IsImplicitAnchor())) {
     // Set the child's `anchor-name` before propagating its descendants', so
     // that ancestors have precedence over their descendants.
-    DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
     LogicalRect rect{child_offset,
                      child.Size().ConvertToLogical(GetWritingMode())};
     options = AnchorQuerySetOptions(

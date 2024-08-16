@@ -418,7 +418,7 @@ void TakePrivateAggregationRequestsForBidState(
     const InterestGroupAuction::PostAuctionSignals& signals,
     const std::optional<InterestGroupAuction::PostAuctionSignals>&
         top_level_signals,
-    std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+    std::map<PrivateAggregationKey,
              InterestGroupAuctionReporter::PrivateAggregationRequests>&
         private_aggregation_requests_reserved,
     std::map<std::string,
@@ -427,7 +427,7 @@ void TakePrivateAggregationRequestsForBidState(
   bool is_winner = state.get() == winner;
   for (auto& [key, requests] : state->private_aggregation_requests) {
     const url::Origin& origin = key.reporting_origin;
-    InterestGroupAuction::PrivateAggregationPhase phase = key.phase;
+    PrivateAggregationPhase phase = key.phase;
     const std::optional<url::Origin>& aggregation_coordinator_origin =
         key.aggregation_coordinator_origin;
     double winning_bid_to_use = signals.winning_bid;
@@ -437,8 +437,7 @@ void TakePrivateAggregationRequestsForBidState(
     // top-level; in that case the relevant signals are in
     // `top_level_signals` and not `signals`. `highest_scoring_other_bid`
     // is also not reported for top-levels.
-    if (phase ==
-            InterestGroupAuction::PrivateAggregationPhase::kTopLevelSeller &&
+    if (phase == PrivateAggregationPhase::kTopLevelSeller &&
         is_component_auction) {
       highest_scoring_other_bid_to_use = 0;
       winning_bid_to_use =
@@ -462,8 +461,8 @@ void TakePrivateAggregationRequestsForBidState(
           private_aggregation_requests_non_reserved[event_type.value()]
               .emplace_back(std::move(converted_request_value.request));
         } else {
-          InterestGroupAuctionReporter::PrivateAggregationKey agg_key = {
-              origin, aggregation_coordinator_origin};
+          PrivateAggregationKey agg_key = {origin,
+                                           aggregation_coordinator_origin};
           private_aggregation_requests_reserved[std::move(agg_key)]
               .emplace_back(std::move(converted_request_value.request));
         }
@@ -481,12 +480,10 @@ void TakePrivateAggregationRequestsForBidState(
               std::move(request), signals.winning_bid,
               signals.highest_scoring_other_bid,
               auction_worklet::mojom::RejectReason::kBelowKAnonThreshold,
-              state->pa_timings(
-                  InterestGroupAuction::PrivateAggregationPhase::kBidder),
-              false);
+              state->pa_timings(PrivateAggregationPhase::kBidder), false);
       if (converted_request.has_value()) {
-        InterestGroupAuctionReporter::PrivateAggregationKey agg_key = {
-            bidder, aggregation_coordinator_origin};
+        PrivateAggregationKey agg_key = {bidder,
+                                         aggregation_coordinator_origin};
         PrivateAggregationRequestWithEventType converted_request_value =
             std::move(converted_request.value());
         // Only reserved types are supported for k-anon failures.
@@ -496,6 +493,29 @@ void TakePrivateAggregationRequestsForBidState(
         private_aggregation_requests_reserved[std::move(agg_key)].emplace_back(
             std::move(converted_request_value.request));
       }
+    }
+  }
+
+  // Also collect private aggregation requests from B&A server which no longer
+  // needs to be filtered by Chrome, such as single seller auction, server
+  // orchestrated auction, component losing buyer/seller requests.
+  for (auto& [key, requests] : state->server_filtered_pagg_requests_reserved) {
+    if (!requests.empty()) {
+      PrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_reserved[key];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
+    }
+  }
+  for (auto& [event, requests] :
+       state->server_filtered_pagg_requests_non_reserved) {
+    if (!requests.empty()) {
+      PrivateAggregationRequests& destination_vector =
+          private_aggregation_requests_non_reserved[event];
+      destination_vector.insert(destination_vector.end(),
+                                std::move_iterator(requests.begin()),
+                                std::move_iterator(requests.end()));
     }
   }
 }
@@ -902,32 +922,6 @@ void InterestGroupAuction::PostAuctionSignals::
     out_highest_scoring_other_bid_currency = std::nullopt;
   }
 }
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::
-    PrivateAggregationPhaseKey(
-        url::Origin reporting_origin,
-        PrivateAggregationPhase phase,
-        std::optional<url::Origin> aggregation_coordinator_origin)
-    : reporting_origin(reporting_origin),
-      phase(phase),
-      aggregation_coordinator_origin(aggregation_coordinator_origin) {}
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::
-    PrivateAggregationPhaseKey(const PrivateAggregationPhaseKey&) = default;
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey&
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::operator=(
-    const PrivateAggregationPhaseKey&) = default;
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::
-    PrivateAggregationPhaseKey(PrivateAggregationPhaseKey&&) = default;
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey&
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::operator=(
-    PrivateAggregationPhaseKey&&) = default;
-
-InterestGroupAuction::BidState::PrivateAggregationPhaseKey::
-    ~PrivateAggregationPhaseKey() = default;
 
 InterestGroupAuction::BidState::~BidState() {
   if (trace_id.has_value()) {
@@ -1398,8 +1392,7 @@ class InterestGroupAuction::BuyerHelper
       const BidState* non_kanon_winner,
       const PostAuctionSignals& signals,
       const std::optional<PostAuctionSignals>& top_level_signals,
-      std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
-               PrivateAggregationRequests>&
+      std::map<PrivateAggregationKey, PrivateAggregationRequests>&
           private_aggregation_requests_reserved,
       std::map<std::string, PrivateAggregationRequests>&
           private_aggregation_requests_non_reserved) {
@@ -1455,7 +1448,13 @@ class InterestGroupAuction::BuyerHelper
       const std::optional<std::string>& buyer_reporting_id,
       const std::optional<std::string>& buyer_and_seller_reporting_id,
       blink::AdDescriptor ad_descriptor,
-      std::vector<blink::AdDescriptor> ad_component_descriptors) {
+      std::vector<blink::AdDescriptor> ad_component_descriptors,
+      std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>&
+          component_win_pagg_requests,
+      std::map<PrivateAggregationKey, PrivateAggregationRequests>&
+          server_filtered_pagg_requests_reserved,
+      std::map<std::string, PrivateAggregationRequests>&
+          server_filtered_pagg_requests_non_reserved) {
     CHECK_EQ(1u, bid_states_.size());
     BidState* bid_state = bid_states_[0].get();
     bid_state->made_bid = true;
@@ -1499,6 +1498,14 @@ class InterestGroupAuction::BuyerHelper
 
     // 2. Reporting URLs must be okay
     // TODO(crbug.com/40273798): Implement reporting
+
+    // 3. Private aggregation reporting requests.
+    bid_state->private_aggregation_requests =
+        std::move(component_win_pagg_requests);
+    bid_state->server_filtered_pagg_requests_reserved =
+        std::move(server_filtered_pagg_requests_reserved);
+    bid_state->server_filtered_pagg_requests_non_reserved =
+        std::move(server_filtered_pagg_requests_non_reserved);
 
     return std::make_unique<Bid>(
         bid_role, ad_metadata.value_or("null"), bid, bid_currency,
@@ -1954,7 +1961,7 @@ class InterestGroupAuction::BuyerHelper
     }
     auction_->MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
-      BidState::PrivateAggregationPhaseKey agg_key = {
+      PrivateAggregationPhaseKey agg_key = {
           interest_group.owner, PrivateAggregationPhase::kBidder,
           interest_group.aggregation_coordinator_origin};
       PrivateAggregationRequests& pa_requests_for_bidder =
@@ -2633,8 +2640,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
     if (is_server_auction_) {
       if (saved_response_) {
         CreateBidFromServerResponse();
-        std::move(bidding_and_scoring_phase_callback_)
-            .Run(saved_response_->result == AuctionResult::kSuccess);
+        num_scoring_dependencies_ = 0;
         MaybeCompleteBiddingAndScoringPhase();
         return;
       }
@@ -3416,8 +3422,8 @@ bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
   // bucket sums can't be out of range, and scales can't be negative, infinite,
   // or NaN.
   // TODO(crbug.com/330744610): Consider allowing filtering ID to be set.
-  InterestGroupAuctionReporter::PrivateAggregationKey agg_key = {
-      config_->seller, config_->aggregation_coordinator_origin};
+  PrivateAggregationKey agg_key = {config_->seller,
+                                   config_->aggregation_coordinator_origin};
   PrivateAggregationRequests& destination_vector =
       private_aggregation_requests_reserved_[std::move(agg_key)];
   destination_vector.push_back(
@@ -3547,8 +3553,7 @@ void InterestGroupAuction::
     DCHECK(!leader.highest_scoring_other_bid_owner.has_value());
   }
 
-  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
-           PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
       private_aggregation_requests_reserved;
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved;
@@ -3630,14 +3635,12 @@ void InterestGroupAuction::
   }
 }
 
-std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
+std::map<PrivateAggregationKey,
          InterestGroupAuction::PrivateAggregationRequests>
 InterestGroupAuction::TakeReservedPrivateAggregationRequests() {
   for (auto& component_auction_info : component_auctions_) {
-    std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
-             PrivateAggregationRequests>
-        requests_map = component_auction_info.second
-                           ->TakeReservedPrivateAggregationRequests();
+    std::map<PrivateAggregationKey, PrivateAggregationRequests> requests_map =
+        component_auction_info.second->TakeReservedPrivateAggregationRequests();
     for (auto& [agg_key, requests] : requests_map) {
       CHECK(!requests.empty());
       PrivateAggregationRequests& destination_vector =
@@ -3787,8 +3790,11 @@ base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
         *scored_bid->bid->interest_group;
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdBid(
         interest_group, scored_bid->bid->bid_ad->render_url()));
+    // TODO(crbug.com/334053709): Use the selected_buyer_and_seller_reporting_id
+    // from scored_bid->bid when that field has been added.
     k_anon_keys_to_join.push_back(blink::HashedKAnonKeyForAdNameReporting(
-        interest_group, *scored_bid->bid->bid_ad));
+        interest_group, *scored_bid->bid->bid_ad,
+        /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
     for (const blink::AdDescriptor& ad_component_descriptor :
          scored_bid->bid->ad_component_descriptors) {
       k_anon_keys_to_join.push_back(
@@ -3927,13 +3933,6 @@ std::string InterestGroupAuction::CreateTrustedBiddingSignalsSlotSizeParam(
     const blink::AuctionConfig& config,
     blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode
         trusted_bidding_signals_slot_size_mode) {
-  // If sending slot sizes to trusted bidding signals servers is not enabled,
-  // return an empty string to maximize worklet reuse.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgeTrustedBiddingSignalsSlotSize)) {
-    return std::string();
-  }
-
   switch (trusted_bidding_signals_slot_size_mode) {
     case blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode::kNone:
       return std::string();
@@ -4880,7 +4879,7 @@ void InterestGroupAuction::OnScoreAdComplete(
     MaybeLogPrivateAggregationWebFeatures(pa_requests);
     if (!pa_requests.empty()) {
       CHECK(config_);
-      BidState::PrivateAggregationPhaseKey agg_key = {
+      PrivateAggregationPhaseKey agg_key = {
           config_->seller, seller_phase(),
           config_->aggregation_coordinator_origin};
       PrivateAggregationRequests& pa_requests_for_seller =
@@ -5332,8 +5331,9 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
     return false;
   }
   std::optional<BiddingAndAuctionResponse> response =
-      BiddingAndAuctionResponse::TryParse(std::move(result).value(),
-                                          request_context->group_names);
+      BiddingAndAuctionResponse::TryParse(
+          std::move(result).value(), request_context->group_names,
+          request_context->group_pagg_coordinators);
   if (!response) {
     // We couldn't recognize the structure of the response.
     errors_.push_back(
@@ -5493,7 +5493,10 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
           saved_response_->buyer_and_seller_reporting_id,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
-          /*ad_component_descriptors=*/std::move(ad_components));
+          /*ad_component_descriptors=*/std::move(ad_components),
+          saved_response_->component_win_pagg_requests,
+          saved_response_->server_filtered_pagg_requests_reserved,
+          saved_response_->server_filtered_pagg_requests_non_reserved);
 
   if (!bid) {
     saved_response_.emplace();

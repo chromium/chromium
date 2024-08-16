@@ -19,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
@@ -971,7 +972,8 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,
-      InterestGroupManager::InterestGroupDataKey data_key);
+      std::optional<content::InterestGroupManager::InterestGroupDataKey>
+          winner_data_key);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -2836,11 +2838,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       WebContents* web_contents);
 
-  // Return whether entering fullscreen requires transient activation.
-  // The embedder may waive that requirement for user settings or tests.
-  virtual bool IsTransientActivationRequiredForHtmlFullscreen(
-      content::RenderFrameHost* render_frame_host);
-
   // Checks if `origin` should always receive a first-party StorageKey
   // in RenderFrameHostImpl. Currently in Chrome, this is true for all
   // extension origins.
@@ -2971,6 +2968,7 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   virtual void BindAIManager(
       BrowserContext* browser_context,
+      std::variant<RenderFrameHost*, base::SupportsUserData*> host,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2990,6 +2988,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::OnceCallback<void(std::optional<blink::mojom::RelatedApplication>)>
           callback);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Whether the destination URL from a NavigationHandle can be saved and
+  // synced to another machine and reloaded there. Some navigations, such as
+  // http POST requests, cannot be synced across machines as the request body
+  // is no longer available when reloading the URL.
+  virtual bool IsSaveableNavigation(NavigationHandle* navigation_handle);
 };
 
 }  // namespace content

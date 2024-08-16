@@ -832,9 +832,17 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
             },
             std::move(image))));
 
-    frame = media::VideoFrame::WrapNativeTextures(
-        format, mailbox_holders, std::move(release_cb), coded_size,
-        parsed_init.visible_rect, parsed_init.display_size, timestamp);
+    auto client_shared_image = sbi->GetSharedImage();
+    if (client_shared_image) {
+      frame = media::VideoFrame::WrapSharedImage(
+          format, std::move(client_shared_image), mailbox_holders[0].sync_token,
+          mailbox_holders[0].texture_target, std::move(release_cb), coded_size,
+          parsed_init.visible_rect, parsed_init.display_size, timestamp);
+    } else {
+      frame = media::VideoFrame::WrapNativeTextures(
+          format, mailbox_holders, std::move(release_cb), coded_size,
+          parsed_init.visible_rect, parsed_init.display_size, timestamp);
+    }
 
     if (frame)
       frame->metadata().texture_origin_is_top_left = is_origin_top_left;

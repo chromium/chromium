@@ -220,8 +220,33 @@ UIColor* BackgroundColor() {
     return;
   }
 
-  // TODO(crbug.com/330355124): Perform passkey creation here.
-  [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  // TODO(crbug.com/330355124): Handle
+  // passkeyCredentialRequest.userVerificationPreference.
+  ASPasskeyCredentialIdentity* identity =
+      base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
+          passkeyCredentialRequest.credentialIdentity);
+
+  __weak __typeof(self) weakSelf = self;
+  FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
+    CredentialProviderViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+
+    ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
+        PerformPasskeyCreation(passkeyCredentialRequest.clientDataHash,
+                               identity.relyingPartyIdentifier,
+                               identity.userName, identity.userHandle,
+                               securityDomainSecret);
+    if (passkeyRegistrationCredential) {
+      [strongSelf completeRegistrationRequestWithSelectedPasskeyCredential:
+                      passkeyRegistrationCredential];
+    } else {
+      [strongSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
+    }
+  };
+
+  FetchSecurityDomainSecret(completion);
 }
 
 #pragma mark - Properties
@@ -344,9 +369,22 @@ UIColor* BackgroundColor() {
               credentialRequest);
       // TODO(crbug.com/330355124): Handle
       // passkeyCredentialRequest.userVerificationPreference.
-      ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
-          credential, passkeyCredentialRequest.clientDataHash, nil);
-      [self userSelectedPasskey:passkeyCredential];
+
+      __weak __typeof(self) weakSelf = self;
+      FetchKeyCompletionBlock completion = ^(NSData* securityDomainSecret) {
+        CredentialProviderViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        ASPasskeyAssertionCredential* passkeyCredential =
+            PerformPasskeyAssertion(credential,
+                                    passkeyCredentialRequest.clientDataHash,
+                                    nil, securityDomainSecret);
+        [strongSelf userSelectedPasskey:passkeyCredential];
+      };
+
+      FetchSecurityDomainSecret(completion);
       return;
     }
   }
@@ -456,6 +494,17 @@ UIColor* BackgroundColor() {
   [self.extensionContext
       completeAssertionRequestWithSelectedPasskeyCredential:credential
                                           completionHandler:nil];
+}
+
+// Convenience wrapper for
+// -completeRegistrationRequestWithSelectedPasskeyCredential:completionHandler:.
+- (void)completeRegistrationRequestWithSelectedPasskeyCredential:
+    (ASPasskeyRegistrationCredential*)credential API_AVAILABLE(ios(17.0)) {
+  [self.listCoordinator stop];
+  self.listCoordinator = nil;
+  [self.extensionContext
+      completeRegistrationRequestWithSelectedPasskeyCredential:credential
+                                             completionHandler:nil];
 }
 
 // Convenience wrapper for -cancelRequestWithError.

@@ -59,6 +59,7 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/types.h"
@@ -376,8 +377,9 @@ bool ExpiryTooSoon(base::Time expiry) {
   return expiry < now || (expiry - now) < base::Days(7 * 18);
 }
 
-void ResetDeclinedBootstrappingCount(AuthenticatorRequestDialogModel* model) {
-  Profile::FromBrowserContext(model->GetRenderFrameHost()->GetBrowserContext())
+void ResetDeclinedBootstrappingCount(
+    content::RenderFrameHost* render_frame_host) {
+  Profile::FromBrowserContext(render_frame_host->GetBrowserContext())
       ->GetPrefs()
       ->SetInteger(webauthn::pref_names::kEnclaveDeclinedGPMBootstrappingCount,
                    0);
@@ -734,7 +736,8 @@ void GPMEnclaveController::OnKeysStored() {
 }
 
 void GPMEnclaveController::OnDeviceAdded(bool success) {
-  ResetDeclinedBootstrappingCount(model_.get());
+  ResetDeclinedBootstrappingCount(
+      content::RenderFrameHost::FromID(render_frame_host_id_));
   if (!success) {
     model_->SetStep(Step::kGPMError);
     return;
@@ -1008,7 +1011,8 @@ void GPMEnclaveController::OnTrustThisComputer() {
   device::enclave::RecordEvent(device::enclave::Event::kOnboardingAccepted);
   // Clicking through the bootstrapping dialog resets the count even if it
   // doesn't end up being successful.
-  ResetDeclinedBootstrappingCount(model_.get());
+  ResetDeclinedBootstrappingCount(
+      content::RenderFrameHost::FromID(render_frame_host_id_));
   model_->SetStep(Step::kRecoverSecurityDomain);
 }
 
@@ -1051,7 +1055,7 @@ void GPMEnclaveController::OnGPMCreatePasskey() {
         break;
 
       case EnclaveUserVerificationMethod::kUnsatisfiable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -1130,7 +1134,9 @@ void GPMEnclaveController::OnReauthComplete(std::string rapt) {
 void GPMEnclaveController::StartTransaction() {
   // Starting a transaction means the user has chosen to use GPM. Reset the
   // decline count so GPM can again be the priority on creation.
-  Profile::FromBrowserContext(model_->GetRenderFrameHost()->GetBrowserContext())
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  Profile::FromBrowserContext(rfh->GetBrowserContext())
       ->GetPrefs()
       ->SetInteger(
           webauthn::pref_names::kEnclaveDeclinedGPMCredentialCreationCount, 0);
@@ -1237,7 +1243,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
                          enclave_manager_->GetWeakPtr(), base::DoNothing());
       break;
     case EnclaveUserVerificationMethod::kUnsatisfiable:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   switch (request_type_) {
@@ -1311,10 +1317,9 @@ void GPMEnclaveController::OnPasskeyCreated(
   passkey_model->CreatePasskey(passkey);
 
   if (device::kWebAuthnGpmPin.Get()) {
-    content::WebContents* web_contents = model_->GetWebContents();
-    if (!web_contents) {
-      return;
-    }
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(
+            content::RenderFrameHost::FromID(render_frame_host_id_));
 
     PasswordsClientUIDelegate* manage_passwords_ui_controller =
         PasswordsClientUIDelegateFromWebContents(web_contents);

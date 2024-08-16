@@ -23,7 +23,7 @@ public interface TabGroupSyncService {
      */
     interface Observer {
         /**
-         * Called when the sync database (ModelTypeStore) has been initialized and fully loaded to
+         * Called when the sync database (DataTypeStore) has been initialized and fully loaded to
          * memory.
          */
         void onInitialized();

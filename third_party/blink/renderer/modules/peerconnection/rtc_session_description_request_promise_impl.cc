@@ -63,7 +63,7 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestFailed(
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                   ExceptionContextType::kOperationInvoke,
+                                   v8::ExceptionContext::kOperation,
                                    interface_name_, property_name_);
     ThrowExceptionFromRTCError(error, exception_state);
     resolver_->Reject(exception_state);

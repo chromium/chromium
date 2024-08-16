@@ -115,6 +115,7 @@
 <translation id="2559253115192232574">您日後瀏覽的網站可向 Chrome 要求查看您的興趣，以便向您顯示個人化廣告。Chrome 最多可分享 3 個感興趣的主題。</translation>
 <translation id="2563121210305478421">要重新啟動 Chrome 嗎？</translation>
 <translation id="2569974318947988067">Chrome 會在導覽網站時，嘗試升級至 HTTPS</translation>
+<translation id="2571392474191184472">Chrome 由你的機構管理</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
@@ -449,6 +450,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7177959540995930968">您可在 Chrome 設定中進一步瞭解這些功能。</translation>
 <translation id="7193885263065350793">您的機構會在 Chrome 閒置 <ph name="TIMEOUT_DURATION" />後將其關閉。</translation>
 <translation id="7242029209006116544">您已登入受管理的帳戶，並將管理控制權授予您的 Google Chrome 設定檔。您的 Chrome 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。如要另行保留現有的 Chrome 數據，您可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Chrome 由「<ph name="MANAGER" />」管理</translation>
 <translation id="7295052994004373688">使用此語言顯示 Google Chrome 使用者介面</translation>
 <translation id="7296210096911315575">重要的使用和安全資訊</translation>
 <translation id="7302361266603927550">部分 Chrome 資料尚未儲存至 Google 帳戶。請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
@@ -582,6 +584,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8999117580775242387">無法使用 HTTPS 時，Chrome 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
+<translation id="9014771989710951291">Chrome 由多個機構管理</translation>
 <translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖部分檔案的原因</translation>

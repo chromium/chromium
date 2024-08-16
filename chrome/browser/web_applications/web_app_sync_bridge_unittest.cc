@@ -41,7 +41,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -291,7 +291,7 @@ class WebAppSyncBridgeTest : public WebAppTest {
   }
 
  protected:
-  syncer::MockModelTypeChangeProcessor& processor() {
+  syncer::MockDataTypeLocalChangeProcessor& processor() {
     return fake_provider().processor();
   }
   FakeWebAppDatabaseFactory& database_factory() {
@@ -1503,7 +1503,7 @@ std::string ToString(std::optional<WebAppSpecifics_UserDisplayMode> udm) {
     case WebAppSpecifics_UserDisplayMode_STANDALONE:
       return "standalone";
     case WebAppSpecifics_UserDisplayMode_TABBED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1517,7 +1517,7 @@ std::string ToString(std::optional<UserDisplayMode> udm) {
     case UserDisplayMode::kStandalone:
       return "standalone";
     case UserDisplayMode::kTabbed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

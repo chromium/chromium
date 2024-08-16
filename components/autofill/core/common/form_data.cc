@@ -99,6 +99,7 @@ bool FormData::SameFormAs(const FormData& form) const {
   if (name() != form.name() || id_attribute() != form.id_attribute() ||
       name_attribute() != form.name_attribute() || url() != form.url() ||
       action() != form.action() ||
+      likely_contains_captcha() != form.likely_contains_captcha() ||
       renderer_id().is_null() != form.renderer_id().is_null() ||
       fields_.size() != form.fields_.size()) {
     return false;
@@ -126,6 +127,7 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
   if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
       a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
       a.action() != b.action() ||
+      a.likely_contains_captcha() != b.likely_contains_captcha() ||
       !base::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
     return false;
   }

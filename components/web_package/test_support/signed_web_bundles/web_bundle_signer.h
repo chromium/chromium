@@ -26,7 +26,10 @@ class WebBundleSigner {
     kMinValue = 0,
     kInvalidIntegrityBlockStructure = kMinValue,
     kInvalidVersion,
-    kMaxValue = kInvalidVersion
+    kNoSignedWebBundleId,
+    kNoAttributes,
+    kEmptySignatureList,
+    kMaxValue = kEmptySignatureList
   };
 
   enum class IntegritySignatureErrorForTesting {
@@ -118,25 +121,23 @@ class WebBundleSigner {
     std::string web_bundle_id;
   };
 
-  // Creates an integrity block with the given signature stack entries.
-  static cbor::Value CreateIntegrityBlock(
-      const cbor::Value::ArrayValue& signature_stack,
-      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
-      IntegrityBlockErrorsForTesting errors_for_testing = {});
-
-  static cbor::Value CreateIntegrityBlockForBundle(
-      base::span<const uint8_t> unsigned_bundle,
-      const std::vector<KeyPair>& key_pairs,
-      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
-      ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
-                                             /*signatures_errors=*/{}});
-
   // Signs an unsigned bundle with the given key pairs.
   // Signatures do not depend on each other and co-exist in parallel.
+  // If `ib_attributes` is not passed, signed web bundle id will be computed
+  // from the first key.
   static std::vector<uint8_t> SignBundle(
       base::span<const uint8_t> unsigned_bundle,
       const std::vector<KeyPair>& key_pairs,
-      const std::optional<IntegrityBlockAttributes>& ib_attributes = {},
+      std::optional<IntegrityBlockAttributes> ib_attributes = {},
+      ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
+                                             /*signatures_errors=*/{}});
+
+  // Signs an unsigned bundle with a given key pair, automatically computing the
+  // signed web bundle from it. This is a shortcut to above, more broad
+  // function, mainly for convenience.
+  static std::vector<uint8_t> SignBundle(
+      base::span<const uint8_t> unsigned_bundle,
+      const WebBundleSigner::KeyPair& key_pair,
       ErrorsForTesting errors_for_testing = {/*integrity_block_errors=*/{},
                                              /*signatures_errors=*/{}});
 };

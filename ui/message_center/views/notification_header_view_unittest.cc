@@ -407,6 +407,62 @@ TEST_F(NotificationHeaderViewTest, AccessibleNameTest) {
             u"Some app name");
 }
 
+TEST_F(NotificationHeaderViewTest, AccessibleRoleTest) {
+  ui::AXNodeData data;
+  notification_header_view_->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGenericContainer);
+
+  data = ui::AXNodeData();
+  notification_header_view_->expand_button()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kButton);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName), u"");
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(NotificationHeaderViewTest, AccessibleDescription) {
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      u" ");
+
+  notification_header_view_->SetSummaryText(u"Example Summary");
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      u"Example Summary ");
+
+  auto* timestamp_view =
+      notification_header_view_->timestamp_view_for_testing();
+
+  notification_header_view_->SetTimestamp(base::Time::Now() + base::Hours(3) +
+                                          base::Minutes(30));
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      u"Example Summary " + timestamp_view->GetText());
+
+  int progress = 1;
+  notification_header_view_->SetProgress(progress);
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      l10n_util::GetStringFUTF16Int(
+          IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress) +
+          u" " + timestamp_view->GetText());
+
+  int count = 4;
+  notification_header_view_->SetOverflowIndicator(count);
+
+  EXPECT_EQ(
+      notification_header_view_->GetViewAccessibility().GetCachedDescription(),
+      l10n_util::GetStringFUTF16Int(
+          IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR,
+          count) +
+          u" " + timestamp_view->GetText());
+}
+
 TEST_F(NotificationHeaderViewTest, MetadataTest) {
   views::test::TestViewMetadata(notification_header_view_);
 }

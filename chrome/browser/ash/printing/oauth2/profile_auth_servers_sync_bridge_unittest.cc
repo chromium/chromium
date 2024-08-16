@@ -15,12 +15,12 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -60,8 +60,7 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     SaveToLocalStore(uris);
     bridge_ = ProfileAuthServersSyncBridge::CreateForTesting(
         &mock_observer_, mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
     base::RunLoop loop;
     EXPECT_CALL(mock_observer_, OnProfileAuthorizationServersInitialized())
         .WillOnce([&loop]() { loop.Quit(); });
@@ -120,12 +119,12 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
   const GURL uri_4u_ = GURL(uri_4_);
 
   testing::StrictMock<MockProfileAuthServersSyncBridgeObserver> mock_observer_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ProfileAuthServersSyncBridge> bridge_;
 
  private:
   void SaveToLocalStore(const std::vector<std::string>& uris) {
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     for (const std::string& uri : uris) {
       sync_pb::PrintersAuthorizationServerSpecifics specifics;
@@ -144,10 +143,10 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
     loop.Run();
   }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_ =
-      syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  std::unique_ptr<syncer::DataTypeStore> store_ =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
 };
 
 TEST_F(PrintingOAuth2ProfileAuthServersSyncBridgeTest, Initialization) {

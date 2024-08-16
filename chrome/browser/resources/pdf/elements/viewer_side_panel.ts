@@ -61,6 +61,7 @@ export const PEN_COLORS: ColorOption[] = [
 ];
 
 interface SizeOption {
+  icon: string;
   name: string;
   size: number;
 }
@@ -68,27 +69,27 @@ interface SizeOption {
 // TODO(crbug.com/341282609): Choose production size values. Add icons and
 // labels.
 const ERASER_SIZES: SizeOption[] = [
-  {name: 'sizeExtraThin', size: 1},
-  {name: 'sizeThin', size: 2},
-  {name: 'sizeExtraMedium', size: 3},
-  {name: 'sizeThick', size: 6},
-  {name: 'sizeExtraThick', size: 8},
+  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
+  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
+  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
+  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
 const HIGHLIGHTER_SIZES: SizeOption[] = [
-  {name: 'sizeExtraThin', size: 4},
-  {name: 'sizeThin', size: 6},
-  {name: 'sizeExtraMedium', size: 8},
-  {name: 'sizeThick', size: 12},
-  {name: 'sizeExtraThick', size: 16},
+  {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
+  {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
+  {icon: 'highlighter-size-3', name: 'sizeExtraMedium', size: 8},
+  {icon: 'highlighter-size-4', name: 'sizeThick', size: 12},
+  {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
 ];
 
 const PEN_SIZES: SizeOption[] = [
-  {name: 'sizeExtraThin', size: 1},
-  {name: 'sizeThin', size: 2},
-  {name: 'sizeExtraMedium', size: 3},
-  {name: 'sizeThick', size: 6},
-  {name: 'sizeExtraThick', size: 8},
+  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
+  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
+  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
+  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
+  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
 /**

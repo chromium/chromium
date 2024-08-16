@@ -140,7 +140,7 @@ void PinnedToolbarActionsModel::MovePinnedAction(
 
   // Notify observers the action was moved.
   for (Observer& observer : observers_) {
-    observer.OnActionMoved(action_id, start_index, target_index);
+    observer.OnActionMovedLocally(action_id, start_index, target_index);
   }
 }
 
@@ -154,7 +154,7 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
 
   // Notify observers the action was added.
   for (Observer& observer : observers_) {
-    observer.OnActionAdded(action_id);
+    observer.OnActionAddedLocally(action_id);
   }
 }
 
@@ -168,7 +168,7 @@ void PinnedToolbarActionsModel::UnpinAction(
 
   // Notify observers the action was removed.
   for (Observer& observer : observers_) {
-    observer.OnActionRemoved(action_id);
+    observer.OnActionRemovedLocally(action_id);
   }
 }
 
@@ -243,28 +243,36 @@ void PinnedToolbarActionsModel::MaybeUpdateSearchCompanionPinnedState(
 }
 
 void PinnedToolbarActionsModel::ResetToDefault() {
-  // By default, home is unpinned and forward is pinned.
   pref_service_->ClearPref(prefs::kShowHomeButton);
   pref_service_->ClearPref(prefs::kShowForwardButton);
-
-  // By default, most action items are not pinned.
-  const std::vector<actions::ActionId> pinned_ids = PinnedActionIds();
-  for (actions::ActionId id : pinned_ids) {
-    // The exception is Chrome Labs.
-    UpdatePinnedState(id, id == kActionShowChromeLabs);
-  }
+  pref_service_->ClearPref(prefs::kPinnedActions);
 }
 
 bool PinnedToolbarActionsModel::IsDefault() const {
-  // Chrome Labs is pinned by default.
-  const bool labs_is_default = Contains(kActionShowChromeLabs);
+  const bool action_are_default =
+      pref_service_->GetDefaultPrefValue(prefs::kPinnedActions)->GetList() ==
+      pref_service_->GetList(prefs::kPinnedActions);
+  const bool home_is_default =
+      pref_service_->GetDefaultPrefValue(prefs::kShowHomeButton)->GetBool() ==
+      pref_service_->GetBoolean(prefs::kShowHomeButton);
+  const bool forward_is_default =
+      pref_service_->GetDefaultPrefValue(prefs::kShowForwardButton)
+          ->GetBool() == pref_service_->GetBoolean(prefs::kShowForwardButton);
+  return action_are_default && home_is_default && forward_is_default;
+}
 
-  // Other than Labs, only Home is pinned by default.
-  const bool is_default =
-      !pref_service_->GetBoolean(prefs::kShowHomeButton) &&
-      pref_service_->GetBoolean(prefs::kShowForwardButton) && labs_is_default &&
-      PinnedActionIds().size() == 1;
-  return is_default;
+void PinnedToolbarActionsModel::MaybeMigrateChromeLabsPinnedState() {
+  if (!features::IsToolbarPinningEnabled()) {
+    return;
+  }
+  if (pref_service_->GetBoolean(prefs::kPinnedChromeLabsMigrationComplete)) {
+    return;
+  }
+
+  if (CanUpdate()) {
+    UpdatePinnedState(kActionShowChromeLabs, true);
+    pref_service_->SetBoolean(prefs::kPinnedChromeLabsMigrationComplete, true);
+  }
 }
 
 const std::vector<actions::ActionId>&

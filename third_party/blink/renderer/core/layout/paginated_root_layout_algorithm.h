@@ -114,7 +114,7 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
   const LayoutResult* Layout();
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Create an empty page box fragment, modeled after an existing fragmentainer.

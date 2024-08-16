@@ -26,9 +26,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from blinkpy.web_tests.port import linux, chrome
-import os
 from blinkpy.common.path_finder import get_blink_dir
+from blinkpy.web_tests.port import linux
 
 
 class AndroidPort(linux.LinuxPort):
@@ -37,7 +36,7 @@ class AndroidPort(linux.LinuxPort):
     SUPPORTED_VERSIONS = ('android', )
     FALLBACK_PATHS = {}
     FALLBACK_PATHS['android'] = (
-        ['android'] + chrome.ChromePort.latest_platform_fallback_path())
+        ['android'] + linux.LinuxPort.latest_platform_fallback_path())
 
     def configuration_specifier_macros(self):
         return {self.port_name: list(self.SUPPORTED_VERSIONS)}

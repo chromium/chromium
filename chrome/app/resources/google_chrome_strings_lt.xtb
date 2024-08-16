@@ -115,6 +115,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2559253115192232574">Vėliau svetainė, kurioje lankotės, gali paprašyti „Chrome“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jūsų matomus skelbimus. „Chrome“ gali bendrinti iki 3 pomėgių.</translation>
 <translation id="2563121210305478421">Iš naujo paleisti „Chrome“?</translation>
 <translation id="2569974318947988067">„Chrome“ bandys naujovinti naršymą į HTTPS</translation>
+<translation id="2571392474191184472">Jūsų organizacija tvarko „Chrome“</translation>
 <translation id="2574930892358684005">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chrome“ profilio. Kad naršytumėte atskirai, „Chrome“ gali sukurti jums atskirą profilį.</translation>
 <translation id="2580411288591421699">Negalima įdiegti tos pačios „Google Chrome“ versijos, kuri dabar paleista. Uždarykite „Google Chrome“ ir bandykite dar kartą.</translation>
 <translation id="2586406160782125153">Atlikus šį veiksmą bus ištrinti naršymo duomenys iš šio įrenginio. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
@@ -450,6 +451,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7177959540995930968">Daugiau apie šias funkcijas sužinosite „Chrome“ nustatymuose.</translation>
 <translation id="7193885263065350793">Organizacija uždaro „Chrome“, kai ji nenaudojama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prisijungiate su valdoma paskyra ir leidžiate jos administratoriui valdyti jūsų „Google Chrome“ profilį. „Chrome“ duomenys, pvz., programos, žymės, istorija, slaptažodžiai ir kiti nustatymai, bus visam laikui susieti su <ph name="USER_NAME" />. Galėsite ištrinti šiuos duomenis naudodami „Google“ paskyrų informacijos suvestinę, bet negalėsite susieti šių duomenų su kita paskyra. Galite pasirinktinai sukurti naują profilį, kad esami „Chrome“ duomenys būtų saugomi atskirai. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" />“ tvarko „Chrome“</translation>
 <translation id="7295052994004373688">Ši kalba vartojama „Google Chrome“ NS pateikti</translation>
 <translation id="7296210096911315575">Svarbi naudojimo ir saugos informacija</translation>
 <translation id="7302361266603927550">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje. Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
@@ -583,6 +585,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8999117580775242387">Kai HTTPS nepasiekiamas, „Chrome“ naudos nesaugų ryšį be perspėjimo</translation>
 <translation id="8999208279178790196">{0,plural, =0{Pasiekiamas „Chrome“ naujinys}=1{Pasiekiamas „Chrome“ naujinys}one{„Chrome“ naujinys pasiekiamas # dieną}few{„Chrome“ naujinys pasiekiamas # dienas}many{„Chrome“ naujinys pasiekiamas # dienos}other{„Chrome“ naujinys pasiekiamas # dienų}}</translation>
+<translation id="9014771989710951291">Kelios organizacijos tvarko „Chrome“</translation>
 <translation id="9024318700713112071">Nustatykite „Chrome“ kaip numatytąją naršyklę</translation>
 <translation id="9053892488859122171">„ChromeOS Flex“ sistema</translation>
 <translation id="9090566250983691233">Sužinokite, kodėl „Chrome“ blokuoja kai kuriuos failus</translation>

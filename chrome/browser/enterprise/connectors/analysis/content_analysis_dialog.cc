@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
@@ -443,8 +444,8 @@ const views::Widget* ContentAnalysisDialog::GetWidget() const {
   return contents_view_->GetWidget();
 }
 
-ui::ModalType ContentAnalysisDialog::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
+ui::mojom::ModalType ContentAnalysisDialog::GetModalType() const {
+  return ui::mojom::ModalType::kChild;
 }
 
 void ContentAnalysisDialog::WebContentsDestroyed() {

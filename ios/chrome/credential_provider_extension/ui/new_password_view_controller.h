@@ -33,6 +33,7 @@
 - (void)saveCredentialWithUsername:(NSString*)username
                           password:(NSString*)password
                               note:(NSString*)note
+                              gaia:(NSString*)gaia
                      shouldReplace:(BOOL)shouldReplace;
 
 @end

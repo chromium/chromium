@@ -100,7 +100,7 @@ std::u16string GetSiteAccessRadioButtonText(
       return l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_ALL_SITES_TEXT);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -118,7 +118,7 @@ std::u16string GetSiteAccessRadioButtonDescription(
       return l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_ON_ALL_SITES_DESCRIPTION);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

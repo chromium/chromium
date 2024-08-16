@@ -87,6 +87,8 @@ EditorMenuView::EditorMenuView(EditorMenuMode editor_menu_mode,
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout(preset_text_queries);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 EditorMenuView::~EditorMenuView() = default;
@@ -127,7 +129,6 @@ void EditorMenuView::RequestFocus() {
 }
 
 void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(editor_menu_mode_ == EditorMenuMode::kWrite
                          ? GetEditorMenuWriteCardTitle()
                          : GetEditorMenuRewriteCardTitle());

@@ -11,7 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/metrics/metrics_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -37,7 +37,7 @@ bool IsMsbbConsentStateAllowed() {
 }
 
 bool CanUploadUkmForType(syncer::SyncService* sync_service,
-                         syncer::ModelType model_type,
+                         syncer::DataType data_type,
                          bool msbb_consent) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Enable uploading of UKM for Kiosk and MGS only if MSBB consent is set.
@@ -46,11 +46,11 @@ bool CanUploadUkmForType(syncer::SyncService* sync_service,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  switch (GetUploadToGoogleState(sync_service, model_type)) {
+  switch (GetUploadToGoogleState(sync_service, data_type)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     // INITIALIZING is considered good enough, because sync is enabled and
-    // |model_type| is known to be uploaded to Google, and transient errors
+    // |data_type| is known to be uploaded to Google, and transient errors
     // don't matter here.
     case syncer::UploadState::INITIALIZING:
     case syncer::UploadState::ACTIVE:
@@ -95,15 +95,14 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   }
 
   if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::ModelType::EXTENSIONS,
+      CanUploadUkmForType(sync_service, syncer::DataType::EXTENSIONS,
                           msbb_consent)) {
     state.SetConsentType(EXTENSIONS);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool app_sync_consent =
-      CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
-                          msbb_consent) ||
+      CanUploadUkmForType(sync_service, syncer::DataType::APPS, msbb_consent) ||
       // Demo mode is a special managed guest session that doesn't support
       // AppKM. To support AppKM an exception needs to be made within UKM.
       IsDeviceInDemoMode();
@@ -114,8 +113,8 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
 #else
   // This separation isn't actually needed for non-ChromeOS devices. But for
   // clarity it is added.
-  if (msbb_consent && CanUploadUkmForType(sync_service, syncer::ModelType::APPS,
-                                          msbb_consent)) {
+  if (msbb_consent &&
+      CanUploadUkmForType(sync_service, syncer::DataType::APPS, msbb_consent)) {
     state.SetConsentType(APPS);
   }
 #endif

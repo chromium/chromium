@@ -325,11 +325,9 @@ void DriveRecentFileSuggestionProvider::PerformSearch(
     base::RepeatingClosure callback) {
   drive_service->GetDriveFsHost()->PerformSearch(
       std::move(query),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
-              weak_factory_.GetWeakPtr(), search_type, std::move(callback)),
-          drive::FileError::FILE_ERROR_ABORT, /*items=*/std::nullopt));
+      base::BindOnce(
+          &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
+          weak_factory_.GetWeakPtr(), search_type, std::move(callback)));
 }
 
 void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
@@ -348,15 +346,12 @@ void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
           "."),
       std::abs(error));
 
-  if (error != drive::FileError::FILE_ERROR_OK &&
-      error != drive::FileError::FILE_ERROR_INVALID_OPERATION &&
-      error != drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+  if (!drive::IsFileErrorOk(error) &&
+      error != drive::FileError::FILE_ERROR_INVALID_OPERATION) {
     can_use_cache_ = false;
   }
 
-  if ((error == drive::FileError::FILE_ERROR_OK ||
-       error == drive::FileError::FILE_ERROR_OK_WITH_MORE_RESULTS) &&
-      items) {
+  if (drive::IsFileErrorOk(error) && items) {
     base::UmaHistogramTimes(
         base::JoinString({kBaseHistogramName, "DurationOnSuccess",
                           GetHistogramSuffix(search_type)},

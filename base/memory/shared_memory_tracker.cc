@@ -132,8 +132,7 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
                                    0 /* importance */);
   return local_dump;
 #else   // BUILDFLAG(ENABLE_BASE_TRACING)
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 

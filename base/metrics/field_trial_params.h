@@ -341,8 +341,7 @@ struct FeatureParam<Enum, true> {
       if (value == options[i].value)
         return options[i].name;
     }
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   // RAW_PTR_EXCLUSION: #global-scope

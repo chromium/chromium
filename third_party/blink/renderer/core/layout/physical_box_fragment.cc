@@ -424,7 +424,7 @@ const LayoutBox* PhysicalBoxFragment::OwnerLayoutBox() const {
 
 #if DCHECK_IS_ON()
   DCHECK(owner_box);
-  if (UNLIKELY(IsFragmentainerBox())) {
+  if (IsFragmentainerBox()) [[unlikely]] {
     if (owner_box->IsLayoutView()) {
       DCHECK_EQ(GetBoxType(), kPageArea);
       DCHECK(To<LayoutView>(owner_box)->ShouldUsePaginatedLayout());
@@ -493,7 +493,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
   }
 
   const LayoutObject* layout_object = GetLayoutObject();
-  if (UNLIKELY(!layout_object)) {
+  if (!layout_object) [[unlikely]] {
     // Some fragments don't have a layout object associated directly with
     // them. This is the case for lines and fragmentainers (columns / pages).
     // We don't need to do anything special for such fragments. Any post-layout
@@ -507,13 +507,13 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
     return this;
   }
   const auto* box = DynamicTo<LayoutBox>(layout_object);
-  if (UNLIKELY(!box)) {
+  if (!box) [[unlikely]] {
     DCHECK(IsInlineBox());
     return this;
   }
 
   const wtf_size_t fragment_count = box->PhysicalFragmentCount();
-  if (UNLIKELY(fragment_count == 0)) {
+  if (fragment_count == 0) [[unlikely]] {
 #if DCHECK_IS_ON()
     DCHECK(AllowPostLayoutScope::IsAllowed());
 #endif
@@ -548,7 +548,7 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
 }
 
 PhysicalRect PhysicalBoxFragment::SelfInkOverflowRect() const {
-  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->SelfVisualOverflowRect();
   }
@@ -558,7 +558,7 @@ PhysicalRect PhysicalBoxFragment::SelfInkOverflowRect() const {
 }
 
 PhysicalRect PhysicalBoxFragment::ContentsInkOverflowRect() const {
-  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->ContentsVisualOverflowRect();
   }
@@ -568,7 +568,7 @@ PhysicalRect PhysicalBoxFragment::ContentsInkOverflowRect() const {
 }
 
 PhysicalRect PhysicalBoxFragment::InkOverflowRect() const {
-  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+  if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->VisualOverflowRect();
   }
@@ -882,8 +882,9 @@ void PhysicalBoxFragment::RecalcInkOverflow() {
   // Fragmentainers may or may not have |BreakToken|s, and that
   // |CopyVisualOverflowFromFragments| cannot compute stitched coordinate for
   // them. See crbug.com/1197561.
-  if (UNLIKELY(IsFragmentainerBox()))
+  if (IsFragmentainerBox()) [[unlikely]] {
     return;
+  }
 
   if (GetBreakToken()) {
     DCHECK_NE(this, &OwnerLayoutBox()->PhysicalFragments().back());
@@ -921,7 +922,7 @@ PhysicalRect PhysicalBoxFragment::RecalcContentsInkOverflow() {
     // text.
     const auto* const text_combine =
         DynamicTo<LayoutTextCombine>(GetLayoutObject());
-    if (UNLIKELY(text_combine)) {
+    if (text_combine) [[unlikely]] {
       // Reset the cursor for text combine to provide a current item for
       // decorations.
       InlineCursor text_combine_cursor(*this, *items);
@@ -972,7 +973,7 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
   const ComputedStyle& style = Style();
 
   PhysicalRect ink_overflow(LocalRect());
-  if (UNLIKELY(IsTableRow())) {
+  if (IsTableRow()) [[unlikely]] {
     // This is necessary because table-rows paints beyond border box if it
     // contains rowspanned cells.
     for (const PhysicalFragmentLink& child : PostLayoutChildren()) {

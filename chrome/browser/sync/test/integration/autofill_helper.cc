@@ -140,7 +140,7 @@ bool ProfilesMatchImpl(
   }
 
   // This seems to be a transient state that will eventually be rectified by
-  // model type logic. We don't need to check b for duplicates directly because
+  // data type logic. We don't need to check b for duplicates directly because
   // after the first is erased from |autofill_profiles_a_map| the second will
   // not be found.
   if (autofill_profiles_a.size() != autofill_profiles_a_map.size()) {

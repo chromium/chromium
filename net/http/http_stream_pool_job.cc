@@ -24,15 +24,31 @@
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
+#include "net/http/http_stream_pool_quic_task.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_http_stream.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
+
+namespace {
+
+StreamSocketHandle::SocketReuseType GetReuseTypeFromIdleStreamSocket(
+    const StreamSocket& stream_socket) {
+  return stream_socket.WasEverUsed()
+             ? StreamSocketHandle::SocketReuseType::kReusedIdle
+             : StreamSocketHandle::SocketReuseType::kUnusedIdle;
+}
+
+}  // namespace
 
 HttpStreamPool::Job::RequestEntry::RequestEntry(Job* job) : job_(job) {
   CHECK(job_);
@@ -73,7 +89,7 @@ void HttpStreamPool::Job::RequestEntry::OnRequestComplete() {
 }
 
 int HttpStreamPool::Job::RequestEntry::RestartTunnelWithProxyAuth() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void HttpStreamPool::Job::RequestEntry::SetPriority(RequestPriority priority) {
@@ -117,78 +133,104 @@ struct HttpStreamPool::Job::PreconnectEntry {
 };
 
 HttpStreamPool::Job::Job(Group* group, NetLog* net_log)
-    : group_(group), requests_(NUM_PRIORITIES) {
-  proxy_info_.UseDirect();
+    : group_(group),
+      net_log_(NetLogWithSource::Make(net_log,
+                                      NetLogSourceType::HTTP_STREAM_POOL_JOB)),
+      requests_(NUM_PRIORITIES),
+      stream_attempt_delay_(GetStreamAttemptDelay()),
+      should_block_stream_attempt_(!stream_attempt_delay_.is_zero()) {
   CHECK(group_);
+  net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE, [&] {
+    base::Value::Dict dict;
+    dict.Set("stream_attempt_delay",
+             static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+    group_->net_log().source().AddToEventParameters(dict);
+    return dict;
+  });
+  group_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_CREATED, net_log_.source());
+  proxy_info_.UseDirect();
 }
 
-HttpStreamPool::Job::~Job() = default;
+HttpStreamPool::Job::~Job() {
+  net_log().EndEvent(NetLogEventType::HTTP_STREAM_POOL_JOB_ALIVE);
+  group_->net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_GROUP_JOB_DESTROYED, net_log_.source());
+}
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::Job::RequestStream(
     HttpStreamRequest::Delegate* delegate,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
-  // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
-  // failing.
-  CHECK(!is_failing_);
-
-  if (!enable_ip_based_pooling) {
-    enable_ip_based_pooling_ = enable_ip_based_pooling;
-  }
+  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
+  // this method.
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(!spdy_session_);
+  CHECK(!spdy_session_pool()->FindAvailableSession(
+      spdy_session_key(), enable_ip_based_pooling_,
+      /*is_websocket=*/false, net_log));
 
   auto entry = std::make_unique<RequestEntry>(this);
   std::unique_ptr<HttpStreamRequest> request =
       entry->CreateRequest(delegate, net_log);
   requests_.Insert(std::move(entry), priority);
-  MaybeChangeServiceEndpointRequestPriority();
 
-  // Check if we already have SPDY session. When found, notify the request that
-  // an HttpStream is ready. Use PostTask() since `delegate` doesn't expect the
-  // request finishes synchronously.
-  if (!spdy_session_) {
-    spdy_session_ =
-        http_network_session()->spdy_session_pool()->FindAvailableSession(
-            spdy_session_key(), enable_ip_based_pooling_,
-            /*is_websocket=*/false, net_log);
-  }
-  if (spdy_session_) {
+  if (is_failing_) {
+    // `this` is failing, notify the failure.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&Job::CreateSpdyStreamAndNotify,
+        FROM_HERE, base::BindOnce(&Job::NotifyStreamRequestOfFailure,
                                   weak_ptr_factory_.GetWeakPtr()));
     return request;
   }
+
+  if (!enable_ip_based_pooling) {
+    enable_ip_based_pooling_ = enable_ip_based_pooling;
+  }
+
+  if (!enable_alternative_services) {
+    enable_alternative_services_ = enable_alternative_services;
+  }
+
+  MaybeChangeServiceEndpointRequestPriority();
 
   // Check idle streams. If found, notify the request that an HttpStream is
   // ready. Use PostTask() since `delegate` doesn't expect the request finishes
   // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&Job::CreateTextBasedStreamAndNotify,
                        weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
-                       LoadTimingInfo::ConnectTiming()));
+                       reuse_type, LoadTimingInfo::ConnectTiming()));
     return request;
   }
 
   allowed_bad_certs_ = allowed_bad_certs;
+  quic_version_ = quic_version;
 
   StartInternal(priority);
   return request;
 }
 
 int HttpStreamPool::Job::Preconnect(size_t num_streams,
+                                    quic::ParsedQuicVersion quic_version,
                                     CompletionOnceCallback callback) {
-  // TODO(crbug.com/346835898): Handle requests that are coming while `this` is
-  // failing.
-  CHECK(!is_failing_);
+  // HttpStreamPool should check the existing QUIC/SPDY sessions before calling
+  // this method.
+  CHECK(!CanUseExistingQuicSession());
+  CHECK(!spdy_session_);
+  CHECK(!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
+                                                  /*is_websocket=*/false));
 
-  if (spdy_session_pool()->HasAvailableSession(spdy_session_key(),
-                                               /*is_websocket=*/false)) {
-    CHECK(!RequiresHTTP11());
-    return OK;
+  if (is_failing_) {
+    return error_to_notify_;
   }
 
   if (group_->ActiveStreamSocketCount() >= num_streams) {
@@ -198,6 +240,8 @@ int HttpStreamPool::Job::Preconnect(size_t num_streams,
   auto entry =
       std::make_unique<PreconnectEntry>(num_streams, std::move(callback));
   preconnects_.emplace(std::move(entry));
+
+  quic_version_ = quic_version;
 
   StartInternal(RequestPriority::IDLE);
   return ERR_IO_PENDING;
@@ -247,7 +291,9 @@ void HttpStreamPool::Job::ProcessPendingRequest() {
 
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
-    CreateTextBasedStreamAndNotify(std::move(stream_socket),
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
                                    LoadTimingInfo::ConnectTiming());
     return;
   }
@@ -287,12 +333,20 @@ const SpdySessionKey& HttpStreamPool::Job::spdy_session_key() const {
   return group_->spdy_session_key();
 }
 
+const QuicSessionKey& HttpStreamPool::Job::quic_session_key() const {
+  return group_->quic_session_key();
+}
+
 HttpNetworkSession* HttpStreamPool::Job::http_network_session() {
   return group_->http_network_session();
 }
 
 SpdySessionPool* HttpStreamPool::Job::spdy_session_pool() {
   return http_network_session()->spdy_session_pool();
+}
+
+QuicSessionPool* HttpStreamPool::Job::quic_session_pool() {
+  return http_network_session()->quic_session_pool();
 }
 
 HttpStreamPool* HttpStreamPool::Job::pool() {
@@ -304,7 +358,7 @@ const HttpStreamPool* HttpStreamPool::Job::pool() const {
 }
 
 const NetLogWithSource& HttpStreamPool::Job::net_log() {
-  return group_->net_log();
+  return net_log_;
 }
 
 bool HttpStreamPool::Job::UsingTls() const {
@@ -312,8 +366,7 @@ bool HttpStreamPool::Job::UsingTls() const {
 }
 
 bool HttpStreamPool::Job::RequiresHTTP11() {
-  return http_network_session()->http_server_properties()->RequiresHTTP11(
-      stream_key().destination(), stream_key().network_anonymization_key());
+  return pool()->RequiresHTTP11(stream_key());
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
@@ -363,14 +416,51 @@ bool HttpStreamPool::Job::IsStalledByPoolLimit() {
     case CanAttemptResult::kReachedPoolLimit:
       return true;
     case CanAttemptResult::kNoPendingRequest:
+    case CanAttemptResult::kBlockedStreamAttempt:
     case CanAttemptResult::kThrottledForSpdy:
     case CanAttemptResult::kReachedGroupLimit:
       return false;
   }
 }
 
+void HttpStreamPool::Job::OnRequiredHttp11() {
+  if (spdy_session_) {
+    spdy_session_.reset();
+    is_failing_ = true;
+    error_to_notify_ = ERR_HTTP_1_1_REQUIRED;
+  }
+}
+
+void HttpStreamPool::Job::OnQuicTaskComplete(int rv) {
+  CHECK(!quic_task_result_.has_value());
+  quic_task_result_ = rv;
+  quic_task_.reset();
+
+  const bool has_requests = !requests_.empty() || !notified_requests_.empty();
+
+  if (rv == OK) {
+    group_->Refresh(kSwitchingToHttp3);
+    NotifyPreconnectsComplete(OK);
+    if (has_requests) {
+      CreateQuicStreamAndNotify();
+      return;
+    }
+  }
+
+  if (should_block_stream_attempt_) {
+    should_block_stream_attempt_ = false;
+    stream_attempt_delay_timer_.Stop();
+    MaybeAttemptConnection();
+  } else {
+    MaybeComplete();
+  }
+}
+
 void HttpStreamPool::Job::StartInternal(RequestPriority priority) {
+  UpdateStreamAttemptState();
+
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
+    MaybeAttemptQuic();
     MaybeAttemptConnection();
   } else {
     ResolveServiceEndpoint(priority);
@@ -406,12 +496,41 @@ void HttpStreamPool::Job::ProcessServiceEndpointChanges() {
   if (CanUseExistingSessionAfterEndpointChanges()) {
     return;
   }
+  MaybeRunStreamAttemptDelayTimer();
   MaybeCalculateSSLConfig();
+  MaybeAttemptQuic();
   MaybeAttemptConnection();
 }
 
 bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
   CHECK(service_endpoint_request_);
+
+  if (!UsingTls()) {
+    return false;
+  }
+
+  if (CanUseExistingQuicSession()) {
+    return true;
+  }
+
+  if (CanUseQuic()) {
+    QuicSessionAliasKey quic_session_alias_key(stream_key().destination(),
+                                               quic_session_key());
+    for (const auto& endpoint :
+         service_endpoint_request_->GetEndpointResults()) {
+      if (quic_session_pool()->HasMatchingIpSessionForServiceEndpoint(
+              quic_session_alias_key, endpoint,
+              service_endpoint_request_->GetDnsAliasResults(), true)) {
+        // Use PostTask() because we could reach here from RequestStream()
+        // synchronously when the DNS resolution finishes immediately.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
+                                      weak_ptr_factory_.GetWeakPtr()));
+        return true;
+      }
+    }
+  }
+
   if (spdy_session_) {
     return true;
   }
@@ -426,7 +545,7 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
             spdy_session_key(), endpoint,
             service_endpoint_request_->GetDnsAliasResults());
     if (spdy_session_) {
-      group_->Refresh();
+      group_->Refresh(kSwitchingToHttp2);
       // Use PostTask() because we could reach here from RequestStream()
       // synchronously when the DNS resolution finishes immediately.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -437,6 +556,18 @@ bool HttpStreamPool::Job::CanUseExistingSessionAfterEndpointChanges() {
   }
 
   return false;
+}
+
+void HttpStreamPool::Job::MaybeRunStreamAttemptDelayTimer() {
+  if (!should_block_stream_attempt_ ||
+      stream_attempt_delay_timer_.IsRunning()) {
+    return;
+  }
+  CHECK(!stream_attempt_delay_.is_zero());
+  stream_attempt_delay_timer_.Start(
+      FROM_HERE, stream_attempt_delay_,
+      base::BindOnce(&Job::OnStreamAttemptDelayPassed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
@@ -474,10 +605,39 @@ void HttpStreamPool::Job::MaybeCalculateSSLConfig() {
 
   ssl_config_.emplace(std::move(ssl_config));
 
+  // Restart slow timer for in-flight attempts that have already completed
+  // TCP handshakes.
+  for (auto& in_flight_attempt : in_flight_attempts_) {
+    if (!in_flight_attempt->is_slow &&
+        !in_flight_attempt->slow_timer.IsRunning()) {
+      // TODO(crbug.com/346835898): Should we use a different delay other than
+      // the connection attempt delay?
+      // base::Unretained() is safe here because `this` owns the
+      // `in_flight_attempt` and `slow_timer`.
+      in_flight_attempt->slow_timer.Start(
+          FROM_HERE, kConnectionAttemptDelay,
+          base::BindOnce(&Job::OnInFlightAttemptSlow, base::Unretained(this),
+                         in_flight_attempt.get()));
+    }
+  }
+
   for (auto& callback : ssl_config_waiting_callbacks_) {
     std::move(callback).Run(OK);
   }
   ssl_config_waiting_callbacks_.clear();
+}
+
+void HttpStreamPool::Job::MaybeAttemptQuic() {
+  CHECK(service_endpoint_request_);
+  if (!CanUseQuic() || quic_task_result_.has_value() ||
+      !service_endpoint_request_->EndpointsCryptoReady()) {
+    return;
+  }
+
+  if (!quic_task_) {
+    quic_task_ = std::make_unique<QuicTask>(this, quic_version_);
+  }
+  quic_task_->MaybeAttempt();
 }
 
 void HttpStreamPool::Job::MaybeAttemptConnection(
@@ -506,22 +666,32 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
   // There might be multiple pending requests. Make attempts as much as needed
   // and allowed.
   size_t num_attempts = 0;
+  const bool using_tls = UsingTls();
   while (IsConnectionAttemptReady()) {
     std::unique_ptr<StreamAttempt> attempt;
-    if (UsingTls()) {
+    if (using_tls) {
       attempt = std::make_unique<TlsStreamAttempt>(
           pool()->stream_attempt_params(), *ip_endpoint,
           HostPortPair::FromSchemeHostPort(stream_key().destination()),
           /*ssl_config_provider=*/this);
     } else {
       attempt = std::make_unique<TcpStreamAttempt>(
-          pool()->stream_attempt_params(), *ip_endpoint, &net_log());
+          pool()->stream_attempt_params(), *ip_endpoint);
     }
     net_log().AddEventReferencingSource(
         NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START,
         attempt->net_log().source());
-    attempt->net_log().AddEventReferencingSource(
-        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
+    net_log().AddEvent(
+        NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_START, [&] {
+          base::Value::Dict dict;
+          dict.Set("num_requests", static_cast<int>(requests_.size()));
+          dict.Set("num_preconnects", static_cast<int>(preconnects_.size()));
+          dict.Set("num_inflight_attempts",
+                   static_cast<int>(in_flight_attempts_.size()));
+          dict.Set("num_slow_attempts", static_cast<int>(slow_attempt_count_));
+          attempt->net_log().source().AddToEventParameters(dict);
+          return dict;
+        });
 
     auto in_flight_attempt =
         std::make_unique<InFlightAttempt>(std::move(attempt));
@@ -531,6 +701,10 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
 
     int rv = raw_attempt->attempt->Start(base::BindOnce(
         &Job::OnInFlightAttemptComplete, base::Unretained(this), raw_attempt));
+    // Add NetLog dependency after Start() so that the first event of the
+    // attempt can have meaningful description in the NetLog viewer.
+    raw_attempt->attempt->net_log().AddEventReferencingSource(
+        NetLogEventType::STREAM_ATTEMPT_BOUND_TO_POOL, net_log().source());
     if (rv != ERR_IO_PENDING) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&Job::OnInFlightAttemptComplete,
@@ -540,6 +714,12 @@ void HttpStreamPool::Job::MaybeAttemptConnection(
           FROM_HERE, kConnectionAttemptDelay,
           base::BindOnce(&Job::OnInFlightAttemptSlow, base::Unretained(this),
                          raw_attempt));
+      if (using_tls) {
+        static_cast<TlsStreamAttempt*>(raw_attempt->attempt.get())
+            ->SetTcpHandshakeCompletionCallback(
+                base::BindOnce(&Job::OnInFlightAttemptTcpHandshakeComplete,
+                               base::Unretained(this), raw_attempt));
+      }
     }
 
     ++num_attempts;
@@ -554,6 +734,8 @@ bool HttpStreamPool::Job::IsConnectionAttemptReady() {
     case CanAttemptResult::kAttempt:
       return true;
     case CanAttemptResult::kNoPendingRequest:
+      return false;
+    case CanAttemptResult::kBlockedStreamAttempt:
       return false;
     case CanAttemptResult::kThrottledForSpdy:
       // TODO(crbug.com/346835898): Consider throttling less aggressively (e.g.
@@ -594,6 +776,10 @@ HttpStreamPool::Job::CanAttemptConnection() {
 
   if (ShouldThrottleAttemptForSpdy()) {
     return CanAttemptResult::kThrottledForSpdy;
+  }
+
+  if (should_block_stream_attempt_) {
+    return CanAttemptResult::kBlockedStreamAttempt;
   }
 
   if (group_->ReachedMaxStreamLimit()) {
@@ -801,18 +987,21 @@ void HttpStreamPool::Job::ProcessPreconnectsAfterAttemptComplete(int rv) {
 
 void HttpStreamPool::Job::CreateTextBasedStreamAndNotify(
     std::unique_ptr<StreamSocket> stream_socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
-      std::move(stream_socket), std::move(connect_timing));
+      std::move(stream_socket), reuse_type, std::move(connect_timing));
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }
 
 void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
+  // TODO(crbug.com/346835898): Handle `spdy_session_` becaming unavailable.
   CHECK(spdy_session_);
+  CHECK(spdy_session_->IsAvailable());
   CHECK(!is_canceling_requests_);
   CHECK(!is_failing_);
 
@@ -830,6 +1019,29 @@ void HttpStreamPool::Job::CreateSpdyStreamAndNotify() {
   auto http_stream = std::make_unique<SpdyHttpStream>(
       spdy_session_, net_log().source(), std::move(dns_aliases));
   NotifyStreamReady(std::move(http_stream), NextProto::kProtoHTTP2);
+  // `this` may be deleted.
+}
+
+void HttpStreamPool::Job::CreateQuicStreamAndNotify() {
+  QuicChromiumClientSession* quic_session =
+      quic_session_pool()->FindExistingSession(quic_session_key(),
+                                               stream_key().destination());
+  CHECK(quic_session);
+
+  // If there are more than one remaining request, post a task to create
+  // HttpStreams for these requests.
+  if (requests_.size() > 1) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&Job::CreateQuicStreamAndNotify,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  std::set<std::string> dns_aliases =
+      quic_session->GetDnsAliasesForSessionKey(quic_session_key());
+  auto http_stream = std::make_unique<QuicHttpStream>(
+      quic_session->CreateHandle(stream_key().destination()),
+      std::move(dns_aliases));
+  NotifyStreamReady(std::move(http_stream), NextProto::kProtoQUIC);
   // `this` may be deleted.
 }
 
@@ -897,6 +1109,9 @@ void HttpStreamPool::Job::OnRequestComplete(RequestEntry* entry) {
 void HttpStreamPool::Job::OnInFlightAttemptComplete(
     InFlightAttempt* raw_attempt,
     int rv) {
+  net_log().AddEventReferencingSource(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_ATTEMPT_END,
+      raw_attempt->attempt->net_log().source());
   raw_attempt->slow_timer.Stop();
   if (raw_attempt->is_slow) {
     CHECK_GT(slow_attempt_count_, 0u);
@@ -917,22 +1132,28 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   LoadTimingInfo::ConnectTiming connect_timing =
       in_flight_attempt->attempt->connect_timing();
   connect_timing.domain_lookup_start = dns_resolution_start_time_;
-  connect_timing.domain_lookup_end = dns_resolution_end_time_.is_null()
-                                         ? connect_timing.connect_start
-                                         : dns_resolution_end_time_;
+  // If the attempt started before DNS resolution completion, `connect_start`
+  // could be smaller than `dns_resolution_end_time_`. Use the smallest one.
+  connect_timing.domain_lookup_end =
+      dns_resolution_end_time_.is_null()
+          ? connect_timing.connect_start
+          : std::min(connect_timing.connect_start, dns_resolution_end_time_);
 
   std::unique_ptr<StreamSocket> stream_socket =
       in_flight_attempt->attempt->ReleaseStreamSocket();
   CHECK(stream_socket);
+  CHECK(service_endpoint_request_);
+  stream_socket->SetDnsAliases(service_endpoint_request_->GetDnsAliasResults());
 
   spdy_throttle_timer_.Stop();
 
+  const auto reuse_type = StreamSocketHandle::SocketReuseType::kUnused;
   if (stream_socket->GetNegotiatedProtocol() == NextProto::kProtoHTTP2) {
     CHECK(!spdy_session_pool()->FindAvailableSession(
         group_->spdy_session_key(), enable_ip_based_pooling_,
         /*is_websocket=*/false, net_log()));
     std::unique_ptr<HttpStreamPoolHandle> handle = group_->CreateHandle(
-        std::move(stream_socket), std::move(connect_timing));
+        std::move(stream_socket), reuse_type, std::move(connect_timing));
     int create_result =
         spdy_session_pool()->CreateAvailableSessionFromSocketHandle(
             spdy_session_key(), std::move(handle), net_log(), &spdy_session_);
@@ -944,7 +1165,7 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
 
     // Cancel in-flight requests and close idle streams as we don't need them
     // anymore.
-    group_->Refresh();
+    group_->Refresh(kSwitchingToHttp2);
 
     NotifyPreconnectsComplete(OK);
     CreateSpdyStreamAndNotify();
@@ -954,8 +1175,20 @@ void HttpStreamPool::Job::OnInFlightAttemptComplete(
   ProcessPreconnectsAfterAttemptComplete(rv);
 
   CHECK_NE(stream_socket->GetNegotiatedProtocol(), NextProto::kProtoHTTP2);
-  CreateTextBasedStreamAndNotify(std::move(stream_socket),
+  CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
                                  std::move(connect_timing));
+}
+
+void HttpStreamPool::Job::OnInFlightAttemptTcpHandshakeComplete(
+    InFlightAttempt* raw_attempt,
+    int rv) {
+  auto it = in_flight_attempts_.find(raw_attempt);
+  CHECK(it != in_flight_attempts_.end());
+  if (raw_attempt->is_slow || !raw_attempt->slow_timer.IsRunning()) {
+    return;
+  }
+
+  raw_attempt->slow_timer.Stop();
 }
 
 void HttpStreamPool::Job::OnInFlightAttemptSlow(InFlightAttempt* raw_attempt) {
@@ -1017,9 +1250,57 @@ void HttpStreamPool::Job::OnSpdyThrottleDelayPassed() {
   MaybeAttemptConnection();
 }
 
+base::TimeDelta HttpStreamPool::Job::GetStreamAttemptDelay() {
+  if (!CanUseQuic()) {
+    return base::TimeDelta();
+  }
+
+  return quic_session_pool()->GetTimeDelayForWaitingJob(quic_session_key());
+}
+
+void HttpStreamPool::Job::UpdateStreamAttemptState() {
+  if (!should_block_stream_attempt_) {
+    return;
+  }
+
+  if (!CanUseQuic()) {
+    should_block_stream_attempt_ = false;
+    stream_attempt_delay_timer_.Stop();
+    return;
+  }
+}
+
+void HttpStreamPool::Job::OnStreamAttemptDelayPassed() {
+  net_log().AddEvent(
+      NetLogEventType::HTTP_STREAM_POOL_JOB_STREAM_ATTEMPT_DELAY_PASSED, [&] {
+        base::Value::Dict dict;
+        dict.Set("stream_attempt_delay",
+                 static_cast<int>(stream_attempt_delay_.InMilliseconds()));
+        return dict;
+      });
+  CHECK(should_block_stream_attempt_);
+  should_block_stream_attempt_ = false;
+  MaybeAttemptConnection();
+}
+
+bool HttpStreamPool::Job::CanUseQuic() {
+  return pool()->CanUseQuic(stream_key(), enable_ip_based_pooling_,
+                            enable_alternative_services_);
+}
+
+bool HttpStreamPool::Job::CanUseExistingQuicSession() {
+  return pool()->CanUseExistingQuicSession(stream_key(), quic_session_key(),
+                                           enable_ip_based_pooling_,
+                                           enable_alternative_services_);
+}
+
 void HttpStreamPool::Job::MaybeComplete() {
   if (!requests_.empty() || !notified_requests_.empty() ||
       !preconnects_.empty() || !in_flight_attempts_.empty()) {
+    return;
+  }
+
+  if (quic_task_) {
     return;
   }
 

@@ -25,7 +25,7 @@ class PasswordSenderServiceImpl : public PasswordSenderService {
   // PasswordSenderService implementation
   void SendPasswords(const std::vector<PasswordForm>& passwords,
                      const PasswordRecipient& recipient) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // KeyedService (through PasswordSenderService) implementation.

@@ -7,5 +7,8 @@
 const char kPushMessagingGcmEndpoint[] =
     "https://fcm.googleapis.com/fcm/send/";
 
+const char kPushMessagingStagingGcmEndpoint[] =
+    "https://jmt17.google.com/fcm/send/";
+
 const char kPushMessagingForcedNotificationTag[] =
     "user_visible_auto_notification";

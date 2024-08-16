@@ -6,12 +6,17 @@
 
 #import "base/i18n/rtl.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -95,6 +100,14 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   BOOL _shouldCollapseForFullscreen;
   // Whether there currently are any Infobar badges being shown.
   BOOL _infobarBadgesCurrentlyShown;
+
+  // LayoutGuideCenter to register the entrypoint container's view for global
+  // access, only when it is large (i.e. dismissable).
+  LayoutGuideCenter* _layoutGuideCenter;
+
+  // Swipe gesture recognizer for the entrypoint (allows the user to "dismiss"
+  // the large chip entrypoint).
+  UISwipeGestureRecognizer* _swipeRecognizer;
 }
 @end
 
@@ -106,6 +119,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   // Set the view as hidden when created as it should only appear when the
   // entrypoint should be shown.
   self.view.hidden = YES;
+  self.view.isAccessibilityElement = NO;
   _entrypointDisplayed = NO;
 
   _entrypointContainer = [self configuredEntrypointContainer];
@@ -119,6 +133,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [_entrypointContainer addSubview:_entrypointItemsWrapper];
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
+
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self activateInitialConstraints];
 
@@ -145,6 +161,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     [self.mutator dismissIPHAnimated:NO];
   }
   self.view.hidden = !display || !_entrypointDisplayed;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
@@ -237,6 +254,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   label.font = [self entrypointLabelFont];
   label.numberOfLines = 1;
   label.accessibilityIdentifier = kContextualPanelEntrypointLabelIdentifier;
+  label.isAccessibilityElement = NO;
   [label
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
@@ -383,6 +401,26 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   _separator.hidden = !_infobarBadgesCurrentlyShown;
 }
 
+// Applies the correct color to the entrypoint (highlighted blue when the
+// in-product help is present), otherwise back to the normal colorset.
+- (void)styleEntrypointForColoredState:(BOOL)colored {
+  _imageView.tintColor =
+      colored ? [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor]
+              : [UIColor colorNamed:kBlue600Color];
+
+  _entrypointContainer.backgroundColor =
+      colored ? [UIColor colorNamed:kBlue600Color]
+              : [UIColor colorNamed:kContextualPanelEntrypointBackgroundColor];
+}
+
+// User swiped the large entrypoint chip towards the leading edge, intending to
+// dismiss it.
+- (void)largeEntrypointChipSwiped {
+  [self transitionToSmallEntrypoint];
+  base::RecordAction(base::UserMetricsAction(
+      "IOSContextualPanelEntrypointLargeChipDismissedWithSwipe"));
+}
+
 #pragma mark - ContextualPanelEntrypointConsumer
 
 - (void)setEntrypointConfig:
@@ -427,6 +465,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   self.view.transform = CGAffineTransformMakeScale(0.95, 0.95);
 
   self.view.hidden = !_entrypointDisplayed;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
                         delay:0
@@ -445,6 +484,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointDisplayed = NO;
   self.view.hidden = YES;
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
@@ -455,6 +495,18 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   if (_largeTrailingConstraint.active) {
     return;
   }
+
+  [_layoutGuideCenter referenceView:_entrypointContainer
+                          underName:kContextualPanelLargeEntrypointGuide];
+
+  _swipeRecognizer = [[UISwipeGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(largeEntrypointChipSwiped)];
+  _swipeRecognizer.cancelsTouchesInView = YES;
+  _swipeRecognizer.direction = base::i18n::IsRTL()
+                                   ? UISwipeGestureRecognizerDirectionRight
+                                   : UISwipeGestureRecognizerDirectionLeft;
+  [_entrypointContainer addGestureRecognizer:_swipeRecognizer];
 
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
@@ -503,12 +555,34 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                                UIViewAnimationOptionAllowUserInteraction)
                    animations:animateTransitionToSmallEntrypoint
                    completion:nil];
+
+  [_entrypointContainer removeGestureRecognizer:_swipeRecognizer];
+
+  [_layoutGuideCenter referenceView:nil
+                          underName:kContextualPanelLargeEntrypointGuide];
 }
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {
   _entrypointTapped = opened;
   [self refreshEntrypointVisualElements];
   [self transitionToSmallEntrypoint];
+}
+
+- (void)setEntrypointColored:(BOOL)colored {
+  if (!ShouldHighlightContextualPanelEntrypointDuringIPH()) {
+    return;
+  }
+
+  __weak ContextualPanelEntrypointViewController* weakSelf = self;
+
+  [UIView animateWithDuration:kEntrypointDisplayingAnimationTime
+                        delay:0
+                      options:(UIViewAnimationOptionCurveEaseOut |
+                               UIViewAnimationOptionAllowUserInteraction)
+                   animations:^{
+                     [weakSelf styleEntrypointForColoredState:colored];
+                   }
+                   completion:nil];
 }
 
 #pragma mark - ContextualPanelEntrypointMutator
@@ -532,6 +606,8 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                               0);
     self.view.alpha = alphaValue;
   }
+
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
 }
 
 #pragma mark - UIView

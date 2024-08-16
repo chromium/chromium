@@ -568,7 +568,7 @@ std::u16string GetGranularFillingLabels(SuggestionType suggestion_type) {
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillFullEmail:
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -770,9 +770,9 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   }
   Suggestion suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_DEVELOPER_TOOLS),
                         SuggestionType::kDevtoolsTestAddresses);
+  suggestion.main_text.is_primary = Suggestion::Text::IsPrimary(false);
   suggestion.icon = Suggestion::Icon::kCode;
   suggestion.is_acceptable = false;
-  suggestion.apply_deactivated_style = true;
   suggestion.children.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_TEST_ADDRESS_BY_COUNTRY),
       SuggestionType::kDevtoolsTestAddressByCountry);

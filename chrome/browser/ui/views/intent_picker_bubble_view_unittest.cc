@@ -527,6 +527,29 @@ TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
   ASSERT_EQ(bubble_->GetSelectedIndex(), 0u);
 }
 
+TEST_F(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
+  ui::AXNodeData data;
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/std::nullopt);
+  // In case of 1 app, 1st view will be selected
+  bubble_->SelectDefaultItem();
+  auto* view = GetButtonAtIndex(0);
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   BubbleType::kLinkCapturing,
+                   /*initiating_origin=*/std::nullopt);
+
+  data = ui::AXNodeData();
+  view = GetButtonAtIndex(1);
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");

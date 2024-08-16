@@ -42,7 +42,7 @@ class PickerLinkSuggester {
   PickerLinkSuggester(const PickerLinkSuggester&) = delete;
   PickerLinkSuggester& operator=(const PickerLinkSuggester&) = delete;
 
-  void GetSuggestedLinks(SuggestedLinksCallback callback);
+  void GetSuggestedLinks(size_t max_links, SuggestedLinksCallback callback);
 
   void set_favicon_service_for_test(favicon::FaviconService* service) {
     favicon_service_ = service;

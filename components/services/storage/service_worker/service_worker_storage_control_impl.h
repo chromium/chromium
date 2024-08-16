@@ -27,15 +27,8 @@ class ServiceWorkerLiveVersionRefImpl;
 
 // This class wraps ServiceWorkerStorage to implement mojo interface defined by
 // the storage service, i.e., ServiceWorkerStorageControl.
-// If kServiceWorkerStorageControlOnThreadPool is enabled,
 // ServiceWorkerStorageControlImpl is created on database_task_runner (thread
-// pool) and retained by mojo::SelfOwnedReceiver. If
-// kServiceWorkerStorageControlOnIOThread is enabled on Android,
-// ServiceWorkerStorageControlImpl is created on the IO thread and owned by
-// PartitionImpl. Otherwise, this is created on the UI thread and owned by
-// ServiceWorkerContextWrapper. In the near future,
-// kServiceWorkerStorageControlOnThreadPool will be the default for all
-// platforms.
+// pool) and retained by mojo::SelfOwnedReceiver.
 // TODO(crbug.com/40120038): Merge this implementation into ServiceWorkerStorage
 // and move the merged class to components/services/storage.
 class ServiceWorkerStorageControlImpl

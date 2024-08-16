@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 namespace ash {
@@ -25,7 +26,7 @@ class BasePasswordDialog : public SystemWebDialogDelegate {
   // ui::WebDialogDelegate:
   void GetDialogSize(gfx::Size* size) const override;
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
 
  private:
   gfx::Size desired_size_;

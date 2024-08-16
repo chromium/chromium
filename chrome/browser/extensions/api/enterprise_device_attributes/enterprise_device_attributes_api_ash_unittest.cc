@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api.h"
-
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -14,14 +12,17 @@
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_attributes_fake.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "extensions/browser/api_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,6 +132,8 @@ class EnterpriseDeviceAttributesApiAshTest
   }
 
  protected:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;

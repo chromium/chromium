@@ -301,11 +301,11 @@ std::string CaptureTypeWithPattern(const FieldType& type,
                                        std::string(), options);
 }
 
-std::u16string NormalizeAndRewrite(const std::u16string& country_code,
+std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    const std::u16string& text,
                                    bool keep_white_space) {
   return AddressRewriter::RewriteForCountryCode(
-      country_code.empty() ? u"US" : country_code,
+      country_code->empty() ? AddressCountryCode("US") : country_code,
       NormalizeValue(text, keep_white_space));
 }
 

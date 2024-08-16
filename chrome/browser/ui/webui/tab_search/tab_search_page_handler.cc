@@ -30,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -610,8 +611,13 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
 
 void TabSearchPageHandler::TriggerSignIn() {
   Profile* profile = chrome::FindLastActive()->profile();
-  signin_ui_util::ShowSigninPromptFromPromo(
-      profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  if (SigninErrorControllerFactory::GetForProfile(profile)->HasError()) {
+    signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  } else {
+    signin_ui_util::ShowSigninPromptFromPromo(
+        profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+  }
 }
 
 void TabSearchPageHandler::OpenHelpPage() {
@@ -925,7 +931,8 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
 
   tab_data->show_icon = tab_renderer_data.show_icon;
 
-  const base::TimeTicks last_active_time_ticks = contents->GetLastActiveTime();
+  const base::TimeTicks last_active_time_ticks =
+      contents->GetLastActiveTimeTicks();
   tab_data->last_active_time_ticks = last_active_time_ticks;
 
   // last_active_time_for_testing can affect pixel tests depending on when the
@@ -937,7 +944,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
           : GetLastActiveElapsedText(last_active_time_ticks);
 
   std::vector<TabAlertState> alert_states =
-      chrome::GetTabAlertStatesForContents(contents);
+      GetTabAlertStatesForContents(contents);
   // Currently, we only report media alert states.
   base::ranges::copy_if(alert_states.begin(), alert_states.end(),
                         std::back_inserter(tab_data->alert_states),

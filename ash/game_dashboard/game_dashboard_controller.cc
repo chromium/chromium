@@ -57,10 +57,11 @@ static const std::array<std::string, 7> kGameAppIdAllowList{
 // TODO(b/343400145): Move these PWA app IDs into `kGameAppIdAllowList` once
 // they have been fully evaluated and the `game-dashboard-game-pwas` flag is
 // removed.
-static const std::array<std::string, 13> kPWAGameAppIdAllowList{
+static const std::array<std::string, 15> kPWAGameAppIdAllowList{
     extension_misc::kAmazonLunaAppIdCA,   extension_misc::kAmazonLunaAppIdDE,
     extension_misc::kAmazonLunaAppIdES,   extension_misc::kAmazonLunaAppIdFR,
-    extension_misc::kAmazonLunaAppIdIT,   extension_misc::kAmazonLunaAppIdUK,
+    extension_misc::kAmazonLunaAppIdIT,   extension_misc::kAmazonLunaAppIdNL,
+    extension_misc::kAmazonLunaAppIdPL,   extension_misc::kAmazonLunaAppIdUK,
     extension_misc::kAmazonLunaAppIdUS,   extension_misc::kBoosteroidAppId,
     extension_misc::kCoolMathGamesAppId,  extension_misc::kNowGGAppIdUK,
     extension_misc::kNowGGAppIdUS,        extension_misc::kPokiAppId,
@@ -430,6 +431,9 @@ void GameDashboardController::MaybeEnableFeatures(
   const bool should_enable =
       enable && game_dashboard_utils::ShouldEnableFeatures();
   for (auto const& [_, context] : game_window_contexts_) {
+    context->OnWindowBoundsChanged(
+        main_menu_toggle_method ==
+        GameDashboardMainMenuToggleMethod::kAnimation);
     context->EnableFeatures(should_enable, main_menu_toggle_method);
   }
 }

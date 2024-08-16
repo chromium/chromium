@@ -208,6 +208,7 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/ic_more_vert_24dp_on_light_bg.png",
     "java/res/drawable/async_image_view_unavailable.xml",
     "java/res/drawable/async_image_view_waiting.xml",
+    "java/res/drawable/bg_white_dialog.xml",
     "java/res/drawable/bottom_sheet_background.xml",
     "java/res/drawable/card_with_corners_background.xml",
     "java/res/drawable/gradient_paragraph_loading_animation.xml",
@@ -426,7 +427,6 @@ robolectric_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
-    "//ui/accessibility:ui_accessibility_features_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]

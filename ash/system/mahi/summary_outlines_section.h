@@ -42,6 +42,9 @@ class ASH_EXPORT SummaryOutlinesSection : public views::BoxLayoutView,
   bool GetViewVisibility(VisibilityState state) const override;
   void OnUpdated(const MahiUiUpdate& update) override;
 
+  // views::BoxLayoutView:
+  void AddedToWidget() override;
+
   void HandleOutlinesLoaded(const std::vector<chromeos::MahiOutline>& outlines);
 
   void HandleSummaryLoaded(const std::u16string& summary_text);

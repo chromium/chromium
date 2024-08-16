@@ -39,7 +39,7 @@ ChromeOSResultToLocalApprovalResult(
       return supervised_user::WebContentHandler::LocalApprovalResult::kError;
     case crosapi::mojom::ParentAccessResult::Tag::kDisabled:
       // Disabled is not a possible result for Local Web Approvals.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

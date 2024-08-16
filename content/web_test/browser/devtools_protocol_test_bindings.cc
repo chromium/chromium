@@ -176,7 +176,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
   if (log_enabled_) {
-    NOTREACHED_NORETURN() << "Unexpected messages dispatched by the browser";
+    NOTREACHED() << "Unexpected messages dispatched by the browser";
   }
   std::string_view str_message(reinterpret_cast<const char*>(message.data()),
                                 message.size());

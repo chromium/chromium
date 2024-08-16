@@ -10,13 +10,15 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_model_availability.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ai_capability_availability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_model_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_text_session_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
+#include "third_party/blink/renderer/modules/ai/ai_rewriter_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
+#include "third_party/blink/renderer/modules/ai/ai_writer_factory.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -29,13 +31,17 @@ AI::AI(ExecutionContext* context)
     : ExecutionContextClient(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
       ai_remote_(context),
-      text_session_factory_(context, task_runner_) {}
+      text_session_factory_(
+          MakeGarbageCollected<AITextSessionFactory>(context, task_runner_)) {}
 
 void AI::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(ai_remote_);
   visitor->Trace(text_session_factory_);
+  visitor->Trace(ai_summarizer_factory_);
+  visitor->Trace(ai_writer_factory_);
+  visitor->Trace(ai_rewriter_factory_);
 }
 
 HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
@@ -48,26 +54,30 @@ HeapMojoRemote<mojom::blink::AIManager>& AI::GetAIRemote() {
   return ai_remote_;
 }
 
-ScriptPromise<V8AIModelAvailability> AI::canCreateTextSession(
+scoped_refptr<base::SequencedTaskRunner> AI::GetTaskRunner() {
+  return task_runner_;
+}
+
+ScriptPromise<V8AICapabilityAvailability> AI::canCreateTextSession(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     ThrowInvalidContextException(exception_state);
-    return ScriptPromise<V8AIModelAvailability>();
+    return ScriptPromise<V8AICapabilityAvailability>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<V8AIModelAvailability>>(
+      MakeGarbageCollected<ScriptPromiseResolver<V8AICapabilityAvailability>>(
           script_state);
   auto promise = resolver->Promise();
   using ModelAvailabilityCheckResult =
       mojom::blink::ModelAvailabilityCheckResult;
 
-  text_session_factory_.CanCreateTextSession(WTF::BindOnce(
-      [](ScriptPromiseResolver<V8AIModelAvailability>* resolver,
-         AIModelAvailability availability,
+  text_session_factory_->CanCreateTextSession(WTF::BindOnce(
+      [](ScriptPromiseResolver<V8AICapabilityAvailability>* resolver,
+         AICapabilityAvailability availability,
          ModelAvailabilityCheckResult check_result) {
-        resolver->Resolve(AIModelAvailabilityToV8(availability));
+        resolver->Resolve(AICapabilityAvailabilityToV8(availability));
       },
       WrapPersistent(resolver)));
   return promise;
@@ -86,6 +96,7 @@ ScriptPromise<AITextSession> AI::createTextSession(
       MakeGarbageCollected<ScriptPromiseResolver<AITextSession>>(script_state);
   auto promise = resolver->Promise();
   mojom::blink::AITextSessionSamplingParamsPtr sampling_params;
+  WTF::String system_prompt;
   if (options) {
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
@@ -98,10 +109,13 @@ ScriptPromise<AITextSession> AI::createTextSession(
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       return promise;
     }
+    if (options->hasSystemPrompt()) {
+      system_prompt = options->systemPrompt();
+    }
   }
 
-  text_session_factory_.CreateTextSession(
-      std::move(sampling_params),
+  text_session_factory_->CreateTextSession(
+      std::move(sampling_params), system_prompt,
       WTF::BindOnce(
           [](ScriptPromiseResolver<AITextSession>* resolver,
              base::expected<AITextSession*, DOMException*> result) {
@@ -148,6 +162,28 @@ ScriptPromise<AITextModelInfo> AI::textModelInfo(
       },
       WrapPersistent(resolver)));
   return promise;
+}
+
+AISummarizerFactory* AI::summarizer() {
+  if (!ai_summarizer_factory_) {
+    ai_summarizer_factory_ = MakeGarbageCollected<AISummarizerFactory>(
+        GetExecutionContext(), task_runner_);
+  }
+  return ai_summarizer_factory_.Get();
+}
+
+AIWriterFactory* AI::writer() {
+  if (!ai_writer_factory_) {
+    ai_writer_factory_ = MakeGarbageCollected<AIWriterFactory>(this);
+  }
+  return ai_writer_factory_.Get();
+}
+
+AIRewriterFactory* AI::rewriter() {
+  if (!ai_rewriter_factory_) {
+    ai_rewriter_factory_ = MakeGarbageCollected<AIRewriterFactory>(this);
+  }
+  return ai_rewriter_factory_.Get();
 }
 
 }  // namespace blink

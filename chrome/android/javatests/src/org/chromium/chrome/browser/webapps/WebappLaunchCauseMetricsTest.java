@@ -10,6 +10,7 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,8 +74,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -84,8 +86,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         Mockito.when(mWebappInfo.distributor()).thenReturn(WebApkDistributor.OTHER);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -95,8 +98,9 @@ public final class WebappLaunchCauseMetricsTest {
                         LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
         Mockito.when(mWebappInfo.isForWebApk()).thenReturn(false);
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
     }
 
     @Test
@@ -113,8 +117,9 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, mWebappInfo);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
     }
 
     @Test
@@ -128,7 +133,8 @@ public final class WebappLaunchCauseMetricsTest {
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
 
         metrics.onReceivedIntent();
-        metrics.recordLaunchCause();
+        int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
+        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
     }
 }

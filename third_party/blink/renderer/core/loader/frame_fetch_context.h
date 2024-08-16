@@ -195,12 +195,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   String GetReducedAcceptLanguage() const;
 
   enum class ClientHintsMode { kLegacy, kStandard };
-  bool ShouldSendClientHint(ClientHintsMode mode,
-                            const PermissionsPolicy*,
-                            const url::Origin& resource_origin,
-                            bool is_1p_origin,
-                            network::mojom::blink::WebClientHintsType,
-                            const ClientHintsPreferences&) const;
   void SetFirstPartyCookie(ResourceRequest&);
 
   // Returns true if `resource_origin` is same as the origin of the top level
@@ -215,6 +209,10 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   // Non-null only when detached.
   Member<FrozenState> frozen_state_;
+
+  // Serializing the brand major version list is expensive, so it's cached.
+  std::optional<UserAgentMetadata> last_ua_;
+  std::optional<AtomicString> last_ua_serialized_brand_major_version_list_;
 };
 
 }  // namespace blink

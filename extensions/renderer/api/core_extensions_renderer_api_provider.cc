@@ -4,9 +4,8 @@
 
 #include "extensions/renderer/api/core_extensions_renderer_api_provider.h"
 
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/grit/extensions_renderer_resources.h"
-#include "extensions/renderer/api/app_window_custom_bindings.h"
-#include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 #include "extensions/renderer/api/context_menus_custom_bindings.h"
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
 #include "extensions/renderer/api/dom_hooks_delegate.h"
@@ -22,7 +21,6 @@
 #include "extensions/renderer/blob_native_handler.h"
 #include "extensions/renderer/chrome_setting.h"
 #include "extensions/renderer/content_setting.h"
-#include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
 #include "extensions/renderer/id_generator_custom_bindings.h"
 #include "extensions/renderer/logging_native_handler.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -40,6 +38,22 @@
 #include "extensions/renderer/v8_context_native_handler.h"
 #include "extensions/renderer/v8_schema_registry.h"
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
+
+// TODO(https://crbug.com/356905053): The following files don't compile
+// cleanly with the experimental desktop-android build. Either make them
+// compile, or determine they should not be included and place them under a
+// more appropriate if-block.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/renderer/api/app_window_custom_bindings.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/renderer/guest_view/guest_view_internal_custom_bindings.h"
+#endif
 
 namespace extensions {
 
@@ -83,15 +97,21 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
       std::make_unique<ServiceWorkerNatives>(context));
 
   // Custom bindings.
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   module_system->RegisterNativeHandler(
       "app_window_natives", std::make_unique<AppWindowCustomBindings>(context));
+#endif
   module_system->RegisterNativeHandler(
       "blob_natives", std::make_unique<BlobNativeHandler>(context));
   module_system->RegisterNativeHandler(
       "context_menus", std::make_unique<ContextMenusCustomBindings>(context));
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   module_system->RegisterNativeHandler(
       "guest_view_internal",
       std::make_unique<GuestViewInternalCustomBindings>(context));
+#endif
+
   module_system->RegisterNativeHandler(
       "id_generator", std::make_unique<IdGeneratorCustomBindings>(context));
   module_system->RegisterNativeHandler(
@@ -99,9 +119,11 @@ void CoreExtensionsRendererAPIProvider::RegisterNativeHandlers(
   module_system->RegisterNativeHandler(
       "runtime", std::make_unique<RuntimeCustomBindings>(context));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   module_system->RegisterNativeHandler(
       "automationInternal", std::make_unique<AutomationInternalCustomBindings>(
                                 context, bindings_system));
+#endif
 }
 
 void CoreExtensionsRendererAPIProvider::AddBindingsSystemHooks(
@@ -148,12 +170,16 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"feedbackPrivate", IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
       {"fileEntryBindingUtil", IDR_FILE_ENTRY_BINDING_UTIL_JS},
       {"fileSystem", IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
       {"guestView", IDR_GUEST_VIEW_JS},
       {"guestViewAttributes", IDR_GUEST_VIEW_ATTRIBUTES_JS},
       {"guestViewContainer", IDR_GUEST_VIEW_CONTAINER_JS},
       {"guestViewContainerElement", IDR_GUEST_VIEW_CONTAINER_ELEMENT_JS},
       {"guestViewDeny", IDR_GUEST_VIEW_DENY_JS},
       {"guestViewEvents", IDR_GUEST_VIEW_EVENTS_JS},
+#endif
+
       {"safeMethods", IDR_SAFE_METHODS_JS},
       {"imageUtil", IDR_IMAGE_UTIL_JS},
       {"setIcon", IDR_SET_ICON_JS},
@@ -178,7 +204,12 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"webViewInternal", IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
 
       {"keep_alive", IDR_KEEP_ALIVE_JS},
+
+// TODO(https://crbug.com/356905053): Figure out mojo bindings for
+// desktop-android builds. Currently, the full bindings aren't generated.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       {"mojo_bindings", IDR_MOJO_MOJO_BINDINGS_JS},
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
       {"mojo_bindings_lite", IDR_MOJO_MOJO_BINDINGS_LITE_JS},

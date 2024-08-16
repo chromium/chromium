@@ -166,18 +166,16 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(removed_prerender_rules,
-                         PrerenderCancellationReason(
-                             PrerenderFinalStatus::kSpeculationRuleRemoved));
+  std::set<int> canceled_prerender_rules_set = registry_->CancelHosts(
+      removed_prerender_rules,
+      PrerenderCancellationReason(
+          PrerenderFinalStatus::kSpeculationRuleRemoved));
 
-  base::flat_set<int> removed_prerender_rules_set(
-      removed_prerender_rules.begin(), removed_prerender_rules.end());
-
-  // Canceled prerenders should have already been removed from
-  // `started_prerenders_` via `OnCancel`.
+  // Canceled prerenders by kSpeculationRuleRemoved should have already been
+  // removed from `started_prerenders_` via `OnCancel`.
   CHECK(std::find_if(started_prerenders_.begin(), started_prerenders_.end(),
                      [&](const PrerenderInfo& x) {
-                       return base::Contains(removed_prerender_rules_set,
+                       return base::Contains(canceled_prerender_rules_set,
                                              x.prerender_host_id);
                      }) == started_prerenders_.end());
 

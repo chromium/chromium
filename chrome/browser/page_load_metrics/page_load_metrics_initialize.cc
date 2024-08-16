@@ -13,13 +13,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/amp_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/foreground_duration_ukm_observer.h"
 #include "chrome/browser/page_load_metrics/observers/formfill_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h"
+#include "chrome/browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/javascript_frameworks_ukm_observer.h"
@@ -53,6 +54,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_base.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
@@ -65,6 +67,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -173,7 +179,8 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
     tracker->AddObserver(std::make_unique<GWSPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<AbandonedPageLoadMetricsObserver>());
     tracker->AddObserver(
-        std::make_unique<GWSAbandonedPageLoadMetricsObserver>());
+        std::make_unique<ChromeGWSAbandonedPageLoadMetricsObserver>());
+    tracker->AddObserver(std::make_unique<GWSHpPageLoadMetricsObserver>());
     tracker->AddObserver(std::make_unique<ForegroundDurationUKMObserver>());
     tracker->AddObserver(
         std::make_unique<DocumentWritePageLoadMetricsObserver>());
@@ -245,6 +252,15 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
   if (translate_observer)
     tracker->AddObserver(std::move(translate_observer));
   tracker->AddObserver(std::make_unique<ZstdPageLoadMetricsObserver>());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (AshSessionRestorePageLoadMetricsObserver::ShouldBeInstantiated(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
+    tracker->AddObserver(
+        std::make_unique<AshSessionRestorePageLoadMetricsObserver>(
+            web_contents()));
+  }
+#endif
 }
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {

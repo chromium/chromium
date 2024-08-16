@@ -34,6 +34,8 @@ declare namespace chrome {
     let linksEnabled: boolean;
     let imagesEnabled: boolean;
     let imagesFeatureEnabled: boolean;
+    // The numerical enum value of these styles, not the actual value used to
+    // style the app.
     let lineSpacing: number;
     let letterSpacing: number;
     let colorTheme: number;
@@ -155,9 +157,7 @@ declare namespace chrome {
     function onLinkClicked(nodeId: number): void;
 
     // Called when the line spacing is changed via the webui toolbar.
-    function onStandardLineSpacing(): void;
-    function onLooseLineSpacing(): void;
-    function onVeryLooseLineSpacing(): void;
+    function onLineSpacingChange(value: number): void;
 
     // Called when a user makes a font size change via the webui toolbar.
     function onFontSizeChanged(increase: boolean): void;
@@ -170,16 +170,10 @@ declare namespace chrome {
     function onImagesEnabledToggled(): void;
 
     // Called when the letter spacing is changed via the webui toolbar.
-    function onStandardLetterSpacing(): void;
-    function onWideLetterSpacing(): void;
-    function onVeryWideLetterSpacing(): void;
+    function onLetterSpacingChange(value: number): void;
 
     // Called when the color theme is changed via the webui toolbar.
-    function onDefaultTheme(): void;
-    function onLightTheme(): void;
-    function onDarkTheme(): void;
-    function onYellowTheme(): void;
-    function onBlueTheme(): void;
+    function onThemeChange(value: number): void;
 
     // Returns the css name of the given font, or the default if it's not valid.
     function getValidatedFontName(font: string): string;

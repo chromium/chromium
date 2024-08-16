@@ -27,14 +27,21 @@ class LensSearchBubbleController {
     = delete;
   ~LensSearchBubbleController();
 
-  // Shows an instance of the lens search bubble for this browser.
+  // Shows an instance of the lens search bubble for this browser. This will
+  // only be called by the LensOverlayController.
   void Show();
-  // This close function gets called in 2 different paths:
-  // (1) The user manually closes the search bubble
-  // (2) The overlay closes the search bubble
-  // In addition to closing the search bubble, it cleans up the reference
-  // that the RealboxOmniboxClient has of web_contents_.
+
+  // Closes the search bubble and cleans up the reference that the
+  // RealboxOmniboxClient has of web_contents_. This will only be called by the
+  // LensOverlayController.
   void Close();
+
+  // Returns whether the search bubble is open.
+  bool IsSearchBubbleVisible();
+
+  // Closes the lens overlay. This is called when the user closes the bubble
+  // manually through the "X" button.
+  void CloseLensOverlay();
 
   // Removes LensOverlayControllerGlue from the web contents.
   void RemoveLensOverlayControllerGlue();
@@ -43,6 +50,10 @@ class LensSearchBubbleController {
   // search bubble searchbox WebUI Passes
   //  ownership of `handler` to the search_bubble_controller_.
   void SetContextualSearchboxHandler(std::unique_ptr<RealboxHandler> handler);
+
+  content::WebContents* search_bubble_web_contents_for_testing() {
+    return web_contents_;
+  }
 
   const WebUIBubbleDialogView* bubble_view_for_testing() {
     return bubble_view_.get();

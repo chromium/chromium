@@ -281,7 +281,8 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetBiddingSignals(
               v8_helper_.get(), context, trusted_bidding_signals_keys);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
               AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
@@ -313,7 +314,8 @@ class TrustedSignalsTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetScoringSignals(
               v8_helper_.get(), context, render_url, ad_component_render_urls);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
               AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }

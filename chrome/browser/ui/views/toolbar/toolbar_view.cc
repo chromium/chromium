@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -416,19 +418,27 @@ void ToolbarView::Init() {
     chrome_labs_model_ = std::make_unique<ChromeLabsModel>();
     UpdateChromeLabsNewBadgePrefs(browser_->profile(),
                                   chrome_labs_model_.get());
-    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
-      chrome_labs_button_ =
-          container_view_->AddChildView(std::make_unique<ChromeLabsButton>(
-              browser_view_, chrome_labs_model_.get()));
 
+    if (ShouldShowChromeLabsUI(chrome_labs_model_.get(), browser_->profile())) {
+      if (!features::IsToolbarPinningEnabled()) {
+        chrome_labs_button_ =
+            container_view_->AddChildView(std::make_unique<ChromeLabsButton>(
+                browser_view_, chrome_labs_model_.get()));
+      }
       show_chrome_labs_button_.Init(
           chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, prefs,
           base::BindRepeating(&ToolbarView::OnChromeLabsPrefChanged,
                               base::Unretained(this)));
       // Set the visibility for the button based on initial enterprise policy
-      // value. Only call OnChromeLabsPrefChanged if there is a change from the
-      // initial value.
-      chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+      // value. Only call OnChromeLabsPrefChanged if there is a change from
+      // the initial value.
+      if (features::IsToolbarPinningEnabled()) {
+        pinned_toolbar_actions_container_
+            ->GetActionItemFor(kActionShowChromeLabs)
+            ->SetVisible(show_chrome_labs_button_.GetValue());
+      } else {
+        chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+      }
     }
   }
 
@@ -691,6 +701,12 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
                                  browser_, url, already_bookmarked);
 }
 
+views::Button* ToolbarView::GetChromeLabsButton() const {
+  return browser_->GetFeatures()
+      .chrome_labs_coordinator()
+      ->GetChromeLabsButton();
+}
+
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
 }
@@ -825,36 +841,20 @@ void ToolbarView::Layout(PassKey) {
     UpdateClipPath();
   }
 
-  // Use two-pass solution to avoid the overflow button interfering with toolbar
-  // element space allocation. The button itself should just be an indicator of
-  // overflow, not the cause (see crbug.com/1484294). In the first pass, hide
-  // the overflow button and calculate other buttons' visibility to determine if
-  // overflow occurs. Do NOT explicitly call LayoutSuperclass() in the first
-  // pass to prevent animation conflicts with the second pass (see
-  // crbug.com/1517065). The second pass will set the overflow button visibility
-  // to the overflow state determined by the first pass.
-  // TODO(pengchaocai): Explore possible optimizations.
   if (toolbar_controller_) {
-    // TODO(crbug.com/40939901) Move this logic into LayoutManager.
-    views::ManualLayoutUtil manual_layout_util(layout_manager_);
+    // Need to determine whether the overflow button should be visible, and only
+    // update it if the visibility changes.
     const bool was_overflow_button_visible =
         toolbar_controller_->overflow_button()->GetVisible();
-    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
-                                     true);
-
-    if (toolbar_controller_->ShouldShowOverflowButton(size())) {
-      // This is the second pass layout that shows overflow button if necessary.
-      manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
-                                       false);
-      if (!was_overflow_button_visible) {
-        base::RecordAction(
-            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
-      }
-    } else {
-      if (was_overflow_button_visible) {
-        base::RecordAction(
-            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
-      }
+    const bool show_overflow_button =
+        toolbar_controller_->ShouldShowOverflowButton(size());
+    if (was_overflow_button_visible != show_overflow_button) {
+      views::ManualLayoutUtil(layout_manager_)
+          .SetViewHidden(toolbar_controller_->overflow_button(),
+                         !show_overflow_button);
+      base::RecordAction(base::UserMetricsAction(
+          show_overflow_button ? "ResponsiveToolbar.OverflowButtonShown"
+                               : "ResponsiveToolbar.OverflowButtonHidden"));
     }
   }
 
@@ -946,10 +946,6 @@ void ToolbarView::ChildPreferredSizeChanged(views::View* child) {
 // also so that it selects all content in the location bar.
 views::View* ToolbarView::GetDefaultFocusableChild() {
   return location_bar_;
-}
-
-void ToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
 }
 
 void ToolbarView::InitLayout() {
@@ -1171,7 +1167,7 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
 views::View* ToolbarView::GetAnchorView(
     std::optional<PageActionIconType> type) {
   if (features::IsToolbarPinningEnabled()) {
-    if (type.has_value()) {
+    if (pinned_toolbar_actions_container_ && type.has_value()) {
       const std::optional<actions::ActionId> action_id =
           GetPageActionIconView(type.value())->action_id();
       if (action_id.has_value() &&
@@ -1215,12 +1211,7 @@ DownloadToolbarButtonView* ToolbarView::GetDownloadButton() {
 }
 
 std::optional<BrowserRootView::DropIndex> ToolbarView::GetDropIndex(
-    const ui::DropTargetEvent& event,
-    bool allow_replacement) {
-  if (!allow_replacement) {
-    return std::nullopt;
-  }
-
+    const ui::DropTargetEvent& event) {
   return BrowserRootView::DropIndex{
       .index = browser_->tab_strip_model()->active_index(),
       .relative_to_index =
@@ -1237,11 +1228,22 @@ views::View* ToolbarView::GetViewForDrop() {
 }
 
 void ToolbarView::OnChromeLabsPrefChanged() {
-  chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
-  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      chrome_labs_button_->GetVisible()
-          ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
-          : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  if (features::IsToolbarPinningEnabled()) {
+    actions::ActionItem* chrome_labs_action =
+        pinned_toolbar_actions_container_->GetActionItemFor(
+            kActionShowChromeLabs);
+    chrome_labs_action->SetVisible(show_chrome_labs_button_.GetValue());
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        chrome_labs_action->GetVisible()
+            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  } else {
+    chrome_labs_button_->SetVisible(show_chrome_labs_button_.GetValue());
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        chrome_labs_button_->GetVisible()
+            ? IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_ADDED_BY_ENTERPRISE_POLICY
+            : IDS_ACCESSIBLE_TEXT_CHROMELABS_BUTTON_REMOVED_BY_ENTERPRISE_POLICY));
+  }
 }
 
 void ToolbarView::LoadImages() {

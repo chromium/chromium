@@ -170,7 +170,7 @@ bool AuthHubImpl::PurposeMatchesMode(AuthPurpose purpose, AuthHubMode mode) {
     case AuthHubMode::kInSession:
       return purpose != AuthPurpose::kLogin;
     case AuthHubMode::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

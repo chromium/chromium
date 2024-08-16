@@ -512,16 +512,16 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
+  <owner>qib@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records the current price bucket of the product when the user clicks
-    &quot;Buying Options&quot; in the price insights side panel. This histogram
-    was expired from 2024-01-03 to 2024-02-06.
+    &quot;Buying Options&quot; in the price insights UI.
   </summary>
 </histogram>
 
 <histogram name="Commerce.PriceInsights.OmniboxIconClicked"
-    enum="PriceInsightsIconLabelType" expires_after="2024-12-08">
+    enum="PriceInsightsIconLabelType" expires_after="2025-02-10">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -533,7 +533,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.OmniboxIconShown"
-    enum="PriceInsightsIconLabelType" expires_after="2024-12-08">
+    enum="PriceInsightsIconLabelType" expires_after="2025-02-10">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -541,6 +541,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Records the initial label of the price insights omnibox icon when it is
     shown to the user.
   </summary>
+</histogram>
+
+<histogram name="Commerce.PriceInsights.PriceTracking.{Action}"
+    enum="PriceInsightsPriceBucket" expires_after="2025-02-06">
+  <owner>mdjones@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>qib@google.com</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records when user clicks the price tracking button to {Action} price for a
+    product in the price insights bottom sheet. Implemented for Android.
+  </summary>
+  <token key="Action">
+    <variant name="Track"/>
+    <variant name="Untrack"/>
+  </token>
 </histogram>
 
 <histogram name="Commerce.PriceInsights.SidePanelOpenWithMultipleCatalogs"
@@ -584,17 +600,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.PriceTracking.IOS.ProductStatus"
+<histogram name="Commerce.PriceTracking.IOS.{Source}.ProductStatus"
     enum="PriceNotificationProductStatus" expires_after="2024-12-08">
   <owner>danieltwhite@google.com</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
     Records a product's new tracking state every time a user successfully
-    tracks/untracks a product via the Track and Untrack buttons on the price
-    tracking UI in Chrome for iOS. This metric serves as a way to determine user
-    engagement with price tracking relative to the iOS platform.
+    tracks/untracks a product via the Track and Untrack buttons in commerce
+    features on Chrome for iOS. This metric serves as a way to determine user
+    engagement with price tracking relative to the iOS platform. This histogram
+    was previously named Commerce.PriceTracking.IOS.ProductStatus.
   </summary>
+  <token key="Source">
+    <variant name="PriceInsights"/>
+    <variant name="PriceTracking"/>
+  </token>
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
@@ -714,7 +735,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Subscriptions.TrackResult"
-    enum="ShoppingSubscriptionsRequestStatus" expires_after="2024-12-08">
+    enum="ShoppingSubscriptionsRequestStatus" expires_after="2025-02-10">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -736,7 +757,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.{FeatureName}.IconInteractionState"
-    enum="CommerceIconInteractionState" expires_after="2024-12-08">
+    enum="CommerceIconInteractionState" expires_after="2025-02-09">
   <owner>josephjoopark@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -930,7 +951,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.PageInfo.IsStoreInfoVisible"
-    enum="BooleanVisible" expires_after="2024-12-08">
+    enum="BooleanVisible" expires_after="2025-02-10">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

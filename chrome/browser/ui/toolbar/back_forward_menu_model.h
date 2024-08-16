@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/favicon/core/favicon_service.h"
@@ -36,8 +37,8 @@ class WebContents;
 // Interface for the showing of the dropdown menu for the Back/Forward buttons.
 // Actual implementations are platform-specific.
 ///////////////////////////////////////////////////////////////////////////////
-class BackForwardMenuModel : public ui::MenuModel,
-                             public content::WebContentsObserver {
+class BackForwardMenuModel final : public ui::MenuModel,
+                                   public content::WebContentsObserver {
  public:
   // These are IDs used to identify individual UI elements within the
   // browser window using View::GetViewByID.
@@ -51,6 +52,7 @@ class BackForwardMenuModel : public ui::MenuModel,
   ~BackForwardMenuModel() override;
 
   // ui::MenuModel:
+  base::WeakPtr<ui::MenuModel> AsWeakPtr() override;
   size_t GetItemCount() const override;
   ItemType GetTypeAt(size_t index) const override;
   ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override;
@@ -217,6 +219,8 @@ class BackForwardMenuModel : public ui::MenuModel,
   // twice depending on whether any of the menu item is activated, the timestamp
   // will not be reset.
   std::optional<base::TimeTicks> menu_model_open_timestamp_;
+
+  base::WeakPtrFactory<BackForwardMenuModel> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_BACK_FORWARD_MENU_MODEL_H_

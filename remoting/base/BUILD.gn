@@ -137,6 +137,7 @@ source_set("base") {
     ":remoting_base_version",
     "//build:chromeos_buildflags",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
     "//remoting/proto/remoting/v1:cloud_proto",
     "//remoting/proto/remoting/v1:directory_proto",
@@ -188,6 +189,18 @@ source_set("errors") {
     "//base",
     "//remoting/proto:error_code_proto",
   ]
+}
+
+source_set("session_policies") {
+  public = [
+    "port_range.h",
+    "session_policies.h",
+  ]
+  sources = [
+    "port_range.cc",
+    "session_policies.cc",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("authorization") {
@@ -400,6 +413,7 @@ source_set("unit_tests") {
     "compound_buffer_unittest.cc",
     "leaky_bucket_unittest.cc",
     "oauth_token_getter_proxy_unittest.cc",
+    "port_range_unittest.cc",
     "protobuf_http_client_unittest.cc",
     "protobuf_http_stream_parser_unittest.cc",
     "queued_task_poster_unittest.cc",
@@ -408,6 +422,7 @@ source_set("unit_tests") {
     "rsa_key_pair_unittest.cc",
     "running_samples_unittest.cc",
     "session_options_unittest.cc",
+    "session_policies_unittest.cc",
     "telemetry_log_writer_unittest.cc",
     "typed_buffer_unittest.cc",
     "util_unittest.cc",
@@ -418,6 +433,7 @@ source_set("unit_tests") {
     ":logging",
     ":protobuf_http_client_messages_proto",
     ":run_all_unittests",
+    ":session_policies",
     ":test_proto",
     ":test_support",
     "//base",

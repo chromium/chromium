@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 """Methods related to test expectations/expectation files."""
 
-from __future__ import print_function
-
 import collections
 import copy
 import datetime
@@ -12,14 +10,12 @@ import logging
 import os
 import re
 import subprocess
-import sys
 from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
 import six
 
 from typ import expectations_parser
 from unexpected_passes_common import data_types
-from unexpected_passes_common import result_output
 
 FINDER_DISABLE_COMMENT_BASE = 'finder:disable'
 FINDER_ENABLE_COMMENT_BASE = 'finder:enable'
@@ -128,6 +124,8 @@ ALL_STALE_COMMENT_REGEXES = frozenset(ALL_STALE_COMMENT_REGEXES)
 
 # pylint: disable=useless-object-inheritance
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 _registered_instance = None
 
 
@@ -136,14 +134,14 @@ def GetInstance() -> 'Expectations':
 
 
 def RegisterInstance(instance: 'Expectations') -> None:
-  global _registered_instance
+  global _registered_instance  # pylint: disable=global-statement
   assert _registered_instance is None
   assert isinstance(instance, Expectations)
   _registered_instance = instance
 
 
 def ClearInstance() -> None:
-  global _registered_instance
+  global _registered_instance  # pylint: disable=global-statement
   _registered_instance = None
 
 
@@ -915,7 +913,7 @@ def _GetDisableReasonFromComment(line: str) -> str:
 
 
 def _IsCommentOrBlankLine(line: str) -> bool:
-  return (not line or line.startswith('#'))
+  return not line or line.startswith('#')
 
 
 def _ExpectationPartOfNonRemovableGroup(
@@ -945,7 +943,8 @@ def _ExpectationPartOfNonRemovableGroup(
     return False
 
   all_expectations_in_group = group_to_expectations[group_name]
-  return not (all_expectations_in_group <= removable_expectations)
+  group_removable = all_expectations_in_group <= removable_expectations
+  return not group_removable
 
 
 def _RemoveStaleComments(content: str, removed_lines: Set[int],

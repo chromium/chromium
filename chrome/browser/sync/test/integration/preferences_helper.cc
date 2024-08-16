@@ -16,7 +16,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 
 using sync_datatype_helper::test;
@@ -121,9 +121,9 @@ bool ListPrefMatches(const char* pref_name) {
 }
 
 const sync_pb::PreferenceSpecifics& GetPreferenceFromEntity(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const sync_pb::SyncEntity& entity) {
-  switch (model_type) {
+  switch (data_type) {
     case syncer::PREFERENCES:
       return entity.specifics().preference();
     case syncer::PRIORITY_PREFERENCES:
@@ -139,13 +139,13 @@ const sync_pb::PreferenceSpecifics& GetPreferenceFromEntity(
 }
 
 std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& pref_name,
     fake_server::FakeServer* fake_server) {
   for (const sync_pb::SyncEntity& entity :
-       fake_server->GetSyncEntitiesByModelType(model_type)) {
+       fake_server->GetSyncEntitiesByDataType(data_type)) {
     const sync_pb::PreferenceSpecifics& preference =
-        GetPreferenceFromEntity(model_type, entity);
+        GetPreferenceFromEntity(data_type, entity);
     if (preference.name() == pref_name) {
       return preference;
     }
@@ -244,22 +244,22 @@ bool ClearedPrefMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 FakeServerPrefMatchesValueChecker::FakeServerPrefMatchesValueChecker(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& pref_name,
     const std::string& expected_value)
-    : model_type_(model_type),
+    : data_type_(data_type),
       pref_name_(pref_name),
       expected_value_(expected_value) {
-  DCHECK(model_type_ == syncer::ModelType::PREFERENCES ||
-         model_type_ == syncer::ModelType::PRIORITY_PREFERENCES ||
-         model_type_ == syncer::ModelType::OS_PREFERENCES ||
-         model_type_ == syncer::ModelType::OS_PRIORITY_PREFERENCES);
+  DCHECK(data_type_ == syncer::DataType::PREFERENCES ||
+         data_type_ == syncer::DataType::PRIORITY_PREFERENCES ||
+         data_type_ == syncer::DataType::OS_PREFERENCES ||
+         data_type_ == syncer::DataType::OS_PRIORITY_PREFERENCES);
 }
 
 bool FakeServerPrefMatchesValueChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   const std::optional<sync_pb::PreferenceSpecifics> actual_specifics =
-      preferences_helper::GetPreferenceInFakeServer(model_type_, pref_name_,
+      preferences_helper::GetPreferenceInFakeServer(data_type_, pref_name_,
                                                     fake_server());
   if (!actual_specifics.has_value()) {
     *os << "No sync entity in FakeServer for pref " << pref_name_;

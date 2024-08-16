@@ -65,6 +65,7 @@ void ContextualSearchLayer::SetProperties(
     float search_panel_height,
     float search_bar_margin_side,
     float search_bar_margin_top,
+    float search_bar_margin_bottom,
     float search_bar_height,
     float search_context_opacity,
     float search_text_layer_min_height,
@@ -115,16 +116,18 @@ void ContextualSearchLayer::SetProperties(
   OverlayPanelLayer::SetProperties(
       dp_to_px, content_layer, content_view_top, search_panel_x, search_panel_y,
       search_panel_width, search_panel_height, search_bar_background_color,
-      search_bar_margin_side, search_bar_margin_top, search_bar_height,
-      search_bar_top, search_term_opacity, should_render_bar_border,
-      search_bar_border_height, icon_color, drag_handlebar_color,
-      close_icon_opacity, separator_line_color, related_searches_in_bar_height);
+      search_bar_margin_side, search_bar_margin_top, search_bar_margin_bottom,
+      search_bar_height, search_bar_top, search_term_opacity,
+      should_render_bar_border, search_bar_border_height, icon_color,
+      drag_handlebar_color, close_icon_opacity, separator_line_color,
+      related_searches_in_bar_height);
 
   // -----------------------------------------------------------------
   // Content setup, to center in space below drag handle.
   // -----------------------------------------------------------------
   int content_height = search_bar_height - search_bar_margin_top -
-                       related_searches_in_bar_height;
+                       related_searches_in_bar_height -
+                       search_bar_margin_bottom;
   int content_top = search_bar_top + search_bar_margin_top;
 
   // ---------------------------------------------------------------------------
@@ -157,9 +160,11 @@ void ContextualSearchLayer::SetProperties(
       related_searches_in_bar_->SetUIResourceId(
           related_searches_resource->ui_resource()->id());
       related_searches_in_bar_->SetBounds(related_searches_size);
+      int related_searches_top =
+          search_bar_bottom - related_searches_in_bar_height -
+          related_searches_in_bar_redundant_padding - search_bar_margin_bottom;
       related_searches_in_bar_->SetPosition(
-          gfx::PointF(0.f, search_bar_bottom - related_searches_in_bar_height -
-                               related_searches_in_bar_redundant_padding));
+          gfx::PointF(0.f, related_searches_top));
     }
   } else if (related_searches_in_bar_.get() &&
              related_searches_in_bar_->parent()) {

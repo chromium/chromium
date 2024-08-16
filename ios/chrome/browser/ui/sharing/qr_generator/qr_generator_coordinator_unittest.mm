@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/sharing/qr_generator/qr_generator_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -37,6 +38,9 @@ class QRGeneratorCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:OCMStrictProtocolMock(
                                      @protocol(BookmarksCommands))
                      forProtocol:@protocol(BookmarksCommands)];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:OCMStrictProtocolMock(@protocol(HelpCommands))
+                     forProtocol:@protocol(HelpCommands)];
 
     coordinator_ = [[QRGeneratorCoordinator alloc]
         initWithBaseViewController:base_view_controller_

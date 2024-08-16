@@ -129,6 +129,29 @@
     // keywords).
     //
     // See prepopulated_engines.json for the list of available IDs.
-    { "field": "id", "type": "int" }
+    { "field": "id", "type": "int" },
+
+    // Regulatory specific extensions associated with this search engine.
+    // Used to expand the {regulatory_extensions} keyword with parameters
+    // appropriate for the regulatory program that triggered instantiation of
+    // this definition.
+    // Known options:
+    // - "default" - the parameters to be used if the template url was not
+    //   instantiated for any regulatory program.
+    // - "android_eea" - the parameters to be used by TemplateUrl definitions
+    //   instantiated in accordance with the EEA DMA.
+    {
+      "field": "regulatory_extensions",
+      "type": "array",
+      "contents": {
+        "type": "struct",
+        "type_name": "RegulatoryExtension",
+        "fields": [
+          { "field": "variant", "type": "string" },
+          { "field": "params", "type": "string" }
+        ]
+      },
+      "optional": true
+    }
   ]
 }

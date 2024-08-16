@@ -12,6 +12,7 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 
 namespace gfx {
+class ImageSkia;
 class Rect;
 class RoundedCornersF;
 }
@@ -209,6 +210,8 @@ class ShellToplevelWrapper {
   virtual void SetShape(std::unique_ptr<ShapeRects> shape_rects) = 0;
 
   virtual void AckRotateFocus(uint32_t serial, uint32_t handled) = 0;
+
+  virtual void SetIcon(const gfx::ImageSkia& icon) = 0;
 
   // Casts `this` to XDGToplevelWrapperImpl, if it is of that type.
   virtual XDGToplevelWrapperImpl* AsXDGToplevelWrapper();

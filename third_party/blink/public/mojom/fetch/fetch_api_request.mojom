@@ -214,6 +214,9 @@ struct FetchAPIRequest {
   network.mojom.AttributionReportingEligibility attribution_reporting_eligibility =
     network.mojom.AttributionReportingEligibility.kUnset;
 
+  network.mojom.AttributionSupport attribution_reporting_support =
+    network.mojom.AttributionSupport.kUnset;
+
   // Used for BestEffortServiceWorker(crbug.com/1420517). Specifies the ID of
   // the RaceNetworkRequest if the RaceNetworkRequest is triggered. This value
   // is referred by the fetch process in blink, in order to detect and dedupe

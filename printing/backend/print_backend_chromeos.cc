@@ -60,7 +60,7 @@ mojom::ResultCode PrintBackendChromeOS::GetPrinterSemanticCapsAndDefaults(
 
 std::vector<std::string> PrintBackendChromeOS::GetPrinterDriverInfo(
     const std::string& printer_name) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::ResultCode PrintBackendChromeOS::GetDefaultPrinterName(

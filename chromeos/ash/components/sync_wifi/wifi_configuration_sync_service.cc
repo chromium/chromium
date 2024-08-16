@@ -19,15 +19,15 @@
 #include "chromeos/ash/components/timer_factory/timer_factory_impl.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace ash::sync_wifi {
 
 WifiConfigurationSyncService::WifiConfigurationSyncService(
     version_info::Channel channel,
     PrefService* pref_service,
-    syncer::OnceModelTypeStoreFactory create_store_callback) {
+    syncer::OnceDataTypeStoreFactory create_store_callback) {
   NetworkHandler* network_handler = NetworkHandler::Get();
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
@@ -45,7 +45,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
       updater_.get(), collector_.get(),
       network_handler->network_configuration_handler(), metrics_logger_.get(),
       timer_factory_.get(), pref_service,
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::WIFI_CONFIGURATIONS,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),
       std::move(create_store_callback));
@@ -57,7 +57,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
 
 WifiConfigurationSyncService::~WifiConfigurationSyncService() = default;
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 WifiConfigurationSyncService::GetControllerDelegate() {
   return bridge_->change_processor()->GetControllerDelegate();
 }

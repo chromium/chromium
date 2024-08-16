@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/account_checker.h"
+
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -16,8 +17,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -82,7 +83,7 @@ bool AccountChecker::IsSyncingBookmarks() {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
     return sync_service_ && syncer::GetUploadToGoogleState(
-                                sync_service_, syncer::ModelType::BOOKMARKS) ==
+                                sync_service_, syncer::DataType::BOOKMARKS) ==
                                 syncer::UploadState::ACTIVE;
   }
   // The feature is not enabled, fallback to old behavior.
@@ -91,8 +92,13 @@ bool AccountChecker::IsSyncingBookmarks() {
   // ConsentLevel::kSync documentation for details.
   return sync_service_ && sync_service_->IsSyncFeatureActive() &&
          syncer::GetUploadToGoogleState(sync_service_,
-                                        syncer::ModelType::BOOKMARKS) !=
+                                        syncer::DataType::BOOKMARKS) !=
              syncer::UploadState::NOT_ACTIVE;
+}
+
+bool AccountChecker::IsSyncTypeEnabled(syncer::UserSelectableType type) {
+  return sync_service_ && sync_service_->GetUserSettings() &&
+         sync_service_->GetUserSettings()->GetSelectedTypes().Has(type);
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {

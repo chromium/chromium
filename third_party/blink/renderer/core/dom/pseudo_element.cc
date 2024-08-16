@@ -93,7 +93,9 @@ PseudoElement* PseudoElement::Create(Element* parent,
     return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
+         pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
+         pseudo_id == kPseudoIdScrollNextButton ||
+         pseudo_id == kPseudoIdScrollPrevButton);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
 }
@@ -126,6 +128,16 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker_group,
                           (AtomicString("::scroll-marker-group")));
       return scroll_marker_group;
+    }
+    case kPseudoIdScrollNextButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_next_button,
+                          (AtomicString("::scroll-next-button")));
+      return scroll_next_button;
+    }
+    case kPseudoIdScrollPrevButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_prev_button,
+                          (AtomicString("::scroll-prev-button")));
+      return scroll_prev_button;
     }
     case kPseudoIdScrollMarker: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
@@ -337,6 +349,13 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       }
       break;
     }
+    case kPseudoIdScrollNextButton:
+    case kPseudoIdScrollPrevButton:
+      if (style.ContentBehavesAsNormal()) {
+        context.counters_context.LeaveElement(*this);
+        return;
+      }
+      break;
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       break;
@@ -384,6 +403,21 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     }
   }
   context.counters_context.LeaveElement(*this);
+}
+
+bool PseudoElement::CanGenerateContent() const {
+  switch (GetPseudoIdForStyling()) {
+    case kPseudoIdMarker:
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+    case kPseudoIdScrollMarker:
+    case kPseudoIdScrollMarkerGroup:
+    case kPseudoIdScrollNextButton:
+    case kPseudoIdScrollPrevButton:
+      return true;
+    default:
+      return false;
+  }
 }
 
 bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
@@ -460,6 +494,9 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdAfter:
       return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdScrollMarker:
+    case kPseudoIdScrollNextButton:
+    case kPseudoIdScrollPrevButton:
+      return !pseudo_style.ContentBehavesAsNormal();
     case kPseudoIdMarker: {
       if (!pseudo_style.ContentBehavesAsNormal()) {
         return !pseudo_style.ContentPreventsBoxGeneration();

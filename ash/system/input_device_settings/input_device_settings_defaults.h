@@ -25,7 +25,7 @@ constexpr ui::mojom::ExtendedFkeysModifier kDefaultFkey =
     ui::mojom::ExtendedFkeysModifier::kDisabled;
 
 // Default settings for all pointers, defined in
-// chrome/browser/ash/preferences.cc.
+// chrome/browser/ash/preferences/preferences.cc.
 constexpr bool kDefaultSwapRight = false;
 constexpr int kDefaultSensitivity = 3;
 constexpr bool kDefaultReverseScrolling = false;

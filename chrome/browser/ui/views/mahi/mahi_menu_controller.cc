@@ -48,6 +48,16 @@ void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
     return;
   }
 
+  // TODO(b:356035887): `MahiManager::Get()->IsEnabled()` is the source of truth
+  // because it checks flag & prefs, as well as age & country restrictions. But
+  // it is not accessible from lacros. Let's remove the macros and the checks
+  // above when the lacros support is removed.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!MahiManager::Get() || !MahiManager::Get()->IsEnabled()) {
+    return;
+  }
+#endif
+
   // Only shows mahi menu for distillable pages or when the switch
   // `kUseFakeMahiManager` is enabled.
   if (!::mahi::MahiWebContentsManager::Get()->IsFocusedPageDistillable() &&

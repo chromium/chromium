@@ -1,0 +1,65 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module updater.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "url/mojom/url.mojom";
+
+struct HttpHeader {
+  string name;
+  string value;
+};
+
+// The callback interface for the state change notifications produced by
+// the FetchService interface during an HTTP POST request.
+interface PostRequestObserver {
+    // A repeated callback to be run when the POST request starts.
+    OnResponseStarted(uint32 http_status_code, uint64? content_length);
+
+    // A repeated callback to be run when the POST request has progress.
+    // `current` is the current progress in bytes.
+    OnProgress(uint64 current);
+
+    // A callback to be run when the POST request is completed.
+    OnRequestComplete(
+        string response_body,
+        int32 net_error,
+        string header_etag,
+        string header_x_cup_server_proof,
+        uint64? xheader_retry_after_sec);
+};
+
+// The callback interface for state change notifications produced by
+// the FetchService interface during a file download request.
+interface FileDownloadObserver {
+    // A repeated callback to be run when the file download starts.
+    OnResponseStarted(uint32 http_status_code, uint64? content_length);
+
+    // A repeated callback to be run when the file download has progress.
+    // `current` is the current progress in bytes.
+    OnProgress(uint64 current);
+
+    // A callback to be run when the file download is completed.
+    OnDownloadComplete(int32 net_error, uint64? content_size);
+};
+
+// A service that does network transaction on behalf of the requester.
+// Often the service runs in a different context that otherwise is not
+// possible to establish a network connection.
+interface FetchService {
+    // Sends a POST request task to the service.
+    PostRequest(
+        url.mojom.Url url,
+        string post_data,
+        string content_type,
+        array<HttpHeader> additional_headers) =>
+        (pending_receiver<PostRequestObserver> observer);
+
+    // Sends a file download task to the service.
+    DownloadToFile(
+        url.mojom.Url url,
+        mojo_base.mojom.File output_file) =>
+        (pending_receiver<FileDownloadObserver> observer);
+};

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
 
+#import "base/test/gmock_callback_support.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -18,8 +19,17 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using base::test::RunOnceCallback;
+using l10n_util::GetNSString;
+using syncer::FakeDeviceInfoTracker;
+using testing::_;
+using testing::NiceMock;
+
+namespace segmentation_platform {
+
+namespace test {
 
 // Test class for DefaultBrowserScreenMediator.
 class DefaultBrowserScreenMediatorTest : public PlatformTest {
@@ -27,13 +37,8 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    segmentation_platform::DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
-        prefs_->registry());
-    device_info_tracker_ = std::make_unique<syncer::FakeDeviceInfoTracker>();
-    device_switcher_result_dispatcher_ = std::make_unique<
-        segmentation_platform::test::FakeDeviceSwitcherResultDispatcher>(
-        &segmentation_platform_service_, device_info_tracker_.get(),
-        prefs_.get(), &field_trial_register_);
+    DeviceSwitcherResultDispatcher::RegisterProfilePrefs(prefs_->registry());
+    device_info_tracker_ = std::make_unique<FakeDeviceInfoTracker>();
     consumer_mock_ =
         OCMStrictProtocolMock(@protocol(DefaultBrowserScreenConsumer));
   }
@@ -41,36 +46,50 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY((id)consumer_mock_);
     PlatformTest::TearDown();
+    mediator_to_test_.consumer = nil;
+    [mediator_to_test_ disconnect];
     mediator_to_test_ = nil;
-    device_switcher_result_dispatcher_.reset();
-    prefs_.reset();
-    device_info_tracker_.reset();
   }
 
-  void SetUpMediatorTest(segmentation_platform::DefaultBrowserUserSegment label,
-                         segmentation_platform::PredictionStatus status) {
-    device_switcher_result_dispatcher_->SetSegmentLabel(label);
-    device_switcher_result_dispatcher_->SetPredictionStatus(status);
+  void SetUpMediatorTest(DefaultBrowserUserSegment label,
+                         PredictionStatus status) {
+    ClassificationResult device_switcher_result(status);
+    device_switcher_result.ordered_labels =
+        GetDeviceSwitcherOrderedLabelsForTesting(label);
+
+    NiceMock<MockDeviceSwitcherResultDispatcher>
+        device_switcher_result_dispatcher_(
+            &segmentation_platform_service_, device_info_tracker_.get(),
+            prefs_.get(), &field_trial_register_);
+    EXPECT_CALL(device_switcher_result_dispatcher_,
+                WaitForClassificationResult(_, _))
+        .WillOnce(RunOnceCallback<1>(device_switcher_result));
+
     mediator_to_test_ = [[DefaultBrowserScreenMediator alloc]
            initWithSegmentationService:&segmentation_platform_service_
-        deviceSwitcherResultDispatcher:device_switcher_result_dispatcher_
-                                           .get()];
+        deviceSwitcherResultDispatcher:&device_switcher_result_dispatcher_];
+  }
+
+  void ExpectTextForSegment(DefaultBrowserUserSegment label) {
+    OCMExpect([consumer_mock_
+        setPromoTitle:GetNSString(GetFirstRunDefaultBrowserScreenTitleStringID(
+                          label))]);
+    OCMExpect([consumer_mock_
+        setPromoSubtitle:GetNSString(
+                             GetFirstRunDefaultBrowserScreenSubtitleStringID(
+                                 label))]);
+    mediator_to_test_.consumer = consumer_mock_;
   }
 
  protected:
-  std::unique_ptr<TestingPrefServiceSimple> prefs_;
-  std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
-  testing::NiceMock<segmentation_platform::MockSegmentationPlatformService>
-      segmentation_platform_service_;
-  testing::NiceMock<segmentation_platform::MockFieldTrialRegister>
-      field_trial_register_;
-  std::unique_ptr<
-      segmentation_platform::test::FakeDeviceSwitcherResultDispatcher>
-      device_switcher_result_dispatcher_;
-  DefaultBrowserScreenMediator* mediator_to_test_;
-  id<DefaultBrowserScreenConsumer> consumer_mock_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  std::unique_ptr<FakeDeviceInfoTracker> device_info_tracker_;
+  NiceMock<MockSegmentationPlatformService> segmentation_platform_service_;
+  NiceMock<MockFieldTrialRegister> field_trial_register_;
+  DefaultBrowserScreenMediator* mediator_to_test_;
+  id<DefaultBrowserScreenConsumer> consumer_mock_;
 };
 
 #pragma mark - Unit Tests
@@ -78,101 +97,43 @@ class DefaultBrowserScreenMediatorTest : public PlatformTest {
 // Tests that consumer is correctly informed if a user's retrieved segment is
 // Desktop User.
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsDesktopUser) {
-  SetUpMediatorTest(
-      segmentation_platform::DefaultBrowserUserSegment::kDesktopUser,
-      segmentation_platform::PredictionStatus::kSucceeded);
-  OCMExpect([consumer_mock_
-      setPromoTitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE)]);
-  OCMExpect([consumer_mock_
-      setPromoSubtitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DESKTOP_USER_SUBTITLE_IPHONE)]);
-  mediator_to_test_.consumer = consumer_mock_;
+  SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
+                    PredictionStatus::kSucceeded);
+  ExpectTextForSegment(DefaultBrowserUserSegment::kDesktopUser);
 }
 
 // Tests that consumer is correctly informed if a user's retrieved segment is
 // Android switcher.
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsAndroidSwitcher) {
-  SetUpMediatorTest(
-      segmentation_platform::DefaultBrowserUserSegment::kAndroidSwitcher,
-      segmentation_platform::PredictionStatus::kSucceeded);
-  OCMExpect([consumer_mock_
-      setPromoTitle:
-          l10n_util::GetNSString(
-              IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE)]);
-  OCMExpect([consumer_mock_
-      setPromoSubtitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_ANDROID_SWITCHER_SUBTITLE_IPHONE)]);
-  mediator_to_test_.consumer = consumer_mock_;
+  SetUpMediatorTest(DefaultBrowserUserSegment::kAndroidSwitcher,
+                    PredictionStatus::kSucceeded);
+  ExpectTextForSegment(DefaultBrowserUserSegment::kAndroidSwitcher);
 }
 
 // Tests that consumer is correctly informed if a user's retrieved segment is
 // not a targeted segment.
 TEST_F(DefaultBrowserScreenMediatorTest, UserIsNotInTargetedSegment) {
-  SetUpMediatorTest(segmentation_platform::DefaultBrowserUserSegment::kDefault,
-                    segmentation_platform::PredictionStatus::kSucceeded);
-  OCMExpect([consumer_mock_
-      setPromoTitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)]);
-  OCMExpect([consumer_mock_
-      setPromoSubtitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)]);
-  mediator_to_test_.consumer = consumer_mock_;
+  SetUpMediatorTest(DefaultBrowserUserSegment::kDefault,
+                    PredictionStatus::kSucceeded);
+  ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
 
 // Tests that consumer is correctly informed if user classification is not ready
 // yet.
 TEST_F(DefaultBrowserScreenMediatorTest, ClassificationNotReady) {
-  SetUpMediatorTest(
-      segmentation_platform::DefaultBrowserUserSegment::kDesktopUser,
-      segmentation_platform::PredictionStatus::kNotReady);
-  OCMExpect([consumer_mock_
-      setPromoTitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)]);
-  OCMExpect([consumer_mock_
-      setPromoSubtitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)]);
-  mediator_to_test_.consumer = consumer_mock_;
+  SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
+                    PredictionStatus::kNotReady);
+  ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
 
 // Tests that consumer is correctly informed if user classification retrieval
 // fails.
 TEST_F(DefaultBrowserScreenMediatorTest, ClassificationFailed) {
-  SetUpMediatorTest(
-      segmentation_platform::DefaultBrowserUserSegment::kDesktopUser,
-      segmentation_platform::PredictionStatus::kFailed);
-  OCMExpect([consumer_mock_
-      setPromoTitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)]);
-  OCMExpect([consumer_mock_
-      setPromoSubtitle:
-          l10n_util::GetNSString(
-              UseIPadTailoredStringForDefaultBrowserPromo()
-                  ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-                  : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)]);
-  mediator_to_test_.consumer = consumer_mock_;
+  SetUpMediatorTest(DefaultBrowserUserSegment::kDesktopUser,
+                    PredictionStatus::kFailed);
+  ExpectTextForSegment(DefaultBrowserUserSegment::kDefault);
 }
+
+}  // namespace test
+
+}  // namespace segmentation_platform

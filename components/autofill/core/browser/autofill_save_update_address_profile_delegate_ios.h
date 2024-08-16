@@ -25,7 +25,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
       const AutofillProfile* original_profile,
       std::optional<std::u16string> user_email,
       const std::string& locale,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;

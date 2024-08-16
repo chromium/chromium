@@ -147,6 +147,7 @@ component("views") {
     "controls/button/label_button_border.h",
     "controls/button/label_button_image_container.h",
     "controls/button/md_text_button.h",
+    "controls/button/md_text_button_with_down_arrow.h",
     "controls/button/menu_button.h",
     "controls/button/menu_button_controller.h",
     "controls/button/radio_button.h",
@@ -387,6 +388,7 @@ component("views") {
     "controls/button/label_button_border.cc",
     "controls/button/label_button_image_container.cc",
     "controls/button/md_text_button.cc",
+    "controls/button/md_text_button_with_down_arrow.cc",
     "controls/button/menu_button.cc",
     "controls/button/menu_button_controller.cc",
     "controls/button/radio_button.cc",
@@ -599,6 +601,7 @@ component("views") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/base/metadata",
+    "//ui/base/mojom:mojom",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",
@@ -1145,6 +1148,7 @@ source_set("test_support") {
   public_deps = [
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/mojom:mojom",
   ]
 
   if (is_win) {
@@ -1261,6 +1265,7 @@ test("views_unittests") {
     "controls/combobox/combobox_unittest.cc",
     "controls/editable_combobox/editable_combobox_unittest.cc",
     "controls/editable_combobox/editable_password_combobox_unittest.cc",
+    "controls/focus_ring_unittest.cc",
     "controls/image_view_unittest.cc",
     "controls/label_unittest.cc",
     "controls/link_fragment_unittest.cc",
@@ -1372,6 +1377,7 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/mojom:mojom",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor:test_support",
@@ -1436,6 +1442,7 @@ test("views_unittests") {
   if (has_native_accessibility) {
     sources += [
       "accessibility/ax_virtual_view_unittest.cc",
+      "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
     ]
   }
@@ -1608,6 +1615,8 @@ source_set("views_interactive_ui_tests") {
     "//ui/resources:ui_test_pak",
     "//ui/strings",
   ]
+
+  public_deps = [ "//ui/base/mojom:mojom" ]
 
   if (is_win) {
     sources += [ "accessibility/ax_system_caret_win_interactive_uitest.cc" ]

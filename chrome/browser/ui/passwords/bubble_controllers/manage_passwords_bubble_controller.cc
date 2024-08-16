@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/manage_passwords_bubble_controller.h"
 
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -67,7 +68,18 @@ ManagePasswordsBubbleController::ManagePasswordsBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate)
     : PasswordBubbleControllerBase(
           std::move(delegate),
-          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS) {}
+          /*display_disposition=*/metrics_util::MANUAL_MANAGE_PASSWORDS),
+      bubble_mode_(
+          delegate_ &&
+                  delegate_
+                      ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              ? BubbleMode::kSingleCredentialDetails
+              : BubbleMode::kCredentialList),
+      details_bubble_credential_(
+          delegate_
+              ? delegate_
+                    ->GetManagePasswordsSingleCredentialDetailsModeCredential()
+              : std::nullopt) {}
 
 ManagePasswordsBubbleController::~ManagePasswordsBubbleController() {
   OnBubbleClosing();
@@ -83,12 +95,23 @@ std::u16string ManagePasswordsBubbleController::GetTitle() const {
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/false);
     case password_manager::ui::UPDATE_CONFIRMATION_STATE:
       return GetConfirmationManagePasswordsDialogTitleText(/*is_update=*/true);
-    case password_manager::ui::MANAGE_STATE:
-      return GetManagePasswordsDialogTitleText(
-          GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
-          !delegate_->GetCurrentForms().empty());
+    case password_manager::ui::MANAGE_STATE: {
+      switch (bubble_mode_) {
+        case BubbleMode::kCredentialList:
+          return GetManagePasswordsDialogTitleText(
+              GetWebContents()->GetVisibleURL(), delegate_->GetOrigin(),
+              !delegate_->GetCurrentForms().empty());
+        case BubbleMode::kSingleCredentialDetails:
+          const std::vector<password_manager::CredentialUIEntry::DomainInfo>&
+              affiliated_domains = password_manager::CredentialUIEntry(
+                                       *details_bubble_credential_)
+                                       .GetAffiliatedDomains();
+          CHECK(!affiliated_domains.empty());
+          return base::UTF8ToUTF16(affiliated_domains[0].name);
+      }
+    }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -143,7 +166,7 @@ ManagePasswordsBubbleController::GetPasswordSyncState() const {
                  ? SyncState::kActiveWithSyncFeatureEnabled
                  : SyncState::kActiveWithAccountPasswords;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string ManagePasswordsBubbleController::GetPrimaryAccountEmail() {
@@ -183,6 +206,13 @@ ManagePasswordsBubbleController::GetCredentials() const {
     return base::span<std::unique_ptr<password_manager::PasswordForm> const>();
   }
   return base::make_span(delegate_->GetCurrentForms());
+}
+
+const password_manager::PasswordForm&
+ManagePasswordsBubbleController::GetSingleCredentialDetailsModeCredential()
+    const {
+  CHECK_EQ(bubble_mode_, BubbleMode::kSingleCredentialDetails);
+  return *delegate_->GetManagePasswordsSingleCredentialDetailsModeCredential();
 }
 
 void ManagePasswordsBubbleController::

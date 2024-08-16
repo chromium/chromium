@@ -1,0 +1,96 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "permission_metrics_util.h",
+    "permission_metrics_util.mm",
+    "permissions_consumer.h",
+    "permissions_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    ":permission_info",
+    "//base:base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/page_info/core",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/web/public/permissions",
+  ]
+}
+
+source_set("permission_info") {
+  sources = [
+    "permission_info.h",
+    "permission_info.mm",
+  ]
+  deps = []
+}
+
+source_set("constants") {
+  sources = [
+    "permissions_constants.h",
+    "permissions_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "permissions_app_interface.h",
+    "permissions_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/web/public",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "permissions_app_interface.h",
+    "permissions_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "permissions_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/supervised_user/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/badges/ui_bundled:public",
+    "//ios/chrome/browser/overlays/model/public/web_content_area:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:constants",
+    "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/permissions",
+    "//net:test_support",
+    "//ui/base",
+  ]
+}

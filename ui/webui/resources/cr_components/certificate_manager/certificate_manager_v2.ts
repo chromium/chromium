@@ -28,6 +28,8 @@ import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
 import '//resources/cr_elements/cr_page_host_style.css.js';
 
+import {CrContainerShadowMixin} from '//resources/cr_elements/cr_container_shadow_mixin.js';
+import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -45,18 +47,21 @@ import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
 import {CertificatesV2BrowserProxy} from './certificates_v2_browser_proxy.js';
-import {Page} from './navigation_v2.js';
+import type {Route} from './navigation_v2.js';
+import {Page, RouteObserverMixin, Router} from './navigation_v2.js';
 
 interface PasswordResult {
   password: string|null;
 }
 
-const CertificateManagerV2ElementBase = I18nMixin(PolymerElement);
+const CertificateManagerV2ElementBase =
+    RouteObserverMixin(CrContainerShadowMixin(I18nMixin(PolymerElement)));
 
 export interface CertificateManagerV2Element {
   $: {
     crsCerts: CertificateListV2Element,
     toolbar: HTMLElement,
+    main: CrPageSelectorElement,
     platformClientCerts: CertificateListV2Element,
     // <if expr="is_win or is_macosx or is_linux">
     provisionedClientCerts: CertificateListV2Element,
@@ -81,7 +86,6 @@ export interface CertificateManagerV2Element {
     localCertSection: HTMLElement,
     clientCertSection: HTMLElement,
     crsCertSection: HTMLElement,
-    adminCertsInstalledLinkRow: HTMLElement,
     adminCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
     platformClientCertsSection: CertificateSubpageV2Element,
@@ -203,7 +207,7 @@ export class CertificateManagerV2Element extends
     };
   }
 
-  private selectedPage_: Page = Page.LOCAL_CERTS;
+  private selectedPage_: Page;
   private toastMessage_: string;
   private showInfoDialog_: boolean = false;
   private infoDialogTitle_: string;
@@ -292,23 +296,29 @@ export class CertificateManagerV2Element extends
     e.preventDefault();
   }
 
-  private switchToPage_(page: Page) {
-    this.selectedPage_ = page;
+  override currentRouteChanged(route: Route, _: Route): void {
+    this.selectedPage_ = route.page;
+
     switch (this.selectedPage_) {
       case Page.ADMIN_CERTS:
       case Page.PLATFORM_CERTS:
       case Page.PLATFORM_CLIENT_CERTS:
-        this.$.toolbar.classList.add('toolbar-shadow');
+        // Sub-pages always show the top shadow, regardless of scroll position.
+        this.enableScrollObservation(false);
+        this.setForceDropShadows(true);
         break;
       default:
-        this.$.toolbar.classList.remove('toolbar-shadow');
+        // Main page uses scroll position to determine whether a shadow should
+        // be shown.
+        this.enableScrollObservation(true);
+        this.setForceDropShadows(false);
     }
   }
 
-  private onMenuItemSelect_(e: CustomEvent<{item: HTMLElement}>) {
+  private onMenuItemActivate_(e: CustomEvent<{item: HTMLElement}>) {
     const page = e.detail.item.getAttribute('path');
     assert(page, 'Page is not available');
-    this.switchToPage_(page as Page);
+    Router.getInstance().navigateTo(page as Page);
   }
 
   private getSelectedTopLevelPage_(): string {
@@ -323,27 +333,50 @@ export class CertificateManagerV2Element extends
     }
   }
 
-  private onPlatformCertsLinkRowClick_(e: Event) {
+  private generateHrefForPage_(p: Page): string {
+    return '/' + p;
+  }
+
+  private async onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.PLATFORM_CERTS);
+    Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
+    await this.$.main.updateComplete;
     this.$.platformCertsSection.setInitialFocus();
   }
 
-  private onClientPlatformCertsLinkRowClick_(e: Event) {
+  private async onClientPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.PLATFORM_CLIENT_CERTS);
+    Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
+    await this.$.main.updateComplete;
     this.$.platformClientCertsSection.setInitialFocus();
   }
 
-  private onAdminCertsInstalledLinkRowClick_(e: Event) {
+  private async onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
-    this.switchToPage_(Page.ADMIN_CERTS);
+    Router.getInstance().navigateTo(Page.ADMIN_CERTS);
+    await this.$.main.updateComplete;
     this.$.adminCertsSection.setInitialFocus();
   }
 
-  private onNavigateBack_(e: CustomEvent<{target: Page}>) {
-    this.switchToPage_(e.detail.target);
-    focusWithoutInk(this.$.localMenuItem);
+  private async onNavigateBack_(e: CustomEvent<{target: Page, source: Page}>) {
+    Router.getInstance().navigateTo(e.detail.target);
+    await this.$.main.updateComplete;
+    switch (e.detail.source) {
+      case Page.ADMIN_CERTS:
+        const linkRow = this.shadowRoot!.querySelector<HTMLElement>(
+            '#adminCertsInstalledLinkRow');
+        assert(linkRow);
+        focusWithoutInk(linkRow);
+        break;
+      case Page.PLATFORM_CERTS:
+        focusWithoutInk(this.$.viewOsImportedCerts);
+        break;
+      case Page.PLATFORM_CLIENT_CERTS:
+        focusWithoutInk(this.$.viewOsImportedClientCerts);
+        break;
+      default:
+        // do nothing; shouldn't ever get here.
+    }
   }
 
   private onImportResult_(e: CustomEvent<ImportResult|null>) {

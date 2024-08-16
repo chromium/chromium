@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -371,7 +372,8 @@ void DecodeImageOnDecoderThread(
       SegmentReader::CreateFromSkData(
           SkData::MakeWithoutCopy(contents.Data(), contents.DataLength())),
       data_complete, alpha_option, ImageDecoder::kDefaultBitDepth,
-      color_behavior, Platform::GetMaxDecodedImageBytes());
+      color_behavior, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes());
   sk_sp<SkImage> frame;
   ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
   if (decoder) {
@@ -403,7 +405,7 @@ void ImageBitmapFactories::ImageBitmapLoader::ScheduleAsyncImageBitmapDecoding(
           std::move(contents), alpha_option, color_behavior,
           CrossThreadBindOnce(&ImageBitmapFactories::ImageBitmapLoader::
                                   ResolvePromiseOnOriginalThread,
-                              WrapCrossThreadWeakPersistent(this))));
+                              MakeUnwrappingCrossThreadWeakHandle(this))));
 }
 
 void ImageBitmapFactories::ImageBitmapLoader::ResolvePromiseOnOriginalThread(

@@ -47,3 +47,6 @@
 
 # crbug.com/352811552
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitSubframe
+
+# crbug.com/357108459
+-org.chromium.chrome.browser.fullscreen.FullscreenManagerTest.testPersistentFullscreenWithOptionsLegacy

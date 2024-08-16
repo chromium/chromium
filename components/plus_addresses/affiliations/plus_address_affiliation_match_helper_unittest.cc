@@ -15,6 +15,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
@@ -43,7 +44,9 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
  public:
   PlusAddressAffiliationMatchHelperTest() {
     plus_address_service_ = std::make_unique<PlusAddressService>(
-        identity_test_env_.identity_manager(), &setting_service_,
+        &plus_environment_.pref_service(),
+        plus_environment_.identity_env().identity_manager(),
+        &plus_environment_.setting_service(),
         std::make_unique<NiceMock<MockPlusAddressHttpClient>>(),
         /*webdata_service=*/nullptr,
         /*affiliation_service=*/mock_affiliation_service(),
@@ -78,7 +81,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
   }
 
   MockAffiliationService* mock_affiliation_service() {
-    return &mock_affiliation_service_;
+    return &plus_environment_.affiliation_service();
   }
 
   PlusAddressService* plus_address_service() {
@@ -92,9 +95,7 @@ class PlusAddressAffiliationMatchHelperTest : public testing::Test {
  private:
   base::test::ScopedFeatureList features_{features::kPlusAddressAffiliations};
   base::test::TaskEnvironment task_environment_;
-  signin::IdentityTestEnvironment identity_test_env_;
-  FakePlusAddressSettingService setting_service_;
-  testing::StrictMock<MockAffiliationService> mock_affiliation_service_;
+  test::PlusAddressTestEnvironment plus_environment_;
   std::unique_ptr<PlusAddressService> plus_address_service_;
   std::unique_ptr<PlusAddressAffiliationMatchHelper> match_helper_;
 };

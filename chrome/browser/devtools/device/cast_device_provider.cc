@@ -136,6 +136,12 @@ class CastDeviceProvider::DeviceListerDelegate final
                                      provider_, service_type));
   }
 
+  void OnPermissionRejected() override {
+    runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&CastDeviceProvider::OnPermissionRejected, provider_));
+  }
+
   base::WeakPtr<DeviceListerDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -217,6 +223,12 @@ void CastDeviceProvider::OnDeviceRemoved(const std::string& service_type,
 
 void CastDeviceProvider::OnDeviceCacheFlushed(const std::string& service_type) {
   VLOG(1) << "Device cache flushed";
+  service_hostname_map_.clear();
+  device_info_map_.clear();
+}
+
+void CastDeviceProvider::OnPermissionRejected() {
+  VLOG(1) << "Permission for local discovery is rejected.";
   service_hostname_map_.clear();
   device_info_map_.clear();
 }

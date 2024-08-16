@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">ஸ்லைடர்</translation>
 <translation id="1211441953136645838">முடிவுக்குறிப்பு</translation>
 <translation id="1281252709823657822">உரையாடல்</translation>
+<translation id="1306460908038601864">முடக்கு</translation>
 <translation id="1335095011850992622">பங்களித்தவர்கள்</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">பேனர்</translation>
+<translation id="1480676835519562650">பலவற்றைத் தேர்ந்தெடுக்கலாம், <ph name="SELECTED" />/<ph name="COUNT" /> தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="1589122976691792535">மண்டலம்</translation>
 <translation id="1650423536718072820">pullquote</translation>
+<translation id="1681022320378710418">தற்போதைய நேரம்</translation>
+<translation id="1727839386348365796">ஐ-டிராப்பர்</translation>
 <translation id="1821985195704844674">ட்ரீ கிரிட்</translation>
 <translation id="1823704031293214298">பக்க அடிக்குறிப்பு</translation>
 <translation id="1838681052457320736">விழிப்பூட்டல் உரையாடல்</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">நீக்கும்</translation>
 <translation id="1907737156431278478">உதாரணம்</translation>
 <translation id="1930711995431081526">நிலை</translation>
+<translation id="2031987842108996681">சிவப்பு சேனல்</translation>
 <translation id="2158401438286456825">பக்கப் பட்டியல்</translation>
 <translation id="2291999235780842123">செக்பாக்ஸ்</translation>
 <translation id="2311842470354187719">பக்க முறிப்பு</translation>
 <translation id="2335594187091864976">தேதி மற்றும் நேரம் தேர்வுக் கருவி</translation>
 <translation id="2508569020611168319">தாவல் பட்டியல்</translation>
+<translation id="2530182415807757784">பலவற்றைத் தேர்ந்தெடுக்கலாம், எதுவும் தேர்ந்தெடுக்கப்படவில்லை.</translation>
+<translation id="2634240155926812724">பச்சை சேனல்</translation>
 <translation id="2657045182931379222">கிராஃபிக்ஸ் பொருள்</translation>
 <translation id="2674318244760992338">அடிக்குறிப்பு</translation>
 <translation id="2723001399770238859">ஆடியோ</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">குறிப்பு</translation>
 <translation id="3175736971608411871">டைமர்</translation>
 <translation id="3199563858620722075">சேர்க்கைப் பெட்டி</translation>
+<translation id="3220661731597678625">தற்போதைய படிநிலை</translation>
+<translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3557673793733683882">தலைப்பு <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">வாரத் தேர்வுக் கருவி</translation>
 <translation id="3706100364254443312">ஸ்விட்ச்</translation>
 <translation id="3808586225841795776">சொல்</translation>
+<translation id="3914173277599553213">அவசியம்</translation>
 <translation id="3920932319529768807">முடிவு</translation>
 <translation id="3924558731517983934">ஆப்ஸ்</translation>
 <translation id="3944740393230681990">முன்னுரை</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">அட்டை</translation>
 <translation id="4757246831282535685">தாவல் பலகம்</translation>
 <translation id="479989351350248267">தேடல்</translation>
+<translation id="4912200001568447310">தற்போதைய மதிப்பு</translation>
 <translation id="4912536737030637138">நூல்விவர அட்டவணை உள்ளீடு</translation>
 <translation id="492244087561876220">கருத்து</translation>
+<translation id="4924138096460353083">தீர்மானிக்க முடியாத நிலை</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="5022314756875057021">வரிசைக் குழு</translation>
 <translation id="5034860022980953847">செயல்நிலை காட்டி</translation>
 <translation id="5093189678851173835">கல்வெட்டு</translation>
+<translation id="509897012892853729">நீல சேனல்</translation>
 <translation id="512758898067543763">வரிசை மேற்தலைப்பு</translation>
 <translation id="5143125788380636750">முடிவுரை</translation>
 <translation id="5406322316791861025">உருவம்</translation>
+<translation id="5425179576310518467">தற்போதைய தேதி</translation>
 <translation id="5453733299334684579">ட்ரீ உருப்படி</translation>
 <translation id="546643433018805598">சப்ஸ்கிரிப்ட்</translation>
 <translation id="5476505524087279545">தேர்வு நீக்கு</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">பட்டன்</translation>
 <translation id="5693537480074347398">சூப்பர்ஸ்கிரிப்ட்</translation>
 <translation id="576709008726043716">அறிமுகம்</translation>
+<translation id="5860033963881614850">ஆஃப்</translation>
 <translation id="591047860372322273">தேடல் பெட்டி</translation>
+<translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5987525920412732405">சுழல் பட்டன்</translation>
 <translation id="6023896073578205740">பட்டியல் பெட்டி</translation>
 <translation id="6119846243427417423">செயல்படுத்து</translation>
 <translation id="6150588977291308318">நூல்விவர அட்டவணை</translation>
 <translation id="6164829606128959761">மீட்டர்</translation>
 <translation id="6166809985690652833">பின்னுரை</translation>
+<translation id="6212595056017402527">தற்போதைய பக்கம்</translation>
 <translation id="6213469881011901533">அருஞ்சொல் திரட்டு</translation>
+<translation id="6281588256137006900">உரையின் தெரிவுநிலை</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">அங்கீகாரங்கள்</translation>
 <translation id="648732519525291180">நேரம் தேர்வுக் கருவி</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">பிளாக்கோட்</translation>
 <translation id="693476918119313863">மேற்குறிப்பு</translation>
 <translation id="6981594929165378967">செருகும்</translation>
+<translation id="698788488269350478">விரிவாக்கப்பட்டது.</translation>
 <translation id="7034405885550056553">பரிந்துரை</translation>
+<translation id="7102274145889307184">தற்போதைய இருப்பிடம்</translation>
 <translation id="7139483182332611405">முன்னுரை</translation>
 <translation id="7198226213493847604">மெனு பாப்-அப் பட்டன்</translation>
 <translation id="7214187073215825913">உள்ளடக்கத் தகவல்</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">பொருளடக்கம்</translation>
 <translation id="7740050170769002709">HTML உள்ளடக்கம்</translation>
 <translation id="7802800022689234070">கூடுதல் உள்ளடக்க முக்கோணம்</translation>
+<translation id="7852167693871241274">வண்ணச் சாயல் ஸ்லைடர்</translation>
 <translation id="7891486169920085145">பிரிப்பான்</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="8034303206267677282">முக்கியமானது</translation>
 <translation id="8053789581856978548">தேடல் உரைப் புலம்</translation>
 <translation id="8057695513531652401">அறிவிப்பு</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">அத்தியாயம்</translation>
 <translation id="8851136666856101339">முதன்மை</translation>
 <translation id="8861621546968757188">உரையாடல் பாப்-அப் பட்டன்</translation>
+<translation id="8889402386540077796">நிறச்சாயல்</translation>
+<translation id="894736920926684893">வடிவமைப்பை நிலைமாற்றும்</translation>
 <translation id="9002566407876343676">திற</translation>
 <translation id="901834265349196618">மின்னஞ்சல்</translation>
 <translation id="9048119486235211610">வழிசெலுத்தல்</translation>

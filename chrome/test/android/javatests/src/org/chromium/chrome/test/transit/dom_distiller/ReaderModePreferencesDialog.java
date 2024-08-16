@@ -1,10 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package org.chromium.chrome.test.transit.dom_distiller;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.GeneralClickAction;
@@ -16,7 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -28,11 +31,11 @@ import org.chromium.chrome.test.util.MenuUtils;
  */
 public class ReaderModePreferencesDialog extends CarryOn {
 
-    public static final ViewElement TEXT_COLOR_LIGHT = scopedViewElement(withText("Light"));
-    public static final ViewElement TEXT_COLOR_DARK = scopedViewElement(withText("Dark"));
-    public static final ViewElement TEXT_COLOR_SEPIA = scopedViewElement(withText("Sepia"));
-    public static final ViewElement FONT_FAMILY = scopedViewElement(withId(R.id.font_family));
-    public static final ViewElement FONT_SIZE_SLIDER = scopedViewElement(withId(R.id.font_size));
+    public static final ViewSpec TEXT_COLOR_LIGHT = viewSpec(withText("Light"));
+    public static final ViewSpec TEXT_COLOR_DARK = viewSpec(withText("Dark"));
+    public static final ViewSpec TEXT_COLOR_SEPIA = viewSpec(withText("Sepia"));
+    public static final ViewSpec FONT_FAMILY = viewSpec(withId(R.id.font_family));
+    public static final ViewSpec FONT_SIZE_SLIDER = viewSpec(withId(R.id.font_size));
 
     @Override
     public void declareElements(Elements.Builder elements) {
@@ -66,15 +69,15 @@ public class ReaderModePreferencesDialog extends CarryOn {
     }
 
     public void pickColorLight(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_LIGHT.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_LIGHT::click, condition);
     }
 
     public void pickColorDark(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_DARK.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_DARK::click, condition);
     }
 
     public void pickColorSepia(Condition condition) {
-        Condition.runAndWaitFor(() -> TEXT_COLOR_SEPIA.perform(click()), condition);
+        Condition.runAndWaitFor(TEXT_COLOR_SEPIA::click, condition);
     }
 
     public void setFontSizeSliderToMin(Condition condition) {

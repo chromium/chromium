@@ -6,11 +6,14 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
@@ -30,7 +33,7 @@ GeneratedHttpsFirstModePref::GeneratedHttpsFirstModePref(Profile* profile)
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));
   user_prefs_registrar_.Add(
-      prefs::kHttpsFirstModeIncognito,
+      prefs::kHttpsFirstBalancedMode,
       base::BindRepeating(
           &GeneratedHttpsFirstModePref::OnSourcePreferencesChanged,
           base::Unretained(this)));
@@ -74,45 +77,64 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
   auto selection = static_cast<HttpsFirstModeSetting>(value->GetInt());
 
   if (selection != HttpsFirstModeSetting::kDisabled &&
-      selection != HttpsFirstModeSetting::kEnabledIncognito &&
+      selection != HttpsFirstModeSetting::kEnabledBalanced &&
       selection != HttpsFirstModeSetting::kEnabledFull) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings) &&
-      selection == HttpsFirstModeSetting::kEnabledIncognito) {
+  if (!IsBalancedModeAvailable() &&
+      selection == HttpsFirstModeSetting::kEnabledBalanced) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
 
-  // kHttpsOnlyModeEnabled is considered the canonical source for HFM
-  // management. Policy enforcement turns it fully on or fully off.
-  const PrefService::Preference* enabled_pref =
+  // If the enterprise policy is enforced, then the kHttpsOnlyModeEnabled pref
+  // will not be modifiable (for all policy values).
+  const PrefService::Preference* fully_enabled_pref =
       profile_->GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
-  if (!enabled_pref->IsUserModifiable()) {
+  if (!fully_enabled_pref->IsUserModifiable()) {
     return extensions::settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
   }
 
   // Update both HTTPS-First Mode preferences to match the selection.
   //
-  // Note that the HttpsFirstModeSetting::kEnabledIncognito is not available by
+  // Note that the HttpsFirstModeSetting::kEnabledBalanced is not available by
   // default. If the feature flag is disabled, then the kEnabledFull and
   // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
   //
-  // Additionally, if kHttpsFirstModeIncognitoNewSettings is disabled, then the
-  // HFM-in-Incognito pref should not be controlled by the user setting. (The
-  // pref will be set to its default `true` regardless of the HFM boolean
-  // setting toggle.)
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings)) {
+  // Note: The Security.HttpsFirstMode.SettingChanged* histograms are logged
+  // here instead of in HttpsFirstModeService::OnHttpsFirstModePrefChanged()
+  // because this will fire the pref observer _twice_, so logging the histogram
+  // in the pref observer would cause double counting.
+  if (IsBalancedModeAvailable()) {
+    switch (selection) {
+      case HttpsFirstModeSetting::kDisabled:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kDisabled);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+      case HttpsFirstModeSetting::kEnabledBalanced:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kEnabledBalanced);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, true);
+        break;
+      case HttpsFirstModeSetting::kEnabledFull:
+        base::UmaHistogramEnumeration("Security.HttpsFirstMode.SettingChanged2",
+                                      HttpsFirstModeSetting::kEnabledFull);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+        profile_->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+        break;
+    }
+  } else {
+    // TODO(crbug.com/349860796): Remove old settings path once Balanced Mode
+    // is launched.
+    base::UmaHistogramBoolean("Security.HttpsFirstMode.SettingChanged",
+                              selection == HttpsFirstModeSetting::kEnabledFull);
     profile_->GetPrefs()->SetBoolean(
-        prefs::kHttpsFirstModeIncognito,
-        selection != HttpsFirstModeSetting::kDisabled);
+        prefs::kHttpsOnlyModeEnabled,
+        selection == HttpsFirstModeSetting::kEnabledFull);
   }
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kHttpsOnlyModeEnabled,
-      selection == HttpsFirstModeSetting::kEnabledFull);
 
   return extensions::settings_private::SetPrefResult::SUCCESS;
 }
@@ -124,23 +146,15 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
           profile_)
           ->IsUnderAdvancedProtection();
 
-  // prefs::kHttpsOnlyModeEnabled is the backing pref that can be controlled by
-  // enterprise policy.
   auto* hfm_fully_enabled_pref =
       profile_->GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
 
-  // The HttpsFirstModeSetting::kEnabledIncognito setting is not available by
-  // default -- if the kHttpsFirstModeIncognitoNewSettings feature flag is
-  // disabled, then the kEnabledFull and kDisabled settings will be mapped to
-  // the kHttpsOnlyModeEnabled pref on its own.
-  bool hfm_incognito_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
-      base::FeatureList::IsEnabled(
-          features::kHttpsFirstModeIncognitoNewSettings) &&
-      profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
-
   bool fully_enabled = hfm_fully_enabled_pref->GetValue()->GetBool() ||
                        is_advanced_protection_enabled;
+
+  // Balanced Mode can be enabled by the user or automatically. In both cases,
+  // the UI setting should look the same.
+  bool balanced_enabled = IsBalancedModeEnabled(profile_->GetPrefs());
 
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedHttpsFirstModePref;
@@ -150,9 +164,9 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
   if (fully_enabled) {
     pref_object.value =
         base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
-  } else if (hfm_incognito_enabled) {
+  } else if (balanced_enabled) {
     pref_object.value =
-        base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledIncognito));
+        base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced));
   } else {
     pref_object.value =
         base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
@@ -160,25 +174,88 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
 
   pref_object.user_control_disabled = is_advanced_protection_enabled;
 
-  if (!hfm_fully_enabled_pref->IsUserModifiable()) {
-    // The pref was controlled by the enterprise policy.
+  if (IsBalancedModeAvailable()) {
+    ApplyManagementState(*profile_, pref_object);
+  } else {
+    // TODO(crbug.com/349860796): Remove old settings path once Balanced Mode
+    // is fully launched.
+    if (!hfm_fully_enabled_pref->IsUserModifiable()) {
+      // The pref was controlled by the enterprise policy.
+      pref_object.enforcement = settings_api::Enforcement::kEnforced;
+      extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
+          &pref_object, hfm_fully_enabled_pref);
+    } else if (hfm_fully_enabled_pref->GetRecommendedValue()) {
+      // Policy can set a recommended setting of fully enabled or fully
+      // disabled. Map those to the enum values.
+      pref_object.enforcement = settings_api::Enforcement::kRecommended;
+      if (hfm_fully_enabled_pref->GetRecommendedValue()->GetBool()) {
+        pref_object.recommended_value =
+            base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
+      } else {
+        pref_object.recommended_value =
+            base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
+      }
+    }
+  }
+  return pref_object;
+}
+
+// static
+void GeneratedHttpsFirstModePref::ApplyManagementState(
+    const Profile& profile,
+    settings_api::PrefObject& pref_object) {
+  // Computing the effective HTTPS-First Mode managed state requires inspecting
+  // both underlying preferences. Note that `prefs::kHttpsOnlyModeEnabled` will
+  // always be marked as enforced or recommended if any policy state is set, so
+  // can be treated as the canonical source for whether policy enforcement is
+  // present.
+
+  // Check fully enabled pref enforced and recommended state.
+  const PrefService::Preference* fully_enabled_pref =
+      profile.GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
+  const bool fully_enabled_enforced = !fully_enabled_pref->IsUserModifiable();
+  const bool fully_enabled_recommended =
+      fully_enabled_pref && fully_enabled_pref->GetRecommendedValue();
+  const bool fully_enabled_recommended_on =
+      fully_enabled_recommended &&
+      fully_enabled_pref->GetRecommendedValue()->GetBool();
+
+  // Check the recommended state of the balanced mode pref.
+  const PrefService::Preference* balanced_pref =
+      profile.GetPrefs()->FindPreference(prefs::kHttpsFirstBalancedMode);
+  const bool balanced_recommended_on =
+      balanced_pref && balanced_pref->GetRecommendedValue() &&
+      balanced_pref->GetRecommendedValue()->GetBool();
+
+  if (!fully_enabled_enforced && !fully_enabled_recommended) {
+    // No relevant policy is applied.
+    return;
+  }
+
+  // If policy is enforcing a setting, then the fully enabled pref will be
+  // enforced, so this covers all policy enforcement states.
+  if (fully_enabled_enforced) {
     pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
-        &pref_object, hfm_fully_enabled_pref);
-  } else if (hfm_fully_enabled_pref->GetRecommendedValue()) {
-    // Policy can set a recommended setting of fully enabled or fully disabled.
-    // Map those to the enum values.
+        &pref_object, fully_enabled_pref);
+    return;
+  }
+
+  // If the policy is recommending a setting, then the fully enabled pref will
+  // be recommended, so this covers all policy enforcement states.
+  if (fully_enabled_recommended) {
+    // Set enforcement to recommended.
     pref_object.enforcement = settings_api::Enforcement::kRecommended;
-    if (hfm_fully_enabled_pref->GetRecommendedValue()->GetBool()) {
+    // Determine what setting value is being recommended.
+    if (fully_enabled_recommended_on) {
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kEnabledFull));
+    } else if (balanced_recommended_on) {
+      pref_object.recommended_value = base::Value(
+          static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced));
     } else {
-      // TODO(crbug.com/40937027): Consider supporting a recommended value of
-      // kEnabledIncognito after the enterprise policy support is updated.
       pref_object.recommended_value =
           base::Value(static_cast<int>(HttpsFirstModeSetting::kDisabled));
     }
   }
-
-  return pref_object;
 }

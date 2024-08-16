@@ -49,13 +49,15 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
       return;
     };
     case BirchItemType::kLastActive: {
-      hash_and_insert(static_cast<BirchLastActiveItem*>(item)->url().spec(),
-                      removed_items_proto_->mutable_removed_tab_items());
+      hash_and_insert(
+          static_cast<BirchLastActiveItem*>(item)->page_url().spec(),
+          removed_items_proto_->mutable_removed_tab_items());
       return;
     }
     case BirchItemType::kMostVisited: {
-      hash_and_insert(static_cast<BirchMostVisitedItem*>(item)->url().spec(),
-                      removed_items_proto_->mutable_removed_tab_items());
+      hash_and_insert(
+          static_cast<BirchMostVisitedItem*>(item)->page_url().spec(),
+          removed_items_proto_->mutable_removed_tab_items());
       return;
     }
     case BirchItemType::kSelfShare: {
@@ -78,11 +80,15 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
                       removed_items_proto_->mutable_removed_file_items());
       return;
     }
+    case ash::BirchItemType::kCoral: {
+      // TODO(yulunwu): implement coral birch item removal once defined.
+      return;
+    }
     case ash::BirchItemType::kReleaseNotes:
     case ash::BirchItemType::kWeather:
     case ash::BirchItemType::kLostMedia:
     case ash::BirchItemType::kTest: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -99,7 +105,7 @@ void BirchItemRemover::FilterRemovedLastActiveItems(
     std::vector<BirchLastActiveItem>* items) {
   CHECK(removed_items_proto_.initialized());
   std::erase_if(*items, [this](const BirchLastActiveItem& item) {
-    const std::string hashed_url = base::SHA1HashString(item.url().spec());
+    const std::string hashed_url = base::SHA1HashString(item.page_url().spec());
     return removed_items_proto_->removed_tab_items().contains(hashed_url);
   });
 }
@@ -108,7 +114,7 @@ void BirchItemRemover::FilterRemovedMostVisitedItems(
     std::vector<BirchMostVisitedItem>* items) {
   CHECK(removed_items_proto_.initialized());
   std::erase_if(*items, [this](const BirchMostVisitedItem& item) {
-    const std::string hashed_url = base::SHA1HashString(item.url().spec());
+    const std::string hashed_url = base::SHA1HashString(item.page_url().spec());
     return removed_items_proto_->removed_tab_items().contains(hashed_url);
   });
 }

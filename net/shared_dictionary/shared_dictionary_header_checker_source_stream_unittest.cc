@@ -253,7 +253,8 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSync) {
   AddReadResult(OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(kTestBodyData.size());
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
+            kTestBodyData);
   CheckSyncRead(OK);
 }
 
@@ -264,7 +265,8 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedSync) {
   AddReadResult(OK, Mode::SYNC);
   CreateHeaderCheckerSourceStream();
   CheckSyncRead(kTestBodyData.size());
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
+            kTestBodyData);
   CheckSyncRead(OK);
 }
 
@@ -274,7 +276,8 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderAsync) {
   AddReadResult(OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(kTestBodyData.size(), 2);
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
+            kTestBodyData);
   CheckAsyncRead(OK, 1);
 }
 
@@ -285,7 +288,8 @@ TEST_P(SharedDictionaryHeaderCheckerSourceStreamTest, HeaderSplittedAsync) {
   AddReadResult(OK, Mode::ASYNC);
   CreateHeaderCheckerSourceStream();
   CheckAsyncRead(kTestBodyData.size(), 3);
-  EXPECT_EQ(buffer()->span().first(kTestBodyData.size()), kTestBodyData);
+  EXPECT_EQ(base::as_chars(buffer()->span()).first(kTestBodyData.size()),
+            kTestBodyData);
   CheckAsyncRead(OK, 1);
 }
 

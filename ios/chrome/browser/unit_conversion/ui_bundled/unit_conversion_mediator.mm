@@ -246,7 +246,7 @@
       return isMetric ? UnitConversionActionTypes::kVolumeMetric
                       : UnitConversionActionTypes::kVolumeImperial;
     case ios::provider::kUnitTypeUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -21,8 +21,9 @@ typedef testing::Test ExtensionRegistryTest;
 testing::AssertionResult HasSingleExtension(
     const ExtensionList& list,
     const scoped_refptr<const Extension>& extension) {
-  if (list.empty())
+  if (list.empty()) {
     return testing::AssertionFailure() << "No extensions in list";
+  }
   if (list.size() > 1) {
     return testing::AssertionFailure() << list.size()
                                        << " extensions, expected 1";

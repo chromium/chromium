@@ -306,7 +306,7 @@ FindBarView::FindBarView(FindBarHost* host) {
                 views::Builder<views::Label>()
                     .CopyAddressTo(&hint_text)
                     .SetText(l10n_util::GetStringUTF16(
-                        IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE))
+                        GetLensOverlayFindBarMessageIds()))
                     .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                     .SetTextStyle(views::style::STYLE_HINT),
@@ -314,7 +314,7 @@ FindBarView::FindBarView(FindBarHost* host) {
                     .SetImageModel(views::Button::STATE_NORMAL,
                                    ui::ImageModel::FromVectorIcon(icon))
                     .SetText(l10n_util::GetStringUTF16(
-                        IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL))
+                        GetLensOverlayFindBarButtonLabelIds()))
                     .SetBgColorIdOverride(ui::kColorSysNeutralContainer)
                     .SetCallback(base::BindRepeating(
                         [](FindBarView* find_bar) {
@@ -636,6 +636,28 @@ void FindBarView::UpdateLensButtonVisibility(
 
   // Notify the parent to re-layout with out new size.
   find_bar_host_->MoveWindowIfNecessary();
+}
+
+int FindBarView::GetLensOverlayFindBarMessageIds() {
+  switch (lens::features::GetLensOverlayFindBarStringsVariant()) {
+    case 1:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1;
+    case 2:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2;
+    default:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE;
+  }
+}
+
+int FindBarView::GetLensOverlayFindBarButtonLabelIds() {
+  switch (lens::features::GetLensOverlayFindBarStringsVariant()) {
+    case 1:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1;
+    case 2:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2;
+    default:
+      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL;
+  }
 }
 
 BEGIN_METADATA(FindBarView)

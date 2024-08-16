@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -115,8 +116,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
 
   // Expect to read the same message from the file.
   std::vector<char> data(message.size());
-  EXPECT_EQ(file.ReadAtCurrentPos(data.data(), static_cast<int>(data.size())),
-            static_cast<int>(data.size()));
+  EXPECT_TRUE(file.ReadAtCurrentPosAndCheck(base::as_writable_byte_span(data)));
   EXPECT_TRUE(base::ranges::equal(message, data));
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }

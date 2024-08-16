@@ -7,14 +7,32 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/app/profile/profile_init_stage.h"
+
 class ChromeBrowserState;
+@protocol ProfileStateAgent;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
 @interface ProfileState : NSObject
 
-// The non-incognito ChromeBrowserState used for this Profile.
+// Profile initialisation stage.
+@property(nonatomic, assign) ProfileInitStage initStage;
+
+// The non-incognito ChromeBrowserState used for this Profile. This will be null
+// until `initStage` >= `InitStageProfileLoaded`.
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+
+// All agents that have been attached. Use -addAgent: and -removeAgent: to
+// add and remove agents.
+@property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;
+
+// Adds a new agent. Agents are owned by the profile state.
+// This automatically sets the profile state on the `agent`.
+- (void)addAgent:(id<ProfileStateAgent>)agent;
+
+// Removes an agent.
+- (void)removeAgent:(id<ProfileStateAgent>)agent;
 
 @end
 

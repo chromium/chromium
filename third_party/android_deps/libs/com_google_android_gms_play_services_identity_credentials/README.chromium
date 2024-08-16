@@ -1,0 +1,15 @@
+Name: play-services-identity-credentials
+Short Name: play-services-identity-credentials
+URL: https://developers.google.com/android/guides/setup
+Version: 16.0.0-alpha02
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+
+
+Local Modifications:
+No modifications.

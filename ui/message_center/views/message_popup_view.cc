@@ -15,6 +15,7 @@
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -38,11 +39,15 @@ MessagePopupView::MessagePopupView(MessageView* message_view,
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  if (!message_view_->IsManuallyExpandedOrCollapsed())
+  CHECK(message_view_) << "MessagePopupView requires a message_view";
+  if (!message_view_->IsManuallyExpandedOrCollapsed()) {
     message_view_->SetExpanded(message_view_->IsAutoExpandingAllowed());
+  }
   AddChildView(message_view_.get());
 
   SetNotifyEnterExitOnChild(true);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
@@ -51,6 +56,8 @@ MessagePopupView::MessagePopupView(MessagePopupCollection* popup_collection)
       a11y_feedback_on_init_(false) {
   set_suppress_default_focus_handling();
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 MessagePopupView::~MessagePopupView() {
@@ -130,9 +137,9 @@ void MessagePopupView::AutoCollapse() {
   message_view_->SetExpanded(false);
 }
 
-void MessagePopupView::Show() {
+std::unique_ptr<views::Widget> MessagePopupView::Show() {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
@@ -146,8 +153,9 @@ void MessagePopupView::Show() {
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #endif
   params.delegate = this;
-  views::Widget* widget = new views::Widget();
-  popup_collection_->ConfigureWidgetInitParamsForContainer(widget, &params);
+  auto widget = std::make_unique<views::Widget>();
+  popup_collection_->ConfigureWidgetInitParamsForContainer(widget.get(),
+                                                           &params);
   widget->set_focus_on_creation(false);
 
 #if BUILDFLAG(IS_WIN)
@@ -155,7 +163,7 @@ void MessagePopupView::Show() {
   // not the Ash desktop (since there is already another toast contents view
   // there.
   if (!params.parent)
-    params.native_widget = new views::DesktopNativeWidgetAura(widget);
+    params.native_widget = new views::DesktopNativeWidgetAura(widget.get());
 #endif
 
   widget->Init(std::move(params));
@@ -178,6 +186,8 @@ void MessagePopupView::Show() {
 
   if (a11y_feedback_on_init_)
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+
+  return widget;
 }
 
 void MessagePopupView::Close() {
@@ -210,7 +220,6 @@ void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // `message_view_` as nullptr.
   if (message_view_)
     message_view_->GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
 void MessagePopupView::OnDisplayChanged() {

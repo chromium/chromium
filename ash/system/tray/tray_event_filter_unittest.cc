@@ -90,7 +90,7 @@ class TestTrayBackgroundView : public TrayBackgroundView {
     bubble_->ShowBubble(std::move(bubble_view));
   }
 
-  void CloseBubble() override { bubble_.reset(); }
+  void CloseBubbleInternal() override { bubble_.reset(); }
 
   TrayBubbleWrapper* bubble() { return bubble_.get(); }
 

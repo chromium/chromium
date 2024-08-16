@@ -404,8 +404,10 @@ public class AppHeaderCoordinatorBrowserTest {
                             Matchers.is(nonOmniboxIconTint));
                     Criteria.checkThat(
                             "Tab switcher icon tint is incorrect.",
-                            toolbarTablet
-                                    .getTabSwitcherButton()
+                            ((ImageButton)
+                                            activity.getToolbarManager()
+                                                    .getTabSwitcherButtonCoordinatorForTesting()
+                                                    .getContainerView())
                                     .getImageTintList()
                                     .getDefaultColor(),
                             Matchers.is(nonOmniboxIconTint));

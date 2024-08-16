@@ -26,7 +26,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from blinkpy.web_tests.port import linux, chrome
+from blinkpy.web_tests.port import linux
 
 
 class WebviewPort(linux.LinuxPort):
@@ -35,7 +35,7 @@ class WebviewPort(linux.LinuxPort):
     SUPPORTED_VERSIONS = ('webview', )
     FALLBACK_PATHS = {}
     FALLBACK_PATHS['webview'] = (
-        ["webview"] + chrome.ChromePort.latest_platform_fallback_path())
+        ['webview'] + linux.LinuxPort.latest_platform_fallback_path())
 
     def configuration_specifier_macros(self):
         return {self.port_name: list(self.SUPPORTED_VERSIONS)}

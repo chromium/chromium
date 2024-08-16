@@ -31,14 +31,14 @@ ActiveMediaSessionController::ActiveMediaSessionController(
       controller_manager_remote_.BindNewPipeAndPassReceiver());
 
   if (request_id == base::UnguessableToken::Null()) {
-    // ID is null for all scenarios where kWebAppSystemMediaControlsWin is not
-    // supported. ie. Mac, Linux, Windows with the feature flag off.
+    // ID is null for all scenarios where kWebAppSystemMediaControls is not
+    // supported. ie. Linux always, mac/Windows with the feature flag off.
     // Create a media controller that follows the active session for this case.
     controller_manager_remote_->CreateActiveMediaController(
         media_controller_remote_.BindNewPipeAndPassReceiver());
   } else {
     // Create a media controller tied to |request_id| when
-    // kWebAppSystemMediaControlsWin is enabled (on Windows OS).
+    // kWebAppSystemMediaControls is enabled (on Windows/macOS).
     controller_manager_remote_->CreateMediaControllerForSession(
         media_controller_remote_.BindNewPipeAndPassReceiver(), request_id);
   }
@@ -238,7 +238,7 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -259,7 +259,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
     case ui::KeyboardCode::VKEY_MEDIA_PREV_TRACK:
       return MediaSessionAction::kPreviousTrack;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

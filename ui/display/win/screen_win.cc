@@ -391,11 +391,23 @@ std::vector<Display> ScreenWinDisplaysToDisplays(
   return displays;
 }
 
-MONITORINFOEX MonitorInfoFromHMONITOR(HMONITOR monitor) {
+std::optional<MONITORINFOEX> MaybeMonitorInfoFromHMONITOR(HMONITOR monitor) {
   MONITORINFOEX monitor_info = {};
   monitor_info.cbSize = sizeof(monitor_info);
-  ::GetMonitorInfo(monitor, &monitor_info);
+  if (::GetMonitorInfo(monitor, &monitor_info) == 0) {
+    return std::nullopt;
+  }
   return monitor_info;
+}
+
+MONITORINFOEX MonitorInfoFromHMONITOR(HMONITOR monitor) {
+  if (std::optional<MONITORINFOEX> monitor_info =
+          MaybeMonitorInfoFromHMONITOR(monitor);
+      monitor_info) {
+    return *monitor_info;
+  } else {
+    return MONITORINFOEX{};
+  }
 }
 
 std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
@@ -455,15 +467,21 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
   base::flat_set<int64_t> hashed_ids;
   base::flat_set<int64_t> hashed_keys;
   for (HMONITOR monitor : monitors) {
-    const MONITORINFOEX monitor_info = MonitorInfoFromHMONITOR(monitor);
+    const std::optional<MONITORINFOEX> monitor_info =
+        MaybeMonitorInfoFromHMONITOR(monitor);
+    if (!monitor_info) {
+      DLOG(WARNING) << "Failed to get MONITORINFOEX for " << monitor;
+      continue;
+    }
+
     const auto display_settings =
-        GetDisplaySettingsForDevice(monitor_info.szDevice);
+        GetDisplaySettingsForDevice(monitor_info->szDevice);
     const gfx::Vector2dF pixels_per_inch =
         GetMonitorPixelsPerInch(monitor).value_or(
             GetDefaultMonitorPhysicalPixelsPerInch());
     const auto path_info = GetDisplayConfigPathInfo(monitor);
     display_infos.emplace_back(
-        monitor_info, GetMonitorScaleFactor(monitor),
+        *monitor_info, GetMonitorScaleFactor(monitor),
         GetSDRWhiteLevel(path_info), display_settings.rotation,
         display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
@@ -485,7 +503,7 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
     };
     DisplayIdResult id_result = DisplayIdResult::kValid;
     DisplayIdResult key_result = DisplayIdResult::kValid;
-    if (!EnumDisplayDevices(monitor_info.szDevice, 0, &device, 0)) {
+    if (!EnumDisplayDevices(monitor_info->szDevice, 0, &device, 0)) {
       id_result = DisplayIdResult::kError;
       key_result = DisplayIdResult::kError;
     } else {

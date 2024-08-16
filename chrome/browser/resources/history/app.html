@@ -38,6 +38,11 @@
         font-weight: 400;
       }
 
+      #historyEmbeddingsDisclaimer[narrow] {
+        padding-inline: 24px;
+        max-width: none;
+      }
+
       cr-history-embeddings-filter-chips {
         margin: 0 auto;
         padding: 16px 8px;
@@ -150,9 +155,10 @@
           on-iron-select="updateScrollTarget_">
         <div id="tabs-container" path="history">
           <div id="historyEmbeddingsDisclaimer" class="history-cards"
-              hidden$="[[!enableHistoryEmbeddings_]]">
+              hidden$="[[!enableHistoryEmbeddings_]]"
+              narrow$="[[hasDrawer_]]">
             $i18n{historyEmbeddingsDisclaimer}
-            <a href="$i18n{historyEmbeddingsHelpArticleUrl}" target="_blank"
+            <a href="$i18n{historyEmbeddingsLearnMoreUrl}" target="_blank"
                 aria-describedby="historyEmbeddingsDisclaimer">
               $i18n{learnMore}
             </a>
@@ -224,9 +230,9 @@
           </history-synced-device-manager>
         </template>
         <template is="dom-if"
-            if="[[productSpecificationsListsSelected_(selectedPage_)]]">
+            if="[[comparisonTablesSelected_(selectedPage_)]]">
           <product-specifications-lists id="productSpecificationsLists"
-              path="productSpecificationsLists"
+              path="comparisonTables"
               search-term="[[queryState_.searchTerm]]">
           </product-specifications-lists>
         </template>

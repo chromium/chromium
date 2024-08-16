@@ -9,17 +9,17 @@
 
 #include "base/timer/timer.h"
 #include "components/sharing_message/sharing_message_bridge.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 // Class that implements sending sharing messages using Sync. This class
 // implements interaction with sync service. Sharing message data type is not
 // stored in any persistent storage.
 class SharingMessageBridgeImpl : public SharingMessageBridge,
-                                 public syncer::ModelTypeSyncBridge {
+                                 public syncer::DataTypeSyncBridge {
  public:
   explicit SharingMessageBridgeImpl(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
   ~SharingMessageBridgeImpl() override;
   SharingMessageBridgeImpl(const SharingMessageBridgeImpl&) = delete;
   SharingMessageBridgeImpl& operator=(const SharingMessageBridgeImpl&) = delete;
@@ -30,10 +30,10 @@ class SharingMessageBridgeImpl : public SharingMessageBridge,
   void SendSharingMessage(
       std::unique_ptr<sync_pb::SharingMessageSpecifics> specifics,
       CommitFinishedCallback on_commit_callback) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

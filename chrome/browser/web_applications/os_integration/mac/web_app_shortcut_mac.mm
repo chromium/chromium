@@ -13,9 +13,11 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
@@ -23,6 +25,9 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 
 namespace web_app {
@@ -66,8 +71,25 @@ bool UseAdHocSigningForWebAppShims() {
   if (@available(macOS 11.7, *)) {
     // macOS 11.7 and above can code sign at runtime without requiring that the
     // developer tools be installed.
-    return base::FeatureList::IsEnabled(
-        features::kUseAdHocSigningForWebAppShims);
+
+    // A disabled feature flag takes precedence over any enterprise policy.
+    if (!base::FeatureList::IsEnabled(
+            features::kUseAdHocSigningForWebAppShims)) {
+      return false;
+    }
+
+    // The browser's local_state can be null in tests. In that case there is no
+    // enterprise policy to consider.
+    if (PrefService* local_state = g_browser_process->local_state()) {
+      // Respect an enterprise policy if one is set.
+      if (local_state->IsManagedPreference(
+              prefs::kWebAppsUseAdHocCodeSigningForAppShims)) {
+        return local_state->GetBoolean(
+            prefs::kWebAppsUseAdHocCodeSigningForAppShims);
+      }
+    }
+
+    return true;
   }
 
   // Code signing on older macOS versions invokes `codesign_allocate` from the
@@ -77,10 +99,29 @@ bool UseAdHocSigningForWebAppShims() {
 
 namespace internals {
 
-bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
+void CreatePlatformShortcuts_WithUseAdHocSigningForWebAppShims(
+    const base::FilePath& app_data_path,
+    const ShortcutLocations& creation_locations,
+    ShortcutCreationReason creation_reason,
+    const ShortcutInfo& shortcut_info,
+    CreateShortcutsCallback callback,
+    bool use_ad_hoc_signing_for_web_app_shims) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
+                                         &shortcut_info,
+                                         use_ad_hoc_signing_for_web_app_shims);
+  bool created_shortcuts =
+      shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+  std::move(callback).Run(created_shortcuts);
+}
+
+void CreatePlatformShortcuts(const base::FilePath& app_data_path,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason creation_reason,
-                             const ShortcutInfo& shortcut_info) {
+                             const ShortcutInfo& shortcut_info,
+                             CreateShortcutsCallback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
@@ -89,12 +130,15 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
-    return true;
+    std::move(callback).Run(true);
+    return;
   }
 
-  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
-                                         &shortcut_info);
-  return shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(UseAdHocSigningForWebAppShims),
+      base::BindOnce(&CreatePlatformShortcuts_WithUseAdHocSigningForWebAppShims,
+                     app_data_path, creation_locations, creation_reason,
+                     std::cref(shortcut_info), std::move(callback)));
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
@@ -106,11 +150,27 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
-  WebAppShortcutCreator shortcut_creator(
-      internals::GetShortcutDataDir(shortcut_info), GetChromeAppsFolder(),
-      &shortcut_info);
+
+  bool has_shortcuts = false;
+  const std::string bundle_id = GetBundleIdentifierForShim(
+      shortcut_info.app_id, shortcut_info.is_multi_profile
+                                ? base::FilePath()
+                                : shortcut_info.profile_path);
+  if (!BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder())
+           .empty()) {
+    has_shortcuts = true;
+  } else if (shortcut_info.is_multi_profile) {
+    // If in multi-profile mode, search using the profile-scoped bundle id, in
+    // case the user has an old shim hanging around.
+    const std::string profile_scoped_bundle_id = GetBundleIdentifierForShim(
+        shortcut_info.app_id, shortcut_info.profile_path);
+    has_shortcuts = !BundleInfoPlist::SearchForBundlesById(
+                         profile_scoped_bundle_id, GetChromeAppsFolder())
+                         .empty();
+  }
+
   ShortcutLocations locations;
-  if (!shortcut_creator.GetAppBundlesById().empty()) {
+  if (has_shortcuts) {
     locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   }
   return locations;
@@ -167,29 +227,48 @@ void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   }
 }
 
-Result UpdatePlatformShortcuts(
+void UpdatePlatformShortcuts_WithUseAdHocSigningForWebAppShims(
     const base::FilePath& app_data_path,
     const std::u16string& old_app_title,
     std::optional<ShortcutLocations> user_specified_locations,
-    const ShortcutInfo& shortcut_info) {
+    ResultCallback callback,
+    const ShortcutInfo& shortcut_info,
+    bool use_ad_hoc_signing_for_web_app_shims) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
+                                         &shortcut_info,
+                                         use_ad_hoc_signing_for_web_app_shims);
+  std::vector<base::FilePath> updated_shim_paths;
+  Result result = (shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,
+                                                    &updated_shim_paths)
+                       ? Result::kOk
+                       : Result::kError);
+  std::move(callback).Run(result);
+}
+
+void UpdatePlatformShortcuts(
+    const base::FilePath& app_data_path,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> user_specified_locations,
+    ResultCallback callback,
+    const ShortcutInfo& shortcut_info) {
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
   // `GetChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
-    return Result::kOk;
+    std::move(callback).Run(Result::kOk);
+    return;
   }
 
-  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
-                                         &shortcut_info);
-  std::vector<base::FilePath> updated_shim_paths;
-  return (shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,
-                                           &updated_shim_paths)
-              ? Result::kOk
-              : Result::kError);
+  content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&UseAdHocSigningForWebAppShims),
+      base::BindOnce(&UpdatePlatformShortcuts_WithUseAdHocSigningForWebAppShims,
+                     app_data_path, old_app_title,
+                     std::move(user_specified_locations), std::move(callback),
+                     std::cref(shortcut_info)));
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {

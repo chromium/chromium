@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
 #include "chrome/browser/ui/quick_answers/ui/result_view.h"
 #include "chrome/browser/ui/quick_answers/ui/retry_view.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
@@ -47,18 +48,15 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
-  enum class Design { kCurrent, kRefresh, kMagicBoost };
-
-  // Unlike `ResultType`, `Intent` won't change depending on a response from the
-  // backend. e.g., (Intent::kDefinition, ResultType::kNoResult) can happen if
-  // our local code thinks we can find a definition but the backend doesn't.
-  enum class Intent { kUndefined, kDefinition, kUnitConversion, kTranslation };
-
   struct Params {
    public:
     std::string title;
     Design design = Design::kCurrent;
-    Intent intent = Intent::kUndefined;
+    // Unlike `ResultType`, `Intent` won't change depending on a response from
+    // the backend. e.g., (Intent::kDefinition, ResultType::kNoResult) can
+    // happen if our local code thinks we can find a definition but the backend
+    // doesn't. `Intent::kDefinition` is set as a default placeholder value.
+    Intent intent = Intent::kDefinition;
     // Set true to show a Google internal variant of Qucik Answers UI.
     bool is_internal = false;
   };

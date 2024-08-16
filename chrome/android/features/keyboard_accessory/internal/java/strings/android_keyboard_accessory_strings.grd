@@ -232,6 +232,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
         Use your virtual card for added security
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS_DISABLED" desc="Text used for the In-Product-Help bubble informing that the suggestion is disabled because the merchant does not accept virtual credit cards.">
+        Merchant doesn’t accept this virtual card
+      </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE" desc="Text used for the In-Product-Help bubble suggesting the user use their virtual card suggestion for a standalone CVC field.">
         Use CVC for this virtual card
       </message>

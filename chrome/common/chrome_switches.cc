@@ -441,12 +441,14 @@ const char kNoExperiments[] = "no-experiments";
 // switch is used by automation (including performance benchmarks) where it's
 // important only a browser window is shown.
 //
-// This may not actually be the first run or the What's New page. Overridden by
-// kForceFirstRun (for FRE) and kForceWhatsNew (for What's New). This does not
-// drop the First Run sentinel and thus doesn't prevent first run from
-// occurring the next time chrome is launched without this flag. It also does
-// not update the last What's New milestone, so does not prevent What's New
-// from occurring the next time chrome is launched without this flag.
+// This may not actually be the first run or the What's New page. Its effect can
+// be partially ignored by adding kForceFirstRun (for FRE), kForceWhatsNew (for
+// What's New) and/or kIgnoreNoFirstRunForSearchEngineChoiceScreen (for the DSE
+// choice screen). This does not drop the First Run sentinel and thus doesn't
+// prevent first run from occurring the next time chrome is launched without
+// this flag. It also does not update the last What's New milestone, so does not
+// prevent What's New from occurring the next time chrome is launched without
+// this flag.
 const char kNoFirstRun[] = "no-first-run";
 
 // Don't send hyperlink auditing pings
@@ -584,13 +586,6 @@ const char kSimulateUpgrade[] = "simulate-upgrade";
 // possible) for testing purposes.
 const char kSimulateIdleTimeout[] = "simulate-idle-timeout";
 
-// Causes password_manager_android_util::SetUsesSplitStoresAndUPMForLocal() to
-// ignore the min GmsCore version requirement.
-// TODO(crbug.com/324370397): Remove once min GmsCore version running on the
-// bots is above the checked value.
-const char kSkipLocalUpmGmsCoreVersionCheckForTesting[] =
-    "skip-local-upm-gms-core-version-check-for-testing";
-
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 
@@ -622,11 +617,6 @@ const char kStartStackProfilerBrowserTest[] = "browser-test";
 // amounts of disk space.
 const char kStoragePressureNotificationInterval[] =
     "storage-pressure-notification-interval";
-
-// Sets the supervised user ID for any loaded or newly created profile to the
-// given value. Pass an empty string to mark the profile as non-supervised.
-// Used for testing.
-const char kSupervisedUserId[] = "managed-user-id";
 
 // Frequency in Milliseconds for system log uploads. Should only be used for
 // testing purposes.

@@ -84,7 +84,7 @@ AutofillAddressUIComponent::LengthHint ConvertLengthHint(
     case AddressUiComponent::LengthHint::HINT_SHORT:
       return AutofillAddressUIComponent::LengthHint::HINT_SHORT;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace
 

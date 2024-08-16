@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -279,7 +279,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case PushNotificationClientId::kSafetyCheck:
     case PushNotificationClientId::kCommerce:
       // Not a switch.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

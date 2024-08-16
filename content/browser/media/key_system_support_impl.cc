@@ -5,6 +5,7 @@
 #include "content/browser/media/key_system_support_impl.h"
 
 #include "base/logging.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -115,8 +116,8 @@ void KeySystemSupportImpl::SetUpPermissionListeners() {
           ->GetPermissionController()
           ->SubscribeToPermissionStatusChange(
               blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
-              render_frame_host().GetProcess(),
-              render_frame_host().GetLastCommittedOrigin(),
+              /*render_process_host=*/nullptr, &render_frame_host(),
+              PermissionUtil::GetLastCommittedOriginAsURL(&render_frame_host()),
               /*should_include_device_status=*/false,
               base::BindRepeating(
                   &KeySystemSupportImpl::

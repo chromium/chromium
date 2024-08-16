@@ -59,6 +59,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -88,7 +89,7 @@ bool ContainsSystemModalWindow(const aura::Window* window) {
   }
 
   if (window->GetProperty(aura::client::kModalKey) ==
-      ui::ModalType::MODAL_TYPE_SYSTEM) {
+      ui::mojom::ModalType::kSystem) {
     return true;
   }
 
@@ -238,7 +239,9 @@ bool IsStackedBelow(aura::Window* win1, aura::Window* win2) {
 
 aura::Window* GetTopMostWindow(const aura::Window::Windows& windows) {
   aura::Window* lowest_common_parent = FindLowestCommonParent(windows);
-  CHECK(lowest_common_parent);
+  if (!lowest_common_parent) {
+    return nullptr;
+  }
 
   return FindTopMostChild(lowest_common_parent, windows);
 }
@@ -323,8 +326,7 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
 
   aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
   if (!root || root == window->GetRootWindow()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   WindowState* window_state = WindowState::Get(window);

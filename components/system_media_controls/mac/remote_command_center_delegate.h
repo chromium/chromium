@@ -6,7 +6,9 @@
 #define COMPONENTS_SYSTEM_MEDIA_CONTROLS_MAC_REMOTE_COMMAND_CENTER_DELEGATE_H_
 
 #include "base/containers/flat_set.h"
-#include "base/observer_list.h"
+#include "components/system_media_controls/mac/remote_cocoa/system_media_controls.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 @class RemoteCommandCenterDelegateCocoa;
 
@@ -22,10 +24,11 @@ class SystemMediaControlsObserver;
 namespace internal {
 
 // Wraps an NSObject which interfaces with the MPRemoteCommandCenter.
+// This class can be in-process (browser) or out-of-process (app shim). In both
+// cases it communicates to the browser about events received from macOS.
 class RemoteCommandCenterDelegate {
  public:
-  explicit RemoteCommandCenterDelegate(
-      SystemMediaControls* system_media_controls);
+  RemoteCommandCenterDelegate();
 
   RemoteCommandCenterDelegate(const RemoteCommandCenterDelegate&) = delete;
   RemoteCommandCenterDelegate& operator=(const RemoteCommandCenterDelegate&) =
@@ -42,7 +45,8 @@ class RemoteCommandCenterDelegate {
   void SetIsStopEnabled(bool value);
   void SetIsSeekToEnabled(bool value);
 
-  // Called by |remote_command_center_delegate_cocoa_| when the event happens.
+  // Called by `remote_command_center_delegate_cocoa_` when the event happens.
+  // Passes the message back to the browser process via `observer_remote_`.
   void OnNext();
   void OnPrevious();
   void OnPause();
@@ -50,6 +54,14 @@ class RemoteCommandCenterDelegate {
   void OnStop();
   void OnPlay();
   void OnSeekTo(const base::TimeDelta& time);
+
+  // This rebinds `observer_remote_` to a different listener set.
+  // This is used to account for duplicate dPWAs sharing a single app shim.
+  void BindObserverRemote(
+      mojo::PendingRemote<mojom::SystemMediaControlsObserver> remote);
+
+  // Notifies the browser process when a SystemMediaControlsBridge is made.
+  void OnBridgeCreatedForTesting();
 
  private:
   // Used to track which commands we're already listening for.
@@ -63,11 +75,12 @@ class RemoteCommandCenterDelegate {
 
   bool ShouldSetCommandEnabled(Command command, bool will_enable);
 
+  // Sends messages back to the browser process about events from macOS.
+  mojo::Remote<mojom::SystemMediaControlsObserver> observer_remote_;
+
   RemoteCommandCenterDelegateCocoa* __strong
       remote_command_center_delegate_cocoa_;
-  base::ObserverList<SystemMediaControlsObserver> observers_;
   base::flat_set<Command> enabled_commands_;
-  const raw_ptr<SystemMediaControls> system_media_controls_;
 };
 
 }  // namespace internal

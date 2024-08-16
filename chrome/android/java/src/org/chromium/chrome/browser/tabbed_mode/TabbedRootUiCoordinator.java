@@ -26,6 +26,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
@@ -88,10 +89,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextIPHController;
 import org.chromium.chrome.browser.share.page_info_sheet.PageInfoSharingControllerImpl;
@@ -184,7 +185,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
-    private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final OneshotSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private Callback<Integer> mOnTabStripHeightChangedCallback;
     private MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
@@ -194,6 +195,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
+    private @Nullable ChoiceDialogCoordinator mChoiceDialogCoordinator;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -210,13 +212,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         private void swapToTab(Tab tab) {
             if (mTab != null && !mTab.isDestroyed()) {
-                SwipeRefreshHandler.from(mTab).setNavigationCoordinator(null);
+                var swipeHandler = SwipeRefreshHandler.from(mTab);
+                swipeHandler.setNavigationCoordinator(null);
+                swipeHandler.setBrowserControls(null);
             }
             mTab = tab;
 
             if (tab != null) {
-                SwipeRefreshHandler.from(tab)
-                        .setNavigationCoordinator(mHistoryNavigationCoordinator);
+                var swipeHandler = SwipeRefreshHandler.from(mTab);
+                swipeHandler.setNavigationCoordinator(mHistoryNavigationCoordinator);
+                swipeHandler.setBrowserControls(mBrowserControlsManager);
             }
         }
 
@@ -315,8 +320,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
-            @NonNull
-                    ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @NonNull OneshotSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull InsetObserver insetObserver,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
@@ -859,24 +863,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return false;
     }
 
-    boolean maybeTriggerTrackingProtectionNoticeAndOnboarding(
-            Profile profile, boolean wasPromoTriggered) {
-        if (!wasPromoTriggered && TrackingProtectionNoticeController.shouldShowNotice(profile)) {
-            TrackingProtectionNoticeController.create(
-                    mActivity, profile, mActivityTabProvider, mMessageDispatcher);
-            // Promo will be triggered eventually. We don't want for this promo to clash with other
-            // promos in the same run.
-            return true;
-        }
-        return wasPromoTriggered;
-    }
-
-    boolean initializePrivacySandbox(Profile profile) {
-        // Initializes Privacy Sandbox related logic
-        recordPrivacySandboxActivityType(profile);
-        boolean wasPromoTriggered = maybeTriggerPSDialogSuppression(profile);
-        // TODO(b/350704805): Cleanup - keep wasPromoTriggered out of the nested function calls
-        return maybeTriggerTrackingProtectionNoticeAndOnboarding(profile, wasPromoTriggered);
+    private boolean maybeTriggerPrivacySandboxPrompt(Profile profile) {
+        return maybeTriggerPSDialogSuppression(profile);
     }
 
     // Private class methods
@@ -909,38 +897,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler());
 
-        boolean didTriggerPromo = initializePrivacySandbox(profile);
+        // Initializes Privacy Sandbox related logic
+        recordPrivacySandboxActivityType(profile);
 
-        if (!didTriggerPromo) {
-            Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
-
-            if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
-                rationaleUIDelegateSupplier =
-                        () ->
-                                new NotificationPermissionRationaleBottomSheet(
-                                        mActivity, getBottomSheetController());
-            } else {
-                rationaleUIDelegateSupplier =
-                        () ->
-                                new NotificationPermissionRationaleDialogController(
-                                        mActivity, mModalDialogManagerSupplier.get());
-            }
-
-            mNotificationPermissionController =
-                    new NotificationPermissionController(
-                            mWindowAndroid, rationaleUIDelegateSupplier);
-
-            NotificationPermissionController.attach(
-                    mWindowAndroid, mNotificationPermissionController);
-
-            didTriggerPromo =
-                    mNotificationPermissionController.requestPermissionIfNeeded(
-                            /* contextual= */ false);
-        }
-
-        if (!didTriggerPromo) {
-            didTriggerPromo = triggerPromo(profile, intentWithEffect);
-        }
+        boolean didTriggerPromo = maybeShowRequiredPromptsAndPromos(profile, intentWithEffect);
 
         if (!didTriggerPromo) {
             didTriggerPromo =
@@ -1184,6 +1144,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected Destroyable createEdgeToEdgeBottomChin() {
         return EdgeToEdgeControllerFactory.createBottomChin(
+                mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
+                mWindowAndroid.getKeyboardDelegate(),
                 mLayoutManager,
                 mEdgeToEdgeControllerSupplier.get(),
                 mSystemUiCoordinator.getNavigationBarColorController(),
@@ -1250,6 +1212,50 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onContextMenuCopyLink() {
         // TODO(crbug.com/40732234): Find a better way of passing event for IPH.
         mReadLaterIPHController.onCopyContextMenuItemClicked();
+    }
+
+    /**
+     * Triggers the display of an appropriate required prompt or promo if any.
+     *
+     * <p>Check and trigger here "required prompts", the ones that are very important for Chrome
+     * usage, or for privacy, regulatory etc. reasons. For less critical ones, for example
+     * suggestions to enable features, prefer adding them to {@link #maybeShowPromo}, which can be
+     * skipped via command line, prefs or other Chrome state.
+     *
+     * @return whether a prompt or promo is actually displayed.
+     */
+    private boolean maybeShowRequiredPromptsAndPromos(Profile profile, boolean intentWithEffect) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLAY_BLOCKING)) {
+            mChoiceDialogCoordinator = ChoiceDialogCoordinator.maybeShow(mActivity);
+            if (mChoiceDialogCoordinator != null) {
+                return true;
+            }
+        }
+
+        if (maybeTriggerPrivacySandboxPrompt(profile)) {
+            return true;
+        }
+
+        final Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
+        if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
+            rationaleUIDelegateSupplier =
+                    () ->
+                            new NotificationPermissionRationaleBottomSheet(
+                                    mActivity, getBottomSheetController());
+        } else {
+            rationaleUIDelegateSupplier =
+                    () ->
+                            new NotificationPermissionRationaleDialogController(
+                                    mActivity, mModalDialogManagerSupplier.get());
+        }
+        mNotificationPermissionController =
+                new NotificationPermissionController(mWindowAndroid, rationaleUIDelegateSupplier);
+        NotificationPermissionController.attach(mWindowAndroid, mNotificationPermissionController);
+        if (mNotificationPermissionController.requestPermissionIfNeeded(/* contextual= */ false)) {
+            return true;
+        }
+
+        return triggerPromo(profile, intentWithEffect);
     }
 
     /**

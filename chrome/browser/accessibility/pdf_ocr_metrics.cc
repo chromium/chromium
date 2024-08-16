@@ -6,16 +6,15 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace accessibility {
 
 void RecordPDFOpenedWithA11yFeatureWithPdfOcr() {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  bool is_pdf_ocr_on = features::IsPdfOcrEnabled();
-#else
+#if BUILDFLAG(IS_ANDROID)
   bool is_pdf_ocr_on = false;
+#else
+  bool is_pdf_ocr_on = features::IsPdfOcrEnabled();
 #endif
 
   if (accessibility_state_utils::IsScreenReaderEnabled()) {

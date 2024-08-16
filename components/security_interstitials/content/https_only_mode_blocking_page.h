@@ -19,7 +19,8 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
       const GURL& request_url,
       std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
       const security_interstitials::https_only_mode::HttpInterstitialState&
-          interstitial_state);
+          interstitial_state,
+      bool balanced_mode);
 
   static const SecurityInterstitialPage::TypeID kTypeForTesting;
 
@@ -41,6 +42,7 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
   bool user_made_decision_ = false;
   const security_interstitials::https_only_mode::HttpInterstitialState
       interstitial_state_;
+  bool new_interstitial_enabled_ = false;
 };
 
 }  // namespace security_interstitials

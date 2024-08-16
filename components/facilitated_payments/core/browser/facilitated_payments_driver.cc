@@ -19,7 +19,7 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
 
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
-void FacilitatedPaymentsDriver::DidFinishNavigation() const {
+void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
   manager_->Reset();
 }
 

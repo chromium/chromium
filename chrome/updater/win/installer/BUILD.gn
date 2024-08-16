@@ -5,6 +5,7 @@
 import("//build/config/python.gni")
 import("//build/timestamp.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
 
 source_set("msi_custom_action_sources") {
@@ -73,8 +74,23 @@ source_set("lib_with_resources") {
   public_deps = [ ":lib" ]
 }
 
+# `process_version_rc_template` invokes `process_version` with the default
+# template rc file which is at //chrome/app/chrome_version.rc.version.
 process_version_rc_template("version") {
-  template_file = "installer_version.rc.version"
+  _product_fullname = "$updater_metainstaller_name " + "($current_cpu)"
+  if (is_debug) {
+    _product_fullname += " (debug)"
+  }
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$_product_fullname\"",
+    "-e",
+    "INTERNAL_NAME=\"$updater_metainstaller_name\"",
+    "-e",
+    "ORIGINAL_FILENAME=\"UpdaterSetup.exe\"",
+    "-e",
+    "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
+  ]
   output = "$root_out_dir/installer_version.rc"
 }
 

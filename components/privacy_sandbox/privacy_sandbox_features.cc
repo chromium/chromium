@@ -81,9 +81,6 @@ const base::FeatureParam<bool>
         &kPrivacySandboxSettings4, "suppress-dialog-for-external-app-launches",
         true};
 
-const base::FeatureParam<bool> kPrivacySandboxSettings4CloseAllPrompts{
-    &kPrivacySandboxSettings4, "close-all-prompts", true};
-
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
              "OverridePrivacySandboxSettingsLocalTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -117,12 +114,6 @@ BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger,
-             "TrackingProtectionFullOnboardingMobileTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -155,16 +146,16 @@ BASE_FEATURE(kIpProtectionV1,
              "IpProtectionV1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIpProtectionDogfoodDefaultOn,
+             "IpProtectionDogfoodDefaultOn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIpProtectionUx,
              "IpProtectionUx",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIpProtectionUserBypass,
              "IpProtectionUserBypass",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionSettingsLaunch,
-             "TrackingProtectionSettingsLaunch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
@@ -199,30 +190,13 @@ BASE_FEATURE(kPsRedesignAdPrivacyPage,
 const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles{
     &kPsRedesignAdPrivacyPage, "enable-toggles", false};
 
-BASE_FEATURE(kTrackingProtectionReminder,
-             "TrackingProtectionReminder",
+BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
+             "PsDualWritePrefsToNoticeStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder{
-    &kTrackingProtectionReminder, "is-silent-reminder", false};
 
 BASE_FEATURE(kPrivateStateTokensDevUI,
              "PrivateStateTokensDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kTrackingProtectionReminderDelay{
-    &kTrackingProtectionReminder, "reminder-delay", base::TimeDelta::Max()};
-
-BASE_FEATURE(kTrackingProtectionSentimentSurvey,
-             "TrackingProtectionSentimentSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta> kTrackingProtectionTimeToSurvey{
-    &kTrackingProtectionSentimentSurvey, "time-to-survey",
-    base::TimeDelta::Max()};
-
-const base::FeatureParam<int> kTrackingProtectionSurveyAnchor{
-    &kTrackingProtectionSentimentSurvey, "survey-anchor", 0};
 
 BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
              "PrivacySandboxActivityTypeStorage",
@@ -249,10 +223,6 @@ const base::FeatureParam<bool>
     kPrivacySandboxActivityTypeStorageSkipPreFirstTab{
         &kPrivacySandboxActivityTypeStorage,
         kPrivacySandboxActivityTypeStorageSkipPreFirstTabName, false};
-
-BASE_FEATURE(kPrivacySandboxAdsDialogDisabledOnAll3PCBlock,
-             "PrivacySandboxAdsDialogDisabledOnAll3PCBlock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivacySandboxPrivacyGuideAdTopics,
              "PrivacySandboxPrivacyGuideAdTopics",

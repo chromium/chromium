@@ -28,6 +28,11 @@
 plus_addresses::PlusAddressService*
 PlusAddressServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
+  // Feature not enabled? Don't create any service instances.
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled)) {
+    return nullptr;
+  }
   return static_cast<plus_addresses::PlusAddressService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
@@ -39,11 +44,6 @@ PlusAddressServiceFactory* PlusAddressServiceFactory::GetInstance() {
 
 /* static */
 ProfileSelections PlusAddressServiceFactory::CreateProfileSelections() {
-  // Feature not enabled? Don't create any service instances.
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled)) {
-    return ProfileSelections::BuildNoProfilesSelected();
-  }
   // Otherwise, exclude system accounts and guest accounts, otherwise use one
   // instance.
   return ProfileSelections::Builder()
@@ -69,6 +69,8 @@ PlusAddressServiceFactory::~PlusAddressServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  CHECK(base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressesEnabled));
   Profile* profile = Profile::FromBrowserContext(context);
 
   // In Ash, GuestSession uses Regular Profile, for which we will try to create
@@ -97,7 +99,7 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
       std::make_unique<plus_addresses::PlusAddressService>(
-          identity_manager,
+          profile->GetPrefs(), identity_manager,
           PlusAddressSettingServiceFactory::GetForBrowserContext(context),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetURLLoaderFactory()),
@@ -118,5 +120,6 @@ PlusAddressServiceFactory::BuildServiceInstanceForBrowserContext(
 // Create this service when the profile is created to support populating the
 // local map of plus addresses before the user interacts with the feature.
 bool PlusAddressServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
+  return base::FeatureList::IsEnabled(
+      plus_addresses::features::kPlusAddressesEnabled);
 }

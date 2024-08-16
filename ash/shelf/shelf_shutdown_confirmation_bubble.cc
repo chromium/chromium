@@ -25,6 +25,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -153,6 +154,9 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   base::UmaHistogramEnumeration(
       kActionHistogramName,
       ShelfShutdownConfirmationBubble::BubbleAction::kOpened);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(title_->GetText());
 }
 
 ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
@@ -180,12 +184,6 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kButtonLabelColor);
   cancel_->SetEnabledTextColors(button_color);
   confirm_->SetEnabledTextColors(button_color);
-}
-
-void ShelfShutdownConfirmationBubble::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetNameChecked(title_->GetText());
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()

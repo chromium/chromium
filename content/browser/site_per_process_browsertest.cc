@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
 #include <cmath>
 #include <list>
@@ -84,6 +85,7 @@
 #include "content/common/input/synthetic_tap_gesture.h"
 #include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/common/renderer.mojom.h"
+#include "content/common/renderer_host.mojom-test-utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -5593,23 +5595,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
   GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
   GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
   EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
-  if (base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
-    // The site URL is the data scheme followed by a serialized nonce, which is
-    // unique for every data: URL instance.
-    EXPECT_NE(main_url, new_url);
-    EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
-    EXPECT_EQ(new_url.GetContent().length(),
-              base::UnguessableToken::Create().ToString().length());
-    EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
 
-  } else {
-    // Without the feature, the site URL of data: URLs is the entire data: URL,
-    // so if the data is the same in both cases, the site URLs will be the same,
-    // and they will be allowed to share a process.
-    EXPECT_EQ(main_url, new_url);
-    EXPECT_EQ(main_url, data_url);
-    EXPECT_EQ(new_frame->GetProcess(), main_frame->GetProcess());
-  }
+  // The site URL is the data scheme followed by a serialized nonce, which is
+  // unique for every data: URL instance.
+  EXPECT_NE(main_url, new_url);
+  EXPECT_TRUE(main_url.SchemeIs(url::kDataScheme));
+  EXPECT_EQ(new_url.GetContent().length(),
+            base::UnguessableToken::Create().ToString().length());
+  EXPECT_NE(new_frame->GetProcess(), main_frame->GetProcess());
 }
 
 // Ensures that subframes navigated to data: URLs start in a process based on
@@ -13399,13 +13392,20 @@ IN_PROC_BROWSER_TEST_P(DisableProcessReusePolicyTest,
 class SitePerProcessWithMainFrameThresholdTestBase
     : public SitePerProcessBrowserTestBase {
  public:
-  static constexpr size_t kThreshold = 2;
+  static constexpr size_t kDefaultThreshold = 3;
 
-  SitePerProcessWithMainFrameThresholdTestBase() {
+  explicit SitePerProcessWithMainFrameThresholdTestBase(
+      size_t frame_threshold = kDefaultThreshold,
+      size_t total_memory_threshold = 0) {
+    base::FieldTrialParams params = {
+        {"ProcessPerSiteMainFrameThreshold",
+         base::StringPrintf("%zu", frame_threshold)}};
+    if (total_memory_threshold != 0) {
+      params["ProcessPerSiteMainFrameTotalMemoryLimit"] =
+          base::StringPrintf("%zu", total_memory_threshold);
+    }
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kProcessPerSiteUpToMainFrameThreshold,
-        {{"ProcessPerSiteMainFrameThreshold",
-          base::StringPrintf("%zu", kThreshold)}});
+        features::kProcessPerSiteUpToMainFrameThreshold, params);
   }
   ~SitePerProcessWithMainFrameThresholdTestBase() override = default;
 
@@ -13457,7 +13457,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
             subframe_in_main_shell->GetProcess());
 
   std::vector<Shell*> shells;
-  for (size_t i = 0; i < kThreshold - 1; ++i) {
+  for (size_t i = 0; i < kDefaultThreshold - 1; ++i) {
     Shell* new_shell = CreateShellAndNavigateToURL(kUrl);
     RenderFrameHostImpl* new_frame =
         static_cast<WebContentsImpl*>(new_shell->web_contents())
@@ -13491,6 +13491,136 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdTest,
   for (auto*& shell : shells) {
     shell->Close();
   }
+}
+
+// A test fixture that provides an upper limit of 4 bytes, so should fail the
+// assignment of another outermost main frame into the process.
+class SitePerProcessWithMainFrameThresholdWithTotalLimitTest
+    : public SitePerProcessWithMainFrameThresholdTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  SitePerProcessWithMainFrameThresholdWithTotalLimitTest()
+      : SitePerProcessWithMainFrameThresholdTestBase(
+            /*frame_threshold=*/10,
+            /*total_memory_threshold=*/9) {}
+  ~SitePerProcessWithMainFrameThresholdWithTotalLimitTest() override = default;
+};
+
+class RendererHostInterceptor
+    : public mojom::RendererHostInterceptorForTesting {
+ public:
+  explicit RendererHostInterceptor(RenderProcessHostImpl* process_host)
+      : swapped_impl_(process_host->renderer_host_receiver_for_testing(),
+                      this) {}
+  mojom::RendererHost* GetForwardingInterface() override {
+    return swapped_impl_.old_impl();
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  void SetPrivateMemoryFootprint(
+      uint64_t private_memory_footprint_bytes) override {
+    // Drop this message from the renderer.
+  }
+#endif
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<mojom::RendererHost> swapped_impl_;
+};
+
+// Tests that a RenderProcessHost is not reused when the private memory
+// footprint of the process exceeds a certain amount.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdWithTotalLimitTest,
+                       ExcessiveAllocation) {
+  const GURL kUrl =
+      embedded_test_server()->GetURL("foo.test", "/page_with_iframe.html");
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* main_frame_in_main_shell =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe_in_main_shell =
+      main_frame_in_main_shell->child_at(0)->current_frame_host();
+  ASSERT_EQ(main_frame_in_main_shell->GetProcess(),
+            subframe_in_main_shell->GetProcess());
+
+  Shell* new_shell = CreateShellAndNavigateToURL(kUrl);
+  RenderFrameHostImpl* new_frame =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryMainFrame();
+  ASSERT_NE(main_frame_in_main_shell->GetProcess(), new_frame->GetProcess());
+  new_shell->Close();
+
+  // Verify that we hit a limit histogram.
+  histograms.ExpectTotalCount(
+      "BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit", 1);
+  histograms.ExpectBucketCount(
+      "BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit", 1, 1);
+}
+
+// Tests that opening a fourth tab will put it over the limit and will allocate
+// a new process. We allocate 3 main frames that are 2 bytes each. Placing
+// a fourth would exceeded the limit of 9.
+IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdWithTotalLimitTest,
+                       AllowedAllocation) {
+  const GURL kUrl =
+      embedded_test_server()->GetURL("foo.test", "/page_with_iframe.html");
+
+  base::HistogramTester histograms;
+  ASSERT_TRUE(NavigateToURL(shell(), kUrl));
+  RenderFrameHostImpl* main_frame_in_main_shell =
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* subframe_in_main_shell =
+      main_frame_in_main_shell->child_at(0)->current_frame_host();
+  ASSERT_EQ(main_frame_in_main_shell->GetProcess(),
+            subframe_in_main_shell->GetProcess());
+
+  auto* process_host = static_cast<RenderProcessHostImpl*>(
+      main_frame_in_main_shell->GetProcess());
+  RendererHostInterceptor interceptor(process_host);
+  process_host->SetPrivateMemoryFootprintForTesting(2);
+
+  std::vector<Shell*> shells;
+  for (size_t i = 0; i < 2; ++i) {
+    Shell* new_shell = CreateShellAndNavigateToURL(kUrl);
+    RenderFrameHostImpl* new_frame =
+        static_cast<WebContentsImpl*>(new_shell->web_contents())
+            ->GetPrimaryMainFrame();
+    // Currently the reuse policy is only applied for sites that require a
+    // dedicated process, and if this not the case, the two main frames won't
+    // share a process due to being under the process limit.
+    if (main_frame_in_main_shell->GetSiteInstance()
+            ->RequiresDedicatedProcess()) {
+      ASSERT_EQ(main_frame_in_main_shell->GetProcess(),
+                new_frame->GetProcess());
+    } else {
+      ASSERT_NE(main_frame_in_main_shell->GetProcess(),
+                new_frame->GetProcess());
+    }
+    process_host->SetPrivateMemoryFootprintForTesting(2 * (i + 2));
+    shells.emplace_back(new_shell);
+  }
+  EXPECT_EQ(
+      6u, main_frame_in_main_shell->GetProcess()->GetPrivateMemoryFootprint());
+
+  // The 4th outermostmain frame will not fit.
+  // The expected size of a frame will be 2, with a scale factor of 1.5
+  // 6 + (2 * 1.5) > 9 so the check should fail.
+  Shell* fourth_shell = CreateShellAndNavigateToURL(kUrl);
+  RenderFrameHostImpl* fourth_frame =
+      static_cast<WebContentsImpl*>(fourth_shell->web_contents())
+          ->GetPrimaryMainFrame();
+  ASSERT_NE(main_frame_in_main_shell->GetProcess(), fourth_frame->GetProcess());
+  shells.emplace_back(fourth_shell);
+  for (auto*& shell : shells) {
+    shell->Close();
+  }
+  // Verify that we hit a limit histogram.
+  histograms.ExpectTotalCount(
+      "BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit", 1);
+  histograms.ExpectBucketCount(
+      "BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit", 3, 1);
 }
 
 // Tests that opening a new tab from an existing page via ctrl-click reuses a
@@ -13542,7 +13672,7 @@ class SitePerProcessWithMainFrameThresholdLocalhostTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kProcessPerSiteUpToMainFrameThreshold,
         {{"ProcessPerSiteMainFrameThreshold",
-          base::StringPrintf("%zu", kThreshold)},
+          base::StringPrintf("%zu", kDefaultThreshold)},
          {"ProcessPerSiteMainFrameAllowIPAndLocalhost",
           IsLocalhostAllowed() ? "true" : "false"}});
   }
@@ -13642,6 +13772,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessWithMainFrameThresholdTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessWithMainFrameThresholdWithTotalLimitTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #if BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,

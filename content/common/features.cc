@@ -24,6 +24,11 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Adds OOPIF support for android drag and drop.
+BASE_FEATURE(kAndroidDragDropOopif,
+             "AndroidDragDropOopif",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
@@ -98,26 +103,6 @@ BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 BASE_FEATURE(kCriticalClientHint,
              "CriticalClientHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables setting the nonce of the data: opaque origin early in the navigation
-// so the nonce remains stable throughout a navigation.
-// Note: kDataUrlsHaveOriginAsUrl is dependent on this feature. If this feature
-// is being disabled, the other needs to be disabled as well.
-// TODO(crbug.com/1447896, yangsharon): Remove this once we're confident that
-// this change isn't causing issues in the wild.
-BASE_FEATURE(kDataUrlsHaveStableNonce,
-             "DataUrlsHaveStableNonce",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, main frame data: URLs use the serialized nonce from the origin
-// as the site URL. Otherwise, use the entire data: URL as the site URL.
-// Note: This feature is dependent on kDataUrlsHaveStableNonce. If that flag
-// needs to be disabled, this will have to be disabled as well.
-// TODO(crbug.com/1447896, yangsharon): Remove this once we're confident that
-// this change isn't causing issues in the wild.
-BASE_FEATURE(kDataUrlsHaveOriginAsUrl,
-             "DataUrlsHaveOriginAsUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable changing source dynamically for desktop capture.
@@ -269,7 +254,7 @@ BASE_FEATURE(kFontSrcLocalMatching,
 // of using Fontations. See https://crbug.com/349952802
 BASE_FEATURE(kFontIndexingFontations,
              "FontIndexingFontations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Feature controlling whether or not memory pressure signals will be forwarded
@@ -380,15 +365,6 @@ BASE_FEATURE(kOptimizeImmHideCalls,
              "OptimizeImmHideCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Enables additional ChildProcessSecurityPolicy enforcements for PDF renderer
-// processes, including blocking storage and cookie access for them.
-//
-// TODO(https://crbug.com/40205612): Remove this kill switch once the PDF
-// enforcements are verified not to cause problems.
-BASE_FEATURE(kPdfEnforcements,
-             "PdfEnforcements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature enables Permissions Policy verification in the Browser process
 // in content/. Additionally only for //chrome Permissions Policy verification

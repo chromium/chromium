@@ -860,6 +860,10 @@ void InProcessCommandBuffer::HandleReturnData(base::span<const uint8_t> data) {
                      client_thread_weak_ptr_, std::move(vec)));
 }
 
+bool InProcessCommandBuffer::ShouldYield() {
+  return task_sequence_->ShouldYield();
+}
+
 void InProcessCommandBuffer::PostOrRunClientCallback(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);

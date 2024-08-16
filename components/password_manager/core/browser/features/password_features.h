@@ -116,48 +116,9 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 BASE_DECLARE_FEATURE(
     kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning);
 
-// Enables use of Google Mobile services for non-synced password storage that
-// contains no passwords, so no migration will be necessary.
-// UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this
-// feature once UPM starts to be rolled out to users who have saved local
-// passwords.
-// See also kLocalUpmMinGmsVersionParam below.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-// Enables use of Google Mobile services for non-synced password storage add for
-// users who have local passwords saved.
-// See also kLocalUpmMinGmsVersionParam below.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-
-// Helper function which returns the delay when the local passwords migration is
-// triggered after Chrome startup in seconds.
-int GetLocalPasswordsMigrationToAndroidBackendDelay();
-
-// Enables UPM M4 that no longer needs Password sync engine to sync passwords.
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
-
-// This feature clears login database if user is capable of using UPM.
-BASE_DECLARE_FEATURE(kClearLoginDatabaseForUPMUsers);
-
-// A parameter for both the NoMigration and WithMigration features above. It
-// dictates the min value of base::android::BuildInfo::gms_version_code() for
-// the flag take effect.
-inline constexpr char kLocalUpmMinGmsVersionParam[] = "min_gms_version";
-
-// Same as above, but for automotive.
-//
-// IMPORTANT: as the flags have been enabled by default, this is now the only
-// feature guard remaining on automotive!
-inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
-    "min_gms_version_for_auto";
-// Helper function returning the status of
-// `UnifiedPasswordManagerSyncOnlyInGMSCore`.
-bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

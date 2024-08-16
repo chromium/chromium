@@ -108,7 +108,7 @@ bool WidgetDelegate::CanActivate() const {
   return can_activate_;
 }
 
-ui::ModalType WidgetDelegate::GetModalType() const {
+ui::mojom::ModalType WidgetDelegate::GetModalType() const {
   return params_.modal_type;
 }
 
@@ -438,7 +438,7 @@ void WidgetDelegate::SetInitiallyFocusedView(View* initially_focused_view) {
   params_.initially_focused_view = initially_focused_view;
 }
 
-void WidgetDelegate::SetModalType(ui::ModalType modal_type) {
+void WidgetDelegate::SetModalType(ui::mojom::ModalType modal_type) {
   DCHECK(!GetWidget());
   params_.modal_type = modal_type;
 }

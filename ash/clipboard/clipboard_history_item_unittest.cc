@@ -262,7 +262,7 @@ TEST_P(ClipboardHistoryItemDisplayFormatTest, DisplayImage) {
   const auto& maybe_image = item.display_image();
   switch (GetDisplayFormat()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       EXPECT_FALSE(maybe_image);

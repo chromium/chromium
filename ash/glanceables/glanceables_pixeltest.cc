@@ -165,22 +165,22 @@ class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
 // Pixel test for default / basic glanceables functionality.
 TEST_F(GlanceablesTimeManagementPixelTest, Smoke) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_tasks_top", /*revision_number=*/0,
+      "expanded_tasks_top", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
   GetTasksScrollView()->ScrollToPosition(
       GetTasksScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_tasks_bottom", /*revision_number=*/0,
+      "expanded_tasks_bottom", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
-  GetClassroomView()->SetExpandState(true);
+  GetClassroomView()->SetExpandState(true, /*expand_by_overscroll=*/false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_classroom_top", /*revision_number=*/0,
+      "expanded_classroom_top", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
   GetClassroomScrollView()->ScrollToPosition(
       GetClassroomScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_classroom_bottom", /*revision_number=*/0,
+      "expanded_classroom_bottom", /*revision_number=*/1,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 

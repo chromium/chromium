@@ -26,6 +26,9 @@ namespace blink {
 // processed.
 bool BLINK_PLATFORM_EXPORT ShouldLoadIncremental(ResourceType type);
 
+void SetReferrer(ResourceRequest& request,
+                 const FetchClientSettingsObject& fetch_client_settings_object);
+
 // Returns the adjusted version of `priority` according to the given
 // `fetch_priority_hint` and `render_blocking_behavior`.
 ResourceLoadPriority BLINK_PLATFORM_EXPORT

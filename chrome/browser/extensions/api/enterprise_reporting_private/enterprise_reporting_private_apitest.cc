@@ -110,11 +110,11 @@ constexpr char kManifestTemplate[] = R"(
       "key": "%s",
       "name": "Enterprise Private Reporting API Test",
       "version": "0.1",
-      "manifest_version": 2,
+      "manifest_version": 3,
       "permissions": [
           "enterprise.reportingPrivate"
       ],
-      "background": { "scripts": ["background.js"] }
+      "background": { "service_worker": "background.js" }
     })";
 
 }  // namespace
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(EnterpriseReportingPrivateEnqueueRecordApiTest,
                           "\');"});
 
   ASSERT_EQ(GetParam().affiliated,
-            chrome::enterprise_util::IsProfileAffiliated(
+            enterprise_util::IsProfileAffiliated(
                 ash::ProfileHelper::Get()->GetProfileByAccountId(
                     affiliation_mixin_.account_id())));
 

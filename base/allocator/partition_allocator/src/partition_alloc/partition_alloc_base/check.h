@@ -147,23 +147,31 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
 
 #if defined(OFFICIAL_BUILD) && !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
+// TODO(crbug.com/357081797): Use `[[unlikely]]` instead when there's a way to
+// switch the expression below to a statement without breaking
+// -Wthread-safety-analysis.
+#if PA_HAS_BUILTIN(__builtin_expect)
+#define PA_BASE_INTERNAL_EXPECT_FALSE(cond) __builtin_expect(!(cond), 0)
+#else
+#define PA_BASE_INTERNAL_EXPECT_FALSE(cond) !(cond)
+#endif
 // Discard log strings to reduce code bloat.
 //
 // This is not calling BreakDebugger since this is called frequently, and
 // calling an out-of-line function instead of a noreturn inline macro prevents
 // compiler optimizations.
-#define PA_BASE_CHECK(condition)                   \
-  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
-                            : PA_EAT_CHECK_STREAM_PARAMS()
+#define PA_BASE_CHECK(cond)                                  \
+  PA_BASE_INTERNAL_EXPECT_FALSE(cond) ? PA_IMMEDIATE_CRASH() \
+                                      : PA_EAT_CHECK_STREAM_PARAMS()
 
 #define PA_BASE_CHECK_WILL_STREAM() false
 
-#define PA_BASE_PCHECK(condition)                                         \
+#define PA_BASE_PCHECK(cond)                                              \
   PA_LAZY_CHECK_STREAM(                                                   \
       ::partition_alloc::internal::logging::check_error::PCheck(__FILE__, \
                                                                 __LINE__) \
           .stream(),                                                      \
-      PA_UNLIKELY(!(condition)))
+      PA_BASE_INTERNAL_EXPECT_FALSE(cond))
 
 #else
 

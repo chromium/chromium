@@ -22,6 +22,9 @@ constexpr auto kDomainPrefixMap =
         {DeviceLocalAccountType::kKioskApp, "kiosk-apps"},
         {DeviceLocalAccountType::kSamlPublicSession, "saml-public-accounts"},
         {DeviceLocalAccountType::kWebKioskApp, "web-kiosk-apps"},
+        {DeviceLocalAccountType::kKioskIsolatedWebApp,
+         "kiosk-isolated-web-apps"},
+
     });
 
 constexpr char kDeviceLocalAccountDomainSuffix[] = ".device-local.localhost";
@@ -34,6 +37,7 @@ bool IsValidDeviceLocalAccountType(int value) {
     case DeviceLocalAccountType::kKioskApp:
     case DeviceLocalAccountType::kSamlPublicSession:
     case DeviceLocalAccountType::kWebKioskApp:
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
       return true;
   }
   return false;

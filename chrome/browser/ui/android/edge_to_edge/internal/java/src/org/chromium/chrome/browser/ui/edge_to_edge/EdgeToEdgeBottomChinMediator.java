@@ -19,11 +19,12 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
+                KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 EdgeToEdgeSupplier.ChangeObserver,
                 NavigationBarColorProvider.Observer,
                 BottomControlsLayer {
@@ -32,12 +33,14 @@ class EdgeToEdgeBottomChinMediator
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
-    private @LayoutType int mCurrentLayoutType;
     private int mEdgeToEdgeBottomInsetDp;
     private int mEdgeToEdgeBottomInsetPx;
     private boolean mIsDrawingToEdge;
     private boolean mIsPagedOptedIntoEdgeToEdge;
 
+    private boolean mIsKeyboardVisible;
+
+    private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final @NonNull LayoutManager mLayoutManager;
     private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
     private final @NonNull NavigationBarColorProvider mNavigationBarColorProvider;
@@ -48,6 +51,8 @@ class EdgeToEdgeBottomChinMediator
      *
      * @param model The {@link EdgeToEdgeBottomChinProperties} that holds all the view state for the
      *     bottom chin component.
+     * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
+     *     visibility events.
      * @param layoutManager The {@link LayoutManager} for observing active layout type.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
@@ -58,17 +63,20 @@ class EdgeToEdgeBottomChinMediator
      */
     EdgeToEdgeBottomChinMediator(
             PropertyModel model,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker) {
         mModel = model;
+        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mLayoutManager = layoutManager;
         mEdgeToEdgeController = edgeToEdgeController;
         mNavigationBarColorProvider = navigationBarColorProvider;
         mBottomControlsStacker = bottomControlsStacker;
 
         // Add observers.
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
         mLayoutManager.addObserver(this);
         mEdgeToEdgeController.registerObserver(this);
         mNavigationBarColorProvider.addObserver(this);
@@ -87,11 +95,13 @@ class EdgeToEdgeBottomChinMediator
     }
 
     void destroy() {
+        assert mKeyboardVisibilityDelegate != null;
         assert mLayoutManager != null;
         assert mEdgeToEdgeController != null;
         assert mNavigationBarColorProvider != null;
         assert mBottomControlsStacker != null;
 
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
         mLayoutManager.removeObserver(this);
         mEdgeToEdgeController.unregisterObserver(this);
         mNavigationBarColorProvider.removeObserver(this);
@@ -110,7 +120,8 @@ class EdgeToEdgeBottomChinMediator
                 mIsDrawingToEdge
                         && !mIsPagedOptedIntoEdgeToEdge
                         && isBottomChinAllowed(
-                                mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInsetDp);
+                                mLayoutManager.getActiveLayoutType(), mEdgeToEdgeBottomInsetDp)
+                        && !mIsKeyboardVisible;
 
         boolean heightChanged = mModel.get(HEIGHT) != newHeight;
         boolean visibilityChanged = mModel.get(IS_VISIBLE) != newVisibility;
@@ -156,6 +167,14 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
         mModel.set(DIVIDER_COLOR, dividerColor);
+    }
+
+    // KeyboardVisibilityDelegate.KeyboardVisibilityListener,
+
+    @Override
+    public void keyboardVisibilityChanged(boolean isShowing) {
+        mIsKeyboardVisible = isShowing;
+        updateHeightAndVisibility();
     }
 
     // BottomControlsLayer

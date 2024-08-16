@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/mime_util.h"
 
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -517,12 +513,8 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
       ASSERT_EQ(0u, extensions.size());
 
     if (test.contained_result) {
-      // Convert ASCII to FilePath::StringType.
-      base::FilePath::StringType contained_result(
-          test.contained_result,
-          test.contained_result + strlen(test.contained_result));
-
-      bool found = base::Contains(extensions, contained_result);
+      bool found = base::Contains(
+          extensions, base::FilePath::FromASCII(test.contained_result).value());
 
       ASSERT_TRUE(found) << "Must find at least the contained result within "
                          << test.mime_type;

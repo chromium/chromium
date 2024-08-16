@@ -26,12 +26,12 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -166,6 +166,8 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
 
   histogram_tester_.ExpectBucketCount("Apps.FullRestoreWindowCount2", 2, 1);
+  histogram_tester_.ExpectUniqueSample("Ash.FirstWebContentsProfile.Recorded",
+                                       false, 1);
 }
 
 // Creates SWAs that will be restored in the main test.

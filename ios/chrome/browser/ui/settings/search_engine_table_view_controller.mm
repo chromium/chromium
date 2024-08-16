@@ -362,7 +362,7 @@ enum class SearchEngineSettingVersion {
           [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
                                 sectionIdentifier:SectionIdentifierSecondList];
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)updateUIForEditState {
@@ -476,7 +476,7 @@ enum class SearchEngineSettingVersion {
       return sectionIdentifier == SectionIdentifierSecondList;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)tableView:(UITableView*)tableView

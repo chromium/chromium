@@ -259,7 +259,7 @@ ChromeSigninSettingModification ChromeSigninUserChoiceToModification(
     case ChromeSigninUserChoice::kDoNotSignin:
       return ChromeSigninSettingModification::kToDoNotSignin;
     case ChromeSigninUserChoice::kNoChoice:
-      NOTREACHED_NORETURN() << "No choice is not expected as a modification";
+      NOTREACHED() << "No choice is not expected as a modification";
   }
 }
 #endif
@@ -1072,7 +1072,7 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
 
     // If there is no one logged in or if the profile name is empty then the
     // domain name is empty. This happens in browser tests.
-    if (chrome::enterprise_util::UserAcceptedAccountManagement(profile_) &&
+    if (enterprise_util::UserAcceptedAccountManagement(profile_) &&
         !primary_account_info.email.empty()) {
       sync_status.Set("domain",
                       gaia::ExtractDomainName(primary_account_info.email));

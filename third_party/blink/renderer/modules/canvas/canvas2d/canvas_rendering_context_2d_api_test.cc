@@ -73,8 +73,6 @@ namespace v8 {
 class Isolate;
 }  // namespace v8
 
-using testing::Mock;
-
 namespace blink {
 
 class CanvasRenderingContext2DAPITest : public PageTestBase {
@@ -584,7 +582,6 @@ void ResetCanvasForAccessibilityRectTest(Document& document) {
   EXPECT_TRUE(canvas->RenderingContext()->IsRenderingContext2D());
 }
 
-
 // A IdentifiabilityStudySettingsProvider implementation that opts-into study
 // participation.
 class ActiveSettingsProvider : public IdentifiabilityStudySettingsProvider {
@@ -656,7 +653,7 @@ TEST_F(CanvasRenderingContext2DAPITest, MAYBE_IdentifiabilityStudyDigest_Font) {
   CreateContext(kNonOpaque);
 
   Context2D()->setFont("Arial");
-  EXPECT_EQ(INT64_C(-7111871220951205888),
+  EXPECT_EQ(INT64_C(7339381412423806682),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -695,7 +692,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->strokeText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(2232415440872807707),
+  EXPECT_EQ(INT64_C(8218678546639211996),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -719,7 +716,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(6317349156921019980),
+  EXPECT_EQ(INT64_C(-7525055925911674050),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -743,7 +740,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->setTextAlign("center");
-  EXPECT_EQ(INT64_C(-1799394612814265049),
+  EXPECT_EQ(INT64_C(-5618040280239325003),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -767,7 +764,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->setTextBaseline("top");
-  EXPECT_EQ(INT64_C(-7620161594820691651),
+  EXPECT_EQ(INT64_C(-6814889525293785691),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());
@@ -841,14 +838,14 @@ TEST_F(CanvasRenderingContext2DAPITest,
   CreateContext(kNonOpaque);
 
   Context2D()->fillText("Sensitive message", 1.0, 1.0);
-  EXPECT_EQ(INT64_C(6317349156921019980),
+  EXPECT_EQ(INT64_C(-7525055925911674050),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
   Context2D()->setTextAlign("right");
   SetFillStyleString(Context2D(), GetScriptState(), "red");
   Context2D()->fillText("Bye", 4.0, 3.0);
-  EXPECT_EQ(INT64_C(-3400753946520799765),
+  EXPECT_EQ(INT64_C(-7631959002534825456),
             Context2D()->IdentifiableTextToken().ToUkmMetricValue());
 
   EXPECT_FALSE(Context2D()->IdentifiabilityEncounteredSkippedOps());

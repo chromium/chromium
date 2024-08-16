@@ -51,7 +51,7 @@ class FakeConsentAuditor : public ConsentAuditor {
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   // Methods for fake.

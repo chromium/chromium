@@ -27,7 +27,7 @@ reviewer.
 </variants>
 
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
-    expires_after="2024-09-01">
+    expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -42,7 +42,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.SettingsPage.{FacilitatedPaymentsType}.ToggleUpdated"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -58,7 +58,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.FopSelector.Shown"
-    enum="BooleanShown" expires_after="2024-09-01">
+    enum="BooleanShown" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -77,7 +77,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Latency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -94,7 +94,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Result"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -111,7 +111,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Latency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -126,7 +126,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Result"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -142,7 +142,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Latency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -159,7 +159,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Result"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -176,7 +176,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Latency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -193,7 +193,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.Result"
-    enum="Boolean" expires_after="2024-09-01">
+    enum="Boolean" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -211,7 +211,7 @@ reviewer.
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.PaymentNotOfferedReason"
     enum="FacilitatedPayments.PaymentNotOfferedReason"
-    expires_after="2024-09-01">
+    expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -228,7 +228,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.Transaction.Result"
-    enum="FacilitatedPayments.TransactionResult" expires_after="2024-09-01">
+    enum="FacilitatedPayments.TransactionResult" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
@@ -244,7 +244,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.Transaction.{TransactionResult}.Latency"
-    enum="FacilitatedPayments.TransactionResult" expires_after="2024-09-01">
+    units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>

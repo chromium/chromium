@@ -45,14 +45,15 @@
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                             tabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
-                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
+                        gridConsumer:(id<TabCollectionConsumer>)gridConsumer
+                          modeHolder:(TabGridModeHolder*)modeHolder {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group mediator outside the "
          "Tab Groups experiment.";
   CHECK(webStateList);
   CHECK(groupConsumer);
   CHECK(tabGroup);
-  if (self = [super init]) {
+  if (self = [super initWithModeHolder:modeHolder]) {
     self.webStateList = webStateList;
     _groupConsumer = groupConsumer;
     self.consumer = gridConsumer;
@@ -62,7 +63,6 @@
     [_groupConsumer setGroupTitle:tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:tabGroup->GetColor()];
 
-    [self switchToMode:TabGridModeGroup];
     [self populateConsumerItems];
   }
   return self;
@@ -216,6 +216,15 @@
   webState->GetNavigationManager()->LoadURLWithParams(loadParams);
 
   self.webStateList->InsertWebState(std::move(webState), insertionParams);
+}
+
+- (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
+  return NO;
+}
+
+- (void)recordExternalURLDropped {
+  base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                DragItemOrigin::kOther);
 }
 
 #pragma mark - TabCollectionDragDropHandler override
@@ -414,10 +423,13 @@
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(self.webStateList, webStateList);
+  [self addWebStateObservations];
   [self populateConsumerItems];
   if (_tabGroup) {
     [_groupConsumer setGroupTitle:_tabGroup->GetTitle()];
     [_groupConsumer setGroupColor:_tabGroup->GetColor()];
+  } else {
+    [self.tabGroupsHandler hideTabGroup];
   }
 }
 

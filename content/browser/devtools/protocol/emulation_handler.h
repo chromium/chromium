@@ -12,6 +12,7 @@
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/emulation.h"
 #include "content/browser/devtools/protocol/protocol.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/device/public/mojom/pressure_update.mojom-shared.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
@@ -178,9 +179,11 @@ class EmulationHandler : public DevToolsDomainHandler,
                  std::unique_ptr<ScopedVirtualSensorForDevTools>>
       sensor_overrides_;
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   base::flat_map<device::mojom::PressureSource,
                  std::unique_ptr<ScopedVirtualPressureSourceForDevTools>>
       pressure_overrides_;
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // True when SetDevicePostureOverride() has been called.
   bool device_posture_emulation_enabled_ = false;

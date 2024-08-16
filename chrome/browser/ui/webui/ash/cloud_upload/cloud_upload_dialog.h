@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -308,7 +309,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
 
  protected:
   ~CloudUploadDialog() override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowCloseButton() const override;
   void GetDialogSize(gfx::Size* size) const override;

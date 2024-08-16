@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Witryna, którą później odwiedzisz, może zapytać o Twoje zainteresowania i na tej podstawie spersonalizować wyświetlane reklamy. Chrome może udostępnić do 3 zainteresowań.</translation>
 <translation id="2563121210305478421">Uruchomić ponownie Chrome?</translation>
 <translation id="2569974318947988067">Chrome spróbuje uaktualnić elementy nawigacyjne do HTTPS</translation>
+<translation id="2571392474191184472">Przeglądarką Chrome zarządza Twoja organizacja</translation>
 <translation id="2574930892358684005">W tym profilu Chrome jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chrome może utworzyć dla Ciebie nowy profil.</translation>
 <translation id="2580411288591421699">Nie można zainstalować tej samej wersji przeglądarki Google Chrome co obecnie uruchomiona. Zamknij przeglądarkę Google Chrome i spróbuj ponownie.</translation>
 <translation id="2586406160782125153">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
@@ -441,6 +442,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7177959540995930968">Więcej informacji o tych funkcjach znajdziesz w ustawieniach Chrome.</translation>
 <translation id="7193885263065350793">Twoja organizacja zamyka przeglądarkę Chrome, jeśli przez <ph name="TIMEOUT_DURATION" /> nie jest ona używana.</translation>
 <translation id="7242029209006116544">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chrome osobno. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Przeglądarką Chrome zarządza <ph name="MANAGER" /></translation>
 <translation id="7295052994004373688">Ten język jest używany do wyświetlania UI Google Chrome</translation>
 <translation id="7296210096911315575">Ważne informacje dotyczące użytkowania i bezpieczeństwa</translation>
 <translation id="7302361266603927550">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google. Odczekaj kilka minut, zanim się wylogujesz. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
@@ -574,6 +576,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8989968390305463310">Historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania. Zainteresowania mogą być odświeżane, chyba że je usuniesz.</translation>
 <translation id="8999117580775242387">Gdy protokół HTTPS będzie niedostępny, Chrome bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
+<translation id="9014771989710951291">Przeglądarką Chrome zarządza kilka organizacji</translation>
 <translation id="9024318700713112071">Ustaw Chrome jako przeglądarkę domyślną</translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
 <translation id="9090566250983691233">Dlaczego Chrome blokuje niektóre pliki</translation>

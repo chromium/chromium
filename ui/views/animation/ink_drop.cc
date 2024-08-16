@@ -140,7 +140,7 @@ void InkDrop::NotifyInkDropRippleAnimationEnded(InkDropState ink_drop_state) {
 InkDropContainerView::InkDropContainerView() {
   // Ensure the container View is found as the EventTarget instead of this.
   SetCanProcessEventsWithinSubtree(false);
-  SetProperty(kIsDecorativeViewKey, true);
+  SetProperty(kViewIgnoredByLayoutKey, true);
 }
 
 InkDropContainerView::~InkDropContainerView() = default;

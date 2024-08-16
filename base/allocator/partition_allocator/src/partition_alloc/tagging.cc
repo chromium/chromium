@@ -182,7 +182,7 @@ void* TagRegionIncrementForMTE(void* ptr, size_t sz) {
 }
 
 void* RemaskVoidPtrForMTE(void* ptr) {
-  if (PA_LIKELY(ptr)) {
+  if (ptr) [[likely]] {
     // Can't look up the tag for a null ptr (segfaults).
     return __arm_mte_get_tag(ptr);
   }
@@ -318,7 +318,7 @@ bool PermissiveMte::HandleCrash(int signo,
 
 SuspendTagCheckingScope::SuspendTagCheckingScope() noexcept {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  if (PA_UNLIKELY(internal::base::CPU::GetInstanceNoAllocation().has_mte())) {
+  if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) [[unlikely]] {
     asm volatile(
         R"(
         .arch_extension memtag
@@ -332,7 +332,7 @@ SuspendTagCheckingScope::SuspendTagCheckingScope() noexcept {
 
 SuspendTagCheckingScope::~SuspendTagCheckingScope() {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  if (PA_UNLIKELY(internal::base::CPU::GetInstanceNoAllocation().has_mte())) {
+  if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) [[unlikely]] {
     // Restore previous tco value.
     __asm__ __volatile__(
         R"(

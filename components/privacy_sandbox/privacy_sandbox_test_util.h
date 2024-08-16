@@ -40,7 +40,7 @@ class PrivacySandboxServiceTestInterface {
   virtual std::string TopicsConsentLastUpdateText() const = 0;
   virtual void ForceChromeBuildForTests(bool force_chrome_build) const = 0;
   virtual int GetRequiredPromptType() const = 0;
-  virtual void PromptActionOccurred(int action) const = 0;
+  virtual void PromptActionOccurred(int action, int surface_type) const = 0;
 };
 
 class MockPrivacySandboxObserver

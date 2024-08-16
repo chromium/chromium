@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.dom_distiller;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -31,12 +28,9 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
@@ -55,10 +49,6 @@ import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-})
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
@@ -138,19 +128,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_triggered_messages() {
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        assertEquals(
-                "Distillation should be possible.",
-                DistillationStatus.POSSIBLE,
-                mManager.getDistillationStatus());
-        verify(mMessageDispatcher)
-                .enqueueMessage(
-                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-    }
-
-    @Test
-    @Feature("ReaderMode")
     public void testUI_notTriggered() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, false, true, false);
         assertEquals(
@@ -171,17 +148,6 @@ public class ReaderModeManagerTest {
                 "Distillation should not be possible.",
                 DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    public void testUI_notTriggered_afterDismiss() {
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
-        mManager.onClosed();
-
-        mManager.tryShowingPrompt();
-        verifyNoMoreInteractions(mMessageDispatcher);
     }
 
     @Test
@@ -213,22 +179,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_notMutedByDomain() {
-        mManager.muteSiteForTesting(JUnitTestGURLs.EXAMPLE_URL);
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        assertEquals(
-                "Distillation should be possible.",
-                DistillationStatus.POSSIBLE,
-                mManager.getDistillationStatus());
-        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
     public void testUI_notTriggered_contextualPageActionUiEnabled() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -245,10 +195,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
     public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCCT() {
         when(mTab.isCustomTab()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -263,10 +209,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
-    })
     public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
         when(mTab.isIncognito()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -336,50 +278,6 @@ public class ReaderModeManagerTest {
                 "Distillation should not be possible.",
                 DistillationStatus.NOT_POSSIBLE,
                 mManager.getDistillationStatus());
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    public void testIsUiRateLimited() {
-        assertFalse(mManager.isReaderModeUiRateLimited());
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    public void testIsUiRateLimited_trueWhenShown() {
-        assertFalse(mManager.isReaderModeUiRateLimited());
-        mManager.setReaderModeUiShown();
-
-        assertTrue(mManager.isReaderModeUiRateLimited());
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @EnableFeatures({"ReaderModeInCCT"})
-    public void testIsUiRateLimited_trueWhenShownInOtherTab() {
-        when(mTab.getWebContents()).thenReturn(null);
-
-        Tab secondTab = mock(Tab.class);
-        when(secondTab.getUrl()).thenReturn(MOCK_URL);
-        when(secondTab.getUserDataHost()).thenReturn(mUserDataHost);
-        ReaderModeManager secondTabManager =
-                new ReaderModeManager(secondTab, () -> mMessageDispatcher);
-        // Ensure the tab observer is attached when the manager is created.
-        verify(secondTab).addObserver(mTabObserverCaptor.capture());
-        TabObserver secondTabObserver = mTabObserverCaptor.getValue();
-        secondTabObserver.onShown(secondTab, 0);
-
-        // Show UI in second tab.
-        secondTabManager.setReaderModeUiShown();
-
-        // UI on first tab should be limited.
-        assertTrue(mManager.isReaderModeUiRateLimited());
-
-        // Use reader mode on second tab.
-        secondTabManager.activateReaderMode();
-
-        // URl should be removed from block list, we should show UI on first tab now.
-        assertFalse(mManager.isReaderModeUiRateLimited());
     }
 
     /**

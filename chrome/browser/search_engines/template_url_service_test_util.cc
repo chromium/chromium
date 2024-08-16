@@ -220,7 +220,7 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
   model_ = std::make_unique<TemplateURLService>(
-      profile()->GetPrefs(), search_engine_choice_service_.get(),
+      *profile()->GetPrefs(), *search_engine_choice_service_,
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
       std::unique_ptr<TemplateURLServiceClient>(

@@ -14,17 +14,23 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,19 +47,24 @@ public class TabUiUtils {
      *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
      * @param hideTabGroups Whether to hide or delete the tab group.
+     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
+     * @param didCloseCallback Run after the close confirmation to indicate if a close happened.
      */
     public static void closeTabGroup(
             TabGroupModelFilter filter,
             ActionConfirmationManager actionConfirmationManager,
             int tabId,
-            boolean hideTabGroups) {
+            boolean hideTabGroups,
+            boolean isSyncEnabled,
+            @Nullable Callback<Boolean> didCloseCallback) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
         List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
         boolean isIncognito = filter.isIncognitoBranded();
 
-        if (hideTabGroups || isIncognito) {
-            filter.closeMultipleTabs(tabs, /* canUndo= */ true, hideTabGroups);
+        if (hideTabGroups || isIncognito || !isSyncEnabled) {
+            filter.closeTabs(TabClosureParams.closeTabs(tabs).hideTabGroups(hideTabGroups).build());
+            Callback.runNullSafe(didCloseCallback, true);
         } else {
             List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
 
@@ -61,18 +72,124 @@ public class TabUiUtils {
             Callback<Integer> onResult =
                     (@ConfirmationResult Integer result) -> {
                         if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            boolean canUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
+                            boolean allowUndo = result == ConfirmationResult.IMMEDIATE_CONTINUE;
                             List<Tab> tabsToClose =
                                     tabIds.stream()
                                             .map(filter.getTabModel()::getTabById)
                                             .filter(Objects::nonNull)
                                             .filter(tab -> !tab.isClosing())
                                             .collect(Collectors.toList());
-                            filter.closeMultipleTabs(tabsToClose, canUndo, hideTabGroups);
+                            filter.closeTabs(
+                                    TabClosureParams.closeTabs(tabsToClose)
+                                            .allowUndo(allowUndo)
+                                            .hideTabGroups(hideTabGroups)
+                                            .build());
+                            Callback.runNullSafe(didCloseCallback, true);
+                        } else {
+                            Callback.runNullSafe(didCloseCallback, false);
                         }
                     };
             actionConfirmationManager.processDeleteGroupAttempt(onResult);
         }
+    }
+
+    /**
+     * Ungroups a tab group and maybe shows a confirmation dialog.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param actionConfirmationManager The {@link ActionConfirmationManager} to use to confirm
+     *     actions.
+     * @param tabId The ID of one of the tabs in the tab group.
+     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
+     */
+    public static void ungroupTabGroup(
+            TabGroupModelFilter filter,
+            ActionConfirmationManager actionConfirmationManager,
+            int tabId,
+            boolean isSyncEnabled) {
+        TabModel tabModel = filter.getTabModel();
+        int rootId = tabModel.getTabById(tabId).getRootId();
+        boolean isIncognito = filter.getTabModel().isIncognito();
+        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
+        List<Integer> tabIds = tabs.stream().map(Tab::getId).collect(Collectors.toList());
+
+        if (isIncognito || !isSyncEnabled) {
+            for (Tab tab : tabs) {
+                filter.moveTabOutOfGroup(tab.getId());
+            }
+        } else {
+            // Present a confirmation dialog to the user before ungrouping the tab group.
+            Callback<Integer> onResult =
+                    (@ConfirmationResult Integer result) -> {
+                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
+                            List<Tab> tabsToUngroup =
+                                    tabIds.stream()
+                                            .map(filter.getTabModel()::getTabById)
+                                            .filter(Objects::nonNull)
+                                            .filter(
+                                                    tab ->
+                                                            !tab.isClosing()
+                                                                    && filter.isTabInTabGroup(tab))
+                                            .collect(Collectors.toList());
+                            for (Tab tab : tabsToUngroup) {
+                                filter.moveTabOutOfGroup(tab.getId());
+                            }
+                        }
+                    };
+
+            actionConfirmationManager.processUngroupAttempt(onResult);
+        }
+    }
+
+    /**
+     * Update the tab group color.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param rootId The root id of the interacting tab group.
+     * @param newGroupColor The new group color being assigned to the tab group.
+     */
+    public static void updateTabGroupColor(
+            TabGroupModelFilter filter, int rootId, @TabGroupColorId int newGroupColor) {
+        int curGroupColor = filter.getTabGroupColor(rootId);
+        if (curGroupColor != newGroupColor) {
+            filter.setTabGroupColor(rootId, newGroupColor);
+        }
+    }
+
+    /**
+     * Update the tab group title.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param rootId The root id of the interacting tab group.
+     * @param newGroupTitle The new group title being assigned to the tab group.
+     */
+    public static void updateTabGroupTitle(
+            TabGroupModelFilter filter, int rootId, String newGroupTitle) {
+        if (newGroupTitle == null || newGroupTitle.isEmpty()) {
+            filter.deleteTabGroupTitle(rootId);
+            return;
+        }
+        String curGroupTitle = filter.getTabGroupTitle(rootId);
+        if (!newGroupTitle.equals(curGroupTitle)) {
+            filter.setTabGroupTitle(rootId, newGroupTitle);
+        }
+    }
+
+    /**
+     * Opens a new tab page in the last position of the tab group and selects the new tab.
+     *
+     * @param filter The {@link TabGroupModelFilter} to act on.
+     * @param tabCreator The {@link TabCreator} to use to create new tab.
+     * @param tabId The ID of one of the tabs in the tab group.
+     * @param type The launch type of the new tab.
+     */
+    public static void openNtpInGroup(
+            TabGroupModelFilter filter, TabCreator tabCreator, int tabId, @TabLaunchType int type) {
+        List<Tab> relatedTabs = filter.getRelatedTabList(tabId);
+        assert relatedTabs.size() > 0;
+
+        Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
+        tabCreator.createNewTab(new LoadUrlParams(UrlConstants.NTP_URL), type, parentTabToAttach);
     }
 
     /**

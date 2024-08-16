@@ -40,6 +40,8 @@
 
 @property(nonatomic, assign) BOOL contextualPanelIsOpen;
 
+@property(nonatomic, assign) BOOL entrypointIsColored;
+
 @property(nonatomic, assign) base::WeakPtr<ContextualPanelItemConfiguration>
     currentConfiguration;
 
@@ -73,6 +75,10 @@
 }
 
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+}
+
+- (void)setEntrypointColored:(BOOL)colored {
+  self.entrypointIsColored = colored;
 }
 
 @end
@@ -197,6 +203,10 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
 
     tracker_ = feature_engagement::CreateTestTracker();
 
+    // Make sure tracker is initialized.
+    tracker_->AddOnInitializedCallback(BoolArgumentQuitClosure());
+    run_loop_.Run();
+
     mediator_ = [[ContextualPanelEntrypointMediator alloc]
           initWithWebStateList:&web_state_list_
              engagementTracker:tracker_.get()
@@ -211,8 +221,13 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
+    return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::RunLoop run_loop_;
   std::unique_ptr<feature_engagement::Tracker> tracker_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
@@ -407,7 +422,9 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       std::make_unique<SamplePanelItemConfiguration>();
   configuration->relevance = ContextualPanelItemConfiguration::high_relevance;
   configuration->entrypoint_message = "test";
-  configuration->iph_entrypoint_used_event_name = "testEvent";
+  configuration->iph_entrypoint_used_event_name = "testUsedEvent";
+  configuration->iph_entrypoint_explicitly_dismissed =
+      "testExplicitlyDismissedEvent";
   configuration->iph_feature =
       &feature_engagement::kIPHiOSContextualPanelSampleModelFeature;
   configuration->iph_text = "test_text";
@@ -442,12 +459,14 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
   // At first, the small entrypoint should be displayed.
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsColored);
 
   // Advance time so that the IPH entrypoint is displayed.
   task_environment_.FastForwardBy(
       base::Seconds(LargeContextualPanelEntrypointDelayInSeconds()));
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_TRUE(entrypoint_consumer_.entrypointIsColored);
 
   [[mocked_entrypoint_help_handler_ expect]
       dismissContextualPanelEntrypointIPHAnimated:YES];
@@ -457,6 +476,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
       base::Seconds(LargeContextualPanelEntrypointDisplayedInSeconds()));
   EXPECT_TRUE(entrypoint_consumer_.entrypointIsShown);
   EXPECT_FALSE(entrypoint_consumer_.entrypointIsLarge);
+  EXPECT_FALSE(entrypoint_consumer_.entrypointIsColored);
 
   [mocked_entrypoint_help_handler_ verify];
 

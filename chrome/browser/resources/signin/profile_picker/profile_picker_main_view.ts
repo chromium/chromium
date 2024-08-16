@@ -23,7 +23,7 @@ import type {DraggableTileListInterface} from './drag_drop_reorder_tile_list_del
 import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_delegate.js';
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
-import {navigateTo, NavigationMixinLit, Routes} from './navigation_mixin.js';
+import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} from './policy_helper.js';
 import {getCss} from './profile_picker_main_view.css.js';
 import {getHtml} from './profile_picker_main_view.html.js';
@@ -41,7 +41,7 @@ export interface ProfilePickerMainViewElement {
 }
 
 const ProfilePickerMainViewElementBase =
-    HelpBubbleMixinLit(WebUiListenerMixinLit(NavigationMixinLit(CrLitElement)));
+    HelpBubbleMixinLit(WebUiListenerMixinLit(NavigationMixin(CrLitElement)));
 
 export class ProfilePickerMainViewElement extends
     ProfilePickerMainViewElementBase implements DraggableTileListInterface {

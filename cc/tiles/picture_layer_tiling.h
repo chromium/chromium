@@ -24,7 +24,9 @@
 #include "cc/paint/scroll_offset_map.h"
 #include "cc/raster/raster_source.h"
 #include "cc/tiles/tile.h"
+#include "cc/tiles/tile_index.h"
 #include "cc/tiles/tile_priority.h"
+#include "cc/tiles/tiling_coverage_iterator.h"
 #include "cc/trees/occlusion.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
@@ -64,33 +66,13 @@ class CC_EXPORT PictureLayerTilingClient {
   virtual ~PictureLayerTilingClient() {}
 };
 
-struct TileMapKey {
-  TileMapKey(int x, int y) : index_x(x), index_y(y) {}
-  explicit TileMapKey(const std::pair<int, int>& index)
-      : index_x(index.first), index_y(index.second) {}
-
-  bool operator==(const TileMapKey& other) const {
-    return index_x == other.index_x && index_y == other.index_y;
-  }
-  bool operator<(const TileMapKey& other) const {
-    return std::tie(index_x, index_y) < std::tie(other.index_x, other.index_y);
-  }
-
-  int index_x;
-  int index_y;
-};
-
-struct TileMapKeyHash {
-  size_t operator()(const TileMapKey& key) const {
-    uint16_t value1 = static_cast<uint16_t>(key.index_x);
-    uint16_t value2 = static_cast<uint16_t>(key.index_y);
-    uint32_t value1_32 = value1;
-    return (value1_32 << 16) | value2;
-  }
-};
+class PictureLayerTilingCoverageIterator;
 
 class CC_EXPORT PictureLayerTiling {
  public:
+  using Tile = Tile;
+  using CoverageIterator = PictureLayerTilingCoverageIterator;
+
   static const int kBorderTexels = 1;
 
   // Note on raster_transform: In general raster_transform could be arbitrary,
@@ -153,6 +135,7 @@ class CC_EXPORT PictureLayerTiling {
     return can_require_tiles_for_activation_;
   }
 
+  gfx::Size raster_size() const { return raster_source()->size(); }
   const scoped_refptr<RasterSource>& raster_source() const {
     return raster_source_;
   }
@@ -178,8 +161,10 @@ class CC_EXPORT PictureLayerTiling {
   }
   const TilingData* tiling_data() const { return &tiling_data_; }
 
-  Tile* TileAt(int i, int j) const {
-    TileMap::const_iterator iter = tiles_.find(TileMapKey(i, j));
+  Tile* TileAt(int i, int j) const { return TileAt(TileIndex(i, j)); }
+
+  Tile* TileAt(const TileIndex& index) const {
+    TileMap::const_iterator iter = tiles_.find(index);
     return iter == tiles_.end() ? nullptr : iter->second.get();
   }
 
@@ -216,9 +201,8 @@ class CC_EXPORT PictureLayerTiling {
   }
 
   void UpdateAllRequiredStateForTesting() {
-    for (const auto& key_tile_pair : tiles_) {
-      Tile* tile = key_tile_pair.second.get();
-      UpdateRequiredStatesOnTile(tile);
+    for (const auto& [index, tile] : tiles_) {
+      UpdateRequiredStatesOnTile(tile.get());
     }
   }
   std::map<const Tile*, PrioritizedTile>
@@ -244,8 +228,7 @@ class CC_EXPORT PictureLayerTiling {
                          soon_border_rect, eventually_rect, Occlusion());
   }
 
-  using TileMap =
-      std::unordered_map<TileMapKey, std::unique_ptr<Tile>, TileMapKeyHash>;
+  using TileMap = std::unordered_map<TileIndex, std::unique_ptr<Tile>>;
 
   // Iterates over the tiles of a PictureLayerTiling. Order of iteration is not
   // defined.
@@ -263,61 +246,6 @@ class CC_EXPORT PictureLayerTiling {
     PictureLayerTiling::TileMap::iterator iter_;
   };
 
-  // Iterate over all tiles to fill content_rect.  Even if tiles are invalid
-  // (i.e. no valid resource) this tiling should still iterate over them.
-  // The union of all geometry_rect calls for each element iterated over should
-  // exactly equal content_rect and no two geometry_rects should intersect.
-  class CC_EXPORT CoverageIterator {
-   public:
-    CoverageIterator();
-    // This requests an iterator that produces a coverage of the
-    // |coverage_rect|, which is specified at |coverage_scale|.
-    CoverageIterator(const PictureLayerTiling* tiling,
-                     float coverage_scale,
-                     const gfx::Rect& coverage_rect);
-    ~CoverageIterator();
-
-    // Visible rect (no borders), always in the space of |coverage_rect|,
-    // regardless of the contents scale of the tiling.
-    gfx::Rect geometry_rect() const;
-    // Texture rect (in texels) for geometry_rect
-    gfx::RectF texture_rect() const;
-
-    Tile* operator->() const { return current_tile_; }
-    Tile* operator*() const { return current_tile_; }
-
-    CoverageIterator& operator++();
-    operator bool() const { return tile_j_ <= bottom_; }
-
-    int i() const { return tile_i_; }
-    int j() const { return tile_j_; }
-
-   private:
-    gfx::Rect ComputeGeometryRect() const;
-
-    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
-    // profiler data and tab_search:top100:2020.
-    RAW_PTR_EXCLUSION const PictureLayerTiling* tiling_ = nullptr;
-
-    gfx::Rect coverage_rect_max_bounds_;
-    gfx::Rect coverage_rect_;
-    gfx::AxisTransform2d coverage_to_content_;
-
-    // RAW_PTR_EXCLUSION: Performance reasons: based on analysis of sampling
-    // profiler data and tab_search:top100:2020.
-    RAW_PTR_EXCLUSION Tile* current_tile_ = nullptr;
-
-    gfx::Rect current_geometry_rect_;
-    int tile_i_ = 0;
-    int tile_j_ = 0;
-    int left_ = 0;
-    int top_ = 0;
-    int right_ = -1;
-    int bottom_ = -1;
-
-    friend class PictureLayerTiling;
-  };
-
   void Reset();
 
   void ComputeTilePriorityRects(
@@ -326,7 +254,8 @@ class CC_EXPORT PictureLayerTiling {
       const gfx::Rect& soon_border_rect_in_layer_space,
       const gfx::Rect& eventually_rect_in_layer_space,
       float ideal_contents_scale,
-      const Occlusion& occlusion_in_layer_space);
+      const Occlusion& occlusion_in_layer_space,
+      TileMemoryLimitPolicy memory_limit_policy);
 
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
@@ -335,8 +264,11 @@ class CC_EXPORT PictureLayerTiling {
 
   void UpdateRequiredStatesOnTile(Tile* tile) const;
 
+  // Creates a coverage iterator to iterate over a minimal set of tiles from
+  // this tiling to cover `rect`, which has been pre-scaled by `scale`.
+  CoverageIterator Cover(const gfx::Rect& rect, float scale) const;
+
  protected:
-  friend class CoverageIterator;
   friend class PrioritizedTile;
   friend class TileIterator;
   friend class TilingSetRasterQueueAll;
@@ -554,6 +486,12 @@ class CC_EXPORT PictureLayerTiling {
   bool has_eventually_rect_tiles_ : 1 = false;
   bool all_tiles_done_ : 1 = true;
   bool can_use_lcd_text_ : 1;
+};
+
+class PictureLayerTilingCoverageIterator
+    : public TilingCoverageIterator<PictureLayerTiling> {
+ public:
+  using TilingCoverageIterator<PictureLayerTiling>::TilingCoverageIterator;
 };
 
 }  // namespace cc

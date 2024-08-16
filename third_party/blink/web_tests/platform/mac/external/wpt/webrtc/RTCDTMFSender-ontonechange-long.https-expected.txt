@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] insertDTMF with duration greater than 6000 should be clamped to 6000
+  promise_test: Unhandled rejection with value: "Waited too long for canInsertDTMF"
+Harness: the test ran to completion.
+

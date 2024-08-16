@@ -220,31 +220,34 @@ suite('CookiesPageTest', function() {
     assertFalse(page.$.toast.open);
   });
 
-  test('disabledFPSToggle', async () => {
+  test('disabledRWSToggle', async () => {
     // Confirm that when the user has not selected the block 3PC setting, the
-    // FPS toggle is disabled.
-    const firstPartySetsToggle =
+    // RWS toggle is disabled.
+    const relatedWebsiteSetsToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#firstPartySetsToggle')!;
+            '#relatedWebsiteSetsToggle')!;
     blockThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.BLOCK_THIRD_PARTY,
         page.prefs.profile.cookie_controls_mode.value);
-    assertFalse(firstPartySetsToggle.disabled, 'expect toggle to be enabled');
+    assertFalse(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be enabled');
 
     allowThirdParty().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.OFF, page.prefs.profile.cookie_controls_mode.value);
-    assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
+    assertTrue(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
 
     blockThirdPartyIncognito().click();
     await eventToPromise('selected-changed', primarySettingGroup());
     assertEquals(
         CookieControlsMode.INCOGNITO_ONLY,
         page.prefs.profile.cookie_controls_mode.value);
-    assertTrue(firstPartySetsToggle.disabled, 'expect toggle to be disabled');
+    assertTrue(
+        relatedWebsiteSetsToggle.disabled, 'expect toggle to be disabled');
   });
 
   test('blockThirdPartyIncognitoSecondBulletPointText', function() {
@@ -254,7 +257,7 @@ suite('CookiesPageTest', function() {
             .querySelector<HTMLElement>(
                 '#blockThirdPartyIncognitoBulTwo')!.innerText.trim();
     assertEquals(
-        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoFps'),
+        loadTimeData.getString('cookiePageBlockThirdIncognitoBulTwoRws'),
         cookiesPageBlockThirdPartyIncognitoBulTwoLabel);
   });
 });
@@ -421,6 +424,75 @@ suite('TrackingProtectionSettings', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
+        true);
+  });
+});
+
+suite('ActSettings', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isIpProtectionUxEnabled: true,
+      isFingerprintingProtectionUxEnabled: true,
+    });
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('CheckVisibility', function() {
+    // Settings are visible
+    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
+    assertTrue(isChildVisible(page, '#fingerprintingProtectionToggle'));
+  });
+
+  test('ToggleIpProtection', async function() {
+    page.set('prefs.tracking_protection.ip_protection_enabled.value', false);
+    const ipProtectionToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#ipProtectionToggle')!;
+    assertTrue(!!ipProtectionToggle);
+
+    ipProtectionToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);
+    assertEquals(
+        page.getPref('tracking_protection.ip_protection_enabled.value'), true);
+  });
+
+  test('ToggleFingerprintingProtection', async function() {
+    page.set(
+        'prefs.tracking_protection.fingerprinting_protection_enabled.value',
+        false);
+    const fingerprintingProtectionToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#fingerprintingProtectionToggle')!;
+    assertTrue(!!fingerprintingProtectionToggle);
+
+    fingerprintingProtectionToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.FINGERPRINTING_PROTECTION, result);
+    assertEquals(
+        page.getPref(
+            'tracking_protection.fingerprinting_protection_enabled.value'),
         true);
   });
 });

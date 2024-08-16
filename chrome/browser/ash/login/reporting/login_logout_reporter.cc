@@ -53,11 +53,11 @@ LoginLogoutSessionType GetSessionType(const AccountId& account_id) {
       return LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION;
     case policy::DeviceLocalAccountType::kKioskApp:
     case policy::DeviceLocalAccountType::kWebKioskApp:
+    case policy::DeviceLocalAccountType::kKioskIsolatedWebApp:
       return LoginLogoutSessionType::KIOSK_SESSION;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
   }
+  NOTREACHED_IN_MIGRATION();
+  return LoginLogoutSessionType::UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE;
 }
 
 LoginFailureReason GetLoginFailureReasonForReport(

@@ -46,6 +46,7 @@ VisitContextAnnotations::BrowserType BrowserTypeFromInt(int type) {
     case VisitContextAnnotations::BrowserType::kTabbed:
     case VisitContextAnnotations::BrowserType::kPopup:
     case VisitContextAnnotations::BrowserType::kCustomTab:
+    case VisitContextAnnotations::BrowserType::kAuthTab:
       return converted;
   }
   // If the `type` wasn't actually a valid BrowserType value (e.g. due to DB

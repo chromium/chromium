@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 
 #include <stddef.h>
@@ -346,10 +351,8 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
   const std::string incoming_dump_content = "dummy incoming";
   const std::string outgoing_dump_content = "dummy outgoing";
 
-  base::WriteFile(incoming_dump, &incoming_dump_content[0],
-                  incoming_dump_content.size());
-  base::WriteFile(outgoing_dump, &outgoing_dump_content[0],
-                  outgoing_dump_content.size());
+  base::WriteFile(incoming_dump, incoming_dump_content);
+  base::WriteFile(outgoing_dump, outgoing_dump_content);
 
   WebRtcLogUploader::UploadDoneData upload_done_data;
 

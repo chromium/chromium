@@ -88,6 +88,7 @@
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -185,6 +186,9 @@ const char kAlternativeServiceHttpHeader[] =
     "Alt-Svc: h2=\"mail.example.org:443\"\r\n";
 
 int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    return session->http_stream_pool()->TotalIdleStreamCount();
+  }
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                       ProxyChain::Direct())
@@ -192,6 +196,13 @@ int GetIdleSocketCountInTransportSocketPool(HttpNetworkSession* session) {
 }
 
 bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 feature is enabled, we need to run pending tasks
+    // to ensure that HttpStreamFactory::JobController switches to
+    // HttpStreamPool.
+    base::RunLoop().RunUntilIdle();
+    return session->http_stream_pool()->IsPoolStalled();
+  }
   return session
       ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                       ProxyChain::Direct())
@@ -2114,12 +2125,10 @@ void HttpNetworkTransactionTestBase::PreconnectErrorResendRequestTest(
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  const char upload_data[] = "foobar";
   ChunkedUploadDataStream upload_data_stream(0);
   if (chunked_upload) {
     request.method = "POST";
-    upload_data_stream.AppendData(upload_data, std::size(upload_data) - 1,
-                                  true);
+    upload_data_stream.AppendData(base::byte_span_from_cstring("foobar"), true);
     request.upload_data_stream = &upload_data_stream;
   }
 
@@ -21112,7 +21121,7 @@ TEST_P(HttpNetworkTransactionTest,
   TestCompletionCallback callback;
   HttpRequestInfo request;
   ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/false);
-  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+  upload_data_stream.AppendData(base::as_byte_span(request_body),
                                 /*is_done=*/true);
   request.method = "POST";
   request.url = GURL("https://www.example.org");
@@ -21180,7 +21189,7 @@ TEST_P(HttpNetworkTransactionTest, Response421WithStreamingBodyWithNullSource) {
   TestCompletionCallback callback;
   HttpRequestInfo request;
   ChunkedUploadDataStream upload_data_stream(0, /*has_null_source=*/true);
-  upload_data_stream.AppendData(request_body.data(), request_body.size(),
+  upload_data_stream.AppendData(base::as_byte_span(request_body),
                                 /*is_done=*/true);
   request.method = "POST";
   request.url = GURL("https://www.example.org");
@@ -22381,6 +22390,12 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest) {
   session_deps_.socket_factory->AddSocketDataProvider(&http_data);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   // Start the SSL request.
   TestCompletionCallback ssl_callback;
@@ -22435,6 +22450,14 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
 
   // No data will be sent on the SSL socket.
   StaticSocketDataProvider ssl_data;
+  MockConnectCompleter ssl_connect_completer;
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    // When the HappyEyeballsV3 flag is enabled, the idle socket created by the
+    // following preconnect would be reused immedialy after the transaction is
+    // started when we don't delay Connect(). Use MockConnectCompleter to block
+    // Connect().
+    ssl_data.set_connect_data(MockConnect(&ssl_connect_completer));
+  }
   session_deps_.socket_factory->AddSocketDataProvider(&ssl_data);
 
   SSLSocketDataProvider ssl(ASYNC, OK);
@@ -22463,6 +22486,12 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
   session_deps_.socket_factory->AddSocketDataProvider(&http_data);
 
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    session->http_stream_pool()->set_max_stream_sockets_per_group_for_testing(
+        1u);
+    session->http_stream_pool()->set_max_stream_sockets_per_pool_for_testing(
+        1u);
+  }
 
   // Preconnect an SSL socket.  A preconnect is needed because connect jobs are
   // cancelled when a normal transaction is cancelled.
@@ -22477,6 +22506,10 @@ TEST_P(HttpNetworkTransactionTest, CloseSSLSocketOnIdleForHttpRequest2) {
             http_trans.Start(&http_request, http_callback.callback(),
                              NetLogWithSource()));
   EXPECT_TRUE(IsTransportSocketPoolStalled(session.get()));
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
+    ssl_connect_completer.Complete(OK);
+  }
 
   // The SSL connection will automatically be closed once the connection is
   // established, to let the HTTP request start.
@@ -22724,7 +22757,8 @@ TEST_P(HttpNetworkTransactionTest, ChunkedPostReadsErrorResponseAfterReset) {
   // the test more future proof.
   base::RunLoop().RunUntilIdle();
 
-  upload_data_stream.AppendData("last chunk", 10, true);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("last chunk"),
+                                true);
 
   rv = callback.WaitForResult();
   EXPECT_THAT(rv, IsOk());
@@ -23385,10 +23419,10 @@ TEST_P(HttpNetworkTransactionTest, TotalNetworkBytesChunkedPost) {
             trans.Start(&request, callback.callback(), NetLogWithSource()));
 
   base::RunLoop().RunUntilIdle();
-  upload_data_stream.AppendData("f", 1, false);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("f"), false);
 
   base::RunLoop().RunUntilIdle();
-  upload_data_stream.AppendData("oo", 2, true);
+  upload_data_stream.AppendData(base::byte_span_from_cstring("oo"), true);
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
 
@@ -27977,6 +28011,40 @@ TEST_P(HttpNetworkTransactionTest,
   ASSERT_TRUE(response);
   ASSERT_TRUE(response->headers);
   EXPECT_EQ("HTTP/1.1 200", response->headers->GetStatusLine());
+}
+
+// Tests specific to the HappyEyeballsV3 feature.
+// TODO(crbug.com/346835898): Find ways to run more tests with the
+// HappyEyeballsV3 feature enabled.
+class HttpNetworkTransactionPoolTest : public HttpNetworkTransactionTest {
+ public:
+  HttpNetworkTransactionPoolTest() {
+    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpNetworkTransactionPoolTest,
+                         ::testing::Bool());
+
+TEST_P(HttpNetworkTransactionPoolTest, SwitchToHttpStreamPool) {
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead("hello world"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  SimpleGetHelperResult out = SimpleGetHelper(data_reads);
+  EXPECT_THAT(out.rv, IsOk());
+  EXPECT_EQ("HTTP/1.1 200 OK", out.status_line);
+  EXPECT_EQ("hello world", out.response_data);
+  int64_t reads_size = CountReadBytes(data_reads);
+  EXPECT_EQ(reads_size, out.total_received_bytes);
+  EXPECT_EQ(0u, out.connection_attempts.size());
+
+  EXPECT_FALSE(out.remote_endpoint_after_start.address().empty());
 }
 
 }  // namespace net

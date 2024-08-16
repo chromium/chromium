@@ -97,6 +97,20 @@ def LoadCppTypemapConfig(path):
         }
   return configs
 
+
+def LoadTsTypemapConfig(path):
+  configs = {}
+  with open(path) as f:
+    for config in json.load(f):
+      for entry in config['types']:
+        configs[entry['mojom']] = {
+            'typename': entry['ts'],
+            'converter_import': entry['import'],
+            'converter': entry['converter'],
+        }
+  return configs
+
+
 def main():
   parser = argparse.ArgumentParser(
       description=__doc__,
@@ -115,21 +129,36 @@ def main():
       dest='cpp_config_path',
       help=('A path to a single JSON-formatted typemap config as emitted by'
             'GN when processing a mojom_cpp_typemap build rule.'))
+  parser.add_argument(
+      '--ts-typemap-config',
+      type=str,
+      action='store',
+      dest='ts_config_path',
+      help=('A path to a single JSON-formatted typemap config as emitted by'
+            'GN when processing a mojom_ts_typemap build rule.'))
   parser.add_argument('--output',
                       type=str,
                       required=True,
                       help='The path to which to write the generated JSON.')
   params, _ = parser.parse_known_args()
-  typemaps = {}
+
+  cpp_typemaps = {}
   if params.cpp_config_path:
-    typemaps = LoadCppTypemapConfig(params.cpp_config_path)
+    cpp_typemaps = LoadCppTypemapConfig(params.cpp_config_path)
   missing = [path for path in params.dependency if not os.path.exists(path)]
   if missing:
     raise IOError('Missing dependencies: %s' % ', '.join(missing))
   for path in params.dependency:
-    typemaps.update(ReadTypemap(path))
+    cpp_typemaps.update(ReadTypemap(path))
 
-  WriteFile(json.dumps({'c++': typemaps}, indent=2), params.output)
+  ts_typemaps = {}
+  if params.ts_config_path:
+    ts_typemaps = LoadTsTypemapConfig(params.ts_config_path)
+
+  WriteFile(json.dumps({
+      'c++': cpp_typemaps,
+      'ts': ts_typemaps
+  }, indent=2), params.output)
 
 
 if __name__ == '__main__':

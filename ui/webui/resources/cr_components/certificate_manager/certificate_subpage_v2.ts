@@ -17,7 +17,9 @@
 import './certificate_list_v2.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,7 +35,7 @@ export interface CertificateSubpageV2Element {
 
 declare global {
   interface HTMLElementEventMap {
-    'navigate-back': CustomEvent<{target: Page}>;
+    'navigate-back': CustomEvent<{target: Page, source: Page}>;
   }
 }
 
@@ -44,8 +46,10 @@ export class SubpageCertificateList {
   showImport: boolean;
 }
 
+const CertificateSubpageV2ElementBase = I18nMixin(PolymerElement);
+
 export class CertificateSubpageV2Element extends
-    PolymerElement {
+    CertificateSubpageV2ElementBase {
   static get is() {
     return 'certificate-subpage-v2';
   }
@@ -59,14 +63,18 @@ export class CertificateSubpageV2Element extends
       subpageTitle: String,
       subpageCertLists: Array,
       navigateBackTarget: Page,
+      navigateBackSource: Page,
     };
   }
 
   subpageTitle: string;
   subpageCertLists: SubpageCertificateList[] = [];
   navigateBackTarget: Page;
+  navigateBackSource: Page;
 
-  // Sets initial keyboard focus of the subpage.
+  // Sets initial keyboard focus of the subpage. Assumes that subpage elements
+  // are visible.
+  // TODO(crbug.com/40928765): add test for ensuring correct focus behaviour.
   setInitialFocus() {
     focusWithoutInk(this.$.backButton);
   }
@@ -78,6 +86,7 @@ export class CertificateSubpageV2Element extends
       bubbles: true,
       detail: {
         target: this.navigateBackTarget,
+        source: this.navigateBackSource,
       },
     }));
   }

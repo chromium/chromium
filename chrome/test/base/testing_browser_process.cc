@@ -197,6 +197,9 @@ void TestingBrowserProcess::Init() {
   usb_system_tray_icon_ = std::make_unique<UsbStatusIcon>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  features_ = GlobalFeatures::CreateGlobalFeatures();
+  features_->Init();
 }
 
 void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
@@ -274,6 +277,11 @@ void TestingBrowserProcess::SetVariationsService(
 
 PrefService* TestingBrowserProcess::local_state() {
   return local_state_;
+}
+
+signin::ActivePrimaryAccountsMetricsRecorder*
+TestingBrowserProcess::active_primary_accounts_metrics_recorder() {
+  return nullptr;
 }
 
 variations::VariationsService* TestingBrowserProcess::variations_service() {

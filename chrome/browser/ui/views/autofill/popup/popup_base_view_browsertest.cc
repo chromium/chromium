@@ -18,16 +18,19 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -121,6 +124,20 @@ IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, CorrectBoundsTest) {
   gfx::Point expected_point = gfx::ToRoundedPoint(bounds.bottom_left());
   expected_point.Offset(6, -13);
   EXPECT_EQ(expected_point, display_point);
+}
+
+IN_PROC_BROWSER_TEST_F(PopupBaseViewBrowsertest, AccessibleProperties) {
+  gfx::Rect web_bounds = mock_delegate_.GetWebContents()->GetViewBounds();
+  gfx::RectF bounds(web_bounds.x() + 100, web_bounds.y() + 150, 10, 10);
+  EXPECT_CALL(mock_delegate_, element_bounds())
+      .WillRepeatedly(ReturnRef(bounds));
+  ShowView();
+  ui::AXNodeData data;
+
+  view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kPane, data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 struct ProminentPopupTestParams {

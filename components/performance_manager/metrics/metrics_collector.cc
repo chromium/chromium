@@ -76,7 +76,7 @@ bool LoadingStateIsQuiescent(PageNode::LoadingState loading_state) {
     case PageNode::LoadingState::kLoadedBusy:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -345,7 +345,7 @@ void MetricsCollector::RecordLoadingAndQuiescentPageCount() const {
           // Don't log here, not loading.
           return nullptr;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
     if (visibility_string) {
       base::UmaHistogramCounts1000(

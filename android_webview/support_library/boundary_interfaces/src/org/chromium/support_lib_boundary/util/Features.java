@@ -279,4 +279,8 @@ public class Features {
     // WebSettingsCompat.setBackForwardCacheEnabled
     // WebSettingsCompat.getBackForwardCacheEnabled
     public static final String BACK_FORWARD_CACHE = "BACK_FORWARD_CACHE";
+
+    // Profile.prefetchUrl
+    // Profile.clearPrefetchCache
+    public static final String PREFETCH_WITH_URL = "PREFETCH_URL";
 }

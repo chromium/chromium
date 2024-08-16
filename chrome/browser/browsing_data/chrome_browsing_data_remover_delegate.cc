@@ -1186,7 +1186,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // If the cache from the browser is cleared. Mahi should clear its cache.
-    if (chromeos::features::IsMahiEnabled() && chromeos::MahiManager::Get()) {
+    if (filter_builder->MatchesMostOriginsAndDomains() &&
+        chromeos::features::IsMahiEnabled() && chromeos::MahiManager::Get()) {
       chromeos::MahiManager::Get()->ClearCache();
     }
 #endif

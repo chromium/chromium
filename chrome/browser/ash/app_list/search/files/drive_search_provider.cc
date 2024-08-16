@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -22,6 +23,9 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
+#include "components/drive/file_errors.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
@@ -55,9 +59,11 @@ void LogStatus(Status status) {
 }  // namespace
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile,
-                                         bool should_filter_shared_files)
+                                         bool should_filter_shared_files,
+                                         bool should_filter_directories)
     : SearchProvider(SearchCategory::kFiles),
       should_filter_shared_files_(should_filter_shared_files),
+      should_filter_directories_(should_filter_directories),
       profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)) {
@@ -93,11 +99,20 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 
-  drive_service_->SearchDriveByFileName(
+  drivefs_search_query_ = drive_service_->CreateSearchQueryByFileName(
       base::UTF16ToUTF8(query), kMaxResults,
       drivefs::mojom::QueryParameters::SortField::kLastModified,
       drivefs::mojom::QueryParameters::SortDirection::kDescending,
-      query_source_,
+      query_source_);
+
+  if (drivefs_search_query_ == nullptr) {
+    Results empty_results;
+    SwapResults(&empty_results);
+    LogStatus(Status::kDriveUnavailable);
+    return;
+  }
+
+  drivefs_search_query_->GetNextPage(
       base::BindOnce(&DriveSearchProvider::OnSearchDriveByFileName,
                      weak_factory_.GetWeakPtr()));
 }
@@ -106,14 +121,15 @@ void DriveSearchProvider::StopQuery() {
   weak_factory_.InvalidateWeakPtrs();
   last_query_.clear();
   last_tokenized_query_.reset();
+  drivefs_search_query_.reset();
 }
 
 void DriveSearchProvider::OnSearchDriveByFileName(
     drive::FileError error,
-    std::vector<drivefs::mojom::QueryItemPtr> items) {
+    std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (error != drive::FileError::FILE_ERROR_OK) {
+  if (!drive::IsFileErrorOk(error) || !items.has_value()) {
     Results empty_results;
     SwapResults(&empty_results);
     LogStatus(Status::kFileError);
@@ -125,7 +141,7 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   if (should_filter_shared_files_ &&
       last_query_.size() < kMinQuerySizeForSharedFiles) {
     std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
-    for (auto& item : items) {
+    for (auto& item : *items) {
       if (!item->metadata->shared) {
         filtered_items.push_back(std::move(item));
       }
@@ -144,7 +160,7 @@ void DriveSearchProvider::OnSearchDriveByFileName(
   base::FilePath mount_path = drive_service_->GetMountPointPath();
 
   SearchProvider::Results results;
-  for (const auto& item : items) {
+  for (const auto& item : *items) {
     // Strip leading separators so that the path can be reparented.
     const auto& path = item->path;
     DCHECK(!path.value().empty());
@@ -180,13 +196,18 @@ void DriveSearchProvider::OnSearchDriveByFileName(
     GURL url(item->metadata->alternate_url);
     if (item->metadata->type ==
         drivefs::mojom::FileMetadata::Type::kDirectory) {
+      // TODO: b/357740941 - Move this filtering to the DriveFS query.
+      if (should_filter_directories_) {
+        continue;
+      }
       const auto type = item->metadata->shared
                             ? FileResult::Type::kSharedDirectory
                             : FileResult::Type::kDirectory;
-      result = MakeResult(reparented_path, relevance, type, url);
+      result = MakeResult(reparented_path, relevance, type, url,
+                          item->metadata->item_id, item->metadata->title);
     } else {
-      result =
-          MakeResult(reparented_path, relevance, FileResult::Type::kFile, url);
+      result = MakeResult(reparented_path, relevance, FileResult::Type::kFile,
+                          url, item->metadata->item_id, item->metadata->title);
     }
     results.push_back(std::move(result));
   }
@@ -203,7 +224,9 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
     const base::FilePath& reparented_path,
     double relevance,
     FileResult::Type type,
-    const GURL& url) {
+    const GURL& url,
+    const std::optional<std::string>& id,
+    const std::optional<std::string>& title) {
   // Add "Google Drive" as details.
   std::u16string details =
       l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
@@ -213,7 +236,14 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
       details, ash::AppListSearchResultType::kDriveSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_, /*thumbnail_loader=*/nullptr);
-  result->set_drive_id(GetDriveId(url));
+  if (id.has_value()) {
+    result->set_drive_id(id);
+  } else {
+    result->set_drive_id(GetDriveId(url));
+  }
+  if (title.has_value()) {
+    result->SetTitle(base::UTF8ToUTF16(*title));
+  }
   result->set_url(url);
   return result;
 }

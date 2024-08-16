@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/ozone/demo/demo_window.h"
@@ -93,13 +94,11 @@ void WindowManager::OnDisplaysAcquired(
         display->display_id(), origin, display->native_mode());
     std::vector<display::DisplayConfigurationParams> config_request;
     config_request.push_back(std::move(display_config_params));
-    delegate_->Configure(
-        config_request,
-        base::BindOnce(&WindowManager::OnDisplayConfigured,
-                       base::Unretained(this), display->display_id(),
-                       gfx::Rect(origin, display->native_mode()->size())),
-        {display::ModesetFlag::kTestModeset,
-         display::ModesetFlag::kCommitModeset});
+    delegate_->Configure(config_request,
+                         base::BindOnce(&WindowManager::OnDisplayConfigured,
+                                        base::Unretained(this)),
+                         {display::ModesetFlag::kTestModeset,
+                          display::ModesetFlag::kCommitModeset});
     origin.Offset(display->native_mode()->size().width(), 0);
   }
   is_configuring_ = false;
@@ -112,9 +111,12 @@ void WindowManager::OnDisplaysAcquired(
   }
 }
 
-void WindowManager::OnDisplayConfigured(const int64_t display_id,
-                                        const gfx::Rect& bounds,
-                                        bool config_success) {
+void WindowManager::OnDisplayConfigured(
+    const std::vector<display::DisplayConfigurationParams>& request_results,
+    bool config_success) {
+  CHECK_EQ(request_results.size(), 1u);
+  const auto& request = request_results[0];
+  const gfx::Rect bounds(request.origin, request.mode->size());
   if (config_success) {
     std::unique_ptr<DemoWindow> window(
         new DemoWindow(this, renderer_factory_.get(), bounds));

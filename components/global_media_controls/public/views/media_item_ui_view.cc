@@ -108,7 +108,6 @@ MediaItemUIView::MediaItemUIView(
                                     /*activate_original_media=*/true));
   }
 
-  std::unique_ptr<media_message_center::MediaNotificationView> view;
   if (use_updated_ui_) {
     CHECK(media_color_theme.has_value());
     if (footer_view) {
@@ -160,13 +159,12 @@ MediaItemUIView::MediaItemUIView(
         dismiss_button_container_->AddChildView(std::move(dismiss_button));
     UpdateDismissButtonIcon();
 
-    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-        this, std::move(item), std::move(dismiss_button_placeholder),
-        std::u16string(), kWidth, /*should_show_icon=*/false,
-        notification_theme);
+    view_ = AddChildView(
+        std::make_unique<media_message_center::MediaNotificationViewImpl>(
+            this, std::move(item), std::move(dismiss_button_placeholder),
+            std::u16string(), kWidth, /*should_show_icon=*/false,
+            notification_theme));
     UpdateFooterView(std::move(footer_view));
-
-    view_ = AddChildView(std::move(view));
     UpdateDeviceSelector(std::move(device_selector_view));
     ForceExpandedState();
   }

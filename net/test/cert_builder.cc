@@ -1259,7 +1259,7 @@ void CertBuilder::BuildTBSCertificate(std::string_view signature_algorithm_tlv,
         ASSERT_TRUE(CBB_add_asn1_uint64(&version, 2));
         break;
       case bssl::CertificateVersion::V1:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   ASSERT_TRUE(CBB_add_asn1_uint64(&tbs_cert, GetSerialNumber()));

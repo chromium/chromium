@@ -123,34 +123,68 @@ suite('Main', function() {
     assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
   });
 
-  // Tests that changing the HTTPS-First Mode setting sets the associated pref.
-  test('HttpsFirstModeRadioButtons', async () => {
-    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
-        '#httpsFirstModeEnabledFull');
+  // Tests that changing the HTTPS-First Mode setting sets the associated pref,
+  // and that the radio options are correctly shown/hidden based on the top
+  // level toggle.
+  test('HttpsFirstModeControls', async () => {
+    // Check that the old toggle row under "Advanced" is _not_ present.
+    const oldToggle =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
+    assertFalse(!!oldToggle);
+
+    // Test the new settings UI.
+    const secureConnections = page.shadowRoot!.querySelector<HTMLElement>(
+        '#secureConnectionsSection');
+    const toggleButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeToggle');
+    const collapse = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeRadioGroupCollapse');
     const radioGroup = page.shadowRoot!.querySelector<HTMLElement>(
         '#httpsFirstModeRadioGroup');
-    assertTrue(!!radioButton);
+    assertTrue(!!secureConnections);
+    assertTrue(!!toggleButton);
+    assertTrue(!!collapse);
     assertTrue(!!radioGroup);
+
+    assertEquals(
+        HttpsFirstModeSetting.DISABLED,
+        page.getPref('generated.https_first_mode_enabled').value);
+    assertFalse(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+
+    // Toggling on the button should (1) expand the cr-collapse, and (2) select
+    // the "balanced mode" radio button and set the pref to "balanced".
+    toggleButton.click();
+    await eventToPromise('transitionend', collapse);
+    assertTrue(isChildVisible(page, '#httpsFirstModeRadioGroup'));
+    assertEquals(
+        HttpsFirstModeSetting.ENABLED_BALANCED,
+        page.getPref('generated.https_first_mode_enabled').value);
+
+    // Select the "Strict Mode" radio button.
+    let radioButton = page.shadowRoot!.querySelector<HTMLElement>(
+        '#httpsFirstModeEnabledStrict');
+    assertTrue(!!radioButton);
     radioButton.click();
     await eventToPromise('selected-changed', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_FULL,
         page.getPref('generated.https_first_mode_enabled').value);
 
+    // Select the "Balanced Mode" radio button again.
     radioButton = page.shadowRoot!.querySelector<HTMLElement>(
-        '#httpsFirstModeEnabledIncognito');
+        '#httpsFirstModeEnabledBalanced');
     assertTrue(!!radioButton);
     radioButton.click();
     await eventToPromise('selected-changed', radioGroup);
     assertEquals(
-        HttpsFirstModeSetting.ENABLED_INCOGNITO,
+        HttpsFirstModeSetting.ENABLED_BALANCED,
         page.getPref('generated.https_first_mode_enabled').value);
 
-    radioButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#httpsFirstModeDisabled');
-    assertTrue(!!radioButton);
-    radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    // Toggling on the button off should (1) hide the cr-collapse, and (2) fully
+    // turn off HTTPS-First Mode.
+    toggleButton.click();
+    await eventToPromise('transitionend', collapse);
+    assertFalse(isChildVisible(page, '#httpsFirstModeRadioGroup'));
     assertEquals(
         HttpsFirstModeSetting.DISABLED,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -167,8 +201,33 @@ suite('Main', function() {
         Router.getInstance().getCurrentRoute());
   });
 
-  // TODO(crbug.com/40937027): Add test for alternate sub-label when Advanced
-  // Protection is enabled.
+  // Tests that the correct Advanced Protection sublabel is used when the
+  // HTTPS-First Mode setting toggle has user control disabled.
+  test('HttpsFirstModeSettingAdvancedProtectionSubLabel', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#httpsFirstModeToggle');
+    assertTrue(!!toggle);
+    const defaultSubLabel =
+        loadTimeData.getString('httpsFirstModeSectionDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled', HttpsFirstModeSetting.DISABLED);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    const lockedSubLabel =
+        loadTimeData.getString('httpsFirstModeDescriptionAdvancedProtection');
+    assertEquals(lockedSubLabel, toggle.subLabel);
+
+    page.setPrefValue(
+        'generated.https_first_mode_enabled',
+        HttpsFirstModeSetting.ENABLED_FULL);
+    page.set(
+        'prefs.generated.https_first_mode_enabled.userControlDisabled', true);
+    flush();
+    assertEquals(lockedSubLabel, toggle.subLabel);
+  });
 });
 
 suite('SecurityPageHappinessTrackingSurveys', function() {
@@ -269,11 +328,11 @@ suite('FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
-      enableFriendlierSafeBrowsingSettings: false,
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
       extendedReportingRemovePrefDependency: false,
+      hashPrefixRealTimeLookupsSamplePing: false,
     });
     resetRouterForTesting();
   });
@@ -352,79 +411,19 @@ suite('FlagsDisabled', function() {
   });
   // </if>
 
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test('NotUpdatedStandardProtectionDropdown', function() {
-    const standardProtection = page.$.safeBrowsingStandard;
-    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-    assertEquals(spSubLabel, standardProtection.subLabel);
-
-    const safeBrowsingStandardBulTwo =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#safeBrowsingStandardBulTwo')!;
-    const subBulTwoLabel = loadTimeData.getString('safeBrowsingStandardBulTwo');
-    assertEquals(
-        subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
-
-    const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const passwordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabel');
-    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
-
-    const passwordLeakSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
-  });
-
-  // TODO(crbug.com/40068815): Remove once friendlier safe browsing settings
-  // enhanced protection is launched.
-  test('NotUpdatedEnhancedProtectionDropdown', function() {
-    // Enhanced protection sublabel should not be the updated one.
-    const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
-    assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    // The updated description container should not be visible.
-    assertFalse(isChildVisible(page, '#enhancedProtectionDescContainer'));
-
-    // No protection sublabel should not be the updated one.
-    const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
-    assertEquals(npSubLabel, noProtection.subLabel);
-  });
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test('NotUpdatedPasswordsLeakDetectionSubLabel', function() {
-    const toggle = page.$.passwordsLeakToggle;
-    const defaultSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    const activeWhenSignedInSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
-        ' ' +
-        loadTimeData.getString(
-            'passwordsLeakDetectionSignedOutEnabledDescription');
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', true);
-    flush();
-    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
-
-    page.set('prefs.generated.password_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
-  });
-
-  // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
+  // Tests the old HTTPS-Only Mode toggle UI.
+  // TODO(crbug.com/349860796): Remove this test once HttpsFirstBalancedMode is
+  // enabled by default.
   test('HttpsOnlyModeToggle', function() {
+    // Check that the new "Secure connections" section is not shown if the
+    // flag is disabled.
+    const secureConnections =
+        page.shadowRoot!.querySelector<HTMLElement>('secureConnectionsSection');
+    assertFalse(!!secureConnections);
+
+    // Test the old settings UI when the HttpsFirstBalancedMode flag is
+    // disabled. Checks that toggling the HTTPS-Only Mode setting sets the
+    // associated pref.
     const httpsOnlyModeToggle =
         page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle');
     assertTrue(!!httpsOnlyModeToggle);
@@ -616,11 +615,10 @@ suite('SafeBrowsing', function() {
 
   test('PasswordsLeakDetectionSubLabel', function() {
     const toggle = page.$.passwordsLeakToggle;
-    const defaultSubLabel = loadTimeData.getString(
-        'passwordsLeakDetectionGeneralDescriptionUpdated');
+    const defaultSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     const activeWhenSignedInSubLabel =
-        loadTimeData.getString(
-            'passwordsLeakDetectionGeneralDescriptionUpdated') +
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
         ' ' +
         loadTimeData.getString(
             'passwordsLeakDetectionSignedOutEnabledDescription');
@@ -975,34 +973,32 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('UpdatedStandardProtectionDropdown', async () => {
+  test('StandardProtectionDropdown', async () => {
     loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: false});
     resetRouterForTesting();
 
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
-    const updatedSpSubLabel =
-        loadTimeData.getString('safeBrowsingStandardDescUpdated');
-    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
+    const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+    assertEquals(spSubLabel, standardProtection.subLabel);
 
     const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const updatedPasswordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
-    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
 
-    const updatedPasswordLeakSubLabel = loadTimeData.getString(
-        'passwordsLeakDetectionGeneralDescriptionUpdated');
-    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
+    const passwordLeakSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  test('UpdatedEnhancedProtectionText', async () => {
+  test('EnhancedProtectionText', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel =
-        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
     const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
@@ -1048,83 +1044,32 @@ suite('SafeBrowsing', function() {
 
     await resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
-    const subLabel =
-        loadTimeData.getString('safeBrowsingStandardDescUpdatedProxy');
+    const subLabel = loadTimeData.getString('safeBrowsingStandardDescProxy');
     assertEquals(subLabel, standardProtection.subLabel);
   });
-
-  // TODO(crbug.com/40923883): Remove once friendlier safe browsing settings
-  // standard protection is launched.
-  test(
-      'FriendlierSettingsDisabledStandardProtectionDropdownWithProxyString',
-      async () => {
-        loadTimeData.overrideValues({
-          enableFriendlierSafeBrowsingSettings: false,
-          enableHashPrefixRealTimeLookups: true,
-        });
-        resetRouterForTesting();
-
-        await resetPage();
-        const standardProtection = page.$.safeBrowsingStandard;
-        const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
-        assertEquals(subLabel, standardProtection.subLabel);
-        const safeBrowsingStandardBulTwo =
-            page.shadowRoot!.querySelector<HTMLElement>(
-                '#safeBrowsingStandardBulTwo')!;
-        const subBulTwoLabel =
-            loadTimeData.getString('safeBrowsingStandardBulTwoProxy');
-        assertEquals(
-            subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
-      });
   // </if>
+
   // <if expr="not _google_chrome">
   test('StandardProtectionDropdownNoProxyStringForChromium', function() {
     // If this test fails, it may be because hash-prefix real-time lookups have
     // been enabled for Chromium. The settings strings only currently support
     // Chrome, so this must be addressed to support Chromium as well.
     const standardProtection = page.$.safeBrowsingStandard;
-    const subLabel = loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
     assertEquals(subLabel, standardProtection.subLabel);
   });
   // </if>
 
-  test('FriendlierSettingsPopulatedOnEsbOptIn', async function() {
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: false});
-    resetRouterForTesting();
-
-    await resetPage();
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertFalse(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-
-    loadTimeData.overrideValues({enableFriendlierSafeBrowsingSettings: true});
-    resetRouterForTesting();
-
-    await resetPage();
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertTrue(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-  });
-
-  test('FriendlierSettingsClearedOnEsbOptOut', async function() {
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    page.setPrefValue('safebrowsing.esb_opt_in_with_friendlier_settings', true);
-    page.$.safeBrowsingStandard.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    assertFalse(
-        page.getPref('safebrowsing.esb_opt_in_with_friendlier_settings').value);
-  });
-
   test(
-      'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecated',
+      'SafeBrowsingReportingToggleNotVisibleWhenExtendedReportingDeprecatedAndHprtSampled',
       async function() {
         // The safeBrowsingReportingToggle should not be visible if the extended
-        // reporting deprecation flag is enabled.
-        loadTimeData.overrideValues(
-            {'extendedReportingRemovePrefDependency': true});
+        // reporting deprecation flag is enabled and HPRT sampled lookup flag is
+        // enabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: true,
+          hashPrefixRealTimeLookupsSamplePing: true,
+        });
         resetRouterForTesting();
 
         await resetPage();
@@ -1134,6 +1079,48 @@ suite('SafeBrowsing', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
 
         assertFalse(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
+
+  test(
+      'SafeBrowsingReportingToggleVisibleWhenExtendedReportingDeprecatedAndHprtNotSampled',
+      async function() {
+        // The safeBrowsingReportingToggle should be visible if the extended
+        // reporting deprecation flag is enabled and HPRT sampled lookup flag is
+        // disabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: true,
+          hashPrefixRealTimeLookupsSamplePing: false,
+        });
+        resetRouterForTesting();
+
+        await resetPage();
+        page.$.safeBrowsingStandard.click();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+
+        assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
+      });
+
+  test(
+      'SafeBrowsingReportingToggleVisibleWhenExtendedReportingNotDeprecatedAndHprtSampled',
+      async function() {
+        // The safeBrowsingReportingToggle should be visible if the extended
+        // reporting deprecation flag is disabled and HPRT sampled lookup flag
+        // is enabled.
+        loadTimeData.overrideValues({
+          extendedReportingRemovePrefDependency: false,
+          hashPrefixRealTimeLookupsSamplePing: true,
+        });
+        resetRouterForTesting();
+
+        await resetPage();
+        page.$.safeBrowsingStandard.click();
+
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+
+        assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
 });
 

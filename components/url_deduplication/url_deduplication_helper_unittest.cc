@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "components/url_deduplication/deduplication_strategy.h"
 #include "components/url_deduplication/url_strip_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,6 +42,8 @@ class URLDeduplicationHelperTest : public ::testing::Test {
   std::unique_ptr<URLDeduplicationHelper> helper_;
 };
 
+const std::string kSamplePageTitle = "Sample page title";
+
 TEST_F(URLDeduplicationHelperTest, StripURL) {
   GURL full_url = GURL(
       "https://www.foopayment.com:123?ref=foo"
@@ -54,7 +57,8 @@ TEST_F(URLDeduplicationHelperTest, StripURL) {
   strategy.clear_ref = true;
   strategy.clear_port = true;
   InitHelper({}, strategy);
-  std::string stripped_url = Helper()->ComputeURLDeduplicationKey(full_url);
+  std::string stripped_url =
+      Helper()->ComputeURLDeduplicationKey(full_url, kSamplePageTitle);
   ASSERT_EQ("http://foopayment.com/", stripped_url);
 }
 
@@ -73,8 +77,31 @@ TEST_F(URLDeduplicationHelperTest, StripURLWithHandlers) {
   handlers.push_back(std::move(handler1));
   handlers.push_back(std::move(handler2));
   InitHelper(std::move(handlers), strategy);
-  std::string stripped_url = Helper()->ComputeURLDeduplicationKey(full_url);
+  std::string stripped_url =
+      Helper()->ComputeURLDeduplicationKey(full_url, kSamplePageTitle);
   ASSERT_EQ("http://google.com/search", stripped_url);
+}
+
+TEST_F(URLDeduplicationHelperTest, DeduplicateByDomainAndTitle) {
+  DeduplicationStrategy strategy;
+  strategy.clear_path = true;
+  strategy.include_title = true;
+  InitHelper({}, strategy);
+
+  constexpr char kSampleCalendarPageTitle[] =
+      "Google.com - Calendar - Week of Januaray 5, 2024";
+  constexpr char kSampleBaseCalendarUrl[] = "https://calendar.google.com/";
+  const std::string expected_dedup_url_key =
+      base::StrCat({kSampleBaseCalendarUrl, "#", kSampleCalendarPageTitle});
+  EXPECT_EQ(expected_dedup_url_key,
+            Helper()->ComputeURLDeduplicationKey(
+                GURL(base::StrCat({kSampleBaseCalendarUrl, "calendar/u/0/r"})),
+                kSampleCalendarPageTitle));
+  EXPECT_EQ(expected_dedup_url_key,
+            Helper()->ComputeURLDeduplicationKey(
+                GURL(base::StrCat(
+                    {kSampleBaseCalendarUrl, "calendar/u/0/r/week/2024/1/05"})),
+                kSampleCalendarPageTitle));
 }
 
 }  // namespace url_deduplication

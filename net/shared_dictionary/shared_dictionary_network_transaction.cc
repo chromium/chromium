@@ -335,7 +335,7 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
 
   switch (dictionary_status_) {
     case DictionaryStatus::kNoDictionary:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DictionaryStatus::kReading:
       CHECK(!pending_read_task_);
       pending_read_task_ =
@@ -377,7 +377,7 @@ int SharedDictionaryNetworkTransaction::Read(IOBuffer* buf,
         UMA_HISTOGRAM_ENUMERATION("Network.SharedDictionary.EncodingType",
                                   shared_dictionary_encoding_type_);
       }
-      // When NET_DISABLE_ZSTD or NET_DISABLE_ZSTD is set,
+      // When NET_DISABLE_BROTLI or NET_DISABLE_ZSTD is set,
       // `shared_compression_stream_` can be null.
       if (!shared_compression_stream_) {
         return ERR_CONTENT_DECODING_FAILED;

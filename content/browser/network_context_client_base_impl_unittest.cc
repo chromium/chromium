@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -48,7 +49,7 @@ void CreateFile(const base::FilePath& path, const char* content) {
   base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
   int content_size = strlen(content);
-  int bytes_written = file.Write(0, content, content_size);
+  int bytes_written = UNSAFE_TODO(file.Write(0, content, content_size));
   EXPECT_EQ(bytes_written, content_size);
 }
 

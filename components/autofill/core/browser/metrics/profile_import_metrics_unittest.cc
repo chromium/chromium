@@ -532,4 +532,25 @@ TEST_F(AutofillProfileImportMetricsTest,
       kExpectedDecision, 1);
 }
 
+// Tests that the storage type where a new address is saved to is correctly
+// emitted.
+TEST_F(AutofillProfileImportMetricsTest, EmitsStorageNewProfileIsSavedTo) {
+  AutofillProfile import_candidate = test::GetFullProfile();
+  base::HistogramTester histogram_tester;
+
+  // Saved to local/syncable storage.
+  LogNewProfileStorageLocation(import_candidate);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
+      AutofillProfile::Source::kLocalOrSyncable, 1);
+
+  import_candidate = import_candidate.ConvertToAccountProfile();
+
+  // Saved to account storage.
+  LogNewProfileStorageLocation(import_candidate);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
+      AutofillProfile::Source::kAccount, 1);
+}
+
 }  // namespace autofill::autofill_metrics

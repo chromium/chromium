@@ -38,6 +38,8 @@ constexpr char kProfileImportTypeHistogram[] =
     "Autofill.ProfileImport.ProfileImportType";
 constexpr char kSilentUpdatesProfileImportTypeHistogram[] =
     "Autofill.ProfileImport.SilentUpdatesProfileImportType";
+constexpr char kNewProfileStorageHistogram[] =
+    "Autofill.ProfileImport.StorageNewAddressIsSavedTo";
 constexpr char kNewProfileEditsHistogram[] =
     "Autofill.ProfileImport.NewProfileEditedType";
 constexpr char kProfileUpdateEditsHistogram[] =
@@ -344,6 +346,16 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
           ? kSilentUpdatesProfileImportTypeHistogram
           : kProfileImportTypeHistogram,
       test_scenario.expected_import_type, 1);
+
+  // Only record the profile's storage for new profiles.
+  const bool accepted_and_is_new_profile =
+      (test_scenario.user_decision ==
+           AutofillClient::AddressPromptUserDecision::kAccepted ||
+       test_scenario.user_decision ==
+           AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
+      IsNewProfile(test_scenario);
+  histogram_tester.ExpectTotalCount(kNewProfileStorageHistogram,
+                                    accepted_and_is_new_profile ? 1 : 0);
 
   // When the user is prompted, three histograms are recorded:
   // - The user `decision`.

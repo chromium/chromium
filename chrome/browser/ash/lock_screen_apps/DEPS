@@ -18,7 +18,7 @@ include_rules = [
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/login/users",
-  "+chrome/browser/ash/note_taking_helper.h",
+  "+chrome/browser/ash/note_taking",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system_web_apps",

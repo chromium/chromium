@@ -122,6 +122,7 @@ ScopedJavaLocalRef<jobject> DataSharingConversionBridge::CreateParseURLResult(
       DataSharingService::ParseURLStatus::kUnknown;
   if (data.has_value()) {
     j_group_data = CreateJavaGroupToken(env, data.value());
+    status = DataSharingService::ParseURLStatus::kSuccess;
   } else {
     status = data.error();
   }

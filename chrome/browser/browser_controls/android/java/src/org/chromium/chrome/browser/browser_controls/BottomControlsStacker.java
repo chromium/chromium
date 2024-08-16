@@ -147,6 +147,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     public void requestLayerUpdate(boolean animate) {
         assert isEnabled();
 
+        // TODO(crbug.com/359539294) Re-enable animations when integration of read aloud with the
+        // bottom chin is fixed.
+        // Turn off animations when chin is showing.
+        if (mLayers.get(LayerType.BOTTOM_CHIN) != null) {
+            animate = false;
+        }
+
         updateLayerVisibilities();
         recalculateLayerSizes();
         updateBrowserControlsHeight(animate);
@@ -272,6 +279,15 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int height = 0;
         int totalMinHeight = 0;
         int layerBottomOffset = bottomOffset;
+
+        // TODO(crbug.com/359539294) This may not be needed after fixing and re-enabling animations.
+        // Some calls right after a height change will have a bottomControlsMinHeightOffset
+        // representing an outdated min height. Limit the min height offset to be less than or equal
+        // to the total min height to avoid a gap under the bottom controls after a height change.
+        // This only seems to have negative effects when reducing the min height (i.e. shrinking
+        // the bottom controls).
+        bottomControlsMinHeightOffset = Math.min(bottomControlsMinHeightOffset, mTotalMinHeight);
+
         // Convert the minHeight to use the same axis as bottomOffset (0 as the top of the browser
         // controls; mTotalHeight as the bottom of the bottom controls)
         int minHeightBottomOffset = mTotalHeight - bottomControlsMinHeightOffset;
@@ -499,5 +515,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                         + layer.getHeight()
                         + " YOffset "
                         + layerYOffset);
+    }
+
+    public BottomControlsLayer getLayerForTesting(@LayerType int layerType) {
+        return mLayers.get(layerType);
     }
 }

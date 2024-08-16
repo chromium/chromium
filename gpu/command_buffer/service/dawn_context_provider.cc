@@ -526,6 +526,7 @@ bool DawnSharedState::Initialize(
       wgpu::FeatureName::TransientAttachments,
 
       wgpu::FeatureName::DawnLoadResolveTexture,
+      wgpu::FeatureName::DawnPartialLoadResolveTexture,
   };
 
   wgpu::Adapter adapter(adapters[0].Get());
@@ -614,7 +615,7 @@ bool DawnSharedState::Initialize(
 
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        this, "DawnSharedState",
+        this, "DawnSharedContext",
         base::SingleThreadTaskRunner::GetCurrentDefault());
     registered_memory_dump_provider_ = true;
   }
@@ -676,6 +677,8 @@ void DawnSharedState::OnError(wgpu::ErrorType error_type, const char* message) {
 }
 
 namespace {
+static constexpr char kDawnMemoryDumpPrefix[] = "gpu/dawn";
+
 class DawnMemoryDump : public dawn::native::MemoryDump {
  public:
   explicit DawnMemoryDump(base::trace_event::ProcessMemoryDump* pmd)
@@ -689,20 +692,20 @@ class DawnMemoryDump : public dawn::native::MemoryDump {
                  const char* key,
                  const char* units,
                  uint64_t value) override {
-    pmd_->GetOrCreateAllocatorDump(base::JoinString({kPrefix, name}, ""))
+    pmd_->GetOrCreateAllocatorDump(
+            base::JoinString({kDawnMemoryDumpPrefix, name}, "/"))
         ->AddScalar(key, units, value);
   }
 
   void AddString(const char* name,
                  const char* key,
                  const std::string& value) override {
-    pmd_->GetOrCreateAllocatorDump(base::JoinString({kPrefix, name}, ""))
+    pmd_->GetOrCreateAllocatorDump(
+            base::JoinString({kDawnMemoryDumpPrefix, name}, "/"))
         ->AddString(key, "", value);
   }
 
  private:
-  static constexpr char kPrefix[] = "gpu/dawn/";
-
   const raw_ptr<base::trace_event::ProcessMemoryDump> pmd_;
 };
 }  // namespace
@@ -710,10 +713,14 @@ class DawnMemoryDump : public dawn::native::MemoryDump {
 bool DawnSharedState::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
-  // TODO(https://crbug.com/330806170): Implement background level of
-  // detail support for emitting to UMA GPU memory histograms.
-  if (args.level_of_detail !=
+  if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+    using base::trace_event::MemoryAllocatorDump;
+    pmd->GetOrCreateAllocatorDump(kDawnMemoryDumpPrefix)
+        ->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes,
+                    dawn::native::ComputeEstimatedMemoryUsage(device_.Get()));
+  } else {
     DawnMemoryDump dump(pmd);
     dawn::native::DumpMemoryStatistics(device_.Get(), &dump);
   }

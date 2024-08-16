@@ -248,9 +248,12 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
-            Callback<Integer> callback) {
+            Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
-            callback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+            var result =
+                    new WebAuthSecurityChecksResults(
+                            AuthenticatorStatus.UNKNOWN_ERROR, /* isCrossOrigin= */ false);
+            callback.onResult(result);
             return;
         }
 
@@ -340,7 +343,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
-                Callback<Integer> callback);
+                Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         int getLifecycleState(long nativeRenderFrameHostAndroid);
 

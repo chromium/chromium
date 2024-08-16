@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Kemudian, laman yang anda lawati boleh meminta Chrome melihat minat anda untuk memeribadikan iklan yang anda lihat. Chrome boleh berkongsi sehingga 3 minat.</translation>
 <translation id="2563121210305478421">Lancarkan semula Chrome?</translation>
 <translation id="2569974318947988067">Chrome akan cuba meningkatkan navigasi kepada HTTPS</translation>
+<translation id="2571392474191184472">Organisasi anda mengurus Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Untuk menjadikan penyemakan imbas anda terpisah, Chrome boleh membuat profil anda sendiri untuk anda.</translation>
 <translation id="2580411288591421699">Tidak dapat memasang versi Google Chrome yang sama yang kini dijalankan. Sila tutup Google Chrome dan cuba semula.</translation>
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
@@ -442,6 +443,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7177959540995930968">Anda boleh mengetahui lebih lanjut tentang ciri ini dalam tetapan Chrome.</translation>
 <translation id="7193885263065350793">Organisasi anda menutup Chrome apabila apl tersebut tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Google Account, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> mengurus Chrome</translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk memaparkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7302361266603927550">Sesetengah data Chrome anda belum disimpan dalam Google Account anda. Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
@@ -575,6 +577,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8999117580775242387">Apabila HTTPS tidak tersedia, Chrome akan menggunakan sambungan yang tidak selamat tanpa memberi anda amaran</translation>
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
+<translation id="9014771989710951291">Berbilang organisasi mengurus Chrome</translation>
 <translation id="9024318700713112071">Tetapkan Chrome sebagai lalai anda</translation>
 <translation id="9053892488859122171">Sistem Chrome OS Flex</translation>
 <translation id="9090566250983691233">Ketahui sebab Chrome menyekat sesetengah fail</translation>

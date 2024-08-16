@@ -25,18 +25,21 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
@@ -49,6 +52,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/app_command.h"
+#include "chrome/installer/util/per_install_values.h"
 #include "chrome/installer/util/util_constants.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -103,7 +107,6 @@ void CreateAndMarshalProcessLauncher(
       return;
     }
   }
-  Microsoft::WRL::ComPtr<IStream> stream;
   const HRESULT hr = ::CoMarshalInterThreadInterfaceInStream(
       __uuidof(IUnknown), unknown.Get(), &result->stream);
   if (FAILED(hr)) {
@@ -118,17 +121,40 @@ void CreateAndMarshalProcessLauncher(
 }
 
 // CoCreates the Google Update `ProcessLauncherClass` in a `ThreadPool` thread
-// with a timeout. If the `ThreadPool` is not operational, the CoCreate is done
+// with a timeout, if the `ThreadPool` is operational. The starting value for
+// the timeout is 15 seconds. If the CoCreate times out, the timeout is
+// increased by 15 seconds at each failed attempt and persisted for the next
+// attempt.
+//
+// If the `ThreadPool` is not operational, the CoCreate is done
 // without a timeout.
-// TODO(crbug.com/40792898): gradually backoff on the wait at each attempt
-// to rename, instead of a fixed 15 seconds.
 Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
+  constexpr int kDefaultTimeoutIncrementSeconds = 15;
+  constexpr base::TimeDelta kMaxTimeAfterSystemStartup = base::Seconds(150);
+
   auto result = base::MakeRefCounted<CreateProcessLauncherResult>();
   if (base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
           ->PostTask(FROM_HERE, base::BindOnce(&CreateAndMarshalProcessLauncher,
                                                result))) {
-    if (!result->completion_event.TimedWait(base::Seconds(15))) {
+    installer::PerInstallValue creation_timeout(
+        L"ProcessLauncherCreationTimeout");
+    const base::TimeDelta timeout = base::Seconds(
+        creation_timeout.Get()
+            .value_or(base::Value(kDefaultTimeoutIncrementSeconds))
+            .GetIfInt()
+            .value_or(kDefaultTimeoutIncrementSeconds));
+    const base::ElapsedTimer timer;
+    const bool is_at_startup =
+        base::SysInfo::Uptime() <= kMaxTimeAfterSystemStartup;
+    if (!result->completion_event.TimedWait(timeout)) {
+      base::UmaHistogramMediumTimes(
+          is_at_startup
+              ? "Startup.CreateProcessLauncher2.TimedWaitFailedAtStartup"
+              : "Startup.CreateProcessLauncher2.TimedWaitFailed",
+          timer.Elapsed());
+      creation_timeout.Set(base::Value(static_cast<int>(timeout.InSeconds()) +
+                                       kDefaultTimeoutIncrementSeconds));
       TRACE_EVENT_INSTANT0(
           "startup", "InvokeGoogleUpdateForRename CoCreateInstance timed out",
           TRACE_EVENT_SCOPE_THREAD);
@@ -139,6 +165,11 @@ Microsoft::WRL::ComPtr<IUnknown> CreateProcessLauncher() {
     if (!result->stream) {
       return {};
     }
+    base::UmaHistogramMediumTimes(
+        is_at_startup
+            ? "Startup.CreateProcessLauncher2.TimedWaitSucceededAtStartup"
+            : "Startup.CreateProcessLauncher2.TimedWaitSucceeded",
+        timer.Elapsed());
 
     Microsoft::WRL::ComPtr<IUnknown> unknown;
     const HRESULT hr =

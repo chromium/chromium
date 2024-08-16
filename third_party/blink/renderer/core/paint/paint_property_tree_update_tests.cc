@@ -2139,8 +2139,6 @@ TEST_P(PaintPropertyTreeUpdateTest, UpdatesInLockedDisplayHandledCorrectly) {
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="spacer" style="height: 1000px"></div>
     <div id="anchor" style="

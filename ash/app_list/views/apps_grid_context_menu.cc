@@ -57,7 +57,7 @@ void AppsGridContextMenu::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

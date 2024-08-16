@@ -211,6 +211,10 @@ class AccessibilityManager
   // Returns true if FaceGaze is enabled.
   bool IsFaceGazeEnabled() const;
 
+  // Toggles whether FaceGaze is sending gesture detection information to
+  // settings.
+  void ToggleGestureInfoForSettings(bool enabled) const;
+
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
   void RequestAutoclickScrollableBoundsForPoint(
@@ -401,6 +405,10 @@ class AccessibilityManager
   // Sets the startup sound user preference.
   void SetStartupSoundEnabled(bool value) const;
 
+  // Requests that the system display a preview of the flash notifications
+  // feature.
+  void PreviewFlashNotification() const;
+
   // Gets the bluetooth braille display device address for the current user.
   const std::string GetBluetoothBrailleDisplayAddress() const;
 
@@ -523,6 +531,7 @@ class AccessibilityManager
   void PostLoadEnhancedNetworkTts();
 
   void UpdateAlwaysShowMenuFromPref();
+  void OnFaceGazeChanged();
   void OnLargeCursorChanged();
   void OnLiveCaptionChanged();
   void OnStickyKeysChanged();

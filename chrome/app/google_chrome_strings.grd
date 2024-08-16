@@ -985,6 +985,17 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <!-- Management bubble -->
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED" desc="Disclosure that an unnamed organization is managing the browser.">
+        Your organization manages Chrome
+      </message>
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY" desc="Disclosure that a known organization is managing the browser.">
+        <ph name="MANAGER">$1<ex>The Company</ex></ph> manages Chrome
+      </message>
+      <message name="IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED_BY_MULTIPLE_ORGANIZATIONS" desc="Disclosure that multiple organization are managing the browser and profile.">
+        Multiple organizations manage Chrome
+      </message>
+
       <!-- Extension requests sign in to Chrome through chrome.identity API -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">

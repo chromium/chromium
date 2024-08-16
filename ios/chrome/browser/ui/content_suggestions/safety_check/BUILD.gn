@@ -74,7 +74,11 @@ source_set("prefs") {
     "safety_check_prefs.h",
     "safety_check_prefs.mm",
   ]
-  deps = [ "//components/prefs" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
 }
 
 source_set("unit_tests") {

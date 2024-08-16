@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
 
 #include <memory>
+
 #include "cc/layers/layer.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
@@ -13,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -111,9 +113,9 @@ TestPaintArtifact& TestPaintArtifact::ScrollHitTestChunk(
     const PropertyTreeState& contents_state) {
   const auto& scroll_translation = contents_state.Transform();
   DCHECK(scroll_translation.ScrollNode());
-  Chunk(client).Properties(*scroll_translation.Parent(),
-                           *contents_state.Clip().Parent(),
-                           contents_state.Effect());
+  Chunk(client, DisplayItem::kScrollHitTest)
+      .Properties(*scroll_translation.Parent(), *contents_state.Clip().Parent(),
+                  contents_state.Effect());
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   chunk.hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
   auto& hit_test_data = chunk.EnsureHitTestData();

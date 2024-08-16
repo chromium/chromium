@@ -93,7 +93,7 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
                                             bool is_encrypted,
                                             bool is_directory,
                                             bool contents_valid) {
-  if (base::FeatureList::IsEnabled(kNestedArchives) && !is_encrypted) {
+  if (!is_encrypted) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
       // Archive analyzers expect to start at the beginning of the
@@ -115,7 +115,8 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
   }
 
   UpdateArchiveAnalyzerResultsWithFile(path, &entry, file_length, is_encrypted,
-                                       is_directory, contents_valid, results_);
+                                       is_directory, contents_valid,
+                                       IsTopLevelArchive(), results_);
   return true;
 }
 
@@ -157,6 +158,10 @@ void ArchiveAnalyzer::NestedAnalysisFinished(base::File entry,
   if (ResumeExtraction()) {
     std::move(finished_analysis_callback_).Run();
   }
+}
+
+bool ArchiveAnalyzer::IsTopLevelArchive() const {
+  return root_path_.empty();
 }
 
 }  // namespace safe_browsing

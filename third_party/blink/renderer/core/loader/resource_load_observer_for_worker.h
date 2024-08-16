@@ -60,6 +60,7 @@ class ResourceLoadObserverForWorker final : public ResourceLoadObserver {
   void DidChangeRenderBlockingBehavior(Resource* resource,
                                        const FetchParameters& params) override {
   }
+  bool InterestedInAllRequests() override;
   void Trace(Visitor*) const override;
 
  private:

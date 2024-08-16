@@ -170,14 +170,12 @@ public class DropDataProviderImpl {
      * Clear the image data of Drag and Drop when event ACTION_DRAG_ENDED is received.
      *
      * @param imageInUse Indicate if the image is needed by the drop target app. This is true when
-     *        the image is dropped outside of Chrome AND the drop target app returns true for event
-     *        ACTION_DROP.
+     *     the image is dropped outside of Chrome AND the drop target app returns true for event
+     *     ACTION_DROP.
      */
     public void onDragEnd(boolean imageInUse) {
         if (!imageInUse) {
-            // Clear the image data immediately when:
-            // 1. Image is dropped within Clank and we know it is not used;
-            // 2. Image is dropped outside of Clank and the drop target app rejects the data.
+            // Clear the image data immediately when the drop target app rejects the data.
             clearCache();
         } else {
             // Otherwise, clear it with a delay to allow asynchronous data transfer.

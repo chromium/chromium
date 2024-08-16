@@ -67,7 +67,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
       const apps::AppLaunchParams& params) const override;
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
-  bool PreferManifestBackgroundColor() const override;
   bool UseSystemThemeColor() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAnimateThemeChanges() const override;
@@ -94,7 +93,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetLaunchAndNavigateSystemWebApp(LaunchAndNavigateSystemWebAppCallback);
   void SetIsAppEnabled(bool);
   void SetUrlInSystemAppScope(const GURL& url);
-  void SetPreferManifestBackgroundColor(bool);
   void SetUseSystemThemeColor(bool);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetShouldAnimateThemeChanges(bool);
@@ -121,7 +119,6 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool allow_scripts_to_close_windows_ = false;
   bool is_app_enabled = true;
   GURL url_in_system_app_scope_;
-  bool prefer_manifest_background_color_ = false;
   bool use_system_theme_color_ = true;
 #if BUILDFLAG(IS_CHROMEOS)
   bool should_animate_theme_changes_ = false;

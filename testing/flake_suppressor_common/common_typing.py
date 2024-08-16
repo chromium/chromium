@@ -58,6 +58,6 @@ QueryJsonType = List[SingleQueryResultType]
 
 
 class ResultStatus(str, Enum):
-  ABORT = "ABORT"
-  CRASH = "CRASH"
-  FAIL = "FAIL"
+  ABORT = 'ABORT'
+  CRASH = 'CRASH'
+  FAIL = 'FAIL'

@@ -7,13 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+namespace segmentation_platform {
+enum class DefaultBrowserUserSegment;
+}  // namespace segmentation_platform
+
 enum class SetUpListItemType;
 
 // A view to display an individual item in the SetUpListView.
 @interface SetUpListItemViewData : NSObject
-
-// Initialize a SetUpListItemView with the given `type` and `complete` state.
-- (instancetype)initWithType:(SetUpListItemType)type complete:(BOOL)complete;
 
 // Indicates the type of item.
 @property(nonatomic, readonly) SetUpListItemType type;
@@ -27,6 +28,14 @@ enum class SetUpListItemType;
 // YES if this view should configure itself for a hero cell layout in the Magic
 // Stack.
 @property(nonatomic, assign) BOOL heroCellMagicStackLayout;
+
+// User classification retrieved by the Segmentation Platform. Used to
+// personalize Set Up List item messaging.
+@property(nonatomic, assign)
+    segmentation_platform::DefaultBrowserUserSegment userSegment;
+
+// Initialize a SetUpListItemView with the given `type` and `complete` state.
+- (instancetype)initWithType:(SetUpListItemType)type complete:(BOOL)complete;
 
 @end
 

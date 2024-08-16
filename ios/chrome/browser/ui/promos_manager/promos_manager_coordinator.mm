@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/stay_safe_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/docking_promo/ui/docking_promo_display_handler.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo/omnibox_position_choice_display_handler.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -592,12 +591,6 @@
       [[DefaultBrowserPromoDisplayHandler alloc] init];
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
       [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
-
-  // Omnibox position choice promo handler.
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
-    _displayHandlerPromos[promos_manager::Promo::OmniboxPosition] =
-        [[OmniboxPositionChoiceDisplayHandler alloc] init];
-  }
 }
 
 - (void)registerStandardPromoViewProviderPromos {

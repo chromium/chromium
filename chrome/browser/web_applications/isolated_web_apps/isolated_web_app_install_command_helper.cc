@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -137,6 +140,14 @@ bool IsUrlLoadingResultSuccess(webapps::WebAppUrlLoaderResult result) {
   return result == webapps::WebAppUrlLoaderResult::kUrlLoaded;
 }
 
+bool IntegrityBlockDataHasRotatedKey(
+    base::optional_ref<const IsolatedWebAppIntegrityBlockData>
+        integrity_block_data,
+    base::span<const uint8_t> rotated_key) {
+  return integrity_block_data &&
+         integrity_block_data->HasPublicKey(rotated_key);
+}
+
 }  // namespace
 
 void CleanupLocationIfOwned(const base::FilePath& profile_dir,
@@ -220,6 +231,59 @@ GetIsolatedWebAppById(const WebAppRegistrar& registrar,
     return base::unexpected("Installed app is not an Isolated Web App.");
   }
   return *iwa;
+}
+
+KeyRotationLookupResult LookupRotatedKey(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    base::optional_ref<base::Value::Dict> debug_log) {
+  auto log_rotated_key = [&](const std::string& value) {
+    if (debug_log) {
+      debug_log->Set("rotated_key", value);
+    }
+  };
+
+  const auto* kr_info =
+      IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo(
+          web_bundle_id.id());
+  if (!kr_info) {
+    return KeyRotationLookupResult::kNoKeyRotation;
+  }
+
+  if (!kr_info->public_key) {
+    log_rotated_key("<disabled>");
+    return KeyRotationLookupResult::kKeyBlocked;
+  }
+  log_rotated_key(base::Base64Encode(*kr_info->public_key));
+  return KeyRotationLookupResult::kKeyFound;
+}
+
+KeyRotationData GetKeyRotationData(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const WebApp::IsolationData& isolation_data) {
+  const auto* kr_info =
+      IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo(
+          web_bundle_id.id());
+  CHECK(kr_info && kr_info->public_key)
+      << "`GetKeyRotationData()` must only be called if `LookupRotatedKey()` "
+         "has previously reported `KeyRotationLookupResult::kKeyFound`.";
+
+  const auto& rotated_key = *kr_info->public_key;
+
+  // Checks whether `rotated_key` is contained in
+  // `isolation_data.integrity_block_data`.
+  const bool current_installation_has_rk = IntegrityBlockDataHasRotatedKey(
+      isolation_data.integrity_block_data, rotated_key);
+  const auto& pending_update = isolation_data.pending_update_info();
+
+  // Checks whether `rotated_key` is contained in
+  // `isolation_data.pending_update_info.integrity_block_data`.
+  const bool pending_update_has_rk =
+      pending_update && IntegrityBlockDataHasRotatedKey(
+                            pending_update->integrity_block_data, rotated_key);
+
+  return {.rotated_key = raw_ref(rotated_key),
+          .current_installation_has_rk = current_installation_has_rk,
+          .pending_update_has_rk = pending_update_has_rk};
 }
 
 // static
@@ -460,27 +524,10 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
     const blink::mojom::Manifest& manifest) {
   const GURL& manifest_url = manifest.manifest_url;
 
-  // TODO(b/280862254): Ideally move this validation logic into a
-  // WebAppInstallInfo creator function.
-  if (!manifest.id.is_valid()) {
-    return base::unexpected(
-        "Manifest `id` is not present or invalid. manifest_url: " +
-        manifest_url.possibly_invalid_spec());
-  }
-  if (!manifest.start_url.is_valid()) {
-    return base::unexpected(
-        "Manifest `start_url` is not present or invalid. manifest_url: " +
-        manifest_url.possibly_invalid_spec());
-  }
-  if (!url::Origin::Create(manifest.start_url)
-           .IsSameOriginWith(url::Origin::Create(manifest.id))) {
-    return base::unexpected(
-        "Manifest `id` and `start_url` must have the same origin. "
-        "manifest_url: " +
-        manifest_url.possibly_invalid_spec());
-  }
+  ASSIGN_OR_RETURN(
+      auto info,
+      WebAppInstallInfo::Create(manifest_url, manifest.id, manifest.start_url));
 
-  WebAppInstallInfo info(manifest.id, manifest.start_url);
   UpdateWebAppInfoFromManifest(manifest, &info);
 
   if (!manifest.version.has_value()) {

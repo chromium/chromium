@@ -74,16 +74,6 @@ public class PasswordManagerUtilBridge {
         return PasswordManagerUtilBridgeJni.get().areMinUpmRequirementsMet();
     }
 
-    /**
-     * Checks whether the UPM with sync only available in GMS Core is active for this client.
-     *
-     * @return True if UPM with sync only available in GMS Core is active, false otherwise.
-     */
-    public static boolean isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
-        return PasswordManagerUtilBridgeJni.get()
-                .isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
-    }
-
     public static @PasswordAccessLossWarningType int getPasswordAccessLossWarningType(
             PrefService prefService) {
         return PasswordManagerUtilBridgeJni.get().getPasswordAccessLossWarningType(prefService);
@@ -102,8 +92,6 @@ public class PasswordManagerUtilBridge {
                 @JniType("syncer::SyncService*") SyncService syncService);
 
         boolean areMinUpmRequirementsMet();
-
-        boolean isUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 
         @PasswordAccessLossWarningType
         int getPasswordAccessLossWarningType(@JniType("PrefService*") PrefService prefService);

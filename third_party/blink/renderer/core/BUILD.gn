@@ -401,6 +401,7 @@ component("core") {
     "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",
+    "//ui/strings",
   ]
 
   if (is_mac) {
@@ -1593,6 +1594,8 @@ source_set("unit_test_support") {
     "editing/testing/selection_sample.h",
     "frame/frame_test_helpers.cc",
     "frame/frame_test_helpers.h",
+    "html/canvas/recording_test_utils.cc",
+    "html/canvas/recording_test_utils.h",
     "html/media/html_media_test_helper.cc",
     "html/media/html_media_test_helper.h",
     "script/mock_script_element_base.h",

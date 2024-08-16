@@ -41,7 +41,7 @@
   }
   switch (item.type) {
     case GridItemType::kInactiveTabsButton:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab: {
       [_itemsIdentifiers addObject:item];
       web::WebStateID webStateID = item.tabSwitcherItem.identifier;
@@ -66,14 +66,14 @@
       return;
     }
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 - (void)removeItem:(GridItemIdentifier*)item {
   switch (item.type) {
     case GridItemType::kInactiveTabsButton:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case GridItemType::kTab: {
       [_itemsIdentifiers removeObject:item];
       _sharableItemsIDs.erase(item.tabSwitcherItem.identifier);
@@ -93,7 +93,7 @@
       return;
     }
     case GridItemType::kSuggestedActions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -121,7 +121,7 @@
   for (GridItemIdentifier* item in _itemsIdentifiers) {
     switch (item.type) {
       case GridItemType::kInactiveTabsButton:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case GridItemType::kTab:
         tabs.insert(item.tabSwitcherItem.identifier);
         break;
@@ -133,7 +133,7 @@
         break;
       }
       case GridItemType::kSuggestedActions:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return tabs;

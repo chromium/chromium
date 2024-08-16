@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -294,6 +295,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   UpdateTimestampLabelsVisibility();
 
   item_->SetView(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  UpdateAccessibleName();
+  title_label_changed_callback_ = title_label_->AddTextChangedCallback(
+      base::BindRepeating(&MediaItemUIUpdatedView::UpdateAccessibleName,
+                          base::Unretained(this)));
 }
 
 MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
@@ -322,11 +329,13 @@ void MediaItemUIUpdatedView::AddedToWidget() {
   }
 }
 
-void MediaItemUIUpdatedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+void MediaItemUIUpdatedView::UpdateAccessibleName() {
+  if (title_label_->GetText().empty()) {
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
+  } else {
+    GetViewAccessibility().SetName(title_label_->GetText());
+  }
 }
 
 bool MediaItemUIUpdatedView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -514,6 +523,11 @@ void MediaItemUIUpdatedView::UpdateFooterView(
   UpdateMediaActionButtonsVisibility();
 }
 
+void MediaItemUIUpdatedView::UpdateDeviceSelectorIssue(bool has_issue) {
+  start_casting_button_->UpdateIcon(has_issue ? vector_icons::kCastWarningIcon
+                                              : vector_icons::kCastIcon);
+}
+
 MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
     views::View* parent,
     int button_id,
@@ -565,7 +579,14 @@ void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
           MediaItemUIUpdatedViewAction::kExitPictureInPicture);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
+  }
+
+  // Make the screen reader announce the button text for accessibility since
+  // there are only visual changes outside these buttons when they are clicked.
+  if (base::Contains(kProgressRowMediaActions,
+                     static_cast<MediaSessionAction>(button->GetID()))) {
+    GetViewAccessibility().AnnouncePolitely(button->GetTooltipText());
   }
 
   if (button->GetID() == static_cast<int>(MediaSessionAction::kSeekBackward)) {

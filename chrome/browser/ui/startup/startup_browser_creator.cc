@@ -1163,8 +1163,17 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   // If we don't want to launch a new browser window or tab we are done here.
   if (silent_launch) {
-    if (process_startup == chrome::startup::IsProcessStartup::kYes)
+    bool should_block_browser_startup_metrics =
+        process_startup == chrome::startup::IsProcessStartup::kYes;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Login screen is an expected common case. Startup metrics should still be
+    // recorded after the user logs in even though this is a `silent_launch`.
+    should_block_browser_startup_metrics &=
+        !command_line.HasSwitch(ash::switches::kLoginManager);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    if (should_block_browser_startup_metrics) {
       startup_metric_utils::GetBrowser().SetNonBrowserUIDisplayed();
+    }
     return true;
   }
 

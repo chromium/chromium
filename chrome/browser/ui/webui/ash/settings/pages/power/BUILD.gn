@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("power") {
+  sources = [
+    "device_power_handler.cc",
+    "device_power_handler.h",
+    "power_section.cc",
+    "power_section.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//base",
+    "//chromeos/dbus/power",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "device_power_handler_browsertest.cc" ]
+
+  deps = [
+    ":power",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/test:test_support_ui",
+    "//chromeos/dbus/power",
+    "//components/policy:generated",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

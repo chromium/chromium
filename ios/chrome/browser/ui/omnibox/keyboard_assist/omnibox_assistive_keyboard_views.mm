@@ -16,7 +16,7 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
     NSString* dotComTLD,
     id<OmniboxAssistiveKeyboardDelegate> delegate,
     TemplateURLService* templateURLService,
-    BubblePresenter* bubblePresenter) {
+    id<HelpCommands> helpHandler) {
   DCHECK(dotComTLD);
   NSArray<NSString*>* buttonTitles = @[ @":", @"-", @"/", dotComTLD ];
 
@@ -34,7 +34,7 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
                                                   pasteTarget:textField
                                            templateURLService:templateURLService
                                                     textField:textField
-                                              bubblePresenter:bubblePresenter];
+                                                  helpHandler:helpHandler];
     [keyboardAccessoryView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
     [textField setInputAccessoryView:keyboardAccessoryView];
     return keyboardAccessoryView;

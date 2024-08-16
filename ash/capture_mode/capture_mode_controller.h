@@ -188,6 +188,9 @@ class ASH_EXPORT CaptureModeController
   // starting a countdown by using a null session. Currently unused.
   void StartRecordingInstantlyForGameDashboard(aura::Window* game_window);
 
+  // Starts a new sunfish session. Currently only invoked via a debug command.
+  void StartSunfishSession();
+
   // Stops an existing capture session.
   void Stop();
 
@@ -285,6 +288,9 @@ class ASH_EXPORT CaptureModeController
   // Returns true if the given `path` is the root folder of OneDrive, false
   // otherwise.
   bool IsRootOneDriveFilesPath(const base::FilePath& path) const;
+
+  // Calls the delegate to instantiate `SearchResultsView`.
+  std::unique_ptr<AshWebView> CreateSearchResultsView() const;
 
   // Returns the current parent window for the on-capture-surface widgets such
   // as `CaptureModeCameraController::camera_preview_widget_` and
@@ -598,7 +604,8 @@ class ASH_EXPORT CaptureModeController
   // `instant_screenshot_callback` will be moved and invoked in
   // `OnDlpRestrictionCheckedAtCaptureScreenshot()` to perform the instant
   // screenshot. This is invoked via the screenshot accelerator commands and
-  // will end capture mode session if it is active.
+  // will end capture mode session if it is active (only if the session was
+  // started by the same behavior).
   void CaptureInstantScreenshot(CaptureModeEntryType entry_type,
                                 CaptureModeSource source,
                                 base::OnceClosure instant_screenshot_callback,

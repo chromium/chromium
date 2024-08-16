@@ -40,6 +40,8 @@ inline constexpr std::string_view kServerReservePlusAddressEndpoint =
     "v1/profiles/reserve";
 inline constexpr std::string_view kServerCreatePlusAddressEndpoint =
     "v1/profiles/create";
+inline constexpr std::string_view kServerPreallocatePlusAddressEndpoint =
+    "v1/emailAddresses/reserve";
 
 class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
  public:
@@ -58,8 +60,10 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                           bool refresh,
                           PlusAddressRequestCallback on_completed) override;
   void ConfirmPlusAddress(const url::Origin& origin,
-                          const std::string& plus_address,
+                          const PlusAddress& plus_address,
                           PlusAddressRequestCallback on_completed) override;
+  void PreallocatePlusAddresses(
+      PreallocatePlusAddressesCallback callback) override;
   void GetAllPlusAddresses(PlusAddressMapRequestCallback on_completed) override;
   void Reset() override;
 
@@ -82,11 +86,14 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
   void ConfirmPlusAddressInternal(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed,
                                   std::optional<std::string> auth_token);
   void GetAllPlusAddressesInternal(PlusAddressMapRequestCallback on_completed,
                                    std::optional<std::string> auth_token);
+  void PreallocatePlusAddressesInternal(
+      PreallocatePlusAddressesCallback callback,
+      std::optional<std::string> auth_token);
 
   // This is shared by the `ReservePlusAddress` and `ConfirmPlusAddress` methods
   // since they both use `loaders_for_creation_` and have the same return type.
@@ -97,6 +104,11 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
       PlusAddressRequestCallback on_completed,
       std::unique_ptr<std::string> response);
 
+  void OnPreallocationComplete(UrlLoaderList::iterator it,
+                               base::TimeTicks request_start,
+                               PreallocatePlusAddressesCallback on_completed,
+                               std::unique_ptr<std::string> response);
+
   void OnGetAllPlusAddressesComplete(base::TimeTicks request_start,
                                      PlusAddressMapRequestCallback on_completed,
                                      std::unique_ptr<std::string> response);
@@ -105,6 +117,13 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   void OnTokenFetched(TokenReadyCallback callback,
                       GoogleServiceAuthError error,
                       signin::AccessTokenInfo access_token_info);
+
+  // Creates a resource request for a given `endpoint`, `method` and
+  // `auth_token`.
+  std::unique_ptr<network::ResourceRequest> CreateRequest(
+      std::string_view endpoint,
+      std::string_view method,
+      std::string_view auth_token) const;
 
   // The IdentityManager instance for the current profile.
   const raw_ref<signin::IdentityManager> identity_manager_;
@@ -122,10 +141,8 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
   // Stores callbacks that raced to get an auth token to run them once ready.
   base::queue<TokenReadyCallback> pending_callbacks_;
 
-  // List of loaders used by the creation flow (CreatePlusAddress). We use a
-  // list of loaders instead of a single one to handle several requests made
-  // quickly across different tabs.
-  std::list<std::unique_ptr<network::SimpleURLLoader>> loaders_for_creation_;
+  // Loaders used for Create, Reserve, and Preallocate calls.
+  UrlLoaderList loaders_;
 
   // A loader used infrequently for calls to GetAllPlusAddresses which keeps
   // the PlusAddressService synced with the remote server.

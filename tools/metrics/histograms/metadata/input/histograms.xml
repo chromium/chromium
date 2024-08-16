@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.PointerTypePrimary" enum="PrimaryPointerType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.PointerTypesAll" enum="AllPointerTypes"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Input.ToolType.Android" units="tool type"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>alexmitra@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -1495,7 +1495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Manta.Orca.{Language}.States.{Mode}"
-    enum="IMEEditorStates" expires_after="2024-11-01">
+    enum="IMEEditorStates" expires_after="2025-02-02">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1515,6 +1515,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Write" summary="The editor is in freeform write mode"/>
   </token>
   <token key="Language">
+    <variant name="Afrikaans" summary="Afrikaans input method is enabled"/>
     <variant name="Danish" summary="Danish input method is enabled"/>
     <variant name="Dutch" summary="Dutch input method is enabled"/>
     <variant name="English" summary="English input method is enabled"/>
@@ -1525,6 +1526,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Japanese" summary="Japanese input method is enabled"/>
     <variant name="Norwegian" summary="Norwegian input method is enabled"/>
     <variant name="Other" summary="Other input method is enabled"/>
+    <variant name="Polish" summary="Polish input method is enabled"/>
     <variant name="Portugese" summary="Portugese input method is enabled"/>
     <variant name="Spanish" summary="Spanish input method is enabled"/>
     <variant name="Swedish" summary="Swedish input method is enabled"/>
@@ -1884,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureResult"
-    enum="StylusHandwritingGestureResult" expires_after="2024-12-08">
+    enum="StylusHandwritingGestureResult" expires_after="2025-02-10">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>
@@ -1893,7 +1895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.StylusHandwriting.GestureTime2" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>alexmitra@chromium.org</owner>
   <owner>embedded-experience@google.com</owner>
   <summary>

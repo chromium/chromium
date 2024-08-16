@@ -54,10 +54,21 @@ class OpticalCharacterRecognizer
   // ProfileObserver::
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  // Returns true if OCR service is ready.
+  // Returns true if OCR service is ready. This state will be preserved if the
+  // connection to the OCR service is reset due to being idle or if the service
+  // is shut down. It is expected that the connection would be revivable when
+  // needed.
   bool is_ready() { return ready_ && *ready_; }
 
+  bool is_connected() {
+    return screen_ai_annotator_ && screen_ai_annotator_->is_bound() &&
+           screen_ai_annotator_->is_connected();
+  }
+
   bool StatusAvailableForTesting() { return ready_.has_value(); }
+
+  // Connects to the OCR service if not already connected.
+  void MaybeConnectToOcrService();
 
   // Performs OCR on the given image and returns the results as a
   // `VisualAnnotation` struct.
@@ -74,12 +85,21 @@ class OpticalCharacterRecognizer
   // Ensures all posted tasks are completed in tests.
   virtual void FlushForTesting() {}
 
+  // Disconnects from ScreenAI service for testing. This is to simulate idle
+  // timeout or service shutdown/crash.
+  void DisconnectForTesting() {
+    if (screen_ai_annotator_) {
+      screen_ai_annotator_->reset();
+    }
+  }
+
  protected:
   explicit OpticalCharacterRecognizer(Profile* profile,
                                       mojom::OcrClientType client_type);
   ~OpticalCharacterRecognizer() override;
 
-  // OCR Service is ready to use.
+  // OCR Service is ready to use. The value is set after initialization has
+  // finished successfully or with failure.
   std::optional<bool> ready_;
 
  private:
@@ -96,8 +116,7 @@ class OpticalCharacterRecognizer
       bool successful);
 
   // Is initialized in the constructor and is cleared if profile gets destroyed
-  // while this object still exists, or after it is used in
-  // `OnOCRInitializationCallback`.
+  // while this object still exists.
   raw_ptr<Profile> profile_;
 
   mojom::OcrClientType client_type_;

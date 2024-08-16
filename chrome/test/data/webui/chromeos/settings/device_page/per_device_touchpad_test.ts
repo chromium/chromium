@@ -47,7 +47,8 @@ suite('<settings-per-device-touchpad>', () => {
               'per-device-subsection-header', subsections[i]!.shadowRoot,
               PerDeviceSubsectionHeaderElement);
           const name =
-              subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
+              subsectionHeader.shadowRoot!.querySelector(
+                                              'h2')!.textContent!.trim();
           if (fakeTouchpads[i]!.isExternal) {
             assertEquals(fakeTouchpads[i]!.name, name);
           } else {

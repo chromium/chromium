@@ -192,7 +192,7 @@ void WebAppsIntentPickerDelegate::RecordOutputMetrics(
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -201,7 +201,7 @@ void WebAppsIntentPickerDelegate::RecordOutputMetrics(
 void WebAppsIntentPickerDelegate::PersistIntentPreferencesForApp(
     PickerEntryType entry_type,
     const std::string& app_id) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,

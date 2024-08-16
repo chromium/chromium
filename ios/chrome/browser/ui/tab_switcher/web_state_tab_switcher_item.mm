@@ -78,7 +78,7 @@ const CGFloat kSymbolSize = 16;
   // Use the page favicon.
   favicon::FaviconDriver* faviconDriver =
       favicon::WebFaviconDriver::FromWebState(webState);
-  // The favicon drive may be null during testing.
+  // The favicon driver may be null during testing.
   if (faviconDriver) {
     gfx::Image favicon = faviconDriver->GetFavicon();
     if (!favicon.IsEmpty()) {

@@ -37,7 +37,7 @@ libyuv::FourCC GetFourccForPixelFormat(
     case fuchsia::images2::PixelFormat::NV12:
       return libyuv::FourCC::FOURCC_NV12;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

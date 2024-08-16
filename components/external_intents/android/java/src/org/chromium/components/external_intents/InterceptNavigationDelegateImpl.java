@@ -29,6 +29,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ConsoleMessageLevel;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -116,6 +117,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
     private WebContents mWebContents;
     private ExternalNavigationHandler mExternalNavHandler;
+    private WebContentsObserver mWebContentsObserver;
 
     /** Whether forward history should be cleared after navigation is committed. */
     private boolean mClearAllForwardHistoryRequired;
@@ -141,14 +143,33 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
 
     public void associateWithWebContents(WebContents webContents) {
         if (mWebContents == webContents) return;
+        if (mWebContents != null) {
+            mWebContents.removeObserver(mWebContentsObserver);
+            mWebContentsObserver = null;
+        }
         mWebContents = webContents;
         if (mWebContents == null) return;
 
         // Lazily initialize the external navigation handler.
         if (mExternalNavHandler == null) {
             setExternalNavigationHandler(mClient.createExternalNavigationHandler());
+            if (mExternalNavHandler == null) return;
         }
+
         InterceptNavigationDelegateImplJni.get().associateWithWebContents(this, mWebContents);
+
+        mWebContentsObserver =
+                new WebContentsObserver(mWebContents) {
+                    @Override
+                    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        mExternalNavHandler.onNavigationStarted(navigation.getNavigationId());
+                    }
+
+                    @Override
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        mExternalNavHandler.onNavigationFinished(navigation.getNavigationId());
+                    }
+                };
     }
 
     @Override
@@ -179,7 +200,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         mClient.areIntentLaunchesAllowedInHiddenTabsForNavigation(navigationHandle),
                         this::onDidAsyncActionInMainFrame,
                         hiddenCrossFrame,
-                        isSandboxedFrame);
+                        isSandboxedFrame,
+                        navigationHandle.getNavigationId());
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
 
@@ -236,7 +258,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         /* areIntentLaunchesAllowedInHiddenTabsForNavigation= */ false,
                         this::onDidAsyncActionInSubFrame,
                         /* hiddenCrossFrame= */ false,
-                        /* isSandboxedMainFrame= */ false);
+                        /* isSandboxedMainFrame= */ false,
+                        /* navigationId */ -1);
 
         switch (result.getResultType()) {
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
@@ -268,7 +291,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             boolean areIntentLaunchesAllowedInHiddenTabsForNavigation,
             Callback<AsyncActionTakenParams> asyncActionTakenCallback,
             boolean hiddenCrossFrame,
-            boolean isSandboxedMainFrame) {
+            boolean isSandboxedMainFrame,
+            long navigationId) {
         boolean initialNavigation = isInitialNavigation();
         redirectHandler.updateNewUrlLoading(
                 pageTransition,
@@ -306,6 +330,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                         .setIsInitialNavigationInFrame(initialNavigation)
                         .setIsHiddenCrossFrameNavigation(hiddenCrossFrame)
                         .setIsSandboxedMainFrame(isSandboxedMainFrame)
+                        .setNavigationId(navigationId)
                         .build();
 
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);

@@ -61,7 +61,8 @@ enum class SharingChannelType {
   kFcmVapid,
   kFcmSenderId,
   kServer,
-  kWebRtc
+  kWebRtc,
+  kIosPush
 };
 
 #endif  // COMPONENTS_SHARING_MESSAGE_SHARING_CONSTANTS_H_

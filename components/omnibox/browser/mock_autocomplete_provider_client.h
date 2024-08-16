@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
-#include "components/search_engines/template_url_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -64,10 +63,10 @@ class MockAutocompleteProviderClient
   MOCK_METHOD0(GetInMemoryURLIndex, InMemoryURLIndex*());
 
   TemplateURLService* GetTemplateURLService() override {
-    return template_url_service_.get();
+    return template_url_service_;
   }
   const TemplateURLService* GetTemplateURLService() const override {
-    return template_url_service_.get();
+    return template_url_service_;
   }
   RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const override {
@@ -142,6 +141,7 @@ class MockAutocompleteProviderClient
   MOCK_CONST_METHOD0(IsAuthenticated, bool());
   MOCK_CONST_METHOD0(IsSyncActive, bool());
   MOCK_CONST_METHOD0(IsHistoryEmbeddingsEnabled, bool());
+  MOCK_CONST_METHOD0(IsHistoryEmbeddingsSettingVisible, bool());
 
   MOCK_METHOD6(
       Classify,
@@ -160,8 +160,8 @@ class MockAutocompleteProviderClient
     pedal_provider_ = std::move(pedal_provider);
   }
 
-  void set_template_url_service(std::unique_ptr<TemplateURLService> service) {
-    template_url_service_ = std::move(service);
+  void set_template_url_service(TemplateURLService* template_url_service) {
+    template_url_service_ = template_url_service;
   }
 
   void set_identity_manager(signin::IdentityManager* identity_manager) {
@@ -183,7 +183,8 @@ class MockAutocompleteProviderClient
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
   bool in_background_state_ = false;
-  std::unique_ptr<TemplateURLService> template_url_service_;
+
+  raw_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
   std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
   std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;

@@ -276,13 +276,14 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
  private:
   template <class StringType>
   StringType ToString() const {
-    if (LIKELY(!v8_string_.IsEmpty()))
+    if (!v8_string_.IsEmpty()) [[likely]] {
       return ToBlinkString<StringType>(isolate_, v8_string_, kExternalize);
+    }
     return StringType(wtf_string_);
   }
 
   StringView ToStringView() const& {
-    if (LIKELY(!v8_string_.IsEmpty())) {
+    if (!v8_string_.IsEmpty()) [[likely]] {
       return ToBlinkStringView(isolate_, v8_string_, string_view_backing_store_,
                                kExternalize);
     }
@@ -322,10 +323,9 @@ struct NativeValueTraits<IDLByteStringBase<mode>>
         return bindings::NativeValueTraitsStringAdapter();
     }
 
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     v8::Local<v8::String> v8_string;
     if (!value->ToString(isolate->GetCurrentContext()).ToLocal(&v8_string)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return bindings::NativeValueTraitsStringAdapter();
     }
     if (!v8_string->ContainsOnlyOneByte()) {
@@ -390,10 +390,9 @@ struct NativeValueTraits<IDLStringBase<mode>>
       }
     }
 
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     v8::Local<v8::String> v8_string;
     if (!value->ToString(isolate->GetCurrentContext()).ToLocal(&v8_string)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return bindings::NativeValueTraitsStringAdapter();
     }
     return bindings::NativeValueTraitsStringAdapter(isolate, v8_string);
@@ -996,7 +995,7 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
   ResultType result;
   result.ReserveInitialCapacity(length);
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-  v8::TryCatch try_block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   // Fast path -- we're creating a sequence of script wrappables, which can be
   // done by directly getting underlying object as long as array types are
@@ -1063,9 +1062,6 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
     };
     if (!v8_array->Iterate(current_context, callback, &callback_data)
              .IsJust()) {
-      if (try_block.HasCaught()) {
-        exception_state.RethrowV8Exception(try_block.Exception());
-      }
       DCHECK(exception_state.HadException());
       return {};
     }
@@ -1076,7 +1072,6 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
   for (uint32_t i = 0; i < v8_array->Length(); ++i) {
     v8::Local<v8::Value> v8_element;
     if (!v8_array->Get(current_context, i).ToLocal(&v8_element)) {
-      exception_state.RethrowV8Exception(try_block.Exception());
       return {};
     }
     // 3.4. Initialize Si to the result of converting nextItem to an IDL value
@@ -1257,7 +1252,7 @@ struct NativeValueTraits<IDLRecord<K, V>>
       return ImplType();
     }
     v8::Local<v8::Object> v8_object = v8::Local<v8::Object>::Cast(v8_value);
-    v8::TryCatch block(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
 
     // "3. Let keys be ? O.[[OwnPropertyKeys]]()."
     v8::Local<v8::Array> keys;
@@ -1270,7 +1265,6 @@ struct NativeValueTraits<IDLRecord<K, V>>
                                        v8::PropertyFilter::ALL_PROPERTIES),
                                    v8::KeyConversionMode::kConvertToString)
              .ToLocal(&keys)) {
-      exception_state.RethrowV8Exception(block.Exception());
       return ImplType();
     }
     if (keys->Length() > ImplType::MaxCapacity()) {
@@ -1292,7 +1286,6 @@ struct NativeValueTraits<IDLRecord<K, V>>
       // "4. Repeat, for each element key of keys in List order:"
       v8::Local<v8::Value> key;
       if (!keys->Get(context, i).ToLocal(&key)) {
-        exception_state.RethrowV8Exception(block.Exception());
         return ImplType();
       }
 
@@ -1300,7 +1293,6 @@ struct NativeValueTraits<IDLRecord<K, V>>
       v8::Local<v8::Value> desc;
       if (!v8_object->GetOwnPropertyDescriptor(context, key.As<v8::Name>())
                .ToLocal(&desc)) {
-        exception_state.RethrowV8Exception(block.Exception());
         return ImplType();
       }
 
@@ -1328,7 +1320,6 @@ struct NativeValueTraits<IDLRecord<K, V>>
       // "4.2.2. Let value be ? Get(O, key)."
       v8::Local<v8::Value> value;
       if (!v8_object->Get(context, key).ToLocal(&value)) {
-        exception_state.RethrowV8Exception(block.Exception());
         return ImplType();
       }
 
@@ -1836,7 +1827,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
     if constexpr (T::allow_sequence) {
       auto&& vec = NativeValueTraits<IDLSequence<typename Traits::IDLType>>::
           ArgumentValue(isolate, argument_index, value, exception_state);
-      if (LIKELY(!exception_state.HadException())) {
+      if (!exception_state.HadException()) [[likely]] {
         result.Assign(std::move(vec));
       }
       return result;

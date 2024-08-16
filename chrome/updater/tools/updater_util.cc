@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
@@ -162,8 +163,7 @@ GetCachedPolicyInfo(
   auto cached_info =
       std::make_unique<device_management_storage::CachedPolicyInfo>();
   std::string policy_info_data;
-  if (base::PathExists(policy_info_file) &&
-      base::ReadFileToString(policy_info_file, &policy_info_data)) {
+  if (base::ReadFileToString(policy_info_file, &policy_info_data)) {
     cached_info->Populate(policy_info_data);
   }
   return cached_info;
@@ -181,8 +181,7 @@ std::unique_ptr<edm::OmahaSettingsClientProto> GetOmahaPolicySettings() {
   ::enterprise_management::PolicyFetchResponse response;
   ::enterprise_management::PolicyData policy_data;
   auto omaha_settings = std::make_unique<edm::OmahaSettingsClientProto>();
-  if (!base::PathExists(omaha_policy_file) ||
-      !base::ReadFileToString(omaha_policy_file, &response_data) ||
+  if (!base::ReadFileToString(omaha_policy_file, &response_data) ||
       response_data.empty() || !response.ParseFromString(response_data) ||
       !policy_data.ParseFromString(response.policy_data()) ||
       !policy_data.has_policy_value() ||
@@ -206,8 +205,7 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
   std::string response_data;
   ::enterprise_management::PolicyFetchResponse response;
   auto omaha_settings = std::make_unique<edm::OmahaSettingsClientProto>();
-  if (!base::PathExists(policy_file) ||
-      !base::ReadFileToString(policy_file, &response_data) ||
+  if (!base::ReadFileToString(policy_file, &response_data) ||
       response_data.empty() || !response.ParseFromString(response_data)) {
     std::cout << "  [" << policy_type << "] <not parseable>";
     return;
@@ -414,7 +412,7 @@ UpdateService::Priority Priority() {
 }
 
 std::string Quoted(const std::string& value) {
-  return "\"" + value + "\"";
+  return base::StrCat({"\"", value, "\""});
 }
 
 bool OutputInJSONFormat() {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/workspace_controller.h"
 
 #include <map>
@@ -28,6 +33,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -1308,7 +1314,8 @@ TEST_F(WorkspaceControllerTest, RestoreMinimizedSnappedWindow) {
 TEST_F(WorkspaceControllerTest, SwitchFromModal) {
   std::unique_ptr<Window> modal_window(CreateTestWindowUnparented());
   modal_window->SetBounds(gfx::Rect(10, 11, 21, 22));
-  modal_window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  modal_window->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kSystem);
   ParentWindowInPrimaryRootWindow(modal_window.get());
   modal_window->Show();
   wm::ActivateWindow(modal_window.get());

@@ -23,8 +23,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -176,7 +176,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                                  testing::UnorderedElementsAre(plus_profile))
                   .Wait());
   // Simulate updating the `plus_profile` on the server.
-  plus_profile.plus_address = "new-" + plus_profile.plus_address;
+  plus_profile.plus_address =
+      plus_addresses::PlusAddress("new-" + *plus_profile.plus_address);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::UnorderedElementsAre(plus_profile))
@@ -192,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                                  testing::UnorderedElementsAre(plus_profile))
                   .Wait());
   // Simulate removing the `plus_profile` on the server.
-  InjectTombstoneToServer(plus_profile.profile_id);
+  InjectTombstoneToServer(*plus_profile.profile_id);
   EXPECT_TRUE(
       PlusProfileChecker(GetPlusAddressService(), testing::IsEmpty()).Wait());
 }
@@ -229,7 +230,7 @@ class SingleClientPlusAddressManagedAccountTest
   }
 
  private:
-  // Since the model type controller is shared between `PLUS_ADDRESS` and
+  // Since the data type controller is shared between `PLUS_ADDRESS` and
   // `PLUS_ADDRESS_SETTING`, this test tests the behavior for both.
   base::test::ScopedFeatureList settings_feature_{
       syncer::kSyncPlusAddressSetting};

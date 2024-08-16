@@ -13,11 +13,13 @@
 
 #include "base/base64.h"
 #include "base/base_paths.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -45,6 +47,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "url/gurl.h"
@@ -53,7 +56,7 @@
 namespace content {
 namespace {
 
-constexpr char kKeyAggregationServicePayloads[] =
+constexpr std::string_view kKeyAggregationServicePayloads =
     "aggregation_service_payloads";
 
 std::string ReadStringFromFile(const base::FilePath& file, bool trim = false) {
@@ -183,7 +186,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   testing::AssertionResult VerifyReport(
       base::Value::Dict actual_report,
       base::Value::Dict expected_report,
-      const std::string& base64_encoded_expected_cleartext_payload) {
+      std::string_view base64_encoded_expected_cleartext_payload) {
     std::optional<base::Value> actual_payloads =
         actual_report.Extract(kKeyAggregationServicePayloads);
     if (!actual_payloads) {
@@ -206,7 +209,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
                 "the aggregation service payloads";
     }
 
-    static constexpr char kKeySharedInfo[] = "shared_info";
+    static constexpr std::string_view kKeySharedInfo = "shared_info";
     const std::string* shared_info = expected_report.FindString(kKeySharedInfo);
     if (!shared_info) {
       return testing::AssertionFailure()
@@ -233,8 +236,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
   testing::AssertionResult VerifyAggregationServicePayloads(
       base::Value::List actual_payloads,
       base::Value::List expected_payloads,
-      const std::string& base64_encoded_expected_cleartext_payload,
-      const std::string& shared_info) {
+      std::string_view base64_encoded_expected_cleartext_payload,
+      std::string_view shared_info) {
     if (actual_payloads.size() != 1u) {
       return testing::AssertionFailure()
              << kKeyAggregationServicePayloads
@@ -261,7 +264,7 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
              << "[0] not a dictionary in the expected report";
     }
 
-    static constexpr char kKeyPayload[] = "payload";
+    static constexpr std::string_view kKeyPayload = "payload";
 
     std::optional<base::Value> actual_encrypted_payload =
         actual_payload->Extract(kKeyPayload);
@@ -318,8 +321,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
 
   // Returns empty vector in case of an error.
   std::vector<uint8_t> DecryptPayload(
-      const std::string& base64_encoded_encrypted_payload,
-      const std::string& shared_info) {
+      std::string_view base64_encoded_encrypted_payload,
+      std::string_view shared_info) {
     std::optional<std::vector<uint8_t>> encrypted_payload =
         base::Base64Decode(base64_encoded_encrypted_payload);
     if (!encrypted_payload) {
@@ -431,6 +434,21 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
   };
 
   for (auto& test_case : kTestCases) {
+    // This reflects the logic in
+    // `PrivateAggregationHost::ContributeToHistogram()` and is copied here to
+    // avoid hitting a CHECK().
+    bool use_new_report_version =
+        base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiFilteringIds) &&
+        base::FeatureList::IsEnabled(
+            kPrivacySandboxAggregationServiceFilteringIds);
+    if (!use_new_report_version) {
+      base::ranges::for_each(
+          test_case.contributions,
+          [](blink::mojom::AggregatableReportHistogramContribution&
+                 contribution) { contribution.filtering_id.reset(); });
+    }
+
     AssembleAndVerifyReport(
         std::move(test_case.debug_details), std::move(test_case.contributions),
         std::move(test_case.api_identifier), test_case.report_file,

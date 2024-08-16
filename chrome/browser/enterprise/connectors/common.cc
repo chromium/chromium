@@ -186,7 +186,7 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 
   // A managed device can share its info with the profile if they are
   // affiliated.
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
+  return enterprise_util::IsProfileAffiliated(profile);
 #endif
 }
 

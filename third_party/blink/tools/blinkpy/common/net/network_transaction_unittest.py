@@ -45,9 +45,9 @@ class NetworkTransactionTest(LoggingTestCase):
 
     def test_success(self):
         transaction = NetworkTransaction()
-        self.assertEqual(transaction.run(lambda: 42), 42)
+        self.assertEqual(transaction.run(lambda retry_index: 42), 42)
 
-    def _raise_exception(self):
+    def _raise_exception(self, retry_index):
         raise self.exception
 
     def test_exception(self):
@@ -63,9 +63,9 @@ class NetworkTransactionTest(LoggingTestCase):
         self.assertTrue(did_throw_exception)
         self.assertTrue(did_process_exception)
 
-    def _raise_500_error(self):
+    def _raise_500_error(self, retry_index):
         self._run_count += 1
-        if self._run_count < 3:
+        if retry_index < 2:
             response = Response()
             response.status_code = 500
             response.reason = 'internal server error'
@@ -73,14 +73,14 @@ class NetworkTransactionTest(LoggingTestCase):
             raise HTTPError(response=response)
         return 42
 
-    def _raise_404_error(self):
+    def _raise_404_error(self, retry_index):
         response = Response()
         response.status_code = 404
         response.reason = 'not found'
         response.url = 'http://foo.com/'
         raise HTTPError(response=response)
 
-    def _raise_timeout(self):
+    def _raise_timeout(self, retry_index):
         raise Timeout()
 
     def test_retry(self):

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] ForceReload should get a new image for an image document
+  Cannot read properties of null (reading 'body')
+Harness: the test ran to completion.
+

@@ -4,6 +4,7 @@
 
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
@@ -44,6 +45,20 @@ void MockOnDeviceWebSpeechRecognitionService::BindRecognizer(
       &MockOnDeviceWebSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
   std::move(callback).Run(false);
+}
+
+void MockOnDeviceWebSpeechRecognitionService::BindWebSpeechRecognizer(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        session_client,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionAudioForwarder>
+        audio_forwarder,
+    int channel_count,
+    int sample_rate,
+    media::mojom::SpeechRecognitionOptionsPtr options,
+    bool continuous) {
+  NOTIMPLEMENTED();
 }
 
 // media::mojom::SpeechRecognitionRecognizer:

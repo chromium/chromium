@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -40,6 +41,14 @@ class FirmwareUpdateNotificationControllerTest : public AshTestBase {
   FirmwareUpdateNotificationControllerTest& operator=(
       const FirmwareUpdateNotificationControllerTest&) = delete;
   ~FirmwareUpdateNotificationControllerTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // Call NotifyFirstSessionReady to cause FirmwareUpdateManager to be
+    // initialized since it is only meant to be initialized after core startup
+    // tasks have been completed.
+    Shell::Get()->session_controller()->NotifyFirstSessionReady();
+  }
 
   FirmwareUpdateNotificationController* controller() {
     return Shell::Get()->firmware_update_notification_controller();

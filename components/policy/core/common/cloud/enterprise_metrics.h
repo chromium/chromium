@@ -459,6 +459,9 @@ inline constexpr char kUMAStateDeterminationStatus[] =
 inline constexpr char kUMAStateDeterminationIsInitialByState[] =
     "Enterprise.StateDetermination.IsInitialByState";
 
+inline constexpr char kUMAPrefixEnrollmentTokenBasedOOBEConfig[] =
+    "Enterprise.TokenBasedEnrollmentOobeConfig";
+
 // Suffixes added to kUMAStateDeterminationTotalDurationByState.
 inline constexpr char kUMASuffixConnectionError[] = ".ConnectionError";
 inline constexpr char kUMASuffixStateKeysRetrievalError[] =

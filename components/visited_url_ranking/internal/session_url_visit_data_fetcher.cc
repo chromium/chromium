@@ -49,7 +49,8 @@ void AddAggregateVisitDataFromSession(
           continue;
         }
 
-        auto url_key = ComputeURLMergeKey(tab_url, deduplication_helper);
+        auto url_key = ComputeURLMergeKey(tab_url, current_navigation.title(),
+                                          deduplication_helper);
         bool tab_data_map_already_has_url_entry =
             url_visit_tab_data_map.find(url_key) !=
             url_visit_tab_data_map.end();

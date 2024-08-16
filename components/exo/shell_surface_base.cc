@@ -54,6 +54,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
@@ -287,9 +288,12 @@ class CustomClientView : public views::ClientView {
 
     const Surface* root_surface = shell_surface_->root_surface();
 
-    shell_surface_->ApplyRoundedCornersToSurfaceTree(
-        gfx::RectF(root_surface->surface_hierarchy_content_bounds()),
-        root_surface_radii);
+    const gfx::RectF bounds =
+        root_surface_radii.IsEmpty()
+            ? gfx::RectF()
+            : gfx::RectF(root_surface->surface_hierarchy_content_bounds());
+    shell_surface_->ApplyRoundedCornersToSurfaceTree(bounds,
+                                                     root_surface_radii);
   }
 
  private:
@@ -432,6 +436,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   SetCanFullscreen(ash::desks_util::IsDeskContainerId(container_));
   SetCanResize(true);
   SetShowTitle(false);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
@@ -594,8 +599,8 @@ void ShellSurfaceBase::UpdateSystemModal() {
   DCHECK(widget_);
   DCHECK_EQ(container_, ash::kShellWindowId_SystemModalContainer);
   widget_->GetNativeWindow()->SetProperty(
-      aura::client::kModalKey,
-      system_modal_ ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE);
+      aura::client::kModalKey, system_modal_ ? ui::mojom::ModalType::kSystem
+                                             : ui::mojom::ModalType::kNone);
 }
 
 void ShellSurfaceBase::UpdateShape() {
@@ -1549,17 +1554,21 @@ gfx::Size ShellSurfaceBase::CalculatePreferredSize(
 }
 
 gfx::Size ShellSurfaceBase::GetMinimumSize() const {
-  return minimum_size_.IsEmpty() ? gfx::Size(1, 1) : minimum_size_;
+  return requested_minimum_size_.IsEmpty() ? gfx::Size(1, 1)
+                                           : requested_minimum_size_;
 }
 
 gfx::Size ShellSurfaceBase::GetMaximumSize() const {
   // On ChromeOS, non empty maximum size will make the window
   // non maximizable.
-  return maximum_size_;
-}
-
-void ShellSurfaceBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
+  gfx::Size maximum_size = requested_maximum_size_;
+  // Make sure that the max size is already equal to or greater than the min
+  // size if set.
+  if (!requested_minimum_size_.IsEmpty() &&
+      !requested_maximum_size_.IsEmpty()) {
+    maximum_size.SetToMax(requested_minimum_size_);
+  }
+  return maximum_size;
 }
 
 views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {
@@ -1732,7 +1741,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   }
 
   if (system_modal_)
-    SetModalType(ui::MODAL_TYPE_SYSTEM);
+    SetModalType(ui::mojom::ModalType::kSystem);
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
@@ -2313,8 +2322,9 @@ bool ShellSurfaceBase::CalculateCanResize() const {
 }
 
 void ShellSurfaceBase::CommitWidget() {
-  bool size_constraint_changed = minimum_size_ != pending_minimum_size_ ||
-                                 maximum_size_ != pending_maximum_size_;
+  bool size_constraint_changed =
+      requested_minimum_size_ != pending_minimum_size_ ||
+      requested_maximum_size_ != pending_maximum_size_;
   set_bounds_is_dirty(
       bounds_is_dirty() || origin_ != pending_geometry_.origin() ||
       geometry_ != pending_geometry_ || display_id_ != pending_display_id_ ||
@@ -2325,9 +2335,9 @@ void ShellSurfaceBase::CommitWidget() {
   display_id_ = pending_display_id_;
   shape_dp_ = pending_shape_dp_;
 
-  // Apply new minimum/maximium size.
-  minimum_size_ = pending_minimum_size_;
-  maximum_size_ = pending_maximum_size_;
+  // Apply new minimum/maximum size.
+  requested_minimum_size_ = pending_minimum_size_;
+  requested_maximum_size_ = pending_maximum_size_;
   UpdateResizability();
 
   if (!widget_)

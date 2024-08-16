@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <map>
@@ -106,14 +111,14 @@ SyncChangeList MakeSyncChangeList(const std::string& id,
 // This is a FakeSyncChangeProcessor specialization that maintains a store of
 // SyncData items in the superclass' data_ member variable, treating it like a
 // map keyed by the extension id from the SyncData. Each instance of this class
-// should only be used for one model type (which should be either extensions or
+// should only be used for one data type (which should be either extensions or
 // apps) to match how the real sync system handles things.
 class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
  public:
-  explicit StatefulChangeProcessor(syncer::ModelType expected_type)
+  explicit StatefulChangeProcessor(syncer::DataType expected_type)
       : expected_type_(expected_type) {
-    EXPECT_TRUE(expected_type == syncer::ModelType::EXTENSIONS ||
-                expected_type == syncer::ModelType::APPS);
+    EXPECT_TRUE(expected_type == syncer::DataType::EXTENSIONS ||
+                expected_type == syncer::DataType::APPS);
   }
 
   StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
@@ -169,8 +174,8 @@ class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
   const syncer::SyncDataList& data() const { return data_; }
 
  private:
-  // The expected ModelType of changes that this processor will see.
-  const syncer::ModelType expected_type_;
+  // The expected DataType of changes that this processor will see.
+  const syncer::DataType expected_type_;
   syncer::SyncDataList data_;
 };
 
@@ -180,15 +185,15 @@ class ExtensionServiceSyncTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
   void MockSyncStartFlare(bool* was_called,
-                          syncer::ModelType* model_type_passed_in,
-                          syncer::ModelType model_type) {
+                          syncer::DataType* data_type_passed_in,
+                          syncer::DataType data_type) {
     *was_called = true;
-    *model_type_passed_in = model_type;
+    *data_type_passed_in = data_type;
   }
 
   // Helper to call MergeDataAndStartSyncing with no server data and dummy
   // change processor / error factory.
-  void StartSyncing(syncer::ModelType type) {
+  void StartSyncing(syncer::DataType type) {
     ASSERT_TRUE(type == syncer::EXTENSIONS || type == syncer::APPS);
     extension_sync_service()->MergeDataAndStartSyncing(
         type, syncer::SyncDataList(),
@@ -234,7 +239,7 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledComponent) {
   InitializeEmptyExtensionService();
 
   bool flare_was_called = false;
-  syncer::ModelType triggered_type(syncer::UNSPECIFIED);
+  syncer::DataType triggered_type(syncer::UNSPECIFIED);
   base::WeakPtrFactory<ExtensionServiceSyncTest> factory(this);
   extension_sync_service()->SetSyncStartFlareForTesting(base::BindRepeating(
       &ExtensionServiceSyncTest::MockSyncStartFlare, factory.GetWeakPtr(),
@@ -259,7 +264,7 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupPreInstalledNormal) {
   InitializeGoodInstalledExtensionService();
 
   bool flare_was_called = false;
-  syncer::ModelType triggered_type(syncer::UNSPECIFIED);
+  syncer::DataType triggered_type(syncer::UNSPECIFIED);
   base::WeakPtrFactory<ExtensionServiceSyncTest> factory(this);
   extension_sync_service()->SetSyncStartFlareForTesting(base::BindRepeating(
       &ExtensionServiceSyncTest::MockSyncStartFlare, factory.GetWeakPtr(),
@@ -282,7 +287,7 @@ TEST_F(ExtensionServiceSyncTest, DeferredSyncStartupOnInstall) {
   ASSERT_TRUE(extension_system()->is_ready());
 
   bool flare_was_called = false;
-  syncer::ModelType triggered_type(syncer::UNSPECIFIED);
+  syncer::DataType triggered_type(syncer::UNSPECIFIED);
   base::WeakPtrFactory<ExtensionServiceSyncTest> factory(this);
   extension_sync_service()->SetSyncStartFlareForTesting(base::BindRepeating(
       &ExtensionServiceSyncTest::MockSyncStartFlare, factory.GetWeakPtr(),
@@ -1682,8 +1687,8 @@ TEST_F(ExtensionServiceSyncTest, AppToExtension) {
   EXPECT_FALSE(v1->is_extension());
   std::string id = v1->id();
 
-  StatefulChangeProcessor extensions_processor(syncer::ModelType::EXTENSIONS);
-  StatefulChangeProcessor apps_processor(syncer::ModelType::APPS);
+  StatefulChangeProcessor extensions_processor(syncer::DataType::EXTENSIONS);
+  StatefulChangeProcessor apps_processor(syncer::DataType::APPS);
   extension_sync_service()->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
       extensions_processor.GetWrapped());

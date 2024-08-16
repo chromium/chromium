@@ -3,13 +3,13 @@
     margin-bottom: 16px;
   }
 
-  .pinEntrySubtext {
+  .dialogSubtext {
     font-size: var(--cr-form-field-label-font-size);
     font-weight: 400;
     margin-top: -10px;
   }
 
-  :host([has-error-text_]) .pinEntrySubtext {
+  :host([has-error-text_]) .dialogSubtext {
     color: var(--cros-text-color-alert);
   }
 
@@ -54,7 +54,7 @@
         invalid="[[hasErrorText_]]"
         aria-label="[[i18n('networkSimEnterPinTitle')]]">
     </network-password-input>
-    <div class="pinEntrySubtext" aria-live="assertive">
+    <div id="pinEntrySubtext" class="dialogSubtext" aria-live="assertive">
       [[getPinEntrySubtext_(error_, deviceState)]]
     </div>
   </div>
@@ -62,7 +62,8 @@
     <cr-button class="cancel-button" on-click="onCancel_">
       [[i18n('cancel')]]
     </cr-button>
-    <cr-button class="action-button"
+    <cr-button id="enterPinButton"
+        class="action-button"
         aria-describedby="enter-pin-description"
         on-click="sendEnterPin_"
         disabled="[[!enterPinEnabled_]]">
@@ -105,7 +106,8 @@
     <cr-button class="cancel-button" on-click="onCancel_">
       [[i18n('cancel')]]
     </cr-button>
-    <cr-button class="action-button"
+    <cr-button id="changePinButton"
+        class="action-button"
         on-click="sendChangePin_"
         disabled="[[!changePinEnabled_]]">
       [[i18n('networkSimChange')]]
@@ -132,7 +134,7 @@
         on-enter="sendUnlockPin_"
         disabled="[[inProgress_]]">
     </network-password-input>
-    <div class="pinEntrySubtext" aria-live="polite">
+    <div class="dialogSubtext" aria-live="polite">
       [[getPinEntrySubtext_(error_, deviceState)]]
     </div>
   </div>
@@ -140,7 +142,8 @@
     <cr-button class="cancel-button" on-click="onCancel_">
       [[i18n('cancel')]]
     </cr-button>
-    <cr-button class="action-button"
+    <cr-button id="unlockPinButton"
+        class="action-button"
         on-click="sendUnlockPin_"
         disabled="[[!enterPinEnabled_]]">
       [[i18n('networkSimUnlock')]]
@@ -200,7 +203,8 @@
     <cr-button class="cancel-button" on-click="onCancel_">
       [[i18n('cancel')]]
     </cr-button>
-    <cr-button class="action-button"
+    <cr-button id="unlockPukButton"
+        class="action-button"
         on-click="sendUnlockPuk_"
         disabled="[[!enterPukEnabled_]]"
         aria-describedby="puk-subtitle">

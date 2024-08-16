@@ -214,7 +214,7 @@
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;
   _signinPromoViewMediator.dataTypeToWaitForInitialSync =
-      syncer::ModelType::READING_LIST;
+      syncer::DataType::READING_LIST;
   [self updateSignInPromoVisibility];
 
   [super start];

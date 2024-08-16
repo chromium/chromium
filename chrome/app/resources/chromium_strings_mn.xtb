@@ -23,6 +23,8 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" />-р Gmail эсвэл YouTube зэрэг Google-н үйлчилгээнд нэвтрэх үед та тухайн бүртгэлээр Chromium-д автоматаар нэвтрэх боломжтой</translation>
 <translation id="1290883685122687410">Тохируулгын алдаа: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Chromium-н шинэ профайлаа тохируулах</translation>
+<translation id="1324107359134968521">Chromium-д Bluetooth төхөөрөмжүүдийг судлахад 
+ Bluetooth-н хандалт шаардлагатай. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Мөн Chromium-с өгөгдөл устгах (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Та Chromium руу нэвтэрсэн байна!</translation>
 <translation id="1478370723027452770">Chrome for Testing-р тусламж авах</translation>
@@ -61,6 +63,7 @@
 <translation id="1951406923938785464">Файлын төрлийг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chromium энэ таталтыг блоклосон</translation>
 <translation id="1953553007165777902">Татаж байна... <ph name="MINUTE" /> минут үлдсэн</translation>
 <translation id="1966382378801805537">Chromium нь өгөгдмөл хөтчийг тодорхойлох эсвэл тохируулах боломжгүй</translation>
+<translation id="1990262977744080398">Chromium зарим файлыг яагаад блоклодог болохыг мэдэж авна уу, шинэ табд нээгдэнэ</translation>
 <translation id="2008474315282236005">Энэ нь төхөөрөмжөөс 1 зүйл устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2018879682492276940">Суулгаж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="2020032459870799438">Бусад нууц үгэндээ өгөгдлийн зөрчил болон аюулгүй байдлын өөр асуудал байхгүй болохыг шалгахын тулд <ph name="BEGIN_LINK" />Chromium-д нэвтэрнэ үү<ph name="END_LINK" />.</translation>
@@ -121,6 +124,7 @@
 <translation id="2915996080311180594">Дараа дахин эхлүүлэх</translation>
 <translation id="2928420929544864228">Суулгаж дууслаа.</translation>
 <translation id="2945997411976714835">Суулгах үед алдаа гарлаа: Суулгагч явцыг эхлүүлж чадсангүй.</translation>
+<translation id="2970426615109535079">Танай байгууллага Chromium-г удирддаг</translation>
 <translation id="2977470724722393594">Chromium-г шинэчилсэн байна</translation>
 <translation id="2977506796191543575">Хэрэв сайт таны нууц үгийг хулгайлахаар оролдох эсвэл таныг аюултай файл татах үед Chromium URL-г хуудасны бага зэрэг контентын хамт Аюулгүй үзэх рүү мөн илгээж болзошгүй</translation>
 <translation id="2987208172821108655">Chromium таны үзэх хэрэглээг сайжруулж, нөөцүүдийг чөлөөлөхийн тулд эдгээр табыг идэвхгүй болгох боломжтой.</translation>
@@ -219,6 +223,7 @@
 <translation id="4423735387467980091">Chromium-ыг гүйцэтгэх ба хянах</translation>
 <translation id="4427306783828095590">Сайжруулсан хамгаалалт нь фишинг болон хортой кодыг блоклохын тулд илүү ихийг хийдэг</translation>
 <translation id="4434353761996769206">Суулгагчийн алдаа: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> Chromium-г удирддаг</translation>
 <translation id="4447409407328223819">Chrome for Testing-н тухай</translation>
 <translation id="4501471624619070934">Энэ улсад хандалтыг хязгаарласан тул суулгаж чадсангүй.</translation>
 <translation id="4510853178268397146">Энэ өргөтгөл өгөгдлийг хэрхэн цуглуулж, ашигладаг гэх мэт нууцлалын практикаа нийтлээгүй байна. Chromium танд үүнийг хасахыг зөвлөж байна.</translation>
@@ -485,6 +490,7 @@
 <translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8555465886620020932">Үйлчилгээний алдаа: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгсийг шалгах боломжтой</translation>
+<translation id="8576826849825683917">Олон байгууллага Chromium-г удирддаг</translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Бид энэ өгөгдлийг хэрхэн ашигладаг вэ?:<ph name="END_BOLD" /> Сайтууд Chromium-р таны сонирхлын талаарх мэдээллийг хадгалах боломжтой. Жишээлбэл, та марафонд зориулж гутал авахаар сайтад зочилсон бол тухайн сайт таны сонирхлыг марафонд гүйх гэж тодорхойлж магадгүй. Дараа та уралдаанд бүртгүүлэхийн тулд өөр сайтад зочилсон бол тухайн сайт таны сонирхолд тулгуурлан танд гүйлтийн гутлын зарыг харуулах боломжтой.</translation>
 <translation id="8619360774459241877">Chromium-г эхлүүлж байна...</translation>

@@ -8,7 +8,7 @@ syntax = "proto3";
 
 option optimize_for = LITE_RUNTIME;
 
-package babelorca;
+package ash.babelorca;
 
 import "tachyon_common.proto";
 import "tachyon_enums.proto";
@@ -17,8 +17,43 @@ message RegisterData {
   DeviceId device_id = 1;
 }
 
+message InboxMessage {
+  string message_id = 1;
+
+  enum MessageType {
+    UNKNOWN = 0;
+    GROUP = 5;
+  }
+  MessageType message_type = 2;
+
+  bytes message = 12;
+  Id sender_id = 8;
+  Id receiver_id = 9;
+
+  enum MessageClass {
+    USER = 0;
+    EPHEMERAL = 2;
+  }
+  MessageClass message_class = 5;
+}
+
+message InboxSendRequest {
+  Id dest_id = 1;
+  InboxMessage message = 2;
+  RequestHeader header = 3;
+  int64 time_to_live = 5;
+  bytes routing_cookie = 8;
+  MessageFanout.SenderDevice fanout_sender = 15;
+}
+
+message InboxSendResponse {}
+
 message SignInGaiaRequest {
   RequestHeader header = 1;
   RegisterData register_data = 2;
   string app = 4;
+}
+
+message SignInGaiaResponse {
+  AuthToken auth_token = 4;
 }

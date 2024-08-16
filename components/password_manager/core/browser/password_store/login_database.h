@@ -24,7 +24,7 @@
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_store/statistics_table.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 
@@ -65,10 +65,13 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   using IsEmptyCallback =
       base::RepeatingCallback<void(LoginDatabaseEmptinessState)>;
-  using ClearingUndecryptablePasswordsCallback =
-      base::RepeatingCallback<void(bool)>;
+  using DeletingUndecryptablePasswordsEnabled =
+      base::StrongAlias<class DeletingUndecryptablePasswordsEnabledTag, bool>;
 
-  LoginDatabase(const base::FilePath& db_path, IsAccountStore is_account_store);
+  LoginDatabase(const base::FilePath& db_path,
+                IsAccountStore is_account_store,
+                DeletingUndecryptablePasswordsEnabled can_delete =
+                    DeletingUndecryptablePasswordsEnabled(true));
   LoginDatabase(const LoginDatabase&) = delete;
   LoginDatabase& operator=(const LoginDatabase&) = delete;
 
@@ -83,7 +86,8 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   // Actually creates/opens the database. If false is returned, no other method
   // should be called.
-  virtual bool Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  virtual bool Init(base::RepeatingClosure on_undecryptable_passwords_removed,
+                    std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Reports metrics regarding inaccessible passwords and bubble usages to UMA.
   void ReportMetrics();
@@ -199,16 +203,6 @@ class LoginDatabase : public EncryptDecryptInterface {
   // adding/removing entries, regardless of success.
   void SetIsEmptyCb(IsEmptyCallback is_empty_cb);
 
-  // `clearing_undecryptable_passwords`is called to signal whether user
-  // interacted with the kClearUndecryptablePasswords experiment. It is needed
-  // to ensure that experiment groups stay balaced. This method will be deleted
-  // after a successful rollout.
-  void SetClearingUndecryptablePasswordsCb(
-      ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords);
-
-  void SetIsDeletingUndecryptableLoginsDisabledByPolicy(bool is_disabled) {
-    is_deleting_undecryptable_logins_disabled_by_policy_ = is_disabled;
-  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetIsUserDataDirPolicySet(bool is_set) {
     is_user_data_dir_policy_set_ = is_set;
@@ -257,42 +251,42 @@ class LoginDatabase : public EncryptDecryptInterface {
 
     // Test-only variant of the private function with a similar name.
     std::unique_ptr<sync_pb::EntityMetadata>
-    GetSyncEntityMetadataForStorageKeyForTest(syncer::ModelType model_type,
+    GetSyncEntityMetadataForStorageKeyForTest(syncer::DataType data_type,
                                               const std::string& storage_key);
 
    private:
-    // Reads all the stored sync entities metadata for |model_type| in a
+    // Reads all the stored sync entities metadata for |data_type| in a
     // MetadataBatch. Returns nullptr in case of failure. This is currently used
     // only for passwords.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncEntityMetadata(
-        syncer::ModelType model_type);
+        syncer::DataType data_type);
 
-    // Reads sync entity data for an individual |model_type| and entity
+    // Reads sync entity data for an individual |data_type| and entity
     // identified by |storage_key|. Returns null if no entry is found or an
     // error occurred.
     std::unique_ptr<sync_pb::EntityMetadata> GetSyncEntityMetadataForStorageKey(
-        syncer::ModelType model_type,
+        syncer::DataType data_type,
         const std::string& storage_key);
 
-    // Reads the stored ModelTypeState for |model_type|. Returns nullptr in case
+    // Reads the stored DataTypeState for |data_type|. Returns nullptr in case
     // of failure. This is currently used only for passwords.
-    std::unique_ptr<sync_pb::ModelTypeState> GetModelTypeState(
-        syncer::ModelType model_type);
+    std::unique_ptr<sync_pb::DataTypeState> GetDataTypeState(
+        syncer::DataType data_type);
 
     // PasswordStoreSync::MetadataStore implementation.
     std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata(
-        syncer::ModelType model_type) override;
-    void DeleteAllSyncMetadata(syncer::ModelType model_type) override;
-    bool UpdateEntityMetadata(syncer::ModelType model_type,
+        syncer::DataType data_type) override;
+    void DeleteAllSyncMetadata(syncer::DataType data_type) override;
+    bool UpdateEntityMetadata(syncer::DataType data_type,
                               const std::string& storage_key,
                               const sync_pb::EntityMetadata& metadata) override;
-    bool ClearEntityMetadata(syncer::ModelType model_type,
+    bool ClearEntityMetadata(syncer::DataType data_type,
                              const std::string& storage_key) override;
-    bool UpdateModelTypeState(
-        syncer::ModelType model_type,
-        const sync_pb::ModelTypeState& model_type_state) override;
+    bool UpdateDataTypeState(
+        syncer::DataType data_type,
+        const sync_pb::DataTypeState& data_type_state) override;
 
-    bool ClearModelTypeState(syncer::ModelType model_type) override;
+    bool ClearDataTypeState(syncer::DataType data_type) override;
     void SetPasswordDeletionsHaveSyncedCallback(
         base::RepeatingCallback<void(bool)> callback) override;
     bool HasUnsyncedPasswordDeletions() override;
@@ -382,8 +376,13 @@ class LoginDatabase : public EncryptDecryptInterface {
   const base::FilePath db_path_;
   const IsAccountStore is_account_store_;
   IsEmptyCallback is_empty_cb_ = base::NullCallback();
+
+  // `on_undecryptable_passwords_removed_`is called to signal whether user
+  // interacted with the kClearUndecryptablePasswords experiment. It is needed
+  // to ensure that experiment groups stay balanced. This callback will be
+  // deleted after a successful rollout.
   // TODO(b/40286735): Remove after this feature is launched.
-  ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords_ =
+  base::RepeatingClosure on_undecryptable_passwords_removed_ =
       base::NullCallback();
 
   mutable sql::Database db_;
@@ -396,7 +395,8 @@ class LoginDatabase : public EncryptDecryptInterface {
 
   std::optional<bool> were_undecryptable_logins_deleted_;
   bool is_user_data_dir_policy_set_ = false;
-  bool is_deleting_undecryptable_logins_disabled_by_policy_ = false;
+  DeletingUndecryptablePasswordsEnabled
+      is_deleting_undecryptable_logins_enabled_by_policy_;
 
   // These cached strings are used to build SQL statements.
   std::string add_statement_;

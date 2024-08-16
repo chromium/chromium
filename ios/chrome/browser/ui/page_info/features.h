@@ -10,11 +10,17 @@
 // Feature for the revamp of Page Info in iOS.
 BASE_DECLARE_FEATURE(kRevampPageInfoIos);
 
+// Feature for the implementation of Last Visited in Page Info for iOS.
+BASE_DECLARE_FEATURE(kPageInfoLastVisitedIOS);
+
 // Whether the Revamp Page Info feature is enabled.
 bool IsRevampPageInfoIosEnabled();
 
 // Whether the AboutThisSite feature is enabled. Only users with languages that
 // are supported should fetch the AboutThisSite information and see the UI.
 bool IsAboutThisSiteFeatureEnabled();
+
+// Whether the Last Visited feature in Page Info is enabled.
+bool IsPageInfoLastVisitedIOSEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_PAGE_INFO_FEATURES_H_

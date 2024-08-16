@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/picker/model/picker_emoji_history_model.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -38,8 +40,14 @@ bool ContainsEmoji(const std::vector<HistoryItem>& vec,
 }  // namespace
 
 PickerEmojiSuggester::PickerEmojiSuggester(
-    PickerEmojiHistoryModel* history_model)
-    : history_model_(CHECK_DEREF(history_model)) {}
+    PickerEmojiHistoryModel* history_model,
+    GetNameCallback get_name)
+    : get_name_(std::move(get_name)),
+      history_model_(CHECK_DEREF(history_model)) {
+  CHECK(!get_name_.is_null());
+}
+
+PickerEmojiSuggester::~PickerEmojiSuggester() = default;
 
 std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
     const {
@@ -79,19 +87,22 @@ std::vector<PickerSearchResult> PickerEmojiSuggester::GetSuggestedEmoji()
   for (const auto& item : recent_emojis) {
     switch (item.category) {
       case ui::EmojiPickerCategory::kEmojis:
-        results.push_back(
-            PickerSearchResult::Emoji(base::UTF8ToUTF16(item.text)));
+        results.push_back(PickerSearchResult::Emoji(
+            base::UTF8ToUTF16(item.text),
+            base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kEmoticons:
-        results.push_back(
-            PickerSearchResult::Emoticon(base::UTF8ToUTF16(item.text)));
+        results.push_back(PickerSearchResult::Emoticon(
+            base::UTF8ToUTF16(item.text),
+            base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kSymbols:
-        results.push_back(
-            PickerSearchResult::Symbol(base::UTF8ToUTF16(item.text)));
+        results.push_back(PickerSearchResult::Symbol(
+            base::UTF8ToUTF16(item.text),
+            base::UTF8ToUTF16(get_name_.Run(item.text))));
         break;
       case ui::EmojiPickerCategory::kGifs:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return results;

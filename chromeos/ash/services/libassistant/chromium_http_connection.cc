@@ -86,9 +86,9 @@ void ChromiumHttpConnection::AddHeader(const std::string& name,
   // combine the multiple header fields into one "field-name: field-value" pair,
   // without changing the semantics of the message, by appending each subsequent
   // field-value to the first, each separated by a comma."
-  std::string existing_value;
-  if (headers_.GetHeader(name, &existing_value)) {
-    headers_.SetHeader(name, existing_value + ',' + value);
+  std::optional<std::string> existing_value = headers_.GetHeader(name);
+  if (existing_value) {
+    headers_.SetHeader(name, *existing_value + ',' + value);
   } else {
     headers_.SetHeader(name, value);
   }

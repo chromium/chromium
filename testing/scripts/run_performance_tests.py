@@ -38,27 +38,29 @@ $ cd tools/perf
 $ ./run_tests ScriptsSmokeTest.testRunPerformanceTests
 """
 
-from __future__ import print_function
-
 import argparse
+from collections import OrderedDict
 import json
 import os
 import pathlib
-import requests
 import shutil
 import sys
 import time
 import tempfile
 import traceback
+
 import six
 
-from collections import OrderedDict
+import requests
+
+import common
 
 CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
 RELEASE_DIR = CHROMIUM_SRC_DIR / 'out/Release'
 
 PERF_DIR = CHROMIUM_SRC_DIR / 'tools/perf'
 sys.path.append(str(PERF_DIR))
+# //tools/perf imports.
 if (PERF_DIR / 'crossbench_result_converter.py').exists():
   # Optional import needed to run crossbench.
   import crossbench_result_converter
@@ -69,17 +71,18 @@ from core import path_util
 
 PERF_CORE_DIR = PERF_DIR / 'core'
 sys.path.append(str(PERF_CORE_DIR))
+# //tools/perf/core imports.
 import results_merger
 
-# Add src/testing/ into sys.path for importing xvfb, test_env, and common.
 sys.path.append(str(CHROMIUM_SRC_DIR / 'testing'))
+# //testing imports.
 import xvfb
 import test_env
-from scripts import common
 
 THIRD_PARTY_DIR = CHROMIUM_SRC_DIR / 'third_party'
 CATAPULT_DIR = THIRD_PARTY_DIR / 'catapult'
 TELEMETRY_DIR = CATAPULT_DIR / 'telemetry'
+# //third_party/catapult/telemetry imports.
 if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   # Telemetry is required on perf infra, but not present on some environments.
   sys.path.append(str(TELEMETRY_DIR))
@@ -246,10 +249,10 @@ class GtestCommandGenerator(object):
     if self._options.use_gtest_benchmark_script:
       output_args.append('--output-dir=' + output_dir)
     # These flags are to make sure that test output perf metrics in the log.
-    if not '--verbose' in self._get_additional_flags():
+    if '--verbose' not in self._get_additional_flags():
       output_args.append('--verbose')
-    if (not '--test-launcher-print-test-stdio=always'
-        in self._get_additional_flags()):
+    if ('--test-launcher-print-test-stdio=always'
+        not in self._get_additional_flags()):
       output_args.append('--test-launcher-print-test-stdio=always')
     return output_args
 
@@ -371,7 +374,7 @@ def execute_gtest_perf_test(command_generator,
           output_paths.logs)
       with open(output_paths.perf_results, 'w') as fh:
         fh.write(graph_json_string)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     traceback.print_exc()
     return_code = 1
   if os.path.exists(output_paths.perf_results):
@@ -586,7 +589,7 @@ def execute_telemetry_benchmark(command_generator,
     csv_file_path = os.path.join(temp_dir, 'results.csv')
     if os.path.isfile(csv_file_path):
       shutil.move(csv_file_path, output_paths.csv_perf_results)
-  except Exception:
+  except Exception:  # pylint: disable=broad-except
     print('The following exception may have prevented the code from '
           'outputing structured test results and perf results output:')
     print(traceback.format_exc())
@@ -684,20 +687,86 @@ class CrossbenchTest(object):
   CHROME_BROWSER = '--browser=%s'
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
+  BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
 
   def __init__(self, options, isolated_out_dir):
+    binary_manager.InitDependencyManager(None)
     self.options = options
     self.isolated_out_dir = isolated_out_dir
     browser_arg = self._get_browser_arg(options.passthrough_args)
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
+    self.network = self._get_network_arg(options.passthrough_args,
+                                         self.is_android)
 
   def _get_browser_arg(self, args):
-    browser_args = [arg for arg in args if arg.startswith('--browser=')]
-    if len(browser_args) != 1:
-      raise ValueError('Expects exactly one --browser=... arg on command line')
-    return browser_args[0].split('=', 1)[1]
+    browser_arg = self._get_arg(args, '--browser=', must_exists=True)
+    return browser_arg.split('=', 1)[1]
+
+  def _get_network_arg(self, args, is_android):
+    if _arg := self._get_arg(args, '--network='):
+      return [_arg]
+    if _arg := self._get_arg(args, '--fileserver'):
+      return self._create_fileserver_network(_arg)
+    if is_android or self._get_arg(args, '--wpr'):
+      return self._create_wpr_network(args)
+    return []
+
+  def _create_fileserver_network(self, arg):
+    if '=' in arg:
+      fileserver_path = arg.split('=', 1)[1]
+    else:
+      benchmark = self.options.benchmarks
+      if benchmark not in self.BENCHMARK_FILESERVERS:
+        raise ValueError(f'fileserver does not support {benchmark}')
+      fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
+    # The fileserver localhost port number is set to 8000. See:
+    # third_party/crossbench/crossbench/network/local_fileserver.py
+    http_port = 8000
+    fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
+    # Replacing --fileserver with --network.
+    self.options.passthrough_args.remove(arg)
+    return [
+        self._create_network_json('local',
+                                  path=fileserver_relative_path,
+                                  url=f'http://localhost:{http_port}')
+    ]
+
+  def _create_wpr_network(self, args):
+    wpr_arg = self._get_arg(args, '--wpr')
+    if wpr_arg and '=' in wpr_arg:
+      wpr_name = wpr_arg.split('=', 1)[1]
+    else:
+      # TODO: Use update_wpr library when it supports Crossbench archive files.
+      wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
+    archive = str(PAGE_SETS_DATA / wpr_name)
+    if not (wpr_go := binary_manager.FetchPath(
+        'wpr_go', os_name='linux', arch='x86_64')):
+      raise ValueError(f'wpr_go not found: {wpr_go}')
+    if wpr_arg:
+      # Replacing --wpr with --network.
+      self.options.passthrough_args.remove(wpr_arg)
+    return [self._create_network_json('wpr', path=archive, wpr_go_bin=wpr_go)]
+
+  def _create_network_json(self, config_type, path, url=None, wpr_go_bin=None):
+    network_dict = {'type': config_type}
+    network_dict['path'] = path
+    if url:
+      network_dict['url'] = url
+    if wpr_go_bin:
+      network_dict['wpr_go_bin'] = wpr_go_bin
+    network_json = json.dumps(network_dict)
+    return f'--network={network_json}'
+
+  def _get_arg(self, args, arg, must_exists=False):
+    if _args := [a for a in args if a.startswith(arg)]:
+      if len(_args) != 1:
+        raise ValueError(f'Expects exactly one {arg} on command line')
+      return _args[0]
+    if must_exists:
+      raise ValueError(f'{arg} argument is missing!')
+    return []
 
   def _is_android(self, browser_arg):
     """Is the test running on an Android device.
@@ -714,7 +783,6 @@ class CrossbenchTest(object):
     options = browser_options.BrowserFinderOptions()
     options.chrome_root = CHROMIUM_SRC_DIR
     parser = options.CreateParser()
-    binary_manager.InitDependencyManager(None)
     parser.parse_args([self.CHROME_BROWSER % browser_arg])
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
@@ -723,15 +791,6 @@ class CrossbenchTest(object):
       browser_app = possible_browser.settings.package
       android_json = self.ANDROID_HJSON % (browser_app, ADB_TOOL)
       self.browser = self.CHROME_BROWSER % android_json
-
-      # Using WPR because of lack of network access on lab Android phones.
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      archive = PAGE_SETS_DATA / 'crossbench_android_speedometer_3.0_000.wprgo'
-      if not (wpr_go := binary_manager.FetchPath(
-          'wpr_go', os_name='linux', arch='x86_64')):
-        raise ValueError(f'wpr_go not found: {wpr_go}')
-      wpr_config = f'{{type:"wpr", path:"{archive}", wpr_go_bin:"{wpr_go}"}}'
-      self.network = [f'--network={wpr_config}']
     else:
       self.browser = self.CHROME_BROWSER % possible_browser._local_executable
 
@@ -801,7 +860,7 @@ class CrossbenchTest(object):
             pathlib.Path(output_paths.benchmark_path) / 'output',
             pathlib.Path(output_paths.perf_results), display_name,
             self.STORY_LABEL, self.options.results_label)
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
       print(traceback.format_exc())
@@ -1067,11 +1126,12 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
             '\n### {folder} ###'.format(folder=reference_benchmark_foldername))
         # We intentionally ignore the return code and test results of the
         # reference build.
-        execute_telemetry_benchmark(reference_command_generator,
-                                    reference_output_paths,
-                                    options.xvfb,
-                                    options.ignore_benchmark_exit_code,
-                                    no_output_conversion=no_output_conversion)
+        execute_telemetry_benchmark(
+            reference_command_generator,
+            reference_output_paths,
+            options.xvfb,
+            options.ignore_benchmark_exit_code,
+            no_output_conversion=options.no_output_conversion)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
     for (name, configuration) in names_and_configs.items():

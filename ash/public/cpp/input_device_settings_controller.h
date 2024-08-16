@@ -189,6 +189,9 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
       const std::string& device_key,
       base::OnceCallback<void(const std::optional<std::string>&)> callback) = 0;
 
+  // Resets the tracking of device IDs associated with notification clicks.
+  virtual void ResetNotificationDeviceTracking() = 0;
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 

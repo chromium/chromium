@@ -852,6 +852,9 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"openAppLabel", IDS_SETTINGS_PER_DEVICE_OPEN_APP_LABEL},
       {"installAppLabel", IDS_SETTINGS_PER_DEVICE_INSTALL_APP_LABEL},
       {"installAppButton", IDS_SETTINGS_PER_DEVICE_INSTALL_APP_BUTTON},
+      {"deviceNameLabel", IDS_SETTINGS_PER_DEVICE_NAME},
+      {"deviceBatteryLabel",
+       IDS_SETTINGS_PER_DEVICE_BATTERY_PERCENTAGE_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 

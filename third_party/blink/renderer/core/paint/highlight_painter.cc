@@ -970,7 +970,8 @@ void HighlightPainter::PaintHighlightOverlays(
       // transformed text (include text paths). This might be fixable by
       // transforming the ink overflow before using it to expamd the clip.
       TextPainter::SvgTextPaintState* svg_state = text_painter_.GetSvgState();
-      if (UNLIKELY(svg_state) && part.type == HighlightLayerType::kSelection) {
+      if (svg_state && part.type == HighlightLayerType::kSelection)
+          [[unlikely]] {
         // SVG text painting needs to know it is painting selection.
         is_painting_selection_reset.emplace(&svg_state->is_painting_selection_,
                                             true);
@@ -1119,7 +1120,7 @@ LineRelativeRect HighlightPainter::LocalRectInWritingModeSpace(
 
 void HighlightPainter::ClipToPartRect(const LineRelativeRect& part_rect) {
   gfx::RectF clip_rect{part_rect};
-  if (UNLIKELY(fragment_item_.IsSvgText())) {
+  if (fragment_item_.IsSvgText()) [[unlikely]] {
     clip_rect = TextDecorationPainter::ExpandRectForSVGDecorations(part_rect);
   } else {
     clip_rect.Offset(0, fragment_item_.InkOverflowRect().Y());

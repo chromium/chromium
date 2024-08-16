@@ -77,6 +77,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -116,6 +117,7 @@ public class CustomTabToolbarUnitTest {
     @Mock ToolbarDataProvider mToolbarDataProvider;
     @Mock ToolbarTabController mTabController;
     @Mock MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock HistoryDelegate mHistoryDelegate;
     @Mock BooleanSupplier mPartnerHomepageEnabledSupplier;
     @Mock OfflineDownloader mOfflineDownloader;
@@ -163,6 +165,7 @@ public class CustomTabToolbarUnitTest {
                 mToolbarDataProvider,
                 mTabController,
                 mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
                 mHistoryDelegate,
                 mPartnerHomepageEnabledSupplier,
                 mOfflineDownloader,

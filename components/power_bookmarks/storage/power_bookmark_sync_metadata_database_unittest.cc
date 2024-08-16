@@ -7,8 +7,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -67,26 +67,26 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, EmptyStateIsValid) {
       sync_db()->GetAllSyncMetadata();
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, UpdateEntityMetadata) {
   sync_pb::EntityMetadata entity_metadata;
-  sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
+  sync_db()->UpdateEntityMetadata(syncer::DataType::UNSPECIFIED, "test",
                                   entity_metadata);
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       sync_db()->GetAllSyncMetadata();
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(1u, metadata_batch->TakeAllMetadata().size());
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
   sync_pb::EntityMetadata entity_metadata;
-  sync_db()->UpdateEntityMetadata(syncer::ModelType::UNSPECIFIED, "test",
+  sync_db()->UpdateEntityMetadata(syncer::DataType::UNSPECIFIED, "test",
                                   entity_metadata);
 
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
@@ -94,12 +94,12 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, ClearEntityMetadata) {
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(1u, metadata_batch->TakeAllMetadata().size());
 
-  sync_db()->ClearEntityMetadata(syncer::ModelType::UNSPECIFIED, "test");
+  sync_db()->ClearEntityMetadata(syncer::DataType::UNSPECIFIED, "test");
   metadata_batch = sync_db()->GetAllSyncMetadata();
   EXPECT_NE(nullptr, metadata_batch);
   EXPECT_EQ(0u, metadata_batch->TakeAllMetadata().size());
-  EXPECT_EQ(sync_pb::ModelTypeState().SerializeAsString(),
-            metadata_batch->GetModelTypeState().SerializeAsString());
+  EXPECT_EQ(sync_pb::DataTypeState().SerializeAsString(),
+            metadata_batch->GetDataTypeState().SerializeAsString());
 }
 
 TEST_F(PowerBookmarkSyncMetadataDatabaseTest, FailsToReadCorruptSyncMetadata) {
@@ -114,8 +114,7 @@ TEST_F(PowerBookmarkSyncMetadataDatabaseTest, FailsToReadCorruptSyncMetadata) {
   EXPECT_EQ(nullptr, metadata_batch);
 }
 
-TEST_F(PowerBookmarkSyncMetadataDatabaseTest,
-       FailsToReadCorruptModelTypeState) {
+TEST_F(PowerBookmarkSyncMetadataDatabaseTest, FailsToReadCorruptDataTypeState) {
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
       sync_db()->GetAllSyncMetadata();
   EXPECT_NE(nullptr, metadata_batch);

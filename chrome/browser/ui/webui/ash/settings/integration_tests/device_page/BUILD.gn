@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "device_settings_interactive_uitest.cc" ]
+
+    deps = [
+      "//ash",
+      "//ash/constants",
+      "//ash/webui/settings/public/constants:mojom",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//chromeos/dbus/power",
+      "//device/udev_linux:test_support",
+      "//ui/base",
+      "//ui/base:features",
+      "//ui/base:test_support",
+      "//ui/events:test_support",
+      "//ui/events/ash",
+      "//ui/events/devices",
+      "//ui/events/devices:test_support",
+    ]
+  }
+}

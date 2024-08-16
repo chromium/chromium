@@ -7,15 +7,17 @@ package org.chromium.chrome.browser.price_insights;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -31,11 +33,29 @@ public class PriceInsightsBottomSheetCoordinator {
     /** Delegate interface for price insights feature. */
     public interface PriceInsightsDelegate {
         /**
+         * Get the price tracking state supplier for a {@link Tab}.
+         *
          * @param tab Tab whose current URL is checked against.
-         * @return BookmarkId or {@link null} if bookmark backend is not loaded.
+         * @return The supplier for price tracking state.
          */
-        @Nullable
-        BookmarkId getBookmarkIdForTab(Tab tab);
+        ObservableSupplier<Boolean> getPriceTrackingStateSupplier(Tab tab);
+
+        /**
+         * Set price tracking state for a {@link Tab}.
+         *
+         * @param tab The {@link Tab} to set price tracking state.
+         * @param enabled The price tracking state to be set.
+         * @param callback The callback when price tracking state is set success or not.
+         */
+        void setPriceTrackingStateForTab(Tab tab, boolean enabled, Callback<Boolean> callback);
+
+        /**
+         * Get the view of the price history chart given the price insights info.
+         *
+         * @param info The price insights info data.
+         * @return The view of the price history chart.
+         */
+        View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
     }
 
     private final Context mContext;
@@ -83,13 +103,15 @@ public class PriceInsightsBottomSheetCoordinator {
 
     /** Request to show the price insights bottom sheet. */
     public void requestShowContent() {
-        mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView);
+        ScrollView scrollView = (ScrollView) mPriceInsightsView.findViewById(R.id.scroll_view);
+        mBottomSheetContent = new PriceInsightsBottomSheetContent(mPriceInsightsView, scrollView);
         mBottomSheetMediator.requestShowContent();
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
     }
 
     /** Close the price insights bottom sheet. */
     public void closeContent() {
+        mBottomSheetMediator.closeContent();
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
     }
 }

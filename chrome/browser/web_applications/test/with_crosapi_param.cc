@@ -8,6 +8,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
@@ -21,6 +23,8 @@ WithCrosapiParam::WithCrosapiParam() {
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   } else {
     scoped_feature_list_.InitWithFeatures(
         {}, ash::standalone_browser::GetFeatureRefs());

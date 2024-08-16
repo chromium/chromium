@@ -163,7 +163,7 @@ SharedStorageDataOrigin ParseDataOrigin(const String& data_origin_value) {
   if (data_origin_value == "script-origin") {
     return SharedStorageDataOrigin::kScriptOrigin;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

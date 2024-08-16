@@ -80,7 +80,7 @@ net::ScopedCERTCertificateList GetCaCert() {
   }
 
   return net::x509_util::CreateCERTCertificateListFromBytes(
-      cert_bytes.data(), cert_bytes.size(), net::X509Certificate::FORMAT_AUTO);
+      base::as_byte_span(cert_bytes), net::X509Certificate::FORMAT_AUTO);
 }
 
 void GetNssDatabaseOnIO(NssCertDatabaseGetter nss_getter,

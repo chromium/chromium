@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 
 import java.util.concurrent.TimeUnit;
 
@@ -73,10 +72,7 @@ import java.util.concurrent.TimeUnit;
 @Config(
         manifest = Config.NONE,
         shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
-@EnableFeatures({
-    ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
-    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
-})
+@EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabBottomSheetStrategyTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();

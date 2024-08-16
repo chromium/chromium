@@ -27,20 +27,7 @@ namespace {
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() const override {
-    std::string country;
-    variations::VariationsService* variations_service =
-        GetApplicationContext()->GetVariationsService();
-    if (variations_service) {
-      country = variations_service->GetStoredPermanentCountry();
-      if (country.empty()) {
-        country = variations_service->GetLatestCountry();
-      }
-    }
-    return country;
-  }
-
-  version_info::Channel GetChannel() const override { return ::GetChannel(); }
+  bool SupportsWebstoreURL(const GURL& url) const override { return false; }
 };
 
 }  // namespace
@@ -101,9 +88,6 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state),
       browser_state->GetSharedURLLoaderFactory(), *user_prefs,
       *settings_service, sync_service,
-      // iOS does not support extensions, check_webstore_url_callback returns
-      // false.
-      base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FilterDelegateImpl>(),
       std::make_unique<SupervisedUserServicePlatformDelegate>(browser_state),
       supervised_user::ShouldShowFirstTimeBanner(browser_state));

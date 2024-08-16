@@ -5,6 +5,7 @@
 #include "content/browser/tracing/startup_tracing_controller.h"
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -210,7 +211,7 @@ class StartupTracingController::BackgroundTracer {
 
     // Proto files should be written directly to the file.
     if (output_format_ == tracing::TraceStartupConfig::OutputFormat::kProto) {
-      file_.WriteAtCurrentPos(data, size);
+      UNSAFE_TODO(file_.WriteAtCurrentPos(data, size));
       return;
     }
 
@@ -224,8 +225,8 @@ class StartupTracingController::BackgroundTracer {
         reinterpret_cast<const uint8_t*>(data), size);
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
-        file_.WriteAtCurrentPos(reinterpret_cast<const char*>(slice.start),
-                                slice.size);
+        UNSAFE_TODO(file_.WriteAtCurrentPos(
+            reinterpret_cast<const char*>(slice.start), slice.size));
       }
     }
   }

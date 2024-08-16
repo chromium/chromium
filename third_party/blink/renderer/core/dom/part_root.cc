@@ -211,15 +211,15 @@ void BuildPartsList(PartRoot& part_root,
         unsigned nested_child_node_part_count = 0;
         while (node->HasNextSibling() &&
                ((node = node->nextSibling()) != end_node)) {
-          if (LIKELY(!IsA<Comment>(node))) {
+          if (!IsA<Comment>(node)) [[likely]] {
             continue;
           }
           Comment& end_comment = *To<Comment>(node);
           if (!end_comment.HasNodePart()) {
             continue;  // Plain comment, not ChildNodePart marker.
           }
-          if (LIKELY(end_comment.data() == kChildNodePartEndCommentData)) {
-            if (LIKELY(!nested_child_node_part_count)) {
+          if (end_comment.data() == kChildNodePartEndCommentData) [[likely]] {
+            if (!nested_child_node_part_count) [[likely]] {
               // Found the end of the child node part.
               if (part_list) {
                 Vector<String> metadata;

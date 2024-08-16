@@ -121,6 +121,7 @@
 <translation id="2915996080311180594">後で再起動</translation>
 <translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="2945997411976714835">インストール エラー: インストーラのプロセスを開始できませんでした。</translation>
+<translation id="2970426615109535079">Chromium は組織によって管理されています</translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2987208172821108655">Chromium では、これらのタブを非アクティブにして、ブラウジング環境を改善し、リソースを解放できます。</translation>
@@ -221,6 +222,7 @@
 <translation id="4423735387467980091">Chromium の設定</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4434353761996769206">インストーラー エラー: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614">Chromium は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="4447409407328223819">Chrome for Testing について</translation>
 <translation id="4501471624619070934">お住まいの国ではアクセスが制限されているため、インストールに失敗しました。</translation>
 <translation id="4510853178268397146">この拡張機能は、データの収集方法や使用方法などのプライバシー保護の取り組みを公開していません。削除することをおすすめします。</translation>
@@ -489,6 +491,7 @@
 <translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8568283329061645092">Google アカウントでログインすると、Chromium がパスワードを確認できます。</translation>
+<translation id="8576826849825683917">Chromium は複数の組織によって管理されています</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />このデータの利用方法:<ph name="END_BOLD" /> サイトでは、ユーザーの興味 / 関心に関する情報を Chromium に保存できます。たとえば、マラソン用のシューズを購入するためにあるサイトにアクセスすると、そのサイトでは「ランニング」をユーザーの興味 / 関心として定義する可能性があります。その後、別のサイトにアクセスして競技に登録しようとすると、そのサイトでは、ユーザーの興味 / 関心に基づいてランニング用シューズの広告が表示される場合があります。</translation>
 <translation id="8619360774459241877">Chromium を起動しています...</translation>

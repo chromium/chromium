@@ -53,6 +53,7 @@ class MODULES_EXPORT VideoEncoderTraits {
 
     std::optional<String> not_supported_error_message;
 
+    String ToString();
     void Trace(Visitor*) const {}
   };
 

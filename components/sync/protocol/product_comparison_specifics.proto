@@ -68,4 +68,7 @@ message ProductComparisonItem {
   // necessary because the ProductComparisonItems point to a ProductComparison
   // and not the opposite, so we need to explicitly define the ordering.
   optional UniquePosition unique_position = 3;
+
+  // Title for the URL for the product comparison item.
+  optional string title = 4;
 }

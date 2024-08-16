@@ -1351,9 +1351,17 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
+  if (!accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
+    SerializeBoundingBoxAttributes(*node_data);
+  }
+
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    // TODO(accessibility) We serialize these even on ignored nodes, in order
+    // for the browser side to compute inherited colors for descendants, but we
+    // do not ensure that elements that change foreground/background color are
+    // included in the tree. Could this lead to errors?
+    // See All/DumpAccess*.AccessibilityCSSBackgroundColorTransparent/blink.
     SerializeColorAttributes(node_data);  // Blends using all nodes' values.
-    SerializeHTMLTagAndClass(node_data);
   }
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
@@ -1361,15 +1369,8 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
   }
 
-  // Needed on Android for testing frameworks.
-  SerializeHTMLId(node_data);
-
   // Always try to serialize child tree ids.
   SerializeChildTreeID(node_data);
-
-  if (!accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    SerializeBoundingBoxAttributes(*node_data);
-  }
 
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
@@ -1388,21 +1389,32 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     }
   }
 
+  if (!IsTextObject()) {
+    if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+      SerializeHTMLTagAndClass(node_data);
+    }
+
+    // Needed on Android for testing frameworks.
+    SerializeHTMLId(node_data);
+  }
+
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader))
     SerializeScreenReaderAttributes(node_data);
 
   SerializeUnignoredAttributes(node_data, accessibility_mode);
 
+  SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
+
   if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
     // Return early. None of the following attributes are needed for PDFs.
     return;
   }
 
-  SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
-
-  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader))
+  if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    // Return early. None of the following attributes are needed outside of
+    // screen reader mode.
     return;
+  }
 
   if (LiveRegionRoot())
     SerializeLiveRegionAttributes(node_data);
@@ -1847,6 +1859,24 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
 
+  if (AXObject* next_on_line = NextOnLine()) {
+    CHECK(!next_on_line->IsDetached());
+    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
+                               next_on_line->AXObjectID());
+  }
+
+  if (AXObject* prev_on_line = PreviousOnLine()) {
+    CHECK(!prev_on_line->IsDetached());
+    node_data->AddIntAttribute(
+        ax::mojom::blink::IntAttribute::kPreviousOnLineId,
+        prev_on_line->AXObjectID());
+  }
+
+  if (node_data->role == ax::mojom::blink::Role::kInlineTextBox) {
+    SerializeInlineTextBoxAttributes(node_data);
+    return;
+  }
+
   if (IsA<Document>(GetNode())) {
     // The busy attribute is only relevant for actual Documents, not popups.
     if (RoleValue() == ax::mojom::blink::Role::kRootWebArea && !IsLoaded()) {
@@ -1901,10 +1931,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
     node_data->SetCheckedState(CheckedState());
   }
 
-  if (node_data->role == ax::mojom::blink::Role::kInlineTextBox) {
-    SerializeInlineTextBoxAttributes(node_data);
-  }
-
   if (node_data->role == ax::mojom::blink::Role::kListMarker) {
     SerializeListMarkerAttributes(node_data);
   }
@@ -1918,19 +1944,6 @@ void AXObject::SerializeOtherScreenReaderAttributes(
 
   if (Action() != ax::mojom::blink::DefaultActionVerb::kNone) {
     node_data->SetDefaultActionVerb(Action());
-  }
-
-  if (AXObject* next_on_line = NextOnLine()) {
-    CHECK(!next_on_line->IsDetached());
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kNextOnLineId,
-                               next_on_line->AXObjectID());
-  }
-
-  if (AXObject* prev_on_line = PreviousOnLine()) {
-    CHECK(!prev_on_line->IsDetached());
-    node_data->AddIntAttribute(
-        ax::mojom::blink::IntAttribute::kPreviousOnLineId,
-        prev_on_line->AXObjectID());
   }
 
   AXObjectVector error_messages = ErrorMessage();
@@ -2064,6 +2077,7 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
   // parent. Use the value from computed style first since that is a fast lookup
   // and comparison, and serialize the user-friendly name at points in the tree
   // where the font family changes between parent/child.
+  // TODO(accessibility) No need to serialize these for inline text boxes.
   const AtomicString& computed_family = ComputedFontFamily();
   if (computed_family.length()) {
     AXObject* parent = ParentObjectUnignored();
@@ -2088,6 +2102,15 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
   if (RoleValue() == ax::mojom::blink::Role::kListItem &&
       GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
     node_data->SetListStyle(GetListStyle());
+  }
+
+  if (GetTextAlign() != ax::mojom::blink::TextAlign::kNone) {
+    node_data->SetTextAlign(GetTextAlign());
+  }
+
+  if (GetTextIndent() != 0.0f) {
+    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kTextIndent,
+                                 GetTextIndent());
   }
 
   if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
@@ -2203,6 +2226,44 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
 // Attributes that don't need to be serialized on ignored nodes.
 void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                             ui::AXMode accessibility_mode) const {
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    SerializeMarkerAttributes(node_data);
+    SerializeStyleAttributes(node_data);
+  }
+
+  if (IsLinked()) {
+    node_data->AddState(ax::mojom::blink::State::kLinked);
+    if (IsVisited()) {
+      node_data->AddState(ax::mojom::blink::State::kVisited);
+    }
+  }
+
+  if (IsNotUserSelectable()) {
+    node_data->AddBoolAttribute(
+        ax::mojom::blink::BoolAttribute::kNotUserSelectableStyle, true);
+  }
+
+  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
+      accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
+    // The DOMNodeID from Blink. Currently only populated when using
+    // the accessibility tree for PDF exporting. Warning, this is totally
+    // unrelated to the ID attribute for an HTML element - it's an ID used to
+    // uniquely identify nodes in Blink.
+    // TODO(accessibility) Remove this and use the AXObjectID(), which is the
+    // the same when there there is a DOM node (will always be positive).
+    int dom_node_id = GetDOMNodeId();
+    if (dom_node_id) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kDOMNodeId,
+                                 dom_node_id);
+    }
+  }
+
+  // If text, return early as a performance tweak, as the rest of the properties
+  // in this method do not apply to text.
+  if (IsTextObject()) {
+    return;
+  }
+
   AccessibilityExpanded expanded = IsExpanded();
   if (expanded) {
     if (expanded == kExpandedCollapsed)
@@ -2234,9 +2295,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (IsHovered())
     node_data->AddState(ax::mojom::blink::State::kHovered);
 
-  if (IsLinked())
-    node_data->AddState(ax::mojom::blink::State::kLinked);
-
   if (IsMultiline())
     node_data->AddState(ax::mojom::blink::State::kMultiline);
 
@@ -2257,40 +2315,13 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
         IsSelectedFromFocus());
   }
 
-  if (IsNotUserSelectable()) {
-    node_data->AddBoolAttribute(
-        ax::mojom::blink::BoolAttribute::kNotUserSelectableStyle, true);
-  }
-
-  if (IsVisited())
-    node_data->AddState(ax::mojom::blink::State::kVisited);
-
   if (Orientation() == kAccessibilityOrientationVertical)
     node_data->AddState(ax::mojom::blink::State::kVertical);
   else if (Orientation() == blink::kAccessibilityOrientationHorizontal)
     node_data->AddState(ax::mojom::blink::State::kHorizontal);
 
-  if (GetTextAlign() != ax::mojom::blink::TextAlign::kNone) {
-    node_data->SetTextAlign(GetTextAlign());
-  }
-
-  if (GetTextIndent() != 0.0f) {
-    node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kTextIndent,
-                                 GetTextIndent());
-  }
-
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||
       accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
-    // The DOMNodeID from Blink. Currently only populated when using
-    // the accessibility tree for PDF exporting. Warning, this is totally
-    // unrelated to the accessibility node ID, or the ID attribute for an
-    // HTML element - it's an ID used to uniquely identify nodes in Blink.
-    int dom_node_id = GetDOMNodeId();
-    if (dom_node_id) {
-      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kDOMNodeId,
-                                 dom_node_id);
-    }
-
     // Heading level.
     if (ui::IsHeading(role) && HeadingLevel()) {
       node_data->AddIntAttribute(
@@ -2320,11 +2351,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kUrl, Url().GetString());
-
-  if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
-    SerializeMarkerAttributes(node_data);
-    SerializeStyleAttributes(node_data);
-  }
 
   SerializeSparseAttributes(node_data);
 
@@ -3195,7 +3221,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   // Must be after inert computation, because focusability depends on that, but
   // before the included in tree computation, which depends on focusability.
+  CHECK(!IsDetached());
   cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+  CHECK(!IsDetached());
 
   // Must be computed before is_used_for_label_or_description computation.
   bool was_included_in_tree = IsIncludedInTree();
@@ -3309,13 +3337,14 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   AXObject* previous_live_region_root = cached_live_region_root_;
-  if (GetNode() && IsA<Document>(GetNode())) {
-    // The document root is never a live region root.
-    cached_live_region_root_ = nullptr;
-  } else if (RoleValue() == ax::mojom::blink::Role::kInlineTextBox) {
+  if (RoleValue() == ax::mojom::blink::Role::kInlineTextBox) {
     // Inline text boxes do not need live region properties.
     cached_live_region_root_ = nullptr;
-  } else if (parent_) {
+  } else if (IsA<Document>(GetNode())) {
+    // The document root is never a live region root.
+    cached_live_region_root_ = nullptr;
+  } else {
+    DCHECK(parent_);
     // Is a live region root if this or an ancestor is a live region.
     cached_live_region_root_ =
         IsLiveRegionRoot() ? this : parent_->LiveRegionRoot();
@@ -3451,6 +3480,11 @@ bool AXObject::IsInert() {
 
 bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
                                       IgnoredReasons* ignored_reasons) const {
+  if (IsAXInlineTextBox()) {
+    return ParentObject()->IsInert()
+               ? ParentObject()->ComputeIsInertViaStyle(style, ignored_reasons)
+               : false;
+  }
   // TODO(szager): This method is n^2 -- it recurses into itself via
   // ComputeIsInert(), and InertRoot() does as well.
   if (style) {
@@ -3856,6 +3890,8 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
 }
 
 bool AXObject::ComputeIsIgnoredButIncludedInTree() {
+  CHECK(!IsDetached());
+
   // If an inline text box is ignored, it is never included in the tree.
   if (IsAXInlineTextBox()) {
     return false;
@@ -3974,6 +4010,8 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
                   element->GetPseudoElement(kPseudoIdMarker) ||
+                  element->GetPseudoElement(kPseudoIdScrollNextButton) ||
+                  element->GetPseudoElement(kPseudoIdScrollPrevButton) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore) ||
                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter) ||
                   element->GetPseudoElement(kPseudoIdScrollMarker))) {
@@ -4258,11 +4296,14 @@ bool AXObject::IsKeyboardFocusable() const {
   CHECK(!element.NeedsStyleRecalc())
       << "\n* Element: " << element << "\n* Object: " << this
       << "\n* LayoutObject: " << GetLayoutObject();
-  if (!element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility)) {
-    return false;
+
+  if (element.IsKeyboardFocusable(
+          Element::UpdateBehavior::kNoneForAccessibility)) {
+    DCHECK(element.IsFocusable(Element::UpdateBehavior::kNoneForAccessibility));
+    return true;
   }
-  return element.IsKeyboardFocusable(
-      Element::UpdateBehavior::kNoneForAccessibility);
+
+  return false;
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -4362,7 +4403,6 @@ String AXObject::SimplifyName(const String& str,
 
   String simplified = str.SimplifyWhiteSpace(IsHTMLSpace<UChar>);
 
-#if DCHECK_IS_ON()
   if (GetElement() && !simplified.empty() && IsNameProhibited()) {
     // Enforce that names cannot occur on prohibited roles in Web UI.
     static bool name_on_prohibited_role_error_shown;
@@ -4391,12 +4431,18 @@ String AXObject::SimplifyName(const String& str,
     if (RuntimeEnabledFeatures::AccessibilityProhibitedNamesEnabled()) {
       // Prohibited names are repaired by moving them to the description field,
       // where they will not override the contents of the element for screen
-      // reader users.
+      // reader users. Exception: if it would be redundant with the inner
+      // contents, then the name is stripped out rather than repaired.
       name_from = ax::mojom::blink::NameFrom::kProhibited;
+      // If already redundant with inner text, do not repair to description
+      if (name_from == ax::mojom::blink::NameFrom::kContents ||
+          simplified ==
+              GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+        name_from = ax::mojom::blink::NameFrom::kProhibitedAndRedundant;
+      }
       return "";
     }
   }
-#endif
 
   bool has_before_space = IsHTMLSpace<UChar>(str[0]);
   bool has_after_space = IsHTMLSpace<UChar>(str[str.length() - 1]);
@@ -4423,11 +4469,15 @@ String AXObject::ComputedName(ax::mojom::blink::NameFrom* name_from_out) const {
 }
 
 bool AXObject::IsNameProhibited() const {
-  if (CanSetFocusAttribute()) {
+  if (CanSetFocusAttribute() &&
+      !RuntimeEnabledFeatures::AccessibilityMinRoleTabbableEnabled()) {
     // Make an exception for focusable elements. ATs will likely read the name
     // of a focusable element even if it has the wrong role.
+    // We do not need to do this if/when AccessibilityMinRoleTabbableEnabled
+    // becomes enabled by default, because focusable objects will get a
+    // minimum role of group, which can support an accessible name.
     // TODO(crbug.com/350528330): Test to see whether the following content
-    // works in all screen readers we support, and not, we should return true
+    // works in all screen readers we support, and if not, we should return true
     // here: <div tabindex="0" aria-label="Some label"></div>. Either way,
     // we should still disallow this pattern in Chromium Web UI.
     return false;
@@ -4524,6 +4574,9 @@ String AXObject::RecursiveTextAlternative(
 }
 
 const ComputedStyle* AXObject::GetComputedStyle() const {
+  if (IsAXInlineTextBox()) {
+    return ParentObject()->GetComputedStyle();
+  }
   Node* node = GetNode();
   if (!node) {
     return nullptr;
@@ -4953,7 +5006,8 @@ bool AXObject::ElementsFromAttribute(Element* from,
     return false;
 
   HeapVector<Member<Element>>* attr_associated_elements =
-      from->GetAttrAssociatedElements(attribute);
+      from->GetAttrAssociatedElements(attribute,
+                                      /*resolve_reference_target=*/true);
   if (!attr_associated_elements)
     return false;
 
@@ -5415,9 +5469,18 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
   //   <input role="combobox">
   // ax::mojom::blink::Role::kComboBoxMenuButton:
   //   <div tabindex=0 role="combobox">Select</div>
+  // Note: make sure to exclude this aria role if the element is a <select>,
+  // where this role would be redundant and may cause problems for screen
+  // readers.
   if (role == ax::mojom::blink::Role::kComboBoxGrouping) {
     if (IsAtomicTextField()) {
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
+    } else if (auto* select_element =
+                   DynamicTo<HTMLSelectElement>(*GetNode())) {
+      if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
+        // This is a select element. Don't set the aria role for it.
+        role = ax::mojom::blink::Role::kUnknown;
+      }
     } else if (GetElement() &&
                GetElement()->SupportsFocus(
                    Element::UpdateBehavior::kNoneForAccessibility)) {
@@ -7401,24 +7464,6 @@ bool AXObject::OnNativeShowContextMenuAction() {
 }
 
 // static
-bool AXObject::IsARIAControl(ax::mojom::blink::Role aria_role) {
-  return IsARIAInput(aria_role) ||
-         aria_role == ax::mojom::blink::Role::kButton ||
-         aria_role == ax::mojom::blink::Role::kComboBoxMenuButton ||
-         aria_role == ax::mojom::blink::Role::kSlider;
-}
-
-// static
-bool AXObject::IsARIAInput(ax::mojom::blink::Role aria_role) {
-  return aria_role == ax::mojom::blink::Role::kRadioButton ||
-         aria_role == ax::mojom::blink::Role::kCheckBox ||
-         aria_role == ax::mojom::blink::Role::kTextField ||
-         aria_role == ax::mojom::blink::Role::kSwitch ||
-         aria_role == ax::mojom::blink::Role::kSearchBox ||
-         aria_role == ax::mojom::blink::Role::kTextFieldWithComboBox;
-}
-
-// static
 bool AXObject::IsFrame(const Node* node) {
   auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node);
   if (!frame_owner)
@@ -7765,8 +7810,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         //     << "A focusable node lacked proper accessibility markup, "
         //        "causing a repair situation:"
         //     << "\n* Is name prohibited: " << IsNameProhibited()
-        //     << "\n* Role: " << RoleValue() << "\n* URL: " <<
-        //     GetDocument()->Url()
+        //     << "\n* Role: " << RoleValue()
+        //     << "\n* URL: " << GetDocument()->Url()
         //     << "\n* Outer html: " << GetElement()->outerHTML()
         //     << "\n* AXObject ancestry:\n"
         //     << ParentChainToStringHelper(this);
@@ -7810,7 +7855,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kUnknown:
     case ax::mojom::blink::Role::kWebView:
     case ax::mojom::blink::Role::kWindow:
-      NOTREACHED_NORETURN() << "Role shouldn't occur in Blink: " << this;
+      NOTREACHED() << "Role shouldn't occur in Blink: " << this;
   }
 
   return result;

@@ -911,6 +911,29 @@ TEST_F(EditableComboboxTest, AccessibleNameAndRole) {
   EXPECT_EQ(combobox_->GetViewAccessibility().GetCachedName(), u"New name");
 }
 
+TEST_F(EditableComboboxTest, AccessibleValue) {
+  InitEditableCombobox();
+  // kValue should be empty when the combobox is empty.
+  ui::AXNodeData data;
+  combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kValue), u"");
+
+  FocusTextfield();
+  SendKeyEvent(ui::VKEY_A);
+  SendKeyEvent(ui::VKEY_DOWN);
+  EXPECT_TRUE(IsMenuOpen());
+  SendKeyEvent(ui::VKEY_RETURN);
+  WaitForMenuClosureAnimation();
+  EXPECT_FALSE(IsMenuOpen());
+
+  data = ui::AXNodeData();
+  combobox_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  std::u16string val;
+  ASSERT_TRUE(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kValue, &val));
+  EXPECT_EQ(u"item[0]", val);
+}
+
 TEST_F(EditableComboboxTest, AccessibleArrowDefaultActionVerb) {
   InitEditableCombobox();
   auto* arrow_button = GetArrowButton();

@@ -203,10 +203,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       scoped_refptr<SharedContextState> context_state) override;
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
-  std::unique_ptr<VideoDecodeImageRepresentation> ProduceVideoDecode(
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
-      VideoDecodeDevice device) override;
+      VideoDevice device) override;
 
  private:
   using D3DSharedFenceSet = base::flat_set<scoped_refptr<gfx::D3DSharedFence>>;

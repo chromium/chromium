@@ -549,7 +549,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     RenderViewHostImplTestHarness::SetUp();
 
     // Set up an adapter.
-    adapter_ = new FakeBluetoothAdapter();
+    adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     EXPECT_CALL(*adapter_, IsPresent()).WillRepeatedly(Return(true));
     BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
     battery_device_bundle_ = std::make_unique<FakeBluetoothDeviceBundle>(
@@ -1233,5 +1233,112 @@ TEST_F(WebBluetoothServiceImplTest,
   // StopScan call from device::BluetoothDiscoverySession dtor is expected while
   // tearing down the test.
   EXPECT_CALL(*adapter_, StopScan).Times(1);
+}
+
+TEST_F(WebBluetoothServiceImplTest, ServiceDestroyedDuringAdapterAcquisition) {
+  // Remove the adapter configured by the base test to ensure an async
+  // AcquireAdapter flow.
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+
+  // Due to the service being destroyed before acquisition, this adapter will
+  // never receive these observer calls.
+  EXPECT_CALL(*adapter_, AddObserver).Times(0);
+  EXPECT_CALL(*adapter_, RemoveObserver).Times(0);
+
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(adapter_);
+
+  // Post a task that destroys the service during adapter acquisition.
+  // This is a hack; destruction is normally implicitly triggered by
+  // navigation or destruction of the frame itself, and not explicitly
+  // like this test does.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        WebBluetoothServiceImpl::DeleteForCurrentDocument(
+            &service_ptr_.ExtractAsDangling()->render_frame_host());
+      }));
+
+  // GetAvailability connects the Web Bluetooth service to the adapter,
+  // running through the AcquireAdapter flow.
+  TestFuture<bool> future_1;
+  service_ptr_->GetAvailability(future_1.GetCallback());
+  EXPECT_TRUE(future_1.Wait());
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+}
+
+class WebBluetoothServiceImplTestWithBaseAdapter
+    : public RenderViewHostImplTestHarness,
+      public WithParamInterface<bool> {
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+
+    // Set up a fake system adapter.
+    base_adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
+    EXPECT_CALL(*base_adapter_, IsPresent()).WillRepeatedly(Return(true));
+    BluetoothAdapterFactoryWrapper::Get().SetAdapterInternal(
+        base_adapter_, /*is_override_adapter=*/false);
+
+    // Hook up the test bluetooth delegate.
+    old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
+
+    // Navigate to a URL so that WebBluetoothServiceImpl::GetOrigin() returns a
+    // valid origin. This is required when checking for Bluetooth permissions.
+    constexpr char kTestURL[] = "https://my-battery-level.com";
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                      GURL(kTestURL));
+
+    // Set up an adapter.
+    mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver =
+        service_.BindNewPipeAndPassReceiver();
+    service_ptr_ = WebBluetoothServiceImpl::CreateForTesting(
+        contents()->GetPrimaryMainFrame(), std::move(receiver));
+
+    // GetAvailability connects the Web Bluetooth service to the adapter. Call
+    // it twice in parallel to exercise what happens when multiple requests to
+    // acquire the BluetoothAdapter are in flight.
+    TestFuture<bool> future_1;
+    TestFuture<bool> future_2;
+    service_ptr_->GetAvailability(future_1.GetCallback());
+    service_ptr_->GetAvailability(future_2.GetCallback());
+    EXPECT_TRUE(future_1.Wait());
+    EXPECT_TRUE(future_2.Wait());
+  }
+
+  void TearDown() override {
+    base_adapter_.reset();
+    service_ptr_ = nullptr;
+    SetBrowserClientForTesting(old_browser_client_);
+    RenderViewHostImplTestHarness::TearDown();
+  }
+
+ protected:
+  scoped_refptr<FakeBluetoothAdapter> base_adapter_;
+  raw_ptr<WebBluetoothServiceImpl> service_ptr_ = nullptr;
+  mojo::Remote<blink::mojom::WebBluetoothService> service_;
+  TestContentBrowserClient browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+};
+
+TEST_F(WebBluetoothServiceImplTestWithBaseAdapter,
+       EmulatedAdapterRemovalRestoresOriginalAdapter) {
+  // Confirm that the system adapter is being used.
+  EXPECT_EQ(BluetoothAdapterFactoryWrapper::Get().GetAdapter(service_ptr_),
+            base_adapter_);
+
+  // Create an override adapter and configure to use it.
+  scoped_refptr<FakeBluetoothAdapter> override_adapter_ =
+      base::MakeRefCounted<FakeBluetoothAdapter>();
+  EXPECT_CALL(*override_adapter_, IsPresent()).WillRepeatedly(Return(true));
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(
+      override_adapter_);
+
+  // Confirm that the override adapter is being used.
+  EXPECT_EQ(BluetoothAdapterFactoryWrapper::Get().GetAdapter(service_ptr_),
+            override_adapter_);
+
+  // Remove the override and confirm that it returns to the system adapter.
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+  EXPECT_EQ(BluetoothAdapterFactoryWrapper::Get().GetAdapter(service_ptr_),
+            base_adapter_);
 }
 }  // namespace content

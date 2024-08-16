@@ -196,14 +196,15 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
     static View createContinueButtonView(ViewGroup parent) {
         View buttonView =
                 LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.touch_to_fill_fill_button, parent, false);
+                        .inflate(R.layout.facilitated_payments_continue_button, parent, false);
         return buttonView;
     }
 
     static void bindContinueButtonView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == ON_BANK_ACCOUNT_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
-            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            TextView buttonTitleText =
+                    view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == BANK_NAME
                 || propertyKey == BANK_ACCOUNT_SUMMARY

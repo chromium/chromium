@@ -30,7 +30,7 @@
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/protocol/user_event_specifics.pb.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_user_events/user_event_service.h"

@@ -6,6 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_view_host.h"
 
 namespace metrics {
@@ -65,6 +68,25 @@ void DesktopSessionDurationObserver::RenderFrameHostChanged(
 
   UnregisterInputEventObserver(old_host);
   RegisterInputEventObserver(new_host);
+
+  if (new_host->GetSiteInstance()->GetSiteURL().host() ==
+      old_host->GetSiteInstance()->GetSiteURL().host()) {
+    return;
+  }
+
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(Profile::FromBrowserContext(
+          new_host->GetSiteInstance()->GetBrowserContext()));
+  CHECK(template_url_service);
+
+  const TemplateURL* default_search_engine =
+      template_url_service->GetDefaultSearchProvider();
+
+  if (default_search_engine &&
+      new_host->GetSiteInstance()->GetSiteURL().host() ==
+          GURL(default_search_engine->url()).host()) {
+    service_->IncrementDefaultSearchCounter();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DesktopSessionDurationObserver);

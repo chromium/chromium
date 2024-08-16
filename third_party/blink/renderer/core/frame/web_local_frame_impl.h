@@ -384,6 +384,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool has_transient_user_activation,
       const WebSecurityOrigin& initiator_origin,
       bool is_browser_initiated,
+      bool has_ua_visual_transition,
       std::optional<scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id) override;
   void SetIsNotOnInitialEmptyDocument() override;
@@ -496,8 +497,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   void SendOrientationChangeEvent();
 
-  void SetDevToolsAgentImpl(WebDevToolsAgentImpl*);
-  WebDevToolsAgentImpl* DevToolsAgentImpl();
+  WebDevToolsAgentImpl* DevToolsAgentImpl(bool create_if_necessary);
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client. May only be called on a

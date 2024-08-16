@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.segmentation_platform;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Provides price insights signal for showing contextual page action for a given tab. */
@@ -35,8 +36,17 @@ public class PriceInsightsActionProvider implements ContextualPageActionControll
         shoppingService.getPriceInsightsInfoForUrl(
                 tab.getUrl(),
                 (url, info) -> {
-                    signalAccumulator.setHasPriceInsights(info != null);
+                    signalAccumulator.setHasPriceInsights(hasPriceInsightsInfoData(info));
                     signalAccumulator.notifySignalAvailable();
                 });
+    }
+
+    private boolean hasPriceInsightsInfoData(PriceInsightsInfo info) {
+        return info != null
+                && !info.currencyCode.isEmpty()
+                && info.catalogHistoryPrices != null
+                && !info.catalogHistoryPrices.isEmpty()
+                && info.jackpotUrl != null
+                && !info.jackpotUrl.isEmpty();
     }
 }

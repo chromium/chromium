@@ -91,7 +91,7 @@ PageAllocationGranularityShift() {
   // arm64 supports 4kb (shift = 12), 16kb (shift = 14), and 64kb (shift = 16)
   // page sizes. Retrieve from or initialize cache.
   size_t shift = page_characteristics.shift.load(std::memory_order_relaxed);
-  if (PA_UNLIKELY(shift == 0)) {
+  if (shift == 0) [[unlikely]] {
     shift = static_cast<size_t>(
         __builtin_ctz((unsigned int)PageAllocationGranularity()));
     page_characteristics.shift.store(shift, std::memory_order_relaxed);
@@ -132,7 +132,7 @@ PageAllocationGranularity() {
   // arm64 supports 4kb, 16kb, and 64kb page sizes. Retrieve from or
   // initialize cache.
   size_t size = page_characteristics.size.load(std::memory_order_relaxed);
-  if (PA_UNLIKELY(size == 0)) {
+  if (size == 0) [[unlikely]] {
     size = static_cast<size_t>(getpagesize());
     page_characteristics.size.store(size, std::memory_order_relaxed);
   }

@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -199,7 +200,12 @@ const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(
 // static
 bool DesksTestApi::IsContextMenuRunningForDesk(DeskBarViewBase::Type type,
                                                int index) {
-  return GetContextMenuForDesk(type, index)->context_menu_runner_->IsRunning();
+  DeskMiniView* mini_view = GetDeskBarView(type)->mini_views()[index];
+  DeskActionContextMenu* menu = mini_view->context_menu();
+  if (!menu) {
+    return false;
+  }
+  return menu->context_menu_runner_->IsRunning();
 }
 
 // static
@@ -239,21 +245,66 @@ views::MenuItemView* DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
     CHECK(!bar_view->IsZeroState());
   }
 
-  // Hover over the mini view to show the context menu button.
   CHECK_LE(index, bar_view->mini_views().size());
   DeskMiniView* mini_view = bar_view->mini_views()[index];
-  event_generator.MoveMouseToInHost(
-      mini_view->GetBoundsInScreen().CenterPoint());
-  DeskActionButton* menu_button =
-      mini_view->desk_action_view()->context_menu_button();
-  CHECK(menu_button);
-  CHECK(menu_button->GetVisible());
 
-  // Click the button to open the context menu.
-  click_on_view(menu_button);
+  // If we have previously been using touch controls, open the menu using a long
+  // press on the mini view. Otherwise, hover over the mini view to get the
+  // action buttons to show, then click the menu button.
+  if (!aura::client::GetCursorClient(root)->IsCursorVisible()) {
+    // Long press until the context menu opens.
+    LongGestureTap(
+        mini_view->desk_action_view()->GetBoundsInScreen().CenterPoint(),
+        &event_generator);
+  } else {
+    // Hover over the mini view to show the context menu button.
+    event_generator.MoveMouseToInHost(
+        mini_view->GetBoundsInScreen().CenterPoint());
+
+    // The menu button container should be visible, along with the button
+    // itself.
+    CHECK(mini_view->desk_action_view()->GetVisible());
+    DeskActionButton* menu_button =
+        mini_view->desk_action_view()->context_menu_button();
+    CHECK(menu_button);
+    CHECK(menu_button->GetVisible());
+
+    // Click the button to open the context menu.
+    click_on_view(menu_button);
+  }
+
   DeskActionContextMenu* menu = mini_view->context_menu();
   CHECK(menu);
   return GetDeskActionContextMenuItem(menu, command_id);
+}
+
+// static
+void DesksTestApi::MaybeCloseContextMenuForGrid(OverviewGrid* overview_grid) {
+  for (DeskMiniView* mini_view :
+       overview_grid->desks_bar_view()->mini_views()) {
+    mini_view->MaybeCloseContextMenu();
+
+    // Closing the menu is asynchronous, so we want to wait until it has
+    // actually closed.
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
+// static
+base::TimeDelta DesksTestApi::GetCloseAllWindowCloseTimeout() {
+  return DesksController::GetCloseAllWindowCloseTimeoutForTest();
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetCloseAllWindowCloseTimeout(
+    base::TimeDelta interval) {
+  return DesksController::SetCloseAllWindowCloseTimeoutForTest(interval);
+}
+
+// static
+base::AutoReset<base::TimeDelta> DesksTestApi::SetScrollTimeInterval(
+    base::TimeDelta interval) {
+  return ScrollArrowButton::SetScrollTimeIntervalForTest(interval);
 }
 
 }  // namespace ash

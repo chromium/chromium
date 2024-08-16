@@ -164,8 +164,6 @@ GLenum GetTextureBindingQuery(GLenum texture_type);
 
 gfx::OverlayTransform GetGFXOverlayTransform(GLenum plane_transform);
 
-bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format);
-
 bool IsASTCFormat(GLenum internal_format);
 bool IsCompressedTextureFormat(GLenum internal_format);
 

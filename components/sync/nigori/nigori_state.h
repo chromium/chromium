@@ -10,14 +10,14 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace sync_pb {
+class EncryptedData;
 class NigoriModel;
 }  // namespace sync_pb
 
@@ -52,11 +52,11 @@ struct NigoriState {
 
   bool NeedsKeystoreReencryption() const;
 
-  ModelTypeSet GetEncryptedTypes() const;
+  DataTypeSet GetEncryptedTypes() const;
   bool NeedsGenerateCrossUserSharingKeyPair() const;
 
   // TODO(crbug.com/40141634): Make this const unique_ptr to avoid the object
-  // being destroyed after it's been injected to the ModelTypeWorker-s.
+  // being destroyed after it's been injected to the DataTypeWorker-s.
   std::unique_ptr<CryptographerImpl> cryptographer;
 
   // Pending keys represent a remote update that contained a keybag that cannot

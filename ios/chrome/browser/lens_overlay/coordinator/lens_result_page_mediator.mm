@@ -9,8 +9,8 @@
 #import "base/functional/bind.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -82,19 +82,21 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   [self updateBackgroundColor];
 }
 
+- (void)setWebStateDelegate:
+    (id<LensResultPageWebStateDelegate>)webStateDelegate {
+  _webStateDelegate = webStateDelegate;
+  if (_webState) {
+    [self.webStateDelegate
+        lensResultPageDidChangeActiveWebState:_webState.get()];
+  }
+}
+
 - (void)disconnect {
   _policyDeciderBridge.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webState.reset();
   _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
-}
-
-- (void)dealloc {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webStateObserverBridge.reset();
-  }
 }
 
 #pragma mark - LensOverlayResultConsumer
@@ -207,6 +209,15 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   return _browserWebStateDelegate->GetResponderInputView(webState);
 }
 
+#pragma mark - LensWebProvider
+
+- (web::WebState*)webState {
+  if (!_webState) {
+    return nullptr;
+  }
+  return _webState.get();
+}
+
 #pragma mark - Private
 
 /// Detaches and returns the current web state.
@@ -229,6 +240,12 @@ BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
   AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
+
+  if (self.consumer) {
+    _webState->SetWebUsageEnabled(true);
+    [self.consumer setWebView:_webState->GetView()];
+  }
+  [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
 }
 
 /// Updates the consumer's background color.

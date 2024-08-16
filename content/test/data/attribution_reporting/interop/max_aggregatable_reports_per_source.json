@@ -564,7 +564,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -586,7 +585,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -608,7 +606,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -630,7 +627,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -652,7 +648,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -674,7 +669,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -696,7 +690,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -718,7 +711,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -740,7 +732,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -762,7 +753,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -784,7 +774,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -806,7 +795,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -828,7 +816,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -850,7 +837,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -872,7 +858,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -894,7 +879,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -916,7 +900,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -938,7 +921,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -960,7 +942,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -982,7 +963,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3601",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },

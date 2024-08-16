@@ -113,13 +113,11 @@ size_t SharedBufferChunkReader::Peek(Vector<char>& data,
   data.clear();
   auto data_fragment = segment_.subspan(segment_index_);
   if (requested_size <= data_fragment.size()) {
-    data.Append(data_fragment.data(),
-                base::checked_cast<wtf_size_t>(requested_size));
+    data.AppendSpan(data_fragment.first(requested_size));
     return requested_size;
   }
 
-  data.Append(data_fragment.data(),
-              base::checked_cast<wtf_size_t>(data_fragment.size()));
+  data.AppendSpan(data_fragment);
 
   for (auto it = buffer_->GetIteratorAt(buffer_position_ + segment_.size());
        it != buffer_->cend(); ++it) {

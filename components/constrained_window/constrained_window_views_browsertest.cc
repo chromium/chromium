@@ -14,6 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -54,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewsBrowserTest,
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  delegate->SetModalType(ui::MODAL_TYPE_CHILD);
+  delegate->SetModalType(ui::mojom::ModalType::kChild);
 
   std::unique_ptr<views::Widget> widget = ShowWebModalDialogViewsOwned(
       delegate.get(), shell()->web_contents(),

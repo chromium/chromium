@@ -60,6 +60,7 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
                       IsInternalRequest) override;
   void DidChangeRenderBlockingBehavior(Resource* resource,
                                        const FetchParameters& params) override;
+  bool InterestedInAllRequests() override;
   void Trace(Visitor*) const override;
 
  private:

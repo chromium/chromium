@@ -1,0 +1,14 @@
+{
+  // chrome-extension://mdbihdcgjmagbcapkhhkjbbdlkflmbfo
+  "manifest_version": 3,
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCV9PlZjcTIXfnlB3HXo50OlM/CnIq0y7jmKfPVyStaWsmFB7NaVnqUXoGb9swBDfVnZ6BrupwnxL76TWEJPo+KQMJ6uz0PPdJWi2jQfZiGiheDiKH5Gv+dVd67qf7ly8QWW0o8qmFpqBZQpksm1hOGbfsupv9W4c42tMEIicDMLQIDAQAB",
+  "name": "Component Extension Test: OAuth2 extension",
+  "version": "2",
+  "oauth2": {
+    "auto_approve": true,
+    "scopes": []
+  },
+  "background": {
+    "service_worker": "test.js"
+  }
+}

@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -321,8 +322,8 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
         email_domains_);
   }
 
-  ui::ModalType GetDialogModalType() const override {
-    return ui::MODAL_TYPE_WINDOW;
+  ui::mojom::ModalType GetDialogModalType() const override {
+    return ui::mojom::ModalType::kWindow;
   }
 
   std::u16string GetDialogTitle() const override { return std::u16string(); }

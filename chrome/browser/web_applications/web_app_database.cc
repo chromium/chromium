@@ -45,7 +45,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -408,7 +408,7 @@ void WebAppDatabase::OpenDatabase(RegistryOpenedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!store_);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
+  syncer::OnceDataTypeStoreFactory store_factory =
       database_factory_->GetStoreFactory();
 
   std::move(store_factory)
@@ -424,7 +424,7 @@ void WebAppDatabase::Write(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(opened_);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
   // |update_data| can be empty here but we should write |metadata_change_list|
@@ -1757,7 +1757,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
 void WebAppDatabase::OnDatabaseOpened(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);
@@ -1774,7 +1774,7 @@ void WebAppDatabase::OnDatabaseOpened(
 void WebAppDatabase::OnAllDataAndMetadataRead(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
+    std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   TRACE_EVENT0("ui", "WebAppDatabase::OnAllMetadataRead");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1785,7 +1785,7 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
   }
 
   Registry registry;
-  for (const syncer::ModelTypeStore::Record& record : *data_records) {
+  for (const syncer::DataTypeStore::Record& record : *data_records) {
     const webapps::AppId app_id = record.id;
     std::unique_ptr<WebApp> web_app = ParseWebApp(app_id, record.value);
     if (web_app)

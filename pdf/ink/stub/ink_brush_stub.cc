@@ -43,6 +43,10 @@ SkColor InkBrushStub::GetColor() const {
   return color_;
 }
 
+float InkBrushStub::GetCornerRoundingForTesting() const {
+  return family_->GetCornerRoundingForTesting();  // IN-TEST
+}
+
 float InkBrushStub::GetOpacityForTesting() const {
   return family_->GetOpacityForTesting();  // IN-TEST
 }

@@ -3,15 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import collections
-import copy
-import json
-import subprocess
-import sys
-from typing import (Iterable, List, Optional, Tuple)
+from typing import Iterable, Optional
 import unittest
-
-import unittest.mock as mock
+from unittest import mock
 
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
@@ -43,10 +37,10 @@ class BigQueryQuerierInitUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       uu.CreateGenericQuerier(num_samples=-1)
 
-  def testInvalidNumSamples(self):
-    """Tests that the number of samples is validated."""
-    with self.assertRaises(AssertionError):
-      uu.CreateGenericQuerier(num_samples=-1)
+  def testDefaultSamples(self):
+    """Tests that the number of samples is set to a default if not provided."""
+    querier = uu.CreateGenericQuerier(num_samples=0)
+    self.assertGreater(querier._num_samples, 0)
 
 
 class GetBuilderGroupedQueryResultsUnittest(unittest.TestCase):

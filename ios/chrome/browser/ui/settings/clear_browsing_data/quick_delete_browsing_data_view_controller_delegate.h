@@ -10,8 +10,11 @@
 @protocol QuickDeleteBrowsingDataViewControllerDelegate
 
 // Method invoked when the user wants to dismiss browsing data page either via
-// the 'Confirm', `Cancel` buttons or by dragging the view down.
+// the 'Confirm', 'Cancel' buttons or by dragging the view down.
 - (void)dismissBrowsingDataPage;
+
+// Method invoked when the user taps the footer 'sign out of Chrome' link.
+- (void)signOutAndShowActionSheet;
 
 @end
 

@@ -7,13 +7,11 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
-#import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/ui_bundled/download_manager_coordinator.h"
-#import "ios/chrome/browser/follow/model/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -24,15 +22,18 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
@@ -144,8 +145,8 @@
 
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
-    DCHECK(_followIPHPresenter);
-    followTabHelper->set_follow_iph_presenter(_followIPHPresenter);
+    followTabHelper->set_help_handler(
+        HandlerForProtocol(_commandDispatcher, HelpCommands));
   }
 
   DCHECK(_tabInsertionBrowserAgent);
@@ -164,8 +165,14 @@
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
     annotationsTabHelper->SetUnitConversionCommands(
         HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
-    if (IsIOSParcelTrackingEnabled() &&
-        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
+
+    PrefService* prefs =
+        IsHomeCustomizationEnabled()
+            ? ChromeBrowserState::FromBrowserState(webState->GetBrowserState())
+                  ->GetPrefs()
+            : GetApplicationContext()->GetLocalState();
+
+    if (IsIOSParcelTrackingEnabled() && !IsParcelTrackingDisabled(prefs)) {
       annotationsTabHelper->SetParcelTrackingOptInCommands(
           HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
     }
@@ -174,9 +181,8 @@
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
-    DCHECK(_priceNotificationsIPHPresenter);
-    priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(
-        _priceNotificationsIPHPresenter);
+    priceNotificationsTabHelper->SetHelpHandler(
+        HandlerForProtocol(_commandDispatcher, HelpCommands));
   }
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
       _appLauncherBrowserPresentationProvider);
@@ -229,7 +235,7 @@
 
   FollowTabHelper* followTabHelper = FollowTabHelper::FromWebState(webState);
   if (followTabHelper) {
-    followTabHelper->set_follow_iph_presenter(nil);
+    followTabHelper->set_help_handler(nil);
   }
 
   CaptivePortalTabHelper::GetOrCreateForWebState(webState)
@@ -248,7 +254,7 @@
   PriceNotificationsTabHelper* priceNotificationsTabHelper =
       PriceNotificationsTabHelper::FromWebState(webState);
   if (priceNotificationsTabHelper) {
-    priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
+    priceNotificationsTabHelper->SetHelpHandler(nil);
   }
 
   AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(

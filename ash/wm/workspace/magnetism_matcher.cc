@@ -33,7 +33,7 @@ bool CanMatchSecondaryEdge(MagnetismEdge primary,
       else if (secondary == SECONDARY_MAGNETISM_EDGE_TRAILING)
         secondary_as_magnetism_edge = MAGNETISM_EDGE_RIGHT;
       else
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       break;
     case MAGNETISM_EDGE_LEFT:
     case MAGNETISM_EDGE_RIGHT:
@@ -42,7 +42,7 @@ bool CanMatchSecondaryEdge(MagnetismEdge primary,
       else if (secondary == SECONDARY_MAGNETISM_EDGE_TRAILING)
         secondary_as_magnetism_edge = MAGNETISM_EDGE_BOTTOM;
       else
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       break;
   }
   return (edges & secondary_as_magnetism_edge) != 0;

@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -508,13 +509,16 @@
   [self.NTPViewController omniboxDidResignFirstResponder];
 }
 
-- (void)constrainFeedHeaderManagementButtonNamedGuide {
+- (void)constrainNamedGuideForFeedIPH {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
-  [LayoutGuideCenterForBrowser(self.browser)
-      referenceView:self.feedHeaderViewController.managementButton
-          underName:kFeedHeaderManagementButtonGuide];
+  UIView* viewToConstrain =
+      IsHomeCustomizationEnabled()
+          ? [self.headerViewController customizationMenuButton]
+          : self.feedHeaderViewController.managementButton;
+  [LayoutGuideCenterForBrowser(self.browser) referenceView:viewToConstrain
+                                                 underName:kFeedIPHNamedGuide];
 }
 
 - (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent {
@@ -789,7 +793,8 @@
 
   [self configureMainViewControllerUsing:self.NTPViewController];
   self.NTPViewController.feedMetricsRecorder = self.feedMetricsRecorder;
-  self.NTPViewController.bubblePresenter = self.bubblePresenter;
+  self.NTPViewController.helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   self.NTPViewController.mutator = self.NTPMediator;
 }
 
@@ -875,15 +880,7 @@
 }
 
 - (void)customizationMenuWasTapped:(UIView*)customizationMenu {
-  if (!_customizationCoordinator) {
-    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
-        initWithBaseViewController:self.NTPViewController
-                           browser:self.browser];
-    _customizationCoordinator.delegate = self;
-    [_customizationCoordinator start];
-  }
-  [_customizationCoordinator
-      presentCustomizationMenuAtPage:CustomizationMenuPage::kMain];
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
 }
 
 #pragma mark - FeedMenuCoordinatorDelegate
@@ -1004,7 +1001,8 @@
 }
 
 - (BOOL)shouldFeedBeVisible {
-  return self.NTPMediator.feedHeaderVisible && [self.feedExpandedPref value];
+  return self.NTPMediator.feedHeaderVisible &&
+         ([self.feedExpandedPref value] || IsHomeCustomizationEnabled());
 }
 
 - (BOOL)isFollowingFeedAvailable {
@@ -1053,6 +1051,11 @@
                           params:params
                       originView:view];
   [_sharingCoordinator start];
+}
+
+- (void)openMagicStackCustomizationMenu {
+  [self openCustomizationMenuAtPage:CustomizationMenuPage::kMagicStack
+                           animated:NO];
 }
 
 #pragma mark - FeedSignInPromoDelegate
@@ -1682,8 +1685,33 @@
   if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
     if (visible) {
       self.didAppearTime = base::TimeTicks::Now();
+
+      if (IsHomeCustomizationEnabled()) {
+        [self.NTPMetricsRecorder
+            recordCustomizationState:[self currentCustomizationState]];
+
+        PrefService* prefService = self.prefService;
+        BOOL safetyCheckEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackSafetyCheckEnabled);
+        BOOL setUpListEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackSetUpListEnabled);
+        BOOL tabResumptionEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+        BOOL parcelTrackingEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+        [self.NTPMetricsRecorder
+            recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
+                                                safetyCheck:safetyCheckEnabled
+
+                                              tabResumption:tabResumptionEnabled
+                                             parcelTracking:
+                                                 parcelTrackingEnabled];
+      }
+
+      // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home
+      // Customization launches.
       if (self.NTPMediator.feedHeaderVisible) {
-        if ([self.feedExpandedPref value]) {
+        if ([self.feedExpandedPref value] || IsHomeCustomizationEnabled()) {
           [self.NTPMetricsRecorder
               recordHomeImpression:IOSNTPImpressionType::kFeedVisible
                     isStartSurface:[self isStartSurface]];
@@ -1741,6 +1769,64 @@
 // necessary.
 - (void)restoreNTPState {
   [self.NTPMediator restoreNTPStateForWebState:self.webState];
+}
+
+// Opens the Home customization menu at a specific `page`.
+- (void)openCustomizationMenuAtPage:(CustomizationMenuPage)page
+                           animated:(BOOL)animated {
+  if (!_customizationCoordinator) {
+    _customizationCoordinator = [[HomeCustomizationCoordinator alloc]
+        initWithBaseViewController:self.NTPViewController
+                           browser:self.browser];
+    _customizationCoordinator.delegate = self;
+    [_customizationCoordinator start];
+  }
+  [_customizationCoordinator presentCustomizationMenuAtPage:page
+                                                   animated:animated];
+}
+
+// Returns the current customization state represnting the visibility of NTP
+// components.
+- (IOSNTPImpressionCustomizationState)currentCustomizationState {
+  CHECK(IsHomeCustomizationEnabled());
+  PrefService* prefService = self.prefService;
+  BOOL MVTEnabled =
+      prefService->GetBoolean(prefs::kHomeCustomizationMostVisitedEnabled);
+  BOOL magicStackEnabled =
+      prefService->GetBoolean(prefs::kHomeCustomizationMagicStackEnabled);
+  BOOL feedEnabled = prefService->GetBoolean(prefs::kArticlesForYouEnabled);
+
+  // All components enabled/disabled.
+  if (MVTEnabled && magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kAllEnabled;
+  }
+  if (!MVTEnabled && !magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kAllDisabled;
+  }
+
+  // 2 components enabled.
+  if (MVTEnabled && magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTAndMagicStackEnabled;
+  }
+  if (MVTEnabled && !magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTAndFeedEnabled;
+  }
+  if (!MVTEnabled && magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMagicStackAndFeedEnabled;
+  }
+
+  // 1 component enabled.
+  if (MVTEnabled && !magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMVTEnabled;
+  }
+  if (!MVTEnabled && magicStackEnabled && !feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kMagicStackEnabled;
+  }
+  if (!MVTEnabled && !magicStackEnabled && feedEnabled) {
+    return IOSNTPImpressionCustomizationState::kFeedEnabled;
+  }
+
+  NOTREACHED_NORETURN();
 }
 
 #pragma mark - AccountMenuCoordinatorDelegate

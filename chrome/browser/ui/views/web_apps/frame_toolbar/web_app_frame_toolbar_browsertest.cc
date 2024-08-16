@@ -160,18 +160,6 @@ SkColor GetFrameColor(Browser* browser) {
 
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
  public:
-  WebAppFrameToolbarBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
-  // WebAppBrowserTestBase:
-  void SetUp() override {
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-
-    WebAppBrowserTestBase::SetUp();
-  }
-
   WebAppFrameToolbarTestHelper* helper() {
     return &web_app_frame_toolbar_helper_;
   }
@@ -188,7 +176,6 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
   }
 
  private:
-  net::EmbeddedTestServer https_server_;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 };
 
@@ -302,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 #define MAYBE_ThemeChange ThemeChange
 #endif
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MAYBE_ThemeChange) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   const GURL app_url = https_server()->GetURL("/banners/theme-color.html");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
@@ -958,7 +945,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   }
 
   webapps::AppId InstallAndLaunchWebApp() {
-    EXPECT_TRUE(https_server()->Start());
+    EXPECT_TRUE(https_server()->Started());
     return InstallAndLaunchWCOWebApp(
         helper()->LoadWindowControlsOverlayTestPageWithDataAndGetURL(
             embedded_test_server(), &temp_dir_),
@@ -966,7 +953,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
   }
 
   webapps::AppId InstallAndLaunchFullyDraggableWebApp() {
-    EXPECT_TRUE(https_server()->Start());
+    EXPECT_TRUE(https_server()->Started());
     return InstallAndLaunchWCOWebApp(
         helper()->LoadWholeAppIsDraggableTestPageWithDataAndGetURL(
             embedded_test_server(), &temp_dir_),
@@ -1825,6 +1812,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_FALSE(draggable_region.value().isEmpty());
 }
 
+// Tests for Additional Windowing Controls on web app windows.
+// https://chromestatus.com/feature/5201832664629248
+// For popup tests see PopupTest_AdditionalWindowingControls
 #if !BUILDFLAG(IS_ANDROID)
 class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     : public WebAppFrameToolbarBrowserTest {
@@ -1842,7 +1832,7 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
   }
 
   webapps::AppId InstallAndLaunchWebApp() {
-    DCHECK(https_server()->Start());
+    DCHECK(https_server()->Started());
 
     const GURL start_url = helper()->LoadTestPageWithDataAndGetURL(
         embedded_test_server(), &temp_dir_, "");
@@ -2268,6 +2258,50 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(browser_view->IsMaximized());
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MoveCallFiresMoveEvent) {
+  InstallAndLaunchWebApp();
+  helper()->browser_view()->SetCanResize(true);
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure the window is small enough to be moved within the screen boundaries.
+  const char resize_script[] =
+      R"(new Promise((resolve, reject) => {
+        addEventListener('resize', e => resolve('resized'));
+        setTimeout(() => reject('The window failed to resize.'), 1000);
+        resizeTo(100, 100);
+      }); )";
+  EXPECT_EQ(content::EvalJs(web_contents, resize_script), "resized");
+
+  const char script_template[] =
+      R"(var command = "%s";
+      var coordString = (x, y) => `(X: ${x}, Y: ${y})`;
+      moveTest = new Promise((resolve, reject) => {
+        const coord_before = coordString(screenX, screenY);
+        addEventListener('move', e => resolve(`move fired`));
+        setTimeout(() => {
+          const coord_after = coordString(screenX, screenY);
+          reject(`move not fired by ${command}; window position: `
+               + `${coord_before} -> ${coord_after}`); }, 1000);
+        %s;});
+      )";
+
+  for (const char* const move_command : {"moveBy(10,10)", "moveTo(50,50)"}) {
+    std::string script =
+        base::StringPrintf(script_template, move_command, move_command);
+
+    gfx::Rect bounds_before = helper()->app_browser()->window()->GetBounds();
+    SCOPED_TRACE(testing::Message()
+                 << " move-command: " << move_command
+                 << " popup-before: " << bounds_before.ToString());
+    EXPECT_EQ(content::EvalJs(web_contents, script), "move fired");
+    gfx::Rect bounds_after = helper()->app_browser()->window()->GetBounds();
+    EXPECT_NE(bounds_before.ToString(), bounds_after.ToString());
+  }
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 class OriginTextVisibilityWaiter : public views::ViewObserver {
@@ -2394,7 +2428,7 @@ class WebAppFrameToolbarBrowserTest_OriginText
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
                        InScopeNavigation) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if navigating to a URL in scope and with the
   // same theme color.
@@ -2410,7 +2444,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
                        OutOfScopeBarShown) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if out-of-scope bar is shown after navigation.
   const GURL nav_url =
@@ -2433,7 +2467,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
                        ThemeColorChange) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
       helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
@@ -2456,7 +2490,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
                        OutOfScopeBarWithThemeColorChange) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
       helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
@@ -2491,6 +2525,18 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
       helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(app_url());
 }
+
+IN_PROC_BROWSER_TEST_P(WebAppFrameToolbarBrowserTest_OriginText,
+                       WebAppOriginTextAccessibleProperties) {
+  InstallAndLaunchWebApp();
+  auto* origin_text = helper()->origin_text_view();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(origin_text);
+  origin_text->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kApplication);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     WebAppFrameToolbarBrowserTest_OriginText,
@@ -2610,7 +2656,7 @@ class WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
                        ExtendedScope) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
       helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
@@ -2645,7 +2691,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
                        ExtendedScopeToOutOfScope) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
       helper()->app_browser()->tab_strip_model()->GetActiveWebContents();
@@ -2677,7 +2723,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
                        ExtendedScopeThemeColorChange) {
-  ASSERT_TRUE(https_server()->Start());
+  ASSERT_TRUE(https_server()->Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
       helper()->app_browser()->tab_strip_model()->GetActiveWebContents();

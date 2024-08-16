@@ -52,6 +52,10 @@ CFStringRef GetPrimaries(media::VideoColorSpace::PrimaryID primary_id) {
       return kCMFormatDescriptionColorPrimaries_SMPTE_C;
 
     case media::VideoColorSpace::PrimaryID::BT470BG:
+    case media::VideoColorSpace::PrimaryID::EBU_3213_E:
+      // Based on ITU H.273 8.1, there is a slight discrepancy between BT470 BG
+      // and EBU 3213 E, but a careful reading of E.B.U Tech 3213-E (1975) shows
+      // the primaries are identical.
       return kCMFormatDescriptionColorPrimaries_EBU_3213;
 
     case media::VideoColorSpace::PrimaryID::SMPTEST431_2:

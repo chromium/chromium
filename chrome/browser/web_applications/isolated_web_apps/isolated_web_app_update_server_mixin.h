@@ -36,6 +36,11 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
   GURL GetUpdateManifestUrl(
       const web_package::SignedWebBundleId& web_bundle_id) const;
 
+  // Generates a policy entry that can be appended to
+  // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
+  base::Value::Dict CreateForceInstallPolicyEntry(
+      const web_package::SignedWebBundleId& web_bundle_id) const;
+
   // Adds a bundle to the update server and starts tracking it in the
   // corresponding update manifest.
   void AddBundle(std::unique_ptr<BundledIsolatedWebApp> bundle);

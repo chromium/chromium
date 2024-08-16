@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/native_widget_factory.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -49,6 +50,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/test/views_test_utils.h"
@@ -163,7 +165,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
             profile);
     return std::make_unique<TemplateURLService>(
-        profile->GetPrefs(), search_engine_choice_service,
+        *profile->GetPrefs(), *search_engine_choice_service,
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
         nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
@@ -627,6 +629,38 @@ TEST_F(BookmarkBarViewTest, GetAvailableWidthForSavedTabGroupsBar) {
   // Split the space evenly since neither can fit half of the availablel width.
   ASSERT_EQ(
       50, BookmarkBarView::GetAvailableWidthForSavedTabGroupsBar(80, 60, 100));
+}
+
+TEST_F(BookmarkBarViewTest, AccessibleProperties) {
+  ui::AXNodeData data;
+
+  bookmark_bar_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kToolbar);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
+}
+
+TEST_F(BookmarkBarViewTest, BookmarkFolderButtonAccessibleProperties) {
+  auto* folder_button = test_helper_->managed_bookmarks_button();
+  ui::AXNodeData data;
+
+  folder_button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  // Role in set by menu button controller.
+  EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF8(
+          IDS_ACCNAME_BOOKMARK_FOLDER_BUTTON_ROLE_DESCRIPTION));
+}
+
+TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
+  auto* seperator_view = test_helper_->saved_tab_groups_separator_view_();
+  ui::AXNodeData data;
+
+  seperator_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
 }
 
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {

@@ -2257,6 +2257,75 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileWithSuggestedTwoFactorAuthSetup) {
+  const GURL kTwoFactorIntersitialUrl(
+      "https://myaccount.google.com/interstitials/twosvrequired?query=value");
+
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  Profile* profile_being_created = StartDiceSignIn();
+
+  // Add an account - simulate a successful Gaia sign-in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_being_created);
+  CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithAccessPoint(
+              signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER)
+          .Build("joe.acme@gmail.com"));
+  EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
+      core_account_info.account_id));
+
+  signin::UpdateAccountInfoForAccount(
+      identity_manager,
+      /*account_info=*/FillAccountInfo(core_account_info, "Joe", "acme.com"));
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      core_account_info.account_id, signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
+
+  // Redirect the web contents to a the two factor intersitial authentication
+  // page.
+  web_contents()->GetController().LoadURL(
+      kTwoFactorIntersitialUrl, content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
+
+  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
+      /*expected_type=*/
+      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      /*choice=*/signin::SIGNIN_CHOICE_NEW_PROFILE);
+
+  WaitForLoadStop(GetSyncConfirmationURL());
+  // Simulate finishing the flow with "No, thanks".
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
+
+  WaitForPickerClosed();
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForLoadStop(kTwoFactorIntersitialUrl,
+                  new_browser->tab_strip_model()->GetActiveWebContents());
+
+  // Check expectations when the profile creation flow is done.
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_NE(entry->GetGAIAId(), std::string());
+  EXPECT_FALSE(entry->IsEphemeral());
+  EXPECT_EQ(entry->GetLocalProfileName(), u"acme.com");
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
+  EXPECT_FALSE(sync_service->HasSyncConsent());
+  EXPECT_EQ(
+      ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
+      kProfileColor);
+}
+
 // TODO(crbug.com/40197102): Extend this test to support mirror.
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfileWithSyncDisabled) {
@@ -3015,14 +3084,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
   histogram_tester().ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn, 1);
-  EXPECT_FALSE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile));
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, QuitAtEnd) {
   Profile* profile = GetPrimaryProfile();
 
   // On the second run, the FRE is marked finished and we should skip it.
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
-  EXPECT_FALSE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_FALSE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
@@ -3098,7 +3167,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
                        PRE_QuitEarly) {
   Profile* profile = GetPrimaryProfile();
   // TODO(crbug.com/40224163): This is a bug, the flag should not be set.
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
 
@@ -3124,7 +3193,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
   Profile* profile = GetPrimaryProfile();
 
   // TODO(crbug.com/40224163): This is a bug, the flag should not be set.
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(0, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
 
@@ -3147,7 +3216,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
                        PRE_QuitAtEnd) {
   Profile* profile = GetPrimaryProfile();
   // TODO(crbug.com/40224163): This is a bug, the flag is set too early
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
 
@@ -3156,7 +3225,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
       /*quit_on_sync=*/true);
 
   // The user went past the welcome step, management should be marked accepted.
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
 
@@ -3178,7 +3247,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
 
   // On the second run, the FRE is marked finished and we should skip it.
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
@@ -3198,7 +3267,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
   // The profile picker is created but is waiting for the
   // sync service to complete its initialization to
   // determine whether to show the FRE or not.
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Signin_EnterpriseAccountPrompt_ImportData"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
@@ -3231,7 +3300,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosManagedFirstRunBrowserTest,
 
   // On the second run, the FRE is marked finished and we should skip it.
   EXPECT_FALSE(ShouldOpenFirstRun(profile));
-  EXPECT_TRUE(chrome::enterprise_util::UserAcceptedAccountManagement(profile));
+  EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile));
   EXPECT_FALSE(ProfilePicker::IsOpen());
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }

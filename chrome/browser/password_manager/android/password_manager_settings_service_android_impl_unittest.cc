@@ -75,7 +75,7 @@ class PasswordManagerSettingsServiceAndroidImplBaseTest : public testing::Test {
   void ExpectSettingsRetrievalFromBackend();
 
   Consumer* updater_bridge_consumer() { return settings_service_.get(); }
-  PasswordManagerSettingsService* settings_service() {
+  password_manager::PasswordManagerSettingsService* settings_service() {
     return settings_service_.get();
   }
   TestingPrefServiceSimple* pref_service() { return &test_pref_service_; }
@@ -1355,9 +1355,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsChromeHadNonDefaultValueGmsHadDefaultValue) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -1406,9 +1403,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsChromeAndGmsHadNonDefaultValue) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -1456,9 +1450,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        SettingsMigrationNotStartedIfCompletedBefore) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
   pref_service()->SetBoolean(
@@ -1484,9 +1475,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsChromeAndGMSHadDefaultValue) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
 
@@ -1530,9 +1518,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrationCallbackNotCreatedWhenChromeAndGMSHadDefaultValue) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
 
@@ -1586,9 +1571,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        SettingsMigrationNotPerformedWhenInterruptedByTurningOnSync) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -1633,9 +1615,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 // Checks if settings migration happens only once per browser lifetime.
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsChromePutToForegroundTwice) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   InitializeSettingsService(/*password_sync_enabled=*/false,
                             /*setting_sync_enabled=*/false);
 
@@ -1689,9 +1668,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 // independently from the other.
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsEachPrefHadDifferentValue) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   // User has changed one setting.
   pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
   pref_service()->SetBoolean(
@@ -1744,9 +1720,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsGettingValueFailed) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -1818,9 +1791,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
   pref_service()->ClearPref(
       password_manager::prefs::kCredentialsEnableAutosignin);
@@ -1836,38 +1806,11 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 }
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
-       MigrationNotDoneIfDefaultSettingsButShouldntMigrate) {
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
-  pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
-  pref_service()->ClearPref(
-      password_manager::prefs::kCredentialsEnableAutosignin);
-
-  InitializeSettingsService(/*password_sync_enabled=*/false,
-                            /*setting_sync_enabled=*/false);
-
-  EXPECT_FALSE(pref_service()->GetBoolean(
-      password_manager::prefs::kSettingsMigratedToUPMLocal));
-
-  histogram_tester()->ExpectTotalCount(
-      "PasswordManager.PasswordSettingsMigrationSucceeded2", 0);
-}
-
-TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrationNotDoneIfDefaultSettingsButNoStoreSplit) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->ClearPref(password_manager::prefs::kCredentialsEnableService);
   pref_service()->ClearPref(
       password_manager::prefs::kCredentialsEnableAutosignin);
@@ -1884,9 +1827,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsGotValueForTheSamePrefTwice) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   // Set prefs to user selected value so that the migration is triggered
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              true);
@@ -1993,9 +1933,6 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
 
 TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
        MigrateSettingsSettingGmsPrefFailed) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration};
   pref_service()->SetBoolean(
       password_manager::prefs::kSettingsMigratedToUPMLocal, false);
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,

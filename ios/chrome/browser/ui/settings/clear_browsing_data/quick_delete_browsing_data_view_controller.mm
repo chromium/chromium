@@ -5,15 +5,17 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_mutator.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -23,31 +25,50 @@ namespace {
 // Browing data type icon size.
 const CGFloat kDefaultSymbolSize = 24;
 
+// TableView's footer section height.
+constexpr CGFloat kSectionFooterHeight = 0;
+
+// The URL for signing out of Chrome from Delete Browsing Data (DBD).
+const char kDBDSignOutOfChromeURL[] = "settings://DBDSignOutOfChrome";
+
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierBrowsingData = kSectionIdentifierEnumZero,
+  SectionIdentifierFooter,
 };
 
 // Item identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierHistory = kItemTypeEnumZero,
+  ItemIdentifierTabs,
   ItemIdentifierSiteData,
+  ItemIdentifierCache,
   ItemIdentifierPasswords,
   ItemIdentifierAutofill,
 };
 
 }  // namespace
 
-@implementation QuickDeleteBrowsingDataViewController {
+@interface QuickDeleteBrowsingDataViewController () <
+    TableViewLinkHeaderFooterItemDelegate> {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  browsing_data::TimePeriod _timeRange;
   NSString* _historySummary;
+  NSString* _tabsSummary;
+  NSString* _cacheSummary;
   NSString* _passwordsSummary;
   NSString* _autofillSummary;
   BOOL _historySelected;
+  BOOL _tabsSelected;
   BOOL _siteDataSelected;
+  BOOL _cacheSelected;
   BOOL _passwordsSelected;
   BOOL _autofillSelected;
+  BOOL _shouldShowFooter;
 }
+@end
+
+@implementation QuickDeleteBrowsingDataViewController
 
 #pragma mark - ChromeTableViewController
 
@@ -83,14 +104,17 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
            }];
 
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
-  [snapshot
-      appendSectionsWithIdentifiers:@[ @(SectionIdentifierBrowsingData) ]];
+  [snapshot appendSectionsWithIdentifiers:@[
+    @(SectionIdentifierBrowsingData), @(SectionIdentifierFooter)
+  ]];
   [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifierHistory), @(ItemIdentifierSiteData),
-    @(ItemIdentifierPasswords), @(ItemIdentifierAutofill)
+    @(ItemIdentifierHistory), @(ItemIdentifierTabs), @(ItemIdentifierSiteData),
+    @(ItemIdentifierCache), @(ItemIdentifierPasswords),
+    @(ItemIdentifierAutofill)
   ]
              intoSectionWithIdentifier:@(SectionIdentifierBrowsingData)];
 
@@ -111,11 +135,58 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:itemIdentifier];
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  switch (sectionIdentifier) {
+    case SectionIdentifierFooter: {
+      if (!_shouldShowFooter) {
+        return nil;
+      }
+      TableViewLinkHeaderFooterView* footer =
+          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
+              tableView);
+      footer.accessibilityIdentifier = kQuickDeleteBrowsingDataFooterIdentifier;
+      footer.delegate = self;
+      footer.urls =
+          @[ [[CrURL alloc] initWithGURL:GURL(kDBDSignOutOfChromeURL)] ];
+      [footer setText:l10n_util::GetNSString(
+                          IDS_IOS_DELETE_BROWSING_DATA_PAGE_FOOTER)
+            withColor:[UIColor colorNamed:kTextSecondaryColor]];
+      return footer;
+    }
+    case SectionIdentifierBrowsingData: {
+      return nil;
+    }
+  }
+  NOTREACHED();
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
+      [_dataSource sectionIdentifierForIndex:section].integerValue);
+  if (sectionIdentifier == SectionIdentifierFooter && _shouldShowFooter) {
+    return UITableViewAutomaticDimension;
+  }
+  return kSectionFooterHeight;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  CHECK(url.gurl == kDBDSignOutOfChromeURL);
+  [_delegate signOutAndShowActionSheet];
+}
+
 #pragma mark - QuickDeleteConsumer
 
 - (void)setTimeRange:(browsing_data::TimePeriod)timeRange {
-  // TODO(crbug.com/341107834): Decide whether this is required to be
-  // implemented here or skipped.
+  if (_timeRange == timeRange) {
+    return;
+  }
+  _timeRange = timeRange;
 }
 
 - (void)setBrowsingDataSummary:(NSString*)summary {
@@ -124,24 +195,51 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)setShouldShowFooter:(BOOL)shouldShowFooter {
-  // TODO(crbug.com/341107834): Store the boolean value to used for the footer.
+  if (_shouldShowFooter == shouldShowFooter) {
+    return;
+  }
+
+  _shouldShowFooter = shouldShowFooter;
+
+  // Reload the footer section.
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reloadSectionsWithIdentifiers:@[ @(SectionIdentifierFooter) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 - (void)updateHistoryWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _historySummary = [self counterTextFromResult:result];
+  _historySummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
+}
+
+- (void)updateTabsWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _tabsSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+  [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
+}
+
+- (void)updateCacheWithResult:
+    (const browsing_data::BrowsingDataCounter::Result&)result {
+  _cacheSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
+  [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
 - (void)updatePasswordsWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _passwordsSummary = [self counterTextFromResult:result];
+  _passwordsSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierPasswords];
 }
 
 - (void)updateAutofillWithResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
-  _autofillSummary = [self counterTextFromResult:result];
+  _autofillSummary =
+      quick_delete_util::GetCounterTextFromResult(result, _timeRange);
   [self updateSnapshotForItemIdentifier:ItemIdentifierAutofill];
 }
 
@@ -150,9 +248,19 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   [self updateSnapshotForItemIdentifier:ItemIdentifierHistory];
 }
 
+- (void)setTabsSelection:(BOOL)selected {
+  _tabsSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierTabs];
+}
+
 - (void)setSiteDataSelection:(BOOL)selected {
   _siteDataSelected = selected;
   [self updateSnapshotForItemIdentifier:ItemIdentifierSiteData];
+}
+
+- (void)setCacheSelection:(BOOL)selected {
+  _cacheSelected = selected;
+  [self updateSnapshotForItemIdentifier:ItemIdentifierCache];
 }
 
 - (void)setPasswordsSelection:(BOOL)selected {
@@ -166,11 +274,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 - (void)deletionInProgress {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)deletionFinished {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private
@@ -205,21 +313,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 // selection.
 - (void)onConfirm:(id)sender {
   [_mutator updateHistorySelection:_historySelected];
+  [_mutator updateTabsSelection:_tabsSelected];
   [_mutator updateSiteDataSelection:_siteDataSelected];
+  [_mutator updateCacheSelection:_cacheSelected];
   [_mutator updatePasswordsSelection:_passwordsSelected];
   [_mutator updateAutofillSelection:_autofillSelected];
-  // TODO(crbug.com/341107834): Update changes in data types selection here.
   [_delegate dismissBrowsingDataPage];
-}
-
-// Returns the appropriate summary subtitle for the given counter result.
-// TODO(crbug.com/341107834): Move this to a helper util file and implement
-// cache & tabs types string handling as it's different on iOS than other
-// platforms.
-- (NSString*)counterTextFromResult:
-    (const browsing_data::BrowsingDataCounter::Result&)result {
-  return base::SysUTF16ToNSString(
-      browsing_data::GetCounterTextFromResult(&result));
 }
 
 // Creates the browsing data cell.
@@ -259,6 +358,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                          selected:_historySelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataHistoryIdentifier];
     }
+    case ItemIdentifierTabs: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_TABS)
+                          summary:_tabsSummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_tabsSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataTabsIdentifier];
+    }
     case ItemIdentifierSiteData: {
       // Because there is no counter for site data, an explanatory text is
       // displayed.
@@ -269,6 +376,14 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                              icon:[self iconForItemIdentifier:itemIdentifier]
                          selected:_siteDataSelected
           accessibilityIdentifier:kQuickDeleteBrowsingDataSiteDataIdentifier];
+    }
+    case ItemIdentifierCache: {
+      return [self
+              createCellWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_CACHE)
+                          summary:_cacheSummary
+                             icon:[self iconForItemIdentifier:itemIdentifier]
+                         selected:_cacheSelected
+          accessibilityIdentifier:kQuickDeleteBrowsingDataCacheIdentifier];
     }
     case ItemIdentifierPasswords: {
       return [self
@@ -305,8 +420,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _historySelected = !_historySelected;
       break;
     }
+    case ItemIdentifierTabs: {
+      _tabsSelected = !_tabsSelected;
+      break;
+    }
     case ItemIdentifierSiteData: {
       _siteDataSelected = !_siteDataSelected;
+      break;
+    }
+    case ItemIdentifierCache: {
+      _cacheSelected = !_cacheSelected;
       break;
     }
     case ItemIdentifierPasswords: {
@@ -317,8 +440,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       _autofillSelected = !_autofillSelected;
       break;
     }
-      // TODO(crbug.com/341107834): Update other data types selection state
-      // here.
   }
 }
 
@@ -329,8 +450,16 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return DefaultSymbolTemplateWithPointSize(kHistorySymbol,
                                                 kDefaultSymbolSize);
     }
+    case ItemIdentifierTabs: {
+      return DefaultSymbolTemplateWithPointSize(kTabsSymbol,
+                                                kDefaultSymbolSize);
+    }
     case ItemIdentifierSiteData: {
       return DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
+                                                kDefaultSymbolSize);
+    }
+    case ItemIdentifierCache: {
+      return DefaultSymbolTemplateWithPointSize(kCachedDataSymbol,
                                                 kDefaultSymbolSize);
     }
     case ItemIdentifierPasswords: {
@@ -341,7 +470,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return DefaultSymbolTemplateWithPointSize(kAutofillDataSymbol,
                                                 kDefaultSymbolSize);
     }
-      // TODO(crbug.com/341107834): Add other icons for remaining types here.
   }
 }
 

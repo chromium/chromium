@@ -36,11 +36,6 @@ static_library("browser_util") {
 }
 
 static_library("crosapi") {
-  defines = []
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
-  }
-
   sources = [
     "arc_ash.cc",
     "arc_ash.h",
@@ -363,6 +358,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/net",
+    "//chrome/browser/ash/network_change_manager",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
@@ -390,7 +386,7 @@ static_library("crosapi") {
     "//chrome/browser/ash/system_web_apps/apps/media_app",
     "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/ash/trusted_vault",
-    "//chrome/browser/chromeos/kcer",
+    "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/feedback",
     "//chrome/browser/image_decoder:image_decoder",
@@ -425,6 +421,7 @@ static_library("crosapi") {
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
+    "//chromeos/ash/components/nonclosable_app_ui",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/report:utils",
     "//chromeos/ash/components/settings",
@@ -524,6 +521,7 @@ static_library("crosapi") {
   public_deps = [
     ":browser_util",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/task_manager",
     "//chrome/browser/ui/webui/ash/parent_access",
     "//media/gpu:buildflags",
     "//printing",
@@ -535,18 +533,19 @@ static_library("crosapi") {
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager/virtual_tasks",
     "//chrome/browser/ash/file_system_provider",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/mahi",
     "//chrome/browser/ash/mahi/media_app",
     "//chrome/browser/ash/net",
-    "//chrome/browser/ash/input_method",
-    "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/system_web_apps/apps/help_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
-    "//chrome/browser/ash/file_manager/virtual_tasks",
+    "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/platform_keys",
   ]
 }
@@ -585,11 +584,10 @@ static_library("test_support") {
     "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
-    "//chrome/browser/chromeos/kcer",
+    "//chrome/browser/ash/printing/history:test_support",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/webui/ash/app_install",
     "//chrome/test:test_support",
@@ -682,13 +680,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/cert_provisioning:test_support",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/platform_keys:test_support",
     "//chrome/browser/ash/platform_keys/key_permissions:test_support",
     "//chrome/browser/ash/policy/core",
@@ -786,7 +784,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/app_mode/test:test_support",
@@ -802,6 +799,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/standalone_browser",

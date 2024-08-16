@@ -18,6 +18,8 @@ static_library("system_web_apps") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/webui/system_apps/public:system_web_app_type",
     "//base",
@@ -51,8 +53,11 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 
   # TODO(crbug.com/40251081): Remove circular includes.
@@ -69,7 +74,10 @@ static_library("system_web_apps") {
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/ash/system_web_apps/apps/camera_app",
     "//chrome/browser/ash/system_web_apps/apps/media_app",
+    "//chrome/browser/ash/url_handler",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
   ]
 }

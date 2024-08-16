@@ -143,7 +143,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   viz::FrameSinkId GetRootFrameSinkId() override;
   viz::SurfaceId GetCurrentSurfaceId() const override;
   bool HasSize() const override;
-  double GetZoomLevel() const override;
+  double GetCSSZoomFactor() const override;
   gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) override;
   bool TransformPointToCoordSpaceForView(

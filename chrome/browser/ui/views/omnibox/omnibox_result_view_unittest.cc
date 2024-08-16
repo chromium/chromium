@@ -267,7 +267,7 @@ TEST_F(OmniboxResultViewTest, MouseEnterAndExitSetsHoveredAccessibleState) {
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kHovered));
 }
 
-TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
+TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   // Check accessibility of result.
   std::u16string match_url = u"https://google.com";
   AutocompleteMatch match(nullptr, 500, false,
@@ -280,11 +280,8 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   match.allowed_to_be_default_match = true;
   result_view()->SetMatch(match);
   ui::AXNodeData result_node_data;
-  result_view()->GetAccessibleNodeData(&result_node_data);
-  EXPECT_TRUE(
-      result_node_data.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
-  EXPECT_FALSE(
-      result_node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  result_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
   // TODO(tommycli) Find a way to test this.
   // EXPECT_EQ(
@@ -293,17 +290,11 @@ TEST_F(OmniboxResultViewTest, AccessibleNodeData) {
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);
-  // TODO(accessibility) Find a way to test this.
-  // EXPECT_EQ(result_node_data.GetIntAttribute(
-  //   ax::mojom::IntAttribute::kSetSize), 1);
 
-  // Select it and check selected state.
-  ui::AXNodeData result_after_click;
-  result_view()->OnMousePressed(
-      FakeMouseEvent(ui::EventType::kMousePressed, ui::EF_LEFT_MOUSE_BUTTON));
-  result_view()->GetAccessibleNodeData(&result_after_click);
-  EXPECT_TRUE(
-      result_after_click.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  int result_size = static_cast<int>(
+      popup_view()->controller()->autocomplete_controller()->result().size());
+  EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
+                             ax::mojom::IntAttribute::kSetSize));
 
   // Check accessibility of list box.
   ui::AXNodeData popup_node_data;

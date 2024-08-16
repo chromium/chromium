@@ -38,8 +38,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -598,7 +597,7 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
   DCHECK(contents);
   api::tabs::MutedInfo info;
   info.muted = contents->IsAudioMuted();
-  switch (chrome::GetTabAudioMutedReason(contents)) {
+  switch (GetTabAudioMutedReason(contents)) {
     case TabMutedReason::NONE:
       break;
     case TabMutedReason::AUDIO_INDICATOR:
@@ -1164,12 +1163,12 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
     tab_strip_model = browser->tab_strip_model();
   }
 
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(
           tab_strip_model->profile());
 
   // If the service failed to start, then there are no saved tab groups.
-  if (!saved_tab_group_service) {
+  if (!wrapper_service) {
     return false;
   }
 
@@ -1181,7 +1180,7 @@ bool ExtensionTabUtil::TabIsInSavedTabGroup(content::WebContents* contents,
     return false;
   }
 
-  return saved_tab_group_service->model()->Contains(tab_group_id.value());
+  return wrapper_service->GetGroup(tab_group_id.value()).has_value();
 }
 
 }  // namespace extensions

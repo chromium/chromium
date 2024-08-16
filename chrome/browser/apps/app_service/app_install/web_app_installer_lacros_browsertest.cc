@@ -43,9 +43,9 @@ class WebAppInstallerLacrosBrowserTest
   void SetUpOnMainThread() override {
     AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
 
-    https_server_.RegisterRequestHandler(base::BindRepeating(
-        &WebAppInstallerLacrosBrowserTest::HandleRequest,
-        base::Unretained(this)));
+    https_server_.RegisterRequestHandler(
+        base::BindRepeating(&WebAppInstallerLacrosBrowserTest::HandleRequest,
+                            base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
     ASSERT_TRUE(https_server_.Start());

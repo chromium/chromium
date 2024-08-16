@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
@@ -33,7 +34,10 @@ bool IsUserEligibleParcelTrackingOptInPrompt(
     PrefService* pref_service,
     commerce::ShoppingService* shopping_service) {
   return IsIOSParcelTrackingEnabled() &&
-         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()) &&
+         !IsParcelTrackingDisabled(
+             IsHomeCustomizationEnabled()
+                 ? pref_service
+                 : GetApplicationContext()->GetLocalState()) &&
          !pref_service->GetBoolean(
              prefs::kIosParcelTrackingOptInPromptDisplayLimitMet) &&
          shopping_service->IsParcelTrackingEligible();

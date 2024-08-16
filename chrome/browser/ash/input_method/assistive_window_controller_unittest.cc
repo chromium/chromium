@@ -6,7 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
@@ -116,6 +118,8 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void WaitForSuggestionWindowDelay() {
@@ -124,6 +128,7 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;

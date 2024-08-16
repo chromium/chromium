@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class GridItemIdentifier;
+enum class TabGridMode;
 
 namespace web {
 class WebStateID;
@@ -15,6 +16,9 @@ class WebStateID;
 
 // Supports idempotent insert/delete/updates tabs to a collection view.
 @protocol TabCollectionConsumer <NSObject>
+
+// Sets the mode of the grid.
+- (void)setTabGridMode:(TabGridMode)mode;
 
 // Many of the following methods pass a `selectedItemID` as a parameter,
 // indicating the identifier of the item that should be in the selected state
@@ -60,6 +64,9 @@ class WebStateID;
 // index of that item might be.
 - (void)moveItem:(GridItemIdentifier*)item
       beforeItem:(GridItemIdentifier*)nextItemIdentifier;
+
+// Brings `item` into view (in the visible elements of the grid).
+- (void)bringItemIntoView:(GridItemIdentifier*)item animated:(BOOL)animated;
 
 // Dismisses any presented modal UI.
 - (void)dismissModals;

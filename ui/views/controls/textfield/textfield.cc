@@ -902,7 +902,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
     case ui::EventType::kGestureScrollEnd:
     case ui::EventType::kScrollFlingStart:
       if (HandleGestureForSelectionDragging(event)) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
       if (HasFocus()) {
         if (show_touch_handles_after_scroll_) {
@@ -914,7 +914,7 @@ void Textfield::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::EventType::kGestureEnd:
       if (HandleGestureForSelectionDragging(event)) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       }
       break;
     default:
@@ -1604,6 +1604,10 @@ void Textfield::ExecuteCommand(int command_id, int event_flags) {
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, ui::TextInputClient overrides:
 
+base::WeakPtr<ui::TextInputClient> Textfield::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void Textfield::SetCompositionText(const ui::CompositionText& composition) {
   if (GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE)
     return;
@@ -1974,7 +1978,7 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::INVALID_COMMAND:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void Textfield::SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) {
@@ -2329,7 +2333,7 @@ Textfield::EditCommandResult Textfield::DoExecuteTextEditCommand(
     case ui::TextEditCommand::SET_MARK:
     case ui::TextEditCommand::UNSELECT:
     case ui::TextEditCommand::INVALID_COMMAND:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return {changed, cursor_changed};

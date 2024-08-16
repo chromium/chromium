@@ -71,7 +71,7 @@ std::optional<ViewID> GetViewID(
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

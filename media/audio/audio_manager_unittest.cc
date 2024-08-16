@@ -35,6 +35,7 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +58,7 @@
 #include "media/audio/pulse/pulse_util.h"
 #endif  // defined(USE_PULSEAUDIO)
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 #include "media/audio/cras/audio_manager_cras.h"
 #endif
 
@@ -559,7 +560,7 @@ TEST_F(AudioManagerTest, CheckMakeOutputStreamWithPreferredParameters) {
   stream->Close();
 }
 
-#if BUILDFLAG(IS_MAC) || defined(USE_CRAS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_CRAS)
 class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
  public:
   TestAudioSourceCallback(int expected_frames_per_buffer,
@@ -595,7 +596,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 
 #if BUILDFLAG(IS_MAC)
   CreateAudioManagerForTesting<AudioManagerMac>();
-#elif defined(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(USE_CRAS) && BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAudioManagerForTesting<AudioManagerCras>();
 #endif
 
@@ -612,7 +613,7 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
   ASSERT_GT(default_params.frames_per_buffer(),
             GetMinAudioBufferSizeMacOS(media::limits::kMinAudioBufferSize,
                                        default_params.sample_rate()));
-#elif defined(USE_CRAS)
+#elif BUILDFLAG(USE_CRAS)
   // On CRAS the preferred output buffer size varies per board and may be as low
   // as the minimum for some boards.
   ASSERT_GE(default_params.frames_per_buffer(),

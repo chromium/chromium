@@ -19,7 +19,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -199,13 +199,13 @@ void ChromePageInfoDelegate::FocusWebContents() {
   browser->ActivateContents(web_contents_);
 }
 
-std::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
+std::optional<std::u16string> ChromePageInfoDelegate::GetRwsOwner(
     const GURL& site_url) {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->GetFirstPartySetOwnerForDisplay(site_url);
 }
 
-bool ChromePageInfoDelegate::IsFpsManaged() {
+bool ChromePageInfoDelegate::IsRwsManaged() {
   return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
       ->IsFirstPartySetsDataAccessManaged();
 }
@@ -259,11 +259,11 @@ void ChromePageInfoDelegate::ShowCookiesSettings() {
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
 }
 
-void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByFpsOwner(
-    const std::u16string& fps_owner) {
+void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
+    const std::u16string& rws_owner) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  chrome::ShowAllSitesSettingsFilteredByFpsOwner(browser,
-                                                 base::UTF16ToUTF8(fps_owner));
+  chrome::ShowAllSitesSettingsFilteredByRwsOwner(browser,
+                                                 base::UTF16ToUTF8(rws_owner));
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {
@@ -378,7 +378,7 @@ security_state::SecurityLevel ChromePageInfoDelegate::GetSecurityLevel() {
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
-  SecurityStateTabHelper::CreateForWebContents(web_contents_);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
 
   auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
   DCHECK(helper);
@@ -393,7 +393,7 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
 
   // This is a no-op if a SecurityStateTabHelper already exists for
   // |web_contents|.
-  SecurityStateTabHelper::CreateForWebContents(web_contents_);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents_);
 
   auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
   DCHECK(helper);
@@ -414,8 +414,8 @@ void ChromePageInfoDelegate::OnCookiesPageOpened() {
 
 std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>
 ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
-  auto delegate = std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-      web_contents_);
+  auto delegate =
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents_);
   return std::move(delegate);
 }
 

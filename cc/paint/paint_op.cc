@@ -359,7 +359,7 @@ std::string PaintOpTypeToString(PaintOpType type) {
   TYPES(M)
 #undef M
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsDiscardableImage(const PaintImage& image,

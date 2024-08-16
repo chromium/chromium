@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 
-@class BubblePresenter;
+@protocol HelpCommands;
 class TemplateURLService;
 
 // Accessory View above the keyboard.
@@ -25,7 +25,7 @@ class TemplateURLService;
                     pasteTarget:(id<UIPasteConfigurationSupporting>)pasteTarget
              templateURLService:(TemplateURLService*)templateURLService
                       textField:(UITextField*)textField
-                bubblePresenter:(BubblePresenter*)bubblePresenter
+                    helpHandler:(id<HelpCommands>)helpHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
@@ -36,9 +36,6 @@ class TemplateURLService;
 // The templateURLService used by this view to determine whether or not
 // Google is the default search engine.
 @property(nonatomic, assign) TemplateURLService* templateURLService;
-
-// Bubble presenter for displaying IPH bubbles relating to the NTP.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 @end
 

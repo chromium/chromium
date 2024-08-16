@@ -12,8 +12,8 @@
 #import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
@@ -288,7 +288,8 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self setMinimumHeight];
   }
 
-  [self.bubblePresenter presentDiscoverFeedHeaderTipBubble];
+  [self.helpHandler
+      presentInProductHelpWithType:InProductHelpType::kDiscoverFeedMenu];
 
   // Scrolls NTP into feed initially if `shouldScrollIntoFeed`.
   if (self.shouldScrollIntoFeed) {

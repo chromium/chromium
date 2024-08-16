@@ -50,51 +50,59 @@ class WebTestFinder(object):
                                       'web_tests')
 
     def find_tests(
-            self,
-            args,
-            test_lists=None,
-            filter_files=None,
-            fastest_percentile=None,
-            filters=None,
+        self,
+        args,
+        test_lists=None,
+        exclude_test_lists=None,
+        filter_files=None,
+        fastest_percentile=None,
+        filters=None,
     ):
-        filters = filters or []
-        paths = self._strip_test_dir_prefixes(args)
+        # The second entry of each element is true if the path is to be
+        # included, and false if excluded.
+        paths = [(path, True) for path in self._strip_test_dir_prefixes(args)]
         if test_lists:
             new_paths = self._read_test_list_files(
                 test_lists, self._port.TEST_PATH_SEPARATOR)
-            new_paths = [
-                self._strip_test_dir_prefix(new_path)
-                for new_path in new_paths
-            ]
-            paths += new_paths
+            paths.extend((path, True) for path in new_paths)
 
         all_tests = []
         if not paths or fastest_percentile:
             all_tests = self._port.tests(None)
 
-        path_tests = []
-        if paths:
-            path_tests = self._port.tests(paths)
-
-        test_files = None
+        test_files = set()
         running_all_tests = False
         if fastest_percentile:
             times_trie = self._times_trie()
             if times_trie:
                 fastest_tests = self._fastest_tests(times_trie, all_tests,
                                                     fastest_percentile)
-                test_files = list(set(fastest_tests).union(path_tests))
+                test_files.update(fastest_tests)
             else:
                 _log.warning(
                     'Running all the tests the first time to generate timing data.'
                 )
-                test_files = all_tests
                 running_all_tests = True
-        elif paths:
-            test_files = path_tests
         else:
-            test_files = all_tests
-            running_all_tests = True
+            running_all_tests = not paths and not test_lists
+
+        if running_all_tests:
+            test_files.update(all_tests)
+
+        if exclude_test_lists:
+            new_paths = self._read_test_list_files(
+                exclude_test_lists, self._port.TEST_PATH_SEPARATOR)
+            paths.extend((path, False) for path in new_paths)
+            if new_paths:
+                running_all_tests = False
+
+        for path, include in sorted(paths):
+            path_tests = self._port.tests([path])
+            if include:
+                test_files.update(path_tests)
+            else:
+                test_files -= set(path_tests)
+        test_files = sorted(test_files)
 
         all_filters = []
         if filters:
@@ -108,7 +116,8 @@ class WebTestFinder(object):
 
         # de-dupe the test list and paths here before running them.
         test_files = list(OrderedDict.fromkeys(test_files))
-        paths = list(OrderedDict.fromkeys(paths))
+        paths = list(
+            OrderedDict.fromkeys(path for path, include in paths if include))
         return (paths, test_files, running_all_tests)
 
     def _times_trie(self):
@@ -201,11 +210,13 @@ class WebTestFinder(object):
                         _log.debug(
                             'test-list %s contains a negative filter %s' %
                             (filename, line))
-                    positive_matches.append(line)
+                        continue
+                    positive_matches.append(self._strip_test_dir_prefix(line))
             except IOError as error:
                 if error.errno == errno.ENOENT:
                     _log.critical('')
-                    _log.critical('--test-list file "%s" not found', filename)
+                    _log.critical('--(exclude-)test-list file "%s" not found',
+                                  filename)
                 raise
         return positive_matches
 

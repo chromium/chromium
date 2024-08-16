@@ -9,6 +9,7 @@ import android.os.ConditionVariable;
 import android.os.Process;
 import android.os.SystemClock;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -38,6 +39,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -440,7 +442,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             String method,
             ArrayList<Map.Entry<String, String>> requestHeaders,
             UploadDataProvider uploadDataProvider,
-            Executor uploadDataProviderExecutor) {
+            Executor uploadDataProviderExecutor,
+            byte[] sharedDictionaryHash,
+            ByteBuffer sharedDictionary,
+            @NonNull String sharedDictionaryId) {
         // if this request is not bound to network, use the network bound to the engine.
         if (networkHandle == DEFAULT_NETWORK_HANDLE) {
             networkHandle = mNetworkHandle;
@@ -467,7 +472,10 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     method,
                     requestHeaders,
                     uploadDataProvider,
-                    uploadDataProviderExecutor);
+                    uploadDataProviderExecutor,
+                    sharedDictionaryHash,
+                    sharedDictionary,
+                    sharedDictionaryId);
         }
     }
 

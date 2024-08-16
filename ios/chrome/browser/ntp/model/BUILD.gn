@@ -100,6 +100,8 @@ source_set("set_up_list_prefs") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }
 

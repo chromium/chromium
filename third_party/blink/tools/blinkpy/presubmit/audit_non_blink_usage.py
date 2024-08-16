@@ -280,6 +280,7 @@ _CONFIG = [
             'base::MakeClampedNum',
 
             # //base/strings/strcat.h.
+            'base::StrAppend',
             'base::StrCat',
 
             # Debugging helpers from //base/debug are allowed everywhere.
@@ -343,6 +344,13 @@ _CONFIG = [
         ],
     },
     {
+        'paths': ['third_party/blink/common/interest_group/interest_group.cc'],
+        'allowed': [
+            # For hashing of k-anonymity keys
+            'crypto::SHA256HashString',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/'],
         'allowed': [
             # TODO(dcheng): Should these be in a more specific config?
@@ -367,6 +375,7 @@ _CONFIG = [
             'base::PendingTask',
 
             # cc painting and raster types.
+            'cc::AuxImage',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
             'cc::DrawLooper',
@@ -657,10 +666,6 @@ _CONFIG = [
             # Assume that identifiers where the first qualifier is internal are
             # nested in the blink namespace.
             'internal::.+',
-
-            # TODO(https://crbug.com/1261328): Remove this once the Blob URL
-            # partitioning killswitch is removed.
-            "net::features::kSupportPartitionedBlobUrl",
 
             # HTTP structured headers
             'net::structured_headers::.+',
@@ -1674,20 +1679,27 @@ _CONFIG = [
         ],
         # Suppress almost all checks on platform since code in this directory is
         # meant to be a bridge between Blink and non-Blink code. However,
-        # base::RefCounted should still be explicitly blocked, since
-        # WTF::RefCounted should be used instead. base::RefCountedThreadSafe is
-        # still needed for cross_thread_copier.h though.
-        'allowed': ['base::RefCountedThreadSafe', '(?!base::RefCounted).+'],
-        # This is required to supplant less fine-grained inclass_disallows. We
-        # want to allow everything that the normal ones are allowing here, for
-        # the same reasons.
-        'inclass_allowed':
-        ['base::RefCountedThreadSafe::.+', '(?!base::RefCounted).+'],
+        # base::RefCounted and base::RefCountedThreadSafe should still be
+        # explicitly blocked.
+        # WTF::RefCounted and WTF::ThreadSafeRefCounted should be used instead.
+        'allowed': ['.+'],
+        'inclass_allowed': ['.+'],
         'disallowed': [
+            ('base::RefCounted', 'Use RefCounted'),
+            ('base::RefCountedThreadSafe', 'Use ThreadSafeRefCounted'),
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.
             _DISALLOW_NON_BLINK_MOJOM,
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/platform/wtf/',
+        ],
+        # base::RefCounted and base::RefCountedThreadSafe are prohibited in
+        # platform/ as defined above, but wtf/ needs them to define their WTF
+        # subclasses and CrossThreadCopier.
+        'allowed': ['base::RefCounted', 'base::RefCountedThreadSafe'],
     },
     {
         'paths': [
@@ -1697,7 +1709,7 @@ _CONFIG = [
         # SingleThreadIdleTaskRunner needs to be constructed before WTF and
         # PartitionAlloc are initialized, which forces us to use
         # base::RefCountedThreadSafe for it.
-        'allowed': ['.+'],
+        'allowed': ['base::RefCountedThreadSafe'],
     },
     {
         'paths': [
@@ -2170,6 +2182,14 @@ _CONFIG = [
         ],
         'allowed': [
             'url::Origin',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/public/common/tokens/',
+        ],
+        'allowed': [
+            'base::TokenType',
         ]
     },
     {

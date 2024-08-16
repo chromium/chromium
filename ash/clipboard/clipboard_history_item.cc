@@ -61,15 +61,14 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
   std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng: {
       gfx::Image image;
       if (const auto& maybe_png = item.data().maybe_png()) {
-        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value().data(),
-                                                 maybe_png.value().size());
+        image = gfx::Image::CreateFrom1xPNGBytes(maybe_png.value());
       } else {
         // If we have not yet encoded the bitmap to a PNG, just create the
         // image using the available bitmap. No information is lost here.
@@ -97,8 +96,7 @@ std::u16string DetermineDisplayTextForFileSystemData(
   std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::u16string();
+    NOTREACHED();
   }
 
   size_t file_count = source_list.size();

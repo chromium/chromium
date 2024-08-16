@@ -144,7 +144,8 @@ class StrikeDatabaseTest : public ::testing::Test {
  protected:
   base::HistogramTester* GetHistogramTester() { return &histogram_tester_; }
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<TestStrikeDatabase> strike_database_;
 
@@ -307,7 +308,7 @@ TEST_F(StrikeDatabaseTest, LastUpdateTimestamp) {
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
           strike_database_->GetLastUpdatedTimestamp("fake key")));
   EXPECT_FALSE(strike_added_timestamp.is_null());
-
+  task_environment_.AdvanceClock(base::Microseconds(5));
   strike_database_->AddStrikes(1, "fake key");
   EXPECT_LT(strike_added_timestamp,
             base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(

@@ -1883,8 +1883,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mOmniboxEnabled = true;
             mOmniboxBackground =
                     AppCompatResources.getDrawable(
-                            getContext(),
-                            R.drawable.modern_toolbar_text_box_background_with_primary_color);
+                            getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
             mOmniboxBackground.mutate();
             mOmniboxBackground.setTint(
                     ChromeColors.getSurfaceColor(getContext(), R.dimen.toolbar_text_box_elevation));

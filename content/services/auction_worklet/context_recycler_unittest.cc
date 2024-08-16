@@ -1739,6 +1739,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddSharedStorageBindings(
         &test_shared_storage_host,
+        mojom::AuctionWorkletFunction::kBidderGenerateBid,
         /*shared_storage_permissions_policy_allowed=*/true);
   }
 
@@ -1755,10 +1756,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request{.type = RequestType::kSet,
-                                    .key = u"a",
-                                    .value = u"b",
-                                    .ignore_if_present = false}));
+                ElementsAre(Request{
+                    .type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -1781,10 +1785,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request{.type = RequestType::kSet,
-                                    .key = u"a",
-                                    .value = u"b",
-                                    .ignore_if_present = true}));
+                ElementsAre(Request{
+                    .type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -1802,10 +1809,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request{.type = RequestType::kAppend,
-                                    .key = u"a",
-                                    .value = u"b",
-                                    .ignore_if_present = false}));
+                ElementsAre(Request{
+                    .type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -1822,10 +1832,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request{.type = RequestType::kDelete,
-                                    .key = u"a",
-                                    .value = std::u16string(),
-                                    .ignore_if_present = false}));
+                ElementsAre(Request{
+                    .type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -1842,10 +1855,13 @@ TEST_F(ContextRecyclerTest, SharedStorageMethods) {
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                ElementsAre(Request{.type = RequestType::kClear,
-                                    .key = std::u16string(),
-                                    .value = std::u16string(),
-                                    .ignore_if_present = false}));
+                ElementsAre(Request{
+                    .type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kBidderGenerateBid}));
 
     test_shared_storage_host.ClearObservedRequests();
   }
@@ -2058,7 +2074,7 @@ TEST_F(ContextRecyclerTest, SharedStorageMethodsPermissionsPolicyDisabled) {
   {
     ContextRecyclerScope scope(context_recycler);  // Initialize context
     context_recycler.AddSharedStorageBindings(
-        nullptr,
+        nullptr, mojom::AuctionWorkletFunction::kBidderGenerateBid,
         /*shared_storage_permissions_policy_allowed=*/false);
   }
 

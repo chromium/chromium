@@ -73,6 +73,10 @@ CaptureModeMenuGroup* CaptureModeSettingsTestApi::GetCameraMenuGroup() {
   return settings_view_->camera_menu_group_;
 }
 
+views::View* CaptureModeSettingsTestApi::GetCameraMenuHeader() {
+  return GetCameraMenuGroup()->menu_header();
+}
+
 views::View* CaptureModeSettingsTestApi::GetCameraOption(int option_id) {
   return GetCameraMenuGroup()->GetOptionForTesting(option_id);
 }

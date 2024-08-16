@@ -279,7 +279,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
         reflectToAttribute: true,
       },
 
-      productSpecificationsListsEnabled_: Boolean,
+      compareHistoryEnabled_: Boolean,
       tabContentScrollOffset_: Number,
     };
   }
@@ -310,8 +310,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private scrollTarget_: HTMLElement;
   private queryStateAfterDate_?: Date;
   private hasHistoryEmbeddingsResults_: boolean;
-  private productSpecificationsListsEnabled_: boolean =
-      loadTimeData.getBoolean('productSpecificationsListsEnabled');
+  private compareHistoryEnabled_: boolean =
+      loadTimeData.getBoolean('compareHistoryEnabled');
   private historyEmbeddingsResizeObserver_?: ResizeObserver;
   private tabContentScrollOffset_: number = 0;
   private dataFromNativeBeforeInput_: string|null = null;
@@ -420,8 +420,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
         this.showHistoryClusters_;
   }
 
-  private productSpecificationsListsSelected_(_selectedPage: string): boolean {
-    return this.productSpecificationsListsEnabled_ &&
+  private comparisonTablesSelected_(_selectedPage: string): boolean {
+    return this.compareHistoryEnabled_ &&
         this.selectedPage_ === Page.PRODUCT_SPECIFICATIONS_LISTS;
   }
 

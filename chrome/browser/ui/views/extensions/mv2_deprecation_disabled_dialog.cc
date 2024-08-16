@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,20 +16,21 @@
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 
 namespace extensions {
 
 void ShowMv2DeprecationDisabledDialog(
     Browser* browser,
-    const std::vector<ExtensionId>& extension_ids,
+    std::vector<Mv2DisabledDialogController::ExtensionInfo>& extensions_info,
     base::OnceClosure remove_callback,
     base::OnceClosure manage_callback,
     base::OnceClosure close_callback) {
-  CHECK(!extension_ids.empty());
-  int extensions_size = extension_ids.size();
+  CHECK(!extensions_info.empty());
+  int extensions_size = extensions_info.size();
 
   ui::DialogModel::Builder dialog_builder;
-  dialog_builder
+  dialog_builder.SetInternalName("Mv2DeprecationDisabledDialog")
       .AddParagraph(
           ui::DialogModelLabel(l10n_util::GetPluralStringFUTF16(
               IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION,
@@ -51,35 +53,22 @@ void ShowMv2DeprecationDisabledDialog(
       .DisableCloseOnDeactivate()
       .SetCloseActionCallback(std::move(close_callback));
 
-  auto* extension_registry = ExtensionRegistry::Get(browser->profile());
-  auto* extension_prefs = ExtensionPrefs::Get(browser->profile());
-
   if (extensions_size == 1) {
-    const Extension* extension =
-        extension_registry->disabled_extensions().GetByID(extension_ids[0]);
-    CHECK(extension);
-    CHECK(extension_prefs->HasDisableReason(
-        extension_ids[0],
-        disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
+    dialog_builder
+        .SetTitle(l10n_util::GetStringFUTF16(
+            IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_TITLE,
+            base::UTF8ToUTF16(extensions_info[0].name)))
+        .SetIcon(ui::ImageModel::FromImage(extensions_info[0].icon));
 
-    dialog_builder.SetTitle(l10n_util::GetStringFUTF16(
-        IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_TITLE,
-        base::UTF8ToUTF16(extension->name())));
   } else {
     dialog_builder.SetTitle(l10n_util::GetStringFUTF16Int(
         IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_PLURAL_TITLE,
         extensions_size));
-
-    for (const auto& extension_id : extension_ids) {
-      const Extension* extension =
-          extension_registry->disabled_extensions().GetByID(extension_id);
-      CHECK(extension);
-      CHECK(extension_prefs->HasDisableReason(
-          extension_ids[0],
-          disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION));
-
-      dialog_builder.AddParagraph(
-          ui::DialogModelLabel(base::UTF8ToUTF16(extension->name())));
+    for (const auto& extension_info : extensions_info) {
+      dialog_builder.AddMenuItem(
+          ui::ImageModel::FromImage(extension_info.icon),
+          base::UTF8ToUTF16(extension_info.name), base::DoNothing(),
+          ui::DialogModelMenuItem::Params().SetIsEnabled(false));
     }
   }
 

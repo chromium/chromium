@@ -8,24 +8,18 @@
 #include <iosfwd>
 #include <string>
 
-#include "base/component_export.h"
-
 namespace content {
 
-struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockId {
+struct PartitionedLockId {
   int partition;
   std::string key;
 };
 
 // Logging support.
-COMPONENT_EXPORT(LOCK_MANAGER)
 std::ostream& operator<<(std::ostream& out, const PartitionedLockId& range);
 
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator<(const PartitionedLockId& x, const PartitionedLockId& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator==(const PartitionedLockId& x, const PartitionedLockId& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator!=(const PartitionedLockId& x, const PartitionedLockId& y);
 
 }  // namespace content

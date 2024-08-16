@@ -122,6 +122,10 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
     account_checker_ = std::make_unique<MockAccountChecker>();
     account_checker_->SetCountry("us");
     account_checker_->SetLocale("en-us");
+    account_checker_->SetSignedIn(true);
+    account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    ON_CALL(*account_checker_, IsSyncTypeEnabled)
+        .WillByDefault(testing::Return(true));
 
     RegisterPrefs(prefs_.registry());
     account_checker_->SetPrefs(&prefs_);

@@ -39,8 +39,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_launch_state.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_load_failed_observer.h"
-#include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
+#include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
@@ -69,6 +69,11 @@
 #include "url/gurl.h"
 
 namespace ash {
+
+using kiosk::LoadProfile;
+using kiosk::LoadProfileCallback;
+using kiosk::LoadProfileResult;
+
 namespace {
 
 // Enum types for Kiosk.LaunchType UMA so don't change its values.
@@ -250,7 +255,7 @@ std::string ToString(KioskAppLaunchError::Error error) {
     CASE(kLacrosDataMigrationStarted);
     CASE(kLacrosBackwardDataMigrationStarted);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #undef CASE
 }
 
@@ -368,8 +373,7 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
           .Run(kiosk_app_id().account_id, kiosk_app_id().type,
                /*on_done=*/
                base::BindOnce(
-                   [](KioskLaunchController* self,
-                      KioskProfileLoader::Result result) {
+                   [](KioskLaunchController* self, LoadProfileResult result) {
                      CHECK(!self->profile_) << "Kiosk profile loaded twice";
                      self->profile_loader_handle_.reset();
 
@@ -598,7 +602,7 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
 
   switch (error) {
     case Error::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Error::kCryptohomedNotRunning:
     case Error::kAlreadyMounted:
       // Reboot the device on recoverable cryptohome errors. Do not save error

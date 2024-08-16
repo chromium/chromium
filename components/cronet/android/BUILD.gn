@@ -205,6 +205,8 @@ source_set("cronet_static") {
     "//components/cronet/android/cronet_url_request_adapter.h",
     "//components/cronet/android/io_buffer_with_byte_buffer.cc",
     "//components/cronet/android/io_buffer_with_byte_buffer.h",
+    "//components/cronet/android/shared_dictionary_with_byte_buffer.cc",
+    "//components/cronet/android/shared_dictionary_with_byte_buffer.h",
     "//components/cronet/android/url_request_close_source.cc",
     "//components/cronet/android/url_request_close_source.h",
     "//components/cronet/android/url_request_error.cc",
@@ -408,6 +410,7 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
+    "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   deps += cronet_impl_common_java_deps_to_package
@@ -1271,14 +1274,14 @@ cronet_javatests_deps_to_package = [
   ":cronet_test_apk_java",
   ":flags_java_proto",
   "//base:base_java",
+  "//third_party/jni_zero:jni_zero_java",
   "//base:base_java_test_support",
+
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
   "//net/android:net_java_test_support",
   "//url:url_java",
   "//third_party/androidx:androidx_annotation_annotation_experimental_java",
-  "//third_party/jni_zero:generate_jni_java",
-  "//third_party/jni_zero:jni_zero_java",
 ]
 
 if (!is_cronet_for_aosp_build) {
@@ -1328,6 +1331,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/PkpTest.java",
     "test/javatests/src/org/chromium/net/QuicTest.java",
     "test/javatests/src/org/chromium/net/RequestFinishedInfoTest.java",
+    "test/javatests/src/org/chromium/net/SharedDictionaryTest.java",
     "test/javatests/src/org/chromium/net/TestBidirectionalStreamCallback.java",
     "test/javatests/src/org/chromium/net/TestDrivenDataProvider.java",
     "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",

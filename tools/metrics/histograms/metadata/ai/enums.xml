@@ -37,13 +37,19 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ai.sessionDestroy"/>
   <int value="6" label="ai.sessionClone"/>
   <int value="7" label="ai.textModelInfo"/>
+  <int value="8" label="ai.sessionSummarize"/>
+  <int value="9" label="ai.sessionSummarizeStreaming"/>
+  <int value="10" label="AIWriter.write"/>
+  <int value="11" label="AIWriter.writeStreaming"/>
+  <int value="12" label="AIRewriter.rewrite"/>
+  <int value="13" label="AIRewriter.rewriteStreaming"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
 
-<!-- LINT.IfChange(AIModelAvailability) -->
+<!-- LINT.IfChange(AICapabilityAvailability) -->
 
-<enum name="AIModelAvailability">
+<enum name="AICapabilityAvailability">
   <int value="0" label="Readily">
     The model is available on-device and so creating will happen quickly.
   </int>
@@ -54,7 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="No">The model is not available for this device.</int>
 </enum>
 
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_text_session_factory.h:AIModelAvailability) -->
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_capability_availability.h:AICapabilityAvailability) -->
 
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 

@@ -17,6 +17,7 @@
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -65,8 +66,11 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* const profile = Profile::FromBrowserContext(context);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
-  bool is_otr_profile = !profile->IsRegularProfile();
+  bool is_signed_in = identity_manager && identity_manager->HasPrimaryAccount(
+                                              signin::ConsentLevel::kSync);
+  bool is_otr_profile = !profile->IsRegularProfile() || !is_signed_in;
 
   std::string chrome_version, locale;
   if (PrefService* pref_service = profile->GetPrefs()) {
@@ -82,8 +86,8 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<MantaService>(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      IdentityManagerFactory::GetForProfile(profile), is_demo_mode,
-      is_otr_profile, chrome_version, chrome_channel, locale);
+      identity_manager, is_demo_mode, is_otr_profile, chrome_version,
+      chrome_channel, locale);
 }
 
 }  // namespace manta

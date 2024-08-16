@@ -30,7 +30,6 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
       context_provider_(context_provider) {
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.pending_swap_params.max_pending_swaps = 1;
-  capabilities_.preserve_buffer_content = false;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
   capabilities_.supports_post_sub_buffer = false;
   capabilities_.orientation_mode = OutputSurface::OrientationMode::kLogic;

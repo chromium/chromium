@@ -53,17 +53,18 @@ StorageInterestGroup MakeInterestGroup(blink::InterestGroup interest_group) {
 scoped_refptr<StorageInterestGroups> CreateInterestGroups(url::Origin owner) {
   std::vector<blink::InterestGroup::Ad> ads;
   for (int i = 0; i < 100; i++) {
-    ads.emplace_back(owner.GetURL().Resolve(base::StringPrintf("/%i.html", i)),
-                     "metadata",
-                     /*size_group=*/std::nullopt,
-                     /*buyer_reporting_id=*/std::nullopt,
-                     /*buyer_and_seller_reporting_id=*/std::nullopt,
-                     /*ad_render_id=*/base::NumberToString(i));
+    ads.emplace_back(
+        owner.GetURL().Resolve(base::StringPrintf("/%03i.html", i)), "metadata",
+        /*size_group=*/std::nullopt,
+        /*buyer_reporting_id=*/std::nullopt,
+        /*buyer_and_seller_reporting_id=*/std::nullopt,
+        /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+        /*ad_render_id=*/base::StringPrintf("%03i", i));
   }
   std::vector<StorageInterestGroup> groups;
   for (int i = 0; i < 100; i++) {
     groups.emplace_back(MakeInterestGroup(
-        blink::TestInterestGroupBuilder(owner, base::NumberToString(i))
+        blink::TestInterestGroupBuilder(owner, base::StringPrintf("%03i", i))
             .SetBiddingUrl(owner.GetURL().Resolve("/bidding_script.js"))
             .SetPriority(i)  // Set a priority for deterministic ordering.
             .SetAds(ads)
@@ -124,6 +125,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -138,9 +140,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
-// TODO(crbug.com/355013095): Re-enable this test
-TEST_F(BiddingAndAuctionSerializerTest,
-       DISABLED_SerializeWithSmallRequestSize) {
+TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
   base::HistogramTester histogram_tester;
 
   const size_t kRequestSize = 2000;
@@ -152,6 +152,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -161,7 +162,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 154, 1);
+      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 107, 1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
@@ -169,7 +170,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
   base::HistogramTester histogram_tester;
 
-  const size_t kRequestSize = 200;
+  const size_t kRequestSize = 220;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
   config->request_size = kRequestSize;
@@ -178,6 +179,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -195,17 +197,17 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
   base::HistogramTester histogram_tester;
 
-  const size_t kRequestSize = 3000;
+  const size_t kRequestSize = 3600;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
   config->request_size = kRequestSize;
 
   config->per_buyer_configs[kOriginA] =
-      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1200);
   config->per_buyer_configs[kOriginB] =
-      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1200);
   config->per_buyer_configs[kOriginC] =
-      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1000);
+      blink::mojom::AuctionDataBuyerConfig::New(/*size=*/1200);
   config->per_buyer_configs[kOriginD] =
       blink::mojom::AuctionDataBuyerConfig::New();
 
@@ -213,6 +215,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -249,6 +252,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -256,12 +260,10 @@ TEST_F(BiddingAndAuctionSerializerTest,
   BiddingAndAuctionData data = serializer.Build();
   EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
 
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 2);
-  histogram_tester.ExpectBucketCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3);
   histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 236, 1);
+      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 192, 1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
@@ -287,6 +289,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -322,6 +325,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -359,6 +363,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   AddGroupsToSerializer(serializer);
@@ -398,6 +403,7 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithNoGroupsSetBuyersFixed) {
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   BiddingAndAuctionData data = serializer.Build();
@@ -426,6 +432,7 @@ TEST_F(BiddingAndAuctionSerializerTest,
   serializer.SetPublisher("foo");
   serializer.SetGenerationId(
       base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"));
+  serializer.SetTimestamp(base::Time::FromMillisecondsSinceUnixEpoch(0));
   serializer.SetConfig(std::move(config));
 
   BiddingAndAuctionData data = serializer.Build();

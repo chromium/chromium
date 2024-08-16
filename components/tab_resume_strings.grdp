@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+  <!-- For use in iOS, Android and Desktop UI -->
+  <message name="IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED" desc="Label for frequently visited decorator">
+    Your visit often
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_CONTINUE_READING" desc="Label for continue reading decorator">
+    Continue reading
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_MOST_RECENT" desc="Label for most recent decorator">
+    Your most recent tab
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_TIME_OF_DAY" desc="Label for frequently visited at time of day decorator">
+    You visit often at this time of day
+  </message>
+
+</grit-part>

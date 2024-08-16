@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
@@ -170,7 +171,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Initializes the modal type of the window to |modal_type|. Called from
   // NativeWidgetDelegate::OnNativeWidgetCreated() before the widget is
   // initially parented.
-  virtual void InitModalType(ui::ModalType modal_type) = 0;
+  virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;

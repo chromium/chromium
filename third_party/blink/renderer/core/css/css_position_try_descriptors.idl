@@ -4,7 +4,7 @@
 
 // https://drafts.csswg.org/css-anchor-position-1/#om-position-try
 
-[Exposed=Window, RuntimeEnabled=CSSAnchorPositioning]
+[Exposed=Window]
 interface CSSPositionTryDescriptors : CSSStyleDeclaration {
   [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString margin;
   [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString marginTop;
@@ -74,6 +74,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration {
   [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=justifySelf] attribute CSSOMString justify-self;
   [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString positionAnchor;
   [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=positionAnchor] attribute CSSOMString position-anchor;
-  [SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetArea;
-  [SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetArea] attribute CSSOMString inset-area;
+  [RuntimeEnabled=CSSPositionAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString positionArea;
+  [RuntimeEnabled=CSSPositionAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=positionArea] attribute CSSOMString position-area;
+  // TODO(crbug.com/352360007): these can be removed when inset-area is removed.
+  [RuntimeEnabled=CSSInsetAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter] attribute CSSOMString insetArea;
+  [RuntimeEnabled=CSSInsetAreaProperty, SetterCallWith=ExecutionContext, RaisesException=Setter, ImplementedAs=insetArea] attribute CSSOMString inset-area;
 };

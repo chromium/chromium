@@ -40,7 +40,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SupervisedUserCriticalJourneysIntegrationTest {
     private static final String BLOCKED_SITE_URL = "www.example.com";
-    private static final String MATURE_SITE_URL = "www.bestgore.com";
+    private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -115,7 +115,8 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
                 });
 
         EmbeddedTestServer testServer = mActivityTestRule.getEmbeddedTestServerRule().getServer();
-        String blockedHost = testServer.getURLWithHostName(MATURE_SITE_URL, "/");
+        // TODO(b/356932004): configure real infrastructure.
+        String blockedHost = testServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(blockedHost);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -124,6 +125,32 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
+        SupervisedUserSettingsTestUtils.tearDownTestUrlLoaderFactoryHelper();
+    }
+
+    @Test
+    @LargeTest
+    public void regularSitesAreNotBlockedBySafeSites() throws Exception {
+        SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
+                            mActivityTestRule.getProfile(/* incognito= */ false),
+                            /* isAllowed= */ true);
+                    SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
+                            mActivityTestRule.getProfile(/* incognito= */ false),
+                            /* isAllowed= */ true);
+                });
+
+        EmbeddedTestServer testServer = mActivityTestRule.getEmbeddedTestServerRule().getServer();
+        // TODO(b/356932004): configure real infrastructure.
+        String notBlockedHost = testServer.getURL(TEST_PAGE);
+        mActivityTestRule.loadUrl(notBlockedHost);
+
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Assert.assertFalse(tab.isShowingErrorPage());
+        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        Assert.assertFalse(title.isEmpty());
         SupervisedUserSettingsTestUtils.tearDownTestUrlLoaderFactoryHelper();
     }
 }

@@ -31,7 +31,7 @@ bool IsSegmentedDefaultBrowserPromoEnabled() {
 }
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
-             "kIOSKeyboardAccessoryUpgrade",
+             "IOSKeyboardAccessoryUpgrade",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -42,6 +42,10 @@ BASE_FEATURE(kSafetyCheckMagicStack,
 
 BASE_FEATURE(kSafetyCheckNotifications,
              "SafetyCheckNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmahaServiceRefactor,
+             "OmahaServiceRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kSafetyCheckNotificationsExperimentType[] =
@@ -121,7 +125,7 @@ BASE_FEATURE(kIOSDockingPromoPreventDeregistrationKillswitch,
 
 BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
              "NonModalDefaultBrowserPromoCooldownRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam{
@@ -285,47 +289,6 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBottomOmniboxPromoFRE,
-             "BottomOmniboxPromoFRE",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kBottomOmniboxPromoAppLaunch,
-             "BottomOmniboxPromoAppLaunch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kBottomOmniboxPromoParam[] = "BottomOmniboxPromoParam";
-const char kBottomOmniboxPromoParamForced[] = "Forced";
-
-bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type) {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return false;
-  }
-  if ((type == BottomOmniboxPromoType::kFRE ||
-       type == BottomOmniboxPromoType::kAny) &&
-      base::FeatureList::IsEnabled(kBottomOmniboxPromoFRE)) {
-    return true;
-  }
-  if ((type == BottomOmniboxPromoType::kAppLaunch ||
-       type == BottomOmniboxPromoType::kAny) &&
-      base::FeatureList::IsEnabled(kBottomOmniboxPromoAppLaunch)) {
-    return true;
-  }
-  return false;
-}
-
-BASE_FEATURE(kBottomOmniboxPromoDefaultPosition,
-             "BottomOmniboxPromoDefaultPosition",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kBottomOmniboxPromoDefaultPositionParam[] =
-    "BottomOmniboxPromoDefaultPositionParam";
-const char kBottomOmniboxPromoDefaultPositionParamTop[] = "Top";
-const char kBottomOmniboxPromoDefaultPositionParamBottom[] = "Bottom";
-
-BASE_FEATURE(kBottomOmniboxPromoRegionFilter,
-             "BottomOmniboxPromoRegionFilter",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -347,6 +310,10 @@ bool IsSafetyCheckMagicStackEnabled() {
 
 bool IsSafetyCheckNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckNotifications);
+}
+
+bool IsOmahaServiceRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kOmahaServiceRefactor);
 }
 
 SafetyCheckNotificationsExperimentalArm
@@ -839,7 +806,12 @@ BASE_FEATURE(kIOSTipsNotifications,
              "IOSTipsNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kIOSTipsNotificationsTriggerTimeParam[] = "trigger_time";
+const char kIOSTipsNotificationsUnknownTriggerTimeParam[] =
+    "unknown_trigger_time";
+const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[] =
+    "active_seeker_trigger_time";
+const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[] =
+    "less_engaged_trigger_time";
 const char kIOSTipsNotificationsEnabledParam[] = "enabled";
 
 bool IsIOSTipsNotificationsEnabled() {
@@ -973,3 +945,7 @@ constexpr base::FeatureParam<base::TimeDelta>
         &kIdentityConfirmationSnackbar,
         /*name=*/"IdentityConfirmationMinTimeSinceSignin",
         /*default_value=*/base::Hours(24)};
+
+BASE_FEATURE(kEnableTraitCollectionRegistration,
+             "EnableTraitCollectionRegistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);

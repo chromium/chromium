@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,7 +59,9 @@ class TestLocalCardMigrationBubbleControllerImpl
 class LocalCardMigrationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
-  LocalCardMigrationBubbleControllerImplTest() = default;
+  LocalCardMigrationBubbleControllerImplTest()
+      : BrowserWithTestWindowTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   LocalCardMigrationBubbleControllerImplTest(
       const LocalCardMigrationBubbleControllerImplTest&) = delete;
   LocalCardMigrationBubbleControllerImplTest& operator=(
@@ -94,8 +95,6 @@ class LocalCardMigrationBubbleControllerImplTest
         TestLocalCardMigrationBubbleControllerImpl::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
-
-  TestAutofillClock test_clock_;
 
  private:
   static void LocalCardMigrationCallback() {}
@@ -148,7 +147,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
        StickyBubble_ShouldNotDismissUponNavigation) {
   ShowBubble();
   base::HistogramTester histogram_tester;
-  test_clock_.Advance(base::Seconds(10));
+  task_environment()->FastForwardBy(base::Seconds(10));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(

@@ -12,12 +12,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,8 +37,7 @@ struct TestParam {
   TestParam(const char* url,
             const char* settings_value,
             AnalysisSettings* expected_settings,
-            safe_browsing::DataRegion data_region =
-                safe_browsing::DataRegion::NO_PREFERENCE)
+            DataRegion data_region = DataRegion::NO_PREFERENCE)
       : url(url),
         settings_value(settings_value),
         expected_settings(expected_settings),
@@ -48,7 +46,7 @@ struct TestParam {
   const char* url;
   const char* settings_value;
   raw_ptr<AnalysisSettings> expected_settings;
-  safe_browsing::DataRegion data_region;
+  DataRegion data_region;
 };
 
 constexpr char kNormalSettings[] = R"({
@@ -217,8 +215,7 @@ struct SourceDestinationTestParam {
       std::pair<VolumeInfo, VolumeInfo> source_destination_pair,
       const char* settings_value,
       AnalysisSettings* expected_settings,
-      safe_browsing::DataRegion data_region =
-          safe_browsing::DataRegion::NO_PREFERENCE)
+      DataRegion data_region = DataRegion::NO_PREFERENCE)
       : source_destination_pair(source_destination_pair),
         settings_value(settings_value),
         expected_settings(expected_settings),
@@ -227,7 +224,7 @@ struct SourceDestinationTestParam {
   std::pair<VolumeInfo, VolumeInfo> source_destination_pair;
   const char* settings_value;
   raw_ptr<AnalysisSettings> expected_settings;
-  safe_browsing::DataRegion data_region;
+  DataRegion data_region;
 };
 
 constexpr char kNormalSourceDestinationSettings[] = R"({
@@ -760,9 +757,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
 
     return GetParam().expected_settings;
   }
-  safe_browsing::DataRegion data_region() const {
-    return GetParam().data_region;
-  }
+  DataRegion data_region() const { return GetParam().data_region; }
 
  protected:
   bool is_cloud_ = true;
@@ -940,11 +935,11 @@ INSTANTIATE_TEST_SUITE_P(
         TestParam(kScan1DotCom,
                   kNormalSettings,
                   NormalDlpSettings(),
-                  safe_browsing::DataRegion::UNITED_STATES),
+                  DataRegion::UNITED_STATES),
         TestParam(kScan1DotCom,
                   kNormalSettings,
                   NormalDlpSettings(),
-                  safe_browsing::DataRegion::EUROPE)));
+                  DataRegion::EUROPE)));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1009,9 +1004,7 @@ class AnalysisServiceSourceDestinationSettingsTest
 
     return GetParam().expected_settings;
   }
-  safe_browsing::DataRegion data_region() const {
-    return GetParam().data_region;
-  }
+  DataRegion data_region() const { return GetParam().data_region; }
 
  protected:
   bool is_cloud_ = true;
@@ -1308,12 +1301,12 @@ INSTANTIATE_TEST_SUITE_P(
         SourceDestinationTestParam(kDlpMalwareVolumePair1,
                                    kNormalSourceDestinationSettings,
                                    NormalDlpSettings(),
-                                   safe_browsing::DataRegion::UNITED_STATES),
+                                   DataRegion::UNITED_STATES),
 
         SourceDestinationTestParam(kDlpMalwareVolumePair1,
                                    kNormalSourceDestinationSettings,
                                    NormalDlpSettings(),
-                                   safe_browsing::DataRegion::EUROPE)));
+                                   DataRegion::EUROPE)));
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

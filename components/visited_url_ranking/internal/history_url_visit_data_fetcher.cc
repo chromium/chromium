@@ -18,6 +18,43 @@
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "url/gurl.h"
 
+namespace {
+
+// Used to compute signals on whether related URL visit activity has periodicity
+// patterns based on the day of the week.
+enum DayGroup {
+  kWeekday = 0,
+  kWeekend = 1,
+};
+
+DayGroup GetDayGroupForExplodedTime(const base::Time::Exploded& exploded_time) {
+  return (exploded_time.day_of_week == 0 || exploded_time.day_of_week == 6)
+             ? DayGroup::kWeekend
+             : DayGroup::kWeekday;
+}
+
+// Used to compute signals on whether related URL visit activity has periodicity
+// patterns based on the time of the day. For simplicity, divides a day into 4
+// groups of 6 hours. Time group enum names are of no consequence.
+enum TimeGroup {
+  kGroup0 = 0,
+  kGroup1 = 1,
+  kGroup2 = 2,
+  kGroup3 = 3,
+};
+
+TimeGroup GetTimeGroupForExplodedTime(
+    const base::Time::Exploded& exploded_time) {
+  static constexpr int kHoursPerGroup = base::Time::kHoursPerDay / 4;
+
+  // Note that since the time groups are meant as approximations, relying only
+  // on the `hour` field should be acceptable for the generation of the
+  // corresponding signal.
+  return static_cast<TimeGroup>(exploded_time.hour / kHoursPerGroup);
+}
+
+}  // namespace
+
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
@@ -59,6 +96,11 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     const FetcherConfig& config,
     std::vector<history::AnnotatedVisit> annotated_visits) {
   std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
+
+  base::Time::Exploded time_exploded;
+  config.clock->Now().LocalExplode(&time_exploded);
+  DayGroup current_day_group = GetDayGroupForExplodedTime(time_exploded);
+  TimeGroup current_time_group = GetTimeGroupForExplodedTime(time_exploded);
   for (auto& annotated_visit : annotated_visits) {
     // The `originator_cache_guid` field is only set for foreign session visits.
     Source current_visit_source =
@@ -70,11 +112,12 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
     }
 
     auto url_key = ComputeURLMergeKey(annotated_visit.url_row.url(),
+                                      annotated_visit.url_row.title(),
                                       config.deduplication_helper);
     if (url_annotations.find(url_key) == url_annotations.end()) {
       // `GetAnnotatedVisits` returns a reverse-chronological sorted list of
-      // annotated visits, thus, the first visit in the vector is the most
-      // recent visit for a given URL.
+      // annotated visits, thus, the first visit in the vector is the last
+      // active (i.e. most recent) visit for a given URL.
       url_annotations.emplace(url_key, std::move(annotated_visit));
     } else {
       auto& history = url_annotations.at(url_key);
@@ -103,6 +146,18 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
 
       // TODO(crbug.com/340885723): Wire `in_cluster` signal.
       // TODO(crbug.com/340887237): Wire `interaction_state` signal.
+    }
+
+    auto& history = url_annotations.at(url_key);
+    base::Time::Exploded visit_time_exploded;
+    history.last_visited.visit_row.visit_time.LocalExplode(
+        &visit_time_exploded);
+    if (GetDayGroupForExplodedTime(visit_time_exploded) == current_day_group) {
+      history.same_day_group_visit_count++;
+    }
+    if (GetTimeGroupForExplodedTime(visit_time_exploded) ==
+        current_time_group) {
+      history.same_time_group_visit_count++;
     }
   }
 

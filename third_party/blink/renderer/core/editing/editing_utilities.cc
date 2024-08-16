@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
@@ -1630,7 +1631,8 @@ DispatchEventResult DispatchBeforeInputDataTransfer(
 
 void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
     LocalFrame& frame,
-    const String& replacement) {
+    const String& replacement,
+    bool allow_edit_context) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSpellCheck);
@@ -1656,8 +1658,12 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
     return;
   }
 
-  // No DOM mutation if EditContext is active.
-  if (frame.GetInputMethodController().GetActiveEditContext()) {
+  // When allowed, insert the text into the active edit context if it exists.
+  if (auto* edit_context =
+          frame.GetInputMethodController().GetActiveEditContext()) {
+    if (allow_edit_context) {
+      edit_context->InsertText(replacement);
+    }
     return;
   }
 

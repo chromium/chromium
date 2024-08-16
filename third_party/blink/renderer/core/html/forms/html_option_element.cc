@@ -63,6 +63,9 @@ class OptionTextObserver : public MutationObserver::Delegate {
     init->setCharacterData(true);
     init->setChildList(true);
     init->setSubtree(true);
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      init->setAttributes(true);
+    }
     observer_->observe(option_, init, ASSERT_NO_EXCEPTION);
   }
 
@@ -220,7 +223,7 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (UNLIKELY(is_descendant_of_select_list_)) {
+    } else if (is_descendant_of_select_list_) [[unlikely]] {
       if (HTMLSelectListElement* select_list = OwnerSelectList()) {
         select_list->OptionElementValueChanged(*this);
       }
@@ -709,54 +712,58 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
   }
 
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-  int ignore_modifiers = WebInputEvent::kShiftKey | WebInputEvent::kControlKey |
-                         WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
+  int tab_ignore_modifiers = WebInputEvent::kControlKey |
+                             WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
+  int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
 
-  if (keyboard_event && event.type() == event_type_names::kKeydown &&
-      !(keyboard_event->GetModifiers() & ignore_modifiers)) {
+  if (keyboard_event && event.type() == event_type_names::kKeydown) {
     const AtomicString key(keyboard_event->key());
-    if (key == keywords::kArrowUp && select) {
-      HTMLOptionElement* previous_option = nullptr;
-      OptionListIterator option_list = select->GetOptionList().begin();
-      while (*option_list && *option_list != this) {
-        previous_option = *option_list;
-        ++option_list;
-      }
-      if (previous_option) {
-        previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-        event.SetDefaultHandled();
-        return;
-      }
-    } else if (key == keywords::kArrowDown && select) {
-      OptionListIterator option_list = select->GetOptionList().begin();
-      while (*option_list && *option_list != this) {
-        ++option_list;
-      }
-      if (*option_list) {
-        CHECK_EQ(*option_list, this);
-        ++option_list;
-        auto* next_option = *option_list;
-        if (next_option) {
-          next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
+
+    if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
+      if (key == keywords::kArrowUp && select) {
+        HTMLOptionElement* previous_option = nullptr;
+        OptionListIterator option_list = select->GetOptionList().begin();
+        while (*option_list && *option_list != this) {
+          previous_option = *option_list;
+          ++option_list;
+        }
+        if (previous_option) {
+          previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
           event.SetDefaultHandled();
           return;
         }
+      } else if (key == keywords::kArrowDown && select) {
+        OptionListIterator option_list = select->GetOptionList().begin();
+        while (*option_list && *option_list != this) {
+          ++option_list;
+        }
+        if (*option_list) {
+          CHECK_EQ(*option_list, this);
+          ++option_list;
+          auto* next_option = *option_list;
+          if (next_option) {
+            next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
+            event.SetDefaultHandled();
+            return;
+          }
+        }
+      } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
+        SetSelected(true);
+        select->DisplayedDatalist()->HidePopoverForSelectElement();
+        event.SetDefaultHandled();
+        return;
       }
-    } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
-      SetSelected(true);
-      select->DisplayedDatalist()->HidePopoverForSelectElement();
-      event.SetDefaultHandled();
-      return;
-    } else if (key == keywords::kTab) {
+    }
+
+    if (key == keywords::kTab &&
+        !(keyboard_event->GetModifiers() & tab_ignore_modifiers)) {
       if (auto* selectlist = OwnerSelectList()) {
         selectlist->CloseListbox();
         event.SetDefaultHandled();
         return;
       } else if (select) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
-        // case, and also handle shift+tab. Handling shift+tab will require us
-        // to do something about the modifiers check earlier in this function.
-        // https://github.com/openui/open-ui/issues/1016
+        // case. https://github.com/openui/open-ui/issues/1016
         select->DisplayedDatalist()->HidePopoverForSelectElement();
         event.SetDefaultHandled();
         return;

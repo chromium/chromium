@@ -5,6 +5,7 @@
 #include "chrome/updater/setup.h"
 
 #include <AvailabilityMacros.h>
+#import <Foundation/Foundation.h>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -18,9 +19,18 @@
 
 namespace updater {
 
+namespace {
+
+int MacOSVersion() {
+  NSOperatingSystemVersion v = NSProcessInfo.processInfo.operatingSystemVersion;
+  return v.majorVersion * 100 * 100 + v.minorVersion * 100 + v.patchVersion;
+}
+
+}  // namespace
+
 void InstallCandidate(UpdaterScope scope,
                       base::OnceCallback<void(int)> callback) {
-  if (base::mac::MacOSVersion() < MAC_OS_X_VERSION_MIN_REQUIRED) {
+  if (MacOSVersion() < MAC_OS_X_VERSION_MIN_REQUIRED) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), kErrorUnsupportedOperatingSystem));

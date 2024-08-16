@@ -6,6 +6,12 @@
       include="cr-shared-style md-select cros-color-overrides"
     </if>
     >
+      /* TODO(crbug.com/349860796): Replace border override by instead removing
+         the "hr" class from the Secure DNS element once the new "Secure
+         connections" settings section ships by default. */
+      :host(.no-hr) settings-toggle-button.hr {
+        border-top: 0;
+      }
 
       #resolverSelect {
         width: inherit;

@@ -126,10 +126,7 @@ HoldingSpaceItemView::HoldingSpaceItemView(HoldingSpaceViewDelegate* delegate,
 
   // Background.
   SetBackground(views::CreateThemedRoundedRectBackground(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-          : kColorAshControlBackgroundColorInactive,
-      kHoldingSpaceCornerRadius));
+      cros_tokens::kCrosSysSystemOnBase, kHoldingSpaceCornerRadius));
 
   // Layer.
   SetPaintToLayer();
@@ -447,7 +444,7 @@ void HoldingSpaceItemView::OnPrimaryActionPressed() {
     if (!holding_space_util::ExecuteInProgressCommand(
             item(), HoldingSpaceCommandId::kCancelItem,
             holding_space_metrics::EventSource::kHoldingSpaceItem)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return;
   }

@@ -123,9 +123,11 @@ void PickerItemWithSubmenuView::ShowSubmenu() {
   std::vector<std::unique_ptr<PickerItemView>> items;
   items.reserve(entries_.size());
   for (const auto& [result, callback] : entries_) {
+    // There are no image item results in submenus, so can pass 0 for
+    // `available_width`.
     items.push_back(PickerSectionView::CreateItemFromResult(
         result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
-        callback));
+        /*available_width=*/0, callback));
   }
   GetSubmenuController()->Show(this, std::move(items));
 }

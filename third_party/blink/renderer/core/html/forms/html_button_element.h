@@ -64,9 +64,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
     kReset = base::to_underlying(mojom::blink::FormControlType::kButtonReset),
     kButton = base::to_underlying(mojom::blink::FormControlType::kButtonButton),
     kSelectlist =
-        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList),
-    kPopover =
-        base::to_underlying(mojom::blink::FormControlType::kButtonPopover)
+        base::to_underlying(mojom::blink::FormControlType::kButtonSelectList)
   };
 
   mojom::blink::FormControlType FormControlType() const override;

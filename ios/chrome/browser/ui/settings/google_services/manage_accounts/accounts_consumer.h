@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 
 enum class AccountErrorUserActionableType;
+@class IdentityViewItem;
 @protocol SystemIdentity;
 
 // Consumer protocol for accounts.
@@ -21,11 +22,11 @@ enum class AccountErrorUserActionableType;
 // Updates error section.
 - (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded;
 
-// Updates account identity.
-- (void)updateAccountIdentity:(id<SystemIdentity>)identity;
-
 // Pops the view.
 - (void)popView;
+
+// Updates identity view item.
+- (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem;
 
 @end
 

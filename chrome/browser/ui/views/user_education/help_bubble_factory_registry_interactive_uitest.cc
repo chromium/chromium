@@ -111,45 +111,37 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
             }));
       }),
 
-      // This step should still trigger even inside the Mac context menu loop
-      // because it runs immediately on the callback from the menu item being
-      // created (see ElementTrackerMac for code paths).
-      //
-      // Because Kombucha is currently synchronous, the subsequent steps will
-      // execute immediately as well, as long as the FlushEvents() below aren't
-      // run.
-      WaitForShow(TabMenuModel::kAddToNewGroupItemIdentifier),
-
-  // On non-Mac platforms, ensure that the menu has fully finished being
-  // shown before continuing. On Mac, this has to be done immediately since
-  // the context menu has seized control of the message pump.
-#if !BUILDFLAG(IS_MAC)
-      FlushEvents(),
+#if BUILDFLAG(IS_MAC)
+      // Because context menus run inside of a system message pump that cannot
+      // process Chrome tasks, the following steps must be executed immediately
+      // on the platform.
+      WithoutDelay(Steps(
 #endif
+          // This step should still trigger even inside the Mac context menu
+          // loop because it runs immediately on the callback from the menu item
+          // being created (see ElementTrackerMac for code paths).
+          WaitForShow(TabMenuModel::kAddToNewGroupItemIdentifier),
 
-      // Create and wait for the help bubble.
-      WithElement(TabMenuModel::kAddToNewGroupItemIdentifier,
-                  [this, &bubble](ui::TrackedElement* el) {
-                    bubble =
-                        GetRegistry()->CreateHelpBubble(el, GetBubbleParams());
-                  }),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+          // Create and wait for the help bubble.
+          WithElement(TabMenuModel::kAddToNewGroupItemIdentifier,
+                      [this, &bubble](ui::TrackedElement* el) {
+                        bubble = GetRegistry()->CreateHelpBubble(
+                            el, GetBubbleParams());
+                      }),
+          WaitForShow(
+              user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
 
-  // On non-Mac platforms, ensure that the bubble has rendered before
-  // continuing. On Mac, this has to be done immediately since the context
-  // menu still has control of the message pump.
-#if !BUILDFLAG(IS_MAC)
-      FlushEvents(),
+          // For platforms where context menus run synchronously, if we don't
+          // close the menu, we will get stuck in the inner message pump and can
+          // never finish the test. On other platforms, this is harmless and
+          // will clean up all of the secondary UI.
+          Do([this]() {
+            static_cast<BrowserTabStripController*>(
+                GetBrowserView()->tabstrip()->controller())
+                ->CloseContextMenuForTesting();
+          })
+#if BUILDFLAG(IS_MAC)
+              ))  // WithoutDelay(Steps(
 #endif
-
-      // For platforms where context menus run synchronously, if we don't close
-      // the menu, we will get stuck in the inner message pump and can never
-      // finish the test. On other platforms, this is harmless and will clean
-      // up all of the secondary UI.
-      Do([this]() {
-        static_cast<BrowserTabStripController*>(
-            GetBrowserView()->tabstrip()->controller())
-            ->CloseContextMenuForTesting();
-      }));
+  );
 }

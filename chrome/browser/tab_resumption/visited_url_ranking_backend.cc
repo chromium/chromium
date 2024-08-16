@@ -16,7 +16,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/visited_url_ranking/visited_url_ranking_service_factory.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
@@ -162,7 +162,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                     aggregate.request_id.is_null()
                         ? -1LL
                         : aggregate.request_id.GetUnsafeValue(),
-                    nullptr, j_suggestions_);
+                    nullptr, nullptr, j_suggestions_);
               },
               [&](const URLVisitAggregate::HistoryData& history_data) {
                 Java_VisitedUrlRankingBackend_addSuggestionEntry(
@@ -186,7 +186,9 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                         ? base::android::ConvertUTF8ToJavaString(
                               env_, *history_data.last_app_id)
                         : nullptr,
-                    j_suggestions_);
+                    // TODO(b/358399176): Plumb the "reason" to show the Tab to
+                    // Java.
+                    nullptr, j_suggestions_);
               }},
           fetcher_entry.second);
     }

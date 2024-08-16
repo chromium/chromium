@@ -22,8 +22,8 @@ namespace autofill {
 namespace {
 
 using ModelExecutor =
-    optimization_guide::ModelExecutor<AutofillModelExecutor::ModelOutput,
-                                      const AutofillModelExecutor::ModelInput&>;
+    optimization_guide::ModelExecutor<AutofillModelEncoder::ModelOutput,
+                                      const AutofillModelEncoder::ModelInput&>;
 using TokenId = AutofillModelEncoder::TokenId;
 
 class AutofillModelExecutorTest : public testing::Test {
@@ -74,7 +74,7 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
   // Execute model on a dummy "form" consisting of two fields. Since the
   // executor works in terms of tokenized fields, this is represented as a
   // two arrays of tokens. The TokenIds are completely arbitrary.
-  AutofillModelExecutor::ModelInput input = {
+  AutofillModelEncoder::ModelInput input = {
       {TokenId(1795), TokenId(1), TokenId(2), TokenId(3), TokenId(4),
        TokenId(5), TokenId(1797), TokenId(1), TokenId(2), TokenId(3),
        TokenId(4), TokenId(5), TokenId(1797), TokenId(1), TokenId(2),
@@ -84,7 +84,7 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
        TokenId(5), TokenId(6), TokenId(1796), TokenId(2), TokenId(3),
        TokenId(4), TokenId(5), TokenId(6)}};
   base::test::TestFuture<
-      const std::optional<AutofillModelExecutor::ModelOutput>&>
+      const std::optional<AutofillModelEncoder::ModelOutput>&>
       predictions;
   execution_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ModelExecutor::SendForExecution,

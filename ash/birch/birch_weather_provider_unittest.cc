@@ -10,6 +10,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/birch/birch_icon_cache.h"
+#include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/stub_birch_client.h"
 #include "ash/constants/ash_features.h"
@@ -93,17 +94,16 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   base::RunLoop run_loop;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
 
@@ -121,7 +121,6 @@ TEST_F(BirchWeatherProviderTest, GetWeatherUsesChromeOSWeatherClientId) {
   base::RunLoop run_loop;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
   // Verify the controller was called with the correct weather client ID.
@@ -155,10 +154,10 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   birch_model->SetClientAndInit(nullptr);
@@ -182,7 +181,6 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
   base::RunLoop run_loop;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
   // Weather was not fetched.
@@ -207,7 +205,6 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedForStubUser) {
   base::RunLoop run_loop;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
   // The weather was not fetched.
@@ -231,7 +228,6 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedInAfternoon) {
   base::RunLoop run_loop;
   birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
                                      run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
   run_loop.Run();
 
   // The weather was not fetched.
@@ -281,7 +277,8 @@ TEST_F(BirchWeatherProviderTest, WeatherWithInvalidIcon) {
                                      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+  // The item exists and will use the backup icon.
+  EXPECT_FALSE(birch_model->GetWeatherForTest().empty());
 }
 
 TEST_F(BirchWeatherProviderTest, WeatherIconDownloadFailure) {
@@ -301,7 +298,8 @@ TEST_F(BirchWeatherProviderTest, WeatherIconDownloadFailure) {
                                      run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
+  // The item exists and will use the backup icon.
+  EXPECT_FALSE(birch_model->GetWeatherForTest().empty());
 }
 
 TEST_F(BirchWeatherProviderTest, WeatherWithNoTemperature) {
@@ -357,10 +355,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   // Ensure the cache isn't used.
@@ -382,10 +380,10 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   ASSERT_EQ(1u, updated_weather_items.size());
   EXPECT_EQ(u"Sunny", updated_weather_items[0].title());
   EXPECT_FLOAT_EQ(73.f, updated_weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 }
 
@@ -452,10 +450,10 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
   EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
-  weather_items[0].LoadIcon(
-      base::BindOnce([](const ui::ImageModel& icon, bool success) {
+  weather_items[0].LoadIcon(base::BindOnce(
+      [](const ui::ImageModel& icon, SecondaryIconType secondary_icon_type) {
         EXPECT_FALSE(icon.IsEmpty());
-        EXPECT_TRUE(success);
+        EXPECT_EQ(secondary_icon_type, SecondaryIconType::kNoIcon);
       }));
 
   // Ensure the cache isn't used.
@@ -509,72 +507,6 @@ TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
 
   provider.RequestBirchDataFetch();
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
-}
-
-TEST_F(BirchWeatherProviderTest, IconCache) {
-  auto* birch_model = Shell::Get()->birch_model();
-  auto* icon_cache = birch_model->icon_cache();
-
-  // The cache starts empty.
-  EXPECT_EQ(icon_cache->size_for_test(), 0u);
-
-  // Fetch weather.
-  WeatherInfo info1;
-  info1.condition_description = "Cloudy";
-  info1.condition_icon_url = "https://cloudy-icon-url";
-  info1.show_celsius = false;
-  info1.temp_f = 70.0f;
-  ambient_backend_controller_->SetWeatherInfo(info1);
-
-  base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
-                                     run_loop.QuitClosure());
-  run_loop.Run();
-
-  // The icon cache has a single item in it.
-  EXPECT_EQ(icon_cache->size_for_test(), 1u);
-  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
-
-  // Fetch again with the same icon URL.
-  WeatherInfo info2;
-  info2.condition_description = "Cloudy";
-  info2.condition_icon_url = "https://cloudy-icon-url";
-  info2.show_celsius = false;
-  info2.temp_f = 70.0f;
-  ambient_backend_controller_->SetWeatherInfo(info2);
-
-  // Ensure the weather cache isn't used.
-  GetWeatherProvider()->ResetCacheForTest();
-
-  base::RunLoop run_loop2;
-  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
-                                     run_loop2.QuitClosure());
-  run_loop2.Run();
-
-  // The cache still has a single item in it because the icon was the same.
-  EXPECT_EQ(icon_cache->size_for_test(), 1u);
-  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
-
-  // Fetch again with a different icon URL.
-  WeatherInfo info3;
-  info2.condition_description = "Sunny";
-  info2.condition_icon_url = "https://sunny-icon-url";
-  info2.show_celsius = false;
-  info2.temp_f = 73.0f;
-  ambient_backend_controller_->SetWeatherInfo(info2);
-
-  // Ensure the weather cache isn't used.
-  GetWeatherProvider()->ResetCacheForTest();
-
-  base::RunLoop run_loop3;
-  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
-                                     run_loop3.QuitClosure());
-  run_loop3.Run();
-
-  // Cache now has two items in it for the two different icons.
-  EXPECT_EQ(icon_cache->size_for_test(), 2u);
-  EXPECT_FALSE(icon_cache->Get("https://cloudy-icon-url").isNull());
-  EXPECT_FALSE(icon_cache->Get("https://sunny-icon-url").isNull());
 }
 
 }  // namespace

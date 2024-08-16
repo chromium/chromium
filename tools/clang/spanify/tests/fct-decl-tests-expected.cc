@@ -4,12 +4,18 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 
 struct S {};
 
 // Expected rewrite:
-// S fct_declaration(base::span<const S> arg1,int arg2,S* arg3)
+// S fct_declaration(base::span<const S> arg1,int arg2,S* arg3);
 S fct_declaration(base::span<const S> arg1, int arg2, S* arg3);
+
+// Expected rewrite:
+// int fct_declaration2(base::raw_span<int> arg);
+int fct_declaration2(base::raw_span<int> arg);
 
 class Parent {
  public:
@@ -61,10 +67,20 @@ S fct_declaration(base::span<const S> arg1, int arg2, S* arg3) {
   return arg1[1];
 }
 
+// Expected rewrite:
+// int fct_declaration2(base::raw_span<int> arg)
+int fct_declaration2(base::raw_span<int> arg) {
+  return arg[1];
+}
+
 void fct() {
   // Expected rewrite:
   // Parent p({});
   Parent p({});
   // Leads Parent::get() return value to be rewritten.
   p.get()[0] = {};
+
+  // Expected rewrite:
+  // fct_declaration2({});
+  fct_declaration2({});
 }

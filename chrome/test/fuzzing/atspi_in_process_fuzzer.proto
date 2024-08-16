@@ -17,7 +17,7 @@ message Action {
   // e.g. [Chrome] -> [3rd panel] -> [2nd panel] -> [Maximize]
   // Wherever controls have names, we use them, for maximal
   // stability across Chromium versions.
-  repeated PathElement path_to_control = 1;
+  ControlPath path_to_control = 1;
 
   // Wait until idle after the action.
   bool wait_afterwards = 2;
@@ -44,6 +44,10 @@ message Action {
   message SetSelection {
     repeated uint32 selected_child = 1;
   }
+}
+
+message ControlPath {
+  repeated PathElement path_to_control = 1;
 }
 
 message PathElement {

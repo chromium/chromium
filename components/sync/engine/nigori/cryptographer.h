@@ -12,7 +12,14 @@
 
 #include "base/containers/span.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/protocol/encryption.pb.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
+
+namespace sync_pb {
+class EncryptedData;
+}  // namespace sync_pb
 
 namespace syncer {
 

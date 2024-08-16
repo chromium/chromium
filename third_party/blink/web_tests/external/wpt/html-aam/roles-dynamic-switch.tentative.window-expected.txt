@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Disconnected <input type=checkbox switch>
+  assert_equals: expected "" but got "none"
+[FAIL] Connected <input type=checkbox switch>
+  assert_equals: expected "switch" but got "checkbox"
+[FAIL] Connected <input type=checkbox switch>: adding switch attribute
+  assert_equals: expected "switch" but got "checkbox"
+[FAIL] Connected <input type=checkbox switch>: removing switch attribute
+  assert_equals: expected "switch" but got "checkbox"
+[FAIL] Connected <input type=checkbox switch>: removing type attribute
+  assert_equals: expected "switch" but got "checkbox"
+[FAIL] Connected <input type=checkbox switch>: adding type attribute
+  assert_equals: expected "switch" but got "checkbox"
+Harness: the test ran to completion.
+

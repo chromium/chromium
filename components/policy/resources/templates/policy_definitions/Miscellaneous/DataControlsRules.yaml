@@ -10,7 +10,7 @@ desc: |-
         - Control the clipboard data shared between the sources and the destinations.
         - Control blocking screenshots based on the source tabs.
 
-        If <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is set to True, triggered rules be reported to the admin.
+        If <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEventEnterpriseConnector</ph> policy is set to True, triggered rules are reported to the admin.
         The restriction level can be set to BLOCK, WARN, or REPORT.
         - If the restriction level is set to BLOCK, the action won't be allowed.
         - If the restriction level is set to WARN, a user will be warned and may choose to proceed with or cancel the action.
@@ -187,6 +187,8 @@ schema:
         type: object
     type: object
   type: array
+future_on:
+- android
 supported_on:
 - chrome.*:128-
 - chrome_os:128-

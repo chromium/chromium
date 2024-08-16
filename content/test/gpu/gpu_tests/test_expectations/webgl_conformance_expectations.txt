@@ -36,7 +36,7 @@
 #         google google-0xffff google-0xc0de
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
 #             intel-0x3e92 intel-0x3e9b intel-0x4680 intel-0x5912 intel-0x9bc5
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
+#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184 nvidia-0x2783
 #         qualcomm qualcomm-0x41333430 qualcomm-0x36333630 qualcomm-0x36334330 ]
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
@@ -59,7 +59,8 @@
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
-#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
+#         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
+#         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
@@ -540,6 +541,7 @@ crbug.com/1259977 [ win nvidia-0x2184 angle-vulkan passthrough ] conformance/gls
 
 crbug.com/1291276 [ win nvidia angle-vulkan passthrough ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 
+crbug.com/356565289 [ win nvidia-0x2783 angle-vulkan ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 
 ## Win / Adreno 690 / D3D11
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
@@ -557,12 +559,16 @@ crbug.com/328102507 [ mac angle-opengl graphite-disabled ] conformance/renderbuf
 ## Mac AMD failures ##
 
 crbug.com/642822 [ mac amd ] conformance/rendering/clipping-wide-points.html [ Failure ]
-crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
-crbug.com/328100306 [ amd-0x67ef angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
+crbug.com/1230781 [ mac amd angle-opengl ] conformance/canvas/to-data-url-test.html [ Failure ]
+crbug.com/328100306 [ amd angle-metal sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
 
 # TODO(kbr): uncomment the following expectation after test has
 # been made more robust.
 # crbug.com/735483 [ mac amd release ] conformance/rendering/texture-switch-performance.html [ Failure ]
+
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/354627705 [ angle-metal intel-0x3e9b mac ] conformance/extensions/webgl-polygon-mode.html [ Failure ]
+crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 
 ## Mac Retina NVidia failures / flakes ##
 
@@ -585,15 +591,7 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 
 ## Linux NVIDIA / VANGLE - bot NVIDIA driver is too old. ##
 
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/constructors/glsl-construct-vec-mat-index.html [ Failure ]
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-abs.html [ Failure ]
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-ceil.html [ Failure ]
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
-crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
 
-## Linux Swangle
-crbug.com/337665166 [ linux angle-swiftshader passthrough release ] conformance/context/context-eviction-with-garbage-collection.html [ Failure ]
 
 
 ####################

@@ -54,6 +54,15 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
                           std::string_view printer_capabilities,
                           PrinterSemanticCapsAndDefaults* printer_info);
 
+ScopedHttpPtr HttpConnect2(const char* host,
+                           int port,
+                           http_addrlist_t* addrlist,
+                           int family,
+                           http_encryption_t encryption,
+                           int blocking,
+                           int msec,
+                           int* cancel);
+
 }  // namespace printing
 
 #endif  // PRINTING_BACKEND_CUPS_HELPER_H_

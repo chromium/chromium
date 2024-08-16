@@ -71,9 +71,6 @@
 
 namespace {
 
-// Sets a custom radius for the half sheet presentation.
-CGFloat const kHalfSheetCornerRadius = 20;
-
 // Helper function to configure handlers for child view controllers.
 
 void ConfigureHandlers(id<SettingsRootViewControlling> controller,
@@ -244,7 +241,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     safetyCheckControllerForBrowser:(Browser*)browser
                            delegate:(id<SettingsNavigationControllerDelegate>)
                                         delegate
-                 displayAsHalfSheet:(BOOL)displayAsHalfSheet
                            referrer:(password_manager::PasswordCheckReferrer)
                                         referrer {
   SettingsNavigationController* navigationController =
@@ -252,22 +248,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-
-  if (displayAsHalfSheet) {
-    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-    UISheetPresentationController* presentationController =
-        navigationController.sheetPresentationController;
-
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent,
-    ];
-
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  }
 
   [navigationController showSafetyCheckAndStartSafetyCheck:referrer];
 
@@ -1248,12 +1228,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 // Shows the Safety Check page and starts the Safety Check for `referrer`.
-// `showHalfSheet` determines whether the Safety Check will be displayed as a
-// half-sheet, or full-page modal.
-- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)displayAsHalfSheet
-                                  referrer:
-                                      (password_manager::PasswordCheckReferrer)
-                                          referrer {
+- (void)showAndStartSafetyCheckForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
   [self showSafetyCheckAndStartSafetyCheck:referrer];
 }
 

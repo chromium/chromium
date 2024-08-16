@@ -144,8 +144,9 @@ float SVGPathStringSource::ParseNumberWithError() {
   else
     error =
         !ParseNumber(current_.character16_, end_.character16_, number_value);
-  if (UNLIKELY(error))
+  if (error) [[unlikely]] {
     SetErrorMark(SVGParseStatus::kExpectedNumber);
+  }
   return number_value;
 }
 
@@ -156,8 +157,9 @@ bool SVGPathStringSource::ParseArcFlagWithError() {
     error = !ParseArcFlag(current_.character8_, end_.character8_, flag_value);
   else
     error = !ParseArcFlag(current_.character16_, end_.character16_, flag_value);
-  if (UNLIKELY(error))
+  if (error) [[unlikely]] {
     SetErrorMark(SVGParseStatus::kExpectedArcFlag);
+  }
   return flag_value;
 }
 
@@ -167,7 +169,7 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
   unsigned lookahead =
       is_8bit_source_ ? *current_.character8_ : *current_.character16_;
   SVGPathSegType command = MapLetterToSegmentType(lookahead);
-  if (UNLIKELY(previous_command_ == kPathSegUnknown)) {
+  if (previous_command_ == kPathSegUnknown) [[unlikely]] {
     // First command has to be a moveto.
     if (command != kPathSegMoveToRel && command != kPathSegMoveToAbs) {
       SetErrorMark(SVGParseStatus::kExpectedMoveToCommand);
@@ -249,8 +251,9 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
       NOTREACHED_IN_MIGRATION();
   }
 
-  if (UNLIKELY(error_.Status() != SVGParseStatus::kNoError))
+  if (error_.Status() != SVGParseStatus::kNoError) [[unlikely]] {
     segment.command = kPathSegUnknown;
+  }
   return segment;
 }
 

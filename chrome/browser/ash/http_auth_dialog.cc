@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -284,7 +285,7 @@ HttpAuthDialog::HttpAuthDialog(const net::AuthChallengeInfo& auth_info,
   dialog_delegate_.SetOwnershipOfNewWidget(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
-  dialog_delegate_.SetModalType(ui::MODAL_TYPE_CHILD);
+  dialog_delegate_.SetModalType(ui::mojom::ModalType::kChild);
   dialog_delegate_.SetShowCloseButton(false);
   dialog_delegate_.SetTitle(l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_TITLE));
 

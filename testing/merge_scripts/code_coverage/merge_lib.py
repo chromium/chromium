@@ -7,7 +7,6 @@ import logging
 import multiprocessing
 import os
 import re
-import shutil
 import subprocess
 import sys
 
@@ -48,7 +47,7 @@ def _call_profdata_tool(profile_input_file_paths,
   input_file = os.path.join(output_dir,
                             'input-profdata-files.txt').replace('\\', '/')
   with open(input_file, 'w') as fd:
-    logging.info("List of .profdata files...")
+    logging.info('List of .profdata files...')
     for file_path in profile_input_file_paths:
       logging.info(file_path)
       fd.write('%s\n' % file_path)
@@ -77,12 +76,12 @@ def _call_profdata_tool(profile_input_file_paths,
                        check=True)
     logging.info(p.stdout)
   except subprocess.CalledProcessError as error:
-    logging.info('stdout: %s' % error.output)
-    logging.error('Failed to merge profiles, return code (%d), error: %r' %
-                  (error.returncode, error.stderr))
+    logging.info('stdout: %s', error.output)
+    logging.error('Failed to merge profiles, return code (%d), error: %r',
+                  error.returncode, error.stderr)
     raise error
   except subprocess.TimeoutExpired as e:
-    logging.info('stdout: %s' % e.output)
+    logging.info('stdout: %s', e.output)
     raise e
 
   logging.info('Profile data is created as: "%r".', profile_output_file_path)

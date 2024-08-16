@@ -14,10 +14,6 @@
   self.delegate = delegate;
 }
 
-- (void)setToolbarsMode:(TabGridMode)mode {
-  self.mode = mode;
-}
-
 - (void)setButtonsEnabled:(BOOL)enabled {
   self.enabled = enabled;
 }

@@ -17,9 +17,9 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_store_with_in_memory_cache.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -55,10 +55,10 @@ std::unique_ptr<EntityData> MoveToEntityData(
 }  // namespace
 
 UserEventSyncBridge::UserEventSyncBridge(
-    OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    OnceDataTypeStoreFactory store_factory,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     GlobalIdMapper* global_id_mapper)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       global_id_mapper_(global_id_mapper) {
   DCHECK(global_id_mapper_);
   StoreWithCache::CreateAndLoad(
@@ -74,7 +74,7 @@ UserEventSyncBridge::~UserEventSyncBridge() = default;
 
 std::unique_ptr<MetadataChangeList>
 UserEventSyncBridge::CreateMetadataChangeList() {
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<ModelError> UserEventSyncBridge::MergeFullSyncData(
@@ -177,7 +177,7 @@ std::string UserEventSyncBridge::GetStorageKeyFromSpecificsForTest(
   return GetStorageKeyFromSpecifics(specifics);
 }
 
-std::unique_ptr<ModelTypeStore> UserEventSyncBridge::StealStoreForTest() {
+std::unique_ptr<DataTypeStore> UserEventSyncBridge::StealStoreForTest() {
   return StoreWithCache::ExtractUnderlyingStoreForTest(std::move(store_));
 }
 

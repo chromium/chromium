@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_FRAME_STATS_ACCUMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_FRAME_STATS_ACCUMULATOR_H_
 
+#include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,13 +34,14 @@ class PLATFORM_EXPORT AudioFrameStatsAccumulator {
   // durations, and current latency are simply copied from `from`.
   void Absorb(AudioFrameStatsAccumulator& from);
 
-  size_t observed_frames() const { return observed_frames_; }
+  uint64_t observed_frames() const { return observed_frames_; }
 
   base::TimeDelta observed_frames_duration() const {
     return observed_frames_duration_;
   }
 
-  size_t glitch_frames() const { return glitch_frames_; }
+  uint64_t glitch_frames() const { return glitch_frames_; }
+
   base::TimeDelta glitch_frames_duration() const {
     return glitch_frames_duration_;
   }
@@ -59,11 +61,11 @@ class PLATFORM_EXPORT AudioFrameStatsAccumulator {
   base::TimeDelta max_latency() const { return interval_maximum_latency_; }
 
  private:
-  // Counters for observed frames, glitched frames and glitch events. These only
-  // increment.
-  size_t observed_frames_ = 0u;
+  // Counters for observed frames, glitched frames and glitch events. These
+  // only increment.
+  base::ClampedNumeric<uint64_t> observed_frames_ = 0u;
   base::TimeDelta observed_frames_duration_;
-  size_t glitch_frames_ = 0u;
+  base::ClampedNumeric<uint64_t> glitch_frames_ = 0u;
   base::TimeDelta glitch_frames_duration_;
   size_t glitch_event_count_ = 0u;
 
@@ -73,7 +75,7 @@ class PLATFORM_EXPORT AudioFrameStatsAccumulator {
   // Latency information about an interval. It is accumulated on calls to
   // Update() and Absorb(), and reset when the object is used as an input for
   // a call to Absorb() on another AudioFrameStatsAccumulator object.
-  size_t interval_frames_ = 0u;
+  base::ClampedNumeric<uint64_t> interval_frames_ = 0u;
   base::TimeDelta interval_frames_latency_sum_;
   base::TimeDelta interval_minimum_latency_;
   base::TimeDelta interval_maximum_latency_;

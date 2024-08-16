@@ -366,17 +366,17 @@ state.GetFontBuilder().{{property.setter}}
   {% elif property.style_builder_template == 'grid' %}
     {% set type = property.style_builder_template_args['type'] %}
     {% call(property) apply_initial(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(ComputedStyleInitialValues::InitialGridTemplate{{type}}s());
+  {{style_access(property)}}Set{{type}}(ComputedStyleInitialValues::Initial{{type}}());
     {% endcall %}
 
     {% call(property) apply_inherit(property) %}
-  {{style_access(property)}}SetGridTemplate{{type}}s(state.ParentStyle()->GridTemplate{{type}}s());
+  {{style_access(property)}}Set{{type}}(state.ParentStyle()->{{type}}());
     {% endcall %}
 
     {% call(property) apply_value(property) %}
   ComputedGridTrackList computed_grid_track_list;
   StyleBuilderConverter::ConvertGridTrackList(value, computed_grid_track_list, state);
-  {{style_access(property)}}SetGridTemplate{{type}}s(computed_grid_track_list);
+  {{style_access(property)}}Set{{type}}(computed_grid_track_list);
     {% endcall %}
   {% endif %}
 {%- endmacro %}

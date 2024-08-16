@@ -755,7 +755,7 @@ void RenderWidgetHostViewBase::TransformPointToRootSurface(gfx::PointF* point) {
 
 const viz::LocalSurfaceId&
 RenderWidgetHostViewBase::IncrementSurfaceIdForNavigation() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewBase::OnOldViewDidNavigatePreCommit() {}
@@ -789,7 +789,7 @@ void RenderWidgetHostViewBase::ProcessMouseEvent(
 
   // Ensure the event is not routed to a prerendered page.
   if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   PreProcessMouseEvent(event);
@@ -804,7 +804,7 @@ void RenderWidgetHostViewBase::ProcessMouseWheelEvent(
 
   // Ensure the event is not routed to a prerendered page.
   if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   host()->ForwardWheelEventWithLatencyInfo(event, latency);
@@ -818,7 +818,7 @@ void RenderWidgetHostViewBase::ProcessTouchEvent(
 
   // Ensure the event is not routed to a prerendered page.
   if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   PreProcessTouchEvent(event);
@@ -834,7 +834,7 @@ void RenderWidgetHostViewBase::ProcessGestureEvent(
 
   // Ensure the event is not routed to a prerendered page.
   if (host()->frame_tree() && host()->frame_tree()->is_prerendering()) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   host()->GetRenderInputRouter()->ForwardGestureEventWithLatencyInfo(event,
@@ -879,11 +879,8 @@ bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {
   return true;
 }
 
-// This function is called from host, so host and delegate should be set up.
-double RenderWidgetHostViewBase::GetZoomLevel() const {
-  CHECK(host());
-  CHECK(host()->delegate());
-  return host()->delegate()->GetPendingPageZoomLevel();
+double RenderWidgetHostViewBase::GetCSSZoomFactor() const {
+  return 1.0;
 }
 
 void RenderWidgetHostViewBase::TextInputStateChanged(

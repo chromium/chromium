@@ -114,11 +114,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
     virtual ~Observer() = default;
   };
 
-  // The timeout duration that we allow an app window on a closed desk to run
-  // its "close" hooks before being forcefully closed.
-  static constexpr base::TimeDelta kCloseAllWindowCloseTimeout =
-      base::Seconds(1);
-
   DesksController();
 
   DesksController(const DesksController&) = delete;
@@ -517,6 +512,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Reports custom desk name metrics for the number of desks with custom names
   // and the percentage of the user's desks with custom names.
   void ReportCustomDeskNames() const;
+
+  static base::TimeDelta GetCloseAllWindowCloseTimeoutForTest();
+  static base::AutoReset<base::TimeDelta> SetCloseAllWindowCloseTimeoutForTest(
+      base::TimeDelta interval);
 
   std::vector<std::unique_ptr<Desk>> desks_;
 

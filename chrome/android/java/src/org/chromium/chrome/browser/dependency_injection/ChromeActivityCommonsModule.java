@@ -6,15 +6,12 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.DECOR_VIEW;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.IS_PROMOTABLE_TO_TAB_BOOLEAN;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -75,7 +72,6 @@ public class ChromeActivityCommonsModule {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabCreator> mTabCreatorSupplier;
-    private final Supplier<Boolean> mIsPromotableToTabSupplier;
     private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<NotificationManagerProxy> mNotificationManagerProxySupplier;
@@ -112,7 +108,6 @@ public class ChromeActivityCommonsModule {
                 Supplier<CompositorViewHolder> compositorViewHolderSupplier,
                 TabCreatorManager tabCreatorManager,
                 Supplier<TabCreator> tabCreatorSupplier,
-                Supplier<Boolean> isPromotableToTabSupplier,
                 StatusBarColorController statusBarColorController,
                 ScreenOrientationProvider screenOrientationProvider,
                 Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
@@ -148,7 +143,6 @@ public class ChromeActivityCommonsModule {
             Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             TabCreatorManager tabCreatorManager,
             Supplier<TabCreator> tabCreatorSupplier,
-            Supplier<Boolean> isPromotableToTabSupplier,
             StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<NotificationManagerProxy> notificationManagerProxySupplier,
@@ -181,7 +175,6 @@ public class ChromeActivityCommonsModule {
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabCreatorManager = tabCreatorManager;
         mTabCreatorSupplier = tabCreatorSupplier;
-        mIsPromotableToTabSupplier = isPromotableToTabSupplier;
         mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
         mNotificationManagerProxySupplier = notificationManagerProxySupplier;
@@ -256,12 +249,6 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    @Named(DECOR_VIEW)
-    public View provideDecorView() {
-        return mActivity.getWindow().getDecorView();
-    }
-
-    @Provides
     public Resources provideResources() {
         return mActivity.getResources();
     }
@@ -319,12 +306,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public Supplier<TabCreator> provideTabCreatorSupplier() {
         return mTabCreatorSupplier;
-    }
-
-    @Provides
-    @Named(IS_PROMOTABLE_TO_TAB_BOOLEAN)
-    public boolean provideIsPromotableToTab() {
-        return !mIsPromotableToTabSupplier.get();
     }
 
     @Provides

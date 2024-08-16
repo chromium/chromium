@@ -237,7 +237,6 @@ test("components_unittests") {
     "//components/history/core/browser:unit_tests",
     "//components/history/metrics:unit_tests",
     "//components/image_fetcher/core:unit_tests",
-    "//components/ip_protection:common_unit_tests",
     "//components/ip_protection:unit_tests",
     "//components/keyed_service/core:unit_tests",
     "//components/language/core/browser:unit_tests",
@@ -266,6 +265,7 @@ test("components_unittests") {
     "//components/os_crypt/async/common:unit_tests",
     "//components/os_crypt/sync:unit_tests",
     "//components/page_image_service:unit_tests",
+    "//components/page_info/core:unit_tests",
     "//components/password_manager/core/browser:unit_tests",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching_unittests",
     "//components/password_manager/core/browser/affiliation:unit_tests",
@@ -363,6 +363,7 @@ test("components_unittests") {
     "//components/url_formatter/spoof_checks/top_domains:unit_tests",
     "//components/url_matcher:unit_tests",
     "//components/url_pattern_index:unit_tests",
+    "//components/user_annotations:unit_tests",
     "//components/variations:unit_tests",
     "//components/variations/field_trial_config:unit_tests",
     "//components/variations/service:unit_tests",
@@ -418,6 +419,7 @@ test("components_unittests") {
       "//components/send_tab_to_self:unit_tests",
       "//components/sync_sessions:unit_tests",
       "//components/update_client:unit_tests",
+      "//components/visited_url_ranking/internal:unit_tests",
     ]
   }
 
@@ -481,7 +483,6 @@ test("components_unittests") {
       "//components/page_content_annotations/core:unit_tests",
       "//components/page_image_annotation/content/renderer:unit_tests",
       "//components/page_image_annotation/core:unit_tests",
-      "//components/page_info/core:unit_tests",
       "//components/page_load_metrics/browser:unit_tests",
       "//components/page_load_metrics/browser/observers/ad_metrics:unit_tests",
       "//components/page_load_metrics/renderer:unit_tests",
@@ -513,7 +514,6 @@ test("components_unittests") {
       "//components/url_rewrite:unit_tests",
       "//components/user_education/common:unit_tests",
       "//components/value_store:unit_tests",
-      "//components/visited_url_ranking/internal:unit_tests",
       "//components/visited_url_ranking/public:unit_tests",
       "//components/visitedlink/test:unit_tests",
       "//components/web_cache/browser:unit_tests",
@@ -605,7 +605,7 @@ test("components_unittests") {
 
     data_deps += [
       ":components_tests_pak",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//ui/resources:ui_test_pak_data",
     ]
   }  # iOS / !iOS
@@ -700,6 +700,12 @@ test("components_unittests") {
       "//components/storage_monitor:unit_tests",
       "//components/web_modal:unit_tests",
       "//components/zoom:unit_tests",
+    ]
+  }
+
+  if (!is_android && !is_ios && (!is_fuchsia || !optimize_for_size)) {
+    deps += [
+      "//components/autofill_prediction_improvements/core/browser:unit_tests",
     ]
   }
 
@@ -848,7 +854,10 @@ test("components_unittests") {
   }
 
   if (is_mac) {
-    deps += [ "//components/remote_cocoa/common:unit_tests" ]
+    deps += [
+      "//components/remote_cocoa/app_shim:unit_tests",
+      "//components/remote_cocoa/common:unit_tests",
+    ]
   }
 
   if (enable_reporting) {
@@ -1002,6 +1011,7 @@ if (use_blink) {
       "//components/dom_distiller/core:test_support",
       "//components/error_page/content/browser:browser_tests",
       "//components/facilitated_payments/content/renderer:browser_tests",
+      "//components/input:browser_tests",
       "//components/js_injection/browser:browser_tests",
       "//components/metrics:content",
       "//components/optimization_guide/content/renderer",
@@ -1038,7 +1048,7 @@ if (use_blink) {
 
     data_deps = [
       ":components_tests_pak",
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
     ]
 
     if (is_mac) {

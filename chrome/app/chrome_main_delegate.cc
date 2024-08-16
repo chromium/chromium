@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/app/chrome_main_delegate.h"
 
 #include <stddef.h>
@@ -153,10 +158,10 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
-#include "chrome/browser/ash/dbus_schedqos_state_handler.h"
-#include "chrome/browser/ash/startup_settings_cache.h"
+#include "chrome/browser/ash/locale/startup_settings_cache.h"
+#include "chrome/browser/ash/schedqos/dbus_schedqos_state_handler.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/mglru.h"
 #include "content/public/common/content_features.h"

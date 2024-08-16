@@ -1230,10 +1230,8 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   // behavior. CRC32 is fast and statistically random enough for these
   // purposes.
   uint32_t sampled_num = sampling_seed_;
-  sampled_num =
-      base::Crc32(sampled_num, base::as_bytes(base::make_span(&source_id, 1u)));
-  sampled_num =
-      base::Crc32(sampled_num, base::as_bytes(base::make_span(&event_id, 1u)));
+  sampled_num = base::Crc32(sampled_num, base::byte_span_from_ref(source_id));
+  sampled_num = base::Crc32(sampled_num, base::byte_span_from_ref(event_id));
 
   return sampled_num % sampling_rate == 0;
 }

@@ -28,6 +28,7 @@
 #include "components/viz/service/display_embedder/software_output_surface.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -181,6 +182,12 @@ gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
   static const bool use_shared_image =
       base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
   return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
+}
+
+gpu::Scheduler* OutputSurfaceProviderImpl::GetGpuScheduler() {
+  static const bool use_shared_image =
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
+  return use_shared_image ? gpu_service_impl_->gpu_scheduler() : nullptr;
 }
 
 }  // namespace viz

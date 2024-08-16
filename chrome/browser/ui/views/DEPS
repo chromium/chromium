@@ -17,6 +17,9 @@ specific_include_rules = {
   "browser_user_education_service.cc": [
     "+ash/user_education/views/help_bubble_factory_views_ash.h",
   ],
+  "chrome_web_dialog_view\.cc": [
+    "+ash/utility/wm_util.h",
+  ],
   "chrome_views_delegate_ash\.cc": [
     "+ash/shell.h",
   ],
@@ -45,6 +48,7 @@ specific_include_rules = {
    "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
+   "+ash/system/mahi/fake_mahi_manager.h",
    "+ash/system/mahi/test/mock_mahi_media_app_events_proxy.h",
    "+ash/webui/system_apps/public/system_web_app_type.h",
   ],

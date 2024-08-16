@@ -105,6 +105,6 @@ const uint8_t* CardboardDeviceParams::encoded_device_params() {
     return absl::get<OwnedCardboardParams>(encoded_device_params_).get();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 }  // namespace device

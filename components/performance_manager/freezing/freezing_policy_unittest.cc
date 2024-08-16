@@ -42,8 +42,11 @@ class LenientMockFreezer : public Freezer {
   LenientMockFreezer(const LenientMockFreezer& other) = delete;
   LenientMockFreezer& operator=(const LenientMockFreezer&) = delete;
 
-  MOCK_METHOD1(MaybeFreezePageNode, void(const PageNode* page_node));
-  MOCK_METHOD1(UnfreezePageNode, void(const PageNode* page_node));
+  MOCK_METHOD(void,
+              MaybeFreezePageNode,
+              (const PageNode* page_node),
+              (override));
+  MOCK_METHOD(void, UnfreezePageNode, (const PageNode* page_node), (override));
 };
 using MockFreezer = ::testing::StrictMock<LenientMockFreezer>;
 

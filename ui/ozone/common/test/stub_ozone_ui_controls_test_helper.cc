@@ -10,19 +10,19 @@
 namespace ui {
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperDrm() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperFlatland() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperHeadless() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperCast() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ui

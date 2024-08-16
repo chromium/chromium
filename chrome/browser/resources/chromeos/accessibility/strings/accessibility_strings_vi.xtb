@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Màu nâu ánh hồng</translation>
 <translation id="249330843868392562">Mở tùy chọn cài đặt chuyển văn bản sang lời nói</translation>
 <translation id="2497706219848005458">Màu vàng lục</translation>
+<translation id="2512979179176933762">hiện các cửa sổ</translation>
 <translation id="2523609930580546572">Hướng dẫn về ChromeVox</translation>
 <translation id="2525706221823668172">Phím tắt Chromebook</translation>
 <translation id="2553108862507765288">lỗi ngữ pháp</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Màu xanh thép</translation>
 <translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4254798249533888099">Cây</translation>
+<translation id="4259220820964911921">Bật tính năng điều khiển bằng khuôn mặt?</translation>
 <translation id="4271220233568730077">Biểu thức toán tiếp theo</translation>
 <translation id="4275397969489577657">Bật ghi nhật ký luồng sự kiện</translation>
 <translation id="4278486392851938658">Không có đường liên kết đã truy cập nào trước đó</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Phụ lục</translation>
 <translation id="5761219715606611783">Rất tốt! Bạn đã tìm hiểu xong những thông tin cơ bản về tính năng chạm của ChromeVox. Bạn có thể xem lại hoặc thoát khỏi tài liệu hướng dẫn này bằng các nút ở bên dưới.</translation>
 <translation id="5776001898637896684">Tiện ích chuyển văn bản sang lời nói trên Mạng nâng cao của Google</translation>
+<translation id="5783252477644995371">Tính năng điều khiển bằng khuôn mặt giúp bạn điều khiển con trỏ nhờ đưa khuôn mặt theo hướng bạn muốn và thực hiện các thao tác như nhấp chuột trái bằng các cử chỉ khuôn mặt như cười</translation>
 <translation id="5805940204952508776">Nhấn bằng hai ngón tay</translation>
 <translation id="5819072574982403430">Mục cây</translation>
 <translation id="5822819874379903994">Màu ngọc lam đậm</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">Không có hộp đánh dấu nào tiếp theo</translation>
 <translation id="8473540203671727883">Đọc văn bản bên dưới con trỏ chuột</translation>
 <translation id="8476408756881832830">Tạm dừng phát lại khi ChromeVox đang nói</translation>
-<translation id="8476508772960940536">tổng quan về cửa sổ</translation>
 <translation id="8480873377842220259">Bây giờ, bạn sẽ học một số thao tác cơ bản. Bạn có thể giữ phím Tìm kiếm và nhấn các phím mũi tên để di chuyển xung quanh màn hình. Để tiếp tục, hãy nhấn tổ hợp phím Tìm kiếm + Mũi tên phải.</translation>
 <translation id="8503360654911991865">Giảm mức độ chi tiết của điều hướng</translation>
 <translation id="8520472399088452386">Nút quay tròn</translation>

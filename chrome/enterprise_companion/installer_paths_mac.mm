@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
 
 namespace enterprise_companion {
@@ -36,6 +37,14 @@ std::optional<base::FilePath> FindExistingInstall() {
   }
   path = path->AppendASCII(kExecutableName);
   return base::PathExists(*path) ? path : std::nullopt;
+}
+
+base::FilePath GetKSAdminPath() {
+  return base::FilePath("/Library")
+      .AppendASCII(COMPANY_SHORTNAME_STRING)
+      .AppendASCII(KEYSTONE_NAME)
+      .AppendASCII(base::StrCat({KEYSTONE_NAME, ".bundle"}))
+      .Append(FILE_PATH_LITERAL("Contents/Helpers/ksadmin"));
 }
 
 }  // namespace enterprise_companion

@@ -40,7 +40,7 @@ class AutofillProgressDialogViewsBrowserTest
     } else if (GetParam() == "ServerCardUnmask") {
       return AutofillProgressDialogType::kServerCardUnmaskProgressDialog;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::string GetDialogTypeStringForLogging() const {

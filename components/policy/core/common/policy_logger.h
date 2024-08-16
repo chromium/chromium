@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors)
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,6 +60,7 @@
 #define REMOTE_COMMANDS ::policy::PolicyLogger::Log::Source::kRemoteCommands
 #define DEVICE_TRUST ::policy::PolicyLogger::Log::Source::kDeviceTrust
 #define OIDC_ENROLLMENT ::policy::PolicyLogger::Log::Source::kOidcEnrollment
+#define EXTENSIBLE_SSO ::policy::PolicyLogger::Log::Source::kExtensibleSSO
 
 namespace policy {
 
@@ -78,6 +79,7 @@ class POLICY_EXPORT PolicyLogger {
       kRemoteCommands,
       kDeviceTrust,
       kOidcEnrollment,
+      kExtensibleSSO
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 

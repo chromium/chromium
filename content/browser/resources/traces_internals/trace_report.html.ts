@@ -50,20 +50,19 @@ export function getHtml(this: TraceReportElement) {
     </div>
     <div class="actions-container">
       <cr-icon-button class="action-button" title="Upload Trace"
-          iron-icon="trace-report-icons:cloud_upload" aria-label="Upload Trace"
+          iron-icon="trace-report-icons:cloud_upload"
           ?hidden="${!this.uploadStateEqual_(ReportUploadState.kNotUploaded)}"
           ?disabled="${!this.isManualUploadPermitted_()}"
           @click="${this.onUploadTraceClick_}">
       </cr-icon-button>
-      <cr-icon-button class="action-button" iron-icon="cr:file-download"
-          title="Download Trace" @click="${this.onDownloadTraceClick_}"
-          ?disabled="${this.isDownloadDisabled_()}"
-          aria-label="Download Trace">
+      <cr-icon-button class="action-button download"
+          iron-icon="cr:file-download" title="${this.getDownloadTooltip_()}"
+          @click="${this.onDownloadTraceClick_}"
+          ?disabled="${this.isDownloadDisabled_()}">
       </cr-icon-button>
       <cr-icon-button class="action-button" iron-icon="cr:delete"
           title="Delete Trace" @click="${this.onDeleteTraceClick_}"
-          ?disabled="${this.isLoading_}"
-          aria-label="Delete Trace">
+          ?disabled="${this.isLoading_}">
       </cr-icon-button>
     </div>
   `}`;

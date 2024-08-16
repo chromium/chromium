@@ -26,6 +26,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/edusumer/graduation_prefs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -33,6 +34,7 @@
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/views/picker_feature_tour.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -95,6 +97,7 @@
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -147,6 +150,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
   GlanceablesController::RegisterUserProfilePrefs(registry);
+  graduation_prefs::RegisterProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);
   HotspotInfoCache::RegisterProfilePrefs(registry);
   InputDeviceSettingsControllerImpl::RegisterProfilePrefs(registry);
@@ -166,6 +170,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   PaletteTray::RegisterProfilePrefs(registry);
   PaletteWelcomeBubble::RegisterProfilePrefs(registry);
   PickerFeatureTour::RegisterProfilePrefs(registry);
+  PickerSessionMetrics::RegisterProfilePrefs(registry);
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
   PrivacyHubController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
@@ -189,6 +194,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   WallpaperTimeOfDayScheduler::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
+  growth::CampaignsManager::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {

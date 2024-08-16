@@ -111,9 +111,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
               .disable_post_sub_buffers_for_onscreen_surfaces);
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gfx::SurfaceOrigin::kTopLeft;
-  // DWM handles preserving the contents of the backbuffer in Present1, so we
-  // don't need to have SkiaOutputSurface handle it.
-  capabilities_.preserve_buffer_content = false;
   capabilities_.number_of_buffers =
       gl::DirectCompositionRootSurfaceBufferCount();
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
@@ -123,7 +120,10 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           features::kDirectCompositionUnlimitedOverlays)) {
     capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
-  capabilities_.supports_dc_layers = true;
+  capabilities_.dc_support_level =
+      gl::DirectCompositionTextureSupported()
+          ? OutputSurface::DCSupportLevel::kDCompTexture
+          : OutputSurface::DCSupportLevel::kDCLayers;
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
   capabilities_.pending_swap_params.max_pending_swaps = 1;
@@ -279,6 +279,10 @@ SkiaOutputDeviceDComp::BeginOverlayAccess(const gpu::Mailbox& mailbox) {
   if (!overlay)
     return std::nullopt;
 
+  TRACE_EVENT2("gpu", "SkiaOutputDeviceDComp::BeginOverlayAccess",
+               "debug_label", overlay->debug_label(), "image_size",
+               overlay->size().ToString());
+
   std::tie(it, std::ignore) = overlays_.emplace(mailbox, std::move(overlay));
   return it->second.BeginOverlayAccess();
 }
@@ -312,10 +316,6 @@ SkSurface* SkiaOutputDeviceDComp::BeginPaint(
 
 void SkiaOutputDeviceDComp::EndPaint() {
   NOTIMPLEMENTED();
-}
-
-bool SkiaOutputDeviceDComp::IsPrimaryPlaneOverlay() const {
-  return true;
 }
 
 }  // namespace viz

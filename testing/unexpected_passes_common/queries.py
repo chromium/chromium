@@ -3,26 +3,16 @@
 # found in the LICENSE file.
 """Methods related to querying the ResultDB BigQuery tables."""
 
-import concurrent.futures
-import json
 import logging
-import math
-import multiprocessing.pool
-import os
-import subprocess
-import threading
 import time
-from typing import (Any, Collection, Dict, Generator, Iterable, List, Optional,
-                    Tuple, Union)
+from typing import Collection, Dict, Generator, Iterable, List, Optional, Tuple
 
 from google.cloud import bigquery
 from google.cloud import bigquery_storage
 import pandas
-import six
 
 from typ import expectations_parser
 from typ import json_results
-from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 from unexpected_passes_common import expectations
@@ -41,20 +31,6 @@ PARTITIONED_SUBMITTED_BUILDS_TEMPLATE = """\
       UNNEST(gerrit_changes) as unnested_changes
     WHERE
       unnested_builds.host = "cr-buildbucket.appspot.com"
-      AND unnested_changes.submit_status = "SUCCESS"
-      AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                     INTERVAL 30 DAY)"""
-
-RAW_SUBMITTED_BUILDS_TEMPLATE = """\
-    SELECT
-      CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
-    FROM
-      `commit-queue.raw.attempts`,
-      UNNEST(builds) as unnested_builds,
-      UNNEST(gerrit_changes) as unnested_changes
-    WHERE
-      luci_project = "{project_view}"
-      AND unnested_builds.host = "cr-buildbucket.appspot.com"
       AND unnested_changes.submit_status = "SUCCESS"
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
                                      INTERVAL 30 DAY)"""

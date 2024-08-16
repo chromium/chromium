@@ -336,11 +336,13 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
       focus_manager->GetFocusedView()->GetViewAccessibility().GetCachedName());
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON,
-          base::UTF8ToUTF16(task_name)),
-      focus_manager->GetFocusedView()->GetViewAccessibility().GetCachedName());
+  views::ViewAccessibility& focused_view_a11y =
+      focus_manager->GetFocusedView()->GetViewAccessibility();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON),
+            focused_view_a11y.GetCachedName());
+  EXPECT_EQ(base::UTF8ToUTF16(task_name),
+            focused_view_a11y.GetCachedDescription());
 }
 
 // Tests basic ending moment functionality. If the time expires for the ending

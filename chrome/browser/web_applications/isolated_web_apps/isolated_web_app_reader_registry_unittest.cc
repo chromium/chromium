@@ -141,6 +141,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     integrity_block_ = web_package::mojom::BundleIntegrityBlock::New();
     integrity_block_->size = 42;
     integrity_block_->signature_stack = std::move(signature_stack);
+    integrity_block_->attributes =
+        web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
         std::make_unique<IsolatedWebAppResponseReaderFactory>(

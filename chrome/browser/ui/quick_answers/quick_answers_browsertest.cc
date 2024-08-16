@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -725,6 +726,21 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
               expected_image_model);
 
   // TODO(b/326370198): Add checks for other card contents.
+}
+
+IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest, AccessibleProperties) {
+  views::Widget* quick_answers_view_widget = ShowQuickAnswersWidget();
+  controller()->GetQuickAnswersDelegate()->OnQuickAnswerReceived(
+      CreateQuickAnswerUnitConversionResponse());
+  RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
+      ShowRichAnswersWidget(quick_answers_view_widget)->GetContentsView());
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(rich_answers_view);
+  rich_answers_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
 INSTANTIATE_TEST_SUITE_P(

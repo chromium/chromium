@@ -58,6 +58,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
+#include "remoting/base/port_range.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/util.h"
@@ -106,7 +107,6 @@
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "remoting/protocol/port_range.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
@@ -367,6 +367,9 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   // HeartbeatSender::Delegate implementation.
   void OnFirstHeartbeatSuccessful() override;
+  void OnUpdateHostOwner(const std::string& host_owner) override;
+  void OnUpdateIsCorpUser(bool is_corp_user) override;
+  void OnUpdateRequireSessionAuthorization(bool require_session_auth) override;
   void OnHostNotFound() override;
   void OnAuthFailed() override;
 
@@ -419,7 +422,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   std::string service_account_email_;
   base::Value::Dict config_;
   std::string host_owner_;
-  bool is_googler_ = false;
   std::optional<size_t> max_clipboard_size_;
 
   std::unique_ptr<PolicyWatcher> policy_watcher_;
@@ -434,6 +436,8 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool enable_user_interface_ = true;
   bool allow_remote_access_connections_ = true;
   std::optional<bool> allow_pin_auth_;
+  bool is_corp_user_ = false;
+  bool require_session_authorization_ = false;
 
   DesktopEnvironmentOptions desktop_environment_options_;
   bool security_key_auth_policy_enabled_ = false;
@@ -471,7 +475,7 @@ class HostProcess : public ConfigWatcher::Delegate,
 #endif
   std::unique_ptr<HostPowerSaveBlocker> power_save_blocker_;
 
-  // Only set if |is_googler_| is true.
+  // Only set if |is_corp_user_| is true.
   std::unique_ptr<CorpHostStatusLogger> corp_host_status_logger_;
 
   std::unique_ptr<ChromotingHost> host_;
@@ -803,7 +807,8 @@ void HostProcess::CreateAuthenticatorFactory() {
 
   auto auth_config = std::make_unique<protocol::HostAuthenticationConfig>(
       local_certificate, key_pair_);
-  if (is_googler_ && (!allow_pin_auth_.value_or(false) || pin_hash_.empty())) {
+  if (is_corp_user_ &&
+      (require_session_authorization_ || !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
         base::MakeRefCounted<CorpSessionAuthzServiceClientFactory>(
             context_->url_loader_factory(), service_account_email_,
@@ -819,7 +824,8 @@ void HostProcess::CreateAuthenticatorFactory() {
     cert_watcher_->SetMonitor(host_->status_monitor());
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
-  if (allow_pin_auth_.value_or(!is_googler_) && !pin_hash_.empty()) {
+  if (!is_corp_user_ ||
+      (!require_session_authorization_ && allow_pin_auth_.value_or(false))) {
     scoped_refptr<PairingRegistry> pairing_registry;
     if (allow_pairing_) {
       // On Windows |pairing_registry_| is initialized in
@@ -1070,6 +1076,24 @@ void HostProcess::OnFirstHeartbeatSuccessful() {
 #endif
 }
 
+void HostProcess::OnUpdateHostOwner(const std::string& host_owner) {
+  LOG(INFO) << "Updating host_owner from '" << host_owner_ << "' to '"
+            << host_owner << "'";
+  host_owner_ = host_owner;
+}
+
+void HostProcess::OnUpdateIsCorpUser(bool is_corp_user) {
+  LOG(INFO) << "Updating is_corp_user from " << is_corp_user_ << " to "
+            << is_corp_user;
+  is_corp_user_ = is_corp_user;
+}
+
+void HostProcess::OnUpdateRequireSessionAuthorization(bool require) {
+  LOG(INFO) << "Updating require_session_authorization from "
+            << require_session_authorization_ << " to " << require;
+  require_session_authorization_ = require;
+}
+
 void HostProcess::OnHostDeleted() {
   LOG(ERROR) << "Host was deleted from the directory.";
   ShutdownHost(kHostDeletedExitCode);
@@ -1189,10 +1213,22 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                << kHostOwnerConfigPath << "`";
     return false;
   }
-  host_owner_ = *host_owner;
+  OnUpdateHostOwner(*host_owner);
 
   // Check if the host owner's email is Google-internal.
-  is_googler_ = IsGoogleEmail(host_owner_);
+  // TODO: Remove references to this and replace them with more specific checks.
+  bool is_google_email = IsGoogleEmail(host_owner_);
+
+  // Set the defaults corp and session_auth based on |is_googler|. These will be
+  // overwritten based on the initial heartbeat response, but we need this
+  // default in place until we get that heartbeat. This is temporary until we
+  // can fix the host setup so these are set before the host process starts.
+  // TODO(garykac): Set these values properly during host setup.
+  OnUpdateIsCorpUser(is_google_email);
+  // Default to false so that we rely on the value from the directory service
+  // (via the first heartbeat).
+  // TODO(garykac): Set during host setup.
+  OnUpdateRequireSessionAuthorization(false);
 
   const std::string* host_secret_hash =
       config.FindString(kHostSecretHashConfigPath);
@@ -1202,7 +1238,7 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
                  << kHostSecretHashConfigPath << "`";
       return false;
     }
-  } else if (is_googler_) {
+  } else if (is_corp_user_) {
     HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
              << "authentication is disabled.";
   } else {
@@ -1751,7 +1787,8 @@ void HostProcess::InitializeSignaling() {
 
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
       this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
-      zombie_host_detector_.get(), context_->url_loader_factory(), is_googler_);
+      zombie_host_detector_.get(), context_->url_loader_factory(),
+      is_corp_user_);
   signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();
@@ -1835,7 +1872,7 @@ void HostProcess::StartHost() {
   protocol_config->set_webrtc_supported(true);
   session_manager->set_protocol_config(std::move(protocol_config));
 
-  if (is_googler_) {
+  if (is_corp_user_) {
     // Enabling this policy means that a local user sitting at a host would not
     // see any UI or indication that a remote user was connected.  We do have a
     // few use cases for this internally where we know for a fact that there
@@ -1843,6 +1880,13 @@ void HostProcess::StartHost() {
     // externally, we don't want to apply this policy for non-Googlers.
     desktop_environment_options_.set_enable_user_interface(
         enable_user_interface_);
+    // It is too early to know for sure that this logger is needed, so this ends
+    // up enabling it for some cases where it is not necessary. The correct
+    // approach would be to enable this once we know for sure (after we get the
+    // first heartbeat), but that is complicated because of the dependency on
+    // the |session_manager|.
+    // TODO(garykac): As part of the re-write, we should enable this on setup
+    // only for those corp users who need it.
     corp_host_status_logger_ = std::make_unique<CorpHostStatusLogger>(
         context_->url_loader_factory(), service_account_email_,
         oauth_refresh_token_);
@@ -1850,7 +1894,7 @@ void HostProcess::StartHost() {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  desktop_environment_options_.set_enable_remote_webauthn(is_googler_);
+  desktop_environment_options_.set_enable_remote_webauthn(is_corp_user_);
 #endif
 
   if (max_clipboard_size_.has_value()) {

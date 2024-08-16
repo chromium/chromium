@@ -10,12 +10,14 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/webui/mall/app_id.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -304,6 +306,9 @@ TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   AddRegularUser("test@test.com");
 
   // Migration is necessary to begin with.
@@ -335,6 +340,9 @@ TEST_F(ChromeShelfPrefsTest, ShelfPositionAfterLacrosMigration) {
   // Enable lacros-only.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   AddRegularUser("test@test.com");
 
   // Perform migration

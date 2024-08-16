@@ -96,9 +96,7 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // places an arrow on the popup border to point towards `element_bounds`
   // within `max_bounds_for_popup`. The `preferred_popup_sides` are tried
   // one-by-one until a side with enough space is found.
-  // TODO(crbug.com/324242001): Rename to
-  // GetOptimalPositionAndPlaceArrowOnPopup().
-  virtual gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  virtual gfx::Rect GetOptimalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
       const gfx::Size& preferred_size,
@@ -108,9 +106,6 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   friend class PopupBaseViewBrowsertest;
 
   class Widget;
-
-  // views::Views implementation.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::WidgetFocusChangeListener implementation.
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;

@@ -14,10 +14,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/model_type_configurer.h"
+#include "components/sync/engine/data_type_configurer.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
@@ -27,7 +27,7 @@
 namespace syncer {
 
 class ActiveDevicesProvider;
-class ModelTypeConnector;
+class DataTypeConnector;
 class ProtocolEvent;
 class SyncEngineBackend;
 class SyncInvalidationsService;
@@ -58,7 +58,7 @@ class SyncEngineImpl : public SyncEngine,
   // SyncEngine implementation.
   void Initialize(InitParams params) override;
   bool IsInitialized() const override;
-  void TriggerRefresh(const ModelTypeSet& types) override;
+  void TriggerRefresh(const DataTypeSet& types) override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   std::string GetCacheGuid() const override;
@@ -77,16 +77,16 @@ class SyncEngineImpl : public SyncEngine,
   void StopSyncingForShutdown() override;
   void Shutdown(ShutdownReason reason) override;
   void ConfigureDataTypes(ConfigureParams params) override;
-  void ConnectDataType(ModelType type,
+  void ConnectDataType(DataType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
   const SyncStatus& GetDetailedStatus() const override;
   void GetTypesWithUnsyncedData(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;
   void OnCookieJarChanged(bool account_mismatch,
@@ -107,16 +107,16 @@ class SyncEngineImpl : public SyncEngine,
   friend class SyncEngineBackend;
 
   // Called when the syncer has finished performing a configuration.
-  void FinishConfigureDataTypesOnFrontendLoop(const ModelTypeSet enabled_types,
+  void FinishConfigureDataTypesOnFrontendLoop(const DataTypeSet enabled_types,
                                               base::OnceClosure ready_task);
 
   // Reports backend initialization success.  Includes some objects from sync
   // manager initialization to be passed back to the UI thread.
   //
-  // |model_type_connector| is our ModelTypeConnector, which is owned because in
-  // production it is a proxy object to the real ModelTypeConnector.
+  // |data_type_connector| is our DataTypeConnector, which is owned because in
+  // production it is a proxy object to the real DataTypeConnector.
   void HandleInitializationSuccessOnFrontendLoop(
-      std::unique_ptr<ModelTypeConnector> model_type_connector,
+      std::unique_ptr<DataTypeConnector> data_type_connector,
       const std::string& birthday,
       const std::string& bag_of_chips);
 
@@ -140,7 +140,7 @@ class SyncEngineImpl : public SyncEngine,
       const SyncProtocolError& sync_error);
 
   // Handle a migration request.
-  void HandleMigrationRequestedOnFrontendLoop(const ModelTypeSet types);
+  void HandleMigrationRequestedOnFrontendLoop(const DataTypeSet types);
 
   // Dispatched to from OnConnectionStatusChange to handle updating
   // frontend UI components.
@@ -193,9 +193,9 @@ class SyncEngineImpl : public SyncEngine,
 
   // A handle referencing the main interface for sync data types. This
   // object is owned because in production code it is a proxy object.
-  std::unique_ptr<ModelTypeConnector> model_type_connector_;
+  std::unique_ptr<DataTypeConnector> data_type_connector_;
 
-  ModelTypeSet last_enabled_types_;
+  DataTypeSet last_enabled_types_;
 
   SyncStatus cached_status_;
 

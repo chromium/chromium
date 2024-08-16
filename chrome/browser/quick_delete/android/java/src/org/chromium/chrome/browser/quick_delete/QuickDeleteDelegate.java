@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
 import java.util.List;
@@ -59,7 +59,7 @@ abstract class QuickDeleteDelegate {
     static boolean isSyncingHistory(@NonNull Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         return syncService != null
-                && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
+                && syncService.getActiveDataTypes().contains(DataType.HISTORY_DELETE_DIRECTIVES);
     }
 
     /**

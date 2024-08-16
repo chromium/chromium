@@ -104,8 +104,8 @@ public class MockRenderFrameHost implements RenderFrameHost {
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
-            Callback<Integer> callback) {
-        callback.onResult(AuthenticatorStatus.SUCCESS);
+            Callback<WebAuthSecurityChecksResults> callback) {
+        callback.onResult(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
     }
 
     @Override

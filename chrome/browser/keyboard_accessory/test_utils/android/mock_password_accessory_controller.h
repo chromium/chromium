@@ -26,6 +26,10 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
 
   ~MockPasswordAccessoryController() override;
 
+  MOCK_METHOD(void,
+              RegisterPlusProfilesProvider,
+              (base::WeakPtr<AffiliatedPlusProfilesProvider>),
+              (override));
   MOCK_METHOD(
       void,
       SavePasswordsForOrigin,
@@ -33,7 +37,7 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
        (const url::Origin&)));
   MOCK_METHOD(void,
               RefreshSuggestionsForField,
-              (autofill::mojom::FocusedFieldType, bool),
+              (autofill::mojom::FocusedFieldType),
               (override));
   MOCK_METHOD(void,
               OnGenerationRequested,

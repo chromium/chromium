@@ -109,7 +109,7 @@ void SodaInstallerImpl::UninstallLanguage(const std::string& language,
 }
 
 std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
-  return speech::GetLiveCaptionEnabledLanguages();
+  return GetLiveCaptionEnabledLanguages();
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {

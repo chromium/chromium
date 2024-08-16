@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/data_type_manager.h"
 
 namespace syncer {
@@ -50,7 +50,7 @@ class BackendMigrator {
   virtual ~BackendMigrator();
 
   // Starts a sequence of events that will disable and reenable |types|.
-  void MigrateTypes(ModelTypeSet types);
+  void MigrateTypes(DataTypeSet types);
 
   void AddMigrationObserver(MigrationObserver* observer);
   void RemoveMigrationObserver(MigrationObserver* observer);
@@ -62,7 +62,7 @@ class BackendMigrator {
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result);
 
   // Returns the types that are currently pending migration (if any).
-  ModelTypeSet GetPendingMigrationTypesForTest() const;
+  DataTypeSet GetPendingMigrationTypesForTest() const;
 
  private:
   void ChangeState(State new_state);
@@ -89,7 +89,7 @@ class BackendMigrator {
 
   base::ObserverList<MigrationObserver>::Unchecked migration_observers_;
 
-  ModelTypeSet to_migrate_;
+  DataTypeSet to_migrate_;
 
   base::WeakPtrFactory<BackendMigrator> weak_ptr_factory_{this};
 };

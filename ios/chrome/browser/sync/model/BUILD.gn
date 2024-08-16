@@ -20,8 +20,8 @@ source_set("model") {
     "sync_service_factory.mm",
   ]
   deps = [
+    ":data_type_store_service_factory",
     ":device_info_sync_service_factory",
-    ":model_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
     "//components/autofill/core/browser",
@@ -44,6 +44,7 @@ source_set("model") {
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sessions",
+    "//components/sharing_message",
     "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:buildflags",
@@ -84,6 +85,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sharing_message/model:sharing_message_bridge_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/browser/sync/model/glue",
@@ -113,7 +115,7 @@ source_set("device_info_sync_service_factory") {
     "device_info_sync_service_factory.mm",
   ]
   deps = [
-    ":model_type_store_service_factory",
+    ":data_type_store_service_factory",
     ":sync_invalidations_service_factory",
     "//base",
     "//components/keyed_service/core",
@@ -126,6 +128,7 @@ source_set("device_info_sync_service_factory") {
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
   ]
@@ -148,10 +151,10 @@ source_set("sync_invalidations_service_factory") {
   ]
 }
 
-source_set("model_type_store_service_factory") {
+source_set("data_type_store_service_factory") {
   sources = [
-    "model_type_store_service_factory.cc",
-    "model_type_store_service_factory.h",
+    "data_type_store_service_factory.cc",
+    "data_type_store_service_factory.h",
   ]
   deps = [
     "//base",
@@ -165,10 +168,14 @@ source_set("sync_error_browser_agent") {
   sources = [
     "sync_error_browser_agent.h",
     "sync_error_browser_agent.mm",
+    "sync_error_browser_agent_app_state_observer.h",
+    "sync_error_browser_agent_app_state_observer.mm",
   ]
   deps = [
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",

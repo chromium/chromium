@@ -14,10 +14,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
-#include "content/browser/compute_pressure/pressure_service_for_worker.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/network_isolation_key.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
-#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
@@ -51,6 +51,11 @@
 #include "third_party/blink/public/mojom/worker/shared_worker_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom.h"
 #include "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom.h"
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "content/browser/compute_pressure/pressure_service_for_worker.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom.h"
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 class GURL;
 
@@ -74,7 +79,8 @@ struct WorkerScriptFetcherResult;
 // current BrowserContext.
 class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
                                         public RenderProcessHostObserver,
-                                        public BucketContext {
+                                        public BucketContext,
+                                        public base::SupportsUserData {
  public:
   SharedWorkerHost(
       SharedWorkerServiceImpl* service,
@@ -127,8 +133,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
   void CreateBucketManagerHost(
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   void BindPressureService(
       mojo::PendingReceiver<blink::mojom::WebPressureManager> receiver);
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Causes this instance to be deleted, which will terminate the worker. May
   // be done based on a UI action.
@@ -176,9 +185,11 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
     return content_security_policies_;
   }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   PressureServiceForWorker<SharedWorkerHost>* pressure_service() {
     return pressure_service_.get();
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Exposed so that tests can swap the implementation and intercept calls.
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker>&
@@ -314,7 +325,9 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   std::unique_ptr<SharedWorkerContentSettingsProxyImpl> content_settings_;
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   std::unique_ptr<PressureServiceForWorker<SharedWorkerHost>> pressure_service_;
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // This is kept alive during the lifetime of the shared worker, since it's
   // associated with Mojo interfaces (ServiceWorkerContainer and

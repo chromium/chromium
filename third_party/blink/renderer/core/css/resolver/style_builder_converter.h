@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
+#include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/transform_origin.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_emoji.h"
@@ -364,8 +365,11 @@ class StyleBuilderConverter {
 
   static ScopedCSSName* ConvertViewTransitionName(StyleResolverState&,
                                                   const CSSValue&);
-  static Vector<AtomicString> ConvertViewTransitionClass(StyleResolverState&,
-                                                         const CSSValue&);
+  static ScopedCSSNameList* ConvertViewTransitionClass(StyleResolverState&,
+                                                       const CSSValue&);
+  static StyleViewTransitionGroup ConvertViewTransitionGroup(
+      StyleResolverState&,
+      const CSSValue&);
 
   // Take a list value for a specified color-scheme, extract flags for known
   // color-schemes and the 'only' modifier, and push the list items into a
@@ -392,7 +396,7 @@ class StyleBuilderConverter {
   static ScopedCSSNameList* ConvertTimelineScope(StyleResolverState&,
                                                  const CSSValue&);
 
-  static InsetArea ConvertInsetArea(StyleResolverState&, const CSSValue&);
+  static PositionArea ConvertPositionArea(StyleResolverState&, const CSSValue&);
 };
 
 template <typename T>

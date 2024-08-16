@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 
 #include <stddef.h>
@@ -60,8 +65,8 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -160,12 +165,6 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
     {23, prefs::kGoogleServicesAccountId, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL},
-    // This is being migrated to `kGoogleServicesLastSyncingGaiaId` since
-    // 2022/10, and should move to `CleanupDeprecatedTrackedPreferences()` in
-    // pref_hash_filter.cc when that migration completes.
-    {24, prefs::kGoogleServicesLastSyncingAccountIdDeprecated,
-     EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
-     ValueType::PERSONAL},
     {29, prefs::kMediaStorageIdSalt, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

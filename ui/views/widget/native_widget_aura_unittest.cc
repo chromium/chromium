@@ -22,6 +22,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
@@ -848,8 +849,8 @@ TEST_F(NativeWidgetAuraTest, VisibilityOfChildBubbleWindow) {
 }
 
 // Tests that for a child transient window, if its modal type is
-// ui::MODAL_TYPE_WINDOW, then its visibility is controlled by its transient
-// parent's visibility.
+// ui::mojom::ModalType::kWindow, then its visibility is controlled by its
+// transient parent's visibility.
 TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   // Create the delegate first so it's destroyed last.
   auto delegate_owned = std::make_unique<WidgetDelegate>();
@@ -864,7 +865,7 @@ TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   parent->Show();
   EXPECT_TRUE(parent->IsVisible());
 
-  // Create a ui::MODAL_TYPE_WINDOW modal type transient child window.
+  // Create a ui::mojom::ModalType::kWindow modal type transient child window.
   auto child = std::make_unique<Widget>();
   Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                   Widget::InitParams::TYPE_WINDOW);
@@ -873,7 +874,7 @@ TEST_F(NativeWidgetAuraTest, TransientChildModalWindowVisibility) {
   child_params.delegate = delegate_owned.get();
   child_params.delegate->RegisterDeleteDelegateCallback(
       base::DoNothingWithBoundArgs(std::move(delegate_owned)));
-  child_params.delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  child_params.delegate->SetModalType(ui::mojom::ModalType::kWindow);
   child->Init(std::move(child_params));
   child->SetBounds(gfx::Rect(0, 0, 200, 200));
   child->Show();

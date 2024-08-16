@@ -41,6 +41,11 @@ AuthenticatorGPMArbitraryPinSheetView::BuildStepSpecificContent() {
       ui_disabled ? AutoFocus::kNo : AutoFocus::kYes);
 }
 
+int AuthenticatorGPMArbitraryPinSheetView::
+    GetSpacingBetweenTitleAndDescription() {
+  return kWebAuthnGpmDialogSpacingBetweenTitleAndDescription;
+}
+
 void AuthenticatorGPMArbitraryPinSheetView::OnPinChanged(std::u16string pin) {
   gpm_arbitrary_pin_sheet_model()->SetPin(std::move(pin));
 }

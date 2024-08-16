@@ -162,6 +162,11 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 // Debug reporting runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
 
+// If enabled, the blink scheduler uses the responsiveness metrics definition of
+// discrete input rather than isInputPending's definition.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics);
+
 // If enabled, navigation IPCs are prioritized in blink.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlinkSchedulerPrioritizeNavigationIPCs);
@@ -934,9 +939,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadSystemFonts);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kPreloadSystemFontsTargets;
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kPreloadSystemFontsFromPage;
-
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPreloadSystemFontsRequiredMemoryGB;
 
@@ -1159,6 +1161,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPartitionVisitedLinkDatabase);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionVisitedLinkDatabaseWithSelfLinks);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 
@@ -1702,6 +1706,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppEnableUrlHandlers);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAppManifestLockScreen);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebAudioBypassOutputBuffering);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kWebAudioContextConstructorEchoCancellation);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebFontsCacheAwareTimeoutAdaption);
 
@@ -1772,10 +1778,19 @@ BLINK_COMMON_EXPORT bool IsLinkPreviewTriggerTypeEnabled(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRemoveAuthroizationOnCrossOriginRedirect);
 
-// Number of pixels to expand in root coordinates for cull rect under
-// scroll translation or other composited transform.
+// Number of pixels to expand in root layout coordinates for cull rect under
+// scroll translation or other composited transform:
+//   kCullRectPixelDistanceToExpand *
+//   (1 + (device_pixel_ratio - 1) * kCullRectExpansionDPRCoef)
+// If kCullRectExpansionDPRCoef equals 0 (the default), the expansion will be
+// kCullRectPixelDistanceToExpand in local coordinates.
+// If kCullRectExpansionDPRCoef equals 1, the expansion will be
+// kCullRectPixelDistanceToExpand in device coordinates.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExpandCompositedCullRect);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kPixelDistanceToExpand;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kCullRectPixelDistanceToExpand;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kCullRectExpansionDPRCoef;
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.

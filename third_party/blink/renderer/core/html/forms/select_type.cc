@@ -49,9 +49,11 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
 #include "third_party/blink/renderer/core/html/forms/popup_menu.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -91,6 +93,14 @@ bool CanAssignToSelectSlot(const Node& node) {
          node.HasTagName(html_names::kHrTag);
 }
 
+bool CanAssignToCustomizableSelectSlot(const Node& node) {
+  // Elements which are valid in <select>'s new content model as proposed for
+  // customizable select.
+  return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
+         IsA<HTMLHRElement>(node) || IsA<HTMLDataListElement>(node) ||
+         IsA<HTMLSpanElement>(node) || IsA<HTMLDivElement>(node);
+}
+
 }  // anonymous namespace
 
 // TODO(crbug.com/1511354): Rename this class to PopUpSelectType
@@ -120,8 +130,11 @@ class MenuListSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot& root) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
+  HTMLButtonElement* DisplayedButton() const override;
   HTMLDataListElement* DisplayedDatalist() const override;
   bool IsAppearanceBaseSelect() const override;
+  HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
+      const override;
   Element& InnerElementForAppearanceAuto() const override;
   void ShowPopup(PopupMenu::ShowEventType type) override;
   void HidePopup() override;
@@ -152,6 +165,8 @@ class MenuListSelectType final : public SelectType {
   Member<HTMLButtonElement> default_button_;
   Member<HTMLSpanElement> default_button_selected_option_;
   Member<HTMLDataListElement> default_datalist_;
+  Member<HTMLSelectElement::SelectAutofillPreviewElement> autofill_popover_;
+  Member<HTMLDivElement> autofill_popover_text_;
   Member<HTMLSlotElement> default_datalist_options_slot_;
   Member<HTMLSlotElement> datalist_slot_;
   Member<HTMLSlotElement> option_slot_;
@@ -171,6 +186,8 @@ void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(default_button_);
   visitor->Trace(default_button_selected_option_);
   visitor->Trace(default_datalist_);
+  visitor->Trace(autofill_popover_);
+  visitor->Trace(autofill_popover_text_);
   visitor->Trace(default_datalist_options_slot_);
   visitor->Trace(datalist_slot_);
   visitor->Trace(option_slot_);
@@ -426,8 +443,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     root.appendChild(button_slot_);
 
     default_button_ = MakeGarbageCollected<HTMLButtonElement>(doc);
-    default_button_->setAttribute(html_names::kTypeAttr,
-                                  AtomicString("popover"));
     default_button_->SetShadowPseudoId(
         shadow_element_names::kSelectFallbackButton);
     button_slot_->AppendChild(default_button_);
@@ -468,20 +483,35 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     default_datalist_options_slot_->SetIdAttribute(
         shadow_element_names::kSelectDatalistOptions);
     default_datalist_->AppendChild(default_datalist_options_slot_);
+
+    autofill_popover_ =
+        MakeGarbageCollected<HTMLSelectElement::SelectAutofillPreviewElement>(
+            doc, select_);
+    autofill_popover_->setAttribute(html_names::kPopoverAttr,
+                                    keywords::kManual);
+    autofill_popover_->SetInternalImplicitAnchor(select_);
+    autofill_popover_->SetShadowPseudoId(
+        shadow_element_names::kSelectAutofillPreview);
+    root.appendChild(autofill_popover_);
+
+    autofill_popover_text_ = MakeGarbageCollected<HTMLDivElement>(doc);
+    autofill_popover_text_->SetShadowPseudoId(
+        shadow_element_names::kSelectAutofillPreviewText);
+    autofill_popover_->appendChild(autofill_popover_text_);
   }
 }
 
 void MenuListSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
-  VectorOf<Node> buttons;
+  HTMLButtonElement* first_button = nullptr;
   VectorOf<Node> all_children_except_button_and_datalist;
   Node* first_datalist = nullptr;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (!child.IsSlotable()) {
       continue;
     }
-    if (IsA<HTMLButtonElement>(child)) {
-      buttons.push_back(child);
+    if (IsA<HTMLButtonElement>(child) && !first_button) {
+      first_button = &To<HTMLButtonElement>(child);
     } else if (IsA<HTMLDataListElement>(child)) {
       if (!first_datalist) {
         first_datalist = &child;
@@ -498,7 +528,7 @@ void MenuListSelectType::ManuallyAssignSlots() {
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     CHECK(button_slot_);
     CHECK(datalist_slot_);
-    button_slot_->Assign(buttons);
+    button_slot_->Assign(first_button);
     datalist_slot_->Assign(first_datalist);
     if (default_datalist_->popoverOpen()) {
       default_datalist_options_slot_->Assign(
@@ -526,6 +556,14 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
   return To<HTMLButtonElement>(button_slot_->FirstAssignedNode());
 }
 
+HTMLButtonElement* MenuListSelectType::DisplayedButton() const {
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    CHECK(!button_slot_);
+    return nullptr;
+  }
+  return To<HTMLButtonElement>(FlatTreeTraversal::FirstChild(*button_slot_));
+}
+
 HTMLDataListElement* MenuListSelectType::DisplayedDatalist() const {
   if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
     CHECK(!datalist_slot_);
@@ -543,6 +581,11 @@ bool MenuListSelectType::IsAppearanceBaseSelect() const {
     return style->EffectiveAppearance() == ControlPart::kBaseSelectPart;
   }
   return false;
+}
+
+HTMLSelectElement::SelectAutofillPreviewElement*
+MenuListSelectType::GetAutofillPreviewElement() const {
+  return autofill_popover_;
 }
 
 Element& MenuListSelectType::InnerElementForAppearanceAuto() const {
@@ -717,10 +760,22 @@ void MenuListSelectType::DidBlur() {
     HidePopup();
 }
 
-void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement*) {
+void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
   UpdateTextStyleAndContent();
   if (native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kBySelectionChange);
+  }
+  if (IsAppearanceBaseSelect()) {
+    if (option) {
+      autofill_popover_->showPopover(ASSERT_NO_EXCEPTION);
+      autofill_popover_text_->setInnerText(option->label());
+    } else {
+      autofill_popover_text_->setInnerText(g_empty_string);
+      autofill_popover_->HidePopoverInternal(
+          HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+          /*exception_state=*/nullptr);
+    }
   }
 }
 
@@ -867,8 +922,11 @@ HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {
   if (auto* option =
           select_->OptionAtListIndex(select_->index_to_select_on_cancel_))
     return option;
-  if (select_->suggested_option_)
+  // In appearance:base-select mode, we don't want to reveal the suggested
+  // option anywhere except in autofill_popover_.
+  if (select_->suggested_option_ && !IsAppearanceBaseSelect()) {
     return select_->suggested_option_.Get();
+  }
   // TODO(tkent): We should not call OptionToBeShown() in IsMultiple() case.
   if (select_->IsMultiple())
     return select_->SelectedOption();
@@ -989,8 +1047,11 @@ class ListBoxSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot&) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
+  HTMLButtonElement* DisplayedButton() const override;
   HTMLDataListElement* DisplayedDatalist() const override;
   bool IsAppearanceBaseSelect() const override;
+  HTMLSelectElement::SelectAutofillPreviewElement* GetAutofillPreviewElement()
+      const override;
 
  private:
   HTMLOptionElement* NextSelectableOptionPageAway(HTMLOptionElement*,
@@ -1637,7 +1698,10 @@ void ListBoxSelectType::CreateShadowSubtree(ShadowRoot& root) {
 void ListBoxSelectType::ManuallyAssignSlots() {
   VectorOf<Node> option_nodes;
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
-    if (child.IsSlotable() && CanAssignToSelectSlot(child)) {
+    if (child.IsSlotable() &&
+        (CanAssignToSelectSlot(child) ||
+         (RuntimeEnabledFeatures::StylableSelectEnabled() &&
+          CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }
   }
@@ -1652,12 +1716,23 @@ HTMLButtonElement* ListBoxSelectType::SlottedButton() const {
   return nullptr;
 }
 
+HTMLButtonElement* ListBoxSelectType::DisplayedButton() const {
+  // TODO(crbug.com/357649033): Implement this
+  return nullptr;
+}
+
 HTMLDataListElement* ListBoxSelectType::DisplayedDatalist() const {
   return nullptr;
 }
 
 bool ListBoxSelectType::IsAppearanceBaseSelect() const {
   return false;
+}
+
+HTMLSelectElement::SelectAutofillPreviewElement*
+ListBoxSelectType::GetAutofillPreviewElement() const {
+  // TODO(crbug.com/357649033): Implement this
+  return nullptr;
 }
 
 // ============================================================================

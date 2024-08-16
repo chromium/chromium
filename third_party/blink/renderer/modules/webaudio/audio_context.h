@@ -59,7 +59,8 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   AudioContext(LocalDOMWindow&,
                const WebAudioLatencyHint&,
                std::optional<float> sample_rate,
-               WebAudioSinkDescriptor sink_descriptor);
+               WebAudioSinkDescriptor sink_descriptor,
+               bool update_echo_cancellation_on_first_start);
   ~AudioContext() override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)

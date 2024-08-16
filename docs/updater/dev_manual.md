@@ -250,9 +250,6 @@ providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
 contains copies of the "final" outputs created by the build. `UpdaterSetup` is
 probably what you want for installing the updater you have built.
 
-TODO(crbug.com/40269445): list the relevant/interesting outputs here and what
-they are, why they're relevant/interesting, etc.
-
 ## Code Coverage
 Gerrit now down-votes the changes that do not have enough coverage. And it's
 nice to have good coverage regardless. To improve code-coverage, we need to

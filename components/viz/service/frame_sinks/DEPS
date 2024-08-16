@@ -37,4 +37,7 @@ specific_include_rules = {
   "external_begin_frame_source_win.h": [
     "+ui/gl/vsync_thread_win.h",
   ],
+  "video_detector_unittest.cc": [
+    "+gpu/command_buffer/service/scheduler.h",
+  ],
 }

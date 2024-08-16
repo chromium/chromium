@@ -5,15 +5,19 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_selection_placeholder_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -21,8 +25,16 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -39,7 +51,7 @@
   LensOverlayContainerViewController* _containerViewController;
 
   /// Selection view controller.
-  LensOverlaySelectionPlaceholderViewController* _selectionViewController;
+  UIViewController<ChromeLensOverlay>* _selectionViewController;
 
   /// The mediator for lens overlay.
   LensOverlayMediator* _mediator;
@@ -51,29 +63,41 @@
 
   /// The tab helper associated with the current UI.
   LensOverlayTabHelper* _associatedTabHelper;
+
+  /// Coordinator of the omnibox.
+  OmniboxCoordinator* _omniboxCoordinator;
 }
 
-#pragma mark - properties
+#pragma mark - Helpers
 
-- (void)createUIWithSnapshot:(UIImage*)snapshot {
+// Returns whether the UI was created succesfully.
+- (BOOL)createUIWithSnapshot:(UIImage*)snapshot {
   [self createContainerViewController];
-  [self createSelectionViewController];
+
+  [self createSelectionViewControllerWithSnapshot:snapshot];
+  if (!_selectionViewController) {
+    return NO;
+  }
+
   [self createMediator];
 
   // Wire up consumers and delegates
   _containerViewController.selectionViewController = _selectionViewController;
-  _selectionViewController.delegate = _mediator;
-  _mediator.snapshotConsumer = _selectionViewController;
+  [_selectionViewController setLensOverlayDelegate:_mediator];
+  _mediator.commandsHandler = self;
 
-  [_mediator startWithSnapshot:snapshot];
+  [_selectionViewController start];
+
+  return YES;
 }
 
-- (void)createSelectionViewController {
+- (void)createSelectionViewControllerWithSnapshot:(UIImage*)snapshot {
   if (_selectionViewController) {
     return;
   }
+  LensConfiguration* config = [self createLensConfiguration];
   _selectionViewController =
-      [[LensOverlaySelectionPlaceholderViewController alloc] init];
+      ios::provider::NewChromeLensOverlay(snapshot, config);
 }
 
 - (void)createContainerViewController {
@@ -97,6 +121,10 @@
   // Results UI is lazily initialized; see comment in LensOverlayResultConsumer
   // section.
   _mediator.resultConsumer = self;
+}
+
+- (UIViewController*)viewController {
+  return _containerViewController;
 }
 
 #pragma mark - ChromeCoordinator
@@ -150,8 +178,12 @@
   _associatedTabHelper->SetLensOverlayShown(true);
 
   UIImage* snapshot = [self captureSnapshot];
-  [self createUIWithSnapshot:snapshot];
-  [self showLensUI:animated];
+  BOOL success = [self createUIWithSnapshot:snapshot];
+  if (success) {
+    [self showLensUI:animated];
+  } else {
+    [self destroyLensUI:NO];
+  }
 }
 
 - (void)showLensUI:(BOOL)animated {
@@ -179,6 +211,7 @@
   // different tab. In this case mark the stale tab helper as not shown.
   if (_associatedTabHelper) {
     _associatedTabHelper->SetLensOverlayShown(false);
+    _associatedTabHelper->UpdateSnapshot();
     _associatedTabHelper = nil;
   }
 
@@ -214,20 +247,57 @@
   [_resultMediator loadResultsURL:url];
 }
 
+#pragma mark - LensResultPageWebStateDelegate
+
+- (void)lensResultPageWebStateDestroyed {
+  [self stopResultPage];
+}
+
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
+  _mediator.webState = webState;
+}
+
 #pragma mark - private
+
+// Lens needs to have visibility into the user's identity and whether the search
+// should be incognito or not.
+- (LensConfiguration*)createLensConfiguration {
+  Browser* browser = self.browser;
+  LensConfiguration* configuration = [[LensConfiguration alloc] init];
+  BOOL isIncognito = browser->GetBrowserState()->IsOffTheRecord();
+  configuration.isIncognito = isIncognito;
+  configuration.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
+  // TODO(crbug.com/359115242): Use proper entrypoint for Lens Overlay.
+  configuration.entrypoint = LensEntrypoint::NewTabPage;
+
+  if (!isIncognito) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(
+            browser->GetBrowserState());
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
+        ::signin::ConsentLevel::kSignin);
+    configuration.identity = identity;
+  }
+
+  return configuration;
+}
 
 - (void)startResultPage {
   Browser* browser = self.browser;
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+
   web::WebState::CreateParams params =
-      web::WebState::CreateParams(browser->GetBrowserState());
+      web::WebState::CreateParams(browserState);
   web::WebStateDelegate* browserWebStateDelegate =
       WebStateDelegateBrowserAgent::FromBrowser(browser);
   _resultMediator = [[LensResultPageMediator alloc]
        initWithWebStateParams:params
       browserWebStateDelegate:browserWebStateDelegate
-                  isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
+                  isIncognito:browserState->IsOffTheRecord()];
   _resultMediator.applicationHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  _resultMediator.webStateDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
   _resultViewController = [[LensResultPageViewController alloc] init];
@@ -247,9 +317,46 @@
   ];
   sheet.prefersGrabberVisible = YES;
 
+  // TODO(crbug.com/359124093): Temporary workaround as
+  // `presentViewController:` loads the view asynchronously on the main thread.
+  // `_resultViewController` needs to first be loaded to avoid crashing by
+  // calling `setEditView:`.
+  [_resultViewController loadViewIfNeeded];
   [_containerViewController presentViewController:_resultViewController
                                          animated:YES
                                        completion:nil];
+
+  // TODO(crbug.com/355179986): Implement omnibox navigation with
+  // omnibox_delegate.
+  auto omniboxClient = std::make_unique<LensOmniboxClient>(
+      browserState,
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState),
+      /*web_provider=*/_resultMediator,
+      /*omnibox_delegate=*/_mediator);
+
+  _omniboxCoordinator = [[OmniboxCoordinator alloc]
+      initWithBaseViewController:nil
+                         browser:browser
+                   omniboxClient:std::move(omniboxClient)];
+
+  // TODO(crbug.com/355179721): Add omnibox focus delegate.
+  _omniboxCoordinator.presenterDelegate = _resultViewController;
+  [_omniboxCoordinator start];
+
+  [_omniboxCoordinator.managedViewController
+      willMoveToParentViewController:_resultViewController];
+  [_resultViewController
+      addChildViewController:_omniboxCoordinator.managedViewController];
+  [_resultViewController setEditView:_omniboxCoordinator.editView];
+  [_omniboxCoordinator.managedViewController
+      didMoveToParentViewController:_resultViewController];
+
+  [_omniboxCoordinator updateOmniboxState];
+
+  _mediator.omniboxCoordinator = _omniboxCoordinator;
+  _mediator.toolbarConsumer = _resultViewController;
+  _resultViewController.omniboxMutator = _mediator;
+  _omniboxCoordinator.focusDelegate = _mediator;
 }
 
 - (void)stopResultPage {
@@ -260,6 +367,8 @@
   [_resultMediator disconnect];
   _resultMediator = nil;
   _mediator.resultConsumer = self;
+  [_omniboxCoordinator stop];
+  _omniboxCoordinator = nil;
 }
 
 - (BOOL)isUICreated {
@@ -270,6 +379,8 @@
 - (void)destroyViewControllersAndMediators {
   [self stopResultPage];
   _containerViewController = nil;
+  [_mediator disconnect];
+  _selectionViewController = nil;
   _mediator = nil;
 }
 
@@ -321,10 +432,6 @@
 
 - (BOOL)isLensOverlayVisible {
   return self.baseViewController.presentedViewController != nil;
-}
-
-- (void)lensResultPageWebStateDestroyed {
-  [self stopResultPage];
 }
 
 @end

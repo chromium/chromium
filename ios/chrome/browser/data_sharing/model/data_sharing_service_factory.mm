@@ -14,11 +14,11 @@
 #import "components/data_sharing/public/features.h"
 #import "components/keyed_service/core/keyed_service_export.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
   return std::make_unique<DataSharingServiceImpl>(
       browser_state->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
-      ModelTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
+      DataTypeStoreServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetStoreFactory(),
       ::GetChannel(),
       /*sdk_delegate=*/nullptr, /*ui_delegate=*/nullptr);
@@ -69,8 +69,8 @@ DataSharingServiceFactory::DataSharingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DataSharingService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;

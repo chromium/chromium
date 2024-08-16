@@ -22,9 +22,13 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_cache.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/plus_addresses/features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;
@@ -259,6 +263,8 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       PaymentMethodAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
   DCHECK(payment_method_controller_);
 
+  InitializePlusProfilesCache();
+
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ManualFillingCache",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -275,9 +281,30 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       address_controller_(std::move(address_controller)),
       payment_method_controller_(std::move(payment_method_controller)),
       view_(std::move(view)) {
+  InitializePlusProfilesCache();
+
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ManualFillingCache",
       base::SingleThreadTaskRunner::GetCurrentDefault());
+}
+
+void ManualFillingControllerImpl::InitializePlusProfilesCache() {
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
+    return;
+  }
+  auto* client =
+      autofill::ContentAutofillClient::FromWebContents(&GetWebContents());
+  auto* service = PlusAddressServiceFactory::GetForBrowserContext(
+      GetWebContents().GetBrowserContext());
+  if (client && service) {
+    plus_profiles_cache_ =
+        std::make_unique<AffiliatedPlusProfilesCache>(client, service);
+    pwd_controller_->RegisterPlusProfilesProvider(
+        plus_profiles_cache_->GetWeakPtr());
+    address_controller_->RegisterPlusProfilesProvider(
+        plus_profiles_cache_->GetWeakPtr());
+  }
 }
 
 bool ManualFillingControllerImpl::OnMemoryDump(
@@ -333,11 +360,17 @@ void ManualFillingControllerImpl::UpdateVisibility() {
       if (sheet.has_value())
         view_->OnItemsAvailable(std::move(sheet.value()));
     }
+    if (plus_profiles_cache_) {
+      plus_profiles_cache_->FetchAffiliatedPlusProfiles();
+    }
     view_->Show(ManualFillingViewInterface::WaitForKeyboard(
         last_focused_field_type_ != FocusedFieldType::kUnfillableElement &&
         last_focused_field_type_ != FocusedFieldType::kUnknown));
 
   } else {
+    if (plus_profiles_cache_) {
+      plus_profiles_cache_->ClearCachedPlusProfiles();
+    }
     view_->Hide();
   }
 }

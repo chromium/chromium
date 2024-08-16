@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -31,7 +32,8 @@ class RootLock;
 // This class is in charge of the creation of Locks. Locks restrict the access
 // to a specific file or directory, preventing unexpected concurrent access to
 // data. It is owned by the FileSystemAccessManagerImpl.
-class CONTENT_EXPORT FileSystemAccessLockManager {
+class CONTENT_EXPORT FileSystemAccessLockManager
+    : public base::RefCountedDeleteOnSequence<FileSystemAccessLockManager> {
  public:
   class LockHandle;
 
@@ -80,7 +82,6 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
 
   explicit FileSystemAccessLockManager(
       base::PassKey<FileSystemAccessManagerImpl> pass_key);
-  ~FileSystemAccessLockManager();
 
   FileSystemAccessLockManager(FileSystemAccessLockManager const&) = delete;
   FileSystemAccessLockManager& operator=(FileSystemAccessLockManager const&) =
@@ -117,8 +118,17 @@ class CONTENT_EXPORT FileSystemAccessLockManager {
   // Gets the `ancestor_lock_type_` for testing.
   [[nodiscard]] LockType GetAncestorLockTypeForTesting();
 
+  // Gets a weak pointer to `this` to test if its been destroyed.
+  [[nodiscard]] base::WeakPtr<FileSystemAccessLockManager>
+  GetWeakPtrForTesting();
+
  private:
+  friend class base::DeleteHelper<FileSystemAccessLockManager>;
+  friend class base::RefCountedDeleteOnSequence<FileSystemAccessLockManager>;
+
   friend RootLock;
+
+  ~FileSystemAccessLockManager();
 
   enum class EntryPathType {
     // A path on the local file system. Files with these paths can be operated

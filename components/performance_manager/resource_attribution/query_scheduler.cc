@@ -280,7 +280,7 @@ uint32_t QueryScheduler::GetQueryCountForTesting(
     case ResourceType::kMemorySummary:
       return memory_query_count_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void QueryScheduler::RecordMemoryMetrics() {

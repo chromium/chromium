@@ -5,33 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_OBSERVER_H_
 
-#include "base/observer_list_types.h"
+// This is a forwarding header to ease the name transition of ChromeBrowserState
+// and related classes to ProfileIOS.
+// TODO(crbug.com/358267438): Remove this file.
 
-class ChromeBrowserState;
-class ChromeBrowserStateManager;
-
-// An observer that can be registered with a ChromeBrowserStateManager.
-class ChromeBrowserStateManagerObserver : public base::CheckedObserver {
- public:
-  // Called when the ChromeBrowserStateManager is destroyed. The observer
-  // must unregister itself. This is called as part of the shutdown of the
-  // application.
-  virtual void OnChromeBrowserStateManagerDestroyed(
-      ChromeBrowserStateManager* manager) = 0;
-
-  // Called when a ChromeBrowserState is created, before the initialisation
-  // is complete. In most case `OnBrowserStateAdded(...)` is a better event
-  // to listen to. Will only be called for non-incognito ChromeBrowserState.
-  virtual void OnChromeBrowserStateCreated(
-      ChromeBrowserStateManager* manager,
-      ChromeBrowserState* browser_state) = 0;
-
-  // Called when a ChromeBrowserState has been fully loaded and initialised
-  // and is available through the ChromeBrowserStateManager. Will only be
-  // called for non-incognito ChromeBrowserState.
-  virtual void OnChromeBrowserStateLoaded(
-      ChromeBrowserStateManager* manager,
-      ChromeBrowserState* browser_state) = 0;
-};
+#include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_STATE_CHROME_BROWSER_STATE_MANAGER_OBSERVER_H_

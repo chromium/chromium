@@ -111,4 +111,19 @@ public class BuildConfig {
 #else
     public static MAYBE_FINAL boolean ENABLE_DEBUG_LOGS = true;
 #endif
+
+#if defined(_APK_ASSETS_SUFFIXED_LIST)
+    public static MAYBE_FINAL String[] APK_ASSETS_SUFFIXED_LIST = {_APK_ASSETS_SUFFIXED_LIST};
+    public static MAYBE_FINAL String APK_ASSETS_SUFFIX = QUOTE(_APK_ASSETS_SUFFIX);
+#else
+    public static MAYBE_FINAL String[] APK_ASSETS_SUFFIXED_LIST = {};
+    public static MAYBE_FINAL String APK_ASSETS_SUFFIX = null;
+#endif
+
+    // Enable features that are more typically available on desktop.
+#if defined(_IS_DESKTOP_ANDROID)
+    public static MAYBE_FINAL boolean IS_DESKTOP_ANDROID = true;
+#else
+    public static MAYBE_FINAL boolean IS_DESKTOP_ANDROID MAYBE_FALSE;
+#endif
 }

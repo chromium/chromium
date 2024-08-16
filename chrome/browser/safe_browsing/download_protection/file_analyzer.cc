@@ -80,8 +80,7 @@ void FileAnalyzer::Start(const base::FilePath& target_path,
   } else if (inspection_type == DownloadFileType::DMG) {
     StartExtractDmgFeatures();
 #endif
-  } else if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled) &&
-             inspection_type == DownloadFileType::SEVEN_ZIP) {
+  } else if (inspection_type == DownloadFileType::SEVEN_ZIP) {
     StartExtractSevenZipFeatures();
   } else {
 #if BUILDFLAG(IS_MAC)

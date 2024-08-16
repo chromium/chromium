@@ -587,7 +587,7 @@ class InvalidUtf8HandshakeClient
                             sizeof(message));
 
     EXPECT_EQ(
-        writable->WriteData(base::as_bytes(base::span_from_ref(message)),
+        writable->WriteData(base::byte_span_from_ref(message),
                             MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes),
         MOJO_RESULT_OK);
     EXPECT_EQ(actually_written_bytes, sizeof(message));

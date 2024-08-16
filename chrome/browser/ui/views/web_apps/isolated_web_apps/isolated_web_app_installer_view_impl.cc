@@ -30,6 +30,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -669,7 +670,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
 
   std::unique_ptr<views::BubbleDialogModelHost> bubble =
       views::BubbleDialogModelHost::CreateModal(dialog_model_builder.Build(),
-                                                ui::MODAL_TYPE_CHILD);
+                                                ui::mojom::ModalType::kChild);
   bubble->SetAnchorView(GetWidget()->GetContentsView());
   bubble->SetArrow(views::BubbleBorder::FLOAT);
   bubble->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(

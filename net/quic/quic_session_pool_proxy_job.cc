@@ -244,7 +244,7 @@ int QuicSessionPool::ProxyJob::DoAttemptSession() {
     return rv;
   }
 
-  session_attempt_ = std::make_unique<SessionAttempt>(
+  session_attempt_ = std::make_unique<QuicSessionAttempt>(
       this, std::move(local_address), std::move(peer_address),
       target_quic_version_, cert_verify_flags_, std::move(proxy_stream_),
       http_user_agent_settings_);

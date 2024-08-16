@@ -129,7 +129,7 @@ std::string EncoderStatusCodeToString(EncoderStatus::Codes code) {
     case EncoderStatus::Codes::kEncoderMojoConnectionError:
       return "kEncoderMojoConnectionError";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

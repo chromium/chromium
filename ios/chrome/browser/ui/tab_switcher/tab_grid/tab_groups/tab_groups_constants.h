@@ -10,6 +10,7 @@
 // Accessibility identifiers for the tab group creation view.
 extern NSString* const kCreateTabGroupViewIdentifier;
 extern NSString* const kCreateTabGroupTextFieldIdentifier;
+extern NSString* const kCreateTabGroupTextFieldClearButtonIdentifier;
 extern NSString* const kCreateTabGroupCreateButtonIdentifier;
 extern NSString* const kCreateTabGroupCancelButtonIdentifier;
 

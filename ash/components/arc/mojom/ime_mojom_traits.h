@@ -63,8 +63,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
       case ui::TEXT_INPUT_TYPE_NULL:
         return MojoType::NONE;
     }
-    NOTREACHED_IN_MIGRATION();
-    return MojoType::TEXT;
+    NOTREACHED();
   }
 
   static bool FromMojom(MojoType input, ui::TextInputType* out) {
@@ -106,8 +105,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         *out = ui::TEXT_INPUT_TYPE_NULL;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

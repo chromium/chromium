@@ -277,16 +277,19 @@ class MagicStackRankingModelTest : public PlatformTest {
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
                      authService:authentication_service];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
-          initWithPrefService:GetBrowserState()->GetPrefs()
-                  syncService:syncService
-              identityManager:identityManager
-        authenticationService:authenticationService
-                   sceneState:scene_state_
-        isDefaultSearchEngine:NO];
+                   initWithPrefService:GetBrowserState()->GetPrefs()
+                           syncService:syncService
+                       identityManager:identityManager
+                 authenticationService:authenticationService
+                            sceneState:scene_state_
+                 isDefaultSearchEngine:NO
+                   segmentationService:nullptr
+        deviceSwitcherResultDispatcher:nullptr];
     _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
         initWithShoppingService:shopping_service_.get()
-         URLLoadingBrowserAgent:url_loader_];
+         URLLoadingBrowserAgent:url_loader_
+                    prefService:GetLocalState()];
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
         initWithLocalState:GetLocalState()
                prefService:GetBrowserState()->GetPrefs()
@@ -298,9 +301,10 @@ class MagicStackRankingModelTest : public PlatformTest {
         IOSChromeLargeIconCacheFactory::GetForBrowserState(GetBrowserState());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
-            &pref_service_, /*top_sites*/ nullptr, /*popular_sites*/ nullptr,
-            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr,
-            /*supervisor=*/nullptr, true);
+            &pref_service_, /*identity_manager*/ nullptr,
+            /*supervised_user_service*/ nullptr, /*top_sites*/ nullptr,
+            /*popular_sites*/ nullptr,
+            /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
                     prefService:GetBrowserState()->GetPrefs()
@@ -314,6 +318,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
                                        GetForBrowserState(GetBrowserState())
                         localState:GetLocalState()
+                         userState:GetBrowserState()->GetPrefs()
                           appState:mockAppState];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]

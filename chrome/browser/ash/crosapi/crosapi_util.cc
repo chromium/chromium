@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 
 #include <sys/mman.h>
@@ -919,8 +924,7 @@ void InjectBrowserInitParams(
   params->is_drivefs_bulk_pinning_available =
       drive::util::IsDriveFsBulkPinningAvailable();
 
-  params->is_sys_ui_downloads_integration_v2_enabled =
-      ash::features::IsSysUiDownloadsIntegrationV2Enabled();
+  params->is_sys_ui_downloads_integration_v2_enabled = true;
 
   params->is_cros_battery_saver_available =
       ash::features::IsBatterySaverAvailable();

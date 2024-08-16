@@ -179,7 +179,7 @@ SpaceSplitString::DataMap& SpaceSplitString::SharedDataMap() {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Persistent<DataMap>>,
                                   static_map_holder, {});
   Persistent<DataMap>& map = *static_map_holder;
-  if (UNLIKELY(!map)) {
+  if (!map) [[unlikely]] {
     map = MakeGarbageCollected<DataMap>();
     LEAK_SANITIZER_IGNORE_OBJECT(&map);
   }

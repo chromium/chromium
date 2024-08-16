@@ -100,6 +100,11 @@ class PLATFORM_EXPORT ResourceLoadObserver
       Resource* resource,
       const FetchParameters& params) = 0;
 
+  // Called when ResourceFetcher::DidLoadResourceFromMemoryCache is called to
+  // check if there is an inspector attached and if we should report information
+  // about all requests to the inspector.
+  virtual bool InterestedInAllRequests() = 0;
+
   virtual void Trace(Visitor*) const {}
 };
 

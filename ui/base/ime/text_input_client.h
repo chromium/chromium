@@ -40,8 +40,7 @@ enum class TextEditCommand;
 // An interface implemented by a View that needs text input support.
 // All strings related to IME operations should be UTF-16 encoded and all
 // indices/ranges relative to those strings should be UTF-16 code units.
-class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
-    : public base::SupportsWeakPtr<TextInputClient> {
+class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
  public:
   // The reason the control was focused, used by the virtual keyboard to detect
   // pen input.
@@ -68,6 +67,9 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
 #endif
 
   virtual ~TextInputClient();
+
+  // This should be implemented by the most concrete class.
+  virtual base::WeakPtr<TextInputClient> AsWeakPtr() = 0;
 
   // Input method result -------------------------------------------------------
 

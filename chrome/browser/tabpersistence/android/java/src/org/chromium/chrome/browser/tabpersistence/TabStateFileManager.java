@@ -642,10 +642,28 @@ public class TabStateFileManager {
             StreamUtil.closeQuietly(cipherOutputStream);
             StreamUtil.closeQuietly(fileOutputStream);
             if (success) {
-                atomicFile.finishWrite(fileOutputStream);
+                safelyFinishOrFailWrite(atomicFile, fileOutputStream);
             } else {
-                atomicFile.failWrite(fileOutputStream);
+                safelyFailWrite(atomicFile, fileOutputStream);
             }
+        }
+    }
+
+    private static void safelyFinishOrFailWrite(
+            AtomicFile atomicFile, FileOutputStream fileOutputStream) {
+        try {
+            atomicFile.finishWrite(fileOutputStream);
+        } catch (Throwable e) {
+            Log.e(TAG, "Error finishing atomic write of " + atomicFile, e);
+            safelyFailWrite(atomicFile, fileOutputStream);
+        }
+    }
+
+    private static void safelyFailWrite(AtomicFile atomicFile, FileOutputStream fileOutputStream) {
+        try {
+            atomicFile.failWrite(fileOutputStream);
+        } catch (Throwable e) {
+            Log.e(TAG, "Error failing atomic write of " + atomicFile, e);
         }
     }
 

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -253,8 +254,8 @@ class BaseFileOutputStream
       if (!file_.IsValid()) {
         return false;
       }
-      int bytes_written =
-          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size);
+      int bytes_written = UNSAFE_TODO(
+          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size));
       if (bytes_written == size) {
         return true;
       }
@@ -315,8 +316,8 @@ class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
       if (!file_.IsValid()) {
         return -1;
       }
-      const int bytes_read =
-          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size);
+      const int bytes_read = UNSAFE_TODO(
+          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size));
       if (bytes_read >= 0) {
         return bytes_read;
       }

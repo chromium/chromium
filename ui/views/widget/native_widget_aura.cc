@@ -36,6 +36,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -539,10 +540,11 @@ const gfx::ImageSkia* NativeWidgetAura::GetWindowAppIcon() {
   return window_->GetProperty(aura::client::kAppIconKey);
 }
 
-void NativeWidgetAura::InitModalType(ui::ModalType modal_type) {
-  if (modal_type != ui::MODAL_TYPE_NONE)
+void NativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
+  if (modal_type != ui::mojom::ModalType::kNone) {
     window_->SetProperty(aura::client::kModalKey, modal_type);
-  if (modal_type == ui::MODAL_TYPE_WINDOW) {
+  }
+  if (modal_type == ui::mojom::ModalType::kWindow) {
     wm::TransientWindowManager::GetOrCreate(window_)
         ->set_parent_controls_visibility(true);
   }
@@ -688,7 +690,7 @@ void NativeWidgetAura::Close() {
          ownership_ == Widget::InitParams::CLIENT_OWNS_WIDGET);
   if (window_) {
     Hide();
-    window_->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+    window_->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

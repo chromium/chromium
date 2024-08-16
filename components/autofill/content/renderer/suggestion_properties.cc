@@ -30,6 +30,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
     case AutofillSuggestionTriggerSource::kContentEditableClicked:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return true;
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
@@ -42,7 +43,7 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldAutofillOnLongValues(
@@ -64,6 +65,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return false;
     case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
     case mojom::AutofillSuggestionTriggerSource::kPasswordManager:
@@ -71,7 +73,7 @@ bool ShouldAutofillOnLongValues(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
@@ -92,6 +94,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
     case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
     // are not used in the renderer code. As such, suggestion properties don't
@@ -102,7 +105,7 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ShouldShowFullSuggestionListForPasswordManager(
@@ -128,6 +131,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
         kShowPromptAfterDialogClosedNonManualFallback:
     case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
     case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPredictionImprovements:
       return false;
     // `kShowCardsFromAccount`, `kPasswordManager`, `kAndroidWebView` and `kiOS`
     // are not used in the renderer code. As such, suggestion properties don't
@@ -143,7 +147,7 @@ bool ShouldShowFullSuggestionListForPasswordManager(
     case AutofillSuggestionTriggerSource::kUnspecified:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace autofill

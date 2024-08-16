@@ -65,7 +65,7 @@ class PluginDocumentParser : public RawDataDocumentParser {
   }
 
  private:
-  void AppendBytes(const char*, size_t) override;
+  void AppendBytes(base::span<const uint8_t>) override;
   void Finish() override;
   void StopParsing() override;
 
@@ -162,14 +162,17 @@ void PluginDocumentParser::CreateDocumentStructure() {
     view->DidReceiveResponse(GetDocument()->Loader()->GetResponse());
 }
 
-void PluginDocumentParser::AppendBytes(const char* data, size_t length) {
+void PluginDocumentParser::AppendBytes(base::span<const uint8_t> data) {
   CreateDocumentStructure();
   if (IsStopped())
     return;
-  if (!length)
+  if (data.empty()) {
     return;
-  if (WebPluginContainerImpl* view = GetPluginView())
-    view->DidReceiveData(data, length);
+  }
+  if (WebPluginContainerImpl* view = GetPluginView()) {
+    base::span<const char> char_data = base::as_chars(data);
+    view->DidReceiveData(char_data.data(), char_data.size());
+  }
 }
 
 void PluginDocumentParser::Finish() {

@@ -528,6 +528,9 @@ targets.tests.isolated_script_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+    args = [
+        "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter",
+    ],
 )
 
 targets.tests.isolated_script_test(
@@ -869,7 +872,6 @@ targets.tests.gpu_telemetry_test(
     name = "expected_color_pixel_validating_test",
     telemetry_test_name = "expected_color",
     mixins = [
-        "skia_gold_test",
         "has_native_resultdb_integration",
     ],
 )
@@ -911,6 +913,17 @@ targets.tests.gtest_test(
         "--env-var",
         "LIBVA_DRIVER_NAME",
         "libfake",
+        "../../media/test/data/test-25fps.vp9",
+        "../../media/test/data/test-25fps.vp9.json",
+    ],
+    binary = "video_decode_accelerator_tests",
+)
+
+targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests_v4l2",
+    args = [
+        "--as-root",
+        "--validator_type=none",
         "../../media/test/data/test-25fps.vp9",
         "../../media/test/data/test-25fps.vp9.json",
     ],
@@ -1727,7 +1740,6 @@ targets.tests.gpu_telemetry_test(
     name = "pixel_skia_gold_validating_test",
     telemetry_test_name = "pixel",
     mixins = [
-        "skia_gold_test",
         "has_native_resultdb_integration",
     ],
 )
@@ -2747,6 +2759,23 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "webview_instrumentation_test_apk",
+)
+
+# This target is only to run on Android versions <= Android Q (10).
+targets.tests.gtest_test(
+    name = "webview_instrumentation_test_apk_single_process_mode",
+    args = [
+        "--webview-process-mode=single",
+    ],
+    binary = "webview_instrumentation_test_apk",
+)
+
+targets.tests.gtest_test(
+    name = "webview_instrumentation_test_apk_multiple_process_mode",
+    args = [
+        "--webview-process-mode=multiple",
+    ],
+    binary = "webview_instrumentation_test_apk",
 )
 
 targets.tests.gtest_test(

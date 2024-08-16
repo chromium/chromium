@@ -10,6 +10,7 @@
 #include "ash/auth/views/auth_input_row_view.h"
 #include "ash/auth/views/auth_view_utils.h"
 #include "ash/auth/views/pin_container_view.h"
+#include "ash/auth/views/pin_status_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -118,6 +119,10 @@ raw_ptr<views::Button> AuthContainerView::TestApi::GetSwitchButton() {
   return view_->switch_button_;
 }
 
+raw_ptr<PinStatusView> AuthContainerView::TestApi::GetPinStatusView() {
+  return view_->pin_status_;
+}
+
 AuthInputType AuthContainerView::TestApi::GetCurrentInputType() {
   return view_->current_input_type_;
 }
@@ -152,6 +157,9 @@ AuthContainerView::AuthContainerView(AuthFactorSet auth_factors)
 
   // Add switch button and set visibility of the view.
   AddSwitchButton();
+
+  // Add pin status view.
+  AddPinStatusView();
 }
 
 AuthContainerView::~AuthContainerView() {
@@ -162,6 +170,8 @@ AuthContainerView::~AuthContainerView() {
   password_view_->RemoveObserver(password_observer_.get());
   password_view_ = nullptr;
   password_observer_.reset();
+
+  pin_status_ = nullptr;
 }
 
 void AuthContainerView::AddPasswordView() {
@@ -200,6 +210,12 @@ void AuthContainerView::AddSwitchButton() {
   switch_button_spacer_->SetVisible(switch_button_->GetVisible());
 }
 
+void AuthContainerView::AddPinStatusView() {
+  CHECK_EQ(pin_status_, nullptr);
+  pin_status_ = AddChildView(std::make_unique<PinStatusView>(std::u16string()));
+  pin_status_->SetVisible(false);
+}
+
 gfx::Size AuthContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   int preferred_height = 0;
@@ -211,6 +227,10 @@ gfx::Size AuthContainerView::CalculatePreferredSize(
   if (password_view_->GetVisible()) {
     preferred_height +=
         password_view_->GetPreferredSize(available_size).height();
+  }
+
+  if (pin_status_->GetVisible()) {
+    preferred_height += pin_status_->GetPreferredSize(available_size).height();
   }
 
   if (switch_button_->GetVisible()) {
@@ -267,6 +287,19 @@ void AuthContainerView::SetHasPin(bool has_pin) {
 
 bool AuthContainerView::HasPin() const {
   return available_auth_factors_.Has(AuthInputType::kPin);
+}
+
+void AuthContainerView::SetPinStatus(const std::u16string& status_str) {
+  pin_status_->SetText(status_str);
+  pin_status_->SetVisible(!status_str.empty());
+  PreferredSizeChanged();
+}
+
+void AuthContainerView::SetInputEnabled(bool enabled) {
+  SetEnabled(enabled);
+  pin_container_->SetInputEnabled(enabled);
+  password_view_->SetInputEnabled(enabled);
+  switch_button_->SetEnabled(enabled);
 }
 
 void AuthContainerView::UpdateAuthInput() {

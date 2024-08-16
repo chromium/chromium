@@ -52,7 +52,9 @@ export function getHtml(this: ToolbarElement) {
 </div>
 <hr class="sp-cards-separator">
 <div class="sp-card" id="tipCard">
-  <img src="icons/lightbulb_outline.svg"></img>
+  <svg id="tipIcon" src="icons/lightbulb_outline.svg">
+    <use href="icons/lightbulb_outline.svg#lightbulbOutline"></use>
+  </svg>
   $i18n{reorderTipLabel}
 </div>
 <!--_html_template_end_-->`;

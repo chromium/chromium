@@ -47,6 +47,7 @@ void FakeImageCapture::GetPhotoState(const WTF::String& source_id,
   photo_capabilities->supported_background_blur_modes = {};
   photo_capabilities->supported_eye_gaze_correction_modes = {};
   photo_capabilities->supported_face_framing_modes = {};
+  photo_capabilities->supported_background_segmentation_mask_states = {};
   std::move(callback).Run(std::move(photo_capabilities));
 }
 

@@ -14,6 +14,7 @@
 namespace arc {
 
 // Please keep alphabetized.
+BASE_DECLARE_FEATURE(kArcExchangeVersionOnMojoHandshake);
 BASE_DECLARE_FEATURE(kArcOnDemandV2);
 extern const base::FeatureParam<bool> kArcOnDemandActivateOnAppLaunch;
 extern const base::FeatureParam<base::TimeDelta> kArcOnDemandInactiveInterval;

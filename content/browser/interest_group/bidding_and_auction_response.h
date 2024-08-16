@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_BIDDING_AND_AUCTION_RESPONSE_H_
 
 #include <cstdint>
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -14,13 +15,18 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "content/browser/interest_group/auction_result.h"
+#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+
+using PrivateAggregationRequests =
+    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
 std::optional<base::span<const uint8_t>> CONTENT_EXPORT
 ExtractCompressedBiddingAndAuctionResponse(
@@ -35,7 +41,47 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
 
   static std::optional<BiddingAndAuctionResponse> TryParse(
       base::Value input,
-      const base::flat_map<url::Origin, std::vector<std::string>>& group_names);
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+      const base::flat_map<blink::InterestGroupKey, url::Origin>&
+          group_pagg_coordinators);
+
+  static void TryParsePAggResponse(
+      const base::Value::List& pagg_response,
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+      const base::flat_map<blink::InterestGroupKey, url::Origin>&
+          group_pagg_coordinators,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParsePAggIgContributions(
+      const base::Value::List& ig_contributions,
+      const url::Origin& reporting_origin,
+      const base::flat_map<blink::InterestGroupKey, url::Origin>&
+          group_pagg_coordinators,
+      const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParsePAggEventContributions(
+      const base::Value::List& event_contributions,
+      const url::Origin& reporting_origin,
+      const std::optional<url::Origin>& aggregation_coordinator_origin,
+      bool component_win,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParsePAggContributions(
+      const base::Value::List& contributions,
+      bool component_win,
+      const std::string& event,
+      const PrivateAggregationPhaseKey& agg_phase_key,
+      const PrivateAggregationKey& agg_key,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParseForDebuggingOnlyReports(
+      const base::Value::List& for_debugging_only_reporting,
+      BiddingAndAuctionResponse& output);
+
+  static void TryParseSingleDebugReport(const url::Origin& ad_tech_origin,
+                                        const base::Value::Dict& report_dict,
+                                        BiddingAndAuctionResponse& output);
 
   struct CONTENT_EXPORT ReportingURLs {
     ReportingURLs();
@@ -75,6 +121,32 @@ struct CONTENT_EXPORT BiddingAndAuctionResponse {
   // for single-level auctions.
   std::optional<ReportingURLs> buyer_reporting, top_level_seller_reporting,
       component_seller_reporting;
+
+  // Private aggregation requests from component winning buyer/seller. These
+  // need to be further filtered based on the final auction result.
+  std::map<PrivateAggregationPhaseKey, PrivateAggregationRequests>
+      component_win_pagg_requests;
+
+  // Private aggregation contributions that has been filtered by the server,
+  // which can all be sent without further filtering on auction result. These
+  // include component losing buyers/sellers PAgg contributions, or
+  // contributions from single level auctions or server orchestrated multi-level
+  // auctions.
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
+      server_filtered_pagg_requests_reserved;
+  std::map<std::string, PrivateAggregationRequests>
+      server_filtered_pagg_requests_non_reserved;
+
+  // forDebuggingOnly reports from component winning buyer/seller. These need to
+  // be further filtered based on the final auction result. Keyed by a pair of
+  // origin that the report came from and a bool of whether it's win or loss
+  // report.
+  std::map<std::pair<url::Origin, bool>, std::vector<GURL>>
+      component_winner_debugging_only_reports;
+
+  // forDebuggingOnly reports that have been filtered by the server.
+  std::map<url::Origin, std::vector<GURL>>
+      server_filtered_debugging_only_reports;
 };
 
 }  // namespace content

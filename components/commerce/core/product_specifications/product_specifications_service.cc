@@ -13,11 +13,13 @@
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 
 namespace {
@@ -62,19 +64,26 @@ std::vector<sync_pb::ProductComparisonSpecifics> GetItemSpecifics(
 
 std::vector<sync_pb::ProductComparisonSpecifics> CreateItemLevelSpecifics(
     const std::string& top_level_uuid,
-    const std::vector<GURL>& urls,
+    const std::vector<commerce::UrlInfo>& url_infos,
     const base::Time& now) {
   std::vector<sync_pb::ProductComparisonSpecifics> item_level_specifics;
   std::string position_suffix = GetSuffix(top_level_uuid);
   syncer::UniquePosition prev_position;
-  for (const GURL& url : urls) {
+  for (const auto& url_info : url_infos) {
     sync_pb::ProductComparisonSpecifics new_item;
     new_item.set_uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
     new_item.set_creation_time_unix_epoch_millis(
         now.InMillisecondsSinceUnixEpoch());
     new_item.set_update_time_unix_epoch_millis(
         now.InMillisecondsSinceUnixEpoch());
-    new_item.mutable_product_comparison_item()->set_url(url.spec());
+    new_item.mutable_product_comparison_item()->set_url(url_info.url.spec());
+    // Title additions will be phased in over several CLs and we don't want to
+    // start saving/syncing until all changes are landed.
+    if (base::FeatureList::IsEnabled(
+            commerce::kProductSpecificationsSyncTitle)) {
+      new_item.mutable_product_comparison_item()->set_title(
+          base::UTF16ToUTF8(url_info.title));
+    }
     new_item.mutable_product_comparison_item()->set_product_comparison_uuid(
         top_level_uuid);
     syncer::UniquePosition position =
@@ -116,12 +125,21 @@ GetProductSpecificationsSetFromMultiSpecifics(
       GetItemSpecifics(uuid.AsLowercaseString(), entries);
   SortItemSpecifics(item_specifics);
 
-  std::vector<GURL> urls;
+  std::vector<commerce::UrlInfo> url_infos;
   // The time the ProductSpecificationsSet was last updated is that recorded
   // on the latest specific - be it an item level or top level.
   long update_time = top_level_specific->update_time_unix_epoch_millis();
   for (const auto& item_specific : item_specifics) {
-    urls.emplace_back(item_specific.product_comparison_item().url());
+    std::u16string title = u"";
+    // Title additions will be phased in over several CLs and we don't want to
+    // start saving/syncing until all changes are landed.
+    if (base::FeatureList::IsEnabled(
+            commerce::kProductSpecificationsSyncTitle)) {
+      title =
+          base::UTF8ToUTF16(item_specific.product_comparison_item().title());
+    }
+    url_infos.emplace_back(GURL(item_specific.product_comparison_item().url()),
+                           title);
     if (update_time < item_specific.update_time_unix_epoch_millis()) {
       update_time = item_specific.update_time_unix_epoch_millis();
     }
@@ -130,8 +148,24 @@ GetProductSpecificationsSetFromMultiSpecifics(
   // should take a const ref.
   return commerce::ProductSpecificationsSet(
       top_level_specific->uuid(),
-      top_level_specific->creation_time_unix_epoch_millis(), update_time, urls,
-      top_level_specific->product_comparison().name());
+      top_level_specific->creation_time_unix_epoch_millis(), update_time,
+      url_infos, top_level_specific->product_comparison().name());
+}
+
+std::vector<GURL> GetUrls(const std::vector<commerce::UrlInfo> url_infos) {
+  std::vector<GURL> urls;
+  for (const auto& url_info : url_infos) {
+    urls.push_back(url_info.url);
+  }
+  return urls;
+}
+
+std::vector<commerce::UrlInfo> GetUrlInfos(std::vector<GURL> urls) {
+  std::vector<commerce::UrlInfo> url_infos;
+  for (const auto& url : urls) {
+    url_infos.emplace_back(url, std::u16string());
+  }
+  return url_infos;
 }
 
 }  // namespace
@@ -139,8 +173,8 @@ GetProductSpecificationsSetFromMultiSpecifics(
 namespace commerce {
 
 ProductSpecificationsService::ProductSpecificationsService(
-    syncer::OnceModelTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    syncer::OnceDataTypeStoreFactory create_store_callback,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
     : bridge_(std::make_unique<ProductSpecificationsSyncBridge>(
           std::move(create_store_callback),
           std::move(change_processor),
@@ -150,7 +184,7 @@ ProductSpecificationsService::ProductSpecificationsService(
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ProductSpecificationsService::GetSyncControllerDelegate() {
   CHECK(bridge_);
   return bridge_->change_processor()->GetControllerDelegate();
@@ -187,15 +221,25 @@ ProductSpecificationsService::GetAllProductSpecifications() {
     std::vector<ProductSpecificationsSet> sets;
     for (auto& [uuid, specifics] : bridge_->entries()) {
       if (specifics.has_product_comparison()) {
-        std::vector<GURL> urls;
+        std::vector<UrlInfo> url_infos;
         if (base::FindOrNull(items_lookup, uuid)) {
           for (auto& specific : items_lookup.find(uuid)->second) {
-            urls.emplace_back(specific.product_comparison_item().url());
+            std::u16string title = u"";
+            // Title additions will be phased in over several CLs and we don't
+            // want to start saving/syncing until all changes are landed.
+
+            if (base::FeatureList::IsEnabled(
+                    commerce::kProductSpecificationsSyncTitle)) {
+              title =
+                  base::UTF8ToUTF16(specific.product_comparison_item().title());
+            }
+            url_infos.emplace_back(
+                GURL(specific.product_comparison_item().url()), title);
           }
         }
         sets.emplace_back(specifics.uuid(),
                           specifics.creation_time_unix_epoch_millis(),
-                          specifics.update_time_unix_epoch_millis(), urls,
+                          specifics.update_time_unix_epoch_millis(), url_infos,
                           specifics.product_comparison().name());
       }
     }
@@ -294,7 +338,7 @@ void ProductSpecificationsService::GetSetByUuid(
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::AddProductSpecificationsSet(
     const std::string& name,
-    const std::vector<GURL>& urls) {
+    const std::vector<UrlInfo>& url_infos) {
   if (!bridge_->IsSyncEnabled()) {
     return std::nullopt;
   }
@@ -314,13 +358,13 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     specifics.push_back(comparison_specifics);
     base::Time now = base::Time::Now();
     std::vector<sync_pb::ProductComparisonSpecifics> item_specifics =
-        CreateItemLevelSpecifics(top_level_uuid, urls, now);
+        CreateItemLevelSpecifics(top_level_uuid, url_infos, now);
     specifics.insert(specifics.end(),
                      std::make_move_iterator(item_specifics.begin()),
                      std::make_move_iterator(item_specifics.end()));
     bridge_->AddSpecifics(specifics);
     ProductSpecificationsSet set = ProductSpecificationsSet(
-        top_level_uuid, time_now, time_now, urls, name);
+        top_level_uuid, time_now, time_now, url_infos, name);
     OnProductSpecificationsSetAdded(set);
     return set;
   } else {
@@ -330,7 +374,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
     comparison_specifics.set_creation_time_unix_epoch_millis(time_now);
     comparison_specifics.set_update_time_unix_epoch_millis(time_now);
     comparison_specifics.set_name(name);
-    for (const GURL& url : urls) {
+    for (const GURL& url : GetUrls(url_infos)) {
       sync_pb::ComparisonData* comparison_data =
           comparison_specifics.add_data();
       comparison_data->set_url(url.spec());
@@ -344,7 +388,7 @@ ProductSpecificationsService::AddProductSpecificationsSet(
 
 const std::optional<ProductSpecificationsSet>
 ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
-                                      const std::vector<GURL>& urls) {
+                                      const std::vector<UrlInfo>& url_infos) {
   if (!bridge_->IsSyncEnabled()) {
     return std::nullopt;
   }
@@ -364,12 +408,14 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
 
     base::Time now = base::Time::Now();
     bridge_->DeleteSpecifics(specifics_to_remove);
+    // SetUrls has not been updated to include title yet, so use
+    // GetUrlInfos(...) to convert GURLs -> UrlInfos with a blank title.
     bridge_->AddSpecifics(
-        CreateItemLevelSpecifics(uuid.AsLowercaseString(), urls, now));
+        CreateItemLevelSpecifics(uuid.AsLowercaseString(), url_infos, now));
     ProductSpecificationsSet updated_set(
         uuid.AsLowercaseString(),
         top_level_specific->creation_time_unix_epoch_millis(),
-        now.InMillisecondsSinceUnixEpoch(), urls, previous_set->name());
+        now.InMillisecondsSinceUnixEpoch(), url_infos, previous_set->name());
     NotifyProductSpecificationsUpdate(previous_set.value(), updated_set);
     return updated_set;
   } else {
@@ -381,9 +427,9 @@ ProductSpecificationsService::SetUrls(const base::Uuid& uuid,
     sync_pb::ProductComparisonSpecifics original = entry->second;
     sync_pb::ProductComparisonSpecifics& specifics = entry->second;
     specifics.clear_data();
-    for (const GURL& url : urls) {
+    for (const UrlInfo& url_info : url_infos) {
       sync_pb::ComparisonData* data = specifics.add_data();
-      data->set_url(url.spec());
+      data->set_url(url_info.url.spec());
     }
     specifics.set_update_time_unix_epoch_millis(
         base::Time::Now().InMillisecondsSinceUnixEpoch());
@@ -655,8 +701,10 @@ void ProductSpecificationsService::MigrateLegacySpecificsIfApplicable() {
         for (const sync_pb::ComparisonData& data : specifics.data()) {
           urls.emplace_back(data.url());
         }
+        // Title can be left blank in GetUrlInfos, as the migration
+        // is of specifics created before we included title.
         bridge_->AddSpecifics(CreateItemLevelSpecifics(
-            uuid, urls,
+            uuid, GetUrlInfos(urls),
             base::Time::FromMillisecondsSinceUnixEpoch(
                 specifics.update_time_unix_epoch_millis())));
         specifics.clear_data();

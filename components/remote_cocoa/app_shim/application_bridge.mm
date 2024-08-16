@@ -11,6 +11,7 @@
 #include "components/remote_cocoa/app_shim/alert.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
+#include "components/system_media_controls/mac/remote_cocoa/system_media_controls_bridge.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -148,6 +149,25 @@ void ApplicationBridge::CreateRenderWidgetHostNSView(
     return;
   render_widget_host_create_callback_.Run(view_id, host.PassHandle(),
                                           view_receiver.PassHandle());
+}
+
+void ApplicationBridge::CreateSystemMediaControlsBridge(
+    mojo::PendingReceiver<system_media_controls::mojom::SystemMediaControls>
+        receiver,
+    mojo::PendingRemote<
+        system_media_controls::mojom::SystemMediaControlsObserver> host) {
+  if (!system_media_controls_bridge_) {
+    system_media_controls_bridge_ =
+        std::make_unique<system_media_controls::SystemMediaControlsBridge>(
+            std::move(receiver), std::move(host));
+  } else {
+    // It's possible that ApplicationBridge is asked to make an SMCBridge for an
+    // App when one has already been made. This is the case for duplicate PWAs,
+    // ie. when a user has 2 of the same PWA open, and plays audio in both.
+    // In that case, we just need to rebind the mojo connections.
+    system_media_controls_bridge_->BindMojoConnections(std::move(receiver),
+                                                       std::move(host));
+  }
 }
 
 void ApplicationBridge::CreateWebContentsNSView(

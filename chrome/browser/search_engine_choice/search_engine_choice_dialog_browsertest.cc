@@ -141,6 +141,13 @@ class SearchEngineChoiceDialogBrowserTest : public InProcessBrowserTest {
 
   ~SearchEngineChoiceDialogBrowserTest() override {}
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     // The search engine choice feature is enabled for countries in the EEA
@@ -698,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                         ui::PAGE_TRANSITION_FIRST);
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 150);
   ui_test_utils::NavigateToURL(&params);
 
   Profile* profile = browser()->profile();

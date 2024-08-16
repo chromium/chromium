@@ -53,7 +53,7 @@ em::FmRegistrationTokenUploadRequest::TokenType ScopeToTokenType(
     case PolicyInvalidationScope::kDevice:
       return em::FmRegistrationTokenUploadRequest::DEVICE;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_NORETURN() << "No requests for device local accounts";
+      NOTREACHED() << "No requests for device local accounts";
     case PolicyInvalidationScope::kCBCM:
       return em::FmRegistrationTokenUploadRequest::BROWSER;
   }

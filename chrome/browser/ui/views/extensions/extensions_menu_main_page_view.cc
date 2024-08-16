@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
@@ -542,8 +543,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
       chrome_layout_provider->GetDistanceMetric(
           DISTANCE_CONTROL_LIST_VERTICAL) /
       2;
-  const int icon_size = chrome_layout_provider->GetDistanceMetric(
-      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
 
   views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   const gfx::Insets dialog_insets =
@@ -599,43 +598,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                               .SetMultiLine(true)
                               .SetProperty(views::kFlexBehaviorKey,
                                            stretch_specification)),
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                  views::Builder<views::ImageButton>(
-                      views::CreateVectorImageButtonWithNativeTheme(
-                          base::BindRepeating(
-                              &chrome::ShowWebStore, browser_,
-                              extension_urls::kExtensionsMenuUtmSource),
-                          vector_icons::kGoogleChromeWebstoreIcon, icon_size))
-                      .SetTooltipText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_MAIN_PAGE_OPEN_CHROME_WEBSTORE_TOOLTIP))
-                      .CustomConfigure(
-                          base::BindOnce([](views::ImageButton* view) {
-                            view->SizeToPreferredSize();
-                            InstallCircleHighlightPathGenerator(view);
-                          })),
-#endif
-                  // Setting button.
-                  views::Builder<views::ImageButton>(
-                      views::CreateVectorImageButtonWithNativeTheme(
-                          base::BindRepeating(
-                              [](Browser* browser) {
-                                base::RecordAction(base::UserMetricsAction(
-                                    "Extensions.Menu."
-                                    "ExtensionsSettingsOpened"));
-                                chrome::ShowExtensions(browser);
-                              },
-                              browser_),
-                          vector_icons::kSettingsChromeRefreshIcon, icon_size))
-                      .SetProperty(
-                          views::kMarginsKey,
-                          gfx::Insets::TLBR(0, horizontal_spacing, 0, 0))
-                      .SetTooltipText(
-                          l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS))
-                      .CustomConfigure(
-                          base::BindOnce([](views::ImageButton* view) {
-                            view->SizeToPreferredSize();
-                            InstallCircleHighlightPathGenerator(view);
-                          })),
                   // Toggle site settings button.
                   views::Builder<views::ToggleButton>()
                       .CopyAddressTo(&site_settings_toggle_)
@@ -662,14 +624,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
               .SetDrawOverflowIndicator(false)
               .SetHorizontalScrollBarMode(
                   views::ScrollView::ScrollBarMode::kDisabled)
-              // Add bottom dialog margins since it's the last view. Its last
-              // child view will be a HoverButton with has its own inset. Thus,
-              // we subtract such insets from the dialog bottom inset.
-              .SetProperty(views::kMarginsKey,
-                           gfx::Insets::TLBR(0, 0,
-                                             dialog_insets.bottom() -
-                                                 hover_button_vertical_spacing,
-                                             0))
               .SetContents(
                   views::Builder<views::BoxLayoutView>()
                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -699,8 +653,42 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
                               .SetOrientation(
-                                  views::BoxLayout::Orientation::kVertical))))
-
+                                  views::BoxLayout::Orientation::kVertical))),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          // Webstore button.
+          views::Builder<HoverButton>(
+              std::make_unique<HoverButton>(
+                  base::BindRepeating(&chrome::ShowWebStore, browser_,
+                                      extension_urls::kExtensionsMenuUtmSource),
+                  ui::ImageModel::FromVectorIcon(
+                      vector_icons::kGoogleChromeWebstoreIcon),
+                  l10n_util::GetStringUTF16(
+                      IDS_EXTENSIONS_MENU_MAIN_PAGE_DISCOVER_EXTENSIONS)))
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::TLBR(dialog_insets.top() -
+                                                 hover_button_vertical_spacing,
+                                             0, 0, 0)),
+#endif
+          // Settings button.
+          views::Builder<HoverButton>(
+              std::make_unique<HoverButton>(
+                  base::BindRepeating(
+                      [](Browser* browser) {
+                        base::RecordAction(base::UserMetricsAction(
+                            "Extensions.Menu."
+                            "ExtensionsSettingsOpened"));
+                        chrome::ShowExtensions(browser);
+                      },
+                      browser_),
+                  ui::ImageModel::FromVectorIcon(
+                      vector_icons::kSettingsChromeRefreshIcon),
+                  l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)))
+              // Add bottom dialog margins since it's the last element.
+              .SetProperty(views::kMarginsKey,
+                           gfx::Insets::TLBR(0, 0,
+                                             dialog_insets.bottom() -
+                                                 hover_button_vertical_spacing,
+                                             0)))
       .BuildChildren();
 
   // By default, the button's accessible description is set to the button's

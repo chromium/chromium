@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/nacl/renderer/ppb_nacl_private.h"
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,6 +14,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
@@ -45,6 +44,7 @@
 #include "components/nacl/renderer/nexe_load_manager.h"
 #include "components/nacl/renderer/platform_info.h"
 #include "components/nacl/renderer/pnacl_translation_resource_host.h"
+#include "components/nacl/renderer/ppb_nacl_private.h"
 #include "components/nacl/renderer/progress_event.h"
 #include "components/nacl/renderer/trusted_plugin_channel.h"
 #include "content/public/common/content_client.h"
@@ -1194,7 +1194,7 @@ PP_Bool PPBNaClPrivate::GetPnaclResourceInfo(PP_Instance instance,
     }
 
     auto buffer = base::HeapArray<char>::Uninit(file_size + 1);
-    int rc = file.Read(0, buffer.data(), file_size);
+    int rc = UNSAFE_TODO(file.Read(0, buffer.data(), file_size));
     if (rc < 0 || rc != file_size) {
       return base::unexpected("GetPnaclResourceInfo, reading failed for: " +
                               kFilename);

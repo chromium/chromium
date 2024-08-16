@@ -1504,7 +1504,7 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
 
   result.Set("isSyncActive", sync_service->IsSyncFeatureActive());
   result.Set("arePreferencesSynced", sync_service->GetActiveDataTypes().Has(
-                                         syncer::ModelType::PREFERENCES));
+                                         syncer::DataType::PREFERENCES));
 
   CoreAccountInfo account_info = sync_service->GetAccountInfo();
   if (account_info.IsEmpty()) {
@@ -1536,45 +1536,62 @@ base::Value::Dict DevToolsUIBindings::GetSyncInformationForProfile(
 void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   base::Value::Dict response_dict;
 
-  AidaClient::BlockedReason blocked_reason = AidaClient::CanUseAida(profile_);
+  AidaClient::Availability availability = AidaClient::CanUseAida(profile_);
 
   base::Value::Dict console_insights_dict;
   console_insights_dict.Set(
       "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights));
+      base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
+          availability.available);
   console_insights_dict.Set("aidaModelId",
                             features::kDevToolsConsoleInsightsModelId.Get());
   console_insights_dict.Set(
       "aidaTemperature", features::kDevToolsConsoleInsightsTemperature.Get());
   console_insights_dict.Set("optIn",
                             features::kDevToolsConsoleInsightsOptIn.Get());
-  console_insights_dict.Set("blocked", blocked_reason.blocked);
-  console_insights_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
+  console_insights_dict.Set("blockedByAge", availability.blocked_by_age);
   console_insights_dict.Set("blockedByEnterprisePolicy",
-                            blocked_reason.blocked_by_enterprise_policy);
-  console_insights_dict.Set("blockedByFeatureFlag",
-                            blocked_reason.blocked_by_feature_flag);
-  console_insights_dict.Set("blockedByGeo", blocked_reason.blocked_by_geo);
+                            availability.blocked_by_enterprise_policy);
+  // Kept temporary to ensure compatibility http://crbug.com/348136212
+  console_insights_dict.Set(
+      "blockedByFeatureFlag",
+      !(base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
+        availability.available));
+  console_insights_dict.Set("blockedByGeo", availability.blocked_by_geo);
   console_insights_dict.Set("blockedByRollout",
-                            blocked_reason.blocked_by_rollout);
-  console_insights_dict.Set("disallowLogging", blocked_reason.disallow_logging);
+                            availability.blocked_by_rollout);
+  console_insights_dict.Set("disallowLogging", availability.disallow_logging);
   response_dict.Set("devToolsConsoleInsights",
                     std::move(console_insights_dict));
 
   base::Value::Dict freestyler_dogfood_dict;
   freestyler_dogfood_dict.Set(
       "enabled",
-      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood));
+      base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood) &&
+          availability.available);
   freestyler_dogfood_dict.Set(
       "aidaModelId", features::kDevToolsFreestylerDogfoodModelId.Get());
   freestyler_dogfood_dict.Set(
       "aidaTemperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
-  freestyler_dogfood_dict.Set("blockedByAge", blocked_reason.blocked_by_age);
+  freestyler_dogfood_dict.Set("blockedByAge", availability.blocked_by_age);
   freestyler_dogfood_dict.Set("blockedByEnterprisePolicy",
-                              blocked_reason.blocked_by_enterprise_policy);
-  freestyler_dogfood_dict.Set("blockedByGeo", blocked_reason.blocked_by_geo);
+                              availability.blocked_by_enterprise_policy);
+  freestyler_dogfood_dict.Set("blockedByGeo", availability.blocked_by_geo);
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
+
+  base::Value::Dict explain_this_resource_dogfood_dict;
+  explain_this_resource_dogfood_dict.Set(
+      "enabled", base::FeatureList::IsEnabled(
+                     ::features::kDevToolsExplainThisResourceDogfood));
+  explain_this_resource_dogfood_dict.Set(
+      "aidaModelId",
+      features::kDevToolsExplainThisResourceDogfoodModelId.Get());
+  explain_this_resource_dogfood_dict.Set(
+      "aidaTemperature",
+      features::kDevToolsExplainThisResourceDogfoodTemperature.Get());
+  response_dict.Set("devToolsExplainThisResourceDogfood",
+                    std::move(explain_this_resource_dogfood_dict));
 
   base::Value::Dict ve_logging_dict;
   ve_logging_dict.Set(

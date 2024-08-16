@@ -64,8 +64,8 @@ bool ResizeObservation::ObservationSizeOutOfSync() {
     return false;
 
   // Skip resize observations on locked elements.
-  if (UNLIKELY(target_ && DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-                              *target_))) {
+  if (target_ && DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
+                     *target_)) [[unlikely]] {
     return false;
   }
 

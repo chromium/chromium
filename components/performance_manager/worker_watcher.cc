@@ -587,7 +587,7 @@ WorkerNodeImpl* WorkerWatcher::FindWorkerNodeForToken(
     // at() asserts that the id is in `service_worker_nodes_`.
     return service_worker_nodes_.at(it->second).get();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WorkerWatcher::AddFrameClientConnection(

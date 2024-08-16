@@ -309,13 +309,19 @@ const FeatureEntry::FeatureVariation
     };
 
 const FeatureEntry::FeatureParam kIOSTipsNotifications5SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "5s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "5s"},
 };
 const FeatureEntry::FeatureParam kIOSTipsNotifications10SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "10s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "10s"},
 };
 const FeatureEntry::FeatureParam kIOSTipsNotifications30SecondTrigger[] = {
-    {kIOSTipsNotificationsTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsUnknownTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsActiveSeekerTriggerTimeParam, "30s"},
+    {kIOSTipsNotificationsLessEngagedTriggerTimeParam, "30s"},
 };
 const FeatureEntry::FeatureVariation kIOSTipsNotificationsVariations[] = {
     {"(5s trigger)", kIOSTipsNotifications5SecondTrigger,
@@ -502,13 +508,6 @@ const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
          std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
 };
 
-const FeatureEntry::FeatureParam kBottomOmniboxPromoForced[] = {
-    {kBottomOmniboxPromoParam, kBottomOmniboxPromoParamForced}};
-const FeatureEntry::FeatureVariation kBottomOmniboxPromoVariations[] = {
-    {"Forced", kBottomOmniboxPromoForced, std::size(kBottomOmniboxPromoForced),
-     nullptr},
-};
-
 constexpr flags_ui::FeatureEntry::FeatureParam kPriceInsightsPriceIsLowParam[] =
     {{kLowPriceParam, kLowPriceParamPriceIsLow}};
 constexpr flags_ui::FeatureEntry::FeatureParam
@@ -524,20 +523,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation kPriceInsightsVariations[] =
       std::size(kPriceInsightsGoodDealNowParam), nullptr},
      {"See price history", kPriceInsightsSeePriceHistoryParam,
       std::size(kPriceInsightsSeePriceHistoryParam), nullptr}};
-
-const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionTop[] = {
-    {kBottomOmniboxPromoDefaultPositionParam,
-     kBottomOmniboxPromoDefaultPositionParamTop}};
-const FeatureEntry::FeatureParam kBottomOmniboxPromoDefaultPositionBottom[] = {
-    {kBottomOmniboxPromoDefaultPositionParam,
-     kBottomOmniboxPromoDefaultPositionParamBottom}};
-const FeatureEntry::FeatureVariation
-    kBottomOmniboxPromoDefaultPositionVariations[] = {
-        {"Top", kBottomOmniboxPromoDefaultPositionTop,
-         std::size(kBottomOmniboxPromoDefaultPositionTop), nullptr},
-        {"Bottom", kBottomOmniboxPromoDefaultPositionBottom,
-         std::size(kBottomOmniboxPromoDefaultPositionBottom), nullptr},
-};
 
 const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
     {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
@@ -1611,26 +1596,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPasswordSignInUffName,
      flag_descriptions::kIOSPasswordSignInUffDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::kIOSPasswordSignInUff)},
-    {"bottom-omnibox-promo-fre", flag_descriptions::kBottomOmniboxPromoFREName,
-     flag_descriptions::kBottomOmniboxPromoFREDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoFRE,
-                                    kBottomOmniboxPromoVariations,
-                                    "BottomOmniboxPromoFRE")},
-    {"bottom-omnibox-promo-app-launch",
-     flag_descriptions::kBottomOmniboxPromoAppLaunchName,
-     flag_descriptions::kBottomOmniboxPromoAppLaunchDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxPromoAppLaunch,
-                                    kBottomOmniboxPromoVariations,
-                                    "BottomOmniboxPromoAppLaunch")},
-    {"bottom-omnibox-promo-default-position",
-     flag_descriptions::kBottomOmniboxPromoDefaultPositionName,
-     flag_descriptions::kBottomOmniboxPromoDefaultPositionDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         kBottomOmniboxPromoDefaultPosition,
-         kBottomOmniboxPromoDefaultPositionVariations,
-         "BottomOmniboxPromoDefaultPosition")},
     {"revamp-page-info-ios", flag_descriptions::kRevampPageInfoIosName,
      flag_descriptions::kRevampPageInfoIosDescription, flags_ui::kOsIos,
      MULTI_VALUE_TYPE(kRevampPageInfoiOSChoices)},
@@ -1664,10 +1629,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPanelForceShowEntrypointName,
      flag_descriptions::kContextualPanelForceShowEntrypointDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextualPanelForceShowEntrypoint)},
-    {"bottom-omnibox-promo-region-filter",
-     flag_descriptions::kBottomOmniboxPromoRegionFilterName,
-     flag_descriptions::kBottomOmniboxPromoRegionFilterDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kBottomOmniboxPromoRegionFilter)},
     {"enable-ipad-feed-ghost-cards",
      flag_descriptions::kEnableiPadFeedGhostCardsName,
      flag_descriptions::kEnableiPadFeedGhostCardsDescription, flags_ui::kOsIos,
@@ -1699,17 +1660,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
-    {"ios-iph-swipe-back-forward",
-     flag_descriptions::kIPHiOSSwipeBackForwardFeatureName,
-     flag_descriptions::kIPHiOSSwipeBackForwardFeatureDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(feature_engagement::kIPHiOSSwipeBackForwardFeature)},
-    {"ios-iph-swipe-toolbar-to-change-tab",
-     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureName,
-     flag_descriptions::kIPHiOSSwipeToolbarToChangeTabFeatureDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)},
     {"autofill-enable-card-benefits-for-american-express",
      flag_descriptions::kAutofillEnableCardBenefitsForAmericanExpressName,
      flag_descriptions::
@@ -1997,6 +1947,17 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillUnmaskCardRequestTimeoutDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillUnmaskCardRequestTimeout)},
+    {"autofill-across-iframes", flag_descriptions::kAutofillAcrossIframesName,
+     flag_descriptions::kAutofillAcrossIframesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAcrossIframesIos)},
+    {"ios-page-info-last-visited",
+     flag_descriptions::kPageInfoLastVisitedIOSName,
+     flag_descriptions::kPageInfoLastVisitedIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPageInfoLastVisitedIOS)},
+    {"enable-trait-collection-registration",
+     flag_descriptions::kEnableTraitCollectionRegistrationName,
+     flag_descriptions::kEnableTraitCollectionRegistrationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableTraitCollectionRegistration)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

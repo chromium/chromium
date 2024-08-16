@@ -24,6 +24,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/async_destroy_video_encoder.h"
 #include "media/base/limits.h"
+#include "media/base/media_log.h"
 #include "media/base/mime_util.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
@@ -625,6 +626,17 @@ const char* VideoEncoderTraits::GetName() {
   return "VideoEncoder";
 }
 
+String VideoEncoderTraits::ParsedConfig::ToString() {
+  return String::Format(
+      "{codec: %s, profile: %s, level: %d, hw_pref: %s, "
+      "options: {%s}, codec_string: %s, display_size: %s}",
+      media::GetCodecName(codec).c_str(),
+      media::GetProfileName(profile).c_str(), level,
+      HardwarePreferenceToString(hw_pref).Utf8().c_str(),
+      options.ToString().c_str(), codec_string.Utf8().c_str(),
+      display_size ? display_size->ToString().c_str() : "");
+}
+
 // static
 VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
                                    const VideoEncoderInit* init,
@@ -809,6 +821,9 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(self->active_config_);
 
+    MEDIA_LOG(INFO, self->logger_->log())
+        << "Configured " << self->active_config_->ToString();
+
     if (!status.is_ok()) {
       std::string error_message;
       switch (status.code()) {
@@ -960,7 +975,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
         return result_frame;
       result_frame->set_timestamp(txt_frame->timestamp());
       result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
-      result_frame->metadata().ClearTextureFrameMedatada();
+      result_frame->metadata().ClearTextureFrameMetadata();
       return result_frame;
     };
 

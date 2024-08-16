@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -305,12 +306,21 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // |content_type| will overwrite any Content-Type header in the
   // ResourceRequest passed to Create().
   //
-  // TODO(mmenke): This currently always requires a copy. Update DataElement not
-  // to require this.
-  virtual void AttachStringForUpload(
-      const std::string& upload_data,
-      const std::string& upload_content_type) = 0;
-  virtual void AttachStringForUpload(const std::string& upload_data) = 0;
+  // Short strings will be copied and then passed across processes. Long strings
+  // if passed by value will be stored in-process and then streamed to the other
+  // process.
+  //
+  // This number of overloads is rather unfortunate, but base::optional_ref
+  // doesn't allow implicit conversions.
+  virtual void AttachStringForUpload(std::string_view upload_data,
+                                     std::string_view upload_content_type) = 0;
+  virtual void AttachStringForUpload(std::string_view upload_data) = 0;
+  virtual void AttachStringForUpload(const char* upload_data,
+                                     std::string_view upload_content_type) = 0;
+  virtual void AttachStringForUpload(const char* upload_data) = 0;
+  virtual void AttachStringForUpload(std::string&& upload_data,
+                                     std::string_view upload_content_type) = 0;
+  virtual void AttachStringForUpload(std::string&& upload_data) = 0;
 
   // Helper method to attach a file for upload, so the consumer won't need to
   // open the file itself off-thread. May only be called once, and only if the

@@ -44,8 +44,9 @@ AppInstallerResult RunApplicationInstaller(
   }
 
   int exit_code = 0;
-  if (!base::LaunchProcess(command, options)
-           .WaitForExitWithTimeout(timeout, &exit_code)) {
+  const base::Process process = base::LaunchProcess(command, options);
+  if (!process.IsValid() ||
+      !process.WaitForExitWithTimeout(timeout, &exit_code)) {
     LOG(ERROR) << "Could not launch application installer.";
     return AppInstallerResult(kErrorApplicationInstallerFailed,
                               kErrorProcessLaunchFailed);

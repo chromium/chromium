@@ -100,21 +100,17 @@ CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
 }
 
 void CrxCache::RemoveAll(const std::string& id) {
-  if (base::PathExists(crx_cache_root_path_)) {
-    base::FileEnumerator file_enum(
-        crx_cache_root_path_, false, base::FileEnumerator::FILES, [&id] {
-          std::string result = base::StrCat({id, "*"});
+  base::FileEnumerator(crx_cache_root_path_, false, base::FileEnumerator::FILES,
+                       [&id] {
+                         const std::string result = base::StrCat({id, "*"});
 #if BUILDFLAG(IS_WIN)
-          return base::ASCIIToWide(result);
+                         return base::UTF8ToWide(result);
 #else
             return result;
 #endif
-        }());
-    for (base::FilePath file_path = file_enum.Next(); !file_path.empty();
-         file_path = file_enum.Next()) {
-      base::DeleteFile(file_path);
-    }
-  }
+                       }())
+      .ForEach(
+          [](const base::FilePath& file_path) { base::DeleteFile(file_path); });
 }
 
 UnpackerError CrxCache::MoveFileToCache(const base::FilePath& src_path,

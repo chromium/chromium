@@ -37,8 +37,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/autofill_address_profile",
@@ -48,6 +46,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/save_card",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_modal/translate",
     "//ios/chrome/browser/overlays/ui_bundled/web_content_area/alerts",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/common/ui/util",
   ]
 }
@@ -126,8 +126,8 @@ source_set("unit_tests") {
 
   deps = [
     ":coordinators",
-    ":ui_bundled",
     ":ui",
+    ":ui_bundled",
     ":util",
     "//base/test:test_support",
     "//build:branding_buildflags",
@@ -135,13 +135,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model/public/test_modality",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/overlays/ui_bundled/test_modality",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/infobars/presentation",
-    "//ios/chrome/browser/overlays/ui_bundled/test",
-    "//ios/chrome/browser/overlays/ui_bundled/test_modality",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/common",

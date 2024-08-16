@@ -38,11 +38,10 @@ static bool ExtractRegionRulesData(const std::string& region,
   for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
     // TODO: crbug.com/347651465: GRIT should define std::arrays instead of
     // c-style arrays.
-    UNSAFE_BUFFERS(
-        if (kAutofillAddressRewriterResources[i].path == resource_key) {
-          resource_id = kAutofillAddressRewriterResources[i].id;
-          break;
-        })
+    UNSAFE_TODO(if (kAutofillAddressRewriterResources[i].path == resource_key) {
+      resource_id = kAutofillAddressRewriterResources[i].id;
+      break;
+    })
   }
 
   if (!resource_id) {
@@ -153,7 +152,7 @@ class Cache {
 
 // static
 std::u16string AddressRewriter::RewriteForCountryCode(
-    const std::u16string& country_code,
+    const AddressCountryCode& country_code,
     const std::u16string& normalized_text) {
   AddressRewriter rewriter = AddressRewriter::ForCountryCode(country_code);
   return rewriter.Rewrite(normalized_text);
@@ -161,9 +160,8 @@ std::u16string AddressRewriter::RewriteForCountryCode(
 
 // static
 AddressRewriter AddressRewriter::ForCountryCode(
-    const std::u16string& country_code) {
-  const std::string region =
-      base::UTF16ToUTF8(base::i18n::ToUpper(country_code));
+    const AddressCountryCode& country_code) {
+  const std::string region = base::ToUpperASCII(country_code.value());
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion(region);
   AddressRewriter rewriter;

@@ -63,7 +63,7 @@ Browser* GetDesktopBrowser(content::WebUI* web_ui) {
 base::TimeDelta GetMinorModeRestrictionsDeadline() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Not implemented for those platforms.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   return base::Milliseconds(kMinorModeRestrictionsFetchDeadlineMs);
 #endif
@@ -84,7 +84,7 @@ void SetInitializedModalHeight(Browser* browser,
 void ClearProfileWithManagedAccounts(Profile* profile) {
   policy::UserPolicySigninServiceFactory::GetForProfile(profile)
       ->ShutdownCloudPolicyManager();
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(profile, false);
+  enterprise_util::SetUserAcceptedAccountManagement(profile, false);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId primary_account_id =

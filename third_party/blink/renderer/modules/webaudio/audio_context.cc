@@ -182,8 +182,15 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   // The empty string means the default audio device.
   auto frame_token = window.GetLocalFrameToken();
   WebAudioSinkDescriptor sink_descriptor(String(""), frame_token);
+  // In order to not break echo cancellation of PeerConnection audio, we must
+  // not update the echo cancellation reference unless the sink ID is explicitly
+  // specified.
+  bool update_echo_cancellation_on_first_start = false;
 
   if (window.IsSecureContext() && context_options->hasSinkId()) {
+    // Only try to update the echo cancellation reference if `sinkId` was
+    // explicitly passed in the `AudioContextOptions` dictionary.
+    update_echo_cancellation_on_first_start = true;
     if (context_options->sinkId()->IsString()) {
       sink_descriptor = WebAudioSinkDescriptor(
           context_options->sinkId()->GetAsString(), frame_token);
@@ -209,7 +216,8 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
-      window, latency_hint, sample_rate, sink_descriptor);
+      window, latency_hint, sample_rate, sink_descriptor,
+      update_echo_cancellation_on_first_start);
   ++hardware_context_count;
   audio_context->UpdateStateIfNeeded();
 
@@ -242,7 +250,8 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
 AudioContext::AudioContext(LocalDOMWindow& window,
                            const WebAudioLatencyHint& latency_hint,
                            std::optional<float> sample_rate,
-                           WebAudioSinkDescriptor sink_descriptor)
+                           WebAudioSinkDescriptor sink_descriptor,
+                           bool update_echo_cancellation_on_first_start)
     : BaseAudioContext(&window, kRealtimeContext),
       context_id_(context_id++),
       audio_context_manager_(&window),
@@ -256,11 +265,9 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
 
-  // TODO(http://crbug.com/1410553) update the echo cancellation reference
-  // if the client explicitly specified the sink and there are no issues
-  // accessing it.
   destination_node_ = RealtimeAudioDestinationNode::Create(
-      this, sink_descriptor_, latency_hint, sample_rate);
+      this, sink_descriptor_, latency_hint, sample_rate,
+      update_echo_cancellation_on_first_start);
 
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
@@ -1043,7 +1050,7 @@ void AudioContext::NotifySetSinkIdBegins() {
 
   // This performs step 5 to 9 from the second part of setSinkId() algorithm:
   // https://webaudio.github.io/web-audio-api/#dom-audiocontext-setsinkid-domstring-or-audiosinkoptions-sinkid
-  sink_transition_flag_was_running_ = ContextState() != kSuspended;
+  sink_transition_flag_was_running_ = ContextState() == kRunning;
   destination()->GetAudioDestinationHandler().StopRendering();
   if (sink_transition_flag_was_running_) {
     SetContextState(kSuspended);
@@ -1055,8 +1062,14 @@ void AudioContext::NotifySetSinkIdIsDone(
   DCHECK(IsMainThread());
 
   sink_descriptor_ = pending_sink_descriptor;
-  if (sink_descriptor_.Type() ==
-      WebAudioSinkDescriptor::AudioSinkType::kAudible) {
+
+  // Use flag guard to revert to old AEC SetSinkId behavior if necessary. Remove
+  // this entire block when kWebAudioContextConstructorEchoCancellation is
+  // removed.
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAudioContextConstructorEchoCancellation) &&
+      sink_descriptor_.Type() ==
+          WebAudioSinkDescriptor::AudioSinkType::kAudible) {
     // Note: in order to not break echo cancellation of PeerConnection audio, we
     // are heavily relying on the fact that setSinkId() path of AudioContext is
     // not triggered unless the sink ID is explicitly specified. It assumes we
@@ -1075,6 +1088,7 @@ void AudioContext::NotifySetSinkIdIsDone(
   UpdateV8SinkId();
   DispatchEvent(*Event::Create(event_type_names::kSinkchange));
   if (sink_transition_flag_was_running_) {
+    destination()->GetAudioDestinationHandler().StartRendering();
     SetContextState(kRunning);
     sink_transition_flag_was_running_ = false;
   }
@@ -1230,7 +1244,7 @@ void AudioContext::ResumeOnPrerenderActivation() {
       StartRendering();
       break;
     case kRunning:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kClosed:
       break;
   }

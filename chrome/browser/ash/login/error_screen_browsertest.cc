@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -52,6 +53,8 @@ const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
+const test::UIPath kErrorMessageOfflineLoginLink = {"error-message",
+                                                    "error-offline-login-link"};
 
 ErrorScreen* GetScreen() {
   return static_cast<ErrorScreen*>(
@@ -351,7 +354,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   }
 
  protected:
-  LoginManagerMixin login_mixin_{&mixin_host_};
+  LoginManagerMixin login_mixin_{&mixin_host_, {}, &fake_gaia_};
 
  private:
   void AddKioskAppToDevicePolicy() {
@@ -376,6 +379,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   EmbeddedTestServerSetupMixin embedded_test_server_setup_{
       &mixin_host_, embedded_test_server()};
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Verify that certificate manager dialog opens.
@@ -403,6 +407,8 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
                        PRE_NoBackButtonInNetworkConfigureScreenAfterTimeout) {
   login_mixin_.LoginAsNewRegularUser();
+  login_mixin_.SkipPostLoginScreens();
+  login_mixin_.WaitForActiveSession();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
@@ -423,6 +429,8 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
                        PRE_NoBackButtonInNetworkConfigureScreenAfterShortcut) {
   login_mixin_.LoginAsNewRegularUser();
+  login_mixin_.SkipPostLoginScreens();
+  login_mixin_.WaitForActiveSession();
 }
 
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
@@ -441,6 +449,42 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
   test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
   test::OobeJS().ExpectPathDisplayed(true,
                                      kNetworkConfigureScreenContinueButton);
+}
+
+// It shouldn't be possible to login as an existing user from the network
+// configuration screen (ErrorScreen) in kiosk mode. Verify that this option
+// is not available.
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       PRE_NoOfflineLoginInNetworkConfigureScreen) {
+  login_mixin_.LoginAsNewRegularUser();
+  login_mixin_.SkipPostLoginScreens();
+  login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       NoOfflineLoginInNetworkConfigureScreen) {
+  // Make ErrorScreen to appear first to verify that the state of the
+  // ErrorScreen is properly updated when it is shown from the kiosk mode.
+  SetOnline(false);
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectPathDisplayed(true, kErrorMessageOfflineLoginLink);
+  test::OobeJS().ClickOnPath(kNetworkBackButton);
+
+  // Now start an app.
+  SetOnline(true);
+  KioskAppsMixin::WaitForAppsButton();
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kTestChromeAppId));
+  SetBlockAppLaunch(true);
+  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
+
+  ASSERT_TRUE(LoginScreenTestApi::PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
+  test::OobeJS().ExpectPathDisplayed(false, kErrorMessageOfflineLoginLink);
 }
 
 }  // namespace ash

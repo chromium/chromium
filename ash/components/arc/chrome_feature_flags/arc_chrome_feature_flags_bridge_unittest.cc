@@ -118,9 +118,8 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Disabled) {
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
-  // Currently we need to flip Jelly flag to enable the rounded windows flag.
   scoped_feature_list()->InitWithFeaturesAndParameters(
-      {{chromeos::features::kJelly, {}},
+      {{chromeos::features::kFeatureManagementRoundedWindows, {}},
        {chromeos::features::kRoundedWindows,
         {{chromeos::features::kRoundedWindowsRadius, "8"}}}},
       {});

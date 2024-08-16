@@ -5,6 +5,8 @@
 package org.chromium.components.data_sharing;
 
 import org.chromium.base.Callback;
+import org.chromium.components.data_sharing.protocol.AddAccessTokenParams;
+import org.chromium.components.data_sharing.protocol.AddAccessTokenResult;
 import org.chromium.components.data_sharing.protocol.AddMemberParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupParams;
 import org.chromium.components.data_sharing.protocol.CreateGroupResult;
@@ -71,5 +73,14 @@ public class DataSharingSDKDelegateTestImpl implements DataSharingSDKDelegate {
         LookupGaiaIdByEmailResult.Builder lookupGaiaIdByEmailResult =
                 LookupGaiaIdByEmailResult.newBuilder().setGaiaId(params.getEmail());
         callback.run(lookupGaiaIdByEmailResult.build().toByteArray(), /* status= */ 0);
+    }
+
+    @Override
+    public void addAccessToken(
+            AddAccessTokenParams params, DataSharingSDKDelegateProtoResponseCallback callback) {
+        GroupData.Builder groupData = GroupData.newBuilder().setGroupId("test_group_id");
+        AddAccessTokenResult.Builder addTokenResult =
+                AddAccessTokenResult.newBuilder().setGroupData(groupData.build());
+        callback.run(addTokenResult.build().toByteArray(), /* status= */ 0);
     }
 }

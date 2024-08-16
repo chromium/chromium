@@ -38,6 +38,7 @@
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/pdf/pdf_service.h"
+#include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -68,6 +69,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -117,7 +119,7 @@ ChromeCameraAppUIDelegate::CameraAppDialog::CameraAppDialog(
   set_can_maximize(true);
   // For customizing the title bar.
   set_dialog_frame_kind(ui::WebDialogDelegate::FrameKind::kNonClient);
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   set_dialog_size(
       gfx::Size(kChromeCameraAppDefaultWidth, kChromeCameraAppDefaultHeight));
 }
@@ -528,8 +530,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("auto_qr", base::FeatureList::IsEnabled(
-                                    ash::features::kCameraAppAutoQRDetection));
   source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
                                          ash::features::kCameraAppDigitalZoom));
   source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
@@ -538,8 +538,12 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraSuperResSupported));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
-  source->AddBoolean("video_capture_disallowed",
-                     !prefs->GetBoolean(prefs::kVideoCaptureAllowed));
+  GURL cca_url = GURL(ash::kChromeUICameraAppURL);
+  bool url_allowed = policy::IsOriginInAllowlist(
+      cca_url, prefs, prefs::kVideoCaptureAllowedUrls);
+  source->AddBoolean(
+      "cca_disallowed",
+      !prefs->GetBoolean(prefs::kVideoCaptureAllowed) && !url_allowed);
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";

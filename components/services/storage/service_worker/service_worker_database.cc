@@ -378,7 +378,7 @@ void ConvertToProtoParts(
         break;
       }
       case liburlpattern::PartType::kRegex:
-        NOTREACHED_NORETURN() << "should not see regexp URLPattern";
+        NOTREACHED() << "should not see regexp URLPattern";
       case liburlpattern::PartType::kSegmentWildcard: {
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
             URLPattern::Part::WildcardPattern* ptn =

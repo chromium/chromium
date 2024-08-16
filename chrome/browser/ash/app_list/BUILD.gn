@@ -125,8 +125,6 @@ source_set("unit_tests") {
     "app_context_menu_unittest.cc",
     "app_list_sort_unittest.cc",
     "app_list_syncable_service_unittest.cc",
-    "app_list_test_util.cc",
-    "app_list_test_util.h",
     "chrome_app_list_item_manager_unittest.cc",
     "md_icon_normalizer_unittest.cc",
   ]
@@ -143,7 +141,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/arc:test_support",

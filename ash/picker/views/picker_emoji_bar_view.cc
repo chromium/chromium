@@ -24,6 +24,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
@@ -89,7 +90,7 @@ std::u16string GetTooltipForEmojiResult(
       return l10n_util::GetStringFUTF16(
           IDS_PICKER_EMOTICON_ITEM_ACCESSIBLE_NAME, data.name);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Creates an item view for a search result. Only supports results that can be
@@ -147,27 +148,40 @@ class GifsButton : public views::LabelButton {
 
  public:
   explicit GifsButton(base::RepeatingClosure pressed_callback) {
+    // The label is not translated to keep the width constant. Treat it as an
+    // icon.
     views::Builder<views::LabelButton>(this)
-        .SetText(l10n_util::GetStringUTF16(IDS_PICKER_GIFS_BUTTON_LABEL))
+        .SetText(u"GIF")
         .SetCallback(std::move(pressed_callback))
         .SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface)
-        .SetBackground(views::CreateThemedRoundedRectBackground(
-            cros_tokens::kCrosSysSystemOnBase, kGifsButtonCornerRadius))
         .BuildChildren();
     label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosLabel1));
     label()->SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
         ash::TypographyToken::kCrosLabel1));
     label()->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
-    StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                     /*highlight_on_hover=*/true,
-                                     /*highlight_on_focus=*/true);
+    StyleUtil::SetUpInkDropForButton(this);
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
+    UpdateBackground();
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
   ~GifsButton() override = default;
+
+  // views::LabelButton:
+  void StateChanged(ButtonState old_state) override {
+    views::LabelButton::StateChanged(old_state);
+    UpdateBackground();
+  }
+
+  void UpdateBackground() {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        GetState() == views::Button::ButtonState::STATE_HOVERED
+            ? cros_tokens::kCrosSysHoverOnSubtle
+            : cros_tokens::kCrosSysSystemOnBase,
+        kGifsButtonCornerRadius));
+  }
 };
 
 BEGIN_METADATA(GifsButton)
@@ -182,7 +196,9 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
   SetUseDefaultFillLayout(true);
   GetViewAccessibility().SetProperties(
       ax::mojom::Role::kGrid,
-      l10n_util::GetStringUTF16(IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
+      l10n_util::GetStringUTF16(
+          is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
+                          : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
   SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
       kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
@@ -235,7 +251,9 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
               base::BindRepeating(&PickerEmojiBarView::OpenMoreEmojis,
                                   base::Unretained(this)),
               IconButton::Type::kSmallFloating, &kPickerMoreEmojisIcon,
-              IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
+              is_gifs_enabled
+                  ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
+                  : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
 
   StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
@@ -288,17 +306,33 @@ void PickerEmojiBarView::ClearSearchResults() {
 void PickerEmojiBarView::SetSearchResults(
     std::vector<PickerSearchResult> results) {
   ClearSearchResults();
+  int item_row_width = 0;
+  // This may be slow to calculate, so only `CHECK` on debug builds.
+  DCHECK_EQ(item_row_width, item_row_->GetPreferredSize().width());
+  const int available_item_row_width = CalculateAvailableWidthForItemRow();
   for (const auto& result : results) {
     // `base::Unretained` is safe here because `this` owns the item view.
     auto item_view = CreateItemView(
         result, base::BindRepeating(&PickerEmojiBarView::SelectSearchResult,
                                     base::Unretained(this), result));
+    int new_item_row_width =
+        item_row_width + item_view->GetPreferredSize().width();
+    if (item_row_width != 0) {
+      new_item_row_width += kItemGap;
+    }
+
     // Add the item if there is enough space in the row.
-    if (item_row_->GetPreferredSize().width() + kItemGap +
-            item_view->GetPreferredSize().width() <=
-        CalculateAvailableWidthForItemRow()) {
+    if (new_item_row_width <= available_item_row_width) {
       item_row_->AddChildView(CreateEmptyCell())
           ->AddChildView(std::move(item_view));
+      item_row_width = new_item_row_width;
+
+      DCHECK_EQ(item_row_width, item_row_->GetPreferredSize().width());
+      DCHECK_EQ(available_item_row_width, CalculateAvailableWidthForItemRow());
+    } else {
+      // A narrower item after this one may fit, but we should not show it
+      // because we always want to show a contiguous prefix of `results`.
+      break;
     }
   }
 }

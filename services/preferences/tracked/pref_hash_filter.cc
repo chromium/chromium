@@ -45,6 +45,8 @@ std::vector<const char*>* GetDeprecatedPrefs() {
       // Also delete the now empty dictionaries.
       "software_reporter",
       "settings_reset_prompt",
+      // Added Aug'24. Remove after Aug'25.
+      "google.services.last_account_id",
 #endif
   };
 

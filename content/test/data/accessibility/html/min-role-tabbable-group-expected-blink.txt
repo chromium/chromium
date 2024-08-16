@@ -1,0 +1,17 @@
+rootWebArea focusable scrollable=true
+++genericContainer ignored
+++++genericContainer ignored
+++++++group focusable
+++++++++staticText name='Tabindex=0'
+++++++++++inlineTextBox name='Tabindex=0'
+++++++genericContainer focusable
+++++++++staticText name='Tabindex=-1'
+++++++++++inlineTextBox name='Tabindex=-1'
+++++++group focusable className='scrollable' scrollable=true
+++++++++paragraph
+++++++++++staticText name='Scrollable'
+++++++++++++inlineTextBox name='Scrollable'
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='Scrollable'
+++++++++++++inlineTextBox name='Scrollable'

@@ -71,6 +71,8 @@ class AuthDialogContentsView : public views::View {
 
     raw_ptr<LoginPasswordView> GetPinTextInputView() const;
 
+    views::Label* GetDialogFingerprintLabel() const;
+
    private:
     const raw_ptr<AuthDialogContentsView> view_;
   };
@@ -84,7 +86,6 @@ class AuthDialogContentsView : public views::View {
   ~AuthDialogContentsView() override;
 
   // views::Views:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
 
   uint32_t auth_methods() const { return auth_methods_; }
@@ -159,6 +160,8 @@ class AuthDialogContentsView : public views::View {
 
   // Called when the "Need help?" button is pressed.
   void OnNeedHelpButtonPressed(const ui::Event& event);
+
+  views::Label* GetFingerprintLabel() const;
 
   // Debug container which holds the entire debug UI.
   raw_ptr<views::View> container_ = nullptr;

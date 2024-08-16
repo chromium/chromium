@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
+#include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -161,8 +162,8 @@ bool SkiaOutputDeviceDawn::Reshape(const ReshapeParams& params) {
   sample_count_ = params.sample_count;
 
 #if BUILDFLAG(IS_WIN)
-  if (child_window_.window() && !child_window_.Resize(size_)) {
-    return false;
+  if (child_window_.window()) {
+    child_window_.Resize(size_);
   }
 #endif
 
@@ -212,7 +213,8 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   wgpu::SurfaceTexture texture;
   surface_.GetCurrentTexture(&texture);
-  skgpu::graphite::BackendTexture backend_texture(texture.texture.Get());
+  auto backend_texture =
+      skgpu::graphite::BackendTextures::MakeDawn(texture.texture.Get());
 
   SkSurfaceProps surface_props;
   sk_surface_ = SkSurfaces::WrapBackendTexture(

@@ -69,7 +69,7 @@ std::optional<base::NoDestructor<LightweightQuarantineBranch>>
 bool TryInitSlow();
 
 inline bool TryInit() {
-  if (LIKELY(is_quarantine_initialized.load(std::memory_order_acquire))) {
+  if (is_quarantine_initialized.load(std::memory_order_acquire)) [[likely]] {
     return true;
   }
 
@@ -130,11 +130,11 @@ bool TryInitSlow() {
 // CAUTION: No deallocation is allowed in this function because it causes
 // a reentrancy issue.
 inline bool Quarantine(void* object) {
-  if (UNLIKELY(!TryInit())) {
+  if (!TryInit()) [[unlikely]] {
     return false;
   }
 
-  if (UNLIKELY(!object)) {
+  if (!object) [[unlikely]] {
     return false;
   }
 
@@ -142,8 +142,8 @@ inline bool Quarantine(void* object) {
   // but it can be cold in cache. So, prefetches it to avoid stall.
   PA_PREFETCH_FOR_WRITE(object);
 
-  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-          reinterpret_cast<uintptr_t>(object)))) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(object))) [[unlikely]] {
     return false;
   }
 
@@ -156,7 +156,7 @@ inline bool Quarantine(void* object) {
       partition_alloc::internal::SlotSpanMetadata::FromObject(object);
   partition_alloc::PartitionRoot* root =
       partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
-  if (UNLIKELY(root != lightweight_quarantine_partition_root)) {
+  if (root != lightweight_quarantine_partition_root) [[unlikely]] {
     // The LightweightQuarantineRoot is configured for
     // lightweight_quarantine_partition_root. We cannot quarantine an object
     // in other partition roots.
@@ -173,26 +173,23 @@ inline bool Quarantine(void* object) {
   return true;
 }
 
-void FreeFn(const AllocatorDispatch* self, void* address, void* context) {
-  if (UNLIKELY(sampling_state.Sample())) {
-    if (LIKELY(Quarantine(address))) {
+void FreeFn(void* address, void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return self->next->free_function(self->next, address, context);
+  MUSTTAIL return allocator_dispatch.next->free_function(address, context);
 }
 
-void FreeDefiniteSizeFn(const AllocatorDispatch* self,
-                        void* address,
-                        size_t size,
-                        void* context) {
-  if (UNLIKELY(sampling_state.Sample())) {
-    if (LIKELY(Quarantine(address))) {
+void FreeDefiniteSizeFn(void* address, size_t size, void* context) {
+  if (sampling_state.Sample()) [[unlikely]] {
+    if (Quarantine(address)) [[likely]] {
       return;
     }
   }
-  MUSTTAIL return self->next->free_definite_size_function(self->next, address,
-                                                          size, context);
+  MUSTTAIL return allocator_dispatch.next->free_definite_size_function(
+      address, size, context);
 }
 
 AllocatorDispatch allocator_dispatch = {

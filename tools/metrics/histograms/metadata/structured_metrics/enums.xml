@@ -1,0 +1,52 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="FlushedMapError">
+  <int value="0" label="DELETED_INVALID_KEY"/>
+  <int value="1" label="EVENT_SERIALIZATION_ERROR"/>
+  <int value="2" label="FAILED_TO_READ_KEY"/>
+</enum>
+
+<enum name="RecordStatus">
+  <int value="0" label="OK"/>
+  <int value="1" label="FLUSHED"/>
+  <int value="2" label="FULL"/>
+  <int value="3" label="ERROR"/>
+</enum>
+
+<enum name="StorageManagerFlushStatus">
+  <int value="0" label="SUCCESSFUL"/>
+  <int value="1" label="WRITE_ERROR"/>
+  <int value="2" label="DISK_FULL"/>
+  <int value="3" label="EVENT_SERIALIZATION_ERROR"/>
+  <int value="4" label="QUOTA_EXCEEEDED"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

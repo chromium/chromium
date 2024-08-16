@@ -99,8 +99,9 @@ public class EdgeToEdgeUtils {
      * why it is ineligible.
      *
      * @param activity The current active activity.
+     * @return Whether the activity is eligible for edge to edge based on device configuration.
      */
-    public static void recordEligibility(@NonNull Activity activity) {
+    public static boolean recordEligibility(@NonNull Activity activity) {
         boolean eligible = true;
 
         if (hasTappableBottomBar(activity.getWindow())) {
@@ -135,6 +136,8 @@ public class EdgeToEdgeUtils {
                     IneligibilityReason.NUM_TYPES);
         }
         RecordHistogram.recordBooleanHistogram(ELIGIBLE_HISTOGRAM, eligible);
+
+        return eligible;
     }
 
     /**
@@ -193,6 +196,9 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
+        if (!isLegacyWebsiteOptInEnabled()) {
+            return false;
+        }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
     }
 
@@ -200,7 +206,9 @@ public class EdgeToEdgeUtils {
      * @return whether the given window's insets indicate a tappable bottom bar.
      */
     static boolean hasTappableBottomBar(Window window) {
-        return WindowInsetsCompat.toWindowInsetsCompat(window.getDecorView().getRootWindowInsets())
+        var rootInsets = window.getDecorView().getRootWindowInsets();
+        assert rootInsets != null;
+        return WindowInsetsCompat.toWindowInsetsCompat(rootInsets)
                         .getInsets(WindowInsetsCompat.Type.tappableElement())
                         .bottom
                 != 0;

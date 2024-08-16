@@ -23,7 +23,6 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"

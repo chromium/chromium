@@ -29,7 +29,10 @@ class TestIbanBubbleControllerImpl : public IbanBubbleControllerImpl {
 
 class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
  public:
-  IbanBubbleControllerImplTest() = default;
+  explicit IbanBubbleControllerImplTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)
+      : BrowserWithTestWindowTest(time_source) {}
   IbanBubbleControllerImplTest(IbanBubbleControllerImplTest&) = delete;
   IbanBubbleControllerImplTest& operator=(IbanBubbleControllerImplTest&) =
       delete;
@@ -55,6 +58,10 @@ class IbanBubbleControllerImplTest : public BrowserWithTestWindowTest {
     if (controller()->ShouldShowPaymentSavedLabelAnimation()) {
       controller()->OnAnimationEnded();
     }
+  }
+
+  void ShowConfirmationBubbleView(bool iban_saved, bool hit_max_strikes) {
+    controller()->ShowConfirmationBubbleView(iban_saved, hit_max_strikes);
   }
 
   void CloseBubble(PaymentsBubbleClosedReason closed_reason) {
@@ -154,6 +161,24 @@ TEST_F(IbanBubbleControllerImplTest, Metrics_LocalIbanSaved_NoNickname) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveIbanPromptResult.Local.SavedWithNickname", false, 1);
+}
+
+// Test that confirmation prompt is auto-closed in 3 sec if the IBAN was
+// successfully saved to the server.
+TEST_F(IbanBubbleControllerImplTest, OnConfirmationPromptAutoClosed_Success) {
+  ShowConfirmationBubbleView(/*iban_saved=*/true, /*hit_max_strikes=*/false);
+  task_environment()->FastForwardBy(
+      IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+}
+
+// Test that fallback as local save confirmation prompt is not auto-closed in 3
+// sec if the IBAN was not successfully saved to the server.
+TEST_F(IbanBubbleControllerImplTest, OnConfirmationPromptAutoClosed_Fail) {
+  ShowConfirmationBubbleView(/*iban_saved=*/false, /*hit_max_strikes=*/false);
+  task_environment()->FastForwardBy(
+      IbanBubbleControllerImpl::kAutoCloseConfirmationBubbleWaitSec);
+  EXPECT_TRUE(controller()->GetPaymentBubbleView());
 }
 
 }  // namespace autofill

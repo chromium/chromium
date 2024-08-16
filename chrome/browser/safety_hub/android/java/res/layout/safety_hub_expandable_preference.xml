@@ -60,6 +60,7 @@ found in the LICENSE file.
                 android:layout_marginTop="4dp"
                 android:layout_alignStart="@android:id/title"
                 android:scrollbars="none"
+                android:focusable="true"
                 style="@style/PreferenceSummary" />
         </RelativeLayout>
 

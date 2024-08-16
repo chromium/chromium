@@ -93,6 +93,110 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "fuchsia_arm64_tests",
+    targets = [
+        "fuchsia_sizes_tests",
+        targets.bundle(
+            targets = [
+                "gpu_validating_telemetry_tests",
+                "fuchsia_gtests",
+                targets.bundle(
+                    targets = "gpu_angle_fuchsia_unittests_isolated_scripts",
+                    # Make sure any gtests included get expanded as isolated scripts
+                    mixins = targets.mixin(
+                        expand_as_isolated_script = True,
+                    ),
+                ),
+            ],
+            mixins = [
+                "upload_inv_extended_properties",
+            ],
+        ),
+    ],
+)
+
+# This is a set of selected tests to test the test facility only. The
+# principle of the selection includes time cost, scenario coverage,
+# stability, etc; and it's subject to change. In theory, it should only be
+# used by the EngProd team to verify a new test facility setup.
+targets.bundle(
+    name = "fuchsia_facility_gtests",
+    targets = [
+        "aura_unittests",
+        "blink_common_unittests",
+        "courgette_unittests",
+        "crypto_unittests",
+        "filesystem_service_unittests",
+        "web_engine_integration_tests",
+        "web_engine_unittests",
+    ],
+    mixins = [
+        "upload_inv_extended_properties",
+    ],
+)
+
+targets.bundle(
+    name = "fuchsia_standard_tests",
+    targets = [
+        "gpu_validating_telemetry_tests",
+        "fuchsia_gtests",
+        targets.bundle(
+            targets = "fuchsia_isolated_scripts",
+            # Make sure any gtests included in fuchsia_isolated_scripts get
+            # expanded as isolated scripts
+            mixins = targets.mixin(
+                expand_as_isolated_script = True,
+            ),
+        ),
+    ],
+    mixins = [
+        "upload_inv_extended_properties",
+    ],
+    per_test_modifications = {
+        "blink_web_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_web_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "blink_wpt_tests": [
+            # TODO(crbug.com/337058844): uploading invocations is not supported
+            # by blink_wpt_tests yet.
+            "has_native_resultdb_integration",
+        ],
+        "context_lost_validating_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "expected_color_pixel_validating_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "gpu_process_launch_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "hardware_accelerated_feature_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "pixel_skia_gold_validating_test": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+        "screenshot_sync_validating_tests": [
+            # TODO(crbug.com/337058844): Merging upload_inv_extended_properties
+            # with has_native_resultdb_integration is not supported yet.
+            "has_native_resultdb_integration",
+        ],
+    },
+)
+
+targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [
         "browser_tests",

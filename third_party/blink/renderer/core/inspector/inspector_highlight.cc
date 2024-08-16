@@ -376,6 +376,10 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollNextButton) {
+      class_names.Append("::scroll-next-button");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollPrevButton) {
+      class_names.Append("::scroll-prev-button");
     }
   }
   if (!class_names.empty())
@@ -1232,12 +1236,11 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   if (flex_basis.IsFixed()) {
     base_size = flex_basis;
   } else if (flex_basis.IsAuto() && size.IsFixed()) {
-    // TODO(https://crbug.com/313072): 'flex-basis' should support calc-size()
     base_size = size;
   }
 
   // For now, we only care about the cases where we can know the base size.
-  if (base_size.IsSpecified()) {
+  if (base_size.IsFixed()) {
     flex_info->setDouble("baseSize", base_size.Pixels() * scale);
     flex_info->setBoolean("isHorizontalFlow", is_horizontal);
     auto box_sizing = layout_object->StyleRef().BoxSizing();
@@ -1816,7 +1819,8 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdBefore, kPseudoIdAfter, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker}) {
+            kPseudoIdScrollMarker, kPseudoIdScrollNextButton,
+            kPseudoIdScrollPrevButton}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

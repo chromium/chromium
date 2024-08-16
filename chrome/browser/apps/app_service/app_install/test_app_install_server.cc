@@ -33,28 +33,12 @@ bool TestAppInstallServer::SetUp() {
   return true;
 }
 
-TestAppInstallServer::SetupIds
-TestAppInstallServer::SetupDefaultServerResponse() {
-  GURL start_url = server_.GetURL("/web_apps/basic.html");
-  GURL manifest_url = server_.GetURL("/web_apps/basic.json");
-  webapps::ManifestId manifest_id = start_url;
-  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-  PackageId package_id(apps::PackageType::kWeb, manifest_id.spec());
+TestAppInstallServer::SetupIds TestAppInstallServer::SetUpWebAppResponse() {
+  return SetUpWebAppInstallInternal(PackageType::kWeb);
+}
 
-  // Set Almanac server payload.
-  proto::AppInstallResponse response;
-  proto::AppInstallResponse_AppInstance& instance =
-      *response.mutable_app_instance();
-  instance.set_package_id(package_id.ToString());
-  instance.set_name("Test");
-  proto::AppInstallResponse_WebExtras& web_extras =
-      *instance.mutable_web_extras();
-  web_extras.set_document_url(start_url.spec());
-  web_extras.set_original_manifest_url(manifest_url.spec());
-  web_extras.set_scs_url(manifest_url.spec());
-  SetUpResponse(package_id.ToString(), response);
-
-  return {app_id, package_id};
+TestAppInstallServer::SetupIds TestAppInstallServer::SetUpWebsiteResponse() {
+  return SetUpWebAppInstallInternal(PackageType::kWebsite);
 }
 
 void TestAppInstallServer::SetUpInstallUrlResponse(PackageId package_id,
@@ -106,6 +90,30 @@ TestAppInstallServer::HandleRequest(
   }
 
   return std::move(it->second);
+}
+
+TestAppInstallServer::SetupIds TestAppInstallServer::SetUpWebAppInstallInternal(
+    PackageType package_type) {
+  GURL start_url = server_.GetURL("/web_apps/basic.html");
+  GURL manifest_url = server_.GetURL("/web_apps/basic.json");
+  webapps::ManifestId manifest_id = start_url;
+  webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
+  PackageId package_id(package_type, manifest_id.spec());
+
+  // Set Almanac server payload.
+  proto::AppInstallResponse response;
+  proto::AppInstallResponse_AppInstance& instance =
+      *response.mutable_app_instance();
+  instance.set_package_id(package_id.ToString());
+  instance.set_name("Test");
+  proto::AppInstallResponse_WebExtras& web_extras =
+      *instance.mutable_web_extras();
+  web_extras.set_document_url(start_url.spec());
+  web_extras.set_original_manifest_url(manifest_url.spec());
+  web_extras.set_scs_url(manifest_url.spec());
+  SetUpResponse(package_id.ToString(), response);
+
+  return {app_id, package_id};
 }
 
 }  // namespace apps

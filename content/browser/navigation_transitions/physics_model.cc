@@ -294,7 +294,7 @@ PhysicsModel::Result PhysicsModel::OnAnimate(
       break;
     }
     case Driver::kDragCurve: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 

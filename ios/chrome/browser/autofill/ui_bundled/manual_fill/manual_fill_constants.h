@@ -26,6 +26,14 @@ extern NSString* const kExpandedManualFillHeaderTopViewID;
 // view.
 extern NSString* const kExpandedManualFillChromeLogoID;
 
+// Accessibility identifier for the "Autofill Form" button shown in the entity
+// cells of the expanded manual fill view.
+extern NSString* const kExpandedManualFillAutofillFormButtonID;
+
+// Accessibility identifier for the overflow menu shown in the entity cells of
+// the expanded manual fill view.
+extern NSString* const kExpandedManualFillOverflowMenuID;
+
 // Accessibility identifier for the GPay logo shown in the payment manual fill
 // cells when the corresponding card is a server card.
 extern NSString* const kPaymentManualFillGPayLogoID;

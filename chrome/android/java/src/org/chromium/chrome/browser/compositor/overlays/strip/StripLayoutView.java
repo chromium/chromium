@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
+import android.graphics.RectF;
 import android.util.FloatProperty;
 
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -45,10 +46,32 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
+    // Position variables.
+    protected final RectF mDrawBounds = new RectF();
     private float mIdealX;
     private float mOffsetX;
+
+    // Touch target bound variables.
+    private float mTouchTargetInsetLeft;
+    private float mTouchTargetInsetRight;
+    private float mTouchTargetInsetTop;
+    private float mTouchTargetInsetBottom;
+    private final RectF mTouchTargetBounds = new RectF();
+
+    // State variables.
     private boolean mVisible = true;
     private boolean mCollapsed;
+    private boolean mIsIncognito;
+
+    // A11y variables.
+    private String mAccessibilityDescription = "";
+
+    /**
+     * @param incognito The incognito state of the view.
+     */
+    protected StripLayoutView(boolean incognito) {
+        mIsIncognito = incognito;
+    }
 
     /**
      * This is used to help calculate the view's position and is not used for rendering.
@@ -71,42 +94,68 @@ public abstract class StripLayoutView implements VirtualView {
     /**
      * @return The horizontal position of the view.
      */
-    public abstract float getDrawX();
+    public float getDrawX() {
+        return mDrawBounds.left;
+    }
 
     /**
      * @param x The horizontal position of the view.
      */
-    public abstract void setDrawX(float x);
+    public void setDrawX(float x) {
+        mDrawBounds.right = x + mDrawBounds.width();
+        mDrawBounds.left = x;
+        // Update touch target bounds
+        updateTouchTargetBounds(mTouchTargetBounds);
+    }
 
     /**
      * @return The vertical position of the view.
      */
-    public abstract float getDrawY();
+    public float getDrawY() {
+        return mDrawBounds.top;
+    }
 
     /**
      * @param y The vertical position of the view.
      */
-    public abstract void setDrawY(float y);
+    public void setDrawY(float y) {
+        mDrawBounds.bottom = y + mDrawBounds.height();
+        mDrawBounds.top = y;
+        // Update touch target bounds
+        updateTouchTargetBounds(mTouchTargetBounds);
+    }
 
     /**
      * @return The width of the view.
      */
-    public abstract float getWidth();
+    public float getWidth() {
+        return mDrawBounds.width();
+    }
 
     /**
      * @param width The width of the view.
      */
-    public abstract void setWidth(float width);
+    public void setWidth(float width) {
+        mDrawBounds.right = mDrawBounds.left + width;
+        // Update touch target bounds
+        updateTouchTargetBounds(mTouchTargetBounds);
+    }
 
     /**
      * @return The height of the view.
      */
-    public abstract float getHeight();
+    public float getHeight() {
+        return mDrawBounds.height();
+    }
 
     /**
      * @param height The height of the view.
      */
-    public abstract void setHeight(float height);
+    public void setHeight(float height) {
+        mDrawBounds.bottom = mDrawBounds.top + height;
+        // Update touch target bounds
+        updateTouchTargetBounds(mTouchTargetBounds);
+    }
 
     /**
      * This is used to help calculate the view's position and is not used for rendering.
@@ -118,7 +167,7 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
-     * This is used to help calculate the tab's position and is not used for rendering.
+     * This is used to help calculate the view's position and is not used for rendering.
      *
      * @return The offset of the view (used for drag and drop, slide animating, etc).
      */
@@ -137,8 +186,17 @@ public abstract class StripLayoutView implements VirtualView {
      * @param visible Whether or not this {@link StripLayoutView} should be drawn.
      */
     public void setVisible(boolean visible) {
+        if (mVisible == visible) return;
         mVisible = visible;
+        onVisibilityChanged(mVisible);
     }
+
+    /**
+     * Called if the visibility state has changed.
+     *
+     * @param newVisibility Whether or not this {@link StripLayoutView} should be drawn.
+     */
+    void onVisibilityChanged(boolean newVisibility) {}
 
     /**
      * @return Whether or not this {@link StripLayoutView} is collapsed.
@@ -155,11 +213,90 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /**
+     * @return The incognito state of the view.
+     */
+    public boolean isIncognito() {
+        return mIsIncognito;
+    }
+
+    /**
+     * @param state The incognito state of the view.
+     */
+    public void setIncognito(boolean state) {
+        mIsIncognito = state;
+    }
+
+    /**
      * Get a list of virtual views for accessibility events.
      *
      * @param views A List to populate with virtual views.
      */
     public void getVirtualViews(List<VirtualView> views) {
         views.add(this);
+    }
+
+    /**
+     * @param description A string describing the resource.
+     */
+    public void setAccessibilityDescription(String description) {
+        mAccessibilityDescription = description;
+    }
+
+    /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
+    @Override
+    public String getAccessibilityDescription() {
+        return mAccessibilityDescription;
+    }
+
+    /**
+     * @param x The x offset of the click.
+     * @param y The y offset of the click.
+     * @return Whether or not that gesture occurred inside of the touch target.
+     */
+    @Override
+    public boolean checkClickedOrHovered(float x, float y) {
+        return mTouchTargetBounds.contains(x, y);
+    }
+
+    /**
+     * Get the view's touch target.
+     *
+     * @param outTarget to set to the touch target bounds.
+     */
+    @Override
+    public void getTouchTarget(RectF outTarget) {
+        outTarget.set(mTouchTargetBounds);
+    }
+
+    /**
+     * @return Return cached touch target bounds.
+     */
+    protected RectF getTouchTargetBounds() {
+        return mTouchTargetBounds;
+    }
+
+    /**
+     * Apply insets to touch target bounds.
+     *
+     * @param left - Left inset to apply to touch target.
+     * @param top - Top inset to apply to touch target.
+     * @param right - Right inset to apply to touch target.
+     * @param bottom - Bottom inset to apply to touch target.
+     */
+    protected void setTouchTargetInsets(Float left, Float top, Float right, Float bottom) {
+        if (left != null) mTouchTargetInsetLeft = left;
+        if (right != null) mTouchTargetInsetRight = right;
+        if (top != null) mTouchTargetInsetTop = top;
+        if (bottom != null) mTouchTargetInsetBottom = bottom;
+        updateTouchTargetBounds(mTouchTargetBounds);
+    }
+
+    private void updateTouchTargetBounds(RectF outTarget) {
+        outTarget.set(mDrawBounds);
+        // Get the whole touchable region.
+        outTarget.left += mTouchTargetInsetLeft;
+        outTarget.right -= mTouchTargetInsetRight;
+        outTarget.top += mTouchTargetInsetTop;
+        outTarget.bottom -= mTouchTargetInsetBottom;
     }
 }

@@ -63,7 +63,7 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
       base::CallbackListSubscription(const base::RepeatingClosure& cb));
   MOCK_METHOD0(ScheduleGarbageCollection, void());
   MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::ModelTypeControllerDelegate>());
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
 };
 
 class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {

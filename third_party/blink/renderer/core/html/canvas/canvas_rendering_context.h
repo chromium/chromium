@@ -136,7 +136,7 @@ class CORE_EXPORT CanvasRenderingContext
   bool HasPendingActivity() const override { return false; }
   ExecutionContext* GetExecutionContext() const {
     const CanvasRenderingContextHost* host = Host();
-    if (UNLIKELY(host == nullptr)) {
+    if (host == nullptr) [[unlikely]] {
       return nullptr;
     }
     return host->GetTopExecutionContext();
@@ -153,12 +153,16 @@ class CORE_EXPORT CanvasRenderingContext
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
 
   const CanvasResourceProvider* ResourceProvider() const {
-    const CanvasRenderingContextHost* host = Host();
-    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
+    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
+      return host->ResourceProvider();
+    }
+    return nullptr;
   }
   CanvasResourceProvider* ResourceProvider() {
-    CanvasRenderingContextHost* host = Host();
-    return UNLIKELY(host == nullptr) ? nullptr : host->ResourceProvider();
+    if (const CanvasRenderingContextHost* host = Host()) [[likely]] {
+      return host->ResourceProvider();
+    }
+    return nullptr;
   }
 
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;

@@ -41,14 +41,14 @@ class ModeCheckingAnchorEvaluator : public AnchorEvaluator {
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
       const ScopedCSSName* position_anchor,
-      const std::optional<InsetAreaOffsets>&) override {
+      const std::optional<PositionAreaOffsets>&) override {
     return (required_mode_ == GetMode()) ? std::optional<LayoutUnit>(1)
                                          : std::optional<LayoutUnit>();
   }
 
-  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+  std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
       const ScopedCSSName*,
-      InsetArea) override {
+      PositionArea) override {
     return std::nullopt;
   }
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
@@ -485,6 +485,28 @@ TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
   EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
   EXPECT_EQ(declarations->PropertyAt(1).Id(),
             CSSPropertyID::kPositionTryFallbacks);
+}
+
+TEST_F(CSSPropertyTest, PositionAreaDisabled) {
+  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(true);
+  ScopedCSSPositionAreaPropertyForTest position_area_enabled(false);
+  auto* declarations = ParseShorthand("position-area", "center top");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 0u);
+  declarations = ParseShorthand("inset-area", "center top");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 1u);
+}
+
+TEST_F(CSSPropertyTest, InsetAreaDisabled) {
+  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
+  ScopedCSSPositionAreaPropertyForTest position_area_enabled(true);
+  auto* declarations = ParseShorthand("position-area", "center top");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 1u);
+  declarations = ParseShorthand("inset-area", "center top");
+  ASSERT_TRUE(declarations);
+  ASSERT_EQ(declarations->PropertyCount(), 0u);
 }
 
 }  // namespace blink

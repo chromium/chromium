@@ -122,29 +122,34 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   ContentVerifyJob::FailureReason RunContentVerifyJob(
       const Extension& extension,
       const base::FilePath& resource_path,
-      std::string& resource_contents,
+      std::optional<std::string_view> resource_contents,
       ContentVerifyJobAsyncRunMode run_mode) {
     TestContentVerifySingleJobObserver observer(extension.id(), resource_path);
     auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
         extension.id(), extension.path(), resource_path);
 
-    auto run_content_read_step = [](ContentVerifyJob* verify_job,
-                                    std::string* resource_contents) {
-      // Simulate serving |resource_contents| from |resource_path|.
-      verify_job->BytesRead(std::data(*resource_contents),
-                            resource_contents->size(), MOJO_RESULT_OK);
-      verify_job->DoneReading();
-    };
+    auto run_content_read_step = base::BindRepeating(
+        [](std::optional<std::string_view> resource_contents,
+           ContentVerifyJob* verify_job) {
+          // Simulate serving |resource_contents| from |resource_path|.
+          auto read_data = resource_contents.value_or(std::string_view{});
+          MojoResult read_result =
+              resource_contents ? MOJO_RESULT_OK : MOJO_RESULT_NOT_FOUND;
+          verify_job->BytesRead(read_data.data(), read_data.size(),
+                                read_result);
+          verify_job->DoneReading();
+        },
+        std::move(resource_contents));
 
     switch (run_mode) {
       case kNone:
         // Read hashes asynchronously.
         StartJob(verify_job, extension.version(), extension.manifest_version(),
                  base::DoNothing());
-        run_content_read_step(verify_job.get(), &resource_contents);
+        run_content_read_step.Run(verify_job.get());
         break;
       case kContentReadBeforeHashesReady:
-        run_content_read_step(verify_job.get(), &resource_contents);
+        run_content_read_step.Run(verify_job.get());
         // Read hashes asynchronously.
         StartJob(verify_job, extension.version(), extension.manifest_version(),
                  base::DoNothing());
@@ -154,7 +159,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
                  base::DoNothing());
         // Wait for hashes to become ready.
         observer.WaitForOnHashesReady();
-        run_content_read_step(verify_job.get(), &resource_contents);
+        run_content_read_step.Run(verify_job.get());
         break;
     }
     return observer.WaitForJobFinished();
@@ -163,9 +168,29 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   ContentVerifyJob::FailureReason RunContentVerifyJob(
       const Extension& extension,
       const base::FilePath& resource_path,
-      std::string& resource_contents) {
+      std::optional<std::string_view> resource_contents) {
     return RunContentVerifyJob(extension, resource_path, resource_contents,
                                kNone);
+  }
+
+  ContentVerifyJob::FailureReason RunContentVerifyJobWithMultipleReadErrors(
+      const Extension& extension,
+      const base::FilePath& resource_path,
+      base::span<MojoResult> read_errors) {
+    TestContentVerifySingleJobObserver observer(extension.id(), resource_path);
+    auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
+        extension.id(), extension.path(), resource_path);
+
+    // Read hashes asynchronously.
+    StartJob(verify_job, extension.version(), extension.manifest_version(),
+             base::DoNothing());
+
+    for (const MojoResult read_error : read_errors) {
+      verify_job->BytesRead(nullptr, 0, read_error);
+    }
+    verify_job->DoneReading();
+
+    return observer.WaitForJobFinished();
   }
 
   void StartContentVerifyJob(const Extension& extension,
@@ -277,11 +302,10 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
     // Delete the existent file first.
     EXPECT_TRUE(base::DeleteFile(unzipped_path.Append(existent_resource_path)));
 
-    // Deleted file will serve empty contents.
-    std::string empty_contents;
+    // Deleted file will result in a read error.
     EXPECT_EQ(ContentVerifyJob::HASH_MISMATCH,
               RunContentVerifyJob(*extension.get(), existent_resource_path,
-                                  empty_contents));
+                                  std::nullopt));
   }
 
   {
@@ -290,11 +314,10 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
     const base::FilePath::CharType kNonExistentResource[] =
         FILE_PATH_LITERAL("non-existent.js");
     base::FilePath non_existent_resource_path(kNonExistentResource);
-    // Non-existent file will serve empty contents.
-    std::string empty_contents;
+    // Non-existent file will result in a read error.
     EXPECT_EQ(ContentVerifyJob::NONE,
               RunContentVerifyJob(*extension.get(), non_existent_resource_path,
-                                  empty_contents));
+                                  std::nullopt));
   }
 
   {
@@ -307,8 +330,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
     base::FilePath unexpected_resource_path(kUnexpectedResource);
 
     base::FilePath full_path = unzipped_path.Append(unexpected_resource_path);
-    const std::string kContent("42");
-    EXPECT_TRUE(base::WriteFile(full_path, kContent));
+    EXPECT_TRUE(base::WriteFile(full_path, "42"));
 
     std::string contents;
     base::ReadFileToString(full_path, &contents);
@@ -322,10 +344,9 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
     // Verification should skip this request as if the resource were
     // non-existent. See https://crbug.com/791929.
     base::FilePath empty_path_resource_path(FILE_PATH_LITERAL(""));
-    std::string empty_contents;
     EXPECT_EQ(ContentVerifyJob::NONE,
               RunContentVerifyJob(*extension.get(), empty_path_resource_path,
-                                  empty_contents));
+                                  std::nullopt));
   }
 
   {
@@ -337,11 +358,31 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
     base::FilePath unexpected_folder_path(kUnexpectedFolder);
 
     base::CreateDirectory(unzipped_path.Append(unexpected_folder_path));
-    std::string empty_contents;
     EXPECT_EQ(ContentVerifyJob::NONE,
               RunContentVerifyJob(*extension.get(), unexpected_folder_path,
-                                  empty_contents));
+                                  std::nullopt));
   }
+}
+
+// Tests that multiple read errors are handled correctly.
+TEST_F(ContentVerifyJobUnittest, MultipleReadErrors) {
+  TestExtensionDir temp_dir;
+  scoped_refptr<Extension> extension = LoadTestExtensionFromZipPathToTempDir(
+      &temp_dir, "with_verified_contents", "source_all.zip");
+  ASSERT_TRUE(extension.get());
+  base::FilePath unzipped_path = temp_dir.UnpackedPath();
+
+  const base::FilePath::CharType kExistentResource[] =
+      FILE_PATH_LITERAL("background.js");
+  base::FilePath existent_resource_path(kExistentResource);
+
+  MojoResult read_errors[] = {
+      MOJO_RESULT_DATA_LOSS,
+      MOJO_RESULT_ABORTED,
+  };
+  EXPECT_EQ(ContentVerifyJob::HASH_MISMATCH,
+            RunContentVerifyJobWithMultipleReadErrors(
+                *extension.get(), existent_resource_path, read_errors));
 }
 
 namespace {
@@ -412,14 +453,8 @@ TEST_F(ContentVerifyJobUnittest, DeletedResourceAndCorruptedComputedHashes) {
       base::DeleteFile(unzipped_path.Append(base::FilePath(kResource))));
   content_verifier()->ClearCacheForTesting();
 
-  {
-    // By now in tests we serve an empty resource instead of non-existsing one.
-    // See https://crbug.com/999727 for details.
-    std::string empty_contents;
-    EXPECT_EQ(
-        ContentVerifyJob::NO_HASHES_FOR_FILE,
-        RunContentVerifyJob(*extension.get(), resource_path, empty_contents));
-  }
+  EXPECT_EQ(ContentVerifyJob::CORRUPTED_HASHES,
+            RunContentVerifyJob(*extension.get(), resource_path, std::nullopt));
 }
 
 // Tests that deletion of an extension resource and removing its entry from
@@ -445,14 +480,8 @@ TEST_F(ContentVerifyJobUnittest, DeletedResourceAndCleanedComputedHashes) {
       base::DeleteFile(unzipped_path.Append(base::FilePath(kResource))));
   content_verifier()->ClearCacheForTesting();
 
-  {
-    // By now in tests we serve an empty resource instead of non-existsing one.
-    // See https://crbug.com/999727 for details.
-    std::string empty_contents;
-    EXPECT_EQ(
-        ContentVerifyJob::NO_HASHES_FOR_FILE,
-        RunContentVerifyJob(*extension.get(), resource_path, empty_contents));
-  }
+  EXPECT_EQ(ContentVerifyJob::CORRUPTED_HASHES,
+            RunContentVerifyJob(*extension.get(), resource_path, std::nullopt));
 }
 
 // Tests that extension resources that are originally 0 byte behave correctly
@@ -526,11 +555,10 @@ TEST_F(ContentVerifyJobUnittest, ModifiedComputedHashes) {
       FILE_PATH_LITERAL("background.js");
   base::FilePath existent_resource_path(kExistentResource);
   {
-    // Make sure background.js passes verification correctly.
     std::string contents;
     base::ReadFileToString(unzipped_path.Append(existent_resource_path),
                            &contents);
-    EXPECT_EQ(ContentVerifyJob::NO_HASHES_FOR_FILE,
+    EXPECT_EQ(ContentVerifyJob::CORRUPTED_HASHES,
               RunContentVerifyJob(*extension.get(), existent_resource_path,
                                   contents));
   }
@@ -649,12 +677,9 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, UnverifiedExtension) {
   }
   {
     // Make sure non-existing file doesn't fail content verification.
-    std::string contents;
-    base::ReadFileToString(unzipped_path.Append(kResourceMissingPath),
-                           &contents);
-    EXPECT_EQ(
-        ContentVerifyJob::NONE,
-        RunContentVerifyJob(*extension.get(), kResourceMissingPath, contents));
+    EXPECT_EQ(ContentVerifyJob::NONE,
+              RunContentVerifyJob(*extension.get(), kResourceMissingPath,
+                                  std::nullopt));
   }
   {
     // Make sure existing file fail content verification if there is no entry
@@ -805,6 +830,47 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
     run_loop.Run();
   }
 
+  ContentVerifyJob::FailureReason RunContentVerifyJobBeforeHashReady(
+      scoped_refptr<Extension> extension,
+      const base::FilePath& resource_path,
+      MojoResult read_result) {
+    // First, make sure that next ContentVerifyJob run requires a hash fetch, so
+    // that we can delay its request's response using |hash_fetch_interceptor_|.
+    ForceHashFetchOnNextResourceLoad(*extension);
+
+    TestContentVerifySingleJobObserver observer(extension->id(), resource_path);
+    {
+      // Then ContentVerifyJob gets the read result.
+      scoped_refptr<ContentVerifyJob> verify_job =
+          base::MakeRefCounted<ContentVerifyJob>(
+              extension->id(), extension->path(), resource_path);
+      auto do_read_and_done =
+          [](scoped_refptr<ContentVerifyJob> job,
+             scoped_refptr<ContentVerifier> content_verifier,
+             scoped_refptr<Extension> extension, MojoResult read_result,
+             base::OnceClosure done_callback) {
+            DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+            job->Start(content_verifier.get(), extension->version(),
+                       extension->manifest_version(), base::DoNothing());
+            job->BytesRead(nullptr, 0u, read_result);
+            job->DoneReading();
+            std::move(done_callback).Run();
+          };
+
+      base::RunLoop run_loop;
+      content::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(do_read_and_done, verify_job, content_verifier(),
+                         extension, read_result, run_loop.QuitClosure()));
+      run_loop.Run();
+
+      // After read result is seen, finally serve hash to |verify_job|.
+      set_ready_to_respond();
+      RespondToClientIfReady();
+    }
+    return observer.WaitForJobFinished();
+  }
+
   void set_ready_to_respond() { ready_to_respond_ = true; }
 
  private:
@@ -842,41 +908,38 @@ TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
       FILE_PATH_LITERAL("background.js");
   base::FilePath resource_path(kBackgroundJS);
 
-  // First, make sure that next ContentVerifyJob run requires a hash fetch, so
-  // that we can delay its request's response using |hash_fetch_interceptor_|.
-  ForceHashFetchOnNextResourceLoad(*extension);
+  EXPECT_EQ(ContentVerifyJob::NONE,
+            RunContentVerifyJobBeforeHashReady(extension, resource_path,
+                                               MOJO_RESULT_ABORTED));
+}
 
-  TestContentVerifySingleJobObserver observer(extension->id(), resource_path);
-  {
-    // Then ContentVerifyJob sees a benign read error (MOJO_RESULT_ABORTED).
-    scoped_refptr<ContentVerifyJob> verify_job =
-        base::MakeRefCounted<ContentVerifyJob>(
-            extension->id(), extension->path(), resource_path);
-    auto do_read_abort_and_done =
-        [](scoped_refptr<ContentVerifyJob> job,
-           scoped_refptr<ContentVerifier> content_verifier,
-           scoped_refptr<Extension> extension,
-           base::OnceClosure done_callback) {
-          DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-          job->Start(content_verifier.get(), extension->version(),
-                     extension->manifest_version(), base::DoNothing());
-          job->BytesRead(nullptr, 0u, MOJO_RESULT_ABORTED);
-          job->DoneReading();
-          std::move(done_callback).Run();
-        };
+// Now create a resource foo.js which exists on disk but is not in the
+// extension's verified_contents.json. Test the flow of the file being read
+// before hashes are ready. Verification should result in NO_HASHES_FOR_FILE
+// since the extension is trying to load a file the extension should not have.
+TEST_F(ContentVerifyJobWithHashFetchUnittest,
+       ReadFileWithoutHashesBeforeHashReady) {
+  TestExtensionDir temp_dir;
+  scoped_refptr<Extension> extension = LoadTestExtensionFromZipPathToTempDir(
+      &temp_dir, "with_verified_contents", "source_all.zip");
+  ASSERT_TRUE(extension.get());
+  base::FilePath unzipped_path = temp_dir.UnpackedPath();
 
-    base::RunLoop run_loop;
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(do_read_abort_and_done, verify_job, content_verifier(),
-                       extension, run_loop.QuitClosure()));
-    run_loop.Run();
+  const base::FilePath::CharType kUnexpectedResource[] =
+      FILE_PATH_LITERAL("foo.js");
+  base::FilePath unexpected_resource_path(kUnexpectedResource);
 
-    // After read error is seen, finally serve hash to |verify_job|.
-    set_ready_to_respond();
-    RespondToClientIfReady();
-  }
-  EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
+  base::FilePath full_path = unzipped_path.Append(unexpected_resource_path);
+  EXPECT_TRUE(base::WriteFile(full_path, "42"));
+
+  EXPECT_EQ(ContentVerifyJob::NO_HASHES_FOR_FILE,
+            RunContentVerifyJobBeforeHashReady(
+                extension, unexpected_resource_path, MOJO_RESULT_OK));
+
+  // Aborting the read shouldn't result in a verification failure.
+  EXPECT_EQ(ContentVerifyJob::NONE,
+            RunContentVerifyJobBeforeHashReady(
+                extension, unexpected_resource_path, MOJO_RESULT_ABORTED));
 }
 
 }  // namespace extensions

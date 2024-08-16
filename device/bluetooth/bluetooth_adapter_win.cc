@@ -192,6 +192,12 @@ void BluetoothAdapterWin::AdapterStateChanged(
     initialized_ = true;
     std::move(init_callback_).Run();
   }
+
+  // When the Bluetooth adapter is powered off or not present, all Bluetooth
+  // devices should be removed.
+  if (!powered_ || !is_present) {
+    ClearAllDevices();
+  }
 }
 
 void BluetoothAdapterWin::DevicesPolled(

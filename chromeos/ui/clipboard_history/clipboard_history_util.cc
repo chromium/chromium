@@ -102,7 +102,7 @@ ui::ImageModel GetIconForDescriptor(
       break;
     }
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   if (icon) {
@@ -112,7 +112,7 @@ ui::ImageModel GetIconForDescriptor(
                                           kIconSize);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace chromeos::clipboard_history

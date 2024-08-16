@@ -79,11 +79,6 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnLinkingExperimentation,
-             "WebAuthenticationLinkingExperimentation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Not yet enabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
@@ -97,12 +92,6 @@ const base::FeatureParam<bool> kWebAuthnGpmPin{
 // Enabled by default in M128. Remove in or after M131.
 BASE_FEATURE(kWebAuthnPasskeysReset,
              "WebAuthnPasskeysReset",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
-// ChromeOS. Remove in or after M124.
-BASE_FEATURE(kWebAuthnFilterGooglePasskeys,
-             "WebAuthenticationFilterGooglePasskeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -165,6 +154,11 @@ BASE_FEATURE(kWebAuthnAndroidOpenAccessory,
 // Development flag. Must not be enabled by default.
 BASE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay,
              "WebAuthnEnclaveAuthenticatorDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnAmbientSignin,
+             "WebAuthenticationAmbientSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace device

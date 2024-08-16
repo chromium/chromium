@@ -16,11 +16,12 @@ GuideName* const kNewTabButtonGuide = @"kNewTabButtonGuide";
 GuideName* const kTabSwitcherGuide = @"kTabSwitcherGuide";
 GuideName* const kToolsMenuGuide = @"kToolsMenuGuide";
 GuideName* const kVoiceSearchButtonGuide = @"kVoiceSearchButtonGuide";
-GuideName* const kFeedHeaderManagementButtonGuide =
-    @"kFeedHeaderManagementButtonGuide";
+GuideName* const kFeedIPHNamedGuide = @"kFeedIPHNamedGuide";
 GuideName* const kShareButtonGuide = @"kShareButtonGuide";
 GuideName* const kTabGridBottomToolbarGuide = @"kTabGridBottomToolbarGuide";
 GuideName* const kAutofillFirstSuggestionGuide =
     @"kAutofillFirstSuggestionGuide";
 GuideName* const kLensKeyboardButtonGuide = @"kLensKeyboardButtonGuide";
 GuideName* const kMagicStackGuide = @"kMagicStackGuide";
+GuideName* const kContextualPanelLargeEntrypointGuide =
+    @"kContextualPanelLargeEntrypointGuide";

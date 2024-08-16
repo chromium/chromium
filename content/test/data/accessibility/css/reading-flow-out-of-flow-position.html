@@ -1,0 +1,36 @@
+<style>
+.wrapper {
+  display: flex;
+  reading-flow: flex-visual;
+}
+</style>
+
+<!--- Test reading flow for flex items re-ordered using CSS property order.
+Absolute and fixed position elements are out of the flex container and not
+part of the reading flow re-order. They should be visited after reading order
+items, in DOM order.
+
+Expect order to be:
+C -> B -> (absolute) -> A1 -> A2
+-->
+
+<div class="wrapper">
+  <div style="order: 2; position:absolute; left:100px">
+    <button>A1</button>
+    <button>A2</button>
+  </div>
+  <div style="order:3"><button>B</button></div>
+  <div style="order:1"><button>C</button></div>
+</div>
+
+<!---
+Expect order to be:
+1 -> 2 -> 4 -> fixed 1 -> fixed 2
+-->
+<div class="wrapper" style="position: fixed; top: 100px">
+  <button style="order: 5; position: fixed; left: 100px; top: 130px">fixed 1</button>
+  <button style="order: 2">2</button>
+  <button style="order: 1">1</button>
+  <button style="order: 4">4</button>
+  <button style="order: 3; position: fixed; left: 100px">fixed 2</button>
+</div>

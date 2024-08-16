@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace base {
@@ -63,10 +63,15 @@ class ApplicationContextImpl : public ApplicationContext {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   const std::string& GetApplicationLocale() override;
   const std::string& GetApplicationCountry() override;
+  // TODO(crbug.com/358299872): After all usage has changed to
+  // GetProfileManager(), remove this method.
   ChromeBrowserStateManager* GetChromeBrowserStateManager() override;
+  ChromeBrowserStateManager* GetProfileManager() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* GetMetricsService() override;
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  GetActivePrimaryAccountsMetricsRecorder() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
   net::NetLog* GetNetLog() override;
@@ -81,8 +86,8 @@ class ApplicationContextImpl : public ApplicationContext {
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
-  segmentation_platform::OTRWebStateObserver*
-  GetSegmentationOTRWebStateObserver() override;
+  AccountProfileMapper* GetAccountProfileMapper() override;
+  IncognitoSessionTracker* GetIncognitoSessionTracker() override;
   PushNotificationService* GetPushNotificationService() override;
   UpgradeCenter* GetUpgradeCenter() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
@@ -107,7 +112,7 @@ class ApplicationContextImpl : public ApplicationContext {
   // Create the gcm driver.
   void CreateGCMDriver();
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used internally for tracking whether the call to StartTearDown() has
   // happened already, to avoid recreating lazily-constructed objects after they
@@ -137,6 +142,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   std::unique_ptr<IOSChromeIOThread> ios_chrome_io_thread_;
+  std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
@@ -153,10 +160,9 @@ class ApplicationContextImpl : public ApplicationContext {
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
-  std::unique_ptr<segmentation_platform::OTRWebStateObserver>
-      segmentation_otr_web_state_observer_;
-
+  std::unique_ptr<IncognitoSessionTracker> incognito_session_tracker_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
 
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;

@@ -97,6 +97,7 @@
 #include "content/web_test/common/web_test_switches.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -759,6 +760,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
       browser_context->GetFederatedIdentityPermissionContext())
       ->ResetForTesting();
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   // Delete any ScopedVirtualPressureSourceForDevTools and
   // WebTestPressureManager instances created by WebTestContentBrowserClient.
   // At this point all other windows have been closed and their WebContents
@@ -775,6 +777,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
     main_window_->web_contents()->RemoveUserData(
         WebTestPressureManager::UserDataKey());
   }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
   // Delete all cookies, Attribution Reporting data and Aggregation service data
   {
@@ -1901,7 +1904,7 @@ void WebTestControlHost::SetRegisterProtocolHandlerMode(
           custom_handlers::RphRegistrationMode::kAutoReject);
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebTestControlHost::GoToOffset(int offset) {

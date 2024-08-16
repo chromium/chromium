@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/shell.h"
 
 #include <algorithm>
@@ -276,6 +281,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/chromeos/user_activity_power_manager_notifier.h"
@@ -458,7 +464,7 @@ int Shell::GetOpenSystemModalWindowContainerId() {
       }
       for (const aura::Window* child : system_modal->children()) {
         if (child->GetProperty(aura::client::kModalKey) ==
-                ui::MODAL_TYPE_SYSTEM &&
+                ui::mojom::ModalType::kSystem &&
             child->layer()->GetTargetVisibility()) {
           return modal_window_id;
         }
@@ -1991,8 +1997,7 @@ std::unique_ptr<ui::EventTargetIterator> Shell::GetChildIterator() const {
 }
 
 ui::EventTargeter* Shell::GetEventTargeter() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void Shell::OnWindowActivated(
@@ -2025,22 +2030,13 @@ void Shell::OnFirstSessionStarted() {
       std::make_unique<AppListFeatureUsageMetrics>();
 }
 
-void Shell::OnSessionStateChanged(session_manager::SessionState state) {
-  const bool is_session_active = state == session_manager::SessionState::ACTIVE;
-  // Initialize the |shelf_window_watcher_| when a session becomes active.
-  // Shelf itself is initialized in RootWindowController.
-  if (is_session_active && !shelf_window_watcher_) {
-    shelf_window_watcher_ =
-        std::make_unique<ShelfWindowWatcher>(shelf_controller()->model());
-  }
-
+void Shell::OnFirstSessionReady() {
   // Initialize the fwupd (firmware updater) DBus client only when the user
   // session is active. Since the fwupd service is only relevant during an
   // active user session, this prevents a bug in which the service would start
   // up earlier than expected and causes a delay during boot.
   // See b/250002264 for more details.
-  if (is_session_active && !FwupdClient::Get() &&
-      !firmware_update_notification_controller_ &&
+  if (!FwupdClient::Get() && !firmware_update_notification_controller_ &&
       !features::IsBlockFwupdClientEnabled()) {
     chromeos::InitializeDBusClient<FwupdClient>(dbus_bus_.get());
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
@@ -2052,6 +2048,16 @@ void Shell::OnSessionStateChanged(session_manager::SessionState state) {
             message_center::MessageCenter::Get());
     firmware_update_manager_->RequestAllUpdates(
         FirmwareUpdateManager::Source::kStartup);
+  }
+}
+
+void Shell::OnSessionStateChanged(session_manager::SessionState state) {
+  const bool is_session_active = state == session_manager::SessionState::ACTIVE;
+  // Initialize the |shelf_window_watcher_| when a session becomes active.
+  // Shelf itself is initialized in RootWindowController.
+  if (is_session_active && !shelf_window_watcher_) {
+    shelf_window_watcher_ =
+        std::make_unique<ShelfWindowWatcher>(shelf_controller()->model());
   }
 
   // Disable drag-and-drop during OOBE and GAIA login screens by only enabling

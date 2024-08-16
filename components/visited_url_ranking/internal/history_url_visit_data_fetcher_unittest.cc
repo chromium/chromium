@@ -8,9 +8,12 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/mock_callback.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
@@ -70,6 +73,63 @@ class MockHistoryService : public history::HistoryService {
                          base::CancelableTaskTracker* tracker));
 };
 
+struct HistoryScenario {
+ public:
+  HistoryScenario(base::Time current_time_arg,
+                  std::vector<base::Time> timestamps_arg,
+                  size_t expected_same_day_group_visit_count_arg,
+                  size_t expected_same_time_group_visit_count_arg)
+      : current_time(std::move(current_time_arg)),
+        timestamps(std::move(timestamps_arg)),
+        expected_same_day_group_visit_count(
+            expected_same_day_group_visit_count_arg),
+        expected_same_time_group_visit_count(
+            expected_same_time_group_visit_count_arg) {}
+  base::Time current_time;
+  std::vector<base::Time> timestamps;
+  size_t expected_same_day_group_visit_count = 0;
+  size_t expected_same_time_group_visit_count = 0;
+};
+
+base::Time GetStartOfDay(base::Time time) {
+  base::Time::Exploded time_exploded;
+  time.LocalExplode(&time_exploded);
+  time_exploded.hour = 0;
+  time_exploded.minute = 0;
+  time_exploded.second = 0;
+  time_exploded.millisecond = 0;
+
+  if (base::Time::FromLocalExploded(time_exploded, &time)) {
+    return time;
+  }
+
+  return base::Time();
+}
+
+const HistoryScenario SampleScenario_OverlappingTimeGroup() {
+  base::Time today_mid_of_day =
+      GetStartOfDay(base::Time::Now()) + base::Hours(12);
+  std::vector<base::Time> timestamps;
+  timestamps.push_back(today_mid_of_day + base::Hours(1));
+  timestamps.push_back(today_mid_of_day + base::Hours(2));
+
+  return {std::move(today_mid_of_day), std::move(timestamps), 2, 2};
+}
+
+const HistoryScenario SampleScenario_NonOverlappingTimeGroup() {
+  base::Time today_mid_of_day =
+      GetStartOfDay(base::Time::Now()) + base::Hours(12);
+
+  // The current day is split into four time groups of 6 hours each. The third
+  // group starts at exactly 12 PM, thus, the following two timestamps will
+  // belong to the prior time group.
+  std::vector<base::Time> timestamps;
+  timestamps.push_back(today_mid_of_day - base::Hours(1));
+  timestamps.push_back(today_mid_of_day - base::Hours(2));
+
+  return {std::move(today_mid_of_day), std::move(timestamps), 2, 0};
+}
+
 }  // namespace
 
 namespace visited_url_ranking {
@@ -78,25 +138,46 @@ using Source = URLVisit::Source;
 using URLType = visited_url_ranking::FetchOptions::URLType;
 using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
-class HistoryURLVisitDataFetcherTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<Source> {
+class HistoryURLVisitDataFetcherTest : public testing::Test {
  public:
   HistoryURLVisitDataFetcherTest() {
+    clock_.SetNow(base::Time::Now());
+
     mock_history_service_ = std::make_unique<MockHistoryService>();
 
     history_url_visit_fetcher_ = std::make_unique<HistoryURLVisitDataFetcher>(
         mock_history_service_.get());
   }
 
+  FetchOptions GetSampleFetchOptions() {
+    return FetchOptions(
+        {
+            {URLType::kLocalVisit, {.age_limit = base::Days(1)}},
+            {URLType::kRemoteVisit, {.age_limit = base::Days(1)}},
+        },
+        {{Fetcher::kHistory, FetchOptions::kOriginSources}},
+        base::Time::Now() - base::Days(1));
+  }
+
   std::vector<history::AnnotatedVisit> GetSampleAnnotatedVisits() {
-    std::vector<history::AnnotatedVisit> annotated_visits = {};
+    std::vector<history::AnnotatedVisit> annotated_visits;
     annotated_visits.emplace_back(
         SampleAnnotatedVisit(1, GURL(base::StrCat({kSampleSearchUrl, "1"})),
                              1.0f, "", "sample_app_id"));
     annotated_visits.emplace_back(
         SampleAnnotatedVisit(2, GURL(base::StrCat({kSampleSearchUrl, "2"})),
                              0.75f, "foreign_session_guid"));
+    return annotated_visits;
+  }
+
+  std::vector<history::AnnotatedVisit> GetSampleAnnotatedVisitsForScenario(
+      HistoryScenario scenario) {
+    std::vector<history::AnnotatedVisit> annotated_visits;
+    for (size_t i = 0; i < scenario.timestamps.size(); i++) {
+      annotated_visits.emplace_back(SampleAnnotatedVisit(
+          i + 1, GURL(kSampleSearchUrl), 1.0f, "", "", scenario.timestamps[i]));
+    }
+
     return annotated_visits;
   }
 
@@ -121,7 +202,7 @@ class HistoryURLVisitDataFetcherTest
     FetchResult result = FetchResult(FetchResult::Status::kError, {});
     base::RunLoop wait_loop;
     history_url_visit_fetcher_->FetchURLVisitData(
-        options, FetcherConfig(),
+        options, FetcherConfig(&clock_),
         base::BindOnce(
             [](base::OnceClosure stop_waiting, FetchResult* result,
                FetchResult result_arg) {
@@ -133,6 +214,9 @@ class HistoryURLVisitDataFetcherTest
     wait_loop.Run();
     return result;
   }
+
+ protected:
+  base::SimpleTestClock clock_;
 
  private:
   base::test::TaskEnvironment task_env_;
@@ -166,7 +250,7 @@ TEST_F(HistoryURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
 TEST_F(HistoryURLVisitDataFetcherTest,
        FetchURLVisitData_SomeDefaultVisibilyScores) {
   const float kSampleVisibilityScore = 0.75f;
-  std::vector<history::AnnotatedVisit> annotated_visits = {};
+  std::vector<history::AnnotatedVisit> annotated_visits;
   annotated_visits.emplace_back(SampleAnnotatedVisit(
       1, GURL(kSampleSearchUrl),
       history::VisitContentModelAnnotations::kDefaultVisibilityScore,
@@ -176,14 +260,7 @@ TEST_F(HistoryURLVisitDataFetcherTest,
                            /*originator_cache_guid=*/""));
   SetHistoryServiceExpectations(std::move(annotated_visits));
 
-  FetchOptions options = FetchOptions(
-      {
-          {URLType::kLocalVisit, {.age_limit = base::Days(1)}},
-          {URLType::kRemoteVisit, {.age_limit = base::Days(1)}},
-      },
-      {{Fetcher::kHistory, FetchOptions::kOriginSources}},
-      base::Time::Now() - base::Days(1));
-  auto result = FetchAndGetResult(options);
+  auto result = FetchAndGetResult(GetSampleFetchOptions());
   EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
   EXPECT_EQ(result.data.size(), 1u);
   const auto* history =
@@ -191,13 +268,18 @@ TEST_F(HistoryURLVisitDataFetcherTest,
   EXPECT_FLOAT_EQ(history->last_visited.content_annotations.model_annotations
                       .visibility_score,
                   kSampleVisibilityScore);
+  EXPECT_EQ(history->visit_count, 2u);
 }
 
+class HistoryURLVisitDataFetcherSourcesTest
+    : public HistoryURLVisitDataFetcherTest,
+      public ::testing::WithParamInterface<Source> {};
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         HistoryURLVisitDataFetcherTest,
+                         HistoryURLVisitDataFetcherSourcesTest,
                          ::testing::Values(Source::kLocal, Source::kForeign));
 
-TEST_P(HistoryURLVisitDataFetcherTest, FetchURLVisitData) {
+TEST_P(HistoryURLVisitDataFetcherSourcesTest, FetchURLVisitData) {
   SetHistoryServiceExpectations(GetSampleAnnotatedVisits());
 
   const auto source = GetParam();
@@ -221,6 +303,33 @@ TEST_P(HistoryURLVisitDataFetcherTest, FetchURLVisitData) {
       std::get_if<URLVisitAggregate::HistoryData>(&result.data.begin()->second);
   EXPECT_EQ(history->last_visited.visit_row.originator_cache_guid.empty(),
             source == Source::kLocal);
+}
+
+class HistoryURLVisitDataFetcherDataTest
+    : public HistoryURLVisitDataFetcherTest,
+      public ::testing::WithParamInterface<HistoryScenario> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HistoryURLVisitDataFetcherDataTest,
+    ::testing::Values(SampleScenario_OverlappingTimeGroup(),
+                      SampleScenario_NonOverlappingTimeGroup()));
+
+TEST_P(HistoryURLVisitDataFetcherDataTest, FetchURLVisitData_AggregateCounts) {
+  const auto scenario = GetParam();
+  clock_.SetNow(scenario.current_time);
+  SetHistoryServiceExpectations(GetSampleAnnotatedVisitsForScenario(scenario));
+
+  auto result = FetchAndGetResult(GetSampleFetchOptions());
+  EXPECT_EQ(result.status, FetchResult::Status::kSuccess);
+  EXPECT_EQ(result.data.size(), 1u);
+  const auto* history =
+      std::get_if<URLVisitAggregate::HistoryData>(&result.data.begin()->second);
+  EXPECT_EQ(history->visit_count, scenario.timestamps.size());
+  EXPECT_EQ(history->same_day_group_visit_count,
+            scenario.expected_same_day_group_visit_count);
+  EXPECT_EQ(history->same_time_group_visit_count,
+            scenario.expected_same_time_group_visit_count);
 }
 
 }  // namespace visited_url_ranking

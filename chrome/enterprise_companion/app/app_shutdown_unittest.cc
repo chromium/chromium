@@ -9,9 +9,6 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
-#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -23,6 +20,7 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
+#include "chrome/enterprise_companion/test/test_utils.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,7 +31,7 @@ namespace enterprise_companion {
 namespace {
 
 constexpr char kServerNameFlag[] = "server-name";
-constexpr int32_t kIPCConnectionFailedExitCode = 42;
+constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
@@ -67,32 +65,10 @@ class AppShutdownTest : public ::testing::Test {
                                             /*options=*/{});
   }
 
-  // Waits for a process to exit or appear stuck. The process exit code is
-  // returned if exited.
-  int WaitForProcess(base::Process& process) {
-    int exit_code = 0;
-    bool process_exited = false;
-    base::RunLoop wait_for_process_exit_loop;
-    wait_for_process_exit_runner_->PostTaskAndReply(
-        FROM_HERE, base::BindLambdaForTesting([&] {
-          base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
-          process_exited = base::WaitForMultiprocessTestChildExit(
-              process, TestTimeouts::action_timeout(), &exit_code);
-        }),
-        wait_for_process_exit_loop.QuitClosure());
-    wait_for_process_exit_loop.Run();
-    process.Close();
-    EXPECT_TRUE(process_exited);
-    return exit_code;
-  }
-
   mojo::NamedPlatformChannel::ServerName server_name_ = GetTestServerName();
   base::test::TaskEnvironment environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedIPCSupportWrapper ipc_support_;
-  // Helper thread to wait for process exit without blocking the main thread.
-  scoped_refptr<base::SequencedTaskRunner> wait_for_process_exit_runner_ =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   std::unique_ptr<MockEnterpriseCompanionService> mock_service_;
 
  private:
@@ -147,13 +123,13 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   start_run_loop.Run(FROM_HERE);
 
   base::Process child_process = SpawnClient();
-  EXPECT_EQ(WaitForProcess(child_process), kIPCConnectionFailedExitCode);
+  EXPECT_EQ(WaitForProcess(child_process), kIpcCallerNotAllowedExitCode);
 }
 
 TEST_F(AppShutdownTest, Timeout) {
   EnterpriseCompanionStatus result = CreateAppShutdown(server_name_)->Run();
-  EXPECT_TRUE(result.EqualsApplicationError(
-      ApplicationError::kEnterpriseCompanionServiceConnectionFailed));
+  EXPECT_TRUE(
+      result.EqualsApplicationError(ApplicationError::kMojoConnectionFailed));
 }
 
 MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
@@ -165,9 +141,8 @@ MULTIPROCESS_TEST_MAIN(ShutdownAppClient) {
   EnterpriseCompanionStatus result =
       CreateAppShutdown(command_line->GetSwitchValueNative(kServerNameFlag))
           ->Run();
-  if (result.EqualsApplicationError(
-          ApplicationError::kEnterpriseCompanionServiceConnectionFailed)) {
-    return kIPCConnectionFailedExitCode;
+  if (result.EqualsApplicationError(ApplicationError::kIpcCallerNotAllowed)) {
+    return kIpcCallerNotAllowedExitCode;
   }
   return !result.ok();
 }

@@ -123,7 +123,9 @@ RenderInputRouter::RenderInputRouter(
           std::make_unique<RenderInputRouterLatencyTracker>(delegate)),
       render_input_router_client_(host),
       delegate_(delegate),
-      task_runner_(std::move(task_runner)) {}
+      task_runner_(std::move(task_runner)) {
+  TRACE_EVENT("input", "RenderInputRouter::RenderInputRouter");
+}
 
 void RenderInputRouter::SetupInputRouter(float device_scale_factor) {
   TRACE_EVENT("input", "RenderInputRouter::SetupInputRouter");
@@ -176,6 +178,15 @@ void RenderInputRouter::ProgressFlingIfNeeded(base::TimeTicks current_time) {
 
 void RenderInputRouter::StopFling() {
   input_router()->StopFling();
+}
+
+bool RenderInputRouter::IsAnyScrollGestureInProgress() const {
+  for (size_t i = 0; i < is_in_gesture_scroll_.size(); i++) {
+    if (is_in_gesture_scroll_[i]) {
+      return true;
+    }
+  }
+  return false;
 }
 
 blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
@@ -432,7 +443,7 @@ void RenderInputRouter::DispatchInputEventWithLatencyInfo(
 void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
     const blink::WebTouchEvent& touch_event,
     const ui::LatencyInfo& latency) {
-  TRACE_EVENT0("input", "RenderInputRouter::ForwardTouchEvent");
+  TRACE_EVENT0("input,input.scrolling", "RenderInputRouter::ForwardTouchEvent");
 
   // Always forward TouchEvents for touch stream consistency. They will be
   // ignored if appropriate in FilterInputEvent().

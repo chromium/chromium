@@ -371,19 +371,9 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
-                                false);
   registry->RegisterBooleanPref(
       prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-  registry->RegisterIntegerPref(
-      prefs::kUnenrolledFromGoogleMobileServicesAfterApiErrorCode, 0);
-  registry->RegisterIntegerPref(
-      prefs::kUnenrolledFromGoogleMobileServicesWithErrorListVersion, 0);
   registry->RegisterStringPref(prefs::kUPMErrorUIShownTimestamp, "0");
-  registry->RegisterIntegerPref(prefs::kTimesReenrolledToGoogleMobileServices,
-                                0);
-  registry->RegisterIntegerPref(
-      prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 0);
   registry->RegisterBooleanPref(
       prefs::kUserAcknowledgedLocalPasswordsMigrationWarning, false);
   registry->RegisterTimePref(
@@ -396,7 +386,6 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kPasswordGenerationBottomSheetDismissCount, 0);
   registry->RegisterBooleanPref(
       prefs::kShouldShowPostPasswordMigrationSheetAtStartup, false);
-  registry->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError, false);
   // This pref is used to decide whether the PasswordStore can be connected to
   // the new Android backend without migrating existing entries in the
   // LoginDatabase. In doubt, it's best to assume that's not the case, otherwise
@@ -816,7 +805,7 @@ void PasswordManager::HideManualFallbackForSaving() {
 }
 
 bool PasswordManager::HaveFormManagersReceivedData(
-    const PasswordManagerDriver* driver) {
+    const PasswordManagerDriver* driver) const {
   // If no form managers exist to have requested logins, no data was received
   // either.
   if (password_form_cache_.IsEmpty()) {

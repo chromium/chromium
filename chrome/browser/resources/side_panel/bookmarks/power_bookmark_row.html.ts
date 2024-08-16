@@ -72,8 +72,30 @@ export function getHtml(this: PowerBookmarkRowElement) {
         </iron-icon>` : ''}
 </cr-url-list-item>`;
 
-return (children && children.length > 0 &&
-    this.bookmarksTreeViewEnabled && this.compact) ? html`
-<cr-expand-button no-hover id="expandButton">${urlListItem}
-    </cr-expand-button>` : urlListItem;
+if (this.shouldExpand_()) {
+  return html`
+<cr-expand-button no-hover id="expandButton"
+    @expanded-changed=${this.onExpandedChanged_}>
+  ${urlListItem}
+</cr-expand-button>
+${this.toggleExpand ? html`
+  ${children!.map((item: chrome.bookmarks.BookmarkTreeNode)=> html`
+    <power-bookmark-row
+        id="bookmark-${item.id}"
+        .bookmark="${item}"
+        .compact="${this.compact}"
+        trailingIcon="cr:more-vert"
+        trailingIconTooltip="$i18n{tooltipMore}"
+        .hasCheckbox="${this.hasCheckbox}"
+        .renamingId="${this.renamingId}"
+        .imageUrls="${this.imageUrls}"
+        .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
+        .bookmarksService="${this.bookmarksService}"
+        .contextMenuBookmark="${this.contextMenuBookmark}">
+    </power-bookmark-row>
+  `)}`: ''
+  }`;
+} else {
+    return urlListItem;
+  }
 }

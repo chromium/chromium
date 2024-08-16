@@ -51,8 +51,8 @@ _LIBS_DIR = 'libs'
 
 _GN_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'depot_tools', 'gn')
 
-_GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'gradle_wrapper',
-                        'gradlew')
+_GRADLEW = os.path.join(_CHROMIUM_SRC, 'third_party', 'android_build_tools',
+                        'gradle_wrapper', 'gradlew')
 
 _JAVA_HOME = os.path.join(_CHROMIUM_SRC, 'third_party', 'jdk', 'current')
 

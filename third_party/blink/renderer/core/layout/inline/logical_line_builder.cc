@@ -74,7 +74,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
 
   box_states_->OnEndPlaceItems(constraint_space_, line_box, baseline_type_);
 
-  if (UNLIKELY(node_.IsBidiEnabled())) {
+  if (node_.IsBidiEnabled()) [[unlikely]] {
     box_states_->PrepareForReorder(line_box);
     BidiReorder(line_info->BaseDirection(), line_box,
                 box_states_->RubyColumnList());
@@ -106,7 +106,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       DCHECK(item.GetLayoutObject()->IsText() ||
              item.GetLayoutObject()->IsLayoutListItem());
 
-      if (UNLIKELY(!item_result.Length())) {
+      if (!item_result.Length()) [[unlikely]] {
         // Empty or fully collapsed text isn't needed for layout, but needs
         // `ClearNeedsLayout`. See `LineBreaker::HandleEmptyText`.
         LayoutObject* layout_object = item.GetLayoutObject();
@@ -117,7 +117,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       }
       DCHECK(item_result.shape_result);
 
-      if (UNLIKELY(quirks_mode_)) {
+      if (quirks_mode_) [[unlikely]] {
         box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
       }
 
@@ -128,7 +128,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
 
       DCHECK(item.TextType() == TextItemType::kNormal ||
              item.TextType() == TextItemType::kSymbolMarker);
-      if (UNLIKELY(item_result.is_hyphenated)) {
+      if (item_result.is_hyphenated) [[unlikely]] {
         DCHECK(item_result.hyphen);
         LayoutUnit hyphen_inline_size = item_result.hyphen.InlineSize();
         line_box->AddChild(item, item_result, item_result.TextOffset(),
@@ -136,7 +136,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
                            item_result.inline_size - hyphen_inline_size,
                            box->text_height, item.BidiLevel());
         PlaceHyphen(item_result, hyphen_inline_size, line_box, box);
-      } else if (UNLIKELY(node_.IsTextCombine())) {
+      } else if (node_.IsTextCombine()) [[unlikely]] {
         // We make combined text at block offset 0 with 1em height.
         // Painter paints text at block offset + |font.internal_leading / 2|.
         const auto one_em = item.Style()->ComputedFontSizeAsFixed();
@@ -223,7 +223,7 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
           item.Style()->GetPosition() == EPosition::kRelative;
     } else if (item.Type() == InlineItem::kBidiControl) {
       line_box->AddChild(item.BidiLevel());
-    } else if (UNLIKELY(item.Type() == InlineItem::kInitialLetterBox)) {
+    } else if (item.Type() == InlineItem::kInitialLetterBox) [[unlikely]] {
       // The initial letter does not increase the logical height of the line
       // box in which it participates[1]. So, we should not changes
       // `InlineBoxState::metrics`, or not call ` ComputeTextMetrics()` to
@@ -268,7 +268,7 @@ InlineBoxState* LogicalLineBuilder::HandleCloseTag(
     const InlineItemResult& item_result,
     LogicalLineItems* line_box,
     InlineBoxState* box) {
-  if (UNLIKELY(quirks_mode_ && !item.IsEmptyItem())) {
+  if (quirks_mode_ && !item.IsEmptyItem()) [[unlikely]] {
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
   }
   box =
@@ -297,7 +297,7 @@ void LogicalLineBuilder::PlaceControlItem(const InlineItem& item,
 
   // Don't generate fragments if this is a generated (not in DOM) break
   // opportunity during the white space collapsing in InlineItemBuilder.
-  if (UNLIKELY(item.IsGeneratedForLineBreak())) {
+  if (item.IsGeneratedForLineBreak()) [[unlikely]] {
     return;
   }
 
@@ -307,13 +307,13 @@ void LogicalLineBuilder::PlaceControlItem(const InlineItem& item,
     item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
   }
 
-  if (UNLIKELY(!item_result->Length())) {
+  if (!item_result->Length()) [[unlikely]] {
     // Empty or fully collapsed text isn't needed for layout, but needs
     // `ClearNeedsLayout`. See `LineBreaker::HandleEmptyText`.
     return;
   }
 
-  if (UNLIKELY(quirks_mode_ && !box->HasMetrics())) {
+  if (quirks_mode_ && !box->HasMetrics()) [[unlikely]] {
     box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_);
   }
 
@@ -354,7 +354,7 @@ InlineBoxState* LogicalLineBuilder::PlaceAtomicInline(
   InlineBoxState* box = box_states_->OnOpenTag(
       constraint_space_, item, *item_result, baseline_type_, *line_box);
 
-  if (LIKELY(!IsA<LayoutTextCombine>(layout_object))) {
+  if (!IsA<LayoutTextCombine>(layout_object)) [[likely]] {
     PlaceLayoutResult(item_result, line_box, box,
                       box->margins.inline_start + item_result->spacing_before);
   } else {
@@ -542,7 +542,7 @@ void LogicalLineBuilder::PlaceRubyAnnotation(
 // Place a list marker.
 void LogicalLineBuilder::PlaceListMarker(const InlineItem& item,
                                          InlineItemResult* item_result) {
-  if (UNLIKELY(quirks_mode_)) {
+  if (quirks_mode_) [[unlikely]] {
     box_states_->LineBoxState().EnsureTextMetrics(
         *item.Style(), item.Style()->GetFont(), baseline_type_);
   }

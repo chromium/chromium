@@ -34,6 +34,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
 <translation id="1111021433905331574">Du kan byta färg på tangentbordets bakgrundsbelysning i inställningarna &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Aktivera och inaktivera mobildata. <ph name="STATE" />.</translation>
+<translation id="1122849163460178706">Några saker du kan testa</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
 <translation id="1129383337808748948">Uppdatera <ph name="CONTENT_TITLE" /></translation>
 <translation id="1142002900084379065">Nya foton</translation>
@@ -87,6 +88,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1270290102613614947">Skärmen på tangentbordet har inaktiverats</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275285675049378717">Laddar <ph name="POWER_SOURCE" /></translation>
+<translation id="1275718070701477396">Markerad</translation>
 <translation id="1276975447697633661">Välj en fil och tryck på <ph name="KEY" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Hitta telefonen</translation>
@@ -103,6 +105,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Tryck på <ph name="LAUNCHER_KEY_NAME" /> + g när som helst</translation>
 <translation id="1306549533752902673">REKOMMENDERADE APPAR</translation>
+<translation id="1310396869741602366">Ändra ton</translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
 <translation id="132346741904777634">Kameran har fästs i det övre vänstra hörnet. Konflikt med systemyta.</translation>
@@ -136,6 +139,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1435537621343861112">Det går inte att starta dikteringen. Mikrofonen är avstängd.</translation>
+<translation id="1445031758921122223">Filerna för ansiktsstyrning har laddats ned</translation>
 <translation id="1447907279406111651">Nu ⋅ Slutar kl. <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Enhetens surfzoner</translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
@@ -232,6 +236,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1768366657309696705">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + punkt har ändrats. Om du vill använda Insert-tangenten trycker du på <ph name="LAUNCHER_KEY_NAME" /> + Skift + Backsteg.</translation>
 <translation id="1770726142253415363">Flyttades till rad <ph name="ROW_NUMBER" />, kolumn <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scrolla åt höger</translation>
+<translation id="17722141032474077">Uträkningar</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="178347895271755507">Ställ in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
 <translation id="1787955149152357925">Av</translation>
@@ -245,6 +250,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1831565490995294689">Välj för att öppna <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1838011306813517425">Fokusinställningar</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
+<translation id="1840920496749066704">°C</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
 <translation id="1862077610023398675">Dölj kontroller</translation>
 <translation id="1862380676329487333">Uppdatera och logga ut</translation>
@@ -311,9 +317,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2126242104232412123">Ny arbetsyta</translation>
 <translation id="2132302418721800944">Spela in hela skärmen</translation>
 <translation id="2135456203358955318">Dockad skärmförstoring</translation>
-<translation id="2148716181193084225">Idag</translation>
+<translation id="2148716181193084225">I dag</translation>
 <translation id="2149229036084364364">Tillbaka till föregående spår</translation>
+<translation id="2152796271648108398">Aktuellt väder</translation>
 <translation id="2152895518047545149">Inget verkar saknas. Bra gjort!</translation>
+<translation id="2159568970844941445">Inga bilder i Filer</translation>
 <translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
 <translation id="216955976692983107">Flytta storleksändrat rutat fönster åt höger</translation>
 <translation id="2185166372312820725">Öppna föregående flik</translation>
@@ -373,6 +381,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2392659840443812875">Ingen tillgänglig surfzon. Se till att enheten är i närheten och att Bluetooth har aktiverats.</translation>
 <translation id="2397416548179033562">Visa Chrome-menyn</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
+<translation id="240155812475001919">Google-dokument</translation>
 <translation id="2402411679569069051">Använd ditt fingeravtryck eller lås upp telefonen om du vill låsa upp Chromebook</translation>
 <translation id="240545663114741956">Tryck på <ph name="ACCELERATOR" /> två gånger för att logga ut.</translation>
 <translation id="2405664212338326887">Inte ansluten</translation>
@@ -403,6 +412,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2486214324139475545">Förhandsgranskning av <ph name="DESK_NAME" />. Aktivt skrivbord.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> har ändrats till upplösningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Om du inte bekräftar återställs de tidigare inställningarna om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Delta</translation>
+<translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2499445554382787206">Meny för skrivbordsprofilen. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Låstangentsläge</translation>
 <translation id="2504454902900101003">Ignorera att ställa in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
@@ -412,6 +422,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516416533263263796">Fokus är på, 10 minuter kvar</translation>
 <translation id="2516637483312286228">Redigera spelkontroll</translation>
+<translation id="252054055865191167">Markörverktyg</translation>
 <translation id="2526581474998477112">Lås upp fönstren</translation>
 <translation id="2528111225373402384">Inställningar för surfzon</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -433,6 +444,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2607678425161541573">Onlineinloggning krävs</translation>
 <translation id="2612072250312279703">aktivitetskontroll</translation>
 <translation id="2612614436418177118">Flytta en appikon i rutnätet för appar</translation>
+<translation id="2619052155095999743">Infoga</translation>
 <translation id="2619326010008283367">Rundtur, steg <ph name="STEP" /> av <ph name="TOTAL_STEPS" />. Du hittar enhetsinställningarna i Appstartaren. Testa att anpassa <ph name="PRODUCT_NAME" /> i inställningarna som att ändra bakgrund eller ställa in en skärmsläckare.</translation>
 <translation id="2620016719323068571">Sök efter <ph name="CATEGORY" />, filer, appar med mera …</translation>
 <translation id="2620436844016719705">System</translation>
@@ -555,6 +567,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3077734595579995578">skift</translation>
 <translation id="3081696990447829002">Utöka menyn</translation>
 <translation id="3087734570205094154">Nederst</translation>
+<translation id="3090214513075567547">Öppna snabbmenyn</translation>
 <translation id="3090989381251959936">Aktivera och inaktivera <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Saknas</translation>
 <translation id="3095995014811312755">version</translation>
@@ -569,6 +582,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Typ av klassuppgifter</translation>
 <translation id="3126026824346185272">Ctrl</translation>
+<translation id="3130793786899299931">Ändra längd</translation>
 <translation id="3134486240968249588">Några saker att tänka på</translation>
 <translation id="3139188263101386725">Använd det uppdaterade kortkommandot</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
@@ -579,6 +593,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="316086887565479535">Appar som inte stöds i mallen</translation>
 <translation id="3160929076476941240">2 tim</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
+<translation id="316798519864381606">Google-presentation</translation>
 <translation id="3171170659304083361">Inmatningsinställningar</translation>
 <translation id="3176221688814061633">En äldre version av Bluetooth används av Chromebook eller Bluetooth-enheten. Aktivera Bluetooth Super Resolution eller använd den interna mikrofonen för bättre ljudkvalitet.</translation>
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
@@ -603,6 +618,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3264031581203585083">Dölj alla Google Drive-förslag</translation>
 <translation id="3265032511221679826">Vill du aktivera exakt platsåtkomst?</translation>
 <translation id="3269597722229482060">Högerklicka</translation>
+<translation id="3273040715184276344">Caps Lock har inaktiverats</translation>
 <translation id="3274634049061007184">Visa telefonens appar</translation>
 <translation id="3289364673986435196">Startmeny</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
@@ -653,6 +669,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3439896670700055005">Läs in den aktuella sidan igen utan att använda cacheminnet</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3443917186865471894">Anpassa musen</translation>
+<translation id="3444385531800624797">Resultaten läses in</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
 <translation id="3454555520521576458">Anpassningsbar storlek</translation>
@@ -886,6 +903,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4228078597006700451">Kontrollerna har inte ställts in</translation>
+<translation id="4230560241506423345">Ny</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Översiktsläge</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
@@ -894,6 +912,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4264977415328155183">, komprimerad</translation>
+<translation id="4265259722091164182">Inledande versal</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4275283744500212192">Öppna alternativ för fönsterlayout</translation>
@@ -903,6 +922,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4283888303416325161">Ange lösenordet för ökad säkerhet</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428715201724021596">Ansluter till profilen. Det kan ta några minuter.</translation>
+<translation id="4287250812980588583">Chrome-fönster</translation>
 <translation id="4294319844246081198">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Rensa alla <ph name="COUNT" /> aviseringar</translation>
 <translation id="4300272766492248925">Öppna appen</translation>
@@ -974,6 +994,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
 <translation id="4538824937723742295">Ta en skärmbild av hela skärmen</translation>
 <translation id="4539127209940689201">Skriv ut den aktuella sidan</translation>
+<translation id="4541505619120536051">Alltid öppet</translation>
 <translation id="4541706525461326392">Tar bort profilen. Det kan ta några minuter.</translation>
 <translation id="4544483149666270818">Välj ett fönster att spela in</translation>
 <translation id="4545950850562423083">Spara aktuell sida som bokmärke</translation>
@@ -1015,6 +1036,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4672539464599646374">Batterisparläget har aktiverats</translation>
 <translation id="4673427585974421255">Behåll på</translation>
+<translation id="4677040906536311086">Google-kalkylark</translation>
 <translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
@@ -1072,6 +1094,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4868492592575313542">aktiverad</translation>
 <translation id="4871905435473761992">Visa information om surfzon. Mobilnätverket har inte stöd för surfzoner.</translation>
 <translation id="4872237917498892622">Alt + Sök eller Skift</translation>
+<translation id="4872724534194216608">Sök för att beräkna</translation>
 <translation id="4872852897273142380">Fokusera på eller markera bokmärkesfältet (om det visas)</translation>
 <translation id="4876935764454575645">Ljudval</translation>
 <translation id="4881323000405981760">Effekter stöds inte i Linux-appar</translation>
@@ -1082,6 +1105,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4890408602550914571">Kontrollera att telefonen finns i närheten och att Bluetooth är aktiverat på den.</translation>
 <translation id="4892981359753171125">Ansiktsstyrning</translation>
 <translation id="4895488851634969361">Batteriet är fullt.</translation>
+<translation id="4902797682482387055">Föreslagen uppgift att fokusera på</translation>
 <translation id="490375751687810070">Vertikal</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
 <translation id="491504982845934899">Aktivera <ph name="NETWORK_NAME" /> när du har konfigurerat enheten</translation>
@@ -1092,6 +1116,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="492453977506755176">Tangent för skärmbild/skärminspelning</translation>
 <translation id="4925542575807923399">Administratören för kontot kräver att kontot är det första i en session med multiinloggning.</translation>
 <translation id="493076006037866439">Zooma ut från skärmen</translation>
+<translation id="4932733599132424254">Datum</translation>
 <translation id="4936329710968938986">Alla, av</translation>
 <translation id="4937170330762390348">Med diktering kan du skriva med rösten. Tryck på dikteringstangenten eller välj mikrofonikonen längst ned på skärmen när du är i ett textfält. Dikteringsspråket är inställt på <ph name="LANGUAGE" />. Talfiler laddas ned så att du kan använda diktering offline. Du kan när som helst ändra dikteringsspråket i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="4938176435186993759">Dölj alla förslag</translation>
@@ -1100,6 +1125,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="495046168593986294">Scrolla upp</translation>
 <translation id="4950800194215951939">Anpassa din spelupplevelse</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
+<translation id="4953585991029886728">Textinmatning</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> kräver att du byter till en tidigare version av <ph name="DEVICE_TYPE" />. Enheten återställs och all data raderas.</translation>
 <translation id="4961318399572185831">Casta skärmen</translation>
 <translation id="4964188651935955085">När du inaktiverar Bluetooth kopplas den här externa enheten från din <ph name="DEVICE_TYPE" />:</translation>
@@ -1182,11 +1208,13 @@ Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5238719049014159442">Öppna/stäng appstartaren</translation>
 <translation id="5240725217819182328">Snabbåtkomst till specifika sidor eller åtgärder i installerade appar</translation>
+<translation id="5243355658487390559">Sök efter datum</translation>
 <translation id="5245201184978705914">Det gick inte att generera transkription</translation>
 <translation id="5251174953851719648">Uppdatera innehållet</translation>
 <translation id="5253783950165989294">Ansluten till enheten <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
+<translation id="5265391159779542051">Resultaten har lästs in</translation>
 <translation id="5270547718570958938">Google Kalender</translation>
 <translation id="5277869901083657836">Aktivera eller inaktivera verktyg för e-penna</translation>
 <translation id="5278086053818066789">Aktivera/inaktivera ChromeVox (talad feedback)</translation>
@@ -1222,9 +1250,11 @@ Inga enheter är anslutna.</translation>
 <translation id="5361524080961918551">Filer med tal på <ph name="LANGUAGE" /> har delvis laddats ned</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Öppna den här fliken</translation>
 <translation id="5364693579536176785">lagringsutrymme</translation>
+<translation id="5369573834963677938">Ansiktsstyrning blir tillgängligt för andra användare på enheten</translation>
 <translation id="5369717264580061086">Förhandsgranska fil i appen Filer</translation>
 <translation id="5377367976106153749">Vill du aktivera kameraåtkomst?</translation>
 <translation id="5379115545237091094">För många försök</translation>
+<translation id="5383434787520761436">Inga Google Drive-filer</translation>
 <translation id="5391307769715781764">Vill du ersätta det sparade skrivbordet?</translation>
 <translation id="5392327145184648521">Beräknar batteriprocent …</translation>
 <translation id="5393156353051693207">Tryck länge var som helst och ändra ordning på apparna</translation>
@@ -1358,6 +1388,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5819918159912280082">Din Chromebook startades om oväntat. Öppna dina föregående fönster och appar.</translation>
 <translation id="5823239091726045201">Google Tasks på webben</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
+<translation id="5830180081891717894"><ph name="WINDOWS" /> till</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
 <translation id="5841296711770970362">Öppna nästa spår</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-surfzonen är aktiverad men inga enheter är anslutna</translation>
@@ -1411,6 +1442,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6020147141355393792">Ställ in visning av telefonens aviseringar och appar</translation>
 <translation id="6022924867608035986">Rensa sökrutan</translation>
 <translation id="602472752137106327">Visa fönster från alla skrivbord, alternativknapp har markerats</translation>
+<translation id="6024768346262692989">Det gick inte att ladda ned filerna för ansiktsstyrning</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6027518778343897451">Det finns inga händelser den <ph name="CURRENT_MONTH_DAY" />. Tryck på retur om du vill öppna Google Kalender i webbläsaren.</translation>
 <translation id="6030495522958826102">Menyn har flyttats till skärmens nedre vänstra hörn.</translation>
@@ -1432,6 +1464,8 @@ Inga enheter är anslutna.</translation>
 <translation id="6068258534237496331">Inställningar för videosamtal</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6074087755403037157">Betakanal</translation>
+<translation id="6075098173600599596">Ändra gemener/versaler</translation>
+<translation id="6091929401758362855">Spellista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Inaktiverad av administratören</translation>
 <translation id="6095008505822982596">Talhastighet</translation>
 <translation id="6095425951508823973">Lägg till anslutning med <ph name="PROVIDER" /></translation>
@@ -1475,6 +1509,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Ta en skärmbild eller skärminspelning av en del av skärmen</translation>
 <translation id="621606890568890214">Utöka Google Classroom</translation>
+<translation id="6216759484154215561">Länken Läs mer har öppnats i webbläsaren</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6228457605945141550">Minska ljusstyrkan</translation>
@@ -1484,10 +1519,12 @@ Inga enheter är anslutna.</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> använder just nu kameran och mikrofonen</translation>
 <translation id="6237231532760393653">1X</translation>
 <translation id="6240603910551255087">Övre knappen</translation>
+<translation id="6240821072888636753">Fråga varje gång</translation>
 <translation id="6247728804802644171">Öppna aviseringar</translation>
 <translation id="6249795363855770621">Uppgiften gick inte att markera som slutförd. Försök igen när du är online.</translation>
 <translation id="6254629735336163724">Låst i liggande läge</translation>
 <translation id="6259254695169772643">Välj något med e-pennan</translation>
+<translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: Aktiverar ...</translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6276708887952587684">Visa sidkälla</translation>
@@ -1558,6 +1595,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6537924328260219877">Signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batteri<ph name="BATTERY_STATUS" /></translation>
 <translation id="6539852571005954999">Genomsökning av filen <ph name="FILENAME" /> som laddas ned</translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
+<translation id="6542891623636520977">Emojis, giffar med mera</translation>
 <translation id="6555373427270923730">Ange en webbadress i adressfältet och tryck sedan på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nyligen installerad</translation>
@@ -1567,6 +1605,7 @@ Nyligen installerad</translation>
 <translation id="6565007273808762236">eSIM-anslutning tillgänglig</translation>
 <translation id="6570831796530454248">{0,plural, =1{Uppdatera enheten inom en timme}other{Uppdatera enheten inom # timmar}}</translation>
 <translation id="6570902864550063460">Laddas via USB</translation>
+<translation id="6571006437522772306">Sök i Filer</translation>
 <translation id="6574587113394758819">Aviseringar från <ph name="APP_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6574622320167699133">Upplåst av telefonen. Tryck eller klicka för att öppna.</translation>
 <translation id="6578407462441924264">Namnlös</translation>
@@ -1604,6 +1643,7 @@ Nyligen installerad</translation>
 <translation id="6682029141988159141">Klistra in innehåll från Urklipp</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
 <translation id="6686023075541098243">Ställ in visning av telefonens aviseringar</translation>
+<translation id="6694973220096431421">Sök på Google Drive</translation>
 <translation id="6696025732084565524">Det behövs en viktig uppdatering till ditt frånkopplingsbara tangentbord</translation>
 <translation id="6697913454192220372">Lägg till nytt skrivbord</translation>
 <translation id="6700713906295497288">IME-menyknapp</translation>
@@ -1649,12 +1689,14 @@ Nyligen installerad</translation>
 <translation id="6852628153543175788">Lägg till 10 minuter</translation>
 <translation id="6855029042976311970">Redigerades nyss</translation>
 <translation id="6856708615407876657">Aktivera/inaktivera sökresultatkategorier</translation>
+<translation id="6856756288284651804">Chromebook har uppdaterats</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
 <translation id="6874854809828346832">Visa information om surfzon. Surfzonen är aktiverad.</translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# appar}}</translation>
+<translation id="6879454869409141992">Aktivera Caps Lock</translation>
 <translation id="6883768636838842873">Kortkommandon, tips om hur du använder enheten med mera</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
@@ -1725,6 +1767,7 @@ Nyligen installerad</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas. Batterisparläget är aktiverat.</translation>
+<translation id="7147587499155271409">Ingen webbhistorik</translation>
 <translation id="7149149900052329230">Hantera dina lokala filer och Google Drive-filer i appen Filer.</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1752,11 +1795,14 @@ Nyligen installerad</translation>
 <translation id="7302889331339392448">Live Caption är inaktiverat.</translation>
 <translation id="7303365578352795231">Svarar på en annan enhet.</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
 <translation id="7312761820869643657">Uppdatera enheten till en tidigare version</translation>
 <translation id="7313193732017069507">Utöka kameran</translation>
+<translation id="73289266812733869">Avmarkerad</translation>
 <translation id="7330397557116570022">Öppna ett textfält om du vill använda diktering</translation>
 <translation id="7331646370422660166">alt + nedåtpil</translation>
+<translation id="7336943714413713812">Sök i webbhistoriken</translation>
 <translation id="7337660433630200387">+10 min</translation>
 <translation id="7340731148882810149">Meny för automatiska klick</translation>
 <translation id="7346909386216857016">Ok, jag förstår</translation>
@@ -1810,13 +1856,13 @@ Nyligen installerad</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">sida ned</translation>
-<translation id="7518182783647693467">Växla temperaturenhet (F eller C)</translation>
 <translation id="7519206258459640379">Kamerainramning är på.</translation>
 <translation id="7519649142417630956">När enheten har stängts av loggas administratören ut och kan inte styra enheten.
 
 Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7523420897035067483">Aktivera Stör ej när Fokus är på</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7525067979554623046">Skapa</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Uppdatera det vänstra fönstret</translation>
@@ -1827,6 +1873,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> använder just nu mikrofonen</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
+<translation id="7568790562536448087">Uppdaterar</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7569886975397378678">Ställ in visning av aviseringar och appar på telefonen</translation>
 <translation id="7571361473021531288">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> kvar</translation>
@@ -1858,6 +1905,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7670953955701272011">Öppna det här datumet i Google Kalender</translation>
 <translation id="7671610481353807627">Apparna har sorterats efter färg</translation>
 <translation id="7672095158465655885">Ansluten till <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
+<translation id="7680417644536099065">Caps Lock har aktiverats</translation>
 <translation id="7682351277038250258">Klistra in innehållet i Urklipp som oformaterad text</translation>
 <translation id="7684531502177797067">Indata från kameran har ställts in på <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Öppnades av dig</translation>
@@ -1876,11 +1924,13 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7725108879223146004">Visa information om surfzon. Surfzonen inaktiveras.</translation>
 <translation id="7726391492136714301">Visa telefonens aviseringar och appar</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
+<translation id="7728657226117099693">Inaktivera Caps Lock</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
 <translation id="774736258792760908">När du aktiverar Hjälp mig skriva och Hjälp mig läsa skickas textinput och dokumentinnehåll till Googles AI-servrar för att generera skrivförslag, generera sammanfattningar, svara på frågor och förbättra produkten, i enlighet med <ph name="LINK_TO_SERVICE_TERMS" />. Ange inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
+<translation id="7751260505918304024">Visa alla</translation>
 <translation id="7759183637555564029">Du kan stänga av Hjälp mig skriva och Hjälp mig läsa när som helst i inställningarna. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
@@ -1949,6 +1999,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7946681191253332687">Utökade säkerhetsuppdateringar är tillgängliga</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vill använda din <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gör tangentbordets belysning svagare</translation>
+<translation id="7953176344218790168">VERSALER</translation>
 <translation id="7953994493035617347">Vill du bekräfta den nya upplösningen?</translation>
 <translation id="795958884516058160">Helskärmsförstoring är aktiverat. Tryck på <ph name="ACCELERATOR" /> igen för att inaktivera det.</translation>
 <translation id="7962583092928373823">Dölj alla Google Kalender-förslag</translation>
@@ -1956,7 +2007,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7963992254934562106">Från <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Välj mapp …</translation>
 <translation id="7973756967040444713">Stäng verktygsfältet</translation>
-<translation id="797485111629834774">Markera uppgiften som slutförd: <ph name="TASK_NAME" /></translation>
 <translation id="797512352675305461">Aktivera och inaktivera helskärmsförstoring</translation>
 <translation id="7977927628060636163">Söker efter mobilnätverk …</translation>
 <translation id="7982789257301363584">Nätverk</translation>
@@ -2015,6 +2065,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Den här inställningen hanteras av administratören.</translation>
 <translation id="8155628902202578800">Öppna informationsdialogrutan för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Använder <ph name="LOCALE_NAME" /></translation>
+<translation id="8168435359814927499">Innehåll</translation>
 <translation id="8185090165691050712">Aktivera/inaktivera menyn för att ändra storlek på låst läge</translation>
 <translation id="8192727139462702395">När du inaktiverar Bluetooth kopplas dessa externa enheter från din <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Castar flik</translation>
@@ -2062,6 +2113,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8375916635258623388">Denna <ph name="DEVICE_NAME" /> ansluts automatiskt till din mobil</translation>
 <translation id="8380784334203145311">Hej!</translation>
 <translation id="8382715499079447151">Skydd mot smygtittare</translation>
+<translation id="8383614331548401927">Välkommen tillbaka</translation>
 <translation id="8388750414311082622">Det sista skrivbordet går inte att ta bort.</translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8401850874595457088">Språkmeny</translation>
@@ -2106,6 +2158,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8553395910833293175">Detta har redan tilldelats alla skrivbord.</translation>
 <translation id="8555757996376137129">Ta bort aktuellt skrivbord</translation>
 <translation id="8559845965695780508">Redigerades av <ph name="USER" /></translation>
+<translation id="8569146227972631631">°F</translation>
 <translation id="8569751806372591456">Här är några förslag du kan prova</translation>
 <translation id="857201607579416096">Menyn har flyttats till skärmens nedre högra hörn.</translation>
 <translation id="8581946341807941670">Tryck på <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> och klicka på en länk</translation>
@@ -2130,6 +2183,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8649597172973390955">Hyllan visas alltid</translation>
 <translation id="8652175077544655965">Stäng inställningarna</translation>
 <translation id="8653151467777939995">Visa aviseringsinställningar. Aviseringar har aktiverats</translation>
+<translation id="8657066291275741003">gemener</translation>
 <translation id="8660331759611631213">Kvadratroten ur 71</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tryck på retur för att ta en skärmbild av en del av skärmen</translation>
@@ -2167,6 +2221,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Flytta framåt mellan det nedre högra hörnet, Appstartaren, adressfältet, bokmärkesfältet, webbplatsen som är öppen och nedladdningar</translation>
 <translation id="8792626944327216835">mikrofon</translation>
+<translation id="8797381270745758905">Länken Försök igen har aktiverats</translation>
 <translation id="8801802992492329306">5G</translation>
 <translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="880709030178078220">”Hjälp”</translation>
@@ -2215,6 +2270,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8951539504029375108">Endast godkända Thunderbolt-enheter är kompatibla med din Chromebook</translation>
 <translation id="8956420987536947088">Öppna dina föregående fönster och appar</translation>
 <translation id="8959380109429710384">Du tryckte på kortkommandot för helskärmsförstoring. Använd Ctrl + Alt + pilarna för att flytta den zoomade vyn.</translation>
+<translation id="896335827708646237">Öppna snabbinställningarna för tillgänglighet</translation>
 <translation id="8964525410783593407">1 tim</translation>
 <translation id="8973885907461690937">Flytta fokus till menyikonen</translation>
 <translation id="8980862970816311842">Flytta appikoner till eller från en mapp i rutnätet för appar</translation>
@@ -2224,7 +2280,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="8993733019280019776">Pratar du? Mikrofonen är inaktiverad. Välj mikrofonen för att aktivera den.</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
-<translation id="9002204506712855687">Utforska de senaste funktionerna</translation>
 <translation id="9005984960510803406">Öppna Crosh-fönstret</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
 <translation id="9024331582947483881">helskärm</translation>
@@ -2251,6 +2306,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9089416786594320554">Inmatningsmetoder</translation>
 <translation id="9091406374499386796">Sök efter filer, appar med mera i Appstartaren. Du kan även få svar på frågor om din <ph name="PRODUCT_NAME" />.</translation>
 <translation id="9091626656156419976">Skärmen <ph name="DISPLAY_NAME" /> har tagits bort</translation>
+<translation id="9098750710832798892">Inga objekt har kopierats till urklipp</translation>
 <translation id="9098969848082897657">Inga telefonljud</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> eller <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>
 <translation id="9126339866969410112">Ångra den senaste åtgärden</translation>
@@ -2260,6 +2316,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9139720510312328767">Radera nästa bokstav</translation>
 <translation id="9148058034647219655">Avsluta</translation>
 <translation id="9151906066336345901">end</translation>
+<translation id="9159421884295554245">Sök i urklipp</translation>
 <translation id="9161053988251441839">FÖRESLAGNA APPAR</translation>
 <translation id="9168436347345867845">Gör det senare</translation>
 <translation id="9178475906033259337">1 resultat visas för <ph name="QUERY" /></translation>
@@ -2299,7 +2356,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultat visas för <ph name="QUERY" /></translation>
 <translation id="981011780479609956">Inget inlämningsdatum</translation>
 <translation id="98120814841227350">Gå till slutet av dokumentet</translation>
-<translation id="98515147261107953">Liggande</translation>
+<translation id="98515147261107953">Landskap</translation>
 <translation id="987589956647469042">Mobildata har aktiverats</translation>
 <translation id="989374776391122812">Kamera- och ljudkontroller</translation>
 <translation id="990277280839877440">Fönstret <ph name="WINDOW_TITILE" /> har stängts.</translation>

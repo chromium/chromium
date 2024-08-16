@@ -52,18 +52,14 @@ class Browser;
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;
 
-// Displays the TabGrid.
-- (void)showTabGrid;
+// Displays the TabGrid at `page`.
+- (void)showTabGridPage:(TabGridPage)page;
 
 // Displays the given view controller.
 // Runs the given `completion` block after the view controller is visible.
 - (void)showTabViewController:(UIViewController*)viewController
                     incognito:(BOOL)incognito
                    completion:(ProceduralBlock)completion;
-
-// Sets the `page` as the active (visible) one. The active page must not be the
-// remote tabs.
-- (void)setActivePage:(TabGridPage)page;
 
 // Sets the `mode` as the active one.
 - (void)setActiveMode:(TabGridMode)mode;

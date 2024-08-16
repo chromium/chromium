@@ -62,8 +62,8 @@ bool CalculateNonOverflowingRangeInOneAxis(
     LayoutUnit margin_box_end,
     LayoutUnit imcb_inset_start,
     LayoutUnit imcb_inset_end,
-    LayoutUnit inset_area_start,
-    LayoutUnit inset_area_end,
+    LayoutUnit position_area_start,
+    LayoutUnit position_area_end,
     bool has_non_auto_inset_start,
     bool has_non_auto_inset_end,
     std::optional<LayoutUnit>* out_scroll_min,
@@ -82,7 +82,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
     // containing block is always at the same location, while that of the
     // scroll-shifted margin box can move by at most `start_available_space`
     // before overflowing.
-    *out_scroll_max = inset_area_start + start_available_space;
+    *out_scroll_max = position_area_start + start_available_space;
   }
   // Calculation for the end edge is symmetric.
   const LayoutUnit end_available_space = imcb_inset_end - margin_box_end;
@@ -91,7 +91,7 @@ bool CalculateNonOverflowingRangeInOneAxis(
       return false;
     }
   } else {
-    *out_scroll_min = -(inset_area_end + end_available_space);
+    *out_scroll_min = -(position_area_end + end_available_space);
   }
   if (*out_scroll_min && *out_scroll_max &&
       out_scroll_min->value() > out_scroll_max->value()) {
@@ -198,12 +198,13 @@ class OOFCandidateStyleIterator {
 
   std::optional<const CSSPropertyValueSet*> TrySetFromFallback(
       const PositionTryFallback& fallback) {
-    if (!fallback.GetInsetArea().IsNone()) {
-      // This fallback is an inset-area(). Create a declaration block
-      // with an equivalent inset-area declaration.
+    if (!fallback.GetPositionArea().IsNone()) {
+      // This fallback is an position-area(). Create a declaration block
+      // with an equivalent position-area declaration.
       CSSPropertyValue declaration(
-          CSSPropertyName(CSSPropertyID::kInsetArea),
-          *ComputedStyleUtils::ValueForInsetArea(fallback.GetInsetArea()));
+          CSSPropertyName(CSSPropertyID::kPositionArea),
+          *ComputedStyleUtils::ValueForPositionArea(
+              fallback.GetPositionArea()));
       return ImmutableCSSPropertyValueSet::Create(&declaration, /* length */ 1u,
                                                   kHTMLStandardMode);
     } else if (const ScopedCSSName* name = fallback.GetPositionTryName()) {
@@ -405,9 +406,6 @@ void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
     const BlockNode& node,
     const LogicalAnchorQuery* anchor_query) {
-  if (!RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    return;
-  }
   if (!anchor_query) {
     return;
   }
@@ -610,8 +608,8 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
 }
 
 OutOfFlowLayoutPart::ContainingBlockInfo
-OutOfFlowLayoutPart::ApplyInsetAreaOffsets(
-    const InsetAreaOffsets& offsets,
+OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
+    const PositionAreaOffsets& offsets,
     const OutOfFlowLayoutPart::ContainingBlockInfo& container_info) const {
   ContainingBlockInfo adjusted_container_info(container_info);
   PhysicalToLogical converter(container_info.writing_direction,
@@ -620,7 +618,7 @@ OutOfFlowLayoutPart::ApplyInsetAreaOffsets(
                               offsets.bottom.value_or(LayoutUnit()),
                               offsets.left.value_or(LayoutUnit()));
 
-  // Reduce the container size and adjust the offset based on the inset-area.
+  // Reduce the container size and adjust the offset based on the position-area.
   adjusted_container_info.rect.ContractEdges(
       converter.BlockStart(), converter.InlineEnd(), converter.BlockEnd(),
       converter.InlineStart());
@@ -628,15 +626,15 @@ OutOfFlowLayoutPart::ApplyInsetAreaOffsets(
   // For 'center' values (aligned with start and end anchor sides), the
   // containing block is aligned and sized with the anchor, regardless of
   // whether it's inside the original containing block or not. Otherwise,
-  // ContractEdges above might have created a negative size if the inset-area is
-  // aligned with an anchor side outside the containing block.
+  // ContractEdges above might have created a negative size if the position-area
+  // is aligned with an anchor side outside the containing block.
   if (adjusted_container_info.rect.size.inline_size < LayoutUnit()) {
     DCHECK(converter.InlineStart() == LayoutUnit() ||
            converter.InlineEnd() == LayoutUnit())
         << "If aligned to both anchor edges, the size should never be "
            "negative.";
     // Collapse the inline size to 0 and align with the single anchor edge
-    // defined by the inset-area.
+    // defined by the position-area.
     if (converter.InlineStart() == LayoutUnit()) {
       DCHECK(converter.InlineEnd() != LayoutUnit());
       adjusted_container_info.rect.offset.inline_offset +=
@@ -650,7 +648,7 @@ OutOfFlowLayoutPart::ApplyInsetAreaOffsets(
         << "If aligned to both anchor edges, the size should never be "
            "negative.";
     // Collapse the block size to 0 and align with the single anchor edge
-    // defined by the inset-area.
+    // defined by the position-area.
     if (converter.BlockStart() == LayoutUnit()) {
       DCHECK(converter.BlockEnd() != LayoutUnit());
       adjusted_container_info.rect.offset.block_offset +=
@@ -1953,7 +1951,6 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
 
   unsigned attempts_left = kMaxTryAttempts;
   bool has_no_overflow_visibility =
-      RuntimeEnabledFeatures::CSSPositionVisibilityEnabled() &&
       node_info.node.Style().HasPositionVisibility(
           PositionVisibility::kNoOverflow);
   // If `position-try-fallbacks` or `position-visibility: no-overflow` exists,
@@ -2061,9 +2058,10 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const ContainingBlockInfo container_info = ([&]() -> ContainingBlockInfo {
     ContainingBlockInfo container_info = node_info.base_container_info;
-    if (const std::optional<InsetAreaOffsets> offsets =
-            candidate_style.InsetAreaOffsets()) {
-      container_info = ApplyInsetAreaOffsets(offsets.value(), container_info);
+    if (const std::optional<PositionAreaOffsets> offsets =
+            candidate_style.PositionAreaOffsets()) {
+      container_info =
+          ApplyPositionAreaOffsets(offsets.value(), container_info);
     }
     return container_info;
   })();
@@ -2077,11 +2075,11 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       ToPhysicalSize(container_rect.size,
                      node_info.default_writing_direction.GetWritingMode());
 
-  // "used" inset-area offsets. Don't use the inset-area offsets directly as
-  // they may be clamped to produce non-negative space. Instead take the
+  // "used" position-area offsets. Don't use the position-area offsets directly
+  // as they may be clamped to produce non-negative space. Instead take the
   // difference between the base, and adjusted container-info.
-  const BoxStrut inset_area_offsets = ([&]() -> BoxStrut {
-    if (!candidate_style.InsetAreaOffsets()) {
+  const BoxStrut position_area_offsets = ([&]() -> BoxStrut {
+    if (!candidate_style.PositionAreaOffsets()) {
       return BoxStrut();
     }
 
@@ -2242,9 +2240,10 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxInlineEnd(),
             imcb_for_position_fallback->inline_start,
             imcb_for_position_fallback->InlineEndOffset(),
-            inset_area_offsets.inline_start, inset_area_offsets.inline_end,
-            has_non_auto_inset.InlineStart(), has_non_auto_inset.InlineEnd(),
-            &inline_scroll_min, &inline_scroll_max)) {
+            position_area_offsets.inline_start,
+            position_area_offsets.inline_end, has_non_auto_inset.InlineStart(),
+            has_non_auto_inset.InlineEnd(), &inline_scroll_min,
+            &inline_scroll_max)) {
       return std::nullopt;
     }
   }
@@ -2266,7 +2265,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
             node_dimensions.MarginBoxBlockEnd(),
             imcb_for_position_fallback->block_start,
             imcb_for_position_fallback->BlockEndOffset(),
-            inset_area_offsets.block_start, inset_area_offsets.block_end,
+            position_area_offsets.block_start, position_area_offsets.block_end,
             has_non_auto_inset.BlockStart(), has_non_auto_inset.BlockEnd(),
             &block_scroll_min, &block_scroll_max)) {
       return std::nullopt;
@@ -2939,6 +2938,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
   visitor->Trace(non_overflowing_scroll_ranges);
+  visitor->Trace(display_locks_affected_by_anchors);
 }
 
 void OutOfFlowLayoutPart::NodeToLayout::Trace(Visitor* visitor) const {

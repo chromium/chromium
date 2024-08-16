@@ -69,7 +69,7 @@ int GetContentSettingRowOrder(ContentSetting setting) {
     case CONTENT_SETTING_BLOCK:
       return 2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -465,7 +465,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
     // If none of the children (except the empty state label) are visible, show
     // a label to explain the empty state.
     bool none_children_visible =
-        base::ranges::none_of(children(), [=](views::View* v) {
+        base::ranges::none_of(children(), [=, this](views::View* v) {
           return v != empty_state_label_ && v->GetVisible();
         });
     empty_state_label_->SetVisible(none_children_visible);

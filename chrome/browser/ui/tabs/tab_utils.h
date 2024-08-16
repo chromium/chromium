@@ -30,8 +30,6 @@ struct LastMuteMetadata
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-namespace chrome {
-
 // Returns the alert states to be shown by the tab's alert indicator.
 // The returned list is in descending order of importance to user
 // privacy, i.e. if only one is to be shown, it should be the first.
@@ -61,7 +59,5 @@ bool IsSiteMuted(const TabStripModel& tab_strip, const int index);
 // Returns true if the sites at the |indices| in |tab_strip| are all muted.
 bool AreAllSitesMuted(const TabStripModel& tab_strip,
                       const std::vector<int>& indices);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_UTILS_H_

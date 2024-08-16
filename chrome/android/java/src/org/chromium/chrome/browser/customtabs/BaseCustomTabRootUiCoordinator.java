@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -188,7 +189,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CustomTabToolbarCoordinator> customTabToolbarCoordinator,
             @NonNull Supplier<CustomTabActivityNavigationController> customTabNavigationController,
             @NonNull Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
-            @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController,
             @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
@@ -229,7 +229,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 appMenuDelegate,
                 statusBarColorProvider,
                 intentRequestTracker,
-                ephemeralTabCoordinatorSupplier,
+                new OneshotSupplierImpl<>(),
                 false,
                 backPressManager,
                 null,
@@ -250,6 +250,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     new BrandingController(
                             activity, appId, browserName, new ChromePureJavaExceptionReporter());
         }
+        // TODO(353517557): Do initialization necessary for ActivityType.AUTH_TAB
+
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
         mFeatureOverridesManagerSupplier = featureOverridesManagerSupplier;
@@ -321,7 +323,26 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         if (mGoogleBottomBarCoordinator != null) {
             mGoogleBottomBarCoordinator.onFinishNativeInitialization();
         }
-
+        if (EphemeralTabCoordinator.isSupported()) {
+            Supplier<TabCreator> tabCreator =
+                    () ->
+                            mTabCreatorManagerSupplier
+                                    .get()
+                                    .getTabCreator(
+                                            mTabModelSelectorSupplier.get().isIncognitoSelected());
+            boolean canPromoteToTab =
+                    mActivityType == ActivityType.CUSTOM_TAB
+                            || mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY;
+            mEphemeralTabCoordinatorSupplier.set(
+                    new EphemeralTabCoordinator(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivity.getWindow().getDecorView(),
+                            mActivityTabProvider,
+                            tabCreator,
+                            getBottomSheetController(),
+                            canPromoteToTab));
+        }
         new OneShotCallback<>(
                 mProfileSupplier,
                 mCallbackController.makeCancelable(
@@ -392,7 +413,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean isContextualSearchEnabled() {
-        if (mIntentDataProvider.get().isAuthView()) return false;
+        if (mIntentDataProvider.get().isAuthTab()) return false;
         return super.isContextualSearchEnabled();
     }
 
@@ -503,7 +524,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected boolean showWebSearchInActionMode() {
-        return !mIntentDataProvider.get().isAuthView();
+        return !mIntentDataProvider.get().isAuthTab();
     }
 
     @Override

@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -109,9 +110,13 @@ StyleImage* CSSImageSetValue::CachedImage(
   return cached_image_.Get();
 }
 
-StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
-                                         const float device_scale_factor) {
-  cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
+StyleImage* CSSImageSetValue::CacheImage(
+    StyleImage* style_image,
+    const float device_scale_factor,
+    bool is_lcp_mouseover_dispatched_recently,
+    bool is_origin_clean) {
+  cached_image_ = MakeGarbageCollected<StyleImageSet>(
+      style_image, this, is_lcp_mouseover_dispatched_recently, is_origin_clean);
   cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }

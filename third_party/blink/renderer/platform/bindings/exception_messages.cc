@@ -64,40 +64,38 @@ String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
   const String& m = message;
 
   switch (context.GetType()) {
-    case ExceptionContextType::kConstructorOperationInvoke:
+    case v8::ExceptionContext::kConstructor:
       return ExceptionMessages::FailedToConstruct(c, m);
-    case ExceptionContextType::kOperationInvoke:
+    case v8::ExceptionContext::kOperation:
       return ExceptionMessages::FailedToExecute(p, c, m);
-    case ExceptionContextType::kAttributeGet:
+    case v8::ExceptionContext::kAttributeGet:
       return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContextType::kAttributeSet:
+    case v8::ExceptionContext::kAttributeSet:
       return ExceptionMessages::FailedToSet(p, c, m);
-    case ExceptionContextType::kNamedPropertyEnumerator:
+    case v8::ExceptionContext::kNamedEnumerator:
       return ExceptionMessages::FailedToEnumerate(c, m);
-    case ExceptionContextType::kNamedPropertyQuery:
-      break;
-    case ExceptionContextType::kIndexedPropertyGetter:
-    case ExceptionContextType::kIndexedPropertyDescriptor:
+    case v8::ExceptionContext::kIndexedGetter:
+    case v8::ExceptionContext::kIndexedDescriptor:
+    case v8::ExceptionContext::kIndexedQuery:
       return ExceptionMessages::FailedToGetIndexed(p, c, m);
-    case ExceptionContextType::kIndexedPropertySetter:
-    case ExceptionContextType::kIndexedPropertyDefiner:
+    case v8::ExceptionContext::kIndexedSetter:
+    case v8::ExceptionContext::kIndexedDefiner:
       return ExceptionMessages::FailedToSetIndexed(p, c, m);
-    case ExceptionContextType::kIndexedPropertyDeleter:
+    case v8::ExceptionContext::kIndexedDeleter:
       return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
-    case ExceptionContextType::kNamedPropertyGetter:
-    case ExceptionContextType::kNamedPropertyDescriptor:
+    case v8::ExceptionContext::kNamedGetter:
+    case v8::ExceptionContext::kNamedDescriptor:
+    case v8::ExceptionContext::kNamedQuery:
       return ExceptionMessages::FailedToGetNamed(p, c, m);
-    case ExceptionContextType::kNamedPropertySetter:
-    case ExceptionContextType::kNamedPropertyDefiner:
+    case v8::ExceptionContext::kNamedSetter:
+    case v8::ExceptionContext::kNamedDefiner:
       return ExceptionMessages::FailedToSetNamed(p, c, m);
-    case ExceptionContextType::kNamedPropertyDeleter:
+    case v8::ExceptionContext::kNamedDeleter:
       return ExceptionMessages::FailedToDeleteNamed(p, c, m);
-    case ExceptionContextType::kDictionaryMemberGet:
-      return ExceptionMessages::FailedToGet(p, c, m);
-    case ExceptionContextType::kUnknown:
+    case v8::ExceptionContext::kUnknown:
       return m;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 String ExceptionMessages::FailedToConvertJSValue(const char* type) {

@@ -184,7 +184,7 @@ NativeWidget* ViewsTestBase::CreateNativeWidgetForTest(
   return new test::TestPlatformNativeWidget<NativeWidgetAura>(delegate, true,
                                                               nullptr);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

@@ -188,7 +188,7 @@ void DefaultTexture2DWrapper::SetDisplayHDRMetadata(
 
 void DefaultTexture2DWrapper::OnGPUResourceInitDone(
     scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
-    std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep,
+    std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep,
     scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
   DCHECK(shared_image_rep);
   shared_image_rep_ = std::move(shared_image_rep);
@@ -288,8 +288,8 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     }
 
     auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
-    std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep =
-        shared_image_manager->ProduceVideoDecode(
+    std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep =
+        shared_image_manager->ProduceVideo(
             video_device.Get(), shared_image->mailbox(), memory_type_tracker);
     if (!shared_image_rep) {
       std::move(on_error_cb)
@@ -331,9 +331,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     shared_image_ =
         shared_image_manager->Register(std::move(backing), memory_type_tracker);
 
-    std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep =
-        shared_image_manager->ProduceVideoDecode(video_device.Get(), mailbox,
-                                                 memory_type_tracker);
+    std::unique_ptr<gpu::VideoImageRepresentation> shared_image_rep =
+        shared_image_manager->ProduceVideo(video_device.Get(), mailbox,
+                                           memory_type_tracker);
     if (!shared_image_rep) {
       std::move(on_error_cb)
           .Run(

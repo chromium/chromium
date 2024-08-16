@@ -156,6 +156,7 @@ void DumpBackgroundGraphiteMemoryStatistics(
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
+  static constexpr char kNamePurgeableSize[] = "purgeable_size";
 
   std::string context_dump_name =
       base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
@@ -165,6 +166,8 @@ void DumpBackgroundGraphiteMemoryStatistics(
   context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                           MemoryAllocatorDump::kUnitsBytes,
                           context->currentBudgetedBytes());
+  context_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
+                          context->currentPurgeableBytes());
 
   std::string recorder_dump_name = base::StringPrintf(
       "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,
@@ -174,6 +177,8 @@ void DumpBackgroundGraphiteMemoryStatistics(
   recorder_dump->AddScalar(MemoryAllocatorDump::kNameSize,
                            MemoryAllocatorDump::kUnitsBytes,
                            recorder->currentBudgetedBytes());
+  recorder_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
+                           recorder->currentPurgeableBytes());
 
   // The ImageProvider's bytes are not included in the recorder's budgeted
   // bytes as they are owned by Chrome, so dump them separately.

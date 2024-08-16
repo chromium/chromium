@@ -298,6 +298,24 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   base::WeakPtrFactory<GameDashboardBehavior> weak_ptr_factory_{this};
 };
 
+// -----------------------------------------------------------------------------
+// SunfishBehavior:
+// Implements the `CaptureModeBehavior` interface with behavior defined for the
+// sunfish capture mode.
+class SunfishBehavior : public CaptureModeBehavior {
+ public:
+  SunfishBehavior()
+      : CaptureModeBehavior(
+            {CaptureModeType::kImage, CaptureModeSource::kRegion,
+             RecordingType::kWebM, AudioRecordingMode::kOff,
+             /*demo_tools_enabled=*/false},
+            BehaviorType::kSunfish) {}
+
+  SunfishBehavior(const SunfishBehavior&) = delete;
+  SunfishBehavior& operator=(const SunfishBehavior&) = delete;
+  ~SunfishBehavior() override = default;
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -318,6 +336,8 @@ std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(
       return std::make_unique<GameDashboardBehavior>();
     case BehaviorType::kDefault:
       return std::make_unique<DefaultBehavior>();
+    case BehaviorType::kSunfish:
+      return std::make_unique<SunfishBehavior>();
   }
 }
 
@@ -401,7 +421,7 @@ bool CaptureModeBehavior::RequiresCaptureFolderCreation() const {
 
 void CaptureModeBehavior::CreateCaptureFolder(
     OnCaptureFolderCreatedCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
@@ -416,7 +436,7 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
 
 void CaptureModeBehavior::SetPreSelectedWindow(
     aura::Window* pre_selected_window) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {

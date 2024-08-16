@@ -64,6 +64,7 @@ buildflag_header("media_buildflags") {
     "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
+    "USE_CRAS=$use_cras",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
   ]
 
@@ -83,8 +84,8 @@ if (proprietary_codecs && media_use_ffmpeg) {
 }
 
 # Common configuration for targets in the media directory; these must not be
-# exported since things like USE_NEON and USE_CRAS have different meanings
-# elsewhere in the code base.
+# exported since things like USE_NEON have different meanings elsewhere in the
+# code base.
 config("media_config") {
   defines = []
   if (current_cpu == "arm64" || (current_cpu == "arm" && arm_use_neon)) {
@@ -95,9 +96,6 @@ config("media_config") {
     if (!link_pulseaudio) {
       defines += [ "DLOPEN_PULSEAUDIO" ]
     }
-  }
-  if (use_cras) {
-    defines += [ "USE_CRAS" ]
   }
 }
 
@@ -293,6 +291,11 @@ test("media_perftests") {
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
   ]
+
+  if (enable_av1_decoder &&
+      ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
+    data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
+  }
 }
 
 # Note: Most external components should just depend on //media unless they

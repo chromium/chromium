@@ -43,6 +43,7 @@ struct BLINK_COMMON_EXPORT FrameVisualProperties {
   bool is_pinch_gesture_active = false;
   uint32_t capture_sequence_number = 0u;
   double zoom_level = 0;
+  double css_zoom_factor = 1.f;
   float page_scale_factor = 1.f;
   float compositing_scale_factor = 1.f;
   float cursor_accessibility_scale_factor = 1.f;

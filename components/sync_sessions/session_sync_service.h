@@ -11,7 +11,7 @@
 
 namespace syncer {
 class GlobalIdMapper;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace sync_sessions {
@@ -41,7 +41,7 @@ class SessionSyncService : public KeyedService {
   [[nodiscard]] virtual base::CallbackListSubscription
   SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) = 0;
 
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

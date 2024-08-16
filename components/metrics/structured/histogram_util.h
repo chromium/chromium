@@ -67,6 +67,74 @@ void LogDroppedProjectExternalMetrics(std::string_view project_name,
 void LogProducedProjectExternalMetrics(std::string_view project_name,
                                        int num_produced);
 
+// Possible status of the Storage Manager when flushing a buffer to disk. These
+// values must match the values in
+// tools/metrics/histograms/metadata/structured_metrics/enums.xml.
+enum class StorageManagerFlushStatus {
+  kSuccessful = 0,
+  kWriteError = 1,
+  kDiskFull = 2,
+  kEventSerializationError = 3,
+  kQuotaExceeded = 4,
+  kMaxValue = kQuotaExceeded,
+};
+
+// Possible status when an event is recorded to the Storage Manager. These
+// values must match the values in
+// tools/metrics/histograms/metadata/structured_metrics/enums.xml.
+enum class RecordStatus {
+  kOk = 0,
+  kFlushed = 1,
+  kFull = 2,
+  kError = 3,
+  kMaxValue = kError,
+};
+
+// Possible internal errors of the FlushedMap. These should
+// be looked at in absolute counts. These values must match the values in
+// tools/metrics/histograms/metadata/structured_metrics/enums.xml.
+enum class FlushedMapError {
+  kDeletedInvalidKey = 0,
+  kEventSerializationError = 1,
+  kFailedToReadKey = 2,
+  kMaxValue = kFailedToReadKey,
+};
+
+// Logs Storage Managers result when flushing a buffer.
+void LogStorageManagerFlushStatus(StorageManagerFlushStatus status);
+
+// Logs internal errors of the FlushedMap.
+void LogFlushedMapError(FlushedMapError error);
+
+// Logs the number of FlushedKeys that are loaded at boot.
+void LogFlushedMapLoadedFlushedKeys(int count);
+
+// Logs the number of flushed buffers that were deleted when disk quota is
+// reached.
+void LogDeletedBuffersWhenOverQuota(int count);
+
+// Logs the number of bytes the disk quota has been exceeded. This should be
+// proportional to the number of buffers deleted.
+void LogDiskQuotaExceededDelta(int delta_kb);
+
+// Logs the number of flushed buffers when an upload occurs.
+//
+// With the current implementation, this is implying that this is the number of
+// buffers read when creating the uploaded log.
+void LogFlushedBuffersAtUpload(int count);
+
+// Logs the number of in-memory events when an upload occurs.
+void LogInMemoryEventsAtUpload(int count);
+
+// Logs the max disk size in kb that the Storage Manager can consume.
+void LogMaxDiskSizeKb(int size_kb);
+
+// Logs the max amount of memory in kb that the in-memory events can consume.
+void LogMaxMemorySizeKb(int size_kb);
+
+// Logs the status of recording an event.
+void LogStorageManagerRecordStatus(RecordStatus status);
+
 }  // namespace metrics::structured
 
 #endif  // COMPONENTS_METRICS_STRUCTURED_HISTOGRAM_UTIL_H_

@@ -29,12 +29,12 @@ class CORE_EXPORT ResponsivenessMetrics
   // Timestamps for input events.
   struct EventTimestamps {
     // The duration of the event (creation --> first display update it caused).
-    base::TimeDelta duration() const { return end_time - start_time; }
+    base::TimeDelta duration() const { return end_time - creation_time; }
 
     // The event creation time.
-    base::TimeTicks start_time;
+    base::TimeTicks creation_time;
     // The time when the original WebInputEvent was queued on main thread.
-    base::TimeTicks main_thread_queued_time;
+    base::TimeTicks queued_to_main_thread_time;
     // The time when commit was finished on compositor thread.
     base::TimeTicks commit_finish_time;
     // The time when the first display update caused by the input event was
@@ -163,7 +163,6 @@ class CORE_EXPORT ResponsivenessMetrics
   // events. Returns true if the entry is ready to be surfaced in
   // PerformanceObservers and the Performance Timeline.
   bool SetPointerIdAndRecordLatency(PerformanceEventTiming* entry,
-                                    PointerId pointer_id,
                                     EventTimestamps event_timestamps);
 
   // Assigns interactionId and records interaction latency for keyboard events.
@@ -172,13 +171,11 @@ class CORE_EXPORT ResponsivenessMetrics
   // would be ready to be surfaced in PerformanceObservers and the Performance
   // Timeline.
   bool SetKeyIdAndRecordLatency(PerformanceEventTiming* entry,
-                                std::optional<int> key_code,
                                 EventTimestamps event_timestamps);
 
   // Experimental function that in addition to SetKeyIdAndRecordLatency()
   // exposes interactionId for keypress and keyup/keydown under composition.
   bool SetKeyIdAndRecordLatencyExperimental(PerformanceEventTiming* entry,
-                                            std::optional<int> key_code,
                                             EventTimestamps event_timestamps);
 
   // Clear keydowns in |key_codes_to_remove| if we have stored them for a while.

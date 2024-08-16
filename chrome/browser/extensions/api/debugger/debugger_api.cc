@@ -29,7 +29,6 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
-#include "chrome/browser/extensions/api/debugger/debugger_api_constants.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -87,6 +86,23 @@ class ExtensionRegistry;
 class ExtensionDevToolsClientHost;
 
 namespace {
+
+constexpr char kAlreadyAttachedError[] =
+    "Another debugger is already attached to the * with id: *.";
+constexpr char kNoTargetError[] = "No * with given id *.";
+constexpr char kInvalidTargetError[] =
+    "Either tab id or extension id must be specified.";
+constexpr char kNotAttachedError[] =
+    "Debugger is not attached to the * with id: *.";
+constexpr char kProtocolVersionNotSupportedError[] =
+    "Requested protocol version is not supported: *.";
+constexpr char kRestrictedError[] = "Cannot attach to this target.";
+constexpr char kDetachedWhileHandlingError[] =
+    "Detached while handling command.";
+
+constexpr char kTabTargetType[] = "tab";
+constexpr char kBackgroundPageTargetType[] = "background page";
+constexpr char kOpaqueTargetType[] = "target";
 
 // Helpers --------------------------------------------------------------------
 
@@ -163,13 +179,13 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   if (extension.permissions_data()->IsPolicyBlockedHost(url) ||
       extension.permissions_data()->IsPolicyBlockedHost(
           url_for_restriction_check)) {
-    *error = debugger_api_constants::kRestrictedError;
+    *error = kRestrictedError;
     return false;
   }
 
   if (url.SchemeIsFile() &&
       !util::AllowFileAccess(extension.id(), extension_profile)) {
-    *error = debugger_api_constants::kRestrictedError;
+    *error = kRestrictedError;
     return false;
   }
 
@@ -233,7 +249,7 @@ bool ExtensionMayAttachToRenderFrameHost(
 #endif  // BUILDFLAG(ENABLE_PDF)
 
         if (render_frame_host->GetWebUI()) {
-          *error = debugger_api_constants::kRestrictedError;
+          *error = kRestrictedError;
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
@@ -265,7 +281,7 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
           SecurityInterstitialTabHelper::FromWebContents(&web_contents);
   if (security_interstitial_tab_helper &&
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
-    *error = debugger_api_constants::kRestrictedError;
+    *error = kRestrictedError;
     return false;
   }
   // This is *not* redundant to the checks below, as
@@ -294,7 +310,7 @@ bool ExtensionMayAttachToAgentHost(const Extension& extension,
                                    std::string* error) {
   if (!ExtensionMayAttachToTargetProfile(extension_profile,
                                          allow_incognito_access, agent_host)) {
-    *error = debugger_api_constants::kRestrictedError;
+    *error = kRestrictedError;
     return false;
   }
   if (WebContents* wc = agent_host.GetWebContents()) {
@@ -652,17 +668,15 @@ DebuggerFunction::~DebuggerFunction() = default;
 std::string DebuggerFunction::FormatErrorMessage(const std::string& format) {
   if (debuggee_.tab_id) {
     return ErrorUtils::FormatErrorMessage(
-        format, debugger_api_constants::kTabTargetType,
-        base::NumberToString(*debuggee_.tab_id));
+        format, kTabTargetType, base::NumberToString(*debuggee_.tab_id));
   }
   if (debuggee_.extension_id) {
-    return ErrorUtils::FormatErrorMessage(
-        format, debugger_api_constants::kBackgroundPageTargetType,
-        *debuggee_.extension_id);
+    return ErrorUtils::FormatErrorMessage(format, kBackgroundPageTargetType,
+                                          *debuggee_.extension_id);
   }
 
-  return ErrorUtils::FormatErrorMessage(
-      format, debugger_api_constants::kOpaqueTargetType, *debuggee_.target_id);
+  return ErrorUtils::FormatErrorMessage(format, kOpaqueTargetType,
+                                        *debuggee_.target_id);
 }
 
 bool DebuggerFunction::InitAgentHost(std::string* error) {
@@ -725,12 +739,12 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
                               DevToolsAgentHost::CreateServerSocketCallback());
     }
   } else {
-    *error = debugger_api_constants::kInvalidTargetError;
+    *error = kInvalidTargetError;
     return false;
   }
 
   if (!agent_host_.get()) {
-    *error = FormatErrorMessage(debugger_api_constants::kNoTargetError);
+    *error = FormatErrorMessage(kNoTargetError);
     return false;
   }
   return true;
@@ -742,7 +756,7 @@ bool DebuggerFunction::InitClientHost(std::string* error) {
 
   client_host_ = FindClientHost();
   if (!client_host_) {
-    *error = FormatErrorMessage(debugger_api_constants::kNotAttachedError);
+    *error = FormatErrorMessage(kNotAttachedError);
     return false;
   }
 
@@ -784,13 +798,11 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   if (!DevToolsAgentHost::IsSupportedProtocolVersion(
           params->required_version)) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        debugger_api_constants::kProtocolVersionNotSupportedError,
-        params->required_version)));
+        kProtocolVersionNotSupportedError, params->required_version)));
   }
 
   if (FindClientHost()) {
-    return RespondNow(Error(
-        FormatErrorMessage(debugger_api_constants::kAlreadyAttachedError)));
+    return RespondNow(Error(FormatErrorMessage(kAlreadyAttachedError)));
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -798,7 +810,7 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
       profile, agent_host_.get(), extension(), worker_id(), debuggee_);
 
   if (!host->Attach()) {
-    return RespondNow(Error(debugger_api_constants::kRestrictedError));
+    return RespondNow(Error(kRestrictedError));
   }
 
   host.release();  // An attached client host manages its own lifetime.
@@ -875,7 +887,7 @@ void DebuggerSendCommandFunction::SendResponseBody(base::Value response) {
 }
 
 void DebuggerSendCommandFunction::SendDetachedError() {
-  Respond(Error(debugger_api_constants::kDetachedWhileHandlingError));
+  Respond(Error(kDetachedWhileHandlingError));
 }
 
 // DebuggerGetTargetsFunction -------------------------------------------------

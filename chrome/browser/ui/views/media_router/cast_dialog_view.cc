@@ -85,19 +85,22 @@ std::u16string CastDialogView::GetWindowTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 void CastDialogView::OnModelUpdated(const CastDialogModel& model) {
-  if (model.media_sinks().empty()) {
-    scroll_position_ = 0;
+  if (base::FeatureList::IsEnabled(kShowCastPermissionRejectedError) &&
+      model.is_permission_rejected()) {
+    ShowPermissionRejectedView();
+  } else if (model.media_sinks().empty()) {
     ShowNoSinksView();
   } else {
-    if (scroll_view_)
+    if (scroll_view_) {
       scroll_position_ = scroll_view_->GetVisibleRect().y();
-    else
+    } else {
       ShowScrollView();
+    }
     PopulateScrollView(model.media_sinks());
     RestoreSinkListState();
     metrics_.OnSinksLoaded(base::Time::Now());
@@ -185,7 +188,7 @@ void CastDialogView::ShowAccessCodeCastDialog() {
       cast_mode_set = {MediaCastMode::DESKTOP_MIRROR};
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   AccessCodeCastDialog::Show(
@@ -200,35 +203,52 @@ void CastDialogView::MaybeShowAccessCodeCastButton() {
   auto callback = base::BindRepeating(&CastDialogView::ShowAccessCodeCastDialog,
                                       base::Unretained(this));
 
-  access_code_cast_button_ = new CastDialogAccessCodeCastButton(callback);
-  AddChildView(access_code_cast_button_.get());
+  access_code_cast_button_ =
+      AddChildView(std::make_unique<CastDialogAccessCodeCastButton>(callback));
 }
 
 void CastDialogView::ShowNoSinksView() {
   if (no_sinks_view_)
     return;
-  if (scroll_view_) {
-    // The dtor of |scroll_view_| removes it from the dialog.
-    delete scroll_view_;
-    scroll_view_ = nullptr;
-    sink_views_.clear();
+  ResetViews();
+  no_sinks_view_ = AddChildView(std::make_unique<CastDialogNoSinksView>(
+      profile_, /*permission_rejected*/ false));
+}
+
+void CastDialogView::ShowPermissionRejectedView() {
+  if (permission_rejected_view_) {
+    return;
   }
-  no_sinks_view_ = new CastDialogNoSinksView(profile_);
-  AddChildView(no_sinks_view_.get());
+  ResetViews();
+  permission_rejected_view_ =
+      AddChildView(std::make_unique<CastDialogNoSinksView>(
+          profile_, /*permission_rejected*/ true));
 }
 
 void CastDialogView::ShowScrollView() {
   if (scroll_view_)
     return;
-  if (no_sinks_view_) {
-    // The dtor of |no_sinks_view_| removes it from the dialog.
-    delete no_sinks_view_;
-    no_sinks_view_ = nullptr;
-  }
-  scroll_view_ = new views::ScrollView();
-  AddChildView(scroll_view_.get());
+  ResetViews();
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   constexpr int kSinkButtonHeight = 56;
   scroll_view_->ClipHeightTo(0, kSinkButtonHeight * 6.5);
+}
+
+void CastDialogView::ResetViews() {
+  if (no_sinks_view_) {
+    auto temp = RemoveChildViewT(no_sinks_view_);
+    no_sinks_view_ = nullptr;
+  }
+  if (permission_rejected_view_) {
+    auto temp = RemoveChildViewT(permission_rejected_view_);
+    permission_rejected_view_ = nullptr;
+  }
+  if (scroll_view_) {
+    auto temp = RemoveChildViewT(scroll_view_);
+    scroll_view_ = nullptr;
+    sink_views_.clear();
+    scroll_position_ = 0;
+  }
 }
 
 void CastDialogView::RestoreSinkListState() {

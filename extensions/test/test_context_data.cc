@@ -6,11 +6,7 @@
 
 namespace extensions {
 
-std::unique_ptr<ContextData> TestContextData::Clone() const {
-  return std::make_unique<TestContextData>();
-}
-
-bool TestContextData::IsIsolatedApplication() const {
+bool TestContextData::HasIsolatedContextCapability() const {
   return false;
 }
 

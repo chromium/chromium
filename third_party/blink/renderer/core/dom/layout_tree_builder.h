@@ -90,9 +90,10 @@ class LayoutTreeBuilder {
       return next;
     // Should return a normal result for display:ruby though it can be
     // an anonymous inline.
-    if (UNLIKELY(parent->IsInlineRuby()))
+    if (parent->IsInlineRuby()) [[unlikely]] {
       return next;
-    if (!LIKELY(parent->IsLayoutTextCombine())) {
+    }
+    if (!parent->IsLayoutTextCombine()) [[unlikely]] {
       return parent;
     }
     auto* const text_combine_parent = parent->Parent();

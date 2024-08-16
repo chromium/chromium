@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Chromium-en blokeo modua desgaitzeko, desaktiba ezazu iPhone-an.</translation>
 <translation id="159029779861043703">Chromium-ek Face ID bidez babesten ditu zure kontuzko datuak.</translation>
 <translation id="1591119736686995611">Chromium-en fitxen sareta irekitzen du.</translation>
+<translation id="16001233025397167">Segurtasun-egiaztapenari esker, babestuta egongo zara datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean. Jaso Chromium-ek zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
 <translation id="1611584326765829247">Eman paketeen jarraipena egiten laguntzeko baimena Chromium-i</translation>
 <translation id="1617663976202781617">Chromium-en sinkronizazioaren datuak</translation>
 <translation id="1647558790457890304">Chromium-en ezarpenak</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Saioa hasteko eskatzen dizu zure erakundeak, Chromium erabiltzearren.</translation>
 <translation id="2450140762465183767">Orain, Chromium erabili ahalko duzu mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean.</translation>
 <translation id="2478931088402984578">Hautatu <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Lortu Chromium bidez erostearen ahalmena</translation>
 <translation id="252374538254180121">Ezarri Chromium arakatzaile lehenetsi gisa</translation>
 <translation id="2574528844022712255">Ikusi Chromium-eko laster-markak</translation>
 <translation id="2590893390871230428">Sinkronizatu Chromium-eko datuak</translation>
@@ -103,6 +105,7 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="3855938650519180865">Chromium-en berritasunak</translation>
 <translation id="3886689467633467988">Hasi saioa webgune honetan eta Chromium-en, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun.</translation>
 <translation id="3904484643286601695">Hautatu duzuna aldatzeko, joan Chromium-en ezarpenetara.</translation>
+<translation id="3983291422281996849">Ezarri Chromium arakatzaile lehenetsi gisa erosi nahi dituzun gauzen prezioen jarraipena egiteko eta prezioen informazio xehatua jasotzeko.</translation>
 <translation id="4005283307739974863">Chromium-en segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea zerbitzuan.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
@@ -133,6 +136,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="4736424910885271643">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chromium-eko datuak garbitu egingo dira gailu honetatik</translation>
 <translation id="4790638144988730920">Jarraitu Google-ko kontuan dauzkazun Chromium-eko datuak erabiltzen.</translation>
 <translation id="4828317641996116749">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
+<translation id="4904452304169763785">Chromium-ek zuretzat hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
 <translation id="4962295957157529683">Amaitu egiten ari zarena irekita daukazun Chromium-eko beste leihoan.</translation>
 <translation id="4985291216379576555">Interneteko konexiorik gabe, Chromium-ek ezin ditu bilatu eguneratzeak</translation>
 <translation id="4996471330284142407">Egin gauza gehiago Chromium-ekin: sinplea, segurua eta inoiz baino bizkorragoa da.</translation>
@@ -144,6 +148,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko dat
 <translation id="5131565040785979529"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabili duzun kontua eta Chromium erabiltzeko modua.</translation>
 <translation id="5146749061471423558">Gehitu laster-markak Chromium-en</translation>
 <translation id="5171868502429358653">Hasi saioa Chromium-en</translation>
+<translation id="5203483872492817335">Sartu Chromium-en bizkorrago iPad-eko orri nagusiko zintaren bidez.</translation>
 <translation id="5213683223491576284">Chromium-en Pasahitz-kudeatzailea irekitzen du.</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5242782538551259282">Chromium-eko datu batzuk ez dira gorde Google-ko kontuan oraindik.
@@ -175,6 +180,7 @@ Kontuan hartu beharrekoak:
   • Chromium-ek huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
 
   • Zure historia Google-ko kontuarekin sinkronizatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Jaso Chromium-ek zuretzat automatikoki hautematen dituen pribatutasun- edo segurtasun-arazoei buruzko alertak.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin hasi duzu saioa eta administratzaileari eman diozu Chromium datuen kontrola. Datuak betiko lotuko dira kontu honekin. Saioa amaitzen baduzu, Chromium datuak ezabatu egingo dira gailutik, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="5951593919357934226">Atera ahalik eta etekin handiena Chromium-i.</translation>
 <translation id="5983312940147103417">Hobetu Chromium</translation>
@@ -225,6 +231,7 @@ Kontuan hartu beharrekoak:
 Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-en jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
 <translation id="7222001353246886083">Bilatu ${searchPhrase} Chromium-en</translation>
+<translation id="7228180817326917122">Chromium-erako aholkua: aukeratu helbide-barraren posizioa</translation>
 <translation id="725427773388857052">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chromium-ek.</translation>
 <translation id="7269362888766543920">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
 <translation id="7285031092584344905">Erabili Chromium-eko pasahitzak eta gainerako informazioa beste aplikazioetan.</translation>
@@ -247,6 +254,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7928628054454574139">Ireki Chromium beste aplikazioetako estekak sakatzen dituzunean</translation>
 <translation id="7931842119211730154">Blokeatu ezkutuko moduko fitxak Chromium ixten duzunean</translation>
 <translation id="7934404985878918282">Ikusi Chromium-en Irakurketa-zerrenda</translation>
+<translation id="7947765692209663835">Sartu Chromium-en bizkorrago iPhone-ko orri nagusiko zintaren bidez.</translation>
 <translation id="7971753607796745700">Gehitu irakurketa-zerrendako elementu bat Chromium-en</translation>
 <translation id="7980860476903281594">Onartzen dituzun webguneekin partekatuko du kokapena Chromium-ek.</translation>
 <translation id="7994322153108931467">Chromium-i buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
@@ -265,6 +273,8 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8386869251364507178">Chromium-en ekintzak</translation>
 <translation id="8409374867500149834">Chromium-en segurtasun-aukerarik sendoena darabilzu webgune kaltegarrien aurka</translation>
 <translation id="8458950033462118672">Ezarri Chromium arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
+<translation id="8473874987831035139">Chromium-erako aholkua: eraman Chromium zintara</translation>
+<translation id="8502918057530111907">Erabili Chromium modu lehenetsian prezioen informazio xehatua erraz jasotzeko</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}other{Chromium {THRESHOLD} minutuz erabiltzen ez denean gertatzen da hori. Saio hasita daukazula gailu honetan bakarrik gorde diren datuak ezabatu egingo dira. Baliteke pasahitzak eta arakatze-historia ezabatzea, besteak beste.}}</translation>
 <translation id="858114650497379505">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>

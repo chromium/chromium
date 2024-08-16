@@ -44,6 +44,20 @@ class DevToolsExtensionsProtocolTest : public DevToolsProtocolTestBase {
 
     return SendCommandSync("Extensions.loadUnpacked", std::move(params));
   }
+
+  const base::Value::Dict* SendStorageCommand(
+      const std::string& command,
+      const extensions::Extension* extension,
+      base::Value::Dict extra_params) {
+    base::Value::Dict storage_params;
+    storage_params.Set("id", extension->id());
+    storage_params.Set("storageArea", "local");
+    storage_params.Merge(std::move(extra_params));
+
+    const base::Value::Dict* get_result =
+        SendCommandSync(command, std::move(storage_params));
+    return get_result;
+  }
 };
 
 class DevToolsExtensionsProtocolWithUnsafeDebuggingTest
@@ -112,41 +126,52 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   // Ensure service worker has had time to initialize.
   EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
 
-  base::Value::Dict values_to_set;
-  values_to_set.Set("foo", "bar");
-  values_to_set.Set("other", "value");
-
-  //  Set some dummy values in storage.
-  base::RunLoop run_loop;
-  extensions::StorageFrontend::Get(browser()->profile())
-      ->Set(extension, extensions::StorageAreaNamespace::kLocal,
-            std::move(values_to_set),
-            base::BindOnce(
-                [](base::OnceClosure quit_closure,
-                   extensions::StorageFrontend::ResultStatus status) {
-                  ASSERT_TRUE(status.success);
-                  std::move(quit_closure).Run();
-                },
-                run_loop.QuitClosure()));
-  run_loop.Run();
-
-  // Extensions.getStorageItems is only allowed from a target associated with
+  // Access to storage commands is only allowed from a target associated with
   // the extension. Attach to the extension service worker to be able to test
   // the method.
   DetachProtocolClient();
   agent_host_ = FindExtensionHost(extension->id());
   agent_host_->AttachClient(this);
 
-  base::Value::Dict storage_params;
-  storage_params.Set("id", extension->id());
-  storage_params.Set("storageArea", "local");
-  storage_params.Set("keys", base::Value::List().Append("foo"));
+  //  Set some dummy values in storage.
+  ASSERT_TRUE(SendStorageCommand(
+      "Extensions.setStorageItems", extension,
+      base::Value::Dict().Set("values", base::Value::Dict()
+                                            .Set("foo", "bar")
+                                            .Set("other", "value")
+                                            .Set("remove-on-clear", "value"))));
 
-  const base::Value::Dict* get_result =
-      SendCommandSync("Extensions.getStorageItems", std::move(storage_params));
+  // Check only the requested keys are returned.
+  const base::Value::Dict* get_result = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
   ASSERT_TRUE(get_result);
   ASSERT_EQ(*get_result->FindDict("data")->FindString("foo"), "bar");
   ASSERT_FALSE(get_result->FindDict("data")->contains("other"));
+
+  // Remove the `foo` key.
+  ASSERT_TRUE(SendStorageCommand(
+      "Extensions.removeStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo"))));
+
+  // Check the `foo` key no longer exists.
+  const base::Value::Dict* get_result_2 = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys", base::Value::List().Append("foo")));
+  ASSERT_TRUE(get_result_2);
+  ASSERT_FALSE(get_result_2->FindDict("data")->contains("foo"));
+
+  // Clear the storage area.
+  ASSERT_TRUE(SendStorageCommand("Extensions.clearStorageItems", extension,
+                                 base::Value::Dict()));
+
+  // Check the `remove-on-clear` key no longer exists.
+  const base::Value::Dict* get_result_3 = SendStorageCommand(
+      "Extensions.getStorageItems", extension,
+      base::Value::Dict().Set("keys",
+                              base::Value::List().Append("remove-on-clear")));
+  ASSERT_TRUE(get_result_3);
+  ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
 }
 
 // Test to ensure that the target associated with an extension service worker

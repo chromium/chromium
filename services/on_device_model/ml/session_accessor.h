@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,11 +19,10 @@ namespace ml {
 
 // Allows for safely accessing ChromeMLSession on a task runner. ChromeMLSession
 // may make blocking calls, so it can't be used on the main thread.
-class SessionAccessor {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionAccessor {
  public:
   using Ptr = std::unique_ptr<SessionAccessor, base::OnTaskRunnerDeleter>;
 
-  static Ptr Empty();
   static Ptr Create(scoped_refptr<base::SequencedTaskRunner> task_runner,
                     ChromeMLModel model,
                     base::File adaptation_data = base::File());

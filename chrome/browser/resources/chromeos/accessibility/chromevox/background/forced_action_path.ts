@@ -314,16 +314,6 @@ abstract class Action {
   abstract typedValue(value: SerializedValueType): ValueType;
 }
 
-/** Uses Output module to provide speech and braille feedback. */
-function output(message: string): void {
-  new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
-}
-
-/** Uses the CommandHandler to perform a command. */
-function onCommand(command: Command): void {
-  CommandHandlerInterface.instance.onCommand(command);
-}
-
 class KeySequenceAction extends Action {
   override equals(other: Action): boolean {
     return super.equals(other) &&
@@ -352,6 +342,18 @@ class StringAction extends Action {
     }
     return value;
   }
+}
+
+// Local to module.
+
+/** Uses Output module to provide speech and braille feedback. */
+function output(message: string): void {
+  new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
+}
+
+/** Uses the CommandHandler to perform a command. */
+function onCommand(command: Command): void {
+  CommandHandlerInterface.instance.onCommand(command);
 }
 
 BridgeHelper.registerHandler(

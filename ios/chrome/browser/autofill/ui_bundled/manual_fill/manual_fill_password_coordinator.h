@@ -13,6 +13,8 @@ namespace password_manager {
 struct CredentialUIEntry;
 }
 
+@class ManualFillPlusAddressMediator;
+
 // Delegate for the coordinator actions.
 @protocol PasswordCoordinatorDelegate <FallbackCoordinatorDelegate>
 
@@ -48,6 +50,8 @@ struct CredentialUIEntry;
 // form.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+             manualFillPlusAddressMediator:
+                 (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator
                                        URL:(const GURL&)URL
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler

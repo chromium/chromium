@@ -49,10 +49,6 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::DefaultBrowserRemindMeLater;
   }
 
-  if (promo == "promos_manager::Promo::OmniboxPosition") {
-    return promos_manager::Promo::OmniboxPosition;
-  }
-
   if (promo == "promos_manager::Promo::DockingPromo") {
     return promos_manager::Promo::DockingPromo;
   }
@@ -104,8 +100,6 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "PostRestoreDefaultBrowserAlert";
     case promos_manager::Promo::DefaultBrowserRemindMeLater:
       return "DefaultBrowserRemindMeLater";
-    case promos_manager::Promo::OmniboxPosition:
-      return "OmniboxPosition";
     case promos_manager::Promo::DockingPromo:
       return "DockingPromo";
     case promos_manager::Promo::DockingPromoRemindMeLater:

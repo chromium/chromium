@@ -113,9 +113,11 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -123,6 +125,47 @@
 namespace blink {
 
 namespace {
+
+// Creates a serialized AtomicString header value out of the input string, using
+// structured headers as described in
+// https://www.rfc-editor.org/rfc/rfc8941.html.
+const AtomicString SerializeStringHeader(const std::string& str) {
+  std::string output;
+
+  // See https://crbug.com/1416925.
+  if (str.empty() &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kQuoteEmptySecChUaStringHeadersConsistently)) {
+    return AtomicString(output.c_str());
+  }
+
+  output =
+      net::structured_headers::SerializeItem(net::structured_headers::Item(str))
+          .value_or(std::string());
+
+  return AtomicString(output.c_str());
+}
+
+AtomicString GenerateBoolHeaderValue(bool value) {
+  const std::string output = net::structured_headers::SerializeItem(
+                                 net::structured_headers::Item(value))
+                                 .value_or(std::string());
+  return AtomicString(output.c_str());
+}
+
+// Creates a serialized AtomicString header value out of the input boolean,
+// using structured headers as described in
+// https://www.rfc-editor.org/rfc/rfc8941.html.
+const AtomicString SerializeBoolHeader(const bool value) {
+  if (value) {
+    DEFINE_STATIC_LOCAL(AtomicString, true_value,
+                        (GenerateBoolHeaderValue(true)));
+    return true_value;
+  }
+  DEFINE_STATIC_LOCAL(AtomicString, false_value,
+                      (GenerateBoolHeaderValue(false)));
+  return false_value;
+}
 
 mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   if (!frame)
@@ -166,6 +209,21 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
   }
   NOTREACHED_IN_MIGRATION();
   return mojom::FetchCacheMode::kDefault;
+}
+
+bool ShouldSendClientHint(const PermissionsPolicy& policy,
+                          const url::Origin& resource_origin,
+                          bool is_1p_origin,
+                          network::mojom::blink::WebClientHintsType type,
+                          const ClientHintsPreferences& hints_preferences) {
+  // For subresource requests, sending the hint in the fetch request based on
+  // the permissions policy.
+  if (!policy.IsFeatureEnabledForOrigin(
+          GetClientHintToPolicyFeatureMap().at(type), resource_origin)) {
+    return false;
+  }
+
+  return IsClientHintSentByDefault(type) || hints_preferences.ShouldSend(type);
 }
 
 }  // namespace
@@ -463,49 +521,265 @@ void FrameFetchContext::AddClientHintsIfNecessary(
           ? document_->domWindow()->GetSecurityContext().GetPermissionsPolicy()
           : nullptr;
 
-  const scoped_refptr<SecurityOrigin> resource_origin =
+  if (!policy) {
+    return;
+  }
+
+  const scoped_refptr<SecurityOrigin> security_origin =
       SecurityOrigin::Create(request.Url());
-  bool is_1p_origin =
-      IsFirstPartyOrigin(base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-                             ? resource_origin.get()
-                             : SecurityOrigin::Create(request.Url()).get());
+  bool is_1p_origin = IsFirstPartyOrigin(security_origin.get());
+  const url::Origin resource_origin = security_origin->ToUrlOrigin();
 
   std::optional<UserAgentMetadata> ua = GetUserAgentMetadata();
 
-  std::optional<ClientHintImageInfo> image_info;
-  std::optional<WTF::AtomicString> prefers_color_scheme;
-  std::optional<WTF::AtomicString> prefers_reduced_motion;
-  std::optional<WTF::AtomicString> prefers_reduced_transparency;
+  const ClientHintsPreferences& hints_preferences = GetClientHintsPreferences();
 
-  if (document_) {  // Only get frame info if the frame is not detached
-    image_info = ClientHintImageInfo();
-    image_info->dpr = GetDevicePixelRatio();
-    image_info->resource_width = resource_width;
-    if (!GetResourceFetcherProperties().IsDetached() && GetFrame()->View()) {
-      image_info->viewport_width = GetFrame()->View()->ViewportWidth();
-      image_info->viewport_height = GetFrame()->View()->ViewportHeight();
-    }
+  using network::mojom::blink::WebClientHintsType;
 
-    prefers_color_scheme = AtomicString(
-        document_->InDarkMode() ? network::kPrefersColorSchemeDark
-                                : network::kPrefersColorSchemeLight);
-    prefers_reduced_motion =
-        AtomicString(GetSettings()->GetPrefersReducedMotion()
-                         ? network::kPrefersReducedMotionReduce
-                         : network::kPrefersReducedMotionNoPreference);
-    prefers_reduced_transparency =
-        AtomicString(GetSettings()->GetPrefersReducedTransparency()
-                         ? network::kPrefersReducedTransparencyReduce
-                         : network::kPrefersReducedTransparencyNoPreference);
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kDeviceMemory_DEPRECATED,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(
+        http_names::kDeviceMemory_DEPRECATED,
+        AtomicString(String::Number(
+            ApproximatedDeviceMemory::GetApproximatedDeviceMemory())));
   }
 
-  // GetClientHintsPreferences() has things parsed for this document
-  // by browser (from accept-ch header on this response or previously persisted)
-  // with renderer-parsed http-equiv merged in.
-  BaseFetchContext::AddClientHintsIfNecessary(
-      GetClientHintsPreferences(), resource_origin->ToUrlOrigin(), is_1p_origin,
-      ua, policy, image_info, prefers_color_scheme, prefers_reduced_motion,
-      prefers_reduced_transparency, request);
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kDeviceMemory,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(
+        http_names::kDeviceMemory,
+        AtomicString(String::Number(
+            ApproximatedDeviceMemory::GetApproximatedDeviceMemory())));
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kRtt_DEPRECATED,
+                           hints_preferences)) {
+    std::optional<base::TimeDelta> http_rtt =
+        GetNetworkStateNotifier().GetWebHoldbackHttpRtt();
+    if (!http_rtt) {
+      http_rtt = GetNetworkStateNotifier().HttpRtt();
+    }
+
+    uint32_t rtt =
+        GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
+    request.SetHttpHeaderField(http_names::kRtt_DEPRECATED,
+                               AtomicString(String::Number(rtt)));
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kDownlink_DEPRECATED,
+                           hints_preferences)) {
+    std::optional<double> throughput_mbps =
+        GetNetworkStateNotifier().GetWebHoldbackDownlinkThroughputMbps();
+    if (!throughput_mbps) {
+      throughput_mbps = GetNetworkStateNotifier().DownlinkThroughputMbps();
+    }
+
+    double mbps = GetNetworkStateNotifier().RoundMbps(request.Url().Host(),
+                                                      throughput_mbps);
+    request.SetHttpHeaderField(http_names::kDownlink_DEPRECATED,
+                               AtomicString(String::Number(mbps)));
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kEct_DEPRECATED,
+                           hints_preferences)) {
+    std::optional<WebEffectiveConnectionType> holdback_ect =
+        GetNetworkStateNotifier().GetWebHoldbackEffectiveType();
+    if (!holdback_ect) {
+      holdback_ect = GetNetworkStateNotifier().EffectiveType();
+    }
+
+    request.SetHttpHeaderField(
+        http_names::kEct_DEPRECATED,
+        AtomicString(NetworkStateNotifier::EffectiveConnectionTypeToString(
+            holdback_ect.value())));
+  }
+
+  // Only send User Agent hints if the info is available
+  if (ua) {
+    // ShouldSendClientHint is called to make sure UA is controlled by
+    // Permissions Policy.
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUA, hints_preferences)) {
+      if (last_ua_ != *ua) {
+        last_ua_ = *ua;
+        last_ua_serialized_brand_major_version_list_ =
+            AtomicString(ua->SerializeBrandMajorVersionList().c_str());
+      }
+      request.SetHttpHeaderField(http_names::kUA,
+                                 *last_ua_serialized_brand_major_version_list_);
+    }
+
+    // We also send Sec-CH-UA-Mobile to all hints. It is a one-bit header
+    // identifying if the browser has opted for a "mobile" experience.
+    // ShouldSendClientHint is called to make sure it's controlled by
+    // PermissionsPolicy.
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAMobile,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAMobile,
+                                 SerializeBoolHeader(ua->mobile));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAArch, hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAArch,
+                                 SerializeStringHeader(ua->architecture));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAPlatform,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAPlatform,
+                                 SerializeStringHeader(ua->platform));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAPlatformVersion,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAPlatformVersion,
+                                 SerializeStringHeader(ua->platform_version));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAModel, hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAModel,
+                                 SerializeStringHeader(ua->model));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAFullVersion,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAFullVersion,
+                                 SerializeStringHeader(ua->full_version));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAFullVersionList,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(
+          http_names::kUAFullVersionList,
+          AtomicString(ua->SerializeBrandFullVersionList().c_str()));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUABitness,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUABitness,
+                                 SerializeStringHeader(ua->bitness));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kUAWoW64, hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kUAWoW64,
+                                 SerializeBoolHeader(ua->wow64));
+    }
+
+    if (ShouldSendClientHint(
+            *policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kUAFormFactors,
+            hints_preferences)) {
+      request.SetHttpHeaderField(
+          http_names::kUAFormFactors,
+          AtomicString(ua->SerializeFormFactors().c_str()));
+    }
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kSaveData, hints_preferences) &&
+      GetNetworkStateNotifier().SaveDataEnabled()) {
+    request.SetHttpHeaderField(http_names::kSaveData, http_names::kOn);
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kPrefersReducedTransparency,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(http_names::kPrefersReducedTransparency,
+                               GetSettings()->GetPrefersReducedTransparency()
+                                   ? http_names::kReduce
+                                   : http_names::kNoPreference);
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kPrefersReducedMotion,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(http_names::kPrefersReducedMotion,
+                               GetSettings()->GetPrefersReducedMotion()
+                                   ? http_names::kReduce
+                                   : http_names::kNoPreference);
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kPrefersColorScheme,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(
+        http_names::kPrefersColorScheme,
+        document_->InDarkMode() ? http_names::kDark : http_names::kLight);
+  }
+
+  const float dpr = GetDevicePixelRatio();
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kDpr_DEPRECATED,
+                           hints_preferences)) {
+    request.SetHttpHeaderField(http_names::kDpr_DEPRECATED,
+                               AtomicString(String::Number(dpr)));
+  }
+
+  if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                           WebClientHintsType::kDpr, hints_preferences)) {
+    request.SetHttpHeaderField(http_names::kDpr,
+                               AtomicString(String::Number(dpr)));
+  }
+
+  if (LocalFrameView* frame_view = GetFrame()->View()) {
+    const int viewport_width = frame_view->ViewportWidth();
+    const int viewport_height = frame_view->ViewportHeight();
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kViewportWidth_DEPRECATED,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kViewportWidth_DEPRECATED,
+                                 AtomicString(String::Number(viewport_width)));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kViewportWidth,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kViewportWidth,
+                                 AtomicString(String::Number(viewport_width)));
+    }
+
+    if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                             WebClientHintsType::kViewportHeight,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(http_names::kViewportHeight,
+                                 AtomicString(String::Number(viewport_height)));
+    }
+
+    if (resource_width) {
+      if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                               WebClientHintsType::kResourceWidth_DEPRECATED,
+                               hints_preferences)) {
+        float physical_width = resource_width.value() * dpr;
+        request.SetHttpHeaderField(
+            http_names::kResourceWidth_DEPRECATED,
+            AtomicString(String::Number(ceil(physical_width))));
+      }
+
+      if (ShouldSendClientHint(*policy, resource_origin, is_1p_origin,
+                               WebClientHintsType::kResourceWidth,
+                               hints_preferences)) {
+        float physical_width = resource_width.value() * dpr;
+        request.SetHttpHeaderField(
+            http_names::kResourceWidth,
+            AtomicString(String::Number(ceil(physical_width))));
+      }
+    }
+  }
 }
 
 void FrameFetchContext::AddReducedAcceptLanguageIfNecessary(

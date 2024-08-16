@@ -131,7 +131,7 @@ gfx::Size WidgetTest::GetNativeWidgetMinimumContentSize(Widget* widget) {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return widget->GetNativeWindow()->delegate()->GetMinimumSize();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

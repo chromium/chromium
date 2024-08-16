@@ -412,6 +412,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UNKNOWN_ERROR"/>
 </enum>
 
+<enum name="AndroidWebViewSupportedThreatTypesResult">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="TIMEOUT"/>
+  <int value="2" label="UNKNOWN_ERROR"/>
+</enum>
+
 <enum name="AndroidWebViewTextSelectionMenuOrdering">
   <int value="0" label="Default"/>
   <int value="1" label="Samsung"/>
@@ -548,6 +554,8 @@ chromium-metrics-reviews@google.com.
   <int value="105" label="WebSettingsCompat.getSpeculativeLoadingStatus"/>
   <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
   <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
+  <int value="108" label="Profile.prefetchUrl"/>
+  <int value="109" label="Profile.clearPrefetchCache"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -688,6 +696,13 @@ chromium-metrics-reviews@google.com.
 <enum name="BooleanSameArray">
   <int value="0" label="Not the same resource array"/>
   <int value="1" label="App returned same resource array instance"/>
+</enum>
+
+<enum name="BottomControlsStatus">
+  <int value="0" label="HEIGHT_ZERO"/>
+  <int value="1" label="HIDDEN"/>
+  <int value="2" label="VISIBLE_FULL_HEIGHT"/>
+  <int value="3" label="VISIBLE_PARTIAL_HEIGHT"/>
 </enum>
 
 <enum name="ChromeActivityType">

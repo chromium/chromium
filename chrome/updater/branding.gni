@@ -25,6 +25,8 @@ if (is_chrome_branded) {
   updater_copyright =
       "Copyright 2020 The Chromium Authors. All rights reserved."
   updater_product_full_name = "ChromiumUpdater"
+  updater_product_full_display_name = "Chromium Updater"
+  updater_metainstaller_name = "Chromium Installer"
   mac_team_identifier = "PLACEHOLDER"
   updater_appid = "{6e8ffa8f-e7e2-4000-9884-589283c27015}"
   qualification_appid = "{43f3a046-04b3-4443-a770-d67dae90e440}"

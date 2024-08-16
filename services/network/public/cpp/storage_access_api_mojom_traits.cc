@@ -23,7 +23,7 @@ bool EnumTraits<network::mojom::StorageAccessApiStatus,
       *out = net::StorageAccessApiStatus::kAccessViaAPI;
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 network::mojom::StorageAccessApiStatus EnumTraits<
@@ -35,7 +35,7 @@ network::mojom::StorageAccessApiStatus EnumTraits<
     case net::StorageAccessApiStatus::kAccessViaAPI:
       return network::mojom::StorageAccessApiStatus::kAccessViaAPI;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace mojo

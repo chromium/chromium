@@ -341,8 +341,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // synchronization, the default implementation returns true.
   virtual bool CanSynchronizeVisualProperties();
 
-  // Returns the zoom level used for this RenderWidgetHostView.
-  virtual double GetZoomLevel() const;
+  // For an embedded widget, returns the cumulative effect of CSS zoom on the
+  // embedding element (e.g. <iframe>) and its ancestors. For a top-level
+  // widget, returns 1.0.
+  virtual double GetCSSZoomFactor() const;
 
   //----------------------------------------------------------------------------
   // The following methods are related to IME.

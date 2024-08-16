@@ -21,10 +21,6 @@ BASE_DECLARE_FEATURE(kPushSubscriptionWithExpirationTime);
 // corresponds to.
 BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointEnvironment);
 
-// FeatureParam indicating what URL to use. The production URL is set by
-// default.
-extern const base::FeatureParam<std::string> kPushMessagingGcmEndpointUrl;
-
 #if BUILDFLAG(IS_ANDROID)
 // Feature flag to revoke site-level Notifications permissions and FCM
 // registration.

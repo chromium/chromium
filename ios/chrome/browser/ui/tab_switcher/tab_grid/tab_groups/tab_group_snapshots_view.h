@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class GroupTabInfo;
+@class GroupTabView;
 
 // View controller that manages the tab group sample view with multiples
 // snapshots.
@@ -21,6 +22,10 @@
 - (void)configureTabGroupSnapshotsViewWithTabGroupInfos:
             (NSArray<GroupTabInfo*>*)tabGroupInfos
                                                    size:(NSUInteger)size;
+
+// Returns all tab views that compose this tab group view in the order they're
+// presented.
+- (NSArray<GroupTabView*>*)allGroupTabViews;
 
 @end
 

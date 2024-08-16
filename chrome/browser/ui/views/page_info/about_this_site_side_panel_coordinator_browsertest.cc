@@ -6,6 +6,7 @@
 #include "base/strings/escape.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -70,7 +71,7 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   base::test::ScopedFeatureList feature_list_;

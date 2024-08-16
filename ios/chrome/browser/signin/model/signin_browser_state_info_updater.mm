@@ -9,8 +9,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
     signin::IdentityManager* identity_manager,

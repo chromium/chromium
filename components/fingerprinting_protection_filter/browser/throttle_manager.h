@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/subresource_filter/content/shared/browser/page_load_statistics.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -265,6 +266,8 @@ class ThrottleManager : public base::SupportsUserData::Data {
   // activation is triggered. Will go away when there are no more activated
   // RenderFrameHosts (i.e. activated_frame_hosts_ is empty).
   std::unique_ptr<subresource_filter::VerifiedRuleset::Handle> ruleset_handle_;
+
+  std::unique_ptr<subresource_filter::PageLoadStatistics> statistics_;
 
   // TODO(https://crbug.com/40280666): Add statistics once they are available in
   // a shared SubresourceFilter directory.

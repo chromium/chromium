@@ -27,8 +27,9 @@ build_webui("build") {
 
   css_files = [
     "description_citation.css",
-    "loading_state.css",
     "disclosure/app.css",
+    "horizontal_carousel.css",
+    "loading_state.css",
   ]
 
   mojo_files_deps = [
@@ -42,6 +43,8 @@ build_webui("build") {
     "disclosure/app.html.ts",
     "disclosure/app.ts",
     "drag_and_drop_manager.ts",
+    "horizontal_carousel.html.ts",
+    "horizontal_carousel.ts",
     "loading_state.html.ts",
     "loading_state.ts",
     "router.ts",
@@ -52,6 +55,10 @@ build_webui("build") {
   icons_html_files = [ "images/icons.html" ]
 
   ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",

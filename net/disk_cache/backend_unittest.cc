@@ -4093,8 +4093,8 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOpenBadFile) {
 
   disk_cache::SimpleFileHeader header;
   header.initial_magic_number = UINT64_C(0xbadf00d);
-  EXPECT_TRUE(base::WriteFile(entry_file1_path,
-                              base::as_bytes(base::make_span(&header, 1u))));
+  EXPECT_TRUE(
+      base::WriteFile(entry_file1_path, base::byte_span_from_ref(header)));
   ASSERT_THAT(OpenEntry(key, &entry), IsError(net::ERR_FAILED));
 }
 

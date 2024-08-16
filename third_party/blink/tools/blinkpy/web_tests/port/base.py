@@ -195,6 +195,8 @@ class Port(object):
         ('mac13-arm64', 'arm64'),
         ('mac14', 'x86_64'),
         ('mac14-arm64', 'arm64'),
+        ('mac15', 'x86_64'),
+        ('mac15-arm64', 'arm64'),
         ('win10.20h2', 'x86'),
         ('win11-arm64', 'arm64'),
         ('win11', 'x86_64'),
@@ -206,7 +208,7 @@ class Port(object):
     CONFIGURATION_SPECIFIER_MACROS = {
         'mac': [
             'mac11', 'mac11-arm64', 'mac12', 'mac12-arm64', 'mac13',
-            'mac13-arm64', 'mac14', 'mac14-arm64'
+            'mac13-arm64', 'mac14', 'mac14-arm64', 'mac15', 'mac15-arm64'
         ],
         'ios': ['ios17-simulator'],
         'win': ['win10.20h2', 'win11-arm64', 'win11'],
@@ -720,6 +722,11 @@ class Port(object):
     def driver_name(self):
         if self.get_option('driver_name'):
             return self.get_option('driver_name')
+        product = self.get_option('product')
+        if product == 'chrome':
+            return self.CHROME_NAME
+        elif product == 'headless_shell':
+            return self.HEADLESS_SHELL_NAME
         return self.CONTENT_SHELL_NAME
 
     def expected_baselines_by_extension(self, test_name):

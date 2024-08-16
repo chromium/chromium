@@ -16,13 +16,13 @@
 #include "base/time/time.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
-#include "components/sync/engine/model_type_registry.h"
+#include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 
 namespace syncer {
 
 class ExtensionsActivity;
-class ModelTypeRegistry;
+class DataTypeRegistry;
 class ServerConnectionManager;
 
 // Default number of items a client can commit in a single message.
@@ -43,7 +43,7 @@ class SyncCycleContext {
                    ExtensionsActivity* extensions_activity,
                    const std::vector<SyncEngineEventListener*>& listeners,
                    DebugInfoGetter* debug_info_getter,
-                   ModelTypeRegistry* model_type_registry,
+                   DataTypeRegistry* data_type_registry,
                    const std::string& cache_guid,
                    const std::string& birthday,
                    const std::string& bag_of_chips,
@@ -56,7 +56,7 @@ class SyncCycleContext {
 
   ServerConnectionManager* connection_manager() { return connection_manager_; }
 
-  ModelTypeSet GetConnectedTypes() const;
+  DataTypeSet GetConnectedTypes() const;
 
   ExtensionsActivity* extensions_activity() {
     return extensions_activity_.get();
@@ -96,7 +96,7 @@ class SyncCycleContext {
 
   const sync_pb::ClientStatus& client_status() const { return client_status_; }
 
-  ModelTypeRegistry* model_type_registry() { return model_type_registry_; }
+  DataTypeRegistry* data_type_registry() { return data_type_registry_; }
 
   bool cookie_jar_mismatch() const { return cookie_jar_mismatch_; }
 
@@ -149,7 +149,7 @@ class SyncCycleContext {
   // client behavior on server side.
   const raw_ptr<DebugInfoGetter, DanglingUntriaged> debug_info_getter_;
 
-  const raw_ptr<ModelTypeRegistry> model_type_registry_;
+  const raw_ptr<DataTypeRegistry> data_type_registry_;
 
   // Satus information to be sent up to the server.
   sync_pb::ClientStatus client_status_;

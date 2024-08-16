@@ -826,10 +826,12 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
       BucketInfosFromSqlStatement(statement_expired);
 
   // Return early if we don't need to gather stale buckets as well.
-  if (!base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
+  if (already_evicted_stale_storage_ ||
+      !base::FeatureList::IsEnabled(features::kEvictStaleQuotaStorage) ||
       GetNow() < evict_stale_buckets_after_) {
     return expired_buckets;
   }
+  already_evicted_stale_storage_ = true;
 
   // We gather stale buckets in a different fetch round so that we can count
   // the amount found for metrics and filter out persistent buckets. After
@@ -866,16 +868,20 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
   }
   base::UmaHistogramCounts100000("Quota.StaleBucketCount", buckets_found);
 
-  // TODO(crbug.com/353555346): Merge this with the query above and start
-  // clearing storage. For now, we are just gathering metrics on orphaned
-  // storage (inactive quota buckets with a nonce which cannot be reused).
+  // Return early if we don't need to gather orphan buckets as well.
+  if (!base::FeatureList::IsEnabled(features::kEvictOrphanQuotaStorage)) {
+    return expired_buckets;
+  }
+
+  // We gather orphan buckets in a different fetch round so that we can count
+  // the amount found. After launch it may be worth merging these queries.
   // We only need to check for ^1 and ^4 are these are indicators for the
   // presence of a nonce in the storage key.
   // For more on StorageKey encoding see EncodedAttribute in
-  // clang-format off
   // third_party/blink/common/storage_key/storage_key.cc
+  // clang-format off
   static constexpr char kSqlOrphan[] =
-      "SELECT count(*) "
+      "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
         "WHERE storage_key REGEXP '.*\\^(1|4).*' AND "
               "last_accessed < ? AND last_modified < ?";
@@ -886,10 +892,13 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
   base::Time orphan_cutoff = GetNow() - base::Days(1);
   statement_orphan.BindTime(0, orphan_cutoff);
   statement_orphan.BindTime(1, orphan_cutoff);
-  if (statement_orphan.Step()) {
-    base::UmaHistogramCounts100000("Quota.OrphanBucketCount",
-                                   statement_orphan.ColumnInt64(0));
+
+  buckets_found = 0;
+  while ((bucket = BucketInfoFromSqlStatement(statement_orphan)).has_value()) {
+    expired_buckets.insert(*bucket);
+    buckets_found++;
   }
+  base::UmaHistogramCounts100000("Quota.OrphanBucketCount", buckets_found);
 
   return expired_buckets;
 }
@@ -967,6 +976,11 @@ base::Time QuotaDatabase::GetNow() {
 // static
 void QuotaDatabase::SetClockForTesting(base::Clock* clock) {
   g_clock_for_testing = clock;
+}
+
+void QuotaDatabase::SetAlreadyEvictedStaleStorageForTesting(
+    bool already_evicted_stale_storage) {
+  already_evicted_stale_storage_ = already_evicted_stale_storage;
 }
 
 void QuotaDatabase::CommitNow() {

@@ -362,7 +362,8 @@ ScriptPromise<IDLUndefined> OutgoingStream::WriteOrCacheData(
     ScriptState* script_state,
     base::span<const uint8_t> data) {
   DVLOG(1) << "OutgoingStream::WriteOrCacheData() this=" << this << " data=("
-           << data.data() << ", " << data.size() << ")";
+           << static_cast<const void*>(data.data()) << ", " << data.size()
+           << ")";
   size_t written = WriteDataSynchronously(data);
 
   if (written == data.size())
@@ -424,7 +425,8 @@ void OutgoingStream::WriteCachedData() {
 // bytes written. May close |data_pipe_| as a side-effect on error.
 size_t OutgoingStream::WriteDataSynchronously(base::span<const uint8_t> data) {
   DVLOG(1) << "OutgoingStream::WriteDataSynchronously() this=" << this
-           << " data=(" << data.data() << ", " << data.size() << ")";
+           << " data=(" << static_cast<const void*>(data.data()) << ", "
+           << data.size() << ")";
   DCHECK(data_pipe_);
 
   size_t actually_written_bytes = 0;

@@ -4,66 +4,61 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from '//resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {FeaturePromoDemoPageInfo} from './user_education_internals.mojom-webui.js';
-import {getTemplate} from './user_education_internals_card.html.js';
+import {getCss} from './user_education_internals_card.css.js';
+import {getHtml} from './user_education_internals_card.html.js';
 
 const PROMO_LAUNCH_EVENT = 'promo-launch';
 const CLEAR_PROMO_DATA_EVENT = 'clear-promo-data';
 
-class UserEducationInternalsCardElement extends PolymerElement {
+export class UserEducationInternalsCardElement extends CrLitElement {
   static get is() {
     return 'user-education-internals-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      promo: Object,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      showAction: {
-        type: Boolean,
-        value: false,
-      },
+  static override get properties() {
+    return {
+      promo: {type: Object},
+      showAction: {type: Boolean},
 
       /**
        * Indicates if the list of instructions is expanded or collapsed.
        */
-      instructionsExpanded_: {
-        type: Boolean,
-        value: false,
-      },
+      instructionsExpanded_: {type: Boolean},
 
       /**
        * Indicates if the list of promo data is expanded or collapsed.
        */
-      dataExpanded_: {
-        type: Boolean,
-        value: false,
-      },
+      dataExpanded_: {type: Boolean},
     };
   }
 
-  promo: FeaturePromoDemoPageInfo;
-  showAction: boolean;
-  private instructionsExpanded_: boolean;
-  private dataExpanded_: boolean;
+  promo: FeaturePromoDemoPageInfo|null = null;
+  showAction: boolean = false;
+  protected instructionsExpanded_: boolean = false;
+  protected dataExpanded_: boolean = false;
 
-  private launchPromo_() {
+  protected launchPromo_() {
+    assert(this.promo);
     this.dispatchEvent(new CustomEvent(
         PROMO_LAUNCH_EVENT,
         {bubbles: true, composed: true, detail: this.promo.internalName}));
   }
 
-  private clearData_() {
+  protected clearData_() {
+    assert(this.promo);
     if (confirm(
             'Clear all data associated with this User Education journey?\n' +
             'Note: because of session tracking and event constraints, ' +
@@ -74,39 +69,48 @@ class UserEducationInternalsCardElement extends PolymerElement {
     }
   }
 
-  private showMilestone_() {
+  protected showMilestone_() {
+    assert(this.promo);
     return this.promo.addedMilestone > 0;
   }
 
-  private showDescription_() {
+  protected showDescription_() {
+    assert(this.promo);
     return this.promo.displayDescription !== '';
   }
 
-  private formatPlatforms_() {
+  protected formatPlatforms_() {
+    assert(this.promo);
     return this.promo.supportedPlatforms.join(', ');
   }
 
-  private showRequiredFeatures_() {
+  protected showRequiredFeatures_() {
+    assert(this.promo);
     return this.promo.requiredFeatures.length;
   }
 
-  private formatRequiredFeatures_() {
+  protected formatRequiredFeatures_() {
+    assert(this.promo);
     return this.promo.requiredFeatures.join(', ');
   }
 
-  private showInstructions_() {
+  protected showInstructions_() {
+    assert(this.promo);
     return this.promo.instructions.length;
   }
 
-  private showFollowedBy_() {
+  protected showFollowedBy_() {
+    assert(this.promo);
     return this.promo.followedByInternalName;
   }
 
-  private showData_() {
+  protected showData_() {
+    assert(this.promo);
     return this.promo.data.length;
   }
 
-  private scrollToFollowedBy_() {
+  protected scrollToFollowedBy_() {
+    assert(this.promo);
     const parent = this.parentElement;
     if (parent) {
       const allCards = parent.querySelectorAll('user-education-internals-card');
@@ -122,8 +126,23 @@ class UserEducationInternalsCardElement extends PolymerElement {
     }
   }
 
-  private getFollowedByAnchor_() {
+  protected getFollowedByAnchor_() {
+    assert(this.promo);
     return encodeURIComponent(this.promo.followedByInternalName);
+  }
+
+  protected onInstructionsExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.instructionsExpanded_ = e.detail.value;
+  }
+
+  protected onDataExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.dataExpanded_ = e.detail.value;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'user-education-internals-card': UserEducationInternalsCardElement;
   }
 }
 

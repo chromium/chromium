@@ -71,7 +71,7 @@ const char* GetProcessPriorityString(const base::Process& process) {
     case base::Process::Priority::kUserBlocking:
       return "User blocking";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 

@@ -12,6 +12,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/font.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -69,7 +70,7 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
   DialogDelegate::SetShowTitle(false);
   DialogDelegate::SetShowCloseButton(false);
 
-  DialogDelegate::SetModalType(ui::MODAL_TYPE_WINDOW);
+  DialogDelegate::SetModalType(ui::mojom::ModalType::kWindow);
   DialogDelegate::set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

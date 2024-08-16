@@ -60,18 +60,6 @@ FakeTrustedVaultClientBackend::FakeTrustedVaultClientBackend() = default;
 
 FakeTrustedVaultClientBackend::~FakeTrustedVaultClientBackend() = default;
 
-void FakeTrustedVaultClientBackend::AddObserver(
-    Observer* observer,
-    const std::string& security_domain_path) {
-  // Do nothing.
-}
-
-void FakeTrustedVaultClientBackend::RemoveObserver(
-    Observer* observer,
-    const std::string& security_domain_path) {
-  // Do nothing.
-}
-
 void FakeTrustedVaultClientBackend::
     SetDeviceRegistrationPublicKeyVerifierForUMA(VerifierCallback verifier) {
   // Do nothing.

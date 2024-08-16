@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.fuzz builder group."""
 
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 
@@ -109,6 +109,7 @@ try_.builder(
     gn_args = "ci/Mac ASAN Release",
     cores = None,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(

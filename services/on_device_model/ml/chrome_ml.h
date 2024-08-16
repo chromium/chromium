@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
@@ -18,7 +19,7 @@ namespace ml {
 // A ChromeMLHolder object encapsulates a reference to the ChromeML shared
 // library, exposing the library's API functions to callers and ensuring that
 // the library remains loaded and usable throughout the object's lifetime.
-class ChromeMLHolder {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeMLHolder {
  public:
   ChromeMLHolder(base::PassKey<ChromeMLHolder>,
                  base::ScopedNativeLibrary library,
@@ -44,7 +45,7 @@ class ChromeMLHolder {
   raw_ptr<const ChromeMLAPI> api_;
 };
 
-class ChromeML {
+class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
  public:
   // Use Get() to acquire a global instance.
   ChromeML(base::PassKey<ChromeML>, ChromeMLHolder holder);
@@ -58,19 +59,11 @@ class ChromeML {
   // Exposes the raw ChromeMLAPI functions defined by the library.
   const ChromeMLAPI& api() const { return holder_.api(); }
 
-  // Whether or not the GPU is blocklisted.
-  bool IsGpuBlocked() const;
-
-  void SetAllowGpuForTesting(bool allow_gpu) {
-    allow_gpu_for_testing_ = allow_gpu;
-  }
-
  private:
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
   ChromeMLHolder holder_;
-  bool allow_gpu_for_testing_ = false;
 };
 
 }  // namespace ml

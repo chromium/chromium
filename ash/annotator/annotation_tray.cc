@@ -90,8 +90,7 @@ const gfx::VectorIcon& GetIconForTool(AnnotatorToolType tool, SkColor color) {
       }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kPaletteTrayIconProjectorIcon;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -164,7 +163,7 @@ void AnnotationTray::HideBubbleWithView(
     CloseBubble();
 }
 
-void AnnotationTray::CloseBubble() {
+void AnnotationTray::CloseBubbleInternal() {
   pen_view_ = nullptr;
   bubble_.reset();
   // Annotator can be enabled after closing the bubble so set the activity state
@@ -343,8 +342,7 @@ int AnnotationTray::GetAccessibleNameForColor(SkColor color) {
     case kAnnotatorMagentaPenColor:
       return IDS_MAGENTA_COLOR_BUTTON;
   }
-  NOTREACHED_IN_MIGRATION();
-  return IDS_RED_COLOR_BUTTON;
+  NOTREACHED();
 }
 
 void AnnotationTray::ResetTray() {

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -29,7 +30,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -68,6 +68,13 @@ struct TestData {
   const std::vector<std::string> output;
 };
 
+struct IphData {
+  const IphType iph_type;
+  const std::u16string iph_contents;
+  const std::u16string iph_link_text;
+  const GURL iph_link_url;
+};
+
 }  // namespace
 
 class FeaturedSearchProviderTest : public testing::Test {
@@ -80,8 +87,6 @@ class FeaturedSearchProviderTest : public testing::Test {
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
-    client_->set_template_url_service(
-        search_engines_test_environment_.ReleaseTemplateURLService());
     provider_ = new FeaturedSearchProvider(client_.get());
     omnibox::RegisterProfilePrefs(
         static_cast<sync_preferences::TestingPrefServiceSyncable*>(
@@ -105,6 +110,23 @@ class FeaturedSearchProviderTest : public testing::Test {
       for (size_t j = 0; j < cases[i].output.size(); ++j) {
         EXPECT_EQ(GURL(cases[i].output[j]), matches[j].destination_url);
       }
+    }
+  }
+
+  void RunAndVerifyIph(const AutocompleteInput& input,
+                       const std::vector<IphData> expected_iphs) {
+    provider_->Start(input, false);
+    EXPECT_TRUE(provider_->done());
+    ACMatches matches = provider_->matches();
+    if (matches.size() == expected_iphs.size()) {
+      for (size_t j = 0; j < expected_iphs.size(); ++j) {
+        EXPECT_EQ(matches[j].iph_type, expected_iphs[j].iph_type);
+        EXPECT_EQ(matches[j].contents, expected_iphs[j].iph_contents);
+        EXPECT_EQ(matches[j].iph_link_text, expected_iphs[j].iph_link_text);
+        EXPECT_EQ(matches[j].iph_link_url, expected_iphs[j].iph_link_url);
+      }
+    } else {
+      EXPECT_EQ(matches.size(), expected_iphs.size());
     }
   }
 
@@ -135,7 +157,6 @@ class FeaturedSearchProviderTest : public testing::Test {
         std::make_unique<TemplateURL>(template_url_data));
   }
 
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<MockAutocompleteProviderClient> client_;
   scoped_refptr<FeaturedSearchProvider> provider_;
 };
@@ -525,4 +546,138 @@ TEST_F(FeaturedSearchProviderTest,
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 0u);
+}
+
+TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
+  // Setup.
+  AddStarterPackEntriesToTemplateUrlService();
+
+  AutocompleteInput zero_input(u"", metrics::OmniboxEventProto::OTHER,
+                               TestSchemeClassifier());
+  zero_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  AutocompleteInput non_zero_input(u"x", metrics::OmniboxEventProto::OTHER,
+                                   TestSchemeClassifier());
+  AutocompleteInput scope_input(u"@history", metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+
+  auto mock_setting = [&](bool setting_visible, bool setting_opted_in) {
+    CHECK(!setting_opted_in || setting_visible);
+    EXPECT_CALL(*client_, IsHistoryEmbeddingsSettingVisible())
+        .WillRepeatedly(testing::Return(setting_visible));
+    EXPECT_CALL(*client_, IsHistoryEmbeddingsEnabled())
+        .WillRepeatedly(testing::Return(setting_opted_in));
+  };
+
+  // No IPH is shown when the feature is disabled.
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(zero_input, {});
+  }
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(scope_input, {});
+  }
+
+  // '@history' promo is shown when embeddings is not opted-in (even if the
+  // feature is enabled).
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      history_embeddings::kHistoryEmbeddings,
+      {{history_embeddings::kOmniboxScoped.name, "true"}});
+  mock_setting(false, false);
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(zero_input,
+                    {{IphType::kHistoryScopePromo,
+                      u"Type @history to search your browsing history"}});
+  }
+  // Not shown for non-zero input.
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+
+  // '@history' AI promo is shown when embeddings is opted-in.
+  mock_setting(true, true);
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(
+        zero_input,
+        {{IphType::kHistoryEmbeddingsScopePromo,
+          u"Type @history to search your browsing history, powered by AI"}});
+  }
+  // Not shown for non-zero input.
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+
+  // chrome://settings/historySearch promo shown when not opted-in and in
+  // @history scope.
+  mock_setting(true, false);
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(
+        scope_input,
+        {{IphType::kHistoryEmbeddingsSettingsPromo,
+          // Should end with whitespace since there's a link following it.
+          u"For a more powerful way to search your browsing history, turn on ",
+          u"History search, powered by AI",
+          GURL("chrome://settings/historySearch")}});
+  }
+  // Not shown for unscoped inputs. Zero input will show the '@history' promo
+  // tested above, so just test `non_zero_input` here.
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+  // Not shown if the setting isn't available.
+  mock_setting(false, false);
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(scope_input, {});
+  }
+
+  // Disclaimer shown when opted-in and in @history scope.
+  mock_setting(true, true);
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(
+        scope_input,
+        {{IphType::kHistoryEmbeddingsDisclaimer,
+          // Should end with whitespace since there's a link following it.
+          u"Your searches, best matches, and their page contents are sent to "
+          u"Google and may be seen by human reviewers to improve this feature. "
+          u"This is an experimental feature and won't always get it right. ",
+          u"Learn more", GURL("chrome://settings/historySearch")}});
+  }
+  // Not shown for unscoped inputs. Zero input will show the '@history' AI promo
+  // tested above, so just test `non_zero_input` here.
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+
+  // Not shown if omnibox entry is disabled, even if embeddings is overall
+  // enabled.
+  base::test::ScopedFeatureList features_without_omnibox;
+  features_without_omnibox.InitAndEnableFeatureWithParameters(
+      history_embeddings::kHistoryEmbeddings,
+      {{history_embeddings::kOmniboxScoped.name, "false"}});
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(zero_input, {});
+  }
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(non_zero_input, {});
+  }
+  {
+    SCOPED_TRACE("");
+    RunAndVerifyIph(scope_input, {});
+  }
 }

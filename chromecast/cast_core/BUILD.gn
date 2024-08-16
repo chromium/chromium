@@ -43,6 +43,17 @@ cast_source_set("cast_runtime_main") {
   ]
 }
 
+cast_source_set("cast_starboard_runtime_main") {
+  sources = [ "cast_starboard_runtime_main.cc" ]
+
+  deps = [
+    ":child_log_process",
+    "//base",
+    "//chromecast/app",
+    "//content/public/app",
+  ]
+}
+
 cast_executable("core_runtime_simple") {
   deps = [
     ":cast_runtime_main",
@@ -53,10 +64,19 @@ cast_executable("core_runtime_simple") {
 
 cast_executable("core_runtime_starboard") {
   deps = [
-    ":cast_runtime_main",
+    ":cast_starboard_runtime_main",
     ":core_runtime_lib_starboard",
     "//chromecast:chromecast_locales_pak",
   ]
+}
+
+cast_source_set("child_log_process") {
+  sources = [
+    "child_log_process.cc",
+    "child_log_process.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 group("all_unit_tests") {

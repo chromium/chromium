@@ -53,6 +53,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -70,7 +71,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -460,7 +460,7 @@ std::unique_ptr<developer::ProfileInfo> DeveloperPrivateAPI::CreateProfileInfo(
     Profile* profile) {
   std::unique_ptr<developer::ProfileInfo> info(new developer::ProfileInfo());
   info->is_child_account =
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
+      supervised_user::AreExtensionsPermissionsEnabled(profile);
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
@@ -1060,8 +1060,7 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   if (update.in_developer_mode) {
     Profile* profile = Profile::FromBrowserContext(browser_context());
     CHECK(profile);
-    if (supervised_user::AreExtensionsPermissionsEnabled(
-            *profile->GetPrefs())) {
+    if (supervised_user::AreExtensionsPermissionsEnabled(profile)) {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     }
     util::SetDeveloperModeForProfile(profile, *update.in_developer_mode);
@@ -1289,8 +1288,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())) {
+  if (profile && supervised_user::AreExtensionsPermissionsEnabled(profile)) {
     return RespondNow(
         Error("Child account users cannot load unpacked extensions."));
   }
@@ -1938,8 +1936,7 @@ ExtensionFunction::ResponseAction
 DeveloperPrivateIsProfileManagedFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   return RespondNow(WithArguments(
-      profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs())));
+      profile && supervised_user::AreExtensionsPermissionsEnabled(profile)));
 }
 
 DeveloperPrivateIsProfileManagedFunction::
@@ -2843,7 +2840,7 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
       experiment_manager->GetCurrentExperimentStage();
   switch (experiment_stage) {
     case MV2ExperimentStage::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 
     case MV2ExperimentStage::kWarning: {
       // Immediately dismiss the notice.
@@ -2862,14 +2859,14 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
         return AlreadyResponded();
       }
 
-      content::WebContents* web_contents = GetSenderWebContents();
-      if (!web_contents) {
+      Browser* browser = chrome::FindLastActiveWithProfile(
+          Profile::FromBrowserContext(browser_context()));
+      if (!browser) {
         return RespondNow(Error(kCouldNotFindWebContentsError));
       }
-      gfx::NativeWindow parent = web_contents->GetTopLevelNativeWindow();
 
       ShowMv2DeprecationKeepDialog(
-          browser_context(), parent, *extension,
+          browser, *extension,
           base::BindOnce(
               &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
                   OnDialogAccepted,

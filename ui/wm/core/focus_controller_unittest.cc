@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -1514,18 +1515,22 @@ class FocusControllerParentHideTest : public FocusControllerHideTest {
     aura::Window* w1 = root_window()->GetChildById(1);
     aura::Window* w11 = root_window()->GetChildById(11);
     ::wm::AddTransientChild(w1, w11);
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
-    EXPECT_EQ(ui::MODAL_TYPE_NONE, w1->GetProperty(aura::client::kModalKey));
-    EXPECT_EQ(ui::MODAL_TYPE_WINDOW, w11->GetProperty(aura::client::kModalKey));
+    EXPECT_EQ(ui::mojom::ModalType::kNone,
+              w1->GetProperty(aura::client::kModalKey));
+    EXPECT_EQ(ui::mojom::ModalType::kWindow,
+              w11->GetProperty(aura::client::kModalKey));
 
     // Hide the parent window w1 and show it again.
     w1->Hide();
     w1->Show();
 
     // Test that child window w11 doesn't change its modality property.
-    EXPECT_EQ(ui::MODAL_TYPE_NONE, w1->GetProperty(aura::client::kModalKey));
-    EXPECT_EQ(ui::MODAL_TYPE_WINDOW, w11->GetProperty(aura::client::kModalKey));
+    EXPECT_EQ(ui::mojom::ModalType::kNone,
+              w1->GetProperty(aura::client::kModalKey));
+    EXPECT_EQ(ui::mojom::ModalType::kWindow,
+              w11->GetProperty(aura::client::kModalKey));
   }
 };
 

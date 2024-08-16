@@ -9,6 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -20,7 +22,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_benefit_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -80,6 +81,10 @@ class PaymentsSyncBridgeUtilTest : public testing::Test {
       delete;
 
   ~PaymentsSyncBridgeUtilTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
@@ -268,9 +273,7 @@ TEST_P(PaymentsSyncBridgeUtilCardBenefitsTest,
 
   // Set a time in milliseconds accuracy so that the testing benefits can be
   // generated in milliseconds to match the server format.
-  TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromMillisecondsSinceUnixEpoch(1234);
-  test_clock.SetNow(arbitrary_time);
+  task_environment_.FastForwardBy(base::Milliseconds(1234));
 
   // Add two credit-card-linked benefits to card 1.
   CreditCardBenefit merchant_benefit =
@@ -393,10 +396,8 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 // Verify that the use stats on disk are kept when server cards are synced.
 TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepUseStats) {
-  TestAutofillClock test_clock;
-  base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
   base::Time disk_time = base::Time::FromSecondsSinceUnixEpoch(10);
-  test_clock.SetNow(arbitrary_time);
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
@@ -1070,13 +1071,14 @@ class PaymentsSyncBridgeUtilTest_WalletCardMapping
 // Test to verify the correct mapping of CardType to the card network.
 TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
        VerifyCardTypeMappingFromCardNetwork) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableVerveCardSupport);
   auto test_case = GetParam();
 
   syncer::EntityChangeList entity_data;
   // Add a credit card.
   std::string credit_card_id = "credit_card_1";
-  // Add the first card that has its billing address id set to the address's id.
-  // No nickname is set.
+  // Add the first card. No nickname is set.
   sync_pb::AutofillWalletSpecifics wallet_specifics_card =
       CreateAutofillWalletSpecificsForCard(
           /*client_tag=*/credit_card_id,
@@ -1106,6 +1108,8 @@ TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
 // Test to verify the correct mapping of the card network to CardType.
 TEST_P(PaymentsSyncBridgeUtilTest_WalletCardMapping,
        VerifyCardNetworkMappingFromCardType) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableVerveCardSupport);
   auto test_case = GetParam();
 
   CreditCard credit_card = test::GetMaskedServerCard();
@@ -1138,6 +1142,65 @@ INSTANTIATE_TEST_SUITE_P(
                               autofill::kVerveCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
                               autofill::kVisaCard}));
+
+// These two tests verify the same case as
+// `PaymentsSyncBridgeUtilTest_WalletCardMapping` but with the added caveat of
+// checking the Verve conversion values with `kAutofillEnableVerveCardSupport`
+// flag off.
+TEST_F(PaymentsSyncBridgeUtilTest,
+       VerifyCardNetworkMappingFromCardType_ForVerve_WithFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableVerveCardSupport);
+
+  CreditCard credit_card = test::GetMaskedServerCard();
+  credit_card.SetNetworkForMaskedCard(autofill::kVerveCard);
+
+  sync_pb::AutofillWalletSpecifics wallet_specifics;
+  SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
+
+  // With the flag off, the card type is UNKNOWN instead of VERVE.
+  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::UNKNOWN,
+            wallet_specifics.mutable_masked_card()->type());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       VerifyCardTypeMappingFromCardNetwork_ForVerve_WithFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableVerveCardSupport);
+
+  syncer::EntityChangeList entity_data;
+  // Add a credit card.
+  std::string credit_card_id = "credit_card_1";
+  // Add the first card. No nickname is set.
+  sync_pb::AutofillWalletSpecifics wallet_specifics_card =
+      CreateAutofillWalletSpecificsForCard(
+          /*client_tag=*/credit_card_id,
+          /*billing_address_id=*/"1");
+  wallet_specifics_card.mutable_masked_card()->set_type(
+      sync_pb::WalletMaskedCreditCard::VERVE);
+
+  entity_data.push_back(EntityChange::CreateAdd(
+      credit_card_id,
+      SpecificsToEntity(wallet_specifics_card, /*client_tag=*/"card-card1")));
+
+  std::vector<CreditCard> wallet_cards;
+  std::vector<Iban> wallet_ibans;
+  std::vector<PaymentsCustomerData> customer_data;
+  std::vector<CreditCardCloudTokenData> cloud_token_data;
+  std::vector<BankAccount> bank_accounts;
+  std::vector<CreditCardBenefit> benefits;
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
+                                  customer_data, cloud_token_data,
+                                  bank_accounts, benefits, payment_instruments);
+
+  ASSERT_EQ(1U, wallet_cards.size());
+  // With the flag off, the card network is `kGenericCard` instead of
+  // `kVerveCard`.
+  EXPECT_EQ(autofill::kGenericCard, wallet_cards.front().network());
+}
 
 }  // namespace
 }  // namespace autofill

@@ -280,7 +280,7 @@ void WorkerScriptLoader::OnComplete(
       break;
     case State::kOnCompleteCalled:
     case State::kCompleted:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   CommitCompleted();
 }
@@ -302,7 +302,7 @@ void WorkerScriptLoader::OnFetcherCallbackCalled() {
       // ignore the fetcher callback notification.
       break;
     case State::kFetcherCallbackCalled:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

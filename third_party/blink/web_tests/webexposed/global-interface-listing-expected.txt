@@ -5,10 +5,41 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 [INTERFACES]
 interface AI
     attribute @@toStringTag
+    getter rewriter
+    getter summarizer
+    getter writer
     method canCreateTextSession
     method constructor
     method createTextSession
     method textModelInfo
+interface AIRewriter
+    attribute @@toStringTag
+    getter length
+    getter sharedContext
+    getter tone
+    method constructor
+    method destroy
+    method rewrite
+    method rewriteStreaming
+interface AIRewriterFactory
+    attribute @@toStringTag
+    method constructor
+    method create
+interface AISummarizer
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method summarize
+    method summarizeStreaming
+interface AISummarizerCapabilities
+    attribute @@toStringTag
+    getter available
+    method constructor
+interface AISummarizerFactory
+    attribute @@toStringTag
+    method capabilities
+    method constructor
+    method create
 interface AITextSession
     attribute @@toStringTag
     method clone
@@ -16,6 +47,17 @@ interface AITextSession
     method destroy
     method prompt
     method promptStreaming
+interface AIWriter
+    attribute @@toStringTag
+    getter sharedContext
+    method constructor
+    method destroy
+    method write
+    method writeStreaming
+interface AIWriterFactory
+    attribute @@toStringTag
+    method constructor
+    method create
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -964,7 +1006,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     getter place-self
     getter placeSelf
     getter position-anchor
+    getter position-area
     getter positionAnchor
+    getter positionArea
     getter right
     getter top
     getter width
@@ -1035,7 +1079,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     setter place-self
     setter placeSelf
     setter position-anchor
+    setter position-area
     setter positionAnchor
+    setter positionArea
     setter right
     setter top
     setter width
@@ -1357,7 +1403,6 @@ interface CanvasRenderingContext2D
     method roundRect
     method save
     method scale
-    method scrollPathIntoView
     method setLineDash
     method setTransform
     method stroke
@@ -2908,8 +2953,8 @@ interface EventTarget
     method addEventListener
     method constructor
     method dispatchEvent
-    method on
     method removeEventListener
+    method when
 interface External
     attribute @@toStringTag
     method AddSearchProvider
@@ -2945,8 +2990,6 @@ interface Fence
     method setReportEventDataForAutomaticBeacons
 interface FencedFrameConfig
     attribute @@toStringTag
-    getter height
-    getter width
     method constructor
     method setSharedStorageContext
 interface FetchLaterResult
@@ -4974,6 +5017,7 @@ interface HTMLSelectElement : HTMLElement
     getter options
     getter required
     getter selectedIndex
+    getter selectedOptionElement
     getter selectedOptions
     getter size
     getter type
@@ -4998,6 +5042,7 @@ interface HTMLSelectElement : HTMLElement
     setter name
     setter required
     setter selectedIndex
+    setter selectedOptionElement
     setter size
     setter value
 interface HTMLSelectListElement : HTMLElement
@@ -5022,6 +5067,9 @@ interface HTMLSelectListElement : HTMLElement
     setter name
     setter required
     setter value
+interface HTMLSelectedOptionElement : HTMLElement
+    attribute @@toStringTag
+    method constructor
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
     getter name
@@ -5764,6 +5812,10 @@ interface KeyframeEffect : AnimationEffect
     setter composite
     setter pseudoElement
     setter target
+interface LanguageDetector
+    attribute @@toStringTag
+    method constructor
+    method detect
 interface LanguageTranslator
     attribute @@toStringTag
     method constructor
@@ -7698,6 +7750,7 @@ interface RTCDataChannel : EventTarget
     getter onmessage
     getter onopen
     getter ordered
+    getter priority
     getter protocol
     getter readyState
     getter reliable
@@ -7892,6 +7945,9 @@ interface RTCRtpReceiver
     method getSynchronizationSources
     setter jitterBufferTarget
     setter playoutDelayHint
+interface RTCRtpScriptTransform
+    attribute @@toStringTag
+    method constructor
 interface RTCRtpSendResult
     attribute @@toStringTag
     getter sent
@@ -7907,6 +7963,7 @@ interface RTCRtpSender
     getter dtmf
     getter rtcpTransport
     getter track
+    getter transform
     getter transport
     method constructor
     method createEncodedStreams
@@ -7916,6 +7973,7 @@ interface RTCRtpSender
     method replaceTrack
     method setParameters
     method setStreams
+    setter transform
 interface RTCRtpSent
     attribute @@toStringTag
     getter ackId
@@ -7940,8 +7998,7 @@ interface RTCRtpTransceiver
 interface RTCRtpTransport
     attribute @@toStringTag
     method constructor
-    method readReceivedAcks
-    method readSentRtp
+    method createProcessor
 interface RTCSctpTransport : EventTarget
     attribute @@toStringTag
     getter maxChannels
@@ -9553,6 +9610,7 @@ interface ShadowRoot : DocumentFragment
     getter onslotchange
     getter pictureInPictureElement
     getter pointerLockElement
+    getter referenceTarget
     getter registry
     getter serializable
     getter slotAssignment
@@ -9570,6 +9628,7 @@ interface ShadowRoot : DocumentFragment
     setter fullscreenElement
     setter innerHTML
     setter onslotchange
+    setter referenceTarget
 interface SharedStorage
     attribute @@toStringTag
     getter worklet
@@ -10069,8 +10128,10 @@ interface TransitionEvent : Event
     method constructor
 interface Translation
     attribute @@toStringTag
+    method canDetect
     method canTranslate
     method constructor
+    method createDetector
     method createTranslator
 interface TreeWalker
     attribute @@toStringTag

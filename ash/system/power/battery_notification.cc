@@ -55,8 +55,7 @@ const gfx::VectorIcon& GetBatteryImageMD(
              PowerNotificationController::NOTIFICATION_CRITICAL) {
     return kNotificationBatteryCriticalIcon;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::kNoneIcon;
+    NOTREACHED();
   }
 }
 
@@ -70,8 +69,7 @@ message_center::SystemNotificationWarningLevel GetWarningLevelMD(
              PowerNotificationController::NOTIFICATION_CRITICAL) {
     return message_center::SystemNotificationWarningLevel::CRITICAL_WARNING;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return message_center::SystemNotificationWarningLevel::NORMAL;
+    NOTREACHED();
   }
 }
 
@@ -226,7 +224,7 @@ void HandlePowerNotificationButtonClick(
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -85,7 +85,7 @@ constexpr base::TimeDelta kBandwidthUpdateInterval = base::Milliseconds(500);
 // timeout occurs, the session is terminated.
 constexpr base::TimeDelta kStartRemotePlaybackTimeOut = base::Seconds(5);
 
-constexpr char kLogPrefix[] = "OpenscreenSessionHost: ";
+constexpr char kLogPrefix[] = "OpenscreenSessionHost";
 
 int NumberOfEncodeThreads() {
   // Do not saturate CPU utilization just for encoding. On a lower-end system
@@ -227,11 +227,13 @@ class OpenscreenSessionHost::AudioCapturingCallback final
   using AudioDataCallback =
       base::RepeatingCallback<void(std::unique_ptr<media::AudioBus> audio_bus,
                                    base::TimeTicks recorded_time)>;
-  using ErrorCallback = base::OnceCallback<void(const std::string&)>;
+  using ErrorCallback = base::OnceCallback<void(std::string_view)>;
   AudioCapturingCallback(AudioDataCallback audio_data_callback,
-                         ErrorCallback error_callback)
+                         ErrorCallback error_callback,
+                         mojo::Remote<mojom::SessionObserver>& observer)
       : audio_data_callback_(std::move(audio_data_callback)),
-        error_callback_(std::move(error_callback)) {
+        error_callback_(std::move(error_callback)),
+        logger_("AudioCapturingCallback", observer) {
     DCHECK(!audio_data_callback_.is_null());
   }
 
@@ -242,7 +244,7 @@ class OpenscreenSessionHost::AudioCapturingCallback final
 
  private:
   // media::AudioCapturerSource::CaptureCallback implementation.
-  void OnCaptureStarted() override {}
+  void OnCaptureStarted() override { logger_.LogInfo("OnCaptureStarted"); }
 
   // Called on audio thread.
   void Capture(const media::AudioBus* audio_bus,
@@ -250,6 +252,11 @@ class OpenscreenSessionHost::AudioCapturingCallback final
                const media::AudioGlitchInfo& glitch_info,
                double volume,
                bool key_pressed) override {
+    if (!has_captured_) {
+      logger_.LogInfo(
+          base::StringPrintf("first Capture(): volume = %f", volume));
+      has_captured_ = true;
+    }
     // TODO(crbug.com/40103719): Don't copy the audio data. Instead, send
     // |audio_bus| directly to the encoder.
     std::unique_ptr<media::AudioBus> captured_audio =
@@ -260,17 +267,22 @@ class OpenscreenSessionHost::AudioCapturingCallback final
 
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) override {
+    std::string error_message = base::StrCat(
+        {"AudioCaptureError occurred, code: ",
+         base::NumberToString(static_cast<int>(code)), ", message: ", message});
     if (!error_callback_.is_null())
-      std::move(error_callback_)
-          .Run(base::StrCat({"AudioCaptureError occurred, code: ",
-                             base::NumberToString(static_cast<int>(code)),
-                             ", message: ", message}));
+      std::move(error_callback_).Run(error_message);
   }
 
-  void OnCaptureMuted(bool is_muted) override {}
+  void OnCaptureMuted(bool is_muted) override {
+    logger_.LogInfo(base::StrCat(
+        {"OnCaptureMuted, is_muted = ", base::NumberToString(is_muted)}));
+  }
 
   const AudioDataCallback audio_data_callback_;
   ErrorCallback error_callback_;
+  MirroringLogger logger_;
+  bool has_captured_ = false;
 };
 
 OpenscreenSessionHost::OpenscreenSessionHost(
@@ -287,7 +299,8 @@ OpenscreenSessionHost::OpenscreenSessionHost(
       message_port_(session_params_.source_id,
                     session_params_.destination_id,
                     std::move(outbound_channel),
-                    std::move(inbound_channel)) {
+                    std::move(inbound_channel)),
+      logger_(kLogPrefix, observer_) {
   DCHECK(resource_provider_);
 
   openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
@@ -472,16 +485,15 @@ void OpenscreenSessionHost::OnNegotiated(
             &AudioRtpStream::InsertAudio, audio_stream_->AsWeakPtr())),
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OpenscreenSessionHost::ReportAndLogError,
-            weak_factory_.GetWeakPtr(), SessionError::AUDIO_CAPTURE_ERROR)));
+            weak_factory_.GetWeakPtr(), SessionError::AUDIO_CAPTURE_ERROR)),
+        observer_);
     audio_input_device_ = new media::AudioInputDevice(
-        std::make_unique<CapturedAudioInput>(base::BindRepeating(
-            &OpenscreenSessionHost::CreateAudioStream, base::Unretained(this))),
+        std::make_unique<CapturedAudioInput>(
+            base::BindRepeating(&OpenscreenSessionHost::CreateAudioStream,
+                                base::Unretained(this)),
+            observer_),
         media::AudioInputDevice::Purpose::kLoopback,
         media::AudioInputDevice::DeadStreamDetection::kEnabled);
-    const media::AudioParameters& capture_params =
-        mirror_settings_.GetAudioCaptureParams();
-    LogInfoMessage(base::StrCat({"Creating AudioInputDevice with params ",
-                                 capture_params.AsHumanReadableString()}));
     audio_input_device_->Initialize(mirror_settings_.GetAudioCaptureParams(),
                                     audio_capturing_callback_.get());
     audio_input_device_->Start();
@@ -517,7 +529,7 @@ void OpenscreenSessionHost::OnNegotiated(
         std::move(video_sender), weak_factory_.GetWeakPtr(),
         mirror_settings_.refresh_interval());
 
-    LogInfoMessage(base::StringPrintf(
+    logger_.LogInfo(base::StringPrintf(
         "Created video stream with refresh interval of %d ms",
         static_cast<int>(
             mirror_settings_.refresh_interval().InMilliseconds())));
@@ -530,8 +542,8 @@ void OpenscreenSessionHost::OnNegotiated(
           mirror_settings_.GetVideoCaptureParams();
       video_capture_client_ = std::make_unique<VideoCaptureClient>(
           capture_params, std::move(video_host));
-      LogInfoMessage(base::StrCat({"Starting VideoCaptureHost with params ",
-                                   ToString(capture_params)}));
+      logger_.LogInfo(base::StrCat({"Starting VideoCaptureHost with params ",
+                                    ToString(capture_params)}));
       video_capture_client_->Start(
           base::BindRepeating(&VideoRtpStream::InsertVideoFrame,
                               video_stream_->AsWeakPtr()),
@@ -576,7 +588,7 @@ void OpenscreenSessionHost::OnNegotiated(
     }
   }
 
-  LogInfoMessage(base::StringPrintf(
+  logger_.LogInfo(base::StringPrintf(
       "negotiated a new %s session. audio codec=%s, video codec=%s (%s)",
       (state_ == State::kRemoting ? "remoting" : "mirroring"),
       (audio_config ? media::GetCodecName(audio_config->audio_codec()).c_str()
@@ -625,7 +637,7 @@ void OpenscreenSessionHost::OnError(
     // OnCapabilitiesDetermined() will never be called and the media remoter
     // will not be set up.
     case openscreen::Error::Code::kRemotingNotSupported:
-      LogInfoMessage(base::StrCat(
+      logger_.LogInfo(base::StrCat(
           {"Remoting is disabled for this session. error=", error.ToString()}));
       return;
 
@@ -757,20 +769,11 @@ void OpenscreenSessionHost::OnAsyncInitialized(
     std::move(initialized_cb_).Run();
 }
 
-void OpenscreenSessionHost::LogInfoMessage(const std::string& message) {
-  const std::string log_message = kLogPrefix + message;
-  DVLOG(1) << log_message;
-  if (observer_)
-    observer_->LogInfoMessage(log_message);
-}
-
 void OpenscreenSessionHost::ReportAndLogError(SessionError error,
-                                              const std::string& message) {
+                                              std::string_view message) {
   base::UmaHistogramEnumeration("MediaRouter.MirroringService.SessionError",
                                 error);
-
-  if (observer_)
-    observer_->LogErrorMessage(kLogPrefix + message);
+  logger_.LogError(error, message);
 
   if (state_ == State::kRemoting) {
     // Try to fallback to mirroring.
@@ -786,7 +789,7 @@ void OpenscreenSessionHost::ReportAndLogError(SessionError error,
 }
 
 void OpenscreenSessionHost::StopStreaming() {
-  LogInfoMessage(
+  logger_.LogInfo(
       base::StrCat({"stopped streaming. state=",
                     base::NumberToString(static_cast<int>(state_))}));
   if (!cast_environment_)
@@ -806,7 +809,7 @@ void OpenscreenSessionHost::StopStreaming() {
 }
 
 void OpenscreenSessionHost::StopSession() {
-  LogInfoMessage(
+  logger_.LogInfo(
       base::StrCat({"stopped session. state=",
                     base::NumberToString(static_cast<int>(state_))}));
   if (state_ == State::kStopped)
@@ -956,7 +959,7 @@ void OpenscreenSessionHost::SetTargetPlayoutDelay(
   }
 
   if (playout_delay_was_updated) {
-    LogInfoMessage(base::StrCat(
+    logger_.LogInfo(base::StrCat(
         {"Updated target playout delay to ",
          base::NumberToString(playout_delay.InMilliseconds()), "ms"}));
   }

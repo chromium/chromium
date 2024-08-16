@@ -1483,7 +1483,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   } else {
     CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);
@@ -1510,7 +1510,7 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
         manager, this, tracker, context_state->gpu_main_graphite_recorder(),
         std::move(mtl_textures));
 #else
-  NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }

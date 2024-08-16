@@ -19,6 +19,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
+#include "ash/wm/window_util.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -33,6 +34,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -51,17 +53,17 @@
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/eol_notification.h"
+#include "chrome/browser/ash/eol/eol_notification.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/browser/ash/logging.h"
+#include "chrome/browser/ash/logging/logging.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -102,13 +104,14 @@
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm_firmware_update_notification.h"
-#include "chrome/browser/ash/u2f_notification.h"
+#include "chrome/browser/ash/u2f/u2f_notification.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -147,6 +150,8 @@
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -171,6 +176,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_service.h"
@@ -187,6 +193,7 @@
 #include "content/public/common/content_switches.h"
 #include "rlz/buildflags/buildflags.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
+#include "ui/aura/window.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
@@ -2444,6 +2451,10 @@ void UserSessionManager::RespectLocalePreferenceWrapper(
 }
 
 void UserSessionManager::LaunchBrowser(Profile* profile) {
+  if (!has_recorded_first_web_contents_metrics_) {
+    startup_metric_utils::GetBrowser().RecordWebContentsStartTime(
+        base::TimeTicks::Now());
+  }
   StartupBrowserCreator browser_creator;
   chrome::startup::IsFirstRun first_run =
       ::first_run::IsChromeFirstRun() ? chrome::startup::IsFirstRun::kYes
@@ -2454,6 +2465,27 @@ void UserSessionManager::LaunchBrowser(Profile* profile) {
       chrome::startup::IsProcessStartup::kYes, first_run,
       std::make_unique<OldLaunchModeRecorder>(),
       /*restore_tabbed_browser=*/true);
+  if (!has_recorded_first_web_contents_metrics_) {
+    has_recorded_first_web_contents_metrics_ = true;
+    // Another non-browser window may be active even after calling
+    // `LaunchBrowser()` above. Ex: When `ForestFeature` is enabled and the
+    // session is restored, a window from overview mode is still active and
+    // must be closed first before a restored browser window can become active.
+    // In this case, the intent behind capturing "FirstWebContents" metrics has
+    // degraded, so skip the recording.
+    aura::Window* active_window = ash::window_util::GetActiveWindow();
+    const bool is_browser_window_active =
+        active_window && active_window->GetProperty(chromeos::kAppTypeKey) ==
+                             chromeos::AppType::BROWSER;
+    base::UmaHistogramBoolean("Ash.FirstWebContentsProfile.Recorded",
+                              is_browser_window_active);
+    if (is_browser_window_active) {
+      // This location intentionally only records the "FirstWebContents" metrics
+      // for ChromeOS session restores. If the user just logs in and opens a
+      // browser window manually, that is deliberately not counted currently.
+      metrics::BeginFirstWebContentsProfiling();
+    }
+  }
 }
 
 // static

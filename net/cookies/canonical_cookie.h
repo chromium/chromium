@@ -294,9 +294,6 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   // match, for comparing cookies in collections.
   bool HasEquivalentDataMembers(const CanonicalCookie& other) const;
 
-  // Similar to operator<, but considers all data members.
-  bool DataMembersPrecede(const CanonicalCookie& other) const;
-
   void SetLastAccessDate(const base::Time& date) {
     last_access_date_ = date;
   }

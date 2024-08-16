@@ -24,13 +24,13 @@ class WithOpt : public GarbageCollected<WithOpt> {
 
 void DisallowedUseOfOptional() {
   {
-    absl::optional<Base> optional_base;  // Must be okay.
+    absl::optional<Base> optional_base;
     (void)optional_base;
 
-    absl::optional<Derived> optional_derived;  // Must also be okay.
+    absl::optional<Derived> optional_derived;
     (void)optional_derived;
 
-    absl::optional<Traceable> optional_traceable;  // Must also be okay.
+    absl::optional<Traceable> optional_traceable;  // Must be okay.
     (void)optional_traceable;
 
     new absl::optional<Base>;  // New expression with gced optionals are not
@@ -41,13 +41,13 @@ void DisallowedUseOfOptional() {
   }
 
   {
-    std::optional<Base> optional_base;  // Must be okay.
+    std::optional<Base> optional_base;
     (void)optional_base;
 
-    std::optional<Derived> optional_derived;  // Must also be okay.
+    std::optional<Derived> optional_derived;
     (void)optional_derived;
 
-    std::optional<Traceable> optional_traceable;  // Must also be okay.
+    std::optional<Traceable> optional_traceable;  // Must be okay.
     (void)optional_traceable;
 
     new std::optional<Base>;  // New expression with gced optionals are not
@@ -58,13 +58,13 @@ void DisallowedUseOfOptional() {
   }
 
   {
-    base::raw_ptr<Base> raw_ptr_base;  // Must be okay.
+    base::raw_ptr<Base> raw_ptr_base;
     (void)raw_ptr_base;
 
-    base::raw_ptr<Derived> raw_ptr_derived;  // Must also be okay.
+    base::raw_ptr<Derived> raw_ptr_derived;
     (void)raw_ptr_derived;
 
-    base::raw_ptr<Traceable> raw_ptr_traceable;  // Must also be okay.
+    base::raw_ptr<Traceable> raw_ptr_traceable;
     (void)raw_ptr_traceable;
 
     new base::raw_ptr<Base>;  // New expression with gced raw_ptrs are not
@@ -75,13 +75,13 @@ void DisallowedUseOfOptional() {
   }
 
   {
-    base::raw_ref<Base> raw_ref_base;  // Must be okay.
+    base::raw_ref<Base> raw_ref_base;
     (void)raw_ref_base;
 
-    base::raw_ref<Derived> raw_ref_derived;  // Must also be okay.
+    base::raw_ref<Derived> raw_ref_derived;
     (void)raw_ref_derived;
 
-    base::raw_ref<Traceable> raw_ref_traceable;  // Must also be okay.
+    base::raw_ref<Traceable> raw_ref_traceable;
     (void)raw_ref_traceable;
 
     new base::raw_ref<Base>;  // New expression with gced raw_refs are not

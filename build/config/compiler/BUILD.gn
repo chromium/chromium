@@ -69,12 +69,7 @@ declare_args() {
 
   # Enable fatal linker warnings. Building Chromium with certain versions
   # of binutils can cause linker warning.
-  # TODO(crbug.com/356176455): Temporarily disable fatal_linker_warnings on
-  # iOS coverage builds when targeting x64 due to a linker warning. Either fix
-  # and revert, or revert this after the next clang roll when crbug.com/346575276
-  # is fixed.
-  fatal_linker_warnings =
-      !(is_ios && use_clang_coverage && !use_lld && target_cpu == "x64")
+  fatal_linker_warnings = true
 
   # Build with C++ RTTI enabled. Chromium builds without RTTI by default,
   # but some sanitizers are known to require it, like CFI diagnostics
@@ -937,6 +932,19 @@ config("compiler") {
         "MLGO is currently only supported for targeting Android on a linux host")
     if (use_thin_lto) {
       ldflags += [ "-Wl,-mllvm,-enable-ml-inliner=release" ]
+      if (is_high_end_android) {
+        # Besides using the arm64 - trained model, instruct the inline advisor
+        # to not use the ML policy (which will aim to reduce size) for any
+        # callsites where the caller is not cold. This avoids performance
+        # regressions while still bringing size benefits.
+        # Profile quality is essential here.
+        ldflags += [
+          "-Wl,-mllvm,-ml-inliner-model-selector=arm64-mixed",
+          "-Wl,-mllvm,-ml-inliner-skip-policy=if-caller-not-cold",
+        ]
+      } else {
+        ldflags += [ "-Wl,-mllvm,-ml-inliner-model-selector=arm32-size" ]
+      }
     }
   }
 
@@ -1961,10 +1969,8 @@ config("default_warnings") {
         # TODO(crbug.com/344680447): Fix and re-enable.
         cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
 
-        if (llvm_force_head_revision) {
-          # TODO(crbug.com/356172342): Fix and re-enable.
-          cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
-        }
+        # TODO(crbug.com/356172342): Fix and re-enable.
+        cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
       }
     }
 
@@ -1981,7 +1987,7 @@ config("default_warnings") {
   }
 
   # TODO(crbug.com/354162568): Clean up and enable.
-  if (llvm_force_head_revision && is_apple && use_lld) {
+  if (is_apple && use_lld) {
     ldflags += [ "-Wl,--no-warn-duplicate-rpath" ]
   }
 
@@ -2500,10 +2506,13 @@ config("optimize") {
       cflags = [ "-Os" ] + common_optimize_on_cflags
     }
 
-    if (is_clang && use_ml_inliner && is_a_target_toolchain && !is_chromeos) {
+    if (is_clang && use_ml_inliner && is_a_target_toolchain && !is_chromeos &&
+        !is_high_end_android) {
       cflags += [
         "-mllvm",
         "-enable-ml-inliner=release",
+        "-mllvm",
+        "-ml-inliner-model-selector=arm32-size",
       ]
     }
 

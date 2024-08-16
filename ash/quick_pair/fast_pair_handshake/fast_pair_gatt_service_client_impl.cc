@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client_impl.h"
 
 #include "ash/constants/ash_features.h"
@@ -88,8 +93,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -113,7 +117,7 @@ constexpr ash::quick_pair::AccountKeyFailure GattErrorCodeToAccountKeyFailure(
     case device::BluetoothGattService::GattErrorCode::kNotSupported:
       return ash::quick_pair::AccountKeyFailure::kGattErrorNotSupported;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -137,8 +141,7 @@ constexpr const char* ErrorCodeToString(
     case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -198,7 +201,7 @@ const std::array<uint8_t, kBlockByteSize> CreateActionRequest(
       request[kDataIdOrSizeIndex] = data_id_or_size.value();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Fill unused trailing bytes with random (salt) values.
@@ -688,7 +691,7 @@ void FastPairGattServiceClientImpl::OnNotifySessionError(
         << ": for passkey characteristic: " << ErrorCodeToString(error);
     NotifyWritePasskeyError(failure);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

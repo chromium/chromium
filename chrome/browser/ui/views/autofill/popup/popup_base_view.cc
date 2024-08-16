@@ -230,7 +230,16 @@ PopupBaseView::PopupBaseView(
     : delegate_(delegate),
       parent_widget_(parent_widget),
       new_widget_activatable_(new_widget_activatable),
-      show_arrow_pointer_(show_arrow_pointer) {}
+      show_arrow_pointer_(show_arrow_pointer) {
+  // TODO(aleventhal) The correct role spec-wise to use here is kMenu, however
+  // as of NVDA 2018.2.1, firing a menu event with kMenu breaks left/right
+  // arrow editing feedback in text field. If NVDA addresses this we should
+  // consider returning to using kMenu, so that users are notified that a
+  // menu popup has been shown.
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
+}
 
 PopupBaseView::~PopupBaseView() {
   if (delegate_) {
@@ -286,12 +295,7 @@ bool PopupBaseView::DoShow() {
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
-  // TODO(crbug.com/325246516): Hiding by widget focus change seems redundant as
-  // it is already done by the field focus loss. After successful password
-  // manual fallback testing confirms safety, remove the focus observation.
-  if (initialize_widget &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManualFallbackAvailable)) {
+  if (initialize_widget) {
     CHECK(!focus_observation_.IsObserving());
     focus_observation_.Observe(views::WidgetFocusManager::GetInstance());
   }
@@ -445,7 +449,7 @@ gfx::Rect PopupBaseView::GetTopWindowBounds() const {
   return gfx::Rect();
 }
 
-gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
+gfx::Rect PopupBaseView::GetOptimalPositionAndPlaceArrowOnPopup(
     const gfx::Rect& element_bounds,
     const gfx::Rect& max_bounds_for_popup,
     const gfx::Size& preferred_size,
@@ -532,7 +536,7 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
     return false;
   }
 
-  gfx::Rect popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
+  gfx::Rect popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
       element_bounds, max_bounds_for_popup, preferred_size,
       kDefaultPreferredPopupSides);
 
@@ -556,17 +560,6 @@ void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
     HideController(SuggestionHidingReason::kFocusChanged);
   }
-}
-
-void PopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(aleventhal) The correct role spec-wise to use here is kMenu, however
-  // as of NVDA 2018.2.1, firing a menu event with kMenu breaks left/right
-  // arrow editing feedback in text field. If NVDA addresses this we should
-  // consider returning to using kMenu, so that users are notified that a
-  // menu popup has been shown.
-  node_data->role = ax::mojom::Role::kPane;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
 void PopupBaseView::HideController(SuggestionHidingReason reason) {

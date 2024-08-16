@@ -31,7 +31,6 @@ struct WebPluginInfo;
 }
 
 namespace extensions {
-class Dispatcher;
 class RendererPermissionsPolicyDelegate;
 class ResourceRequestPolicy;
 }
@@ -72,7 +71,6 @@ class ChromeExtensionsRendererClient
   void RenderThreadStarted() override;
   bool IsIncognitoProcess() const override;
   int GetLowestIsolatedWorldId() const override;
-  extensions::Dispatcher* GetDispatcher() override;
   void OnExtensionLoaded(const extensions::Extension& extension) override;
   void OnExtensionUnloaded(
       const extensions::ExtensionId& extension_id) override;
@@ -96,9 +94,6 @@ class ChromeExtensionsRendererClient
   v8::Local<v8::Object> GetScriptableObject(
       const blink::WebElement& plugin_element,
       v8::Isolate* isolate);
-  void SetExtensionDispatcherForTest(
-      std::unique_ptr<extensions::Dispatcher> extension_dispatcher);
-  extensions::Dispatcher* GetExtensionDispatcherForTest();
 
   static void DidBlockMimeHandlerViewForDisallowedPlugin(
       const blink::WebElement& plugin_element);
@@ -114,13 +109,8 @@ class ChromeExtensionsRendererClient
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame);
   void RunScriptsAtDocumentIdle(content::RenderFrame* render_frame);
 
-  extensions::Dispatcher* extension_dispatcher() {
-    return extension_dispatcher_.get();
-  }
-
  private:
   std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder_;
-  std::unique_ptr<extensions::Dispatcher> extension_dispatcher_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
   std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;

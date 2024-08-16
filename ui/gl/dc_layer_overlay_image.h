@@ -29,9 +29,6 @@ enum class DCLayerOverlayType {
   kDCompSurfaceProxy,
 };
 
-GL_EXPORT const char* DCLayerOverlayTypeToString(
-    DCLayerOverlayType overlay_type);
-
 // Holds DComp content needed to update the DComp layer tree
 class GL_EXPORT DCLayerOverlayImage {
  public:

@@ -289,6 +289,20 @@ targets.variant(
 )
 
 targets.variant(
+    name = "SIM_IPHONE_14_18_0",
+    identifier = "iPhone 14 18.0",
+    mixins = [
+        "ios_runtime_cache_18_0",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14",
+        "--version",
+        "18.0",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPHONE_15_18_0",
     identifier = "iPhone 15 18.0",
     mixins = [
@@ -327,6 +341,20 @@ targets.variant(
         "iPhone 14 Plus",
         "--version",
         "17.5",
+    ],
+)
+
+targets.variant(
+    name = "SIM_IPHONE_14_PLUS_18_0",
+    identifier = "iPhone 14 Plus 18.0",
+    mixins = [
+        "ios_runtime_cache_18_0",
+    ],
+    args = [
+        "--platform",
+        "iPhone 14 Plus",
+        "--version",
+        "18.0",
     ],
 )
 
@@ -447,22 +475,6 @@ targets.variant(
         if k != "cros_chrome_version"
     }),
 ) for name, variant in json.decode(io.read_file("./cros-skylab-variants.json")).items()]
-
-targets.variant(
-    name = "LACROS_AMD64_GENERIC",
-    identifier = "amd64-generic",
-    args = [
-        "--board=amd64-generic",
-        "--use-vm",
-    ],
-    swarming = targets.swarming(
-        dimensions = {
-            "cpu": "x86-64",
-            "kvm": "1",
-            "os": "Ubuntu-22.04",
-        },
-    ),
-)
 
 targets.variant(
     name = "LACROS_ASH_TOT",

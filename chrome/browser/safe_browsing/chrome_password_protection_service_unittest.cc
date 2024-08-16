@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -16,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -35,12 +33,12 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
@@ -52,8 +50,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/sync_user_events/fake_user_event_service.h"
 #include "content/public/browser/navigation_handle.h"
@@ -65,9 +62,9 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/browser/password_manager/android/mock_password_checkup_launcher_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "components/sync/test/test_sync_service.h"
 #endif
 
@@ -113,7 +110,7 @@ class MockSecurityEventRecorder : public SecurityEventRecorder {
   }
 
   MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::ModelTypeControllerDelegate>());
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
   MOCK_METHOD1(RecordGaiaPasswordReuse, void(const GaiaPasswordReuse&));
 };
 
@@ -1639,19 +1636,12 @@ class ChromePasswordProtectionServiceWithAccountPasswordStoreTest
  public:
   ChromePasswordProtectionServiceWithAccountPasswordStoreTest() {
 #if BUILDFLAG(IS_ANDROID)
-    // Using the account store on Android requires enabling the flag for UPM
-    // support of local passwords. Skip the Gms version check, otherwise the
-    // flag won't do anything in bots that have outdated GmsCore.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
 #endif
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
@@ -1693,9 +1683,6 @@ TEST_F(ChromePasswordProtectionServiceWithAccountPasswordStoreTest,
 class PasswordCheckupWithPhishGuardTest
     : public ChromePasswordProtectionServiceTest {
  protected:
-  base::test::ScopedFeatureList feature_list_;
-  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
-
   void SetUpSyncService(bool is_syncing_passwords) {
     // Setting up the syncing account.
     CoreAccountInfo account;
@@ -1721,20 +1708,18 @@ class PasswordCheckupWithPhishGuardTest
         LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED, "unused_token",
         WarningUIType::MODAL_DIALOG, WarningAction::CHANGE_PASSWORD);
   }
+
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
 };
 
 class PasswordCheckupWithPhishGuardAfterPasswordStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
-    // Splitting the stores requires enabling the flag for UPM support of local
-    // passwords. Skip the Gms version check, otherwise the flag won't do
-    // anything in bots that have outdated GmsCore.
-    feature_list_.InitAndEnableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
     PasswordCheckupWithPhishGuardTest::SetUp();
   }
 };
@@ -1825,9 +1810,8 @@ class PasswordCheckupWithPhishGuardUPMBeforeStoreSplitAndroidTest
     : public PasswordCheckupWithPhishGuardTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Force split stores to be off by faking an outdated GmsCore version.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
     PasswordCheckupWithPhishGuardTest::SetUp();
   }
 };

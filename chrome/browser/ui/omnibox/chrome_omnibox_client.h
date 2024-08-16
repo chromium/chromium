@@ -62,7 +62,6 @@ class ChromeOmniboxClient final : public OmniboxClient {
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source,
       bool is_prefetch) override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
@@ -100,6 +99,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
       size_t index,
       const AutocompleteMatch& match,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
+  void ShowFeedbackPage(const std::u16string& input_text,
+                        const GURL& destination_url) override;
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,

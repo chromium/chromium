@@ -23,20 +23,37 @@
 
 namespace password_manager {
 
+namespace {
+
+LoginDatabase::DeletingUndecryptablePasswordsEnabled GetPolicyFromPrefs(
+    PrefService* prefs) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
+  return LoginDatabase::DeletingUndecryptablePasswordsEnabled(
+      prefs->GetBoolean(prefs::kDeletingUndecryptablePasswordsEnabled));
+#else
+  return LoginDatabase::DeletingUndecryptablePasswordsEnabled(true);
+#endif
+}
+
+}  // namespace
+
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory) {
+    const base::FilePath& db_directory,
+    PrefService* prefs) {
   base::FilePath login_db_file_path =
       db_directory.Append(kLoginDataForProfileFileName);
-  return std::make_unique<LoginDatabase>(login_db_file_path,
-                                         IsAccountStore(false));
+  return std::make_unique<LoginDatabase>(
+      login_db_file_path, IsAccountStore(false), GetPolicyFromPrefs(prefs));
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& db_directory) {
+    const base::FilePath& db_directory,
+    PrefService* prefs) {
   base::FilePath login_db_file_path =
       db_directory.Append(kLoginDataForAccountFileName);
-  return std::make_unique<LoginDatabase>(login_db_file_path,
-                                         IsAccountStore(true));
+  return std::make_unique<LoginDatabase>(
+      login_db_file_path, IsAccountStore(true), GetPolicyFromPrefs(prefs));
 }
 
 // TODO(http://crbug.com/890318): Add unitests to check cleaners are correctly

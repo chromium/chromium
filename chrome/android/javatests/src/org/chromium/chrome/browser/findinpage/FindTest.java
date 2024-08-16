@@ -42,6 +42,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -82,7 +83,7 @@ public class FindTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getModel(true)
-                            .closeAllTabs();
+                            .closeTabs(TabClosureParams.closeAllTabs().build());
                 });
     }
 
@@ -324,6 +325,51 @@ public class FindTest {
 
         String findResults = waitForFindResults("");
         Assert.assertEquals(0, findResults.length());
+    }
+
+    /** Verify "Find in page" is dismissed when ESCAPE is pressed w/o modifiers. */
+    @Test
+    @SmallTest
+    @Feature({"FindInPage"})
+    public void testFindDismissOnEscape() {
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final FindToolbar findToolbar = getFindToolbar();
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        final TextView findQueryText = getFindQueryText();
+        Assert.assertTrue(findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ESCAPE);
+
+        Assert.assertEquals(View.GONE, findToolbar.getVisibility());
+        Assert.assertFalse(findQueryText.hasFocus());
+    }
+
+    /** Verify "Find in page" isn't dismissed when ESCAPE is pressed w/ modifiers. */
+    @Test
+    @SmallTest
+    @Feature({"FindInPage"})
+    public void testFindDismissOnEscapeWithModifiers() {
+        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
+        findInPageFromMenu();
+
+        final FindToolbar findToolbar = getFindToolbar();
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        final TextView findQueryText = getFindQueryText();
+        Assert.assertTrue(findQueryText.hasFocus());
+
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
+                KeyEvent.KEYCODE_ESCAPE,
+                KeyEvent.META_CTRL_ON);
+
+        Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
+        Assert.assertTrue(findQueryText.hasFocus());
     }
 
     /** Verify FIP in IncognitoTabs. */

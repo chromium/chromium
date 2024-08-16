@@ -306,7 +306,7 @@ HttpRequestSSLUpgradeDecision GetMetricForSSLUpgradeDecision(
       return is_secure ? HttpRequestSSLUpgradeDecision::kSSLDynamicUpgrade
                        : HttpRequestSSLUpgradeDecision::kInsecureDynamicUpgrade;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordSTSHistograms(net::SSLUpgradeDecision upgrade_decision,

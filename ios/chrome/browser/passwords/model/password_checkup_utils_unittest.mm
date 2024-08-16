@@ -253,8 +253,8 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordCountForWarningType) {
 
 // Tests that the correct string is returned with the right timestamp.
 TEST_F(PasswordCheckupUtilsTest, ElapsedTimeSinceLastCheck) {
-  EXPECT_NSEQ(@"Check never run.", FormatElapsedTimeSinceLastCheck(
-                                       manager().GetLastPasswordCheckTime()));
+  EXPECT_NSEQ(@"Check never run", FormatElapsedTimeSinceLastCheck(
+                                      manager().GetLastPasswordCheckTime()));
 
   base::Time expected1 = base::Time::Now() - base::Seconds(10);
   browser_state()->GetPrefs()->SetDouble(

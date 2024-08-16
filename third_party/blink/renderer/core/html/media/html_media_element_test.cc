@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -359,6 +360,12 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
 
     media_->SetMediaPlayerHostForTesting(
         media_player_host_receiver_.BindNewEndpointAndPassDedicatedRemote());
+
+    UpdateLifecyclePhases();
+  }
+
+  void UpdateLifecyclePhases() {
+    dummy_page_holder_->GetFrameView().UpdateAllLifecyclePhasesForTest();
   }
 
   void WaitForPlayer() {
@@ -641,6 +648,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
       Fullscreen::RequestFullscreen(*element);
     }
     test::RunPendingTasks();
+    UpdateLifecyclePhases();
 
     if (auto* video = DynamicTo<HTMLVideoElement>(element); video) {
       video->DidEnterFullscreen();
@@ -668,6 +676,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   }
 
   test::TaskEnvironment task_environment_;
+  CSSDefaultStyleSheets::TestingScope ua_style_sheets_scope_;
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 
  private:

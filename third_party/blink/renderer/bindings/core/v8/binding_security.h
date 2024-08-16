@@ -96,7 +96,7 @@ class CORE_EXPORT BindingSecurity {
     DCHECK(accessing_script_state);
 
     // Fast path for the most likely case.
-    if (LIKELY(accessing_script_state == target_script_state)) {
+    if (accessing_script_state == target_script_state) [[likely]] {
       return true;
     }
     ExceptionState* exception_state = nullptr;

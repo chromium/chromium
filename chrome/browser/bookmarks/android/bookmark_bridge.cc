@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
 
 #include <stddef.h>
@@ -516,7 +521,7 @@ const BookmarkNode* BookmarkBridge::GetCorrespondingAccountFolder(
                : nullptr;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetRootFolderId(JNIEnv* env) {
@@ -1722,7 +1727,7 @@ ReadingListManager* BookmarkBridge::GetReadingListManagerFromParentNode(
     return local_or_syncable_reading_list_manager_.get();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void BookmarkBridge::ReadingListModelLoaded(const ReadingListModel* model) {

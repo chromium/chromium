@@ -146,7 +146,6 @@ class VIEWS_EXPORT Combobox : public View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnThemeChanged() override;
 
@@ -205,6 +204,10 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Sets the expanded/collapsed accessible state of the view.
   void UpdateExpandedCollapsedAccessibleState() const;
+
+  // Updates the kValue attribute and triggers a kValueChanged event if
+  // selected index is changed.
+  void UpdateAccessibleValue() const;
 
   void UpdateAccessibleDefaultActionVerb();
 

@@ -39,7 +39,7 @@ class SyncStorageBackend final : public syncer::SyncableService {
       scoped_refptr<value_store::ValueStoreFactory> storage_factory,
       const SettingsStorageQuotaEnforcer::Limits& quota,
       SequenceBoundSettingsChangedCallback observer,
-      syncer::ModelType sync_type,
+      syncer::DataType sync_type,
       const syncer::SyncableService::StartSyncFlare& flare);
 
   SyncStorageBackend(const SyncStorageBackend&) = delete;
@@ -52,15 +52,15 @@ class SyncStorageBackend final : public syncer::SyncableService {
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
-  void StopSyncing(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
  private:
@@ -89,8 +89,8 @@ class SyncStorageBackend final : public syncer::SyncableService {
       std::map<ExtensionId, std::unique_ptr<SyncableSettingsStorage>>;
   mutable StorageObjMap storage_objs_;
 
-  // Current sync model type. Either EXTENSION_SETTINGS or APP_SETTINGS.
-  syncer::ModelType sync_type_;
+  // Current sync data type. Either EXTENSION_SETTINGS or APP_SETTINGS.
+  syncer::DataType sync_type_;
 
   // Current sync processor, if any.
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #import "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 
 #import <Cocoa/Cocoa.h>
@@ -37,8 +42,8 @@
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -137,7 +142,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
 
   mach_header_64 header;
   if (!executable_file.ReadAtCurrentPosAndCheck(
-          base::as_writable_bytes(base::make_span(&header, 1u))) ||
+          base::as_writable_bytes(base::span_from_ref(header))) ||
       header.magic != MH_MAGIC_64 || header.filetype != MH_EXECUTE) {
     LOG(ERROR) << "File at " << executable_path
                << " is not a valid Mach-O executable";
@@ -178,8 +183,7 @@ bool AddPathToRPath(const base::FilePath& executable_path,
       header.sizeofcmds += new_rpath_command.cmdsize;
 
       // Write the updated header and commands back to the file.
-      if (!executable_file.WriteAndCheck(
-              0, base::as_bytes(base::make_span(&header, 1u))) ||
+      if (!executable_file.WriteAndCheck(0, base::byte_span_from_ref(header)) ||
           !executable_file.WriteAndCheck(sizeof header,
                                          base::make_span(commands))) {
         LOG(ERROR) << "Failed to write updated load commands to "
@@ -223,9 +227,10 @@ bool AppShimRevealDisabledForTest() {
          OsIntegrationTestOverride::Get();
 }
 
-bool CopyStagingBundleToDestination(base::FilePath staging_path,
+bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
+                                    base::FilePath staging_path,
                                     base::FilePath dst_app_path) {
-  if (!UseAdHocSigningForWebAppShims()) {
+  if (!use_ad_hoc_signing_for_web_app_shims) {
     return base::CopyDirectory(staging_path, dst_app_path, true);
   }
 
@@ -371,10 +376,13 @@ NSData* AppShimEntitlements() {
 WebAppShortcutCreator::WebAppShortcutCreator(
     const base::FilePath& app_data_dir,
     const base::FilePath& chrome_apps_dir,
-    const ShortcutInfo* shortcut_info)
+    const ShortcutInfo* shortcut_info,
+    bool use_ad_hoc_signing_for_web_app_shims)
     : app_data_dir_(app_data_dir),
       chrome_apps_dir_(chrome_apps_dir),
-      info_(shortcut_info) {
+      info_(shortcut_info),
+      use_ad_hoc_signing_for_web_app_shims_(
+          use_ad_hoc_signing_for_web_app_shims) {
   DCHECK(shortcut_info);
 }
 
@@ -759,7 +767,8 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::DeletePathRecursively(dst_app_path);
 
     // Copy the bundle to |dst_app_path|.
-    if (!CopyStagingBundleToDestination(staging_path, dst_app_path)) {
+    if (!CopyStagingBundleToDestination(UseAdHocSigningForWebAppShims(),
+                                        staging_path, dst_app_path)) {
       RecordCreateShortcut(CreateShortcutResult::kFailToCopyApp);
       LOG(ERROR) << "Copying app to dst dir: " << dst_parent_dir.value()
                  << " failed";
@@ -1072,6 +1081,11 @@ bool WebAppShortcutCreator::UpdateSignature(
                                 info_->app_id, std::move(cd_hash)));
 
   return true;
+}
+
+// Return true if ad-hoc signing should be used for web app shims.
+bool WebAppShortcutCreator::UseAdHocSigningForWebAppShims() const {
+  return use_ad_hoc_signing_for_web_app_shims_;
 }
 
 }  // namespace web_app

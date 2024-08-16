@@ -18,6 +18,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
 
@@ -293,6 +294,20 @@ class HttpStreamFactory::JobController
            (dns_alpn_h3_job_ ? 1 : 0);
   }
 
+  // Called when the request needs to use the HttpStreamPool instead of `this`.
+  // Call site of Start() should destroy the current HttpStreamRequest and
+  // switch to the HttpStreamPool. `this` will be destroyed when `request_` is
+  // destroyed.
+  void SwitchToHttpStreamPool(quic::ParsedQuicVersion quic_version);
+
+  // Called when `this` asked the HttpStreamPool to handle a preconnect and
+  // the preconnect completed. Used to notify the factory of completion.
+  void OnPoolPreconnectsComplete(int rv);
+
+  // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
+  void CallOnSwitchesToHttpStreamPool(HttpStreamKey stream_key,
+                                      quic::ParsedQuicVersion quic_version);
+
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;
   const raw_ptr<JobFactory> job_factory_;
@@ -363,6 +378,10 @@ class HttpStreamFactory::JobController
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session_;
+
+  // Set to true when `this` asked the request to use HttpStreamPool instead
+  // of `this`.
+  bool switched_to_http_stream_pool_ = false;
 
   // Waiting time for the main job before it is resumed.
   base::TimeDelta main_job_wait_time_;

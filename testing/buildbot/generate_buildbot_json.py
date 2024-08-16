@@ -12,6 +12,7 @@ import ast
 import collections
 import copy
 import difflib
+import functools
 import glob
 import itertools
 import json
@@ -285,28 +286,27 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     group.add_argument(
         '--query',
         type=str,
-        help=(
-            "Returns raw JSON information of buildbots and tests.\n" +
-            "Examples:\n" + "  List all bots (all info):\n" +
-            "    --query bots\n\n" +
-            "  List all bots and only their associated tests:\n" +
-            "    --query bots/tests\n\n" +
-            "  List all information about 'bot1' " +
-            "(make sure you have quotes):\n" + "    --query bot/'bot1'\n\n" +
-            "  List tests running for 'bot1' (make sure you have quotes):\n" +
-            "    --query bot/'bot1'/tests\n\n" + "  List all tests:\n" +
-            "    --query tests\n\n" +
-            "  List all tests and the bots running them:\n" +
-            "    --query tests/bots\n\n" +
-            "  List all tests that satisfy multiple parameters\n" +
-            "  (separation of parameters by '&' symbol):\n" +
-            "    --query tests/'device_os:Android&device_type:hammerhead'\n\n" +
-            "  List all tests that run with a specific flag:\n" +
-            "    --query bots/'--test-launcher-print-test-studio=always'\n\n" +
-            "  List specific test (make sure you have quotes):\n"
-            "    --query test/'test1'\n\n"
-            "  List all bots running 'test1' " +
-            "(make sure you have quotes):\n" + "    --query test/'test1'/bots"))
+        help=('Returns raw JSON information of buildbots and tests.\n'
+              'Examples:\n  List all bots (all info):\n'
+              '    --query bots\n\n'
+              '  List all bots and only their associated tests:\n'
+              '    --query bots/tests\n\n'
+              '  List all information about "bot1" '
+              '(make sure you have quotes):\n    --query bot/"bot1"\n\n'
+              '  List tests running for "bot1" (make sure you have quotes):\n'
+              '    --query bot/"bot1"/tests\n\n  List all tests:\n'
+              '    --query tests\n\n'
+              '  List all tests and the bots running them:\n'
+              '    --query tests/bots\n\n'
+              '  List all tests that satisfy multiple parameters\n'
+              '  (separation of parameters by "&" symbol):\n'
+              '    --query tests/"device_os:Android&device_type:hammerhead"\n\n'
+              '  List all tests that run with a specific flag:\n'
+              '    --query bots/"--test-launcher-print-test-studio=always"\n\n'
+              '  List specific test (make sure you have quotes):\n'
+              '    --query test/"test1"\n\n'
+              '  List all bots running "test1" '
+              '(make sure you have quotes):\n    --query test/"test1"/bots'))
     parser.add_argument(
         '--json',
         metavar='JSON_FILE_PATH',
@@ -361,7 +361,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     args = parser.parse_args(argv)
     if args.json and not args.query:
       parser.error(
-          "The --json flag can only be used with --query.")  # pragma: no cover
+          'The --json flag can only be used with --query.')  # pragma: no cover
 
     args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
     args.output_dir = args.output_dir or args.pyl_files_dir
@@ -647,7 +647,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # Apply mixins from the builder
     builder_mixins = builder.get('mixins', [])
     self.ensure_valid_mixin_list(builder_mixins,
-                                 f"builder {builder_name} mixins")
+                                 f'builder {builder_name} mixins')
     test = self.apply_mixins(test, builder_mixins, mixins_to_ignore, builder)
 
     # See if there are any exceptions that need to be merged into this
@@ -702,14 +702,14 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           if test_key == replacement_key:
             found_key = True
             # Handle flags without values.
-            if replacement_val == None:
+            if replacement_val is None:
               del test[key][i]
             else:
               test[key][i+1] = replacement_val
             break
           if test_key.startswith(replacement_key + '='):
             found_key = True
-            if replacement_val == None:
+            if replacement_val is None:
               del test[key][i]
             else:
               test[key][i] = '%s=%s' % (replacement_key, replacement_val)
@@ -846,20 +846,19 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return None
     result = copy.deepcopy(test_config)
     result.setdefault('test', test_name)
+    result['run_cft'] = True
 
     if 'cros_board' in result or 'cros_board' in tester_config:
       result['cros_board'] = tester_config.get('cros_board') or result.get(
           'cros_board')
     else:
-      raise BBGenErr("skylab tests must specify cros_board.")
+      raise BBGenErr('skylab tests must specify cros_board.')
     if 'cros_model' in result or 'cros_model' in tester_config:
       result['cros_model'] = tester_config.get('cros_model') or result.get(
           'cros_model')
     if 'dut_pool' in result or 'cros_dut_pool' in tester_config:
       result['dut_pool'] = tester_config.get('cros_dut_pool') or result.get(
           'dut_pool')
-    if 'run_cft' in result or 'run_cft' in tester_config:
-      result['run_cft'] = tester_config.get('run_cft') or result.get('run_cft')
     if 'cros_build_target' in result or 'cros_build_target' in tester_config:
       result['cros_build_target'] = tester_config.get(
           'cros_build_target') or result.get('cros_build_target')
@@ -898,6 +897,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         substitutions['gpu_vendor_id'] = gpu[0]
         substitutions['gpu_device_id'] = gpu[1]
     return [string.Template(arg).safe_substitute(substitutions) for arg in args]
+
+  # LINT.IfChange(gpu_telemetry_test)
 
   def generate_gpu_telemetry_test(self, waterfall, tester_name, tester_config,
                                   test_name, test_config, is_android_webview,
@@ -983,6 +984,10 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result['args'] = self.maybe_fixup_args_array(
         self.substitute_gpu_args(tester_config, result, args))
     return result
+
+  # pylint: disable=line-too-long
+  # LINT.ThenChange(//infra/config/lib/targets-internal/test-types/gpu_telemetry_test.star)
+  # pylint: enable=line-too-long
 
   def get_default_isolate_name(self, tester_config, is_android_webview):
     if self.is_android(tester_config):
@@ -1208,20 +1213,22 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # referenced by matrix suites exist.
     basic_suites = self.test_suites.get('basic_suites')
 
+    def update_tests_uncurried(full_suite, expanded):
+      for test_name, new_tests in expanded.items():
+        if not isinstance(new_tests, list):
+          new_tests = [new_tests]
+        tests_for_name = full_suite.setdefault(test_name, [])
+        for t in new_tests:
+          if t not in tests_for_name:
+            tests_for_name.append(t)
+
     for matrix_suite_name, matrix_config in matrix_compound_suites.items():
       full_suite = {}
 
       for test_suite, mtx_test_suite_config in matrix_config.items():
         basic_test_def = copy.deepcopy(basic_suites[test_suite])
 
-        def update_tests(expanded):
-          for test_name, new_tests in expanded.items():
-            if not isinstance(new_tests, list):
-              new_tests = [new_tests]
-            tests_for_name = full_suite.setdefault(test_name, [])
-            for t in new_tests:
-              if t not in tests_for_name:
-                tests_for_name.append(t)
+        update_tests = functools.partial(update_tests_uncurried, full_suite)
 
         if (variants := mtx_test_suite_config.get('variants')):
           mixins = mtx_test_suite_config.get('mixins', [])
@@ -1482,7 +1489,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       for field in required_fields:
         # Verify required fields
         if field not in waterfall:
-          raise BBGenErr("Waterfall %s has no %s" % (waterfall['name'], field))
+          raise BBGenErr('Waterfall %s has no %s' % (waterfall['name'], field))
 
       # Handle filter flag, if specified
       if filters and waterfall['name'] not in filters:
@@ -1729,7 +1736,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     """
     if not isinstance(node, typ):
       if verbose:
-        lines = [""] + self.read_file(file_path).splitlines()
+        lines = [''] + self.read_file(file_path).splitlines()
 
         context = 2
         lines_start = max(node.lineno - context, 0)
@@ -1737,7 +1744,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         lines_end = min(node.lineno + context, len(lines)) + 1
         lines = itertools.chain(
             ['== %s ==\n' % file_path],
-            ["<snip>\n"],
+            ['<snip>\n'],
             [
                 '%d %s' % (lines_start + i, line)
                 for i, line in enumerate(lines[lines_start:lines_start +
@@ -1753,7 +1760,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
                 '%d %s' % (node.lineno + 1 + i, line)
                 for i, line in enumerate(lines[node.lineno + 1:lines_end])
             ],
-            ["<snip>\n"],
+            ['<snip>\n'],
         )
         # Print out a useful message when a type assertion fails.
         for l in lines:
@@ -1765,7 +1772,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if len(node_dumped) > 60: # pragma: no cover
         node_dumped = node_dumped[:30] + '  <SNIP>  ' + node_dumped[-30:]
       raise BBGenErr(
-          'Invalid .pyl file \'%s\'. Python AST node %r on line %s expected to'
+          "Invalid .pyl file '%s'. Python AST node %r on line %s expected to"
           ' be %s, is %s' %
           (file_path, node_dumped, node.lineno, typ, type(node)))
 
@@ -1897,7 +1904,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
               val, self.args.waterfalls_pyl_path, verbose):
             bad_files.add(self.args.waterfalls_pyl_path)
 
-        if key.s == "name":
+        if key.s == 'name':
           self.type_assert(val, ast.Str, self.args.waterfalls_pyl_path, verbose)
           waterfall_name = val
       assert waterfall_name
@@ -2158,16 +2165,16 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     params_dict = {}
     for p in params:
       # flag
-      if p.startswith("--"):
+      if p.startswith('--'):
         params_dict[p] = True
       else:
-        pair = p.split(":")
+        pair = p.split(':')
         if len(pair) != 2:
           self.error_msg('Invalid command.')
         # regular parameters
-        if pair[1].lower() == "true":
+        if pair[1].lower() == 'true':
           params_dict[pair[0]] = True
-        elif pair[1].lower() == "false":
+        elif pair[1].lower() == 'false':
           params_dict[pair[0]] = False
         else:
           params_dict[pair[0]] = pair[1]
@@ -2217,7 +2224,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     cmd_class = query[0]
 
     # For queries starting with 'bots'
-    if cmd_class == "bots":
+    if cmd_class == 'bots':
       if len(query) == 1:
         return self.output_query_result(bots, args.json)
       # query with specific parameters
@@ -2225,35 +2232,35 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         if query[1] == 'tests':
           test_suites_dict = self.get_test_suites_dict(bots)
           return self.output_query_result(test_suites_dict, args.json)
-        self.error_msg("This query should be in the format: bots/tests.")
+        self.error_msg('This query should be in the format: bots/tests.')
 
       else:
-        self.error_msg("This query should have 0 or 1 '/', found %s instead."
-                        % str(len(query)-1))
+        self.error_msg('This query should have 0 or 1 "/"", found %s instead.' %
+                       str(len(query) - 1))
 
     # For queries starting with 'bot'
-    elif cmd_class == "bot":
+    elif cmd_class == 'bot':
       if not len(query) == 2 and not len(query) == 3:
-        self.error_msg("Command should have 1 or 2 '/', found %s instead."
-                        % str(len(query)-1))
+        self.error_msg('Command should have 1 or 2 "/"", found %s instead.' %
+                       str(len(query) - 1))
       bot_id = query[1]
       if not bot_id in bots:
-        self.error_msg("No bot named '" + bot_id + "' found.")
+        self.error_msg('No bot named "' + bot_id + '" found.')
       bot_info = bots[bot_id]
       if len(query) == 2:
         return self.output_query_result(bot_info, args.json)
       if not query[2] == 'tests':
-        self.error_msg("The query should be in the format:" +
-                       "bot/<bot-name>/tests.")
+        self.error_msg('The query should be in the format:'
+                       'bot/<bot-name>/tests.')
 
       bot_tests = self.flatten_tests_for_bot(bot_info)
       return self.output_query_result(bot_tests, args.json)
 
     # For queries starting with 'tests'
-    elif cmd_class == "tests":
+    elif cmd_class == 'tests':
       if not len(query) == 1 and not len(query) == 2:
-        self.error_msg("The query should have 0 or 1 '/', found %s instead."
-                        % str(len(query)-1))
+        self.error_msg('The query should have 0 or 1 "/", found %s instead.' %
+                       str(len(query) - 1))
       flattened_tests = self.flatten_tests_for_query(tests)
       if len(query) == 1:
         return self.output_query_result(flattened_tests, args.json)
@@ -2265,26 +2272,27 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return self.output_query_result(matching_bots)
 
     # For queries starting with 'test'
-    elif cmd_class == "test":
+    elif cmd_class == 'test':
       if not len(query) == 2 and not len(query) == 3:
-        self.error_msg("The query should have 1 or 2 '/', found %s instead."
-                        % str(len(query)-1))
+        self.error_msg('The query should have 1 or 2 "/", found %s instead.' %
+                       str(len(query) - 1))
       test_id = query[1]
       if len(query) == 2:
         flattened_tests = self.flatten_tests_for_query(tests)
         for test in flattened_tests:
           if test == test_id:
             return self.output_query_result(flattened_tests[test], args.json)
-        self.error_msg("There is no test named %s." % test_id)
+        self.error_msg('There is no test named %s.' % test_id)
       if not query[2] == 'bots':
-        self.error_msg("The query should be in the format: " +
-                       "test/<test-name>/bots")
+        self.error_msg('The query should be in the format: '
+                       'test/<test-name>/bots')
       bots_for_test = self.find_bots_that_run_test(test_id, bots)
       return self.output_query_result(bots_for_test)
 
     else:
-      self.error_msg("Your command did not match any valid commands." +
-                     "Try starting with 'bots', 'bot', 'tests', or 'test'.")
+      self.error_msg('Your command did not match any valid commands. '
+                     'Try starting with "bots", "bot", "tests", or "test".')
+
   # pylint: enable=inconsistent-return-statements
 
   def main(self):  # pragma: no cover
@@ -2296,6 +2304,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       self.write_json_result(self.generate_outputs())
     return 0
 
-if __name__ == "__main__": # pragma: no cover
+
+if __name__ == '__main__':  # pragma: no cover
   generator = BBJSONGenerator(BBJSONGenerator.parse_args(sys.argv[1:]))
   sys.exit(generator.main())

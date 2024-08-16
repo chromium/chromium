@@ -26,34 +26,34 @@ TEST_F(SyncErrorTest, Unset) {
 TEST_F(SyncErrorTest, Default) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
+  DataType type = PREFERENCES;
   SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);
   ASSERT_TRUE(error.IsSet());
   EXPECT_EQ(location.line_number(), error.location().line_number());
   EXPECT_EQ("datatype error was encountered: ", error.GetMessagePrefix());
   EXPECT_EQ(msg, error.message());
-  EXPECT_EQ(type, error.model_type());
+  EXPECT_EQ(type, error.data_type());
   EXPECT_EQ(SyncError::SYNC_ERROR_SEVERITY_ERROR, error.GetSeverity());
 }
 
 TEST_F(SyncErrorTest, LowSeverity) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
+  DataType type = PREFERENCES;
   SyncError error(location, SyncError::DATATYPE_POLICY_ERROR, msg, type);
   ASSERT_TRUE(error.IsSet());
   EXPECT_EQ(location.line_number(), error.location().line_number());
   EXPECT_EQ("disabled due to configuration constraints: ",
             error.GetMessagePrefix());
   EXPECT_EQ(msg, error.message());
-  EXPECT_EQ(type, error.model_type());
+  EXPECT_EQ(type, error.data_type());
   EXPECT_EQ(SyncError::SYNC_ERROR_SEVERITY_INFO, error.GetSeverity());
 }
 
 TEST_F(SyncErrorTest, Reset) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
+  DataType type = PREFERENCES;
 
   SyncError error;
   EXPECT_FALSE(error.IsSet());
@@ -62,22 +62,22 @@ TEST_F(SyncErrorTest, Reset) {
   ASSERT_TRUE(error.IsSet());
   EXPECT_EQ(location.line_number(), error.location().line_number());
   EXPECT_EQ(msg, error.message());
-  EXPECT_EQ(type, error.model_type());
+  EXPECT_EQ(type, error.data_type());
 
   base::Location location2 = FROM_HERE;
   std::string msg2 = "test";
-  ModelType type2 = PREFERENCES;
+  DataType type2 = PREFERENCES;
   error.Reset(location2, msg2, type2);
   ASSERT_TRUE(error.IsSet());
   EXPECT_EQ(location2.line_number(), error.location().line_number());
   EXPECT_EQ(msg2, error.message());
-  EXPECT_EQ(type2, error.model_type());
+  EXPECT_EQ(type2, error.data_type());
 }
 
 TEST_F(SyncErrorTest, Copy) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
+  DataType type = PREFERENCES;
 
   SyncError error1;
   EXPECT_FALSE(error1.IsSet());
@@ -88,13 +88,13 @@ TEST_F(SyncErrorTest, Copy) {
   ASSERT_TRUE(error1.IsSet());
   EXPECT_EQ(location.line_number(), error1.location().line_number());
   EXPECT_EQ(msg, error1.message());
-  EXPECT_EQ(type, error1.model_type());
+  EXPECT_EQ(type, error1.data_type());
 
   SyncError error3(error1);
   ASSERT_TRUE(error3.IsSet());
   EXPECT_EQ(error1.location().line_number(), error3.location().line_number());
   EXPECT_EQ(error1.message(), error3.message());
-  EXPECT_EQ(error1.model_type(), error3.model_type());
+  EXPECT_EQ(error1.data_type(), error3.data_type());
 
   SyncError error4;
   EXPECT_FALSE(error4.IsSet());
@@ -105,7 +105,7 @@ TEST_F(SyncErrorTest, Copy) {
 TEST_F(SyncErrorTest, Assign) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
+  DataType type = PREFERENCES;
 
   SyncError error1;
   EXPECT_FALSE(error1.IsSet());
@@ -117,13 +117,13 @@ TEST_F(SyncErrorTest, Assign) {
   ASSERT_TRUE(error1.IsSet());
   EXPECT_EQ(location.line_number(), error1.location().line_number());
   EXPECT_EQ(msg, error1.message());
-  EXPECT_EQ(type, error1.model_type());
+  EXPECT_EQ(type, error1.data_type());
 
   error2 = error1;
   ASSERT_TRUE(error2.IsSet());
   EXPECT_EQ(error1.location().line_number(), error2.location().line_number());
   EXPECT_EQ(error1.message(), error2.message());
-  EXPECT_EQ(error1.model_type(), error2.model_type());
+  EXPECT_EQ(error1.data_type(), error2.data_type());
 
   error2 = SyncError();
   EXPECT_FALSE(error2.IsSet());
@@ -132,8 +132,8 @@ TEST_F(SyncErrorTest, Assign) {
 TEST_F(SyncErrorTest, ToString) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  ModelType type = PREFERENCES;
-  std::string expected = std::string(ModelTypeToDebugString(type)) +
+  DataType type = PREFERENCES;
+  std::string expected = std::string(DataTypeToDebugString(type)) +
                          " datatype error was encountered: " + msg;
   LOG(INFO) << "Expect " << expected;
   SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);

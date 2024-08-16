@@ -51,7 +51,8 @@ void CastToolbarButtonController::SetAlwaysShowActionPref(Profile* profile,
 }
 
 void CastToolbarButtonController::OnIssue(const media_router::Issue& issue) {
-  has_issue_ = true;
+  // Don't show the toolbar button if it receives a permission rejected issue.
+  has_issue_ = !issue.is_permission_rejected_issue();
   MaybeAddOrRemoveAction();
 }
 

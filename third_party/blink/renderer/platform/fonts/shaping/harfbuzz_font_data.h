@@ -48,7 +48,8 @@ struct HarfBuzzFontData final : public GarbageCollected<HarfBuzzFontData> {
 
     font_ = platform_data.CreateSkFont();
 
-    if (UNLIKELY(vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)) {
+    if (vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)
+        [[unlikely]] {
       FontMetrics::AscentDescentWithHacks(ascent, descent, platform_data,
                                           font_);
       ascent_fallback_ = ascent;

@@ -93,8 +93,7 @@ std::string GetDescriptionForMovedToPosition(FloatingMenuPosition position) {
       return l10n_util::GetStringUTF8(
           IDS_ASH_FLOATING_ACCESSIBILITY_MAIN_MENU_MOVED_TOP_RIGHT);
     case FloatingMenuPosition::kSystemDefault:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

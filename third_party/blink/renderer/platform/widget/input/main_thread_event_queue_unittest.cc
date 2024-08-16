@@ -19,6 +19,7 @@
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -253,7 +254,7 @@ class MainThreadEventQueueTest : public testing::Test,
   }
 
   void SetUp() override {
-    queue_ = new MainThreadEventQueue(
+    queue_ = base::MakeRefCounted<MainThreadEventQueue>(
         this, main_task_runner_, main_task_runner_, widget_scheduler_, true);
     queue_->ClearRafFallbackTimerForTesting();
   }

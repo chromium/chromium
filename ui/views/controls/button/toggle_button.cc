@@ -297,6 +297,9 @@ void ToggleButton::AnimateIsOn(bool is_on) {
   } else {
     slide_animation_.Hide();
   }
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   OnPropertyChanged(&slide_animation_, kPropertyEffectsNone);
 }
 
@@ -305,6 +308,9 @@ void ToggleButton::SetIsOn(bool is_on) {
     return;
   }
   slide_animation_.Reset(is_on ? 1.0 : 0.0);
+  GetViewAccessibility().SetCheckedState(GetIsOn()
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateThumb();
   OnPropertyChanged(&slide_animation_, kPropertyEffectsPaint);
 }
@@ -504,13 +510,6 @@ SkPath ToggleButton::GetFocusRingPath() const {
   const float corner_radius = sk_rect.height() / 2;
   path.addRoundRect(sk_rect, corner_radius, corner_radius);
   return path;
-}
-
-void ToggleButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-
-  node_data->SetCheckedState(GetIsOn() ? ax::mojom::CheckedState::kTrue
-                                       : ax::mojom::CheckedState::kFalse);
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {

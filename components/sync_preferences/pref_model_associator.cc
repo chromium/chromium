@@ -23,8 +23,8 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -72,7 +72,7 @@ std::optional<base::Value> ReadPreferenceSpecifics(
 PrefModelAssociator::PrefModelAssociator(
     scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<WriteablePrefStore> user_prefs,
-    syncer::ModelType type)
+    syncer::DataType type)
     : type_(type),
       client_(client),
       user_prefs_(user_prefs),
@@ -92,7 +92,7 @@ PrefModelAssociator::PrefModelAssociator(
 PrefModelAssociator::PrefModelAssociator(
     scoped_refptr<PrefModelAssociatorClient> client,
     scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
-    syncer::ModelType type)
+    syncer::DataType type)
     : PrefModelAssociator(client,
                           dual_layer_user_prefs->GetAccountPrefStore(),
                           type) {
@@ -113,7 +113,7 @@ void PrefModelAssociator::SetPrefService(
 
 // static
 sync_pb::PreferenceSpecifics* PrefModelAssociator::GetMutableSpecifics(
-    syncer::ModelType type,
+    syncer::DataType type,
     sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case syncer::PREFERENCES:
@@ -212,7 +212,7 @@ void PrefModelAssociator::WaitUntilReadyToSync(base::OnceClosure done) {
 }
 
 std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK_EQ(type_, type);
@@ -264,12 +264,12 @@ std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
   return error;
 }
 
-void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
+void PrefModelAssociator::StopSyncing(syncer::DataType type) {
   DCHECK_EQ(type_, type);
   Stop(/*is_browser_shutdown=*/false);
 }
 
-void PrefModelAssociator::OnBrowserShutdown(syncer::ModelType type) {
+void PrefModelAssociator::OnBrowserShutdown(syncer::DataType type) {
   DCHECK_EQ(type_, type);
   Stop(/*is_browser_shutdown=*/true);
 }
@@ -401,7 +401,7 @@ void PrefModelAssociator::RegisterPref(std::string_view name) {
                           std::string(name)) &&
                       client_->GetSyncablePrefsDatabase()
                               .GetSyncablePrefMetadata(std::string(name))
-                              ->model_type() == type_))
+                              ->data_type() == type_))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";

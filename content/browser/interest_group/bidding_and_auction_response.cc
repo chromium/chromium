@@ -4,13 +4,36 @@
 
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/containers/adapters.h"
+#include "base/containers/flat_map.h"
+#include "base/feature_list.h"
+#include "base/values.h"
+#include "content/browser/interest_group/interest_group_pa_report_util.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace content {
 
 namespace {
 const size_t kFramingHeaderSize = 5;  // bytes
 const uint8_t kExpectedHeaderVersionInfo = 0x02;
+
+// TODO(crbug.com/40215445): Replace with `base/numerics/byte_conversions.h` if
+// available.
+absl::uint128 U128FromBigEndian(std::vector<uint8_t> bytes) {
+  absl::uint128 result = 0;
+  for (unsigned char byte : bytes) {
+    result = (result << 8) | byte;
+  }
+  return result;
+}
+
 }  // namespace
 
 std::optional<base::span<const uint8_t>>
@@ -45,7 +68,9 @@ BiddingAndAuctionResponse::~BiddingAndAuctionResponse() = default;
 // static
 std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     base::Value input,
-    const base::flat_map<url::Origin, std::vector<std::string>>& group_names) {
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+    const base::flat_map<blink::InterestGroupKey, url::Origin>&
+        group_pagg_coordinators) {
   BiddingAndAuctionResponse output;
   base::Value::Dict* input_dict = input.GetIfDict();
   if (!input_dict) {
@@ -205,8 +230,301 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
     output.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
   }
 
+  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
+      blink::features::kPrivateAggregationApiEnabledInProtectedAudience.Get()) {
+    const base::Value::List* pagg_response =
+        input_dict->FindList("paggResponse");
+    if (pagg_response) {
+      TryParsePAggResponse(*pagg_response, group_names, group_pagg_coordinators,
+                           output);
+    }
+  }
+  base::Value::List* for_debugging_only_reports =
+      input_dict->FindList("debugReports");
+  if (for_debugging_only_reports) {
+    TryParseForDebuggingOnlyReports(*for_debugging_only_reports, output);
+  }
+
   output.result = AuctionResult::kSuccess;
   return std::move(output);
+}
+
+// static
+void BiddingAndAuctionResponse::TryParsePAggResponse(
+    const base::Value::List& pagg_response,
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+    const base::flat_map<blink::InterestGroupKey, url::Origin>&
+        group_pagg_coordinators,
+    BiddingAndAuctionResponse& output) {
+  for (const auto& per_origin_response : pagg_response) {
+    const base::Value::Dict* per_origin_response_dict =
+        per_origin_response.GetIfDict();
+    if (!per_origin_response_dict) {
+      continue;
+    }
+
+    const std::string* maybe_reporting_origin =
+        per_origin_response_dict->FindString("reportingOrigin");
+    if (!maybe_reporting_origin) {
+      continue;
+    }
+    url::Origin reporting_origin =
+        url::Origin::Create(GURL(*maybe_reporting_origin));
+    if (!network::IsOriginPotentiallyTrustworthy(reporting_origin)) {
+      continue;
+    }
+
+    const base::Value::List* ig_contributions =
+        per_origin_response_dict->FindList("igContributions");
+    if (ig_contributions) {
+      TryParsePAggIgContributions(*ig_contributions, reporting_origin,
+                                  group_pagg_coordinators, group_names, output);
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParsePAggIgContributions(
+    const base::Value::List& ig_contributions,
+    const url::Origin& reporting_origin,
+    const base::flat_map<blink::InterestGroupKey, url::Origin>&
+        group_pagg_coordinators,
+    const base::flat_map<url::Origin, std::vector<std::string>>& group_names,
+    BiddingAndAuctionResponse& output) {
+  auto single_origin_group_names_it = group_names.find(reporting_origin);
+  for (const auto& ig_contribution : ig_contributions) {
+    const base::Value::Dict* ig_contribution_dict = ig_contribution.GetIfDict();
+    if (!ig_contribution_dict) {
+      continue;
+    }
+    std::optional<int> maybe_ig_index =
+        ig_contribution_dict->FindInt("igIndex");
+    const std::string* maybe_coordinator =
+        ig_contribution_dict->FindString("coordinator");
+    std::optional<url::Origin> aggregation_coordinator_origin;
+    if (maybe_coordinator) {
+      aggregation_coordinator_origin =
+          url::Origin::Create(GURL(*maybe_coordinator));
+      if (!network::IsOriginPotentiallyTrustworthy(
+              *aggregation_coordinator_origin)) {
+        continue;
+      }
+    } else if (maybe_ig_index.has_value()) {
+      if (single_origin_group_names_it == group_names.end()) {
+        continue;
+      }
+      const std::vector<std::string>& names =
+          single_origin_group_names_it->second;
+      if (*maybe_ig_index < 0 ||
+          static_cast<size_t>(*maybe_ig_index) >= names.size()) {
+        continue;
+      }
+      auto it = group_pagg_coordinators.find(
+          blink::InterestGroupKey(reporting_origin, names[*maybe_ig_index]));
+      if (it != group_pagg_coordinators.end()) {
+        aggregation_coordinator_origin = it->second;
+      }
+    }
+    std::optional<bool> maybe_component_win =
+        ig_contribution_dict->FindBool("componentWin");
+    const base::Value::List* event_contributions =
+        ig_contribution_dict->FindList("eventContributions");
+    if (event_contributions) {
+      TryParsePAggEventContributions(
+          *event_contributions, reporting_origin,
+          aggregation_coordinator_origin,
+          maybe_component_win.has_value() && *maybe_component_win, output);
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParsePAggEventContributions(
+    const base::Value::List& event_contributions,
+    const url::Origin& reporting_origin,
+    const std::optional<url::Origin>& aggregation_coordinator_origin,
+    bool component_win,
+    BiddingAndAuctionResponse& output) {
+  // Used as key in `server_filtered_pagg_requests_reserved`.
+  PrivateAggregationKey agg_key = {reporting_origin,
+                                   aggregation_coordinator_origin};
+  // Used as key in `component_win_pagg_requests`.
+  PrivateAggregationPhaseKey agg_phase_key = {
+      reporting_origin, PrivateAggregationPhase::kNonTopLevelSeller,
+      aggregation_coordinator_origin};
+  for (const auto& event_contribution : event_contributions) {
+    const base::Value::Dict* event_contribution_dict =
+        event_contribution.GetIfDict();
+    if (!event_contribution_dict) {
+      continue;
+    }
+    const std::string* event_type_str =
+        event_contribution_dict->FindString("event");
+    if (!event_type_str) {
+      continue;
+    }
+
+    const base::Value::List* contributions =
+        event_contribution_dict->FindList("contributions");
+    if (contributions) {
+      TryParsePAggContributions(*contributions, component_win, *event_type_str,
+                                agg_phase_key, agg_key, output);
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParsePAggContributions(
+    const base::Value::List& contributions,
+    bool component_win,
+    const std::string& event_type_str,
+    const PrivateAggregationPhaseKey& agg_phase_key,
+    const PrivateAggregationKey& agg_key,
+    BiddingAndAuctionResponse& output) {
+  std::optional<auction_worklet::mojom::EventTypePtr> event_type =
+      auction_worklet::ParsePrivateAggregationEventType(event_type_str);
+  if (!event_type.has_value()) {
+    // Don't throw an error if an invalid reserved event type is provided, to
+    // provide forward compatibility with new reserved event types added
+    // later.
+    return;
+  }
+  for (const auto& contribution : contributions) {
+    const base::Value::Dict* contribution_dict = contribution.GetIfDict();
+    if (!contribution_dict) {
+      continue;
+    }
+    const std::vector<uint8_t>* bucket = contribution_dict->FindBlob("bucket");
+    std::optional<int> value = contribution_dict->FindInt("value");
+    std::optional<uint64_t> filtering_id;
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiFilteringIds)) {
+      filtering_id = contribution_dict->FindInt("filteringId");
+    }
+    if (!bucket || bucket->size() > 16 || !value.has_value() ||
+        (filtering_id.has_value() && !IsValidFilteringId(filtering_id))) {
+      continue;
+    }
+    if (component_win) {
+      // Response contains all event types for a component winner, since it may
+      // win or lose the top level auction. `request` needs to contain event
+      // type because it's needed to decide whether it needs to be filtered out
+      // based on the top level auction result.
+      auction_worklet::mojom::PrivateAggregationRequestPtr request =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewForEventContribution(
+                      auction_worklet::mojom::
+                          AggregatableReportForEventContribution::New(
+                              auction_worklet::mojom::ForEventSignalBucket::
+                                  NewIdBucket(U128FromBigEndian(*bucket)),
+                              auction_worklet::mojom::ForEventSignalValue::
+                                  NewIntValue(*value),
+                              filtering_id, event_type->Clone())),
+              // TODO(qingxinwu): consider allowing this to be set
+              blink::mojom::AggregationServiceMode::kDefault,
+              blink::mojom::DebugModeDetails::New());
+      output.component_win_pagg_requests[agg_phase_key].emplace_back(
+          std::move(request));
+    } else {
+      // Server already filtered out not needed contributions based on final
+      // auction result.
+      auction_worklet::mojom::PrivateAggregationRequestPtr request =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewHistogramContribution(
+                      blink::mojom::AggregatableReportHistogramContribution::
+                          New(
+                              /*bucket=*/U128FromBigEndian(*bucket),
+                              /*value=*/*value,
+                              /*filtering_id=*/filtering_id)),
+              // TODO(qingxinwu): consider allowing this to be set
+              blink::mojom::AggregationServiceMode::kDefault,
+              blink::mojom::DebugModeDetails::New());
+      if ((*event_type)->is_reserved()) {
+        output.server_filtered_pagg_requests_reserved[agg_key].emplace_back(
+            std::move(request));
+      } else {
+        output.server_filtered_pagg_requests_non_reserved[event_type_str]
+            .emplace_back(std::move(request));
+      }
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParseForDebuggingOnlyReports(
+    const base::Value::List& for_debugging_only_reports,
+    BiddingAndAuctionResponse& output) {
+  for (const auto& per_origin_debug_reports : for_debugging_only_reports) {
+    const base::Value::Dict* per_origin_debug_reports_dict =
+        per_origin_debug_reports.GetIfDict();
+    if (!per_origin_debug_reports_dict) {
+      continue;
+    }
+    const std::string* maybe_ad_tech_origin =
+        per_origin_debug_reports_dict->FindString("adTechOrigin");
+    if (!maybe_ad_tech_origin) {
+      continue;
+    }
+    url::Origin ad_tech_origin =
+        url::Origin::Create(GURL(*maybe_ad_tech_origin));
+    if (!network::IsOriginPotentiallyTrustworthy(ad_tech_origin)) {
+      continue;
+    }
+    const base::Value::List* reports =
+        per_origin_debug_reports_dict->FindList("reports");
+    if (reports) {
+      for (const auto& report : *reports) {
+        const base::Value::Dict* report_dict = report.GetIfDict();
+        if (!report_dict) {
+          continue;
+        }
+        TryParseSingleDebugReport(ad_tech_origin, *report_dict, output);
+      }
+    }
+  }
+}
+
+// static
+void BiddingAndAuctionResponse::TryParseSingleDebugReport(
+    const url::Origin& ad_tech_origin,
+    const base::Value::Dict& report_dict,
+    BiddingAndAuctionResponse& output) {
+  std::optional<bool> maybe_is_win_report = report_dict.FindBool("isWinReport");
+  bool is_win_report = maybe_is_win_report.has_value() && *maybe_is_win_report;
+  std::optional<bool> maybe_component_win =
+      report_dict.FindBool("componentWin");
+
+  const std::string* maybe_url_str = report_dict.FindString("url");
+  if (maybe_url_str) {
+    GURL reporting_url(*maybe_url_str);
+    if (!reporting_url.is_valid() ||
+        !network::IsUrlPotentiallyTrustworthy(reporting_url)) {
+      return;
+    }
+    if (!maybe_component_win.has_value() || !*maybe_component_win) {
+      output.server_filtered_debugging_only_reports[ad_tech_origin]
+          .emplace_back(reporting_url);
+    } else {
+      output
+          .component_winner_debugging_only_reports[std::make_pair(
+              ad_tech_origin, is_win_report)]
+          .emplace_back(reporting_url);
+    }
+  } else {
+    // "url" field is allowed to be not set in debugReports, for cases like
+    // forDebuggingOnly APIs were called but server side sampling filtered them
+    // out. There's still an entry for this in debugReports to tell Chrome to
+    // set cooldown for the ad tech origin.
+    // Insert an entry to corresponding maps for `ad_tech_origin`.
+    if (!maybe_component_win.has_value() || !*maybe_component_win) {
+      output.server_filtered_debugging_only_reports[ad_tech_origin];
+    } else {
+      output.component_winner_debugging_only_reports[std::make_pair(
+          ad_tech_origin, is_win_report)];
+    }
+  }
 }
 
 BiddingAndAuctionResponse::ReportingURLs::ReportingURLs() = default;

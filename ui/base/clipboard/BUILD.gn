@@ -186,9 +186,7 @@ component("clipboard") {
     frameworks = [
       "AppKit.framework",
       "CoreFoundation.framework",
-    ]
-    weak_frameworks = [
-      "UniformTypeIdentifiers.framework",  # macOS 11
+      "UniformTypeIdentifiers.framework",
     ]
   }
 }

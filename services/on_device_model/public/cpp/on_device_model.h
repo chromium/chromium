@@ -32,7 +32,6 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
         mojom::InputOptionsPtr input,
         mojo::PendingRemote<mojom::StreamingResponder> response,
         base::OnceClosure on_complete) = 0;
-    virtual bool ClearContext() = 0;
     virtual void SizeInTokens(const std::string& text,
                               base::OnceCallback<void(uint32_t)> callback) = 0;
     virtual void Score(const std::string& text,
@@ -42,9 +41,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
 
   virtual std::unique_ptr<Session> CreateSession(
       std::optional<uint32_t> adaptation_id) = 0;
-  virtual mojom::SafetyInfoPtr ClassifyTextSafety(const std::string& text) = 0;
-  virtual mojom::LanguageDetectionResultPtr DetectLanguage(
-      const std::string& text) = 0;
+  virtual void ClassifyTextSafety(
+      const std::string& text,
+      mojom::OnDeviceModel::ClassifyTextSafetyCallback callback) = 0;
+  virtual void DetectLanguage(
+      const std::string& text,
+      mojom::OnDeviceModel::DetectLanguageCallback callback) = 0;
   virtual base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
       mojom::LoadAdaptationParamsPtr params,
       base::OnceClosure on_complete) = 0;

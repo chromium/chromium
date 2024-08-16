@@ -15,12 +15,20 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/picker/views/picker_preview_metadata.h"
+#include "ash/picker/views/picker_shortcut_hint_view.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -51,7 +59,7 @@ constexpr auto kBorderInsetsWithoutBadge = gfx::Insets::TLBR(8, 16, 8, 16);
 constexpr auto kBorderInsetsWithBadge = gfx::Insets::TLBR(8, 16, 8, 12);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
-constexpr int kImageDisplayHeight = 72;
+constexpr int kImageDisplayHeight = 64;
 constexpr int kImageRadius = 8;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr auto kBadgeLeftPadding = gfx::Insets::TLBR(0, 8, 0, 0);
@@ -134,6 +142,9 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   secondary_container_ = main_container->AddChildView(
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
 
+  shortcut_hint_container_ = item_contents->AddChildView(
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
+
   // Trailing badge should always be preferred size.
   trailing_badge_ = item_contents->AddChildView(
       views::Builder<PickerBadgeView>()
@@ -156,8 +167,10 @@ void PickerListItemView::SetItemState(ItemState item_state) {
   PickerItemView::SetItemState(item_state);
   if (GetItemState() == ItemState::kPseudoFocused) {
     ShowPreview();
+    shortcut_hint_container_->SetVisible(false);
   } else {
     HidePreview();
+    shortcut_hint_container_->SetVisible(true);
   }
 }
 
@@ -173,22 +186,24 @@ void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   UpdateAccessibleName();
 }
 
-void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image) {
+void PickerListItemView::SetPrimaryImage(const ui::ImageModel& primary_image,
+                                         int available_width) {
   primary_label_ = nullptr;
   primary_container_->RemoveAllChildViews();
-  auto* image_view = primary_container_->AddChildView(
-      std::make_unique<views::ImageView>((primary_image)));
+  auto* image_view =
+      primary_container_->AddChildView(std::make_unique<views::ImageView>(
+          ui::ImageModel::FromImageSkia(image_util::ResizeAndCropImage(
+              primary_image.Rasterize(GetColorProvider()),
+              gfx::Size(available_width - kBorderInsetsWithoutBadge.width() -
+                            kLeadingIconSizeDip.width() -
+                            kLeadingIconRightPadding.right(),
+                        kImageDisplayHeight)))));
   image_view->SetCanProcessEventsWithinSubtree(false);
-  const gfx::Size original_size = image_view->GetImageModel().Size();
-  if (original_size.height() > 0) {
-    const gfx::Size image_display_size = gfx::ScaleToRoundedSize(
-        original_size,
-        static_cast<float>(kImageDisplayHeight) / original_size.height());
-    image_view->SetImageSize(image_display_size);
+  const gfx::Size cropped_size = image_view->GetImageModel().Size();
+  if (cropped_size.height() > 0) {
     SkPath path;
-    path.addRoundRect(
-        gfx::RectToSkRect(gfx::Rect(gfx::Point(), image_display_size)),
-        SkIntToScalar(kImageRadius), SkIntToScalar(kImageRadius));
+    path.addRoundRect(gfx::RectToSkRect(gfx::Rect(gfx::Point(), cropped_size)),
+                      SkIntToScalar(kImageRadius), SkIntToScalar(kImageRadius));
     image_view->SetClipPath(path);
   }
   UpdateAccessibleName();
@@ -219,6 +234,14 @@ void PickerListItemView::SetSecondaryText(
   UpdateAccessibleName();
 }
 
+void PickerListItemView::SetShortcutHintView(
+    std::unique_ptr<PickerShortcutHintView> shortcut_hint_view) {
+  shortcut_hint_view_ = nullptr;
+  shortcut_hint_container_->RemoveAllChildViews();
+  shortcut_hint_view_ =
+      shortcut_hint_container_->AddChildView(std::move(shortcut_hint_view));
+}
+
 void PickerListItemView::SetBadgeAction(PickerActionType action) {
   switch (action) {
     case PickerActionType::kDo:
@@ -226,15 +249,15 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
       break;
     case PickerActionType::kInsert:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_INSERT));
+          l10n_util::GetStringUTF16(IDS_PICKER_INSERT_RESULT_BADGE_LABEL));
       break;
     case PickerActionType::kOpen:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_OPEN));
+          l10n_util::GetStringUTF16(IDS_PICKER_OPEN_RESULT_BADGE_LABEL));
       break;
     case PickerActionType::kCreate:
       trailing_badge_->SetText(
-          l10n_util::GetStringUTF16(IDS_PICKER_RESULT_BADGE_LABEL_CREATE));
+          l10n_util::GetStringUTF16(IDS_PICKER_CREATE_RESULT_BADGE_LABEL));
       break;
   }
   badge_action_ = action;
@@ -242,6 +265,14 @@ void PickerListItemView::SetBadgeAction(PickerActionType action) {
 }
 
 void PickerListItemView::SetBadgeVisible(bool visible) {
+  if (primary_container_ != nullptr &&
+      !primary_container_->children().empty() &&
+      views::IsViewClass<views::ImageView>(
+          primary_container_->children().front().get())) {
+    // Badge should not be visible if the list item has a primary image.
+    return;
+  }
+
   trailing_badge_->SetVisible(visible);
 
   if (visible) {
@@ -253,6 +284,7 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
 
 void PickerListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
+    FileInfoResolver get_file_info,
     const base::FilePath& file_path,
     AsyncBitmapResolver async_bitmap_resolver,
     bool update_icon) {
@@ -265,6 +297,15 @@ void PickerListItemView::SetPreview(
       async_bitmap_resolver);
   file_path_ = file_path;
   preview_bubble_controller_ = preview_bubble_controller;
+
+  // Can be null in tests.
+  if (!get_file_info.is_null()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        std::move(get_file_info),
+        base::BindOnce(&PickerListItemView::OnFileInfoResolved,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   if (update_icon) {
     // base::Unretained is safe here since `async_icon_subscription_` is a
@@ -328,6 +369,12 @@ std::u16string PickerListItemView::GetAccessibilityLabel() const {
           : l10n_util::GetStringFUTF16(IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME,
                                        primary_accessibililty_label,
                                        secondary_label_->GetText());
+  if (shortcut_hint_view_ != nullptr) {
+    label = l10n_util::GetStringFUTF16(
+        IDS_PICKER_LIST_ITEM_WITH_SHORTCUT_ACCESSIBLE_NAME, label,
+        shortcut_hint_view_->GetShortcutText());
+  }
+
   switch (badge_action_) {
     case PickerActionType::kDo:
       return label;
@@ -347,11 +394,33 @@ void PickerListItemView::UpdateAccessibleName() {
   GetViewAccessibility().SetName(GetAccessibilityLabel());
 }
 
-void PickerListItemView::ShowPreview() {
+void PickerListItemView::OnFileInfoResolved(
+    std::optional<base::File::Info> info) {
+  file_info_ = std::move(info);
+
+  std::u16string description = PickerGetFilePreviewDescription(file_info_);
+
   if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
-                                                     file_path_, this);
+    // Update the bubble main text if it's open.
+    preview_bubble_controller_->SetBubbleMainText(description);
   }
+
+  GetViewAccessibility().SetDescription(std::move(description));
+}
+
+void PickerListItemView::ShowPreview() {
+  if (preview_bubble_controller_ == nullptr) {
+    return;
+  }
+
+  std::u16string description = PickerGetFilePreviewDescription(file_info_);
+
+  // Update the bubble main text before it becomes visible.
+  preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),
+                                                   file_path_, this);
+  preview_bubble_controller_->SetBubbleMainText(description);
+
+  GetViewAccessibility().SetDescription(std::move(description));
 }
 
 void PickerListItemView::HidePreview() {

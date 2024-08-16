@@ -40,7 +40,7 @@ std::string SerializeIntoKey(BuyerReportType report_type) {
     case BuyerReportType::kTotalSignalsFetchLatency:
       return "totalSignalsFetchLatency";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 using RealTimeReportingType =
@@ -50,7 +50,7 @@ std::string SerializeIntoValue(RealTimeReportingType report_type) {
     case RealTimeReportingType::kDefaultLocalReporting:
       return "default-local-reporting";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 template <typename T>
@@ -297,6 +297,8 @@ base::Value SerializeIntoValue(const InterestGroup::Ad& ad) {
   SerializeIntoDict("buyerReportingId", ad.buyer_reporting_id, result);
   SerializeIntoDict("buyerAndSellerReportingId",
                     ad.buyer_and_seller_reporting_id, result);
+  SerializeIntoDict("selectableBuyerAndSellerReportingIds",
+                    ad.selectable_buyer_and_seller_reporting_ids, result);
   SerializeIntoDict("adRenderId", ad.ad_render_id, result);
   SerializeIntoDict("allowedReportingOrigins", ad.allowed_reporting_origins,
                     result);

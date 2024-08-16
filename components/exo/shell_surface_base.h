@@ -147,7 +147,9 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Set container for surface.
   void SetContainer(int container);
 
-  // Set the maximum size for the surface.
+  // Set the maximum size for the surface. If the size smaller than the minimum
+  // size is given, it's ignored. However, the given maximum size is restored
+  // once the minimum size is set to that smaller than the maximum size.
   void SetMaximumSize(const gfx::Size& size);
 
   // Set the miniumum size for the surface.
@@ -313,7 +315,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // ShellSurfaceBase::GetWidget()->GetXxxSize.
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::FocusTraversable* GetFocusTraversable() override;
 
   // aura::WindowObserver:
@@ -507,8 +508,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool server_side_resize_ = false;
   bool needs_layout_on_show_ = false;
   bool client_supports_window_bounds_ = false;
-  gfx::Size minimum_size_;
-  gfx::Size maximum_size_;
+
+  // The requested size constraint for this window.
+  // Actual return value of GetMaximumSize() may be modified to make sure it's
+  // equal to or greater than the minimum size constraint.
+  gfx::Size requested_minimum_size_;
+  gfx::Size requested_maximum_size_;
 
   // Effective and pending top inset (header) heights, that are reserved or
   // occupied by the top window frame.

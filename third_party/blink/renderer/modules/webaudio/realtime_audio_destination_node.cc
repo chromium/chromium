@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_messaging_proxy.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -47,19 +48,23 @@ RealtimeAudioDestinationNode::RealtimeAudioDestinationNode(
     AudioContext& context,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    std::optional<float> sample_rate)
+    std::optional<float> sample_rate,
+    bool update_echo_cancellation_on_first_start)
     : AudioDestinationNode(context) {
   SetHandler(RealtimeAudioDestinationHandler::Create(
-      *this, sink_descriptor, latency_hint, sample_rate));
+      *this, sink_descriptor, latency_hint, sample_rate,
+      update_echo_cancellation_on_first_start));
 }
 
 RealtimeAudioDestinationNode* RealtimeAudioDestinationNode::Create(
     AudioContext* context,
     const WebAudioSinkDescriptor& sink_descriptor,
     const WebAudioLatencyHint& latency_hint,
-    std::optional<float> sample_rate) {
+    std::optional<float> sample_rate,
+    bool update_echo_cancellation_on_first_start) {
   return MakeGarbageCollected<RealtimeAudioDestinationNode>(
-      *context, sink_descriptor, latency_hint, sample_rate);
+      *context, sink_descriptor, latency_hint, sample_rate,
+      update_echo_cancellation_on_first_start);
 }
 
 RealtimeAudioDestinationHandler& RealtimeAudioDestinationNode::GetOwnHandler()

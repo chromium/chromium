@@ -124,6 +124,7 @@ cc_component("cc") {
     "layers/recording_source.h",
     "layers/render_surface_impl.cc",
     "layers/render_surface_impl.h",
+    "layers/scroll_hit_test_rect.h",
     "layers/scrollbar_layer_base.cc",
     "layers/scrollbar_layer_base.h",
     "layers/scrollbar_layer_impl_base.cc",
@@ -330,6 +331,7 @@ cc_component("cc") {
     "tiles/tile.h",
     "tiles/tile_draw_info.cc",
     "tiles/tile_draw_info.h",
+    "tiles/tile_index.h",
     "tiles/tile_manager.cc",
     "tiles/tile_manager.h",
     "tiles/tile_manager_settings.h",
@@ -339,6 +341,9 @@ cc_component("cc") {
     "tiles/tile_task_manager.h",
     "tiles/tiles_with_resource_iterator.cc",
     "tiles/tiles_with_resource_iterator.h",
+    "tiles/tiling_coverage_iterator.h",
+    "tiles/tiling_internal.h",
+    "tiles/tiling_set_coverage_iterator.h",
     "tiles/tiling_set_eviction_queue.cc",
     "tiles/tiling_set_eviction_queue.h",
     "tiles/tiling_set_raster_queue_all.cc",
@@ -688,7 +693,7 @@ cc_test_static_library("test_support") {
     deps += [ "//gpu/vulkan/init" ]
   }
   if (!is_android) {
-    data_deps = [ "//third_party/mesa_headers" ]
+    data_deps = [ "//third_party/angle:includes" ]
   }
   if (skia_use_dawn) {
     deps += [
@@ -946,7 +951,7 @@ cc_test("cc_unittests") {
   data = [ "//components/test/data/viz/" ]
   data_deps = [
     "//testing/buildbot/filters:cc_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_android && enable_chrome_android_internal) {

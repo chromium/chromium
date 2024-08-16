@@ -6,10 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -190,7 +189,7 @@ AnalysisServiceSettings::GetPatternSettings(
 
 AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
     std::map<std::string, TagSettings> tags,
-    safe_browsing::DataRegion data_region) const {
+    DataRegion data_region) const {
   DCHECK(IsValid());
 
   AnalysisSettings settings;
@@ -230,7 +229,7 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
 
 std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     const GURL& url,
-    safe_browsing::DataRegion data_region) const {
+    DataRegion data_region) const {
   if (!IsValid())
     return std::nullopt;
 
@@ -251,7 +250,7 @@ std::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
     content::BrowserContext* context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
-    safe_browsing::DataRegion data_region) const {
+    DataRegion data_region) const {
   if (!IsValid())
     return std::nullopt;
   DCHECK(source_destination_matcher_);

@@ -1,0 +1,78 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("printing") {
+  sources = [
+    "cups_printers_handler.cc",
+    "cups_printers_handler.h",
+    "printing_section.cc",
+    "printing_section.h",
+    "server_printer_url_util.cc",
+    "server_printer_url_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/printing",
+    "//chromeos/ash/components/dbus/printscanmgr",
+    "//chromeos/printing",
+    "//printing:printing_base",
+    "//ui/shell_dialogs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/device_event_log",
+    "//content/public/browser",
+    "//google_apis",
+    "//net",
+    "//printing/backend",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cups_printers_handler_unittest.cc",
+    "server_printer_url_util_unittest.cc",
+  ]
+
+  deps = [
+    ":printing",
+    "//ash/public/cpp:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/printing:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/printscanmgr",
+    "//content/test:test_support",
+    "//printing/backend:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/shell_dialogs",
+    "//url",
+  ]
+}

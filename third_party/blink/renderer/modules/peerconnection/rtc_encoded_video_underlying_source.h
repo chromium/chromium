@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -21,9 +22,15 @@ namespace blink {
 class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
     : public UnderlyingSourceBase {
  public:
+  // If |controller_override| is provided, it won't work as an instance of
+  // |UnderlyingSourceBase| so shouldn't be used directly, only with
+  // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedVideoUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      WTF::CrossThreadOnceClosure disconnect_callback =
+          WTF::CrossThreadOnceClosure(),
+      ReadableStreamDefaultControllerWithScriptScope* controller_override =
+          nullptr);
 
   // UnderlyingSourceBase
   ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
@@ -46,6 +53,10 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   // context, called on the thread upon which the instance was created.
   void OnSourceTransferStartedOnTaskRunner();
 
+  // In case there is controller override, this one is returned. If not,
+  // Controller() from the underlying source base will be returned.
+  ReadableStreamDefaultControllerWithScriptScope* GetController();
+
   FRIEND_TEST_ALL_PREFIXES(RTCEncodedVideoUnderlyingSourceTest,
                            QueuedFramesAreDroppedWhenOverflow);
   static const int kMinQueueDesiredSize;
@@ -55,6 +66,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  Member<ReadableStreamDefaultControllerWithScriptScope> controller_override_;
 };
 
 }  // namespace blink

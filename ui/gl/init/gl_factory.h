@@ -59,8 +59,7 @@ GL_INIT_EXPORT bool InitializeExtensionSettingsOneOffPlatform(
 // Initializes GL bindings using the provided parameters. This might be required
 // for use in tests.
 GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
-    GLImplementationParts impl,
-    bool fallback_to_software_gl);
+    GLImplementationParts impl);
 
 // Initializes GL platform using the provided parameters. This might be required
 // for use in tests. This should be called only after GL bindings are initilzed
@@ -68,7 +67,6 @@ GL_INIT_EXPORT bool InitializeStaticGLBindingsImplementation(
 // |gpu_preference| specifies which GPU to use on a multi-GPU system.
 // If its value is kDefault, use the default GPU of the system.
 GL_INIT_EXPORT GLDisplay* InitializeGLOneOffPlatformImplementation(
-    bool fallback_to_software_gl,
     bool disable_gl_drawing,
     bool init_extensions,
     gl::GpuPreference gpu_preference);

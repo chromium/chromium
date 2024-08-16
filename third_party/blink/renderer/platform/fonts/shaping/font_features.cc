@@ -106,7 +106,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
 
   // font-variant-east-asian:
   const FontVariantEastAsian east_asian = description.VariantEastAsian();
-  if (UNLIKELY(!east_asian.IsAllNormal())) {
+  if (!east_asian.IsAllNormal()) [[unlikely]] {
     static constexpr hb_feature_t jp78 = CreateFeature('j', 'p', '7', '8', 1);
     static constexpr hb_feature_t jp83 = CreateFeature('j', 'p', '8', '3', 1);
     static constexpr hb_feature_t jp90 = CreateFeature('j', 'p', '9', '0', 1);
@@ -201,7 +201,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
       ShouldTrimAdjacent(description.GetTextSpacingTrim());
 
   const FontFeatureSettings* settings = description.FeatureSettings();
-  if (UNLIKELY(settings)) {
+  if (settings) [[unlikely]] {
     // TODO(drott): crbug.com/450619 Implement feature resolution instead of
     // just appending the font-feature-settings.
     const hb_tag_t halt_or_vhal =

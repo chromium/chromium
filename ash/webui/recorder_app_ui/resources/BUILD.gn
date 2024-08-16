@@ -112,6 +112,7 @@ build_webui("build") {
 
   mojo_files = [
     "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model_service.mojom-webui.ts",
     "$root_gen_dir/ash/webui/recorder_app_ui/mojom/recorder_app.mojom-webui.ts",
     "$root_gen_dir/chromeos/services/machine_learning/public/mojom/soda.mojom-webui.ts",
   ]

@@ -147,6 +147,12 @@ NOINLINE void ExceptionState::RethrowV8Exception(v8::Local<v8::Value> value) {
   DoRethrowV8Exception(value);
 }
 
+NOINLINE void ExceptionState::RethrowV8Exception(v8::TryCatch& try_catch) {
+  thrown_via_v8_trycatch_ = true;
+  DoRethrowV8Exception(try_catch.Exception());
+  try_catch.ReThrow();
+}
+
 void ExceptionState::ClearException() {
   code_ = 0;
   message_ = String();
@@ -252,17 +258,19 @@ void ExceptionState::PropagateException() {
   // size and results in better performance due to improved code locality in
   // the bindings for the most frequently used code path (cases where no
   // exception is thrown).
-  V8ThrowException::ThrowException(isolate_, exception_.Get(isolate_));
+  if (!thrown_via_v8_trycatch_) {
+    V8ThrowException::ThrowException(isolate_, exception_.Get(isolate_));
+  }
 }
 
 NonThrowableExceptionState::NonThrowableExceptionState()
-    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
+    : ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, nullptr),
       file_(""),
       line_(0) {}
 
 NonThrowableExceptionState::NonThrowableExceptionState(const char* file,
                                                        int line)
-    : ExceptionState(nullptr, ExceptionContextType::kUnknown, nullptr, nullptr),
+    : ExceptionState(nullptr, v8::ExceptionContext::kUnknown, nullptr, nullptr),
       file_(file),
       line_(line) {}
 

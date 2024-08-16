@@ -7,6 +7,8 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "url/gurl.h"
 
 namespace tab_resumption_prefs {
@@ -28,11 +30,20 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 }
 
 bool IsTabResumptionDisabled(PrefService* prefs) {
+  if (IsHomeCustomizationEnabled()) {
+    return !prefs->GetBoolean(
+        prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
+  }
   return prefs->GetBoolean(kTabResumptioDisabledPref);
 }
 
 void DisableTabResumption(PrefService* prefs) {
-  prefs->SetBoolean(kTabResumptioDisabledPref, true);
+  if (IsHomeCustomizationEnabled()) {
+    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackTabResumptionEnabled,
+                      false);
+  } else {
+    prefs->SetBoolean(kTabResumptioDisabledPref, true);
+  }
 }
 
 bool IsLastOpenedURL(GURL URL, PrefService* prefs) {

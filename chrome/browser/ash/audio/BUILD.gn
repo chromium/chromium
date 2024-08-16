@@ -34,12 +34,17 @@ static_library("audio") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "audio_survey_handler_unittest.cc" ]
+  sources = [
+    "audio_survey_handler_unittest.cc",
+    "cras_audio_handler_delegate_impl_unittest.cc",
+  ]
 
   deps = [
     "//base/test:test_support",
     "//chrome/browser/ash/audio",
     "//chrome/browser/ash/hats",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

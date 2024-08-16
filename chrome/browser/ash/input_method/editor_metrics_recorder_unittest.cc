@@ -736,29 +736,23 @@ class EditorStateMetricsSegmentedByLanguage
     : public EditorMetricsRecorderTest,
       public testing::WithParamInterface<LanguageSegmentationCase> {
  public:
-  void EnableInternationalFlags() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kOrcaDanish,
-            features::kOrcaDutch,
-            features::kOrcaFinnish,
-            features::kOrcaFrench,
-            features::kOrcaGerman,
-            features::kOrcaItalian,
-            features::kOrcaJapanese,
-            features::kOrcaPortugese,
-            features::kOrcaSpanish,
-            features::kOrcaSwedish,
-        },
-        {});
-  }
-
   void EnableEnglishFlagsOnly() {
-    feature_list_.InitWithFeatures({}, {
-                                           features::kOrcaFrench,
-                                           features::kOrcaGerman,
-                                           features::kOrcaJapanese,
-                                       });
+    feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                   /*disabled_features=*/{
+                                       features::kOrcaAfrikaans,
+                                       features::kOrcaDanish,
+                                       features::kOrcaDutch,
+                                       features::kOrcaFinnish,
+                                       features::kOrcaFrench,
+                                       features::kOrcaGerman,
+                                       features::kOrcaItalian,
+                                       features::kOrcaJapanese,
+                                       features::kOrcaNorwegian,
+                                       features::kOrcaPolish,
+                                       features::kOrcaPortugese,
+                                       features::kOrcaSpanish,
+                                       features::kOrcaSwedish,
+                                   });
   }
 
  protected:
@@ -814,6 +808,8 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:it::ita", "InputMethod.Manta.Orca.Italian.States."},
         // Norwegian
         {"xkb:no::nob", "InputMethod.Manta.Orca.Norwegian.States."},
+        // Polish
+        {"xkb:pl::pol", "InputMethod.Manta.Orca.Polish.States."},
         // Portugese
         {"xkb:br::por", "InputMethod.Manta.Orca.Portugese.States."},
         {"xkb:pt::por", "InputMethod.Manta.Orca.Portugese.States."},
@@ -831,7 +827,6 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Write"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -857,7 +852,6 @@ TEST_P(EditorStateMetricsSegmentedByLanguage,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "Rewrite"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -901,29 +895,23 @@ class EditorAuxiliaryMetricsSegmentedByEnglishAndOther
     : public EditorMetricsRecorderTest,
       public testing::WithParamInterface<LanguageSegmentationCase> {
  public:
-  void EnableInternationalFlags() {
-    feature_list_.InitWithFeatures(
-        {
-            features::kOrcaDanish,
-            features::kOrcaDutch,
-            features::kOrcaFinnish,
-            features::kOrcaFrench,
-            features::kOrcaGerman,
-            features::kOrcaItalian,
-            features::kOrcaJapanese,
-            features::kOrcaPortugese,
-            features::kOrcaSpanish,
-            features::kOrcaSwedish,
-        },
-        {});
-  }
-
   void EnableEnglishFlagsOnly() {
-    feature_list_.InitWithFeatures({}, {
-                                           features::kOrcaFrench,
-                                           features::kOrcaGerman,
-                                           features::kOrcaJapanese,
-                                       });
+    feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                   /*disabled_features=*/{
+                                       features::kOrcaAfrikaans,
+                                       features::kOrcaDanish,
+                                       features::kOrcaDutch,
+                                       features::kOrcaFinnish,
+                                       features::kOrcaFrench,
+                                       features::kOrcaGerman,
+                                       features::kOrcaItalian,
+                                       features::kOrcaJapanese,
+                                       features::kOrcaNorwegian,
+                                       features::kOrcaPolish,
+                                       features::kOrcaPortugese,
+                                       features::kOrcaSpanish,
+                                       features::kOrcaSwedish,
+                                   });
   }
 
  protected:
@@ -983,6 +971,8 @@ INSTANTIATE_TEST_SUITE_P(
         {"xkb:it::ita", "InputMethod.Manta.Orca.Other."},
         // Norwegian
         {"xkb:no::nob", "InputMethod.Manta.Orca.Other."},
+        // Polish
+        {"xkb:pl::pol", "InputMethod.Manta.Orca.Other."},
         // Portugese
         {"xkb:br::por", "InputMethod.Manta.Orca.Other."},
         {"xkb:pt::por", "InputMethod.Manta.Orca.Other."},
@@ -1000,7 +990,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Write"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1019,7 +1008,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "CharactersInserted.Rewrite"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1057,7 +1045,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Write"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1077,7 +1064,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix,
                     "CharactersSelectedForInsert.Rewrite"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1115,7 +1101,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram =
       base::StrCat({test_case.expected_histogram_prefix, "NumResponses.Write"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1134,7 +1119,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "NumResponses.Rewrite"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1171,7 +1155,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Write"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);
@@ -1190,7 +1173,6 @@ TEST_P(EditorAuxiliaryMetricsSegmentedByEnglishAndOther,
   const LanguageSegmentationCase& test_case = GetParam();
   const std::string expected_histogram = base::StrCat(
       {test_case.expected_histogram_prefix, "LengthOfLongestResponse.Rewrite"});
-  EnableInternationalFlags();
   FakeSystem system;
   FakeContextObserver observer;
   EditorGeolocationMockProvider geolocation_provider(kAllowedCountryCode);

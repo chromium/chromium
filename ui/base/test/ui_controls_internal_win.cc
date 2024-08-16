@@ -578,8 +578,7 @@ bool SendMouseEventsImpl(MouseButton type,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   std::vector<INPUT> input;

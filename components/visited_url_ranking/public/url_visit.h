@@ -19,6 +19,7 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/visited_url_ranking/public/decoration.h"
 #include "url/gurl.h"
 
 namespace visited_url_ranking {
@@ -129,6 +130,16 @@ struct URLVisitAggregate {
     // The number of history visits associated with the URL visit aggregate in a
     // time period.
     size_t visit_count = 1;
+
+    // The number of history visits that took place on the same time group as
+    // the current visit. See `url_visit_util.h|cc` for details on the
+    // definition of a time group.
+    size_t same_time_group_visit_count = 0;
+
+    // The number of history visits that took place on the same day group as the
+    // current visit. See `url_visit_util.h|cc` for details on the definition of
+    // a day group.
+    size_t same_day_group_visit_count = 0;
   };
 
   explicit URLVisitAggregate(std::string key_arg);
@@ -176,6 +187,10 @@ struct URLVisitAggregate {
 
   // A score associated with the aggregate, if any.
   std::optional<float> score = std::nullopt;
+
+  // The matching decorations for a URL visit aggregate. One of these will be
+  // selected to display on various UI surfaces.
+  std::vector<Decoration> decorations;
 };
 
 // Helper to visit each variant of URLVisitVariant.

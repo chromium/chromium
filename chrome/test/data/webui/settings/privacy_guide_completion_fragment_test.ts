@@ -32,6 +32,7 @@ suite('CompletionFragment', function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       isPrivacySandboxRestrictedNoticeEnabled: false,
+      isPrivacySandboxPrivacyGuideAdTopicsEnabled: false,
     });
     resetRouterForTesting();
   });

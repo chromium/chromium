@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/login/ui/login_pin_view.h"
 
 #include <memory>
@@ -99,6 +104,7 @@ class BasePinButton : public views::View {
                 const std::u16string& accessible_name,
                 const base::RepeatingClosure& on_press)
       : on_press_(on_press) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     GetViewAccessibility().SetName(accessible_name);
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     SetPreferredSize(size);
@@ -185,7 +191,6 @@ class BasePinButton : public views::View {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kButton;
     node_data->SetName(GetViewAccessibility().GetCachedName());
   }
 

@@ -26,13 +26,6 @@ using ChromeMLFatalErrorFn = void (*)(const char* msg);
 using ChromeMLScheduleFn = void (*)(uintptr_t context,
                                     std::function<void()>* task);
 
-enum ContextMode {
-  kNone = 0,
-  kReset = 1 << 0,
-  kSave = 1 << 1,
-  kIgnoreContext = 1 << 2,
-};
-
 #if defined(_WIN32)
 using PlatformFile = void*;
 #else
@@ -45,6 +38,14 @@ using ChromeMLModel = uintptr_t;
 using ChromeMLSession = uintptr_t;
 // Opaque handle to an object that allows canceling operations.
 using ChromeMLCancel = uintptr_t;
+// Opaque handle to an instance of a ChromeMLTS model.
+using ChromeMLTSModel = uintptr_t;
+
+// A contiguous byte span.
+struct ChromeMLByteSpan {
+  uint8_t* data;
+  size_t size;
+};
 
 // Describes a ChromeML model's underlying tensors.
 struct ChromeMLModelData {
@@ -105,15 +106,12 @@ struct ChromeMLExecutionOutput {
   // Null-terminated text content for this output chunk, or null if there is no
   // new text output.
   const char* text;
+};
 
-  // Optional TS scores for the full output so far, up to and including this
-  // chunk. Only included as specified by `score_ts_interval` in
-  // ChromeMLExecuteOptions.
-  //
-  // If no new scores are provided for this output, this field is null and
-  // `num_ts_scores` is zero.
-  float* ts_scores;
-  size_t num_ts_scores;
+struct ChromeMLTSModelDescriptor {
+  ChromeMLByteSpan model;
+  ChromeMLByteSpan sp_model;
+  size_t dimensions;
 };
 
 // Status value indicating the result of ad hoc safety classification.
@@ -210,6 +208,35 @@ struct ChromeMLMetricsFns {
                                       size_t buckets);
 };
 
+struct ChromeMLTSAPI {
+  // Construct a text safety model.
+  // Destroy the returned object by passing it to DestroyModel.
+  ChromeMLTSModel (*CreateModel)(const ChromeMLTSModelDescriptor* descriptor);
+
+  // Destroy a text safety model.
+  void (*DestroyModel)(ChromeMLTSModel model);
+
+  // Performs ad hoc safety classification on a chunk of text using the
+  // classifier defined by `model`.
+  //
+  // On input, `scores` must point to an output buffer to receive the safety
+  // class scores, and `num_scores` must point to the capacity of that buffer in
+  // number of elements.
+  //
+  // On success this returns kOk on and `*num_scores` is set to the actual
+  // number of score values written into the output buffer. This number is
+  // guaranteed to be no larger than the input value of `*num_scores`.
+  //
+  // If this fails with kInsufficientStorage, no `scores` are populated and
+  // `*num_scores` is set to the correct number scores the caller should expect.
+  //
+  // If `model` does not define a safety classifier, this returns kNoClassifier.
+  ChromeMLSafetyResult (*ClassifyTextSafety)(ChromeMLTSModel model,
+                                             const char* text,
+                                             float* scores,
+                                             size_t* num_scores);
+};
+
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with
 // DISABLE_CFI_DLSYM.
 
@@ -225,20 +252,6 @@ struct ChromeMLAPI {
   // Sets an error handling function for fatal errors in the GPU. See also
   // SetFatalErrorNonGpuFn.
   void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn);
-
-  // Creates a new ChromeML model instance as described by `model`. The returned
-  // object can be destroyed by passing it to DestroyModel(). `context` is
-  // forwarded to any invocations of `schedule` or `token_output` made by this
-  // model.
-  ChromeMLModel (*CreateModel)(const ChromeMLModelDescriptor* descriptor,
-                               uintptr_t context,
-                               ChromeMLScheduleFn schedule);
-
-  // Executes a model given the input `prompt`. Results are fed incrementally
-  // to the model's given ChromeMLOutputFn.
-  bool (*ExecuteModel)(ChromeMLModel model,
-                       const ChromeMLExecuteOptions* options,
-                       ChromeMLCancelFn* cancel_fn);
 
   // Performs ad hoc safety classification on a chunk of text using the
   // classifier defined by `model`.
@@ -260,17 +273,12 @@ struct ChromeMLAPI {
                                              float* scores,
                                              size_t* num_scores);
 
-  // Destroys a model that was created by CreateModel().
+  // Destroys a model that was created by SessionCreateModel().
   void (*DestroyModel)(ChromeMLModel model);
 
   // Estimates the tokens per second this device will be able to achieve when
   // running a typical model.
   bool (*GetEstimatedPerformance)(ChromeMLPerformanceInfo* performance_info);
-
-  // Returns the GpuConfig in `config`. Returns true on success, false if there
-  // was an error calculating it.
-  // Deprecated: Use QueryGPUAdapter insteed.
-  bool (*GetGpuConfig)(GpuConfig& config);
 
   // Query the GPU adapter used.
   // Synchronously calls `adapter_callback_fn` with a non-owning pointer to the
@@ -286,33 +294,28 @@ struct ChromeMLAPI {
   // gpu.
   void (*SetFatalErrorNonGpuFn)(ChromeMLFatalErrorFn error_fn);
 
-  // Loads an adaptation and outputs an identifier for this adaptation in `id`.
-  bool (*CreateAdaptation)(ChromeMLModel model,
-                           const ChromeMLAdaptationDescriptor* descriptor,
-                           uint32_t& id);
-
-  // Get the size of the given text in tokens.
-  void (*SizeInTokens)(ChromeMLModel model,
-                       const std::string& text,
-                       const ChromeMLSizeInTokensFn& fn);
-
-  // Scores the first token of the given text.
-  void (*Score)(ChromeMLModel model,
-                const std::string& text,
-                const ChromeMLScoreFn& fn);
-
-  // Session based mirror of the above API.
-  // TODO: b/350517296 - Delete old API.
+  // Creates a new ChromeML model instance as described by `descriptor`. The
+  // returned object can be destroyed by passing it to DestroyModel(). `context`
+  // is forwarded to any invocations of `schedule` or `token_output` made by
+  // this model.
   ChromeMLModel (*SessionCreateModel)(const ChromeMLModelDescriptor* descriptor,
                                       uintptr_t context,
                                       ChromeMLScheduleFn schedule);
+
+  // Executes a model given the input `options.prompt`. Results are fed
+  // incrementally to `options.execution_output_fn`. Execution may be cancelled
+  // by calling CancelExecuteModel on `cancel`.
   bool (*SessionExecuteModel)(ChromeMLSession session,
                               ChromeMLModel model,
                               const ChromeMLExecuteOptions* options,
                               ChromeMLCancel cancel);
+
+  // Get the size of the given text in tokens.
   void (*SessionSizeInTokens)(ChromeMLSession session,
                               const std::string& text,
                               const ChromeMLSizeInTokensFn& fn);
+
+  // Scores the first token of the given text.
   void (*SessionScore)(ChromeMLSession session,
                        const std::string& text,
                        const ChromeMLScoreFn& fn);
@@ -331,6 +334,8 @@ struct ChromeMLAPI {
   ChromeMLCancel (*CreateCancel)();
   void (*DestroyCancel)(ChromeMLCancel cancel);
   void (*CancelExecuteModel)(ChromeMLCancel cancel);
+
+  ChromeMLTSAPI ts_api;
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

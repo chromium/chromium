@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 
 #include <stddef.h>
@@ -4505,8 +4510,7 @@ void OnDangerPromptCreated(DownloadDangerPrompt* prompt) {
 }
 
 // TODO(https://crbug.com/40304461): Flaky on Mac debug, failing with a timeout.
-// TODO(https://crbug.com/353748713): Fails in MSan with use-after-dtor checks.
-#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG)) || defined(MEMORY_SANITIZER)
+#if (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
 #define MAYBE_DownloadExtensionTest_AcceptDanger \
   DISABLED_DownloadExtensionTest_AcceptDanger
 #else

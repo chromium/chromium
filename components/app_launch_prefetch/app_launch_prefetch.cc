@@ -82,7 +82,7 @@ base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
     // kPrefetchArgument8 and kPrefetchArgument15 are currently unused.
     switch (type) {
       case kBrowser:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case kRenderer:
         return kPrefetchArgument1;
       case kGPU:
@@ -121,7 +121,7 @@ base::CommandLine::StringViewType GetPrefetchSwitch(SubprocessType type) {
     // bucket is used by the crashpad fallback handler.
     switch (type) {
       case kBrowser:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case kRenderer:
         return kPrefetchArgument1;
       case kGPU:

@@ -11,6 +11,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/mic_indicator.h"
+#include "ash/system/video_conference/bubble/settings_button.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +19,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -63,6 +65,7 @@ TitleView::TitleView() {
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetInsideBorderInsets(kTitleViewPadding);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+  SetBetweenChildSpacing(kTitleChildSpacing);
 
   auto* title_column =
       AddChildView(views::Builder<views::BoxLayoutView>()
@@ -114,6 +117,10 @@ TitleView::TitleView() {
       VideoConferenceTrayController::Get()->GetSidetoneEnabled());
 
   VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
+
+  if (features::IsVcStudioLookEnabled()) {
+    AddChildView(std::make_unique<SettingsButton>());
+  }
 }
 
 void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
@@ -139,12 +146,12 @@ void TitleView::OnSidetoneButtonClicked(const ui::Event& event) {
 void TitleView::ShowSidetoneBubble(const bool supported) {
   CloseSidetoneBubble();
 
-  auto title_id =
+  std::u16string title_str = l10n_util::GetStringUTF16(
       supported ? IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_TITLE
-                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE;
-  auto body_id =
+                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_TITLE);
+  std::u16string body_str = l10n_util::GetStringUTF16(
       supported ? IDS_ASH_VIDEO_CONFERENCE_SIDETONE_ENABLED_BUBBLE_BODY
-                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY;
+                : IDS_ASH_VIDEO_CONFERENCE_SIDETONE_NOT_SUPPORTED_BUBBLE_BODY);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -179,7 +186,7 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
 
   auto* title = bubble_view->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(title_id))
+          .SetText(title_str)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .Build());
@@ -187,7 +194,7 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
 
   auto* body = bubble_view->AddChildView(
       views::Builder<views::Label>()
-          .SetText(l10n_util::GetStringUTF16(body_id))
+          .SetText(body_str)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(kColorAshTextColorPrimary)
           .SetMultiLine(true)
@@ -205,6 +212,15 @@ void TitleView::ShowSidetoneBubble(const bool supported) {
 
   sidetone_bubble_widget_ = std::move(bubble_widget);
   sidetone_bubble_widget_->Show();
+  std::u16string announcement = l10n_util::GetStringFUTF16(
+      IDS_ASH_VIDEO_CONFERENCE_SIDETONE_BUBBLE_ANNOUNCEMENT, title_str,
+      body_str);
+
+  if (supported) {
+    GetViewAccessibility().AnnouncePolitely(announcement);
+  } else {
+    GetViewAccessibility().AnnounceAlert(announcement);
+  }
 }
 
 void TitleView::CloseSidetoneBubble() {

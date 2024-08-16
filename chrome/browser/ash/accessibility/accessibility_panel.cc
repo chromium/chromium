@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"

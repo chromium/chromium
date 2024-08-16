@@ -461,7 +461,7 @@ public class KeyboardAccessoryData {
             return mUserInfoList;
         }
 
-        public List<PlusAddressSection> getPlusAddressSection() {
+        public List<PlusAddressSection> getPlusAddressSectionList() {
             return mPlusAddressSection;
         }
 

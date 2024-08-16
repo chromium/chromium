@@ -97,6 +97,14 @@ class FakeTabSlotController : public TabSlotController {
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool IsLockedForOnTask() override;
+
+  // Sets OnTask locked for testing purposes. Only relevant for non-web browser
+  // scenarios.
+  void SetLockedForOnTask(bool locked) { on_task_locked_ = locked; }
+#endif
+
   void SetTabColors(SkColor fg_color_active, SkColor fg_color_inactive) {
     tab_fg_color_active_ = fg_color_active;
     tab_fg_color_inactive_ = fg_color_inactive;
@@ -110,6 +118,9 @@ class FakeTabSlotController : public TabSlotController {
   ui::ListSelectionModel selection_model_;
   raw_ptr<Tab, DanglingUntriaged> active_tab_ = nullptr;
   bool paint_throbber_to_layer_ = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool on_task_locked_ = false;
+#endif
 
   SkColor tab_fg_color_active_ = gfx::kPlaceholderColor;
   SkColor tab_fg_color_inactive_ = gfx::kPlaceholderColor;

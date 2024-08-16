@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/quick_pair/message_stream/message_stream.h"
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -192,8 +197,7 @@ std::string MessageStream::MessageStreamMessageTypeToString(
   if (message->is_sdk_version())
     return "SDK version";
 
-  NOTREACHED_IN_MIGRATION();
-  return "INVALID MESSAGE TYPE";
+  NOTREACHED();
 }
 
 void MessageStream::NotifyObservers(
@@ -280,7 +284,7 @@ void MessageStream::NotifyObservers(
   }
 
   CD_LOG(WARNING, Feature::FP) << __func__ << ": unexpected message type.";
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MessageStream::OnUtilityProcessStopped(

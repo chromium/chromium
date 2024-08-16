@@ -18,14 +18,40 @@ namespace WTF {
 
 namespace {
 
+ALWAYS_INLINE static bool IsOnly8Bit(const UChar* chars, unsigned len) {
+  for (unsigned i = 0; i < len; ++i) {
+    if ((uint16_t)chars[i] > 255) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class UCharBuffer {
  public:
-  UCharBuffer(const UChar* chars,
-              unsigned len,
-              AtomicStringUCharEncoding encoding)
+  ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8Bits(
+      const UChar* chars,
+      unsigned len,
+      AtomicStringUCharEncoding encoding) {
+    if (encoding == AtomicStringUCharEncoding::kIs8Bit ||
+        (encoding == AtomicStringUCharEncoding::kUnknown &&
+         IsOnly8Bit(chars, len))) {
+      // This is a very common case from HTML parsing, so we take
+      // the size penalty from inlining.
+      return StringHasher::ComputeHashAndMaskTop8BitsInline<
+          ConvertTo8BitHashReader>((const char*)chars, len);
+    } else {
+      return StringHasher::ComputeHashAndMaskTop8Bits((const char*)chars,
+                                                      len * 2);
+    }
+  }
+
+  ALWAYS_INLINE UCharBuffer(const UChar* chars,
+                            unsigned len,
+                            AtomicStringUCharEncoding encoding)
       : characters_(chars),
         length_(len),
-        hash_(StringHasher::ComputeHashAndMaskTop8Bits(chars, len)),
+        hash_(ComputeHashAndMaskTop8Bits(chars, len, encoding)),
         encoding_(encoding) {}
 
   const UChar* characters() const { return characters_; }
@@ -68,115 +94,19 @@ struct UCharBufferTranslator {
   }
 };
 
-class HashAndUTF8Characters {
- public:
-  HashAndUTF8Characters(const char* chars_start, const char* chars_end)
-      : characters_(chars_start),
-        hash_(unicode::CalculateStringHashAndLengthFromUTF8MaskingTop8Bits(
-            chars_start,
-            chars_end,
-            length_,
-            utf16_length_)) {}
-
-  const char* characters() const { return characters_; }
-  unsigned length() const { return length_; }
-  unsigned utf16_length() const { return utf16_length_; }
-  unsigned hash() const { return hash_; }
-
- private:
-  const char* characters_;
-  unsigned length_;
-  unsigned utf16_length_;
-  unsigned hash_;
-};
-
-struct HashAndUTF8CharactersTranslator {
-  static unsigned GetHash(const HashAndUTF8Characters& buffer) {
-    return buffer.hash();
-  }
-
-  static bool Equal(StringImpl* const& string,
-                    const HashAndUTF8Characters& buffer) {
-    if (buffer.utf16_length() != string->length())
-      return false;
-
-    // If buffer contains only ASCII characters UTF-8 and UTF16 length are the
-    // same.
-    if (buffer.utf16_length() != buffer.length()) {
-      if (string->Is8Bit()) {
-        const LChar* characters8 = string->Characters8();
-        return unicode::EqualLatin1WithUTF8(
-            characters8, characters8 + string->length(), buffer.characters(),
-            buffer.characters() + buffer.length());
-      }
-      const UChar* characters16 = string->Characters16();
-      return unicode::EqualUTF16WithUTF8(
-          characters16, characters16 + string->length(), buffer.characters(),
-          buffer.characters() + buffer.length());
-    }
-
-    if (string->Is8Bit()) {
-      const LChar* string_characters = string->Characters8();
-
-      for (unsigned i = 0; i < buffer.length(); ++i) {
-        DCHECK(IsASCII(buffer.characters()[i]));
-        if (string_characters[i] != buffer.characters()[i])
-          return false;
-      }
-
-      return true;
-    }
-
-    const UChar* string_characters = string->Characters16();
-
-    for (unsigned i = 0; i < buffer.length(); ++i) {
-      DCHECK(IsASCII(buffer.characters()[i]));
-      if (string_characters[i] != buffer.characters()[i])
-        return false;
-    }
-
-    return true;
-  }
-
-  static void Store(StringImpl*& location,
-                    const HashAndUTF8Characters& buffer,
-                    unsigned hash) {
-    scoped_refptr<StringImpl> new_string;
-    // If buffer contains only ASCII characters, the UTF-8 and UTF-16 lengths
-    // are the same.
-    bool is_all_ascii = buffer.utf16_length() == buffer.length();
-    if (!is_all_ascii) {
-      UChar* target;
-      new_string =
-          StringImpl::CreateUninitialized(buffer.utf16_length(), target);
-
-      const char* source = buffer.characters();
-      if (unicode::ConvertUTF8ToUTF16(
-              &source, source + buffer.length(), &target,
-              target + buffer.utf16_length()) != unicode::kConversionOK) {
-        NOTREACHED_IN_MIGRATION();
-      }
-    } else {
-      new_string = StringImpl::Create(buffer.characters(), buffer.length());
-    }
-    location = new_string.release();
-    location->SetHash(hash);
-    location->SetIsAtomic();
-  }
-};
-
 struct StringViewLookupTranslator {
   static unsigned GetHash(const StringView& buf) {
     StringImpl* shared_impl = buf.SharedImpl();
-    if (LIKELY(shared_impl))
+    if (shared_impl) [[likely]] {
       return shared_impl->GetHash();
+    }
 
     if (buf.Is8Bit()) {
-      return StringHasher::ComputeHashAndMaskTop8Bits(buf.Characters8(),
-                                                      buf.length());
+      return StringHasher::ComputeHashAndMaskTop8Bits(
+          (const char*)buf.Characters8(), buf.length());
     } else {
-      return StringHasher::ComputeHashAndMaskTop8Bits(buf.Characters16(),
-                                                      buf.length());
+      return StringHasher::ComputeHashAndMaskTop8Bits(
+          (const char*)buf.Characters16(), buf.length());
     }
   }
 
@@ -190,6 +120,106 @@ struct StringViewLookupTranslator {
 // of hash and equality computations as if we had done so. Strings reaching
 // these methods are expected to not be lowercase.
 
+// NOTE: Interestingly, the SIMD paths here improve on code size, not just
+// on performance.
+template <typename CharType>
+struct ASCIILowerHashReader {
+  static constexpr unsigned kCompressionFactor = 1;
+  static constexpr unsigned kExpansionFactor = 1;
+
+  ALWAYS_INLINE static uint64_t Lowercase(CharType ch) {
+    return ToASCIILower(ch);
+  }
+
+  ALWAYS_INLINE static uint64_t Read64(const uint8_t* ptr) {
+    const CharType* p = reinterpret_cast<const CharType*>(ptr);
+#if defined(__SSE2__) || defined(__ARM_NEON__)
+    CharType b __attribute__((vector_size(8)));
+    memcpy(&b, p, sizeof(b));
+    b |= (b >= 'A' & b <= 'Z') & 0x20;
+    uint64_t ret;
+    memcpy(&ret, &b, sizeof(b));
+    return ret;
+#else
+    if constexpr (sizeof(CharType) == 2) {
+      return Lowercase(p[0]) | (Lowercase(p[1]) << 16) |
+             (Lowercase(p[2]) << 32) | (Lowercase(p[3]) << 48);
+    } else {
+      return Lowercase(p[0]) | (Lowercase(p[1]) << 8) |
+             (Lowercase(p[2]) << 16) | (Lowercase(p[3]) << 24) |
+             (Lowercase(p[4]) << 32) | (Lowercase(p[5]) << 40) |
+             (Lowercase(p[6]) << 48) | (Lowercase(p[7]) << 56);
+    }
+#endif
+  }
+  ALWAYS_INLINE static uint64_t Read32(const uint8_t* ptr) {
+    const CharType* p = reinterpret_cast<const CharType*>(ptr);
+#if defined(__SSE2__) || defined(__ARM_NEON__)
+    CharType b __attribute__((vector_size(4)));
+    memcpy(&b, p, sizeof(b));
+    b |= (b >= 'A' & b <= 'Z') & 0x20;
+    uint32_t ret;
+    memcpy(&ret, &b, sizeof(b));
+    return ret;
+#else
+    if constexpr (sizeof(CharType) == 2) {
+      return Lowercase(p[0]) | (Lowercase(p[1]) << 16);
+    } else {
+      return Lowercase(p[0]) | (Lowercase(p[1]) << 8) |
+             (Lowercase(p[2]) << 16) | (Lowercase(p[3]) << 24);
+    }
+#endif
+  }
+
+  ALWAYS_INLINE static uint64_t ReadSmall(const uint8_t* p, size_t k) {
+    if constexpr (sizeof(CharType) == 2) {
+      // This is fine, but the reasoning is a bit subtle. If we get here,
+      // we have to be a UTF-16 string, and since ReadSmall can only be called
+      // with 1, 2 or 3, it means we must be a UTF-16 string with a single
+      // code point (i.e., two bytes). Furthermore, we know that this code point
+      // must be above 0xFF, or the HashTranslatorLowercaseBuffer constructor
+      // would not have called us. Thus, ToASCIILower() on this code point would
+      // do nothing, and this, we should just hash it exactly as PlainHashReader
+      // would have done.
+      DCHECK_EQ(k, 2u);
+      k = 2;
+      return (uint64_t{p[0]} << 56) | (uint64_t{p[k >> 1]} << 32) |
+             uint64_t{p[k - 1]};
+    } else {
+      return (Lowercase(p[0]) << 56) | (Lowercase(p[k >> 1]) << 32) |
+             Lowercase(p[k - 1]);
+    }
+  }
+};
+
+// Combines ASCIILowerHashReader and ConvertTo8BitHashReader into one.
+// This is an obscure case that we only need for completeness,
+// so it is fine that it's not all that optimized.
+struct ASCIIConvertTo8AndLowerHashReader {
+  static constexpr unsigned kCompressionFactor = 2;
+  static constexpr unsigned kExpansionFactor = 1;
+
+  static uint64_t Lowercase(uint16_t ch) { return ToASCIILower(ch); }
+
+  static uint64_t Read64(const uint8_t* ptr) {
+    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
+    return Lowercase(p[0]) | (Lowercase(p[1]) << 8) | (Lowercase(p[2]) << 16) |
+           (Lowercase(p[3]) << 24) | (Lowercase(p[4]) << 32) |
+           (Lowercase(p[5]) << 40) | (Lowercase(p[6]) << 48) |
+           (Lowercase(p[7]) << 56);
+  }
+  static uint64_t Read32(const uint8_t* ptr) {
+    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
+    return Lowercase(p[0]) | (Lowercase(p[1]) << 8) | (Lowercase(p[2]) << 16) |
+           (Lowercase(p[3]) << 24);
+  }
+  static uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
+    const uint16_t* p = reinterpret_cast<const uint16_t*>(ptr);
+    return (Lowercase(p[0]) << 56) | (Lowercase(p[k >> 1]) << 32) |
+           Lowercase(p[k - 1]);
+  }
+};
+
 class HashTranslatorLowercaseBuffer {
  public:
   explicit HashTranslatorLowercaseBuffer(const StringImpl* impl) : impl_(impl) {
@@ -198,14 +228,18 @@ class HashTranslatorLowercaseBuffer {
     DCHECK(!impl_->IsLowerASCII());
     if (impl_->Is8Bit()) {
       hash_ =
-          StringHasher::ComputeHashAndMaskTop8Bits<LChar,
-                                                   ToASCIILowerUChar<LChar>>(
-              impl_->Characters8(), impl_->length());
+          StringHasher::ComputeHashAndMaskTop8Bits<ASCIILowerHashReader<LChar>>(
+              (const char*)impl_->Characters8(), impl_->length());
     } else {
-      hash_ =
-          StringHasher::ComputeHashAndMaskTop8Bits<UChar,
-                                                   ToASCIILowerUChar<UChar>>(
-              impl_->Characters16(), impl_->length());
+      if (IsOnly8Bit(impl_->Characters16(), impl_->length())) {
+        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
+            ASCIIConvertTo8AndLowerHashReader>(
+            (const char*)impl_->Characters16(), impl_->length());
+      } else {
+        hash_ = StringHasher::ComputeHashAndMaskTop8Bits<
+            ASCIILowerHashReader<UChar>>((const char*)impl_->Characters16(),
+                                         impl_->length() * 2);
+      }
     }
   }
 
@@ -213,11 +247,6 @@ class HashTranslatorLowercaseBuffer {
   unsigned hash() const { return hash_; }
 
  private:
-  template <typename CharType>
-  static UChar ToASCIILowerUChar(CharType ch) {
-    return ToASCIILower(ch);
-  }
-
   const StringImpl* impl_;
   unsigned hash_;
 };
@@ -310,10 +339,12 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
 
 class LCharBuffer {
  public:
-  LCharBuffer(const LChar* chars, unsigned len)
+  ALWAYS_INLINE LCharBuffer(const LChar* chars, unsigned len)
       : characters_(chars),
         length_(len),
-        hash_(StringHasher::ComputeHashAndMaskTop8Bits(chars, len)) {}
+        // This is a common path from V8 strings, so inlining is worth it.
+        hash_(StringHasher::ComputeHashAndMaskTop8BitsInline((const char*)chars,
+                                                             len)) {}
 
   const LChar* characters() const { return characters_; }
   unsigned length() const { return length_; }
@@ -392,13 +423,27 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
 scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
     const char* characters_start,
     const char* characters_end) {
-  HashAndUTF8Characters buffer(characters_start, characters_end);
+  bool seen_non_ascii = false;
+  bool seen_non_latin1 = false;
+  unsigned utf16_length = unicode::CalculateStringLengthFromUTF8(
+      characters_start, characters_end, seen_non_ascii, seen_non_latin1);
+  if (!seen_non_ascii) {
+    return Add((const LChar*)characters_start, utf16_length);
+  }
 
-  if (!buffer.hash())
-    return nullptr;
+  std::unique_ptr<UChar[]> utf16_buf(new UChar[utf16_length]);
+  const char* source = characters_start;
+  UChar* dptr = utf16_buf.get();
+  if (unicode::ConvertUTF8ToUTF16(&source, characters_end, &dptr,
+                                  utf16_buf.get() + utf16_length) !=
+      unicode::kConversionOK) {
+    NOTREACHED_IN_MIGRATION();
+  }
 
-  return AddToStringTable<HashAndUTF8Characters,
-                          HashAndUTF8CharactersTranslator>(buffer);
+  UCharBuffer buffer(utf16_buf.get(), utf16_length,
+                     seen_non_latin1 ? AtomicStringUCharEncoding::kIs16Bit
+                                     : AtomicStringUCharEncoding::kIs8Bit);
+  return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
 
 AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlowForTesting(

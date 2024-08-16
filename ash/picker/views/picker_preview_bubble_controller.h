@@ -64,24 +64,25 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Updates the bubble view labels for the currently open bubble.
+  // If the bubble is not shown, this does nothing.
+  // If `text` is empty, then the bubble view labels are hidden.
+  void SetBubbleMainText(const std::u16string& text);
+
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
   void ShowBubbleImmediatelyForTesting(
       HoldingSpaceImage* async_preview_image,
-      base::OnceCallback<std::optional<base::File::Info>()> get_file_info,
       views::View* anchor_view);
 
   PickerPreviewBubbleView* bubble_view_for_testing() const;
 
  private:
   void UpdateBubbleImage();
-  void UpdateBubbleMetadata(std::optional<base::File::Info> info);
 
-  // `get_file_info` is run in a `base::MayBlock()` task.
   void CreateBubbleWidget(
       HoldingSpaceImage* async_preview_image,
-      base::OnceCallback<std::optional<base::File::Info>()> get_file_info,
       views::View* anchor_view);
 
   // Shows the bubble if one has been created. Does nothing if the bubble is

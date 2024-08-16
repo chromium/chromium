@@ -49,7 +49,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/url_constants.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -211,7 +211,7 @@ class WebAppRegistrarTest : public WebAppTest {
 
  private:
   std::unique_ptr<FakeWebAppDatabaseFactory> database_factory_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 };
 
 class WebAppRegistrarTest_TabStrip : public WebAppRegistrarTest {

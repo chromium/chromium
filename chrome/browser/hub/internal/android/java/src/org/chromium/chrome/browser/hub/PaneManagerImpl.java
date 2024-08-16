@@ -112,8 +112,9 @@ public class PaneManagerImpl implements PaneManager {
 
         Pane currentPane = mCurrentPaneSupplierImpl.get();
         boolean hasCurrentPane = currentPane != null;
-        if (hasCurrentPane && isVisible) {
-            mPaneTransitionHelper.processTransition(currentPane.getPaneId(), LoadHint.HOT);
+        if (hasCurrentPane) {
+            mPaneTransitionHelper.processTransition(
+                    currentPane.getPaneId(), isVisible ? LoadHint.HOT : LoadHint.WARM);
         }
 
         for (int paneId : mPanes.keySet()) {

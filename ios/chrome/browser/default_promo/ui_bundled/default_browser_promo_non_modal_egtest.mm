@@ -73,6 +73,7 @@ id<GREYMatcher> FakeOmniboxMatcher() {
   [ChromeEarlGrey copyURLToPasteBoard];
   [[EarlGrey selectElementWithMatcher:FakeOmniboxMatcher()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:LinkYouCopiedMatcher()];
   [[EarlGrey selectElementWithMatcher:LinkYouCopiedMatcher()]
       performAction:grey_tap()];
 

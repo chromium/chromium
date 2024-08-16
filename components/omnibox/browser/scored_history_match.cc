@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/scored_history_match.h"
 
 #include <math.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -50,7 +46,7 @@ const int kMaxRawTermScore = 30;
 // lookups of scores without requiring math. This is initialized by
 // InitDaysAgoToRecencyScoreArray called by
 // ScoredHistoryMatch::Init().
-float days_ago_to_recency_score[kDaysToPrecomputeRecencyScoresFor];
+std::array<float, kDaysToPrecomputeRecencyScoresFor> days_ago_to_recency_score;
 
 // Pre-computed information to speed up calculating topicality scores.
 // |raw_term_score_to_topicality_score| is a simple array mapping how raw terms
@@ -59,7 +55,7 @@ float days_ago_to_recency_score[kDaysToPrecomputeRecencyScoresFor];
 // assign it.  This allows easy lookups of scores without requiring math. This
 // is initialized by InitRawTermScoreToTopicalityScoreArray() called from
 // ScoredHistoryMatch::Init().
-float raw_term_score_to_topicality_score[kMaxRawTermScore];
+std::array<float, kMaxRawTermScore> raw_term_score_to_topicality_score;
 
 // Precalculates raw_term_score_to_topicality_score, used in
 // GetTopicalityScore().

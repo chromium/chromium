@@ -14,6 +14,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -43,13 +44,11 @@ LoginTooltipView::LoginTooltipView(const std::u16string& message,
   label_->SetEnabledColorId(
       is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
                : kColorAshTextColorPrimary);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
 }
 
 LoginTooltipView::~LoginTooltipView() = default;
-
-void LoginTooltipView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTooltip;
-}
 
 BEGIN_METADATA(LoginTooltipView)
 END_METADATA

@@ -545,6 +545,15 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to set DCOMP surface handle";
     REPORT_ERROR_REASON(kOnDCompSurfaceHandleSetError);
     OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    return;
+  }
+
+  // Ensure `SwapChainPresenter::PresentDCOMPSurface()` is invoked to add video
+  // into DCOMP visual tree since `DCOMPTexture::SetDCOMPSurfaceHandle()`
+  // has just succeeded.
+  if (dcomp_video_frame_ && !IsFrameServerMode()) {
+    sink_->PaintSingleFrame(dcomp_video_frame_,
+                            /*repaint_duplicate_frame=*/true);
   }
 }
 

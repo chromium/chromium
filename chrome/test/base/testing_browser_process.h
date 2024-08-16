@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -102,6 +103,8 @@ class TestingBrowserProcess : public BrowserProcess {
   GetOriginTrialsSettingsStorage() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() override;
   variations::VariationsService* variations_service() override;
   policy::ChromeBrowserPolicyConnector* browser_policy_connector() override;
   policy::PolicyService* policy_service() override;

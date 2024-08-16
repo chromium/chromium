@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 
 #include <functional>
@@ -23,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -109,11 +115,18 @@ void CreatePlatformShortcutsAndPostCallback(
     const ShortcutLocations& creation_locations,
     ShortcutCreationReason creation_reason,
     CreateShortcutsCallback callback,
-    const ShortcutInfo& shortcut_info) {
-  bool shortcut_created = internals::CreatePlatformShortcuts(
-      shortcut_data_path, creation_locations, creation_reason, shortcut_info);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), shortcut_created));
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  // Ownership of shortcut_info is moved into the callback.
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info.get();
+  internals::CreatePlatformShortcuts(
+      shortcut_data_path, creation_locations, creation_reason,
+      shortcut_info_ref,
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          std::move(callback)
+              // Ensure that `shortcut_info` is deleted on the UI thread.
+              .Then(base::OnceClosure(
+                  base::DoNothingWithBoundArgs(std::move(shortcut_info))))));
 }
 
 void DeletePlatformShortcutsAndPostCallback(
@@ -130,6 +143,25 @@ void DeleteMultiProfileShortcutsForAppAndPostCallback(const std::string& app_id,
   internals::DeleteMultiProfileShortcutsForApp(app_id);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
+}
+
+void UpdatePlatformShortcutsAndPostCallback(
+    const base::FilePath& shortcut_data_dir,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> locations,
+    ResultCallback callback,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  // Ownership of shortcut_info is moved into the callback.
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info.get();
+  internals::UpdatePlatformShortcuts(
+      std::move(shortcut_data_dir), std::move(old_app_title), locations,
+      base::BindPostTask(
+          content::GetUIThreadTaskRunner({}),
+          std::move(callback)
+              // Ensure that `shortcut_info` is deleted on the UI thread.
+              .Then(base::OnceClosure(
+                  base::DoNothingWithBoundArgs(std::move(shortcut_info))))),
+      shortcut_info_ref);
 }
 
 std::vector<WebAppShortcutsMenuItemInfo::Icon>
@@ -455,6 +487,17 @@ void PostShortcutIOTask(base::OnceCallback<void(const ShortcutInfo&)> task,
           std::move(shortcut_info)));
 }
 
+void PostAsyncShortcutIOTask(
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> task,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Ownership of |shortcut_info| is transferred to the task. The task must
+  // ensure that it is destroyed on the UI thread.
+  GetShortcutIOTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(task), std::move(shortcut_info)));
+}
+
 void ScheduleCreatePlatformShortcuts(
     const base::FilePath& shortcut_data_path,
     const ShortcutLocations& creation_locations,
@@ -463,10 +506,11 @@ void ScheduleCreatePlatformShortcuts(
     CreateShortcutsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PostShortcutIOTask(base::BindOnce(&CreatePlatformShortcutsAndPostCallback,
-                                    shortcut_data_path, creation_locations,
-                                    reason, std::move(callback)),
-                     std::move(shortcut_info));
+  PostAsyncShortcutIOTask(
+      base::BindOnce(&CreatePlatformShortcutsAndPostCallback,
+                     shortcut_data_path, creation_locations, reason,
+                     std::move(callback)),
+      std::move(shortcut_info));
 }
 
 void ScheduleDeletePlatformShortcuts(
@@ -488,6 +532,21 @@ void ScheduleDeleteMultiProfileShortcutsForApp(const std::string& app_id,
       FROM_HERE,
       base::BindOnce(&DeleteMultiProfileShortcutsForAppAndPostCallback, app_id,
                      std::move(callback)));
+}
+
+void ScheduleUpdatePlatformShortcuts(
+    const base::FilePath& shortcut_data_dir,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> locations,
+    base::OnceCallback<void(Result)> on_complete,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  internals::PostAsyncShortcutIOTask(
+      base::BindOnce(&UpdatePlatformShortcutsAndPostCallback,
+                     std::move(shortcut_data_dir), std::move(old_app_title),
+                     locations, std::move(on_complete)),
+      std::move(shortcut_info));
 }
 
 void PostShortcutIOTaskAndReplyWithResult(

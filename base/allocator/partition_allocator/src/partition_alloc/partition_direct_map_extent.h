@@ -41,18 +41,34 @@ struct ReadOnlyPartitionDirectMapExtent
   FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
 
   PA_ALWAYS_INLINE WritablePartitionDirectMapExtent* ToWritable(
-      [[maybe_unused]] std::ptrdiff_t offset);
+      const PartitionRoot* root);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent* ToReadOnly();
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+
+ private:
+  // In order to resolve circular dependencies, i.e. ToWritable() needs
+  // PartitionRoot, define template method: ToWritableInternal() and
+  // ToWritable() uses it.
+  template <typename T>
+  WritablePartitionDirectMapExtent* ToWritableInternal(
+      [[maybe_unused]] T* root);
 };
 
 struct WritablePartitionDirectMapExtent
     : public PartitionDirectMapExtent<MetadataKind::kWritable> {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent* ToReadOnly(
-      [[maybe_unused]] std::ptrdiff_t offset);
+      const PartitionRoot* root);
+
+ private:
+  // In order to resolve circular dependencies, i.e. ToReadOnly() needs
+  // PartitionRoot, define template method: ToReadOnlyInternal() and
+  // ToReadOnly() uses it.
+  template <typename T>
+  ReadOnlyPartitionDirectMapExtent* ToReadOnlyInternal(
+      [[maybe_unused]] T* root);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 
@@ -88,18 +104,34 @@ struct ReadOnlyPartitionDirectMapMetadata
   FromSlotSpanMetadata(SlotSpanMetadata* slot_span);
 
   PA_ALWAYS_INLINE WritablePartitionDirectMapMetadata* ToWritable(
-      [[maybe_unused]] std::ptrdiff_t offset);
+      const PartitionRoot* root);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata* ToReadOnly();
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+
+ private:
+  // In order to resolve circular dependencies, i.e. ToWritable() needs
+  // PartitionRoot, define template method: ToWritableInternal() and
+  // ToWritable() uses it.
+  template <typename T>
+  WritablePartitionDirectMapMetadata* ToWritableInternal(
+      [[maybe_unused]] T* root);
 };
 
 struct WritablePartitionDirectMapMetadata
     : public PartitionDirectMapMetadata<MetadataKind::kWritable> {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata* ToReadOnly(
-      [[maybe_unused]] std::ptrdiff_t offset);
+      const PartitionRoot* root);
+
+ private:
+  // In order to resolve circular dependencies, i.e. ToReadOnly() needs
+  // PartitionRoot, define template method: ToReadOnlyInternal() and
+  // ToReadOnly() uses it.
+  template <typename T>
+  ReadOnlyPartitionDirectMapMetadata* ToReadOnlyInternal(
+      [[maybe_unused]] T* root);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 };
 
@@ -123,22 +155,33 @@ ReadOnlyPartitionDirectMapExtent::FromSlotSpanMetadata(
 }
 
 PA_ALWAYS_INLINE WritablePartitionDirectMapMetadata*
-ReadOnlyPartitionDirectMapMetadata::ToWritable(
-    [[maybe_unused]] std::ptrdiff_t offset) {
+ReadOnlyPartitionDirectMapMetadata::ToWritable(const PartitionRoot* root) {
+  return ToWritableInternal(root);
+}
+
+template <typename T>
+WritablePartitionDirectMapMetadata*
+ReadOnlyPartitionDirectMapMetadata::ToWritableInternal(
+    [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   return reinterpret_cast<WritablePartitionDirectMapMetadata*>(
-      reinterpret_cast<intptr_t>(this) + offset);
+      reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
 #else
   return reinterpret_cast<WritablePartitionDirectMapMetadata*>(this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 }
 
 PA_ALWAYS_INLINE WritablePartitionDirectMapExtent*
-ReadOnlyPartitionDirectMapExtent::ToWritable(
-    [[maybe_unused]] std::ptrdiff_t offset) {
+ReadOnlyPartitionDirectMapExtent::ToWritable(const PartitionRoot* root) {
+  return ToWritableInternal(root);
+}
+
+template <typename T>
+WritablePartitionDirectMapExtent*
+ReadOnlyPartitionDirectMapExtent::ToWritableInternal([[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   return reinterpret_cast<WritablePartitionDirectMapExtent*>(
-      reinterpret_cast<intptr_t>(this) + offset);
+      reinterpret_cast<intptr_t>(this) + root->ShadowPoolOffset());
 #else
   return reinterpret_cast<WritablePartitionDirectMapExtent*>(this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
@@ -151,11 +194,17 @@ ReadOnlyPartitionDirectMapMetadata::ToReadOnly() {
 }
 
 PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapMetadata*
-WritablePartitionDirectMapMetadata::ToReadOnly(
-    [[maybe_unused]] std::ptrdiff_t offset) {
+WritablePartitionDirectMapMetadata::ToReadOnly(const PartitionRoot* root) {
+  return ToReadOnlyInternal(root);
+}
+
+template <typename T>
+ReadOnlyPartitionDirectMapMetadata*
+WritablePartitionDirectMapMetadata::ToReadOnlyInternal(
+    [[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   return reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(
-      reinterpret_cast<intptr_t>(this) - offset);
+      reinterpret_cast<intptr_t>(this) - root->ShadowPoolOffset());
 #else
   // must be no-op.
   return reinterpret_cast<ReadOnlyPartitionDirectMapMetadata*>(this);
@@ -168,11 +217,16 @@ ReadOnlyPartitionDirectMapExtent::ToReadOnly() {
 }
 
 PA_ALWAYS_INLINE ReadOnlyPartitionDirectMapExtent*
-WritablePartitionDirectMapExtent::ToReadOnly(
-    [[maybe_unused]] std::ptrdiff_t offset) {
+WritablePartitionDirectMapExtent::ToReadOnly(const PartitionRoot* root) {
+  return ToReadOnlyInternal(root);
+}
+
+template <typename T>
+ReadOnlyPartitionDirectMapExtent*
+WritablePartitionDirectMapExtent::ToReadOnlyInternal([[maybe_unused]] T* root) {
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   return reinterpret_cast<ReadOnlyPartitionDirectMapExtent*>(
-      reinterpret_cast<intptr_t>(this) - offset);
+      reinterpret_cast<intptr_t>(this) - root->ShadowPoolOffset());
 #else
   return reinterpret_cast<ReadOnlyPartitionDirectMapExtent*>(this);
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)

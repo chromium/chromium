@@ -53,6 +53,7 @@
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
       <meta-data android:name="android.activity.launch_mode" android:value="singleInstancePerTask"/>
+      <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" android:value="true"/>
     </activity>  # DIFF-ANCHOR: 61b2c776
     <activity  # DIFF-ANCHOR: 610e8ccf
         android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
@@ -77,6 +78,7 @@
         android:exported="false"
         android:taskAffinity=""
         android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" android:value="true"/>
     </activity>  # DIFF-ANCHOR: 76686af9
     <activity  # DIFF-ANCHOR: dc170161
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkActivity"
@@ -217,13 +219,15 @@
         android:exported="false"
         android:launchMode="singleInstancePerTask"
         android:taskAffinity=""
-        android:theme="@style/LauncherTheme">
+        android:theme="@style/LauncherTheme"
+        android:windowNoDisplay="true">
       <intent-filter>  # DIFF-ANCHOR: f18dfa5a
         <action android:name="org.chromium.chrome.browser.dragdrop.action.VIEW"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="http"/>
         <data android:scheme="https"/>
       </intent-filter>  # DIFF-ANCHOR: f18dfa5a
+      <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" android:value="true"/>
     </activity>  # DIFF-ANCHOR: f540098b
     <activity  # DIFF-ANCHOR: 2121eb0d
         android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
@@ -232,7 +236,7 @@
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleTop"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateHidden|adjustPan">
     </activity>  # DIFF-ANCHOR: 2121eb0d
     <activity  # DIFF-ANCHOR: 67932092
@@ -245,16 +249,6 @@
         android:theme="@style/Theme.BrowserUI.AlertDialog.NoActionBar.DayNight"
         android:windowSoftInputMode="stateHidden|adjustPan">
     </activity>  # DIFF-ANCHOR: 67932092
-    <activity  # DIFF-ANCHOR: bb612a34
-        android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
-        android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
-        android:excludeFromRecents="true"
-        android:label="@string/fre_activity_label"
-        android:launchMode="singleTop"
-        android:theme="@style/Theme.Chromium.TabbedMode"
-        android:windowSoftInputMode="stateHidden|adjustPan">
-    </activity>  # DIFF-ANCHOR: bb612a34
     <activity  # DIFF-ANCHOR: 05911131
         android:name="org.chromium.chrome.browser.history.HistoryActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
@@ -659,6 +653,7 @@
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
       <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
+      <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" android:value="true"/>
     </activity-alias>  # DIFF-ANCHOR: 5042984f
     <activity-alias  # DIFF-ANCHOR: dcfe2999
         android:name="com.google.android.apps.chrome.webapps.WebappActivity"
@@ -896,6 +891,7 @@
         <action android:name="android.support.customtabs.action.CustomTabsService"/>
         <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
         <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
+        <category android:name="androidx.browser.customtabs.category.SetNetwork"/>
         <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>
         <category android:name="androidx.browser.trusted.category.LaunchSiteSettings"/>
         <category android:name="androidx.browser.trusted.category.LaunchWebApkSiteSettings"/>

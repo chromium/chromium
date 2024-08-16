@@ -129,6 +129,18 @@ enum class MediaRouterUserPromptWhenLaunchingCast {
   kMaxValue = kUserNotAllowed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MediaRouterUiPermissionRejectedViewEvents {
+  kCastDialogErrorShown = 0,
+  kCastDialogLinkClicked = 1,
+  kGmcDialogErrorShown = 2,
+  kGmcDialogLinkClicked = 3,
+  kGmcDialogErrorDismissed = 4,
+
+  kMaxValue = kGmcDialogErrorDismissed,
+};
+
 class MediaRouterMetrics {
  public:
   MediaRouterMetrics();
@@ -149,6 +161,7 @@ class MediaRouterMetrics {
   static const char kHistogramUiIconStateAtInit[];
   static const char kHistogramUiAndroidDialogType[];
   static const char kHistogramUiAndroidDialogAction[];
+  static const char kHistogramUiPermissionRejectedViewAction[];
   static const char kHistogramUserPromptWhenLaunchingCast[];
   static const char kHistogramPendingUserAuthLatency[];
 
@@ -231,6 +244,9 @@ class MediaRouterMetrics {
   // response of UserPendingAuthorization
   static void RecordMediaRouterPendingUserAuthLatency(
       const base::TimeDelta& delta);
+
+  static void RecordMediaRouterUiPermissionRejectedViewEvents(
+      MediaRouterUiPermissionRejectedViewEvents event);
 };
 
 }  // namespace media_router

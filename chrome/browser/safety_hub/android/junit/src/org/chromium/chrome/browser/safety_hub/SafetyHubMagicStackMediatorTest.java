@@ -8,10 +8,13 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -35,11 +39,13 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the Safety Hub Magic Stack mediator. */
@@ -49,33 +55,50 @@ public class SafetyHubMagicStackMediatorTest {
     private static final String DESCRIPTION = "description";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
     @Mock private MagicStackBridge mMagicStackBridge;
-    @Mock private PrefService mPrefService;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private SettingsLauncher mSettingsLauncher;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
+    @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private View mView;
 
     private Context mContext;
+    private Profile mProfile;
+    private PrefService mPrefService;
+    private PendingIntent mPasswordCheckIntentForAccountCheckup;
     private PropertyModel mModel;
     private SafetyHubMagicStackMediator mMediator;
+    private ModalDialogManager mModalDialogManager;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
+        mProfile = mSafetyHubTestRule.getProfile();
+        mPrefService = mSafetyHubTestRule.getPrefService();
+        mPasswordCheckIntentForAccountCheckup =
+                mSafetyHubTestRule.getIntentForAccountPasswordCheckup();
         mModel = new PropertyModel(SafetyHubMagicStackViewProperties.ALL_KEYS);
         mMediator =
                 new SafetyHubMagicStackMediator(
                         mContext,
+                        mProfile,
                         mPrefService,
                         mModel,
                         mMagicStackBridge,
                         mTabModelSelector,
                         mModuleDelegate,
-                        mPrefChangeRegistrar);
+                        mPrefChangeRegistrar,
+                        mModalDialogManagerSupplier);
         SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+
+        mModalDialogManager =
+                new ModalDialogManager(
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
+        when(mModalDialogManagerSupplier.get()).thenReturn(mModalDialogManager);
 
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
     }
@@ -138,10 +161,59 @@ public class SafetyHubMagicStackMediatorTest {
         doReturn(entry).when(mMagicStackBridge).getModuleToShow();
         mMediator.showModule();
 
-        testSafeStateDisplayed(
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
                 mContext.getResources()
-                        .getString(R.string.safety_hub_magic_stack_notifications_title),
-                DESCRIPTION);
+                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.safety_hub_notifications_icon);
+
+        OnClickListener onClickListener =
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
+        onClickListener.onClick(mView);
+        verify(mSettingsLauncher).launchSettingsActivity(eq(mContext), eq(SafetyHubFragment.class));
+    }
+
+    @Test
+    public void testCompromisedPasswordsDisplayed() throws PendingIntent.CanceledException {
+        MagicStackEntry entry =
+                MagicStackEntry.create(DESCRIPTION, MagicStackEntry.ModuleType.PASSWORDS);
+        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
+        mMediator.showModule();
+
+        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(mModel.get(SafetyHubMagicStackViewProperties.SUMMARY), DESCRIPTION);
+        assertEquals(
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        assertEquals(
+                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
+                        .getCreatedFromResId(),
+                R.drawable.ic_password_manager_key);
+
+        OnClickListener onClickListener =
+                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
+        onClickListener.onClick(mView);
+        verify(mPasswordCheckIntentForAccountCheckup, times(1)).send();
     }
 
     @Test

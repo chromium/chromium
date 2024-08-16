@@ -20,7 +20,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
-suite('DisableFirstPartySets', function() {
+suite('DisableRelatedWebsiteSets', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -1018,7 +1018,7 @@ suite('DisableFirstPartySets', function() {
   });
 });
 
-suite('EnableFirstPartySets', function() {
+suite('EnableRelatedWebsiteSets', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -1039,7 +1039,7 @@ suite('EnableFirstPartySets', function() {
       displayName: 'foo.com',
       origins: [createOriginInfo('https://foo.com')],
       numCookies: 0,
-      fpsOwner: 'foo.com',
+      rwsOwner: 'foo.com',
       hasInstalledPWA: false,
     },
     {
@@ -1061,9 +1061,9 @@ suite('EnableFirstPartySets', function() {
   ];
 
   /**
-   * Example first party set site groups.
+   * Example related website set site groups.
    */
-  const TEST_FPS_SITE_GROUPS: SiteGroup[] = [
+  const TEST_RWS_SITE_GROUPS: SiteGroup[] = [
     {
       groupingKey: groupingKey('google.com'),
       etldPlus1: 'google.com',
@@ -1073,8 +1073,8 @@ suite('EnableFirstPartySets', function() {
         createOriginInfo('https://translate.google.com'),
       ],
       numCookies: 4,
-      fpsOwner: 'google.com',
-      fpsNumMembers: 2,
+      rwsOwner: 'google.com',
+      rwsNumMembers: 2,
       hasInstalledPWA: false,
     },
     {
@@ -1083,8 +1083,8 @@ suite('EnableFirstPartySets', function() {
       displayName: 'youtube.com',
       origins: [createOriginInfo('https://youtube.com')],
       numCookies: 0,
-      fpsOwner: 'google.com',
-      fpsNumMembers: 2,
+      rwsOwner: 'google.com',
+      rwsNumMembers: 2,
       hasInstalledPWA: false,
     },
   ];
@@ -1139,7 +1139,7 @@ suite('EnableFirstPartySets', function() {
     assertTrue(siteEntries.length >= 1);
     const overflowMenuButton =
         siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
-            '#fpsOverflowMenuButton')!;
+            '#rwsOverflowMenuButton')!;
     assertFalse(
         overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
 
@@ -1186,7 +1186,7 @@ suite('EnableFirstPartySets', function() {
 
   test('remove site via overflow menu', async function() {
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
-    siteGroup.fpsOwner = 'google.com';
+    siteGroup.rwsOwner = 'google.com';
     testElement.siteGroupMap.set(
         siteGroup.groupingKey, structuredClone(siteGroup));
     testElement.forceListUpdateForTesting();
@@ -1202,7 +1202,7 @@ suite('EnableFirstPartySets', function() {
   test(
       'cancelling the confirm dialog on removing site works', async function() {
         const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
-        siteGroup.fpsOwner = 'google.com';
+        siteGroup.rwsOwner = 'google.com';
         testElement.siteGroupMap.set(
             siteGroup.groupingKey, structuredClone(siteGroup));
         testElement.forceListUpdateForTesting();
@@ -1235,7 +1235,7 @@ suite('EnableFirstPartySets', function() {
         cancelDialog();
       });
 
-  test('filter sites by first party set owner', async function() {
+  test('filter sites by related website set owner', async function() {
     TEST_SITE_GROUPS.forEach(siteGroup => {
       testElement.siteGroupMap.set(
           siteGroup.groupingKey, structuredClone(siteGroup));
@@ -1247,7 +1247,7 @@ suite('EnableFirstPartySets', function() {
     assertEquals(3, siteEntries.length);
     const overflowMenuButton =
         siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
-            '#fpsOverflowMenuButton')!;
+            '#rwsOverflowMenuButton')!;
     assertFalse(
         overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
 
@@ -1277,7 +1277,7 @@ suite('EnableFirstPartySets', function() {
     let hiddenSiteEntries = Array.from(
         testElement.shadowRoot!.querySelectorAll('site-entry[hidden]'));
     assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
-    assertEquals('foo.com', siteEntries[0]!.siteGroup.fpsOwner);
+    assertEquals('foo.com', siteEntries[0]!.siteGroup.rwsOwner);
 
     // Clear filter and assert the list is back to 3 elements.
     testElement.filter = '';
@@ -1290,9 +1290,9 @@ suite('EnableFirstPartySets', function() {
   });
 
   test(
-      'site entry first party set information updated on site deletion',
+      'site entry related website set information updated on site deletion',
       async function() {
-        TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
+        TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));
         });
@@ -1301,26 +1301,26 @@ suite('EnableFirstPartySets', function() {
         let siteEntries =
             testElement.$.listContainer.querySelectorAll('site-entry');
         assertEquals(testElement.$.allSitesList.items!.length, 2);
-        await browserProxy.whenCalled('getFpsMembershipLabel');
+        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
             '· 2 sites in google.com\'s group',
-            siteEntries[1]!.$.fpsMembership.innerText.trim());
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
 
         // Remove first site group.
         removeSiteViaOverflowMenu('action-button');
         siteEntries =
             testElement.$.listContainer.querySelectorAll('site-entry');
         assertEquals(testElement.$.allSitesList.items!.length, 1);
-        await browserProxy.whenCalled('getFpsMembershipLabel');
+        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
             '· 1 site in google.com\'s group',
-            siteEntries[1]!.$.fpsMembership.innerText.trim());
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
       });
 
   test(
-      'site entry first party set constant member count on origin deletion',
+      'site entry related website set constant member count on origin deletion',
       async function() {
-        TEST_FPS_SITE_GROUPS.forEach(siteGroup => {
+        TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));
         });
@@ -1330,10 +1330,10 @@ suite('EnableFirstPartySets', function() {
         let siteEntries =
             testElement.$.listContainer.querySelectorAll('site-entry');
         assertEquals(testElement.$.allSitesList.items!.length, 2);
-        await browserProxy.whenCalled('getFpsMembershipLabel');
+        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
             '· 2 sites in google.com\'s group',
-            siteEntries[1]!.$.fpsMembership.innerText.trim());
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
 
         let originList = siteEntries[0]!.$.originList.get();
         flush();
@@ -1356,11 +1356,11 @@ suite('EnableFirstPartySets', function() {
         originEntries = originList.querySelectorAll('.hr');
         assertEquals(1, originEntries.length);
 
-        // Ensure that first party set info is unaffected by origin removal.
-        await browserProxy.whenCalled('getFpsMembershipLabel');
+        // Ensure that related website set info is unaffected by origin removal.
+        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
             '· 2 sites in google.com\'s group',
-            siteEntries[1]!.$.fpsMembership.innerText.trim());
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
 
         // Remove the last origin.
         siteEntries =
@@ -1375,16 +1375,16 @@ suite('EnableFirstPartySets', function() {
 
         // Ensure that the site entry remains in the list as there are cookies
         // set at the eTLD+1 level so it converts to an ungrouped site entry and
-        // first party set information remain unchanged.
+        // related website set information remain unchanged.
         assertEquals(testElement.$.allSitesList.items!.length, 2);
-        await browserProxy.whenCalled('getFpsMembershipLabel');
+        await browserProxy.whenCalled('getRwsMembershipLabel');
         assertEquals(
             '· 2 sites in google.com\'s group',
-            siteEntries[1]!.$.fpsMembership.innerText.trim());
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
       });
 
   test(
-      'show learn more about first party sets link when filtering by fps owner',
+      'show learn more about related website sets link when filtering by rws owner',
       function() {
         TEST_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
@@ -1392,31 +1392,31 @@ suite('EnableFirstPartySets', function() {
         });
         testElement.forceListUpdateForTesting();
         flush();
-        let fpsLearnMore =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
+        let relatedWebsiteSetsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#relatedWebsiteSetsLearnMore');
         // When no filter is applied (as the test starts) the learn more link
         // should be hidden.
-        assertTrue(fpsLearnMore!.hidden);
+        assertTrue(relatedWebsiteSetsLearnMore!.hidden);
 
         testElement.filter = 'related:foo.com';
         flush();
 
-        fpsLearnMore =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
-        assertFalse(fpsLearnMore!.hidden);
+        relatedWebsiteSetsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#relatedWebsiteSetsLearnMore');
+        assertFalse(relatedWebsiteSetsLearnMore!.hidden);
         assertEquals(
             [
               loadTimeData.getStringF(
-                  'siteSettingsFirstPartySetsLearnMore', 'foo.com'),
+                  'siteSettingsRelatedWebsiteSetsLearnMore', 'foo.com'),
               loadTimeData.getString('learnMore'),
             ].join(' '),
-            fpsLearnMore!.innerText.trim());
+            relatedWebsiteSetsLearnMore!.innerText.trim());
 
         testElement.filter = 'related:bar.com';
         flush();
 
-        fpsLearnMore =
-            testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
-        assertTrue(fpsLearnMore!.hidden);
+        relatedWebsiteSetsLearnMore =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#relatedWebsiteSetsLearnMore');
+        assertTrue(relatedWebsiteSetsLearnMore!.hidden);
       });
 });

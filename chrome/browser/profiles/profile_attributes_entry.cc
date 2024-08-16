@@ -30,7 +30,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -450,10 +449,6 @@ std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
 
 bool ProfileAttributesEntry::IsSupervised() const {
   return !GetSupervisedUserId().empty();
-}
-
-bool ProfileAttributesEntry::IsChild() const {
-  return GetSupervisedUserId() == supervised_user::kChildAccountSUID;
 }
 
 bool ProfileAttributesEntry::IsOmitted() const {

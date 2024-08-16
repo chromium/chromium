@@ -4,14 +4,26 @@
 
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 
 namespace ash {
+namespace {
+
+// Returns the pref service to use for Birch bar prefs.
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
+}  // namespace
 
 BirchChipContextMenuModel::BirchChipContextMenuModel(
     ui::SimpleMenuModel::Delegate* delegate,
@@ -73,8 +85,11 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
       l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CUSTOMIZE_SUGGESTIONS),
       sub_menu_model_.get(), CreateIconForMenuItem(kPencilIcon));
   if (chip_type == BirchSuggestionType::kWeather) {
+    bool is_celsius = GetPrefService()->GetBoolean(prefs::kBirchUseCelsius);
     AddItem(base::to_underlying(CommandId::kToggleTemperatureUnits),
-            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_TOGGLE_TEMPERATURE_UNITS));
+            l10n_util::GetStringUTF16(
+                is_celsius ? IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_FAHRENHEIT
+                           : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
   }
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   AddItemWithIcon(base::to_underlying(CommandId::kFeedback),

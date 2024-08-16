@@ -293,7 +293,7 @@ ShoppingService::ShoppingService(
             &commerce_info_cache_, product_specifications_service_);
 
     if (identity_manager &&
-        IsProductSpecificationsEnabled(account_checker_.get())) {
+        CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
       cluster_manager_ = std::make_unique<ClusterManager>(
           product_specifications_service_,
           std::make_unique<ClusterServerProxy>(identity_manager,
@@ -303,6 +303,10 @@ ShoppingService::ShoppingService(
           base::BindRepeating(&ShoppingService::GetUrlInfosForActiveWebWrappers,
                               base::Unretained(this)));
     }
+  }
+
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
   }
 }
 
@@ -424,35 +428,11 @@ void ShoppingService::DidFinishLoad(WebWrapper* web) {
 }
 
 void ShoppingService::OnWebWrapperSwitched(WebWrapper* web) {
-  bool already_exists_in_recents = false;
-  for (auto it = recently_visited_tabs_.begin();
-       it != recently_visited_tabs_.end(); ++it) {
-    if (it->url == web->GetLastCommittedURL()) {
-      recently_visited_tabs_.erase(it);
+  UpdateRecentlyViewedURL(web);
+}
 
-      // Don't remove the item from the cache here in case it's the only
-      // reference to a particular URL (causing deletion from the cache) since
-      // we're only shifting it to the head of the list.
-      already_exists_in_recents = true;
-      break;
-    }
-  }
-
-  UrlInfo info;
-  info.url = web->GetLastCommittedURL();
-  info.title = web->GetTitle();
-
-  if (!already_exists_in_recents) {
-    commerce_info_cache_.AddRef(info.url);
-  }
-
-  recently_visited_tabs_.insert(recently_visited_tabs_.begin(),
-                                std::move(info));
-
-  if (recently_visited_tabs_.size() > kRecentTabsMaxSize) {
-    commerce_info_cache_.RemoveRef(recently_visited_tabs_.back().url);
-    recently_visited_tabs_.pop_back();
-  }
+void ShoppingService::OnWebWrapperViewed(WebWrapper* web) {
+  UpdateRecentlyViewedURL(web);
 }
 
 void ShoppingService::TryRunningLocalExtractionForProductInfo(
@@ -1823,6 +1803,38 @@ void ShoppingService::GetProductIdentifierForUrl(
           std::move(callback)));
 }
 
+void ShoppingService::UpdateRecentlyViewedURL(WebWrapper* web) {
+  bool already_exists_in_recents = false;
+  for (auto it = recently_visited_tabs_.begin();
+       it != recently_visited_tabs_.end(); ++it) {
+    if (it->url == web->GetLastCommittedURL()) {
+      recently_visited_tabs_.erase(it);
+
+      // Don't remove the item from the cache here in case it's the only
+      // reference to a particular URL (causing deletion from the cache) since
+      // we're only shifting it to the head of the list.
+      already_exists_in_recents = true;
+      break;
+    }
+  }
+
+  UrlInfo info;
+  info.url = web->GetLastCommittedURL();
+  info.title = web->GetTitle();
+
+  if (!already_exists_in_recents) {
+    commerce_info_cache_.AddRef(info.url);
+  }
+
+  recently_visited_tabs_.insert(recently_visited_tabs_.begin(),
+                                std::move(info));
+
+  if (recently_visited_tabs_.size() > kRecentTabsMaxSize) {
+    commerce_info_cache_.RemoveRef(recently_visited_tabs_.back().url);
+    recently_visited_tabs_.pop_back();
+  }
+}
+
 const std::vector<ProductSpecificationsSet>
 ShoppingService::GetAllProductSpecificationSets() {
   if (!product_specifications_service_) {
@@ -1849,6 +1861,15 @@ void ShoppingService::OnGetOnDemandProductInfo(
   }
 
   on_demand_product_info_callbacks_.erase(url);
+}
+
+void ShoppingService::OnHistoryDeletions(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // Since history deals with "visits" rather than "views", we don't have a
+  // reliable way to clear entries from the revently viewed list. If a user is
+  // deleting items from history, clear the whole list.
+  recently_visited_tabs_.clear();
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ProactiveNudge.DerivedEngagement"
-    enum="ProactiveNudgeDerivedEngagement" expires_after="2024-12-01">
+    enum="ProactiveNudgeDerivedEngagement" expires_after="2025-02-02">
   <owner>harringtond@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -261,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.TextElementUsage.LongField.EditingTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>harringtond@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

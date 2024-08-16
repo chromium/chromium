@@ -385,6 +385,12 @@ Things to consider:
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_CHROME_DATA" desc="Turns off and on all the sync data (like bookmarks, history and others). [iOS only]">
         Sync Your Chrome Data
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_PAGE_HEADER" desc="The header text for the Discover page in the Home Customization menu.">
+        A custom feed made for you by Google. Including News, Sports and Weather.
+      </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_SUBTITLE" desc="The subtitle of the Discover toggle in the Home Customization menu's main page.">
+        A custom feed made for you by Google.
+      </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_KEEP_USING_YOUR_CHROME_DATA_MESSAGE" desc="The error message in the identity error info bar related to keep using your Chromium data in your Google account. [iOS only]">
         Keep using the Chrome data in your Google Account
       </message>
@@ -747,6 +753,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SAFETY_CHECK_DESCRIPTION_UPDATE_CHROME" desc="Tag label description displayed for the Safety Check module in the Magic Stack when the Update Chrome check finds an issue. [iOS only]">
         Your Chrome is out of date. Update it to stay safe.
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_ALERTS_ON_ISSUES" desc="Description of the alerts provided by Safety Check, specifically mentioning privacy or security issues detected by Chrome.">
+        Alerts on any privacy or security issues that Chrome detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_DESCRIPTION_LONG" desc="Long description of Safety Check, emphasizing its protection against data breaches, unsafe websites, and more, and mentioning alerts for detected privacy or security issues.">
+        Safety Check keeps you safe from data breaches, unsafe websites and more. Receive alerts on any privacy or security issues that Chrome detects for you.
+      </message>
+      <message name="IDS_IOS_SAFETY_CHECK_NOTIFICATIONS_RECEIVE_ALERTS" desc="Description of the Safety Check feature, highlighting that it provides alerts on privacy or security issues detected by Chrome.">
+        Receive alerts on any privacy or security issues that Chrome automatically detects for you.
+      </message>
       <message name="IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_BULLET_TWO" desc="Second bullet point under the Safe Browsing enhanced protection mode">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.
       </message>
@@ -804,6 +819,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_IOS_SCANNER_MULTIPLE_FOREGROUND_APPS_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner in a Split View mode, when the camera is unavailable. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera in Split View mode
+      </message>
+      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_SUBTITLE" desc="Subtitle for Default Browser promo shown on Set Up List item tap to users identified as Shopping feature users.">
+        Set Chrome as your default browser to easily track prices and get price insights for things you want to buy.
+      </message>
+      <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_SCREEN_SHOPPER_TITLE" desc="Title for Default Browser promo shown on Set Up List item tap to users identified as Shopping feature users.">
+        Get the Power of Chrome Shopping
       </message>
       <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_SHOPPER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Shoppers.">
         Use Chrome by Default to Easily Get Price Insights

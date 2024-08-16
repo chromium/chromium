@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // This test validates that the ProcessSingleton class properly makes sure
 // that there is only one main browser process.
 //
@@ -294,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
             &chrome_starters_[pending_starters[i]]->done_event_;
       }
       size_t done_index = base::WaitableEvent::WaitMany(
-          starters_done_events, pending_starters.size());
+          base::span(starters_done_events).first(pending_starters.size()));
       size_t starter_index = pending_starters[done_index];
       // If the starter is done but has not marked itself as terminated,
       // it is because it timed out of its WaitForExitCodeWithTimeout(). Only

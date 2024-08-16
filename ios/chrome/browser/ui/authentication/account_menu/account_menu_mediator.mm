@@ -15,7 +15,8 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_data_source.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
+#import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 
 @interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
                                    IdentityManagerObserverBridgeDelegate,
@@ -108,21 +109,19 @@
   return gaiaIDs;
 }
 
-- (TableViewIdentityItem*)identityItemForGaiaID:(NSString*)gaiaID {
+- (TableViewAccountItem*)identityItemForGaiaID:(NSString*)gaiaID {
   for (id<SystemIdentity> identity : _identities) {
     if (gaiaID == identity.gaiaID) {
-      TableViewIdentityItem* item =
-          [[TableViewIdentityItem alloc] initWithType:0];
-      item.identityViewStyle = IdentityViewStyleIdentityChooser;
-      item.gaiaID = identity.gaiaID;
-      item.name = identity.userFullName;
-      item.email = identity.userEmail;
-      item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-          identity, IdentityAvatarSize::Regular);
+      TableViewAccountItem* item =
+          [[TableViewAccountItem alloc] initWithType:SettingsItemTypeAccount];
+      item.text = identity.userFullName;
+      item.detailText = identity.userEmail;
+      item.image = _accountManagerService->GetIdentityAvatarWithIdentity(
+          identity, IdentityAvatarSize::TableViewIcon);
       return item;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (NSString*)primaryAccountEmail {

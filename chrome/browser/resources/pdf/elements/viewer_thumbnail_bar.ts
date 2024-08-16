@@ -8,12 +8,14 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PluginController, PluginControllerEventType} from '../controller.js';
 
-import {getTemplate} from './viewer_thumbnail_bar.html.js';
 import type {ViewerThumbnailElement} from './viewer_thumbnail.js';
+import {getCss} from './viewer_thumbnail_bar.css.js';
+import {getHtml} from './viewer_thumbnail_bar.html.js';
 
 export interface ViewerThumbnailBarElement {
   $: {
@@ -21,39 +23,33 @@ export interface ViewerThumbnailBarElement {
   };
 }
 
-export class ViewerThumbnailBarElement extends PolymerElement {
+export class ViewerThumbnailBarElement extends CrLitElement {
   static get is() {
     return 'viewer-thumbnail-bar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      activePage: {
-        type: Number,
-        observer: 'activePageChanged_',
-      },
-
-      clockwiseRotations: Number,
-      docLength: Number,
-      isPluginActive_: Boolean,
-
-      pageNumbers_: {
-        type: Array,
-        computed: 'computePageNumbers_(docLength)',
-      },
+      activePage: {type: Number},
+      clockwiseRotations: {type: Number},
+      docLength: {type: Number},
+      isPluginActive_: {type: Boolean},
     };
   }
 
-  activePage: number;
-  clockwiseRotations: number;
-  docLength: number;
-  private isPluginActive_: boolean;
-  private pageNumbers_: number[];
-  private intersectionObserver_: IntersectionObserver;
+  activePage: number = 0;
+  clockwiseRotations: number = 0;
+  docLength: number = 0;
+  protected isPluginActive_: boolean = false;
+  private intersectionObserver_: IntersectionObserver|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();
 
@@ -74,9 +70,7 @@ export class ViewerThumbnailBarElement extends PolymerElement {
         (e: CustomEvent<boolean>) => this.isPluginActive_ = e.detail);
   }
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('focus', this.onFocus_);
     this.addEventListener('keydown', this.onKeydown_);
 
@@ -120,13 +114,22 @@ export class ViewerThumbnailBarElement extends PolymerElement {
     FocusOutlineManager.forDocument(document);
   }
 
-  /**
-   * Changes the focus to the thumbnail of the new active page if the focus was
-   * already on a thumbnail.
-   */
-  private activePageChanged_() {
-    if (this.shadowRoot!.activeElement) {
-      this.getThumbnailForPage(this.activePage)!.focusAndScroll();
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('activePage')) {
+      if (this.shadowRoot!.activeElement) {
+        // Changes the focus to the thumbnail of the new active page if the
+        // focus was already on a thumbnail.
+        this.getThumbnailForPage(this.activePage)!.focusAndScroll();
+      }
+    }
+
+    if (changedProperties.has('docLength')) {
+      assert(this.intersectionObserver_);
+      // If doc length changes, we render new thumbnails.
+      this.shadowRoot!.querySelectorAll('viewer-thumbnail')
+          .forEach(thumbnail => this.intersectionObserver_!.observe(thumbnail));
     }
   }
 
@@ -145,23 +148,17 @@ export class ViewerThumbnailBarElement extends PolymerElement {
   }
 
   /** @return The array of page numbers. */
-  private computePageNumbers_(): number[] {
+  protected computePageNumbers_(): number[] {
     return Array.from({length: this.docLength}, (_, i) => i + 1);
   }
 
-  private getAriaLabel_(pageNumber: number): string {
+  protected getAriaLabel_(pageNumber: number): string {
     return loadTimeData.getStringF('thumbnailPageAriaLabel', pageNumber);
   }
 
   /** @return Whether the page is the current page. */
-  private isActivePage_(page: number): boolean {
+  protected isActivePage_(page: number): boolean {
     return this.activePage === page;
-  }
-
-  private onDomChange_() {
-    this.shadowRoot!.querySelectorAll('viewer-thumbnail').forEach(thumbnail => {
-      this.intersectionObserver_.observe(thumbnail);
-    });
   }
 
   /** Forwards focus to a thumbnail when tabbing. */

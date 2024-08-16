@@ -7,8 +7,7 @@ package org.chromium.chrome.test.transit;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
-import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.os.Build;
 import android.view.View;
@@ -26,8 +25,10 @@ import org.hamcrest.Matcher;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition.Trigger;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.messages.DismissReason;
@@ -44,22 +45,23 @@ import java.util.List;
  * Represents a message banner shown over a PageStation.
  *
  * <p>Subclass for specific messages types to specify expected title, button text and behavior.
+ *
+ * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
 public class MessageFacility<HostStationT extends PageStation> extends Facility<HostStationT> {
     public static final Matcher<View> MESSAGE_TITLE_MATCHER = withId(R.id.message_title);
     public static final Matcher<View> MESSAGE_PRIMARY_BUTTON_MATCHER =
             withId(R.id.message_primary_button);
 
-    // Unscoped because other messages can appear and fail the exit condition.
-    public static final ViewElement MESSAGE_BANNER =
-            unscopedViewElement(withId(R.id.message_banner));
-    public static final ViewElement MESSAGE_ICON = unscopedViewElement(withId(R.id.message_icon));
+    public static final ViewSpec MESSAGE_BANNER = viewSpec(withId(R.id.message_banner));
+    public static final ViewSpec MESSAGE_ICON = viewSpec(withId(R.id.message_icon));
 
     @CallSuper
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(MESSAGE_BANNER);
-        elements.declareView(MESSAGE_ICON);
+        // Unscoped because other messages can appear and fail the exit condition.
+        elements.declareView(MESSAGE_BANNER, ViewElement.unscopedOption());
+        elements.declareView(MESSAGE_ICON, ViewElement.unscopedOption());
     }
 
     /** Dismiss the message banner. */
@@ -103,14 +105,16 @@ public class MessageFacility<HostStationT extends PageStation> extends Facility<
         mHostStation.exitFacilitySync(this, dismissTrigger);
     }
 
-    /** Create a ViewElement expecting the message's |title|. */
-    protected static ViewElement titleViewElement(String title) {
-        return scopedViewElement(CoreMatchers.allOf(MESSAGE_TITLE_MATCHER, withText(title)));
+    /** Create a {@link ViewSpec} expecting the message's |title|. */
+    protected static ViewSpec titleViewSpec(String title) {
+        Matcher<View> viewMatcher = CoreMatchers.allOf(MESSAGE_TITLE_MATCHER, withText(title));
+        return viewSpec(viewMatcher);
     }
 
-    /** Create a ViewElement expecting the message's primary button with |text|. */
-    protected static ViewElement primaryButtonViewElement(String text) {
-        return scopedViewElement(
-                CoreMatchers.allOf(MESSAGE_PRIMARY_BUTTON_MATCHER, withText(text)));
+    /** Create a {@link ViewSpec} expecting the message's primary button with |text|. */
+    protected static ViewSpec primaryButtonViewSpec(String text) {
+        Matcher<View> viewMatcher =
+                CoreMatchers.allOf(MESSAGE_PRIMARY_BUTTON_MATCHER, withText(text));
+        return viewSpec(viewMatcher);
     }
 }

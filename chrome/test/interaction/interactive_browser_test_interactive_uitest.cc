@@ -80,24 +80,11 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       // the menu appears.
       Do(base::BindOnce([]() { LOG(INFO) << "In second action."; })),
       PressButton(kToolbarAppMenuButtonElementId),
-      AfterActivate(
-          kToolbarAppMenuButtonElementId,
-          base::BindLambdaForTesting(
-              [&](ui::InteractionSequence* seq, ui::TrackedElement* el) {
-                // Check AsView() to make sure it correctly returns the view.
-                auto* const button = AsView<BrowserAppMenuButton>(el);
-                auto* const browser_view =
-                    BrowserView::GetBrowserViewForBrowser(browser());
-                if (button != browser_view->toolbar()->app_menu_button()) {
-                  LOG(WARNING)
-                      << "AsView() should have returned the app menu button.";
-                  seq->FailForTesting();
-                }
-              })),
-      AfterShow(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()),
+      WaitForActivate(kToolbarAppMenuButtonElementId),
+      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
       // Move the mouse to the button and click it. This will hide the menu.
       MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
-      AfterHide(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()));
+      WaitForHide(AppMenuModel::kMoreToolsMenuItem));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, TestNameAndDrag) {
@@ -414,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       EnsureNotPresent(kBrowserPageId),
       // But we can find a page in the correct context even if we specify
       // InAnyContext().
-      InAnyContext(WithElement(kIncognitoPageId, base::DoNothing())));
+      InAnyContext(EnsurePresent(kIncognitoPageId)));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
@@ -432,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
             return view->web_view();
           })),
       InstrumentNonTabWebView(kWebContentsId, kTabSearchWebViewName),
-      WithElement(kTabSearchWebViewName, base::DoNothing()));
+      EnsurePresent(kTabSearchWebViewName));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,

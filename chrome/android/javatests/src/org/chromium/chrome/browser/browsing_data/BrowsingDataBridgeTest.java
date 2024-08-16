@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -277,7 +278,10 @@ public class BrowsingDataBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
+                    sActivityTestRule
+                            .getActivity()
+                            .getCurrentTabModel()
+                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
                     frozen[0] =
                             sActivityTestRule
                                     .getActivity()

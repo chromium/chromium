@@ -881,6 +881,197 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Media foundation renderer unsupported"/>
 </enum>
 
+<!-- LINT.IfChange(ChromeVoxCommand)-->
+
+<enum name="ChromeVoxCommand">
+  <summary>
+    List of ChromeVox commands. Ensure this enum stays in sync with the Command
+    enum in:
+    chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts
+  </summary>
+  <int value="0" label="ANNOUNCE_BATTERY_DESCRIPTION"/>
+  <int value="1" label="ANNOUNCE_HEADERS"/>
+  <int value="2" label="ANNOUNCE_RICH_TEXT_DESCRIPTION"/>
+  <int value="3" label="AUTORUNNER"/>
+  <int value="4" label="BACKWARD"/>
+  <int value="5" label="BOTTOM"/>
+  <int value="6" label="CONTEXT_MENU"/>
+  <int value="7" label="COPY"/>
+  <int value="8" label="CYCLE_PUNCTUATION_ECHO"/>
+  <int value="9" label="CYCLE_TYPING_ECHO"/>
+  <int value="10" label="DEBUG"/>
+  <int value="11" label="DECREASE_TTS_PITCH"/>
+  <int value="12" label="DECREASE_TTS_RATE"/>
+  <int value="13" label="DECREASE_TTS_VOLUME"/>
+  <int value="14" label="DISABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP"/>
+  <int value="15" label="DISABLE_LOGGING"/>
+  <int value="16" label="DUMP_TREE"/>
+  <int value="17" label="ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP"/>
+  <int value="18" label="ENABLE_CONSOLE_TTS"/>
+  <int value="19" label="ENABLE_LOGGING"/>
+  <int value="20" label="ENTER_SHIFTER"/>
+  <int value="21" label="EXIT_SHIFTER"/>
+  <int value="22" label="EXIT_SHIFTER_CONTENT"/>
+  <int value="23" label="FORCE_CLICK_ON_CURRENT_ITEM"/>
+  <int value="24" label="FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM"/>
+  <int value="25" label="FORCE_LONG_CLICK_ON_CURRENT_ITEM"/>
+  <int value="26" label="FORWARD"/>
+  <int value="27" label="FULLY_DESCRIBE"/>
+  <int value="28" label="GO_TO_COL_FIRST_CELL"/>
+  <int value="29" label="GO_TO_COL_LAST_CELL"/>
+  <int value="30" label="GO_TO_FIRST_CELL"/>
+  <int value="31" label="GO_TO_LAST_CELL"/>
+  <int value="32" label="GO_TO_ROW_FIRST_CELL"/>
+  <int value="33" label="GO_TO_ROW_LAST_CELL"/>
+  <int value="34" label="HANDLE_TAB"/>
+  <int value="35" label="HANDLE_TAB_PREV"/>
+  <int value="36" label="HELP"/>
+  <int value="37" label="INCREASE_TTS_PITCH"/>
+  <int value="38" label="INCREASE_TTS_RATE"/>
+  <int value="39" label="INCREASE_TTS_VOLUME"/>
+  <int value="40" label="JUMP_TO_BOTTOM"/>
+  <int value="41" label="JUMP_TO_DETAILS"/>
+  <int value="42" label="JUMP_TO_TOP"/>
+  <int value="43" label="LEFT"/>
+  <int value="44" label="LINE_DOWN"/>
+  <int value="45" label="LINE_UP"/>
+  <int value="46" label="MOVE_TO_END_OF_LINE"/>
+  <int value="47" label="MOVE_TO_START_OF_LINE"/>
+  <int value="48" label="NOP"/>
+  <int value="49" label="NATIVE_NEXT_CHARACTER"/>
+  <int value="50" label="NATIVE_NEXT_WORD"/>
+  <int value="51" label="NATIVE_PREVIOUS_CHARACTER"/>
+  <int value="52" label="NATIVE_PREVIOUS_WORD"/>
+  <int value="53" label="NEXT_ARTICLE"/>
+  <int value="54" label="NEXT_AT_GRANULARITY"/>
+  <int value="55" label="NEXT_BUTTON"/>
+  <int value="56" label="NEXT_CHARACTER"/>
+  <int value="57" label="NEXT_CHECKBOX"/>
+  <int value="58" label="NEXT_COL"/>
+  <int value="59" label="NEXT_COMBO_BOX"/>
+  <int value="60" label="NEXT_CONTROL"/>
+  <int value="61" label="NEXT_EDIT_TEXT"/>
+  <int value="62" label="NEXT_FORM_FIELD"/>
+  <int value="63" label="NEXT_GRANULARITY"/>
+  <int value="64" label="NEXT_GRAPHIC"/>
+  <int value="65" label="NEXT_GROUP"/>
+  <int value="66" label="NEXT_HEADING"/>
+  <int value="67" label="NEXT_HEADING_1"/>
+  <int value="68" label="NEXT_HEADING_2"/>
+  <int value="69" label="NEXT_HEADING_3"/>
+  <int value="70" label="NEXT_HEADING_4"/>
+  <int value="71" label="NEXT_HEADING_5"/>
+  <int value="72" label="NEXT_HEADING_6"/>
+  <int value="73" label="NEXT_INVALID_ITEM"/>
+  <int value="74" label="NEXT_LANDMARK"/>
+  <int value="75" label="NEXT_LINE"/>
+  <int value="76" label="NEXT_LINK"/>
+  <int value="77" label="NEXT_LIST"/>
+  <int value="78" label="NEXT_LIST_ITEM"/>
+  <int value="79" label="NEXT_MATH"/>
+  <int value="80" label="NEXT_MEDIA"/>
+  <int value="81" label="NEXT_OBJECT"/>
+  <int value="82" label="NEXT_PAGE"/>
+  <int value="83" label="NEXT_RADIO"/>
+  <int value="84" label="NEXT_ROW"/>
+  <int value="85" label="NEXT_SECTION"/>
+  <int value="86" label="NEXT_SENTENCE"/>
+  <int value="87" label="NEXT_SIMILAR_ITEM"/>
+  <int value="88" label="NEXT_SLIDER"/>
+  <int value="89" label="NEXT_TABLE"/>
+  <int value="90" label="NEXT_VISITED_LINK"/>
+  <int value="91" label="NEXT_WORD"/>
+  <int value="92" label="OPEN_CHROMEVOX_MENUS"/>
+  <int value="93" label="OPEN_KEYBOARD_SHORTCUTS"/>
+  <int value="94" label="OPEN_LONG_DESC"/>
+  <int value="95" label="PAN_LEFT"/>
+  <int value="96" label="PAN_RIGHT"/>
+  <int value="97" label="PASS_THROUGH_MODE"/>
+  <int value="98" label="PAUSE_ALL_MEDIA"/>
+  <int value="99" label="PREVIOUS_ARTICLE"/>
+  <int value="100" label="PREVIOUS_AT_GRANULARITY"/>
+  <int value="101" label="PREVIOUS_BUTTON"/>
+  <int value="102" label="PREVIOUS_CHARACTER"/>
+  <int value="103" label="PREVIOUS_CHECKBOX"/>
+  <int value="104" label="PREVIOUS_COMBO_BOX"/>
+  <int value="105" label="PREVIOUS_COL"/>
+  <int value="106" label="PREVIOUS_CONTROL"/>
+  <int value="107" label="PREVIOUS_EDIT_TEXT"/>
+  <int value="108" label="PREVIOUS_FORM_FIELD"/>
+  <int value="109" label="PREVIOUS_GRANULARITY"/>
+  <int value="110" label="PREVIOUS_GRAPHIC"/>
+  <int value="111" label="PREVIOUS_GROUP"/>
+  <int value="112" label="PREVIOUS_HEADING"/>
+  <int value="113" label="PREVIOUS_HEADING_1"/>
+  <int value="114" label="PREVIOUS_HEADING_2"/>
+  <int value="115" label="PREVIOUS_HEADING_3"/>
+  <int value="116" label="PREVIOUS_HEADING_4"/>
+  <int value="117" label="PREVIOUS_HEADING_5"/>
+  <int value="118" label="PREVIOUS_HEADING_6"/>
+  <int value="119" label="PREVIOUS_INVALID_ITEM"/>
+  <int value="120" label="PREVIOUS_LANDMARK"/>
+  <int value="121" label="PREVIOUS_LINE"/>
+  <int value="122" label="PREVIOUS_LINK"/>
+  <int value="123" label="PREVIOUS_LIST"/>
+  <int value="124" label="PREVIOUS_LIST_ITEM"/>
+  <int value="125" label="PREVIOUS_MATH"/>
+  <int value="126" label="PREVIOUS_MEDIA"/>
+  <int value="127" label="PREVIOUS_OBJECT"/>
+  <int value="128" label="PREVIOUS_PAGE"/>
+  <int value="129" label="PREVIOUS_RADIO"/>
+  <int value="130" label="PREVIOUS_ROW"/>
+  <int value="131" label="PREVIOUS_SECTION"/>
+  <int value="132" label="PREVIOUS_SENTENCE"/>
+  <int value="133" label="PREVIOUS_SIMILAR_ITEM"/>
+  <int value="134" label="PREVIOUS_SLIDER"/>
+  <int value="135" label="PREVIOUS_TABLE"/>
+  <int value="136" label="PREVIOUS_VISITED_LINK"/>
+  <int value="137" label="PREVIOUS_WORD"/>
+  <int value="138" label="READ_CURRENT_TITLE"/>
+  <int value="139" label="READ_CURRENT_URL"/>
+  <int value="140" label="READ_FROM_HERE"/>
+  <int value="141" label="READ_LINK_URL"/>
+  <int value="142" label="READ_PHONETIC_PRONUNCIATION"/>
+  <int value="143" label="REPORT_ISSUE"/>
+  <int value="144" label="RESET_TEXT_TO_SPEECH_SETTINGS"/>
+  <int value="145" label="RIGHT"/>
+  <int value="146" label="ROUTING"/>
+  <int value="147" label="SCROLL_BACKWARD"/>
+  <int value="148" label="SCROLL_FORWARD"/>
+  <int value="149" label="SHOW_ACTIONS_MENU"/>
+  <int value="150" label="SHOW_FORMS_LIST"/>
+  <int value="151" label="SHOW_HEADINGS_LIST"/>
+  <int value="152" label="SHOW_LANDMARKS_LIST"/>
+  <int value="153" label="SHOW_LEARN_MODE_PAGE"/>
+  <int value="154" label="SHOW_LINKS_LIST"/>
+  <int value="155" label="SHOW_LOG_PAGE"/>
+  <int value="156" label="SHOW_OPTIONS_PAGE"/>
+  <int value="157" label="SHOW_PANEL_MENU_MOST_RECENT"/>
+  <int value="158" label="SHOW_TABLES_LIST"/>
+  <int value="159" label="SHOW_TALKBACK_KEYBOARD_SHORTCUTS"/>
+  <int value="160" label="SHOW_TTS_SETTINGS"/>
+  <int value="161" label="SPEAK_TABLE_LOCATION"/>
+  <int value="162" label="SPEAK_TIME_AND_DATE"/>
+  <int value="163" label="START_HISTORY_RECORDING"/>
+  <int value="164" label="STOP_HISTORY_RECORDING"/>
+  <int value="165" label="STOP_SPEECH"/>
+  <int value="166" label="TOGGLE_BRAILLE_CAPTIONS"/>
+  <int value="167" label="TOGGLE_BRAILLE_TABLE"/>
+  <int value="168" label="TOGGLE_DICTATION"/>
+  <int value="169" label="TOGGLE_EARCONS"/>
+  <int value="170" label="TOGGLE_KEYBOARD_HELP"/>
+  <int value="171" label="TOGGLE_SCREEN"/>
+  <int value="172" label="TOGGLE_SEARCH_WIDGET"/>
+  <int value="173" label="TOGGLE_SELECTION"/>
+  <int value="174" label="TOGGLE_SEMANTICS"/>
+  <int value="175" label="TOGGLE_SPEECH_ON_OR_OFF"/>
+  <int value="176" label="TOGGLE_STICKY_MODE"/>
+  <int value="177" label="TOP"/>
+  <int value="178" label="VIEW_GRAPHIC_AS_BRAILLE"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/chromeos/accessibility/chromevox/common/command.ts:Command) -->
+
 <enum name="ChromeVoxGestureType">
   <int value="1" label="click"/>
   <int value="2" label="swipeDown1"/>
@@ -1020,6 +1211,43 @@ Unknown properties are collapsed to zero. -->
   <int value="14" label="Previous invalid"/>
   <int value="15" label="Invalid selection bounds"/>
 </enum>
+
+<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning)-->
+
+<enum name="KeyboardShortcutsSemanticMeaning">
+  <summary>Track keyboard shortcuts used on Android.</summary>
+<!-- This must be kept in sync with
+KeyboardShortcuts.KeyboardShortcutsSemanticMeaning in
+chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java -->
+
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Open recently closed tab"/>
+  <int value="2" label="Open new tab"/>
+  <int value="3" label="Open new tab incognito"/>
+  <int value="4" label="Open new window"/>
+  <int value="5" label="Reload tab"/>
+  <int value="6" label="Close tab"/>
+  <int value="7" label="Move to tab left"/>
+  <int value="8" label="Move to tab right"/>
+  <int value="9" label="Move to specific tab"/>
+  <int value="10" label="Move to last tab"/>
+  <int value="11" label="Jump to omnibox"/>
+  <int value="12" label="Go back"/>
+  <int value="13" label="Go forward"/>
+  <int value="14" label="Open menu"/>
+  <int value="15" label="Open help"/>
+  <int value="16" label="Find in page"/>
+  <int value="17" label="Open bookmarks"/>
+  <int value="18" label="Bookmark page"/>
+  <int value="19" label="Open history"/>
+  <int value="20" label="Save page"/>
+  <int value="21" label="Print"/>
+  <int value="22" label="Zoom in"/>
+  <int value="23" label="Zoom out"/>
+  <int value="24" label="Zoom reset"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>

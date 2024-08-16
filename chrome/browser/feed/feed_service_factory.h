@@ -31,6 +31,7 @@ class FeedServiceFactory : public ProfileKeyedServiceFactory {
 
   static FeedService* GetForBrowserContext(content::BrowserContext* context);
   static FeedServiceFactory* GetInstance();
+  static std::string GetCountry();
 
  private:
   friend base::NoDestructor<FeedServiceFactory>;

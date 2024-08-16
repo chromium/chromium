@@ -51,7 +51,12 @@ class Browser : public base::SupportsUserData {
   virtual Type type() const = 0;
 
   // Accessor for the owning ChromeBrowserState.
+  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
+  // remove this method.
   virtual ChromeBrowserState* GetBrowserState() = 0;
+
+  // Accessor for the owning Profile.
+  virtual ChromeBrowserState* GetProfile() = 0;
 
   // Accessor for the WebStateList.
   virtual WebStateList* GetWebStateList() = 0;

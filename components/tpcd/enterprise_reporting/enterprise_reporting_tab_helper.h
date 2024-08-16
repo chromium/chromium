@@ -30,8 +30,8 @@ class EnterpriseReportingTabHelper
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;
 
-  // TODO(crbug.com/353754403): Implement OnCookiesAccessed when there's
-  // a NavigationHandle available.
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override;
 
  private:
   explicit EnterpriseReportingTabHelper(content::WebContents* web_contents);

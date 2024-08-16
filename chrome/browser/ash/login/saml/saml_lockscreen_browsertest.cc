@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, ScrapedSingle) {
   // Make sure that the password is scraped correctly.
   ASSERT_TRUE(content::ExecJs(
       reauth_dialog_helper->DialogWebContents(),
-      "$('main-element').authenticator_.addEventListener('authCompleted',"
+      "$('main-element').authenticator.addEventListener('authCompleted',"
       "    function(e) {"
       "      var password = e.detail.password;"
       "      window.domAutomationController.send(password);"

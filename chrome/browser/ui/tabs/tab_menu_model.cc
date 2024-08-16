@@ -181,7 +181,7 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
 
-  const bool will_mute = !chrome::AreAllSitesMuted(*tab_strip, indices);
+  const bool will_mute = !AreAllSitesMuted(*tab_strip, indices);
   AddItem(TabStripModel::CommandToggleSiteMuted,
           will_mute ? l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_MUTE_SITE, num_tabs)

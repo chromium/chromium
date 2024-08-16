@@ -449,7 +449,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
                               ":-internal-is-html",
                               ":-internal-list-box",
                               ":-internal-multi-select-focus",
-                              ":-internal-shadow-host-has-appearance",
+                              ":-internal-shadow-host-has-non-auto-appearance",
                               ":-internal-spatial-navigation-focus",
                               ":-internal-video-persistent",
                               ":-internal-video-persistent-ancestor"};
@@ -485,7 +485,7 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
   }
 }
 
-TEST(CSSSelectorParserTest, ScrollMarkerPseudos) {
+TEST(CSSSelectorParserTest, ScrollControlPseudos) {
   test::TaskEnvironment task_environment;
   struct TestCase {
     const char* selector;
@@ -495,6 +495,8 @@ TEST(CSSSelectorParserTest, ScrollMarkerPseudos) {
   TestCase test_cases[] = {
       {"ul::scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
+      {"div::scroll-next-button", CSSSelector::kPseudoScrollNextButton},
+      {"div::scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
   };
 
   HeapVector<CSSSelector> arena;

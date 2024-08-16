@@ -15,6 +15,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
@@ -72,8 +73,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                mojom::WebNNGraph::ComputeCallback callback) override;
 
   void Dispatch(
-      const base::flat_map<std::string, base::UnguessableToken>& named_inputs,
-      const base::flat_map<std::string, base::UnguessableToken>& named_outputs)
+      const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
+      const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs)
       override;
 
   // An WebNNGraph backend should implement this method to execute the compiled

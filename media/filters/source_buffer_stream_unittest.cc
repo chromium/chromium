@@ -267,7 +267,7 @@ class SourceBufferStreamTest : public testing::Test {
                             int ending_position,
                             const uint8_t* data) {
     CheckExpectedBuffers(starting_position, ending_position, false,
-                         UNSAFE_BUFFERS(base::span(data, kDataSize)));
+                         UNSAFE_TODO(base::span(data, kDataSize)));
   }
 
   void CheckExpectedBuffers(int starting_position,
@@ -275,7 +275,7 @@ class SourceBufferStreamTest : public testing::Test {
                             const uint8_t* data,
                             bool expect_keyframe) {
     CheckExpectedBuffers(starting_position, ending_position, expect_keyframe,
-                         UNSAFE_BUFFERS(base::span(data, kDataSize)));
+                         UNSAFE_TODO(base::span(data, kDataSize)));
   }
 
   void CheckExpectedBuffers(
@@ -435,7 +435,7 @@ class SourceBufferStreamTest : public testing::Test {
       case SourceBufferStreamType::kVideo:
         return DemuxerStream::VIDEO;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   base::TimeDelta ConvertToFrameDuration(int frames_per_second) {

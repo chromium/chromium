@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Marró rosat</translation>
 <translation id="249330843868392562">Obre la configuració de text a parla</translation>
 <translation id="2497706219848005458">Groc verdós</translation>
+<translation id="2512979179176933762">mostra les finestres</translation>
 <translation id="2523609930580546572">Tutorial de ChromeVox</translation>
 <translation id="2525706221823668172">Tecles de drecera de Chromebook</translation>
 <translation id="2553108862507765288">error gramatical</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Blau metàl·lic</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="4254798249533888099">Arbre</translation>
+<translation id="4259220820964911921">Vols activar el control facial?</translation>
 <translation id="4271220233568730077">Expressió matemàtica següent</translation>
 <translation id="4275397969489577657">Activa el registre del flux d'esdeveniments</translation>
 <translation id="4278486392851938658">No hi ha cap enllaç visitat anterior</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Apèndix</translation>
 <translation id="5761219715606611783">Ben fet! Has après els conceptes bàsics dels tocs a ChromeVox. Pots tornar a consultar el tutorial o sortir-ne amb els botons que trobaràs més avall.</translation>
 <translation id="5776001898637896684">Extensió de text a parla de Google Enhanced Network</translation>
+<translation id="5783252477644995371">El control facial et permet controlar el cursor amb el moviment de la cara i dur a terme accions com, per exemple, fer clic amb el botó esquerre del ratolí per mitjà de gestos facials, com ara somriure</translation>
 <translation id="5805940204952508776">Toca amb dos dits</translation>
 <translation id="5819072574982403430">Element d'arbre</translation>
 <translation id="5822819874379903994">Turquesa fosc</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">No hi ha cap casella de selecció més</translation>
 <translation id="8473540203671727883">Llegeix el text que hi ha a sota del cursor del ratolí</translation>
 <translation id="8476408756881832830">Pausa la reproducció quan ChromeVox parli</translation>
-<translation id="8476508772960940536">visió general de la finestra</translation>
 <translation id="8480873377842220259">Ara t'explicarem algunes tècniques bàsiques de navegació. Pots mantenir premuda la tecla de cerca i prémer les tecles de fletxa per moure't per la pantalla. Per continuar, prem Cerca+fletxa dreta.</translation>
 <translation id="8503360654911991865">Disminueix la granularitat de la navegació.</translation>
 <translation id="8520472399088452386">Botó de selecció de valors</translation>

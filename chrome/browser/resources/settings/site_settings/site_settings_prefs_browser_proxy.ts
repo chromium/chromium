@@ -66,9 +66,9 @@ export interface SiteGroup {
   numCookies: number;
   origins: OriginInfo[];
   etldPlus1?: string;
-  fpsOwner?: string;
-  fpsNumMembers?: number;
-  fpsEnterpriseManaged?: boolean;
+  rwsOwner?: string;
+  rwsNumMembers?: number;
+  rwsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
 }
 
@@ -491,11 +491,11 @@ export interface SiteSettingsPrefsBrowserProxy {
   recordAction(action: number): void;
 
   /**
-   * Gets display string for FPS information of owner and member count.
-   * @param fpsNumMembers The number of members in the first party set.
-   * @param fpsOwner The eTLD+1 for the first party set owner.
+   * Gets display string for RWS information of owner and member count.
+   * @param rwsNumMembers The number of members in the related website set.
+   * @param rwsOwner The eTLD+1 for the related website set owner.
    */
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string):
+  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string):
       Promise<string>;
 
   /**
@@ -503,6 +503,20 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numCookies The number of cookies.
    */
   getNumCookiesString(numCookies: number): Promise<string>;
+
+  /**
+   * Gets the warning messages for the permissions types blocked at the OS
+   * level.
+   */
+  getOsGlobalPermissionStatus(): Promise<Record<ContentSettingsTypes, string>>;
+
+  /**
+   * Attempts to open a system setting page that allows to modify the system
+   * wide block for a given permission type. If this is not possible, the call
+   * will fail silently and no window will open.
+   * @param contentType The permission type.
+   */
+  openSystemPermissionSettings(contentType: string): void;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -667,12 +681,20 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('recordAction', [action]);
   }
 
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
-    return sendWithPromise('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+  getRwsMembershipLabel(rwsNumMembers: number, rwsOwner: string) {
+    return sendWithPromise('getRwsMembershipLabel', rwsNumMembers, rwsOwner);
   }
 
   getNumCookiesString(numCookies: number) {
     return sendWithPromise('getNumCookiesString', numCookies);
+  }
+
+  getOsGlobalPermissionStatus() {
+    return sendWithPromise('getOsGlobalPermissionStatus');
+  }
+
+  openSystemPermissionSettings(contentType: string) {
+    chrome.send('openSystemPermissionSettings', [contentType]);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

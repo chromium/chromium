@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-0.6.3.tgz
-Version: 0.6.3
-Date: 2024-07-29
-Revision: c5205996c875d375757a34298376ab1246e6b0de
-SHA-512: f90be84ca9ee7b827d70c5a3435c09a7d80a601f826ccb4f0505b96fa0402748a088aa69d6efcc964abba53c655cbb75a4ce33fc3040814912510601376444d7
+URL: https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-0.6.4.tgz
+Version: 0.6.4
+Date: 2024-08-05
+Revision: 54dab6c913ef15cd1a12594e97d716ca3f7ca9e6
+SHA-512: a0bece1b2306539dbdcc03dc5ae7131461499cfb68191c8d0556fb18ae388843c336b1ab094b4b0af8dc7625152a6de777ce59b1d96e93e1c958cd957c1ba904
 License: Apache 2.0
 License File: LICENSE
 Shipped: yes
@@ -20,19 +20,19 @@ Find the needed revision in the project release list: https://github.com/GoogleC
 Roll the BiDiMapper to the needed version:
 
 ```bash
-set_pinned_version --version=<your-version>
+roll_bidimapper --version=<your-version>
 ```
 
 If you omit the `--version` parameter the latest available version will be pulled from NPM.
 
-The file README.chromium will be updated by set_pinned_version
+The file README.chromium will be updated by roll_bidimapper
 
 Local Modifications:
 Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
 
-The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/c5205996c875d375757a34298376ab1246e6b0de.zip
+The source code of the current revision can be found at the following url: https://github.com/GoogleChromeLabs/chromium-bidi/archive/54dab6c913ef15cd1a12594e97d716ca3f7ca9e6.zip
 
 -------------------- DEPENDENCY DIVIDER --------------------
 

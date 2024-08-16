@@ -32,7 +32,7 @@
 // Internal helper.
 #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
   auto statusor = (rexpr);                                            \
-  if (UNLIKELY(!statusor.ok())) {                                     \
+  if (!statusor.ok()) [[unlikely]] {                                  \
     return std::move(statusor).status();                              \
   }                                                                   \
   lhs = std::move(statusor).value()

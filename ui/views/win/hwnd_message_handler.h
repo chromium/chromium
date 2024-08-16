@@ -26,6 +26,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/event.h"
@@ -101,7 +102,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   ~HWNDMessageHandler() override;
 
   virtual void Init(HWND parent, const gfx::Rect& bounds);
-  virtual void InitModalType(ui::ModalType modal_type);
+  virtual void InitModalType(ui::mojom::ModalType modal_type);
 
   virtual void Close();
   virtual void CloseNow();

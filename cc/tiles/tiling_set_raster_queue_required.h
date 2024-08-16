@@ -5,6 +5,8 @@
 #ifndef CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 #define CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
@@ -18,8 +20,9 @@ namespace cc {
 // constructor.
 class CC_EXPORT TilingSetRasterQueueRequired {
  public:
-  TilingSetRasterQueueRequired(PictureLayerTilingSet* tiling_set,
-                               RasterTilePriorityQueue::Type type);
+  static std::unique_ptr<TilingSetRasterQueueRequired> Create(
+      PictureLayerTilingSet* tiling_set,
+      RasterTilePriorityQueue::Type type);
   ~TilingSetRasterQueueRequired();
 
   const PrioritizedTile& Top() const;
@@ -52,6 +55,10 @@ class CC_EXPORT TilingSetRasterQueueRequired {
     PrioritizedTile current_tile_;
     TilingData::Iterator visible_iterator_;
   };
+
+  TilingSetRasterQueueRequired();
+  TilingSetRasterQueueRequired(PictureLayerTiling* tiling,
+                               RasterTilePriorityQueue::Type type);
 
   bool IsTileRequired(const PrioritizedTile& prioritized_tile) const;
 

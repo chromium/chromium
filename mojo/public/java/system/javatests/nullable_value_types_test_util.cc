@@ -73,14 +73,14 @@ class InterfaceV2 : public mojom::InterfaceV2 {
                                std::optional<TypemappedEnum> mapped_enum_value,
                                MethodWithVersionedArgsCallback reply) override {
     // Not currently exercised by tests.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void MethodWithVersionedStruct(
       mojom::VersionedStructV2Ptr in,
       MethodWithVersionedStructCallback reply) override {
     // Not currently exercised by tests.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void MethodWithContainers(

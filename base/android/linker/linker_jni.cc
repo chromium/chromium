@@ -126,7 +126,14 @@ bool FindRegionInOpenFile(int fd, uintptr_t* out_address, size_t* out_size) {
   // Loop until no bytes left to scan. On every iteration except the last, fill
   // the buffer till the end. On every iteration except the first, the buffer
   // begins with kMaxLineLength bytes from the end of the previous fill.
+
+// Silence clang's warning about allocating on the stack because this is a very
+// special case.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wvla-extension"
   char buf[kReadSize + kMaxLineLength + 1];
+#pragma clang diagnostic pop
+
   buf[kReadSize + kMaxLineLength] = '\0';  // Stop strstr().
   size_t pos = 0;
   size_t bytes_requested = kReadSize + kMaxLineLength;

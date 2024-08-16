@@ -91,7 +91,7 @@ VideoCaptureBufferType VideoCaptureBufferPoolImpl::GetBufferType(
 
   VideoCaptureBufferTracker* tracker = GetTracker(buffer_id);
   if (!tracker) {
-    NOTREACHED_NORETURN() << "Unrecognized buffer id, buffer_id=" << buffer_id;
+    NOTREACHED() << "Unrecognized buffer id, buffer_id=" << buffer_id;
   }
 
   return tracker->GetBufferType();

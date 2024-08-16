@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #import "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"

@@ -76,7 +76,7 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
 
-  //  Navigates the Settings app, which is expected to be associated with
+  // Navigates the Settings app, which is expected to be associated with
   // `element_id`, to the details page for the network named `network_name`
   // with type `network_pattern`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
@@ -152,13 +152,14 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id`.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementExists(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to not exist in the DOM of an
   // instrumented WebUI identified by `element_id`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
-                             const DeepQuery& query);
+  WaitForElementDoesNotExist(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be enabled.
@@ -185,8 +186,20 @@ class InteractiveAshTest
       WebContentsInteractionTestUtil::DeepQuery query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be expanded.
+  InteractiveTestApi::MultiStep WaitForElementExpanded(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and be opened.
   InteractiveTestApi::MultiStep WaitForElementOpened(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be unopened.
+  InteractiveTestApi::MultiStep WaitForElementUnopened(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
 
@@ -194,7 +207,7 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id` and be focused.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementFocused(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have its text, or the
@@ -207,7 +220,7 @@ class InteractiveAshTest
 
   // This function is similar to `WaitForElementTextContains()` except it
   // supports non-unique elements. For more info see
-  // `FindElementWithTextAndDoAction()`.
+  // `FindElementAndDoActionOnChildren()`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   WaitForAnyElementTextContains(
       const ui::ElementIdentifier& element_id,
@@ -223,6 +236,9 @@ class InteractiveAshTest
       WebContentsInteractionTestUtil::DeepQuery element,
       const std::string& attribute);
 
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and have a display style of
+  // `none`, indicating that the element is not visible.
   InteractiveTestApi::MultiStep WaitForElementDisplayNone(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery element);
@@ -245,17 +261,18 @@ class InteractiveAshTest
   // `element_bounds.IsEmpty()` flakes.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementToRender(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // Clicks on an element in the DOM. `element_id` is the identifier
-  // of the WebContents to query. `query` is a DeepQuery path to the
-  // element to start with, it can be {} to query the entire page.
+  // of the WebContents to query. `query` is a
+  // WebContentsInteractionTestUtil::DeepQuery path to the element to start
+  // with, it can be {} to query the entire page.
   ui::test::internal::InteractiveTestPrivate::MultiStep ClickElement(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& query);
+      const WebContentsInteractionTestUtil::DeepQuery& query);
 
   // This function is similar to `ClickElement()` except it supports non-unique
-  // elements. For more info see `FindElementWithTextAndDoAction()`.
+  // elements. For more info see `FindElementAndDoActionOnChildren()`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   ClickAnyElementTextContains(
       const ui::ElementIdentifier& element_id,
@@ -268,9 +285,10 @@ class InteractiveAshTest
   // element to be a drop-down and will directly update the selected option
   // index to match the first option matching `option`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  SelectDropdownElementOption(const ui::ElementIdentifier& element_id,
-                              const DeepQuery& query,
-                              const std::string& option);
+  SelectDropdownElementOption(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& option);
 
   // Sends an instrumented WebUI identified by `element_id` the key presses
   // needed to input the provided text `text`. This function can handle ASCII
@@ -281,18 +299,27 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       const std::string& text);
 
- private:
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`, which is expected to be a
+  // text input field, clears the existing input, clicks the element, and sends
+  // the key events needed to type `text`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep ClearInputAndEnterText(
+      const ui::ElementIdentifier& element_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query,
+      const std::string& text);
+
   // Waits for an element identified by `root` to exist in the DOM of an
   // instrumented WebUI identified by `element_id`. When found, this function
-  // will search for elements matching `selectors` and will execute `action` on
-  // each element until `action` returns a truthy value.
+  // will search for its children elements by `selectors` and will execute
+  // `action` on each element until `action` returns a truthy value.
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  FindElementWithTextAndDoAction(
+  FindElementAndDoActionOnChildren(
       const ui::ElementIdentifier& element_id,
       const WebContentsInteractionTestUtil::DeepQuery& root,
       const WebContentsInteractionTestUtil::DeepQuery& selectors,
       const std::string& action);
 
+ private:
   // Helper function that navigates to a top-level page of the Settings app.
   // This function expects the Settings app to already be open. The `path`
   // parameter should correspond to a top-level menu item.
@@ -306,6 +333,14 @@ class InteractiveAshTest
   // desired detailed page.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   NavigateQuickSettingsToPage(const ui::ElementIdentifier& element_id);
+
+  // Returns the JS code that searches for an element selected by
+  // `element_with_text` that contains the expected text, and when found will
+  // click on the sibling element selected by `element_to_click`.
+  const std::string ClickElementWithSiblingContainsText(
+      const WebContentsInteractionTestUtil::DeepQuery& element_with_text,
+      const std::string& expected,
+      const WebContentsInteractionTestUtil::DeepQuery& element_to_click);
 };
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_

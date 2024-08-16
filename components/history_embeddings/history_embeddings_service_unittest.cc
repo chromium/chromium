@@ -77,7 +77,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
           {{"UseMlEmbedder", "false"},
            {"SearchPassageMinimumWordCount", "3"},
            {"UseMlAnswerer", "false"},
-           {"EnableAnswers", "true"}}},
+           {"EnableAnswers", "true"},
+           {"FilterTerms", "term1,term2,Filter Phrase,TeRm3"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -135,8 +136,8 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     base::RunLoop loop;
     service_->storage_.PostTaskWithThisObject(base::BindLambdaForTesting(
         [&](HistoryEmbeddingsServicePublic::Storage* storage) {
-          std::unique_ptr<SqlDatabase::EmbeddingsIterator> iterator =
-              storage->sql_database.MakeEmbeddingsIterator({});
+          std::unique_ptr<SqlDatabase::UrlDataIterator> iterator =
+              storage->sql_database.MakeUrlDataIterator({});
           if (!iterator) {
             return;
           }
@@ -427,6 +428,142 @@ TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
   EXPECT_EQ(2u, CountWords("a  bc"));
   EXPECT_EQ(3u, CountWords("a  bc d"));
   EXPECT_EQ(3u, CountWords("a  bc  def "));
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, FilterTerms) {
+  AddTestHistoryPage("http://test1.com");
+  OnPassagesEmbeddingsComputed(UrlPassages(1, 1, base::Time::Now()),
+                               {"term1", "term2", "Filter Phrase", "TeRm3"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  OverrideVisibilityScoresForTesting({
+      {"term1", 0.99},
+      {"term2", 0.99},
+      {"Filter Phrase", 0.99},
+      {"TeRm3", 0.99},
+      {"query without terms", 0.99},
+      {"term1 in query", 0.99},
+      {"query ending with term2", 0.99},
+      {"query ending with tErM2", 0.99},
+      {"query containing filTer phrAse", 0.99},
+      {"query containing thefilter phrase-and-more", 0.99},
+      {"query containing the filterphrase inexactly", 0.99},
+      {"query with term3 in the middle", 0.99},
+      {"query with TERM3 in the middle", 0.99},
+      {"query with inexact te'rm3 in the middle", 0.99},
+      {"query with 'term3', surrounded by punctuation", 0.99},
+      {"query with non-ASCII ∅ character but no terms", 0.99},
+  });
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query without terms", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query without terms");
+    EXPECT_GT(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("term1 in query", {}, 3, future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "term1 in query");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query ending with term2", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query ending with term2");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query ending with tErM2", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query ending with tErM2");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query containing filTer phrAse", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing filTer phrAse");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query containing thefilter phrase-and-more", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing thefilter phrase-and-more");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query containing the filterphrase inexactly", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query containing the filterphrase inexactly");
+    EXPECT_GT(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query with term3 in the middle", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with term3 in the middle");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query with TERM3 in the middle", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with TERM3 in the middle");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query with inexact te'rm3 in the middle", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with inexact te'rm3 in the middle");
+    EXPECT_GT(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query with 'term3', surrounded by punctuation", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with 'term3', surrounded by punctuation");
+    EXPECT_EQ(result.count, 0u);
+  }
+  {
+    base::test::TestFuture<SearchResult> future;
+    service_->Search("query with non-ASCII ∅ character but no terms", {}, 3,
+                     future.GetRepeatingCallback());
+    SearchResult result = future.Take();
+    EXPECT_FALSE(result.session_id.empty());
+    EXPECT_EQ(result.query, "query with non-ASCII ∅ character but no terms");
+    EXPECT_EQ(result.count, 0u);
+  }
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {

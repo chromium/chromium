@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/views/animation/ink_drop.h"
+
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
@@ -9,12 +11,18 @@
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/views/animation/ink_drop.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/animation/ink_drop_stub.h"
 #include "ui/views/animation/test/test_ink_drop_host.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_base.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views::test {
 
@@ -133,6 +141,47 @@ TEST_P(InkDropTest, TypicalSlowActivated) {
   ink_drop_->AnimateToState(InkDropState::ACTIVATED);
   ink_drop_->AnimateToState(InkDropState::DEACTIVATED);
   EXPECT_EQ(InkDropState::HIDDEN, ink_drop_->GetTargetInkDropState());
+}
+
+using InkDropContainerViewTest = ViewsTestBase;
+
+// Ensure that the inkdrop tracks its parent View's bounds, even if the parent
+// has its own layout manager.
+TEST_F(InkDropContainerViewTest, MatchesParentBounds) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  auto* const child1 = contents->AddChildView(
+      std::make_unique<StaticSizedView>(gfx::Size(20, 20)));
+  child1->set_minimum_size(gfx::Size(10, 10));
+  auto* const child2 = contents->AddChildView(
+      std::make_unique<StaticSizedView>(gfx::Size(20, 20)));
+  child2->set_minimum_size(gfx::Size(10, 10));
+  auto* const layout =
+      contents->SetLayoutManager(std::make_unique<FlexLayout>());
+  layout->SetDefault(kFlexBehaviorKey,
+                     FlexSpecification(LayoutOrientation::kHorizontal,
+                                       MinimumFlexSizeRule::kScaleToMinimum,
+                                       MaximumFlexSizeRule::kPreferred));
+  auto* const inkdrop_container =
+      contents->AddChildView(std::make_unique<InkDropContainerView>());
+  inkdrop_container->SetAutoMatchParentBounds(true);
+
+  // Start near the default size for the layout.
+  widget->SetBounds({20, 20, 40, 20});
+  widget->LayoutRootViewIfNecessary();
+
+  // Ensure that the inkdrop container has (a) been laid out, and (b) has the
+  // expected bounds.
+  EXPECT_EQ(gfx::Point(0, 0), inkdrop_container->origin());
+  EXPECT_EQ(contents->size(), inkdrop_container->size());
+  EXPECT_FALSE(inkdrop_container->needs_layout());
+
+  // Shrink the widget and ensure the inkdrop container shrinks too.
+  widget->SetBounds({20, 20, 20, 20});
+  widget->LayoutRootViewIfNecessary();
+  EXPECT_EQ(gfx::Point(0, 0), inkdrop_container->origin());
+  EXPECT_EQ(contents->size(), inkdrop_container->size());
+  EXPECT_FALSE(inkdrop_container->needs_layout());
 }
 
 }  // namespace views::test

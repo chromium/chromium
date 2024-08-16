@@ -1,0 +1,52 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+template("domatolpm") {
+  _name = target_name
+  _script_target_name = "${_name}_domatolpm_gen"
+  _gen_target_name = "${_name}_proto_gen"
+  _gen_file_format = "${target_gen_dir}/${_name}"
+  action(_script_target_name) {
+    testonly = true
+    script = "//testing/libfuzzer/research/domatolpm/generator.py"
+    args = [
+      "-p",
+      rebase_path(invoker.grammar_file, root_build_dir),
+      "-f",
+      rebase_path(_gen_file_format, root_build_dir),
+    ]
+    inputs = [
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.cc.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.h.tmpl",
+      "//testing/libfuzzer/research/domatolpm/templates/domatolpm.proto.tmpl",
+    ]
+    outputs = [
+      "${_gen_file_format}.proto",
+      "${_gen_file_format}.cc",
+      "${_gen_file_format}.h",
+    ]
+  }
+  proto_library(_gen_target_name) {
+    testonly = true
+    deps = [ ":${_script_target_name}" ]
+    sources = [ "${_gen_file_format}.proto" ]
+    proto_out_dir = rebase_path(target_gen_dir, root_gen_dir)
+    generate_python = false
+  }
+  static_library(_name) {
+    testonly = true
+    public_deps = [
+      ":${_gen_target_name}",
+      ":${_script_target_name}",
+      "//base",
+    ]
+    deps = [ "//testing/libfuzzer/research/domatolpm:domatolpm_context" ]
+    sources = [
+      "${_gen_file_format}.cc",
+      "${_gen_file_format}.h",
+    ]
+  }
+}

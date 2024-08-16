@@ -28,8 +28,8 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -120,7 +120,7 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
   int GetNumWebAppsInSync() {
-    return GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS).size();
+    return GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS).size();
   }
 
   WebAppRegistrar& registrar_unsafe() {
@@ -129,7 +129,7 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
-                       DisablingSelectedTypeDisablesModelType) {
+                       DisablingSelectedTypeDisablesDataType) {
   ASSERT_TRUE(SetupSync());
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   std::string entity_id;
   {
     std::vector<sync_pb::SyncEntity> sync_entities =
-        GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+        GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
     ASSERT_EQ(sync_entities.size(), 1u);
     entity_id = sync_entities[0].id_string();
     sync_pb::WebAppSpecifics result_web_app =
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
             syncer::WebAppSpecificsToValue(web_app->sync_proto()));
 
   std::vector<sync_pb::SyncEntity> sync_entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
   ASSERT_EQ(sync_entities.size(), 1u);
   sync_pb::WebAppSpecifics result_web_app =
       sync_entities[0].specifics().web_app();
@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
 
   {
     std::vector<sync_pb::SyncEntity> sync_entities =
-        GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+        GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
     ASSERT_EQ(sync_entities.size(), 1u);
     sync_pb::WebAppSpecifics synced_web_app =
         sync_entities[0].specifics().web_app();
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
 
   {
     std::vector<sync_pb::SyncEntity> sync_entities =
-        GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+        GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
     ASSERT_EQ(sync_entities.size(), 1u);
     sync_pb::WebAppSpecifics synced_web_app =
         sync_entities[0].specifics().web_app();
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   // Create a sync proto with an updated start_url for the same app.
   GURL updated_start_url("https://example.com/updated/");
   std::vector<sync_pb::SyncEntity> sync_entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
   ASSERT_EQ(sync_entities.size(), 1u);
   std::string entity_id = sync_entities[0].id_string();
   sync_pb::EntitySpecifics modified_entity_specifics =
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(

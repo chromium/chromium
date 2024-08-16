@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
+#include "chrome/browser/media/webrtc/tab_desktop_media_list_mock_observer.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,18 +21,6 @@ int kThumbnailSize = 100;
 
 using testing::AtLeast;
 using testing::DoDefault;
-
-class MockDesktopMediaListObserver : public DesktopMediaListObserver {
- public:
-  MOCK_METHOD1(OnSourceAdded, void(int index));
-  MOCK_METHOD1(OnSourceRemoved, void(int index));
-  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
-  MOCK_METHOD1(OnSourceNameChanged, void(int index));
-  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
-  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
-  MOCK_METHOD0(OnDelegatedSourceListSelection, void());
-  MOCK_METHOD0(OnDelegatedSourceListDismissed, void());
-};
 
 class DesktopMediaListAshTest : public ChromeAshTestBase {
  public:
@@ -57,7 +46,7 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
   }
 
  protected:
-  MockDesktopMediaListObserver observer_;
+  DesktopMediaListMockObserver observer_;
   std::unique_ptr<DesktopMediaListAsh> list_;
 };
 

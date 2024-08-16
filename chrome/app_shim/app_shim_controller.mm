@@ -836,7 +836,7 @@ void AppShimController::BindNotificationService(
 
 mac_notifications::MacNotificationServiceUN*
 AppShimController::notification_service_un() {
-  if (WebAppIsAdHocSigned()) {
+  if (!WebAppIsAdHocSigned()) {
     return nullptr;
   }
   return static_cast<mac_notifications::MacNotificationServiceUN*>(

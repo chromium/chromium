@@ -70,7 +70,6 @@ interface HTMLMediaElement : HTMLElement
 # Bluetooth API (crbug.com/1100993), WebUSB API (crbug.com/933055) and
 # the Login Status API (crbug.com/1340252) are not supported in webview.
 interface Navigator
-    getter bluetooth                   # crbug.com/1100993
     getter hid                         # crbug.com/1164125
     getter login                       # crbug.com/1340252
     getter mediaSession                # crbug.com/925997
@@ -204,16 +203,6 @@ interface WindowControlsOverlay : EventTarget
 interface WindowControlsOverlayGeometryChangeEvent : Event
 interface Navigator
     getter windowControlsOverlay
-
-# Web Bluetooth is not implemented on WebView. crbug.com/1100993
-interface Bluetooth : EventTarget
-interface BluetoothCharacteristicProperties
-interface BluetoothDevice : EventTarget
-interface BluetoothRemoteGATTCharacteristic : EventTarget
-interface BluetoothRemoteGATTDescriptor
-interface BluetoothRemoteGATTServer
-interface BluetoothRemoteGATTService
-interface BluetoothUUID
 
 # WebUSB is not implemented on WebView. crbug.com/933055
 interface USB : EventTarget

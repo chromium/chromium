@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/dns_response.h"
 
 #include <algorithm>
@@ -141,18 +136,6 @@ DnsRecordParser::DnsRecordParser(base::span<const uint8_t> packet,
     : packet_(packet), num_records_(num_records), cur_(offset) {
   CHECK_LE(offset, packet_.size());
 }
-
-DnsRecordParser::DnsRecordParser(const void* packet,
-                                 size_t length,
-                                 size_t offset,
-                                 size_t num_records)
-    : DnsRecordParser(
-          // TODO(crbug.com/40284755): This span construction can not be sound
-          // here. This DnsRecordParser constructor should be removed.
-          UNSAFE_BUFFERS(
-              base::span(static_cast<const uint8_t*>(packet), length)),
-          offset,
-          num_records) {}
 
 unsigned DnsRecordParser::ReadName(const void* const vpos,
                                    std::string* out) const {
@@ -356,7 +339,7 @@ DnsResponse::DnsResponse(
                       response_size, do_accumulation);
 
   auto io_buffer = base::MakeRefCounted<IOBufferWithSize>(response_size);
-  auto writer = base::SpanWriter(base::as_writable_bytes(io_buffer->span()));
+  auto writer = base::SpanWriter(io_buffer->span());
   success &= WriteHeader(&writer, header);
   DCHECK(success);
   if (has_query) {
@@ -407,16 +390,13 @@ DnsResponse::DnsResponse(size_t length)
     : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
       io_buffer_size_(length) {}
 
-DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
-    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
-      io_buffer_size_(length),
-      parser_(io_buffer_->data(),
-              length,
+DnsResponse::DnsResponse(base::span<const uint8_t> data, size_t answer_offset)
+    : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(data.size())),
+      io_buffer_size_(data.size()),
+      parser_(io_buffer_->span(),
               answer_offset,
               std::numeric_limits<size_t>::max()) {
-  DCHECK(data);
-  std::copy(static_cast<const char*>(data),
-            static_cast<const char*>(data) + length, io_buffer_->data());
+  io_buffer_->span().copy_from(data);
 }
 
 // static
@@ -461,9 +441,10 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   if (base::NetToHost16(header()->qdcount) != 1)
     return false;
 
+  base::span<const uint8_t> subspan =
+      io_buffer_->span().subspan(kHeaderSize, question.size());
   // Match the question section.
-  if (question !=
-      std::string_view(io_buffer_->data() + kHeaderSize, question.size())) {
+  if (question != base::as_string_view(subspan)) {
     return false;
   }
 
@@ -481,7 +462,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   // Construct the parser. Only allow parsing up to `num_records` records. If
   // more records are present in the buffer, it's just garbage extra data after
   // the formal end of the response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->data(), nbytes,
+  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes),
                             kHeaderSize + question.size(), num_records);
   return true;
 }
@@ -502,8 +483,8 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   // Only allow parsing up to `num_records` records. If more records are present
   // in the buffer, it's just garbage extra data after the formal end of the
   // response and should be ignored.
-  parser_ =
-      DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize, num_records);
+  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes), kHeaderSize,
+                            num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {

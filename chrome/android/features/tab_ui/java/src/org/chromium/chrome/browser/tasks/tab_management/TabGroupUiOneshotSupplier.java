@@ -19,6 +19,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -127,6 +128,8 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     *     UI and DataSharing services.
      * @param tabContentManager Gives access to the tab content.
      * @param rootView The root view of the app.
      * @param tabCreatorManager Manages creation of tabs.
@@ -144,6 +147,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             ScrimCoordinator scrimCoordinator,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             BottomSheetController bottomSheetController,
+            DataSharingTabManager dataSharingTabManager,
             TabContentManager tabContentManager,
             ViewGroup rootView,
             TabCreatorManager tabCreatorManager,
@@ -162,6 +166,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                                             scrimCoordinator,
                                             omniboxFocusStateSupplier,
                                             bottomSheetController,
+                                            dataSharingTabManager,
                                             tabModelSelector,
                                             tabContentManager,
                                             rootView,

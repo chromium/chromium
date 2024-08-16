@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -207,7 +208,7 @@ void SavedDeskDialogController::CreateDialogWidget(
   // The dialog will show on the display associated with `root_window`, and will
   // block all input since it is system modal.
   DCHECK(root_window->IsRootWindow());
-  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   dialog->SetShowCloseButton(false);
 
   views::Widget::InitParams params(

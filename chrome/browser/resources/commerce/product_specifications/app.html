@@ -60,9 +60,12 @@
     margin-top: 32px;
   }
 
-  #specs {
-    display: flex;
-    gap: 8px;
+  horizontal-carousel[can-scroll] #summaryTable {
+    --last-column-overflow-x: hidden;
+  }
+
+  #newColumnSelector {
+    margin-inline-start: 8px;
   }
 
   #footer {
@@ -83,13 +86,12 @@
 </style>
 <product-specifications-header id="header" subtitle="[[setName_]]"
     menu-button-disabled$="[[loadingState_.loading]]"
-    on-add-to-new-group-click="addToNewGroup_"
     on-delete-click="deleteSet_"
     on-name-change="updateSetName_"
     on-see-all-click="seeAllSets_">
 </product-specifications-header>
 <div id="summaryContainer">
-  <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">
+  <div id="empty" hidden$="[[!showEmptyState_]]">
     <picture>
       <source srcset="images/empty_state_dark.svg"
           media="(prefers-color-scheme: dark)">
@@ -101,24 +103,26 @@
           on-selected-url-change="onUrlAdd_">
       </product-selector>
   </div>
+  <!-- TODO(b/357616541): Give loading state the same max-width as
+       the horizontal-carousel and restyle accordingly. -->
   <loading-state id="loading" hidden$="[[!loadingState_.loading]]"
       column-count="[[loadingState_.urlCount]]">
   </loading-state>
-  <div id="specs" class="summary"
+  <horizontal-carousel id="specs"
       hidden$="[[!showTable_(showEmptyState_, loadingState_.loading)]]">
-    <product-specifications-table
-        id="summaryTable"
-        columns="[[tableColumns_]]"
-        on-url-change="onUrlChange_"
-        on-url-remove="onUrlRemove_"
-        on-url-order-update="onUrlOrderUpdate_"
-        on-unavailable-action-attempted="showOfflineToast_">
+      <product-specifications-table slot="table"
+          id="summaryTable"
+          columns="[[tableColumns_]]"
+          on-url-change="onUrlChange_"
+          on-url-remove="onUrlRemove_"
+          on-url-order-update="onUrlOrderUpdate_"
+          on-unavailable-action-attempted="showOfflineToast_">
     </product-specifications-table>
-    <new-column-selector id="newColumnSelector"
+    <new-column-selector slot="selector" id="newColumnSelector"
         excluded-urls="[[getTableUrls_(tableColumns_)]]"
         on-selected-url-change="onUrlAdd_">
     </new-column-selector>
-  </div>
+  </horizontal-carousel>
 </div>
 <div id="footer" hidden$="[[showEmptyState_]]">
   <div id="disclaimer">$i18n{experimentalFeatureDisclaimer}

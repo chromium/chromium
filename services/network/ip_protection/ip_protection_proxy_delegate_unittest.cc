@@ -4,9 +4,11 @@
 
 #include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -77,24 +79,24 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
   void SetIpProtectionProxyListManagerForTesting(
       std::unique_ptr<IpProtectionProxyListManager> ipp_proxy_list_manager)
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   IpProtectionTokenCacheManager* GetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   std::vector<net::ProxyChain> GetProxyChainList() override {
@@ -115,7 +117,7 @@ class MockIpProtectionConfigCache : public IpProtectionConfigCache {
     }
   }
 
-  void GeoChangeObserved(const std::string& geo_id) override {}
+  void GeoObserved(const std::string& geo_id) override {}
 
   // Set the proxy list returned from `ProxyList()`.
   void SetProxyList(std::vector<net::ProxyChain> proxy_list) {

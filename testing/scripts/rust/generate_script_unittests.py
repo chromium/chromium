@@ -5,9 +5,10 @@
 # found in the LICENSE file.
 
 import os
-from pyfakefs import fake_filesystem_unittest
 import tempfile
 import unittest
+
+from pyfakefs import fake_filesystem_unittest
 
 from generate_script import _parse_args
 from generate_script import _generate_script
@@ -37,8 +38,8 @@ class Tests(fake_filesystem_unittest.TestCase):
                                          mode='w',
                                          encoding='utf-8') as f:
             filepath = f.name
-            f.write("foo\n")
-            f.write("bar\n")
+            f.write('foo\n')
+            f.write('bar\n')
         try:
             args.rust_test_executables = filepath
             actual = _generate_script(args,
@@ -46,13 +47,14 @@ class Tests(fake_filesystem_unittest.TestCase):
         finally:
             os.remove(filepath)
 
-        expected = '''
+        expected = """
 #!/bin/bash
-env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
+env vpython3 \
+"$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" \\
     "--rust-test-executable=$(dirname $0)/../bar" \\
     "--rust-test-executable=$(dirname $0)/../foo" \\
     "$@"
-'''.strip()
+""".strip()
 
         self.assertEqual(expected, actual)
 
@@ -69,8 +71,8 @@ env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" 
                                          mode='w',
                                          encoding='utf-8') as f:
             filepath = f.name
-            f.write("foo\n")
-            f.write("bar\n")
+            f.write('foo\n')
+            f.write('bar\n')
         try:
             args.rust_test_executables = filepath
             actual = _generate_script(args,
@@ -78,13 +80,13 @@ env vpython3 "$(dirname $0)/../../../testing/scripts/rust/rust_main_program.py" 
         finally:
             os.remove(filepath)
 
-        expected = '''
+        expected = """
 @echo off
 vpython3 "%~dp0\\../../../testing/scripts/rust\\rust_main_program.py" ^
     "--rust-test-executable=%~dp0\\..\\bar.exe" ^
     "--rust-test-executable=%~dp0\\..\\foo.exe" ^
     %*
-'''.strip()
+""".strip()
 
         self.assertEqual(expected, actual)
 

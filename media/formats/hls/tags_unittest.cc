@@ -98,7 +98,7 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
   if (!result.has_value()) {
     CHECK(false) << from.ToString() << "\n"
                  << MediaSerialize(std::move(result).error());
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return OkTestResult<T>{.tag = std::move(result).value(),
                          .source = std::move(source)};

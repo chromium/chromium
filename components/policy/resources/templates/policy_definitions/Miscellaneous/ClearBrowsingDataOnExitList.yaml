@@ -8,7 +8,9 @@ desc: |-
 
   Until Chrome 114, this policy required the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy to be set to true. Starting Chrome 115, setting this policy will disable sync for the respective data types if neither `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>` is disabled by setting the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy nor <ph name="BROWSER_SIGNIN_POLICY_NAME">BrowserSignin</ph> is disabled.
 
-  If <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> does not exit cleanly (for example, if the browser or the OS crashes), the browsing data will be cleared the next time the profile is loaded.
+  If for some reason the data deletion has started and did not complete, the browsing data will be cleared the next time the profile is loaded.
+
+  If <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> does not exit cleanly (for example, if the browser or the OS crashes), the browsing data will not be cleared since the browser closing was not a result of the use closing all the browser windows.
 example_value:
 - browsing_history
 - download_history

@@ -81,7 +81,7 @@ std::string DumpNodeDescription(const Node* node) {
           .DescribeNodeData(WorkerNodeImpl::FromNode(node))
           .DebugString();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string DumpRegisteredDescribers(const Node* node) {

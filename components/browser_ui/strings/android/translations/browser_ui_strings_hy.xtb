@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Փակել և ցույց տալ հաջորդ հասանելի գործողությունը</translation>
 <translation id="3744111561329211289">Ֆոնային համաժամացում</translation>
 <translation id="3763247130972274048">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք տեսանյութի աջ/ձախ մասում</translation>
+<translation id="3779154269823594982">Փոխել գաղտնաբառերը</translation>
 <translation id="3797520601150691162">Չկիրառել մուգ թեման որոշակի կայքում</translation>
 <translation id="3803367742635802571">Կայքերը, որոնք այցելում եք, հնարավոր է, դադարեն աշխատել նախատեսված ձևով</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />։ <ph name="TYPE_2" />։</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Թույլատրել ձայնը առանձին կայքերում</translation>
 <translation id="789180354981963912">Արգելափակել կողմնակի կայքերի քուքիները ինկոգնիտո ռեժիմում․</translation>
 <translation id="7940722705963108451">Հիշեցնել ինձ</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}one{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}other{<ph name="FPS_OWNER" /> տիրույթի կայքերի խմբի <ph name="FPS_MEMBERS_COUNT" /> կայք կարող է տեսնել ձեր գործողությունները խմբում}}</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
 <translation id="7990211076305263060">Երբ այս պարամետրը միացված է, կայքերը կարող են խոսափողն օգտագործելու թույլտվություն խնդրել։ Երբ այն անջատված է, կայքերը չեն կարող օգտագործել ձեր խոսափողը։</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="8541410041357371550">Այս կայքը Chrome-ից ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}one{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}other{Քուքիները թույլատրված են <ph name="FPS_OWNER" /> տիրույթի <ph name="FPS_MEMBERS_COUNT" /> կայքի համար}}</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>
 <translation id="8609465669617005112">Տեղափոխել վեր</translation>
 <translation id="8617611086246832542">Երբ այս պարամետրը միացված է, ցուցադրվում է կայքերի համակարգչային տարբերակը։ Երբ այն անջատված է, ցուցադրվում է կայքերի բջջային տարբերակը։</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="9039697262778250930">Հնարավոր է, որ դուք դուրս գրվեք հաշվից այս կայքերում</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Այս կայքը խմբում է, որը կարող է տեսնել ձեր գործողությունները։ Խումբը սահմանված է <ph name="FPS_OWNER" /> տիրույթի կողմից։</translation>
 <translation id="9106233582039520022">Ջնջե՞լ քուքիները</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{«<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="913657688200966289">Միացնել <ph name="APP_NAME" />-ի թույլտվությունները <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>

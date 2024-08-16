@@ -91,7 +91,7 @@ export class SeaPenRouterElement extends WithSeaPenStore {
         state => state.shouldShowSeaPenIntroductionDialog);
     this.updateFromStore();
     this.fetchIntroductionDialogStatus();
-    logSeaPenVisited();
+    logSeaPenVisited(this.relativePath_ as SeaPenPaths);
     afterNextRender(this, () => SeaPenObserver.initSeaPenObserverIfNeeded());
   }
 

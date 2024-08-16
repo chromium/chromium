@@ -4,11 +4,20 @@
 
 #include "ash/style/typography.h"
 
+#include <array>
+#include <cstddef>
+#include <optional>
+
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/font.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -222,22 +231,37 @@ class TypographyProviderImpl : public TypographyProvider {
   ~TypographyProviderImpl() override = default;
 
   gfx::FontList ResolveTypographyToken(TypographyToken token) const override {
-    const FontInfo& info = LookupInfo(token);
-    return gfx::FontList(FontNames(info.family), info.style, info.size,
-                         info.weight);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    TypographyToken converted_token = ConvertToken(token);
+    CHECK_LE(converted_token, TypographyToken::kMaxValue);
+
+    // Constructing an entirely new `gfx::FontList` for each call is very slow,
+    // as each caller will need to resolve the font separately - a slow
+    // operation - and have separate caches for calculated font metrics like
+    // height and baseline.
+    // As `gfx::FontList` is internally a `scoped_refptr`, return a copy of a
+    // cached `gfx::FontList` instead of constructing a new one, so callers can
+    // share font resolution and font metrics.
+    std::optional<gfx::FontList>& list =
+        font_list_cache_[base::to_underlying(converted_token)];
+    if (!list.has_value()) {
+      const FontInfo& info = LookupInfo(converted_token);
+      list.emplace(FontNames(info.family), info.style, info.size, info.weight);
+    }
+    return *list;
   }
 
   int ResolveLineHeight(TypographyToken token) const override {
-    return LookupInfo(token).line_height;
+    return LookupInfo(ConvertToken(token)).line_height;
   }
 
  private:
+  // Does not perform token conversion.
   const FontInfo& LookupInfo(TypographyToken token) const {
-    TypographyToken converted_token = ConvertToken(token);
-    const auto iter = font_map_.find(converted_token);
+    const auto iter = font_map_.find(token);
     if (iter == font_map_.end()) {
-      NOTREACHED_IN_MIGRATION() << "Tried to resolve unmapped token";
-      return font_map_.at(TypographyToken::kLegacyDisplay1);
+      NOTREACHED() << "Tried to resolve unmapped token";
     }
     return iter->second;
   }
@@ -252,16 +276,21 @@ class TypographyProviderImpl : public TypographyProvider {
 
     const auto iter = kTokenEquivalents.find(token);
     if (iter == kTokenEquivalents.end()) {
-      NOTREACHED_IN_MIGRATION()
-          << "Missing a mapping for legacy token " << static_cast<int>(token);
-      // Return an arbitrary but valid cros.sys token.
-      return TypographyToken::kCrosButton1;
+      NOTREACHED() << "Missing a mapping for legacy token "
+                   << static_cast<int>(token);
     }
 
     return iter->second;
   }
 
   const base::fixed_flat_map<TypographyToken, FontInfo, 41> font_map_;
+
+  static constexpr size_t kNumTokens =
+      base::to_underlying(TypographyToken::kMaxValue) + 1;
+  mutable std::array<std::optional<gfx::FontList>, kNumTokens> font_list_cache_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace

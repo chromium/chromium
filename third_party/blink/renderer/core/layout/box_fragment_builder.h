@@ -75,12 +75,18 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     border_padding_ =
         initial_fragment_geometry.border + initial_fragment_geometry.padding;
     border_scrollbar_padding_ =
-        border_padding_ + initial_fragment_geometry.scrollbar;
+        initial_fragment_geometry.border + initial_fragment_geometry.scrollbar;
+    // Padding doesn't take up layout space in fieldset containers (that's done
+    // inside the anonymous child wrapper).
+    if (!node_ || !node_.IsFieldsetContainer()) {
+      border_scrollbar_padding_ += initial_fragment_geometry.padding;
+    }
     original_border_scrollbar_padding_block_start_ =
         border_scrollbar_padding_.block_start;
     if (node_) {
       child_available_size_ = CalculateChildAvailableSize(
-          space_, To<BlockNode>(node_), size_, border_scrollbar_padding_);
+          space_, To<BlockNode>(node_), size_,
+          border_padding_ + initial_fragment_geometry.scrollbar);
     }
   }
 
@@ -233,7 +239,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     DCHECK(initial_fragment_geometry_);
     return child_available_size_;
   }
-  const BlockNode& Node() {
+  const BlockNode& Node() const {
     DCHECK(node_);
     return To<BlockNode>(node_);
   }

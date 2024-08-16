@@ -192,7 +192,7 @@ def _make_xorg_modeline(width, height, refresh):
   specified width, height and refresh rate.
   See: https://www.x.org/archive/X11R7.0/doc/html/chips4.html"""
   re_matches = _re_search_command(
-      'Modeline "(.*)"\s+(.*)',
+      r'Modeline "(.*)"\s+(.*)',
       ['cvt', str(width), str(height),
        str(refresh)],
   )
@@ -223,9 +223,8 @@ def _make_xorg_config(default_whd):
   mode_labels = []
   for width, height in mode_sizes:
     (modeline_label, modeline) = _make_xorg_modeline(width, height, 60)
-    modelines.append("Modeline \"%s\" %s" %
-                     (modeline_label, " ".join(modeline)))
-    mode_labels.append("\"%s\"" % modeline_label)
+    modelines.append('Modeline "%s" %s' % (modeline_label, ' '.join(modeline)))
+    mode_labels.append('"%s"' % modeline_label)
   config = """
 Section "Monitor"
   Identifier "Monitor0"
@@ -248,7 +247,7 @@ Section "Screen"
     Modes %s
   EndSubSection
 EndSection
-  """ % ("\n".join(modelines), depth, " ".join(mode_labels))
+  """ % ('\n'.join(modelines), depth, ' '.join(mode_labels))
   config_file = os.path.join(tempfile.gettempdir(),
                              'xorg-%s.config' % uuid.uuid4().hex)
   with open(config_file, 'w') as f:
@@ -284,14 +283,14 @@ def _setup_xrandr(env, default_whd):
         call_xrandr(['--addmode', output_name, modeline_label])
     (default_mode_label, _) = _make_xorg_modeline(*default_size, refresh_rate)
     # Set the mode of all monitors to connect and activate them.
-    for i in range(0, len(output_names)):
-      args = ['--output', output_names[i], '--mode', default_mode_label]
-      if (i > 0):
+    for i, name in enumerate(output_names):
+      args = ['--output', name, '--mode', default_mode_label]
+      if i > 0:
         args += ['--right-of', output_names[i - 1]]
       call_xrandr(args)
 
   # Sets the primary monitor to the default size and marks the rest as disabled.
-  call_xrandr(["-s", "%dx%d" % default_size])
+  call_xrandr(['-s', '%dx%d' % default_size])
   # Set the DPI to something realistic (as required by some desktops).
   call_xrandr(['--dpi', '96'])
 
@@ -412,7 +411,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
     kill(openbox_proc, 'openbox')
     kill(xcompmgr_proc, 'xcompmgr')
     kill(x11_proc, x11_binary)
-    if xorg_config_file != None:
+    if xorg_config_file is not None:
       os.remove(xorg_config_file)
 
     # dbus-daemon is not a subprocess, so we can't SIGTERM+waitpid() on it.
@@ -443,7 +442,7 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # a better solution is found, add a check for the "weston" binary here and
     # run tests without Wayland compositor if the weston binary is not found.
     # TODO(https://1178788): find a better solution.
-    if not os.path.isfile("./weston"):
+    if not os.path.isfile('./weston'):
       print('Weston is not available. Starting without Wayland compositor')
       return test_env.run_executable(cmd, env, stdoutfile, cwd)
 

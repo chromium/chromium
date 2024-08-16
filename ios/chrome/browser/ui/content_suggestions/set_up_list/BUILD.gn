@@ -29,6 +29,8 @@ source_set("set_up_list") {
     "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base:features",
@@ -40,6 +42,7 @@ source_set("set_up_list") {
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -71,20 +74,29 @@ source_set("default_browser_promo") {
     "set_up_list_default_browser_promo_coordinator.h",
     "set_up_list_default_browser_promo_coordinator.mm",
     "set_up_list_default_browser_promo_coordinator_delegate.h",
+    "set_up_list_default_browser_promo_mediator.h",
+    "set_up_list_default_browser_promo_mediator.mm",
   ]
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_mediator",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_ui",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/promo_style",
   ]
 }
@@ -146,7 +158,9 @@ source_set("utils") {
   ]
   deps = [
     "//base",
+    "//components/prefs",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
   ]
@@ -154,20 +168,51 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "set_up_list_default_browser_promo_coordinator_unittest.mm" ]
+  sources = [
+    "set_up_list_default_browser_promo_coordinator_unittest.mm",
+    "set_up_list_default_browser_promo_mediator_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":default_browser_promo",
     ":set_up_list",
     "//base",
     "//base/test:test_support",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_mediator",
     "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser",
+    "//ios/chrome/browser/segmentation_platform/model:segmented_default_browser_tests",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "set_up_list_default_browser_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

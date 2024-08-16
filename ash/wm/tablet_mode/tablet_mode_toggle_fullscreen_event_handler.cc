@@ -103,8 +103,7 @@ bool TabletModeToggleFullscreenEventHandler::ProcessEvent(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool TabletModeToggleFullscreenEventHandler::CanToggleFullscreen(

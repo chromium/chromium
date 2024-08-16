@@ -66,7 +66,8 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     return;
   }
 
-  if (resource_request.load_flags & net::LOAD_RESTRICTED_PREFETCH) {
+  if (resource_request.load_flags &
+      net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     // The renderer has marked this prefetch as restricted, meaning it is a
     // cross-origin prefetch intended for top-level navigation reuse. We must
     // verify that the request meets the necessary security requirements, and
@@ -111,7 +112,10 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
 
   // Recursive prefetch from a cross-origin main resource prefetch.
   if (resource_request.recursive_prefetch_token) {
-    CHECK(!(resource_request.load_flags & net::LOAD_RESTRICTED_PREFETCH));
+    // TODO(crbug.com/357325599): This condition is not mutually exclusive with
+    // the one above, which means that we will overwrite the IsolationInfo
+    // computed above with one that might be different. Investigate whether this
+    // behavior should be corrected.
 
     // TODO(crbug.com/40150754): Figure out why we're seeing this condition
     // hold true in the field.
@@ -229,7 +233,8 @@ bool PrefetchURLLoaderServiceContext::IsValidCrossOriginPrefetch(
   // the prefetch cache. This is because it is possible that another origin
   // prefetched the same resource, which should only be reused for top-level
   // navigations.
-  if (resource_request.load_flags & net::LOAD_CAN_USE_RESTRICTED_PREFETCH) {
+  if (resource_request.load_flags &
+      net::LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     loader_factory_receivers_->ReportBadMessage(
         "Prefetch/IsValidCrossOrigin: can use restricted prefetch");
     return false;

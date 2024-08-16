@@ -29,6 +29,8 @@ namespace {
 // static constexpr char kReasonForFirstTourPrevention[] =
 //     "ash.welcome_tour.prevented.first_reason";
 
+static constexpr char kFirstExperimentalArm[] =
+    "ash.welcome_tour.v2.experimental_arm.first";
 static constexpr char kTimeOfFirstInteractionPrefPrefix[] =
     "ash.welcome_tour.v2.interaction_time.";
 static constexpr char kTimeOfFirstTourAborted[] =
@@ -64,6 +66,24 @@ bool TourWasPreventedAsHoldback(PrefService* prefs) {
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
+
+std::optional<welcome_tour_metrics::ExperimentalArm> GetFirstExperimentalArm(
+    PrefService* prefs) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  auto* pref = prefs->FindPreference(kFirstExperimentalArm);
+  if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
+    return std::nullopt;
+  }
+
+  auto arm = static_cast<welcome_tour_metrics::ExperimentalArm>(
+      pref->GetValue()->GetInt());
+  if (welcome_tour_metrics::kAllExperimentalArmsSet.Has(arm)) {
+    return arm;
+  }
+
+  return std::nullopt;
+}
 
 std::optional<base::Time> GetTimeOfFirstInteraction(
     PrefService* prefs,
@@ -125,6 +145,18 @@ GetReasonForFirstTourPrevention(PrefService* prefs) {
   return PreventedReason::kUnknown;
 }
 
+bool MarkFirstExperimentalArm(PrefService* prefs,
+                              welcome_tour_metrics::ExperimentalArm arm) {
+  CHECK(features::IsWelcomeTourEnabled());
+
+  if (prefs->FindPreference(kFirstExperimentalArm)->IsDefaultValue()) {
+    prefs->SetInteger(kFirstExperimentalArm, static_cast<int>(arm));
+    return true;
+  }
+
+  return false;
+}
+
 bool MarkFirstTourPrevention(PrefService* prefs,
                              welcome_tour_metrics::PreventedReason reason) {
   CHECK(features::IsWelcomeTourEnabled());
@@ -181,6 +213,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kTimeOfFirstTourAborted, base::Time());
   registry->RegisterTimePref(kTimeOfFirstTourCompletion, base::Time());
   registry->RegisterTimePref(kTimeOfFirstTourPrevention, base::Time());
+  registry->RegisterIntegerPref(kFirstExperimentalArm, -1);
   registry->RegisterIntegerPref(kReasonForFirstTourPrevention, -1);
 
   for (const auto interaction : welcome_tour_metrics::kAllInteractionsSet) {

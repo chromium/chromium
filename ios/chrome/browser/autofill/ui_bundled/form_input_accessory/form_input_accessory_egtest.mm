@@ -30,6 +30,8 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
 constexpr char kFormUsername[] = "un";
 constexpr char kFormPassword[] = "pw";
 
@@ -46,6 +48,23 @@ constexpr char kFormAddress[] = "form_address";
 constexpr char kFormCity[] = "form_city";
 constexpr char kFormState[] = "form_state";
 constexpr char kFormZip[] = "form_zip";
+
+constexpr NSString* kExampleUsername = @"user";
+
+// Matcher for the autofill password suggestion chip in the keyboard accessory.
+id<GREYMatcher> KeyboardAccessoryPasswordSuggestion() {
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    return grey_allOf(grey_text(kExampleUsername),
+                      grey_ancestor(grey_accessibilityID(
+                          kFormInputAccessoryViewAccessibilityID)),
+                      nil);
+  }
+
+  return grey_accessibilityLabel(
+      [NSString stringWithFormat:@"%@ ••••••••", kExampleUsername]);
+}
+
+}  // namespace
 
 @interface FormInputAccessoryEGTest : WebHttpServerChromeTestCase
 @end
@@ -218,7 +237,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
-  NSString* username = @"user";
+  NSString* username = kExampleUsername;
   NSString* password = @"password";
   [PasswordManagerAppInterface
       storeCredentialWithUsername:username
@@ -229,7 +248,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
 
-  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+  id<GREYMatcher> user_chip = KeyboardAccessoryPasswordSuggestion();
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
 
@@ -250,7 +269,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
-  NSString* username = @"user";
+  NSString* username = kExampleUsername;
   NSString* password = @"password";
   [PasswordManagerAppInterface
       storeCredentialWithUsername:username
@@ -262,7 +281,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(
                         kSigninUffFormUsername)];
 
-  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+  id<GREYMatcher> user_chip = KeyboardAccessoryPasswordSuggestion();
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
 
@@ -283,7 +302,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
-  NSString* username = @"user";
+  NSString* username = kExampleUsername;
   NSString* password = @"password";
   [PasswordManagerAppInterface
       storeCredentialWithUsername:username
@@ -295,7 +314,7 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(
                         kSigninUffFormPassword)];
 
-  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+  id<GREYMatcher> user_chip = KeyboardAccessoryPasswordSuggestion();
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
 

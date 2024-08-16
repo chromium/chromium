@@ -10,7 +10,7 @@
 
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 

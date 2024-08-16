@@ -664,8 +664,9 @@ class HashTable final {
   ~HashTable()
     requires(!Allocator::kIsGarbageCollected)
   {
-    if (LIKELY(!table_))
+    if (!table_) [[likely]] {
       return;
+    }
     EnterAccessForbiddenScope();
     DeleteAllBucketsAndDeallocate(table_, table_size_);
     LeaveAccessForbiddenScope();

@@ -118,10 +118,7 @@ bool ShouldMigrateLocalSettings(PrefService* pref_service,
   return !is_password_sync_enabled &&
          !pref_service->GetBoolean(
              password_manager::prefs::kSettingsMigratedToUPMLocal) &&
-         DoesUpmPrefAllowForSettingsMigration(pref_service) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+         DoesUpmPrefAllowForSettingsMigration(pref_service);
 }
 
 // This function is called after a setting is fetched from

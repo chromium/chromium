@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+option java_multiple_files = true;
+
+// The file is a manual copy of the google3 file
+// //chrome/intelligence/proto/features/summarize.proto
+// Be sure to update the google3 file before making the change here.
+
+message SummarizeRequest {
+  string article = 1;
+}

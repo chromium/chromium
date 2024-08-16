@@ -320,7 +320,8 @@ FileSystemAccessManagerImpl::FileSystemAccessManagerImpl(
     : context_(std::move(context)),
       blob_context_(std::move(blob_context)),
       permission_context_(permission_context),
-      lock_manager_(std::make_unique<FileSystemAccessLockManager>(PassKey())),
+      lock_manager_(
+          base::MakeRefCounted<FileSystemAccessLockManager>(PassKey())),
       watcher_manager_(this, PassKey()),
       off_the_record_(off_the_record) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1176,6 +1177,12 @@ FileSystemAccessLockManager::LockType
 FileSystemAccessManagerImpl::GetAncestorLockTypeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return lock_manager_->GetAncestorLockTypeForTesting();  // IN-TEST
+}
+
+base::WeakPtr<FileSystemAccessLockManager>
+FileSystemAccessManagerImpl::GetLockManagerWeakPtrForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lock_manager_->GetWeakPtrForTesting();  // IN-TEST
 }
 
 mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>

@@ -529,7 +529,7 @@ void PageInfoMainView::HandleMoreInfoRequestAsync(int view_id) {
       presenter_->OpenSiteSettingsView();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -19,6 +19,9 @@ extern CustomizationSection* const kCustomizationSectionDiscoverLinks;
 // The section identifier for the Magic Stack menu's visibility toggles.
 extern CustomizationSection* const kCustomizationSectionMagicStackToggles;
 
+// The identifier for the bottom sheet's initial detent.
+extern NSString* const kBottomSheetDetentIdentifier;
+
 // The identifier for the dismiss button on the top right of the navigation bar.
 extern NSString* const kNavigationBarDismissButtonIdentifier;
 
@@ -60,9 +63,16 @@ enum class CustomizationMenuPage : NSInteger {
 
 // Enum representing the toggle cells to control module visibility.
 enum class CustomizationToggleType : NSInteger {
+  // Main page toggles.
   kMostVisited,
   kMagicStack,
   kDiscover,
+
+  // Magic Stack page toggles.
+  kSetUpList,
+  kSafetyCheck,
+  kTapResumption,
+  kParcelTracking,
 };
 
 // Enum representing the link cells to navigate to external URLs.

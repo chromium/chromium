@@ -328,7 +328,8 @@ bool CanComputeBlockSizeWithoutLayout(
     const BlockNode& node,
     WritingDirectionMode container_writing_direction,
     ItemPosition block_alignment_position,
-    bool has_auto_block_inset) {
+    bool has_auto_block_inset,
+    bool has_inline_size) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
     return false;
@@ -344,15 +345,20 @@ bool CanComputeBlockSizeWithoutLayout(
     return false;
   }
   if (style.LogicalHeight().HasAuto()) {
-    // Any 'auto' inset will trigger shink-to-fit sizing.
+    // Any 'auto' inset will trigger fit-content.
     if (has_auto_block_inset) {
       return false;
     }
+    // Check for an explicit stretch.
     if (block_alignment_position == ItemPosition::kStretch) {
       return true;
     }
-    // Non-normal alignment will trigger shrink-to-fit sizing.
+    // Non-normal alignment will trigger fit-content.
     if (block_alignment_position != ItemPosition::kNormal) {
+      return false;
+    }
+    // An aspect-ratio (with a definite inline-size) will trigger fit-content.
+    if (!style.AspectRatio().IsAuto() && has_inline_size) {
       return false;
     }
   }
@@ -368,7 +374,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
     WritingDirectionMode self_writing_direction) {
   bool force_x_insets_to_zero = false;
   bool force_y_insets_to_zero = false;
-  std::optional<InsetAreaOffsets> offsets = style.InsetAreaOffsets();
+  std::optional<PositionAreaOffsets> offsets = style.PositionAreaOffsets();
   if (offsets.has_value()) {
     force_x_insets_to_zero = force_y_insets_to_zero = true;
   }
@@ -430,11 +436,11 @@ LogicalAlignment ComputeAlignment(
     WritingDirectionMode self_writing_direction) {
   ItemPosition align_normal_behavior = ItemPosition::kNormal;
   ItemPosition justify_normal_behavior = ItemPosition::kNormal;
-  const InsetArea inset_area = style.GetInsetArea().ToPhysical(
+  const PositionArea position_area = style.GetPositionArea().ToPhysical(
       container_writing_direction, self_writing_direction);
-  if (!inset_area.IsNone()) {
+  if (!position_area.IsNone()) {
     std::tie(align_normal_behavior, justify_normal_behavior) =
-        inset_area.AlignJustifySelfFromPhysical(container_writing_direction);
+        position_area.AlignJustifySelfFromPhysical(container_writing_direction);
   }
   const bool is_parallel =
       IsParallelWritingMode(container_writing_direction.GetWritingMode(),
@@ -578,7 +584,8 @@ bool ComputeOofInlineDimensions(
   const bool can_compute_block_size_without_layout =
       CanComputeBlockSizeWithoutLayout(node, container_writing_direction,
                                        block_alignment_position,
-                                       imcb.has_auto_block_inset);
+                                       imcb.has_auto_block_inset,
+                                       /* has_inline_size */ false);
 
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
     DCHECK(!node.IsReplaced());
@@ -659,17 +666,13 @@ bool ComputeOofInlineDimensions(
       return is_stretch ? Length::FillAvailable() : Length::FitContent();
     })();
 
-    const Length& min_inline_length =
-        apply_automatic_min_size && style.LogicalMinWidth().HasAuto()
-            ? Length::MinIntrinsic()
-            : style.LogicalMinWidth();
-
-    LayoutUnit main_inline_size = ResolveMainInlineLength(
+    const LayoutUnit main_inline_size = ResolveMainInlineLength(
         space, style, border_padding, MinMaxSizesFunc, main_inline_length,
         &auto_length, imcb.InlineSize());
-    MinMaxSizes min_max_inline_sizes =
-        ComputeMinMaxInlineSizes(space, node, border_padding, MinMaxSizesFunc,
-                                 &min_inline_length, imcb.InlineSize());
+    const MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
+        space, node, border_padding,
+        apply_automatic_min_size ? &Length::MinIntrinsic() : nullptr,
+        MinMaxSizesFunc, imcb.InlineSize());
 
     inline_size = min_max_inline_sizes.ClampSizeToMinAndMax(main_inline_size);
   }
@@ -716,100 +719,58 @@ const LayoutResult* ComputeOofBlockDimensions(
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
 
   const auto alignment_position = alignment.block_alignment.GetPosition();
+
   const LayoutResult* result = nullptr;
-
-  auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
-    DCHECK(!node.IsReplaced());
-    DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);
-
-    if (!result) {
-      // Create a new space, setting the fixed block-size.
-      ConstraintSpaceBuilder builder(style.GetWritingMode(),
-                                     style.GetWritingDirection(),
-                                     /* is_new_fc */ true);
-      builder.SetAvailableSize(
-          {dimensions->size.inline_size, imcb.BlockSize()});
-      builder.SetIsFixedInlineSize(true);
-      builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
-
-      // Tables need to know about the explicit stretch constraint to produce
-      // the correct result.
-      if (!imcb.has_auto_block_inset &&
-          alignment_position == ItemPosition::kStretch) {
-        builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-      }
-
-      if (space.IsInitialColumnBalancingPass()) {
-        // The |fragmentainer_offset_delta| will not make a difference in the
-        // initial column balancing pass.
-        SetupSpaceBuilderForFragmentation(
-            space, node, /*fragmentainer_offset_delta=*/LayoutUnit(),
-            space.FragmentainerBlockSize(),
-            /*requires_content_before_breaking=*/false, &builder);
-      }
-      result = node.Layout(builder.ToConstraintSpace());
-    }
-
-    return LogicalFragment(style.GetWritingDirection(),
-                           result->GetPhysicalFragment())
-        .BlockSize();
-  };
-
   LayoutUnit block_size;
   if (replaced_size) {
     DCHECK(node.IsReplaced());
     block_size = replaced_size->block_size;
-  } else {
-    const Length& main_block_length = style.LogicalHeight();
+  } else if (CanComputeBlockSizeWithoutLayout(
+                 node, container_writing_direction, alignment_position,
+                 imcb.has_auto_block_inset,
+                 /* has_inline_size */ dimensions->size.inline_size !=
+                     kIndefiniteSize)) {
+    DCHECK(!node.IsTable());
 
-    const bool is_table = node.IsTable();
-
-    const bool is_implicit_stretch =
-        !imcb.has_auto_block_inset &&
-        alignment_position == ItemPosition::kNormal;
-    const bool is_explicit_stretch =
-        !imcb.has_auto_block_inset &&
-        alignment_position == ItemPosition::kStretch;
-    const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
-
-    // Determine how "auto" should resolve.
-    const Length& auto_length = ([&]() {
-      // Tables always shrink-to-fit unless explicitly asked to stretch.
-      if (is_table) {
-        return is_explicit_stretch ? Length::FillAvailable()
-                                   : Length::FitContent();
-      }
-      if (!style.AspectRatio().IsAuto() &&
-          dimensions->size.inline_size != kIndefiniteSize &&
-          !is_explicit_stretch) {
-        return Length::FitContent();
-      }
-      return is_stretch ? Length::FillAvailable() : Length::FitContent();
-    })();
-
+    // Nothing depends on our intrinsic-size, so we can safely use the initial
+    // variant of these functions.
     const LayoutUnit main_block_size = ResolveMainBlockLength(
-        space, style, border_padding, main_block_length, &auto_length,
-        [&](SizeType) { return IntrinsicBlockSizeFunc(); }, imcb.BlockSize());
-
-    MinMaxSizes min_max_block_sizes = ComputeMinMaxBlockSizesDeprecated(
-        space, node, border_padding, imcb.BlockSize());
-
-    // Manually resolve any intrinsic/content min/max block-sizes.
-    // TODO(crbug.com/1135207): |ComputeMinMaxBlockSizes()| should handle this.
-    if (style.LogicalMinHeight().HasContentOrIntrinsic()) {
-      min_max_block_sizes.min_size = IntrinsicBlockSizeFunc();
-    }
-    if (style.LogicalMaxHeight().HasContentOrIntrinsic()) {
-      min_max_block_sizes.max_size = IntrinsicBlockSizeFunc();
-    }
-    min_max_block_sizes.max_size =
-        std::max(min_max_block_sizes.max_size, min_max_block_sizes.min_size);
-
-    // Tables are never allowed to go below their "auto" block-size.
-    if (is_table)
-      min_max_block_sizes.Encompass(IntrinsicBlockSizeFunc());
-
+        space, style, border_padding, style.LogicalHeight(),
+        &Length::FillAvailable(), kIndefiniteSize, imcb.BlockSize());
+    const MinMaxSizes min_max_block_sizes =
+        ComputeInitialMinMaxBlockSizes(space, node, border_padding);
     block_size = min_max_block_sizes.ClampSizeToMinAndMax(main_block_size);
+  } else {
+    DCHECK_NE(dimensions->size.inline_size, kIndefiniteSize);
+
+    // Create a new space, setting the fixed inline-size.
+    ConstraintSpaceBuilder builder(style.GetWritingMode(),
+                                   style.GetWritingDirection(),
+                                   /* is_new_fc */ true);
+    builder.SetAvailableSize({dimensions->size.inline_size, imcb.BlockSize()});
+    builder.SetIsFixedInlineSize(true);
+    builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
+
+    // Tables need to know about the explicit stretch constraint to produce
+    // the correct result.
+    if (!imcb.has_auto_block_inset &&
+        alignment_position == ItemPosition::kStretch) {
+      builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
+    }
+
+    if (space.IsInitialColumnBalancingPass()) {
+      // The |fragmentainer_offset_delta| will not make a difference in the
+      // initial column balancing pass.
+      SetupSpaceBuilderForFragmentation(
+          space, node, /*fragmentainer_offset_delta=*/LayoutUnit(),
+          space.FragmentainerBlockSize(),
+          /*requires_content_before_breaking=*/false, &builder);
+    }
+
+    result = node.Layout(builder.ToConstraintSpace());
+    block_size = LogicalFragment(style.GetWritingDirection(),
+                                 result->GetPhysicalFragment())
+                     .BlockSize();
   }
 
   dimensions->size.block_size = block_size;

@@ -19,6 +19,7 @@ source_set("browser_state_service") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public/thread",
   ]
 }
@@ -91,6 +92,7 @@ source_set("push_notification_service") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
@@ -115,6 +117,7 @@ source_set("push_notification_client") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/url_loading/model",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
@@ -154,6 +157,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/test:test_support",

@@ -18,7 +18,7 @@ bool HasAttributionOsSupport(mojom::AttributionSupport attribution_support) {
     case mojom::AttributionSupport::kNone:
       return false;
     case mojom::AttributionSupport::kUnset:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -31,7 +31,7 @@ bool HasAttributionWebSupport(mojom::AttributionSupport attribution_support) {
     case mojom::AttributionSupport::kNone:
       return false;
     case mojom::AttributionSupport::kUnset:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

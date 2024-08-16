@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -34,13 +39,12 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync/test/mock_model_type_worker.h"
+#include "components/sync/test/mock_data_type_worker.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -208,8 +212,8 @@ void ExtensionSessionsTest::CreateSessionModels() {
       sync_start_future;
   service->GetControllerDelegate()->OnSyncStarting(
       request, sync_start_future.GetCallback());
-  std::unique_ptr<syncer::MockModelTypeWorker> worker =
-      syncer::MockModelTypeWorker::CreateWorkerAndConnectSync(
+  std::unique_ptr<syncer::MockDataTypeWorker> worker =
+      syncer::MockDataTypeWorker::CreateWorkerAndConnectSync(
           sync_start_future.Take());
 
   const base::Time time_now = base::Time::Now();
@@ -229,7 +233,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
 
     // We need to provide a recent timestamp to prevent garbage collection of
     // sessions (anything older than 14 days), so we cannot use
-    // MockModelTypeWorker's convenience functions, which internally use very
+    // MockDataTypeWorker's convenience functions, which internally use very
     // old timestamps.
     syncer::EntityData header_entity_data;
     header_entity_data.client_tag_hash =
@@ -256,7 +260,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   }
 
   // Let the processor receive and honor all updates, which requires running
-  // the runloop because there is a ModelTypeProcessorProxy in between, posting
+  // the runloop because there is a DataTypeProcessorProxy in between, posting
   // tasks.
   base::RunLoop().RunUntilIdle();
 }

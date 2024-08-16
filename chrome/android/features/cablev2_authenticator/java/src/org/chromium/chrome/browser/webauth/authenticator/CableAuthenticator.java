@@ -152,6 +152,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                 params.challenge,
                 GpmBrowserOptionsHelper.createDefaultBrowserOptions(),
                 origin,
+                origin,
                 (status, response) -> {
                     mTaskRunner.postTask(
                             () ->

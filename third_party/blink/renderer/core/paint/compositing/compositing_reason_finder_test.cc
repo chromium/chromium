@@ -112,8 +112,6 @@ TEST_P(CompositingReasonFinderTest, UndoOverscroll) {
 // Tests that an anchored-positioned fixpos element should overscroll if the
 // anchor cab be overscrolled, so that it keeps "attached" to the anchor.
 TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { height: 200vh; }
@@ -149,8 +147,6 @@ TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosOverscroll) {
 // Tests that an anchored-positioned fixpos element should not overscroll if
 // the anchor does not overscroll.
 TEST_P(CompositingReasonFinderTest, FixedPosAnchorPosUndoOverscroll) {
-  ScopedCSSAnchorPositioningForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { height: 200vh; }

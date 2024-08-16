@@ -957,7 +957,7 @@ void DlpContentManager::RemoveAllowedContents(
     DlpConfidentialContents& contents,
     DlpRulesManager::Restriction restriction) {
   base::EraseIf(
-      contents.GetContents(), [=](const DlpConfidentialContent& content) {
+      contents.GetContents(), [=, this](const DlpConfidentialContent& content) {
         return user_allowed_contents_cache_.Contains(content, restriction);
       });
 }

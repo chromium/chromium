@@ -74,9 +74,11 @@ class CheckedNumeric {
 #endif
   constexpr bool
   AssignIfValid(Dst* result) const {
-    return BASE_NUMERICS_LIKELY(IsValid<Dst>())
-               ? ((*result = static_cast<Dst>(state_.value())), true)
-               : false;
+    if (IsValid<Dst>()) [[likely]] {
+      *result = static_cast<Dst>(state_.value());
+      return true;
+    }
+    return false;
   }
 
   // ValueOrDie() - The primary accessor for the underlying value. If the
@@ -89,9 +91,10 @@ class CheckedNumeric {
   // the underlying value, and it is not available through other means.
   template <typename Dst = T, class CheckHandler = CheckOnFailure>
   constexpr StrictNumeric<Dst> ValueOrDie() const {
-    return BASE_NUMERICS_LIKELY(IsValid<Dst>())
-               ? static_cast<Dst>(state_.value())
-               : CheckHandler::template HandleFailure<Dst>();
+    if (IsValid<Dst>()) [[likely]] {
+      return static_cast<Dst>(state_.value());
+    }
+    return CheckHandler::template HandleFailure<Dst>();
   }
 
   // ValueOrDefault(T default_value) - A convenience method that returns the
@@ -102,9 +105,10 @@ class CheckedNumeric {
   // if the supplied default_value is not within range of the destination type.
   template <typename Dst = T, typename Src>
   constexpr StrictNumeric<Dst> ValueOrDefault(const Src default_value) const {
-    return BASE_NUMERICS_LIKELY(IsValid<Dst>())
-               ? static_cast<Dst>(state_.value())
-               : checked_cast<Dst>(default_value);
+    if (IsValid<Dst>()) [[likely]] {
+      return static_cast<Dst>(state_.value());
+    }
+    return checked_cast<Dst>(default_value);
   }
 
   // Returns a checked numeric of the specified type, cast from the current

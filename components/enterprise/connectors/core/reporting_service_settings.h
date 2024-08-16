@@ -12,9 +12,9 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 
 namespace enterprise_connectors {
 

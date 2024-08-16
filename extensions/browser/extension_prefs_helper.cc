@@ -68,8 +68,9 @@ void ExtensionPrefsHelper::RemoveExtensionControlledPref(
     ExtensionPrefs::ScopedDictionaryUpdate update(prefs_, extension_id,
                                                   scope_string);
     auto preference = update.Get();
-    if (preference)
+    if (preference) {
       preference->RemoveWithoutPathExpansion(pref_key, nullptr);
+    }
   }
   value_map_->RemoveExtensionPref(extension_id, pref_key, scope);
 }

@@ -44,13 +44,14 @@ class AddressBubblesController
   // Sets up the controller and offers to save or the `profile`. If
   // `original_profile` is not nullptr, it will be updated if the user accepts
   // the offer. `callback` will be invoked once the user makes a decision with
-  // respect to the prompt. `options` carries extra configuration for opening
-  // the prompt.
+  // respect to the prompt. `is_migration_to_account` is relevant for the save
+  // case only and makes the bubble open in a special mode for saving `profile`
+  // in user's Google account.
   static void SetUpAndShowSaveOrUpdateAddressBubble(
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   static void SetUpAndShowAddNewAddressBubble(
@@ -94,12 +95,11 @@ class AddressBubblesController
 
   // TODO(crbug.com/325440757): Remove `profile` and `original_profile`, put
   // them in specific bubble controllers.
-  void SetUpAndShowBubble(
-      ShowBubbleViewCallback show_bubble_view_callback,
-      std::u16string page_action_icon_tootip,
-      AutofillClient::SaveAddressProfilePromptOptions options,
-      AutofillClient::AddressProfileSavePromptCallback
-          address_profile_save_prompt_callback);
+  void SetUpAndShowBubble(ShowBubbleViewCallback show_bubble_view_callback,
+                          std::u16string page_action_icon_tootip,
+                          bool is_migration_to_account,
+                          AutofillClient::AddressProfileSavePromptCallback
+                              address_profile_save_prompt_callback);
 
   // Callback to run once the user makes a decision with respect to the saving
   // the address profile.

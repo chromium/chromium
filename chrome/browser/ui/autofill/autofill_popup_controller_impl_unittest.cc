@@ -621,15 +621,20 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
-       SuggestionFiltration_FooterSuggestionsAreNotFiltratable) {
+       SuggestionFiltration_StaticSuggestionsAreNotFilteredOut) {
   using enum SuggestionType;
+
+  Suggestion footer_suggestion1 = Suggestion(kSeparator);
+  footer_suggestion1.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  Suggestion footer_suggestion2 = Suggestion(kUndoOrClear);
+  footer_suggestion2.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 
   AutofillPopupController& controller = client().popup_controller(manager());
   ShowSuggestions(manager(), {
                                  Suggestion(u"abc", kAddressEntry),
                                  Suggestion(u"abx", kAddressEntry),
-                                 Suggestion(kSeparator),
-                                 Suggestion(kUndoOrClear),
+                                 std::move(footer_suggestion1),
+                                 std::move(footer_suggestion2),
                              });
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
@@ -669,6 +674,24 @@ TEST_F(AutofillPopupControllerImplTest,
 
   controller.SetFilter(AutofillPopupController::SuggestionFilter(u"abc"));
   EXPECT_TRUE(controller.HasFilteredOutSuggestions());
+}
+
+TEST_F(
+    AutofillPopupControllerImplTest,
+    SuggestionFiltration_PresentOnlyWithoutFilterSuggestionsAlwaysFilteredOut) {
+  using enum SuggestionType;
+  Suggestion suggestion1 = Suggestion(u"abcd", kAddressEntry);
+  Suggestion suggestion2 = Suggestion(u"abcd", kAddressEntry);
+  suggestion2.filtration_policy =
+      Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
+
+  AutofillPopupController& controller = client().popup_controller(manager());
+  ShowSuggestions(manager(), {std::move(suggestion1), std::move(suggestion2)});
+
+  ASSERT_EQ(controller.GetSuggestions().size(), 2u);
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"ab"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 1u);
 }
 
 TEST_F(AutofillPopupControllerImplTest, RemoveSuggestion) {

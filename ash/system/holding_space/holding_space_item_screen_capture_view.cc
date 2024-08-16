@@ -58,8 +58,7 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
     case HoldingSpaceItem::Type::kPinnedFile:
     case HoldingSpaceItem::Type::kPrintedPdf:
     case HoldingSpaceItem::Type::kScan:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case HoldingSpaceItem::Type::kScreenshot:
       return std::nullopt;
   }
@@ -119,8 +118,7 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                       views::MaximumFlexSizeRule::kUnbounded)))
               .AddChild(
                   CreatePrimaryActionBuilder(
-                      /*apply_accent_colors=*/chromeos::features::
-                          IsJellyEnabled(),
+                      /*apply_accent_colors=*/true,
                       /*min_size=*/kPrimaryActionSize)
                       .SetBackground(holding_space_util::CreateCircleBackground(
                           kColorAshShieldAndBase80))))

@@ -44,7 +44,7 @@ metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
       case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
         return metrics_util::MANUAL_WITH_PASSWORD_PENDING_UPDATE;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     switch (state) {
@@ -53,7 +53,7 @@ metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
       case password_manager::ui::PENDING_PASSWORD_UPDATE_STATE:
         return metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING_UPDATE;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

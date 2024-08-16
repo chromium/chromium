@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -72,9 +73,9 @@
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
@@ -195,19 +196,18 @@
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
-#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/exps_registration_success_observer.h"
-#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
+#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/companion/exps_registration_success_observer.h"
+#include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -222,7 +222,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/boot_times_recorder_tab_helper.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ui/ash/google_one_offer_iph_tab_helper.h"
 #endif
@@ -265,7 +265,7 @@
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "extensions/browser/view_type_utils.h"
+#include "extensions/browser/view_type_utils.h"  // nogncheck
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
@@ -283,11 +283,6 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
-#endif
-
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -351,8 +346,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // observer list.
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents));
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
   // RedirectChainDetector comes before common tab helpers since
   // DIPSWebContentsObserver has it as a dependency.
@@ -392,6 +386,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ChromeRLZTrackerWebContentsObserver::CreateForWebContentsIfNeeded(
       web_contents);
 #endif
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
       web_contents);
@@ -414,12 +409,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
   FileSystemAccessTabHelper::CreateForWebContents(web_contents);
   FindBarState::ConfigureWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(fingerprinting_protection_filter::features::
-                                       kEnableFingerprintingProtectionFilter)) {
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     // TODO(https://crbug.com/40280666): Move this to TabFeatures.
     CreateFingerprintingProtectionWebContentsHelper(
         web_contents, profile->GetPrefs(),
-        TrackingProtectionSettingsFactory::GetForProfile(profile));
+        TrackingProtectionSettingsFactory::GetForProfile(profile),
+        profile->IsIncognitoProfile());
   }
   download::DownloadNavigationObserver::CreateForWebContents(
       web_contents,
@@ -539,7 +535,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       profile, web_contents);
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
         web_contents,
@@ -653,11 +648,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SadTabHelper::CreateForWebContents(web_contents);
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
-  if (privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
-          IsHelperNeeded(profile)) {
-    privacy_sandbox::TrackingProtectionNoticeService::TabHelper::
-        CreateForWebContents(web_contents);
-  }
   MemorySaverChipTabHelper::CreateForWebContents(web_contents);
   TabResourceUsageTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
@@ -679,7 +669,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }
-  ReadAnythingTabHelper::CreateForWebContents(web_contents);
   if (base::FeatureList::IsEnabled(
           companion::features::internal::
               kCompanionEnabledByObservingExpsNavigations)) {
@@ -747,16 +736,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     HatsHelper::CreateForWebContents(web_contents);
   }
   SharedHighlightingPromo::CreateForWebContents(web_contents);
-
-  if (!profile->IsIncognitoProfile()) {
-    // TODO(crbug.com/40863325): Consider using the in-memory cache instead.
-    commerce::CommerceUiTabHelper::CreateForWebContents(
-        web_contents,
-        commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
-        BookmarkModelFactory::GetForBrowserContext(profile),
-        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
-            ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly));
-  }
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -786,12 +765,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 
   extensions::TabHelper::CreateForWebContents(web_contents);
   extensions::NavigationExtensionEnabler::CreateForWebContents(web_contents);
-
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::side_panel_util::CreateSidePanelManagerForWebContents(
-        profile, web_contents);
-  }
 
   extensions::WebNavigationTabObserver::CreateForWebContents(web_contents);
   if (web_app::AreWebAppsEnabled(profile)) {

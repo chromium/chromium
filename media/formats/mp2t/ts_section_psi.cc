@@ -102,8 +102,9 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
       << "Trailing bytes after a PSI section: "
       << psi_length << " vs " << raw_psi_size;
 
-  // Verify the CRC.
-  RCHECK(IsCrcValid(raw_psi, psi_length));
+  if (!IsCrcValid(raw_psi, psi_length)) {
+    DVLOG(1) << "Invalid PSI section crc checksum.";
+  }
 
   // Parse the PSI section.
   BitReader bit_reader(raw_psi, raw_psi_size);

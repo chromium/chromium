@@ -36,7 +36,7 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsSliderElement} from '../controls/settings_slider.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {KeyboardAmbientLightSensorObserverReceiver, KeyboardBrightnessObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
+import {KeyboardAmbientLightSensorObserverReceiver, KeyboardBrightnessObserverReceiver, LidStateObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
 import {Route, Router, routes} from '../router.js';
@@ -163,6 +163,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         type: Boolean,
         value: false,
       },
+
+      isLidOpen: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
@@ -211,12 +216,14 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       KeyboardBrightnessObserverReceiver;
   private keyboardAmbientLightSensorObserverReceiver:
       KeyboardAmbientLightSensorObserverReceiver;
+  private lidStateObserverReceiver: LidStateObserverReceiver;
   private keyboardIndex: number;
   private isLastDevice: boolean;
   private isRgbKeyboardSupported: boolean;
   private hasKeyboardBacklight: boolean;
   private hasAmbientLightSensor: boolean;
   private isKeyboardBacklightControlInSettingsEnabled: boolean;
+  private isLidOpen: boolean;
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -235,6 +242,15 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           this.keyboardAmbientLightSensorObserverReceiver.$
               .bindNewPipeAndPassRemote());
 
+      // Add LidState Observer.
+      this.lidStateObserverReceiver = new LidStateObserverReceiver(this);
+      this.inputDeviceSettingsProvider
+          .observeLidState(
+              this.lidStateObserverReceiver.$.bindNewPipeAndPassRemote())
+          .then(({isLidOpen}: {isLidOpen: boolean}) => {
+            this.onLidStateChanged(isLidOpen);
+          });
+
       this.isRgbKeyboardSupported =
         (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
           ?.isRgbKeyboardSupported;
@@ -245,7 +261,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight && this.hasAmbientLightSensor) {
+      if (this.hasKeyboardBacklight) {
         const crSlider = this.shadowRoot!
                              .querySelector<SettingsSliderElement>(
                                  '#keyboardBrightnessSlider')!.shadowRoot!
@@ -366,6 +382,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         'keyboardAutoBrightnessPref.value', keyboardAmbientLightSensorEnabled);
   }
 
+  onLidStateChanged(isLidOpen: boolean): void {
+    this.isLidOpen = isLidOpen;
+  }
+
   private getNumRemappedSixPackKeys(): number {
     return Object
         .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
@@ -398,6 +418,14 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private getKeyboardName(): string {
     return this.keyboard.isExternal ? this.keyboard.name :
                                       this.i18n('builtInKeyboardName');
+  }
+
+  private showKeyboardSettings(): boolean {
+    if (!this.isKeyboardBacklightControlInSettingsEnabled) {
+      return true;
+    }
+    return this.keyboard.isExternal ||
+        (!this.keyboard.isExternal && this.isLidOpen);
   }
 
   private isChromeOsKeyboard(): boolean {

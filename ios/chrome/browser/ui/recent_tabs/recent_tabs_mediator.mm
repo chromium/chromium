@@ -29,15 +29,17 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
 
@@ -80,13 +82,14 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
 
 @interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver,
+                                  TabGridModeObserving,
                                   TabGridToolbarsGridDelegate> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -107,6 +110,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // Time to ensure that the updates to the consumer are only happening once all
   // the updates are complete.
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
+  // Holder for the current mode of the tab grid.
+  TabGridModeHolder* _modeHolder;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -120,8 +125,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 @property(nonatomic, assign) syncer::SyncService* syncService;
 @property(nonatomic, assign) BrowserList* browserList;
-// The mode of the TabGrid.
-@property(nonatomic, assign) TabGridMode currentMode;
 @end
 
 @implementation RecentTabsMediator
@@ -136,7 +139,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                    browserList:(BrowserList*)browserList
                     sceneState:(SceneState*)sceneState
               disabledByPolicy:(BOOL)disabled
-             engagementTracker:(feature_engagement::Tracker*)engagementTracker {
+             engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                    modeHolder:(TabGridModeHolder*)modeHolder {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -153,6 +157,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
         FROM_HERE, base::Milliseconds(100), base::BindRepeating(^{
           [weakSelf updateConsumerTabs];
         }));
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
   }
   return self;
 }
@@ -197,21 +203,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 
   _sceneState = nil;
+
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
 }
 
 - (void)configureConsumer {
   [self refreshSessionsView];
-}
-
-#pragma mark - Accessors
-
-- (void)setCurrentMode:(TabGridMode)currentMode {
-  if (_currentMode == currentMode) {
-    return;
-  }
-  _currentMode = currentMode;
-  [self configureToolbarsButtons];
-  [self.gridConsumer setPageMode:currentMode];
 }
 
 #pragma mark - SyncedSessionsObserver
@@ -320,7 +318,6 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageRemoteTabs];
-  toolbarsConfiguration.mode = self.currentMode;
   toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
@@ -344,6 +341,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   [self.consumer refreshUserState:[self userSignedInState]];
 }
 
+#pragma mark - TabGridModeObserving
+
+- (void)tabGridModeDidChange:(TabGridModeHolder*)modeHolder {
+  [self configureToolbarsButtons];
+}
+
 #pragma mark - TabGridPageMutator
 
 - (void)currentlySelectedGrid:(BOOL)selected {
@@ -358,54 +361,49 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   }
 }
 
-- (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridModeNormal || mode == TabGridModeSearch)
-      << "remote tabs should only support normal and search modes.";
-  self.currentMode = mode;
-}
-
 - (void)setPageAsActive {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.toolbarTabGridDelegate doneButtonTapped:sender];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+  [self.tabGridHandler exitTabGrid];
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)searchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridSearchTabs"));
-  self.currentMode = TabGridModeSearch;
+  _modeHolder.mode = TabGridMode::kSearch;
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
   base::RecordAction(base::UserMetricsAction("MobileTabGridCancelSearchTabs"));
-  self.currentMode = TabGridModeNormal;
+  _modeHolder.mode = TabGridMode::kNormal;
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+  NOTREACHED() << "Should not be called in remote tabs.";
 }
 
 #pragma mark - TabGridActivityObserver

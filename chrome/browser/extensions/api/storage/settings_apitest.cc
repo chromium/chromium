@@ -51,7 +51,7 @@ using testing::NiceMock;
 namespace {
 
 // TODO(kalman): test both EXTENSION_SETTINGS and APP_SETTINGS.
-const syncer::ModelType kModelType = syncer::EXTENSION_SETTINGS;
+const syncer::DataType kDataType = syncer::EXTENSION_SETTINGS;
 
 // The managed_storage extension has a key defined in its manifest, so that
 // its extension ID is well-known and the policy system can push policies for
@@ -138,7 +138,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
     EXPECT_FALSE(
         syncable_service
             ->MergeDataAndStartSyncing(
-                kModelType, syncer::SyncDataList(),
+                kDataType, syncer::SyncDataList(),
                 std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
                     sync_processor))
             .has_value());
@@ -152,7 +152,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
         FROM_HERE,
         base::BindOnce(&InitSyncOnBackgroundSequence,
                        settings_sync_util::GetSyncableServiceProvider(
-                           profile(), kModelType),
+                           profile(), kDataType),
                        sync_processor),
         loop.QuitClosure());
     loop.Run();
@@ -179,7 +179,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
         FROM_HERE,
         base::BindOnce(&SendChangesOnBackgroundSequence,
                        settings_sync_util::GetSyncableServiceProvider(
-                           profile(), kModelType),
+                           profile(), kDataType),
                        change_list),
         loop.QuitClosure());
     loop.Run();
@@ -505,8 +505,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // Set "foo" to "bar" via sync.
   syncer::SyncChangeList sync_changes;
   base::Value bar("bar");
-  sync_changes.push_back(settings_sync_util::CreateAdd(
-      extension_id, "foo", bar, kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateAdd(extension_id, "foo", bar, kDataType));
   SendChanges(sync_changes);
 
   ReplyWhenSatisfied(StorageAreaNamespace::kSync, "assertAddFooNotification",
@@ -516,8 +516,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
 
   // Remove "foo" via sync.
   sync_changes.clear();
-  sync_changes.push_back(settings_sync_util::CreateDelete(
-      extension_id, "foo", kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateDelete(extension_id, "foo", kDataType));
   SendChanges(sync_changes);
 
   FinalReplyWhenSatisfied(StorageAreaNamespace::kSync,
@@ -550,8 +550,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
   // Set "foo" to "bar" via sync.
   syncer::SyncChangeList sync_changes;
   base::Value bar("bar");
-  sync_changes.push_back(settings_sync_util::CreateAdd(
-      extension_id, "foo", bar, kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateAdd(extension_id, "foo", bar, kDataType));
   SendChanges(sync_changes);
 
   ReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",
@@ -559,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest,
 
   // Remove "foo" via sync.
   sync_changes.clear();
-  sync_changes.push_back(settings_sync_util::CreateDelete(
-      extension_id, "foo", kModelType));
+  sync_changes.push_back(
+      settings_sync_util::CreateDelete(extension_id, "foo", kDataType));
   SendChanges(sync_changes);
 
   FinalReplyWhenSatisfied(StorageAreaNamespace::kLocal, "assertNoNotifications",

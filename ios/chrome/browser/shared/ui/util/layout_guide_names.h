@@ -46,9 +46,8 @@ extern GuideName* const kToolsMenuGuide;
 // A guide that is constrained to match the frame of the last-tapped voice
 // search button.
 extern GuideName* const kVoiceSearchButtonGuide;
-// A guide that is constrained to match the frame of the feed header's top-level
-// management button.
-extern GuideName* const kFeedHeaderManagementButtonGuide;
+// A guide that is constrained to present the feed IPH on a view.
+extern GuideName* const kFeedIPHNamedGuide;
 // A guide that is constrained to match the frame of the bottom toolbar in the
 // tab grid.
 extern GuideName* const kTabGridBottomToolbarGuide;
@@ -59,5 +58,8 @@ extern GuideName* const kAutofillFirstSuggestionGuide;
 extern GuideName* const kLensKeyboardButtonGuide;
 // A guide that is constrained to match the frame of the Magic Stack on the NTP.
 extern GuideName* const kMagicStackGuide;
+// A guide that is constrained to match the frame of the Contextual Panel's
+// entrypoint when it is large, otherwise this stays nil.
+extern GuideName* const kContextualPanelLargeEntrypointGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

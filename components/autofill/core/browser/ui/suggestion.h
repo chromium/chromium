@@ -27,9 +27,12 @@ namespace autofill {
 
 struct Suggestion {
   struct PasswordSuggestionDetails {
-    friend bool operator==(const PasswordSuggestionDetails&,
-                           const PasswordSuggestionDetails&) = default;
+    std::u16string username;
     std::u16string password;
+    // The signon realm of the password. Unlike the `display_signon_realm`, it
+    // is not necessarily user friendly/readable, but rather has the raw
+    // `PasswordForm::signon_realm` value.
+    std::string signon_realm;
     // Stores either the password signon realm or the Android app name for which
     // the password was saved.
     std::u16string display_signon_realm;
@@ -37,7 +40,22 @@ struct Suggestion {
     // represent exact, strongly affiliated, PSL and weakly affiliated matches
     // for the domain the suggestions are shown for. All other suggestions have
     // this flag set to `true`.
-    bool is_cross_domain;
+    bool is_cross_domain = false;
+
+    PasswordSuggestionDetails();
+    PasswordSuggestionDetails(std::u16string_view username,
+                              std::u16string_view password,
+                              std::string_view signon_realm,
+                              std::u16string_view display_signon_realm,
+                              bool is_cross_domain);
+    PasswordSuggestionDetails(const PasswordSuggestionDetails&);
+    PasswordSuggestionDetails(PasswordSuggestionDetails&);
+    PasswordSuggestionDetails& operator=(const PasswordSuggestionDetails&);
+    PasswordSuggestionDetails& operator=(PasswordSuggestionDetails&&);
+    virtual ~PasswordSuggestionDetails();
+
+    friend bool operator==(const PasswordSuggestionDetails&,
+                           const PasswordSuggestionDetails&) = default;
   };
 
   using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
@@ -142,6 +160,25 @@ struct Suggestion {
     kIban,
   };
 
+  // This enum is used to control filtration of suggestions (see it's used in
+  // the `PopupViewViews` search bar and `AutofillPopupControllerImpl` where
+  // the logic is implemented) by explicitly marking special suggestions at
+  // creation.
+  enum class FiltrationPolicy {
+    // Suggestions, that are normally filtered. The match is highlighted on
+    // the UI and those that don't match are removed from the list.
+    kFilterable,
+
+    // Suggestions, that are excluded from filtration by always disappearing
+    // from the list as soon as any filter is applied (in other words, these
+    // suggestion don't match any filter except the empty one).
+    kPresentOnlyWithoutFilter,
+
+    // Suggestions, that are excluded from filtration by always staying in
+    // in the list (basically, these suggestions ignore filter).
+    kStatic,
+  };
+
   // TODO(crbug.com/335194240): Consolidate expected param types for these
   // constructors. Some expect UTF16 strings and others UTF8, while internally
   // we only use UTF16. The ones expecting UTF8 are only used by tests and could
@@ -197,6 +234,7 @@ struct Suggestion {
         return absl::holds_alternative<BackendId>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kFillPassword:
+      case SuggestionType::kViewPasswordDetails:
         return absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
@@ -295,6 +333,12 @@ struct Suggestion {
   // Whether the user is able to preview the suggestion by hovering on it or
   // accept it by clicking on it.
   bool is_acceptable = true;
+
+  // How the suggestion should be handled by the filtration logic, see the enum
+  // values doc for details.
+  // Now used for filtering manually triggered password suggestions only and
+  // has no effect on other suggestions.
+  FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
   // If true, the user will see the suggestion in a "disabled and grayed-out"
   // form. This field should be true only when `is_acceptable` is false  which

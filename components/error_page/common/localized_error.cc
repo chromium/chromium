@@ -559,7 +559,7 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
     CHECK(map);
     return map;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -1106,7 +1106,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
     // NOP. Link Preview doesn't show error code and describes an error with
     // text only.
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   result.strings.Set("errorCode", error_code_string);
 

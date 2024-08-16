@@ -675,4 +675,17 @@ TEST_F(ManagePasswordsStateTest, OnKeychainError) {
             passwords_data().state());
 }
 
+TEST_F(ManagePasswordsStateTest, OpenPasswordDetailsBubble) {
+  PasswordForm form;
+  form.username_value = u"user";
+  form.password_value = u"passw0rd";
+  form.signon_realm = "https://google.com/";
+  form.url = GURL("https://google.com");
+
+  passwords_data().OpenPasswordDetailsBubble(form);
+
+  EXPECT_EQ(passwords_data().state(), password_manager::ui::MANAGE_STATE);
+  EXPECT_EQ(passwords_data().single_credential_mode_credential(), form);
+  EXPECT_TRUE(passwords_data().origin().GetURL().is_empty());
+}
 }  // namespace

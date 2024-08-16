@@ -135,8 +135,7 @@ void ApplyStyle(views::Label* label,
                                        gfx::Font::Weight::MEDIUM));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

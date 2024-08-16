@@ -154,15 +154,17 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest, IniializeWithRedirectStatus) {
                  /*browsing_topics_permissions_policy_allowed=*/true,
                  /*interest_cohort_permissions_policy_allowed=*/true);
 
+  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
   BrowsingTopicsPageLoadDataTracker::CreateForPage(
       web_contents()->GetPrimaryMainFrame()->GetPage(),
       /*redirect_count=*/10,
-      /*redirect_with_topics_invoked_count=*/5);
+      /*redirect_with_topics_invoked_count=*/5, source_id);
 
   auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
 
   EXPECT_EQ(tracker->redirect_count(), 10);
   EXPECT_EQ(tracker->redirect_with_topics_invoked_count(), 5);
+  EXPECT_EQ(tracker->source_id_before_redirects(), source_id);
   EXPECT_FALSE(tracker->topics_invoked());
 
   GetBrowsingTopicsPageLoadDataTracker()->OnBrowsingTopicsApiUsed(

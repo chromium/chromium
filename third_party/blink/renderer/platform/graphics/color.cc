@@ -877,8 +877,9 @@ void Color::UnpremultiplyColor() {
 // This converts -0.0 to 0.0, so that they have the same hash value. This
 // ensures that equal FontDescription have the same hash value.
 float NormalizeSign(float number) {
-  if (UNLIKELY(number == 0.0))
+  if (number == 0.0) [[unlikely]] {
     return 0.0;
+  }
   return number;
 }
 
@@ -969,11 +970,11 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kOklch:
       return "oklch";
     case Color::ColorSpace::kSRGBLegacy:
-      return "RGB Legacy";
+      return "rgb";
     case Color::ColorSpace::kHSL:
-      return "HSL";
+      return "hsl";
     case Color::ColorSpace::kHWB:
-      return "HWB";
+      return "hwb";
     case ColorSpace::kNone:
       NOTREACHED_IN_MIGRATION();
       return "None";

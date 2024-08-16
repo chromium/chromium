@@ -27,7 +27,11 @@ source_set("drivefs") {
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [ ":native_message_host_origins" ]
+  public_deps = [
+    ":native_message_host_origins",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
   sources = [
     "drivefs_native_message_host.cc",
     "drivefs_native_message_host.h",

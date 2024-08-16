@@ -238,9 +238,10 @@ bool LayoutInline::ComputeInitialShouldCreateBoxFragment() const {
     return true;
 
   const ComputedStyle& first_line_style = FirstLineStyleRef();
-  if (UNLIKELY(&style != &first_line_style &&
-               ComputeInitialShouldCreateBoxFragment(first_line_style)))
+  if (&style != &first_line_style &&
+      ComputeInitialShouldCreateBoxFragment(first_line_style)) [[unlikely]] {
     return true;
+  }
 
   return false;
 }
@@ -622,7 +623,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
   if (IsInLayoutNGInlineFormattingContext()) {
     // TODO(crbug.com/965976): We should fix the root cause of the missed
     // layout.
-    if (UNLIKELY(NeedsLayout())) {
+    if (NeedsLayout()) [[unlikely]] {
       NOTREACHED_IN_MIGRATION();
       return false;
     }
@@ -668,7 +669,7 @@ bool LayoutInline::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool LayoutInline::HitTestCulledInline(HitTestResult& result,
@@ -696,7 +697,7 @@ bool LayoutInline::HitTestCulledInline(HitTestResult& result,
     // painting-order-wise. Don't include it as part of the culled inline
     // region. https://www.w3.org/TR/CSS22/zindex.html#painting-order
     if (const auto* fragment = cursor.Current().BoxFragment()) {
-      if (UNLIKELY(fragment->IsOpaque())) {
+      if (fragment->IsOpaque()) [[unlikely]] {
         continue;
       }
     }

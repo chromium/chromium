@@ -115,12 +115,12 @@ const char kAudioCapturerWithEchoCancellation[] =
     "audio-capturer-with-echo-cancellation";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";
 // Enforce system audio echo cancellation.
 const char kSystemAecEnabled[] = "system-aec-enabled";
-#endif  // defined(USE_CRAS)
+#endif  // BUILDFLAG(USE_CRAS)
 
 // For automated testing of protected content, this switch allows specific
 // domains (e.g. example.com) to always allow the permission to share the
@@ -844,6 +844,10 @@ BASE_FEATURE(kVaapiVp9SModeHWEncoding,
 BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
              "V4L2FlatStatefulVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable H264 temporal layer encoding with V4L2 HW encoder on ChromeOS.
+BASE_FEATURE(kV4L2H264TemporalLayerHWEncoding,
+             "V4L2H264TemporalLayerHWEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Inform video blitter of video color space.
@@ -897,6 +901,12 @@ BASE_FEATURE(kExternalClearKeyForTesting,
 // Specifies the path to the MediaFoundation Clear Key CDM for testing.
 const base::FeatureParam<std::string> kMediaFoundationClearKeyCdmPathForTesting{
     &kExternalClearKeyForTesting, "media_foundation_cdm_path", ""};
+
+// Enables the use of a faulty GPU for MediaFoundation. This is used for testing
+// purposes only.
+BASE_FEATURE(kEnableFaultyGPUForMediaFoundation,
+             "EnableFaultyGPUForMediaFoundation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables the On-Device Web Speech feature on supported devices.
@@ -1204,6 +1214,13 @@ BASE_FEATURE(kUsePooledSharedImageVideoProvider,
 BASE_FEATURE(kAllowMediaCodecSoftwareDecoder,
              "AllowMediaCodecSoftwareDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature allows for some MediaDrm functions to be executed in a separate
+// process so that crashes do not bring down the browser. Flag is available so
+// that it can be disabled for WebView as separate processes are not allowed.
+BASE_FEATURE(kAllowMediaCodecCallsInSeparateProcess,
+             "AllowMediaCodecCallsInSeparateProcess",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

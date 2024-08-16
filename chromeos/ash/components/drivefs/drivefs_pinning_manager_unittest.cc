@@ -141,8 +141,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
   MockDriveFs& operator=(const MockDriveFs&) = delete;
 
   mojom::DriveFs* GetForwardingInterface() override {
-    NOTREACHED_NORETURN()
-        << "No calls should make it to the forwarding interface";
+    NOTREACHED() << "No calls should make it to the forwarding interface";
   }
 
   MOCK_METHOD(void, OnStartSearchQuery, (const QueryParameters&));

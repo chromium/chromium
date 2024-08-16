@@ -4,12 +4,20 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_coordinator.h"
 
+#import "base/feature_list.h"
+#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
+#import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/web/public/web_state.h"
@@ -35,6 +43,9 @@ using manual_fill::ManualFillDataType;
 
   // Reauthentication Module used for re-authentication.
   ReauthenticationModule* _reauthenticationModule;
+
+  // Used to fetch the plus addresses.
+  ManualFillPlusAddressMediator* _manualFillPlusAddressMediator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -47,6 +58,7 @@ using manual_fill::ManualFillDataType;
     _focusedFieldDataType = dataType;
     _selectedSegmentDataType = dataType;
     _reauthenticationModule = reauthenticationModule;
+    _manualFillPlusAddressMediator = nil;
   }
   return self;
 }
@@ -62,6 +74,7 @@ using manual_fill::ManualFillDataType;
 
 - (void)stop {
   [self stopChildCoordinators];
+  _manualFillPlusAddressMediator = nil;
   self.expandedManualFillViewController = nil;
 }
 
@@ -92,6 +105,26 @@ using manual_fill::ManualFillDataType;
   // now.
 }
 
+#pragma mark - FormInputInteractionDelegate
+
+- (void)focusDidChangedWithFillingProduct:
+    (autofill::FillingProduct)fillingProduct {
+  ManualFillDataType previousFocusedFieldDataType = _focusedFieldDataType;
+  _focusedFieldDataType =
+      [ManualFillUtil manualFillDataTypeFromFillingProduct:fillingProduct];
+  if (previousFocusedFieldDataType == _focusedFieldDataType) {
+    return;
+  }
+
+  BOOL autofillFormButtonCurrentlyVisible =
+      previousFocusedFieldDataType == _selectedSegmentDataType;
+  BOOL shouldAutofillFormButtonBeVisible =
+      _focusedFieldDataType == _selectedSegmentDataType;
+  if (autofillFormButtonCurrentlyVisible != shouldAutofillFormButtonBeVisible) {
+    [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
+  }
+}
+
 #pragma mark - Private
 
 // Stops and deletes all active child coordinators.
@@ -115,7 +148,7 @@ using manual_fill::ManualFillDataType;
       [self showAddressManualFillingOptions];
       break;
     case ManualFillDataType::kOther:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -129,13 +162,14 @@ using manual_fill::ManualFillDataType;
 
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                                 URL:URL
-                    injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:self.invokedOnObfuscatedField
-              showAutofillFormButton:(_focusedFieldDataType ==
-                                      ManualFillDataType::kPassword)];
+             initWithBaseViewController:self.baseViewController
+                                browser:self.browser
+          manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+                                    URL:URL
+                       injectionHandler:self.injectionHandler
+               invokedOnObfuscatedField:self.invokedOnObfuscatedField
+                 showAutofillFormButton:(_focusedFieldDataType ==
+                                         ManualFillDataType::kPassword)];
   passwordCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
@@ -168,11 +202,12 @@ using manual_fill::ManualFillDataType;
   [self stopChildCoordinators];
 
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler
-          showAutofillFormButton:(_focusedFieldDataType ==
-                                  ManualFillDataType::kAddress)];
+         initWithBaseViewController:self.baseViewController
+                            browser:self.browser
+      manualFillPlusAddressMediator:[self manualFillPlusAddressMediator]
+                   injectionHandler:self.injectionHandler
+             showAutofillFormButton:(_focusedFieldDataType ==
+                                     ManualFillDataType::kAddress)];
   addressCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
@@ -181,24 +216,36 @@ using manual_fill::ManualFillDataType;
   [self.childCoordinators addObject:addressCoordinator];
 }
 
-#pragma mark - FormInputInteractionDelegate
-
-- (void)focusDidChangedWithFillingProduct:
-    (autofill::FillingProduct)fillingProduct {
-  ManualFillDataType previousFocusedFieldDataType = _focusedFieldDataType;
-  _focusedFieldDataType =
-      [ManualFillUtil manualFillDataTypeFromFillingProduct:fillingProduct];
-  if (previousFocusedFieldDataType == _focusedFieldDataType) {
-    return;
+// Initializes `_manualFillPlusAddressMediator`.
+- (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator {
+  if (!base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressIOSManualFallbackEnabled)) {
+    return nil;
   }
 
-  BOOL autofillFormButtonCurrentlyVisible =
-      previousFocusedFieldDataType == _selectedSegmentDataType;
-  BOOL shouldAutofillFormButtonBeVisible =
-      _focusedFieldDataType == _selectedSegmentDataType;
-  if (autofillFormButtonCurrentlyVisible != shouldAutofillFormButtonBeVisible) {
-    [self showManualFillingOptionsForDataType:_selectedSegmentDataType];
+  if (_manualFillPlusAddressMediator) {
+    return _manualFillPlusAddressMediator;
   }
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  CHECK(webStateList->GetActiveWebState());
+  const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
+
+  plus_addresses::PlusAddressService* plusAddressService =
+      PlusAddressServiceFactory::GetForBrowserState(browserState);
+  CHECK(plusAddressService);
+
+  _manualFillPlusAddressMediator = [[ManualFillPlusAddressMediator alloc]
+      initWithFaviconLoader:faviconLoader
+         plusAddressService:plusAddressService
+                        URL:URL
+             isOffTheRecord:browserState->IsOffTheRecord()];
+
+  return _manualFillPlusAddressMediator;
 }
 
 @end

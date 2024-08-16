@@ -35,7 +35,7 @@ ConvertCecServiceClientPowerState(crosapi::mojom::PowerState power_state) {
       return extensions::api::cec_private::DisplayCecPowerState::kUnknown;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojo::Remote<crosapi::mojom::CecPrivate>* GetCecPrivateRemote() {

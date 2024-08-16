@@ -703,7 +703,7 @@
     "includes": [5320],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/resources.grd": {
-    "META": {"sizes": {"includes": [60]}},
+    "META": {"sizes": {"includes": [70]}},
     "includes": [5340],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/search_bubble/resources.grd": {
@@ -719,7 +719,7 @@
     "includes": [5400],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/on_device_internals/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
+    "META": {"sizes": {"includes": [20]}},
     "includes": [5420],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/internals/resources.grd": {
@@ -731,7 +731,7 @@
     "includes": [5460],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/data_sharing/resources.grd": {
-   "META": {"sizes": {"includes": [10]}},
+   "META": {"sizes": {"includes": [20]}},
     "includes": [5480],
   },
   # END chrome/ WebUI resources section

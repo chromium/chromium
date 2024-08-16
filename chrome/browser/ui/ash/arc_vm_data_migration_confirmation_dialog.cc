@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
@@ -97,7 +98,7 @@ ArcVmDataMigrationConfirmationDialog::ArcVmDataMigrationConfirmationDialog(
   InitializeView(days_until_deadline);
 
   // Not system modal so that the user can interact with apps before restart.
-  SetModalType(ui::MODAL_TYPE_NONE);
+  SetModalType(ui::mojom::ModalType::kNone);
   SetOwnedByWidget(true);
   SetShowCloseButton(false);
 

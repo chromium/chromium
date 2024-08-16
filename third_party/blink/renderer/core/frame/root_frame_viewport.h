@@ -55,6 +55,7 @@ class CORE_EXPORT RootFrameViewport final
   void DidUpdateVisualViewport();
 
   // ScrollableArea Implementation
+  PhysicalOffset LocalToScrollOriginOffset() const final;
   bool IsRootFrameViewport() const override { return true; }
   bool SetScrollOffset(const ScrollOffset&,
                        mojom::blink::ScrollType,

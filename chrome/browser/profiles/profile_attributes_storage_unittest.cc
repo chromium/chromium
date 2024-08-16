@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <stddef.h>
@@ -295,11 +300,11 @@ class ProfileAttributesStorageTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 #endif
+  TestingProfileManager testing_profile_manager_;
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -1108,19 +1113,16 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
 
   entry->SetSupervisedUserId("");
   ASSERT_FALSE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId("some_supervised_user_id");
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId(supervised_user::kChildAccountSUID);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_TRUE(entry->IsChild());
 }
 
 TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {

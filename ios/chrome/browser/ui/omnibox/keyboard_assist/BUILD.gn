@@ -23,7 +23,6 @@ source_set("keyboard_assist") {
     "//base:i18n",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",

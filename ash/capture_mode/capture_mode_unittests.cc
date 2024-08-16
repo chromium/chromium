@@ -102,6 +102,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -352,7 +353,7 @@ class CaptureModeTest : public AshTestBase {
     wm::AddTransientChild(transient_parent, child.get());
     child->Show();
 
-    child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    child->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
     wm::SetModalParent(child.get(), transient_parent);
     return child;
   }
@@ -486,6 +487,20 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, AccessibleCheckedState) {
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  ui::AXNodeData data;
+  GetImageToggleButton()->SetSelected(true);
+  GetImageToggleButton()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  GetImageToggleButton()->SetSelected(false);
+  GetImageToggleButton()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
 TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
@@ -1135,22 +1150,27 @@ TEST_F(CaptureModeTest, MultiDisplayCaptureBarInitialLocation) {
 
 // Tests behavior of a capture mode session if the active display is removed.
 TEST_F(CaptureModeTest, DisplayRemoval) {
-  UpdateDisplay("800x700,801+0-800x700");
+  UpdateDisplay("1200x700,1201+0-800x700");
 
   // Start capture mode on the secondary display.
-  GetEventGenerator()->MoveMouseTo(gfx::Point(1000, 500));
+  GetEventGenerator()->MoveMouseTo(gfx::Point(1300, 500));
   auto* controller = StartImageRegionCapture();
   auto* session = controller->capture_mode_session();
-  EXPECT_TRUE(gfx::Rect(801, 0, 800, 800)
+  EXPECT_TRUE(gfx::Rect(1201, 0, 800, 700)
                   .Contains(GetCaptureModeBarView()->GetBoundsInScreen()));
   ASSERT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
 
   RemoveSecondaryDisplay();
 
   // Tests that the capture mode bar is now on the primary display.
-  EXPECT_TRUE(gfx::Rect(800, 800).Contains(
-      GetCaptureModeBarView()->GetBoundsInScreen()));
+  const gfx::Rect bar_bounds_in_screen =
+      GetCaptureModeBarView()->GetBoundsInScreen();
+  EXPECT_TRUE(gfx::Rect(1200, 700).Contains(bar_bounds_in_screen));
   ASSERT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Tests that the capture mode bar is centered on the primary display.
+  // Regression test for http://b/303094552.
+  EXPECT_EQ(600, bar_bounds_in_screen.CenterPoint().x());
 }
 
 // Tests behavior of a capture mode session if the active display is removed
@@ -5445,6 +5465,20 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
                                       CaptureModeEntryType::kProjector, 1);
 }
 
+// Tests that a fullscreen screenshot can be taken via the keyboard shortcut
+// while a Projector-initiated session is active without ending the session.
+TEST_P(ProjectorCaptureModeIntegrationTests, FullscreenScreenshotKeyCombo) {
+  StartProjectorModeSession();
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  WaitForCaptureFileToBeSaved();
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeBehavior* active_behavior =
+      controller->capture_mode_session()->active_behavior();
+  ASSERT_TRUE(active_behavior);
+  EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kProjector);
+}
+
 // Tests that the settings view is simplified in projector mode.
 TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
   auto* controller = CaptureModeController::Get();
@@ -6938,6 +6972,35 @@ TEST_F(CaptureModeSettingsTest, DeleteCustomFolderFromDialog) {
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kCustomFolder));
   EXPECT_FALSE(custom_folder_view->GetEnabled());
   EXPECT_TRUE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
+}
+
+TEST_F(CaptureModeSettingsTest, AccessibleCheckedStateChange) {
+  // Start a new session with a pre-configured custom folder.
+  ui::AXNodeData data;
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_folder(
+      CreateCustomFolderInUserDownloadsPath("test"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+  WaitForSettingsMenuToBeRefreshed();
+
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
+
+  auto* checked_custom_folder_view =
+      save_to_menu_group->SetOptionCheckedForTesting(kCustomFolder, true);
+  checked_custom_folder_view->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  data = ui::AXNodeData();
+  auto* unchecked_custom_folder_view =
+      save_to_menu_group->SetOptionCheckedForTesting(kCustomFolder, false);
+  unchecked_custom_folder_view->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
 }
 
 TEST_F(CaptureModeSettingsTest, AcceptDefaultDownloadsFolderFromDialog) {

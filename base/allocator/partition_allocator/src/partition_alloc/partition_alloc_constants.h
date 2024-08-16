@@ -351,18 +351,6 @@ static_assert(kThreadIsolatedPoolHandle == kNumPools,
 // of large areas which are less likely to benefit from MTE protection.
 constexpr size_t kMaxMemoryTaggingSize = 1024;
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-// Returns whether the tag of |object| overflowed, meaning the containing slot
-// needs to be moved to quarantine.
-PA_ALWAYS_INLINE bool HasOverflowTag(void* object) {
-  // The tag with which the slot is put to quarantine.
-  constexpr uintptr_t kOverflowTag = 0x0f00000000000000uLL;
-  static_assert((kOverflowTag & kPtrTagMask) != 0,
-                "Overflow tag must be in tag bits");
-  return (reinterpret_cast<uintptr_t>(object) & kPtrTagMask) == kOverflowTag;
-}
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-
 PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR size_t
 NumPartitionPagesPerSuperPage() {
   return kSuperPageSize >> PartitionPageShift();

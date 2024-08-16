@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_install.h"
+#include "chrome/updater/app/app_net_worker.h"
 #include "chrome/updater/app/app_recover.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/app_uninstall.h"
@@ -95,8 +96,7 @@ void InitializeCrashReporting(UpdaterScope updater_scope) {
     return;
   }
   if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->database()->GetSettings()->SetUploadsEnabled(
-        true);
+    CrashClient::GetInstance()->SetUploadsEnabled(true);
   }
   VLOG(1) << "Crash reporting initialized.";
 }
@@ -215,6 +215,12 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     return MakeAppWakeAll()->Run();
   }
 
+#if BUILDFLAG(IS_MAC)
+  if (command_line->HasSwitch(kNetWorkerSwitch)) {
+    return MakeAppNetWorker()->Run();
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   VLOG(1) << "Unknown command line switch.";
   return kErrorUnknownCommandLine;
 }
@@ -239,6 +245,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kWakeAllSwitch,
       kHealthCheckSwitch,
       kHandoffSwitch,
+      kNetWorkerSwitch,
   };
   const auto it = base::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);

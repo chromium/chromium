@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_MEMORY_REF_COUNTED_MEMORY_H_
 #define BASE_MEMORY_REF_COUNTED_MEMORY_H_
 
@@ -87,7 +82,7 @@ class BASE_EXPORT RefCountedStaticMemory : public RefCountedMemory {
 
   // TODO(crbug.com/40284755): Remove this overload, use the span ctor instead.
   RefCountedStaticMemory(const void* data, size_t length)
-      : UNSAFE_BUFFERS(bytes_(static_cast<const uint8_t*>(data), length)) {}
+      : UNSAFE_TODO(bytes_(static_cast<const uint8_t*>(data), length)) {}
 
   RefCountedStaticMemory(const RefCountedStaticMemory&) = delete;
   RefCountedStaticMemory& operator=(const RefCountedStaticMemory&) = delete;

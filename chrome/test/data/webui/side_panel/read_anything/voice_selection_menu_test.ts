@@ -5,11 +5,11 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
 
@@ -19,15 +19,17 @@ function stringToHtmlTestId(s: string): string {
 
 suite('VoiceSelectionMenu', () => {
   let voiceSelectionMenu: VoiceSelectionMenuElement;
-  let availableVoices: SpeechSynthesisVoice[];
-  let myClickEvent: MouseEvent;
+  let dots: HTMLElement;
+  let voice1 = createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'});
+  let voice2 = createSpeechSynthesisVoice({name: 'test voice 2', lang: 'lang'});
 
   const voiceSelectionButtonSelector: string =
       '.dropdown-voice-selection-button:not(.language-menu-button)';
 
   // If no param for enabledLangs is provided, it auto populates it with the
   // langs of the voices
-  function setAvailableVoices(enabledLangs?: string[]) {
+  function setAvailableVoicesAndEnabledLangs(
+      availableVoices: SpeechSynthesisVoice[], enabledLangs?: string[]) {
     voiceSelectionMenu.availableVoices = availableVoices;
     if (enabledLangs === undefined) {
       voiceSelectionMenu.enabledLangs =
@@ -35,7 +37,6 @@ suite('VoiceSelectionMenu', () => {
     } else {
       voiceSelectionMenu.enabledLangs = enabledLangs;
     }
-    flush();
   }
 
   function getDropdownItemForVoice(voice: SpeechSynthesisVoice) {
@@ -51,49 +52,44 @@ suite('VoiceSelectionMenu', () => {
     document.body.appendChild(voiceSelectionMenu);
 
     // Proxy button as click target to open the menu with
-    const dots: HTMLElement = document.createElement('button');
+    dots = document.createElement('button');
     const newContent = document.createTextNode('...');
     dots.appendChild(newContent);
     document.body.appendChild(dots);
-    myClickEvent = {target: dots} as unknown as MouseEvent;
 
     voiceSelectionMenu.voicePackInstallStatus = {};
-
-    flush();
+    return microtasksFinished();
   });
 
   suite('with one voice', () => {
     setup(() => {
-      availableVoices =
-          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'})];
-      setAvailableVoices();
+      setAvailableVoicesAndEnabledLangs([voice1]);
+
+      return microtasksFinished();
     });
 
     test('it does not show dropdown before click', () => {
-      assertFalse(
-          isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)));
+      assertFalse(isPositionedOnPage(getDropdownItemForVoice(voice1)));
     });
 
-    test('it shows dropdown items after button click', () => {
+    test('it shows dropdown items after button click', async () => {
       stubAnimationFrame();
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+      await microtasksFinished();
 
-      flush();
-
-      assertTrue(
-          isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)!));
+      const dropdownItems: HTMLButtonElement = getDropdownItemForVoice(voice1);
+      assertTrue(isPositionedOnPage(dropdownItems!));
       assertEquals(
-          getDropdownItemForVoice(availableVoices[0]!)!.textContent!.trim(),
-          availableVoices[0]!.name);
+          getDropdownItemForVoice(voice1)!.textContent!.trim(), voice1.name);
     });
 
-    test('it shows language menu after button click', () => {
+    test('it shows language menu after button click', async () => {
       stubAnimationFrame();
       const button =
           voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelector<HTMLButtonElement>('.language-menu-button');
       button!.click();
-      flush();
+      await microtasksFinished();
 
       const languageMenuElement =
           voiceSelectionMenu!.shadowRoot!.querySelector<LanguageMenuElement>(
@@ -102,37 +98,24 @@ suite('VoiceSelectionMenu', () => {
       assertTrue(isPositionedOnPage(languageMenuElement));
     });
 
-    suite('when availableVoices updates', () => {
-      setup(() => {
-        availableVoices = [
-          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'}),
-          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'lang'}),
-        ];
-        setAvailableVoices();
-      });
+    test('when availableVoices updates', async () => {
+      setAvailableVoicesAndEnabledLangs(/*availableVoices=*/[voice1, voice2]);
+      stubAnimationFrame();
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+      await microtasksFinished();
 
-      test('it updates and displays the new voices', () => {
-        stubAnimationFrame();
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
-        flush();
+      const dropdownItems: NodeListOf<HTMLElement> =
+          voiceSelectionMenu!.$.voiceSelectionMenu.get()
+              .querySelectorAll<HTMLButtonElement>(
+                  voiceSelectionButtonSelector);
 
-        const dropdownItems: NodeListOf<HTMLElement> =
-            voiceSelectionMenu!.$.voiceSelectionMenu.get()
-                .querySelectorAll<HTMLButtonElement>(
-                    voiceSelectionButtonSelector);
-
-        assertEquals(
-            availableVoices[0]!.name,
-            getDropdownItemForVoice(availableVoices[0]!).textContent!.trim());
-        assertEquals(
-            availableVoices[1]!.name,
-            getDropdownItemForVoice(availableVoices[1]!).textContent!.trim());
-        assertEquals(2, dropdownItems.length);
-        assertTrue(
-            isPositionedOnPage(getDropdownItemForVoice(availableVoices[0]!)));
-        assertTrue(
-            isPositionedOnPage(getDropdownItemForVoice(availableVoices[1]!)));
-      });
+      assertEquals(
+          voice1.name, getDropdownItemForVoice(voice1).textContent!.trim());
+      assertEquals(
+          voice2.name, getDropdownItemForVoice(voice2).textContent!.trim());
+      assertEquals(2, dropdownItems.length);
+      assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice1)));
+      assertTrue(isPositionedOnPage(getDropdownItemForVoice(voice2)));
     });
   });
 
@@ -145,25 +128,28 @@ suite('VoiceSelectionMenu', () => {
       // tests to ensure the menu has been rendered.
       voiceSelectionMenu!.$.voiceSelectionMenu.get();
       selectedVoice =
-          createSpeechSynthesisVoice({name: 'test voice 3', lang: 'en-US'});
+          createSpeechSynthesisVoice({name: 'selected', lang: 'en-US'});
       previewVoice =
-          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'});
-
-      availableVoices = [
-        createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'preview', lang: 'en-US'});
+      voice1 = createSpeechSynthesisVoice({name: 'voice1', lang: 'en-US'});
+      voice2 = createSpeechSynthesisVoice({name: 'voice2', lang: 'it-IT'});
+      const availableVoices = [
+        voice1,
         previewVoice,
-        createSpeechSynthesisVoice({name: 'test voice 2', lang: 'it-IT'}),
+        voice2,
         selectedVoice,
       ];
-      setAvailableVoices();
+      setAvailableVoicesAndEnabledLangs(availableVoices);
+      return microtasksFinished();
     });
 
-    test('it shows a checkmark for the selected voice', () => {
+    test('it shows a checkmark for the selected voice', async () => {
       voiceSelectionMenu.selectedVoice = selectedVoice;
-      flush();
+      await microtasksFinished();
 
-      const checkMarkVoice0 = getDropdownItemForVoice(availableVoices[0]!)
-                                  .querySelector<HTMLElement>('#check-mark')!;
+      const checkMarkVoice0 =
+          getDropdownItemForVoice(voice1).querySelector<HTMLElement>(
+              '#check-mark')!;
       const checkMarkSelectedVoice =
           getDropdownItemForVoice(selectedVoice)
               .querySelector<HTMLElement>('#check-mark')!;
@@ -182,35 +168,44 @@ suite('VoiceSelectionMenu', () => {
       const secondVoice = firstVoice.nextElementSibling!;
       const thirdVoice = secondVoice.nextElementSibling!;
       const italianVoice = groupTitles.item(1)!.nextElementSibling!;
-      assertEquals('test voice 0', firstVoice.textContent!.trim());
-      assertEquals('test voice 1', secondVoice.textContent!.trim());
-      assertEquals('test voice 3', thirdVoice.textContent!.trim());
-      assertEquals('test voice 2', italianVoice.textContent!.trim());
+      assertEquals('voice1', firstVoice.textContent!.trim());
+      assertEquals('preview', secondVoice.textContent!.trim());
+      assertEquals('selected', thirdVoice.textContent!.trim());
+      assertEquals('voice2', italianVoice.textContent!.trim());
     });
 
-    test('it only shows enabled languages with some disabled languages', () => {
-      setAvailableVoices(['it-it']);
+    test(
+        'it only shows enabled languages with some disabled languages',
+        async () => {
+          setAvailableVoicesAndEnabledLangs(
+              voiceSelectionMenu.availableVoices, ['it-it']);
+          await microtasksFinished();
 
-      const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
-      const groupTitles =
-          menu.querySelectorAll<HTMLElement>('.lang-group-title');
-      assertEquals(1, groupTitles.length);
+          const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
+          const groupTitles =
+              menu.querySelectorAll<HTMLElement>('.lang-group-title');
+          assertEquals(1, groupTitles.length);
 
-      const italianVoice = groupTitles.item(0)!.nextElementSibling!;
-      assertEquals('test voice 2', italianVoice.textContent!.trim());
-    });
+          const italianVoice = groupTitles.item(0)!.nextElementSibling!;
+          assertEquals('voice2', italianVoice.textContent!.trim());
+        });
 
     suite('with Natural voices also available', () => {
       setup(() => {
-        availableVoices = [
+        voice1 = createSpeechSynthesisVoice(
+            {name: 'Google US English 1 (Natural)', lang: 'en-US'});
+        voice2 = createSpeechSynthesisVoice(
+            {name: 'Google US English 2 (Natural)', lang: 'en-US'});
+
+        const availableVoices = [
           previewVoice,
-          createSpeechSynthesisVoice(
-              {name: 'Google US English 1 (Natural)', lang: 'en-US'}),
-          createSpeechSynthesisVoice(
-              {name: 'Google US English 2 (Natural)', lang: 'en-US'}),
+          voice1,
+          voice2,
           selectedVoice,
         ];
-        setAvailableVoices();
+        setAvailableVoicesAndEnabledLangs(availableVoices);
+
+        return microtasksFinished();
       });
 
       test('it orders Natural voices first', () => {
@@ -226,17 +221,18 @@ suite('VoiceSelectionMenu', () => {
             'Google US English 2 (Natural)',
             usEnglishDropdownItems.item(1).textContent!.trim());
         assertEquals(
-            'test voice 1', usEnglishDropdownItems.item(2).textContent!.trim());
+            'preview', usEnglishDropdownItems.item(2).textContent!.trim());
         assertEquals(
-            'test voice 3', usEnglishDropdownItems.item(3).textContent!.trim());
+            'selected', usEnglishDropdownItems.item(3).textContent!.trim());
       });
     });
 
-    test('with display names for locales', () => {
+    test('with display names for locales', async () => {
       voiceSelectionMenu.localeToDisplayName = {
         'en-us': 'English (United States)',
       };
-      flush();
+      await microtasksFinished();
+
       const groupTitles =
           voiceSelectionMenu!.$.voiceSelectionMenu.get()
               .querySelectorAll<HTMLElement>('.lang-group-title');
@@ -248,13 +244,14 @@ suite('VoiceSelectionMenu', () => {
 
     test(
         'when voices have duplicate names languages are grouped correctly',
-        () => {
-          availableVoices = [
+        async () => {
+          const availableVoices = [
             createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
             createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
             createSpeechSynthesisVoice({name: 'English', lang: 'en-UK'}),
           ];
-          setAvailableVoices();
+          setAvailableVoicesAndEnabledLangs(availableVoices);
+          await microtasksFinished();
 
           const menu = voiceSelectionMenu!.$.voiceSelectionMenu.get();
           const groupTitles =
@@ -270,40 +267,37 @@ suite('VoiceSelectionMenu', () => {
           assertEquals('English', voiceNames.item(2)!.textContent!.trim());
         });
 
-    test('when preview button is clicked it emits play preview event', () => {
-      let clickEmitted: boolean;
+    test(
+        'when preview button is clicked it emits play preview event',
+        async () => {
+          let clickEmitted = false;
+          document.addEventListener(
+              ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
+          // Display dropdown menu
+          voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
+          const previewButton =
+              getDropdownItemForVoice(voice1)
+                  .querySelector<CrIconButtonElement>('#preview-icon')!;
+          previewButton!.click();
+          await microtasksFinished();
 
-      clickEmitted = false;
-      document.addEventListener(
-          ToolbarEvent.PLAY_PREVIEW, () => clickEmitted = true);
-
-      // Display dropdown menu
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
-      flush();
-      const previewButton =
-          getDropdownItemForVoice(availableVoices[0]!)
-              .querySelector<CrIconButtonElement>('#preview-icon')!;
-
-      previewButton!.click();
-      flush();
-
-      assertTrue(clickEmitted);
-    });
+          assertTrue(clickEmitted);
+        });
 
     suite('when preview starts playing', () => {
       setup(() => {
         // Display dropdown menu
-        voiceSelectionMenu.onVoiceSelectionMenuClick(myClickEvent);
+        voiceSelectionMenu.onVoiceSelectionMenuClick(dots);
 
         voiceSelectionMenu.previewVoicePlaying = previewVoice;
-        flush();
+        return microtasksFinished();
       });
 
       test('it shows preview-playing button when preview plays', () => {
         stubAnimationFrame();
         const playIconVoice0 =
-            getDropdownItemForVoice(availableVoices[0]!)
-                .querySelector<CrIconButtonElement>('#preview-icon')!;
+            getDropdownItemForVoice(voice1).querySelector<CrIconButtonElement>(
+                '#preview-icon')!;
         const playIconOfPreviewVoice =
             getDropdownItemForVoice(previewVoice)
                 .querySelector<CrIconButtonElement>('#preview-icon')!;
@@ -326,16 +320,16 @@ suite('VoiceSelectionMenu', () => {
 
       test(
           'when preview finishes playing it flips the button back to play icon',
-          () => {
-            voiceSelectionMenu.previewVoicePlaying = null;
-            flush();
+          async () => {
+            voiceSelectionMenu.previewVoicePlaying = undefined;
+            await microtasksFinished();
 
             stubAnimationFrame();
             const playIconVoice0 =
-                getDropdownItemForVoice(availableVoices[0]!)
+                getDropdownItemForVoice(voice1)
                     .querySelector<CrIconButtonElement>('#preview-icon')!;
             const playIconOfPreviewVoice =
-                getDropdownItemForVoice(availableVoices[1]!)
+                getDropdownItemForVoice(voice2)
                     .querySelector<CrIconButtonElement>('#preview-icon')!;
 
             // All icons should be play icons because no preview is
@@ -365,16 +359,8 @@ suite('VoiceSelectionMenu', () => {
         ...voiceSelectionMenu.voicePackInstallStatus,
         [lang]: status,
       };
-      flush();
     }
 
-    function startDownload(lang: string) {
-      setVoiceStatus(lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
-    }
-
-    function finishDownload(lang: string) {
-      setVoiceStatus(lang, VoiceClientSideStatusCode.AVAILABLE);
-    }
 
     function getDownloadMessages(): HTMLElement[] {
       return Array.from(
@@ -383,16 +369,17 @@ suite('VoiceSelectionMenu', () => {
     }
 
     setup(() => {
-      voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
-      flush();
+      voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
     });
 
     test('no downloading messages by default', () => {
       assertEquals(0, getDownloadMessages().length);
     });
 
-    test('no downloading messages with invalid language', () => {
-      startDownload('simlish');
+    test('no downloading messages with invalid language', async () => {
+      setVoiceStatus('simlish', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+      await microtasksFinished();
+
       assertEquals(0, getDownloadMessages().length);
     });
 
@@ -400,7 +387,8 @@ suite('VoiceSelectionMenu', () => {
       const lang = 'fr';
 
       setup(() => {
-        startDownload(lang);
+        setVoiceStatus(lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        return microtasksFinished();
       });
 
       test('shows downloading message while installing', () => {
@@ -411,8 +399,10 @@ suite('VoiceSelectionMenu', () => {
             msgs[0]!.textContent!.trim(), 'Downloading Français voices');
       });
 
-      test('hides downloading message when done', () => {
-        finishDownload(lang);
+      test('hides downloading message when done', async () => {
+        setVoiceStatus(lang, VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
+
         assertEquals(0, getDownloadMessages().length);
       });
     });
@@ -424,10 +414,11 @@ suite('VoiceSelectionMenu', () => {
       const lang4 = 'hi-HI';
 
       setup(() => {
-        startDownload(lang1);
-        startDownload(lang2);
-        startDownload(lang3);
-        startDownload(lang4);
+        setVoiceStatus(lang1, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        setVoiceStatus(lang2, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        setVoiceStatus(lang3, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        setVoiceStatus(lang4, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        return microtasksFinished();
       });
 
       test('shows downloading messages while installing', () => {
@@ -447,17 +438,21 @@ suite('VoiceSelectionMenu', () => {
             'Downloading हिन्दी voices');
       });
 
-      test('hides downloading messages when done', () => {
-        finishDownload(lang1);
+      test('hides downloading messages when done', async () => {
+        setVoiceStatus(lang1, VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
         assertEquals(3, getDownloadMessages().length);
 
-        finishDownload(lang2);
+        setVoiceStatus(lang2, VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
         assertEquals(2, getDownloadMessages().length);
 
-        finishDownload(lang3);
+        setVoiceStatus(lang3, VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
         assertEquals(1, getDownloadMessages().length);
 
-        finishDownload(lang4);
+        setVoiceStatus(lang4, VoiceClientSideStatusCode.AVAILABLE);
+        await microtasksFinished();
         assertEquals(0, getDownloadMessages().length);
       });
     });

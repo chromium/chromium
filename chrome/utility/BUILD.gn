@@ -145,11 +145,8 @@ static_library("utility") {
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
       "//services/proxy_resolver:lib",
+      "//services/screen_ai",
     ]
-  }
-
-  if (enable_screen_ai_service) {
-    deps += [ "//services/screen_ai" ]
   }
 
   if (enable_extensions) {

@@ -483,12 +483,15 @@ size_t Iban::GetLengthOfIbanCountry(IbanSupportedCountry supported_country) {
     case IbanSupportedCountry::kXK:
       return 20;
     case IbanSupportedCountry::kUnsupported:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
 bool Iban::SetMetadata(const PaymentsMetadata& metadata) {
-  if (metadata.id != guid()) {
+  // Make sure the ids match.
+  if (metadata.id != (record_type_ == RecordType::kLocalIban
+                          ? guid()
+                          : base::NumberToString(instrument_id()))) {
     return false;
   }
   set_use_count(metadata.use_count);
@@ -554,10 +557,6 @@ int Iban::Compare(const Iban& iban) const {
     return comparison;
   }
 
-  if (length_ != iban.length_) {
-    return 1;
-  }
-
   if (record_type_ != iban.record_type_) {
     return 1;
   }
@@ -600,7 +599,6 @@ void Iban::set_value(const std::u16string& value) {
   CHECK(value_.length() >= kPrefixLength + kSuffixLength);
   prefix_ = value_.substr(0, kPrefixLength);
   suffix_ = value_.substr(value_.length() - kSuffixLength);
-  length_ = value_.length();
 }
 
 void Iban::set_nickname(const std::u16string& nickname) {
@@ -623,11 +621,6 @@ void Iban::set_prefix(std::u16string prefix) {
 void Iban::set_suffix(std::u16string suffix) {
   CHECK_NE(record_type_, Iban::kLocalIban);
   suffix_ = std::move(suffix);
-}
-
-void Iban::set_length(int length) {
-  CHECK_NE(record_type_, Iban::kLocalIban);
-  length_ = length;
 }
 
 bool Iban::IsValid() {
@@ -668,7 +661,7 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
   // will be displayed as: DE91 1000 0000 0123 4567 89.
   std::u16string output;
   output.reserve(value_.length() + (value_.length() - 1) / 4);
-  for (int i = 0; i < length_; ++i) {
+  for (size_t i = 0; i < value_.length(); ++i) {
     if (i % 4 == 0 && i > 0) {
       output.push_back(kEllipsisOneSpace);
     }
@@ -678,16 +671,15 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
   return output;
 }
 
-bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
+bool Iban::MatchesPrefixAndSuffix(const Iban& iban) const {
   // Unlike the `Compare()` function, which seeks an exact match between
-  // `prefix_`, `suffix_`, and `length_`, the comparison performed here involves
-  // matching the prefixes between each other and similarly comparing the
-  // suffixes between each other This approach is adopted because the `prefix`,
-  // `suffix`, and `length` received from the server are considered the
-  // source of truth. Therefore, even if the values of `kPrefixLength` or
-  // `kSuffixLength` change later, leading to differences in length between the
-  // client and server, it remains essential to match substrings and identify
-  // the matched IBAN.
+  // `prefix_` and `suffix_`, the comparison performed here involves matching
+  // the prefixes between each other and similarly comparing the suffixes
+  // between each other This approach is adopted because the `prefix` and
+  // `suffix` received from the server are considered the source of truth.
+  // Therefore, even if the values of `kPrefixLength` or `kSuffixLength` change
+  // later, leading to differences in length between the client and server, it
+  // remains essential to match substrings and identify the matched IBAN.
   bool prefix_matched = base::StartsWith(prefix(), iban.prefix()) ||
                         base::StartsWith(iban.prefix(), prefix());
   if (!prefix_matched) {
@@ -700,7 +692,7 @@ bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
     return false;
   }
 
-  return length() == iban.length();
+  return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban) {
@@ -715,7 +707,6 @@ std::ostream& operator<<(std::ostream& os, const Iban& iban) {
             << ", value: " << base::UTF16ToUTF8(iban.GetRawInfo(IBAN_VALUE))
             << ", prefix: " << base::UTF16ToUTF8(iban.prefix())
             << ", suffix: " << base::UTF16ToUTF8(iban.suffix())
-            << ", length: " << iban.length()
             << ", nickname: " << base::UTF16ToUTF8(iban.nickname()) << "]";
 }
 

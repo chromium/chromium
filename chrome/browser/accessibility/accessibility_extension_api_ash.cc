@@ -76,7 +76,7 @@ ash::AccessibilityToastType ConvertToastType(
     case accessibility_private::ToastType::kDictationMicMuted:
       return ash::AccessibilityToastType::kDictationMicMuted;
     case accessibility_private::ToastType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

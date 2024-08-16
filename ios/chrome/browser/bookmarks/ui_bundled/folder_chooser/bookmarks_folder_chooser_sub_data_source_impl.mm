@@ -67,7 +67,7 @@ using bookmarks::BookmarkNode;
     case BookmarkStorageType::kAccount:
       return _bookmarkModel->account_mobile_node();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (std::vector<const BookmarkNode*>)visibleFolderNodes {

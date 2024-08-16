@@ -76,7 +76,6 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    bool by_user,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
   // TOP_RIGHT is correct for both RTL and LTR, because the views platform
@@ -85,7 +84,7 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
 
   ExtensionPopup::ShowPopup(std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
-                            arrow, by_user, show_action, std::move(callback));
+                            arrow, show_action, std::move(callback));
 }
 
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(

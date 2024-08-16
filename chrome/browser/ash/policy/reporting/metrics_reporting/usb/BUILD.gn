@@ -35,3 +35,36 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "usb_events_browsertest.cc" ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/missive:test_support",
+    "//components/account_id",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

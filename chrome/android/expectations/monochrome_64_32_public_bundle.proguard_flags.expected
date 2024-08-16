@@ -219,6 +219,12 @@
   static <fields>;
 }
 
+# Causes R8 to more agressively optimize ServiceLoader.load() calls, by
+# assuming no exceptions will be thrown.
+-assumenosideeffects class java.util.ServiceLoader {
+  static *** load(...);
+}
+
 # Keep the names of exception types, to make it easier to understand stack
 # traces in contexts where it's not trivial to deobfuscate them - for example
 # when reported to app developers who are using WebView.
@@ -434,13 +440,13 @@
 
 # Keeps for method level annotations.
 -keepclasseswithmembers,allowaccessmodification class ** {
-  @org.jni_zero.AccessedByNative <fields>;
+  @**org.jni_zero.AccessedByNative <fields>;
 }
 -keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.jni_zero.CalledByNative <methods>;
+  @**org.jni_zero.CalledByNative <methods>;
 }
 -keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.jni_zero.CalledByNativeUnchecked <methods>;
+  @**org.jni_zero.CalledByNativeUnchecked <methods>;
 }
 
 # Allow unused native methods to be removed, but prevent renaming on those that
@@ -828,8 +834,9 @@
 -dontwarn sun.misc.Unsafe
 -dontwarn libcore.io.Memory
 
-# Internal Google annotations for generating Proguard keep rules.
+# Annotations used during internal SDK shrinking.
 -dontwarn com.google.android.apps.common.proguard.UsedBy*
+-dontwarn com.google.android.apps.common.proguard.SideEffectFree
 
 # Annotations referenced by the SDK but whose definitions are contained in
 # non-required dependencies.
@@ -837,6 +844,10 @@
 -dontwarn org.checkerframework.**
 -dontwarn com.google.errorprone.annotations.**
 -dontwarn org.jspecify.nullness.NullMarked
+
+# Annotations no longer exist. Suppression prevents ProGuard failures in
+# SDKs which depend on earlier versions of play-services-basement.
+-dontwarn com.google.android.gms.common.util.VisibleForTesting
 
 # Proguard flags for consumers of the Google Play services SDK
 # https://developers.google.com/android/guides/setup#add_google_play_services_to_your_project
@@ -904,6 +915,11 @@
 -keepclassmembers class com.google.android.gms.gcm.GcmListenerService {
     public void handleIntent(android.content.Intent);
 }
+
+# File: obj/third_party/android_deps/google_play_services_identity_credentials_java/proguard.txt
+# Proguard cannot process META-INF/versions/9.
+# See https://discuss.gradle.org/t/meta-inf-version-duplicate-error-when-using-proguard/31380
+-dontwarn module-info
 
 # File: obj/third_party/android_deps/google_play_services_vision_common_java/proguard.txt
 # We keep all fields for every generated proto file as the runtime uses

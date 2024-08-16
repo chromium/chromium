@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -234,6 +235,14 @@ struct WebAppInstallInfo {
       const GURL& document_url,
       const std::u16string& document_title,
       const WebAppInstallInfo& other);
+
+  // This creates WebAppInstallInfo in the same way as the default constructor
+  // does, but it will return an error on invalid arguments instead of failing
+  // with a CHECK().
+  static base::expected<WebAppInstallInfo, std::string> Create(
+      const GURL& manifest_url,
+      const webapps::ManifestId& manifest_id,
+      const GURL& start_url);
 
   // This creates a WebAppInstallInfo where the `manifest_id` is derived from
   // the `start_url` using `GenerateManifestIdFromStartUrlOnly`.

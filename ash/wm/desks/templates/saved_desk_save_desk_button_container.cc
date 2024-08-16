@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/public/cpp/desk_template.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -24,89 +25,6 @@ namespace ash {
 namespace {
 
 constexpr int kButtonSpacing = 16;
-
-enum class TooltipStatus {
-  kOk = 0,
-  kReachMax,
-  kIncognitoWindow,
-  kUnsupportedWindow,
-  kIncognitoAndUnsupportedWindow,
-  kNumberOfTooltipStatus,
-};
-
-struct SaveDeskButtonStatus {
-  bool enabled;
-  int tooltip_id;
-};
-
-constexpr std::array<int,
-                     static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
-    kSaveAsTemplateButtonTooltipIDs = {
-        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON,
-        IDS_ASH_DESKS_TEMPLATES_MAX_TEMPLATES_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
-};
-
-constexpr std::array<int,
-                     static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
-    kSaveForLaterButtonTooltipIDs = {
-        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON,
-        IDS_ASH_DESKS_TEMPLATES_MAX_SAVED_DESKS_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_TOOLTIP,
-        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_TOOLTIP,
-};
-
-int GetTooltipID(SavedDeskSaveDeskButton::Type button_type,
-                 TooltipStatus status) {
-  switch (button_type) {
-    case SavedDeskSaveDeskButton::Type::kSaveAsTemplate:
-      return kSaveAsTemplateButtonTooltipIDs[static_cast<int>(status)];
-    case SavedDeskSaveDeskButton::Type::kSaveForLater:
-      return kSaveForLaterButtonTooltipIDs[static_cast<int>(status)];
-  }
-}
-
-SaveDeskButtonStatus GetEnableStateAndTooltipIDForButtonType(
-    SavedDeskSaveDeskButton::Type type,
-    int current_entry_count,
-    int max_entry_count,
-    int incognito_window_count,
-    int unsupported_window_count,
-    int window_count) {
-  // Disable if we already have the max supported saved desks.
-  if (current_entry_count >= max_entry_count) {
-    return {.enabled = false,
-            .tooltip_id = GetTooltipID(type, TooltipStatus::kReachMax)};
-  }
-
-  // Enable if there are any supported window.
-  if (incognito_window_count + unsupported_window_count != window_count) {
-    return {.enabled = true,
-            .tooltip_id = GetTooltipID(type, TooltipStatus::kOk)};
-  }
-
-  // Disable if there are incognito windows and unsupported Linux Apps but no
-  // supported windows.
-  if (incognito_window_count && unsupported_window_count) {
-    return {.enabled = false,
-            .tooltip_id = GetTooltipID(
-                type, TooltipStatus::kIncognitoAndUnsupportedWindow)};
-  }
-
-  // Disable if there are incognito windows but no supported windows.
-  if (incognito_window_count) {
-    return {.enabled = false,
-            .tooltip_id = GetTooltipID(type, TooltipStatus::kIncognitoWindow)};
-  }
-
-  // Disable if there are unsupported Linux Apps but no supported windows.
-  DCHECK(unsupported_window_count);
-  return {.enabled = false,
-          .tooltip_id = GetTooltipID(type, TooltipStatus::kUnsupportedWindow)};
-}
 
 }  // namespace
 
@@ -155,8 +73,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             save_as_template_callback,
             l10n_util::GetStringUTF16(
                 IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON),
-            SavedDeskSaveDeskButton::Type::kSaveAsTemplate,
-            &kSaveDeskAsTemplateIcon));
+            DeskTemplateType::kTemplate, &kSaveDeskAsTemplateIcon));
   }
 
   if (saved_desk_util::ShouldShowSavedDesksOptions()) {
@@ -165,8 +82,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             save_for_later_callback,
             l10n_util::GetStringUTF16(
                 IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON),
-            SavedDeskSaveDeskButton::Type::kSaveForLater,
-            &kSaveDeskForLaterIcon));
+            DeskTemplateType::kSaveAndRecall, &kSaveDeskForLaterIcon));
   }
 
   accessibility_observer_ =
@@ -179,20 +95,15 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
 SavedDeskSaveDeskButtonContainer::~SavedDeskSaveDeskButtonContainer() = default;
 
 void SavedDeskSaveDeskButtonContainer::UpdateButtonEnableStateAndTooltip(
-    SavedDeskSaveDeskButton::Type type,
-    int current_entry_count,
-    int max_entry_count,
-    int incognito_window_count,
-    int unsupported_window_count,
-    int window_count) {
+    DeskTemplateType type,
+    SaveDeskOptionStatus status) {
   SavedDeskSaveDeskButton* button = GetButtonFromType(type);
-  if (!button)
+  if (!button) {
     return;
-  SaveDeskButtonStatus button_status = GetEnableStateAndTooltipIDForButtonType(
-      type, current_entry_count, max_entry_count, incognito_window_count,
-      unsupported_window_count, window_count);
-  button->SetEnabled(button_status.enabled);
-  button->SetTooltipText(l10n_util::GetStringUTF16(button_status.tooltip_id));
+  }
+
+  button->SetEnabled(status.enabled);
+  button->SetTooltipText(l10n_util::GetStringUTF16(status.tooltip_id));
 }
 
 void SavedDeskSaveDeskButtonContainer::
@@ -204,12 +115,15 @@ void SavedDeskSaveDeskButtonContainer::
 }
 
 SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
-    SavedDeskSaveDeskButton::Type type) {
+    DeskTemplateType type) {
   switch (type) {
-    case SavedDeskSaveDeskButton::Type::kSaveAsTemplate:
+    case DeskTemplateType::kTemplate:
       return save_desk_as_template_button_;
-    case SavedDeskSaveDeskButton::Type::kSaveForLater:
+    case DeskTemplateType::kSaveAndRecall:
       return save_desk_for_later_button_;
+    case DeskTemplateType::kFloatingWorkspace:
+    case DeskTemplateType::kUnknown:
+      return nullptr;
   }
 }
 

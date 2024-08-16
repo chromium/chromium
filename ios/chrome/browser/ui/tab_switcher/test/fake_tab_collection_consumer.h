@@ -22,6 +22,7 @@ class TabGroup;
 @property(nonatomic, readonly) const std::vector<web::WebStateID>& items;
 @property(nonatomic, readonly) const std::vector<const TabGroup*>& groups;
 @property(nonatomic, strong) GridItemIdentifier* selectedItem;
+@property(nonatomic, assign) TabGridMode mode;
 
 @end
 

@@ -157,8 +157,7 @@ TEST_F(PointerEventManagerTest, HasPointerCapture) {
   ASSERT_FALSE(
       GetDocument().body()->hasPointerCapture(PointerEventFactory::kMouseId));
 
-  ExceptionState exception(nullptr, ExceptionContextType::kOperationInvoke, "",
-                           "");
+  ExceptionState exception(nullptr, v8::ExceptionContext::kOperation, "", "");
 
   GetEventHandler().HandleMousePressEvent(CreateTestMouseEvent(
       WebInputEvent::Type::kMouseDown, gfx::PointF(100, 100)));

@@ -82,7 +82,7 @@ class ServerThemeMatchChecker
   ServerThemeMatchChecker& operator=(const ServerThemeMatchChecker&) = delete;
 
   // FakeServer::Observer overrides.
-  void OnCommit(syncer::ModelTypeSet committed_model_types) override;
+  void OnCommit(syncer::DataTypeSet committed_data_types) override;
 
   // StatusChangeChecker overrides.
   bool IsExitConditionSatisfied(std::ostream* os) override;
@@ -97,15 +97,15 @@ ServerThemeMatchChecker::ServerThemeMatchChecker(const Matcher& matcher)
 ServerThemeMatchChecker::~ServerThemeMatchChecker() = default;
 
 void ServerThemeMatchChecker::OnCommit(
-    syncer::ModelTypeSet committed_model_types) {
-  if (committed_model_types.Has(syncer::THEMES)) {
+    syncer::DataTypeSet committed_data_types) {
+  if (committed_data_types.Has(syncer::THEMES)) {
     CheckExitCondition();
   }
 }
 
 bool ServerThemeMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::THEMES);
+      fake_server()->GetSyncEntitiesByDataType(syncer::THEMES);
 
   if (entities.empty()) {
     return false;

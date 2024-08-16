@@ -27,8 +27,8 @@ V8PrivateProperty::Symbol V8PrivateProperty::GetWindowDocumentCachedAccessor(
     v8::Isolate* isolate) {
   V8PrivateProperty* private_prop =
       V8PerIsolateData::From(isolate)->PrivateProperty();
-  if (UNLIKELY(
-          private_prop->symbol_window_document_cached_accessor_.IsEmpty())) {
+  if (private_prop->symbol_window_document_cached_accessor_.IsEmpty())
+      [[unlikely]] {
     // This private property is used in Window, and Window and Document are
     // stored in the V8 context snapshot.  So, this private property needs to
     // be restorable from the snapshot, and only v8::Private::ForApi supports
@@ -73,7 +73,7 @@ V8PrivateProperty::Symbol V8PrivateProperty::GetSymbol(
   auto& symbol_map = private_prop->symbol_map_;
   auto iter = symbol_map.find(&key);
   v8::Local<v8::Private> v8_private;
-  if (UNLIKELY(iter == symbol_map.end())) {
+  if (iter == symbol_map.end()) [[unlikely]] {
     v8_private = CreateV8Private(isolate, nullptr);
     symbol_map.insert(&key, v8::Eternal<v8::Private>(isolate, v8_private));
   } else {

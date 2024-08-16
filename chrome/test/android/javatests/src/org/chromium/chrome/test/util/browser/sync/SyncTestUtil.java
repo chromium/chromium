@@ -261,19 +261,19 @@ public final class SyncTestUtil {
             return bookmarkSpecifics;
         }
 
-        JSONObject model_type_info = specifics.getJSONObject(key);
+        JSONObject specificsWithMetadata = specifics.getJSONObject(key);
         if (node.has("metadata")) {
-            model_type_info.put("metadata", node.getJSONObject("metadata"));
+            specificsWithMetadata.put("metadata", node.getJSONObject("metadata"));
         }
-        return model_type_info;
+        return specificsWithMetadata;
     }
 
     /**
      * Converts the given ID to the format stored by the server.
      *
-     * See the SyncableId (C++) class for more information about ID encoding. To paraphrase,
-     * the client prepends "s" or "c" to the server's ID depending on the commit state of the data.
-     * IDs can also be "r" to indicate the root node, but that entity is not supported here.
+     * <p>See the SyncableId (C++) class for more information about ID encoding. To paraphrase, the
+     * client prepends "s" or "c" to the server's ID depending on the commit state of the data. IDs
+     * can also be "r" to indicate the root node, but that entity is not supported here.
      *
      * @param clientId the ID to be converted
      * @return the converted ID
@@ -301,7 +301,7 @@ public final class SyncTestUtil {
      *
      * @param context the Context used to retreive the correct SyncService
      * @param typeString a String representing a specific datatype.
-     *     <p>TODO(pvalenzuela): Replace typeString with the native ModelType enum or something else
+     *     <p>TODO(pvalenzuela): Replace typeString with the native DataType enum or something else
      *     that will avoid callers needing to specify the native string version.
      * @return a List of Pair<String, JSONObject> representing the local Sync data
      */

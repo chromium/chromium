@@ -16,7 +16,7 @@ source_set("browser_tests") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/first_party_sets",

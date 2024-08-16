@@ -199,6 +199,10 @@ BASE_FEATURE(kTrustedVaultAutoUpgradeSyntheticFieldTrial,
              "TrustedVaultAutoUpgradeSyntheticFieldTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMoveThemePrefsToSpecifics,
+             "MoveThemePrefsToSpecifics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kWebApkBackupAndRestoreBackend,
              "WebApkBackupAndRestoreBackend",

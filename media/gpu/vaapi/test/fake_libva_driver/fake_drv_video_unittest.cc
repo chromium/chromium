@@ -22,6 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "base/types/fixed_array.h"
 #include "media/gpu/vaapi/va_stubs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -122,12 +123,13 @@ TEST_F(FakeDriverTest, QueryConfigAttributesForValidConfigID) {
 
   VAProfile profile = VAProfileNone;
   VAEntrypoint entrypoint = VAEntrypointProtectedContent;
-  VAConfigAttrib config_attribs[base::checked_cast<size_t>(
-      vaMaxNumConfigAttributes(display_))];
-  memset(config_attribs, 0, sizeof(config_attribs));
+  base::FixedArray<VAConfigAttrib> config_attribs(
+      base::checked_cast<size_t>(vaMaxNumConfigAttributes(display_)));
+  memset(config_attribs.data(), 0, config_attribs.memsize());
   int num_attribs = 0;
-  const VAStatus va_res = vaQueryConfigAttributes(
-      display_, config_id, &profile, &entrypoint, config_attribs, &num_attribs);
+  const VAStatus va_res =
+      vaQueryConfigAttributes(display_, config_id, &profile, &entrypoint,
+                              config_attribs.data(), &num_attribs);
   ASSERT_EQ(VA_STATUS_SUCCESS, va_res);
   EXPECT_EQ(VAProfileVP8Version0_3, profile);
   EXPECT_EQ(VAEntrypointVLD, entrypoint);
@@ -137,13 +139,13 @@ TEST_F(FakeDriverTest, QueryConfigAttributesForValidConfigID) {
 TEST_F(FakeDriverTest, QueryConfigAttributesCrashesForInvalidConfigID) {
   VAProfile profile;
   VAEntrypoint entrypoint;
-  VAConfigAttrib config_attribs[base::checked_cast<size_t>(
-      vaMaxNumConfigAttributes(display_))];
-  memset(config_attribs, 0, sizeof(config_attribs));
+  base::FixedArray<VAConfigAttrib> config_attribs(
+      base::checked_cast<size_t>(vaMaxNumConfigAttributes(display_)));
+  memset(config_attribs.data(), 0, config_attribs.memsize());
   int num_attribs;
   EXPECT_DEATH(
       vaQueryConfigAttributes(display_, /*config_id=*/0, &profile, &entrypoint,
-                              config_attribs, &num_attribs);
+                              config_attribs.data(), &num_attribs);
       , "");
 }
 
@@ -179,8 +181,9 @@ TEST_F(FakeDriverTest, QuerySurfaceAttributesForValidConfigID) {
       vaCreateConfig(display_, VAProfileVP8Version0_3, VAEntrypointVLD,
                      /*attrib_list=*/nullptr, /*num_attribs=*/0, &config_id));
 
+  constexpr unsigned int max_num_attribs = 32;
   unsigned int num_attribs = 32;
-  VASurfaceAttrib surface_attribs[num_attribs];
+  VASurfaceAttrib surface_attribs[max_num_attribs];
   memset(surface_attribs, 0, sizeof(surface_attribs));
 
   const VAStatus va_res = vaQuerySurfaceAttributes(

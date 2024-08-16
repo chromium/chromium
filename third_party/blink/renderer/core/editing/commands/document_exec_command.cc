@@ -97,8 +97,9 @@ bool Document::execCommand(const String& command_name,
                            bool unused_bool,
                            const String& value,
                            ExceptionState& exception_state) {
-  V8UnionStringOrTrustedHTML tmp(value);
-  return execCommand(command_name, unused_bool, &tmp, exception_state);
+  V8UnionStringOrTrustedHTML* tmp =
+      MakeGarbageCollected<V8UnionStringOrTrustedHTML>(value);
+  return execCommand(command_name, unused_bool, tmp, exception_state);
 }
 
 bool Document::execCommand(const String& command_name,

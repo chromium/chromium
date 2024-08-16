@@ -45,7 +45,7 @@ constexpr SkFontStyle::Slant ConvertToFontStyle(mojom::TypefaceSlant slant) {
     case mojom::TypefaceSlant::kOblique:
       return SkFontStyle::Slant::kOblique_Slant;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

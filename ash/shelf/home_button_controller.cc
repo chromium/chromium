@@ -30,12 +30,6 @@ namespace {
 
 constexpr base::TimeDelta kAssistantAnimationDelay = base::Milliseconds(200);
 
-// Returns true if the button should appear activatable.
-bool CanActivate(int64_t display_id) {
-  return Shell::Get()->IsInTabletMode() ||
-         !Shell::Get()->app_list_controller()->IsVisible(display_id);
-}
-
 }  // namespace
 
 HomeButtonController::HomeButtonController(HomeButton* button)
@@ -73,12 +67,6 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
         assistant_animation_delay_timer_->Stop();
       }
 
-      if (!chromeos::features::IsJellyEnabled() &&
-          CanActivate(button_->GetDisplayId())) {
-        views::InkDrop::Get(button_)->AnimateToState(
-            views::InkDropState::ACTION_TRIGGERED, event);
-      }
-
       // After animating the ripple, let the button handle the event.
       return false;
     case ui::EventType::kGestureTapDown:
@@ -88,13 +76,6 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
             base::BindOnce(&HomeButtonController::StartAssistantAnimation,
                            base::Unretained(this)));
       }
-
-      if (!chromeos::features::IsJellyEnabled() &&
-          CanActivate(button_->GetDisplayId())) {
-        views::InkDrop::Get(button_)->AnimateToState(
-            views::InkDropState::ACTION_PENDING, event);
-      }
-
       return false;
     case ui::EventType::kGestureLongPress:
       // Only consume the long press event if the Assistant is available.
@@ -114,12 +95,6 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
       // Only consume the long tap event if the Assistant is available.
       if (!IsAssistantAvailable())
         return false;
-
-      // This event happens after the user long presses and lifts the finger.
-      if (!chromeos::features::IsJellyEnabled()) {
-        views::InkDrop::Get(button_)->AnimateToState(
-            views::InkDropState::HIDDEN, event);
-      }
 
       // We already handled the long press; consume the long tap to avoid
       // bringing up the context menu again.
@@ -156,11 +131,6 @@ void HomeButtonController::OnDisplayTabletStateChanged(
   if (state != display::TabletState::kInTabletMode) {
     return;
   }
-
-  if (!chromeos::features::IsJellyEnabled()) {
-    views::InkDrop::Get(button_)->AnimateToState(
-        views::InkDropState::DEACTIVATED, nullptr);
-  }
 }
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
@@ -189,27 +159,11 @@ void HomeButtonController::OnAppListShown() {
   // view is always open in the background.
   if (!Shell::Get()->IsInTabletMode()) {
     button_->SetToggled(true);
-    if (!chromeos::features::IsJellyEnabled()) {
-      views::InkDrop::Get(button_)->AnimateToState(
-          views::InkDropState::ACTIVATED, nullptr);
-    }
   }
 }
 
 void HomeButtonController::OnAppListDismissed() {
   button_->SetToggled(false);
-
-  if (!chromeos::features::IsJellyEnabled()) {
-    // If ink drop is not hidden already, snap it to active state, so animation
-    // to DEACTIVATED state starts immediately (the animation would otherwise
-    // wait for the current animation to finish).
-    views::InkDrop* const ink_drop = views::InkDrop::Get(button_)->GetInkDrop();
-    if (ink_drop->GetTargetInkDropState() != views::InkDropState::HIDDEN) {
-      ink_drop->SnapToActivated();
-    }
-    views::InkDrop::Get(button_)->AnimateToState(
-        views::InkDropState::DEACTIVATED, nullptr);
-  }
 }
 
 void HomeButtonController::InitializeAssistantOverlay() {

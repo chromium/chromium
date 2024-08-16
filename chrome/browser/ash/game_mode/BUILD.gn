@@ -14,7 +14,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/game_mode/testing",

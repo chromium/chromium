@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
-#include "services/device/compute_pressure/pressure_manager_impl.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_provider_impl.h"
@@ -41,6 +40,10 @@
 #include "services/device/battery/battery_monitor_impl.h"
 #include "services/device/battery/battery_status_service.h"
 #include "services/device/hid/hid_manager_impl.h"
+#endif
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "services/device/compute_pressure/pressure_manager_impl.h"
 #endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
@@ -169,11 +172,13 @@ void DeviceService::OverrideGeolocationContextBinderForTesting(
   internal::GetGeolocationContextBinderOverride() = std::move(binder);
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 // static
 void DeviceService::OverridePressureManagerBinderForTesting(
     PressureManagerBinder binder) {
   internal::GetPressureManagerBinderOverride() = std::move(binder);
 }
+#endif
 
 // static
 void DeviceService::OverrideTimeZoneMonitorBinderForTesting(
@@ -190,6 +195,7 @@ void DeviceService::BindBatteryMonitor(
 #endif
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void DeviceService::BindPressureManager(
     mojo::PendingReceiver<mojom::PressureManager> receiver) {
   const auto& binder_override = internal::GetPressureManagerBinderOverride();
@@ -202,6 +208,7 @@ void DeviceService::BindPressureManager(
     pressure_manager_ = PressureManagerImpl::Create();
   pressure_manager_->Bind(std::move(receiver));
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // static

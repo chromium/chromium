@@ -6,9 +6,41 @@
 
 #include "base/memory/ptr_util.h"
 #include "ios/web/public/navigation/navigation_context.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/web_state.h"
+#include "net/http/http_response_headers.h"
 
 namespace commerce {
+
+namespace {
+bool ShouldUpdateRecentlyViewedURL(web::WebState* web_state,
+                                   web::NavigationContext* navigation_context) {
+  if (navigation_context->GetError()) {
+    return false;
+  }
+
+  if (navigation_context->GetResponseHeaders() &&
+      navigation_context->GetResponseHeaders()->response_code() == 404) {
+    return false;
+  }
+
+  if (!navigation_context->HasCommitted() ||
+      !web_state->GetNavigationManager()->GetLastCommittedItem()) {
+    // Navigation was replaced or aborted.
+    return false;
+  }
+
+  web::NavigationItem* last_committed_item =
+      web_state->GetNavigationManager()->GetLastCommittedItem();
+  const GURL& url = last_committed_item->GetURL();
+  if (url.SchemeIs(url::kDataScheme)) {
+    return false;
+  }
+
+  return true;
+}
+}  // namespace
 
 CommerceTabHelper::CommerceTabHelper(web::WebState* state,
                                      bool is_off_the_record,
@@ -44,6 +76,11 @@ void CommerceTabHelper::DidFinishNavigation(
   }
 
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+
+  if (web_state->IsVisible() &&
+      ShouldUpdateRecentlyViewedURL(web_state, navigation_context)) {
+    shopping_service_->OnWebWrapperViewed(web_wrapper_.get());
+  }
 }
 
 void CommerceTabHelper::DidStopLoading(web::WebState* web_state) {

@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
   EXPECT_EQ(
       0u,
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS).size());
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_EVENTS).size());
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
   const UserEventSpecifics specifics = CreateTestEvent(base::Time());
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   UserEventSpecifics retry_specifics;
   GetFakeServer()->OverrideResponseType(base::BindLambdaForTesting(
       [&](const syncer::LoopbackServerEntity& entity) {
-        if (entity.GetModelType() == syncer::USER_EVENTS) {
+        if (entity.GetDataType() == syncer::USER_EVENTS) {
           retry_specifics = entity.GetSpecifics().user_event();
           run_loop.Quit();
         }
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
   bool first_attempt = true;
   GetFakeServer()->OverrideResponseType(base::BindLambdaForTesting(
       [&](const syncer::LoopbackServerEntity& entity) {
-        if (entity.GetModelType() != syncer::USER_EVENTS ||
+        if (entity.GetDataType() != syncer::USER_EVENTS ||
             entity.GetSpecifics().user_event().event_time_usec() !=
                 specifics1.event_time_usec()) {
           return CommitResponse::SUCCESS;
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoQuotaApplied) {
   // Make sure the histogram gets propagated from the sync engine sequence.
   base::StatisticsRecorder::ImportProvidedHistogramsSync();
   // There is no record in the depleted quota histogram.
-  histogram_tester.ExpectTotalCount("Sync.ModelTypeCommitWithDepletedQuota", 0);
+  histogram_tester.ExpectTotalCount("Sync.DataTypeCommitWithDepletedQuota", 0);
 }
 
 }  // namespace

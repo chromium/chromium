@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.USE_SHRINK_CLOSE_ANIMATION;
 
 import android.util.Pair;
 import android.view.View;
@@ -53,16 +54,12 @@ public class TabListItemAnimatorUnitTest {
 
     @Before
     public void setUp() {
-        mItemAnimator =
-                spy(
-                        new TabListItemAnimator(
-                                /* skipRemovalDelay= */ false,
-                                /* rearrangeUseStandardEasing= */ true));
+        mItemAnimator = spy(new TabListItemAnimator(/* rearrangeUseStandardEasing= */ true));
     }
 
     private static void emptyBind(PropertyModel model, View view, PropertyKey key) {}
 
-    private ViewHolder buildViewHolder(@ModelType int modelType) {
+    private ViewHolder buildViewHolder(@ModelType int modelType, boolean useShrinkCloseAnimation) {
         View itemView = mock(View.class);
         when(itemView.getAlpha()).thenReturn(1f);
         when(itemView.getTranslationX()).thenReturn(0f);
@@ -70,8 +67,9 @@ public class TabListItemAnimatorUnitTest {
         when(itemView.getVisibility()).thenReturn(View.VISIBLE);
         var viewHolder = mAdapter.new ViewHolder(itemView, TabListItemAnimatorUnitTest::emptyBind);
         PropertyModel model =
-                new PropertyModel.Builder(new PropertyKey[] {CARD_TYPE})
+                new PropertyModel.Builder(new PropertyKey[] {CARD_TYPE, USE_SHRINK_CLOSE_ANIMATION})
                         .with(CARD_TYPE, modelType)
+                        .with(USE_SHRINK_CLOSE_ANIMATION, useShrinkCloseAnimation)
                         .build();
         viewHolder.model = model;
         return viewHolder;
@@ -83,7 +81,7 @@ public class TabListItemAnimatorUnitTest {
     }
 
     private void animateAddWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateAdd(holder));
         verify(holder.itemView).setAlpha(0f);
@@ -120,7 +118,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateChange_SameViewHolder_NoDelta() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertFalse(mItemAnimator.animateChange(holder, holder, 0, 0, 0, 0));
         verify(mItemAnimator).dispatchMoveFinished(holder);
@@ -128,7 +126,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateChange_SameViewHolder_WithDelta() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateChange(holder, holder, 0, 100, 50, 200));
         verify(holder.itemView).setTranslationX(-50);
@@ -154,7 +152,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateChange_SingleHolder_RunToCompletion() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         float x = 40f;
         float y = 30f;
@@ -192,8 +190,8 @@ public class TabListItemAnimatorUnitTest {
 
     private void animateChangeWithCompletionTrigger(
             Callback<Pair<ViewHolder, ViewHolder>> completionTrigger) {
-        var oldHolder = buildViewHolder(TAB);
-        var newHolder = buildViewHolder(TAB);
+        var oldHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
+        var newHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         float x = 40f;
         float y = 30f;
@@ -262,14 +260,14 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateMove_NoDelta() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertFalse(mItemAnimator.animateMove(holder, 0, 0, 0, 0));
         verify(mItemAnimator).dispatchMoveFinished(holder);
     }
 
     private void animateMoveWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateMove(holder, 400, 200, 50, 100));
         verify(holder.itemView).setTranslationX(350);
@@ -310,7 +308,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateRemove_Alpha0() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
         when(holder.itemView.getAlpha()).thenReturn(0f);
 
         assertFalse(mItemAnimator.animateRemove(holder));
@@ -319,7 +317,7 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateRemove_NotVisible() {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
         when(holder.itemView.getVisibility()).thenReturn(View.INVISIBLE);
 
         assertFalse(mItemAnimator.animateRemove(holder));
@@ -327,7 +325,7 @@ public class TabListItemAnimatorUnitTest {
     }
 
     private void animateTabRemoveWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
-        var holder = buildViewHolder(TAB);
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ true);
 
         assertTrue(mItemAnimator.animateRemove(holder));
 
@@ -338,7 +336,6 @@ public class TabListItemAnimatorUnitTest {
         completionTrigger.onResult(holder);
 
         // Cannot be accurate regarding animation.
-        verify(holder.itemView, atLeastOnce()).setAlpha(0f);
         verify(holder.itemView, atLeastOnce()).setScaleX(anyFloat());
         verify(holder.itemView, atLeastOnce()).setScaleY(anyFloat());
         inOrder.verify(mItemAnimator).dispatchRemoveStarting(holder);
@@ -366,9 +363,8 @@ public class TabListItemAnimatorUnitTest {
         animateTabRemoveWithCompletionTrigger(holder -> mItemAnimator.endAnimations());
     }
 
-    private void animateNonTabRemoveWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
-        var holder = buildViewHolder(MESSAGE);
-
+    private void animateNonTabRemoveWithCompletionTrigger(
+            ViewHolder holder, Callback<ViewHolder> completionTrigger) {
         assertTrue(mItemAnimator.animateRemove(holder));
 
         assertTrue(mItemAnimator.isRunning());
@@ -388,25 +384,34 @@ public class TabListItemAnimatorUnitTest {
 
     @Test
     public void animateRemove_NonTabCard_RunToCompletion() {
-        animateNonTabRemoveWithCompletionTrigger(holder -> runAnimationToCompletion());
+        var holder = buildViewHolder(MESSAGE, /* useShrinkCloseAnimation= */ false);
+        animateNonTabRemoveWithCompletionTrigger(holder, unused -> runAnimationToCompletion());
     }
 
     @Test
     public void animateRemove_NonTabCard_EndAnimation() {
-        animateNonTabRemoveWithCompletionTrigger(mItemAnimator::endAnimation);
+        var holder = buildViewHolder(MESSAGE, /* useShrinkCloseAnimation= */ false);
+        animateNonTabRemoveWithCompletionTrigger(holder, mItemAnimator::endAnimation);
     }
 
     @Test
     public void animateRemove_NonTabCard_EndAnimations() {
-        animateNonTabRemoveWithCompletionTrigger(holder -> mItemAnimator.endAnimations());
+        var holder = buildViewHolder(MESSAGE, /* useShrinkCloseAnimation= */ false);
+        animateNonTabRemoveWithCompletionTrigger(holder, unused -> mItemAnimator.endAnimations());
+    }
+
+    @Test
+    public void animateRemove_TabCardNoShrink() {
+        var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
+        animateNonTabRemoveWithCompletionTrigger(holder, unused -> mItemAnimator.endAnimations());
     }
 
     @Test
     public void multipleAnimationSequencing() {
-        var removedHolder = buildViewHolder(TAB);
-        var movedHolder = buildViewHolder(TAB);
-        var changedHolder = buildViewHolder(TAB);
-        var addedHolder = buildViewHolder(TAB);
+        var removedHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
+        var movedHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
+        var changedHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
+        var addedHolder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         mItemAnimator.animateRemove(removedHolder);
         mItemAnimator.animateMove(movedHolder, 1, 2, 3, 4);

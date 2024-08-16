@@ -5,17 +5,17 @@
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_page_handler_impl.h"
 
 namespace {
-data_sharing_internals::mojom::RoleType MemberRoleToRoleType(
+data_sharing::mojom::MemberRole MemberRoleToRoleType(
     data_sharing::MemberRole member_role) {
   switch (member_role) {
     case data_sharing::MemberRole::kUnknown:
-      return data_sharing_internals::mojom::RoleType::UNKNOWN;
+      return data_sharing::mojom::MemberRole::kUnspecified;
     case data_sharing::MemberRole::kOwner:
-      return data_sharing_internals::mojom::RoleType::OWNER;
+      return data_sharing::mojom::MemberRole::kOwner;
     case data_sharing::MemberRole::kMember:
-      return data_sharing_internals::mojom::RoleType::MEMBER;
+      return data_sharing::mojom::MemberRole::kMember;
     case data_sharing::MemberRole::kInvitee:
-      return data_sharing_internals::mojom::RoleType::INVITEE;
+      return data_sharing::mojom::MemberRole::kInvitee;
   }
 }
 }  // namespace
@@ -50,13 +50,13 @@ void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
     const data_sharing::DataSharingService::GroupsDataSetOrFailureOutcome&
         group_result) {
   if (group_result.has_value()) {
-    std::vector<data_sharing_internals::mojom::GroupDataPtr> group_data;
+    std::vector<data_sharing::mojom::GroupDataPtr> group_data;
     for (const auto& data : group_result.value()) {
-      auto group_entry = data_sharing_internals::mojom::GroupData::New();
+      auto group_entry = data_sharing::mojom::GroupData::New();
       group_entry->group_id = data.group_token.group_id.value();
-      group_entry->name = data.display_name;
+      group_entry->display_name = data.display_name;
       for (const auto& member : data.members) {
-        auto group_member = data_sharing_internals::mojom::GroupMember::New();
+        auto group_member = data_sharing::mojom::GroupMember::New();
         group_member->display_name = member.display_name;
         group_member->email = member.email;
         group_member->role = MemberRoleToRoleType(member.role);
@@ -68,7 +68,7 @@ void DataSharingInternalsPageHandlerImpl::OnGetAllGroupsDone(
     }
     std::move(callback).Run(true, std::move(group_data));
   } else {
-    std::move(callback).Run(
-        false, std::vector<data_sharing_internals::mojom::GroupDataPtr>());
+    std::move(callback).Run(false,
+                            std::vector<data_sharing::mojom::GroupDataPtr>());
   }
 }

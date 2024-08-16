@@ -116,7 +116,7 @@ DialogActivationLocationAndCastMode GetActivationLocationAndCastMode(
     case MediaRouterDialogActivationLocation::TOTAL_COUNT:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

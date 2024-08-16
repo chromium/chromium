@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/web_applications/locks/lock.h"
-#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
@@ -16,7 +16,7 @@ NoopLockDescription::NoopLockDescription()
 NoopLockDescription::NoopLockDescription(NoopLockDescription&&) = default;
 NoopLockDescription::~NoopLockDescription() = default;
 
-NoopLock::NoopLock(std::unique_ptr<content::PartitionedLockHolder> holder,
+NoopLock::NoopLock(std::unique_ptr<PartitionedLockHolder> holder,
                    base::WeakPtr<WebAppLockManager> lock_manager)
     : Lock(std::move(holder), std::move(lock_manager)) {}
 NoopLock::~NoopLock() = default;

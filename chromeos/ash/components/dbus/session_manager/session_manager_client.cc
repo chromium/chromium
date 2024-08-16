@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 #include <stddef.h>
@@ -34,6 +39,7 @@
 #include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/policy_descriptor.h"
 #include "chromeos/dbus/common/blocking_method_caller.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "dbus/bus.h"
@@ -86,17 +92,6 @@ RetrievePolicyResponseType GetPolicyResponseTypeByError(
   return RetrievePolicyResponseType::OTHER_ERROR;
 }
 
-// Creates a PolicyDescriptor object to store/retrieve Chrome policy.
-login_manager::PolicyDescriptor MakeChromePolicyDescriptor(
-    login_manager::PolicyAccountType account_type,
-    const std::string& account_id) {
-  login_manager::PolicyDescriptor descriptor;
-  descriptor.set_account_type(account_type);
-  descriptor.set_account_id(account_id);
-  descriptor.set_domain(login_manager::POLICY_DOMAIN_CHROME);
-  return descriptor;
-}
-
 // Creates a pipe that contains the given data. The data will be prefixed by a
 // size_t sized variable containing the size of the data to read. Since we don't
 // pass this pipe's read end anywhere, we can be sure that the only FD that can
@@ -120,7 +115,7 @@ base::ScopedFD CreatePasswordPipe(const std::string& data) {
   const size_t data_size = data.size();
 
   base::WriteFileDescriptor(pipe_write_end.get(),
-                            base::as_bytes(base::make_span(&data_size, 1u)));
+                            base::byte_span_from_ref(data_size));
   base::WriteFileDescriptor(pipe_write_end.get(), data);
 
   return pipe_read_end;
@@ -528,50 +523,6 @@ class SessionManagerClientImpl : public SessionManagerClient {
                        std::move(callback)));
   }
 
-  void RetrieveDevicePolicy(RetrievePolicyCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
-    CallRetrievePolicy(descriptor, std::move(callback));
-  }
-
-  RetrievePolicyResponseType BlockingRetrieveDevicePolicy(
-      std::string* policy_out) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
-    return BlockingRetrievePolicy(descriptor, policy_out);
-  }
-
-  void RetrievePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
-                             RetrievePolicyCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
-    CallRetrievePolicy(descriptor, std::move(callback));
-  }
-
-  RetrievePolicyResponseType BlockingRetrievePolicyForUser(
-      const cryptohome::AccountIdentifier& cryptohome_id,
-      std::string* policy_out) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
-    return BlockingRetrievePolicy(descriptor, policy_out);
-  }
-
-  void RetrieveDeviceLocalAccountPolicy(
-      const std::string& account_name,
-      RetrievePolicyCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_name);
-    CallRetrievePolicy(descriptor, std::move(callback));
-  }
-
-  RetrievePolicyResponseType BlockingRetrieveDeviceLocalAccountPolicy(
-      const std::string& account_name,
-      std::string* policy_out) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_name);
-    return BlockingRetrievePolicy(descriptor, policy_out);
-  }
-
   void RetrievePolicy(const login_manager::PolicyDescriptor& descriptor,
                       RetrievePolicyCallback callback) override {
     CallRetrievePolicy(descriptor, std::move(callback));
@@ -585,16 +536,18 @@ class SessionManagerClientImpl : public SessionManagerClient {
 
   void StoreDevicePolicy(const std::string& policy_blob,
                          chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
+    login_manager::PolicyDescriptor descriptor =
+        ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_DEVICE,
+                                        kEmptyAccountId);
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                           const std::string& policy_blob,
                           chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
+    login_manager::PolicyDescriptor descriptor =
+        ash::MakeChromePolicyDescriptor(login_manager::ACCOUNT_TYPE_USER,
+                                        cryptohome_id.account_id());
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 
@@ -602,8 +555,9 @@ class SessionManagerClientImpl : public SessionManagerClient {
       const std::string& account_name,
       const std::string& policy_blob,
       chromeos::VoidDBusMethodCallback callback) override {
-    login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
-        login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_name);
+    login_manager::PolicyDescriptor descriptor =
+        ash::MakeChromePolicyDescriptor(
+            login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_name);
     CallStorePolicy(descriptor, policy_blob, std::move(callback));
   }
 

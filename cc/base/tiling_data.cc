@@ -162,25 +162,6 @@ IndexRect TilingData::TileAroundIndexRect(const gfx::Rect& center_rect) const {
   return IndexRect(around_left, around_right, around_top, around_bottom);
 }
 
-gfx::Rect TilingData::ExpandRectIgnoringBordersToTileBounds(
-    const gfx::Rect& rect) const {
-  if (rect.IsEmpty() || has_empty_bounds()) {
-    return gfx::Rect();
-  }
-  if (rect.x() > tiling_rect_.right() || rect.y() > tiling_rect_.bottom()) {
-    return gfx::Rect();
-  }
-  int index_x = TileXIndexFromSrcCoord(rect.x());
-  int index_y = TileYIndexFromSrcCoord(rect.y());
-  int index_right = TileXIndexFromSrcCoord(rect.right() - 1);
-  int index_bottom = TileYIndexFromSrcCoord(rect.bottom() - 1);
-
-  gfx::Rect rect_top_left(TileBounds(index_x, index_y));
-  gfx::Rect rect_bottom_right(TileBounds(index_right, index_bottom));
-
-  return gfx::UnionRects(rect_top_left, rect_bottom_right);
-}
-
 gfx::Rect TilingData::ExpandRectToTileBounds(const gfx::Rect& rect) const {
   if (rect.IsEmpty() || has_empty_bounds()) {
     return gfx::Rect();

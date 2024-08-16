@@ -62,7 +62,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/eol_incentive_util.h"
+#include "chrome/browser/ash/eol/eol_incentive_util.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"

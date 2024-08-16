@@ -1161,7 +1161,10 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
-      return pseudo_class == CSSSelector::kPseudoFocus;
+      // TODO(crbug.com/40824273): User action pseudos should be allowed more
+      // generally after pseudo elements.
+      return pseudo_class == CSSSelector::kPseudoFocus ||
+             pseudo_class == CSSSelector::kPseudoChecked;
     default:
       return false;
   }
@@ -2027,6 +2030,10 @@ CSSSelector::AttributeMatchType CSSSelectorParser::ConsumeAttributeFlags(
 
 bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
                                        std::pair<int, int>& result) {
+  if (stream.AtEnd()) {
+    return false;
+  }
+
   const CSSParserToken& token = stream.Consume();
   if (token.GetType() == kNumberToken &&
       token.GetNumericValueType() == kIntegerValueType) {
@@ -2109,7 +2116,7 @@ bool CSSSelectorParser::ConsumeANPlusB(CSSParserTokenStream& stream,
   result.second = ClampTo<int>(b.NumericValue());
   if (sign == kMinusSign) {
     // Negating minimum integer returns itself, instead return max integer.
-    if (UNLIKELY(result.second == std::numeric_limits<int>::min())) {
+    if (result.second == std::numeric_limits<int>::min()) [[unlikely]] {
       result.second = std::numeric_limits<int>::max();
     } else {
       result.second = -result.second;

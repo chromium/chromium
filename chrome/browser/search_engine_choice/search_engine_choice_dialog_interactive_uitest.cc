@@ -84,6 +84,9 @@ class SearchEngineChoiceDialogInteractiveUiTest
     // the profile country.
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "be");
+
+    command_line->AppendSwitch(
+        switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

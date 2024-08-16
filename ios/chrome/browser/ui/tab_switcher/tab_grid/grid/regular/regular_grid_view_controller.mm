@@ -7,19 +7,59 @@
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
 #import "base/task/sequenced_task_runner.h"
+#import "components/tab_groups/tab_group_id.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/inactive_tabs_button_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/tabs_closure_animation.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_ui_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_preamble_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/web/public/web_state_id.h"
 
 using base::apple::ObjCCast;
+using base::apple::ObjCCastStrict;
 
 namespace {
 
 constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     base::Seconds(0.3);
+
+// Returns the views to animate a tab group closure. If the entire group is to
+// be closed, i.e. all tabs of `group_grid_cell` are in
+// `indexes_in_group_to_close`, then returns the entire tab group grid cell. If
+// only some tabs of the group are to be closed, then it returns only the views
+// inside the group view that correspond to the tabs to be closed.
+NSArray<UIView*>* GetTabGroupViewsToAnimateClosure(
+    GroupGridCell* group_grid_cell,
+    std::set<int> indexes_in_group_to_close) {
+  CHECK(!indexes_in_group_to_close.empty());
+
+  // If the entire group is going to be closed, then animate the entire grid
+  // cell.
+  if ((long)indexes_in_group_to_close.size() == group_grid_cell.tabsCount) {
+    return @[ group_grid_cell ];
+  }
+
+  // If only some of the tabs inside the tab group are going to be closed, then
+  // animate the corresponding views inside the tab group cell.
+  // TODO(crbug.com/354112735): The last view can represent a tab or a counter.
+  // We should adjust the animation to only animate the last view if it
+  // represents a tab or if the tab counter will disappear after the animation.
+  NSArray<UIView*>* all_views = [group_grid_cell allGroupTabViews];
+  NSMutableArray<UIView*>* all_views_to_close = [[NSMutableArray alloc] init];
+  for (NSUInteger index = 0; index < all_views.count; index++) {
+    if (indexes_in_group_to_close.contains(index)) {
+      [all_views_to_close addObject:[all_views objectAtIndex:index]];
+    }
+  }
+  return all_views_to_close;
+}
 
 }  // namespace
 
@@ -27,7 +67,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // Tracks if the Inactive Tabs button is being animated out.
   BOOL _inactiveTabsHeaderHideAnimationInProgress;
   // The number of currently inactive tabs. If there are (inactiveTabsCount > 0)
-  // and the grid is in TabGridModeNormal, a button is displayed at the top,
+  // and the grid is in TabGridMode::kNormal, a button is displayed at the top,
   // advertizing them.
   NSInteger _inactiveTabsCount;
   // The number of days after which tabs are considered inactive. This is
@@ -41,9 +81,50 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   // The supplementary view registration for the Inactive Tabs button header.
   UICollectionViewSupplementaryRegistration*
       _inactiveTabsButtonHeaderRegistration;
-  // The supplementary view registration for the Inactive Tabs preamble header.
-  UICollectionViewSupplementaryRegistration*
-      _inactiveTabsPreambleHeaderRegistration;
+
+  // The object responsible for animating the tabs closure.
+  TabsClosureAnimation* _tabsClosureAnimation;
+}
+
+#pragma mark - Public
+
+- (void)animateTabsClosureForTabs:(std::set<web::WebStateID>)tabsToClose
+                           groups:
+                               (std::map<tab_groups::TabGroupId, std::set<int>>)
+                                   groupsWithTabsToClose
+                  allInactiveTabs:(BOOL)animateAllInactiveTabs
+                completionHandler:(ProceduralBlock)completionHandler {
+  NSMutableArray<UIView*>* gridCells = [[NSMutableArray alloc] init];
+
+  for (NSIndexPath* path in self.collectionView.indexPathsForVisibleItems) {
+    GridItemIdentifier* item =
+        [self.diffableDataSource itemIdentifierForIndexPath:path];
+    UICollectionViewCell* collectionViewCell =
+        [self.collectionView cellForItemAtIndexPath:path];
+    if (item.type == GridItemType::kTab &&
+        tabsToClose.contains(item.tabSwitcherItem.identifier)) {
+      [gridCells addObject:collectionViewCell];
+    } else if (item.type == GridItemType::kGroup &&
+               groupsWithTabsToClose.contains(
+                   item.tabGroupItem.tabGroup->tab_group_id())) {
+      [gridCells addObjectsFromArray:
+                     GetTabGroupViewsToAnimateClosure(
+                         ObjCCastStrict<GroupGridCell>(collectionViewCell),
+                         groupsWithTabsToClose[item.tabGroupItem.tabGroup
+                                                   ->tab_group_id()])];
+    } else if (item.type == GridItemType::kInactiveTabsButton &&
+               animateAllInactiveTabs) {
+      [gridCells addObject:collectionViewCell];
+    }
+  }
+
+  __weak RegularGridViewController* weakSelf = self;
+  _tabsClosureAnimation =
+      [[TabsClosureAnimation alloc] initWithWindow:self.view.window
+                                         gridCells:gridCells];
+  [_tabsClosureAnimation animateWithCompletion:^{
+    [weakSelf onTabsClosureAnimationEndWithCompletion:completionHandler];
+  }];
 }
 
 #pragma mark - Parent's functions
@@ -54,25 +135,17 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
 - (UICollectionReusableView*)headerForSectionAtIndexPath:
     (NSIndexPath*)indexPath {
-  if (self.mode == TabGridModeNormal) {
-    if (IsInactiveTabButtonRefactoringEnabled()) {
-      return [super headerForSectionAtIndexPath:indexPath];
-    }
+  if (IsInactiveTabButtonRefactoringEnabled()) {
+    return [super headerForSectionAtIndexPath:indexPath];
+  }
+
+  if (self.mode == TabGridMode::kNormal) {
     CHECK(IsInactiveTabsAvailable());
     // The Regular Tabs grid has a button to inform about the hidden inactive
     // tabs.
     return [self.collectionView
         dequeueConfiguredReusableSupplementaryViewWithRegistration:
             _inactiveTabsButtonHeaderRegistration
-                                                      forIndexPath:indexPath];
-  }
-  if (self.mode == TabGridModeInactive) {
-    CHECK(IsInactiveTabsAvailable());
-    // The Inactive Tabs grid has a header to inform about the feature and a
-    // link to its settings.
-    return [self.collectionView
-        dequeueConfiguredReusableSupplementaryViewWithRegistration:
-            _inactiveTabsPreambleHeaderRegistration
                                                       forIndexPath:indexPath];
   }
   return [super headerForSectionAtIndexPath:indexPath];
@@ -121,20 +194,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
                               configureInactiveTabsButtonHeader];
   }
 
-  // Register InactiveTabsPreambleHeader.
-  auto configureInactiveTabsPreambleHeader =
-      ^(InactiveTabsPreambleHeader* header, NSString* elementKind,
-        NSIndexPath* indexPath) {
-        [weakSelf configureInactiveTabsPreambleHeader:header];
-      };
-  _inactiveTabsPreambleHeaderRegistration =
-      [UICollectionViewSupplementaryRegistration
-          registrationWithSupplementaryClass:[InactiveTabsPreambleHeader class]
-                                 elementKind:
-                                     UICollectionElementKindSectionHeader
-                        configurationHandler:
-                            configureInactiveTabsPreambleHeader];
-
   [super createRegistrations];
 }
 
@@ -144,7 +203,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
     return [super tabsSectionHeaderTypeForMode:mode];
   }
 
-  if (mode == TabGridModeNormal) {
+  if (mode == TabGridMode::kNormal) {
     if (!IsInactiveTabsAvailable()) {
       return TabsSectionHeaderType::kNone;
     }
@@ -226,9 +285,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
       [self updateInactiveTabsButtonHeader];
     }
   }
-
-  // Update the preamble.
-  [self updateInactiveTabsPreambleHeader];
 }
 
 #pragma mark - Actions
@@ -239,12 +295,19 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [self.delegate didTapInactiveTabsButtonInGridViewController:self];
 }
 
-// Called when the Inactive Tabs settings link is tapped.
-- (void)didTapInactiveTabsSettingsLink {
-  [self.delegate didTapInactiveTabsSettingsLinkInGridViewController:self];
-}
-
 #pragma mark - Private
+
+// Callback of `_tabsClosureAnimation` when the animation has been completed.
+// Closes the actual tabs in `tabsToClose`.
+- (void)onTabsClosureAnimationEndWithCompletion:
+    (ProceduralBlock)closeSelectedTabsOnCompletion {
+  CHECK(closeSelectedTabsOnCompletion);
+  // Close selected tabs which which rearranges the grid to not include the tabs
+  // hidden by the animation.
+  closeSelectedTabsOnCompletion();
+
+  _tabsClosureAnimation = nil;
+}
 
 // Updates the inactive tabs button (reconfigure, show or remove) based on its
 // visible state.
@@ -255,7 +318,7 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
 
   BOOL isEnabled = _inactiveTabsDaysThreshold != kInactiveTabsDisabledByUser;
   BOOL hasInactiveTabs = _inactiveTabsCount != 0;
-  BOOL isInNormalMode = self.mode == TabGridModeNormal;
+  BOOL isInNormalMode = self.mode == TabGridMode::kNormal;
 
   BOOL visible = isEnabled && hasInactiveTabs && isInNormalMode;
 
@@ -377,21 +440,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [self configureInactiveTabsButtonHeader:header];
 }
 
-// Reconfigures the Inactive Tabs preamble header.
-- (void)updateInactiveTabsPreambleHeader {
-  NSInteger tabSectionIndex = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:tabSectionIndex];
-  InactiveTabsPreambleHeader* header =
-      ObjCCast<InactiveTabsPreambleHeader>([self.collectionView
-          supplementaryViewForElementKind:UICollectionElementKindSectionHeader
-                              atIndexPath:indexPath]);
-  // Note: At this point, `header` could be nil if not visible, or if the
-  // supplementary view is not an InactiveTabsPreambleHeader.
-  header.daysThreshold = _inactiveTabsDaysThreshold;
-}
-
 // Configures `cell` according to the current state.
 - (void)configureInativeTabsButtonCell:(InactiveTabsButtonCell*)cell {
   cell.count = _inactiveTabsCount;
@@ -409,17 +457,6 @@ constexpr base::TimeDelta kInactiveTabsHeaderAnimationDuration =
   [header configureWithDaysThreshold:_inactiveTabsDaysThreshold];
   [header configureWithCount:_inactiveTabsCount];
   header.hidden = _inactiveTabsCount == 0;
-}
-
-// Configures the Inactive Tabs Preamble header according to the current state.
-- (void)configureInactiveTabsPreambleHeader:
-    (InactiveTabsPreambleHeader*)header {
-  __weak __typeof(self) weakSelf = self;
-  header.settingsLinkAction = ^{
-    [weakSelf didTapInactiveTabsSettingsLink];
-  };
-  header.daysThreshold = _inactiveTabsDaysThreshold;
-  header.hidden = !IsInactiveTabsEnabled();
 }
 
 @end

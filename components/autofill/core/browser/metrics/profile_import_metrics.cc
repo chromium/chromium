@@ -155,6 +155,12 @@ void LogNewProfileImportDecision(
   }
 }
 
+void LogNewProfileStorageLocation(const AutofillProfile& import_candidate) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.StorageNewAddressIsSavedTo",
+      import_candidate.source());
+}
+
 void LogProfileUpdateImportDecision(
     AutofillClient::AddressPromptUserDecision decision,
     const std::vector<const AutofillProfile*>& existing_profiles,

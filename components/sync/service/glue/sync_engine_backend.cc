@@ -25,14 +25,14 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_manager.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "components/sync/model/forwarding_model_type_controller_delegate.h"
-#include "components/sync/nigori/nigori_model_type_processor.h"
+#include "components/sync/model/forwarding_data_type_controller_delegate.h"
+#include "components/sync/nigori/nigori_data_type_processor.h"
 #include "components/sync/nigori/nigori_storage_impl.h"
 #include "components/sync/nigori/nigori_sync_bridge_impl.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/service/configure_context.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/glue/sync_engine_impl.h"
-#include "components/sync/service/model_type_controller.h"
 
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncers involved.
@@ -46,9 +46,12 @@ namespace {
 const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
-void RecordInvalidationPerModelType(ModelType type) {
+void RecordInvalidationPerDataType(DataType type) {
+  UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerDataType",
+                            DataTypeHistogramValue(type));
+  // Legacy equivalent, before the metric was renamed.
   UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
-                            ModelTypeHistogramValue(type));
+                            DataTypeHistogramValue(type));
 }
 
 void RecordIncomingInvalidationStatus(
@@ -87,7 +90,7 @@ void SyncEngineBackend::OnSyncCycleCompleted(
              snapshot);
 }
 
-void SyncEngineBackend::DoRefreshTypes(ModelTypeSet types) {
+void SyncEngineBackend::DoRefreshTypes(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_manager_->RefreshTypes(types);
 }
@@ -107,7 +110,7 @@ void SyncEngineBackend::OnActionableProtocolError(
              sync_error);
 }
 
-void SyncEngineBackend::OnMigrationRequested(ModelTypeSet types) {
+void SyncEngineBackend::OnMigrationRequested(DataTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_.Call(FROM_HERE, &SyncEngineImpl::HandleMigrationRequestedOnFrontendLoop,
              types);
@@ -145,13 +148,13 @@ void SyncEngineBackend::DoInitialize(
 
   authenticated_account_id_ = params.authenticated_account_info.account_id;
 
-  auto nigori_processor = std::make_unique<NigoriModelTypeProcessor>();
+  auto nigori_processor = std::make_unique<NigoriDataTypeProcessor>();
   // Note: NIGORI always runs in SyncMode::kFull (see
   // `LoadAndConnectNigoriController`), so there's no need to create a
   // `delegate_for_transport_mode`.
-  nigori_controller_ = std::make_unique<ModelTypeController>(
+  nigori_controller_ = std::make_unique<DataTypeController>(
       NIGORI,
-      std::make_unique<ForwardingModelTypeControllerDelegate>(
+      std::make_unique<ForwardingDataTypeControllerDelegate>(
           nigori_processor->GetControllerDelegate().get()),
       /*delegate_for_transport_mode=*/nullptr);
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
@@ -184,10 +187,10 @@ void SyncEngineBackend::DoInitialize(
                                ? CONFIGURE_REASON_NEW_CLIENT
                                : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
 
-  ModelTypeSet new_control_types =
+  DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
 
-  SDVLOG(1) << "Control Types " << ModelTypeSetToDebugString(new_control_types)
+  SDVLOG(1) << "Control Types " << DataTypeSetToDebugString(new_control_types)
             << " added; calling ConfigureSyncer";
 
   sync_manager_->ConfigureSyncer(
@@ -255,7 +258,7 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
 
   host_.Call(FROM_HERE,
              &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-             sync_manager_->GetModelTypeConnectorProxy(),
+             sync_manager_->GetDataTypeConnectorProxy(),
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
 }
 
@@ -289,7 +292,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
     // null or both non-null.
     DCHECK(nigori_controller_);
 
-    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
+    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
 
     if (reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       nigori_controller_->Stop(ShutdownReasonToSyncStopMetadataFate(reason),
@@ -311,7 +314,7 @@ void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
+void SyncEngineBackend::DoPurgeDisabledTypes(const DataTypeSet& to_purge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (to_purge.Has(NIGORI)) {
     // We are using USS implementation of Nigori and someone asked us to purge
@@ -322,7 +325,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
     // TODO(crbug.com/40154783): Evaluate whether this logic is necessary at
     // all. There's no "purging" logic for any other data type, so likely it's
     // not necessary for NIGORI either.
-    sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
+    sync_manager_->GetDataTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(SyncStopMetadataFate::CLEAR_METADATA,
                              base::DoNothing());
     LoadAndConnectNigoriController();
@@ -330,7 +333,7 @@ void SyncEngineBackend::DoPurgeDisabledTypes(const ModelTypeSet& to_purge) {
 }
 
 void SyncEngineBackend::DoConfigureSyncer(
-    ModelTypeConfigurer::ConfigureParams params) {
+    DataTypeConfigurer::ConfigureParams params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!params.ready_task.is_null());
 
@@ -347,17 +350,17 @@ void SyncEngineBackend::DoConfigureSyncer(
 }
 
 void SyncEngineBackend::DoFinishConfigureDataTypes(
-    ModelTypeSet types_to_download,
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task) {
+    DataTypeSet types_to_download,
+    base::OnceCallback<void(DataTypeSet, DataTypeSet)> ready_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Update the enabled types for the bridge and sync manager.
-  const ModelTypeSet enabled_types = sync_manager_->GetConnectedTypes();
+  const DataTypeSet enabled_types = sync_manager_->GetConnectedTypes();
   DCHECK(Difference(enabled_types, ProtocolTypes()).empty());
 
-  const ModelTypeSet failed_types =
+  const DataTypeSet failed_types =
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
-  const ModelTypeSet succeeded_types =
+  const DataTypeSet succeeded_types =
       Difference(types_to_download, failed_types);
   CHECK_EQ(
       succeeded_types,
@@ -404,7 +407,7 @@ void SyncEngineBackend::DoOnCookieJarChanged(bool account_mismatch,
 
 void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
     const std::string& payload,
-    const ModelTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const IncomingInvalidationStatus status =
       DoOnStandaloneInvalidationReceivedImpl(payload, interested_data_types);
@@ -414,13 +417,13 @@ void SyncEngineBackend::DoOnStandaloneInvalidationReceived(
 SyncEngineBackend::IncomingInvalidationStatus
 SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
     const std::string& payload,
-    const ModelTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types) {
   sync_pb::SyncInvalidationsPayload payload_message;
   if (!payload_message.ParseFromString(payload)) {
     return IncomingInvalidationStatus::kPayloadParseFailed;
   }
 
-  bool contains_valid_model_type = false;
+  bool contains_valid_data_type = false;
 
   std::vector<int> field_numbers;
   field_numbers.reserve(payload_message.data_type_invalidations_size());
@@ -428,15 +431,15 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
        payload_message.data_type_invalidations()) {
     field_numbers.push_back(data_type_invalidation.data_type_id());
   }
-  for (auto model_type :
-       GetModelTypeSetFromSpecificsFieldNumberList(field_numbers)) {
-    if (!interested_data_types.Has(model_type)) {
+  for (auto data_type :
+       GetDataTypeSetFromSpecificsFieldNumberList(field_numbers)) {
+    if (!interested_data_types.Has(data_type)) {
       // Filter out invalidations for unsubscribed data types.
       continue;
     }
 
-    contains_valid_model_type = true;
-    RecordInvalidationPerModelType(model_type);
+    contains_valid_data_type = true;
+    RecordInvalidationPerDataType(data_type);
     std::optional<int64_t> version;
     if (payload_message.has_version()) {
       version = payload_message.version();
@@ -444,12 +447,12 @@ SyncEngineBackend::DoOnStandaloneInvalidationReceivedImpl(
     std::unique_ptr<SyncInvalidation> inv_adapter =
         std::make_unique<SyncInvalidationAdapter>(payload_message.hint(),
                                                   version);
-    sync_manager_->OnIncomingInvalidation(model_type, std::move(inv_adapter));
+    sync_manager_->OnIncomingInvalidation(data_type, std::move(inv_adapter));
   }
-  if (contains_valid_model_type) {
+  if (contains_valid_data_type) {
     return IncomingInvalidationStatus::kSuccess;
   }
-  return IncomingInvalidationStatus::kUnknownModelType;
+  return IncomingInvalidationStatus::kUnknownDataType;
 }
 
 void SyncEngineBackend::DoOnActiveDevicesChanged(
@@ -474,7 +477,7 @@ bool SyncEngineBackend::HasUnsyncedItemsForTest() const {
   return sync_manager_->HasUnsyncedItemsForTest();
 }
 
-ModelTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
+DataTypeSet SyncEngineBackend::GetTypesWithUnsyncedData() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sync_manager_);
   return sync_manager_->GetTypesWithUnsyncedData();
@@ -492,8 +495,8 @@ void SyncEngineBackend::LoadAndConnectNigoriController() {
       .sync_mode = SyncMode::kFull,
       .configuration_start_time = base::Time::Now()};
   nigori_controller_->LoadModels(configure_context, base::DoNothing());
-  DCHECK_EQ(nigori_controller_->state(), ModelTypeController::MODEL_LOADED);
-  sync_manager_->GetModelTypeConnector()->ConnectDataType(
+  DCHECK_EQ(nigori_controller_->state(), DataTypeController::MODEL_LOADED);
+  sync_manager_->GetDataTypeConnector()->ConnectDataType(
       NIGORI, nigori_controller_->Connect());
 }
 

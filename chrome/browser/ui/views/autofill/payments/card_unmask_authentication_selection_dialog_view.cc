@@ -12,6 +12,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -41,7 +42,7 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -59,7 +60,7 @@ CardUnmaskAuthenticationSelectionDialogView::
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
 
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));

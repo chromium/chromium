@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace gcm {
@@ -47,8 +47,8 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
   std::optional<std::string> GetFCMRegistrationToken() const override;
   void SetInterestedDataTypesHandler(
       InterestedDataTypesHandler* handler) override;
-  std::optional<ModelTypeSet> GetInterestedDataTypes() const override;
-  void SetInterestedDataTypes(const ModelTypeSet& data_types) override;
+  std::optional<DataTypeSet> GetInterestedDataTypes() const override;
+  void SetInterestedDataTypes(const DataTypeSet& data_types) override;
   void SetCommittedAdditionalInterestedDataTypesCallback(
       InterestedDataTypesAppliedCallback callback) override;
 
@@ -63,7 +63,7 @@ class SyncInvalidationsServiceImpl : public SyncInvalidationsService {
 
   std::unique_ptr<FCMHandler> fcm_handler_;
   raw_ptr<InterestedDataTypesHandler> interested_data_types_handler_ = nullptr;
-  std::optional<ModelTypeSet> interested_data_types_;
+  std::optional<DataTypeSet> interested_data_types_;
 };
 
 }  // namespace syncer

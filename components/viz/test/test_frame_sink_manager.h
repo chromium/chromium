@@ -16,6 +16,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager_test_api.mojom.h"
+#include "services/viz/privileged/mojom/compositing/frame_sinks_metrics_recorder.mojom.h"
 
 namespace viz {
 
@@ -48,7 +50,9 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
       const FrameSinkId& frame_sink_id,
       const std::optional<FrameSinkBundleId>& bundle_id,
       mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
-      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client) override {}
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client,
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient> rir_client)
+      override {}
   void DestroyCompositorFrameSink(
       const FrameSinkId& frame_sink_id,
       DestroyCompositorFrameSinkCallback callback) override {}
@@ -78,23 +82,14 @@ class TestFrameSinkManagerImpl : public mojom::FrameSinkManager {
                 base::TimeDelta interval) override {}
   void StartThrottlingAllFrameSinks(base::TimeDelta interval) override {}
   void StopThrottlingAllFrameSinks() override {}
-  void StartFrameCountingForTest(base::TimeTicks start_time,
-                                 base::TimeDelta bucket_size) override {}
-  void StopFrameCountingForTest(
-      StopFrameCountingForTestCallback callback) override {}
-  void StartOverdrawTrackingForTest(const FrameSinkId& root_frame_sink_id,
-                                    base::TimeDelta bucket_size) override {}
-  void StopOverdrawTrackingForTest(
-      const FrameSinkId& root_frame_sink_id,
-      mojom::FrameSinkManager::StopOverdrawTrackingForTestCallback callback)
-      override {}
   void ClearUnclaimedViewTransitionResources(
       const blink::ViewTransitionToken& transition_token) override {}
-  void HasUnclaimedViewTransitionResourcesForTest(
-      HasUnclaimedViewTransitionResourcesForTestCallback callback) override {}
-  void SetSameDocNavigationScreenshotSizeForTesting(
-      const gfx::Size& result_size,
-      SetSameDocNavigationScreenshotSizeForTestingCallback callback) override {}
+  void CreateMetricsRecorderForTest(
+      mojo::PendingReceiver<mojom::FrameSinksMetricsRecorder> receiver)
+      override {}
+  void EnableFrameSinkManagerTestApi(
+      mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) override {
+  }
 
   mojo::Receiver<mojom::FrameSinkManager> receiver_{this};
   mojo::Remote<mojom::FrameSinkManagerClient> client_;

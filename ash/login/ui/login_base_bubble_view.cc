@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/system_shadow.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -291,7 +290,7 @@ void LoginBaseBubbleView::OnLayerAnimationEnded(
 void LoginBaseBubbleView::OnLayerAnimationAborted(
     ui::LayerAnimationSequence* sequence) {
   // The animation for this view should never be aborted.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::Size LoginBaseBubbleView::CalculatePreferredSize(
@@ -336,10 +335,8 @@ gfx::Rect LoginBaseBubbleView::GetBoundsAvailableToShowBubble() const {
 views::View* LoginBaseBubbleView::GetAnchorView() const {
   if (anchor_view_.WasInvalidated()) {
     // TODO(crbug.com/1171827): This is to detect dangling anchor_view_
-    // pointers. This should not cause a crash, but is still indicative of UI
-    // bugs.
-    base::debug::DumpWithoutCrashing();
-    NOTREACHED_IN_MIGRATION();
+    // pointers.
+    NOTREACHED();
   }
   return anchor_view_.get();
 }

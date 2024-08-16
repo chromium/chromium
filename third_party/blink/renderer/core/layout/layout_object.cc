@@ -160,7 +160,7 @@ LayoutObject* FindAncestorByPredicate(const LayoutObject* descendant,
     if (skip_info)
       skip_info->Update(*object);
 
-    if (UNLIKELY(object->IsColumnSpanAll())) {
+    if (object->IsColumnSpanAll()) [[unlikely]] {
       // The containing block chain goes directly from the column spanner to the
       // multi-column container.
       const auto* multicol_container =
@@ -358,6 +358,10 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   switch (style.Display()) {
     case EDisplay::kNone:
     case EDisplay::kContents:
+    // TODO(ethavar): Return the appropriate `LayoutMasonry` object once we
+    // introduce `MasonryLayoutAlgorithm`.
+    case EDisplay::kMasonry:
+    case EDisplay::kInlineMasonry:
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
@@ -702,14 +706,14 @@ void LayoutObject::AddChild(LayoutObject* new_child,
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
-  } else if (LIKELY(new_child->IsHorizontalWritingMode()) ||
-             !new_child->IsText()) {
+  } else if (new_child->IsHorizontalWritingMode() || !new_child->IsText())
+      [[likely]] {
     children->InsertChildNode(this, new_child, before_child);
   } else if (IsA<LayoutTextCombine>(*this)) {
     DCHECK(LayoutTextCombine::ShouldBeParentOf(*new_child)) << new_child;
     new_child->SetStyle(Style());
     children->InsertChildNode(this, new_child, before_child);
-  } else if (!IsHorizontalTypographicMode(StyleRef().GetWritingMode()) &&
+  } else if (!IsHorizontalTypographicMode() &&
              LayoutTextCombine::ShouldBeParentOf(*new_child)) {
     if (before_child) {
       if (IsA<LayoutTextCombine>(before_child)) {
@@ -1287,8 +1291,9 @@ LayoutBox* LayoutObject::ContainingNGBox() const {
     return nullptr;
   // Flow threads should be invisible to LayoutNG, so skip to the multicol
   // container.
-  if (UNLIKELY(containing_block->IsLayoutFlowThread()))
+  if (containing_block->IsLayoutFlowThread()) [[unlikely]] {
     containing_block = To<LayoutBlockFlow>(containing_block->Parent());
+  }
   if (!containing_block->IsLayoutNGObject())
     return nullptr;
   return containing_block;
@@ -1357,13 +1362,13 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 
   // OOF-positioned objects which rely on their static-position for placement
   // cannot be relayout boundaries (their final position would be incorrect).
-  // TODO(crbug.com/1477314): Ignoring inset-area means we may not allow using
-  // the object as a relayout boundary even if inset-area causes the object to
-  // not rely on static position.
+  // TODO(crbug.com/40280256): Ignoring position-area means we may not allow
+  // using the object as a relayout boundary even if position-area causes the
+  // object to not rely on static position.
   const ComputedStyle* style = box->Style();
   if (box->IsOutOfFlowPositioned() &&
-      (style->HasAutoLeftAndRightIgnoringInsetArea() ||
-       style->HasAutoTopAndBottomIgnoringInsetArea())) {
+      (style->HasAutoLeftAndRightIgnoringPositionArea() ||
+       style->HasAutoTopAndBottomIgnoringPositionArea())) {
     return false;
   }
 
@@ -1487,8 +1492,8 @@ void LayoutObject::SetNeedsCollectInlines() {
   if (NeedsCollectInlines())
     return;
 
-  if (UNLIKELY(IsSVGChild() && !IsSVGText() && !IsSVGInline() &&
-               !IsSVGInlineText() && !IsSVGForeignObject())) {
+  if (IsSVGChild() && !IsSVGText() && !IsSVGInline() && !IsSVGInlineText() &&
+      !IsSVGForeignObject()) [[unlikely]] {
     return;
   }
 
@@ -1505,7 +1510,7 @@ void LayoutObject::SetChildNeedsCollectInlines() {
   LayoutObject* object = this;
   do {
     // Should not stop at |LayoutFlowThread| as |CollectInlines()| skips them.
-    if (UNLIKELY(object->IsLayoutFlowThread())) {
+    if (object->IsLayoutFlowThread()) [[unlikely]] {
       object = object->Parent();
       continue;
     }
@@ -1529,6 +1534,9 @@ namespace {
 bool HasPropagatedLayoutObjects(const LayoutObject* object) {
   if (auto* box = DynamicTo<LayoutBox>(object)) {
     for (const auto& fragment : box->PhysicalFragments()) {
+      if (fragment.IsLayoutObjectDestroyedOrMoved()) {
+        return true;
+      }
       if (fragment.HasPropagatedLayoutObjects()) {
         return true;
       }
@@ -2654,7 +2662,9 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdFirstLetter ||
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
-         pseudo_style->StyleType() == kPseudoIdScrollMarker);
+         pseudo_style->StyleType() == kPseudoIdScrollMarker ||
+         pseudo_style->StyleType() == kPseudoIdScrollNextButton ||
+         pseudo_style->StyleType() == kPseudoIdScrollPrevButton);
 
   InheritIsInDetachedNonDomTree(owner);
 
@@ -2682,7 +2692,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     return;
   }
 
-  if (IsText() && Parent() && UNLIKELY(Parent()->IsInitialLetterBox())) {
+  if (IsText() && Parent() && Parent()->IsInitialLetterBox()) [[unlikely]] {
     // Note: `Parent()` can be null for text for generated contents.
     // See "accessibility/css-generated-content.html"
     const ComputedStyle* initial_letter_text_style =
@@ -2692,7 +2702,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
     return;
   }
 
-  if (IsText() && UNLIKELY(IsA<LayoutTextCombine>(Parent()))) {
+  if (IsText() && IsA<LayoutTextCombine>(Parent())) [[unlikely]] {
     // See http://crbug.com/1222640
     ComputedStyleBuilder combined_text_style_builder =
         GetDocument()
@@ -3234,10 +3244,12 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     SetNeedsLayoutAndIntrinsicWidthsRecalc(
         layout_invalidation_reason::kStyleChange);
   } else if (diff.NeedsPositionedMovementLayout()) {
-    if (StyleRef().HasOutOfFlowPosition()) {
-      ContainingBlock()->SetNeedsSimplifiedLayout();
-    } else {
-      ContainingBlock()->SetChildNeedsLayout();
+    if (auto* containing_block = ContainingBlock()) {
+      if (StyleRef().HasOutOfFlowPosition()) {
+        containing_block->SetNeedsSimplifiedLayout();
+      } else {
+        containing_block->SetChildNeedsLayout();
+      }
     }
   }
 
@@ -4595,7 +4607,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
 
 SVGLayoutResult LayoutObject::UpdateSVGLayout(const SVGLayoutInfo&) {
   NOT_DESTROYED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::RectF LayoutObject::ObjectBoundingBox() const {

@@ -416,11 +416,27 @@ void VideoCaptureManager::OnDeviceConnectionLost(
       media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost);
 }
 
+void VideoCaptureManager::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  video_capture_provider_->OpenNativeScreenCapturePicker(
+      type, std::move(picker_callback), std::move(cancel_callback),
+      std::move(error_callback));
+}
+
+void VideoCaptureManager::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  video_capture_provider_->CloseNativeScreenCapturePicker(device_id);
+}
+
 void VideoCaptureManager::ConnectClient(
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
     VideoCaptureControllerID client_id,
     VideoCaptureControllerEventHandler* client_handler,
+    std::optional<url::Origin> origin,
     DoneCB done_cb,
     BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -442,10 +458,21 @@ void VideoCaptureManager::ConnectClient(
     return;
   }
 
+  bool client_exist =
+      controller->HasActiveClient() || controller->HasPausedClient();
+  base::UmaHistogramBoolean("Media.VideoCapture.StreamShared", client_exist);
+  if (client_exist) {
+    std::optional<url::Origin> first_client_origin =
+        controller->GetFirstClientOrigin();
+    bool same_origin = first_client_origin.has_value() && origin.has_value() &&
+                       *first_client_origin == *origin;
+    base::UmaHistogramBoolean("Media.VideoCapture.StreamSharedSameOrigin",
+                              same_origin);
+  }
+
   // First client starts the device. Device can't be started while the screen is
   // locked.
-  if (!controller->HasActiveClient() && !controller->HasPausedClient() &&
-      lock_time_.is_null()) {
+  if (!client_exist && lock_time_.is_null()) {
     std::ostringstream string_stream;
     string_stream
         << "VideoCaptureManager queueing device start for device_id = "
@@ -469,7 +496,7 @@ void VideoCaptureManager::ConnectClient(
 
   // Run the callback first, as AddClient() may trigger OnFrameInfo().
   std::move(done_cb).Run(controller->GetWeakPtrForIOThread());
-  controller->AddClient(client_id, client_handler, session_id, params);
+  controller->AddClient(client_id, client_handler, session_id, params, origin);
 }
 
 void VideoCaptureManager::DisconnectClient(
@@ -839,6 +866,11 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
                   << controller->stream_type()
                   << ", device_id = " << controller->device_id() << ")";
     EmitLogMessage(string_stream.str(), 1);
+
+    // Close the native OS picker as the associated VideoCaptureDevice is being
+    // closed.
+    CloseNativeScreenCapturePicker(
+        DesktopMediaID::Parse(controller->device_id()));
 
     // The VideoCaptureController is removed from |controllers_| immediately.
     // The controller is deleted immediately, and the device is freed

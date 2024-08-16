@@ -17,6 +17,7 @@ class Rect;
 
 namespace ash {
 
+class SnapGroup;
 class SplitViewDivider;
 
 SplitViewDivider* GetTopmostSnapGroupDivider();
@@ -30,6 +31,16 @@ void SnapTwoTestWindows(aura::Window* window1,
                         aura::Window* window2,
                         bool horizontal,
                         ui::test::EventGenerator* event_generator);
+
+// Verifies that the union bounds of `w1`, `w2` and the divider are equal to
+// the bounds of the work area with no overlap.
+void UnionBoundsEqualToWorkAreaBounds(aura::Window* w1,
+                                      aura::Window* w2,
+                                      SplitViewDivider* divider);
+
+// Verifies that the union bounds of the windows and divider in `snap_group` are
+// equal to the bounds of the work area with no overlap.
+void UnionBoundsEqualToWorkAreaBounds(SnapGroup* snap_group);
 
 }  // namespace ash
 

@@ -121,8 +121,7 @@ LayoutParams BuildLayoutForStyle(LoginDisplayStyle style) {
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return LayoutParams();
+      NOTREACHED();
     }
   }
 }
@@ -138,10 +137,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
       SkColor dark_muted_color = view->GetColorProvider()->GetColor(
           kColorAshLoginScrollableUserListBackground);
 
-      ui::ColorId tint_color_id =
-          chromeos::features::IsJellyEnabled()
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-              : kColorAshShieldAndBase80;
+      ui::ColorId tint_color_id = cros_tokens::kCrosSysScrim2;
 
       SkColor tint_color = color_utils::GetResultingPaintColor(
           view->GetColorProvider()->GetColor(tint_color_id),
@@ -159,8 +155,7 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
       return params;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return GradientParams();
+      NOTREACHED();
     }
   }
 }
@@ -327,10 +322,7 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
 
-    ui::ColorId background_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-            : kColorAshShieldAndBase80;
+    ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
     flags.setColor(GetColorProvider()->GetColor(background_color_id));
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);

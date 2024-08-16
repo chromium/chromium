@@ -994,7 +994,7 @@ public class TabDragSourceTest {
         StripLayoutTab stripTab = mock(StripLayoutTab.class);
         when(stripTab.getWidth()).thenReturn(tabWidth);
         when(stripTab.getDrawX()).thenReturn(drawX);
-        when(stripTab.getId()).thenReturn(10);
+        when(stripTab.getTabId()).thenReturn(10);
         when(mDestStripLayoutHelper.getTabAtPosition(POS_X)).thenReturn(stripTab);
     }
 

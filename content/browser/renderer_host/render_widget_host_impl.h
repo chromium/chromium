@@ -746,6 +746,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // getting rid of this.
   blink::VisualProperties GetInitialVisualProperties();
 
+  // Clears the state of the VisualProperties of this widget.
+  void ClearVisualProperties();
+
   // Pushes updated visual properties to the renderer as well as whether the
   // focused node should be scrolled into view.
   bool SynchronizeVisualProperties(bool scroll_focused_node_into_view,
@@ -1503,6 +1506,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   const viz::FrameSinkId frame_sink_id_;
 
+  // Used to avoid unnecessary IPC calls when ForwardDelegatedInkPoint receives
+  // the same point twice.
+  std::optional<gfx::DelegatedInkPoint> last_delegated_ink_point_sent_;
+
   bool sent_autoscroll_scroll_begin_ = false;
   gfx::PointF autoscroll_start_position_;
 
@@ -1562,6 +1569,9 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   bool view_is_frame_sink_id_owner_{false};
 
   std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
+
+  std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
+      viz_rir_client_remote_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

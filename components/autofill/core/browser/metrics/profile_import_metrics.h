@@ -171,6 +171,9 @@ void LogPhoneNumberImportParsingResult(bool parsed_successfully);
 // Logs that a specific type was edited in a save prompt.
 void LogNewProfileEditedType(FieldType edited_type);
 
+// Logs which storage a newly imported profile will be saved to.
+void LogNewProfileStorageLocation(const AutofillProfile& import_candidate);
+
 // Logs that a specific type changed in a profile update that received the
 // user |decision|. Note that additional manual edits in the update prompt are
 // not accounted for in this metric.

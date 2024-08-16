@@ -266,6 +266,8 @@ class AwContents : public FindHelper::Listener,
   gfx::Point GetLocationOnScreen() override;
   void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) override;
+  void SetPreferredFrameInterval(
+      base::TimeDelta preferred_frame_interval) override;
 
   // |new_value| is in physical pixel scale.
   void ScrollContainerViewTo(const gfx::Point& new_value) override;
@@ -364,6 +366,8 @@ class AwContents : public FindHelper::Listener,
   typedef std::pair<const GURL, PermissionCallback> OriginCallback;
   // The first element in the list is always the currently pending request.
   std::list<OriginCallback> pending_geolocation_prompts_;
+
+  base::TimeDelta preferred_frame_interval_;
 };
 
 }  // namespace android_webview

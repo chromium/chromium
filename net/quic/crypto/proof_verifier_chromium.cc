@@ -490,7 +490,7 @@ bool ProofVerifierChromium::Job::VerifySignature(
 
   verifier.VerifyUpdate(base::as_byte_span(quic::kProofSignatureLabel));
   uint32_t len = chlo_hash.length();
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(&len, 1u)));
+  verifier.VerifyUpdate(base::byte_span_from_ref(len));
   verifier.VerifyUpdate(base::as_byte_span(chlo_hash));
   verifier.VerifyUpdate(base::as_byte_span(signed_data));
 

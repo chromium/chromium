@@ -15,6 +15,7 @@
 @class CommandDispatcher;
 class PrefRegistrySimple;
 enum class TipsNotificationType;
+enum class TipsNotificationUserType;
 
 // A notification client responsible for registering notification requests and
 // handling the receiving of user notifications that are user-ed "Tips".
@@ -50,13 +51,13 @@ class TipsNotificationClient : public PushNotificationClient {
   // if there isn't one.
   void GetPendingRequest(GetPendingRequestCallback callback);
 
-  // Clears any existing request(s) and requests a new notification if the
-  // conditions are right.
-  void ClearAndMaybeRequestNotification(base::OnceClosure callback);
+  // Called when a pending request is found. Or called with `nil` when none is
+  // found.
+  void OnPendingRequestFound(UNNotificationRequest* request);
 
-  // Clears any previously requested notification(s), and calls `completion`.
-  void ClearNotification(base::OnceClosure callback);
-  void OnNotificationCleared(UNNotificationRequest* request);
+  // Checks for any pending requests and schedules the next notification if
+  // none are pending and there are any left in inventory.
+  void CheckAndMaybeRequestNotification(base::OnceClosure callback);
 
   // Request a new tips notification, if the conditions are right (i.e. the
   // user has opted-in, etc).
@@ -85,6 +86,9 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if a Docking promo notification should be sent.
   bool ShouldSendDocking();
 
+  // Returns true if an Omnibox Position promo notification should be sent.
+  bool ShouldSendOmniboxPosition();
+
   // Returns `true` if there is foreground active browser.
   bool IsSceneLevelForegroundActive();
 
@@ -96,6 +100,7 @@ class TipsNotificationClient : public PushNotificationClient {
   void ShowSignin();
   void ShowSetUpListContinuation();
   void ShowDocking();
+  void ShowOmniboxPosition();
 
   // Helpers to store state in local state prefs.
   void MarkNotificationTypeSent(TipsNotificationType type);
@@ -117,8 +122,14 @@ class TipsNotificationClient : public PushNotificationClient {
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
 
+  // Classifies the user and sets the `user_type`, if possible.
+  void ClassifyUser();
+
   // Stores whether Tips notifications are permitted.
   bool permitted_ = false;
+
+  // Stores the user's classification.
+  TipsNotificationUserType user_type_;
 
   // When the user interacts with a Tips notification but there are no
   // foreground scenes, this will store the notification type so it can

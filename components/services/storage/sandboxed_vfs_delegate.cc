@@ -47,10 +47,4 @@ SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   return access;
 }
 
-bool SandboxedVfsDelegate::SetFileLength(const base::FilePath& file_path,
-                                         base::File& file,
-                                         size_t size) {
-  return filesystem_->SetOpenedFileLength(&file, static_cast<uint64_t>(size));
-}
-
 }  // namespace storage

@@ -79,10 +79,6 @@ def CommonChecks(input_api, output_api):
           version='2.7'))
   # yapf: enable
 
-  # Disabled due to http://crbug.com/410936
-  #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-  #input_api, output_api, J('buildbot', 'tests')))
-
   pylib_test_env = dict(input_api.environ)
   pylib_test_env.update({
       'PYTHONPATH': build_android_dir,

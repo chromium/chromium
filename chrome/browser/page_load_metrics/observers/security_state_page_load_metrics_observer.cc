@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/navigation_handle.h"

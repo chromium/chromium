@@ -7,6 +7,7 @@
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
@@ -66,7 +67,8 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     // reclaim all the resources).
     //
     // TODO(crbug.com/40261105): We need a proper UX to support this.
-    animator_.reset();
+    animator_->AbortAnimation();
+    DestroyAnimator();
   }
 
   // Handle the case where the screenshot's dimension does not match the
@@ -135,6 +137,16 @@ AnimationStage
 BackForwardTransitionAnimationManagerAndroid::GetCurrentAnimationStage() {
   return animator_ ? animator_->GetCurrentAnimationStage()
                    : AnimationStage::kNone;
+}
+
+void BackForwardTransitionAnimationManagerAndroid::SetFavicon(
+    const SkBitmap& favicon) {
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
+  auto* entry = web_contents_view_android_->web_contents()
+                    ->GetController()
+                    .GetLastCommittedEntry();
+  CHECK(entry);
+  entry->navigation_transition_data().set_favicon(favicon);
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnDetachedFromWindow() {

@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
@@ -57,7 +58,7 @@ void ShowSearchEngineChoiceDialog(
 
   auto delegate = std::make_unique<views::DialogDelegate>();
   delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
 

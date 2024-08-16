@@ -77,6 +77,9 @@ class ContentStabilityMetricsProvider
 
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessHostCreationFailed(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(

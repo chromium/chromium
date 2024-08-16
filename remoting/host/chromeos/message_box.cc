@@ -10,6 +10,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -43,7 +44,7 @@ class MessageBox::Core : public views::DialogDelegateView {
   void Hide();
 
   // views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
+  ui::mojom::ModalType GetModalType() const override;
   std::u16string GetWindowTitle() const override;
   views::View* GetContentsView() override;
   views::Widget* GetWidget() override;
@@ -111,8 +112,8 @@ void MessageBox::Core::Hide() {
   }
 }
 
-ui::ModalType MessageBox::Core::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType MessageBox::Core::GetModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 std::u16string MessageBox::Core::GetWindowTitle() const {

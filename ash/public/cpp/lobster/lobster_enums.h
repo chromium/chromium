@@ -23,6 +23,17 @@ enum class ASH_PUBLIC_EXPORT LobsterSystemCheck {
   kMaxValue = kInvalidRegion,
 };
 
+enum class ASH_PUBLIC_EXPORT LobsterErrorCode {
+  kNoInternetConnection,
+  kBlockedOutputs,
+  kUnknown,
+  kResourceExhausted,
+  kInvalidArgument,
+  kBackendFailure,
+  kUnsupportedLanguage,
+  kRestrictedRegion,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_LOBSTER_LOBSTER_ENUMS_H_

@@ -97,9 +97,7 @@ std::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
     case IconButton::Type::kXLargeProminent:
       return cros_tokens::kCrosSysSystemPrimaryContainer;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Floating type button does not have a background";
-      return std::nullopt;
+      NOTREACHED() << "Floating type button does not have a background";
   }
 }
 

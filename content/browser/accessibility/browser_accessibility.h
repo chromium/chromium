@@ -413,6 +413,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   ui::AXPlatformNode* GetTableCaption() const override;
 
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
+
+// TODO(https://crbug.com/358567091): Move this logic outside of
+// BrowserAccessibility to avoid platform-specific code in the base class.
+#if !BUILDFLAG(IS_FUCHSIA)
   std::u16string GetLocalizedString(int message_id) const;
   std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override;
@@ -420,6 +424,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   std::u16string GetLocalizedStringForLandmarkType() const override;
   std::u16string GetLocalizedStringForRoleDescription() const override;
   std::u16string GetStyleNameAttributeAsLocalizedString() const override;
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
   ui::TextAttributeMap ComputeTextAttributeMap(
       const ui::TextAttributeList& default_attributes) const override;
   bool ShouldIgnoreHoveredStateForTesting() override;

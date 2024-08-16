@@ -142,16 +142,12 @@ public class ContextualSearchBarControl {
      * @param panel The panel.
      * @param container The parent view for the bottom bar views.
      * @param loader The resource loader that will handle the snapshot capturing.
-     * @param edgeToEdgeBottomPaddingDp Extra bottom padding in dp used when the current page is in
-     *     edge-to-edge mode in order to keep the search bar contents above the bottom nav bar area.
-     *     0 if edge-to-edge is not enabled, or if the current page is not edge-to-edge.
      */
     public ContextualSearchBarControl(
             ContextualSearchPanel panel,
             Context context,
             ViewGroup container,
-            DynamicResourceLoader loader,
-            int edgeToEdgeBottomPaddingDp) {
+            DynamicResourceLoader loader) {
         mContextualSearchPanel = panel;
         mCanPromoteToNewTab = panel.canPromoteToNewTab();
         mImageControl = new ContextualSearchImageControl(panel);
@@ -161,12 +157,7 @@ public class ContextualSearchBarControl {
         mDpToPx = context.getResources().getDisplayMetrics().density;
         mCaptionControl =
                 new ContextualSearchCaptionControl(
-                        panel,
-                        context,
-                        container,
-                        loader,
-                        mCanPromoteToNewTab,
-                        edgeToEdgeBottomPaddingDp * mDpToPx);
+                        panel, context, container, loader, mCanPromoteToNewTab);
 
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
@@ -670,14 +661,5 @@ public class ContextualSearchBarControl {
     public void setInBarAnimationTestNotifier(Runnable runnable) {
         assert mInBarAnimationTestNotifier == null;
         mInBarAnimationTestNotifier = runnable;
-    }
-
-    /**
-     * Override the extra bottom padding used when the current page is drawing edge-to-edge.
-     *
-     * @param edgeToEdgeBottomPaddingDp The extra bottom padding in dp.
-     */
-    public void overrideEdgeToEdgePadding(int edgeToEdgeBottomPaddingDp) {
-        mCaptionControl.overrideEdgeToEdgePadding(edgeToEdgeBottomPaddingDp * mDpToPx);
     }
 }

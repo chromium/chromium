@@ -1920,10 +1920,11 @@ TEST_F(HttpCacheTest, SimpleGET_UnusedSincePrefetch) {
   EXPECT_TRUE(response_info.was_cached);
 }
 
-// Tests that requests made with the LOAD_RESTRICTED_PREFETCH load flag result
-// in HttpResponseInfo entries with the |restricted_prefetch| flag set. Also
-// tests that responses with |restricted_prefetch| flag set can only be used by
-// requests that have the LOAD_CAN_USE_RESTRICTED_PREFETCH load flag.
+// Tests that requests made with the LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME
+// load flag result in HttpResponseInfo entries with the |restricted_prefetch|
+// flag set. Also tests that responses with |restricted_prefetch| flag set can
+// only be used by requests that have the
+// LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME load flag.
 TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchIsRestrictedUntilReuse) {
   MockHttpCache cache;
   HttpResponseInfo response_info;
@@ -1939,7 +1940,7 @@ TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchIsRestrictedUntilReuse) {
   // A restricted prefetch is marked as |restricted_prefetch|.
   MockTransaction prefetch_transaction(kSimpleGET_Transaction);
   prefetch_transaction.load_flags |= LOAD_PREFETCH;
-  prefetch_transaction.load_flags |= LOAD_RESTRICTED_PREFETCH;
+  prefetch_transaction.load_flags |= LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   RunTransactionTestWithResponseInfoAndGetTiming(
       cache.http_cache(), prefetch_transaction, &response_info,
       NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
@@ -1953,7 +1954,7 @@ TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchIsRestrictedUntilReuse) {
   MockTransaction can_use_restricted_prefetch_transaction(
       kSimpleGET_Transaction);
   can_use_restricted_prefetch_transaction.load_flags |=
-      LOAD_CAN_USE_RESTRICTED_PREFETCH;
+      LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   RunTransactionTestWithResponseInfoAndGetTiming(
       cache.http_cache(), can_use_restricted_prefetch_transaction,
       &response_info, NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
@@ -1977,7 +1978,7 @@ TEST_F(HttpCacheTest, SimpleGET_RestrictedPrefetchReuseIsLimited) {
   // A restricted prefetch is marked as |restricted_prefetch|.
   MockTransaction prefetch_transaction(kSimpleGET_Transaction);
   prefetch_transaction.load_flags |= LOAD_PREFETCH;
-  prefetch_transaction.load_flags |= LOAD_RESTRICTED_PREFETCH;
+  prefetch_transaction.load_flags |= LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
   RunTransactionTestWithResponseInfoAndGetTiming(
       cache.http_cache(), prefetch_transaction, &response_info,
       NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
@@ -2037,7 +2038,8 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
       "Content-Length: 20\n"
       "Etag: \"foopy\"\n";
   transaction.data = "01234567890123456789";
-  transaction.load_flags |= LOAD_PREFETCH | LOAD_CAN_USE_RESTRICTED_PREFETCH;
+  transaction.load_flags |=
+      LOAD_PREFETCH | LOAD_CAN_USE_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
 
   // Do a truncated read of a prefetch request.
   {

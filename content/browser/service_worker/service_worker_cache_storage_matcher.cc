@@ -150,7 +150,7 @@ void ServiceWorkerCacheStorageMatcher::DidMatch(
     case blink::mojom::MatchResult::Tag::kEagerResponse:
       // EagerResponse, which should be used only if `in_related_fetch_event`
       // is set.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

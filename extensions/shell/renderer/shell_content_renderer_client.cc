@@ -50,12 +50,12 @@ void ShellContentRendererClient::RenderThreadStarted() {
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
   extensions_renderer_client_->RenderThreadStarted();
 
-  thread->AddObserver(extensions_renderer_client_->GetDispatcher());
+  thread->AddObserver(extensions_renderer_client_->dispatcher());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
-  Dispatcher* dispatcher = extensions_renderer_client_->GetDispatcher();
+  Dispatcher* dispatcher = extensions_renderer_client_->dispatcher();
   // ExtensionFrameHelper destroys itself when the RenderFrame is destroyed.
   new ExtensionFrameHelper(render_frame, dispatcher);
 
@@ -109,13 +109,13 @@ bool ShellContentRendererClient::IsExternalPepperPlugin(
 
 void ShellContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentStart(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentStart(
       render_frame);
 }
 
 void ShellContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentEnd(
       render_frame);
 }
 

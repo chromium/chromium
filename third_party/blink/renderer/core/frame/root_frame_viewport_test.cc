@@ -112,7 +112,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
   bool ScrollbarsCanBeActive() const override { return true; }
   bool ShouldPlaceVerticalScrollbarOnLeft() const override { return true; }
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
-  bool UsesCompositedScrolling() const override { NOTREACHED_NORETURN(); }
+  bool UsesCompositedScrolling() const override { NOTREACHED(); }
   bool UserInputScrollable(ScrollbarOrientation orientation) const override {
     return orientation == kHorizontalScrollbar ? user_input_scrollable_x_
                                                : user_input_scrollable_y_;
@@ -157,6 +157,8 @@ class RootLayoutViewportStub : public ScrollableAreaStub {
     return ret;
   }
 
+  PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
+
  private:
   int VisibleWidth() const override { return viewport_size_.width(); }
   int VisibleHeight() const override { return viewport_size_.height(); }
@@ -173,6 +175,8 @@ class VisualViewportStub : public ScrollableAreaStub {
         ContentsSize() - gfx::ScaleToFlooredSize(ViewportSize(), 1 / scale_);
     return ScrollOffset(diff.width(), diff.height());
   }
+
+  PhysicalOffset LocalToScrollOriginOffset() const override { return {}; }
 
   void SetScale(float scale) { scale_ = scale; }
 

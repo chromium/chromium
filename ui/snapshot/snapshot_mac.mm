@@ -173,11 +173,18 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
 }
 
 bool ShouldForceOldAPIUse() {
-  // The SCK API -[SCShareableContent
-  // getCurrentProcessShareableContentWithCompletionHandler:] does not work
-  // correctly when there are multiple instances of an app with the same bundle
-  // ID. It must not be used in that case, as it can return errors, hang, or
-  // crash. https://crbug.com/333443445, FB13717818
+  // The SCK API +[SCShareableContent
+  // getCurrentProcessShareableContentWithCompletionHandler:] was introduced in
+  // macOS 14.4, but it did not work correctly when there were multiple
+  // instances of an app with the same bundle ID.
+  //
+  // This is fixed in macOS 15.
+  //
+  // https://crbug.com/333443445, FB13717818
+  if (base::mac::MacOSVersion() > 15'00'00) {
+    return false;
+  }
+
   return [NSRunningApplication
              runningApplicationsWithBundleIdentifier:NSBundle.mainBundle
                                                          .bundleIdentifier]

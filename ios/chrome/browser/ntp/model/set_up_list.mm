@@ -61,7 +61,7 @@ bool GetIsItemComplete(SetUpListItemType type,
     }
     case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -143,9 +143,16 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
                    syncService:(syncer::SyncService*)syncService
          authenticationService:(AuthenticationService*)authService
     contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
-  if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
+  if (IsHomeCustomizationEnabled() &&
+      !prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
     return nil;
   }
+
+  if (!IsHomeCustomizationEnabled() &&
+      set_up_list_prefs::IsSetUpListDisabled(localState)) {
+    return nil;
+  }
+
   NSMutableArray<SetUpListItem*>* items =
       [[NSMutableArray<SetUpListItem*> alloc] init];
 

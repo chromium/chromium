@@ -109,6 +109,21 @@ inline constexpr char kEmojiPickerHistory[] = "emoji_picker.history";
 // A dictionary storing user preferences for emoji picker.
 inline constexpr char kEmojiPickerPreferences[] = "emoji_picker.preferences";
 
+// An integer pref which indicates the number of times the user selects the caps
+// lock toggle in the picker. The number will be halved together with
+// `caps_lock_displayed_count` whenever `caps_lock_displayed_count` reaches a
+// threshold so that recent usages have more weights when calculating the ratio
+// between them.
+inline constexpr char kPickerCapsLockSelectedCountPrefName[] =
+    "ash.picker.caps_lock_selected_count";
+
+// An integer pref which indicates the number of times the caps lock toggle is
+// displayed in the picker zero state view. Only used to calculate the ratio
+// between `caps_lock_selected_count` and itself. It will not grow infinitely
+// but will be halved whenever it reaches a threshold.
+inline constexpr char kPickerCapsLockDislayedCountPrefName[] =
+    "ash.picker.caps_lock_displayed_count";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.
@@ -641,6 +656,13 @@ inline constexpr char kAccessibilityCursorColorEnabled[] =
 // An integer pref which determines the custom cursor color.
 inline constexpr char kAccessibilityCursorColor[] =
     "settings.a11y.cursor_color";
+// A boolean pref which determines whether flash screen for notifications is
+// enabled.
+inline constexpr char kAccessibilityFlashNotificationsEnabled[] =
+    "settings.a11y.flash_notifications_enabled";
+// An integer pref which determines the flash screen color.
+inline constexpr char kAccessibilityFlashNotificationsColor[] =
+    "settings.a11y.flash_notifications_color";
 // A boolean pref which determines whether floating accessibility menu is
 // enabled.
 inline constexpr char kAccessibilityFloatingMenuEnabled[] =
@@ -814,6 +836,10 @@ inline constexpr char kAccessibilityFaceGazeActionsEnabled[] =
 // separately or whether speeds in all directions should be adjusted together.
 inline constexpr char kAccessibilityFaceGazeAdjustSpeedSeparately[] =
     "settings.a11y.face_gaze.adjust_speed_separately";
+// A boolean pref which indicates whether the FaceGaze confirmation dialog has
+// ever been accepted.
+inline constexpr char kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted[] =
+    "settings.a11y.face_gaze.accelerator_dialog_has_been_accepted";
 // A boolean pref which indicates whether the FaceGaze DLC success notification
 // has ever been shown.
 inline constexpr char kFaceGazeDlcSuccessNotificationHasBeenShown[] =
@@ -2178,6 +2204,15 @@ inline constexpr char kHandsFreeProfileInputSuperResolution[] =
 inline constexpr char kShortcutCustomizationAllowed[] =
     "ash.shortcut_customization_allowed";
 
+// A dictionary pref used to record the number of times each deprecated
+// accelerator notification has shown.
+inline constexpr char kDeprecatedAcceleratorNotificationsShownCounts[] =
+    "ash.deprecated_accelerator_notifications_shown_counts";
+// A dictionary pref used to record the timestamp each deprecated accelerator
+// notification last shown.
+inline constexpr char kDeprecatedAcceleratorNotificationsLastShown[] =
+    "ash.deprecated_accelerator_notifications_last_shown";
+
 // A `TimeDelta` pref for the session duration Focus Mode should default to.
 // Based off of the last session, if any.
 inline constexpr char kFocusModeSessionDuration[] =
@@ -2222,6 +2257,10 @@ inline constexpr char kDemoModeAppVersion[] = "demo_mode.app_version";
 // A string pref holding the version of the installed demo mode resources.
 inline constexpr char kDemoModeResourcesVersion[] =
     "demo_mode.resources_version";
+
+// A string list pref holding the collection of user intested perk IDs. The
+// values are used to filter campaign in growth framework.
+inline constexpr char kGrowthPerksInterested[] = "growth.perks";
 
 // A dictionary pref containing the set of touchpad settings for the user. This
 // is synced for all user devices.
@@ -2391,6 +2430,9 @@ inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 // A boolean pref indicating whether Birch should use release notes data.
 inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
 
+// A boolean pref indicating whether Birch should use coral data.
+inline constexpr char kBirchUseCoral[] = "ash.birch.use_coral";
+
 // LINT.ThenChange(/chrome/browser/ui/ash/birch/birch_browsertest.cc)
 
 // A boolean pref that holds whether the user dismissed the extended updates
@@ -2409,9 +2451,19 @@ inline constexpr char kDnsOverHttpsExcludedDomains[] =
 inline constexpr char kDnsOverHttpsIncludedDomains[] =
     "dns_over_https.included_domains";
 
+// Dictionary pref representing information related to whether the Graduation
+// app should be enabled for a user. This corresponds to the policy defined in
+// GraduationEnablementStatus.yaml.
+inline constexpr char kGraduationEnablementStatus[] =
+    "ash.graduation.enablement_status";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------
+
+// A string pref set to the current input method.
+inline constexpr char kLanguageCurrentInputMethod[] =
+    "settings.language.current_input_method";
 
 // A string pref (comma-separated list) that corresponds to the set of enabled
 // 1P input method engine IDs.

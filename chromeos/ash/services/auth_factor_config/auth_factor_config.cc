@@ -130,13 +130,9 @@ void AuthFactorConfig::IsSupportedWithContext(
             cryptohome_supported_factors.Has(cryptohome::AuthFactorType::kPin));
         return;
       }
+      case mojom::AuthFactor::kLocalPassword:
       case mojom::AuthFactor::kGaiaPassword: {
         std::move(callback).Run(true);
-        return;
-      }
-      case mojom::AuthFactor::kLocalPassword: {
-        std::move(callback).Run(
-            features::AreLocalPasswordsEnabledForConsumers());
         return;
       }
     }

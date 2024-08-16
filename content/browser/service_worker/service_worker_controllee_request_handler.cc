@@ -58,12 +58,12 @@ namespace {
 // offline snapshot of the page.
 bool ShouldFallbackToLoadOfflinePage(
     const net::HttpRequestHeaders& extra_request_headers) {
-  std::string offline_header_value;
-  if (!extra_request_headers.GetHeader(offline_pages::kOfflinePageHeader,
-                                       &offline_header_value)) {
+  std::optional<std::string> offline_header_value =
+      extra_request_headers.GetHeader(offline_pages::kOfflinePageHeader);
+  if (!offline_header_value) {
     return false;
   }
-  offline_pages::OfflinePageHeader offline_header(offline_header_value);
+  offline_pages::OfflinePageHeader offline_header(*offline_header_value);
   return offline_header.reason !=
              offline_pages::OfflinePageHeader::Reason::NONE &&
          offline_header.reason !=

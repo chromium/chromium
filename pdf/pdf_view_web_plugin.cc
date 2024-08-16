@@ -68,6 +68,7 @@
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/post_message_receiver.h"
 #include "pdf/ui/document_properties.h"
 #include "pdf/ui/file_name.h"
@@ -301,13 +302,13 @@ PdfViewWebPlugin::Client::CreateAccessibilityDataHandler(
 PdfViewWebPlugin::PdfViewWebPlugin(
     std::unique_ptr<Client> client,
     mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host,
-    const blink::WebPluginParams& params)
+    blink::WebPluginParams params)
     : client_(std::move(client)),
       pdf_host_(std::move(pdf_host)),
 #if BUILDFLAG(ENABLE_PDF_INK2)
       ink_module_(MaybeCreatePdfInkModule(*this)),
 #endif
-      initial_params_(params) {
+      initial_params_(std::move(params)) {
   DCHECK(pdf_host_);
   pdf_host_->SetListener(listener_receiver_.BindNewPipeAndPassRemote());
 }
@@ -603,7 +604,7 @@ blink::WebInputEventResult PdfViewWebPlugin::HandleInputEvent(
           ? blink::WebInputEventResult::kHandledApplication
           : blink::WebInputEventResult::kNotHandled;
 
-  *cursor = cursor_type_;
+  *cursor = cursor_;
 
   return result;
 }
@@ -915,7 +916,15 @@ void PdfViewWebPlugin::NavigateToDestination(int page,
 }
 
 void PdfViewWebPlugin::UpdateCursor(ui::mojom::CursorType new_cursor_type) {
-  cursor_type_ = new_cursor_type;
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_ && ink_module_->enabled()) {
+    // Block normal mouse cursor updates, so the cursor set by PdfInkModule
+    // while it is enabled does not get overwritten.
+    return;
+  }
+#endif
+
+  cursor_ = new_cursor_type;
 }
 
 void PdfViewWebPlugin::UpdateTickMarks(
@@ -1236,7 +1245,21 @@ void PdfViewWebPlugin::FormFieldFocusChange(
     PDFiumEngineClient::FocusFieldType type) {
   base::Value::Dict message;
   message.Set("type", "formFocusChange");
-  message.Set("focused", type != PDFiumEngineClient::FocusFieldType::kNoFocus);
+  std::string field_type;
+  // LINT.IfChange(FocusFieldTypes)
+  switch (type) {
+    case PDFiumEngineClient::FocusFieldType::kNoFocus:
+      field_type = "none";
+      break;
+    case PDFiumEngineClient::FocusFieldType::kNonText:
+      field_type = "non-text";
+      break;
+    case PDFiumEngineClient::FocusFieldType::kText:
+      field_type = "text";
+      break;
+  }
+  // LINT.ThenChange(//chrome/browser/resources/pdf/constants.ts:FocusFieldTypes)
+  message.Set("focused", field_type);
   client_->PostMessage(std::move(message));
 
   text_input_type_ = type == PDFiumEngineClient::FocusFieldType::kText
@@ -1851,8 +1874,15 @@ void PdfViewWebPlugin::OnGeometryChanged(double old_zoom,
                                          float old_device_scale) {
   RecalculateAreas(old_zoom, old_device_scale);
 
-  if (accessibility_state_ == AccessibilityState::kLoaded)
+  if (accessibility_state_ == AccessibilityState::kLoaded) {
     PrepareAndSetAccessibilityViewportInfo();
+  }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  if (ink_module_) {
+    ink_module_->OnGeometryChanged();
+  }
+#endif
 }
 
 void PdfViewWebPlugin::RecalculateAreas(double old_zoom,
@@ -2021,14 +2051,21 @@ void PdfViewWebPlugin::StrokeFinished() {
   client_->PostMessage(std::move(message));
 }
 
+void PdfViewWebPlugin::UpdateInkCursorImage(SkBitmap bitmap) {
+  gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+  cursor_ = ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
+}
+
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
-  gfx::Point rounded_point = gfx::ToRoundedPoint(point);
   for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
     if (!IsPageVisible(i)) {
       continue;
     }
-    auto rect = engine_->GetPageContentsRect(i);
-    if (!rect.Contains(rounded_point)) {
+
+    // Explicitly construct a gfx::RectF from gfx::Rect, so the Contains() call
+    // below works with `point`, which has float values.
+    gfx::RectF rect(engine_->GetPageContentsRect(i));
+    if (!rect.Contains(point)) {
       continue;
     }
     return i;

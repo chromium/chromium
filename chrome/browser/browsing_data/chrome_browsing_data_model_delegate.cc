@@ -217,7 +217,7 @@ std::optional<bool> ChromeBrowsingDataModelDelegate::IsStorageTypeCookieLike(
     case StorageType::kMediaDeviceSalt:
       return false;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,15 +24,14 @@ class ProductSpecificationsService
   using GetAllCallback =
       base::OnceCallback<void(const std::vector<ProductSpecificationsSet>)>;
   ProductSpecificationsService(
-      syncer::OnceModelTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      syncer::OnceDataTypeStoreFactory create_store_callback,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;
   ~ProductSpecificationsService() override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();
@@ -47,17 +47,19 @@ class ProductSpecificationsService
           callback);
 
   // Add new product specifications set called |name| with product pages
-  // corresponding to |urls|.
+  // corresponding the urls in |url_infos|. Note, title support is being
+  // added to ProductSpecificationsService (crbug.com/357561655), although
+  // the title field in UrlInfo is currently unused.
   virtual const std::optional<ProductSpecificationsSet>
   AddProductSpecificationsSet(const std::string& name,
-                              const std::vector<GURL>& urls);
+                              const std::vector<UrlInfo>& url_infos);
 
   // Set the URLs for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated
   // ProductSpecificationsSet will be returned, otherwise nullopt.
   virtual const std::optional<ProductSpecificationsSet> SetUrls(
       const base::Uuid& uuid,
-      const std::vector<GURL>& urls);
+      const std::vector<UrlInfo>& urls);
 
   // Set the name for a product specifications set associated with the provided
   // Uuid. If a set with the provided Uuid exists, an updated

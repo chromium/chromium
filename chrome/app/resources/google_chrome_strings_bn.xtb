@@ -113,6 +113,7 @@
 <translation id="2559253115192232574">পরে, আপনি যে সাইটটি দেখেন সেটি আপনার দেখা বিজ্ঞাপনগুলিকে পছন্দমতো করার জন্য Chrome-কে আপনার আগ্রহগুলি দেখতে বলতে পারে। Chrome সর্বাধিক ৩টি আগ্রহ শেয়ার করতে পারে।</translation>
 <translation id="2563121210305478421">Chrome আবার লঞ্চ করবেন?</translation>
 <translation id="2569974318947988067">Chrome নেভিগেশনকে HTTPS-তে আপগ্রেড করার চেষ্টা করবে</translation>
+<translation id="2571392474191184472">আপনার সংস্থা Chrome ম্যানেজ করে</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> আগে থেকেই এই Chrome প্রোফাইলে সাইন-ইন করে আছেন। আপনার ব্রাউজিং আলাদা করতে, Chrome আপনার জন্য প্রোফাইল তৈরি করে দিতে পারে।</translation>
 <translation id="2580411288591421699">বর্তমানে Google Chrome-এর যে ভার্সনটি চলছে সেটি ইনস্টল করা যায় না৷ অনুগ্রহ করে Google Chrome বন্ধ করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="2586406160782125153">এটি এই ডিভাইস থেকে আপনার ব্রাউজিং ডেটা মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -213,6 +214,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome-এর Windows 10 বা আরও উন্নত ভার্সন প্রয়োজন।</translation>
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য এটি একটি নতুন Chrome প্রোফাইল তৈরি করবে</translation>
+<translation id="383928141529488001">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে 
+ Google Chrome-কে ব্লুটুথের অ্যাক্সেস দিতে হবে। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">দয়া করে সকল Google Chrome উইন্ডো বন্ধ করুন ও আবার চেষ্টা করুন৷</translation>
 <translation id="3865754807470779944">Chrome ভার্সন <ph name="PRODUCT_VERSION" /> ইনস্টল করা আছে</translation>
 <translation id="3873044882194371212">Chrome-এ ছদ্মবেশী উইন্ডোতে লিঙ্ক খুলুন</translation>
@@ -421,6 +424,7 @@
 <translation id="6938166777909186039">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8.1 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="6943584222992551122">ডিভাইসটি থেকে এই ব্যক্তির ব্রাউজিং ডেটা মুছে ফেলা হবে। ডেটা ফিরিয়ে আনতে Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="6967962315388095737">mDNS ট্রাফিকের অনুমতি দিতে Google Chrome বিটার জন্য ইনবাউন্ড নিয়ম।</translation>
+<translation id="6979589607440534284">Chrome কিছু ফাইল কেন ব্লক করে, নতুন ট্যাবে খোলে সেই সম্পর্কে জানুন</translation>
 <translation id="7011190694940573312">ইনস্টলেশন করা যায়নি কারণ অপারেটিং সিস্টেমের এই ভার্সন কাজ করে না।</translation>
 <translation id="7024536598735240744">আনপ্যাক করার সময় সমস্যা হয়েছে: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025789849649390912">ইনস্টলেশন বন্ধ হয়ে গেছে।</translation>
@@ -443,6 +447,7 @@
 <translation id="7177959540995930968">আপনি Chrome সেটিংস থেকে এই ফিচার সম্পর্কে আরও জানতে পারবেন।</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chrome বন্ধ করে দেয়।</translation>
 <translation id="7242029209006116544">আপনি একটি পরিচালিত অ্যাকাউন্টের মাধ্যমে সাইন-ইন করছেন এবং এর অ্যাডমিনিস্ট্রেটরকে আপনার Google Chrome প্রোফাইলের উপরে নিয়ন্ত্রণ দিচ্ছেন৷ আপনার Chrome ডেটা, যেমন অ্যাপ, বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস <ph name="USER_NAME" /> এতে স্থায়ীভাবে সম্পৃক্ত হবে৷ আপনি Google অ্যাকাউন্টের ড্যাশবোর্ডের মাধ্যমে এই ডেটাগুলি মুছতে পারবেন, কিন্তু অন্য অ্যাকাউন্টের সাথে এই ডেটা সংশ্লিষ্ট করতে পারবেন না৷ বিকল্প হিসেবে আপনি আপনার বিদ্যমান Chrome ডেটা আলাদা রাখার জন্য একটি নতুন প্রোফাইল তৈরি করতে পারেন৷ <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> Chrome ম্যানেজ করে</translation>
 <translation id="7295052994004373688">Google Chrome UI-এ দেখানোর জন্য এই ভাষা ব্যবহার করা হয়</translation>
 <translation id="7296210096911315575">ব্যবহার ও নিরাপত্তা সম্পর্কে গুরুত্বপূর্ণ তথ্য</translation>
 <translation id="7302361266603927550">আপনার Chrome ডেটার কিছুটা এখনও Google অ্যাকাউন্টে সেভ হয়নি। সাইন-আউট করার আগে কয়েক মিনিট অপেক্ষা করে দেখুন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
@@ -576,6 +581,7 @@
 <translation id="8989968390305463310">আপনার ব্রাউজিং ইতিহাস আপনি যে বিজ্ঞাপনগুলি দেখেন এবং নিচের অনুমান অনুযায়ী আগ্রহগুলিকে প্রভাবিত করে। আপনার গোপনীয়তা রক্ষা করার জন্য, Chrome প্রতি মাসে রোলিংয়ের ভিত্তিতে আপনার আগ্রহগুলি অটোমেটিক মুছে দেয়। আপনি সেগুলি সরিয়ে না দিলে আগ্রহগুলি রিফ্রেশ হতে পারে।</translation>
 <translation id="8999117580775242387">HTTPS উপলভ্য না থাকলে, Chrome আপনাকে সতর্ক না করেই অসুরক্ষিত কানেকশন ব্যবহার করবে</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-এর একটি আপডেট উপলভ্য আছে}=1{Chrome-এর একটি আপডেট উপলভ্য আছে}one{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}other{Chrome-এর একটি আপডেট # দিন ধরে উপলভ্য আছে}}</translation>
+<translation id="9014771989710951291">একাধিক সংস্থা Chrome ম্যানেজ করে</translation>
 <translation id="9024318700713112071">আপনার ডিফল্ট ব্রাউজার হিসেবে Chrome সেট করুন</translation>
 <translation id="9053892488859122171">ChromeOS Flex সিস্টেম</translation>
 <translation id="9090566250983691233">Chrome কিছু ফাইল কেন ব্লক করে সেই সম্পর্কে জানুন</translation>

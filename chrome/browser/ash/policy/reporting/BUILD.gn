@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash)
@@ -48,6 +50,8 @@ static_library("reporting") {
     "user_event_reporter_helper.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc:prefs",
     "//ash/components/arc/mojom",
@@ -55,12 +59,12 @@ static_library("reporting") {
     "//base",
     "//base:i18n",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash:app_install_events_proto",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/policy",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
@@ -170,4 +174,21 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("policy_single_install_event_log_fuzzer") {
+    sources = [ "single_install_event_log_fuzzer.cc" ]
+
+    deps = [
+      ":reporting",
+      "//base",
+
+      # TODO(crbug.com/335294371): Remove dependency on //chrome/browser to
+      # implement the proper fix.
+      "//chrome/browser",
+      "//components/exo/wayland:test_controller_stub",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+    ]
+  }
 }

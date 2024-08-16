@@ -66,7 +66,8 @@ class CONTENT_EXPORT VideoCaptureController
   void AddClient(const VideoCaptureControllerID& id,
                  VideoCaptureControllerEventHandler* event_handler,
                  const media::VideoCaptureSessionId& session_id,
-                 const media::VideoCaptureParams& params);
+                 const media::VideoCaptureParams& params,
+                 std::optional<url::Origin> origin);
 
   // Stop video capture. This will take back all buffers held by
   // |event_handler|, and |event_handler| shouldn't use those buffers any more.
@@ -108,6 +109,8 @@ class CONTENT_EXPORT VideoCaptureController
   const std::optional<media::VideoCaptureFormat> GetVideoCaptureFormat() const;
 
   bool has_received_frames() const { return has_received_frames_; }
+
+  const std::optional<url::Origin> GetFirstClientOrigin() const;
 
   // Implementation of media::VideoFrameReceiver interface:
   void OnCaptureConfigurationChanged() override;
@@ -284,6 +287,8 @@ class CONTENT_EXPORT VideoCaptureController
   base::TimeTicks time_of_start_request_;
 
   std::optional<media::VideoCaptureFormat> video_capture_format_;
+
+  std::optional<url::Origin> first_client_origin_;
 
   // As a work-around to technical limitations, we don't allow multiple
   // captures of the same tab, by the same capturer, if the first capturer

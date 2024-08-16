@@ -80,7 +80,7 @@ inline const LineBreakPoint* ScoreLineBreakContext::CurrentLineBreakPoint()
 
 inline void ScoreLineBreakContext::DidCreateLine(bool is_end_paragraph) {
   // Resume from the suspended state if all lines are consumed.
-  if (UNLIKELY(is_suspended_ && is_end_paragraph)) {
+  if (is_suspended_ && is_end_paragraph) [[unlikely]] {
     is_suspended_ = false;
   }
 

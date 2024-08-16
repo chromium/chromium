@@ -7,93 +7,198 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.EditText;
 
-import org.chromium.base.Log;
+import androidx.annotation.DimenRes;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupTitleEditor;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
+import org.chromium.ui.listmenu.ListSectionDividerProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on the group titles. It is
  * responsible for creating a list of menu items, setting up the menu and displaying the menu.
  */
 public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordinator {
-    private TabGroupVisualDataTextInputLayout mTabGroupTextInputLayout;
-    private static final String TAG = "TabGroupContextMenu";
+    private View mContentView;
+    private EditText mGroupTitleEditText;
+    private ColorPickerCoordinator mColorPickerCoordinator;
+    private TabGroupModelFilter mTabGroupModelFilter;
+    private int mGroupRootId;
+    private Context mContext;
+    private WindowAndroid mWindowAndroid;
+    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
-     * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
+     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param actionConfirmationManager Used to show a confirmation dialog.
+     * @param tabCreator The {@link TabCreator} to use to create new tab.
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
      */
     public TabGroupContextMenuCoordinator(
-            OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
+            TabGroupModelFilter tabGroupModelFilter,
+            ActionConfirmationManager actionConfirmationManager,
+            TabCreator tabCreator,
+            WindowAndroid windowAndroid,
             boolean isTabGroupSyncEnabled) {
         super(
                 R.layout.tab_strip_group_menu_layout,
-                onItemClicked,
+                getMenuItemClickedCallback(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabCreator,
+                        isTabGroupSyncEnabled),
                 tabModelSupplier,
                 isTabGroupSyncEnabled,
                 /* identityManager= */ null,
                 /* tabGroupSyncService= */ null,
                 /* dataSharingService= */ null);
+        mTabGroupModelFilter = tabGroupModelFilter;
+        mWindowAndroid = windowAndroid;
+        mKeyboardVisibilityListener =
+                isHiding -> {
+                    updateTabGroupTitle();
+                };
+    }
+
+    @VisibleForTesting
+    static OnItemClickedCallback getMenuItemClickedCallback(
+            TabGroupModelFilter tabGroupModelFilter,
+            ActionConfirmationManager actionConfirmationManager,
+            TabCreator tabCreator,
+            boolean isTabGroupSyncEnabled) {
+        return (menuId, tabId) -> {
+            if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
+                TabUiUtils.ungroupTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        isTabGroupSyncEnabled);
+            } else if (menuId == org.chromium.chrome.R.id.close_tab) {
+                TabUiUtils.closeTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        /* hideTabGroups= */ true,
+                        isTabGroupSyncEnabled,
+                        /* didCloseCallback= */ null);
+            } else if (menuId == org.chromium.chrome.R.id.delete_tab) {
+                TabUiUtils.closeTabGroup(
+                        tabGroupModelFilter,
+                        actionConfirmationManager,
+                        tabId,
+                        /* hideTabGroups= */ false,
+                        isTabGroupSyncEnabled,
+                        /* didCloseCallback= */ null);
+            } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
+                TabUiUtils.openNtpInGroup(
+                        tabGroupModelFilter, tabCreator, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
+            }
+        };
+    }
+
+    /**
+     * Show the context menu of the tab group.
+     *
+     * @param anchorView The anchor {@link View} of the context menu.
+     * @param rootId The root id of the interacting tab group.
+     */
+    protected void showMenu(View anchorView, int rootId) {
+        mGroupRootId = rootId;
+        createAndShowMenu(anchorView, rootId, mWindowAndroid.getActivity().get());
     }
 
     @Override
     protected void buildCustomView(View contentView, boolean isIncognito) {
-        // TODO(crbug.com/354255648): Implement afterTextChangedListener to validate input and
-        // update tab group title.
-        mTabGroupTextInputLayout = contentView.findViewById(R.id.tab_group_title);
+        mContentView = contentView;
+        mContext = contentView.getContext();
 
-        Context context = contentView.getContext();
+        buildTitleEditor();
 
-        // TODO(crbug.com/355483736): Confirm the final horizontal padding for the menu and update
-        // if necessary.
-        // Set horizontal padding to custom view to match list items.
-        int horizontalPadding =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
-        mTabGroupTextInputLayout.setPadding(horizontalPadding, 0, horizontalPadding, 0);
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            ColorPickerCoordinator colorPickerCoordinator =
-                    new ColorPickerCoordinator(
-                            context,
-                            ColorPickerUtils.getTabGroupColorIdList(),
-                            ((ViewStub) contentView.findViewById(R.id.color_picker_stub)).inflate(),
-                            ColorPickerType.TAB_GROUP,
-                            isIncognito,
-                            ColorPickerLayoutType.DYNAMIC,
-                            // TODO(crbug.com/354257045): Implement onColorItemClickedListener to
-                            // update tab group color.
-                            () -> {
-                                Log.i(TAG, "Color icon clicked.");
-                            });
-            colorPickerCoordinator
-                    .getContainerView()
-                    .setPadding(horizontalPadding, 0, horizontalPadding, 0);
-        }
+        buildColorEditor(isIncognito);
     }
 
     @Override
     protected void buildMenuActionItems(
-            ModelList modelList,
+            ModelList itemList,
             boolean isIncognito,
-            boolean isTabGroupSyncEnabled,
+            boolean shouldShowDeleteGroup,
             boolean hasCollaborationData) {
-        // TODO(crbug.com/354248683): Implement icon and texts for items like ungroup, close group
-        // and open new tab in group.
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
+                        .with(
+                                ListSectionDividerProperties.LEFT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding)
+                        .with(
+                                ListSectionDividerProperties.RIGHT_PADDING_DIMEN_ID,
+                                R.dimen.list_menu_item_horizontal_padding);
+        itemList.add(new ListItem(ListMenuItemType.DIVIDER, builder.build()));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.open_new_tab_in_group_context_menu_item,
+                        R.id.open_new_tab_in_group,
+                        R.drawable.ic_open_new_tab_in_group_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.ungroup_tab_group_menu_item,
+                        R.id.ungroup_tab,
+                        R.drawable.ic_ungroup_tabs_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+        itemList.add(
+                BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                        R.string.tab_grid_dialog_toolbar_close_group,
+                        R.id.close_tab,
+                        R.drawable.ic_tab_close_24dp,
+                        R.color.default_icon_color_light_tint_list,
+                        R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                        isIncognito,
+                        true));
+
+        // Delete does not make sense for incognito since the tab group is not saved to sync.
+        if (shouldShowDeleteGroup && !isIncognito && !hasCollaborationData) {
+            itemList.add(new ListItem(ListMenuItemType.DIVIDER, builder.build()));
+            itemList.add(
+                    BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                            R.string.tab_grid_dialog_toolbar_delete_group,
+                            R.id.delete_tab,
+                            R.drawable.material_ic_delete_24dp,
+                            R.color.default_icon_color_light_tint_list,
+                            R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                            isIncognito,
+                            true));
+        }
     }
 
     @Override
@@ -105,7 +210,103 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
-    protected int getMenuWidth() {
-        return 0;
+    protected void onMenuDismissed() {
+        updateTabGroupTitle();
+        mWindowAndroid
+                .getKeyboardDelegate()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+    }
+
+    @Override
+    protected @DimenRes int getMenuWidth() {
+        return R.dimen.tab_strip_group_context_menu_max_width;
+    }
+
+    private void updateTabGroupColor() {
+        @TabGroupColorId int newColor = mColorPickerCoordinator.getSelectedColorSupplier().get();
+        TabUiUtils.updateTabGroupColor(mTabGroupModelFilter, mGroupRootId, newColor);
+    }
+
+    @VisibleForTesting
+    void updateTabGroupTitle() {
+        String newTitle = mGroupTitleEditText.getText().toString();
+        TabUiUtils.updateTabGroupTitle(mTabGroupModelFilter, mGroupRootId, newTitle);
+        if (mTabGroupModelFilter.getTabGroupTitle(mGroupRootId) == null) {
+            setEditTextToDefaultGroupTitle();
+        }
+    }
+
+    private void setEditTextToDefaultGroupTitle() {
+        String defaultTitle =
+                TabGroupTitleEditor.getDefaultTitle(
+                        mContext, mTabGroupModelFilter.getRelatedTabCountForRootId(mGroupRootId));
+        mGroupTitleEditText.setText(defaultTitle);
+    }
+
+    // TODO(crbug.com/358689769): Enable live editing and updating of the group title by
+    // implementing a `TextWatcher`.
+    private void buildTitleEditor() {
+        // TODO:(crbug.com/359622287): Set incognito color with ColorStateList for title editor.
+        mGroupTitleEditText = mContentView.findViewById(R.id.tab_group_title);
+        String curGroupTitle = mTabGroupModelFilter.getTabGroupTitle(mGroupRootId);
+
+        // Set the initial text to the existing group title, defaulting to "N tabs" if no title name
+        // is set.
+        if (curGroupTitle == null || curGroupTitle.isEmpty()) {
+            setEditTextToDefaultGroupTitle();
+        } else {
+            mGroupTitleEditText.setText(curGroupTitle);
+        }
+
+        // Add listener to group title EditText to update group title when keyboard starts hiding.
+        mWindowAndroid
+                .getKeyboardDelegate()
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+    }
+
+    private void buildColorEditor(boolean isIncognito) {
+        // TODO(crbug.com/359941567): Refactor layout to use uniform padding in xml and remove
+        // custom padding here.
+        // Set horizontal padding to custom view to match list items.
+        int horizontalPadding =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.list_menu_item_horizontal_padding);
+
+        // TODO(crbug.com/357104424): Consider create ColorPickerCoordinator once during the first
+        // call, and reuse it for subsequent calls.
+        mColorPickerCoordinator =
+                new ColorPickerCoordinator(
+                        mContext,
+                        ColorPickerUtils.getTabGroupColorIdList(),
+                        ((ViewStub) mContentView.findViewById(R.id.color_picker_stub)).inflate(),
+                        ColorPickerType.TAB_GROUP,
+                        isIncognito,
+                        ColorPickerLayoutType.DYNAMIC,
+                        this::updateTabGroupColor);
+        mColorPickerCoordinator
+                .getContainerView()
+                .setPadding(horizontalPadding, 0, horizontalPadding, 0);
+
+        // The color picker should select the current color of the tab group when it is displayed.
+        @TabGroupColorId
+        int curGroupColor = mTabGroupModelFilter.getTabGroupColorWithFallback(mGroupRootId);
+        mColorPickerCoordinator.setSelectedColorItem(curGroupColor);
+    }
+
+    EditText getGroupTitleEditTextForTesting() {
+        return mGroupTitleEditText;
+    }
+
+    ColorPickerCoordinator getColorPickerCoordinatorForTesting() {
+        return mColorPickerCoordinator;
+    }
+
+    KeyboardVisibilityDelegate.KeyboardVisibilityListener
+            getKeyboardVisibilityListenerForTesting() {
+        return mKeyboardVisibilityListener;
+    }
+
+    void setGroupRootIdForTesting(int id) {
+        mGroupRootId = id;
     }
 }

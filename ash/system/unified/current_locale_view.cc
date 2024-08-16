@@ -61,10 +61,6 @@ void CurrentLocaleView::HandleLocaleChange() {
 }
 
 void CurrentLocaleView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    label()->SetEnabledColorId(kColorAshIconColorPrimary);
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   label()->SetEnabledColorId(active

@@ -76,7 +76,7 @@ mojom::KeyEvent GetStaticShortcutAction(mojom::StaticShortcutAction action) {
     case mojom::StaticShortcutAction::kLeftClick:
     case mojom::StaticShortcutAction::kRightClick:
     case mojom::StaticShortcutAction::kMiddleClick:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case mojom::StaticShortcutAction::kCopy:
       key_event =
           mojom::KeyEvent(ui::VKEY_C, static_cast<int>(ui::DomCode::US_C),
@@ -512,7 +512,7 @@ mojom::ButtonPtr GetButtonFromMouseEvent(const ui::MouseEvent& mouse_event) {
           mojom::CustomizableButton::kExtra);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns the customizable button for the scroll wheel event. Will return null

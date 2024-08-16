@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @param <ActivityT> exact type of Activity expected
  */
-public class ActivityElement<ActivityT extends Activity> extends ElementInState<ActivityT> {
+public class ActivityElement<ActivityT extends Activity> extends Element<ActivityT> {
     private final Class<ActivityT> mActivityClass;
 
     ActivityElement(Class<ActivityT> activityClass) {

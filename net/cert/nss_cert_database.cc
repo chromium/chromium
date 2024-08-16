@@ -274,7 +274,7 @@ CERTCertificate* NSSCertDatabase::FindRootInList(
 int NSSCertDatabase::ImportUserCert(const std::string& data) {
   ScopedCERTCertificateList certificates =
       x509_util::CreateCERTCertificateListFromBytes(
-          data.c_str(), data.size(), net::X509Certificate::FORMAT_AUTO);
+          base::as_byte_span(data), net::X509Certificate::FORMAT_AUTO);
   if (certificates.empty())
     return ERR_CERT_INVALID;
 

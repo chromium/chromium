@@ -951,8 +951,9 @@ void WebrtcTransport::OnIceConnectionChange(
     connected_ = false;
     want_ice_restart_ = true;
     close_after_disconnect_timer_.Start(
-        FROM_HERE, kCloseAfterDisconnectTimeout, this,
-        &WebrtcTransport::OnCloseAfterDisconnectTimeout);
+        FROM_HERE, kCloseAfterDisconnectTimeout,
+        base::BindOnce(&WebrtcTransport::OnCloseAfterDisconnectTimeout,
+                       weak_factory_.GetWeakPtr()));
     RequestNegotiation();
   }
 }

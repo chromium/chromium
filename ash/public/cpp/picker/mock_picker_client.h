@@ -31,6 +31,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
                CrosSearchResultsCallback callback),
               (override));
   MOCK_METHOD(void, StopCrosQuery, (), (override));
+  MOCK_METHOD(bool, IsEligibleForEditor, (), (override));
   MOCK_METHOD(ShowEditorCallback, CacheEditorContext, (), (override));
   MOCK_METHOD(void,
               GetSuggestedEditorResults,
@@ -46,7 +47,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               (override));
   MOCK_METHOD(void,
               GetSuggestedLinkResults,
-              (SuggestedLinksCallback),
+              (size_t, SuggestedLinksCallback),
               (override));
   MOCK_METHOD(bool, IsFeatureAllowedForDogfood, (), (override));
   MOCK_METHOD(void,
@@ -60,6 +61,7 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
               GetWebPasteTarget,
               (),
               (override));
+  MOCK_METHOD(void, Announce, (std::u16string_view message), (override));
 };
 
 }  // namespace ash

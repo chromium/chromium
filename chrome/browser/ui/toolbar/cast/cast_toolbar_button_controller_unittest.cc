@@ -38,10 +38,11 @@ class FakeCastToolbarIcon : public CastToolbarButtonController::Observer {
 class CastToolbarButtonControllerUnitTest : public BrowserWithTestWindowTest {
  public:
   CastToolbarButtonControllerUnitTest()
-      : issue_(media_router::IssueInfo(
-            "title notification",
-            media_router::IssueInfo::Severity::NOTIFICATION,
-            "sinkId1")) {}
+      : issue_(media_router::Issue::CreateIssueWithIssueInfo(
+            media_router::IssueInfo(
+                "title notification",
+                media_router::IssueInfo::Severity::NOTIFICATION,
+                "sinkId1"))) {}
 
   CastToolbarButtonControllerUnitTest(
       const CastToolbarButtonControllerUnitTest&) = delete;
@@ -135,6 +136,10 @@ TEST_F(CastToolbarButtonControllerUnitTest, EphemeralIconForIssues) {
   EXPECT_TRUE(IsIconShown());
   // Removing the issue should hide the icon.
   controller_->OnIssuesCleared();
+  EXPECT_FALSE(controller_->has_issue_);
+  EXPECT_FALSE(IsIconShown());
+  // Adding a permission rejected issue should not show the icon.
+  controller_->OnIssue(media_router::Issue::CreatePermissionRejectedIssue());
   EXPECT_FALSE(controller_->has_issue_);
   EXPECT_FALSE(IsIconShown());
 

@@ -41,6 +41,19 @@ class SpanWriter {
     return true;
   }
 
+  // Returns true and writes `value` into the front of the inner span if there
+  // is space remaining. Otherwise, it returns false and does nothing.
+  template <typename V>
+    requires(std::same_as<T, std::remove_cvref_t<V>>)
+  bool Write(V&& value) {
+    if (!remaining()) {
+      return false;
+    }
+    buf_[0] = std::forward<V>(value);
+    buf_ = buf_.last(remaining() - 1);
+    return true;
+  }
+
   // Skips over the next `n` objects, and returns a span that points to the
   // skipped objects, if there are enough objects left. Otherwise, it returns
   // nullopt and does nothing.

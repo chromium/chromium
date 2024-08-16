@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -120,7 +121,8 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
 
   if (result.package_id.package_type() == PackageType::kArc) {
     result.app_type_data.emplace<AndroidAppInstallData>();
-  } else if (result.package_id.package_type() == PackageType::kWeb) {
+  } else if (result.package_id.package_type() == PackageType::kWeb ||
+             result.package_id.package_type() == PackageType::kWebsite) {
     if (!instance.has_web_extras()) {
       return std::nullopt;
     }
@@ -139,6 +141,7 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     if (!web_app_data.proxied_manifest_url.is_valid()) {
       return std::nullopt;
     }
+    web_app_data.open_as_window = instance.web_extras().open_as_window();
   } else if (result.package_id.package_type() == PackageType::kGeForceNow) {
     result.app_type_data.emplace<GeForceNowAppInstallData>();
   } else if (result.package_id.package_type() == PackageType::kBorealis) {

@@ -24,7 +24,6 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -236,13 +235,10 @@ std::optional<FilteringSubdomainConflictType> AddConflict(
 
 SupervisedUserURLFilter::SupervisedUserURLFilter(
     PrefService& user_prefs,
-    std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client,
-    ValidateURLSupportCallback check_webstore_url_callback)
+    std::unique_ptr<Delegate> delegate)
     : default_behavior_(FilteringBehavior::kAllow),
       user_prefs_(user_prefs),
-      async_url_checker_(std::make_unique<safe_search_api::URLChecker>(
-          std::move(url_checker_client))),
-      check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
+      delegate_(std::move(delegate)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -454,12 +450,12 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) {
 
 bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
     const GURL& effective_url) {
-  DCHECK(!check_webstore_url_callback_.is_null());
+  DCHECK(delegate_);
   return IsNonStandardUrlScheme(effective_url) ||
          IsAlwaysAllowedHost(effective_url) ||
          IsAlwaysAllowedUrlPrefix(effective_url) ||
          IsPlayStoreTermsOfServiceUrl(effective_url) ||
-         check_webstore_url_callback_.Run(effective_url);
+         delegate_->SupportsWebstoreURL(effective_url);
 }
 
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
@@ -683,6 +679,7 @@ void SupervisedUserURLFilter::Clear() {
   url_map_.clear();
   allowed_host_list_.clear();
   blocked_host_list_.clear();
+  async_url_checker_.reset();
   is_filter_initialized_ = false;
 }
 
@@ -701,7 +698,7 @@ WebFilterType SupervisedUserURLFilter::GetWebFilterType() const {
     return WebFilterType::kCertainSites;
   }
 
-  return user_prefs_.get().GetBoolean(prefs::kSupervisedUserSafeSites)
+  return supervised_user::IsSafeSitesEnabled(user_prefs_.get())
              ? WebFilterType::kTryToBlockMatureSites
              : WebFilterType::kAllowAllSites;
 }
@@ -778,13 +775,14 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
     return true;
   }
 
+  CHECK(async_url_checker_);
   return async_url_checker_->CheckURL(
       url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
 }
 
-void SupervisedUserURLFilter::SetURLCheckerClientForTesting(
+void SupervisedUserURLFilter::SetURLCheckerClient(
     std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client) {
   async_url_checker_.reset(
       new safe_search_api::URLChecker(std::move(url_checker_client)));

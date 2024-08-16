@@ -17,10 +17,10 @@
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database.h"
@@ -61,7 +61,7 @@ PlusAddressWebDataService::PlusAddressWebDataService(
                    notify_observers,
                SyncBridgeDBSequenceWrapper* wrapper) {
               wrapper->sync_bridge = std::make_unique<PlusAddressSyncBridge>(
-                  std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+                  std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
                       syncer::PLUS_ADDRESS,
                       /*dump_stack=*/base::DoNothing()),
                   std::move(db_backend), std::move(notify_observers));
@@ -119,16 +119,16 @@ void PlusAddressWebDataService::ClearPlusProfiles() {
       }));
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressWebDataService::GetSyncControllerDelegate() {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddress));
   // `sync_bridge` operates on the `db_task_runner_` - use a
-  // `ProxyModelTypeControllerDelegate` to forward calls to that sequence.
+  // `ProxyDataTypeControllerDelegate` to forward calls to that sequence.
   // Because `db_task_runner_` is a `SequencedTaskRunner`, the `sync_bridge`
   // will already be initialized in the callback by the task posted in the
   // constructor.
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+  return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
       db_task_runner_, base::BindRepeating(
                            [](SyncBridgeDBSequenceWrapper* wrapper) {
                              return wrapper->sync_bridge->change_processor()

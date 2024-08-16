@@ -77,7 +77,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/net/network_diagnostics",
     "//chrome/browser/ash/policy/reporting/metrics_reporting",
@@ -107,6 +106,46 @@ source_set("unit_tests") {
     "//components/user_manager:test_support",
     "//content/test:test_support",
     "//dbus",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "network_events_observer_browsertest.cc",
+    "network_info_sampler_browsertest.cc",
+    "network_telemetry_sampler_browsertest.cc",
+  ]
+
+  deps = [
+    ":network",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/services/cros_healthd/public/cpp:fakes",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/missive:test_support",
+    "//chromeos/services/network_health/public/mojom:types",
+    "//components/policy/proto",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

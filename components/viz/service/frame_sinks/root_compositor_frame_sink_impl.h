@@ -17,6 +17,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/display_client.h"
+#include "components/viz/service/display/frame_interval_decider.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/display/overdraw_tracker.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
@@ -90,11 +91,13 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
 #if BUILDFLAG(IS_ANDROID)
   void SetVSyncPaused(bool paused) override;
   void UpdateRefreshRate(float refresh_rate) override;
-  void SetSupportedRefreshRates(
-      const std::vector<float>& supported_refresh_rates) override;
   void PreserveChildSurfaceControls() override;
   void SetSwapCompletionCallbackEnabled(bool enable) override;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetSupportedRefreshRates(
+      const std::vector<float>& supported_refresh_rates) override;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   void AddVSyncParameterObserver(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;
   void SetDelegatedInkPointRenderer(
@@ -102,8 +105,8 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       override;
   void SetStandaloneBeginFrameObserver(
       mojo::PendingRemote<mojom::BeginFrameObserver> observer) override;
-  void SetMaxVrrInterval(
-      std::optional<base::TimeDelta> max_vrr_interval) override;
+  void SetMaxVSyncAndVrr(std::optional<base::TimeDelta> max_vsync_interval,
+                         display::VariableRefreshRateState vrr_state) override;
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
@@ -160,6 +163,11 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::unique_ptr<Display> display,
       bool hw_support_for_multiple_refresh_rates);
 
+  void UpdateFrameIntervalDeciderSettings();
+  void FrameIntervalDeciderResultCallback(
+      FrameIntervalDecider::Result result,
+      FrameIntervalMatcherType matcher_type);
+
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;
   void DisplayWillDrawAndSwap(bool will_draw_and_swap,
@@ -178,8 +186,7 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
 
-  base::flat_set<base::TimeDelta> GetSupportedFrameIntervals(
-      base::TimeDelta interval);
+  base::flat_set<base::TimeDelta> GetSupportedFrameIntervals();
 
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
   mojo::AssociatedReceiver<mojom::CompositorFrameSink>
@@ -193,6 +200,12 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // Must be destroyed before |compositor_frame_sink_client_|. This must never
   // change for the lifetime of RootCompositorFrameSinkImpl.
   const std::unique_ptr<CompositorFrameSinkSupport> support_;
+
+  // FrameIntervalDecider related members.
+  // True indicates FrameIntervalDecider uses FixedIntervalSettings.
+  bool interval_decider_use_fixed_intervals_ = true;
+  // The current display frame interval that FrameIntervalDecider decided on.
+  base::TimeDelta decided_display_interval_;
 
   // RootCompositorFrameSinkImpl holds a Display and a BeginFrameSource if it
   // was created with a non-null gpu::SurfaceHandle. The source can either be a
@@ -234,6 +247,10 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
   // Let client control whether it wants `DidCompleteSwapWithSize`.
   bool enable_swap_completion_callback_ = false;
 #endif
+
+  // Map which retains the exact supported refresh rates, keyed by their
+  // interval conversion value which may be subject to precision loss.
+  base::flat_map<base::TimeDelta, float> exact_supported_refresh_rates_;
 };
 
 }  // namespace viz

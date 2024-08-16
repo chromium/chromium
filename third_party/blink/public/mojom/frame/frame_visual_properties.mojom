@@ -31,6 +31,10 @@ struct FrameVisualProperties {
   // Page scoped value.
   double zoom_level;
 
+  // This represents the cumulative effect of the CSS "zoom" property on this
+  // frame's embedding element and its ancestors.
+  double css_zoom_factor;
+
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.
   float page_scale_factor = 1;

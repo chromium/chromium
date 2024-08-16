@@ -794,6 +794,19 @@ FileSystemURL CreateExternalURL(const FilePath& path) {
                                       storage::kFileSystemTypeExternal, path);
 }
 
+storage::FileSystemURL CreateExternalURL(
+    const blink::StorageKey& storage_key,
+    storage::FileSystemType file_system_type,
+    const std::string& file_system_id,
+    const std::string& virtual_path,
+    const std::string& cracked_path) {
+  return storage::FileSystemURL::CreateForTest(
+      storage_key, storage::kFileSystemTypeExternal,
+      base::FilePath::FromUTF8Unsafe(virtual_path), file_system_id,
+      file_system_type, base::FilePath::FromUTF8Unsafe(cracked_path),
+      file_system_id, storage::FileSystemMountOption());
+}
+
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Archive) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv({"", "--enable-arcvm"});
   GURL url;
@@ -887,10 +900,6 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
-  ash::CiceroneClient::InitializeFake();
-  ash::ConciergeClient::InitializeFake();
-  ash::SeneschalClient::InitializeFake();
-
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->InitFromArgv({"", "--enable-arcvm"});
   EXPECT_TRUE(arc::IsArcVmEnabled());
@@ -902,10 +911,6 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
                  "MyDrive/a/b/c"),
             url);
   EXPECT_TRUE(requires_sharing);
-
-  ash::SeneschalClient::Shutdown();
-  ash::ConciergeClient::Shutdown();
-  ash::CiceroneClient::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_ShareCache) {
@@ -920,6 +925,107 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_ShareCache) {
             url);
   // ShareCache files do not need to be shared to ARC through Seneschal.
   EXPECT_FALSE(requires_seneschal_sharing);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest,
+       ConvertPathToArcUrl_FuseboxOnArcContainer) {
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, "subdir"}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      base::FilePath::FromUTF8Unsafe(util::kFuseBoxMediaPath)
+          .AppendASCII("subdir"));
+
+  // On ARC++ container, Fusebox paths are converted into
+  // ChromeContentProvider URIs which do not need to be shared via seneschal.
+  GURL url;
+  bool requires_seneschal_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      base::FilePath::FromUTF8Unsafe(util::kFuseBoxMediaPath)
+          .AppendASCII("subdir/a/b/c"),
+      &url, &requires_seneschal_sharing));
+  EXPECT_EQ(url, GURL("content://org.chromium.arc.chromecontentprovider/"
+                      "externalfile%3Afubomona%253Asubdir%2Fa%2Fb%2Fc"));
+  EXPECT_FALSE(requires_seneschal_sharing);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_FuseboxOnArcVm) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm"});
+  EXPECT_TRUE(arc::IsArcVmEnabled());
+
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      base::StrCat({util::kFuseBoxMountNamePrefix, "subdir"}),
+      storage::kFileSystemTypeFuseBox, storage::FileSystemMountOption(),
+      base::FilePath::FromUTF8Unsafe(util::kFuseBoxMediaPath)
+          .AppendASCII("subdir"));
+
+  // On ARCVM, Fusebox paths are converted into ArcVolumeProvider URIs which
+  // need to be shared via seneschal.
+  GURL url;
+  bool requires_seneschal_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      base::FilePath::FromUTF8Unsafe(util::kFuseBoxMediaPath)
+          .AppendASCII("subdir/a/b/c"),
+      &url, &requires_seneschal_sharing));
+  EXPECT_EQ(
+      url,
+      GURL("content://org.chromium.arc.volumeprovider/fusebox/subdir/a/b/c"));
+  EXPECT_TRUE(requires_seneschal_sharing);
+}
+
+TEST_F(FileManagerPathUtilConvertUrlTest,
+       ConvertFileSystemURLToPathForSharingWithArc) {
+  const std::string file_manager_origin =
+      url::Origin::Create(GetFileManagerURL()).Serialize();
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting(file_manager_origin);
+
+  // Register volumes for FSP and MTP in the Fusebox server.
+  fusebox::Server fusebox_server(/*delegate=*/nullptr);
+  fusebox_server.RegisterFSURLPrefix(
+      "fsp.subdir",
+      base::StrCat({"filesystem:", file_manager_origin,
+                    "/external/extensionid%3Afilesystemid%3Auserhash"}),
+      /*read_only=*/true);
+  fusebox_server.RegisterFSURLPrefix(
+      "mtp.subdir",
+      base::StrCat({"filesystem:", file_manager_origin,
+                    "/external/fileman-mtp-mtp%3Aserialnumber%3Astorageid"}),
+      /*read_only=*/true);
+
+  // FileSystemURLs for FSP and MTP are converted into Fusebox VFS paths.
+  EXPECT_EQ(
+      ConvertFileSystemURLToPathForSharingWithArc(CreateExternalURL(
+          storage_key, storage::kFileSystemTypeProvided,
+          "extensionid:filesystemid:userhash",
+          "extensionid:filesystemid:userhash/a/b/c",
+          "/provided/extensionid:filesystemid:userhash/a/b/c")),
+      base::FilePath::FromUTF8Unsafe("/media/fuse/fusebox/fsp.subdir/a/b/c"));
+  EXPECT_EQ(
+      ConvertFileSystemURLToPathForSharingWithArc(CreateExternalURL(
+          storage_key, storage::kFileSystemTypeDeviceMediaAsFileStorage,
+          "fileman-mtp-mtp:serialnumber:storageid",
+          "fileman-mtp-mtp:serialnumber:storageid/a/b/c",
+          "/usb:x,y:storageid/a/b/c")),
+      base::FilePath::FromUTF8Unsafe("/media/fuse/fusebox/mtp.subdir/a/b/c"));
+
+  // For the other FileSystemURLs, the path associated with the original URL is
+  // returned as-is.
+  EXPECT_EQ(ConvertFileSystemURLToPathForSharingWithArc(
+                CreateExternalURL(storage_key, storage::kFileSystemTypeLocal,
+                                  "Downloads-testing_profile%40test-hash",
+                                  "Downloads-testing_profile%40test-hash/a/b/c",
+                                  GetMyFilesFolderForProfile(primary_profile_)
+                                      .AppendASCII("a/b/c")
+                                      .value())),
+            GetMyFilesFolderForProfile(primary_profile_).AppendASCII("a/b/c"));
+  EXPECT_EQ(ConvertFileSystemURLToPathForSharingWithArc(CreateExternalURL(
+                storage_key, storage::kFileSystemTypeDriveFs,
+                "drivefs-84675c855b63e12f384d45f033826980",
+                "drivefs-84675c855b63e12f384d45f033826980/a/b/c",
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/a/b/c")),
+            base::FilePath::FromUTF8Unsafe(
+                "/media/fuse/drivefs-84675c855b63e12f384d45f033826980/a/b/c"));
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest,

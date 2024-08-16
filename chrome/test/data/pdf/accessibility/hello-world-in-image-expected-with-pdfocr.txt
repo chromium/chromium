@@ -9,6 +9,6 @@ pdfRoot 'PDF document containing 1 page'
           staticText 'Start of extracted text'
         paragraph
           staticText 'Hello, world!'
-            inlineTextBox 'Hello, world! '
+            inlineTextBox 'Hello, world!'
         contentInfo
           staticText 'End of extracted text'

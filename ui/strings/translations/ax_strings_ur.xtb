@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">سلائیڈر</translation>
 <translation id="1211441953136645838">اختتامی نوٹ</translation>
 <translation id="1281252709823657822">ڈئیلاگ</translation>
+<translation id="1306460908038601864">آف</translation>
 <translation id="1335095011850992622">کریڈٹس</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">بینر</translation>
+<translation id="1480676835519562650">متعدد قابل انتخاب، <ph name="COUNT" /> میں سے <ph name="SELECTED" /> کو منتخب کیا گیا۔</translation>
 <translation id="1589122976691792535">علاقہ</translation>
 <translation id="1650423536718072820">اقوال زریں</translation>
+<translation id="1681022320378710418">موجودہ وقت</translation>
+<translation id="1727839386348365796">آئی ڈراپر</translation>
 <translation id="1821985195704844674">ٹری گرڈ</translation>
 <translation id="1823704031293214298">صفحے کا فٹر</translation>
 <translation id="1838681052457320736">الرٹ ڈائیلاگ</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">حذف کرنا</translation>
 <translation id="1907737156431278478">مثال</translation>
 <translation id="1930711995431081526">صورتحال</translation>
+<translation id="2031987842108996681">سرخ چینل</translation>
 <translation id="2158401438286456825">صفحے کی فہرست</translation>
 <translation id="2291999235780842123">چیک باکس</translation>
 <translation id="2311842470354187719">صفحہ کا انقطاع</translation>
 <translation id="2335594187091864976">تاریخ اور وقت کا منتخب کنندہ</translation>
 <translation id="2508569020611168319">ٹیب کی فہرست</translation>
+<translation id="2530182415807757784">متعدد قابل انتخاب، کوئی بھی منتخب نہیں کیا گیا۔</translation>
+<translation id="2634240155926812724">سبز چینل</translation>
 <translation id="2657045182931379222">گرافکس آبجیکٹ</translation>
 <translation id="2674318244760992338">فٹر</translation>
 <translation id="2723001399770238859">آڈیو</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">نوٹ</translation>
 <translation id="3175736971608411871">ٹائمر</translation>
 <translation id="3199563858620722075">کومبو باکس</translation>
+<translation id="3220661731597678625">موجودہ قدم</translation>
+<translation id="3329013043687509092">سیرابی</translation>
 <translation id="3486220673238053218">وضاحت</translation>
 <translation id="3557673793733683882">سرخی <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">ہفتہ کا منتخب کنندہ</translation>
 <translation id="3706100364254443312">سوئچ کریں</translation>
 <translation id="3808586225841795776">اصطلاح</translation>
+<translation id="3914173277599553213">مطلوب</translation>
 <translation id="3920932319529768807">اختتامیہ</translation>
 <translation id="3924558731517983934">ایپلیکیشن</translation>
 <translation id="3944740393230681990">تمہید</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">سر ورق</translation>
 <translation id="4757246831282535685">ٹیب پینل</translation>
 <translation id="479989351350248267">تلاش کریں</translation>
+<translation id="4912200001568447310">موجودہ آئٹم</translation>
 <translation id="4912536737030637138">کتابیات کا اندراج</translation>
 <translation id="492244087561876220">تبصرہ</translation>
+<translation id="4924138096460353083">غیر متعین</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> منتخب کیا گيا</translation>
 <translation id="5022314756875057021">قطار گروپ</translation>
 <translation id="5034860022980953847">پیشرفت کا انڈیکیٹر</translation>
 <translation id="5093189678851173835">کتبہ</translation>
+<translation id="509897012892853729">نیلا چینل</translation>
 <translation id="512758898067543763">قطار کا ہیڈر</translation>
 <translation id="5143125788380636750">اختتامیہ</translation>
 <translation id="5406322316791861025">فیگر</translation>
+<translation id="5425179576310518467">موجودہ تاریخ</translation>
 <translation id="5453733299334684579">ٹری آئٹم</translation>
 <translation id="546643433018805598">سب سکرپٹ</translation>
 <translation id="5476505524087279545">غیر نشان زد کریں</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">بٹن</translation>
 <translation id="5693537480074347398">سپر سکرپٹ</translation>
 <translation id="576709008726043716">تعارف</translation>
+<translation id="5860033963881614850">آف</translation>
 <translation id="591047860372322273">تلاش کا خانہ</translation>
+<translation id="5916664084637901428">آن</translation>
 <translation id="5987525920412732405">اسپن بٹن</translation>
 <translation id="6023896073578205740">فہرست باکس</translation>
 <translation id="6119846243427417423">فعال کریں</translation>
 <translation id="6150588977291308318">کتابیات</translation>
 <translation id="6164829606128959761">میٹر</translation>
 <translation id="6166809985690652833">پسِ نوشت</translation>
+<translation id="6212595056017402527">موجودہ صفحہ</translation>
 <translation id="6213469881011901533">فرہنگ</translation>
+<translation id="6281588256137006900">روشن</translation>
 <translation id="6281763101136022427">URL</translation>
 <translation id="6453774872122745852">اظہار تشکر</translation>
 <translation id="648732519525291180">وقت منتخب کنندہ</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">بلاک کوٹ</translation>
 <translation id="693476918119313863">ہیڈر</translation>
 <translation id="6981594929165378967">داخل کرنا</translation>
+<translation id="698788488269350478">پھیلایا گیا۔</translation>
 <translation id="7034405885550056553">تجویز</translation>
+<translation id="7102274145889307184">موجودہ مقام</translation>
 <translation id="7139483182332611405">دیباچہ</translation>
 <translation id="7198226213493847604">مینیو پاپ اپ بٹن</translation>
 <translation id="7214187073215825913">مواد کی معلومات</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">فہرست مضامین</translation>
 <translation id="7740050170769002709">‏HTML مواد</translation>
 <translation id="7802800022689234070">افشاء کا مثلث</translation>
+<translation id="7852167693871241274">رنگین سلائیڈر</translation>
 <translation id="7891486169920085145">تقسیم کنندہ</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> منتخب کردہ نہیں ہے</translation>
 <translation id="8034303206267677282">مضبوط</translation>
 <translation id="8053789581856978548">متن تلاش کرنے کی فیلڈ</translation>
 <translation id="8057695513531652401">نوٹس</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">باب</translation>
 <translation id="8851136666856101339">اصل</translation>
 <translation id="8861621546968757188">ڈائیلاگ پاپ اپ بٹن</translation>
+<translation id="8889402386540077796">ہیو</translation>
+<translation id="894736920926684893">فارمیٹ ٹوگلر</translation>
 <translation id="9002566407876343676">کھولیں</translation>
 <translation id="901834265349196618">ای میل</translation>
 <translation id="9048119486235211610">نیویگیشن</translation>

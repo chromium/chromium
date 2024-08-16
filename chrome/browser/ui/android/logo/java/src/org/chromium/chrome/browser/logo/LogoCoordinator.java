@@ -9,6 +9,7 @@ import android.view.View.MeasureSpec;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -65,16 +66,18 @@ public class LogoCoordinator {
     }
 
     /**
-     * @see LogoMediator#initWithNative
+     * @see LogoMediator#initWithNative(Profile)
      */
-    public void initWithNative() {
+    public void initWithNative(Profile profile) {
         // TODO(crbug.com/40881870): Would be more elegant if we were given an
         //  onNativeInitializedObserver and didn't rely on the good will of outside callers to
         //  invoke this.
-        mMediator.initWithNative();
+        mMediator.initWithNative(profile);
     }
 
-    /** @see LogoMediator#loadSearchProviderLogoWithAnimation */
+    /**
+     * @see LogoMediator#loadSearchProviderLogoWithAnimation
+     */
     public void loadSearchProviderLogoWithAnimation() {
         mMediator.loadSearchProviderLogoWithAnimation();
     }

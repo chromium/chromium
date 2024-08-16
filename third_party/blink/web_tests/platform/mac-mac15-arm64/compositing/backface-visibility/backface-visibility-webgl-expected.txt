@@ -1,0 +1,6 @@
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas
+CONSOLE ERROR: Uncaught Unable to fetch WebGL rendering context for Canvas

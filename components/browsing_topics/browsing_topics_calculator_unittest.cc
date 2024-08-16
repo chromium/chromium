@@ -63,7 +63,7 @@ Topic ExpectedRandomTopic(size_t index) {
     return kExpectedRandomTopicsForTaxonomyV2[index];
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class TestHistoryService : public history::HistoryService {

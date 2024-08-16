@@ -26,7 +26,7 @@ class WebauthnCredentialSpecifics;
 }
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }
 
 namespace webauthn {
@@ -78,10 +78,10 @@ class PasskeyModel : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns the sync ModelTypeControllerDelegate for the WEBAUTHN_CREDENTIAL
+  // Returns the sync DataTypeControllerDelegate for the WEBAUTHN_CREDENTIAL
   // data type.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate() = 0;
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate() = 0;
 
   // Returns true if the model has finished loading state from disk and is ready
   // to sync.

@@ -163,6 +163,12 @@ class WebMediaPlayer {
   virtual void SetWasPlayedWithUserActivation(
       bool was_played_with_user_activation) = 0;
 
+  // Sets a flag indicating whether media playback should be paused when the
+  // the iframe is hidden.
+  virtual void SetShouldPauseWhenFrameIsHidden(
+      bool should_pause_when_frame_is_hidden) = 0;
+  virtual bool GetShouldPauseWhenFrameIsHidden() { return false; }
+
   // The associated media element is going to enter Picture-in-Picture. This
   // method should make sure the player is set up for this and has a SurfaceId
   // as it will be needed.

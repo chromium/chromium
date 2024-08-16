@@ -14,8 +14,8 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -96,8 +96,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
   DCHECK(supervised_user_extensions_delegate);
-  if (supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs()) &&
-      extension &&
+  if (supervised_user::AreExtensionsPermissionsEnabled(profile_) && extension &&
 
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
@@ -239,7 +238,7 @@ void ExtensionEnableFlow::EnableExtension() {
         /*user_initiated=*/true);  // |delegate_| may delete us.
     return;
   }
-  if (supervised_user::AreExtensionsPermissionsEnabled(*profile_->GetPrefs())) {
+  if (supervised_user::AreExtensionsPermissionsEnabled(profile_)) {
     // We need to add parent approval first.
     extensions::SupervisedUserExtensionsDelegate*
         supervised_user_extensions_delegate =

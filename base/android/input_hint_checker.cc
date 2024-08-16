@@ -73,9 +73,7 @@ void InputHintChecker::InitializeFeatures() {
   }
 }
 
-void InputHintChecker::SetView(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& root_view) {
+void InputHintChecker::SetView(JNIEnv* env, jobject root_view) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   InitState state = FetchState();
   if (state == InitState::kFailedToInitialize) {
@@ -91,7 +89,7 @@ void InputHintChecker::SetView(
     // j.l.reflect.Method via double-reflection.
     TransitionToState(InitState::kInProgress);
     view_class_ =
-        ScopedJavaGlobalRef<jobject>(env, env->GetObjectClass(root_view.obj()));
+        ScopedJavaGlobalRef<jobject>(env, env->GetObjectClass(root_view));
     pthread_t new_thread;
     if (pthread_create(&new_thread, nullptr, OffThreadInitInvoker::Run,
                        nullptr) != 0) {
@@ -305,8 +303,8 @@ InputHintChecker::ScopedOverrideInstance::~ScopedOverrideInstance() {
 }
 
 void JNI_InputHintChecker_SetView(_JNIEnv* env,
-                                  const jni_zero::JavaParamRef<jobject>& v) {
-  InputHintChecker::GetInstance().SetView(env, v);
+                                  const JavaParamRef<jobject>& v) {
+  InputHintChecker::GetInstance().SetView(env, v.obj());
 }
 
 jboolean JNI_InputHintChecker_IsInitializedForTesting(_JNIEnv* env) {

@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "components/sync/protocol/entity_metadata.pb.h"
+
 namespace syncer {
 
 NigoriMetadataBatch::NigoriMetadataBatch() = default;
 
 NigoriMetadataBatch::NigoriMetadataBatch(NigoriMetadataBatch&& other)
-    : model_type_state(std::move(other.model_type_state)),
+    : data_type_state(std::move(other.data_type_state)),
       entity_metadata(std::move(other.entity_metadata)) {}
 
 NigoriMetadataBatch::~NigoriMetadataBatch() = default;

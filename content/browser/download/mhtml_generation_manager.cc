@@ -501,8 +501,8 @@ void MHTMLGenerationManager::Job::WriteMHTMLToDisk(
           base::as_string_view(buffer).substr(0, actually_read_bytes);
       if (secure_hash_)
         secure_hash_->Update(read_chars.data(), read_chars.size());
-      if (browser_file_.WriteAtCurrentPos(
-              read_chars.data(), base::checked_cast<int>(read_chars.size())) <
+      if (UNSAFE_TODO(browser_file_.WriteAtCurrentPos(
+              read_chars.data(), base::checked_cast<int>(read_chars.size()))) <
           0) {
         DLOG(ERROR) << "Error writing to file handle.";
         OnWriteComplete(std::move(callback),
@@ -709,7 +709,8 @@ bool MHTMLGenerationManager::Job::WriteToFileAndUpdateHash(
     base::File* file,
     crypto::SecureHash* secure_hash,
     std::string to_write) {
-  bool result = file->WriteAtCurrentPos(to_write.data(), to_write.size()) >= 0;
+  bool result = UNSAFE_TODO(file->WriteAtCurrentPos(to_write.data(),
+                                                    to_write.size())) >= 0;
   if (result && secure_hash) {
     secure_hash->Update(to_write.data(), to_write.size());
   }

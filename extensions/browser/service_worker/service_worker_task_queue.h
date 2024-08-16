@@ -23,6 +23,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -165,10 +166,12 @@ class ServiceWorkerTaskQueue
 
   // Called once an extension Service Worker context was initialized but not
   // necessarily started executing its JavaScript.
-  void DidInitializeServiceWorkerContext(int render_process_id,
-                                         const ExtensionId& extension_id,
-                                         int64_t service_worker_version_id,
-                                         int thread_id);
+  void DidInitializeServiceWorkerContext(
+      int render_process_id,
+      const ExtensionId& extension_id,
+      int64_t service_worker_version_id,
+      int thread_id,
+      const blink::ServiceWorkerToken& service_worker_token);
   // Called once an extension Service Worker started running.
   // This can be thought as "loadstop", i.e. the global JS script of the worker
   // has completed executing.
@@ -267,7 +270,8 @@ class ServiceWorkerTaskQueue
     virtual void WorkerUnregistered(const ExtensionId& extension_id) {}
 
     // Called when a service worker registered for the extension with the
-    // `extension_id` has been registered in the //content layer.
+    // `extension_id` has been registered in the //content layer. It is always
+    // called, even if the registration request fails.
     virtual void OnWorkerRegistered(const ExtensionId& extension_id) {}
   };
 
@@ -297,6 +301,7 @@ class ServiceWorkerTaskQueue
   enum class RegistrationReason {
     REGISTER_ON_EXTENSION_LOAD,
     RE_REGISTER_ON_STATE_MISMATCH,
+    RE_REGISTER_ON_TIMEOUT,
   };
 
   void RegisterServiceWorker(RegistrationReason reason,
@@ -305,6 +310,16 @@ class ServiceWorkerTaskQueue
 
   void RunTasksAfterStartWorker(const SequencedContextId& context_id);
 
+  // Checks if the `activation_token` has any more worker registration retries
+  // left. Retries are only performed on registration timeout and up to 3 times
+  // before silently failing. CHECK()s if called before a worker registration is
+  // attempted.
+  bool ShouldRetryRegistrationRequest(base::UnguessableToken activation_token);
+
+  // Callbacks called when the worker is registered or unregistered,
+  // respectively. `worker_previously_successfully_registered` true indicates
+  // that when the unregistration request was made the task queue had a record
+  // of an existing worker registration.
   void DidRegisterServiceWorker(const SequencedContextId& context_id,
                                 RegistrationReason reason,
                                 base::Time start_time,
@@ -312,6 +327,7 @@ class ServiceWorkerTaskQueue
   void DidUnregisterServiceWorker(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
+      bool worker_previously_registered,
       blink::ServiceWorkerStatusCode status);
 
   void DidStartWorkerForScope(const SequencedContextId& context_id,
@@ -413,6 +429,10 @@ class ServiceWorkerTaskQueue
 
   // Current activation tokens for each activated extensions.
   std::map<ExtensionId, base::UnguessableToken> activation_tokens_;
+
+  // The number of times that a worker registration request has been retried
+  // for an activation token.
+  std::map<base::UnguessableToken, int> worker_reregistration_attempts_;
 
   // A set of pending service worker registrations. These are registrations that
   // succeeded in the first step (triggering `DidRegisterServiceWorker`), but

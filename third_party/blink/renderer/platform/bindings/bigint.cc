@@ -23,10 +23,9 @@ BigInt ToBigIntSlow(v8::Isolate* isolate,
     return BigInt();
   }
 
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::BigInt> bigint_value;
   if (!value->ToBigInt(isolate->GetCurrentContext()).ToLocal(&bigint_value)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return BigInt();
   }
   return BigInt(bigint_value);

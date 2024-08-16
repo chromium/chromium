@@ -86,11 +86,12 @@ bool GetRangeForRequest(const net::HttpRequestHeaders& headers,
                         size_t max_length,
                         size_t* start,
                         size_t* length) {
-  std::string range_header;
+  std::optional<std::string> range_header =
+      headers.GetHeader(net::HttpRequestHeaders::kRange);
   net::HttpByteRange byte_range;
-  if (headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header)) {
+  if (range_header) {
     std::vector<net::HttpByteRange> ranges;
-    if (net::HttpUtil::ParseRangeHeader(range_header, &ranges) &&
+    if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges) &&
         ranges.size() == 1) {
       byte_range = ranges[0];
     } else {

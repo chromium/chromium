@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -57,7 +57,7 @@
 #include "components/prefs/testing_pref_store.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -71,6 +71,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using password_manager::GetLocalUpmMinGmsVersion;
 using password_manager::UsesSplitStoresAndUPMForLocal;
 using password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores;
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
@@ -93,7 +94,6 @@ enum class ActivationError {
   kInitialUpmMigrationMissing = 2,
   kLoginDbFileMoveFailed = 3,
   kOutdatedGmsCore = 4,
-  kFlagDisabled = 5,
   kMigrationWarningUnacknowledged = 6,
   kMax = kMigrationWarningUnacknowledged,
 };
@@ -110,8 +110,8 @@ password_manager::PasswordForm MakeExampleForm() {
 class SyncDataTypeActiveWaiter : public syncer::SyncServiceObserver {
  public:
   SyncDataTypeActiveWaiter(syncer::SyncService* sync_service,
-                           syncer::ModelType model_type)
-      : sync_service_(sync_service), model_type_(model_type) {}
+                           syncer::DataType data_type)
+      : sync_service_(sync_service), data_type_(data_type) {}
   SyncDataTypeActiveWaiter(const SyncDataTypeActiveWaiter&) = delete;
   SyncDataTypeActiveWaiter& operator=(const SyncDataTypeActiveWaiter&) = delete;
   ~SyncDataTypeActiveWaiter() override = default;
@@ -126,14 +126,14 @@ class SyncDataTypeActiveWaiter : public syncer::SyncServiceObserver {
  private:
   // syncer::SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* service) override {
-    if (service->GetActiveDataTypes().Has(model_type_)) {
+    if (service->GetActiveDataTypes().Has(data_type_)) {
       observation_.Reset();
       run_loop_.Quit();
     }
   }
 
   const raw_ptr<syncer::SyncService> sync_service_;
-  const syncer::ModelType model_type_;
+  const syncer::DataType data_type_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       observation_{this};
   base::RunLoop run_loop_;
@@ -165,7 +165,7 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
         base::StrCat({syncer::prefs::internal::
                           kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
                       ".",
-                      syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+                      syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
         false);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::
@@ -179,10 +179,9 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
                         password_manager::kLoginDataForProfileFileName),
                     "");
 
-    // Skip the Gms version check, otherwise enabling UPM flags in individual
-    // tests won't actually do anything in bots with outdated GmsCore.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    // Most tests check the modern GmsCore case.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
   }
 
   // SetUsesSplitStoresAndUPMForLocal() reads whether password sync is enabled
@@ -197,7 +196,7 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
           base::StrCat(
               {syncer::prefs::internal::
                    kSyncDataTypeStatusForSyncToSigninMigrationPrefix,
-               ".", syncer::GetModelTypeLowerCaseRootTag(syncer::PASSWORDS)}),
+               ".", syncer::GetDataTypeLowerCaseRootTag(syncer::PASSWORDS)}),
           true);
       ASSERT_EQ(browser_sync::GetSyncToSigninMigrationDataTypeDecision(
                     &pref_service_, syncer::PASSWORDS,
@@ -217,12 +216,6 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
   const base::FilePath& login_db_directory() { return login_db_directory_; }
-
-  const char* min_gms_version_param_name() {
-    return base::android::BuildInfo::GetInstance()->is_automotive()
-               ? password_manager::features::kLocalUpmMinGmsVersionParamForAuto
-               : password_manager::features::kLocalUpmMinGmsVersionParam;
-  }
 
  private:
   TestingPrefServiceSimple pref_service_;
@@ -333,10 +326,6 @@ TEST_F(
     PasswordManagerAndroidUtilTest,
     SetUsesSplitStoresAndUPMForLocal_SignedOutWithNoPasswordsAndDefaultSettings) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList disable_local_upm;
-  disable_local_upm.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
   ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
@@ -344,24 +333,7 @@ TEST_F(
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // Nothing changed, the flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingNoMigration",
-      ActivationError::kFlagDisabled, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The flag was enabled, so the user got activated.
+  // The user got activated.
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOn));
   histogram_tester->ExpectUniqueSample(
@@ -394,13 +366,6 @@ TEST_F(
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SignedOutNoPasswordsAndCustomSettings) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
-      {});
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
@@ -431,9 +396,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SignedOutWithFreshProfile) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   // kEmptyProfileStoreLoginDatabase is false, so in principle there would be
   // local passwords to migrate. But actually the pref is just in its default
   // state. This is a fresh profile without a DB file.
@@ -449,7 +411,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // User got activated by the NoMigration flag.
+  // User got activated.
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOn));
   histogram_tester.ExpectUniqueSample(
@@ -461,43 +423,9 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
 }
 
-TEST_F(
-    PasswordManagerAndroidUtilTest,
-    SetUsesSplitStoresAndUPMForLocal_SignedOutWithFreshProfileWithGMSCheckForAuto) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
-
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The user did not get activated, because the GMS min version condition
-  // isn't met.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-}
-
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SignedOutWithPasswords) {
-  // The warning is not shown on automotive, so there is a separate test
-  // for auto.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList enable_local_upm_without_migration;
-  enable_local_upm_without_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
   ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
@@ -505,46 +433,34 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // The migration warning was not acknowledged so the migration attempt fails.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kMigrationWarningUnacknowledged, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
-      true);
+  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // The migration warning was not acknowledged so the migration attempt
+    // fails.
+    EXPECT_EQ(
+        pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+        static_cast<int>(kOff));
+    histogram_tester->ExpectUniqueSample(
+        "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
+        ActivationError::kMigrationWarningUnacknowledged, 1);
+    histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                         false, 1);
+    histogram_tester->ExpectUniqueSample(
+        "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+    histogram_tester = std::make_unique<base::HistogramTester>();
+    pref_service()->SetBoolean(
+        password_manager::prefs::
+            kUserAcknowledgedLocalPasswordsMigrationWarning,
+        true);
 
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+    // Try again.
+    SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+  } else {
+    // On Android Auto, the migration warning is not shown, so acknowledging is
+    // not required.
+  }
 
-  // Nothing changed, the WithMigration flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kFlagDisabled, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  base::test::ScopedFeatureList enable_local_upm_with_migration;
-  enable_local_upm_with_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {});
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The flag was enabled, so the migration got marked as pending (but the user
-  // is not considered activated).
+  // The migration got marked as pending (but the user is not considered
+  // activated).
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOffAndMigrationPending));
   histogram_tester->ExpectUniqueSample(
@@ -587,105 +503,10 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
 }
 
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SignedOutWithPasswordsAuto) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-  auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList enable_local_upm_with_migration;
-  enable_local_upm_with_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
-      {});
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Despite the migration warning not being acknowledged, the migration
-  // attempt should proceed.
-  ASSERT_FALSE(pref_service()->GetBoolean(
-      password_manager::prefs::
-          kUserAcknowledgedLocalPasswordsMigrationWarning));
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOffAndMigrationPending));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kNone, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-
-  histogram_tester = std::make_unique<base::HistogramTester>();
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The first migration didn't finish/succeed, so a new migration is scheduled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOffAndMigrationPending));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kNone, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(kOn));
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The migration finished successfully, the user is activated, so next calls
-  // are no-ops.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOn));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kNone, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       true, 1);
-}
-
-TEST_F(
-    PasswordManagerAndroidUtilTest,
-    SetUsesSplitStoresAndUPMForLocal_SignedOutWithPasswordsWithGMSCheckForAuto) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-
-  base::test::ScopedFeatureList enable_local_upm_with_migration;
-  enable_local_upm_with_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The migration did not get marked as pending, because the GMS min version
-  // condition isn't met.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-}
-
 TEST_F(
     PasswordManagerAndroidUtilTest,
     SetUsesSplitStoresAndUPMForLocal_SignedOutWithCustomEnableServiceSetting) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList enable_local_upm_without_migration;
-  enable_local_upm_without_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
   pref_service()->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                              false);
   pref_service()->SetBoolean(
@@ -696,29 +517,8 @@ TEST_F(
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // Nothing changed, the WithMigration flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kFlagDisabled, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  base::test::ScopedFeatureList enable_local_upm_with_migration;
-  enable_local_upm_with_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {});
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The flag was enabled, so the migration got marked as pending (but the user
-  // is not considered activated yet).
+  // The migration got marked as pending (but the user is not considered
+  // activated yet).
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOffAndMigrationPending));
   histogram_tester->ExpectUniqueSample(
@@ -733,12 +533,6 @@ TEST_F(
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SignedOutWithCustomAutoSigninSetting) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList enable_local_upm_without_migration;
-  enable_local_upm_without_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
   pref_service()->SetBoolean(
@@ -749,29 +543,8 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // Nothing changed, the WithMigration flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
-      ActivationError::kFlagDisabled, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  base::test::ScopedFeatureList enable_local_upm_with_migration;
-  enable_local_upm_with_migration.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {});
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // The flag was enabled, so the migration got marked as pending (but the user
-  // is not considered activated yet).
+  // The migration got marked as pending (but the user is not considered
+  // activated yet).
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOffAndMigrationPending));
   histogram_tester->ExpectUniqueSample(
@@ -791,13 +564,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
   // kLoginDataForAccountFileName exists because the account store was created
   // when the migration got scheduled, even if it was never used.
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm;
-  enable_local_upm.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-       password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
-      {});
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOffAndMigrationPending));
   pref_service()->SetBoolean(
@@ -825,14 +591,10 @@ TEST_F(PasswordManagerAndroidUtilTest,
                                       false, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationStatus", kOffAndMigrationPending, 1);
-  // Advanced case: roll back too.
-  base::test::ScopedFeatureList disable_local_upm;
-  disable_local_upm.InitWithFeatures(
-      {}, {password_manager::features::
-               kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-           password_manager::features::
-               kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
 
+  // Advanced case: deactivate too, by downgrading Gmscore.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
   // kOn syncing users that get rolled back will "undo" the login DB file move,
@@ -858,10 +620,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_SyncingHealthy) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
-  base::test::ScopedFeatureList disable_local_upm;
-  disable_local_upm.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   SetPasswordSyncEnabledPref(true);
   pref_service()->SetInteger(
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
@@ -876,27 +634,6 @@ TEST_F(PasswordManagerAndroidUtilTest,
   ASSERT_FALSE(base::PathExists(login_db_directory().Append(
       password_manager::kLoginDataForAccountFileName)));
 
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.Syncing",
-      ActivationError::kFlagDisabled, 1);
-  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                       false, 1);
-  histogram_tester->ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-  histogram_tester = std::make_unique<base::HistogramTester>();
-
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
   // The user should've been activated and the profile DB file should've become
@@ -917,145 +654,12 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingHealthyWithGmsCheckForAuto) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-  base::test::ScopedFeatureList disable_local_upm;
-  disable_local_upm.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  SetPasswordSyncEnabledPref(true);
-  pref_service()->SetInteger(
-      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-      1);
-  // Custom password manager settings should not matter for syncing users.
-  pref_service()->SetBoolean(
-      password_manager::prefs::kCredentialsEnableAutosignin, false);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the flag was disabled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should have happened, because the min GMS Core version condition
-  // isn't met.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-}
-
-// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingButUnenrolled) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm;
-  enable_local_upm.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
-  SetPasswordSyncEnabledPref(true);
-  pref_service()->SetInteger(
-      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-      1);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      true);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the user was unenrolled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.Syncing",
-      ActivationError::kUnenrolled, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-}
-
-// TODO: crbug.com/40265507 - Clean up when M4 feature flag is removed.
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingButInitialMigrationNotFinished) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm;
-  enable_local_upm.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
-  SetPasswordSyncEnabledPref(true);
-  ASSERT_EQ(pref_service()->GetInteger(
-                password_manager::prefs::
-                    kCurrentMigrationVersionToGoogleMobileServices),
-            0);
-  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Nothing should've happened, the initial UPM migration wasn't finished.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForProfileFileName)));
-  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
-      password_manager::kLoginDataForAccountFileName)));
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationError.Syncing",
-      ActivationError::kInitialUpmMigrationMissing, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
-                                      false, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
-}
-
-TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_StaysActivatedIfEnabledSyncLater) {
   // Set up a user that got activated while being signed out and later enabled
   // sync, but didn't have kCurrentMigrationVersionToGoogleMobileServices set
   // (that pref is part of a migration logic that's no longer triggered when
   // the local UPM is activated).
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   SetPasswordSyncEnabledPref(true);
   ASSERT_EQ(pref_service()->GetInteger(
                 password_manager::prefs::
@@ -1079,46 +683,8 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_OnlyNoMigrationFlagDeactivates) {
-  // Set up a user that required a migration and got successfully activated in
-  // the past.
-  base::test::ScopedFeatureList disable_with_migration_flag;
-  disable_with_migration_flag.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
-  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(kOn));
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Disabling only the WithMigration flag does nothing.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOn));
-
-  base::test::ScopedFeatureList disable_both_flags;
-  disable_both_flags.InitWithFeatures(
-      {}, {password_manager::features::
-               kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-           password_manager::features::
-               kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Disabling both flags deactivates the user.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-}
-
-TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_DeactivatingSyncUserMovesDBFile) {
   // Set up a healthy syncing user that got previously activated.
-  base::test::ScopedFeatureList disable_local_upm;
-  disable_local_upm.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOn));
   SetPasswordSyncEnabledPref(true);
@@ -1132,10 +698,12 @@ TEST_F(PasswordManagerAndroidUtilTest,
       password_manager::kLoginDataForProfileFileName)));
   ASSERT_TRUE(base::PathExists(login_db_directory().Append(
       password_manager::kLoginDataForAccountFileName)));
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
 
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  // Disabling the flag undoes the process, including the file move.
+  // Downgrading GmsCore undoes the process, including the file move.
   EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
             static_cast<int>(kOff));
   EXPECT_TRUE(base::PathExists(login_db_directory().Append(
@@ -1144,17 +712,12 @@ TEST_F(PasswordManagerAndroidUtilTest,
       password_manager::kLoginDataForAccountFileName)));
 }
 
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_OldGmsCoreVersionIsNotActivated) {
+TEST_F(
+    PasswordManagerAndroidUtilTest,
+    SetUsesSplitStoresAndUPMForLocal_OldGmsNotActivatedIfSignedOutWithoutPasswords) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitAndEnableFeatureWithParameters(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-      {{min_gms_version_param_name(),
-        base::ToString(std::numeric_limits<int>::max())}});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetBoolean(
       password_manager::prefs::kEmptyProfileStoreLoginDatabase, true);
 
@@ -1171,17 +734,55 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOff, 1);
 }
 
-TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_BumpingMinGmsCoreVersionDeactivates) {
+TEST_F(
+    PasswordManagerAndroidUtilTest,
+    SetUsesSplitStoresAndUPMForLocal_OldGmsNotActivatedIfSignedOutWithPasswords) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitAndEnableFeatureWithParameters(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-      {{min_gms_version_param_name(),
-        base::ToString(std::numeric_limits<int>::max())}});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
+  pref_service()->SetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
+      true);
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.NonSyncingWithMigration",
+      ActivationError::kOutdatedGmsCore, 1);
+  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_OldGmsNotActivatedIfSyncing) {
+  base::HistogramTester histogram_tester;
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
+  SetPasswordSyncEnabledPref(true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+      1);
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.Syncing",
+      ActivationError::kOutdatedGmsCore, 1);
+  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_DowngradingGmsCoreDeactivates) {
+  base::HistogramTester histogram_tester;
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOn));
   pref_service()->SetBoolean(
@@ -1200,51 +801,12 @@ TEST_F(PasswordManagerAndroidUtilTest,
       "PasswordManager.LocalUpmActivationStatus", kOff, 1);
 }
 
-TEST_F(
-    PasswordManagerAndroidUtilTest,
-    SetUsesSplitStoresAndUPMForLocal_DisablingMigrationFlagCancelsMigration) {
-  // In the past the WithMigration flag was enabled and the migration got
-  // scheduled, but never finished. The flag has since been disabled.
-  base::test::ScopedFeatureList disable_with_migration_flag;
-  disable_with_migration_flag.InitWithFeatures(
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-      {password_manager::features::
-           kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
-  pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
-                             static_cast<int>(kOffAndMigrationPending));
-  pref_service()->SetBoolean(
-      password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning,
-      true);
-
-  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
-
-  // Migration should have been canceled.
-  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
-            static_cast<int>(kOff));
-}
-
-TEST_F(
-    PasswordManagerAndroidUtilTest,
-    SetUsesSplitStoresAndUPMForLocal_BumpingMinGmsCoreVersionCancelsMigration) {
-  // In the past the WithMigration flag was enabled and the migration got
-  // scheduled, but never finished. The min GmsCore version has since been
-  // bumped.
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-        {}},
-       {password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-        {{min_gms_version_param_name(),
-          base::ToString(std::numeric_limits<int>::max())}}}},
-      /*disabled_features=*/{});
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_DowngradingGmsCoreCancelsMigration) {
+  // In the past the migration got scheduled, but never finished. GmsCore has
+  // since been downgraded.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOffAndMigrationPending));
   pref_service()->SetBoolean(
@@ -1322,19 +884,11 @@ TEST_F(
     SetUsesSplitStoresAndUPMForLocal_NoLoginDataFilesCreatedForDeactivatedAccountUsers) {
   // This test simulated a case when the GMS Core version was manually
   // downgraded after UPM activation.
-  base::test::ScopedFeatureList enable_local_upm_with_high_min_version;
-  enable_local_upm_with_high_min_version.InitWithFeaturesAndParameters(
-      {{password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-        {{min_gms_version_param_name(),
-          base::ToString(std::numeric_limits<int>::max())}}},
-       {password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers,
-        {}}},
-      {});
-  // In this test UPM should get deactivated because of the low GMS Core version
-  // so the check for the UPM version has to be active.
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+  base::test::ScopedFeatureList enable_clearing_flag{
+      password_manager::features::kClearLoginDatabaseForAllMigratedUPMUsers};
+  // In this test UPM should get deactivated because of low GMS Core version.
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
 
   // The initial state of the test is that the user is activated for UPM with
   // split stores and the login data files were deleted.
@@ -1370,10 +924,10 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
   UsesSplitStoresAndUPMForLocalTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         syncer::kSyncDeferredStartupTimeoutSeconds, "0");
-    // Skip the Gms version check, otherwise enabling UPM flags in individual
-    // tests won't actually do anything in bots with outdated GmsCore.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
+    // Override the GMS version to be big enough for local UPM support, so these
+    // tests still pass in bots with an outdated version.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
   }
 
   // Can be invoked more than once, calling DestroyProfile() in-between.
@@ -1430,7 +984,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     // database file when using the split stores feature).
     std::unique_ptr<password_manager::LoginDatabase> login_db(
         password_manager::CreateLoginDatabaseForProfileStorage(
-            profile->GetPath()));
+            profile->GetPath(), profile->GetPrefs()));
     password_manager::LoginDatabase* login_db_ptr = login_db.get();
     std::unique_ptr<password_manager::PasswordStoreBackend> profile_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
@@ -1456,7 +1010,7 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
     std::unique_ptr<password_manager::PasswordStoreBackend> account_backend =
         std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
             password_manager::CreateLoginDatabaseForAccountStorage(
-                profile->GetPath()),
+                profile->GetPath(), profile->GetPrefs()),
             syncer::WipeModelUponSyncDisabledBehavior::kAlways,
             profile->GetPrefs());
     AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
@@ -1553,19 +1107,18 @@ class UsesSplitStoresAndUPMForLocalTest : public ::testing::Test {
 
 TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithoutPasswords) {
   {
-    base::test::ScopedFeatureList disable_local_upm;
-    disable_local_upm.InitAndDisableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Prevent activation on the first run by faking an outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
     CreateProfile();
     ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
     DestroyProfile();
   }
 
   {
-    base::test::ScopedFeatureList enable_local_upm(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Now GmsCore was upgraded and activation can proceed.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
     CreateProfile();
     EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(pref_service()));
     DestroyProfile();
@@ -1575,13 +1128,10 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithoutPasswords) {
 TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
   {
     // Set up a signed-out user, with saved passwords, who already acknowledged
-    // the migration warning.
-    base::test::ScopedFeatureList disable_local_upm;
-    disable_local_upm.InitWithFeatures(
-        {}, {password_manager::features::
-                 kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-             password_manager::features::
-                 kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
+    // the migration warning. Prevent activation before the passwords are added,
+    // by faking an outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
@@ -1593,27 +1143,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
   }
 
   {
-    base::test::ScopedFeatureList enable_local_upm_no_migration;
-    enable_local_upm_no_migration.InitWithFeatures(
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration},
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration});
-    CreateProfile();
-    // Should be false because the user had existing passwords and the
-    // "WithMigration" flag is disabled.
-    ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
-    DestroyProfile();
-  }
-
-  {
-    base::test::ScopedFeatureList enable_local_upm_with_migration;
-    enable_local_upm_with_migration.InitWithFeatures(
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration},
-        {});
+    // Now GmsCore was upgraded, so the migration gets scheduled.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
     CreateProfile();
 
     // Until the migration finishes, UsesSplitStoresAndUPMForLocal() should be
@@ -1641,10 +1173,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SignedOutWithPasswords) {
 
 TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingHealthy) {
   {
-    base::test::ScopedFeatureList disable_local_upm;
-    disable_local_upm.InitAndDisableFeature(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Prevent activation before sync is enabled, by faking an outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     SignInAndEnableSync();
@@ -1658,9 +1189,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingHealthy) {
   }
 
   {
-    base::test::ScopedFeatureList enable_local_upm(
-        password_manager::features::
-            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    // Now GmsCore was upgraded and activation can proceed.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
     CreateProfile();
     ASSERT_TRUE(
         SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
@@ -1680,14 +1211,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolledAndM4Enabled) {
   // Test setup where one password was saved to profile store and user is
   // unenrolled from UPM.
   {
-    base::test::ScopedFeatureList disable_upm;
-    disable_upm.InitWithFeatures(
-        {},
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
+    // Prevent activation before sync is enabled, by faking an outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     SignInAndEnableSync();
@@ -1704,14 +1230,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolledAndM4Enabled) {
   }
 
   {
-    base::test::ScopedFeatureList enable_upm;
-    enable_upm.InitWithFeatures(
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore},
-        {});
+    // Now GmsCore was upgraded and activation can proceed.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
     CreateProfile();
 
     // The migration is pending.
@@ -1736,14 +1257,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
   // Test setup where one password was saved to profile store and user is
   // enrolled into original UPM.
   {
-    base::test::ScopedFeatureList disable_upm;
-    disable_upm.InitWithFeatures(
-        {},
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
+    // Prevent activation before sync is enabled, by faking an outdated GmsCore.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
     CreateProfile();
     profile_password_store()->AddLogin(MakeExampleForm());
     SignInAndEnableSync();
@@ -1757,14 +1273,9 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
   }
 
   {
-    base::test::ScopedFeatureList enable_upm;
-    enable_upm.InitWithFeatures(
-        {password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-         password_manager::features::
-             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore},
-        {});
+    // Now GmsCore was upgraded and activation can proceed.
+    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+        base::NumberToString(GetLocalUpmMinGmsVersion()));
     CreateProfile();
 
     // The migration is pending.
@@ -1829,8 +1340,10 @@ TEST_P(GetPasswordAccessLossWarningTypeTest, GetPasswordAccessLossWarningType) {
   // This call is needed to set the variable whether the migration is failed.
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
 
-  PasswordAccessLossWarningType result = GetPasswordAccessLossWarningType(
-      GetParam().gms_core_version, pref_service());
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      GetParam().gms_core_version);
+  PasswordAccessLossWarningType result =
+      GetPasswordAccessLossWarningType(pref_service());
 
   EXPECT_EQ(GetParam().expected_result, result);
 }

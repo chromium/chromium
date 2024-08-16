@@ -399,6 +399,42 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   EXPECT_FALSE(tab4->showing_close_button_);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_P(TabStripTest, CloseButtonHiddenWhenLockedForOnTask) {
+  controller_->SetLockedForOnTask(true);
+
+  controller_->AddTab(0, TabActive::kInactive);
+  controller_->AddTab(1, TabActive::kActive);
+  controller_->AddTab(2, TabActive::kInactive);
+  ASSERT_EQ(3, tab_strip_->GetTabCount());
+
+  Tab* const tab0 = tab_strip_->tab_at(0);
+  ASSERT_FALSE(tab0->IsActive());
+  EXPECT_FALSE(tab0->showing_close_button_);
+
+  Tab* const tab1 = tab_strip_->tab_at(1);
+  ASSERT_TRUE(tab1->IsActive());
+  EXPECT_FALSE(tab1->showing_close_button_);
+
+  Tab* tab2 = tab_strip_->tab_at(2);
+  ASSERT_FALSE(tab2->IsActive());
+  EXPECT_FALSE(tab2->showing_close_button_);
+
+  // Switch tabs and confirm close button remains hidden for all opened tabs.
+  tab_strip_->SelectTab(tab2, dummy_event_);
+  ASSERT_TRUE(tab2->IsActive());
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_FALSE(tab1->showing_close_button_);
+  EXPECT_FALSE(tab2->showing_close_button_);
+
+  // Closing a tab should not alter tab close button visibility either.
+  tab_strip_->CloseTab(tab2, CLOSE_TAB_FROM_MOUSE);
+  tab2 = nullptr;
+  EXPECT_FALSE(tab0->showing_close_button_);
+  EXPECT_FALSE(tab1->showing_close_button_);
+}
+#endif
+
 // The cached widths are private, but if they give incorrect results it can
 // cause subtle errors in other tests. Therefore it's prudent to test them.
 TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {

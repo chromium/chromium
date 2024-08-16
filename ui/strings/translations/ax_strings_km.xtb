@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">របាររំកិល</translation>
 <translation id="1211441953136645838">កំណត់​ចំណាំនៅ​ខាងចុង</translation>
 <translation id="1281252709823657822">ប្រអប់</translation>
+<translation id="1306460908038601864">បិទ</translation>
 <translation id="1335095011850992622">ការថ្លែងអំណរគុណ</translation>
 <translation id="1342835525016946179">អត្ថបទ</translation>
 <translation id="1359897965706325498">បដា</translation>
+<translation id="1480676835519562650">អាចជ្រើសរើសបានច្រើន បានជ្រើសរើស <ph name="SELECTED" /> ក្នុងចំណោម <ph name="COUNT" />។</translation>
 <translation id="1589122976691792535">តំបន់</translation>
 <translation id="1650423536718072820">​សម្រង់​អត្ថបទ​សំខាន់</translation>
+<translation id="1681022320378710418">ម៉ោង​បច្ចុប្បន្ន</translation>
+<translation id="1727839386348365796">បំពង់បន្តក់ពណ៌</translation>
 <translation id="1821985195704844674">ក្រឡាជាមែងធាង</translation>
 <translation id="1823704031293214298">ជើងទំព័រ</translation>
 <translation id="1838681052457320736">ប្រអប់​ជូនដំណឹង</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">ការ​លុប</translation>
 <translation id="1907737156431278478">ឧទាហរណ៍</translation>
 <translation id="1930711995431081526">ស្ថានភាព</translation>
+<translation id="2031987842108996681">បណ្ដាញ​ក្រហម</translation>
 <translation id="2158401438286456825">បញ្ជី​ទំព័រ</translation>
 <translation id="2291999235780842123">ប្រអប់ធីក</translation>
 <translation id="2311842470354187719">បំបែក​ទំព័រ</translation>
 <translation id="2335594187091864976">កម្មវិធីជ្រើសកាលបរិច្ឆេទ និងម៉ោង</translation>
 <translation id="2508569020611168319">បញ្ជីផ្ទាំង</translation>
+<translation id="2530182415807757784">អាចជ្រើសរើសបានច្រើន មិនបានជ្រើសរើស។</translation>
+<translation id="2634240155926812724">បណ្ដាញ​បៃតង</translation>
 <translation id="2657045182931379222">វត្ថុ​ក្រាហ្វិក</translation>
 <translation id="2674318244760992338">ផ្នែកខាងក្រោម</translation>
 <translation id="2723001399770238859">សម្លេង</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">កំណត់ត្រា</translation>
 <translation id="3175736971608411871">កម្មវិធីកំណត់ពេល</translation>
 <translation id="3199563858620722075">ប្រអប់បន្សំ</translation>
+<translation id="3220661731597678625">ជំហានបច្ចុប្បន្ន</translation>
+<translation id="3329013043687509092">កម្រិតពណ៌</translation>
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3557673793733683882">ផ្នែកក្បាល <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">កម្មវិធី​ជ្រើសរើសសប្តាហ៍</translation>
 <translation id="3706100364254443312">ប្តូរ</translation>
 <translation id="3808586225841795776">ពាក្យ</translation>
+<translation id="3914173277599553213">តម្រូវឲ្យមាន</translation>
 <translation id="3920932319529768807">សេចក្ដី​បញ្ចប់</translation>
 <translation id="3924558731517983934">កម្មវិធី</translation>
 <translation id="3944740393230681990">បុរេកថា</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">គម្រប</translation>
 <translation id="4757246831282535685">បន្ទះផ្ទាំង</translation>
 <translation id="479989351350248267">ស្វែងរក</translation>
+<translation id="4912200001568447310">ធាតុបច្ចុប្បន្ន</translation>
 <translation id="4912536737030637138">ធាតុគន្ថនិទ្ទេស</translation>
 <translation id="492244087561876220">មតិ</translation>
+<translation id="4924138096460353083">មិនអាចកំណត់បាន</translation>
+<translation id="4971739861736909480">បាន​ជ្រើសរើស <ph name="ACCNAME" /></translation>
 <translation id="5022314756875057021">ក្រុម​ជួរដេក​ក្នុងតារាង</translation>
 <translation id="5034860022980953847">សញ្ញាបង្ហាញពីដំណើរការ</translation>
 <translation id="5093189678851173835">សម្រង់​ខ្លីៗ</translation>
+<translation id="509897012892853729">បណ្ដាញ​ខៀវ</translation>
 <translation id="512758898067543763">ផ្នែកក្បាលជួរដេក</translation>
 <translation id="5143125788380636750">អវសាន​កថា</translation>
 <translation id="5406322316791861025">តួលេខ</translation>
+<translation id="5425179576310518467">កាលបរិច្ឆេទ​បច្ចុប្បន្ន​</translation>
 <translation id="5453733299334684579">ធាតុជាមែកធាង</translation>
 <translation id="546643433018805598">អក្សរតូច​ខាងក្រោម</translation>
 <translation id="5476505524087279545">ដកធីក</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">ប៊ូតុង</translation>
 <translation id="5693537480074347398">អក្សរតូច​ខាងលើ</translation>
 <translation id="576709008726043716">សេចក្ដី​ផ្ដើម</translation>
+<translation id="5860033963881614850">បិទ</translation>
 <translation id="591047860372322273">ប្រអប់​ស្វែងរក</translation>
+<translation id="5916664084637901428">បើក</translation>
 <translation id="5987525920412732405">ប៊ូតុងបង្វិល</translation>
 <translation id="6023896073578205740">ប្រអប់បញ្ជី</translation>
 <translation id="6119846243427417423">ធ្វើសកម្មភាព</translation>
 <translation id="6150588977291308318">គន្ថនិទ្ទេស</translation>
 <translation id="6164829606128959761">ម៉ែត្រ</translation>
 <translation id="6166809985690652833">សេចក្ដី​បញ្ចប់</translation>
+<translation id="6212595056017402527">ទំព័រ​បច្ចុប្បន្ន</translation>
 <translation id="6213469881011901533">សទ្ទានុក្រម</translation>
+<translation id="6281588256137006900">ភាពភ្លឺ</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">ការថ្លែង​អំណរ​គុណ</translation>
 <translation id="648732519525291180">កម្មវិធីជ្រើសម៉ោង</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">សម្រង់បណ្តុំ</translation>
 <translation id="693476918119313863">ក្បាលទំព័រ</translation>
 <translation id="6981594929165378967">ការ​បញ្ចូល</translation>
+<translation id="698788488269350478">បានពង្រីក។</translation>
 <translation id="7034405885550056553">ការ​ណែនាំ</translation>
+<translation id="7102274145889307184">ទីតាំង​បច្ចុប្បន្ន</translation>
 <translation id="7139483182332611405">អារម្ភកថា</translation>
 <translation id="7198226213493847604">ប៊ូតុងផ្ទាំងលោតឡើងរបស់ម៉ឺនុយ</translation>
 <translation id="7214187073215825913">ព័ត៌មាន​អំពីខ្លឹមសារ</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">សន្ទស្សន៍</translation>
 <translation id="7740050170769002709">មាតិកា HTML</translation>
 <translation id="7802800022689234070">ត្រីកោណបង្ហាញ</translation>
+<translation id="7852167693871241274">របាររំកិល​ពណ៌</translation>
 <translation id="7891486169920085145">អង្គបំបែក</translation>
+<translation id="7962328325860248200">មិនបាន​ជ្រើសរើស <ph name="ACCNAME" /> ទេ</translation>
 <translation id="8034303206267677282">ខ្លាំង</translation>
 <translation id="8053789581856978548">ប្រអប់អត្ថបទស្វែងរក</translation>
 <translation id="8057695513531652401">ការជូន​ដំណឹង</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">ជំពូក</translation>
 <translation id="8851136666856101339">ចម្បង</translation>
 <translation id="8861621546968757188">ប៊ូតុងផ្ទាំងលោតឡើងរបស់ប្រអប់</translation>
+<translation id="8889402386540077796">ពណ៌</translation>
+<translation id="894736920926684893">ប៊ូតុងជ្រើសរើសទម្រង់ពណ៌</translation>
 <translation id="9002566407876343676">បើក</translation>
 <translation id="901834265349196618">អ៊ីម៉ែល</translation>
 <translation id="9048119486235211610">ការរុករក</translation>

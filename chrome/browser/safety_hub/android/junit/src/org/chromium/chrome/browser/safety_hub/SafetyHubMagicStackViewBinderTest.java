@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -94,9 +95,19 @@ public class SafetyHubMagicStackViewBinderTest {
     public void testSetSummary() {
         TextView summaryView = mView.findViewById(R.id.summary);
         assertEquals("", summaryView.getText());
+        assertEquals(View.GONE, summaryView.getVisibility());
 
         mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, SUMMARY_STRING);
         assertEquals(SUMMARY_STRING, summaryView.getText());
+        assertEquals(View.VISIBLE, summaryView.getVisibility());
+
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, null);
+        assertEquals("", summaryView.getText());
+        assertEquals(View.GONE, summaryView.getVisibility());
+
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, "");
+        assertEquals("", summaryView.getText());
+        assertEquals(View.GONE, summaryView.getVisibility());
     }
 
     @Test

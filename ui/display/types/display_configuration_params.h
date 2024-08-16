@@ -23,7 +23,13 @@ struct DISPLAY_TYPES_EXPORT DisplayConfigurationParams {
                              const gfx::Point& origin,
                              const display::DisplayMode* pmode,
                              bool enable_vrr = false);
+
+  DisplayConfigurationParams& operator=(
+      const DisplayConfigurationParams& other);
+
   ~DisplayConfigurationParams();
+
+  bool operator==(const DisplayConfigurationParams& other) const;
 
   int64_t id = 0;
   gfx::Point origin = gfx::Point();

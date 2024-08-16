@@ -826,7 +826,7 @@ void LocalFrameView::UpdateLayout() {
   v8::Isolate* isolate = frame_->GetPage()->GetAgentGroupScheduler().Isolate();
   ENTER_EMBEDDER_STATE(isolate, frame_, BlinkState::LAYOUT);
   TRACE_EVENT_BEGIN0("blink,benchmark", "LocalFrameView::layout");
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) {
+  if (RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled()) [[unlikely]] {
     rcs_scope.emplace(RuntimeCallStats::From(isolate),
                       RuntimeCallStats::CounterId::kUpdateLayout);
   }
@@ -2080,14 +2080,14 @@ bool LocalFrameView::UpdateLifecyclePhases(
     DocumentUpdateReason reason) {
   // If the lifecycle is postponed, which can happen if the inspector requests
   // it, then we shouldn't update any lifecycle phases.
-  if (UNLIKELY(frame_->GetDocument() &&
-               frame_->GetDocument()->Lifecycle().LifecyclePostponed())) {
+  if (frame_->GetDocument() &&
+      frame_->GetDocument()->Lifecycle().LifecyclePostponed()) [[unlikely]] {
     return false;
   }
 
   // Prevent reentrance.
   // TODO(vmpstr): Should we just have a DCHECK instead here?
-  if (UNLIKELY(IsUpdatingLifecycle())) {
+  if (IsUpdatingLifecycle()) [[unlikely]] {
     DUMP_WILL_BE_NOTREACHED()
         << "LocalFrameView::updateLifecyclePhasesInternal() reentrance";
     return false;
@@ -2980,10 +2980,20 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
     }
   }
 
-  Vector<const TransformPaintPropertyNode*> scroll_translation_nodes;
+  PaintArtifactCompositor::StackScrollTranslationVector
+      scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
-        frame_view.GetUserScrollTranslationNodes(scroll_translation_nodes);
+        if (const auto* scrollable_areas = frame_view.UserScrollableAreas()) {
+          for (const auto& area : *scrollable_areas) {
+            const auto* paint_properties =
+                area->GetLayoutBox()->FirstFragment().PaintProperties();
+            if (paint_properties && paint_properties->Scroll()) {
+              scroll_translation_nodes.push_back(
+                  paint_properties->ScrollTranslation());
+            }
+          }
+        }
       });
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
@@ -4745,21 +4755,6 @@ LocalFrameView::EnsureOverlayInterstitialAdDetector() {
         std::make_unique<OverlayInterstitialAdDetector>();
   }
   return *overlay_interstitial_ad_detector_.get();
-}
-
-void LocalFrameView::GetUserScrollTranslationNodes(
-    Vector<const TransformPaintPropertyNode*>& scroll_translation_nodes) {
-  const auto* scrollable_areas = UserScrollableAreas();
-  if (!scrollable_areas)
-    return;
-
-  for (const auto& area : *scrollable_areas) {
-    const auto* paint_properties =
-        area->GetLayoutBox()->FirstFragment().PaintProperties();
-    if (paint_properties && paint_properties->Scroll()) {
-      scroll_translation_nodes.push_back(paint_properties->ScrollTranslation());
-    }
-  }
 }
 
 StickyAdDetector& LocalFrameView::EnsureStickyAdDetector() {

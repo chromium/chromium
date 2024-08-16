@@ -76,6 +76,7 @@ struct SuggestionsContext;
 namespace autofill_metrics {
 
 class CreditCardFormEventLogger;
+struct SuggestionRankingContext;
 
 }  // namespace autofill_metrics
 
@@ -94,10 +95,14 @@ class BrowserAutofillManager : public AutofillManager {
  public:
   // Triggered when `GenerateSuggestionsAndMaybeShowUI` is complete.
   // `show_suggestions` indicates whether or not the list of `suggestions`
-  // should be displayed (via the `external_delegate_`).
-  using OnGenerateSuggestionsCallback =
-      base::OnceCallback<void(bool show_suggestions,
-                              std::vector<Suggestion> suggestions)>;
+  // should be displayed (via the `external_delegate_`). `ranking_context`
+  // contains information regarding the ranking of suggestions and is used for
+  // metrics logging.
+  using OnGenerateSuggestionsCallback = base::OnceCallback<void(
+      bool show_suggestions,
+      std::vector<Suggestion> suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          ranking_context)>;
 
   BrowserAutofillManager(AutofillDriver* driver,
                          const std::string& app_locale);
@@ -436,12 +441,14 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Returns a list of values from the stored credit cards that match
   // `trigger_field_type` and the value of `trigger_field` and returns the
-  // labels of the matching credit cards.
+  // labels of the matching credit cards. `ranking_context` contains information
+  // regarding the ranking of suggestions and is used for metrics logging.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormData& form,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
-      AutofillSuggestionTriggerSource trigger_source);
+      AutofillSuggestionTriggerSource trigger_source,
+      autofill_metrics::SuggestionRankingContext& ranking_context);
 
   // Returns a mapping of credit card guid values to virtual card last fours for
   // standalone CVC field. Cards will only be added to the returned map if they
@@ -485,7 +492,8 @@ class BrowserAutofillManager : public AutofillManager {
   // Returns a list with the suggestions available for `field`. Which fields of
   // the `form` are filled depends on the `trigger_source`. `context` could
   // contain additional information about the suggestions, such as ablation
-  // study related fields.
+  // study related fields.  `ranking_context` contains information
+  // regarding the ranking of suggestions and is used for metrics logging.
   // TODO(crbug.com/340494671): Move ablation study fields out of the function
   // and make the context a const ref.
   std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
@@ -494,7 +502,8 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
-      SuggestionsContext& context);
+      SuggestionsContext& context,
+      autofill_metrics::SuggestionRankingContext& ranking_context);
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout,
@@ -540,13 +549,17 @@ class BrowserAutofillManager : public AutofillManager {
   // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
   // is true (via the `external_delegate_`). It also logs whether there is a
   // suggestion for the user and whether the suggestion is shown.
+  // `ranking_context` contains information regarding the ranking of suggestions
+  // and is used for metrics logging.
   void OnGenerateSuggestionsComplete(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
       const SuggestionsContext& context,
       bool show_suggestions,
-      std::vector<Suggestion> suggestions);
+      std::vector<Suggestion> suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          ranking_context);
 
   void OnGetPlusAddressSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,

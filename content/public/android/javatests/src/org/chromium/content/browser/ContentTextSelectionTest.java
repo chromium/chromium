@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SdkSuppress;
@@ -48,6 +49,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.ArrayList;
@@ -61,14 +63,16 @@ public class ContentTextSelectionTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
+    // Page needs to be long enough for scroll.
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
                     "<html><head><meta name=\"viewport\"content=\"width=device-width\""
-                        + " /></head><body><form action=\"about:blank\"><input id=\"phone_number\""
-                        + " type=\"tel\" value=\"01234567891234\" /><input id=\"empty_input_text\""
-                        + " type=\"text\" /><input id=\"whitespace_input_text\" type=\"text\""
-                        + " value=\" \" /><input id=\"input_text\" type=\"text\""
-                        + " value=\"SampleInputText\" /><textarea id=\"textarea\" rows=\"2\""
+                        + " /></head><body style='height: 1000px'><form"
+                        + " action=\"about:blank\"><input id=\"phone_number\" type=\"tel\""
+                        + " value=\"01234567891234\" /><input id=\"empty_input_text\" type=\"text\""
+                        + " /><input id=\"whitespace_input_text\" type=\"text\" value=\" \""
+                        + " /><input id=\"input_text\" type=\"text\" value=\"SampleInputText\""
+                        + " /><textarea id=\"textarea\" rows=\"2\""
                         + " cols=\"20\">SampleTextArea</textarea><input id=\"password\""
                         + " type=\"password\" value=\"SamplePassword\" size=\"10\"/><p><span"
                         + " id=\"smart_selection\">1600 Amphitheatre Parkway</span></p><p><span"
@@ -283,6 +287,64 @@ public class ContentTextSelectionTest {
         DOMUtils.dragNodeEnd(mWebContents, "plain_text_2", downTime);
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TextSelection"})
+    public void testSelectionPreservedAfterScroll() throws Throwable {
+        DOMUtils.longPressNode(mWebContents, "plain_text_1");
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForSelectActionBarVisible(true);
+        waitForPastePopupStatus(false);
+        Assert.assertTrue(mSelectionPopupController.hasSelection());
+
+        View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
+        float mCurrentX = webContentsView.getWidth() / 2;
+        float mCurrentY = webContentsView.getHeight() / 2;
+
+        // Perform a scroll.
+        TouchCommon.performDrag(
+                mActivityTestRule.getActivity(),
+                mCurrentX,
+                mCurrentX,
+                mCurrentY,
+                mCurrentY - 100,
+                /* stepCount= */ 3, /* duration in ms */
+                250);
+
+        // Ensure selection context menu re-appears after scroll ends.
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForSelectActionBarVisible(true);
+        Assert.assertTrue(mSelectionPopupController.hasSelection());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TextSelection"})
+    public void testPastePopupClearedOnScroll() throws Throwable {
+        DOMUtils.longPressNode(mWebContents, "empty_input_text");
+        Assert.assertTrue(mSelectionPopupController.isActionModeValid());
+        waitForPastePopupStatus(true);
+        waitForSelectActionBarVisible(false);
+
+        View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
+        float mCurrentX = webContentsView.getWidth() / 2;
+        float mCurrentY = webContentsView.getHeight() / 2;
+
+        // Perform a scroll.
+        TouchCommon.performDrag(
+                mActivityTestRule.getActivity(),
+                mCurrentX,
+                mCurrentX,
+                mCurrentY,
+                mCurrentY - 100,
+                /* stepCount= */ 3, /* duration in ms */
+                250);
+
+        // paste popup should be destroyed on scroll.
+        waitForPastePopupStatus(false);
+        Assert.assertFalse(mSelectionPopupController.isActionModeValid());
     }
 
     @Test

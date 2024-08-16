@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace content {

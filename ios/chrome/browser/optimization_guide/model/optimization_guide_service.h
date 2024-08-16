@@ -176,7 +176,7 @@ class OptimizationGuideService
   // tabs. Will be null if the user is off the record.
   std::unique_ptr<optimization_guide::TabUrlProvider> tab_url_provider_;
 
-  std::unique_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Manages the storing, loading, and evaluating of optimization target
   // prediction models.

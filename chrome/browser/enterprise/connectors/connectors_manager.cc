@@ -412,14 +412,13 @@ std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
   return {};
 }
 
-safe_browsing::DataRegion ConnectorsManager::GetDataRegion() const {
+DataRegion ConnectorsManager::GetDataRegion() const {
   bool apply_data_region =
       prefs()->HasPrefPath(prefs::kChromeDataRegionSetting) &&
       base::FeatureList::IsEnabled(safe_browsing::kDlpRegionalizedEndpoints);
-  return apply_data_region
-             ? safe_browsing::ChromeDataRegionSettingToEnum(
-                   prefs()->GetInteger(prefs::kChromeDataRegionSetting))
-             : safe_browsing::DataRegion::NO_PREFERENCE;
+  return apply_data_region ? ChromeDataRegionSettingToEnum(prefs()->GetInteger(
+                                 prefs::kChromeDataRegionSetting))
+                           : DataRegion::NO_PREFERENCE;
 }
 
 void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {

@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -252,7 +252,7 @@ class AutofillWebDataService : public WebDataServiceBase {
  protected:
   ~AutofillWebDataService() override;
 
-  void NotifyOnAutofillChangedBySyncOnUISequence(syncer::ModelType model_type);
+  void NotifyOnAutofillChangedBySyncOnUISequence(syncer::DataType data_type);
 
   base::WeakPtr<AutofillWebDataService> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

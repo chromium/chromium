@@ -76,7 +76,7 @@
   testRunner.log('Got a performance mark event:');
   tracingHelper.logEventShape(performanceMark);
 
-  testRunner.log('Got user timings events:');
+  testRunner.log('Got performance measure event:');
   tracingHelper.logEventShape(userTimings[0]);
   testRunner.log(`Phase of begin event: ${userTimings[0].ph}`);
   testRunner.log(`Phase of end event: ${userTimings[1].ph}`);

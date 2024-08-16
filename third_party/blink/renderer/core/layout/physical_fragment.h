@@ -601,8 +601,9 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       void SkipInvalidAndSetPostLayout() {
         for (; current_ != end_; ++current_) {
           const PhysicalFragment* fragment = current_->fragment.Get();
-          if (UNLIKELY(fragment->IsLayoutObjectDestroyedOrMoved()))
+          if (fragment->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
             continue;
+          }
           if (const PhysicalFragment* post_layout = fragment->PostLayout()) {
             post_layout_.fragment = post_layout;
             post_layout_.offset = current_->offset;

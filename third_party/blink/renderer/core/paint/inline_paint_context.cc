@@ -156,7 +156,7 @@ wtf_size_t InlinePaintContext::SyncDecoratingBox(
               << static_cast<int>(style->GetTextDecorationLine());
         }
 
-        if (UNLIKELY(!IsA<LayoutInline>(parent))) {
+        if (!IsA<LayoutInline>(parent)) [[unlikely]] {
           // This shouldn't happen, indicating text-decoration isn't propagated
           // as expected, but the logs indicate it does, though not too often.
           // Just abort the sync.

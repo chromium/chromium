@@ -16,7 +16,11 @@ repositories {
 // gradle errors where it couldn't determine which variants we wanted. The
 // seemingly obvious choice, setting "org.jetbrains.kotlin.platform.type" to
 // "androidJvm" globally did not work (although it did on a per-library basis).
-// See crbug.com/41497313 and crbug.com/1511597 for other prior issues.
+// It would be ideal to use org.gradle.jvm.environment as android or
+// org.jetbrains.kotlin.platform.type as androidJvm, but currently setting that
+// fails for transitive deps that don't define that attribute. See
+// https://crbug.com/359896493 for latest context, and also
+// crbug.com/41497313 and crbug.com/1511597 for prior issues.
 configurations.androidTestCompile {
     attributes.attribute(Attribute.of("org.gradle.category", String), "library")
     attributes.attribute(Attribute.of("org.gradle.usage", String), "java-runtime")
@@ -76,13 +80,18 @@ dependencies {
     compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer:{{androidx_dependency_version}}'
+    compile 'androidx.pdf:pdf-viewer-fragment:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
     // Privacy Sandbox is less stable than others. Use only release versions.
     compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
     compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
+    // TODO(https://crbug.com/359896493): Remove the following dep once rolls
+    // succeed again. Deps on it will need to be removed first.
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
+    compile 'androidx.savedstate:savedstate-android:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
     compile 'androidx.slice:slice-view:{{androidx_dependency_version}}'

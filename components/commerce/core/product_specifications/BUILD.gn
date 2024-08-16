@@ -13,6 +13,7 @@ source_set("product_specifications") {
   ]
   deps = [
     "//base",
+    "//components/commerce/core:commerce_types",
     "//components/commerce/core:feature_list",
     "//components/keyed_service/core",
     "//components/sync",

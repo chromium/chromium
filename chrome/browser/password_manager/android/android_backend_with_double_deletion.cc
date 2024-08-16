@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
 namespace {
@@ -88,7 +88,7 @@ void AndroidBackendWithDoubleDeletion::GetAutofillableLoginsAsync(
 void AndroidBackendWithDoubleDeletion::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void AndroidBackendWithDoubleDeletion::FillMatchingLoginsAsync(
@@ -168,7 +168,7 @@ AndroidBackendWithDoubleDeletion::GetSmartBubbleStatsStore() {
   return android_backend_->GetSmartBubbleStatsStore();
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 AndroidBackendWithDoubleDeletion::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

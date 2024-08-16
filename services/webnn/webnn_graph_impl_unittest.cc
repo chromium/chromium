@@ -211,7 +211,7 @@ bool ValidateInputsForComputing(
 
 struct CreateBufferSuccess {
   std::optional<mojo::AssociatedRemote<mojom::WebNNBuffer>> webnn_buffer;
-  base::UnguessableToken webnn_handle;
+  blink::WebNNBufferToken webnn_handle;
 };
 
 CreateBufferSuccess CreateWebNNBuffer(
@@ -275,13 +275,13 @@ bool ValidateDispatch(
       }));
 
   // Assign buffers for the inputs.
-  base::flat_map<std::string, base::UnguessableToken> dispatch_inputs;
+  base::flat_map<std::string, blink::WebNNBufferToken> dispatch_inputs;
   for (const auto& [name, buffer_info] : inputs) {
     dispatch_inputs.emplace(name, buffer_info.webnn_handle);
   }
 
   // Assign buffers for the outputs.
-  base::flat_map<std::string, base::UnguessableToken> dispatch_outputs;
+  base::flat_map<std::string, blink::WebNNBufferToken> dispatch_outputs;
   for (const auto& [name, buffer_info] : outputs) {
     dispatch_outputs.emplace(name, buffer_info.webnn_handle);
   }
@@ -6581,8 +6581,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     mojo::Remote<mojom::WebNNContext> webnn_context =
         CreateWebNNContext(provider_remote);
     base::flat_map<std::string, CreateBufferSuccess> inputs;
-    inputs["lhs"] = {/*webnn_buffer=*/std::nullopt,
-                     base::UnguessableToken::Create()};
+    inputs["lhs"] = {/*webnn_buffer=*/std::nullopt};
     inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateBufferSuccess> outputs;
     outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
@@ -6599,8 +6598,7 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     inputs["rhs"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
     base::flat_map<std::string, CreateBufferSuccess> outputs;
     outputs["output1"] = CreateWebNNBuffer(webnn_context, kDataType, kShape);
-    outputs["output2"] = {/*webnn_buffer=*/std::nullopt,
-                          base::UnguessableToken::Create()};
+    outputs["output2"] = {/*webnn_buffer=*/std::nullopt};
     EXPECT_FALSE(ValidateDispatch(webnn_context, builder.CloneGraphInfo(),
                                   std::move(inputs), std::move(outputs)));
   }

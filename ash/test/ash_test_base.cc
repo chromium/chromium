@@ -498,8 +498,7 @@ void AshTestBase::BlockUserSession(UserSessionBlockReason block_reason) {
       SetUserAddingScreenRunning(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -72,8 +72,9 @@ void WebUIURLFetcher::Start() {
 void WebUIURLFetcher::OnURLLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
-  if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers)
+  if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers) {
     response_code = fetcher_->ResponseInfo()->headers->response_code();
+  }
 
   fetcher_.reset();
   std::unique_ptr<std::string> data;

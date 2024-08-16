@@ -2130,7 +2130,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
-                       PRE_PermissionGrantsResetAfterRestart) {
+                       PRE_PermissionGrantsRestoredAfterRestart) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -2141,13 +2141,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
-                       PermissionGrantsResetAfterRestart) {
+                       PermissionGrantsRestoredAfterRestart) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
-  EXPECT_EQ("prompt", QueryPermission(GetFrame()));
+  EXPECT_EQ("granted", QueryPermission(GetFrame()));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,

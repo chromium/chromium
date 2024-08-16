@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -32,7 +33,7 @@ class TestInlineLoginDialog : public InlineLoginDialog {
 class ChildModalDialogDelegate : public views::DialogDelegateView {
  public:
   ChildModalDialogDelegate() {
-    SetModalType(ui::MODAL_TYPE_CHILD);
+    SetModalType(ui::mojom::ModalType::kChild);
     SetFocusBehavior(FocusBehavior::ALWAYS);
     // Dialogs that take focus must have a name and role to pass accessibility
     // checks.

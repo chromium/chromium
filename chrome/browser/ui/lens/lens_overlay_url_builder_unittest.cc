@@ -38,6 +38,7 @@ class LensOverlayUrlBuilderTest : public testing::Test {
         {
             {"results-search-url", kResultsSearchBaseUrl},
             {"use-search-context-for-text-only-requests", "true"},
+            {"use-search-context-for-multimodal-requests", "true"},
         });
   }
 
@@ -309,11 +310,13 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLEmptyClusterInfo) {
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       EncodeRequestId(request_id.get()).c_str());
 
-  EXPECT_EQ(lens::BuildLensSearchURL(
-                text_query, std::move(request_id), cluster_info,
-                additional_params, lens::LensOverlayInvocationSource::kAppMenu,
-                /*use_dark_mode=*/false),
-            expected_url);
+  EXPECT_EQ(
+      lens::BuildLensSearchURL(
+          text_query, /*page_url=*/std::nullopt, /*page_title=*/std::nullopt,
+          std::move(request_id), cluster_info, additional_params,
+          lens::LensOverlayInvocationSource::kAppMenu,
+          /*use_dark_mode=*/false),
+      expected_url);
 }
 
 TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
@@ -340,11 +343,13 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithSessionId) {
       kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
       search_session_id.c_str(), EncodeRequestId(request_id.get()).c_str());
 
-  EXPECT_EQ(lens::BuildLensSearchURL(
-                text_query, std::move(request_id), cluster_info,
-                additional_params, lens::LensOverlayInvocationSource::kAppMenu,
-                /*use_dark_mode=*/false),
-            expected_url);
+  EXPECT_EQ(
+      lens::BuildLensSearchURL(
+          text_query, /*page_url=*/std::nullopt, /*page_title=*/std::nullopt,
+          std::move(request_id), cluster_info, additional_params,
+          lens::LensOverlayInvocationSource::kAppMenu,
+          /*use_dark_mode=*/false),
+      expected_url);
 }
 
 TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
@@ -377,7 +382,8 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithNoTextQuery) {
 
   EXPECT_EQ(
       lens::BuildLensSearchURL(
-          /*text_query=*/std::nullopt, std::move(request_id), cluster_info,
+          /*text_query=*/std::nullopt, /*page_url=*/std::nullopt,
+          /*page_title=*/std::nullopt, std::move(request_id), cluster_info,
           additional_params, lens::LensOverlayInvocationSource::kAppMenu,
           /*use_dark_mode=*/false),
       expected_url);
@@ -414,10 +420,144 @@ TEST_F(LensOverlayUrlBuilderTest, BuildLensSearchURLWithAdditionalParams) {
 
   EXPECT_EQ(
       lens::BuildLensSearchURL(
-          /*text_query=*/std::nullopt, std::move(request_id), cluster_info,
+          /*text_query=*/std::nullopt, /*page_url=*/std::nullopt,
+          /*page_title=*/std::nullopt, std::move(request_id), cluster_info,
           additional_params, lens::LensOverlayInvocationSource::kAppMenu,
           /*use_dark_mode=*/false),
       expected_url);
+}
+
+TEST_F(LensOverlayUrlBuilderTest, BuildMultimodalSearchURLWithSearchContext) {
+  std::string text_query = "Green Apples";
+  std::map<std::string, std::string> additional_params;
+  std::string escaped_text_query =
+      base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
+  uint64_t uuid = 12345;
+  int sequence_id = 1;
+  int image_sequence_id = 3;
+  std::string search_session_id = "search_session_id";
+
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      std::make_unique<lens::LensOverlayRequestId>();
+  lens::LensOverlayClusterInfo cluster_info;
+  cluster_info.set_search_session_id(search_session_id);
+  request_id->set_uuid(uuid);
+  request_id->set_sequence_id(sequence_id);
+  request_id->set_image_sequence_id(image_sequence_id);
+
+  std::string serialized_request_id;
+  CHECK(request_id.get()->SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+
+  std::string expected_search_context =
+      EncodeSearchContext(std::make_optional<GURL>(kPageUrl),
+                          std::make_optional<std::string>(kPageTitle));
+  std::string expected_url = base::StringPrintf(
+      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&masfc=c&mactx=%s&q=%s&lns_"
+      "mode=mu&lns_fp=1&gsessionid=%s&udm=24&"
+      "vsrid=%s",
+      kResultsSearchBaseUrl, kLanguage, expected_search_context.c_str(),
+      escaped_text_query.c_str(), search_session_id.c_str(),
+      encoded_request_id.c_str());
+
+  EXPECT_EQ(lens::BuildLensSearchURL(
+                text_query, std::make_optional<GURL>(kPageUrl),
+                std::make_optional<std::string>(kPageTitle),
+                std::move(request_id), cluster_info, additional_params,
+                lens::LensOverlayInvocationSource::kAppMenu,
+                /*use_dark_mode=*/false),
+            expected_url);
+}
+TEST_F(LensOverlayUrlBuilderTest,
+       BuildImageOnlySearchURLWithSearchContextDoesNotAttachContext) {
+  std::map<std::string, std::string> additional_params;
+  uint64_t uuid = 12345;
+  int sequence_id = 1;
+  int image_sequence_id = 3;
+  std::string search_session_id = "search_session_id";
+
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      std::make_unique<lens::LensOverlayRequestId>();
+  lens::LensOverlayClusterInfo cluster_info;
+  cluster_info.set_search_session_id(search_session_id);
+  request_id->set_uuid(uuid);
+  request_id->set_sequence_id(sequence_id);
+  request_id->set_image_sequence_id(image_sequence_id);
+
+  std::string serialized_request_id;
+  CHECK(request_id.get()->SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+
+  std::string expected_url = base::StringPrintf(
+      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=&lns_"
+      "mode=un&lns_fp=1&gsessionid=%s&udm=26&"
+      "vsrid=%s",
+      kResultsSearchBaseUrl, kLanguage, search_session_id.c_str(),
+      encoded_request_id.c_str());
+
+  EXPECT_EQ(lens::BuildLensSearchURL(
+                /*text_query=*/std::nullopt, std::make_optional<GURL>(kPageUrl),
+                std::make_optional<std::string>(kPageTitle),
+                std::move(request_id), cluster_info, additional_params,
+                lens::LensOverlayInvocationSource::kAppMenu,
+                /*use_dark_mode=*/false),
+            expected_url);
+}
+
+TEST_F(LensOverlayUrlBuilderTest,
+       BuildMultimodalSearchURLWithSearchContextFlagOff) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlay,
+      {
+          {"results-search-url", kResultsSearchBaseUrl},
+          {"use-search-context-for-multimodal-requests", "false"},
+      });
+
+  std::string text_query = "Green Apples";
+  std::map<std::string, std::string> additional_params;
+  std::string escaped_text_query =
+      base::EscapeQueryParamValue(text_query, /*use_plus=*/true);
+  uint64_t uuid = 12345;
+  int sequence_id = 1;
+  int image_sequence_id = 3;
+  std::string search_session_id = "search_session_id";
+
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      std::make_unique<lens::LensOverlayRequestId>();
+  lens::LensOverlayClusterInfo cluster_info;
+  cluster_info.set_search_session_id(search_session_id);
+  request_id->set_uuid(uuid);
+  request_id->set_sequence_id(sequence_id);
+  request_id->set_image_sequence_id(image_sequence_id);
+
+  std::string serialized_request_id;
+  CHECK(request_id.get()->SerializeToString(&serialized_request_id));
+  std::string encoded_request_id;
+  base::Base64UrlEncode(serialized_request_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_request_id);
+
+  std::string expected_url = base::StringPrintf(
+      "%s?source=chrome.cr.menu&gsc=2&hl=%s&cs=0&q=%s&lns_"
+      "mode=mu&lns_fp=1&gsessionid=%s&udm=24&"
+      "vsrid=%s",
+      kResultsSearchBaseUrl, kLanguage, escaped_text_query.c_str(),
+      search_session_id.c_str(), encoded_request_id.c_str());
+
+  EXPECT_EQ(lens::BuildLensSearchURL(
+                text_query, std::make_optional<GURL>(kPageUrl),
+                std::make_optional<std::string>(kPageTitle),
+                std::move(request_id), cluster_info, additional_params,
+                lens::LensOverlayInvocationSource::kAppMenu,
+                /*use_dark_mode=*/false),
+            expected_url);
 }
 
 TEST_F(LensOverlayUrlBuilderTest, HasCommonSearchQueryParameters) {

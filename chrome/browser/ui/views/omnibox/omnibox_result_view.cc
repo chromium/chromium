@@ -77,11 +77,11 @@
 
 namespace {
 
-class OmniboxRemoveSuggestionButton : public views::ImageButton {
-  METADATA_HEADER(OmniboxRemoveSuggestionButton, views::ImageButton)
+class OmniboxResultViewButton : public views::ImageButton {
+  METADATA_HEADER(OmniboxResultViewButton, views::ImageButton)
 
  public:
-  explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
+  OmniboxResultViewButton(int a11y_message_id, PressedCallback callback)
       : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
 
@@ -94,12 +94,11 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
     // Although this appears visually as a button, expose as a list box option
     // so that it matches the other options within its list box container.
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(a11y_message_id));
   }
 };
 
-BEGIN_METADATA(OmniboxRemoveSuggestionButton)
+BEGIN_METADATA(OmniboxResultViewButton)
 END_METADATA
 
 }  // namespace
@@ -205,24 +204,72 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(2));
 
-  remove_suggestion_button_ = right->AddChildView(
-      std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
-          &OmniboxResultView::ButtonPressed, base::Unretained(this),
-          OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
+  // TODO(b/345536738): Move the common code for setting up instances of
+  //  OmniboxResultViewButton to the constructor.
+  thumbs_up_button_ =
+      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+          IDS_ACC_THUMBS_UP_SUGGESTION_BUTTON,
+          base::BindRepeating(
+              &OmniboxResultView::ButtonPressed, base::Unretained(this),
+              OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)));
+  thumbs_up_button_->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(0, 0, 0, 16));
+  views::InstallCircleHighlightPathGenerator(thumbs_up_button_);
+  thumbs_up_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
+  auto* const thumbs_up_focus_ring = views::FocusRing::Get(thumbs_up_button_);
+  thumbs_up_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* results, const View* view) {
+        return view->GetVisible() && results->GetMatchSelected() &&
+               (results->popup_view_->GetSelection().state ==
+                OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP);
+      },
+      base::Unretained(this)));
+  thumbs_up_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+
+  thumbs_down_button_ =
+      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+          IDS_ACC_THUMBS_DOWN_SUGGESTION_BUTTON,
+          base::BindRepeating(
+              &OmniboxResultView::ButtonPressed, base::Unretained(this),
+              OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN)));
+  thumbs_down_button_->SetProperty(views::kMarginsKey,
+                                   gfx::Insets::TLBR(0, 0, 0, 16));
+  views::InstallCircleHighlightPathGenerator(thumbs_down_button_);
+  thumbs_down_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
+  auto* const thumbs_down_focus_ring =
+      views::FocusRing::Get(thumbs_down_button_);
+  thumbs_down_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* results, const View* view) {
+        return view->GetVisible() && results->GetMatchSelected() &&
+               (results->popup_view_->GetSelection().state ==
+                OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN);
+      },
+      base::Unretained(this)));
+  thumbs_down_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+
+  remove_suggestion_button_ =
+      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+          IDS_ACC_REMOVE_SUGGESTION_BUTTON,
+          base::BindRepeating(
+              &OmniboxResultView::ButtonPressed, base::Unretained(this),
+              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)));
   remove_suggestion_button_->SetProperty(views::kMarginsKey,
                                          gfx::Insets::TLBR(0, 0, 0, 16));
   views::InstallCircleHighlightPathGenerator(remove_suggestion_button_);
   remove_suggestion_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_REMOVE_SUGGESTION));
-  auto* const focus_ring = views::FocusRing::Get(remove_suggestion_button_);
-  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+  auto* const remove_focus_ring =
+      views::FocusRing::Get(remove_suggestion_button_);
+  remove_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const OmniboxResultView* results, const View* view) {
         return view->GetVisible() && results->GetMatchSelected() &&
                (results->popup_view_->GetSelection().state ==
                 OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION);
       },
       base::Unretained(this)));
-  focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+  remove_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
   button_row_ = suggestion_and_buttons->AddChildView(
       std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
@@ -236,6 +283,10 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                                views::MaximumFlexSizeRule::kPreferred));
 
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  UpdateAccessibilitySelectedState();
+  GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
 OmniboxResultView::~OmniboxResultView() {}
@@ -273,6 +324,7 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
                                 gfx::Insets::TLBR(0, 0, 0, 0));
 
   suggestion_view_->OnMatchUpdate(this, match_);
+  UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
 
   suggestion_view_->content()->SetTextWithStyling(match_.contents,
@@ -311,12 +363,43 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   const ui::ColorId icon_color_id = GetMatchSelected()
                                         ? kColorOmniboxResultsIconSelected
                                         : kColorOmniboxResultsIcon;
+
+  // TODO(b/345536738): Iterate over all the buttons and updates their icons.
+  views::SetImageFromVectorIconWithColor(
+      thumbs_up_button_,
+      match_.feedback_type == FeedbackType::kThumbsUp
+          ? vector_icons::kThumbUpFilledIcon
+          : vector_icons::kThumbUpIcon,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetColorProvider()->GetColor(icon_color_id),
+      /* omnibox buttons are never disabled */
+      gfx::kPlaceholderColor);
+  if (thumbs_up_button_->GetVisible()) {
+    views::FocusRing::Get(thumbs_up_button_)->SchedulePaint();
+  }
+
+  views::SetImageFromVectorIconWithColor(
+      thumbs_down_button_,
+      match_.feedback_type == FeedbackType::kThumbsDown
+          ? vector_icons::kThumbDownFilledIcon
+          : vector_icons::kThumbDownIcon,
+      GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+      GetColorProvider()->GetColor(icon_color_id),
+      /* omnibox buttons are never disabled */
+      gfx::kPlaceholderColor);
+  if (thumbs_down_button_->GetVisible()) {
+    views::FocusRing::Get(thumbs_down_button_)->SchedulePaint();
+  }
+
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_, vector_icons::kCloseRoundedIcon,
       GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
       GetColorProvider()->GetColor(icon_color_id),
       /* omnibox buttons are never disabled */
       gfx::kPlaceholderColor);
+  if (remove_suggestion_button_->GetVisible()) {
+    views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
+  }
 
   const OmniboxPartState state = GetThemeState();
   SetBackground(GetPopupCellBackground(this, state));
@@ -327,9 +410,6 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
                                     ? kColorOmniboxResultsTextDimmedSelected
                                     : kColorOmniboxResultsTextDimmed;
   suggestion_view_->separator()->ApplyTextColor(dimmed_id);
-  if (remove_suggestion_button_->GetVisible()) {
-    views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
-  }
 
   // Recreate the icons in case the color needs to change.
   // Note: if this is an extension icon or favicon then this can be done in
@@ -390,6 +470,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
+  UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   if (GetMatchSelected()) {
     // Immediately before notifying screen readers that the selected item has
@@ -413,6 +494,7 @@ void OmniboxResultView::OnSelectionStateChanged() {
   }
   ApplyThemeAndRefreshIcons();
   button_row_->SelectionStateChanged();
+  UpdateAccessibilitySelectedState();
 }
 
 bool OmniboxResultView::GetMatchSelected() const {
@@ -424,7 +506,13 @@ bool OmniboxResultView::GetMatchSelected() const {
 
 views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
   if (popup_view_->GetSelection().state ==
-      OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
+      OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP) {
+    return thumbs_up_button_;
+  } else if (popup_view_->GetSelection().state ==
+             OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN) {
+    return thumbs_down_button_;
+  } else if (popup_view_->GetSelection().state ==
+             OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     return remove_suggestion_button_;
   }
 
@@ -542,8 +630,6 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
   // well would result in duplicate announcements.
 
-  node_data->role = ax::mojom::Role::kListBoxOption;
-
   const auto* autocomplete_controller =
       popup_view_->controller()->autocomplete_controller();
 
@@ -575,18 +661,11 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     }
     node_data->SetName(label);
   }
-
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                             model_index_ + 1);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize,
-                             autocomplete_controller->result().size());
-
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
 }
 
 void OmniboxResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  ApplyThemeAndRefreshIcons(true);
+  ApplyThemeAndRefreshIcons(/*force_reapply_styles=*/true);
 }
 
 void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
@@ -598,13 +677,18 @@ void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
   // these items is updated as the value of omnibox changes. The displayed text
   // for a given item is exposed to screen readers as the item's name/label.
   ui::AXNodeData node_data;
-  GetAccessibleNodeData(&node_data);
+  GetViewAccessibility().GetAccessibleNodeData(&node_data);
   std::u16string current_name =
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
   if (accessible_name_ != current_name) {
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
     accessible_name_ = current_name;
   }
+}
+
+void OmniboxResultView::UpdateAccessibilityProperties() {
+  GetViewAccessibility().SetSetSize(
+      popup_view_->controller()->autocomplete_controller()->result().size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -635,11 +719,30 @@ gfx::Image OmniboxResultView::GetIcon() const {
 }
 
 void OmniboxResultView::UpdateHoverState() {
+  UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
   ApplyThemeAndRefreshIcons();
   GetViewAccessibility().SetIsHovered(IsMouseHovered());
 }
 
+void OmniboxResultView::UpdateFeedbackButtonsVisibility() {
+  bool old_visibility = thumbs_up_button_->GetVisible();
+  bool new_visibility =
+      popup_view_->model()->IsPopupControlPresentOnMatch(OmniboxPopupSelection(
+          model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)) &&
+      (GetMatchSelected() || IsMouseHovered());
+
+  // Same rules apply to both buttons.
+  thumbs_up_button_->SetVisible(new_visibility);
+  thumbs_down_button_->SetVisible(new_visibility);
+
+  if (old_visibility != new_visibility) {
+    InvalidateLayout();
+  }
+}
+
+// TODO(b/345536738): Introduce a single UpdateButtonsVisibility() that iterates
+//  over all the buttons and updates their visibilities.
 void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   bool old_visibility = remove_suggestion_button_->GetVisible();
   bool new_visibility =
@@ -653,6 +756,10 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
   if (old_visibility != new_visibility) {
     InvalidateLayout();
   }
+}
+
+void OmniboxResultView::UpdateAccessibilitySelectedState() {
+  GetViewAccessibility().SetIsSelected(GetMatchSelected());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

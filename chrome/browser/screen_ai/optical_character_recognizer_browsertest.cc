@@ -199,8 +199,7 @@ class OpticalCharacterRecognizerTest
       ScreenAIInstallState::GetInstance()->SetComponentFolder(
           GetComponentBinaryPathForTests().DirName());
 #else
-      NOTREACHED_NORETURN()
-          << "Test library is used on a not-suppported platform.";
+      NOTREACHED() << "Test library is used on a not-suppported platform.";
 #endif
     } else {
       // Set an observer to reply download failed, when download requested.
@@ -399,6 +398,48 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   // Fake library always returns empty results.
 #if !BUILDFLAG(USE_FAKE_SCREEN_AI)
   ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       PerformOCR_AfterDisconnect) {
+  if (!IsOcrAvailable()) {
+    GTEST_SKIP() << "This test is only available when service is available";
+  }
+
+  // Init OCR.
+  base::test::TestFuture<bool> init_future;
+  scoped_refptr<OpticalCharacterRecognizer> ocr =
+      OpticalCharacterRecognizer::CreateWithStatusCallback(
+          browser()->profile(), mojom::OcrClientType::kTest,
+          init_future.GetCallback());
+  ASSERT_TRUE(init_future.Wait());
+  ASSERT_TRUE(init_future.Get<bool>());
+
+  ocr->DisconnectForTesting();
+
+  // Perform OCR and get VisualAnnotation.
+  SkBitmap bitmap = LoadImageFromTestFile(
+      base::FilePath(FILE_PATH_LITERAL("ocr/just_one_letter.png")));
+  base::test::TestFuture<mojom::VisualAnnotationPtr> perform_future;
+  ocr->PerformOCR(bitmap, perform_future.GetCallback());
+  ASSERT_TRUE(perform_future.Wait());
+
+  // Fake library always returns empty results.
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
+  ASSERT_FALSE(perform_future.Get<mojom::VisualAnnotationPtr>()->lines.empty());
+#endif
+
+  ocr->DisconnectForTesting();
+
+  // Perform OCR and get AxTreeUpdate.
+  base::test::TestFuture<const ui::AXTreeUpdate&> perform_future2;
+  ocr->PerformOCR(bitmap, perform_future2.GetCallback());
+  ASSERT_TRUE(perform_future2.Wait());
+
+  // Fake library always returns empty results.
+#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
+  ASSERT_FALSE(perform_future2.Get<ui::AXTreeUpdate>().nodes.empty());
 #endif
 }
 

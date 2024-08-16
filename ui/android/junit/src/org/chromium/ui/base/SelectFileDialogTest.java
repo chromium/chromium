@@ -152,8 +152,7 @@ public class SelectFileDialogTest {
         }
     }
 
-    @Test
-    public void testMimeTypesWithExternalPicker() throws Exception {
+    public void testMimeTypesWithExternalPicker(String intentAction) throws Exception {
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
 
@@ -161,6 +160,7 @@ public class SelectFileDialogTest {
         // simulate the pipeline aborting because showIntent fails.
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
@@ -201,6 +201,7 @@ public class SelectFileDialogTest {
         // remain open.
         callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf"},
                 /* capture= */ false,
                 /* multiple= */ false,
@@ -241,6 +242,7 @@ public class SelectFileDialogTest {
         // Add a media file to the mix and allow multiple files.
         callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                intentAction,
                 new String[] {"application/pdf", "image/gif"},
                 /* capture= */ false,
                 /* multiple= */ true,
@@ -251,9 +253,14 @@ public class SelectFileDialogTest {
     }
 
     @Test
+    public void testMimeTypesWithExternalPicker() throws Exception {
+        testMimeTypesWithExternalPicker(Intent.ACTION_GET_CONTENT);
+    }
+
+    @Test
     @EnableFeatures({UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT})
     public void testMimeTypesWithExternalPickerOpenDocument() throws Exception {
-        testMimeTypesWithExternalPicker();
+        testMimeTypesWithExternalPicker(Intent.ACTION_OPEN_DOCUMENT);
     }
 
     @Test
@@ -288,7 +295,11 @@ public class SelectFileDialogTest {
 
         // Select an empty MIME type.
         selectFileDialog.selectFile(
-                new String[] {}, /* capture= */ false, /* multiple= */ false, windowAndroid);
+                Intent.ACTION_GET_CONTENT,
+                new String[] {},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
@@ -305,6 +316,7 @@ public class SelectFileDialogTest {
         // is denied).
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,
@@ -463,6 +475,7 @@ public class SelectFileDialogTest {
         // Ensure permission request in selectFile can handle interrupted permission flow.
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
                 new String[] {"image/jpeg"},
                 /* capture= */ true,
                 /* multiple= */ false,

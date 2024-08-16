@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertExists} from './assert.js';
+import {assert, assertExists} from './assert.js';
 
 /**
  * Clamps `val` into the range `[low, high]`.
@@ -102,4 +102,51 @@ export function downloadFile(filename: string, blob: Blob): void {
   document.body.removeChild(a);
 
   URL.revokeObjectURL(url);
+}
+
+const UNINITIALIZED = Symbol('UNINITIALIZED');
+
+/**
+ * Cache function return value so the function would only be called once.
+ */
+export function lazyInit<T>(fn: () => T): () => T {
+  let output: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return () => {
+    if (output === UNINITIALIZED) {
+      output = fn();
+    }
+    return output;
+  };
+}
+
+/**
+ * Cache async function return value so the function would only be called once.
+ */
+export function asyncLazyInit<T>(fn: () => Promise<T>): () => Promise<T> {
+  let val: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return async () => {
+    if (val === UNINITIALIZED) {
+      val = await fn();
+    }
+    return val;
+  };
+}
+
+/**
+ * Cache function return value so the function would only be called when the
+ * input changes.
+ *
+ * This can be used when the input is expected to not change often.
+ */
+export function cacheLatest<T, U>(fn: (input: T) => U): (input: T) => U {
+  let output: U|typeof UNINITIALIZED = UNINITIALIZED;
+  let lastInput: T|typeof UNINITIALIZED = UNINITIALIZED;
+  return (input: T) => {
+    if (input !== lastInput) {
+      lastInput = input;
+      output = fn(input);
+    }
+    assert(output !== UNINITIALIZED);
+    return output;
+  };
 }

@@ -43,8 +43,9 @@ LoadMessageBundleSubstitutionMapFromPaths(
       LoadNonLocalizedMessageBundleSubstitutionMap(extension_id);
 
   // Touch disk only if extension is localized.
-  if (default_locale.empty())
+  if (default_locale.empty()) {
     return return_value;
+  }
 
   std::string error;
   for (const base::FilePath& path : paths) {

@@ -19,6 +19,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -138,14 +139,14 @@ class LockScreenAshFocusRulesTest : public AshTestBase {
   aura::Window* CreateWindowInLockSystemModalContainer() {
     aura::Window* window =
         CreateWindowInContainer(kShellWindowId_LockSystemModalContainer);
-    window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+    window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
     return window;
   }
 
   aura::Window* CreateWindowInSystemModalContainer() {
     aura::Window* window =
         CreateWindowInContainer(kShellWindowId_SystemModalContainer);
-    window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+    window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
     return window;
   }
 

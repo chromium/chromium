@@ -44,8 +44,10 @@ template("build_webui") {
   minify = optimize
   bundle = optimize && defined(invoker.optimize_webui_in_files)
 
-  enable_source_maps = enable_webui_inline_sourcemaps
-  if (defined(invoker.enable_source_maps)) {
+  has_ts_in_files = defined(invoker.web_component_files) ||
+                    defined(invoker.non_web_component_files)
+  enable_source_maps = enable_webui_inline_sourcemaps && has_ts_in_files
+  if (defined(invoker.enable_source_maps) && has_ts_in_files) {
     assert(!invoker.enable_source_maps || !optimize)
     enable_source_maps = invoker.enable_source_maps
   }
@@ -60,10 +62,11 @@ template("build_webui") {
 
   ### Compute the lists of files that are used across multiple targets.
 
-  # At least one of `web_component_files` or 'non_web_component_files` must be
-  # defined.
-  assert(defined(invoker.web_component_files) ||
-         defined(invoker.non_web_component_files))
+  # At least one of `web_component_files`, `css_files`, `mojo_files`, or
+  # 'non_web_component_files` must be defined. Otherwise, the build rule
+  # does not actually generate any input for TS compiler.
+  assert(has_ts_in_files || defined(invoker.css_files) ||
+         defined(invoker.mojo_files))
 
   ts_files = []
   if (defined(invoker.web_component_files)) {
@@ -168,24 +171,26 @@ template("build_webui") {
     }
   }
 
-  preprocess_if_expr("preprocess_ts_files") {
-    visibility = [
-      ":build_ts",
-      ":html_wrapper_files",
-    ]
-    if (enable_source_maps) {
-      visibility += [ ":create_source_maps" ]
-    }
+  if (has_ts_in_files) {
+    preprocess_if_expr("preprocess_ts_files") {
+      visibility = [
+        ":build_ts",
+        ":html_wrapper_files",
+      ]
+      if (enable_source_maps) {
+        visibility += [ ":create_source_maps" ]
+      }
 
-    defines = preprocessor_defines
+      defines = preprocessor_defines
 
-    in_folder = "."
-    out_folder = preprocess_dir
-    if (enable_source_maps) {
-      out_folder = "${preprocess_dir}/_tmp"
-      enable_removal_comments = enable_source_maps
+      in_folder = "."
+      out_folder = preprocess_dir
+      if (enable_source_maps) {
+        out_folder = "${preprocess_dir}/_tmp"
+        enable_removal_comments = enable_source_maps
+      }
+      in_files = ts_files
     }
-    in_files = ts_files
   }
 
   if (enable_source_maps) {
@@ -355,7 +360,7 @@ template("build_webui") {
       # ts_library()'s |enable_source_maps| param inherited from the outer
       # scope's enable_source_maps
       extra_deps += [ ":create_source_maps" ]
-    } else {
+    } else if (has_ts_in_files) {
       extra_deps += [ ":preprocess_ts_files" ]
     }
 

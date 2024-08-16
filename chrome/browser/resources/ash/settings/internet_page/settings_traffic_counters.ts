@@ -14,8 +14,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 
-import {Network, TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {Network, TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './settings_traffic_counters.html.js';
@@ -153,6 +154,8 @@ export class SettingsTrafficCountersElement extends
     await this.trafficCountersAdapter_.resetTrafficCountersForNetwork(
         this.guid);
     this.load();
+    getAnnouncerInstance().announce(
+        this.i18n('TrafficCountersDataUsageResetButtonPressedA11yMessage'));
   }
 
   /**

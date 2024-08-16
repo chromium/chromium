@@ -179,8 +179,7 @@ bool MediaTray::IsPinnedToShelf() {
       return GetIsPinnedToShelfByDefault();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -298,7 +297,7 @@ void MediaTray::ShowBubble() {
   ShowBubbleWithItem("");
 }
 
-void MediaTray::CloseBubble() {
+void MediaTray::CloseBubbleInternal() {
   if (!bubble_) {
     CHECK(!is_active());
     CHECK(!pin_button_);

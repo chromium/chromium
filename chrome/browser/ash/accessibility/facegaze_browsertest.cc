@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -12,6 +14,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event.h"
@@ -30,6 +34,10 @@ using MediapipeGesture = FaceGazeTestUtils::MediapipeGesture;
 using MockFaceLandmarkerResult = FaceGazeTestUtils::MockFaceLandmarkerResult;
 
 namespace {
+
+PrefService* GetPrefs() {
+  return AccessibilityManager::Get()->profile()->GetPrefs();
+}
 
 aura::Window* GetRootWindow() {
   auto* root_window = Shell::GetRootWindowForNewWindows();
@@ -107,7 +115,6 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
  protected:
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    utils_ = std::make_unique<FaceGazeTestUtils>();
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityFaceGaze);
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -115,6 +122,7 @@ class FaceGazeIntegrationTest : public AccessibilityFeatureBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    utils_ = std::make_unique<FaceGazeTestUtils>();
     GetRootWindow()->AddPreTargetHandler(&event_handler_);
   }
 
@@ -481,6 +489,65 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DoubleClick) {
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
       MediapipeGesture::MOUTH_FUNNEL, 30));
   ASSERT_EQ(0u, event_handler().mouse_events().size());
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, AcceptDialog) {
+  auto* controller = ash::Shell::Get()->accessibility_controller();
+  auto* prefs = GetPrefs();
+
+  base::RunLoop dialog_waiter;
+  controller->AddShowConfirmationDialogCallbackForTesting(
+      base::BindLambdaForTesting([&dialog_waiter]() { dialog_waiter.Quit(); }));
+  // Enabling FaceGaze should show the confirmation dialog.
+  utils()->EnableFaceGaze(Config().Default().WithDialogAccepted(false));
+  dialog_waiter.Run();
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  ASSERT_FALSE(prefs->GetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted));
+  ASSERT_NE(nullptr, controller->GetConfirmationDialogForTest());
+
+  base::RunLoop settings_waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting(
+          [&settings_waiter]() { settings_waiter.Quit(); }));
+  // Accepting the dialog should make FaceGaze open the settings page.
+  controller->GetConfirmationDialogForTest()->Accept();
+  settings_waiter.Run();
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  // Verify that the dialog accepted pref is now true.
+  ASSERT_TRUE(prefs->GetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted));
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, CancelDialog) {
+  auto* controller = ash::Shell::Get()->accessibility_controller();
+  auto* prefs = GetPrefs();
+
+  base::RunLoop dialog_waiter;
+  controller->AddShowConfirmationDialogCallbackForTesting(
+      base::BindLambdaForTesting([&dialog_waiter]() { dialog_waiter.Quit(); }));
+  // Enabling FaceGaze should show the confirmation dialog.
+  utils()->EnableFaceGaze(Config().Default().WithDialogAccepted(false));
+  dialog_waiter.Run();
+  ASSERT_TRUE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  ASSERT_FALSE(prefs->GetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted));
+  ASSERT_NE(nullptr, controller->GetConfirmationDialogForTest());
+
+  base::RunLoop pref_waiter;
+  PrefChangeRegistrar change_observer;
+  change_observer.Init(prefs);
+  change_observer.Add(prefs::kAccessibilityFaceGazeEnabled,
+                      pref_waiter.QuitClosure());
+
+  // Canceling the dialog should turn off FaceGaze.
+  controller->GetConfirmationDialogForTest()->Cancel();
+  pref_waiter.Run();
+
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kAccessibilityFaceGazeEnabled));
+  // Verify that the dialog accepted pref is still false.
+  ASSERT_FALSE(prefs->GetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted));
 }
 
 }  // namespace ash

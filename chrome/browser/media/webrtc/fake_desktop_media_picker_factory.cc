@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 
 FakeDesktopMediaPicker::FakeDesktopMediaPicker(
     FakeDesktopMediaPickerFactory::TestFlags* expectation)
@@ -56,7 +57,7 @@ void FakeDesktopMediaPicker::Show(
   EXPECT_EQ(expectation_->expect_tabs, show_tabs);
   EXPECT_EQ(expectation_->expect_current_tab, show_current_tab);
   EXPECT_EQ(expectation_->expect_audio, params.request_audio);
-  EXPECT_EQ(params.modality, ui::ModalType::MODAL_TYPE_CHILD);
+  EXPECT_EQ(params.modality, ui::mojom::ModalType::kChild);
 
   if (!expectation_->cancelled) {
     // Post a task to call the callback asynchronously.

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_PICKER_PICKER_FILE_SUGGESTER_H_
 #define CHROME_BROWSER_UI_ASH_PICKER_PICKER_FILE_SUGGESTER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,6 +25,17 @@ class PickerFileSuggester {
   };
 
   struct DriveFile {
+    DriveFile(std::optional<std::string> id,
+              std::u16string title,
+              base::FilePath local_path,
+              GURL url);
+    ~DriveFile();
+    DriveFile(const DriveFile&);
+    DriveFile(DriveFile&&);
+    DriveFile& operator=(const DriveFile&);
+    DriveFile& operator=(DriveFile&&);
+
+    std::optional<std::string> id;
     std::u16string title;
     base::FilePath local_path;
     GURL url;

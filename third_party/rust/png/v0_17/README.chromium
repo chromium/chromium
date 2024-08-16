@@ -1,0 +1,9 @@
+Name: png
+URL: https://crates.io/crates/png
+Description: PNG decoding and encoding library in pure Rust
+Version: 0.17.13
+Security Critical: yes
+Shipped: yes
+License: Apache 2.0
+License File: //third_party/rust/chromium_crates_io/vendor/png-0.17.13/LICENSE-APACHE
+Revision: b5b0d48ee352d638db2810f3083d9323094854f4

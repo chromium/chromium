@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
+#include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -89,7 +90,7 @@ bool AudioLatency::IsResamplingPassthroughSupported(Type type) {
 // static
 int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
                                            int preferred_buffer_size) {
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
   // Use 80ms rounded to a power of 2.
   const double eighty_ms_size = 8.0 * sample_rate / 100;
   const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);

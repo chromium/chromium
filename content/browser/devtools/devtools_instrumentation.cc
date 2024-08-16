@@ -200,7 +200,7 @@ BuildAttributionReportingIssueViolationType(
     case blink::mojom::AttributionReportingIssueType::
         kNavigationRegistrationWithoutTransientUserActivation:
       // This issue is not reported from the browser.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case blink::mojom::AttributionReportingIssueType::kInvalidInfoHeader:
       return AttributionReportingIssueTypeEnum::InvalidInfoHeader;
     case blink::mojom::AttributionReportingIssueType::kNoRegisterSourceHeader:
@@ -386,7 +386,7 @@ FederatedAuthRequestResultToProtocol(
       return FederatedAuthRequestIssueReasonEnum::TypeNotMatching;
     }
     case FederatedAuthRequestResult::kSuccess: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -456,7 +456,7 @@ FederatedAuthUserInfoRequestResultToProtocol(
     }
     case FederatedAuthUserInfoRequestResult::kSuccess:
     case FederatedAuthUserInfoRequestResult::kUnhandledRequest: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -1164,6 +1164,41 @@ DevToolsAgentHostImpl* GetDevToolsAgentHostForNetworkOverrides(
   return RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
 }
 
+void ApplyNetworkRequestOverrides(
+    DevToolsAgentHostImpl* agent_host,
+    net::HttpRequestHeaders* headers,
+    bool* disable_cache,
+    bool* network_instrumentation_enabled,
+    bool* skip_service_worker,
+    std::optional<std::vector<net::SourceStream::SourceType>>*
+        devtools_accepted_stream_types,
+    bool* devtools_user_agent_overridden,
+    bool* devtools_accept_language_overridden) {
+  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
+    if (!network->enabled()) {
+      continue;
+    }
+    if (network_instrumentation_enabled) {
+      *network_instrumentation_enabled = true;
+    }
+    network->ApplyOverrides(headers, skip_service_worker, disable_cache,
+                            devtools_accepted_stream_types);
+  }
+
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    bool ua_overridden = false;
+    bool accept_language_overridden = false;
+    emulation->ApplyOverrides(headers, &ua_overridden,
+                              &accept_language_overridden);
+    if (devtools_user_agent_overridden) {
+      *devtools_user_agent_overridden |= ua_overridden;
+    }
+    if (devtools_accept_language_overridden) {
+      *devtools_accept_language_overridden |= accept_language_overridden;
+    }
+  }
+}
+
 }  // namespace
 
 void ApplyAuctionNetworkRequestOverrides(
@@ -1176,24 +1211,10 @@ void ApplyAuctionNetworkRequestOverrides(
   if (!agent_host) {
     return;
   }
-
-  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
-    if (!network->enabled()) {
-      continue;
-    }
-    *network_instrumentation_enabled = true;
-    network->ApplyOverrides(&request->headers, &request->skip_service_worker,
-                            &disable_cache,
-                            &request->devtools_accepted_stream_types);
-  }
-
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
-    bool ua_overridden = false;
-    bool accept_language_overridden = false;
-    emulation->ApplyOverrides(&request->headers, &ua_overridden,
-                              &accept_language_overridden);
-  }
-
+  ApplyNetworkRequestOverrides(
+      agent_host, &request->headers, &disable_cache,
+      network_instrumentation_enabled, &request->skip_service_worker,
+      &request->devtools_accepted_stream_types, nullptr, nullptr);
   if (disable_cache) {
     request->load_flags = net::LOAD_BYPASS_CACHE;
   }
@@ -1217,24 +1238,10 @@ void ApplyNetworkRequestOverrides(
   }
   net::HttpRequestHeaders headers;
   headers.AddHeadersFromString(begin_params->headers);
-  for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
-    if (!network->enabled()) {
-      continue;
-    }
-    *report_raw_headers = true;
-    network->ApplyOverrides(&headers, &begin_params->skip_service_worker,
-                            &disable_cache, devtools_accepted_stream_types);
-  }
-
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
-    bool ua_overridden = false;
-    bool accept_language_overridden = false;
-    emulation->ApplyOverrides(&headers, &ua_overridden,
-                              &accept_language_overridden);
-    *devtools_user_agent_overridden |= ua_overridden;
-    *devtools_accept_language_overridden |= accept_language_overridden;
-  }
-
+  ApplyNetworkRequestOverrides(
+      agent_host, &headers, &disable_cache, report_raw_headers,
+      &begin_params->skip_service_worker, devtools_accepted_stream_types,
+      devtools_user_agent_overridden, devtools_accept_language_overridden);
   if (disable_cache) {
     begin_params->load_flags &=
         ~(net::LOAD_VALIDATE_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |
@@ -1414,11 +1421,13 @@ WillCreateURLLoaderFactoryParams::ForSharedWorker(SharedWorkerHost* host) {
 WillCreateURLLoaderFactoryParams
 WillCreateURLLoaderFactoryParams::ForWorkerMainScript(
     DevToolsAgentHostImpl* agent_host,
-    const base::UnguessableToken& worker_token) {
-  RenderProcessHost* rph = agent_host->GetProcessHost();
-  CHECK(rph);
-  return WillCreateURLLoaderFactoryParams(
-      agent_host, worker_token, rph->GetID(), rph->GetStoragePartition());
+    const base::UnguessableToken& worker_token,
+    RenderFrameHostImpl& ancestor_render_frame_host) {
+  // Use the ancestor frame's interceptor to align with the interception
+  // behavior in the renderer that reuses the same url loader factory from
+  // the ancestor frame for the worker.
+  return WillCreateURLLoaderFactoryParams::ForFrame(
+      &ancestor_render_frame_host);
 }
 
 void OnPrefetchRequestWillBeSent(
@@ -2181,6 +2190,21 @@ void OnWorkerMainScriptRequestWillBeSent(
     return;
   }
   MaybeAssignResourceRequestId(owner_host, worker_token.ToString(), request);
+
+  // Note: we apply overrides from the owner frame to match the behavior in the
+  // renderer.
+  bool disable_cache = false;
+  ApplyNetworkRequestOverrides(owner_host, &request.headers, &disable_cache,
+                               nullptr, &request.skip_service_worker,
+                               &request.devtools_accepted_stream_types, nullptr,
+                               nullptr);
+  if (disable_cache) {
+    request.load_flags &=
+        ~(net::LOAD_VALIDATE_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |
+          net::LOAD_ONLY_FROM_CACHE | net::LOAD_DISABLE_CACHE);
+    request.load_flags |= net::LOAD_BYPASS_CACHE;
+  }
+
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,

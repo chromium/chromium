@@ -31,14 +31,11 @@ class FocusModeUI : public ui::MojoWebUIController {
 };
 
 // The WebUIConfig for chrome://focus-mode-media.
-class FocusModeUIConfig : public content::WebUIConfig {
+class FocusModeUIConfig : public content::DefaultWebUIConfig<FocusModeUI> {
  public:
   FocusModeUIConfig();
 
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
-
+  // content::DefaultWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 

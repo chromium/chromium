@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -22,7 +23,9 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
   debug_value.Set("app_id", app_id);
   debug_value.Set("set_to_preferred", set_to_preferred);
 
-  if (!lock.registrar().IsLocallyInstalled(app_id)) {
+  if (!lock.registrar().IsInstallState(
+          app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::INSTALLED_WITH_OS_INTEGRATION})) {
     debug_value.Set("result", "App not installed.");
     return;
   }

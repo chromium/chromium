@@ -76,6 +76,9 @@ class SpeechRecognitionController final
           audio_forwarder = mojo::NullReceiver(),
       std::optional<media::AudioParameters> audio_parameters = std::nullopt);
 
+  void OnDeviceWebSpeechAvailable(String language,
+                                  base::OnceCallback<void(bool)> callback);
+
   static SpeechRecognitionController* From(LocalDOMWindow&);
 
   void Trace(Visitor* visitor) const override;

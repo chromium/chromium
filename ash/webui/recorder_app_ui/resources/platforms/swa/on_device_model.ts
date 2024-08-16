@@ -4,20 +4,33 @@
 
 import {
   Model,
+  ModelLoader as ModelLoaderBase,
   ModelResponse,
   ModelResponseError,
+  ModelState,
 } from '../../core/on_device_model/types.js';
+import {signal} from '../../core/reactive/signal.js';
+import {
+  assertExhaustive,
+  assertExists,
+  assertNotReached,
+} from '../../core/utils/assert.js';
 import {shorten} from '../../core/utils/utils.js';
 
 import {
+  FormatFeature,
+  LoadModelResult,
+  ModelState as MojoModelState,
+  ModelStateMonitorReceiver,
+  ModelStateType,
   OnDeviceModelRemote,
+  PageHandlerRemote,
   ResponseChunk,
   ResponseSummary,
   SessionRemote,
   StreamingResponderCallbackRouter,
 } from './types.js';
 
-// TODO(shik): Extract the common prompting logic into a better place.
 // The input token limit is 2048 and 3 words roughly equals to 4
 // tokens. Having a conservative limit here and leaving some room for the
 // template.
@@ -43,11 +56,7 @@ format:
 3. TITLE 3 (descriptive, ~15 words)
 
 Reply:
-<ctrl23>
 `;
-
-export const SUMMARIZATION_PROMPT_TEMPLATE = `${PLACEHOLDER}
-Write an abstractive summary in 3-bullet points: <ctrl23>`;
 
 /**
  * The keys are id of the safety classes.
@@ -86,13 +95,18 @@ function parseResponse(res: string): string {
   return res.replaceAll('▁', ' ').replaceAll(/\n+/g, '\n').trim();
 }
 
-export class OnDeviceModel implements Model {
-  constructor(private readonly remote: OnDeviceModelRemote) {
+abstract class OnDeviceModel<T> implements Model<T> {
+  constructor(
+    private readonly remote: OnDeviceModelRemote,
+    private readonly pageRemote: PageHandlerRemote,
+    private readonly modelId: string,
+  ) {
     // TODO(pihsun): Handle disconnection error
   }
 
-  // TODO(pihsun): Streaming? We can return signal<string> if needed.
-  execute(text: string): Promise<string> {
+  abstract execute(content: string): Promise<ModelResponse<T>>;
+
+  private executeRaw(text: string): Promise<string> {
     const session = new SessionRemote();
     this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
     const responseRouter = new StreamingResponderCallbackRouter();
@@ -129,49 +143,6 @@ export class OnDeviceModel implements Model {
     return promise;
   }
 
-  async suggestTitles(content: string): Promise<ModelResponse<string[]>> {
-    if (await this.contentIsUnsafe(content, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
-    }
-    content = shorten(content, MAX_CONTENT_WORDS);
-    const prompt = TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(
-      PLACEHOLDER,
-      content,
-    );
-    const res = await this.execute(prompt);
-    if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
-    }
-    const lines = parseResponse(res)
-                    .replaceAll(/^\s*\d\.\s*/gm, '')
-                    .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
-                    .split('\n');
-
-    const titles: string[] = [];
-    for (const line of lines) {
-      // Find the longest title-like substring.
-      const m = line.match(/\w.*\w/);
-      if (m !== null && !titles.includes(m[0])) {
-        titles.push(m[0]);
-      }
-    }
-    return {kind: 'success', result: titles.slice(0, 3)};
-  }
-
-  async summarize(content: string): Promise<ModelResponse> {
-    if (await this.contentIsUnsafe(content, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
-    }
-    content = shorten(content, MAX_CONTENT_WORDS);
-    const prompt = SUMMARIZATION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content);
-    const res = await this.execute(prompt);
-    if (await this.contentIsUnsafe(res, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
-    }
-    const summary = parseResponse(res);
-    return {kind: 'success', result: summary};
-  }
-
   private async contentIsUnsafe(
     content: string,
     thresholds: Map<number, number>,
@@ -192,5 +163,167 @@ export class OnDeviceModel implements Model {
 
   close(): void {
     this.remote.$.close();
+  }
+
+  private async formatInput(
+    feature: FormatFeature,
+    fields: Record<string, string>,
+  ) {
+    const {result} = await this.pageRemote.formatModelInput(
+      {value: this.modelId},
+      feature,
+      fields,
+    );
+    return result;
+  }
+
+  /**
+   * Formats the prompt with the specified `formatFeature`, runs the prompt
+   * through the model, and returns the result.
+   *
+   * The key of the fields of each different model / formatFeature
+   * combination can be found in
+   * //google3/chromeos/odml_foundations/lib/inference/features/models/.
+   */
+  protected async formatAndExecute(
+    formatFeature: FormatFeature,
+    fields: Record<string, string>,
+  ): Promise<ModelResponse<string>> {
+    const prompt = await this.formatInput(formatFeature, fields);
+    if (prompt === null) {
+      console.error('formatInput returns null, wrong model?');
+      return {kind: 'error', error: ModelResponseError.GENERAL};
+    }
+    if (await this.contentIsUnsafe(prompt, REQUEST_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
+    const result = await this.executeRaw(prompt);
+    if (await this.contentIsUnsafe(result, RESPONSE_SAFETY_SCORE_THRESHOLDS)) {
+      return {kind: 'error', error: ModelResponseError.UNSAFE};
+    }
+    return {kind: 'success', result};
+  }
+}
+
+export class SummaryModel extends OnDeviceModel<string> {
+  override async execute(content: string): Promise<ModelResponse<string>> {
+    content = shorten(content, MAX_CONTENT_WORDS);
+    const resp = await this.formatAndExecute(FormatFeature.kAudioSummary, {
+      transcription: content,
+    });
+    // TODO(pihsun): `Result` monadic helper class?
+    if (resp.kind === 'error') {
+      return resp;
+    }
+    const summary = parseResponse(resp.result);
+    return {kind: 'success', result: summary};
+  }
+}
+
+export class TitleSuggestionModel extends OnDeviceModel<string[]> {
+  override async execute(content: string): Promise<ModelResponse<string[]>> {
+    content = shorten(content, MAX_CONTENT_WORDS);
+    const resp = await this.formatAndExecute(FormatFeature.kPrompt, {
+      prompt: TITLE_SUGGESTION_PROMPT_TEMPLATE.replace(PLACEHOLDER, content),
+    });
+    if (resp.kind === 'error') {
+      return resp;
+    }
+    const lines = parseResponse(resp.result)
+                    .replaceAll(/^\s*\d\.\s*/gm, '')
+                    .replaceAll(/TITLE\s*\d*:?\s*/gim, '')
+                    .split('\n');
+
+    const titles: string[] = [];
+    for (const line of lines) {
+      // Find the longest title-like substring.
+      const m = line.match(/\w.*\w/);
+      if (m !== null && !titles.includes(m[0])) {
+        titles.push(m[0]);
+      }
+    }
+    return {kind: 'success', result: titles.slice(0, 3)};
+  }
+}
+
+/**
+ * Converts ModelState from mojo to the `ModelState` interface.
+ */
+export function mojoModelStateToModelState(state: MojoModelState): ModelState {
+  switch (state.type) {
+    case ModelStateType.kNotInstalled:
+      return {kind: 'notInstalled'};
+    case ModelStateType.kInstalling:
+      return {kind: 'installing', progress: assertExists(state.progress)};
+    case ModelStateType.kInstalled:
+      return {kind: 'installed'};
+    case ModelStateType.kError:
+      return {kind: 'error'};
+    case ModelStateType.kUnavailable:
+      return {kind: 'unavailable'};
+    case ModelStateType.MIN_VALUE:
+    case ModelStateType.MAX_VALUE:
+      return assertNotReached(
+        `Got MIN_VALUE or MAX_VALUE from mojo ModelStateType: ${state.type}`,
+      );
+    default:
+      assertExhaustive(state.type);
+  }
+}
+
+abstract class ModelLoader<T> extends ModelLoaderBase<T> {
+  override state = signal<ModelState>({kind: 'unavailable'});
+
+  protected abstract readonly modelId: string;
+
+  abstract createModel(remote: OnDeviceModelRemote): OnDeviceModel<T>;
+
+  constructor(protected readonly remote: PageHandlerRemote) {
+    super();
+  }
+
+  async init(): Promise<void> {
+    const update = (state: MojoModelState) => {
+      this.state.value = mojoModelStateToModelState(state);
+    };
+    const monitor = new ModelStateMonitorReceiver({update});
+
+    // This should be relatively quick since in recorder_app_ui.cc we just
+    // return the cached state here, but we await here to avoid UI showing
+    // temporary unavailable state.
+    const {state} = await this.remote.addModelMonitor(
+      {value: this.modelId},
+      monitor.$.bindNewPipeAndPassRemote(),
+    );
+    update(state);
+  }
+
+  override async load(): Promise<Model<T>> {
+    const newModel = new OnDeviceModelRemote();
+    const {result} = await this.remote.loadModel(
+      {value: this.modelId},
+      newModel.$.bindNewPipeAndPassReceiver(),
+    );
+    if (result !== LoadModelResult.kSuccess) {
+      // TODO(pihsun): Dedicated error type?
+      throw new Error(`Load model failed: ${result}`);
+    }
+    return this.createModel(newModel);
+  }
+}
+
+export class SummaryModelLoader extends ModelLoader<string> {
+  protected override modelId = '73caa678-45cb-4007-abb9-f04e431376da';
+
+  override createModel(remote: OnDeviceModelRemote): SummaryModel {
+    return new SummaryModel(remote, this.remote, this.modelId);
+  }
+}
+
+export class TitleSuggestionModelLoader extends ModelLoader<string[]> {
+  protected override modelId = 'ee7c31c2-18e5-405a-b54e-f2607130a15d';
+
+  override createModel(remote: OnDeviceModelRemote): TitleSuggestionModel {
+    return new TitleSuggestionModel(remote, this.remote, this.modelId);
   }
 }

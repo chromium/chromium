@@ -500,8 +500,8 @@ const KNOWN_SCREENS: ScreenDefType[] = [
       {
         id: 'overview',
         trigger: (screen: any) => {
-          screen.setUIStep('overview');
           screen.setPerksData(createPerksData());
+          screen.setOverviewStep();
         },
       },
     ],
@@ -637,11 +637,6 @@ const KNOWN_SCREENS: ScreenDefType[] = [
         },
       },
     ],
-  },
-  {
-    id: 'autolaunch',
-    kind: ScreenKind.OTHER,
-    suffix: 'kiosk',
   },
   {
     id: 'app-launch-splash',

@@ -8,6 +8,8 @@ import type {CrCollapseElement, CrExpandButtonElement, PrivateStateTokensListIte
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {testListItemData} from './test_data.js';
+
 const testRedemptionsDummyData: Redemption[] = [
   {origin: 'https://a.test', formattedTimestamp: 'test A'},
   {origin: 'https://b.test', formattedTimestamp: 'test B'},
@@ -45,5 +47,18 @@ suite('ListItemTest', () => {
     for (const redemption of redemptions) {
       assertTrue(isVisible(redemption));
     }
+  });
+
+  test('check if numTokens is displayed', async () => {
+    listItem.issuerOrigin = testListItemData.issuerOrigin;
+    listItem.numTokens = testListItemData.numTokens;
+    listItem.redemptions = testListItemData.redemptions;
+    await microtasksFinished();
+    const rowText = $$<HTMLElement>(listItem, '#row-content');
+    assertTrue(!!rowText);
+    const tokenSpan =
+        rowText.querySelector<HTMLElement>('.cr-padded-text > #tokenText');
+    const tokenText = tokenSpan!.innerText;
+    assertEquals(`${testListItemData.numTokens} token`, tokenText);
   });
 });

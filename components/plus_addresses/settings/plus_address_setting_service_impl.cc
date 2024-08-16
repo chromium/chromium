@@ -11,12 +11,12 @@
 #include "base/functional/callback_helpers.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/forwarding_model_type_controller_delegate.h"
-#include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/forwarding_data_type_controller_delegate.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
 
 namespace plus_addresses {
@@ -24,11 +24,8 @@ namespace plus_addresses {
 namespace {
 
 // Setting names - must be in sync with the server.
-// TODO(crbug.com/342089839): Agree upon names with server-side team.
-constexpr std::string_view kPlusAddressEnabledSetting =
-    "plus_address.is_enabled";
-constexpr std::string_view kAcceptedNoticeSetting =
-    "plus_address.has_accepted_notice";
+constexpr std::string_view kPlusAddressEnabledSetting = "has_feature_enabled";
+constexpr std::string_view kAcceptedNoticeSetting = "has_accepted_notice";
 
 }  // namespace
 
@@ -53,10 +50,10 @@ void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {
   }
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressSettingServiceImpl::GetSyncControllerDelegate() {
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting));
-  return std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+  return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
 }
 

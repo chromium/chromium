@@ -8,9 +8,21 @@
 
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/profile_metrics/counts.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/web/public/browser_state.h"
+
+namespace {
+
+constexpr base::TimeDelta kActivityThreshold = base::Days(28);
+
+bool BrowserStateIsActive(const BrowserStateInfoCache& info_cache, int index) {
+  return base::Time::Now() -
+             info_cache.GetLastActiveTimeOfBrowserStateAtIndex(index) <=
+         kActivityThreshold;
+}
+
+}  // namespace
 
 bool CountBrowserStateInformation(ChromeBrowserStateManager* manager,
                                   profile_metrics::Counts* counts) {
@@ -24,8 +36,13 @@ bool CountBrowserStateInformation(ChromeBrowserStateManager* manager,
   }
 
   for (size_t i = 0; i < number_of_browser_states; ++i) {
-    if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
-      counts->signedin++;
+    if (!BrowserStateIsActive(*info_cache, i)) {
+      counts->unused++;
+    } else {
+      counts->active++;
+      if (info_cache->BrowserStateIsAuthenticatedAtIndex(i)) {
+        counts->signedin++;
+      }
     }
   }
   return true;

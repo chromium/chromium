@@ -1010,6 +1010,23 @@ TEST_F(ButtonTest, AccessibleRole) {
             ax::mojom::Role::kCheckBox);
 }
 
+TEST_F(ButtonTest, AccessibleDefaultActionVerb) {
+  ui::AXNodeData data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kPress);
+
+  data = ui::AXNodeData();
+  button()->SetEnabled(false);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_FALSE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+
+  data = ui::AXNodeData();
+  button()->SetEnabled(true);
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kPress);
+}
+
 TEST_F(ButtonTest, AnchorHighlightSetsHiglight) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 

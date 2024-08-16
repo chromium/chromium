@@ -51,9 +51,9 @@ class SavedTabGroupKeyedService : public KeyedService,
   SavedTabGroupModelListener* listener() { return &listener_; }
   const SavedTabGroupModel* model() const { return &model_; }
   SavedTabGroupModel* model() { return &model_; }
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate();
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate();
   Profile* profile() { return profile_; }
 
@@ -168,8 +168,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   const TabStripModel* GetTabStripModelWithTabGroupId(
       const tab_groups::TabGroupId& local_group_id);
 
-  // Returns the ModelTypeStoreFactory tied to the current profile.
-  syncer::OnceModelTypeStoreFactory GetStoreFactory();
+  // Returns the DataTypeStoreFactory tied to the current profile.
+  syncer::OnceDataTypeStoreFactory GetStoreFactory();
 
   // Notifies observers that the tab group with id `group_id`'s visual data was
   // changed using data found in `saved_group_guid`.

@@ -49,8 +49,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
           profile, /*original_profile=*/nullptr,
           /*user_email=*/std::nullopt,
           /*locale=*/"en-US",
-          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
-          base::DoNothing());
+          /*is_migration_to_account=*/false, base::DoNothing());
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
@@ -90,8 +89,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
           profile, /*original_profile=*/nullptr,
           /*user_email=*/std::nullopt,
           /*locale=*/"en-US",
-          autofill::AutofillClient::SaveAddressProfilePromptOptions{},
-          base::DoNothing());
+          /*is_migration_to_account=*/false, base::DoNothing());
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                      std::move(passed_delegate));
 

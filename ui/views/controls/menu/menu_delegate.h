@@ -214,6 +214,12 @@ class VIEWS_EXPORT MenuDelegate {
   // rather than directly above or below it, when the menu is too tall to fit
   // within the screen.
   virtual bool ShouldTryPositioningBesideAnchor() const;
+
+  // Returns true if the delegate has started tearing down its internal state in
+  // preparation for destruction. The delegate should no longer be used once
+  // this occurs. Remove once crash root cause has been addressed
+  // (crbug.com/1283454).
+  virtual bool IsTearingDown() const;
 };
 
 }  // namespace views

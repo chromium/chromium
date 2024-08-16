@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <algorithm>
@@ -203,8 +208,9 @@ profile_metrics::UnconsentedPrimaryAccountType GetUnconsentedPrimaryAccountType(
     ProfileAttributesEntry* entry) {
   if (entry->GetSigninState() == SigninState::kNotSignedIn)
     return profile_metrics::UnconsentedPrimaryAccountType::kSignedOut;
-  if (entry->IsChild())
+  if (entry->IsSupervised()) {
     return profile_metrics::UnconsentedPrimaryAccountType::kChild;
+  }
   // TODO(crbug.com/40121889): Replace this check by
   // !entry->GetHostedDomain().has_value() in M84 (once the attributes storage
   // gets reasonably well populated).

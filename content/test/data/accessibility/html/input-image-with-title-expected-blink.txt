@@ -1,7 +1,7 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button inputType='image' name='email'
+++++++button inputType='image' name='email' nameFrom=title
 ++++++++genericContainer ignored
 ++++++++++image
 ++++++++++staticText name='email'

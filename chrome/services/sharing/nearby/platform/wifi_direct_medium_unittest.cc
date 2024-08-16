@@ -24,6 +24,7 @@ constexpr uint16_t kMinPort = 50000;  // Arbitrary port.
 constexpr uint16_t kMaxPort = 65535;
 constexpr char kTestSSID[] = "DIRECT-xx";
 constexpr char kTestPassword[] = "ABCD1234";
+constexpr int32_t kTestFrequency = 123456;
 
 constexpr char kIsP2pSupportedMetricName[] =
     "Nearby.Connections.WifiDirect.IsP2pSupported";
@@ -66,6 +67,7 @@ class FakeWifiDirectConnection
     auto properties =
         ash::wifi_direct::mojom::WifiDirectConnectionProperties::New();
     properties->ipv4_address = ipv4_address;
+    properties->frequency = kTestFrequency;
     properties->credentials = ash::wifi_direct::mojom::WifiCredentials::New();
     properties->credentials->ssid = kTestSSID;
     properties->credentials->passphrase = kTestPassword;
@@ -99,6 +101,7 @@ class FakeWifiDirectManager
       ConnectToWifiDirectGroupCallback callback) override {
     EXPECT_EQ(credentials->ssid, expected_ssid_);
     EXPECT_EQ(credentials->passphrase, expected_password_);
+    EXPECT_EQ(frequency, expected_frequency_);
     ReturnConnection(std::move(callback));
   }
 
@@ -123,6 +126,10 @@ class FakeWifiDirectManager
     expected_password_ = password;
   }
 
+  void SetExpectedFrequency(std::optional<uint32_t> frequency) {
+    expected_frequency_ = frequency;
+  }
+
  private:
   void ReturnConnection(ConnectToWifiDirectGroupCallback callback) {
     if (!connection_) {
@@ -143,6 +150,7 @@ class FakeWifiDirectManager
 
   std::string expected_ssid_ = "";
   std::string expected_password_ = "";
+  std::optional<uint32_t> expected_frequency_ = std::nullopt;
   std::unique_ptr<FakeWifiDirectConnection> connection_;
   bool is_interface_valid_ = true;
 };
@@ -305,6 +313,7 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
         EXPECT_EQ(credentials.GetGateway(), kTestIPv4Address);
         EXPECT_EQ(credentials.GetSSID(), kTestSSID);
         EXPECT_EQ(credentials.GetPassword(), kTestPassword);
+        EXPECT_EQ(credentials.GetFrequency(), kTestFrequency);
       },
       medium()));
 
@@ -356,6 +365,7 @@ TEST_F(WifiDirectMediumTest, StopWifiDirect_ExistingConnection) {
 TEST_F(WifiDirectMediumTest, ConnectWifiDirect_MissingConnection) {
   manager()->SetWifiDirectConnection(nullptr);
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
   histogram_tester().ExpectTotalCount(kConnectGroupResultMetricName, 0);
   histogram_tester().ExpectTotalCount(kConnectGroupErrorMetricName, 0);
 
@@ -365,6 +375,7 @@ TEST_F(WifiDirectMediumTest, ConnectWifiDirect_MissingConnection) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
         EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -378,10 +389,11 @@ TEST_F(WifiDirectMediumTest, ConnectWifiDirect_MissingConnection) {
       ash::wifi_direct::mojom::WifiDirectOperationResult::kNotSupported, 1);
 }
 
-TEST_F(WifiDirectMediumTest, ConnectWifiDirect_ValidConnection) {
+TEST_F(WifiDirectMediumTest, ConnectWifiDirect_ValidConnection_ValidFrequency) {
   manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
   histogram_tester().ExpectTotalCount(kConnectGroupResultMetricName, 0);
   histogram_tester().ExpectTotalCount(kConnectGroupErrorMetricName, 0);
 
@@ -391,6 +403,33 @@ TEST_F(WifiDirectMediumTest, ConnectWifiDirect_ValidConnection) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
+        EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
+      },
+      medium()));
+
+  histogram_tester().ExpectTotalCount(kConnectGroupResultMetricName, 1);
+  histogram_tester().ExpectBucketCount(kConnectGroupResultMetricName,
+                                       /*bucket:true=*/1, 1);
+  histogram_tester().ExpectTotalCount(kConnectGroupErrorMetricName, 0);
+}
+
+TEST_F(WifiDirectMediumTest,
+       ConnectWifiDirect_ValidConnection_InvalidFrequency) {
+  manager()->SetWifiDirectConnection(
+      std::make_unique<FakeWifiDirectConnection>());
+  manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(std::nullopt);
+  histogram_tester().ExpectTotalCount(kConnectGroupResultMetricName, 0);
+  histogram_tester().ExpectTotalCount(kConnectGroupErrorMetricName, 0);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        WifiDirectCredentials credentials;
+        credentials.SetSSID(kTestSSID);
+        credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(-1);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -408,6 +447,7 @@ TEST_F(WifiDirectMediumTest, DisconnectWifiDirect_MissingConnection) {
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         WifiDirectCredentials credentials;
+        credentials.SetFrequency(0);
         EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -424,6 +464,7 @@ TEST_F(WifiDirectMediumTest, DisconnectWifiDirect_ExistingConnection) {
   manager()->SetWifiDirectConnection(
       std::make_unique<FakeWifiDirectConnection>());
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -431,6 +472,7 @@ TEST_F(WifiDirectMediumTest, DisconnectWifiDirect_ExistingConnection) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -448,6 +490,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
       std::make_unique<FakeWifiDirectConnection>());
   connection->should_associate = true;
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -455,6 +498,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -485,6 +529,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_Success) {
 TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
   manager()->SetWifiDirectConnection(nullptr);
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -492,6 +537,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_MissingConnection) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
         EXPECT_FALSE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));
@@ -525,6 +571,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
       std::make_unique<FakeWifiDirectConnection>());
   connection->should_associate = false;
   manager()->SetExpectedCredentials(kTestSSID, kTestPassword);
+  manager()->SetExpectedFrequency(kTestFrequency);
 
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
@@ -532,6 +579,7 @@ TEST_F(WifiDirectMediumTest, ConnectToService_FailToAssociatesSocket) {
         WifiDirectCredentials credentials;
         credentials.SetSSID(kTestSSID);
         credentials.SetPassword(kTestPassword);
+        credentials.SetFrequency(kTestFrequency);
         EXPECT_TRUE(medium->ConnectWifiDirect(&credentials));
       },
       medium()));

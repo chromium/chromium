@@ -78,7 +78,7 @@ class V8StringResource {
 
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator StringView() const {
-    if (LIKELY(!v8_object_.IsEmpty())) {
+    if (!v8_object_.IsEmpty()) [[likely]] {
       return ToBlinkStringView(isolate_, v8_object_.As<v8::String>(),
                                backing_store_, mode_);
     }
@@ -96,10 +96,11 @@ class V8StringResource {
       return true;
     }
 
-    if (LIKELY(v8_object_->IsString()))
+    if (v8_object_->IsString()) [[likely]] {
       return true;
+    }
 
-    if (LIKELY(v8_object_->IsInt32())) {
+    if (v8_object_->IsInt32()) [[likely]] {
       SetString(ToBlinkString(v8_object_.As<v8::Int32>()->Value()));
       return true;
     }
@@ -109,13 +110,9 @@ class V8StringResource {
   }
 
   bool PrepareSlow(ExceptionState& exception_state) {
-    v8::TryCatch try_catch(isolate_);
-    if (!v8_object_->ToString(isolate_->GetCurrentContext())
-             .ToLocal(&v8_object_)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
-      return false;
-    }
-    return true;
+    TryRethrowScope rethrow_scope(isolate_, exception_state);
+    return v8_object_->ToString(isolate_->GetCurrentContext())
+        .ToLocal(&v8_object_);
   }
 
   bool IsValid() const;
@@ -128,7 +125,7 @@ class V8StringResource {
 
   template <class StringType>
   StringType ToString() const {
-    if (LIKELY(!v8_object_.IsEmpty())) {
+    if (!v8_object_.IsEmpty()) [[likely]] {
       return ToBlinkString<StringType>(isolate_, v8_object_.As<v8::String>(),
                                        mode_);
     }

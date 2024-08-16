@@ -1,6 +1,7 @@
 <style>
   :host {
     --sea-pen-top-container-min-height: 168px;
+    --sea-pen-freeform-top-container-min-height: 160px;
   }
 
   #topContainer {
@@ -15,6 +16,11 @@
     z-index: 1;
   }
 
+  #topContainer:has(sea-pen-input-query) {
+    position: static;
+    z-index: auto;
+  }
+
   #bottomContainer {
     display: grid;
     grid-template-areas:
@@ -26,10 +32,19 @@
     width: 100%;
   }
 
-  sea-pen-input-query,
+  #bottomContainer:has(sea-pen-freeform) {
+    min-height: calc(var(--sea-pen-router-min-height) - var(--sea-pen-freeform-top-container-min-height));
+    position: static;
+  }
+
   sea-pen-template-query {
     grid-area: middle;
     min-height: var(--sea-pen-top-container-min-height);
+  }
+
+  sea-pen-input-query {
+    grid-area: middle;
+    min-height: var(--sea-pen-freeform-top-container-min-height);
   }
 
   ::slotted(wallpaper-selected) {
@@ -132,5 +147,4 @@
   <!-- Prevent the right margin from collapsing when window gets very narrow -->
   <div class="rightspacerbottom"></div>
   <sea-pen-toast></sea-pen-toast>
-  <wallpaper-fullscreen></wallpaper-fullscreen>
 </div>

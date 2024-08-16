@@ -24,6 +24,8 @@ static_library("browser") {
     "account_reconcilor_delegate.h",
     "account_reconcilor_throttler.cc",
     "account_reconcilor_throttler.h",
+    "active_primary_accounts_metrics_recorder.cc",
+    "active_primary_accounts_metrics_recorder.h",
     "chrome_connected_header_helper.cc",
     "chrome_connected_header_helper.h",
     "cookie_settings_util.cc",
@@ -114,9 +116,10 @@ source_set("unit_tests") {
     "account_investigator_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
+    "active_primary_accounts_metrics_recorder_unittest.cc",
     "signin_error_controller_unittest.cc",
     "signin_header_helper_unittest.cc",
-    "signin_metrics_service_unittests.cc",
+    "signin_metrics_service_unittest.cc",
     "signin_status_metrics_provider_helpers_unittest.cc",
   ]
 

@@ -82,6 +82,7 @@ BASE_DECLARE_FEATURE(kPriceTrackingIconColors);
 BASE_DECLARE_FEATURE(kProductSpecifications);
 BASE_DECLARE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields);
 BASE_DECLARE_FEATURE(kProductSpecificationsMultiSpecifics);
+BASE_DECLARE_FEATURE(kProductSpecificationsSyncTitle);
 
 BASE_DECLARE_FEATURE(kShoppingIconColorVariant);
 BASE_DECLARE_FEATURE(kShoppingList);
@@ -392,6 +393,9 @@ extern const base::FeatureParam<base::TimeDelta>
     kProductSpecificationsSetValidForClusteringTime;
 extern const char kProductSpecificationsUseServerClusteringParam[];
 extern const base::FeatureParam<bool> kProductSpecificationsUseServerClustering;
+extern const char kProductSpecificationsEnableQualityLoggingParam[];
+extern const base::FeatureParam<bool>
+    kProductSpecificationsEnableQualityLogging;
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

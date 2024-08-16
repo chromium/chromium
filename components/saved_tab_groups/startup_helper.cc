@@ -25,8 +25,23 @@ StartupHelper::~StartupHelper() = default;
 void StartupHelper::InitializeTabGroupSync() {
   CloseDeletedTabGroupsFromTabModel();
   CreateRemoteTabGroupForNewGroups();
-  ReconcileGroupsToSync();
-  UpdateTabIdMappings();
+
+  for (const auto& saved_tab_group : service_->GetAllGroups()) {
+    auto local_tab_group_id = saved_tab_group.local_group_id();
+    if (!local_tab_group_id) {
+      continue;
+    }
+
+    // First update the tab ID mappings left to right.
+    MapTabIdsForGroup(*local_tab_group_id, saved_tab_group);
+
+    // Update the local to group to match sync. As the group was modified, query
+    // it again to have the updated one.
+    auto updated_saved_group = service_->GetGroup(saved_tab_group.saved_guid());
+    if (updated_saved_group) {
+      platform_delegate_->UpdateLocalTabGroup(updated_saved_group.value());
+    }
+  }
 }
 
 void StartupHelper::CloseDeletedTabGroupsFromTabModel() {
@@ -50,33 +65,21 @@ void StartupHelper::CreateRemoteTabGroupForNewGroups() {
   }
 }
 
-void StartupHelper::ReconcileGroupsToSync() {
-  // TODO(shaktisahu): Might prefer to loop over local tab groups instead.
-  for (const auto& saved_tab_group : service_->GetAllGroups()) {
-    // TODO(shaktisahu): Invoke special logic for merging on startup.
-    platform_delegate_->UpdateLocalTabGroup(saved_tab_group);
-  }
-}
-
-void StartupHelper::UpdateTabIdMappings() {
-  // TODO(shaktisahu): Might prefer to loop over local tab groups instead.
-  for (const auto& saved_tab_group : service_->GetAllGroups()) {
-    auto local_tab_group_id = saved_tab_group.local_group_id();
-    if (!local_tab_group_id) {
-      continue;
-    }
-
-    std::vector<LocalTabID> local_tab_ids =
-        platform_delegate_->GetLocalTabIdsForTabGroup(*local_tab_group_id);
-    // TODO(b/350622883): Reenable the CHECK after fixing.
-    // CHECK_EQ(saved_tab_group.saved_tabs().size(), local_tab_ids.size());
-    for (size_t i = 0;
-         i < saved_tab_group.saved_tabs().size() && i < local_tab_ids.size();
-         ++i) {
-      const auto& saved_tab = saved_tab_group.saved_tabs()[i];
-      service_->UpdateLocalTabId(*local_tab_group_id,
-                                 saved_tab.saved_tab_guid(), local_tab_ids[i]);
-    }
+void StartupHelper::MapTabIdsForGroup(const LocalTabGroupID& local_tab_group_id,
+                                      const SavedTabGroup& saved_tab_group) {
+  std::vector<LocalTabID> local_tab_ids =
+      platform_delegate_->GetLocalTabIdsForTabGroup(local_tab_group_id);
+  // Since we haven't run UpdateTabGroup yet, the number of tabs might be
+  // different between local and sync versions of the tab group.
+  // Regardless, update the in-memory tab ID mappings left to right.
+  // The mismatch in number of tabs will be handled in the subsequent call to
+  // UpdateLocalTabGroup.
+  for (size_t i = 0;
+       i < saved_tab_group.saved_tabs().size() && i < local_tab_ids.size();
+       ++i) {
+    const auto& saved_tab = saved_tab_group.saved_tabs()[i];
+    service_->UpdateLocalTabId(local_tab_group_id, saved_tab.saved_tab_guid(),
+                               local_tab_ids[i]);
   }
 }
 

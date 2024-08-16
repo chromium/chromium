@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
 static_library("print_compositor") {
@@ -14,6 +15,7 @@ static_library("print_compositor") {
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/discardable_memory/client",
+    "//components/enterprise/buildflags",
     "//content/public/utility",
     "//printing/common",
     "//printing/mojom",
@@ -26,6 +28,10 @@ static_library("print_compositor") {
       "//content/public/child",
       "//printing:printing_base",
     ]
+  }
+
+  if (enterprise_watermark) {
+    deps += [ "//components/enterprise/watermarking" ]
   }
 
   public_deps = [

@@ -143,6 +143,9 @@ class IntentPickerAppGridButton : public views::Button {
 
     SetFocusBehavior(FocusBehavior::ALWAYS);
     GetViewAccessibility().SetRole(ax::mojom::Role::kRadioButton);
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
     // TODO(crbug.com/325137417): `SetName` should be called whenever the
     // `name_label` text changes, not just in the constructor.
     GetViewAccessibility().SetName(name_label->GetText());
@@ -158,16 +161,14 @@ class IntentPickerAppGridButton : public views::Button {
   void SetSelected(bool selected) {
     selected_ = selected;
     UpdateBackground();
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged, true);
+    GetViewAccessibility().SetCheckedState(
+        selected_ ? ax::mojom::CheckedState::kTrue
+                  : ax::mojom::CheckedState::kFalse);
   }
 
   // views::Button:
   void StateChanged(ButtonState old_state) override { UpdateBackground(); }
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(selected_ ? ax::mojom::CheckedState::kTrue
-                                         : ax::mojom::CheckedState::kFalse);
-  }
+
   bool IsGroupFocusTraversable() const override { return false; }
   views::View* GetSelectedViewForGroup(int group) override {
     if (group != kGridItemGroupId)
@@ -438,7 +439,7 @@ class IntentPickerAppListView
         delta = base::i18n::IsRTL() ? -1 : 1;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     SetSelectedAppIndex(CalculateNextAppIndex(delta), nullptr);

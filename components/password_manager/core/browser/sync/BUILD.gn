@@ -7,10 +7,10 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("sync") {
   sources = [
+    "password_data_type_controller.cc",
+    "password_data_type_controller.h",
     "password_local_data_batch_uploader.cc",
     "password_local_data_batch_uploader.h",
-    "password_model_type_controller.cc",
-    "password_model_type_controller.h",
     "password_proto_utils.cc",
     "password_proto_utils.h",
     "password_store_sync.cc",
@@ -37,8 +37,8 @@ source_set("sync") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "password_data_type_controller_unittest.cc",
     "password_local_data_batch_uploader_unittest.cc",
-    "password_model_type_controller_unittest.cc",
     "password_proto_utils_unittest.cc",
     "password_sync_bridge_unittest.cc",
   ]

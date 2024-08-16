@@ -702,6 +702,8 @@ message SystemProfileProto {
   // ChromeUserMetricsExtension. A benefit of this is that this can
   // differentiate sessions between cloned installs that may report the same
   // `session_id` but are actually different sessions.
+  // Note: Added in M125. Clients before will not set this field, and trying to
+  // read it will return the default value of 0.
   optional fixed64 session_hash = 46;
 
   // Information about the A/V output device(s) (typically just a TV).

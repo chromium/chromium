@@ -43,8 +43,7 @@ std::string MessageStreamLookupImpl::CreateMessageStreamAttemptTypeToString(
       return "[DeviceChanged]";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 MessageStreamLookupImpl::MessageStreamLookupImpl() {

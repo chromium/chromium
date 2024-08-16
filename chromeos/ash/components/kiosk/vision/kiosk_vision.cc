@@ -36,7 +36,7 @@ void InstallDlc(base::OnceCallback<void(std::string dlc_root_path)> on_done,
                 base::OnceClosure on_error) {
   auto& dlc_service = CHECK_DEREF(DlcserviceClient::Get());
   dlcservice::InstallRequest install_request;
-  install_request.set_id(std::string(kKioskVisionDlcId));
+  install_request.set_id(kKioskVisionDlcId);
   dlc_service.Install(
       install_request,
       base::BindOnce(

@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
+#include "chrome/browser/extensions/bookmarks/bookmarks_error_constants.h"
 #include "chrome/common/extensions/api/bookmarks.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -125,19 +125,19 @@ bool RemoveNode(BookmarkModel* model,
                 std::string* error) {
   const BookmarkNode* node = bookmarks::GetBookmarkNodeByID(model, id);
   if (!node) {
-    *error = bookmark_api_constants::kNoNodeError;
+    *error = bookmarks_errors::kNoNodeError;
     return false;
   }
   if (model->is_permanent_node(node)) {
-    *error = bookmark_api_constants::kModifySpecialError;
+    *error = bookmarks_errors::kModifySpecialError;
     return false;
   }
   if (bookmarks::IsDescendantOf(node, managed->managed_node())) {
-    *error = bookmark_api_constants::kModifyManagedError;
+    *error = bookmarks_errors::kModifyManagedError;
     return false;
   }
   if (node->is_folder() && !node->children().empty() && !recursive) {
-    *error = bookmark_api_constants::kFolderNotEmptyError;
+    *error = bookmarks_errors::kFolderNotEmptyError;
     return false;
   }
 

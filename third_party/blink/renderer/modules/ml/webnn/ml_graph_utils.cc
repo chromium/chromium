@@ -174,7 +174,7 @@ DOMArrayBufferView* CreateArrayBufferView(ArrayBufferViewInfo view_info) {
     default:
       // Other ArrayBufferView types should not pass the
       // `ValidateNamedArrayBufferViews()` and reach here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return target_view;
 }

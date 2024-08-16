@@ -23,11 +23,14 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/web_view/web_view_constants.h"
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_constants.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#endif
 
 using extensions::api::events::Rule;
 
@@ -39,7 +42,10 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 constexpr char kDeclarativeEventPrefix[] = "declarative";
+#endif
+
 constexpr char kDeclarativeContentEventPrefix[] = "declarativeContent.";
 constexpr char kDeclarativeWebRequestEventPrefix[] = "declarativeWebRequest.";
 constexpr char kDeclarativeWebRequestWebViewEventPrefix[] =
@@ -155,9 +161,11 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
 
   RecordUMA(event_name);
 
-  bool from_web_view = web_view_instance_id != 0;
   // If we are not operating on a particular <webview>, then the key is 0.
   int rules_registry_id = RulesRegistryService::kDefaultRulesRegistryID;
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+  bool from_web_view = web_view_instance_id != 0;
   if (from_web_view) {
     // Sample event names:
     // webViewInternal.declarativeWebRequest.onRequest.
@@ -170,6 +178,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
     rules_registry_id = WebViewGuest::GetOrGenerateRulesRegistryID(
         source_process_id(), web_view_instance_id);
   }
+#endif
 
   // The following call will return a NULL pointer for apps_shell, but should
   // never be called there anyways.
@@ -201,8 +210,9 @@ ExtensionFunction::ResponseValue EventsEventAddRulesFunction::RunInternal() {
   std::vector<const api::events::Rule*> rules_out;
   std::string error = rules_registry_->AddRules(
       extension_id(), std::move(params_->rules), &rules_out);
-  if (!error.empty())
+  if (!error.empty()) {
     return Error(error);
+  }
 
   base::Value::List rules_value;
   rules_value.reserve(rules_out.size());

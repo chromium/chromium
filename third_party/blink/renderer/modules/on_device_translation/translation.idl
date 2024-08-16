@@ -9,7 +9,7 @@ enum TranslationAvailability {
 };
 
 [
-  RuntimeEnabled=TranslationAPI,
+  RuntimeEnabled=TranslationAPIEntryPoint,
   Exposed=(Window,Worker)
 ]
 interface Translation {
@@ -31,4 +31,18 @@ interface Translation {
   Promise<LanguageTranslator> createTranslator(
     TranslationLanguageOptions options
   );
+  [
+    RuntimeEnabled=LanguageDetectionAPI,
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<TranslationAvailability> canDetect();
+  [
+    RuntimeEnabled=LanguageDetectionAPI,
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<LanguageDetector> createDetector();
 };

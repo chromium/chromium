@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -260,9 +261,9 @@ void OmniboxFieldTrial::GetDemotionsByType(
       demotion_rule = "1:61,2:61,3:61,4:61,16:61,24:61";
     }
 #endif
-    if (current_page_classification ==
-            OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS ||
-        current_page_classification == OmniboxEventProto::NTP_REALBOX) {
+    omnibox::CheckObsoletePageClass(current_page_classification);
+
+    if (current_page_classification == OmniboxEventProto::NTP_REALBOX) {
       demotion_rule = "1:10,2:10,3:10,4:10,5:10,16:10,17:10,24:10";
     }
   }
@@ -1019,6 +1020,17 @@ MLConfig::MLConfig() {
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
           "MlUrlPiecewiseMappedSearchBlending_BreakPoints", "")
           .Get();
+  piecewise_mapped_search_blending_break_points_verbatim_url =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_VerbatimUrl",
+          piecewise_mapped_search_blending_break_points.c_str())
+          .Get();
+  piecewise_mapped_search_blending_break_points_search =
+      base::FeatureParam<std::string>(
+          &omnibox::kMlUrlPiecewiseMappedSearchBlending,
+          "MlUrlPiecewiseMappedSearchBlending_BreakPoints_Search", "0,0;1,1400")
+          .Get();
   piecewise_mapped_search_blending_relevance_bias =
       base::FeatureParam<int>(
           &omnibox::kMlUrlPiecewiseMappedSearchBlending,
@@ -1035,7 +1047,19 @@ MLConfig::MLConfig() {
                               "MlUrlScoreCaching_MaxMlScoreCacheSize",
                               max_ml_score_cache_size)
           .Get();
+
+  enable_ml_scoring_for_searches =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForSearches", false)
+          .Get();
+  enable_ml_scoring_for_verbatim_urls =
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoring_EnableMlScoringForVerbatimUrls",
+                               false)
+          .Get();
 }
+
+MLConfig::~MLConfig() = default;
 
 MLConfig::MLConfig(const MLConfig&) = default;
 
@@ -1090,11 +1114,29 @@ bool IsMlUrlScoreCachingEnabled() {
   return GetMLConfig().ml_url_score_caching;
 }
 
-std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints() {
+std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
+    PiecewiseMappingVariant mapping_variant) {
   std::vector<std::pair<double, int>> break_points;
 
-  std::string param_value = OmniboxFieldTrial::GetMLConfig()
-                                .piecewise_mapped_search_blending_break_points;
+  std::string param_value;
+  switch (mapping_variant) {
+    case PiecewiseMappingVariant::kRegular:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points;
+      break;
+    case PiecewiseMappingVariant::kVerbatimUrl:
+      param_value =
+          OmniboxFieldTrial::GetMLConfig()
+              .piecewise_mapped_search_blending_break_points_verbatim_url;
+      break;
+    case PiecewiseMappingVariant::kSearch:
+      param_value = OmniboxFieldTrial::GetMLConfig()
+                        .piecewise_mapped_search_blending_break_points_search;
+      break;
+    default:
+      NOTREACHED();
+  }
+
   base::StringPairs pairs;
   if (base::SplitStringIntoKeyValuePairs(param_value, ',', ';', &pairs)) {
     for (const auto& p : pairs) {
@@ -1145,14 +1187,6 @@ bool IsFeaturedEnterpriseSearchIPHEnabled() {
   return base::FeatureList::IsEnabled(
       omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
 }
-// <- Featured Enterprise Site Search
-// ---------------------------------------------------------
-// Featured Search ->
-bool IsFeaturedSearchIPHEnabled() {
-  return IsStarterPackIPHEnabled() || IsFeaturedEnterpriseSearchIPHEnabled();
-}
-// <- Featured Search
-// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

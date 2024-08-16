@@ -187,8 +187,7 @@ void AutoclickRingHandler::StartAnimation(base::TimeDelta delay) {
       break;
     }
     case AnimationType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -212,8 +211,7 @@ void AutoclickRingHandler::AnimateToState(double state) {
       view_->UpdateWithGrowAnimation(this);
       break;
     case AnimationType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

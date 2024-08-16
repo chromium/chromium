@@ -5,6 +5,7 @@ include_rules = [
   "+content/test/fuzzer/mojolpm_fuzzer_support.h",
   "+gpu/command_buffer/service/shared_context_state.h",
   "+gpu/config",
+  "+third_party/blink/public/common/tokens/tokens.h",
   "+third_party/coremltools/mlmodel/format",
   "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",

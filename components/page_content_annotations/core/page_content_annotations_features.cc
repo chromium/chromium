@@ -108,7 +108,7 @@ bool IsSupportedCountryForFeature(const std::string& country_code,
 // Enables page content to be annotated.
 BASE_FEATURE(kPageContentAnnotations,
              "PageContentAnnotations",
-             enabled_by_default_desktop_only);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
@@ -142,7 +142,7 @@ BASE_FEATURE(kPageContentAnnotationsPersistSalientImageMetadata,
 
 BASE_FEATURE(kExtractRelatedSearchesFromPrefetchedZPSResponse,
              "ExtractRelatedSearchesFromPrefetchedZPSResponse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables text embeddings to annotated on every page visit and later queried.
 BASE_FEATURE(kQueryInMemoryTextEmbeddings,

@@ -100,10 +100,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_CONTROL_LIST_VERTICAL:
       return 12;
-    case DISTANCE_DROPDOWN_BUTTON_LABEL_ARROW_SPACING:
-      return 8;
-    case DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN:
-      return 12;
     case DISTANCE_EXTENSIONS_MENU_WIDTH:
       return kMediumDialogWidth;
     case DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE:
@@ -167,7 +163,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL:
       return 8;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChromeLayoutProvider::GetSnappedDialogWidth(int min_width) const {

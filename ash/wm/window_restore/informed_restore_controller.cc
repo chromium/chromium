@@ -45,6 +45,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -139,7 +140,7 @@ void InformedRestoreController::MaybeShowInformedRestoreOnboarding(
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(true);
-  dialog->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog->SetModalType(ui::mojom::ModalType::kSystem);
   dialog->SetTopContentView(
       views::Builder<views::ImageView>()
           .SetImage(

@@ -54,9 +54,9 @@ void CupsConnectionPool::Create() {
   VLOG(1) << "Creating CUPS connection pool seeded with " << kNumCupsConnections
           << " connections";
   for (auto i = 0; i < kNumCupsConnections; ++i) {
-    ScopedHttpPtr connection(httpConnect2(
+    ScopedHttpPtr connection = HttpConnect2(
         server, port, /*addrlist=*/nullptr, AF_UNSPEC, HTTP_ENCRYPTION_NEVER,
-        /*blocking*/ 0, kCupsTimeoutMs, /*cancel=*/nullptr));
+        /*blocking*/ 0, kCupsTimeoutMs, /*cancel=*/nullptr);
     if (!connection) {
       LOG(ERROR) << "Unable to create CUPS connection: "
                  << cupsLastErrorString();

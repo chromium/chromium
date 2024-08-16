@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
 <translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">ତିଆରି କରାଯାଇଥିବା ତାରିଖ</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ମିନିଟ</translation>
 <translation id="1310380015393971138">କୌଣସି <ph name="NETWORK_NAME" /> ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">ଆର୍ଟ ଗ୍ୟାଲେରୀ</translation>
 <translation id="1836553715834333258">ସିଷ୍ଟମର ରଙ୍ଗ</translation>
 <translation id="183675228220305365">ରିଆଲିଷ୍ଟ</translation>
-<translation id="1837537071599385610">ପ୍ରମ୍ପ୍ଟ କରିବାର ଗାଇଡ</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1840474674287087346">ଡେସ୍କଟପର ରଙ୍ଗ</translation>
 <translation id="184095011128924488">ସୃଜନାତ୍ମକ</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="2652403576514495859">ଡିକ୍ଟେସନକୁ ସକ୍ଷମ କିମ୍ବା ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
-<translation id="2653807227758181366">ଆପଣ ତିଆରି କରିବାକୁ ଚାହୁଁଥିବା ୱାଲପେପରର ବର୍ଣ୍ଣନା କରନ୍ତୁ କିମ୍ବା ଏକ ନମୁନା ପ୍ରମ୍ପ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2654647726140493436">ଅପଡେଟ ଚାଲୁଥିବା ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ କିମ୍ୱା <ph name="DEVICE_TYPE" /> ପାୱାର କେବୁଲକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2656001153562991489">Chromebook Plus ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ</translation>
 <translation id="2665671725390405060">ଉଚ୍ଚାରଣକୁ ଶୁଣନ୍ତୁ</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AI ଦ୍ୱାରା ପରିଚାଳିତ ବର୍ତ୍ତମାନର ବେକଗ୍ରାଉଣ୍ଡ</translation>
 <translation id="2783010256799387990">ପାସ୍ ହୋଇଛି</translation>
 <translation id="2786429550992142861">ଲିନେନ</translation>
+<translation id="2787237339470862294">ବର୍ତ୍ତମାନ ଏହି ଭାଷାକୁ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="2787435249130282949">କୀବୋର୍ଡକୁ ଆହୁରି ଉଜ୍ଜ୍ୱଳ କରନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="28232023175184696">ଇଣ୍ଟରନେଟ୍ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">ଡକ୍ୟୁମେଣ୍ଟ ଫିଡର୍ (ଦୁଇ-ପାର୍ଶ୍ୱ)</translation>
 <translation id="3201315366910775591">ସେୟାର କରାଯାଇଥିବା ଆଲବମ ଅନ୍ୟ ଲୋକମାନଙ୍କ ଦ୍ୱାରା ଅପଡେଟ କରାଯାଇପାରିବ</translation>
 <translation id="3211671540163313381">କୀମେପିଂ ଡି-ପେଡ</translation>
-<translation id="3224812403568276799">ଆପଣ ଏହାକୁ ଅନୁମତି ଦେଲେ, ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରିବା ପାଇଁ Recorder ଉନ୍ନତ ଅଡିଓ ବିଶ୍ଳେଷଣକୁ ବ୍ୟବହାର କରିବ ଏବଂ ପ୍ରତ୍ୟେକ ଭଏସକୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ।
-
-ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="3226405216343213872">ସ୍କାନରଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି</translation>
 <translation id="3226657629376379887">ଲେଆଉଟ ଆକ୍ସନ ମେନୁ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ଭେଲ୍ୟୁକୁ <ph name="CONVERSION_RATE" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
@@ -465,6 +462,7 @@
 <translation id="346423161771747987">କରେଣ୍ଟ</translation>
 <translation id="346539236881580388">ପୁଣି ଉଠାନ୍ତୁ</translation>
 <translation id="3484914941826596830">ଫାର୍ମୱେରକୁ ଅପଡେଟ କରାଯାଉଥିବା ସମୟରେ ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏହି ଅପଡେଟ ପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
+<translation id="3485555238092220889">ଆକ୍ସେସିବିଲିଟୀ ଆକ୍ସନ</translation>
 <translation id="3486220673238053218">ସଂଜ୍ଞା</translation>
 <translation id="3487866404496702283">ମାହି ଫିଚର ପାଇଁ ମତାମତ</translation>
 <translation id="3488065109653206955">ଆଶିଂକ ଭାବେ ସକ୍ରିୟ କରାଯାଇଛି</translation>
@@ -509,6 +507,7 @@
 <translation id="3708186454126126312">ପୂର୍ବରୁ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3715651196924935218">ଫ୍ଲୋଟରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="3716250181321371108">ନିୟନ୍ତ୍ରଣ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="3716830479327464973">ଆପଣ ଏହାକୁ ଅନୁମତି ଦେଲେ, Recorder ଏସବୁ ପାଇଁ ଆପଣଙ୍କ ଅଡିଓ ରେକର୍ଡିଂଗୁଡ଼ିକୁ ବିଶ୍ଳେଷଣ କରିବ:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
@@ -535,6 +534,7 @@
 <translation id="3869314628814282185">ଟ୍ୟୁଲ</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="3877066159641251281">ଅନୁବାଦକୁ ଶୁଣନ୍ତୁ</translation>
+<translation id="3880601782712134623">ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରି ପ୍ରତ୍ୟେକ ସ୍ପିକରଙ୍କୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ</translation>
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="3889914174935857450">ତାରିଖ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="3897092660631435901">ମେନୁ</translation>
@@ -638,6 +638,7 @@
 <translation id="4422041425070339732">ତଳ ଆଡ଼କୁ ତୀର</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ବନ୍ଦ ଅଛି</translation>
+<translation id="4428840632568803690">ସ୍ପିକର <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos ଟିକେଟ୍‍ର ମିଆଦ ଶୀଘ୍ର ଶେଷ ହୋଇଯିବ</translation>
 <translation id="4431821876790500265">ରିପୋର୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="4443192710976771874">ନାଲି</translation>
@@ -673,6 +674,7 @@
 <translation id="458794348635939462">ହୋଷ୍ଟ ସମ୍ବନ୍ଧିତ ସମସ୍ତ ସମସ୍ୟାର ସମାଧାନ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4593212453765072419">ପ୍ରକ୍ସି ପ୍ରାମାଣିକତା ଆବଶ୍ୟକ</translation>
 <translation id="4594021849294327751">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="4607282946861182308">ଏହାର ଇମେଜ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ। ଅନ୍ୟ ଏକ ପ୍ରମ୍ପ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4609350030397390689">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />ଟି ମଧ୍ୟରୁ <ph name="PRINTED_PAGE_NUMBER" /> ନମ୍ବର ପୃଷ୍ଠା। ପ୍ରିଣ୍ଟ କାର୍ଯ୍ୟ ବାତିଲ୍ କରିବାକୁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="463791356324567266">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି...</translation>
@@ -759,6 +761,7 @@
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
+<translation id="5078711626843651677">ସ୍ପିକର ଲେବଲିଂ ସମ୍ପୂର୍ଣ୍ଣ ନ ହେବା ପର୍ଯ୍ୟନ୍ତ ଭଏସ ମଡେଲଗୁଡ଼ିକୁ ଅସ୍ଥାୟୀ ଭାବରେ ଡିଭାଇସରେ ଷ୍ଟୋର କରାଯାଏ। ଆପଣ ଏହାକୁ ସେଟିଂସରେ ଯେ କୌଣସି ସମୟରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="5078983345702708852">ଫ୍ୟୁଚରିଷ୍ଟିକ</translation>
 <translation id="5087864757604726239">ପଛକୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
@@ -813,9 +816,11 @@
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="53196409393069519">ଟ୍ରାନ୍ସକ୍ରିପସନକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">ନାମ</translation>
 <translation id="5332948983412042822">ବର୍ତ୍ତମାନ ଏକ ନୂଆ ବାଛନ୍ତୁ</translation>
 <translation id="5333530671332546086">ଅଜଣା ପୋର୍ଟାଲ୍ ସ୍ଥିତି</translation>
 <translation id="5335373365677455232">ଗୋଲାପି</translation>
+<translation id="5344619683981067131">ପରାମର୍ଶ ସହିତ ଚୟନିତ ଟେକ୍ସଟକୁ ପରିବର୍ତ୍ତନ କରାଯାଉଛି</translation>
 <translation id="5346687412805619883">ସ୍ଥାନୀୟ ନେଟୱାର୍କ</translation>
 <translation id="5358174242040570474">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଏକ ୱାଲପେପର ବାଛିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା ଆପକୁ ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="5372659122375744710">ୱାଇଫାଇ ନେଟୱାର୍କ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
@@ -867,6 +872,7 @@
 <translation id="5662240986744577912">ଗୋପନୀୟତା ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ।</translation>
 <translation id="5669267381087807207">ସକ୍ରିୟ ହେଉଛି</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">ଆପଣ ତିଆରି କରିବାକୁ ଚାହୁଁଥିବା ୱାଲପେପରର ବର୍ଣ୍ଣନା କରନ୍ତୁ</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> ସହିତ ଏକ ଅବାସ୍ତବ <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">ଚେରି</translation>
 <translation id="5691511426247308406">ଫ୍ୟାମିଲି</translation>
@@ -974,7 +980,6 @@
 <translation id="6231648282154119906">ଆପଣ ବାଛିଥିବା ଉନ୍ନତ ସୁରକ୍ଷାର ଅଂଶ ଭାବରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଦ୍ୱାରା ସନ୍ଦେହଜନକ ଫାଇଲଗୁଡ଼ିକ ସ୍ୱତଃ ସ୍କାନ ହେବ</translation>
 <translation id="6232017090690406397">ବେଟେରୀ</translation>
 <translation id="6234024205316847054">ଆଉଟଲାଇନ ଦେଖାନ୍ତୁ</translation>
-<translation id="6235460611964961764">ଡାଟା ବ୍ୟବହାରକୁ ମାନୁଆଲୀ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="6250316632541035980">ବାକନ ଏବଂ ଅଣ୍ଡା</translation>
 <translation id="6265268291107409527"><ph name="KEYS" /> ହେଉଛି ଚୟନିତ କୀ। <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@
 <translation id="680983167891198932">କୀ</translation>
 <translation id="6816797338148849397">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ଉପଲବ୍ଧ ଅଛି। ଆକ୍ସେସ୍ କରିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="6853312040151791195">ଡିସଚାର୍ଜିଂ ରେଟ୍</translation>
+<translation id="6862416241246624313">ମତାମତ ଦାଖଲ କରାଯାଇଛି</translation>
 <translation id="6866732840889595464">ଡେଇଜି</translation>
 <translation id="6871256179359663621">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="6889786074662672253">ରିଷ୍ଟାର୍ଟ କରାଯାଉଥିବା ସମୟରେ, ଏହି ଏକ୍ସଟର୍ନଲ ଡିଭାଇସକୁ ଅନପ୍ଲଗ କରନ୍ତୁ ନାହିଁ କିମ୍ବା ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ବନ୍ଦ କରନ୍ତୁ ନାହିଁ। ଆପଣ ଏହି ୱିଣ୍ଡୋକୁ ଛୋଟ କରିପାରିବେ। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ ଏବଂ ଏହି ସମୟରେ ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ ଡିଭାଇସ କାମ କରିନପାରେ।</translation>
@@ -1108,7 +1114,9 @@
 <translation id="6905163627763043954">ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" />କୁ ଫେରନ୍ତୁ</translation>
 <translation id="6910312834584889076">ସ୍କାନରର କଭର୍ ଖୋଲା ଅଛି। କଭର୍ ବନ୍ଦ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="6910845598686542904">ରେକର୍ଡିଂରେ ଚିହ୍ନଟ କରାଯାଇଥିବା ଭଏସର ମଡେଲଗୁଡ଼ିକୁ ଗଣନା କରିବା</translation>
 <translation id="6911383237894364323">ମିଡିଆ ସର୍ଭରଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ଅସମର୍ଥ</translation>
+<translation id="6930242544192836755">ଅବଧି</translation>
 <translation id="6930597342185648547">ବେକଗ୍ରାଉଣ୍ଡ ବିଷୟରେ</translation>
 <translation id="6939667434404433010">ରେକର୍ଡିଂର ନାମ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6939766318048400022">କାଫେ</translation>
@@ -1291,6 +1299,7 @@
 <translation id="7802764839223122985">କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>
 <translation id="7805768142964895445">ସ୍ଥିତି</translation>
+<translation id="7811024689617730980">1ରୁ 31 ପର୍ଯ୍ୟନ୍ତ ରେଞ୍ଜରେ ଏକ ସ୍ୱତଃ ରିସେଟ ଦିନ ଚୟନ କରନ୍ତୁ, ଯେଉଁଥିରେ ଅନ୍ତର୍ଭୁକ୍ତ</translation>
 <translation id="7813073042185856802">ପର୍ବତ</translation>
 <translation id="7819857487979277519">PSK (WPA or RSN)</translation>
 <translation id="7824219488248240180">ପୋଷ୍ଟ-ଇମ୍ପ୍ରେସନିଷ୍ଟ</translation>
@@ -1329,6 +1338,7 @@
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
 <translation id="8017679124341497925">ସର୍ଟକଟ୍ ଏଡିଟ୍ କରାଯାଇଛି</translation>
 <translation id="802154636333426148">ଡାଉନ୍‌ଲୋଡ୍ ବିଫଳ ହୋଇଛି</translation>
+<translation id="8028993641010258682">ଆକାର</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ଅଟୋ କଲର ମୋଡକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8041089156583427627">ମତାମତ ପଠାନ୍ତୁ</translation>
@@ -1365,6 +1375,7 @@
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
+<translation id="8227488649450500937">ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟିଂ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ଦେଖନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8238771987802558562">ଏକ APN ବାଛନ୍ତୁ</translation>
 <translation id="8246209727385807362">ଅଜଣା ବାହକ</translation>
@@ -1570,6 +1581,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> ପାଇଁ କୀ ଉପଲବ୍ଧ ନାହିଁ। <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ସମ୍ପୂର୍ଣ୍ଣ ରେକର୍ଡିଂରେ ଭଏସଗୁଡ଼ିକୁ ତୁଳନା କରିବା ଯାହା ଫଳରେ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ପ୍ରତ୍ୟେକ ସ୍ପିକର କଣ ଏବଂ କେତେବେଳେ କହିଲେ ତାହା ପ୍ରତିଫଳିତ କରେ</translation>
 <translation id="952992212772159698">ସକ୍ରିୟ ହୋ‍ଇନାହିଁ</translation>
 <translation id="95718197892796296">କାଦୁଅ</translation>
 <translation id="960719561871045870">ଅପରେଟର୍ କୋଡ୍</translation>

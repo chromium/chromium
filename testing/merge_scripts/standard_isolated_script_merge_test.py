@@ -8,13 +8,9 @@ import os
 import shutil
 import tempfile
 import unittest
-
-import mock
+from unittest import mock
 
 import common_merge_script_tests
-
-THIS_DIR = os.path.dirname(__file__)
-
 import standard_isolated_script_merge
 
 TWO_COMPLETED_SHARDS = {
@@ -82,8 +78,8 @@ class OutputTest(StandardIsolatedScriptMergeTest):
 
     with open(output_json_file, 'r') as f:
       results = json.load(f)
-      self.assertEquals(results['successes'], ['fizz', 'baz', 'buzz', 'bar'])
-      self.assertEquals(results['failures'], ['failing_test_one'])
+      self.assertEqual(results['successes'], ['fizz', 'baz', 'buzz', 'bar'])
+      self.assertEqual(results['failures'], ['failing_test_one'])
       self.assertTrue(results['valid'])
 
   def test_missing_shard(self):
@@ -98,11 +94,11 @@ class OutputTest(StandardIsolatedScriptMergeTest):
 
     with open(output_json_file, 'r') as f:
       results = json.load(f)
-      self.assertEquals(results['successes'], ['fizz', 'baz'])
-      self.assertEquals(results['failures'], [])
+      self.assertEqual(results['successes'], ['fizz', 'baz'])
+      self.assertEqual(results['failures'], [])
       self.assertTrue(results['valid'])
-      self.assertEquals(results['global_tags'], ['UNRELIABLE_RESULTS'])
-      self.assertEquals(results['missing_shards'], [1])
+      self.assertEqual(results['global_tags'], ['UNRELIABLE_RESULTS'])
+      self.assertEqual(results['missing_shards'], [1])
 
 
 class InputParsingTest(StandardIsolatedScriptMergeTest):
@@ -146,8 +142,8 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
     exit_code = standard_isolated_script_merge.StandardIsolatedScriptMerge(
         output_json_file, self.summary, self.test_files)
 
-    self.assertEquals(0, exit_code)
-    self.assertEquals([
+    self.assertEqual(0, exit_code)
+    self.assertEqual([
         [{
             'result0': [
                 'bar',
@@ -170,8 +166,8 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
     exit_code = standard_isolated_script_merge.StandardIsolatedScriptMerge(
         output_json_file, self.summary, json_files)
 
-    self.assertEquals(0, exit_code)
-    self.assertEquals([[]], self.merge_test_results_args)
+    self.assertEqual(0, exit_code)
+    self.assertEqual([[]], self.merge_test_results_args)
 
 
 class CommandLineTest(common_merge_script_tests.CommandLineTest):

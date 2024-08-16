@@ -26,7 +26,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/test/fake_sync_change_processor.h"

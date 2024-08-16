@@ -390,11 +390,6 @@ void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
   g_iph_min_delay_after_creation = delay;
 }
 
-// static
-void AvatarToolbarButton::SetTextDurationForTesting(base::TimeDelta duration) {
-  AvatarToolbarButtonDelegate::SetTextDurationForTesting(duration);
-}
-
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   if (button_action_disabled_) {
     return;
@@ -467,25 +462,6 @@ void AvatarToolbarButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void AvatarToolbarButton::NotifyShowNameClearedForTesting() const {
-  for (auto& observer : observer_list_) {
-    observer.OnShowNameClearedForTesting();  // IN-TEST
-  }
-}
-
-void AvatarToolbarButton::NotifyManagementTransientTextClearedForTesting()
-    const {
-  for (auto& observer : observer_list_) {
-    observer.OnShowManagementTransientTextClearedForTesting();  // IN-TEST
-  }
-}
-
-void AvatarToolbarButton::NotifyShowSigninPausedDelayEnded() const {
-  for (auto& observer : observer_list_) {
-    observer.OnShowSigninPausedDelayEnded();  // IN-TEST
-  }
-}
-
 void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
   int icon_size = GetIconSize();
   // This ensures that the bounds get are mirror adapted, and will only return
@@ -508,6 +484,25 @@ void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
   }
 
   delegate_->PaintIcon(canvas, avatar_image_bounds);
+}
+
+// static
+base::AutoReset<std::optional<base::TimeDelta>>
+AvatarToolbarButton::CreateScopedInfiniteDelayOverrideForTesting(
+    AvatarDelayType delay_type) {
+  return AvatarToolbarButtonDelegate::
+      CreateScopedInfiniteDelayOverrideForTesting(delay_type);
+}
+
+void AvatarToolbarButton::TriggerTimeoutForTesting(AvatarDelayType delay_type) {
+  delegate_->TriggerTimeoutForTesting(delay_type);  // IN-TEST
+}
+
+// static
+base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
+    CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
+  return AvatarToolbarButtonDelegate::
+      CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 }
 
 BEGIN_METADATA(AvatarToolbarButton)

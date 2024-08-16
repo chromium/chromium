@@ -57,6 +57,7 @@
 #include "components/autofill/core/browser/mock_autofill_compose_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -353,7 +354,7 @@ Suggestion GetCardSuggestion(const std::string& network,
     last_four = "0005";
     expiration_date = "04/10";
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return GenerateSuggestionFromCardDetails(network, icon, last_four,
                                            expiration_date, nickname, type);
@@ -555,6 +556,10 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
+  MOCK_METHOD(AutofillPredictionImprovementsDelegate*,
+              GetAutofillPredictionImprovementsDelegate,
+              (),
+              (override));
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -7277,6 +7282,41 @@ TEST_F(BrowserAutofillManagerTest, ComposeSuggestionsAreQueriedForTextareas) {
           Suggestion(u"Help me write", SuggestionType::kComposeResumeNudge)));
   GetAutofillSuggestions(form, form.fields()[0]);
   external_delegate()->CheckSuggestionCount(form.fields()[0].global_id(), 1);
+}
+
+// Tests that suggestions requested with
+// `AutofillSuggestionTriggerSource::kPredictionImprovements` will be filled
+// automatically (via `FormFiller::FillOrPreviewFields()`).
+TEST_F(BrowserAutofillManagerTest, FillFormWithPredictionImprovements) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  MockAutofillPredictionImprovementsDelegate delegate;
+  ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
+      .WillByDefault(Return(&delegate));
+  AutofillPredictionImprovementsDelegate::FillPredictionsCallback fill_callback;
+  EXPECT_CALL(delegate, ExtractImprovedPredictionsForFormFields)
+      .WillOnce(
+          [&](const FormData& form,
+              AutofillPredictionImprovementsDelegate::FillPredictionsCallback
+                  callback) { fill_callback = std::move(callback); });
+
+  GetAutofillSuggestions(
+      form, form.fields().front(),
+      AutofillSuggestionTriggerSource::kPredictionImprovements);
+
+  FormFieldData* field = form.FindFieldByNameForTest(u"firstname");
+  ASSERT_TRUE(field);
+  field->set_value(u"John");
+
+  EXPECT_CALL(*autofill_driver_,
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               field->global_id(), field->value()));
+  fill_callback.Run(autofill::mojom::ActionPersistence::kFill,
+                    autofill::mojom::FieldActionType::kReplaceAll, form, *field,
+                    field->value(),
+                    autofill::SuggestionType::kAutocompleteEntry, std::nullopt);
 }
 
 // Test param indicates if there is an active screen reader.

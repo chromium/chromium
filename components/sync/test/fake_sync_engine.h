@@ -60,7 +60,7 @@ class FakeSyncEngine final : public SyncEngine {
 
   bool IsInitialized() const override;
 
-  void TriggerRefresh(const ModelTypeSet& types) override;
+  void TriggerRefresh(const DataTypeSet& types) override;
 
   void UpdateCredentials(const SyncCredentials& credentials) override;
 
@@ -94,19 +94,19 @@ class FakeSyncEngine final : public SyncEngine {
 
   void ConfigureDataTypes(ConfigureParams params) override;
 
-  void ConnectDataType(ModelType type,
+  void ConnectDataType(DataType type,
                        std::unique_ptr<DataTypeActivationResponse>) override;
-  void DisconnectDataType(ModelType type) override;
+  void DisconnectDataType(DataType type) override;
 
   const SyncStatus& GetDetailedStatus() const override;
 
   void GetTypesWithUnsyncedData(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
 
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
   void GetThrottledDataTypesForTest(
-      base::OnceCallback<void(ModelTypeSet)> cb) const override;
+      base::OnceCallback<void(DataTypeSet)> cb) const override;
 
   void RequestBufferedProtocolEventsAndEnableForwarding() override;
   void DisableProtocolEventForwarding() override;

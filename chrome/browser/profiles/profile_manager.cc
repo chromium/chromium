@@ -89,6 +89,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
+#include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -1208,20 +1209,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
     profile->GetPrefs()->SetString(prefs::kProfileName, profile_name);
   }
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool force_supervised_user_id =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      !ash::IsSigninBrowserContext(profile) &&
-      !ash::IsLockScreenAppBrowserContext(profile) &&
-#endif
-      command_line->HasSwitch(switches::kSupervisedUserId);
-
-  if (force_supervised_user_id) {
-    supervised_user_id =
-        command_line->GetSwitchValueASCII(switches::kSupervisedUserId);
-  }
-  if (force_supervised_user_id ||
-      !profile->GetPrefs()->HasPrefPath(prefs::kSupervisedUserId)) {
+  if (!profile->GetPrefs()->HasPrefPath(prefs::kSupervisedUserId)) {
     profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                    supervised_user_id);
   }
@@ -2095,6 +2083,55 @@ void ProfileManager::SaveActiveProfiles() {
   }
 }
 
+void ProfileManager::SetProfileAsLastUsed(Profile* last_active) {
+#if !BUILDFLAG(IS_ANDROID)
+  // The profile may incorrectly become "active" during its destruction, caused
+  // by the UI teardown. See https://crbug.com/1073451
+  if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath())) {
+    return;
+  }
+#endif
+
+  // If there is a primary account, mark it as used "just now".
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(last_active);
+  signin::ActivePrimaryAccountsMetricsRecorder*
+      active_primary_accounts_metrics_recorder =
+          g_browser_process->active_primary_accounts_metrics_recorder();
+  // IdentityManager is null for incognito profiles.
+  if (active_primary_accounts_metrics_recorder && identity_manager &&
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    CoreAccountInfo account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    active_primary_accounts_metrics_recorder->MarkAccountAsActiveNow(
+        account_info.gaia);
+  }
+
+  // Don't remember ephemeral profiles as last because they are not going to
+  // persist after restart.
+  if (IsRegisteredAsEphemeral(&GetProfileAttributesStorage(),
+                              last_active->GetPath())) {
+    return;
+  }
+
+  // Only keep track of profiles that we are managing; tests may create others.
+  // Also never consider the SystemProfile as "active".
+  if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
+      !last_active->IsSystemProfile()) {
+    base::FilePath profile_path_base = last_active->GetBaseName();
+    if (profile_path_base != GetLastUsedProfileBaseName()) {
+      profiles::SetLastUsedProfile(profile_path_base);
+    }
+
+    ProfileAttributesEntry* entry =
+        GetProfileAttributesStorage().GetProfileAttributesWithPath(
+            last_active->GetPath());
+    if (entry) {
+      entry->SetActiveTimeToNow();
+    }
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void ProfileManager::OnBrowserOpened(Browser* browser) {
   DCHECK(browser);
@@ -2166,31 +2203,6 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   }
 }
 
-void ProfileManager::UpdateLastUser(Profile* last_active) {
-  // The profile may incorrectly become "active" during its destruction, caused
-  // by the UI teardown. See https://crbug.com/1073451
-  if (IsProfileDirectoryMarkedForDeletion(last_active->GetPath()))
-    return;
-
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  // Only keep track of profiles that we are managing; tests may create others.
-  // Also never consider the SystemProfile as "active".
-  if (profiles_info_.find(last_active->GetPath()) != profiles_info_.end() &&
-      !last_active->IsSystemProfile()) {
-    base::FilePath profile_path_base = last_active->GetBaseName();
-    if (profile_path_base != GetLastUsedProfileBaseName())
-      profiles::SetLastUsedProfile(profile_path_base);
-
-    ProfileAttributesEntry* entry =
-        GetProfileAttributesStorage().GetProfileAttributesWithPath(
-            last_active->GetPath());
-    if (entry) {
-      entry->SetActiveTimeToNow();
-    }
-  }
-}
-
 ProfileManager::BrowserListObserver::BrowserListObserver(
     ProfileManager* manager)
     : profile_manager_(manager) {
@@ -2215,18 +2227,11 @@ void ProfileManager::BrowserListObserver::OnBrowserSetLastActive(
   // shutting down), this event will be fired after each browser is
   // closed. This does not represent a user intention to change the active
   // browser so is not handled here.
-  if (profile_manager_->closing_all_browsers_)
+  if (profile_manager_->closing_all_browsers_) {
     return;
+  }
 
-  Profile* last_active = browser->profile();
-
-  // Don't remember ephemeral profiles as last because they are not going to
-  // persist after restart.
-  if (IsRegisteredAsEphemeral(&profile_manager_->GetProfileAttributesStorage(),
-                              last_active->GetPath()))
-    return;
-
-  profile_manager_->UpdateLastUser(last_active);
+  profile_manager_->SetProfileAsLastUsed(browser->profile());
 }
 
 void ProfileManager::OnClosingAllBrowsersChanged(bool closing) {

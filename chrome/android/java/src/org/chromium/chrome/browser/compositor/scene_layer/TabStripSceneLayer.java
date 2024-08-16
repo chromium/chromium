@@ -148,8 +148,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         topPaddingPx);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
-        CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
-        boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
         boolean newTabButtonVisible = newTabButton.isVisible();
         TabStripSceneLayerJni.get()
                 .updateNewTabButton(
@@ -167,21 +165,26 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         newTabButton.getBackgroundTint(),
                         newTabButton.getOpacity(),
                         resourceManager);
-        TabStripSceneLayerJni.get()
-                .updateModelSelectorButton(
-                        mNativePtr,
-                        TabStripSceneLayer.this,
-                        modelSelectorButton.getResourceId(),
-                        ((TintedCompositorButton) modelSelectorButton).getBackgroundResourceId(),
-                        modelSelectorButton.getDrawX() * mDpToPx,
-                        modelSelectorButton.getDrawY() * mDpToPx,
-                        modelSelectorButtonVisible,
-                        ((TintedCompositorButton) modelSelectorButton)
-                                .getShouldApplyHoverBackground(),
-                        ((TintedCompositorButton) modelSelectorButton).getTint(),
-                        ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
-                        modelSelectorButton.getOpacity(),
-                        resourceManager);
+
+        CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
+        if (modelSelectorButton != null) {
+            boolean modelSelectorButtonVisible = modelSelectorButton.isVisible();
+            TabStripSceneLayerJni.get()
+                    .updateModelSelectorButton(
+                            mNativePtr,
+                            TabStripSceneLayer.this,
+                            modelSelectorButton.getResourceId(),
+                            ((TintedCompositorButton) modelSelectorButton)
+                                    .getBackgroundResourceId(),
+                            modelSelectorButton.getDrawX() * mDpToPx,
+                            modelSelectorButton.getDrawY() * mDpToPx,
+                            modelSelectorButtonVisible,
+                            modelSelectorButton.getShouldApplyHoverBackground(),
+                            ((TintedCompositorButton) modelSelectorButton).getTint(),
+                            ((TintedCompositorButton) modelSelectorButton).getBackgroundTint(),
+                            modelSelectorButton.getOpacity(),
+                            resourceManager);
+        }
 
         TabStripSceneLayerJni.get()
                 .updateTabStripLeftFade(
@@ -217,8 +220,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         //  unused.
         for (int i = 0; i < tabsCount; i++) {
             final StripLayoutTab st = stripTabs[i];
-            boolean isSelected = st.getId() == selectedTabId;
-            boolean isHovered = st.getId() == hoveredTabId;
+            boolean isSelected = st.getTabId() == selectedTabId;
+            boolean isHovered = st.getTabId() == hoveredTabId;
             boolean shouldShowOutline = layoutHelper.shouldShowTabOutline(st);
 
             // TODO(b/326301060): Update tab outline placeholder color with color picker.
@@ -226,7 +229,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     .putStripTabLayer(
                             mNativePtr,
                             TabStripSceneLayer.this,
-                            st.getId(),
+                            st.getTabId(),
                             st.getCloseButton().getResourceId(),
                             st.getCloseButton().getBackgroundResourceId(),
                             st.getDividerResourceId(),
@@ -236,7 +239,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.getCloseButton().getBackgroundTint(),
                             st.getDividerTint(),
                             st.getTint(isSelected, isHovered),
-                            layoutHelper.getSelectedOutlineGroupTint(st.getId(), shouldShowOutline),
+                            layoutHelper.getSelectedOutlineGroupTint(
+                                    st.getTabId(), shouldShowOutline),
                             isSelected,
                             shouldShowOutline,
                             st.getClosePressed(),
@@ -255,7 +259,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             st.isEndDividerVisible(),
                             st.isLoading(),
                             st.getLoadingSpinnerRotation(),
-                            st.getBrightness(),
                             st.getContainerOpacity(),
                             layerTitleCache,
                             resourceManager);
@@ -396,7 +399,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 boolean isEndDividerVisible,
                 boolean isLoading,
                 float spinnerRotation,
-                float brightness,
                 float opacity,
                 LayerTitleCache layerTitleCache,
                 ResourceManager resourceManager);

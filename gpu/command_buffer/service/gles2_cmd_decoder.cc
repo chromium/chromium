@@ -3349,11 +3349,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
         std::min(caps.max_texture_size,
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
-  if (feature_info_->IsWebGL2OrES3Context()) {
-    // TODO(zmo): once we switch to MANGLE, we should query version numbers.
-    caps.major_version = 3;
-    caps.minor_version = 0;
-  }
 
   caps.egl_image_external =
       feature_info_->feature_flags().oes_egl_image_external;
@@ -3434,6 +3429,18 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
     shader_precision->max_range = range[1];
     shader_precision->precision = precision;
   });
+
+  if (feature_info_->IsWebGL2OrES3Context()) {
+    // TODO(zmo): once we switch to MANGLE, we should query version numbers.
+    caps.major_version = 3;
+    caps.minor_version = 0;
+  }
+  DoGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps.max_texture_size, 1);
+  if (workarounds().webgl_or_caps_max_texture_size) {
+    caps.max_texture_size =
+        std::min(caps.max_texture_size,
+                 feature_info_->workarounds().webgl_or_caps_max_texture_size);
+  }
 
   DoGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps.max_combined_texture_image_units, 1);
@@ -3527,6 +3534,8 @@ GLCapabilities GLES2DecoderImpl::GetGLCapabilities() {
   caps.occlusion_query_boolean =
       feature_info_->feature_flags().occlusion_query_boolean;
   caps.timer_queries = query_manager_->GPUTimingAvailable();
+
+  caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
 
   return caps;
 }

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -27,6 +28,7 @@ class RetryView : public views::FlexLayoutView {
   void SetFirstLineText(const std::u16string& first_line_text);
   std::u16string GetFirstLineText() const;
   void SetRetryButtonCallback(RetryButtonCallback retry_button_callback);
+  void SetDesign(Design design);
 
   views::LabelButton* retry_label_button() const { return retry_label_button_; }
 
@@ -34,6 +36,7 @@ class RetryView : public views::FlexLayoutView {
   void OnRetryButtonPressed();
 
   raw_ptr<views::Label> first_line_label_ = nullptr;
+  raw_ptr<views::Label> second_line_label_ = nullptr;
   raw_ptr<views::LabelButton> retry_label_button_ = nullptr;
   RetryButtonCallback retry_button_callback_;
 };
@@ -41,6 +44,7 @@ class RetryView : public views::FlexLayoutView {
 BEGIN_VIEW_BUILDER(/* no export */, RetryView, views::FlexLayoutView)
 VIEW_BUILDER_PROPERTY(const std::u16string&, FirstLineText)
 VIEW_BUILDER_PROPERTY(RetryView::RetryButtonCallback, RetryButtonCallback)
+VIEW_BUILDER_PROPERTY(Design, Design)
 END_VIEW_BUILDER
 
 }  // namespace quick_answers

@@ -1,7 +1,6 @@
 include_rules = [
-  '+vp8',
+  '+testing/gtest/include/gtest',
   '+vp9',
   '+vpx',
   '+vpx_dsp',
-  '+vpx_ports',
 ]

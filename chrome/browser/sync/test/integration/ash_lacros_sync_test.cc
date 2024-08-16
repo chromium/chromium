@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
@@ -21,11 +23,14 @@ class LacrosOnlyAshSyncTest : public SyncTest {
   LacrosOnlyAshSyncTest() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
                                    {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   ~LacrosOnlyAshSyncTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
@@ -50,10 +55,10 @@ IN_PROC_BROWSER_TEST_F(LacrosOnlyAshSyncTest, AshSyncsOnlyOSTypes) {
       << syncer::UserSelectableOsTypeSetToString(
              user_settings->GetRegisteredSelectableOsTypes());
 
-  // Only OS ModelTypes should be active
+  // Only OS DataTypes should be active
   EXPECT_EQ(
       sync_service->GetActiveDataTypes(),
-      syncer::ModelTypeSet(
+      syncer::DataTypeSet(
           {syncer::DEVICE_INFO, syncer::APP_LIST, syncer::ARC_PACKAGE,
            syncer::PRINTERS, syncer::USER_CONSENTS, syncer::WIFI_CONFIGURATIONS,
            syncer::OS_PREFERENCES, syncer::OS_PRIORITY_PREFERENCES,

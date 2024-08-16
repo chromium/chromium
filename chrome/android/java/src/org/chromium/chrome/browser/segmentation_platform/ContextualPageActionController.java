@@ -117,14 +117,10 @@ public class ContextualPageActionController {
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {
         mActionProviders.clear();
-        if (AdaptiveToolbarFeatures.isPriceTrackingPageActionEnabled()) {
-            mActionProviders.add(
-                    new PriceTrackingActionProvider(
-                            shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
-        }
-        if (AdaptiveToolbarFeatures.isReaderModePageActionEnabled()) {
-            mActionProviders.add(new ReaderModeActionProvider());
-        }
+        mActionProviders.add(
+                new PriceTrackingActionProvider(
+                        shoppingServiceSupplier, bookmarkModelSupplier, mProfileSupplier));
+        mActionProviders.add(new ReaderModeActionProvider());
         if (AdaptiveToolbarFeatures.isPriceInsightsPageActionEnabled()) {
             mActionProviders.add(new PriceInsightsActionProvider(shoppingServiceSupplier));
         }
@@ -187,7 +183,6 @@ public class ContextualPageActionController {
                                             && mTabSupplier.get().getId() == tab.getId();
                             if (!isSameTab) return;
 
-                            if (!AdaptiveToolbarFeatures.isContextualPageActionUiEnabled()) return;
                             showDynamicAction(result);
                         });
     }

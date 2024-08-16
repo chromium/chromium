@@ -29,6 +29,7 @@ class PaintTestConfigurations
       private ScopedPaintUnderInvalidationCheckingForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedHitTestOpaquenessForTest,
+      private ScopedFastNonCompositedScrollHitTestForTest,
       private ScopedElementCaptureForTest,
       private ScopedRasterInducingScrollForTest {
  public:
@@ -38,6 +39,8 @@ class PaintTestConfigurations
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedHitTestOpaquenessForTest(GetParam() & kHitTestOpaqueness),
+        ScopedFastNonCompositedScrollHitTestForTest(GetParam() &
+                                                    kHitTestOpaqueness),
         ScopedElementCaptureForTest(GetParam() & kElementCapture),
         ScopedRasterInducingScrollForTest(GetParam() & kRasterInducingScroll) {
     std::vector<base::test::FeatureRef> enabled_features = {};
@@ -66,7 +69,7 @@ class PaintTestConfigurations
 
 #define PAINT_TEST_SUITE_P_VALUES                                          \
   0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness, \
-      kRasterInducingScroll
+      kRasterInducingScroll | kHitTestOpaqueness
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \

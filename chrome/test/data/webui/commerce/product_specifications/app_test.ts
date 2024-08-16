@@ -47,7 +47,7 @@ function createSpecsProduct(overrides?: Partial<ProductSpecificationsProduct>):
         productUrl: {url: ''},
         imageUrl: {url: ''},
         productDimensionValues: new Map<bigint, string[]>(),
-        summary: '',
+        summary: [],
       },
       overrides);
 }
@@ -145,9 +145,13 @@ suite('AppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({priceRowTitle: 'price'});
+    loadTimeData.overrideValues(
+        {priceRowTitle: 'price', productSummaryRowTitle: 'summary'});
     shoppingServiceApi.reset();
     shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
+    shoppingServiceApi.setResultFor(
+        'maybeShowProductSpecificationDisclosure',
+        Promise.resolve({show: false}));
     BrowserProxyImpl.setInstance(shoppingServiceApi);
     router.reset();
     Router.setInstance(router);
@@ -279,7 +283,7 @@ suite('AppTest', () => {
       }],
       specificationDescriptions: [
         {
-          label: '',
+          label: 'label',
           altText: '',
           options: [
             {
@@ -315,6 +319,10 @@ suite('AppTest', () => {
       productClusterId: BigInt(123),
       title: 'qux',
       productDimensionValues: dimensionValuesMap,
+      summary: [{
+        text: 'product summary',
+        urls: [],
+      }],
     });
     const info1 = createInfo({
       clusterId: BigInt(123),
@@ -352,10 +360,22 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '$100', summary: []},
+              {title: 'price', text: '$100', description: [], summary: []},
+              {
+                title: 'summary',
+                text: null,
+                description: [],
+                summary: [{
+                  text: 'product summary',
+                  urls: [],
+                }],
+              },
               {
                 title: detailTitle,
-                description: 'bar, baz',
+                text: null,
+                description: [
+                  {label: 'label', description: 'bar, baz'},
+                ],
                 summary: [{
                   text: 'summary',
                   urls: [{
@@ -380,8 +400,9 @@ suite('AppTest', () => {
             // `productDetails` should have empty strings for `description` and
             // summary`.
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: detailTitle, description: '', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {title: detailTitle, text: null, description: [], summary: []},
             ],
           },
         ],
@@ -450,8 +471,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: detailTitle, description: 'bar', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {
+                title: detailTitle,
+                text: null,
+                description: [{label: '', description: 'bar'}],
+                summary: [],
+              },
             ],
           },
         ],
@@ -565,8 +592,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: detailTitle, description: 'desc 1', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {
+                title: detailTitle,
+                text: null,
+                description: [{label: '', description: 'desc 1'}],
+                summary: [],
+              },
             ],
           },
           {
@@ -576,8 +609,14 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: detailTitle, description: 'desc 2', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {
+                title: detailTitle,
+                text: null,
+                description: [{label: '', description: 'desc 2'}],
+                summary: [],
+              },
             ],
           },
         ],
@@ -719,8 +758,14 @@ suite('AppTest', () => {
               imageUrl: info2.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: rowTitle, description: 'desc 2', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {
+                title: rowTitle,
+                text: null,
+                description: [{label: '', description: 'desc 2'}],
+                summary: [],
+              },
             ],
           },
           {
@@ -730,8 +775,14 @@ suite('AppTest', () => {
               imageUrl: info1.imageUrl.url,
             },
             productDetails: [
-              {title: 'price', description: '', summary: []},
-              {title: rowTitle, description: 'desc 1', summary: []},
+              {title: 'price', text: null, description: [], summary: []},
+              {title: 'summary', text: null, description: [], summary: []},
+              {
+                title: rowTitle,
+                text: null,
+                description: [{label: '', description: 'desc 1'}],
+                summary: [],
+              },
             ],
           },
         ],
@@ -878,6 +929,45 @@ suite('AppTest', () => {
     assertArrayEquals([{url: 'https://example.com/'}], args[1]);
   });
 
+  test('creating new set triggers disclosure', async () => {
+    const productTabs = [{
+      title: 'title',
+      url: stringToMojoUrl('https://example.com/'),
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForProductTabs', Promise.resolve({urlInfos: productTabs}));
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForRecentlyViewedTabs', Promise.resolve({urlInfos: []}));
+    // Mock that disclosure dialog should be shown.
+    shoppingServiceApi.setResultFor(
+        'maybeShowProductSpecificationDisclosure',
+        Promise.resolve({disclosureShown: true}));
+    createAppElement();
+
+    // Click on the "add column" button and select the first (only) item.
+    const newColSelector = appElement.$.newColumnSelector;
+    newColSelector.$.button.click();
+    await waitAfterNextRender(appElement);
+    const menu = newColSelector.$.productSelectionMenu;
+    const crActionMenu = menu.$.menu.get();
+    assertTrue(crActionMenu.open);
+    const dropdownItem =
+        crActionMenu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!dropdownItem);
+    dropdownItem.click();
+    await waitAfterNextRender(appElement);
+
+    await shoppingServiceApi.whenCalled(
+        'maybeShowProductSpecificationDisclosure');
+    const showArgs =
+        shoppingServiceApi.getArgs('maybeShowProductSpecificationDisclosure');
+    assertEquals('https://example.com/', showArgs[0][0][0].url);
+    // Product spec set title will be empty by default.
+    assertEquals('', showArgs[0][1]);
+    assertEquals(
+        0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+  });
+
   test('add url for existing set', async () => {
     const dimensionValues = {
       summary: [],
@@ -944,6 +1034,11 @@ suite('AppTest', () => {
     assertArrayEquals(
         [{url: 'https://example.com/'}, {url: 'https://example.com/2'}],
         args[1]);
+    // We should not try to show the disclosure when there is an existing set.
+    assertEquals(
+        0,
+        shoppingServiceApi.getCallCount(
+            'maybeShowProductSpecificationDisclosure'));
   });
 
   test('name change updates page title', async () => {
@@ -1336,43 +1431,35 @@ suite('AppTest', () => {
       assertTrue(appElement.$.offlineToast.open);
     });
 
-    // TODO(b/330345730): Add expected API calls for #addToNewGroup and #seeAll.
-    ([
-      ['#addToNewGroup', null],
-      ['#delete', 'deleteProductSpecificationsSet'],
-      ['#seeAll', null],
-    ] as Array<[string, keyof BrowserProxyImpl | null]>)
-        .forEach(([menuItem, expectedApiCall]) => {
-          test(
-              `shows offline toast instead of making api call when ${
-                  menuItem} is clicked`,
-              async () => {
-                // Arrange.
-                const promiseValues = createAppPromiseValues({
-                  urlsParam: ['https://example.com/'],
-                  specsSet: createSpecsSet(),
-                });
-                await createAppElementWithPromiseValues(promiseValues);
-                windowProxy.setResultFor('onLine', false);
-                assertFalse(appElement.$.offlineToast.open);
+    test(
+        `shows offline toast instead of making api call when
+                  #delete is clicked`,
+        async () => {
+          // Arrange.
+          const promiseValues = createAppPromiseValues({
+            urlsParam: ['https://example.com/'],
+            specsSet: createSpecsSet(),
+          });
+          await createAppElementWithPromiseValues(promiseValues);
+          windowProxy.setResultFor('onLine', false);
+          assertFalse(appElement.$.offlineToast.open);
 
-                // Act.
-                const header = appElement.$.header;
-                header.$.menuButton.click();
-                const menu = header.$.menu.$.menu;
-                const menuItemButton =
-                    menu.get().querySelector<HTMLElement>(menuItem);
-                assertTrue(!!menuItemButton);
-                menuItemButton.click();
-                await flushTasks();
+          // Act.
+          const header = appElement.$.header;
+          header.$.menuButton.click();
+          const menu = header.$.menu.$.menu;
+          const menuItemButton =
+              menu.get().querySelector<HTMLElement>('#delete');
+          assertTrue(!!menuItemButton);
+          menuItemButton.click();
+          await flushTasks();
 
-                // Assert.
-                assertTrue(appElement.$.offlineToast.open);
-                if (expectedApiCall) {
-                  assertEquals(
-                      0, shoppingServiceApi.getCallCount(expectedApiCall));
-                }
-              });
+          // Assert.
+          assertTrue(appElement.$.offlineToast.open);
+          assertEquals(
+              0,
+              shoppingServiceApi.getCallCount(
+                  'deleteProductSpecificationsSet'));
         });
 
     test(

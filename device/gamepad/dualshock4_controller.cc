@@ -127,7 +127,7 @@ uint32_t ComputeDualshock4Checksum(base::span<const uint8_t> report_data) {
   // The Bluetooth report checksum includes a constant header byte not contained
   // in the report data.
   constexpr uint8_t bt_header = 0xa2;
-  uint32_t crc = base::Crc32(0xffffffff, base::make_span(&bt_header, 1u));
+  uint32_t crc = base::Crc32(0xffffffff, base::span_from_ref(bt_header));
   // Extend the checksum with the contents of the report.
   return ~base::Crc32(crc, report_data);
 }

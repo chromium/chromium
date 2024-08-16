@@ -96,7 +96,6 @@ static_library("test_support") {
   public_deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/test:test_support",
     "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
@@ -108,6 +107,7 @@ static_library("test_support") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
     "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash",
     "//chromeos/ash/components/login/login_state",
@@ -118,8 +118,6 @@ static_library("test_support") {
     "//ui/chromeos/resources",
     "//ui/gfx",
   ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 source_set("browser_tests") {
@@ -134,13 +132,13 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/external_data:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/profiles:profile",
@@ -187,7 +185,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/policy:onc",

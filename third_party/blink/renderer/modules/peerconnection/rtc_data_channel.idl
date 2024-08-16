@@ -36,7 +36,7 @@ enum RTCDataChannelState {
 
 [
     ActiveScriptWrappable,
-    Exposed=Window
+    Exposed(Window StableBlinkFeatures, DedicatedWorker TransferableRTCDataChannel)
 ] interface RTCDataChannel : EventTarget {
     readonly attribute USVString label;
     readonly attribute boolean ordered;
@@ -60,6 +60,9 @@ enum RTCDataChannelState {
     [RaisesException] void send(Blob data);
     [RaisesException] void send(ArrayBuffer data);
     [RaisesException] void send(ArrayBufferView data);
+
+    // https://w3c.github.io/webrtc-priority/#datachannel
+    [RuntimeEnabled=RTCDataChannelPriority] readonly attribute RTCPriorityType priority;
 
     // Non-standard APIs
     [Measure] readonly attribute boolean reliable;

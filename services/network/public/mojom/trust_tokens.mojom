@@ -32,44 +32,50 @@ enum TrustTokenProtocolVersion {
 //
 // Each status may be returned in similar cases beyond those listed in its
 // comment.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(TrustTokenOperationStatus)
 enum TrustTokenOperationStatus {
-  kOk,
+  kOk = 0,
 
   // A client-provided argument was malformed or otherwise invalid.
-  kInvalidArgument,
+  kInvalidArgument = 1,
 
   // There are no key commitments registered for the issuer.
-  kMissingIssuerKeys,
+  kMissingIssuerKeys = 2,
 
   // A precondition failed (for instance, there was an error parsing the
   // verification keys for an issuer).
-  kFailedPrecondition,
+  kFailedPrecondition = 3,
 
   // No inputs for the given operation available.
-  kResourceExhausted,
+  kResourceExhausted = 4,
 
   // The operation's result already exists (for instance, a cache was hit).
-  kAlreadyExists,
+  kAlreadyExists = 5,
 
   // A quota on the operation's outputs would be exceeded.
-  kResourceLimited,
+  kResourceLimited = 6,
 
   // The operation was unauthorized due to some sort of policy.
-  kUnauthorized,
+  kUnauthorized = 7,
 
   // The server response was malformed or otherwise invalid.
-  kBadResponse,
+  kBadResponse = 8,
 
   // A, usually severe, internal error occurred.
-  kInternalError,
+  kInternalError = 9,
 
   // The operation failed for some other reason.
-  kUnknownError,
+  kUnknownError = 10,
 
   // The operation was executed by a means other than sending the resource
   // request at hand, so there's no response to provide for the request.
-  kOperationSuccessfullyFulfilledLocally,
+  kOperationSuccessfullyFulfilledLocally = 11,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:TrustTokenOperationStatus)
 
 // Trust Tokens operation parameterization
 //
@@ -319,6 +325,14 @@ struct TrustTokenOperationResult {
 struct StoredTrustTokensForIssuer {
   url.mojom.Origin issuer;
   int32 count;
+};
+
+
+// Used by PST Dev UI to store redemption record information per issuer/toplevel
+// pair.
+struct ToplevelRedemptionRecord {
+  url.mojom.Origin toplevel_origin;
+  mojo_base.mojom.Time last_redemption;
 };
 
 // Returned by DeleteStoredTrustTokens method on the NetworkContext.

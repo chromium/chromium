@@ -95,6 +95,7 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
         {features::kReadAnythingReadAloud},
         {features::kReadAnythingWithScreen2x, features::kPdfOcr});
     BrowserWithTestWindowTest::SetUp();
+    AddTab(browser(), GURL(url::kAboutBlankURL));
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();
@@ -275,6 +276,7 @@ class ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest
          features::kReadAloudAutoVoiceSwitching},
         {features::kReadAnythingWithScreen2x, features::kPdfOcr});
     BrowserWithTestWindowTest::SetUp();
+    AddTab(browser(), GURL(url::kAboutBlankURL));
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile()));
     test_web_ui_ = std::make_unique<content::TestWebUI>();

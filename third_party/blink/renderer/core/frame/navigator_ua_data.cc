@@ -30,7 +30,7 @@ void MaybeRecordMetric(bool record_identifiability,
                        const String& hint,
                        const IdentifiableToken token,
                        ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
+  if (!record_identifiability) [[likely]] {
     return;
   }
   auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
@@ -53,7 +53,7 @@ void MaybeRecordMetric(bool record_identifiability,
                        const String& hint,
                        const Vector<String>& strings,
                        ExecutionContext* execution_context) {
-  if (LIKELY(!record_identifiability)) {
+  if (!record_identifiability) [[likely]] {
     return;
   }
   IdentifiableTokenBuilder token_builder;
@@ -155,8 +155,8 @@ const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
   ExecutionContext* context = GetExecutionContext();
   if (context) {
     // Record IdentifiabilityStudy metrics if the client is in the study.
-    if (UNLIKELY(IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-            identifiable_surface))) {
+    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
+            identifiable_surface)) [[unlikely]] {
       IdentifiableTokenBuilder token_builder;
       for (const auto& brand : brand_set_) {
         token_builder.AddValue(brand->hasBrand());

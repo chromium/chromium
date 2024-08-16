@@ -173,6 +173,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Open Safety Hub (main settings)"/>
   <int value="1" label="Open Safety Hub (magic stack)"/>
   <int value="2" label="Open Safe Browsing (magic stack)"/>
+  <int value="3" label="Open Google Password Manager (magic stack)"/>
 </enum>
 
 <enum name="SafetyHubModuleState">

@@ -111,7 +111,7 @@ FrameConfig GetFrameConfig(size_t num_temporal_layers, size_t frame_num) {
       return TL3Pattern[frame_num % std::size(TL3Pattern)];
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

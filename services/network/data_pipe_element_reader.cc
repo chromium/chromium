@@ -120,9 +120,8 @@ int DataPipeElementReader::ReadInternal(net::IOBuffer* buf, int buf_length) {
     return net::OK;
 
   size_t num_bytes = base::checked_cast<size_t>(buf_length);
-  MojoResult rv = data_pipe_->ReadData(
-      MOJO_READ_DATA_FLAG_NONE,
-      base::as_writable_bytes(buf->span()).first(num_bytes), num_bytes);
+  MojoResult rv = data_pipe_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       buf->span().first(num_bytes), num_bytes);
   if (rv == MOJO_RESULT_OK) {
     bytes_read_ += num_bytes;
     return base::checked_cast<int>(num_bytes);

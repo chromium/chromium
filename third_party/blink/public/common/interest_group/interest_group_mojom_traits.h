@@ -43,6 +43,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
     return ad.buyer_and_seller_reporting_id;
   }
 
+  static const std::optional<std::vector<std::string>>&
+  selectable_buyer_and_seller_reporting_ids(
+      const blink::InterestGroup::Ad& ad) {
+    return ad.selectable_buyer_and_seller_reporting_ids;
+  }
+
   static const std::optional<std::string>& metadata(
       const blink::InterestGroup::Ad& ad) {
     return ad.metadata;

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -67,7 +68,14 @@ namespace {
 //
 // The test is performed against a test policy server, which is set up for
 // rotating the policy key automatically with each policy fetch.
-class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
+struct FeaturesTestParam {
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+};
+
+class KeyRotationDeviceCloudPolicyTest
+    : public DevicePolicyCrosBrowserTest,
+      public testing::WithParamInterface<FeaturesTestParam> {
  public:
   KeyRotationDeviceCloudPolicyTest(const KeyRotationDeviceCloudPolicyTest&) =
       delete;
@@ -82,6 +90,10 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   KeyRotationDeviceCloudPolicyTest() {
     UpdateBuiltTestPolicyValue(kInitialPolicyValue);
+    const FeaturesTestParam& features_test_param = GetParam();
+    scoped_feature_list_.InitWithFeatures(
+        features_test_param.enabled_features,
+        features_test_param.disabled_features);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -158,8 +170,9 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   void WaitForInstalledPolicyValue(int expected_policy_value) {
-    if (GetInstalledPolicyValue() == expected_policy_value)
+    if (GetInstalledPolicyValue() == expected_policy_value) {
       return;
+    }
     awaited_policy_value_ = expected_policy_value;
     // The run loop will be terminated by OnPolicyChanged() once the policy
     // value becomes equal to the awaited value.
@@ -208,11 +221,12 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   int awaited_policy_value_ = -1;
   std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(KeyRotationDeviceCloudPolicyTest, Basic) {
+IN_PROC_BROWSER_TEST_P(KeyRotationDeviceCloudPolicyTest, Basic) {
   // The policy has the initial value from the cache.
   EXPECT_EQ(kInitialPolicyValue, GetInstalledPolicyValue());
 
@@ -243,12 +257,21 @@ IN_PROC_BROWSER_TEST_F(KeyRotationDeviceCloudPolicyTest, Basic) {
   EXPECT_EQ(key_version + 1, GetInstalledPolicyKeyVersion());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    KeyRotationDeviceCloudPolicyTest,
+    KeyRotationDeviceCloudPolicyTest,
+    ::testing::Values(
+        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
+        FeaturesTestParam{
+            .disabled_features = {policy::kPolicyFetchWithSha256}}));
+
 namespace {
 
 // Tests how component policy is handled for extensions installed on the sign-in
 // screen.
 class SigninExtensionsDeviceCloudPolicyBrowserTest
-    : public DevicePolicyCrosBrowserTest {
+    : public DevicePolicyCrosBrowserTest,
+      public testing::WithParamInterface<FeaturesTestParam> {
  public:
   static constexpr const char* kTestExtensionId =
       "hifnmfgfdfhmoaponfpmnlpeahiomjim";
@@ -261,7 +284,12 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
       "{\"string-policy\": {\"Value\": \"value\"}}";
   static constexpr int kFakePolicyPublicKeyVersion = 1;
 
-  SigninExtensionsDeviceCloudPolicyBrowserTest() = default;
+  SigninExtensionsDeviceCloudPolicyBrowserTest() {
+    const FeaturesTestParam& features_test_param = GetParam();
+    scoped_feature_list_.InitWithFeatures(
+        features_test_param.enabled_features,
+        features_test_param.disabled_features);
+  }
 
   SigninExtensionsDeviceCloudPolicyBrowserTest(
       const SigninExtensionsDeviceCloudPolicyBrowserTest&) = delete;
@@ -318,8 +346,9 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   // Intercepts the request for the test extension update manifest.
   std::unique_ptr<net::test_server::HttpResponse> InterceptUpdateManifest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != kTestExtensionUpdateManifestPath)
+    if (request.GetURL().path() != kTestExtensionUpdateManifestPath) {
       return nullptr;
+    }
 
     // Create update manifest for the test extension, setting the extension URL
     // with a test server URL pointing to the extension under the test data
@@ -345,11 +374,13 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   std::unique_ptr<net::test_server::HttpResponse> InterceptComponentPolicy(
       bool hang,
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != kFakePolicyPath)
+    if (request.relative_url != kFakePolicyPath) {
       return nullptr;
+    }
 
-    if (hang)
+    if (hang) {
       return std::make_unique<net::test_server::HungResponse>();
+    }
 
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_content(kFakePolicy);
@@ -392,6 +423,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   }
 
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -403,7 +435,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
 //     extension installed into the sign-in profile can access the component
 //     policy downloaded during the first step.
 // PRE_ManagedStorage test handles the first step.
-IN_PROC_BROWSER_TEST_F(SigninExtensionsDeviceCloudPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(SigninExtensionsDeviceCloudPolicyBrowserTest,
                        PRE_ManagedStorage) {
   // The test app will be installed via policy, at which point its
   // background page will be loaded.
@@ -416,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(SigninExtensionsDeviceCloudPolicyBrowserTest,
 // download and verifies that a cached component policy is available to the test
 // extenion.
 // See PRE_ManagedStorage test.
-IN_PROC_BROWSER_TEST_F(SigninExtensionsDeviceCloudPolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(SigninExtensionsDeviceCloudPolicyBrowserTest,
                        ManagedStorage) {
   // The test app will be installed via policy, at which point its
   // background page will be loaded. Note that the app will not be installed
@@ -427,5 +459,13 @@ IN_PROC_BROWSER_TEST_F(SigninExtensionsDeviceCloudPolicyBrowserTest,
   StartTestServer(true /*hang_component_policy_fetch*/);
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    SigninExtensionsDeviceCloudPolicyBrowserTest,
+    SigninExtensionsDeviceCloudPolicyBrowserTest,
+    ::testing::Values(
+        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
+        FeaturesTestParam{
+            .disabled_features = {policy::kPolicyFetchWithSha256}}));
 
 }  // namespace policy

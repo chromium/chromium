@@ -324,7 +324,7 @@ const PhysicalFragmentLink& GetPageBorderBoxLink(
     }
   }
   // A page container will never be laid out without a page border box child.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const PhysicalBoxFragment& GetPageBorderBox(

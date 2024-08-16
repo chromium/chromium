@@ -124,6 +124,10 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     return this.displayedItems_.length > 0;
   }
 
+  showSyncSetupFlow() {
+    this.shoppingApi_.showSyncSetupFlow();
+  }
+
   getSelectedItemCount() {
     return this.selectedItems.size;
   }

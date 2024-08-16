@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_factory.h"
@@ -46,6 +47,15 @@ scoped_refptr<SSLCertRequestInfo> TlsStreamAttempt::GetCertRequestInfo() {
   return ssl_cert_request_info_;
 }
 
+void TlsStreamAttempt::SetTcpHandshakeCompletionCallback(
+    CompletionOnceCallback callback) {
+  CHECK(!tls_handshake_started_);
+  CHECK(!tcp_handshake_completion_callback_);
+  if (next_state_ <= State::kTcpAttemptComplete) {
+    tcp_handshake_completion_callback_ = std::move(callback);
+  }
+}
+
 int TlsStreamAttempt::StartInternal() {
   CHECK_EQ(next_state_, State::kNone);
   next_state_ = State::kTcpAttempt;
@@ -74,7 +84,7 @@ int TlsStreamAttempt::DoLoop(int rv) {
     next_state_ = State::kNone;
     switch (state) {
       case State::kNone:
-        NOTREACHED_NORETURN() << "Invalid state";
+        NOTREACHED() << "Invalid state";
       case State::kTcpAttempt:
         rv = DoTcpAttempt();
         break;
@@ -105,7 +115,10 @@ int TlsStreamAttempt::DoTcpAttemptComplete(int rv) {
   const LoadTimingInfo::ConnectTiming& nested_timing =
       nested_attempt_->connect_timing();
   mutable_connect_timing().connect_start = nested_timing.connect_start;
-  mutable_connect_timing().connect_end = nested_timing.connect_end;
+
+  if (tcp_handshake_completion_callback_) {
+    std::move(tcp_handshake_completion_callback_).Run(rv);
+  }
 
   if (rv != OK) {
     return rv;

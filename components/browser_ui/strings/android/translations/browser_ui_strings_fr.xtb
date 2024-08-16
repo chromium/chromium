@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1448064542941920355">Réduire le zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1500473259453106018">Masquer la fiche "Baisses de prix dans les onglets"</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="1547123415014299762">Les cookies tiers sont autorisés</translation>
 <translation id="1568470248891039841">Les sites que vous consultez peuvent intégrer des contenus provenant d'autres sites (par exemple, des images, des annonces et du texte). Ces autres sites peuvent demander l'autorisation d'utiliser les informations qu'ils ont enregistrées vous concernant lorsque vous les parcourez. <ph name="BEGIN_LINK" />En savoir plus sur le contenu intégré<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Micro</translation>
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
 <translation id="3242646949159196181">Lorsque cette option est activée, le son des sites est activé. Lorsqu'elle est désactivée, le son des sites est désactivé.</translation>
+<translation id="3273479183583863618">Baisses de prix dans les onglets</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder à vos capteurs (recommandé)</translation>
 <translation id="3285500645985761267">Autoriser les sites associés à voir votre activité dans le groupe</translation>
 <translation id="3295019059349372795">Chapitre 11 : La merveilleuse cité d'émeraude</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Ignorer et afficher la prochaine action disponible</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Appuyez deux fois à gauche/droite de la vidéo pour reculer/avancer de 10 s</translation>
+<translation id="3779154269823594982">Modifier les mots de passe</translation>
 <translation id="3797520601150691162">Ne pas appliquer le thème sombre à un site précis</translation>
 <translation id="3803367742635802571">Les sites que vous consultez ne fonctionneront peut-être plus comme prévu</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Sélectionner des éléments</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, appuyez de manière prolongée sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6864395892908308021">Lecture NFC impossible sur cet appareil</translation>
+<translation id="6870169401250095575">Masquer la fiche "Contrôle de sécurité"</translation>
 <translation id="6912998170423641340">Interdire aux sites d'accéder en lecture au texte et aux images du presse-papiers</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6950072572526089586">Un site que vous consultez peut enregistrer des informations sur ce que vous êtes en train de faire afin de fonctionner comme prévu, par exemple pour vous permettre de rester connecté ou pour enregistrer des articles dans votre panier. Les sites enregistrent souvent ces informations temporairement sur votre appareil.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
 <translation id="789180354981963912">Bloquer les cookies tiers en mode navigation privée :</translation>
 <translation id="7940722705963108451">M'envoyer un rappel</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}one{<ph name="FPS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}other{<ph name="FPS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="FPS_OWNER" /> qui peuvent voir votre activité dans le groupe}}</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
 <translation id="7990211076305263060">Lorsque cette option est activée, les sites peuvent demander à utiliser votre micro. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser votre micro.</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Masquer la fiche "Continuer avec cet onglet"}one{Masquer la fiche "Continuer avec cet onglet"}other{Masquer la fiche "Continuer avec ces onglets"}}</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8042586301629853791">Trier par :</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Interdire à tous les sites de se connecter à des appareils</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8541410041357371550">Ce site obtient vos thèmes d'annonces par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}one{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}other{Cookies autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web sont affichés comme sur ordinateur. Lorsqu'elle est désactivée, les sites Web sont affichés comme sur mobile.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9039697262778250930">Vous serez peut-être déconnecté de ces sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Supprimer les cookies ?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>

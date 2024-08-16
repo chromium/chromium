@@ -6,6 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_TABLE_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "components/plus_addresses/plus_address_types.h"
@@ -34,14 +35,14 @@ namespace plus_addresses {
 //                    database layer doesn't enforce this.
 //
 // Schema to implement `syncer::SyncMetadataStore`.
-// Even though plus addresses only use a single model type so far, more might
-// be added in the future. For this reason, tables are keyed by model type.
+// Even though plus addresses only use a single data type so far, more might
+// be added in the future. For this reason, tables are keyed by data type.
 // plus_address_sync_model_type_state
-//   model_type         int identifying the ModelType. Primary key.
-//   value              A serialized ModelTypeState record.
+//   model_type         int identifying the DataType. Primary key.
+//   value              A serialized DataTypeState record.
 //
 // plus_address_sync_entity_metadata
-//   model_type         int identifying the ModelType.
+//   model_type         int identifying the DataType.
 //   storage_key        The storage_key of the sync EntitySpecifics.
 //     Composite (model_type, storage_key) primary key.
 //   value              A serialized EntityMetadata record.
@@ -62,7 +63,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Returns the profile with the given `profile_id` or std::nullopt if it
   // doesn't exist.
   std::optional<PlusProfile> GetPlusProfileForId(
-      const std::string& profile_id) const;
+      std::string_view profile_id) const;
 
   // Adds `profile` to the database, if a profile with the same `profile_id`
   // doesn't already exist. Otherwise, updates the existing `profile`.
@@ -72,7 +73,7 @@ class PlusAddressTable : public WebDatabaseTable,
   // Removes the profile with the given `profile_id` and returns true if the
   // operation succeeded. Trying to remove a non-existing profile is a no-op and
   // not considered a failure.
-  bool RemovePlusProfile(const std::string& profile_id);
+  bool RemovePlusProfile(std::string_view profile_id);
 
   // Deletes all stored PlusProfiles, returning true if the operation succeeded.
   bool ClearPlusProfiles();
@@ -83,28 +84,28 @@ class PlusAddressTable : public WebDatabaseTable,
   bool MigrateToVersion(int version, bool* update_compatible_version) override;
 
   // syncer::SyncMetadataStore:
-  bool UpdateEntityMetadata(syncer::ModelType model_type,
+  bool UpdateEntityMetadata(syncer::DataType data_type,
                             const std::string& storage_key,
                             const sync_pb::EntityMetadata& metadata) override;
-  bool ClearEntityMetadata(syncer::ModelType model_type,
+  bool ClearEntityMetadata(syncer::DataType data_type,
                            const std::string& storage_key) override;
-  bool UpdateModelTypeState(
-      syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override;
-  bool ClearModelTypeState(syncer::ModelType model_type) override;
+  bool UpdateDataTypeState(
+      syncer::DataType data_type,
+      const sync_pb::DataTypeState& data_type_state) override;
+  bool ClearDataTypeState(syncer::DataType data_type) override;
 
-  // Populates `metadata_batch` with all stored metadata for the `model_type`.
+  // Populates `metadata_batch` with all stored metadata for the `data_type`.
   // Returns true if all the reads succeeded.
-  // If no metadata is stored for the model type, the function will succeed and
-  // set the batch's model type state to the default state.
-  bool GetAllSyncMetadata(syncer::ModelType model_type,
+  // If no metadata is stored for the data type, the function will succeed and
+  // set the batch's data type state to the default state.
+  bool GetAllSyncMetadata(syncer::DataType data_type,
                           syncer::MetadataBatch& metadata_batch);
 
  private:
   // Creates the table of the given name in the newest version of the schema,
   // unless it already exists. Returns true if the table exists now.
   bool CreatePlusAddressesTable();
-  bool CreateSyncModelTypeStateTable();
+  bool CreateSyncDataTypeStateTable();
   bool CreateSyncEntityMetadataTable();
 
   // Migration logic to a specific version. Returns true if the migration

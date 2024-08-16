@@ -102,11 +102,11 @@ bool WebMCreateDecryptConfig(const uint8_t* data_ptr,
                              int* data_offset) {
   // TODO(crbug.com/40284755):: The function should receive a span, not a
   // pointer/length pair.
-  auto data = UNSAFE_BUFFERS(
-      base::span(data_ptr, base::checked_cast<size_t>(data_size)));
+  auto data =
+      UNSAFE_TODO(base::span(data_ptr, base::checked_cast<size_t>(data_size)));
   // TODO(crbug.com/40284755):: The function should receive a span, not a
   // pointer/length pair.
-  auto key_id = UNSAFE_BUFFERS(
+  auto key_id = UNSAFE_TODO(
       base::span(key_id_ptr, base::checked_cast<size_t>(key_id_size)));
   auto reader = base::SpanReader(data);
 

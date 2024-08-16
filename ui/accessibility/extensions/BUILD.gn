@@ -15,7 +15,6 @@ group("extensions") {
     ":caretbrowsing",
     ":colorenhancer",
     ":highcontrast",
-    "chromevoxclassic:chromevox",
   ]
 }
 
@@ -25,7 +24,6 @@ group("extension_tests") {
     deps = [
       ":colorenhancer_tests",
       ":highcontrast_tests",
-      "chromevoxclassic:chromevox_tests",
     ]
   }
 }

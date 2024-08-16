@@ -11,7 +11,7 @@
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "third_party/metrics_proto/user_demographics.pb.h"
 
 @class ElementSelector;
@@ -393,7 +393,7 @@
 + (void)flushFakeSyncServerToDisk;
 
 // Gets the number of entities of the given `type`.
-+ (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type;
++ (int)numberOfSyncEntitiesWithType:(syncer::DataType)type;
 
 // Forces every request to fail in a way that simulates a network failure.
 + (void)disconnectFakeSyncServerNetwork;
@@ -431,7 +431,7 @@
 + (BOOL)isURL:(NSString*)spec presentOnClient:(BOOL)expectPresent;
 
 // Triggers a sync cycle for a `type`.
-+ (void)triggerSyncCycleForType:(syncer::ModelType)type;
++ (void)triggerSyncCycleForType:(syncer::DataType)type;
 
 // Injects user demographics into the fake sync server. `rawBirthYear` is the
 // true birth year, pre-noise, and the gender corresponds to the proto enum

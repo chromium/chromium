@@ -37,7 +37,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -170,6 +169,8 @@ class BrowserProcessImpl : public BrowserProcess,
   GetOriginTrialsSettingsStorage() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
+  signin::ActivePrimaryAccountsMetricsRecorder*
+  active_primary_accounts_metrics_recorder() override;
   variations::VariationsService* variations_service() override;
   BrowserProcessPlatformPart* platform_part() override;
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -286,6 +287,10 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<ProfileManager> profile_manager_;
 
   const std::unique_ptr<PrefService> local_state_;
+
+  // Must be destroyed before |local_state_|.
+  std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
+      active_primary_accounts_metrics_recorder_;
 
   // |metrics_services_manager_| owns this.
   raw_ptr<ChromeMetricsServicesManagerClient, AcrossTasksDanglingUntriaged>
@@ -425,9 +430,7 @@ class BrowserProcessImpl : public BrowserProcess,
   // SodaInstallerImpl depends on ComponentUpdateService, so define it here
   // to ensure that SodaInstallerImpl gets destructed first.
   std::unique_ptr<speech::SodaInstaller> soda_installer_impl_;
-#endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Used to download Screen AI on demand and keep track of the library
   // availability.
   std::unique_ptr<screen_ai::ScreenAIInstallState> screen_ai_download_;

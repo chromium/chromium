@@ -63,6 +63,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      float search_panel_height,
                      float search_bar_margin_side,
                      float search_bar_margin_top,
+                     float search_bar_margin_bottom,
                      float search_bar_height,
                      float search_context_opacity,
                      float search_text_layer_min_height,

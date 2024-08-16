@@ -115,6 +115,7 @@
 <translation id="2559253115192232574">Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren. Chrome pode compartir ata 3 intereses.</translation>
 <translation id="2563121210305478421">Queres reiniciar Chrome?</translation>
 <translation id="2569974318947988067">Chrome tentará actualizar as navegacións ao protocolo HTTPS</translation>
+<translation id="2571392474191184472">A túa organización xestiona Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
 <translation id="2580411288591421699">Non se pode instalar a mesma versión de Google Chrome que se está executando actualmente. Pecha Google Chrome e téntao de novo.</translation>
 <translation id="2586406160782125153">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -215,6 +216,8 @@
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Para usar Chrome, precísase Windows 10 ou unha versión posterior.</translation>
 <translation id="3835168907083856002">Con esta acción crearase un novo perfil de Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome precisa acceso ao Bluetooth para explorar 
+ os dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Pecha todas as ventás de Google Chrome e téntao de novo.</translation>
 <translation id="3865754807470779944">Tes instalada a versión <ph name="PRODUCT_VERSION" /> de Chrome</translation>
 <translation id="3873044882194371212">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
@@ -425,6 +428,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6938166777909186039">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="6943584222992551122">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Regra de entrada para que Google Chrome Beta permita tráfico mDNS.</translation>
+<translation id="6979589607440534284">Descubre por que Chrome bloquea algúns ficheiros (abrirase nunha nova pestana)</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Detívose a instalación.</translation>
@@ -447,6 +451,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7177959540995930968">Podes obter máis información sobre estas funcións na configuración de Chrome.</translation>
 <translation id="7193885263065350793">A túa organización pecha Chrome cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> xestiona Chrome</translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7302361266603927550">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
@@ -580,6 +585,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8999117580775242387">Cando o protocolo HTTPS non estea dispoñible, Chrome usará unha conexión pouco segura sen avisarte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
+<translation id="9014771989710951291">Varias organizacións xestionan Chrome</translation>
 <translation id="9024318700713112071">Define Chrome como o navegador predeterminado.</translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
 <translation id="9090566250983691233">Descubre por que Chrome bloquea algúns ficheiros</translation>

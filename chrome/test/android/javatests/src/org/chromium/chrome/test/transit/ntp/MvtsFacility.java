@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParentIndex;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -21,6 +21,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.MoreViewConditions.ViewHasChildrenCountCondition;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
@@ -32,12 +33,8 @@ import java.util.List;
 /** Represents the Most Visited Tiles section in the New Tab Page. */
 public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
 
-    // 1% visibility is enough because this layout is clipped by being inside scroll view in
-    // tablets.
-    public static final ViewElement MOST_VISITED_TILES_LAYOUT =
-            scopedViewElement(
-                    withId(R.id.mv_tiles_layout),
-                    ViewElement.newOptions().displayingAtLeast(1).build());
+    public static final ViewSpec MOST_VISITED_TILES_LAYOUT = viewSpec(withId(R.id.mv_tiles_layout));
+
     private final List<SiteSuggestion> mSiteSuggestions;
     private ArrayList<Item<WebPageStation>> mTiles;
 
@@ -49,7 +46,11 @@ public class MvtsFacility extends ScrollableFacility<RegularNewTabPageStation> {
     @Override
     public void declareElements(Elements.Builder elements) {
         elements.declareView(RegularNewTabPageStation.MOST_VISITED_TILES_CONTAINER);
-        Supplier<View> tilesViewSupplier = elements.declareView(MOST_VISITED_TILES_LAYOUT);
+        // 1% visibility is enough because this layout is clipped by being inside scroll view in
+        // tablets.
+        Supplier<View> tilesViewSupplier =
+                elements.declareView(
+                        MOST_VISITED_TILES_LAYOUT, ViewElement.displayingAtLeastOption(1));
         elements.declareEnterCondition(
                 new ViewHasChildrenCountCondition(tilesViewSupplier, mSiteSuggestions.size()));
         super.declareElements(elements);

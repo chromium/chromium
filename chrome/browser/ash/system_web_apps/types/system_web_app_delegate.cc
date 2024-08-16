@@ -130,10 +130,6 @@ bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   return false;
 }
 
-bool SystemWebAppDelegate::PreferManifestBackgroundColor() const {
-  return false;
-}
-
 bool SystemWebAppDelegate::UseSystemThemeColor() const {
   return true;
 }

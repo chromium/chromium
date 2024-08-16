@@ -196,10 +196,9 @@ static inline void AppendQuadsToSubtargetList(
     Vector<gfx::QuadF>& quads,
     Node* node,
     SubtargetGeometryList& subtargets) {
-  Vector<gfx::QuadF>::const_iterator it = quads.begin();
-  const Vector<gfx::QuadF>::const_iterator end = quads.end();
-  for (; it != end; ++it)
-    subtargets.push_back(SubtargetGeometry(node, *it));
+  for (const auto& quad : quads) {
+    subtargets.push_back(SubtargetGeometry(node, quad));
+  }
 }
 
 static inline void AppendBasicSubtargetsForNode(
@@ -503,21 +502,20 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
                                       DistanceFunction distance_function) {
   adjusted_node = nullptr;
   float best_distance_metric = std::numeric_limits<float>::infinity();
-  SubtargetGeometryList::const_iterator it = subtargets.begin();
-  const SubtargetGeometryList::const_iterator end = subtargets.end();
   gfx::Point snapped_point;
 
-  for (; it != end; ++it) {
-    Node* node = it->GetNode();
-    float distance_metric = distance_function(touch_hotspot, touch_area, *it);
+  for (const auto& subtarget : subtargets) {
+    Node* node = subtarget.GetNode();
+    float distance_metric =
+        distance_function(touch_hotspot, touch_area, subtarget);
     if (distance_metric < best_distance_metric) {
-      if (SnapTo(*it, touch_hotspot, touch_area, snapped_point)) {
+      if (SnapTo(subtarget, touch_hotspot, touch_area, snapped_point)) {
         adjusted_point = snapped_point;
         adjusted_node = node;
         best_distance_metric = distance_metric;
       }
     } else if (distance_metric - best_distance_metric < kZeroTolerance) {
-      if (SnapTo(*it, touch_hotspot, touch_area, snapped_point)) {
+      if (SnapTo(subtarget, touch_hotspot, touch_area, snapped_point)) {
         if (node->IsDescendantOf(adjusted_node)) {
           // Try to always return the inner-most element.
           adjusted_point = snapped_point;

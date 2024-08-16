@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_HISTORY_DATA_SOURCE_H_
 #define COMPONENTS_PAGE_INFO_CORE_PAGE_INFO_HISTORY_DATA_SOURCE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -33,11 +34,12 @@ class PageInfoHistoryDataSource {
       base::Time now = base::Time::Now());
 
   // Gets a version of the last time any webpage on the `site_url` host was
-  // visited, formatted as a string, by using the min("last navigation time", x
-  // minutes ago) as the upper bound of the GetLastVisitToHost query. This is
-  // done in order to provide the user with a more useful sneak peak into their
-  // navigation history, by excluding the site(s) they were just on.
-  void GetLastVisitedTimestamp(base::OnceCallback<void(base::Time)> callback);
+  // visited by using the min("last navigation time", x minutes ago) as the
+  // upper bound of the GetLastVisitToHost query. This is done in order to
+  // provide the user with a more useful sneak peak into their navigation
+  // history, by excluding the site(s) they were just on.
+  void GetLastVisitedTimestamp(
+      base::OnceCallback<void(std::optional<base::Time>)> callback);
 
  private:
   // Callback from the history system when the last visit query has completed.
@@ -45,13 +47,13 @@ class PageInfoHistoryDataSource {
   void OnLastVisitBeforeRecentNavigationsComplete(
       const std::string& host_name,
       base::Time query_start_time,
-      base::OnceCallback<void(base::Time)> callback,
+      base::OnceCallback<void(std::optional<base::Time>)> callback,
       history::HistoryLastVisitResult result);
 
   // Callback from the history system when the last visit query has completed
   // the second time.
   void OnLastVisitBeforeRecentNavigationsComplete2(
-      base::OnceCallback<void(base::Time)> callback,
+      base::OnceCallback<void(std::optional<base::Time>)> callback,
       history::HistoryLastVisitResult result);
 
   raw_ptr<history::HistoryService> history_service_ = nullptr;

@@ -27,12 +27,6 @@
 
 namespace supervised_user {
 
-class MockSupervisedUserServicePlatformDelegate
-    : public SupervisedUserService::PlatformDelegate {
- public:
-  MOCK_METHOD(void, CloseIncognitoTabs, (), (override));
-};
-
 class MockSupervisedUserMetricsServiceExtensionDelegateImpl
     : public SupervisedUserMetricsService::
           SupervisedUserMetricsServiceExtensionDelegate {
@@ -56,10 +50,8 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
         identity_test_env_.identity_manager(),
         test_url_loader_factory_.GetSafeWeakWrapper(), pref_service_,
         settings_service_, &sync_service_,
-        /*check_webstore_url_callback=*/
-        base::BindRepeating([](const GURL& url) { return false; }),
         std::make_unique<FakeURLFilterDelegate>(),
-        std::make_unique<MockSupervisedUserServicePlatformDelegate>(),
+        std::make_unique<FakePlatformDelegate>(),
         /*can_show_first_time_interstitial_banner=*/false);
     supervised_user_service_->Init();
   }

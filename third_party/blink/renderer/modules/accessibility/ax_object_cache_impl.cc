@@ -460,6 +460,13 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
       if (element->FastGetAttribute(html_names::kAriaHiddenAttr) == "true") {
         return false;
       }
+
+      // <select>'s autofill preview should not be included in the accessibility
+      // tree.
+      if (element->ShadowPseudoId() ==
+          shadow_element_names::kSelectAutofillPreview) {
+        return false;
+      }
     }
   }
 
@@ -1197,15 +1204,14 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   if (!node.GetLayoutObject())
     return false;
 
-  // ::before, ::after, ::marker, ::scroll-marker and ::scroll-marker-group are
-  // relevant. Allowing these pseudo elements ensures that all visible
-  // descendant pseudo content will be reached, despite only being able to walk
-  // layout inside of pseudo content. However, AXObjects aren't created for
+  // ::before, ::after, ::marker, ::scroll-marker, ::scroll-*-buttons and
+  // ::scroll-marker-group are relevant. Allowing these pseudo elements ensures
+  // that all visible descendant pseudo content will be reached, despite only
+  // being able to walk layout inside of pseudo content. However, AXObjects
+  // aren't created for
   // ::first-letter subtrees. The text of ::first-letter is already available in
   // the child text node of the element that the CSS ::first letter applied to.
-  if (node.IsMarkerPseudoElement() || node.IsBeforePseudoElement() ||
-      node.IsAfterPseudoElement() || node.IsScrollMarkerGroupPseudoElement() ||
-      node.IsScrollMarkerPseudoElement()) {
+  if (To<PseudoElement>(node).CanGenerateContent()) {
     // Ignore non-inline whitespace content, which is used by many pages as
     // a "Micro Clearfix Hack" to clear floats without extra HTML tags. See
     // http://nicolasgallagher.com/micro-clearfix-hack/
@@ -3793,7 +3799,21 @@ bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
   }
 
   // Return true if any ancestor is a label, as in <label><input></label>.
-  return Traversal<HTMLLabelElement>::FirstAncestor(elem);
+  if (Traversal<HTMLLabelElement>::FirstAncestor(elem)) {
+    return true;
+  }
+
+  // If the element is the reference target of its shadow host, also check if
+  // the host may have a label.
+  if (ShadowRoot* shadow_root = elem.ContainingShadowRoot()) {
+    if (shadow_root->referenceTargetElement() == &elem) {
+      if (HTMLElement* host = DynamicTo<HTMLElement>(shadow_root->host())) {
+        return MayHaveHTMLLabel(*host);
+      }
+    }
+  }
+
+  return false;
 }
 
 bool AXObjectCacheImpl::IsLabelOrDescription(Element& element) {

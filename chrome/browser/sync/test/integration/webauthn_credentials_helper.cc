@@ -13,7 +13,7 @@
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -114,7 +114,7 @@ ServerPasskeysMatchChecker::~ServerPasskeysMatchChecker() = default;
 bool ServerPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for server passkeys to match: ";
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::WEBAUTHN_CREDENTIAL);
+      fake_server()->GetSyncEntitiesByDataType(syncer::WEBAUTHN_CREDENTIAL);
   testing::StringMatchResultListener result_listener;
   const bool matches =
       testing::ExplainMatchResult(matcher_, entities, &result_listener);

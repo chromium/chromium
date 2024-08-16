@@ -6,9 +6,11 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -140,8 +142,8 @@ class PassphraseStateNotifiedToCrosapiObserverChecker
 class AshCustomPassphraseSharingSyncTest : public SyncTest {
  public:
   AshCustomPassphraseSharingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   AshCustomPassphraseSharingSyncTest(
@@ -211,7 +213,7 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
     return account_key;
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   mojo::Remote<crosapi::mojom::SyncService> sync_mojo_service_remote_;
   mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient>

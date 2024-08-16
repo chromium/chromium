@@ -12,6 +12,7 @@
 #include "ash/system/mahi/mahi_panel_drag_controller.h"
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_update.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -146,7 +147,7 @@ void MahiUiController::Retry(VisibilityState origin_state) {
           MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesReloaded));
       return;
     case VisibilityState::kError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -170,10 +171,20 @@ void MahiUiController::SendQuestion(const std::u16string& question,
       VisibilityState::kQuestionAndAnswer,
       MahiUiUpdate(MahiUiUpdateType::kQuestionPosted, question));
 
-  chromeos::MahiManager::Get()->AnswerQuestion(
-      question, current_panel_content,
-      base::BindOnce(&MahiUiController::OnAnswerLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // If Mahi Manager Implementation allows for repeating answers, then the
+  // callback function should be bound as a repeating callback. Else, a BindOnce
+  // callback will be used.
+  if (chromeos::MahiManager::Get()->AllowRepeatingAnswers()) {
+    chromeos::MahiManager::Get()->AnswerQuestionRepeating(
+        question, current_panel_content,
+        base::BindRepeating(&MahiUiController::OnAnswerLoaded,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    chromeos::MahiManager::Get()->AnswerQuestion(
+        question, current_panel_content,
+        base::BindOnce(&MahiUiController::OnAnswerLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void MahiUiController::UpdateSummaryAndOutlines() {

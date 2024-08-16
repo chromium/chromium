@@ -7,10 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -90,7 +88,6 @@ class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginReauthTest()
       : AuthFlowsLoginTestBase(/* require_reauth */ true) {
-    feature_list_.InitAndEnableFeature(features::kLocalPasswordForConsumers);
   }
   ~AuthFlowsLoginReauthTest() override = default;
 
@@ -105,9 +102,6 @@ class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
     gaia->TypePassword(password);
     gaia->ContinueLogin();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // ----------------------------------------------------------
@@ -116,7 +110,6 @@ class AuthFlowsLoginRecoverUserTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginRecoverUserTest()
       : AuthFlowsLoginTestBase(/* require_reauth */ false) {
-    feature_list_.InitAndEnableFeature(features::kLocalPasswordForConsumers);
   }
 
   ~AuthFlowsLoginRecoverUserTest() override = default;
@@ -147,9 +140,6 @@ class AuthFlowsLoginRecoverUserTest : public AuthFlowsLoginTestBase {
     gaia->TypePassword(password);
     gaia->ContinueLogin();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // ----------------------------------------------------------

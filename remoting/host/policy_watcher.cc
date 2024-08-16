@@ -28,7 +28,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
-#include "remoting/protocol/port_range.h"
+#include "remoting/base/port_range.h"
 
 #if !defined(NDEBUG)
 #include "base/json/json_reader.h"

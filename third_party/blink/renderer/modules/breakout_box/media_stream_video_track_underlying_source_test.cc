@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -615,18 +616,21 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   VideoFrame* web_video_frame3 =
       ReadObjectFromStream<VideoFrame>(v8_scope, reader);
 
-  scoped_refptr<media::VideoFrame> wrapped_video_frame3 =
-      web_video_frame3->frame();
-  ASSERT_TRUE(wrapped_video_frame3->metadata().capture_begin_time.has_value());
-  EXPECT_EQ(
-      web_video_frame3->timestamp(),
-      (*wrapped_video_frame3->metadata().capture_begin_time - base::TimeTicks())
-          .InMicroseconds());
-  ASSERT_TRUE(wrapped_video_frame3->metadata().reference_time.has_value());
-  EXPECT_EQ(
-      web_video_frame3->timestamp(),
-      (*wrapped_video_frame3->metadata().reference_time - base::TimeTicks())
-          .InMicroseconds());
+  if (base::FeatureList::IsEnabled(kBreakoutBoxInsertVideoCaptureTimestamp)) {
+    scoped_refptr<media::VideoFrame> wrapped_video_frame3 =
+        web_video_frame3->frame();
+    ASSERT_TRUE(
+        wrapped_video_frame3->metadata().capture_begin_time.has_value());
+    EXPECT_EQ(web_video_frame3->timestamp(),
+              (*wrapped_video_frame3->metadata().capture_begin_time -
+               base::TimeTicks())
+                  .InMicroseconds());
+    ASSERT_TRUE(wrapped_video_frame3->metadata().reference_time.has_value());
+    EXPECT_EQ(
+        web_video_frame3->timestamp(),
+        (*wrapped_video_frame3->metadata().reference_time - base::TimeTicks())
+            .InMicroseconds());
+  }
 
   source->Close();
   track->stopTrack(v8_scope.GetExecutionContext());

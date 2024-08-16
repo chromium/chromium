@@ -146,7 +146,7 @@ GetBenefitCategoryForOptimizationType(
     case optimization_guide::proto::CAPITAL_ONE_CREDIT_CARD_STREAMING_BENEFITS:
       return CreditCardCategoryBenefit::BenefitCategory::kStreaming;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -184,6 +184,19 @@ void AutofillOptimizationGuide::OnDidParseForm(
     if (has_credit_card_field) {
       AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
     }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    if (has_credit_card_field &&
+        !personal_data_manager->payments_data_manager()
+             .GetServerCreditCards()
+             .empty() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableAmountExtractionDesktop)) {
+      optimization_types.insert(
+          optimization_guide::proto::AMOUNT_EXTRACTION_ALLOWLIST);
+    }
+#endif
   }
 
   if (base::FeatureList::IsEnabled(

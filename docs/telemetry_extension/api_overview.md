@@ -892,7 +892,7 @@ This is a [union type](#Dictionary_based-union-types). Exactly one field is set.
 | fan | CreateFanRoutineArguments | M125 | Arguments to create a fan routine | None |
 | networkBandwidth | CreateNetworkBandwidthRoutineArguments | M125 | Arguments to create a network bandwidth routine | `os.diagnostics.network_info_mlab` |
 | ledLitUp | CreateLedLitUpRoutineArguments | M125 | Arguments to create a LED lit up routine | None |
-| cameraFrameAnalysis | CreateCameraFrameAnalysisRoutineArguments | (not released) | Arguments to create a camera frame analysis routine | None |
+| cameraFrameAnalysis | CreateCameraFrameAnalysisRoutineArguments | M129 | Arguments to create a camera frame analysis routine | None |
 | keyboardBacklight | CreateKeyboardBacklightRoutineArguments | M128 | Arguments to create a keyboard backlight routine | None |
 
 

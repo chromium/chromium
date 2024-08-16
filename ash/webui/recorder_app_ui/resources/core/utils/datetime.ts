@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {cacheLatest} from './utils.js';
+
 /**
  * @fileoverview Date and time related utilities.
  */
@@ -41,41 +43,72 @@ export function formatDuration(duration: Duration, digits = 0): string {
   }
 }
 
-const DATE_FORMAT = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-});
+const useDateFormat = cacheLatest(
+  (locale: Intl.LocalesArgument) => new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    day: 'numeric',
+  }),
+);
 
 /**
  * Formats the timestamp into a date string.
  *
- * TODO(pihsun): Handles i18n.
- *
+ * @param locale Locale to format the string in.
  * @param timestamp Number of milliseconds elapsed since epoch.
  * @return The date string.
- * @example formatDate(975902640000) // => 'Dec 4'.
+ * @example formatDate('en-US', 975902640000) // => 'Dec 4'.
  */
-export function formatDate(timestamp: number): string {
-  return DATE_FORMAT.format(new Date(timestamp));
+export function formatDate(
+  locale: Intl.LocalesArgument,
+  timestamp: number,
+): string {
+  return useDateFormat(locale).format(new Date(timestamp));
 }
 
-const TIME_FORMAT = new Intl.DateTimeFormat('en-US', {
-  hour: 'numeric',
-  minute: '2-digit',
-  hour12: true,
-});
+const useTimeFormat = cacheLatest(
+  (locale: Intl.LocalesArgument) => new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }),
+);
 
 /**
  * Formats the timestamp into a time string.
  *
- * TODO(pihsun): Handles i18n.
- *
+ * @param locale Locale to format the string in.
  * @param timestamp Number of milliseconds elapsed since epoch.
  * @return The date string.
- * @example formatTime(975902640000) // => '12:04pm'.
+ * @example formatTime('en-US', 975902640000) // => '12:04 PM'.
  */
-export function formatTime(timestamp: number): string {
-  return TIME_FORMAT.format(new Date(timestamp)).toLowerCase().replace(' ', '');
+export function formatTime(
+  locale: Intl.LocalesArgument,
+  timestamp: number,
+): string {
+  return useTimeFormat(locale).format(new Date(timestamp));
+}
+
+const useFullDatetimeFormat = cacheLatest(
+  (locale: Intl.LocalesArgument) => new Intl.DateTimeFormat(locale, {
+    dateStyle: 'long',
+    timeStyle: 'medium',
+  }),
+);
+
+/**
+ * Formats the timestamp into a string with both year, date and time.
+ *
+ * @param locale Locale to format the string in.
+ * @param timestamp Number of milliseconds elapsed since epoch.
+ * @return The formatted string.
+ * @example formatFullDatetime('en-US', 975902640000)
+ *              // => 'December 4, 2000 at 12:04:00 PM'
+ */
+export function formatFullDatetime(
+  locale: Intl.LocalesArgument,
+  timestamp: number,
+): string {
+  return useFullDatetimeFormat(locale).format(new Date(timestamp));
 }
 
 /**
@@ -105,22 +138,26 @@ export function getYesterday(): number {
   return yesterday.getTime() - dayInMilliseconds;
 }
 
-const MONTH_FORMAT = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  year: 'numeric',
-});
+const useMonthFormat = cacheLatest(
+  (locale: Intl.LocalesArgument) => new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    year: 'numeric',
+  }),
+);
 
 /**
  * Format the timestamp into a string of month and year.
  *
- * TODO: b/336963138 - Handle i18n.
- *
+ * @param locale Locale to format the string in.
  * @param timestamp Number of milliseconds elapsed since epoch.
  * @return The string containing month and year.
- * @example getMonthLabel(975902640000) => 'December 2000'.
+ * @example getMonthLabel('en-US', 975902640000) => 'December 2000'.
  */
-export function getMonthLabel(timestamp: number): string {
-  return MONTH_FORMAT.format(new Date(timestamp));
+export function getMonthLabel(
+  locale: Intl.LocalesArgument,
+  timestamp: number,
+): string {
+  return useMonthFormat(locale).format(new Date(timestamp));
 }
 
 /**
@@ -133,6 +170,8 @@ export function getMonthLabel(timestamp: number): string {
 export function isInThisMonth(timestamp: number): boolean {
   const now = new Date();
   const date = new Date(timestamp);
-  return date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
+  return (
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear()
+  );
 }

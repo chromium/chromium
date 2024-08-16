@@ -116,7 +116,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   bool should_show_caret_ = false;
   bool is_caret_blinking_suspended_ = false;
   // Controls visibility of caret with opacity when the caret is blinking.
-  scoped_refptr<EffectPaintPropertyNode> effect_;
+  const Member<EffectPaintPropertyNode> effect_;
 };
 
 }  // namespace blink

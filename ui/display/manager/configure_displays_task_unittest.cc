@@ -53,17 +53,18 @@ class ConfigureDisplaysTaskTest : public testing::Test {
   ~ConfigureDisplaysTaskTest() override = default;
 
   void SetUp() override {
-    displays_.push_back(FakeDisplaySnapshot::Builder()
-                            .SetId(123)
-                            .SetNativeMode(medium_mode_60hz_.Clone())
-                            .SetCurrentMode(medium_mode_60hz_.Clone())
-                            .AddMode(medium_mode_29_98hz_.Clone())
-                            .AddMode(small_mode_60hz_.Clone())
-                            .AddMode(small_mode_30hz_.Clone())
-                            .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
-                            .SetBaseConnectorId(kEdpConnectorId)
-                            .SetVariableRefreshRateState(kVrrDisabled)
-                            .Build());
+    displays_.push_back(
+        FakeDisplaySnapshot::Builder()
+            .SetId(123)
+            .SetNativeMode(medium_mode_60hz_.Clone())
+            .SetCurrentMode(medium_mode_60hz_.Clone())
+            .AddMode(medium_mode_29_98hz_.Clone())
+            .AddMode(small_mode_60hz_.Clone())
+            .AddMode(small_mode_30hz_.Clone())
+            .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+            .SetBaseConnectorId(kEdpConnectorId)
+            .SetVariableRefreshRateState(VariableRefreshRateState::kVrrDisabled)
+            .Build());
     displays_.push_back(FakeDisplaySnapshot::Builder()
                             .SetId(456)
                             .SetNativeMode(big_mode_60hz_.Clone())
@@ -73,7 +74,8 @@ class ConfigureDisplaysTaskTest : public testing::Test {
                             .AddMode(small_mode_30hz_.Clone())
                             .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                             .SetBaseConnectorId(kSecondConnectorId)
-                            .SetVariableRefreshRateState(kVrrNotCapable)
+                            .SetVariableRefreshRateState(
+                                VariableRefreshRateState::kVrrNotCapable)
                             .Build());
   }
 
@@ -2599,8 +2601,10 @@ TEST_F(ConfigureDisplaysTaskTest, ConfigureVrr) {
 
   EXPECT_TRUE(callback_called_);
   EXPECT_EQ(ConfigureDisplaysTask::SUCCESS, status_);
-  EXPECT_EQ(displays_[0]->variable_refresh_rate_state(), kVrrEnabled);
-  EXPECT_EQ(displays_[1]->variable_refresh_rate_state(), kVrrNotCapable);
+  EXPECT_EQ(displays_[0]->variable_refresh_rate_state(),
+            VariableRefreshRateState::kVrrEnabled);
+  EXPECT_EQ(displays_[1]->variable_refresh_rate_state(),
+            VariableRefreshRateState::kVrrNotCapable);
   EXPECT_EQ(
       JoinActions(
           kTestModesetStr,

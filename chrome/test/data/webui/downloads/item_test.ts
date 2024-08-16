@@ -697,6 +697,31 @@ suite('item tests', function() {
     assertEquals('itemId', id);
   });
 
+  test(
+      'copy download link button copies download url and shows toast',
+      async () => {
+        const url = 'https://example.com';
+        item.set('data', createDownload({url: stringToMojoUrl(url)}));
+        flush();
+        const copyDownloadLinkButton =
+            item.shadowRoot!.querySelector<HTMLElement>('#copy-download-link');
+        assertTrue(!!copyDownloadLinkButton);
+        copyDownloadLinkButton.click();
+        const clipboardText = await navigator.clipboard.readText();
+
+        assertTrue(toastManager.isToastOpen);
+        assertTrue(toastManager.slottedHidden);
+        assertEquals(clipboardText, url);
+      });
+
+  test('copy download link button hidden when url not present', async () => {
+    item.set('data', createDownload({url: undefined}));
+    flush();
+    const copyDownloadLinkButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#copy-download-link');
+    assertFalse(isVisible(copyDownloadLinkButton));
+  });
+
   // <if expr="_google_chrome">
   test('ESBDownloadRowPromoShownAndClicked', async () => {
     const item = document.createElement('downloads-item');

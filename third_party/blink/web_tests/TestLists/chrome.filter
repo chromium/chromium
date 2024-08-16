@@ -1,0 +1,11 @@
+# This file lists WPTs that should run against chrome via chromedriver. Tests
+# should run in this configuration if they depend on the `//chrome` layer.
+# Otherwise, the test should be listed in `TestLists/headless_shell.filter`,
+# since headless shell is generally faster. Chromedriver tests should not be
+# listed in either of the files as they are handled separately.
+#
+# Further documentation:
+# https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/run_web_platform_tests.md
+
+# crbug.com/336866597 set_spc_transaction_mode not implemented for content shell
+external/wpt/secure-payment-confirmation/

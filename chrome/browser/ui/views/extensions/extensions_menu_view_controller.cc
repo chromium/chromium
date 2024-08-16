@@ -149,7 +149,7 @@ bool IsSitePermissionsButtonVisible(const extensions::Extension& extension,
                  SitePermissionsHelper::SiteInteraction::kGranted;
     }
     case PermissionsManager::UserSiteSetting::kGrantAllExtensions: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

@@ -124,11 +124,20 @@
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
     Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI." translateable="false">
+    Promo
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the promo for history search powered by AI." translateable="false">
+    Close promo
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
     Search your history, powered by AI
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI.">
     Using everyday language, you can search your browsing history using phrases like "pizza places near me" or “family-friendly parks downtown". Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Manage your history search setting<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL" desc="On the history page, the accessibility label on the menu to select whether to filter results grouped by date or by group." translateable="false">
+    Filter
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date.">
     Show by date
@@ -173,23 +182,26 @@
     You can enter any phrases or details you remember from pages you browsed in the past, like "comfortable walking shoes". <ph name="SHORTCUT">$1<ex>CTRL+F</ex></ph> to search.
   </message>
 
-  <!-- For Product Specifications -->
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY" desc="Text shown for product specifications tab when no sets are present." translateable="false">
-    No Product Specifications sets
+  <!-- For Compare -->
+  <message name="IDS_COMPARE_HISTORY_EMPTY" desc="Text shown for comparison tables tab when no sets are present.">
+    No comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
-    Product Specifications lists
+  <message name="IDS_COMPARE_HISTORY_HEADER" desc="Header text for comparison tables tab in history.">
+    Comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE" desc="Text for deleting a single row in Product Specifications history" translateable="false">
-    Remove from lists
+  <message name="IDS_COMPARE_HISTORY_INFO" desc="Info disclaimer text for comparison tables tab in history.">
+    Tabs you delete from your Chrome history will still show up in your comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_INFO" desc="Info disclaimer text for product specifications tab in history." translateable="false">
-    Tabs you delete from your product specifications tables will still show up in your Chrome history.
+  <message name="IDS_COMPARE_HISTORY_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in tab compare history">
+    More actions for comparison table <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph>
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in Product Specifications history" translateable="false">
-    More actions for product set <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph>
+  <message name="IDS_COMPARE_HISTORY_MENU_ITEM" desc="The title of the link in the history UI that navigates the user to a page showing the tables being maintained by the tab compare feature.">
+    Comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_ROW" desc="Text for a single row in Product Specifications history" translateable="false">
-    Analyze <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
+  <message name="IDS_COMPARE_HISTORY_REMOVE" desc="Text for deleting a single row in tab compare history">
+    Remove from tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_ROW" desc="Text for a single row in tab compare history">
+    Compare <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
   </message>
 </grit-part>

@@ -380,6 +380,10 @@ LoginShelfView::LoginShelfView(
       Shell::Get()->login_screen_controller()->data_dispatcher());
   enterprise_domain_model_observation_.Observe(
       Shell::Get()->system_tray_model()->enterprise_domain());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
 LoginShelfView::~LoginShelfView() {
@@ -427,8 +431,6 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
 
   GetViewAccessibility().SetNextFocus(shelf->GetStatusAreaWidget());
-  node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
 void LoginShelfView::OnShelfConfigUpdated() {

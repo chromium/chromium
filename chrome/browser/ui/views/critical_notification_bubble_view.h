@@ -41,7 +41,6 @@ class CriticalNotificationBubbleView : public views::BubbleDialogDelegateView {
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
   void Init() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
 

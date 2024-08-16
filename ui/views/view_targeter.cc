@@ -90,13 +90,13 @@ View* ViewTargeter::FindTargetForGestureEvent(View* root,
   //                   a RootViewTargeter). Provide a default implementation
   //                   here if we need to be able to perform gesture targeting
   //                   starting at an arbitrary node in a Views tree.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ui::EventTarget* ViewTargeter::FindNextBestTargetForGestureEvent(
     ui::EventTarget* previous_target,
     const ui::GestureEvent& gesture) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace views

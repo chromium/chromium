@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/webauthn/enclave_manager.h"
 
 #include <array>
@@ -360,8 +365,10 @@ cbor::Value BuildRegistrationMessage(
                              : enclave::kSoftwareKey;
   pub_keys.emplace(key_type, identity_key.GetSubjectPublicKeyInfo());
   if (uv_key) {
-    pub_keys.emplace(enclave::kUserVerificationKey,
-                     uv_key->key().GetPublicKey());
+    const char* uv_key_type = uv_key->key().IsHardwareBacked()
+                                  ? enclave::kUserVerificationKey
+                                  : enclave::kSoftwareUserVerificationKey;
+    pub_keys.emplace(uv_key_type, uv_key->key().GetPublicKey());
   }
 
   cbor::Value::MapValue request1;
@@ -3065,7 +3072,7 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
               uv_signing_key->key().Sign(
                   message_to_be_signed,
                   base::BindOnce(
-                      [](std::string device_id,
+                      [](std::string device_id, const bool is_hardware_backed,
                          base::OnceCallback<void(
                              std::optional<enclave::ClientSignature>)>
                              result_callback,
@@ -3084,11 +3091,15 @@ enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback(
                         client_signature.signature =
                             std::move(maybe_signature.value());
                         client_signature.key_type =
-                            enclave::ClientKeyType::kUserVerified;
+                            is_hardware_backed
+                                ? enclave::ClientKeyType::kUserVerified
+                                : enclave::ClientKeyType::kSoftwareUserVerified;
                         std::move(result_callback)
                             .Run(std::move(client_signature));
                       },
-                      std::move(device_id), std::move(result_callback)));
+                      std::move(device_id),
+                      uv_signing_key->key().IsHardwareBacked(),
+                      std::move(result_callback)));
             },
             enclave_manager->user_->device_id(),
             std::move(message_to_be_signed), std::move(result_callback));

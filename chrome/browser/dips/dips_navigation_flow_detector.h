@@ -55,7 +55,7 @@ class DipsNavigationFlowDetector
 
  protected:
   explicit DipsNavigationFlowDetector(content::WebContents* web_contents,
-                                      DIPSService* dips_service);
+                                      DIPSServiceImpl* dips_service);
 
   void MaybeEmitUkmForPreviousPage();
   bool CanEmitUkmForPreviousPage() {
@@ -120,7 +120,7 @@ class DipsNavigationFlowDetector
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
   // with the BrowserContext/Profile, which will outlive the WebContents that
   // DipsNavigationFlowDetector is observing.
-  raw_ptr<DIPSService> dips_service_;
+  raw_ptr<DIPSServiceImpl> dips_service_;
 
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
 

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
@@ -21,8 +22,48 @@ static_library("lobster") {
 
   deps = [
     "//ash/public/cpp",
+    "//chrome/browser/ash/lobster",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash/lobster",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "lobster_page_handler_unittest.cc" ]
+
+  deps = [
+    ":lobster",
+    "//ash/public/cpp:cpp",
+    "//base",
+    "//base/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
+
+mojom("lobster_mojom") {
+  sources = [ "lobster.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "lobster.mojom.StatusCode"
+          cpp = "::ash::LobsterErrorCode"
+        },
+      ]
+
+      traits_headers = [ "lobster_mojom_traits.h" ]
+      traits_public_deps = [ "//ash/public/cpp:cpp" ]
+    },
   ]
 }

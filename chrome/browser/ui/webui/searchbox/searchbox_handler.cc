@@ -349,7 +349,7 @@ std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
               ntp_features::kRealboxCr23ExpandedStateIcons) ||
           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23All)) {
         mojom_match->is_weather_answer_suggestion =
-            match.answer->type() == omnibox::ANSWER_TYPE_WEATHER;
+            match.answer_type == omnibox::ANSWER_TYPE_WEATHER;
       }
     }
     mojom_match->is_rich_suggestion =
@@ -491,9 +491,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
-  bool redesigned_modules_enabled = ntp_features::IsNtpModulesRedesignedEnabled(
-      g_browser_process->GetApplicationLocale(),
-      GetVariationsServiceCountryCode(g_browser_process->variations_service()));
+  bool redesigned_modules_enabled =
+      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
   source->AddString("realboxWidthBehavior",
                     redesigned_modules_enabled ? "wide" : "");
   source->AddBoolean("realboxIsTall", redesigned_modules_enabled);

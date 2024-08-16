@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">‏לאחר מכן, אתר שבו ביקרת יכול לשלוח בקשה ל-Chrome כדי לגלות מהם תחומי העניין שלך ולהתאים אישית את המודעות שמוצגות לך. Chrome יכול לשתף עד 3 תחומי עניין.</translation>
 <translation id="2563121210305478421">‏להפעיל את Chrome מחדש?</translation>
 <translation id="2569974318947988067">‏Chrome ינסה לשדרג את הניווטים ל-HTTPS</translation>
+<translation id="2571392474191184472">‏הארגון שלך מנהל את Chrome</translation>
 <translation id="2574930892358684005">‏המשתמש <ph name="EXISTING_USER" /> כבר מחובר לפרופיל Chrome הזה. כדי להפריד בין פעילויות גלישה, Chrome יכול ליצור עבורך פרופיל משלך.</translation>
 <translation id="2580411288591421699">‏אין אפשרות להתקין את אותה גרסת Google Chrome הפועלת כעת. יש לסגור את Google Chrome ולנסות שוב.</translation>
 <translation id="2586406160782125153">‏הפעולה תמחק את נתוני הגלישה מהמכשיר. כדי לאחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
@@ -132,7 +133,7 @@
 <translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2825024317344269723">‏אתר מסוכן. ‫Chrome הסיר את ההתראות.</translation>
 <translation id="2846251086934905009">שגיאת התקנה: פעולת מנהל ההתקנה לא הושלמה. ההתקנה בוטלה.</translation>
-<translation id="2847461019998147611">‏הצגת Google Chrome בשפה זו</translation>
+<translation id="2847461019998147611">‏הצגת Google Chrome בשפה הזו</translation>
 <translation id="2853415089995957805">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, Chrome טוען מראש דפים שיש סיכוי גבוה שייפתחו</translation>
 <translation id="2857540653560290388">‏הפעלת Chrome...</translation>
 <translation id="2857972467023607093">‏כבר קיים פרופיל Chrome עם החשבון הזה</translation>
@@ -211,6 +212,8 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">‏כדי להשתמש ב-Google Chrome, נדרש Windows מגרסה 10 ואילך.</translation>
 <translation id="3835168907083856002">‏ייווצר פרופיל Chrome חדש בשביל <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי למצוא 
+ מכשירי Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">‏יש לסגור את כל החלונות של Google Chrome ולנסות שוב.</translation>
 <translation id="3865754807470779944">‏מותקנת גרסה <ph name="PRODUCT_VERSION" /> של Chrome</translation>
 <translation id="3873044882194371212">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
@@ -417,6 +420,7 @@
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
 <translation id="6943584222992551122">‏נתוני הגלישה של האדם הזה יימחקו מהמכשיר. כדי לשחזר את הנתונים, יש להיכנס ל-Chrome בתור<ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">‏כלל נכנס לגרסת הבטא של Google Chrome כדי לאפשר תנועת mDNS.</translation>
+<translation id="6979589607440534284">‏מידע על חסימה של קבצים מסוימים ב-Chrome, נפתח בכרטיסייה חדשה</translation>
 <translation id="7011190694940573312">ההתקנה נכשלה כי הגרסה הזו של מערכת ההפעלה לא נתמכת.</translation>
 <translation id="7024536598735240744">שגיאה בפתיחה: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ההתקנה נעצרה.</translation>
@@ -439,6 +443,7 @@
 <translation id="7177959540995930968">‏מידע נוסף לגבי התכונות האלה זמין בהגדרות של Chrome.</translation>
 <translation id="7193885263065350793">‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">‏בחרת להיכנס לחשבון מנוהל, ויינתן למנהל המערכת שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
 <translation id="7295052994004373688">‏זו השפה שבה מוצג ממשק המשתמש של Google Chrome</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
 <translation id="7302361266603927550">‏חלק מהנתונים ב-Chrome עדיין לא נשמרו בחשבון Google. כדאי לחכות כמה דקות לפני היציאה מהחשבון. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
@@ -572,6 +577,7 @@
 <translation id="8989968390305463310">‏היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chrome מחיקה אוטומטית של תחומי העניין שלך על בסיס מתחלף מדי חודש. תחומי עניין שלא הוסרו עוברים רענון.</translation>
 <translation id="8999117580775242387">‏כש-HTTPS לא יהיה זמין, Chrome ישתמש בחיבור לא מאובטח בלי להציג אזהרה</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏יש עדכון זמין ל-Chrome}=1{‏יש עדכון זמין ל-Chrome}one{‏עדכון ל-Chrome זמין כבר # ימים}two{‏עדכון ל-Chrome זמין כבר # ימים}other{‏עדכון ל-Chrome זמין כבר # ימים}}</translation>
+<translation id="9014771989710951291">‏מספר ארגונים מנהלים את Chrome</translation>
 <translation id="9024318700713112071">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="9053892488859122171">‏מערכת ChromeOS Flex</translation>
 <translation id="9090566250983691233">‏למה קבצים מסוימים נחסמים ב-Chrome</translation>

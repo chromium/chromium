@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,8 +30,7 @@ class View;
 //  feature. Classes outside this feature should make calls to the coordinator.
 //  This class has the same lifetime as the browser.
 //
-class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
-                                public SidePanelEntryObserver,
+class ReadAnythingCoordinator : public SidePanelEntryObserver,
                                 public TabStripModelObserver,
                                 public content::WebContentsObserver,
                                 public BrowserListObserver {
@@ -46,6 +44,9 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   explicit ReadAnythingCoordinator(Browser* browser);
   ~ReadAnythingCoordinator() override;
 
+  // This class does not do anything until Initialize is called.
+  void Initialize();
+
   void AddObserver(ReadAnythingCoordinator::Observer* observer);
   void RemoveObserver(ReadAnythingCoordinator::Observer* observer);
 
@@ -56,13 +57,8 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   void ActivePageNotDistillableForTesting();
 
  private:
-  friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
   friend class ReadAnythingCoordinatorScreen2xDataCollectionModeTest;
-
-  void CreateAndRegisterEntriesForExistingWebContents(
-      TabStripModel* tab_strip_model);
-  void CreateAndRegisterEntryForWebContents(content::WebContents* web_contents);
 
   // Starts the delay for showing the IPH after the tab has changed.
   void StartPageChangeDelay();
@@ -115,11 +111,12 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   bool post_tab_change_delay_complete_ = true;
   base::RetainingOneShotTimer delay_timer_;
 
+  // Owns this.
+  raw_ptr<Browser> browser_;
+
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
   base::WeakPtrFactory<ReadAnythingCoordinator> weak_ptr_factory_{this};
-
-  BROWSER_USER_DATA_KEY_DECL();
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_COORDINATOR_H_

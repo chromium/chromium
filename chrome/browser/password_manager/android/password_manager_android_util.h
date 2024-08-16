@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
-#include <memory>
-
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 class PrefService;
@@ -49,9 +47,7 @@ bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
                         const PrefService* pref_service);
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
-// based on feature flags, minimum GmsCore version and other criteria.
-// If switches::kSkipLocalUpmGmsCoreVersionCheckForTesting is added to the
-// command-line, the GmsCore version check will be skipped.
+// based on minimum GmsCore version and other criteria.
 void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
                                       const base::FilePath& login_db_directory);
 
@@ -69,7 +65,6 @@ void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
 // is returned.
 // - Otherwise no warning is shown.
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
-    const std::string& gms_version_str,
     PrefService* pref_service);
 
 }  // namespace password_manager_android_util

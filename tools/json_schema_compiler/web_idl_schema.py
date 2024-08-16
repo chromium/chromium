@@ -6,7 +6,8 @@
 import json
 import os.path
 import sys
-from typing import Optional
+from typing import List, Optional
+from json_parse import OrderedDict
 
 # This file is a peer to json_schema.py and idl_schema.py. Each of these files
 # understands a certain format describing APIs (either JSON, old extensions IDL
@@ -34,6 +35,15 @@ else:
 
 IDLNode = idl_node.IDLNode  # Used for type hints.
 
+
+class SchemaCompilerError(Exception):
+
+  def __init__(self, message: str, node: IDLNode):
+    super().__init__(
+        node.GetLogLine(f'Error processing node {node}: {message}')
+    )
+
+
 def GetChildWithName(node: IDLNode, name: str) -> Optional[IDLNode]:
   """Gets the first child node with a given name from an IDLNode.
 
@@ -60,18 +70,111 @@ def GetTypeName(node: IDLNode) -> str:
     The string representing the name given to this IDL type definition.
 
   Raises:
-    Exception: If a child of class 'Type' was not found on the node.
+    SchemaCompilerError: If a child of class 'Type' was not found on the node.
   """
   for child_node in node.GetChildren():
     if child_node.GetClass() == 'Type':
       return child_node.GetOneOf('Typeref').GetName()
-  raise Exception(
-      'Could not find Type name for node %s in %s'
-      % (node.GetName(), node.GetProperty('FILENAME'))
+  raise SchemaCompilerError(
+      'Could not find Type node when looking for Typeref name.', node
   )
 
 
-class Namespace():
+def GetExtendedAttributes(node: IDLNode) -> Optional[List[IDLNode]]:
+  """Returns the list of extended attribute nodes on a given IDLNode
+
+  Args:
+    node: The IDLNode to get the extended attributes from.
+
+  Returns:
+    The list of ExtAttribute IDLNodes from the node if any exist, otherwise
+    returns an empty list.
+  """
+  ext_attribute_node = node.GetOneOf('ExtAttributes')
+  if ext_attribute_node is None:
+    return []
+  return ext_attribute_node.GetListOf('ExtAttribute')
+
+
+class Type:
+  """Represents an IDL type and maps it to the corresponding python type.
+
+  Given a Type node representing the type of a dictionary member, function
+  parameter or return, converts it into a Python dictionary the JSON schema
+  compiler expects to see.
+
+  Attributes:
+    node: The IDLNode that represents this type.
+    additional_properties: A dictionary of additional key value pairs to be
+      included on the resulting dictionary after processing.
+  """
+
+  def __init__(self, node: IDLNode, additional_properties: dict) -> None:
+    assert node.GetClass() == 'Type', node.GetLogLine(
+        'Attempted to process a "Type" node, but was passed a "%s" node.'
+        % (node.GetClass())
+    )
+    self.node = node
+    self.additional_properties = additional_properties
+
+  def process(self) -> dict:
+    properties = self.additional_properties
+    basic_type = self.node.GetOneOf('PrimitiveType', 'StringType')
+    if basic_type:
+      name = basic_type.GetName()
+      if name == 'void':
+        # If it's a void return, we bail early.
+        return None
+
+      if name == 'boolean':
+        properties['type'] = 'boolean'
+      elif name == 'double':
+        properties['type'] = 'number'
+      elif name == 'long':
+        properties['type'] = 'integer'
+      elif name == 'DOMString':
+        properties['type'] = 'string'
+      else:
+        raise SchemaCompilerError(
+            'Unsupported basic type found when processing type.', basic_type
+        )
+    else:
+      unknown_child = self.node.GetChildren()[0]
+      raise SchemaCompilerError(
+          'Unsupported type class when processing type.', unknown_child
+      )
+
+    return properties
+
+
+class Operation:
+  """Represents an API function and processes the details of it.
+
+  Given an IDLNode representing an API function, processes it into a Python
+  dictionary that the JSON schema compiler expects to see.
+
+  Attributes:
+    node: The IDLNode for the Operation definition that represents this
+      function.
+  """
+
+  def __init__(self, node: IDLNode) -> None:
+    self.node = node
+
+  def process(self) -> dict:
+    properties = OrderedDict()
+    properties['name'] = self.node.GetName()
+
+    # Return type processing.
+    type_node = self.node.GetOneOf('Type')
+    return_type = Type(type_node, {'name': self.node.GetName()}).process()
+    if return_type is not None:
+      properties['returns'] = return_type
+
+    return properties
+
+
+class Namespace:
   """Represents an API namespace and processes individual details of it.
 
   Given an IDLNode that is the root of a tree representing an API Interface,
@@ -79,30 +182,41 @@ class Namespace():
   see.
 
   Attributes:
-    name:
-      The name the API namespace will be exposed on.
-    namespace_node:
-      The root IDLNode for the abstract syntax tree representing this namespace.
+    name: The name the API namespace will be exposed on.
+    namespace_node: The root IDLNode for the abstract syntax tree representing
+      this namespace.
   """
 
   def __init__(self, name: str, namespace_node: IDLNode) -> None:
     """Initializes the instance with the namespace name and root IDLNode.
 
     Args:
-      name:
-        The name the API namespace will be exposed on.
-      namespace_node:
-        The root IDLNode for the abstract syntax tree representing this
-        namespace.
+      name: The name the API namespace will be exposed on.
+      namespace_node: The root IDLNode for the abstract syntax tree representing
+        this namespace.
     """
     self.name = name
     self.namespace = namespace_node
 
   def process(self) -> dict:
-    return {'namespace': self.name}
+    functions = []
+
+    for node in self.namespace.GetListOf('Operation'):
+      functions.append(Operation(node).process())
+
+    nodoc = 'nodoc' in [
+        attribute.GetName()
+        for attribute in GetExtendedAttributes(self.namespace)
+    ]
+
+    return {
+        'namespace': self.name,
+        'functions': functions,
+        'nodoc': nodoc,
+    }
 
 
-class IDLSchema():
+class IDLSchema:
   """Holds the entirety of a parsed IDL schema, ready to process further.
 
   Given an abstract syntax tree of IDLNodes and IDLAttributes, converts into a
@@ -126,22 +240,18 @@ class IDLSchema():
     # processing "shared types", which are not exposed on a Browser interface.
     browser_node = GetChildWithName(self.idl, 'Browser')
     if browser_node is None or browser_node.GetClass() != 'Interface':
-      raise Exception(
-          'Required partial Browser interface not found in %s'
-          % (self.idl.GetProperty('FILENAME'))
+      raise SchemaCompilerError(
+          'Required partial Browser interface not found in schema.', self.idl
       )
 
     # The 'Browser' Interface has one attribute describing the name this API is
     # exposed on.
     attributes = browser_node.GetListOf('Attribute')
     if len(attributes) != 1:
-      raise Exception(
-          'The Browser interface should have exactly one attribute for the name'
-          ' the API will be exposed under in %s(%s)'
-          % (
-              browser_node.GetProperty('FILENAME'),
-              browser_node.GetProperty('LINENO'),
-          )
+      raise SchemaCompilerError(
+          'The partial Browser interface should have exactly one attribute for'
+          ' the name the API will be exposed under.',
+          browser_node,
       )
     api_name = attributes[0].GetName()
     idl_type = GetTypeName(attributes[0])
@@ -160,8 +270,7 @@ def Load(filename):
   dictionary in a format that the JSON schema compiler expects to see.
 
   Args:
-    filename:
-      A string of the filename of the IDL file to be parsed.
+    filename: A string of the filename of the IDL file to be parsed.
 
   Returns:
     A dictionary representing the parsed API schema details.

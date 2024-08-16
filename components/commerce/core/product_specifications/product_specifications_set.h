@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
 #include "url/gurl.h"
 
@@ -56,6 +57,18 @@ class ProductSpecificationsSet {
                            const std::vector<GURL>& urls,
                            const std::string& name);
 
+  // Title support is being added which necessitates the ProductSpecifications
+  // APIs using UrlInfo instead of GURL. These changes are being phased in
+  // over several CLs, so the constructors with both std::vector<GURL> and
+  // std::vector<UrlInfo> will be used transitionally with the constructor
+  // which uses std::vector<GURL> being deprecated when title support is
+  // complete.
+  ProductSpecificationsSet(const std::string& uuid,
+                           const int64_t creation_time_usec_since_epoch,
+                           const int64_t update_time_usec_since_epoch,
+                           const std::vector<UrlInfo>& url_info,
+                           const std::string& name);
+
   ProductSpecificationsSet(const ProductSpecificationsSet&);
   ProductSpecificationsSet& operator=(const ProductSpecificationsSet&) = delete;
 
@@ -71,7 +84,9 @@ class ProductSpecificationsSet {
   const base::Time& update_time() const { return update_time_; }
 
   // Product urls for each item in the set
-  const std::vector<GURL>& urls() const { return urls_; }
+  const std::vector<GURL> urls() const;
+
+  const std::vector<UrlInfo> url_infos() const { return url_infos_; }
 
   // Name of the set
   const std::string& name() const { return name_; }
@@ -90,7 +105,7 @@ class ProductSpecificationsSet {
   const base::Uuid uuid_;
   const base::Time creation_time_;
   base::Time update_time_;
-  std::vector<GURL> urls_;
+  std::vector<UrlInfo> url_infos_;
   std::string name_;
 };
 

@@ -24,7 +24,9 @@ class GPU_EXPORT GPUTestConfig {
     kOsWin10 = 1 << 1,
     kOsWin = kOsWin10,
     // Jump over a few bits for future Windows versions.
-    kOsMacLeopard = 1 << 10,
+    // Versions after Sonoma are now at the top of the list, replacing obsolete
+    // versions.
+    kOsMacSequoia = 1 << 10,
     kOsMacSnowLeopard = 1 << 11,
     kOsMacLion = 1 << 12,
     kOsMacMountainLion = 1 << 13,
@@ -39,19 +41,18 @@ class GPU_EXPORT GPUTestConfig {
     kOsMacMonterey = 1 << 22,
     kOsMacVentura = 1 << 23,
     kOsMacSonoma = 1 << 24,
-    kOsMac = kOsMacLeopard | kOsMacSnowLeopard | kOsMacLion |
+    kOsMac = kOsMacSequoia | kOsMacSnowLeopard | kOsMacLion |
              kOsMacMountainLion | kOsMacMavericks | kOsMacYosemite |
              kOsMacElCapitan | kOsMacSierra | kOsMacHighSierra | kOsMacMojave |
              kOsMacCatalina | kOsMacBigSur | kOsMacMonterey | kOsMacVentura |
              kOsMacSonoma,
-    // Jump over a few bits for future OSX versions.
     kOsLinux = 1 << 25,
     kOsChromeOS = 1 << 26,
     kOsAndroid = 1 << 27,
     kOsFuchsia = 1 << 28,
     kOsIOS = 1 << 29,
     // If we run out of bits, please retire older OS versions, like WinXP,
-    // MacLeopard, etc., for which we no longer have bots.
+    // MacSnowLeopard, etc., for which we no longer have bots.
   };
 
   enum BuildType {

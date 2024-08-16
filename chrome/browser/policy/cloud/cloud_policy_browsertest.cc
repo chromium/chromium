@@ -5,9 +5,12 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -37,6 +40,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
@@ -59,9 +63,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -321,7 +322,10 @@ class CloudPolicyTest : public PlatformBrowserTest,
                 AccountId::FromUserEmail(GetTestUser())));
     user_policy_key_file_ = user_policy_key_dir.AppendASCII(sanitized_username)
                                 .AppendASCII("policy.pub");
-#endif
+#else
+    user_policy_key_file_ =
+        profile->GetPath().AppendASCII("Policy").AppendASCII("Signing Key");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void TearDownOnMainThread() override {
@@ -395,6 +399,19 @@ class CloudPolicyTest : public PlatformBrowserTest,
   }
 
   void OnPolicyServiceInitialized(PolicyDomain domain) override {}
+
+  void FlushNonChromeOSStoreIOTasks() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    base::RunLoop run_loop;
+    profile()
+        ->GetUserCloudPolicyManager()
+        ->user_store()
+        ->background_task_runner()
+        ->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(),
+                          base::Milliseconds(0));
+    run_loop.Run();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   base::FilePath user_policy_key_file_;
@@ -505,7 +522,6 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, MAYBE_InvalidatePolicy) {
   policy_service->RemoveObserver(POLICY_DOMAIN_CHROME, this);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
   PolicyService* policy_service = GetPolicyService();
   {
@@ -515,6 +531,11 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
                                     PolicyFetchReason::kTest);
     run_loop.Run();
   }
+  // Non-ChromeOS policy stack persist policies in the background thread
+  // The code path from RefreshPolicies does not wait for the persistence
+  // to complete, unlike in the policy stack on ChromeOS.
+  // Flush the tasks to persist the policies.
+  FlushNonChromeOSStoreIOTasks();
 
   // Read the initial key.
   std::string initial_key;
@@ -540,6 +561,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
                                     PolicyFetchReason::kTest);
     run_loop.Run();
   }
+  FlushNonChromeOSStoreIOTasks();
   EXPECT_TRUE(expected.Equals(policy_service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
 
@@ -558,6 +580,7 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
                                     PolicyFetchReason::kTest);
     run_loop.Run();
   }
+  FlushNonChromeOSStoreIOTasks();
   EXPECT_TRUE(expected.Equals(policy_service->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))));
   std::string current_key;
@@ -568,15 +591,17 @@ IN_PROC_BROWSER_TEST_P(CloudPolicyTest, FetchPolicyWithRotatedKey) {
 
   EXPECT_EQ(rotated_key, current_key);
 }
-#endif
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CloudPolicyTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{.enabled_features =
+                              {invalidation::kInvalidationsWithDirectMessages}},
+        FeaturesTestParam{.enabled_features = {policy::kPolicyFetchWithSha256}},
+        FeaturesTestParam{
+            .disabled_features = {policy::kPolicyFetchWithSha256}}));
 
 TEST(CloudPolicyProtoTest, VerifyProtobufEquivalence) {
   // There are 2 protobufs that can be used for user cloud policy:

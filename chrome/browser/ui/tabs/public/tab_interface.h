@@ -39,8 +39,17 @@ class TabInterface {
  public:
   // This method exists to ease the transition from WebContents to TabInterface.
   // This method should only be called on instances of WebContents that are
-  // known to be tabs.
+  // known to be tabs. Calling this on a non-tab will crash.
   static TabInterface* GetFromContents(content::WebContents* web_contents);
+
+  // Code that references a WebContents should already know whether the
+  // WebContents is a tab, and thus should use GetFromContents(). For historical
+  // reasons, there is code in the repository that typically lives in or below
+  // //content which does not know whether it's being invoked in the context of
+  // a tab. This is an anti-pattern that should be avoided. When it is
+  // unavoidable, this method may be used. Features that live entirely above the
+  // //content layer should not use this method.
+  static TabInterface* MaybeGetFromContents(content::WebContents* web_contents);
 
   // When a tab is in the background, the WebContents may be discarded to save
   // memory. When a tab is in the foreground it is guaranteed to have a

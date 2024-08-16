@@ -14,10 +14,15 @@
 
 namespace blink {
 
-ScriptWrappableTaskState::ScriptWrappableTaskState() = default;
+ScriptWrappableTaskState::ScriptWrappableTaskState(
+    WrappableTaskState* task_state)
+    : wrapped_task_state_(task_state) {
+  CHECK(wrapped_task_state_);
+}
 
 void ScriptWrappableTaskState::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(wrapped_task_state_);
 }
 
 // static

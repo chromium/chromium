@@ -202,13 +202,7 @@ class NativeMessagingLaunchApiTest : public NativeMessagingApiTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Disabled on Windows due to timeouts; see https://crbug.com/984897.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Success DISABLED_Success
-#else
-#define MAYBE_Success Success
-#endif
-IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, MAYBE_Success) {
+IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Success) {
   ProcessManager::SetEventPageIdleTimeForTesting(1);
   ProcessManager::SetEventPageSuspendingTimeForTesting(1);
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));

@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -470,7 +471,8 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
 
     const webapps::AppId& app_id =
         web_app::GenerateAppIdFromManifestId(manifest_id);
-    if (!provider_->registrar_unsafe().IsLocallyInstalled(app_id)) {
+    if (!provider_->registrar_unsafe().IsInstallState(
+            app_id, {proto::INSTALLED_WITH_OS_INTEGRATION})) {
       continue;
     }
 

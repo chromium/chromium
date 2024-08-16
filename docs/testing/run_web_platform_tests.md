@@ -59,16 +59,8 @@ increase verbosity.
 
 ### Test expectations and Baselines
 
-The
-[ChromeTestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file contains the list of all known Chrome
-specific test failures, and it inherits or overrides test expectations from the default [TestExpectations](../../third_party/blink/web_tests/ChromeTestExpectations) file.
-A special tag `Chrome` is introduced to specify chrome specific failures. See the
-[Web Test Expectations documentation](./web_test_expectations.md) for more
-on this.
-
-Chrome specific baselines reside at `third_party/blink/web_tests/platform/linux-chrome`, and
-falls back to `third_party/blink/web_tests/platform/linux`. To update baselines for chrome,
-you should trigger `linux-wpt-chromium-rel` and run [rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after the results are ready.
+To suppress failures, `run_wpt_tests.py` uses the [same `*-expected.txt` and
+TestExpectations files](web_test_expectations.md) that `run_web_tests.py` uses.
 
 ### Running webdriver tests with Chrome
 

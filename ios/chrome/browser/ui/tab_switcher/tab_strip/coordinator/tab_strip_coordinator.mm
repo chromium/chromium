@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 
+#import <MaterialComponents/MaterialSnackbar.h>
+
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
@@ -17,9 +19,14 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_strip_last_tab_dragged_alert_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
@@ -34,6 +41,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
@@ -255,6 +263,42 @@
   };
 
   [_tabGroupConfirmationCoordinator start];
+
+  self.tabStripViewController.tabGroupConfirmationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupConfirmationCommands);
+}
+
+- (void)showTabStripTabGroupSnackbarAfterClosingGroups:
+    (int)numberOfClosedGroups {
+  if (!IsTabGroupSyncEnabled() ||
+      self.browser->GetBrowserState()->IsOffTheRecord()) {
+    return;
+  }
+
+  // Create the "Open Tab Groups" action.
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  __weak id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  __weak id<TabGridCommands> tabGridHandler =
+      HandlerForProtocol(dispatcher, TabGridCommands);
+  void (^openTabGroupPanelAction)() = ^{
+    [applicationHandler displayTabGridInMode:TabGridOpeningMode::kRegular];
+    [tabGridHandler showTabGroupsPanelAnimated:NO];
+  };
+
+  // Create and config the snackbar.
+  NSString* messageLabel =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, numberOfClosedGroups));
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageLabel);
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = openTabGroupPanelAction;
+  action.title = l10n_util::GetNSString(IDS_IOS_TAB_GROUP_SNACKBAR_ACTION);
+  message.action = action;
+
+  id<SnackbarCommands> snackbarCommandsHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  [snackbarCommandsHandler showSnackbarMessage:message];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

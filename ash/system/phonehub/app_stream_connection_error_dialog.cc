@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -74,7 +75,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
       bool is_on_different_network,
       bool is_phone_on_cellular)
       : start_tethering_callback_(std::move(start_tethering_callback)) {
-    SetModalType(ui::MODAL_TYPE_WINDOW);
+    SetModalType(ui::mojom::ModalType::kWindow);
 
     SetPaintToLayer();
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);

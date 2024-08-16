@@ -335,7 +335,10 @@ class FakeAutofillDriver : public TestAutofillDriver {
     return form;
   }
 
-  MOCK_METHOD(void, TriggerFormExtractionInDriverFrame, (), (override));
+  MOCK_METHOD(void,
+              TriggerFormExtractionInDriverFrame,
+              (AutofillDriverRouterAndFormForestPassKey),
+              (override));
 
   // Fakes whether a subframe is a root frame from the perspective of
   // MockFlattening(). In the real world, this can happen, for example, because

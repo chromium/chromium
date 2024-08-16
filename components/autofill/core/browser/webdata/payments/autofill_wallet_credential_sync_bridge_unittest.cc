@@ -13,21 +13,21 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,9 +36,9 @@ namespace autofill {
 namespace {
 
 using sync_pb::AutofillWalletCredentialSpecifics;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using syncer::EntityData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
@@ -70,10 +70,9 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL_WALLET_CREDENTIAL,
-            /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL_WALLET_CREDENTIAL,
+        /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
@@ -101,7 +100,7 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -117,14 +116,14 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
               loop.Quit();
             }));
     loop.Run();
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     syncer::UpdateResponseDataList initial_updates;
     for (const AutofillWalletCredentialSpecifics& specifics : remote_data) {
       initial_updates.push_back(SpecificsToUpdateResponse(specifics));
@@ -151,8 +150,8 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletCredentialSyncBridge> bridge_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

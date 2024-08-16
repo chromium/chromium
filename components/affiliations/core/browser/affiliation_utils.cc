@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
 #include <map>
@@ -33,10 +28,11 @@ const char kAndroidAppScheme[] = "android";
 // Returns a std::string_view corresponding to |component| in |uri|, or the empty
 // string in case there is no such component.
 std::string_view ComponentString(const std::string& uri,
-                                  const url::Component& component) {
-  if (!component.is_valid())
+                                 const url::Component& component) {
+  if (!component.is_valid()) {
     return std::string_view();
-  return std::string_view(uri.c_str() + component.begin, component.len);
+  }
+  return std::string_view(uri).substr(component.begin, component.len);
 }
 
 // Returns true if the passed ASCII |input| string contains nothing else than

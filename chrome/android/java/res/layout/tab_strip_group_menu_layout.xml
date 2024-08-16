@@ -7,22 +7,34 @@ found in the LICENSE file.
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-  <!--TODO(crbug.com/355483736): Update vertical margin here if necessary -->
-  <include
-      layout="@layout/tab_group_visual_data_text_input_layout" />
+  <EditText
+      tools:ignore="Autofill,LabelFor"
+      android:id="@+id/tab_group_title"
+      android:layout_height="0dp"
+      android:layout_width="match_parent"
+      android:layout_weight="1"
+      android:layout_marginTop="12dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:singleLine="true"
+      android:ellipsize="end"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:inputType="text|textNoSuggestions"
+      android:imeOptions="actionDone"
+      android:theme="@style/TabStripGroupContextMenuTitleTheme"
+      android:selectAllOnFocus="true" />
 
   <ViewStub
       android:id="@+id/color_picker_stub"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout="@layout/tab_group_color_picker_container" />
-
-  <include
-    layout="@layout/horizontal_divider" />
 
   <include
       layout="@layout/tab_switcher_action_menu_layout" />

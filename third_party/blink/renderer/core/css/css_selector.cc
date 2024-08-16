@@ -98,8 +98,6 @@ CSSSelector::CSSSelector(MatchType match_type,
           HasRareDataField::encode(false) | IsForPageField::encode(false) |
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
-          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
-          IsInvisibleField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           IsCaseSensitiveAttributeField::encode(
               HTMLDocument::IsCaseSensitiveAttribute(attribute))),
@@ -120,8 +118,6 @@ CSSSelector::CSSSelector(MatchType match_type,
           HasRareDataField::encode(true) | IsForPageField::encode(false) |
           IsImplicitlyAddedField::encode(false) |
           IsCoveredByBucketingField::encode(false) |
-          SignalField::encode(static_cast<unsigned>(Signal::kNone)) |
-          IsInvisibleField::encode(false) |
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           IsCaseSensitiveAttributeField::encode(
               HTMLDocument::IsCaseSensitiveAttribute(attribute))),
@@ -337,6 +333,10 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollMarker;
     case kPseudoScrollMarkerGroup:
       return kPseudoIdScrollMarkerGroup;
+    case kPseudoScrollNextButton:
+      return kPseudoIdScrollNextButton;
+    case kPseudoScrollPrevButton:
+      return kPseudoIdScrollPrevButton;
     case kPseudoScrollbarButton:
       return kPseudoIdScrollbarButton;
     case kPseudoScrollbarCorner:
@@ -412,7 +412,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoHorizontal:
     case kPseudoHost:
     case kPseudoHostContext:
-    case kPseudoHostHasAppearance:
+    case kPseudoHostHasNonAutoAppearance:
     case kPseudoHover:
     case kPseudoInRange:
     case kPseudoIncrement:
@@ -523,8 +523,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
-    {"-internal-shadow-host-has-appearance",
-     CSSSelector::kPseudoHostHasAppearance},
+    {"-internal-shadow-host-has-non-auto-appearance",
+     CSSSelector::kPseudoHostHasNonAutoAppearance},
     {"-internal-spatial-navigation-focus",
      CSSSelector::kPseudoSpatialNavigationFocus},
     {"-internal-video-persistent", CSSSelector::kPseudoVideoPersistent},
@@ -611,6 +611,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
+    {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
+    {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
     {"select-fallback-button", CSSSelector::kPseudoSelectFallbackButton},
     {"select-fallback-button-icon",
@@ -727,6 +729,12 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
+  if ((match->type == CSSSelector::kPseudoScrollNextButton ||
+       match->type == CSSSelector::kPseudoScrollPrevButton) &&
+      !RuntimeEnabledFeatures::CSSPseudoScrollButtonsEnabled()) {
+    return CSSSelector::kPseudoUnknown;
+  }
+
   if ((match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed) &&
       !RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
@@ -836,6 +844,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
+    case kPseudoScrollNextButton:
+    case kPseudoScrollPrevButton:
     case kPseudoSelectFallbackButton:
     case kPseudoSelectFallbackButtonIcon:
     case kPseudoSelectFallbackButtonText:
@@ -864,7 +874,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       }
       break;
     case kPseudoHasDatalist:
-    case kPseudoHostHasAppearance:
+    case kPseudoHostHasNonAutoAppearance:
     case kPseudoIsHtml:
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
@@ -1435,7 +1445,7 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
-    case CSSSelector::kPseudoHostHasAppearance:
+    case CSSSelector::kPseudoHostHasNonAutoAppearance:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
       // so that those adding new pseudos know they need to choose one path or
@@ -1648,9 +1658,9 @@ bool CSSSelector::RareData::MatchNth(unsigned unsigned_count) {
   // give up immediately if we see them.
   int max_value = std::numeric_limits<int>::max() / 2;
   int min_value = std::numeric_limits<int>::min() / 2;
-  if (UNLIKELY(unsigned_count > static_cast<unsigned>(max_value) ||
-               NthAValue() > max_value || NthAValue() < min_value ||
-               NthBValue() > max_value || NthBValue() < min_value)) {
+  if (unsigned_count > static_cast<unsigned>(max_value) ||
+      NthAValue() > max_value || NthAValue() < min_value ||
+      NthBValue() > max_value || NthBValue() < min_value) [[unlikely]] {
     return false;
   }
 

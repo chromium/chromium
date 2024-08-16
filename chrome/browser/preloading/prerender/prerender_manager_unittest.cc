@@ -262,7 +262,7 @@ class PrerenderManagerBasicRequirementTest
       case kSearchSuggestion:
         return prerender_utils::kDefaultSearchEngineMetricSuffix;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Navigates to another page that cannot be prerendered.

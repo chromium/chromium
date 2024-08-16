@@ -39,7 +39,7 @@ class ASH_EXPORT OverviewWindowOcclusionCalculator
 
  private:
   // OverviewObserver:
-  void OnOverviewModeWillStart() override;
+  void OnOverviewModeStarting() override;
   void OnOverviewModeStartingAnimationComplete(bool canceled) override;
   void OnOverviewModeEnding(OverviewSession* overview_session) override;
 

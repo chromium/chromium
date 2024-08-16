@@ -372,11 +372,11 @@ bool V4L2VideoDecoder::NeedsBitstreamConversion() const {
 
 bool V4L2VideoDecoder::CanReadWithoutStalling() const {
   NOTIMPLEMENTED();
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int V4L2VideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderType V4L2VideoDecoder::GetDecoderType() const {

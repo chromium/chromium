@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -77,6 +78,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -1140,7 +1142,7 @@ class TabListMediator {
                         if (closingTab == null) return;
 
                         if (mActionsOnAllRelatedTabs || filter.isIncognito()) {
-                            doCloseTab(tabId, closingTab, filter, /* canUndo= */ true);
+                            doCloseTab(tabId, closingTab, filter, /* allowUndo= */ true);
                             return;
                         }
 
@@ -1172,13 +1174,18 @@ class TabListMediator {
                             int tabId,
                             Tab closingTab,
                             TabGroupModelFilter filter,
-                            boolean canUndo) {
+                            boolean allowUndo) {
                         RecordUserAction.record("MobileTabClosed." + mComponentName);
 
+                        setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
                         if (mActionsOnAllRelatedTabs && filter.isTabInTabGroup(closingTab)) {
                             List<Tab> related = getRelatedTabsForId(tabId);
                             onGroupClosedFrom(tabId);
-                            filter.closeMultipleTabs(related, canUndo, /* hideTabGroups= */ true);
+                            filter.closeTabs(
+                                    TabClosureParams.closeTabs(related)
+                                            .allowUndo(allowUndo)
+                                            .hideTabGroups(true)
+                                            .build());
                         } else {
                             TabModel tabModel = filter.getTabModel();
                             onTabClosedFrom(tabId, mComponentName);
@@ -1186,7 +1193,11 @@ class TabListMediator {
                             Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
                             Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
 
-                            tabModel.closeTab(closingTab, nextTab, /* uponExit= */ false, canUndo);
+                            tabModel.closeTabs(
+                                    TabClosureParams.closeTab(closingTab)
+                                            .recommendedNextTab(nextTab)
+                                            .allowUndo(allowUndo)
+                                            .build());
                         }
                     }
 
@@ -2195,6 +2206,7 @@ class TabListMediator {
                                 QuickDeleteAnimationStatus.TAB_RESTORE)
                         .with(TabProperties.TAB_GROUP_COLOR_ID, colorId)
                         .with(TabProperties.VISIBILITY, View.VISIBLE)
+                        .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .build();
 
         if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(tab)) {
@@ -2953,26 +2965,32 @@ class TabListMediator {
 
     @VisibleForTesting
     void onMenuItemClicked(@IdRes int menuId, int tabId) {
-        if (menuId == R.id.close_tab) {
-            RecordUserAction.record("TabGroupItemMenu.Close");
+        boolean isSyncEnabled = TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile);
+        if (menuId == R.id.close_tab || menuId == R.id.delete_tab) {
+            boolean hideTabGroups = menuId == R.id.close_tab;
+            if (hideTabGroups) {
+                RecordUserAction.record("TabGroupItemMenu.Close");
+            } else {
+                RecordUserAction.record("TabGroupItemMenu.Delete");
+            }
+            setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             TabUiUtils.closeTabGroup(
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     tabId,
-                    /* hideTabGroups= */ true);
+                    hideTabGroups,
+                    isSyncEnabled,
+                    getMaybeUnsetShrinkCloseAnimationCallback(tabId));
         } else if (menuId == R.id.edit_group_name) {
             RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
             RecordUserAction.record("TabGroupItemMenu.Ungroup");
-            ungroupTabGroup(tabId);
-        } else if (menuId == R.id.delete_tab) {
-            RecordUserAction.record("TabGroupItemMenu.Delete");
-            TabUiUtils.closeTabGroup(
+            TabUiUtils.ungroupTabGroup(
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     tabId,
-                    /* hideTabGroups= */ false);
+                    isSyncEnabled);
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
@@ -3055,32 +3073,6 @@ class TabListMediator {
         tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
     }
 
-    private void ungroupTabGroup(int tabId) {
-        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
-        int rootId = tabModel.getTabById(tabId).getRootId();
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
-        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
-        boolean isIncognito = filter.getTabModel().isIncognito();
-
-        if (isIncognito) {
-            for (Tab tab : tabs) {
-                filter.moveTabOutOfGroup(tab.getId());
-            }
-        } else {
-            // Present a confirmation dialog to the user before ungrouping the tab group.
-            Callback<Integer> onResult =
-                    (@ConfirmationResult Integer result) -> {
-                        if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            for (Tab tab : tabs) {
-                                filter.moveTabOutOfGroup(tab.getId());
-                            }
-                        }
-                    };
-
-            mActionConfirmationManager.processUngroupAttempt(onResult);
-        }
-    }
-
     private String getActionButtonDescriptionString(
             int numOfRelatedTabs, String title, int rootId) {
         Resources res = mContext.getResources();
@@ -3132,6 +3124,48 @@ class TabListMediator {
                 }
             }
         }
+    }
+
+    private void setUseShrinkCloseAnimation(int tabId, boolean useShrinkCloseAnimation) {
+        if (mMode != TabListMode.GRID) return;
+
+        @Nullable PropertyModel model = getModelFromId(tabId);
+        if (model != null) {
+            model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, useShrinkCloseAnimation);
+        }
+    }
+
+    @VisibleForTesting
+    @Nullable
+    Callback<Boolean> getMaybeUnsetShrinkCloseAnimationCallback(int tabId) {
+        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+
+        Tab tab = filter.getTabModel().getTabById(tabId);
+        if (tab == null) return null;
+
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId == null) return null;
+
+        return (didClose) -> {
+            // The close did not happen unset the shrink animation bit.
+            if (!didClose) {
+                setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ false);
+                return;
+            }
+
+            // Special case in defense of the group not being completely closed. We need to find the
+            // group and unset the USE_SHRINK_CLOSE_ANIMATION property.
+            int rootId = filter.getRootIdFromStableId(tabGroupId);
+            if (rootId == Tab.INVALID_TAB_ID) return;
+
+            List<Integer> ids = filter.getRelatedTabIds(rootId);
+            for (int id : ids) {
+                @Nullable PropertyModel model = getModelFromId(id);
+                if (model != null) {
+                    model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false);
+                }
+            }
+        };
     }
 
     private PropertyModel getModelFromId(int tabId) {

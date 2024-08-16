@@ -253,7 +253,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
-    public void testShowFinancialAccountsManagementSettingsOnFooter() {
+    public void testShowManagePaymentMethodsSettingsOnFooter() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
 
         int lastItemPos =
@@ -271,7 +271,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK)
                 .run();
 
-        verify(mDelegateMock).showFinancialAccountsManagementSettings(mContext);
+        verify(mDelegateMock).showManagePaymentMethodsSettings(mContext);
     }
 
     @Test

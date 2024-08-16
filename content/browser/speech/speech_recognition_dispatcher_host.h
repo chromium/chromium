@@ -50,6 +50,10 @@ class SpeechRecognitionDispatcherHost : public media::mojom::SpeechRecognizer {
   // media::mojom::SpeechRecognizer implementation
   void Start(
       media::mojom::StartSpeechRecognitionRequestParamsPtr params) override;
+  void OnDeviceWebSpeechAvailable(
+      const std::string& language,
+      SpeechRecognitionDispatcherHost::OnDeviceWebSpeechAvailableCallback
+          callback) override;
 
  private:
   static void StartRequestOnUI(

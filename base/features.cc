@@ -56,16 +56,6 @@ const base::FeatureParam<int> kLowMemoryDeviceThresholdMB{
     &kLowEndMemoryExperiment, "LowMemoryDeviceThresholdMB",
     LOW_MEMORY_DEVICE_THRESHOLD_MB};
 
-// TODO(crbug.com/40580068): Roll out this to 100% before replacing existing
-// NOTREACHED_IN_MIGRATION()s with NOTREACHED() as part of [[noreturn]]
-// migration. Note that a prerequisite for rolling out this experiment is that
-// existing NOTREACHED() reports are at a very low rate. Once this rolls out we
-// should monitor that crash rates for the experiment population is within a
-// 1-5% or lower than the control group.
-BASE_FEATURE(kNotReachedIsFatal,
-             "NotReachedIsFatal",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseRustJsonParser,
              "UseRustJsonParser",
              FEATURE_DISABLED_BY_DEFAULT);

@@ -129,6 +129,11 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.tpcd_metadata_cohort_;
   }
 
+  static bool decided_by_related_website_sets(
+      const content_settings::RuleMetaData& r) {
+    return r.decided_by_related_website_sets_;
+  }
+
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,
                    content_settings::RuleMetaData* out);
 };

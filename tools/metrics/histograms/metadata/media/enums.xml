@@ -1397,6 +1397,14 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Local Media"/>
 </enum>
 
+<enum name="MediaRouterUiPermissionRejectedViewEvents">
+  <int value="0" label="kCastDialogErrorShown"/>
+  <int value="1" label="kCastDialogLinkClicked"/>
+  <int value="2" label="kGmcDialogErrorShown"/>
+  <int value="3" label="kGmcDialogLinkClicked"/>
+  <int value="4" label="kGmcDialogErrorDismissed"/>
+</enum>
+
 <enum name="MediaRouterUserPromptWhenLaunchingCast">
   <int value="0" label="Total prompts"/>
   <int value="1" label="User rejects cast request"/>

@@ -26,4 +26,5 @@ found in the LICENSE file.
 
     <!-- Tab Resumption module -->
     <dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_3</dimen>
+    <dimen name="tab_resumption_module_tile_reason_background_color_elevation">@dimen/default_elevation_5</dimen>
 </resources>

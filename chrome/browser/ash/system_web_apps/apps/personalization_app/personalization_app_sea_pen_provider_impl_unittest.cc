@@ -459,7 +459,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
       search_wallpaper_future.Get<0>().value().front()->id,
-      select_wallpaper_future.GetCallback());
+      /*preview_mode=*/false, select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());
   EXPECT_EQ(1, test_wallpaper_controller()->get_sea_pen_wallpaper_count());
@@ -511,14 +511,15 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, SelectThumbnailCallsObserver) {
 
   // Select the first returned thumbnail.
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
-      kIdToSelect, base::BindLambdaForTesting(
-                       [test_wallpaper_controller =
-                            test_wallpaper_controller()](bool success) {
-                         ASSERT_TRUE(success);
-                         // Simulate a wallpaper being set to notify observers.
-                         test_wallpaper_controller->ShowWallpaperImage(
-                             gfx::test::CreateImageSkia(1, 1));
-                       }));
+      kIdToSelect, /*preview_mode=*/false,
+      base::BindLambdaForTesting(
+          [test_wallpaper_controller =
+               test_wallpaper_controller()](bool success) {
+            ASSERT_TRUE(success);
+            // Simulate a wallpaper being set to notify observers.
+            test_wallpaper_controller->ShowWallpaperImage(
+                gfx::test::CreateImageSkia(1, 1));
+          }));
 
   EXPECT_EQ(kIdToSelect, sea_pen_id_future.Get());
   EXPECT_EQ(kIdToSelect, test_sea_pen_observer().GetCurrentId().value());
@@ -620,13 +621,13 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   // Selects from `search_query_2`.
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
-      248, select_wallpaper_future.GetCallback());
+      248, /*preview_mode=*/false, select_wallpaper_future.GetCallback());
   ASSERT_TRUE(select_wallpaper_future.Take());
   select_wallpaper_future.Clear();
 
   // Selects from `search_query_1`.
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
-      247, select_wallpaper_future.GetCallback());
+      247, /*preview_mode=*/false, select_wallpaper_future.GetCallback());
   ASSERT_TRUE(select_wallpaper_future.Take());
 }
 
@@ -688,7 +689,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
       search_wallpaper_future.Get<0>().value().front()->id,
-      select_wallpaper_future.GetCallback());
+      /*preview_mode=*/false, select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());
 
@@ -743,7 +744,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
       search_wallpaper_future.Get<0>().value().front()->id,
-      select_wallpaper_future.GetCallback());
+      /*preview_mode=*/false, select_wallpaper_future.GetCallback());
   ASSERT_TRUE(select_wallpaper_future.Take());
 
   // Verify the image was really saved with the correct metadata.

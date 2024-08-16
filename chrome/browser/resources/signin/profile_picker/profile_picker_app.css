@@ -1,0 +1,59 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./profile_picker_shared.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=profile-picker-shared cr-hidden-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+cr-view-manager {
+  display: flex;
+  font-size: 100%;
+  margin: 0;
+}
+
+cr-view-manager > [slot='view'] {
+  min-height: var(--view-min-size);
+  min-width: var(--view-min-size);
+}
+
+.tangible-sync-style-left-banner {
+  content: url(images/left_banner.svg);
+  left: 0;
+}
+
+.tangible-sync-style-right-banner {
+  content: url(images/right_banner.svg);
+  right: 0;
+}
+
+.tangible-sync-style-left-banner,
+.tangible-sync-style-right-banner {
+  max-width: 320px;
+  position: absolute;
+  top: 0;
+  width: 17vw;
+}
+
+@media (prefers-color-scheme: dark) {
+  .left-banner {
+    content: url(images/dark_mode_left_banner_image.svg);
+  }
+
+  .right-banner {
+    content: url(images/dark_mode_right_banner_image.svg);
+  }
+
+  .tangible-sync-style-left-banner {
+    content: url(images/left_banner_dark.svg);
+  }
+
+  .tangible-sync-style-right-banner {
+    content: url(images/right_banner_dark.svg);
+  }
+}

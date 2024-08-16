@@ -234,21 +234,27 @@ void TranslateAgent::PageCaptured(
   LanguageDetectionDetails details;
   std::string language;
   if (page_contents_length_ == 0) {
-    // If captured content is empty do not run language detection and pass "und"
-    // as the model defined language along with page-provided languages.
-    language = translate::DeterminePageLanguage(
-        content_language, html_lang, translate::kUnknownLanguageCode, false);
+    // If captured content is empty do not run language detection and
+    // only use page-provided languages.
+    language = translate::DeterminePageLanguageNoModel(
+        content_language, html_lang,
+        translate::LanguageVerificationType::kNoPageContent);
   } else if (translate::IsTFLiteLanguageDetectionEnabled()) {
     // Use TFLite and page contents to assist with language detection.
     translate::LanguageDetectionModel& language_detection_model =
         GetLanguageDetectionModel();
     bool is_available = language_detection_model.IsAvailable();
-    language = is_available
-                   ? language_detection_model.DeterminePageLanguage(
-                         content_language, html_lang, contents->as_string(),
-                         &model_detected_language, &is_model_reliable,
-                         model_reliability_score)
-                   : translate::kUnknownLanguageCode;
+    language =
+        is_available
+            ? language_detection_model.DeterminePageLanguage(
+                  content_language, html_lang, contents->as_string(),
+                  &model_detected_language, &is_model_reliable,
+                  model_reliability_score)
+            // If the model is not available do not run language
+            // detection and only use page-provided languages.
+            : translate::DeterminePageLanguageNoModel(
+                  content_language, html_lang,
+                  translate::LanguageVerificationType::kModelNotAvailable);
     UMA_HISTOGRAM_BOOLEAN(
         "LanguageDetection.TFLiteModel.WasModelAvailableForDetection",
         is_available);

@@ -937,13 +937,13 @@ void PasswordFormManager::OnTimeout() {
 }
 
 bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
-  auto check_credentials_delegate = [=]() {
+  auto check_credentials_delegate = [=, this]() {
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
     return delegate && delegate->GetPasskeys().has_value();
   };
 #if BUILDFLAG(IS_ANDROID)
-  auto check_cred_man_delegate = [=]() {
+  auto check_cred_man_delegate = [=, this]() {
     WebAuthnCredManDelegate* delegate =
         client_->GetWebAuthnCredManDelegateForDriver(driver_.get());
     return delegate &&

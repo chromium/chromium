@@ -606,7 +606,6 @@ ios_builder(
             "libfuzzer",
             "no_dsyms",
             "no_remoting",
-            "lld",
         ],
     ),
     tree_closing = False,

@@ -87,8 +87,7 @@ std::optional<std::u16string> GetPortalStateSubtext(
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN);
     case PortalState::kDeprecatedProxyAuthRequired:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 
@@ -128,6 +127,10 @@ bool IsNetworkDisabled(
     return true;
   }
 
+  if (IsCellularDeviceFlashing(network_properties)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -145,6 +148,21 @@ bool IsNetworkInhibited(
 
   return cellular_device &&
          chromeos::network_config::IsInhibited(cellular_device);
+}
+
+bool IsCellularDeviceFlashing(
+    const chromeos::network_config::mojom::NetworkStatePropertiesPtr&
+        network_properties) {
+  if (!chromeos::network_config::NetworkTypeMatchesType(
+          network_properties->type, NetworkType::kCellular)) {
+    return false;
+  }
+
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+
+  return cellular_device && cellular_device->is_flashing;
 }
 
 }  // namespace ash

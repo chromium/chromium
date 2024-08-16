@@ -35,6 +35,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_notice_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -299,10 +300,16 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 #endif
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service) {
+
+  // Create notice storage
+  notice_storage_ =
+      std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
+  CHECK(notice_storage_);
 
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
@@ -366,23 +373,57 @@ PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 PrivacySandboxService::PromptType
 PrivacySandboxServiceImpl::GetRequiredPromptType() {
-  bool third_party_cookies_blocked;
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxAdsDialogDisabledOnAll3PCBlock)) {
-    third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
-        cookie_settings_.get(), pref_service_, tracking_protection_settings_);
-  } else {
-    third_party_cookies_blocked =
-        ShouldBlockThirdPartyOrFirstPartyCookies(cookie_settings_.get());
-  }
+  bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
+      cookie_settings_.get(), pref_service_, tracking_protection_settings_);
   return GetRequiredPromptTypeInternal(
       pref_service_, profile_type_, privacy_sandbox_settings_,
       third_party_cookies_blocked,
       force_chrome_build_for_tests_ || IsChromeBuild());
 }
 
-void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
+void UpdateNoticeStorage(
+    PrivacySandboxService::PromptAction action,
+    privacy_sandbox::PrivacySandboxNoticeStorage* notice_storage,
+    PrefService* pref_service) {
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kPsDualWritePrefsToNoticeStorage)) {
+    return;
+  }
+  std::string_view topics_notice_name = privacy_sandbox::kTopicsConsentModal;
+  // TODO(crbug.com/352577199): Remove dependency on build flag when we
+  // introduce SurfaceType.
+#if BUILDFLAG(IS_ANDROID)
+  topics_notice_name = privacy_sandbox::kTopicsConsentModalClankBrApp;
+#endif
+
+  switch (action) {
+    case PrivacySandboxService::PromptAction::kConsentShown: {
+      notice_storage->SetNoticeShown(pref_service, topics_notice_name,
+                                     base::Time::Now());
+      break;
+    }
+    case PrivacySandboxService::PromptAction::kConsentAccepted: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, topics_notice_name,
+          privacy_sandbox::NoticeActionTaken::kOptIn, base::Time::Now());
+      break;
+    }
+    case PrivacySandboxService::PromptAction::kConsentDeclined: {
+      notice_storage->SetNoticeActionTaken(
+          pref_service, topics_notice_name,
+          privacy_sandbox::NoticeActionTaken::kOptOut, base::Time::Now());
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action,
+                                                     SurfaceType surface_type) {
   RecordPromptActionMetrics(action);
+  // TODO(crbug.com/355238694): Incorporate SurfaceType to UpdateNoticeStorage.
+  UpdateNoticeStorage(action, notice_storage_.get(), pref_service_.get());
 
   InformSentimentService(action);
   if (PromptAction::kNoticeAcknowledge == action ||
@@ -415,6 +456,7 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
 #if !BUILDFLAG(IS_ANDROID)
     MaybeCloseOpenPrompts();
 #endif  // !BUILDFLAG(IS_ANDROID)
+    // Consent-related PromptActions refer to to Topics Notice Consent
   } else if (PromptAction::kConsentAccepted == action) {
     DCHECK(privacy_sandbox::IsConsentRequired());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
@@ -621,11 +663,6 @@ void PrivacySandboxServiceImpl::SetFledgeJoiningAllowed(
 void PrivacySandboxServiceImpl::RecordFirstPartySetsStateHistogram(
     FirstPartySetsState state) {
   base::UmaHistogramEnumeration("Settings.FirstPartySets.State", state);
-}
-
-void PrivacySandboxServiceImpl::RecordPrivacySandboxHistogram(
-    SettingsPrivacySandboxEnabled state) {
-  base::UmaHistogramEnumeration("Settings.PrivacySandbox.Enabled", state);
 }
 
 void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
@@ -838,6 +875,17 @@ void PrivacySandboxServiceImpl::LogPrivacySandboxState() {
   RecordFirstPartySetsStateHistogram(fps_status);
 
   RecordPrivacySandbox4StartupMetrics();
+
+  // TODO(crbug.com/333406690): After migration, move this portion to the
+  // chrome/browser/privacy_sandbox/privacy_sandbox_notice_service.h constructor
+  // and emit ALL startup histograms instead of just Topics consent related
+  // histograms.
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModal);
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModalClankBrApp);
+  notice_storage_->RecordHistogramsOnStartup(
+      pref_service_, privacy_sandbox::kTopicsConsentModalClankCCT);
 }
 
 void PrivacySandboxServiceImpl::ConvertInterestGroupDataKeysForDisplay(
@@ -1266,10 +1314,6 @@ void PrivacySandboxServiceImpl::RecordUpdatedTopicsConsent(
 
 #if !BUILDFLAG(IS_ANDROID)
 void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
-  if (!privacy_sandbox::kPrivacySandboxSettings4CloseAllPrompts.Get()) {
-    return;
-  }
-
   // Take a copy to avoid concurrent modification issues as widgets close and
   // remove themselves from the map synchronously. The map will typically have
   // at most a few elements, so this is cheap.

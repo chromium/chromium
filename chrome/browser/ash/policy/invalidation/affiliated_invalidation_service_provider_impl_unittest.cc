@@ -24,6 +24,7 @@
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
+#include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -366,7 +367,8 @@ AffiliatedInvalidationServiceProviderImplTest::GetProfileInvalidationService(
     return nullptr;
   auto invalidation_service =
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID, /*project_id=*/"");
+          kPolicyFCMInvalidationSenderID,
+          invalidation::InvalidationListener::kProjectNumberEnterprise);
   CHECK(std::holds_alternative<invalidation::InvalidationService*>(
       invalidation_service));
   return static_cast<invalidation::FakeInvalidationService*>(

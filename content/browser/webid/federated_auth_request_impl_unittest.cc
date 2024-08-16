@@ -5772,7 +5772,10 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestNoPopUpWindow) {
 // windows.
 TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAuthz);
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kFedCmAuthz,
+                            features::kFedCmMetricsEndpoint},
+      /*disabled_features=*/{});
 
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].fields = {"non_default_field"};
@@ -5785,6 +5788,12 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   // rather than the typical idtoken response.
   GURL continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
   config.continue_on = std::move(continue_on);
+
+  std::unique_ptr<IdpNetworkRequestMetricsRecorder> unique_metrics_recorder =
+      std::make_unique<IdpNetworkRequestMetricsRecorder>();
+  IdpNetworkRequestMetricsRecorder* metrics_recorder =
+      unique_metrics_recorder.get();
+  SetNetworkRequestManager(std::move(unique_metrics_recorder));
 
   // Set up the UI dialog controller to show a pop-up window, rather
   // than the typical mediated authorization prompt that generates
@@ -5821,6 +5830,11 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
       "Blink.FedCm.Timing.ContinueOn.TurnaroundTime", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+
+  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_success(),
+              ElementsAre("https://idp.example/metrics"));
+  EXPECT_TRUE(
+      metrics_recorder->get_metrics_endpoints_notified_failure().empty());
 
   // When the authorization is delegated and the feature is enabled
   // we don't fetch the client metadata endpoint (which is used to

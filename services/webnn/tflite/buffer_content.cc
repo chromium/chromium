@@ -5,6 +5,7 @@
 #include "services/webnn/tflite/buffer_content.h"
 
 #include "base/compiler_specific.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/util.h"
 
@@ -30,7 +31,10 @@ size_t AddPaddingIfNecessary(size_t size) {
 BufferContent::BufferContent(size_t size)
     : buffer_(base::AlignedAlloc(AddPaddingIfNecessary(size),
                                  ::tflite::kDefaultTensorAlignment)),
-      size_(size) {}
+      size_(size) {
+  // `base::AlignedAlloc` does not return initialized memory.
+  base::ranges::fill(AsSpan(), 0);
+}
 
 BufferContent::~BufferContent() = default;
 

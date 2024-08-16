@@ -82,9 +82,7 @@ class JsonFileSanitizer {
                        std::optional<base::Value> json_value,
                        const std::optional<std::string>& error);
 
-  void JsonFileWritten(const base::FilePath& file_path,
-                       int expected_size,
-                       int actual_size);
+  void JsonFileWritten(const base::FilePath& file_path, bool success);
 
   void ReportSuccess();
 

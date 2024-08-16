@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -26,10 +27,9 @@ public class CloseAllTabsHelper {
     /** Closes all tabs hiding tab groups. */
     public static void closeAllTabsHidingTabGroups(TabModelSelector tabModelSelector) {
         var filterProvider = tabModelSelector.getTabModelFilterProvider();
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
-                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
-                .closeAllTabs(/* uponExit= */ false, /* hideTabGroups= */ true);
+        TabClosureParams params = TabClosureParams.closeAllTabs().hideTabGroups(true).build();
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false)).closeTabs(params);
+        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true)).closeTabs(params);
     }
 
     /**
@@ -63,8 +63,9 @@ public class CloseAllTabsHelper {
             TabModelSelector tabModelSelector,
             boolean isIncognitoOnly) {
 
-        boolean useCustomAnimation =
-                ChromeFeatureList.sGtsCloseTabAnimationCloseAllCustomAnimation.getValue();
+        // TODO(crbug.com/346777141): Remove the custom animation logic once we are sure we don't
+        // need it.
+        boolean useCustomAnimation = false;
         boolean useQuickDeleteAnimation =
                 ChromeFeatureList.sGtsCloseTabAnimationCloseAllQuickDeleteAnimation.getValue();
 
@@ -99,7 +100,9 @@ public class CloseAllTabsHelper {
 
     private static void closeAllTabs(TabModelSelector tabModelSelector, boolean isIncognitoOnly) {
         if (isIncognitoOnly) {
-            tabModelSelector.getModel(/* isIncognito= */ true).closeAllTabs(/* uponExit= */ false);
+            tabModelSelector
+                    .getModel(/* isIncognito= */ true)
+                    .closeTabs(TabClosureParams.closeAllTabs().build());
         } else {
             closeAllTabsHidingTabGroups(tabModelSelector);
         }

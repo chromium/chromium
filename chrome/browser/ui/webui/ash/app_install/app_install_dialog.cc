@@ -19,6 +19,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
@@ -212,7 +213,7 @@ void AppInstallDialog::Show(gfx::NativeWindow parent,
   dialog_height_ = GetDialogHeight(dialog_args_.value());
 
   if (absl::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
-    set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+    set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   }
 
   ShowSystemDialog(parent);

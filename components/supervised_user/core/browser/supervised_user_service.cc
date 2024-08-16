@@ -126,7 +126,12 @@ bool SupervisedUserService::HasACustodian() const {
          !GetSecondCustodianEmailAddress().empty();
 }
 
-bool SupervisedUserService::IsBlockedURL(GURL url) const {
+bool SupervisedUserService::IsBlockedURL(const GURL& url) const {
+  // TODO(b/359161670): prevent access to URL filtering through lifecycle events
+  // rather than individually checking active state.
+  if (!active_) {
+    return false;
+  }
   return GetURLFilter()->GetFilteringBehaviorForURL(url) ==
          supervised_user::FilteringBehavior::kBlock;
 }
@@ -147,7 +152,6 @@ SupervisedUserService::SupervisedUserService(
     PrefService& user_prefs,
     SupervisedUserSettingsService& settings_service,
     syncer::SyncService* sync_service,
-    ValidateURLSupportCallback check_webstore_url_callback,
     std::unique_ptr<SupervisedUserURLFilter::Delegate> url_filter_delegate,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     bool can_show_first_time_interstitial_banner)
@@ -160,15 +164,8 @@ SupervisedUserService::SupervisedUserService(
       platform_delegate_(std::move(platform_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
-  CHECK(url_filter_delegate);
-  std::unique_ptr<safe_search_api::URLCheckerClient> url_checker_client =
-      std::make_unique<KidsChromeManagementURLCheckerClient>(
-          identity_manager, url_loader_factory,
-          url_filter_delegate->GetCountryCode(),
-          url_filter_delegate->GetChannel());
   url_filter_ = std::make_unique<SupervisedUserURLFilter>(
-      user_prefs, std::move(url_checker_client),
-      std::move(check_webstore_url_callback));
+      user_prefs, std::move(url_filter_delegate));
   url_filter_->AddObserver(this);
 }
 
@@ -203,7 +200,7 @@ void SupervisedUserService::SetActive(bool active) {
 
   // Trigger a sync reconfig to enable/disable the right SU data types.
   // The logic to do this lives in the
-  // SupervisedUserSettingsModelTypeController.
+  // SupervisedUserSettingsDataTypeController.
   // TODO(crbug.com/40620346): Get rid of this hack and instead call
   // DataTypePreconditionChanged from the controller.
   if (sync_service_ &&
@@ -214,6 +211,13 @@ void SupervisedUserService::SetActive(bool active) {
   }
 
   if (active_) {
+    // Initialize SafeSites URL checker.
+    GetURLFilter()->SetURLCheckerClient(
+        std::make_unique<KidsChromeManagementURLCheckerClient>(
+            identity_manager_, url_loader_factory_,
+            platform_delegate_->GetCountryCode(),
+            platform_delegate_->GetChannel()));
+
     pref_change_registrar_.Add(
         prefs::kDefaultSupervisedUserFilteringBehavior,
         base::BindRepeating(

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
+#include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -712,9 +713,12 @@ class TabDragController : public views::WidgetObserver,
   // group header, indicating that the entire group is being dragged together.
   std::optional<tab_groups::TabGroupId> group_;
 
-  // The GUID of the saved tab group whose tracking is paused between paired
-  // Detach() and Attach() calls, if dragging a saved tab group between windows.
-  std::optional<base::Uuid> paused_saved_group_id_;
+  // Used to pause observation of all open SavedTabGroups when a drag is
+  // occurring. This object is assigned when MaybePauseTrackingSavedTabGroup()
+  // is called and reset when MaybeResumeTrackingSavedTabGroup() is called. The
+  // primary use cases are when we are in the middle of a drag session (Paired
+  // Detach() and Attach() calls) or when reverting a drag (RevertDrag()).
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser_;
 
   // True until MoveAttached() is first invoked.
   bool initial_move_;

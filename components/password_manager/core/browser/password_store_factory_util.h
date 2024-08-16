@@ -29,9 +29,11 @@ class PasswordStoreInterface;
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& db_directory);
+    const base::FilePath& db_directory,
+    PrefService* prefs);
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& db_directory);
+    const base::FilePath& db_directory,
+    PrefService* prefs);
 
 // This function handles the following clean-ups of credentials:
 // (1) Removing blocklisted duplicates: if two blocklisted credentials have the

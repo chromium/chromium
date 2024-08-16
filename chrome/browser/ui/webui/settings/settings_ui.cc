@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 
 #include <stddef.h>
@@ -32,6 +37,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -367,21 +373,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableCbdTimeframeRequired",
       base::FeatureList::IsEnabled(features::kCbdTimeframeRequired));
 
-  html_source->AddBoolean(
-      "enableFriendlierSafeBrowsingSettings",
-      base::FeatureList::IsEnabled(
-          safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
-          base::FeatureList::IsEnabled(
-              safe_browsing::
-                  kFriendlierSafeBrowsingSettingsStandardProtection));
-
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::
                               IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean("enableHttpsFirstModeNewSettings",
-                          base::FeatureList::IsEnabled(
-                              features::kHttpsFirstModeIncognitoNewSettings));
+                          IsBalancedModeAvailable());
 
   html_source->AddBoolean(
       "enableKeyboardAndPointerLockPrompt",
@@ -424,6 +421,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "extendedReportingRemovePrefDependency",
       base::FeatureList::IsEnabled(
           safe_browsing::kExtendedReportingRemovePrefDependency));
+
+  html_source->AddBoolean(
+      "hashPrefixRealTimeLookupsSamplePing",
+      base::FeatureList::IsEnabled(
+          safe_browsing::kHashPrefixRealTimeLookupsSamplePing));
 
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
@@ -532,6 +534,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
 
+  // ACT UX
+  html_source->AddBoolean(
+      "isIpProtectionUxEnabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx));
+  html_source->AddBoolean("isFingerprintingProtectionUxEnabled",
+                          base::FeatureList::IsEnabled(
+                              privacy_sandbox::kFingerprintingProtectionUx));
+
   html_source->AddBoolean(
       "isProactiveTopicsBlockingEnabled",
       base::FeatureList::IsEnabled(
@@ -548,10 +558,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "isPerformanceInterventionUiEnabled",
       base::FeatureList::IsEnabled(
           performance_manager::features::kPerformanceInterventionUI));
-  html_source->AddBoolean(
-      "isMemorySaverModeAggressivenessEnabled",
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kMemorySaverModeAggressiveness));
   html_source->AddBoolean(
       "isBatterySaverModeManagedByOS",
       performance_manager::user_tuning::IsBatterySaverModeManagedByOS());

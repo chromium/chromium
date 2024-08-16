@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//components/password_manager/core/browser/buildflags.gni")
+
+java_cpp_template("buildflags_srcjar") {
+  sources = [ "java/templates/PasswordManagerBuildflags.template" ]
+  defines = [
+    # Normally we'd pass password_manager_buildflags.h to `input` here, but
+    # that doesn't seem to work for auto-generated headers.
+    "_USE_LOGIN_DATABASE_AS_BACKEND=$use_login_database_as_backend",
+  ]
+}

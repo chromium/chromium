@@ -129,6 +129,8 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
 
   bool overlays_enabled_by_hwui_ = false;
 
+  float frame_rate_ = 0.f;
+
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<OverlayProcessorWebView> weak_ptr_factory_{this};
 };

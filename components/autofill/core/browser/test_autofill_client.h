@@ -281,7 +281,7 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      AutofillClient::SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
   void ShowEditAddressProfileDialog(
@@ -293,14 +293,6 @@ class TestAutofillClientTemplate : public T {
       const AutofillProfile& profile,
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
-
-  bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest) override {
-    return false;
-  }
-
-  void HideTouchToFillCreditCard() override {}
 
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,

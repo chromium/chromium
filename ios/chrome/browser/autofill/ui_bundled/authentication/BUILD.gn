@@ -15,11 +15,11 @@ source_set("otp_input_dialog") {
     "//base:base",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
   ]
 }
 
@@ -38,11 +38,11 @@ source_set("otp_input_dialog_ui") {
   deps = [
     ":otp_input_dialog_ui_constants",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
@@ -73,13 +73,13 @@ source_set("card_unmask_authentication_coordinator") {
   deps = [
     ":card_unmask_authentication_selection_coordinator",
     "//ios/chrome/browser/autofill/model:model_internal",
+    "//ios/chrome/browser/autofill/ui_bundled:bridges",
+    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/autofill/ui_bundled/authentication:otp_input_dialog",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/autofill/ui_bundled:coordinator",
-    "//ios/chrome/browser/autofill/ui_bundled:bridges",
-    "//ios/chrome/browser/autofill/ui_bundled/authentication:otp_input_dialog",
   ]
 }
 
@@ -159,11 +159,11 @@ source_set("card_unmask_authentication_selection_view_controller") {
   ]
   deps = [
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

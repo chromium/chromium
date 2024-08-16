@@ -283,6 +283,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/autofill",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/task_manager",
       "//components/autofill/content/browser:test_support",
       "//components/bookmarks/common:common",
       "//components/enterprise",
@@ -406,7 +407,6 @@ source_set("browser_tests") {
       "//ash/components/arc/session:session",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/arc/session",
       "//chrome/browser/ash/crostini:test_support",
@@ -437,6 +437,7 @@ source_set("browser_tests") {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
+      "test/ad_hoc_code_signing_for_pwas_enabled_mac_browsertest.mm",
     ]
   }
 
@@ -537,7 +538,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/settings",
       "//chrome/browser/ash/settings:test_support",
       "//chromeos/ash/components/system",

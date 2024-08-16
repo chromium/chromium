@@ -20,13 +20,26 @@ build_webui("build") {
 
   static_files = [ "on_device_internals.html" ]
 
-  web_component_files = [ "app.ts" ]
+  web_component_files = [ "tools.ts" ]
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  non_web_component_files = [
+    "app.html.ts",
+    "app.ts",
+    "browser_proxy.ts",
+    "event_log.html.ts",
+    "event_log.ts",
+  ]
+
+  css_files = [
+    "app.css",
+    "event_log.css",
+  ]
 
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
   webui_context_type = "trusted"

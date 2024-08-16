@@ -117,31 +117,6 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   NOTREACHED_IN_MIGRATION();
 }
 
-#if defined(USE_OZONE)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum FormatPixmapSupport { kNone = 0, kNV12 = 1, kYV12 = 2, kMaxValue = kYV12 };
-
-// Return the supported multiplanar format in order of fallback support.
-FormatPixmapSupport GetFormatPixmapSupport(
-    std::vector<gfx::BufferFormat> supported_formats) {
-  FormatPixmapSupport val = FormatPixmapSupport::kNone;
-  for (auto format : supported_formats) {
-    if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
-      val = FormatPixmapSupport::kNV12;
-      break;
-    } else if (format == gfx::BufferFormat::YVU_420) {
-      val = FormatPixmapSupport::kYV12;
-    }
-  }
-  return val;
-}
-
-// Set bool only once as formats supported on platform don't change on factory
-// creation.
-bool set_format_supported_metric = false;
-#endif
-
 gfx::GpuMemoryBufferType GetNativeBufferType() {
 #if BUILDFLAG(IS_APPLE)
   return gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
@@ -223,28 +198,6 @@ SharedImageFactory::SharedImageFactory(
       texture_target_for_io_surfaces_(GetTextureTargetForIOSurfaces()),
 #endif
       workarounds_(workarounds) {
-#if defined(USE_OZONE)
-  if (!set_format_supported_metric) {
-    bool is_pixmap_supported = ui::OzonePlatform::GetInstance()
-                                   ->GetPlatformRuntimeProperties()
-                                   .supports_native_pixmaps;
-    // Only log histogram for formats that are used with real GMBs containing
-    // native pixmap.
-    if (is_pixmap_supported) {
-      auto* factory =
-          ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
-      if (factory) {
-        // Get all formats that are supported by platform.
-        auto supported_formats = factory->GetSupportedFormatsForTexturing();
-        auto supported_format = GetFormatPixmapSupport(supported_formats);
-        base::UmaHistogramEnumeration("GPU.SharedImage.FormatPixmapSupport",
-                                      supported_format);
-      }
-    }
-    set_format_supported_metric = true;
-  }
-#endif
-
   auto shared_memory_backing_factory =
       std::make_unique<SharedMemoryImageBackingFactory>();
   factories_.push_back(std::move(shared_memory_backing_factory));
@@ -757,17 +710,18 @@ bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
 void SharedImageFactory::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   auto* vulkan_context_provider = context_state_->vk_context_provider();
   VkDevice device =
       vulkan_context_provider->GetDeviceQueue()->GetVulkanDevice();
   DCHECK(device != VK_NULL_HANDLE);
+  auto buffer_format = ToBufferFormat(format);
   vulkan_context_provider->GetVulkanImplementation()
       ->RegisterSysmemBufferCollection(
-          device, std::move(service_handle), std::move(sysmem_token), format,
-          usage, gfx::Size(), 0, register_with_image_pipe);
+          device, std::move(service_handle), std::move(sysmem_token),
+          buffer_format, usage, gfx::Size(), 0, register_with_image_pipe);
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 

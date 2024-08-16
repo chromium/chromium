@@ -11,10 +11,10 @@
 
 :host {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 3fr auto auto auto;
+  grid-template-columns: repeat(3, 1fr) 3fr auto 250px auto;
   grid-auto-flow: column;
   grid-column-gap: 12px;
-  grid-row-gap: 0px;
+  grid-row-gap: 0;
   padding: 8px 16px;
   margin-bottom: 12px;
   background-color: var(--cr-card-background-color);
@@ -114,7 +114,7 @@
     background-color: transparent;
   }
 
-  .action-button:hover {
+  .action-button:not([disabled]):hover {
     --cr-icon-button-fill-color: var(--cr-card-background-color);
     background-color: DarkGray;
   }
@@ -127,25 +127,27 @@
     background-color: rgb(239, 239, 239);
   }
 
-  .action-button:hover {
+  .action-button:not([disabled]):hover {
     --cr-icon-button-fill-color: black;
   }
 }
 
 .actions-container {
   width: 150px;
+  justify-content: end;
+  display: flex;
 }
 
 .action-button {
   height: 40px;
   width: 40px;
-  cursor: pointer;
   border-radius: 100%;
-  pointer-events: auto;
+  margin-inline-start: 0px;
+  margin-inline-end: 8px;
 }
 
-.action-button:active {
-  background-color: WhiteSmoke;
+.action-button.download {
+  pointer-events: visible;
 }
 
 .info {

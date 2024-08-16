@@ -1,6 +1,11 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <memory>
@@ -186,7 +191,7 @@ content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 content::DesktopMediaID::Id GetUpdatedWindowId(
@@ -285,7 +290,8 @@ class NativeDesktopMediaList::Worker
          base::WeakPtr<NativeDesktopMediaList> media_list,
          DesktopMediaList::Type type,
          std::unique_ptr<ThumbnailCapturer> capturer,
-         bool add_current_process_windows);
+         bool add_current_process_windows,
+         bool auto_show_delegated_source_list);
 
   Worker(const Worker&) = delete;
   Worker& operator=(const Worker&) = delete;
@@ -299,6 +305,7 @@ class NativeDesktopMediaList::Worker
                          const gfx::Size& thumbnail_size);
   void FocusList();
   void HideList();
+  void ShowDelegatedList();
   void ClearDelegatedSourceListSelection();
 
   // If |excluded_window_id| is not kNullId, then that ID will
@@ -359,6 +366,7 @@ class NativeDesktopMediaList::Worker
   const std::unique_ptr<ThumbnailCapturer> capturer_;
   const ThumbnailCapturer::FrameDeliveryMethod frame_delivery_method_;
   const bool add_current_process_windows_;
+  const bool auto_show_delegated_source_list_;
 
   const bool is_source_list_delegated_;
   bool delegated_source_list_has_selection_ = false;
@@ -390,13 +398,15 @@ NativeDesktopMediaList::Worker::Worker(
     base::WeakPtr<NativeDesktopMediaList> media_list,
     DesktopMediaList::Type type,
     std::unique_ptr<ThumbnailCapturer> capturer,
-    bool add_current_process_windows)
+    bool add_current_process_windows,
+    bool auto_show_delegated_source_list)
     : task_runner_(task_runner),
       media_list_(media_list),
       source_type_(ConvertToDesktopMediaIDType(type)),
       capturer_(std::move(capturer)),
       frame_delivery_method_(capturer_->GetFrameDeliveryMethod()),
       add_current_process_windows_(add_current_process_windows),
+      auto_show_delegated_source_list_(auto_show_delegated_source_list),
       is_source_list_delegated_(capturer_->GetDelegatedSourceListController() !=
                                 nullptr) {
   DCHECK(capturer_);
@@ -717,9 +727,10 @@ void NativeDesktopMediaList::Worker::ClearDelegatedSourceListSelection() {
   delegated_source_list_has_selection_ = false;
 
   // If we're currently focused and the selection has been cleared; ensure that
-  // the SourceList is visible.
-  if (focused_)
+  // the SourceList is visible if it should be auto-showed.
+  if (focused_ && auto_show_delegated_source_list_) {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
+  }
 }
 
 void NativeDesktopMediaList::Worker::SetExcludedWindow(
@@ -738,7 +749,8 @@ void NativeDesktopMediaList::Worker::FocusList() {
   // its source list is visible, unless a selection has previously been made.
   // If the capturer doesn't use a delegated source list, there's nothing for us
   // to do as we're continually querying the list state ourselves.
-  if (is_source_list_delegated_ && !delegated_source_list_has_selection_) {
+  if (is_source_list_delegated_ && auto_show_delegated_source_list_ &&
+      !delegated_source_list_has_selection_) {
     capturer_->GetDelegatedSourceListController()->EnsureVisible();
   }
 }
@@ -753,6 +765,11 @@ void NativeDesktopMediaList::Worker::HideList() {
   if (is_source_list_delegated_) {
     capturer_->GetDelegatedSourceListController()->EnsureHidden();
   }
+}
+
+void NativeDesktopMediaList::Worker::ShowDelegatedList() {
+  CHECK(capturer_->GetDelegatedSourceListController());
+  capturer_->GetDelegatedSourceListController()->EnsureVisible();
 }
 
 void NativeDesktopMediaList::Worker::OnSelection() {
@@ -782,12 +799,14 @@ NativeDesktopMediaList::NativeDesktopMediaList(
     std::unique_ptr<ThumbnailCapturer> capturer)
     : NativeDesktopMediaList(type,
                              std::move(capturer),
-                             /*add_current_process_windows=*/false) {}
+                             /*add_current_process_windows=*/false,
+                             /*auto_show_delegated_source_list=*/true) {}
 
 NativeDesktopMediaList::NativeDesktopMediaList(
     DesktopMediaList::Type type,
     std::unique_ptr<ThumbnailCapturer> capturer,
-    bool add_current_process_windows)
+    bool add_current_process_windows,
+    bool auto_show_delegated_source_list)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultNativeDesktopMediaListUpdatePeriod)),
       thread_("DesktopMediaListCaptureThread"),
@@ -811,7 +830,8 @@ NativeDesktopMediaList::NativeDesktopMediaList(
 
   worker_ = std::make_unique<Worker>(
       thread_.task_runner(), weak_factory_.GetWeakPtr(), type,
-      std::move(capturer), add_current_process_windows_);
+      std::move(capturer), add_current_process_windows_,
+      auto_show_delegated_source_list);
 
   if (!is_source_list_delegated_)
     StartCapturer();
@@ -909,6 +929,16 @@ void NativeDesktopMediaList::HideList() {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&Worker::HideList, base::Unretained(worker_.get())));
+}
+
+void NativeDesktopMediaList::ShowDelegatedList() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // base::Unretained is safe here because we own the lifetime of both the
+  // worker and the thread and ensure that destroying the worker is the last
+  // thing the thread does before stopping.
+  thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&Worker::ShowDelegatedList,
+                                base::Unretained(worker_.get())));
 }
 
 void NativeDesktopMediaList::Refresh(bool update_thumbnails) {

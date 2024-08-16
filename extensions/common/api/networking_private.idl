@@ -65,6 +65,14 @@ namespace networkingPrivate {
     Direct, Manual, PAC, WPAD
   };
 
+  enum ApnType {
+    Default, Attach, Tether
+  };
+
+  enum ApnSource {
+    Modem, Modb, Ui, Admin
+  };
+
   // Managed property types. These types all share a common structure:
   // Active: For properties that are translated from the configuration
   //     manager (e.g. Shill), the 'active' value currently in use by the
@@ -160,6 +168,8 @@ namespace networkingPrivate {
     DOMString? Name;
     DOMString? Password;
     DOMString? Username;
+    ApnType[]? ApnTypes;
+    ApnSource? Source;
   };
 
   dictionary ManagedAPNProperties {

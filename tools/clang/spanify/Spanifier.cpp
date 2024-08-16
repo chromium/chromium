@@ -429,6 +429,81 @@ static Node getDataChangeNode(const std::string& lhs_replacement,
   return data_node;
 }
 
+// Gets the array size as written in the source code (if possible), otherwise
+// relies on the compile time value as seen in the ConstantArrayType.
+// Returns an empty string in case of error.
+std::string getArraySize(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+  const auto& lang_opts = ast_context.getLangOpts();
+
+  const auto* type_loc =
+      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+
+  auto array_type_loc = type_loc->getAs<clang::ArrayTypeLoc>();
+
+  // This is the case for arrays where the size expression is omitted. Example:
+  // int a[] = {1,2,3,4};
+  // For such cases, we rely on getting the compile-time size from the
+  // ConstantArrayType below.
+  if (array_type_loc.getLBracketLoc() != array_type_loc.getRBracketLoc()) {
+    auto source_range =
+        clang::SourceRange(array_type_loc.getLBracketLoc().getLocWithOffset(1),
+                           array_type_loc.getRBracketLoc());
+    auto size_text = clang::Lexer::getSourceText(
+                         clang::CharSourceRange::getCharRange(source_range),
+                         source_manager, lang_opts)
+                         .str();
+    if (!size_text.empty()) {
+      return size_text;
+    }
+  }
+  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
+  if (const clang::ConstantArrayType* type =
+          clang::dyn_cast<clang::ConstantArrayType>(array_type)) {
+    return std::to_string(*type->getSize().getRawData());
+  }
+  assert(false && "Unable to determine array size.");
+}
+
+// Creates a replacement node for c-style arrays on which we invoke operator[].
+// These arrays are rewritten to std::array<Type, Size>.
+Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
+
+  auto* array_type_loc =
+      result.Nodes.getNodeAs<clang::TypeLoc>("array_type_loc");
+  auto* array_type = result.Nodes.getNodeAs<clang::ArrayType>("array_type");
+  auto* array_variable =
+      result.Nodes.getNodeAs<clang::VarDecl>("array_variable");
+
+  auto element_type = array_type->getElementType();
+
+  clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+  printing_policy.SuppressScope = 1;
+  printing_policy.PrintCanonicalTypes = 1;
+  std::string element_type_as_string =
+      element_type.getAsString(printing_policy);
+
+  std::string array_size_as_string = getArraySize(result);
+  std::string replacement_text =
+      llvm::formatv("std::array<{0},{1}>{2}", element_type_as_string,
+                    array_size_as_string, array_variable->getNameAsString());
+
+  clang::SourceRange replacement_range = {
+      array_type_loc->getSourceRange().getBegin(),
+      array_type_loc->getSourceRange().getEnd().getLocWithOffset(1)};
+
+  auto replacement_and_include_pair = GetReplacementAndIncludeDirectives(
+      replacement_range, replacement_text, source_manager, "<array>");
+  Node n;
+  n.replacement = replacement_and_include_pair.first;
+  n.include_directive = replacement_and_include_pair.second;
+  n.size_info_available = true;
+  return n;
+}
+
 // Called when the Match registered for it was successfully found in the AST.
 // The matches registered represent two categories:
 //   1- An adjacency relationship
@@ -477,6 +552,10 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (result.Nodes.getNodeAs<clang::Expr>(
             "passing_a_buffer_to_third_party_function")) {
       return getNodeFromCallToExternalFunction(result);
+    }
+
+    if (result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
+      return getNodeFromArrayType(result);
     }
     assert(false);
   }
@@ -597,11 +676,6 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
   }
 
   Node getNodeFromMatchResult(const MatchFinder::MatchResult& result) {
-    if (auto* rhs_begin =
-            result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")) {
-      return getNodeFromDecl(rhs_begin, result);
-    }
-
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
@@ -612,32 +686,57 @@ class FunctionSignatureNodes : public MatchFinder::MatchCallback {
                 "rhs_raw_ptr_type_loc")) {
       return getNodeFromRawPtrTypeLoc(raw_ptr_type_loc, result);
     }
+
+    // "rhs_begin" match id could refer to a declaration that has a raw_ptr
+    // type. Those are handled in getNodeFromRawPtrTypeLoc. We
+    // should always check for a "rhs_raw_ptr_type_loc" match id and call
+    // getNodeFromRawPtrTypeLoc first.
+    if (auto* rhs_begin =
+            result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")) {
+      return getNodeFromDecl(rhs_begin, result);
+    }
+
     // Shouldn't get here.
     assert(false);
   }
 
   void run(const MatchFinder::MatchResult& result) override {
     const clang::SourceManager& source_manager = *result.SourceManager;
-
     const clang::FunctionDecl* fct_decl =
         result.Nodes.getNodeAs<clang::FunctionDecl>("fct_decl");
+    const clang::CXXMethodDecl* method_decl =
+        result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl");
 
-    std::string key = GetKey(fct_decl, source_manager);
-    if (auto* prev_decl = fct_decl->getPreviousDecl()) {
-      std::string prev_key = GetKey(prev_decl, source_manager);
-      fct_sig_pairs_.push_back({prev_key, key});
+    const std::string current_key = GetKey(fct_decl, source_manager);
+
+    // Function related by separate declaration and definition:
+    {
+      for (auto* previous_decl = fct_decl->getPreviousDecl(); previous_decl;
+           previous_decl = previous_decl->getPreviousDecl()) {
+        // TODO(356666773): The `previous_decl` might be part of third_party/.
+        // Then it won't be matched by the matcher. So only one of the pair
+        // would have a node.
+        const std::string previous_key = GetKey(previous_decl, source_manager);
+        fct_sig_pairs_.push_back({
+            current_key,
+            previous_key,
+        });
+      }
     }
 
-    if (const clang::CXXMethodDecl* method_decl =
-            result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl")) {
+    // Function related by overriding:
+    if (method_decl) {
       for (auto* m : method_decl->overridden_methods()) {
-        std::string prev_key = GetKey(m, source_manager);
-        fct_sig_pairs_.push_back({prev_key, key});
+        const std::string previous_key = GetKey(m, source_manager);
+        fct_sig_pairs_.push_back({
+            current_key,
+            previous_key,
+        });
       }
     }
 
     Node n = getNodeFromMatchResult(result);
-    fct_sig_nodes_[key].insert(n);
+    fct_sig_nodes_[current_key].insert(n);
   }
 
  private:
@@ -829,7 +928,7 @@ class Spanifier {
 
     // Expressions used to decide the pointer is used as a buffer include:
     // expr[n], expr++, ++expr, expr + n, expr += n
-    auto buffer_usage_expr = traverse(
+    auto buffer_expr1 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         expr(ignoringParenCasts(anyOf(
                  arraySubscriptExpr(hasLHS(lhs_expr_variations)),
@@ -843,7 +942,18 @@ class Spanifier {
                                            hasOperatorName("++")),
                                      hasArgument(0, lhs_expr_variations)))))
             .bind("buffer_expr"));
-    match_finder_.addMatcher(buffer_usage_expr, &potential_nodes_);
+    match_finder_.addMatcher(buffer_expr1, &potential_nodes_);
+
+    auto buffer_expr2 = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(to(
+                 varDecl(hasType(arrayType().bind("array_type")),
+                         hasTypeLoc(
+                             loc(qualType(anything())).bind("array_type_loc")),
+                         unless(exclusions), unless(hasExternalFormalLinkage()))
+                     .bind("array_variable")))))))
+            .bind("buffer_expr"));
+    match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
     auto deref_expression = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
@@ -1102,8 +1212,17 @@ int main(int argc, const char* argv[]) {
   // other or if one is a function declaration while the other is its
   // corresponding definition.
   for (auto& [l, r] : fct_sig_pairs) {
+    // By construction, only the left side of the pair is guaranteed to have a
+    // matching set of nodes.
     assert(fct_sig_nodes.find(l) != fct_sig_nodes.end());
-    assert(fct_sig_nodes.find(r) != fct_sig_nodes.end());
+
+    // TODO(356666773): Handle the case where both side of the pair haven't
+    // been matched. This happens when a function is declared in third_party/,
+    // but implemented in first party.
+    if (fct_sig_nodes.find(r) == fct_sig_nodes.end()) {
+      continue;
+    }
+
     auto& s1 = fct_sig_nodes[l];
     auto& s2 = fct_sig_nodes[r];
     assert(s1.size() == s2.size());

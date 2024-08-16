@@ -86,6 +86,12 @@ found in the LICENSE file.
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
 
+    <!-- Dimens for tab card label -->
+    <dimen name="tab_card_label_icon_size">16dp</dimen>
+    <dimen name="tab_card_label_icon_inset">3dp</dimen>
+    <dimen name="tab_card_label_icon_radius">8dp</dimen>
+    <dimen name="tab_card_label_height">24dp</dimen>
+
     <!-- Dimens for TabGroupSync features -->
     <dimen name="tab_group_start_icon_size">34dp</dimen>
     <dimen name="tab_group_favicon_image_size">16dp</dimen>
@@ -106,4 +112,6 @@ found in the LICENSE file.
 
     <!-- Dimens for archived tabs. -->
     <dimen name="archived_tabs_dialog_bottom_button_container_height">92dp</dimen>
+
+    <dimen name="message_card_close_button_size">24dp</dimen>
 </resources>

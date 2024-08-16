@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -16,9 +17,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
@@ -75,7 +76,8 @@ gfx::NativeWindow ShowWebDialogWithParams(
   params.delegate = view;
   params.parent = parent;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!parent && delegate->GetDialogModalType() == ui::MODAL_TYPE_SYSTEM) {
+  if (!parent &&
+      delegate->GetDialogModalType() == ui::mojom::ModalType::kSystem) {
     int container_id = ash_util::GetSystemModalDialogContainerId();
     ash_util::SetupWidgetInitParamsForContainer(&params, container_id);
   }

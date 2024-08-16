@@ -49,8 +49,7 @@ void ArcNotificationSurfaceManagerImpl::AddSurface(
           surface->notification_key(),
           std::make_unique<ArcNotificationSurfaceImpl>(surface)));
   if (!result.second) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   for (auto& observer : observers_)

@@ -4,17 +4,14 @@
 
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/sessions/ios/ios_live_tab.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
@@ -22,21 +19,12 @@
 
 namespace {
 sessions::LiveTabContext* FindLiveTabContextWithCondition(
+    BrowserList* browser_list,
     base::RepeatingCallback<bool(Browser*)> condition) {
-  std::vector<ChromeBrowserState*> browser_states =
-      GetApplicationContext()
-          ->GetChromeBrowserStateManager()
-          ->GetLoadedBrowserStates();
-
-  for (ChromeBrowserState* browser_state : browser_states) {
-    DCHECK(!browser_state->IsOffTheRecord());
-    BrowserList* browsers =
-        BrowserListFactory::GetForBrowserState(browser_state);
-    for (Browser* browser :
-         browsers->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-      if (condition.Run(browser)) {
-        return LiveTabContextBrowserAgent::FromBrowser(browser);
-      }
+  for (Browser* browser :
+       browser_list->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+    if (condition.Run(browser)) {
+      return LiveTabContextBrowserAgent::FromBrowser(browser);
     }
   }
 
@@ -45,10 +33,14 @@ sessions::LiveTabContext* FindLiveTabContextWithCondition(
 }  // namespace
 
 IOSChromeTabRestoreServiceClient::IOSChromeTabRestoreServiceClient(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    const base::FilePath& state_path,
+    BrowserList* browser_list)
+    : browser_state_path_(state_path), browser_list_(browser_list) {
+  DCHECK(!browser_state_path_.empty());
+  DCHECK(browser_list_);
+}
 
-IOSChromeTabRestoreServiceClient::~IOSChromeTabRestoreServiceClient() {}
+IOSChromeTabRestoreServiceClient::~IOSChromeTabRestoreServiceClient() = default;
 
 sessions::LiveTabContext*
 IOSChromeTabRestoreServiceClient::CreateLiveTabContext(
@@ -74,25 +66,29 @@ IOSChromeTabRestoreServiceClient::FindLiveTabContextForTab(
   if (!web_state) {
     return nullptr;
   }
-  return FindLiveTabContextWithCondition(base::BindRepeating(
-      [](const web::WebState* web_state, Browser* browser) {
-        WebStateList* web_state_list = browser->GetWebStateList();
-        const int index = web_state_list->GetIndexOfWebState(web_state);
-        return index != WebStateList::kInvalidIndex;
-      },
-      web_state));
+  return FindLiveTabContextWithCondition(
+      browser_list_,
+      base::BindRepeating(
+          [](const web::WebState* web_state, Browser* browser) {
+            WebStateList* web_state_list = browser->GetWebStateList();
+            const int index = web_state_list->GetIndexOfWebState(web_state);
+            return index != WebStateList::kInvalidIndex;
+          },
+          web_state));
 }
 
 sessions::LiveTabContext*
 IOSChromeTabRestoreServiceClient::FindLiveTabContextWithID(
     SessionID desired_id) {
-  return FindLiveTabContextWithCondition(base::BindRepeating(
-      [](SessionID desired_id, Browser* browser) {
-        SyncedWindowDelegateBrowserAgent* syncedWindowDelegate =
-            SyncedWindowDelegateBrowserAgent::FromBrowser(browser);
-        return syncedWindowDelegate->GetSessionId() == desired_id;
-      },
-      desired_id));
+  return FindLiveTabContextWithCondition(
+      browser_list_,
+      base::BindRepeating(
+          [](SessionID desired_id, Browser* browser) {
+            SyncedWindowDelegateBrowserAgent* syncedWindowDelegate =
+                SyncedWindowDelegateBrowserAgent::FromBrowser(browser);
+            return syncedWindowDelegate->GetSessionId() == desired_id;
+          },
+          desired_id));
 }
 
 sessions::LiveTabContext*
@@ -116,10 +112,7 @@ std::string IOSChromeTabRestoreServiceClient::GetExtensionAppIDForTab(
 }
 
 base::FilePath IOSChromeTabRestoreServiceClient::GetPathToSaveTo() {
-  // Note that this will return a different path in incognito from normal mode.
-  // In this case, that shouldn't be an issue because the tab restore service
-  // is not used in incognito mode.
-  return browser_state_->GetStatePath();
+  return browser_state_path_;
 }
 
 GURL IOSChromeTabRestoreServiceClient::GetNewTabURL() {

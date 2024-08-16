@@ -9,11 +9,11 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 // ChromeBrowserStateManager implementation for tests.
 //
@@ -32,11 +32,21 @@ class TestChromeBrowserStateManager : public ChromeBrowserStateManager {
   // ChromeBrowserStateManager:
   void AddObserver(ChromeBrowserStateManagerObserver* observer) override;
   void RemoveObserver(ChromeBrowserStateManagerObserver* observer) override;
+  void LoadBrowserStates() override;
   ChromeBrowserState* GetLastUsedBrowserStateDeprecatedDoNotUse() override;
   ChromeBrowserState* GetBrowserStateByName(std::string_view name) override;
-  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
   std::vector<ChromeBrowserState*> GetLoadedBrowserStates() override;
-  void LoadBrowserStates() override;
+  bool LoadBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback) override;
+  bool CreateBrowserStateAsync(
+      std::string_view name,
+      ChromeBrowserStateLoadedCallback initialized_callback,
+      ChromeBrowserStateLoadedCallback created_callback) override;
+  ChromeBrowserState* LoadBrowserState(std::string_view name) override;
+  ChromeBrowserState* CreateBrowserState(std::string_view name) override;
+  BrowserStateInfoCache* GetBrowserStateInfoCache() override;
 
   // Builds and adds a TestChromeBrowserState using `builder`. Asserts that
   // no BrowserState share the same name. Returns a pointer to the new object.

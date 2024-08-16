@@ -964,8 +964,12 @@ public class UrlBar extends AutocompleteEditText {
                     mVisibleTextPrefixHint = null;
                 } else {
                     if (ChromeFeatureList.sNoVisibleHintForDifferentTLD.isEnabled()) {
+                        // TODO(b/357649034): revisit and simplify the logic, seek to obsolete
+                        // mPreviousScrollOriginEndIndex if possible.
                         String previousTLD =
                                 mPreviousScrollText == null
+                                                || (mPreviousScrollText.length()
+                                                        < mPreviousScrollOriginEndIndex)
                                         ? null
                                         : mPreviousScrollText.substring(
                                                 0, mPreviousScrollOriginEndIndex);

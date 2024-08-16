@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
-namespace {
 
 // This function corresponds with step 2 substep 7 of
 // https://fetch.spec.whatwg.org/#main-fetch.
@@ -39,8 +38,6 @@ void SetReferrer(
   request.SetReferrerString(generated_referrer.referrer);
   request.SetReferrerPolicy(generated_referrer.referrer_policy);
 }
-
-}  // namespace
 
 ResourceLoadPriority AdjustPriorityWithPriorityHintAndRenderBlocking(
     ResourceLoadPriority priority,
@@ -114,7 +111,7 @@ bool ShouldLoadIncremental(ResourceType type) {
     case ResourceType::kDictionary:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<ResourceRequestBlockedReason> PrepareResourceRequest(

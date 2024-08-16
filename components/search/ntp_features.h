@@ -53,6 +53,7 @@ BASE_DECLARE_FEATURE(kNtpLogo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromo);
 BASE_DECLARE_FEATURE(kNtpMiddleSlotPromoDismissal);
 BASE_DECLARE_FEATURE(kNtpModulesLoadTimeoutMilliseconds);
+BASE_DECLARE_FEATURE(kNtpWideModules);
 BASE_DECLARE_FEATURE(kNtpModulesOrder);
 BASE_DECLARE_FEATURE(kNtpModulesOverflowScrollbar);
 BASE_DECLARE_FEATURE(kNtpModulesDragAndDrop);
@@ -196,6 +197,9 @@ extern const char kNtpRealboxWidthBehaviorParam[];
 extern const char kNtpTabResumptionModuleCategoriesBlocklistParam[];
 extern const char kNtpMostRelevantTabResumptionModuleDataParam[];
 extern const char kNtpTabResumptionModuleDataParam[];
+// Parameter determining for how long a dismissed tab should be discarded
+// from the module's displayed visit resumption suggestions.
+extern const char kNtpTabResumptionModuleDismissalDurationParam[];
 // Parameter determining what types result types to request when fetching URL
 // visit aggregate data.
 extern const char kNtpTabResumptionModuleResultTypesParam[];
@@ -226,11 +230,6 @@ extern const base::FeatureParam<bool>
     kNtpRealboxCr23ExpandedStateBgMatchesOmnibox;
 // Parameter determining the whether the steady state realbox has a shadow.
 extern const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow;
-
-// Returns whether the NTP redesigned launchpad experience is enabled for the
-// given locale and country code.
-bool IsNtpModulesRedesignedEnabled(std::string application_locale,
-                                   std::string country_code);
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

@@ -39,6 +39,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
@@ -478,9 +480,10 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::test::ScopedCommandLine scoped_command_line_;
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
@@ -682,6 +685,8 @@ class LegacyPackagedAppLacrosPrimaryPublisherTest : public PublisherTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   LegacyPackagedAppLacrosPrimaryPublisherTest(
@@ -734,6 +739,8 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =

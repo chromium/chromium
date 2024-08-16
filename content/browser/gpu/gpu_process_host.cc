@@ -400,10 +400,6 @@ class GpuSandboxedProcessLauncherDelegate
   };
 
   bool GetAppContainerId(std::string* appcontainer_id) override {
-    if (UseOpenGLRenderer()) {
-      return false;
-    }
-
     if (!enable_appcontainer_) {
       return false;
     }
@@ -419,38 +415,25 @@ class GpuSandboxedProcessLauncherDelegate
   bool InitializeConfig(sandbox::TargetConfig* config) override {
     DCHECK(!config->IsConfigured());
 
-    if (UseOpenGLRenderer()) {
-      // Open GL path.
-      sandbox::ResultCode result = config->SetTokenLevel(
-          sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
+    sandbox::ResultCode result = config->SetTokenLevel(
+        sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
+    }
 
-      result = sandbox::policy::SandboxWin::SetJobLevel(
-          sandbox::mojom::Sandbox::kGpu, sandbox::JobLevel::kUnprotected, 0,
-          config);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-    } else {
-      sandbox::ResultCode result = config->SetTokenLevel(
-          sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
-
-      // UI restrictions break when we access Windows from outside our job.
-      // However, we don't want a proxy window in this process because it can
-      // introduce deadlocks where the renderer blocks on the gpu, which in
-      // turn blocks on the browser UI thread. So, instead we forgo a window
-      // message pump entirely and just add job restrictions to prevent child
-      // processes.
-      result = sandbox::policy::SandboxWin::SetJobLevel(
-          sandbox::mojom::Sandbox::kGpu, sandbox::JobLevel::kLimitedUser,
-          JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_DESKTOP |
-              JOB_OBJECT_UILIMIT_EXITWINDOWS |
-              JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
-          config);
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
+    // UI restrictions break when we access Windows from outside our job.
+    // However, we don't want a proxy window in this process because it can
+    // introduce deadlocks where the renderer blocks on the gpu, which in
+    // turn blocks on the browser UI thread. So, instead we forgo a window
+    // message pump entirely and just add job restrictions to prevent child
+    // processes.
+    result = sandbox::policy::SandboxWin::SetJobLevel(
+        sandbox::mojom::Sandbox::kGpu, sandbox::JobLevel::kLimitedUser,
+        JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_DESKTOP |
+            JOB_OBJECT_UILIMIT_EXITWINDOWS | JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
+        config);
+    if (result != sandbox::SBOX_ALL_OK) {
+      return false;
     }
 
     // Check if we are running on the winlogon desktop and set a delayed
@@ -463,8 +446,7 @@ class GpuSandboxedProcessLauncherDelegate
     if (ShouldSetDelayedIntegrity()) {
       config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
     } else {
-      sandbox::ResultCode result =
-          config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+      result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
       if (result != sandbox::SBOX_ALL_OK)
         return false;
     }
@@ -509,11 +491,6 @@ class GpuSandboxedProcessLauncherDelegate
       kMaxValue = kDesktopAccessMediumIl,
   };
 
-  bool UseOpenGLRenderer() {
-    return cmd_line_.GetSwitchValueASCII(switches::kUseGL) ==
-           gl::kGLImplementationDesktopName;
-  }
-
   bool CanLowIntegrityAccessDesktop() {
     // Access required for UI thread to initialize (when user32.dll loads
     // without win32k lockdown).
@@ -547,10 +524,6 @@ class GpuSandboxedProcessLauncherDelegate
   }
 
   bool ShouldSetDelayedIntegrity() {
-    if (UseOpenGLRenderer()) {
-      return true;
-    }
-
     // Desktop access is needed to load user32.dll, we can lower token in child
     // process after that's done.
     if (CanLowIntegrityAccessDesktop()) {
@@ -1194,7 +1167,7 @@ std::string GpuProcessHost::GetIsolationKey(
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void GpuProcessHost::BlockDomainsFrom3DAPIs(const std::set<GURL>& urls,

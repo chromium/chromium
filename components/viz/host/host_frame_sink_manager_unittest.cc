@@ -72,11 +72,13 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
   MOCK_METHOD2(SetFrameSinkDebugLabel,
                void(const FrameSinkId& frame_sink_id,
                     const std::string& debug_label));
-  MOCK_METHOD4(CreateCompositorFrameSink,
-               void(const FrameSinkId&,
-                    const std::optional<FrameSinkBundleId>&,
-                    mojo::PendingReceiver<mojom::CompositorFrameSink>,
-                    mojo::PendingRemote<mojom::CompositorFrameSinkClient>));
+  MOCK_METHOD5(
+      CreateCompositorFrameSink,
+      void(const FrameSinkId&,
+           const std::optional<FrameSinkBundleId>&,
+           mojo::PendingReceiver<mojom::CompositorFrameSink>,
+           mojo::PendingRemote<mojom::CompositorFrameSinkClient>,
+           mojo::PendingRemote<blink::mojom::RenderInputRouterClient>));
   void CreateRootCompositorFrameSink(
       mojom::RootCompositorFrameSinkParamsPtr params) override {
     MockCreateRootCompositorFrameSink(params->frame_sink_id);
@@ -125,7 +127,7 @@ class HostFrameSinkManagerTest : public testing::Test {
 
   bool IsBoundToFrameSinkManager() {
     return host_manager_.frame_sink_manager_remote_.is_bound() ||
-           host_manager_.receiver_.is_bound();
+           host_manager_.frame_sink_manager_client_receiver_.is_bound();
   }
 
   bool DisplayHitTestQueryExists(const FrameSinkId& frame_sink_id) {
@@ -190,7 +192,7 @@ TEST_F(HostFrameSinkManagerTest, CreateCompositorFrameSinks) {
 
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _));
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _, _));
   host().CreateCompositorFrameSink(
       kFrameSinkChild1, compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
@@ -300,7 +302,7 @@ TEST_F(HostFrameSinkManagerTest, HierarchyMultipleParents) {
                                     ReportFirstSurfaceActivation::kYes);
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  EXPECT_CALL(impl(), CreateCompositorFrameSink(id_child, _, _, _));
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(id_child, _, _, _, _));
   host().CreateCompositorFrameSink(
       id_child, compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
@@ -348,7 +350,7 @@ TEST_F(HostFrameSinkManagerTest, RestartOnGpuCrash) {
 
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
-  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _));
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _, _));
   host().CreateCompositorFrameSink(
       kFrameSinkChild1, compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
@@ -456,7 +458,7 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
       compositor_frame_sink_client1.BindInterfaceRemote());
 
   // Verify CompositorFrameSink was created on other end of message pipe.
-  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _));
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _, _));
   FlushHostAndVerifyExpectations();
 
   // Create a new CompositorFrameSink and try to connect it with the same
@@ -469,7 +471,7 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
 
   // Verify CompositorFrameSink is destroyed and then recreated.
   EXPECT_CALL(impl(), MockDestroyCompositorFrameSink(kFrameSinkChild1));
-  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _));
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkChild1, _, _, _, _));
   FlushHostAndVerifyExpectations();
 }
 

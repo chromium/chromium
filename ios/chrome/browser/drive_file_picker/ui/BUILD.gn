@@ -10,12 +10,17 @@ source_set("ui") {
     "drive_file_picker_navigation_controller.mm",
     "drive_file_picker_table_view_controller.h",
     "drive_file_picker_table_view_controller.mm",
+    "drive_item.h",
+    "drive_item.mm",
+    "root_drive_file_picker_table_view_controller.h",
+    "root_drive_file_picker_table_view_controller.mm",
   ]
   deps = [
     ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",

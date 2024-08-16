@@ -8,7 +8,9 @@
 
 #include "base/logging.h"
 #include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace syncer {
 
@@ -69,7 +71,7 @@ void DebugInfoEventListener::OnTrustedVaultKeyAccepted() {
 }
 
 void DebugInfoEventListener::OnEncryptedTypesChanged(
-    ModelTypeSet encrypted_types,
+    DataTypeSet encrypted_types,
     bool encrypt_everything) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateAndAddEvent(sync_pb::SyncEnums::ENCRYPTED_TYPES_CHANGED);
@@ -96,17 +98,17 @@ void DebugInfoEventListener::OnActionableProtocolError(
   CreateAndAddEvent(sync_pb::SyncEnums::ACTIONABLE_ERROR);
 }
 
-void DebugInfoEventListener::OnMigrationRequested(ModelTypeSet types) {}
+void DebugInfoEventListener::OnMigrationRequested(DataTypeSet types) {}
 
 void DebugInfoEventListener::OnProtocolEvent(const ProtocolEvent& event) {}
 
 void DebugInfoEventListener::OnSyncStatusChanged(const SyncStatus& status) {}
 
-void DebugInfoEventListener::OnNudgeFromDatatype(ModelType datatype) {
+void DebugInfoEventListener::OnNudgeFromDatatype(DataType datatype) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_pb::DebugEventInfo event_info;
   event_info.set_nudging_datatype(
-      GetSpecificsFieldNumberFromModelType(datatype));
+      GetSpecificsFieldNumberFromDataType(datatype));
   AddEventToQueue(event_info);
 }
 

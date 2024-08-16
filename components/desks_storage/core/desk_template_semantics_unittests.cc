@@ -14,8 +14,8 @@
 #include "components/desks_storage/core/desk_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -50,7 +50,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
   DeskTemplateSemanticsTest()
       : cache_(std::make_unique<apps::AppRegistryCache>()),
         account_id_(AccountId::FromUserEmail("test@gmail.com")),
-        store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+        store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
   // testing::test.
   void SetUp() override {
@@ -58,7 +58,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<DeskSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         account_id_);
     desk_test_util::PopulateAppRegistryCache(account_id_, cache_.get());
   }
@@ -68,13 +68,13 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
   apps::AppRegistryCache* app_cache() { return cache_.get(); }
 
  private:
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<apps::AppRegistryCache> cache_;
   AccountId account_id_;
   std::unique_ptr<DeskSyncBridge> bridge_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 };
 
 TEST_P(DeskTemplateSemanticsTest, PolicyTemplateSemanticallyEquivalentToProto) {

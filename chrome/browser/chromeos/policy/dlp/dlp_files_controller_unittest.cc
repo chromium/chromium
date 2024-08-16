@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 
 #include "base/files/file_util.h"
@@ -33,7 +38,7 @@ constexpr char kFilePath1[] = "test1.txt";
 constexpr char kFilePath2[] = "test2.txt";
 
 bool CreateDummyFile(const base::FilePath& path) {
-  return WriteFile(path, "42", sizeof("42")) == sizeof("42");
+  return WriteFile(path, "42");
 }
 }  // namespace
 

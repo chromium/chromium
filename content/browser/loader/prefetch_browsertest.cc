@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  net::IsolationInfo::RequestType::kMainFrame, cross_origin,
                   cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
@@ -213,9 +213,11 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
                        DISABLED_CrossOriginDocumentReusedAsNavigation) {
   const char* prefetch_path = "/prefetch.html";
   const char* target_path = "/target.html";
-  RegisterResponse(
-      target_path,
-      ResponseEntry("<head><title>Prefetch Target</title></head>"));
+  RegisterResponse(target_path,
+                   ResponseEntry("<head><title>Prefetch Target</title></head>",
+                                 // The empty content type prevents this
+                                 // response from being blocked by ORB.
+                                 /*content_types=*/""));
 
   base::RunLoop prefetch_waiter;
   auto request_counter = RequestCounter::CreateAndMonitor(
@@ -722,7 +724,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   ASSERT_TRUE(request->trusted_params);
   url::Origin cross_origin = url::Origin::Create(cross_origin_target_url);
   EXPECT_TRUE(net::IsolationInfo::Create(
-                  net::IsolationInfo::RequestType::kOther, cross_origin,
+                  net::IsolationInfo::RequestType::kMainFrame, cross_origin,
                   cross_origin, net::SiteForCookies())
                   .IsEqualForTesting(request->trusted_params->isolation_info));
 }
@@ -1380,8 +1382,11 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
 // request url. This allows the first prefetch request to go through. However,
 // the second prefetch request, which is changed from a preload request because
 // of the recursive prefetch token, is blocked.
+// TODO(crbug.com/336778624): This test is based on
+// PrefetchBrowserTest.CrossOriginWithPreloadCredentialled, which is flaky. Once
+// the flakiness is addressed, re-enable this test as well.
 IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
-                       NetworkCutoffDisablesRecursivePrefetch) {
+                       DISABLED_NetworkCutoffDisablesRecursivePrefetch) {
   ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
   const auto port = embedded_https_test_server().port();
   const char target_path[] = "/target.html";

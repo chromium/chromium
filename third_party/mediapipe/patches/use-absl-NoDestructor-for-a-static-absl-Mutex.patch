@@ -1,0 +1,43 @@
+From 6ff4ef4bed06085c90f2c3d579f2b2a19db3a4b5 Mon Sep 17 00:00:00 2001
+From: ahmedmoussa <ahmedmoussa@google.com>
+Date: Thu, 1 Aug 2024 15:39:33 -0700
+Subject: [PATCH] Use absl::NoDestructor for a static absl::Mutex
+
+This is needed for a successful build when build_with_mediapipe_lib is true
+
+---
+ .../mediapipe/src/mediapipe/framework/tool/options_map.h     | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/tool/options_map.h b/third_party/mediapipe/src/mediapipe/framework/tool/options_map.h
+index ece47835edf35..0ff2de580d664 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/tool/options_map.h
++++ b/third_party/mediapipe/src/mediapipe/framework/tool/options_map.h
+@@ -7,6 +7,7 @@
+
+ #include "absl/base/attributes.h"
+ #include "absl/base/const_init.h"
++#include "absl/base/no_destructor.h"
+ #include "absl/synchronization/mutex.h"
+ #include "mediapipe/framework/calculator.pb.h"
+ #include "mediapipe/framework/port/any_proto.h"
+@@ -16,7 +17,7 @@ namespace mediapipe {
+
+ namespace tool {
+
+-ABSL_CONST_INIT static absl::Mutex option_extension_lock(absl::kConstInit);
++static absl::NoDestructor<absl::Mutex> option_extension_lock(absl::kConstInit);
+
+ // A compile-time detector for the constant |T::ext|.
+ template <typename T>
+@@ -47,7 +48,7 @@ bool HasExtension(const CalculatorOptions& options) {
+ template <class T,
+           typename std::enable_if<IsExtension<T>::value, int>::type = 0>
+ T* GetExtension(CalculatorOptions& options) {
+-  absl::MutexLock lock(&option_extension_lock);
++  absl::MutexLock lock(option_extension_lock.get());
+   if (options.HasExtension(T::ext)) {
+     return options.MutableExtension(T::ext);
+   }
+--
+2.46.0.rc2.264.g509ed76dc8-goog

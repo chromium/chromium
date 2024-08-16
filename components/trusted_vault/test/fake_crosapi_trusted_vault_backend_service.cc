@@ -51,7 +51,7 @@ void FakeCrosapiTrustedVaultBackendService::GetTrustedVaultBackend(
     mojo::PendingReceiver<crosapi::mojom::TrustedVaultBackend> backend) {
   switch (security_domain) {
     case crosapi::mojom::SecurityDomainId::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::SecurityDomainId::kChromeSync:
       chrome_sync_trusted_vault_backend_->BindReceiver(std::move(backend));
       break;

@@ -118,7 +118,7 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
 
   // Closes the associated tray bubble view if it exists and is currently
   // showing.
-  virtual void CloseBubble() {}
+  virtual void CloseBubbleInternal() {}
 
   // Shows the associated tray bubble if one exists.
   virtual void ShowBubble();
@@ -168,6 +168,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // For Jelly: updates the color of either the icon or the label of this view
   // based on the active state specified by `is_active`.
   virtual void UpdateTrayItemColor(bool is_active) = 0;
+
+  // Calls `CloseBubbleInternal` which is implemented by each child tray view.
+  // The focusing behavior is handled in this method.
+  void CloseBubble();
 
   // Gets the anchor for bubbles, which is tray_container().
   views::View* GetBubbleAnchor() const;

@@ -9,7 +9,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"

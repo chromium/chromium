@@ -40,8 +40,8 @@
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
-#include "components/sync/model/model_type_controller_delegate.h"
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/model/data_type_controller_delegate.h"
+#include "components/sync/service/data_type_controller.h"
 #include "components/sync/test/mock_commit_queue.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/synced_session.h"
@@ -143,7 +143,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
   }
 
   void EnableSync() {
-    // ClientTagBasedModelTypeProcessor requires connecting before
+    // ClientTagBasedDataTypeProcessor requires connecting before
     // other interactions with the worker happen.
     sync_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
@@ -167,7 +167,7 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
  private:
   raw_ptr<sync_sessions::SessionSyncService, DanglingUntriaged>
       session_sync_service_;
-  std::unique_ptr<syncer::ModelTypeProcessor> sync_processor_;
+  std::unique_ptr<syncer::DataTypeProcessor> sync_processor_;
 };
 
 class TestLogMetricsAppMenuModel : public AppMenuModel {

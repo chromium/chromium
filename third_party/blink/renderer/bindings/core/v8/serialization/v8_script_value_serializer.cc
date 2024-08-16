@@ -250,15 +250,14 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
 
   // Serialize the value and handle errors.
   v8::Isolate* isolate = script_state_->GetIsolate();
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   bool wrote_value;
   if (!serializer_.WriteValue(script_state_->GetContext(), value)
            .To(&wrote_value)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    DCHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
   DCHECK(wrote_value);
@@ -819,15 +818,8 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUTF8String(
         config->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>()
             .GetString());
-    WriteUint32(config->GetValueIgnoringVisibility<
-                FencedFrameConfig::Attribute::kWidth>());
-    WriteUint32(config->GetValueIgnoringVisibility<
-                FencedFrameConfig::Attribute::kHeight>());
     WriteUint32(static_cast<uint32_t>(
         config->GetAttributeVisibility<FencedFrameConfig::Attribute::kURL>(
-            PassKey())));
-    WriteUint32(static_cast<uint32_t>(
-        config->GetAttributeVisibility<FencedFrameConfig::Attribute::kWidth>(
             PassKey())));
     WriteUint32(config->deprecated_should_freeze_initial_size(PassKey()));
     std::optional<KURL> urn_uuid = config->urn_uuid(PassKey());
@@ -945,7 +937,7 @@ namespace {
 DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state) {
-  if (UNLIKELY(!value->IsSharedArrayBuffer())) {
+  if (!value->IsSharedArrayBuffer()) [[unlikely]] {
     exception_state.ThrowTypeError(
         ExceptionMessages::FailedToConvertJSValue("SharedArrayBuffer"));
     return nullptr;

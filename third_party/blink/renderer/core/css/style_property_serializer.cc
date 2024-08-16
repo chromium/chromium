@@ -353,9 +353,9 @@ String StylePropertySerializer::AsText() const {
 
       shorthand_appeared.set(shorthand_property_index);
       bool serialized_other_longhand = false;
-      for (unsigned i = 0; i < shorthand.length(); i++) {
-        if (longhand_serialized.test(GetCSSPropertyIDIndex(
-                shorthand.properties()[i]->PropertyID()))) {
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        if (longhand_serialized.test(
+                GetCSSPropertyIDIndex(longhand->PropertyID()))) {
           serialized_other_longhand = true;
           break;
         }
@@ -373,9 +373,8 @@ String StylePropertySerializer::AsText() const {
           CSSProperty::Get(shorthand_property).GetCSSPropertyName(),
           shorthand_result, property.IsImportant(), num_decls++));
       serialized_as_shorthand = true;
-      for (unsigned i = 0; i < shorthand.length(); i++) {
-        longhand_serialized.set(
-            GetCSSPropertyIDIndex(shorthand.properties()[i]->PropertyID()));
+      for (const CSSProperty* const longhand : shorthand.properties()) {
+        longhand_serialized.set(GetCSSPropertyIDIndex(longhand->PropertyID()));
       }
       break;
     }
@@ -648,6 +647,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(maskPositionShorthand());
     case CSSPropertyID::kMask:
       return GetLayeredShorthandValue(maskShorthand());
+    case CSSPropertyID::kTextBox:
+      return TextBoxValue();
     case CSSPropertyID::kTextEmphasis:
       return GetShorthandValue(textEmphasisShorthand());
     case CSSPropertyID::kTextSpacing:
@@ -1183,21 +1184,20 @@ String StylePropertySerializer::FontValue() const {
   }
 
   const StylePropertyShorthand& shorthand = fontShorthand();
-  const CSSProperty** longhands = shorthand.properties();
-  unsigned length = shorthand.length();
+  const StylePropertyShorthand::Properties& longhands = shorthand.properties();
   const CSSValue* first = property_set_.GetPropertyCSSValue(*longhands[0]);
   if (const auto* system_font =
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(first)) {
-    for (unsigned i = 1; i < length; i++) {
-      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhands[i]);
+    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (!base::ValuesEquivalent(first, value)) {
         return g_empty_string;
       }
     }
     return getValueName(system_font->SystemFontId());
   } else {
-    for (unsigned i = 1; i < length; i++) {
-      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhands[i]);
+    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+      const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (value->IsPendingSystemFontValue()) {
         return g_empty_string;
       }
@@ -1417,15 +1417,13 @@ String StylePropertySerializer::OffsetValue() const {
 String StylePropertySerializer::TextDecorationValue() const {
   StringBuilder result;
   const auto& shorthand = shorthandForProperty(CSSPropertyID::kTextDecoration);
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
     String value_text = value->CssText();
     if (value->IsInitialValue()) {
       continue;
     }
-    if (shorthand.properties()[i]->PropertyID() ==
-        CSSPropertyID::kTextDecorationThickness) {
+    if (longhand->PropertyID() == CSSPropertyID::kTextDecorationThickness) {
       if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
         // Do not include initial value 'auto' for thickness.
         // TODO(https://crbug.com/1093826): general shorthand serialization
@@ -1819,9 +1817,8 @@ String StylePropertySerializer::GetShorthandValue(
     const StylePropertyShorthand& shorthand,
     String separator) const {
   StringBuilder result;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
     String value_text = value->CssText();
     if (value->IsInitialValue()) {
       continue;
@@ -1890,9 +1887,8 @@ String StylePropertySerializer::GetShorthandValueForColumns(
   DCHECK_EQ(shorthand.length(), 2u);
 
   StringBuilder result;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
     String value_text = value->CssText();
     if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
         ident_value && ident_value->GetValueID() == CSSValueID::kAuto) {
@@ -1914,8 +1910,8 @@ String StylePropertySerializer::GetShorthandValueForColumns(
 String StylePropertySerializer::GetShorthandValueForDoubleBarCombinator(
     const StylePropertyShorthand& shorthand) const {
   StringBuilder result;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const Longhand* longhand = To<Longhand>(shorthand.properties()[i]);
+  for (const CSSProperty* const property : shorthand.properties()) {
+    const Longhand* longhand = To<Longhand>(property);
     DCHECK(!longhand->InitialValue()->IsInitialValue())
         << "Without InitialValue() implemented, 'initial' will show up in the "
            "serialization below.";
@@ -2166,9 +2162,8 @@ String StylePropertySerializer::GetShorthandValueForGridTemplate(
 String StylePropertySerializer::GetCommonValue(
     const StylePropertyShorthand& shorthand) const {
   String res;
-  for (unsigned i = 0; i < shorthand.length(); ++i) {
-    const CSSValue* value =
-        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+  for (const CSSProperty* const longhand : shorthand.properties()) {
+    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
     // FIXME: CSSInitialValue::CssText should generate the right value.
     String text = value->CssText();
     if (res.IsNull()) {
@@ -2317,6 +2312,39 @@ String StylePropertySerializer::ContainIntrinsicSizeValue() const {
   }
   // Otherwise just serialize them in sequence.
   return GetShorthandValue(containIntrinsicSizeShorthand());
+}
+
+String StylePropertySerializer::TextBoxValue() const {
+  const auto* trim_value = DynamicTo<CSSIdentifierValue>(
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextBoxTrim()));
+  CHECK(trim_value);
+  const CSSValueID trim_id = trim_value->GetValueID();
+  const CSSValue* edge_value =
+      property_set_.GetPropertyCSSValue(GetCSSPropertyTextBoxEdge());
+  CHECK(edge_value);
+
+  // If `text-box-edge: auto`, produce `normal` or `<text-box-trim>`.
+  if (const auto* edge_identifier = DynamicTo<CSSIdentifierValue>(edge_value)) {
+    const CSSValueID edge_id = edge_identifier->GetValueID();
+    if (edge_id == CSSValueID::kAuto) {
+      if (trim_id == CSSValueID::kNone) {
+        return getValueName(CSSValueID::kNormal);
+      }
+      return trim_value->CssText();
+    }
+  }
+
+  // Omit `text-box-trim` if `trim-both`, not when it's initial.
+  if (trim_id == CSSValueID::kTrimBoth) {
+    return edge_value->CssText();
+  }
+
+  // Otherwise build a multi-value list.
+  StringBuilder result;
+  result.Append(trim_value->CssText());
+  result.Append(kSpaceCharacter);
+  result.Append(edge_value->CssText());
+  return result.ToString();
 }
 
 String StylePropertySerializer::TextSpacingValue() const {

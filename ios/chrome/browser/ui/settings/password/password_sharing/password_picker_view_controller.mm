@@ -29,6 +29,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCredential = kItemTypeEnumZero,
 };
 
+// Orders passwords before passkeys. For the same type of credentials defaults
+// to the existing comparator.
+bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
+                              const password_manager::CredentialUIEntry& rhs) {
+  bool is_lhs_passkey = !lhs.passkey_credential_id.empty();
+  bool is_rhs_passkey = !rhs.passkey_credential_id.empty();
+  if (is_lhs_passkey != is_rhs_passkey) {
+    return is_lhs_passkey < is_rhs_passkey;
+  }
+  return lhs < rhs;
+}
+
 }  // namespace
 
 @interface PasswordPickerViewController () {
@@ -149,10 +161,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)setCredentials:
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
-  // TODO(crbug.com/355048091): The credentials should already be sorted so that
-  // passwords are before passkeys, but ensure that here as well in case sth
-  // changes in the CredentialUIEntry operator<.
   _credentials = credentials;
+
+  // Ensure that passkeys are at the end since they cannot be shared currently.
+  std::sort(_credentials.begin(), _credentials.end(), CompareCredentialsByType);
 
   [self loadModel];
   [self.tableView reloadData];

@@ -54,7 +54,6 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "CHROME_ENABLE_LOGGING_BY_DEFAULT=$chrome_enable_logging_by_default",
-    "CHROME_CERTIFICATE_POLICIES_SUPPORTED=$chrome_certificate_policies_supported",
     "CHROME_ROOT_STORE_CERT_MANAGEMENT_UI=$chrome_root_store_cert_management_ui",
     "ENABLE_ANDROID_SITE_ISOLATION=$enable_android_site_isolation",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
@@ -119,6 +118,12 @@ group("common") {
   }
 }
 
+source_set("request_code_constants") {
+  sources = [ "chrome_resource_request_blocked_reason.h" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  public_deps = [ "//content/public/common" ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("common_lib") {
@@ -134,7 +139,6 @@ static_library("common_lib") {
     "chrome_content_client_constants.cc",
     "chrome_descriptors.h",
     "chrome_isolated_world_ids.h",
-    "chrome_resource_request_blocked_reason.h",
     "chrome_result_codes.cc",
     "chrome_result_codes.h",
     "common_message_generator.cc",
@@ -162,6 +166,8 @@ static_library("common_lib") {
     "search/ntp_logging_events.h",
     "secure_origin_allowlist.cc",
     "secure_origin_allowlist.h",
+    "webui_util.cc",
+    "webui_util.h",
   ]
   defines = []
 
@@ -177,6 +183,7 @@ static_library("common_lib") {
     ":ini_parser",
     ":mojo_bindings",
     ":offline_page_auto_fetcher_mojom",
+    ":request_code_constants",
     ":supervised_user_commands_mojom",
     ":url_constants",
     "//base",
@@ -278,78 +285,37 @@ static_library("common_lib") {
     public_deps += [ "//ppapi/shared_impl" ]
   }
 
-  if (enable_extensions) {
-    sources += [
-      "controlled_frame/controlled_frame.cc",
-      "controlled_frame/controlled_frame.h",
-      "extensions/api/file_browser_handlers/file_browser_handler.cc",
-      "extensions/api/file_browser_handlers/file_browser_handler.h",
-      "extensions/api/notifications/notification_style.cc",
-      "extensions/api/notifications/notification_style.h",
-      "extensions/api/omnibox/omnibox_handler.cc",
-      "extensions/api/omnibox/omnibox_handler.h",
-      "extensions/api/side_panel/side_panel_info.cc",
-      "extensions/api/side_panel/side_panel_info.h",
-      "extensions/api/speech/tts_engine_manifest_handler.cc",
-      "extensions/api/speech/tts_engine_manifest_handler.h",
-      "extensions/api/storage/storage_schema_manifest_handler.cc",
-      "extensions/api/storage/storage_schema_manifest_handler.h",
-      "extensions/api/system_indicator/system_indicator_handler.cc",
-      "extensions/api/system_indicator/system_indicator_handler.h",
-      "extensions/api/url_handlers/url_handlers_parser.cc",
-      "extensions/api/url_handlers/url_handlers_parser.h",
-      "extensions/chrome_extensions_api_provider.cc",
-      "extensions/chrome_extensions_api_provider.h",
-      "extensions/chrome_extensions_client.cc",
-      "extensions/chrome_extensions_client.h",
-      "extensions/chrome_manifest_handlers.cc",
-      "extensions/chrome_manifest_handlers.h",
-      "extensions/chrome_manifest_url_handlers.cc",
-      "extensions/chrome_manifest_url_handlers.h",
-      "extensions/extension_constants.cc",
-      "extensions/extension_constants.h",
-      "extensions/extension_metrics.cc",
-      "extensions/extension_metrics.h",
-      "extensions/manifest_handlers/app_launch_info.cc",
-      "extensions/manifest_handlers/app_launch_info.h",
-      "extensions/manifest_handlers/minimum_chrome_version_checker.cc",
-      "extensions/manifest_handlers/minimum_chrome_version_checker.h",
-      "extensions/manifest_handlers/natively_connectable_handler.cc",
-      "extensions/manifest_handlers/natively_connectable_handler.h",
-      "extensions/manifest_handlers/settings_overrides_handler.cc",
-      "extensions/manifest_handlers/settings_overrides_handler.h",
-      "extensions/manifest_handlers/theme_handler.cc",
-      "extensions/manifest_handlers/theme_handler.h",
-      "extensions/permissions/chrome_api_permissions.cc",
-      "extensions/permissions/chrome_api_permissions.h",
-      "extensions/permissions/chrome_permission_message_provider.cc",
-      "extensions/permissions/chrome_permission_message_provider.h",
-      "extensions/permissions/chrome_permission_message_rules.cc",
-      "extensions/permissions/chrome_permission_message_rules.h",
-      "extensions/sync_helper.cc",
-      "extensions/sync_helper.h",
-      "extensions/webstore_install_result.cc",
-      "extensions/webstore_install_result.h",
-      "extensions/webstore_override.cc",
-      "extensions/webstore_override.h",
-      "initialize_extensions_client.cc",
-      "initialize_extensions_client.h",
-    ]
-    deps += [
-      "//chrome/common/apps/platform_apps",
-      "//chrome/common/controlled_frame",
-      "//components/app_constants",
-    ]
+  if (enable_extensions || enable_desktop_android_extensions) {
+    # TODO(https://crbug.com/356905053): Gradually include more of these sources
+    # in the desktop-android build, or put them behind more specific build
+    # flags.
+    if (enable_extensions) {
+      sources += [
+        "controlled_frame/controlled_frame.cc",
+        "controlled_frame/controlled_frame.h",
+        "initialize_extensions_client.cc",
+        "initialize_extensions_client.h",
+      ]
+      deps += [
+        "//chrome/common/apps/platform_apps",
+        "//chrome/common/controlled_frame",
+        "//components/app_constants",
+      ]
+      public_deps += [
+        "//chrome/common/extensions",
+        "//chrome/common/extensions/api",
+        "//chrome/common/extensions/api:extensions_features",
+        "//extensions:extensions_resources",
+        "//extensions/common/api",
+        "//extensions/strings",
+        "//services/device/public/cpp/usb",
+      ]
+    }  # if (enable_extensions)
+
     public_deps += [
-      "//chrome/common/extensions/api",
-      "//chrome/common/extensions/api:extensions_features",
-      "//extensions:extensions_resources",
       "//extensions/common",
       "//extensions/common:common_constants",
       "//extensions/common:core_api_provider",
-      "//extensions/common/api",
-      "//extensions/strings",
-      "//services/device/public/cpp/usb",
     ]
   }
 
@@ -362,15 +328,6 @@ static_library("common_lib") {
     public_deps += [ ":app_mode_app_support" ]
   }
 
-  if (is_chromeos) {
-    assert(enable_extensions)
-    sources += [
-      "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
-      "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
-    ]
-    public_deps += [ "//chrome/common/extensions/api" ]
-    deps += [ "//chrome/common/chromeos/extensions" ]
-  }
   if (is_chromeos_ash) {
     assert(enable_extensions)
     public_deps += [ "//ash/keyboard/ui" ]

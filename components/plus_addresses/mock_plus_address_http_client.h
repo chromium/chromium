@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_MOCK_PLUS_ADDRESS_HTTP_CLIENT_H_
 #define COMPONENTS_PLUS_ADDRESSES_MOCK_PLUS_ADDRESS_HTTP_CLIENT_H_
 
-#include <string>
-
 #include "base/functional/callback.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -27,8 +25,12 @@ class MockPlusAddressHttpClient : public PlusAddressHttpClient {
   MOCK_METHOD(void,
               ConfirmPlusAddress,
               (const url::Origin&,
-               const std::string&,
+               const PlusAddress&,
                PlusAddressRequestCallback));
+  MOCK_METHOD(void,
+              PreallocatePlusAddresses,
+              (PreallocatePlusAddressesCallback),
+              (override));
   MOCK_METHOD(void,
               GetAllPlusAddresses,
               (PlusAddressMapRequestCallback),

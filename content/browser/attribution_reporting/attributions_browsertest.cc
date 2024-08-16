@@ -1316,11 +1316,11 @@ IN_PROC_BROWSER_TEST_P(
 class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
  public:
   AttributionsFencedFrameBrowserTest()
-      : AttributionsBrowserTest(/*enabled_features=*/{
-            blink::features::kFencedFrames,
-            features::kPrivacySandboxAdsAPIsOverride,
-            blink::features::kFencedFramesAPIChanges,
-            blink::features::kFencedFramesDefaultMode}) {}
+      : AttributionsBrowserTest(
+            /*enabled_features=*/{blink::features::kFencedFrames,
+                                  features::kPrivacySandboxAdsAPIsOverride,
+                                  blink::features::kFencedFramesAPIChanges,
+                                  blink::features::kFencedFramesDefaultMode}) {}
 
   FrameTreeNode* AddFencedFrame(
       FrameTreeNode* root,
@@ -1696,45 +1696,79 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTestWithKeepAliveMigration,
   expected_report.WaitForReport();
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AttributionsBrowserTest,
-    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderNotSet) {
+void TestServiceWorker(const char* registration_js,
+                       WebContents* web_contents,
+                       ServiceWorkerContextWrapper* sw_wrapper,
+                       net::EmbeddedTestServer* https_server) {
   auto register_response =
       std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server(), "/attribution_reporting/register_source");
-  ASSERT_TRUE(https_server()->Start());
+          https_server, "/attribution_reporting/register_source");
+  ASSERT_TRUE(https_server->Start());
 
-  GURL page_url = https_server()->GetURL(
+  GURL page_url = https_server->GetURL(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
 
   // Setup our service worker.
-  WorkerStateObserver sw_observer(wrapper(), ServiceWorkerVersion::ACTIVATED);
+  WorkerStateObserver sw_observer(sw_wrapper, ServiceWorkerVersion::ACTIVATED);
   blink::mojom::ServiceWorkerRegistrationOptions options(
       page_url, blink::mojom::ScriptType::kClassic,
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   const blink::StorageKey key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(options.scope));
-  public_context()->RegisterServiceWorker(
-      https_server()->GetURL("a.test",
-                             "/attribution_reporting/service_worker.js"),
+  sw_wrapper->RegisterServiceWorker(
+      https_server->GetURL("a.test",
+                           "/attribution_reporting/service_worker.js"),
       key, options,
       base::BindOnce(&ExpectRegisterResultAndRun,
                      blink::ServiceWorkerStatusCode::kOk, base::DoNothing()));
   sw_observer.Wait();
 
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+  EXPECT_TRUE(NavigateToURL(web_contents, page_url));
 
   EXPECT_TRUE(ExecJs(
-      web_contents(),
-      JsReplace("createAttributionSrcImg($1);",
-                https_server()->GetURL(
+      web_contents,
+      JsReplace(registration_js,
+                https_server->GetURL(
                     "a.test", "/attribution_reporting/register_source"))));
 
   register_response->WaitForRequest();
   EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
                              "Attribution-Reporting-Eligible"));
-  EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
-                              "Attribution-Reporting-Support"));
+  EXPECT_TRUE(base::Contains(register_response->http_request()->headers,
+                             "Attribution-Reporting-Support"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_createAttributionEligibleImgSrc) {
+  TestServiceWorker("createAttributionEligibleImgSrc($1);", web_contents(),
+                    wrapper(), https_server());
+}
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_createAttributionSrcScript) {
+  TestServiceWorker("createAttributionSrcScript($1);", web_contents(),
+                    wrapper(), https_server());
+}
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_doAttributionEligibleFetch) {
+  TestServiceWorker("doAttributionEligibleFetch($1);", web_contents(),
+                    wrapper(), https_server());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_doAttributionEligibleXHR) {
+  TestServiceWorker("doAttributionEligibleXHR($1);", web_contents(), wrapper(),
+                    https_server());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    AttributionsBrowserTest,
+    ServiceWorkerPerformsAttributionSrcRegistration_SupportHeaderSet_createAttributionEligibleScriptSrc) {
+  TestServiceWorker("createAttributionEligibleScriptSrc($1);", web_contents(),
+                    wrapper(), https_server());
 }
 
 }  // namespace content

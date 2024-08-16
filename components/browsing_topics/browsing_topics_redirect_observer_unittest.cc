@@ -49,6 +49,17 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
       HashedDomain(123), "abc.com", /*history_service=*/nullptr,
       /*observe=*/false);
 
+  ukm::SourceId source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()->redirect_count(), 0);
+  EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
+                ->redirect_with_topics_invoked_count(),
+            0);
+  EXPECT_EQ(
+      GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
+      source_id);
+
   auto navigation1 = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://bar.com"), main_rfh());
   navigation1->SetHasUserGesture(false);
@@ -65,6 +76,9 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
   EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
                 ->redirect_with_topics_invoked_count(),
             1);
+  EXPECT_EQ(
+      GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
+      source_id);
 
   navigation2->ReadyToCommit();
   navigation2->Commit();
@@ -77,6 +91,9 @@ TEST_F(BrowsingTopicsRedirectObserverTest, TwoNavigationsRacingCommit) {
   EXPECT_EQ(GetBrowsingTopicsPageLoadDataTracker()
                 ->redirect_with_topics_invoked_count(),
             1);
+  EXPECT_EQ(
+      GetBrowsingTopicsPageLoadDataTracker()->source_id_before_redirects(),
+      source_id);
 }
 
 }  // namespace browsing_topics

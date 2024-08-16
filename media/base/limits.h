@@ -8,6 +8,7 @@
 #define MEDIA_BASE_LIMITS_H_
 
 #include "build/build_config.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -67,7 +68,7 @@ constexpr int kMaxKeySystemLength = 256;
 #if BUILDFLAG(IS_MAC)
 constexpr int kMinAudioBufferSize = 128;
 constexpr int kMaxAudioBufferSize = 4096;
-#elif defined(USE_CRAS)
+#elif BUILDFLAG(USE_CRAS)
 // Though CRAS has different per-board defaults, allow explicitly requesting
 // this buffer size on any board.
 constexpr int kMinAudioBufferSize = 256;

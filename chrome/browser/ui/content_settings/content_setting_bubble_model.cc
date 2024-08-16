@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 
 #include <stddef.h>
@@ -117,7 +122,7 @@ void RecordActionHistogram(ContentSettingsType type,
       break;
     default:
       // Currently only defined and implemented for StorageAccess.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -469,8 +474,7 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
       previous_handler_(
           custom_handlers::ProtocolHandler::EmptyProtocolHandler()) {
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents);
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
   pending_handler_ = content_settings->pending_protocol_handler();
   previous_handler_ = content_settings->previous_protocol_handler();
 
@@ -519,7 +523,7 @@ void ContentSettingRPHBubbleModel::CommitChanges() {
 
   // The user has one chance to deal with the RPH content setting UI,
   // then we remove it.
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->ClearPendingProtocolHandler();
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
@@ -530,20 +534,20 @@ void ContentSettingRPHBubbleModel::RegisterProtocolHandler() {
   registry_->RemoveIgnoredHandler(pending_handler_);
 
   registry_->OnAcceptRegisterProtocolHandler(pending_handler_);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler_setting(CONTENT_SETTING_ALLOW);
 }
 
 void ContentSettingRPHBubbleModel::UnregisterProtocolHandler() {
   registry_->OnDenyRegisterProtocolHandler(pending_handler_);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler_setting(CONTENT_SETTING_BLOCK);
   ClearOrSetPreviousHandler();
 }
 
 void ContentSettingRPHBubbleModel::IgnoreProtocolHandler() {
   registry_->OnIgnoreRegisterProtocolHandler(pending_handler_);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler_setting(CONTENT_SETTING_DEFAULT);
   ClearOrSetPreviousHandler();
 }
@@ -1087,7 +1091,7 @@ void ContentSettingMediaStreamBubbleModel::SetTitle() {
   else if (CameraAccessed())
     title_id = IDS_CAMERA_ACCESSED_TITLE;
   else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   set_title(l10n_util::GetStringUTF16(title_id));
 }
 
@@ -1107,7 +1111,7 @@ void ContentSettingMediaStreamBubbleModel::SetMessage() {
   else if (CameraAccessed())
     message_id = IDS_CAMERA_ACCESSED;
   else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   set_message(l10n_util::GetStringUTF16(message_id));
 }
 
@@ -1349,15 +1353,11 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-#if BUILDFLAG(IS_MAC)
-      set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#elif BUILDFLAG(IS_WIN)
-    set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS));
-#elif BUILDFLAG(IS_CHROMEOS)
-    set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  set_title(l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
 #else
     // The system-level location permission is not supported on Linux.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
 
     clear_message();

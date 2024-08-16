@@ -156,8 +156,7 @@ GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
 GURL AppendSearchContextParamToURL(const GURL& url_to_modify,
                                    std::optional<GURL> page_url,
                                    std::optional<std::string> page_title) {
-  if (!lens::features::UseSearchContextForTextOnlyLensOverlayRequests() ||
-      (!page_url.has_value() && !page_title.has_value())) {
+  if (!page_url.has_value() && !page_title.has_value()) {
     return url_to_modify;
   }
 
@@ -245,13 +244,17 @@ GURL BuildTextOnlySearchURL(
   }
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
-  url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
-                                                        page_url, page_title);
+  if (lens::features::UseSearchContextForTextOnlyLensOverlayRequests()) {
+    url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
+                                                          page_url, page_title);
+  }
   return url_with_query_params;
 }
 
 GURL BuildLensSearchURL(
     std::optional<std::string> text_query,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title,
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     lens::LensOverlayClusterInfo cluster_info,
     std::map<std::string, std::string> additional_search_query_params,
@@ -265,6 +268,11 @@ GURL BuildLensSearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params =
       AppendCommonSearchParametersToURL(url_with_query_params, use_dark_mode);
+  if (text_query.has_value() &&
+      lens::features::UseSearchContextForMultimodalLensOverlayRequests()) {
+    url_with_query_params = AppendSearchContextParamToURL(url_with_query_params,
+                                                          page_url, page_title);
+  }
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey,
       text_query.has_value() ? *text_query : "");

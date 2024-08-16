@@ -32,7 +32,7 @@ import java.util.Set;
 public class Elements {
     static final Elements EMPTY = new Elements();
 
-    private ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
+    private ArrayList<Element<?>> mElements = new ArrayList<>();
     private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
     private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
     private ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
@@ -43,16 +43,16 @@ public class Elements {
         return new Builder(this);
     }
 
-    Set<String> getElementsInStateIds() {
+    Set<String> getElementIds() {
         Set<String> elementIds = new HashSet<>();
-        for (ElementInState<?> element : mElementsInState) {
+        for (Element<?> element : mElements) {
             elementIds.add(element.getId());
         }
         return elementIds;
     }
 
-    List<ElementInState<?>> getElementsInState() {
-        return mElementsInState;
+    List<Element<?>> getElements() {
+        return mElements;
     }
 
     Map<Condition, ElementFactory> getElementFactories() {
@@ -68,7 +68,7 @@ public class Elements {
     }
 
     void addAll(Elements otherElements) {
-        mElementsInState.addAll(otherElements.mElementsInState);
+        mElements.addAll(otherElements.mElements);
         mElementFactories.putAll(otherElements.mElementFactories);
         mOtherEnterConditions.addAll(otherElements.mOtherEnterConditions);
         mOtherExitConditions.addAll(otherElements.mOtherExitConditions);
@@ -82,7 +82,7 @@ public class Elements {
      */
     public static class Builder {
         private Elements mOwner;
-        private ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
+        private ArrayList<Element<?>> mElements = new ArrayList<>();
         private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
         private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
         private ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
@@ -96,16 +96,21 @@ public class Elements {
         public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
             assertNotBuilt();
             ActivityElement<T> element = new ActivityElement<>(activityClass);
-            mElementsInState.add(element);
+            mElements.add(element);
             return element;
         }
 
         /** Declare as an element a View that matches |viewMatcher|. */
-        public ViewElementInState declareView(ViewElement viewElement) {
+        public ViewElement declareView(ViewSpec viewSpec) {
+            return declareView(viewSpec, ViewElement.Options.DEFAULT);
+        }
+
+        /** Declare as an element a View that matches |viewMatcher| with extra Options. */
+        public ViewElement declareView(ViewSpec viewSpec, ViewElement.Options options) {
             assertNotBuilt();
-            ViewElementInState inState = new ViewElementInState(viewElement);
-            mElementsInState.add(inState);
-            return inState;
+            ViewElement element = new ViewElement(viewSpec, options);
+            mElements.add(element);
+            return element;
         }
 
         /**
@@ -121,13 +126,13 @@ public class Elements {
         }
 
         /**
-         * Declare an {@link ElementFactory} gated by an {@link ElementInState}'s enter Condition.
+         * Declare an {@link ElementFactory} gated by an {@link Element}'s enter Condition.
          *
-         * <p>When the ElementInState's enter Condition becomes fulfilled, |delayedDeclarations|
+         * <p>When the {@link Element}'s enter Condition becomes fulfilled, |delayedDeclarations|
          * will be run to declare new Elements.
          */
         public void declareElementFactory(
-                ElementInState<?> element, Callback<Elements.Builder> delayedDeclarations) {
+                Element<?> element, Callback<Elements.Builder> delayedDeclarations) {
             declareElementFactory(element.getEnterCondition(), delayedDeclarations);
         }
 
@@ -147,7 +152,7 @@ public class Elements {
          */
         public LogicalElement<?> declareLogicalElement(LogicalElement<?> logicalElement) {
             assertNotBuilt();
-            mElementsInState.add(logicalElement);
+            mElements.add(logicalElement);
             return logicalElement;
         }
 
@@ -180,11 +185,11 @@ public class Elements {
             return condition;
         }
 
-        /** Declare a custom element, already rendered to an ElementInState. */
-        public <T extends ElementInState<?>> T declareElementInState(T elementInState) {
+        /** Declare a custom Element. */
+        public <T extends Element<?>> T declareElement(T element) {
             assertNotBuilt();
-            mElementsInState.add(elementInState);
-            return elementInState;
+            mElements.add(element);
+            return element;
         }
 
         /**
@@ -194,7 +199,7 @@ public class Elements {
         Elements consolidate() {
             assertNotBuilt();
             Elements newElements = new Elements();
-            newElements.mElementsInState.addAll(mElementsInState);
+            newElements.mElements.addAll(mElements);
             newElements.mElementFactories.putAll(mElementFactories);
             newElements.mOtherEnterConditions.addAll(mOtherEnterConditions);
             newElements.mOtherExitConditions.addAll(mOtherExitConditions);

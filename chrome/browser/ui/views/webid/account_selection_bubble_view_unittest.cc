@@ -110,10 +110,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                                     /*is_choose_an_account=*/false);
   }
 
-  void PerformHeaderChecks(
-      views::View* header,
-      const std::u16string& expected_title,
-      bool expect_idp_brand_icon_in_header) {
+  void PerformHeaderChecks(views::View* header,
+                           const std::u16string& expected_title,
+                           bool expect_idp_brand_icon_in_header,
+                           bool skip_separator_checks = false) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -137,6 +137,12 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         static_cast<views::Label*>(GetViewWithClassName(header, "Label"));
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), expected_title);
+
+    // If the separator is in the multi account chooser container, we want to
+    // skip the separator check here.
+    if (skip_separator_checks) {
+      return;
+    }
 
     // Check separator.
     if (expected_title == kTitleSignIn ||
@@ -190,13 +196,19 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
-    ASSERT_EQ(children.size(), 3u);
+    // The separator is in the multiple accounts container.
+    ASSERT_EQ(children.size(), 2u);
     PerformHeaderChecks(children[0], expected_title,
-                        expect_idp_brand_icon_in_header);
-    EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+                        expect_idp_brand_icon_in_header,
+                        /*skip_separator_checks=*/true);
+    children = children[1]->children();
+    ASSERT_EQ(children.size(), 3u);
+    EXPECT_TRUE(IsViewClass<views::Separator>(children[0]));
+    // No mismatches, so last child is empty.
+    EXPECT_EQ(children[2]->GetPreferredSize(), gfx::Size());
 
-    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-    EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
+    EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
     views::View* contents = scroller->contents();
     ASSERT_TRUE(contents);
 
@@ -457,9 +469,12 @@ TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
   ASSERT_EQ(children.size(), 3u);
+  children = children[2]->children();
+  // There should be no mismatches.
+  EXPECT_EQ(children[1]->GetPreferredSize(), gfx::Size());
 
-  views::ScrollView* scroll_view = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroll_view->GetDrawOverflowIndicator());
+  views::ScrollView* scroll_view = static_cast<views::ScrollView*>(children[0]);
+  EXPECT_TRUE(scroll_view->GetDrawOverflowIndicator());
   ASSERT_EQ(scroll_view->contents()->children().size(), 3u);
 
   size_t index = 1;
@@ -723,13 +738,19 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
+  ASSERT_EQ(children.size(), 2u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
-                      /*expect_idp_brand_icon_in_header=*/false);
-  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+                      /*expect_idp_brand_icon_in_header=*/false,
+                      /*skip_separator_checks=*/true);
 
-  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+  children = children[1]->children();
+  ASSERT_EQ(children.size(), 3u);
+  EXPECT_TRUE(IsViewClass<views::Separator>(children[0]));
+  // No mismatches
+  EXPECT_EQ(children[2]->GetPreferredSize(), gfx::Size());
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
+  EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
   views::View* contents = scroller->contents();
   ASSERT_TRUE(contents);
 
@@ -798,7 +819,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
 
   views::ScrollView* accounts_scroller =
       static_cast<views::ScrollView*>(children[0]);
-  EXPECT_FALSE(accounts_scroller->GetDrawOverflowIndicator());
+  EXPECT_TRUE(accounts_scroller->GetDrawOverflowIndicator());
   views::View* accounts_contents = accounts_scroller->contents();
   ASSERT_TRUE(accounts_contents);
 
@@ -815,7 +836,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
 
   views::ScrollView* mismatch_scroller =
       static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(mismatch_scroller->GetDrawOverflowIndicator());
+  EXPECT_TRUE(mismatch_scroller->GetDrawOverflowIndicator());
   views::View* mismatch_contents = mismatch_scroller->contents();
   ASSERT_TRUE(mismatch_contents);
 
@@ -855,10 +876,12 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   ASSERT_EQ(children.size(), 3u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
-  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
 
-  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+  children = children[2]->children();
+  ASSERT_EQ(children.size(), 2u);
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[0]);
+  EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
   views::View* contents = scroller->contents();
   ASSERT_TRUE(contents);
 
@@ -989,14 +1012,15 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
   EXPECT_EQ(box_layout_manager->GetOrientation(),
             views::BoxLayout::Orientation::kVertical);
 
-  // Only one child, the mismatch scroller.
   children = container->children();
-  ASSERT_EQ(children.size(), 1u);
-  EXPECT_TRUE(IsViewClass<views::ScrollView>(children[0]));
+  ASSERT_EQ(children.size(), 2u);
+  // Account scroller is empty.
+  EXPECT_EQ(children[0]->GetPreferredSize(), gfx::Size());
 
+  EXPECT_TRUE(IsViewClass<views::ScrollView>(children[1]));
   views::ScrollView* mismatch_scroller =
-      static_cast<views::ScrollView*>(children[0]);
-  EXPECT_FALSE(mismatch_scroller->GetDrawOverflowIndicator());
+      static_cast<views::ScrollView*>(children[1]);
+  EXPECT_TRUE(mismatch_scroller->GetDrawOverflowIndicator());
   views::View* mismatch_contents = mismatch_scroller->contents();
   ASSERT_TRUE(mismatch_contents);
 
@@ -1033,13 +1057,19 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
+  ASSERT_EQ(children.size(), 2u);
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
-                      /*expect_idp_brand_icon_in_header=*/false);
-  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+                      /*expect_idp_brand_icon_in_header=*/false,
+                      /*skip_separator_checks=*/true);
 
-  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+  children = children[1]->children();
+  ASSERT_EQ(children.size(), 3u);
+  EXPECT_TRUE(IsViewClass<views::Separator>(children[0]));
+  // There are no mismatches.
+  EXPECT_EQ(children[2]->GetPreferredSize(), gfx::Size());
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
+  EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
   views::View* contents = scroller->contents();
   ASSERT_TRUE(contents);
 
@@ -1090,13 +1120,19 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
-  ASSERT_EQ(children.size(), 3u);
+  ASSERT_EQ(children.size(), 2u);
+  // The multiple account chooser container includes the separator.
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
-                      /*expect_idp_brand_icon_in_header=*/false);
-  EXPECT_TRUE(IsViewClass<views::Separator>(children[1]));
+                      /*expect_idp_brand_icon_in_header=*/false,
+                      /*skip_separator_checks=*/true);
+  children = children[1]->children();
+  ASSERT_EQ(children.size(), 3u);
+  EXPECT_TRUE(IsViewClass<views::Separator>(children[0]));
+  // No mismatches, so last child is empty.
+  EXPECT_EQ(children[2]->GetPreferredSize(), gfx::Size());
 
-  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
+  EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
   views::View* contents = scroller->contents();
   ASSERT_TRUE(contents);
 
@@ -1145,8 +1181,12 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, HoverChangesIdpCircle) {
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
   ASSERT_EQ(children.size(), 3u);
-  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
-  EXPECT_FALSE(scroller->GetDrawOverflowIndicator());
+
+  children = children[2]->children();
+  ASSERT_EQ(children.size(), 2u);
+
+  views::ScrollView* scroller = static_cast<views::ScrollView*>(children[0]);
+  EXPECT_TRUE(scroller->GetDrawOverflowIndicator());
   views::View* contents = scroller->contents();
   ASSERT_TRUE(contents);
 

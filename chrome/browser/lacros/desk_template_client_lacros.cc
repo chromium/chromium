@@ -75,9 +75,8 @@ void ImageResultToImageSkia(
     return;
   }
 
-  auto image = gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data->front(),
-                                                result.bitmap_data->size())
-                   .AsImageSkia();
+  auto image =
+      gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data).AsImageSkia();
   image.EnsureRepsForSupportedScales();
   std::move(callback).Run(apps::CreateStandardIconImage(image));
 }

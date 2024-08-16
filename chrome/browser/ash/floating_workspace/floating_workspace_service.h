@@ -348,7 +348,7 @@ class FloatingWorkspaceService : public KeyedService,
   std::optional<base::Time> timestamp_before_suspend_;
 
   // The in memory cache of the latest workspace desk datatype download status.
-  std::optional<syncer::SyncService::ModelTypeDownloadStatus>
+  std::optional<syncer::SyncService::DataTypeDownloadStatus>
       download_status_cache_;
 
   // Timer used for periodic capturing and uploading.

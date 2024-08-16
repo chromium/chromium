@@ -5,6 +5,7 @@
 #include "net/http/http_stream_pool_test_util.h"
 
 #include "net/base/completion_once_callback.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_test_util.h"
@@ -15,6 +16,148 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
+
+namespace {
+
+IPEndPoint MakeIPEndPoint(std::string_view addr, uint16_t port = 80) {
+  return IPEndPoint(*IPAddress::FromIPLiteral(addr), port);
+}
+
+}  // namespace
+
+FakeServiceEndpointRequest::FakeServiceEndpointRequest() = default;
+
+FakeServiceEndpointRequest::~FakeServiceEndpointRequest() = default;
+
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CompleteStartSynchronously(int rv) {
+  start_result_ = rv;
+  endpoints_crypto_ready_ = true;
+  return *this;
+}
+
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CallOnServiceEndpointsUpdated() {
+  CHECK(delegate_);
+  delegate_->OnServiceEndpointsUpdated();
+  return *this;
+}
+
+FakeServiceEndpointRequest&
+FakeServiceEndpointRequest::CallOnServiceEndpointRequestFinished(int rv) {
+  CHECK(delegate_);
+  endpoints_crypto_ready_ = true;
+  delegate_->OnServiceEndpointRequestFinished(rv);
+  return *this;
+}
+
+int FakeServiceEndpointRequest::Start(Delegate* delegate) {
+  CHECK(!delegate_);
+  CHECK(delegate);
+  delegate_ = delegate;
+  return start_result_;
+}
+
+const std::vector<ServiceEndpoint>&
+FakeServiceEndpointRequest::GetEndpointResults() {
+  return endpoints_;
+}
+
+const std::set<std::string>& FakeServiceEndpointRequest::GetDnsAliasResults() {
+  return aliases_;
+}
+
+bool FakeServiceEndpointRequest::EndpointsCryptoReady() {
+  return endpoints_crypto_ready_;
+}
+
+ResolveErrorInfo FakeServiceEndpointRequest::GetResolveErrorInfo() {
+  return resolve_error_info_;
+}
+
+void FakeServiceEndpointRequest::ChangeRequestPriority(
+    RequestPriority priority) {
+  priority_ = priority;
+}
+
+FakeServiceEndpointResolver::FakeServiceEndpointResolver() = default;
+
+FakeServiceEndpointResolver::~FakeServiceEndpointResolver() = default;
+
+FakeServiceEndpointRequest* FakeServiceEndpointResolver::AddFakeRequest() {
+  std::unique_ptr<FakeServiceEndpointRequest> request =
+      std::make_unique<FakeServiceEndpointRequest>();
+  FakeServiceEndpointRequest* raw_request = request.get();
+  requests_.emplace_back(std::move(request));
+  return raw_request;
+}
+
+void FakeServiceEndpointResolver::OnShutdown() {}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+FakeServiceEndpointResolver::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    std::optional<ResolveHostParameters> optional_parameters) {
+  NOTREACHED();
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+FakeServiceEndpointResolver::CreateRequest(
+    const HostPortPair& host,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const NetLogWithSource& net_log,
+    const std::optional<ResolveHostParameters>& optional_parameters) {
+  NOTREACHED();
+}
+
+std::unique_ptr<HostResolver::ServiceEndpointRequest>
+FakeServiceEndpointResolver::CreateServiceEndpointRequest(
+    Host host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource net_log,
+    ResolveHostParameters parameters) {
+  CHECK(!requests_.empty());
+  std::unique_ptr<FakeServiceEndpointRequest> request =
+      std::move(requests_.front());
+  requests_.pop_front();
+  request->set_priority(parameters.initial_priority);
+  return request;
+}
+
+ServiceEndpointBuilder::ServiceEndpointBuilder() = default;
+
+ServiceEndpointBuilder::~ServiceEndpointBuilder() = default;
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::add_v4(std::string_view addr,
+                                                       uint16_t port) {
+  endpoint_.ipv4_endpoints.emplace_back(MakeIPEndPoint(addr));
+  return *this;
+}
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::add_v6(std::string_view addr,
+                                                       uint16_t port) {
+  endpoint_.ipv6_endpoints.emplace_back(MakeIPEndPoint(addr));
+  return *this;
+}
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::add_ip_endpoint(
+    IPEndPoint ip_endpoint) {
+  if (ip_endpoint.address().IsIPv4()) {
+    endpoint_.ipv4_endpoints.emplace_back(ip_endpoint);
+  } else {
+    CHECK(ip_endpoint.address().IsIPv6());
+    endpoint_.ipv6_endpoints.emplace_back(ip_endpoint);
+  }
+  return *this;
+}
+
+ServiceEndpointBuilder& ServiceEndpointBuilder::set_alpns(
+    std::vector<std::string> alpns) {
+  endpoint_.metadata.supported_protocol_alpns = std::move(alpns);
+  return *this;
+}
 
 // static
 std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {

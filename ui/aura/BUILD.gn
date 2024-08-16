@@ -142,6 +142,7 @@ component("aura") {
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
     "//ui/base/metadata",
+    "//ui/base/mojom:mojom",
     "//ui/compositor",
   ]
 
@@ -350,7 +351,7 @@ test("aura_unittests") {
     ]
   }
 
-  data_deps = [ "//third_party/mesa_headers" ]
+  data_deps = [ "//third_party/angle:includes" ]
 }
 
 # This target is added as a dependency of browser interactive_ui_tests. It must

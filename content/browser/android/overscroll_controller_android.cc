@@ -274,7 +274,7 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
 
   if (refresh_effect_) {
     refresh_effect_->OnFrameUpdated(viewport_size, content_scroll_offset,
-                                    root_overflow_y_hidden);
+                                    content_size, root_overflow_y_hidden);
   }
 
   if (glow_effect_) {

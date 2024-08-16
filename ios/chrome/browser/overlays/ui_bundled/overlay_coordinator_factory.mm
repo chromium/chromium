@@ -79,7 +79,7 @@
       // OverlayModality::kTesting.
       // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
-      NOTREACHED_NORETURN() << "Received unsupported modality.";
+      NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
       return [AlertOverlayCoordinator class];
     case OverlayModality::kInfobarBanner:
@@ -95,7 +95,7 @@
       }
       break;
   }
-  NOTREACHED_NORETURN() << "Received unsupported request type.";
+  NOTREACHED() << "Received unsupported request type.";
 }
 
 // Returns the coordinator class corresponding to the given `infobarType`.
@@ -106,10 +106,9 @@
       // OverlayModality::kTesting.
       // TODO(crbug.com/40120484): Remove requirement once modalities are
       // converted to no longer use enums.
-      NOTREACHED_NORETURN() << "Received unsupported modality.";
+      NOTREACHED() << "Received unsupported modality.";
     case OverlayModality::kWebContentArea:
-      NOTREACHED_NORETURN()
-          << "None implemented yet. Received unsupported modality.";
+      NOTREACHED() << "None implemented yet. Received unsupported modality.";
     case OverlayModality::kInfobarBanner:
       return [InfobarBannerOverlayCoordinator class];
     case OverlayModality::kInfobarModal:
@@ -129,7 +128,7 @@
           break;
       }
   }
-  NOTREACHED_NORETURN() << "Received unsupported infobar type.";
+  NOTREACHED() << "Received unsupported infobar type.";
 }
 
 @end

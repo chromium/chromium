@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 
 #include <stddef.h>
@@ -1933,6 +1938,12 @@ bool TabStrip::IsFrameCondensed() const {
   return controller_->IsFrameCondensed();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool TabStrip::IsLockedForOnTask() {
+  return controller_->IsLockedForOnTask();
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, views::View overrides:
 
@@ -1999,10 +2010,9 @@ void TabStrip::ChildPreferredSizeChanged(views::View* child) {
 }
 
 std::optional<BrowserRootView::DropIndex> TabStrip::GetDropIndex(
-    const ui::DropTargetEvent& event,
-    bool allow_replacement) {
+    const ui::DropTargetEvent& event) {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 BrowserRootView::DropTarget* TabStrip::GetDropTarget(
@@ -2012,7 +2022,7 @@ BrowserRootView::DropTarget* TabStrip::GetDropTarget(
 
 views::View* TabStrip::GetViewForDrop() {
   // BrowserView should talk directly to |tab_container_| instead of asking us.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

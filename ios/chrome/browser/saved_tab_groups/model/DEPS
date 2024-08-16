@@ -1,6 +1,6 @@
 include_rules = [
   "+components/saved_tab_groups",
-  "+ios/chrome/browser/sync/model/model_type_store_service_factory.h",
+  "+ios/chrome/browser/sync/model/data_type_store_service_factory.h",
   "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/sync/model/device_info_sync_service_factory.h",
   "+ios/chrome/browser/sessions/model",

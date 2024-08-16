@@ -10,7 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/protocol/sync.pb.h"
 

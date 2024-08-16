@@ -264,17 +264,25 @@ void WaylandInputMethodContext::CreateTextInputWrapper() {
   if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3) ||
       (enable_using_cmd_line_version &&
        version_from_cmd_line == kWaylandTextInputVersion3)) {
-    text_input_ = std::make_unique<ZWPTextInputWrapperV3>(
-        connection_, this, connection_->text_input_manager_v3());
+    if (connection_->text_input_manager_v3()) {
+      text_input_ = std::make_unique<ZWPTextInputWrapperV3>(
+          connection_, this, connection_->text_input_manager_v3());
+    } else {
+      LOG(WARNING) << "text-input-v3 not available.";
+    }
     return;
   } else if (enable_using_cmd_line_version &&
              version_from_cmd_line != kWaylandTextInputVersion1) {
     LOG(WARNING) << "text input version should be either 1 or 3. Defaulting to "
                     "text-input-v1.";
   }
-  text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
-      connection_, this, connection_->text_input_manager_v1(),
-      connection_->text_input_extension_v1());
+  if (connection_->text_input_manager_v1()) {
+    text_input_ = std::make_unique<ZWPTextInputWrapperV1>(
+        connection_, this, connection_->text_input_manager_v1(),
+        connection_->text_input_extension_v1());
+  } else {
+    LOG(WARNING) << "text-input-v1 not available.";
+  }
 }
 
 void WaylandInputMethodContext::Init(
@@ -355,8 +363,9 @@ void WaylandInputMethodContext::Reset() {
 
 void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
                                                 TextInputClient* new_client) {
-  if (old_client)
-    past_clients_.try_emplace(old_client, base::AsWeakPtr(old_client));
+  if (old_client) {
+    past_clients_.try_emplace(old_client, old_client->AsWeakPtr());
+  }
 }
 
 void WaylandInputMethodContext::UpdateFocus(

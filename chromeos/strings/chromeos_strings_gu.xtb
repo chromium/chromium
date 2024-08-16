@@ -8,6 +8,7 @@
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> માટે વિશિષ્ટ અસેટ હવે ઉપલબ્ધ છે</translation>
 <translation id="1022628058306505708">અર્થ ફ્લો</translation>
 <translation id="1026212596705997935">આ શૉર્ટકટનો ઉપયોગ "<ph name="CONFLICT_ACCEL_NAME" />" માટે કરવામાં આવી રહ્યો છે. કોઈ નવો શૉર્ટકટ દબાવો. હાલના શૉર્ટકટને બદલવા માટે, આ શૉર્ટકટને ફરી દબાવો.</translation>
+<translation id="1030856839388844477">ડેટા વપરાશ રીસેટ કરો</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> થ્રેડ, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">નવી સુવિધા ઉપલબ્ધ છે, વધુ જાણવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1049663189809099096">પૅસ્ટલ પીળો</translation>
@@ -62,6 +63,7 @@
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1300115153046603471">APNનો પ્રકાર ડિફૉલ્ટ અને <ph name="ATTACH" /> છે.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">બનાવ્યાની તારીખ</translation>
 <translation id="1308754910631152188">અપડેટ કરી રહ્યાં છીએ (<ph name="PERCENTAGE_VALUE" />% પૂર્ણ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="1310380015393971138">કોઈ <ph name="NETWORK_NAME" /> નેટવર્ક ઉપલબ્ધ નથી</translation>
@@ -179,7 +181,6 @@
 <translation id="1827738518074806965">આર્ટ ગૅલરી</translation>
 <translation id="1836553715834333258">સિસ્ટમનો રંગ</translation>
 <translation id="183675228220305365">વાસ્તવવાદી</translation>
-<translation id="1837537071599385610">પ્રૉમ્પ્ટ લખવા સંબંધી માર્ગદર્શિકા</translation>
 <translation id="1838374766361614909">શોધ સાફ કરો</translation>
 <translation id="1840474674287087346">ડેસ્કટૉપનો રંગ</translation>
 <translation id="184095011128924488">ક્રિએટિવ</translation>
@@ -340,7 +341,6 @@
 <translation id="2645380101799517405">નિયંત્રણો</translation>
 <translation id="2652403576514495859">ડિક્ટેશનની સુવિધા ચાલુ અથવા ટૉગલ કરો</translation>
 <translation id="2653659639078652383">સબમિટ કરો</translation>
-<translation id="2653807227758181366">તમે બનાવવા માગતા હો તે વૉલપેપરનું વર્ણન કરો અથવા નમૂનાના કોઈ પ્રૉમ્પ્ટનો ઉપયોગ કરો</translation>
 <translation id="2654647726140493436">અપડેટની પ્રક્રિયા ચાલુ હોય ત્યારે તમારા <ph name="DEVICE_TYPE" />ને બંધ ન કરો અથવા <ph name="DEVICE_TYPE" />નો પાવર કેબલ અનપ્લગ ન કરો</translation>
 <translation id="2656001153562991489">Chromebook Plus માટે વિશેષ</translation>
 <translation id="2665671725390405060">ઉચ્ચાર સાંભળો</translation>
@@ -359,6 +359,7 @@
 <translation id="2780756493585863768">Google AI દ્વારા સંચાલિત તાજેતરના બૅકગ્રાઉન્ડ</translation>
 <translation id="2783010256799387990">પરીક્ષણ પાસ કર્યુ</translation>
 <translation id="2786429550992142861">લિનન</translation>
+<translation id="2787237339470862294">અત્યારે આ ભાષાને સપોર્ટ કરવામાં આવતો નથી</translation>
 <translation id="2787435249130282949">વધુ બ્રાઇટ કીબોર્ડ</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="28232023175184696">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. ફરી પ્રયાસ કરવા માટે ક્લિક કરો.</translation>
@@ -418,9 +419,6 @@
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
 <translation id="3201315366910775591">અન્ય લોકો શેર કરેલા આલ્બમ અપડેટ કરી શકે છે</translation>
 <translation id="3211671540163313381">કીમૅપિંગ ડી-પૅડ</translation>
-<translation id="3224812403568276799">જ્યારે તમે આની મંજૂરી આપો, ત્યારે Recorder જુદાં જુદાં વૉઇસની ઑટોમૅટિક રીતે ભાળ મેળવવા માટે વિગતવાર ઑડિયો વિશ્લેષણનો ઉપયોગ કરશે અને પ્રત્યેકને કોઈ સામાન્ય લેબલ આપશે, જેમ કે સ્પીકર 1 અને સ્પીકર 2.
-
-તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3226657629376379887">લેઆઉટ ક્રિયા મેનૂ</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ભાગાકાર કરો</translation>
@@ -465,6 +463,7 @@
 <translation id="346423161771747987">કરન્ટ</translation>
 <translation id="346539236881580388">ફરીથી લો</translation>
 <translation id="3484914941826596830">ફર્મવેયર અપડેટ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આ અપડેટમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
+<translation id="3485555238092220889">ઍક્સેસિબિલિટી ઍક્શન</translation>
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3487866404496702283">mahi સુવિધા માટેનો પ્રતિસાદ</translation>
 <translation id="3488065109653206955">આંશિક રીતે સક્રિય કરેલું</translation>
@@ -509,6 +508,7 @@
 <translation id="3708186454126126312">પહેલાં કનેક્ટ કરેલા</translation>
 <translation id="3715651196924935218">ફ્લોટિંગ વિન્ડોમાંથી બહાર નીકળો</translation>
 <translation id="3716250181321371108">નિયંત્રણ બનાવો</translation>
+<translation id="3716830479327464973">જ્યારે તમે આને મંજૂરી આપો, ત્યારે નીચે જણાવેલી બાબતો માટે રેકોર્ડર તમારા ઑડિયો રેકોર્ડિંગનું વિશ્લેષણ કરશે:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
@@ -535,6 +535,7 @@
 <translation id="3869314628814282185">ટયૂલ</translation>
 <translation id="387301095347517405">તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થયાની સંખ્યા</translation>
 <translation id="3877066159641251281">અનુવાદ સાંભળો</translation>
+<translation id="3880601782712134623">અલગ-અલગ વૉઇસની ઑટોમૅટિક રીતે ભાળ મેળવે છે અને દરેક સ્પીકરને કોઈ સામાન્ય લેબલ આપે છે, જેમ કે સ્પીકર 1 અને સ્પીકર 2</translation>
 <translation id="3885327323343477505">સ્ક્રીન સેવર બદલો</translation>
 <translation id="3889914174935857450">ડેટા રિસેટ કરો</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
@@ -638,6 +639,7 @@
 <translation id="4422041425070339732">તીર નીચે</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> બંધ છે</translation>
+<translation id="4428840632568803690">સ્પીકર <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">ટૂંક સમયમાં Kerberos ટિકિટની સમયસીમા સમાપ્ત થશે</translation>
 <translation id="4431821876790500265">રિપોર્ટ જુઓ</translation>
 <translation id="4443192710976771874">લાલ</translation>
@@ -673,6 +675,7 @@
 <translation id="458794348635939462">બધા હોસ્ટ રિઝોલ્વ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4593212453765072419">પ્રોક્સી પ્રમાણીકરણ આવશ્યક છે</translation>
 <translation id="4594021849294327751">ટ્રાન્સક્રિપ્ટ બનાવો</translation>
+<translation id="4607282946861182308">આની છબીઓ બનાવી શકતા નથી. કોઈ અન્ય પ્રૉમ્પ્ટ અજમાવી જુઓ.</translation>
 <translation id="4609350030397390689">કીબોર્ડનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />માંથી <ph name="PRINTED_PAGE_NUMBER" />. પ્રિન્ટ કરવાનું અટકાવવા માટે, Enter કી દબાવો.</translation>
 <translation id="463791356324567266">સ્કૅન કરવાનું કાર્ય રદ કરી રહ્યાં છીએ...</translation>
@@ -759,6 +762,7 @@
 <translation id="5049856988445523908">સિમ કાર્ડ લૉક છે (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">જૂથનું નામ</translation>
 <translation id="5051044138948155788">આ એકમાત્ર પેજ છે. આ તમને સ્કૅન શરૂ કરતી સ્ક્રીન પર લઈ જશે.</translation>
+<translation id="5078711626843651677">જ્યાં સુધી સ્પીકરને લેબલ આપવાની પ્રક્રિયા પૂર્ણ ન થાય, ત્યાં સુધી વૉઇસ મૉડલને હંગામી રીતે ડિવાઇસ પર સ્ટોર કરવામાં આવે છે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="5078983345702708852">ફ્યૂચુરિસ્ટિક</translation>
 <translation id="5087864757604726239">પાછા ફરો</translation>
 <translation id="5088172560898466307">સર્વર હોસ્ટનું નામ</translation>
@@ -813,9 +817,11 @@
 <translation id="5318334351163689047">TCP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="53196409393069519">શું ટ્રાન્સક્રિપ્શન ચાલુ કરીએ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">નામ</translation>
 <translation id="5332948983412042822">કૃપા કરીને નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="5333530671332546086">પોર્ટલની અજાણી સ્થિતિ</translation>
 <translation id="5335373365677455232">ગુલાબી</translation>
+<translation id="5344619683981067131">પસંદ કરેલી ટેક્સ્ટને સૂચન વડે બદલી રહ્યાં છીએ</translation>
 <translation id="5346687412805619883">સ્થાનિક નેટવર્ક</translation>
 <translation id="5358174242040570474">કંઈક ખોટું થયું. વૉલપેપર ફરીથી પસંદ કરવાનો પ્રયાસ કરો અથવા ઍપ ફરીથી ખોલો.</translation>
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
@@ -867,6 +873,7 @@
 <translation id="5662240986744577912">પ્રાઇવસી સ્ક્રીનને ટૉગલ કરો</translation>
 <translation id="5669267381087807207">ચાલુ થાય છે</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">તમે જે વૉલપેપર બનાવવા માગતા હો તેનું વર્ણન કરો</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" />વાળું કોઈ અદ્ભુત <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">ચેરી</translation>
 <translation id="5691511426247308406">કુટુંબ</translation>
@@ -974,7 +981,6 @@
 <translation id="6231648282154119906">તમે પસંદ કરેલા વધારેલા સંરક્ષણના ભાગ તરીકે, શંકાસ્પદ ફાઇલોને Google Safe Browsing દ્વારા ઑટોમૅટિક રીતે સ્કૅન કરવામાં આવશે</translation>
 <translation id="6232017090690406397">બૅટરી</translation>
 <translation id="6234024205316847054">આઉટલાઇન બતાવો</translation>
-<translation id="6235460611964961764">ડેટા વપરાશ મૅન્યુઅલી રીસેટ કરો</translation>
 <translation id="6243280677745499710">હાલમાં સેટ કરેલ</translation>
 <translation id="6250316632541035980">બેકન અને ઈંડાં</translation>
 <translation id="6265268291107409527">પસંદ કરેલી કી <ph name="KEYS" /> છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1106,7 @@
 <translation id="680983167891198932">કી</translation>
 <translation id="6816797338148849397">તમારી પસંદગી સંબંધિત માહિતી ઉપલબ્ધ છે. તેને ઍક્સેસ કરવા માટે ઉપર એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="6853312040151791195">ડિસ્ચાર્જ થવાની ટકાવારી</translation>
+<translation id="6862416241246624313">પ્રતિસાદ સબમિટ કર્યો</translation>
 <translation id="6866732840889595464">ગુલબહાર</translation>
 <translation id="6871256179359663621">આછો જાંબલી</translation>
 <translation id="6889786074662672253">ફરી શરૂ થતું હોય ત્યારે આ બાહ્ય ડિવાઇસ પ્લગમાંથી દૂર કરશો નહીં અથવા તમારા કમ્પ્યુટરને શટ ડાઉન કરશો નહીં. તમે આ વિન્ડો નાની કરી શકો છો. આમાં થોડી મિનિટનો સમય લાગી શકે અને તમારું બાહ્ય ડિવાઇસ આ સમય દરમિયાન કામ ન કરે તેમ બની શકે છે.</translation>
@@ -1108,7 +1115,9 @@
 <translation id="6905163627763043954">અજમાવી જુઓ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> પર પાછા જાઓ</translation>
 <translation id="6910312834584889076">સ્કૅનરનું કવર ખુલ્લું છે. કવર બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6910845598686542904">રેકોર્ડિંગમાં ભાળ મળેલા વૉઇસના મૉડલની ગણતરી કરે છે</translation>
 <translation id="6911383237894364323">મીડિયા સર્વર સાથે કનેક્ટ કરી શકાયું નથી</translation>
+<translation id="6930242544192836755">અવધિ</translation>
 <translation id="6930597342185648547">બૅકગ્રાઉન્ડ વિશે</translation>
 <translation id="6939667434404433010">રેકોર્ડિંગનું નામ શોધો</translation>
 <translation id="6939766318048400022">કૅફે</translation>
@@ -1291,6 +1300,7 @@
 <translation id="7802764839223122985">કી ખૂટે છે. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
+<translation id="7811024689617730980">આના સહિત, 1થી 31 સુધીની રેંજમાં ઑટોમૅટિક રીતે રીસેટ કરવાનો કોઈ દિવસ પસંદ કરો</translation>
 <translation id="7813073042185856802">પર્વત</translation>
 <translation id="7819857487979277519">PSK (WPA અથવા RSN)</translation>
 <translation id="7824219488248240180">પ્રભાવવાદી પછીનો સમયગાળો</translation>
@@ -1329,6 +1339,7 @@
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8017679124341497925">શૉર્ટકટમાં ફેરફાર કર્યો</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
+<translation id="8028993641010258682">કદ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
@@ -1365,6 +1376,7 @@
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
+<translation id="8227488649450500937">આમાંથી કોઈ એક પ્રૉમ્પ્ટ અજમાવો અથવા <ph name="BEGIN_LINK_PROMPTING_GUIDE" />પ્રૉમ્પ્ટ સંબંધિત માર્ગદર્શિકા<ph name="END_LINK_PROMPTING_GUIDE" /> જુઓ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8238771987802558562">APN પસંદ કરો</translation>
 <translation id="8246209727385807362">અજાણ કૅરિઅર</translation>
@@ -1540,6 +1552,7 @@
 <translation id="9087578468327036362">આ ક્વેરીની જાણ કરો</translation>
 <translation id="9088306295921699330">વર્તમાન વપરાશ</translation>
 <translation id="9095775724867566971">PluginVM</translation>
+<translation id="909856219855259344">રીસેટ કરેલા ડેટા વિશે વધુ માહિતી</translation>
 <translation id="9100765901046053179">વિગતવાર સેટિંગ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> નંબરનું પેજ સ્કૅન કરી રહ્યાં છીએ</translation>
@@ -1570,6 +1583,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> માટે કી ખૂટે છે. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">સમગ્ર રેકોર્ડિંગ દરમિયાન વૉઇસની તુલના કરે છે, જેથી ટ્રાન્સક્રિપ્ટ દર્શાવી શકે કે દરેક સ્પીકર દ્વારા શું કહેવામાં આવ્યું અને ક્યારે કહેવામાં આવ્યું</translation>
 <translation id="952992212772159698">સક્રિય કરેલું નથી</translation>
 <translation id="95718197892796296">માટી</translation>
 <translation id="960719561871045870">ઑપરેટર કોડ</translation>
@@ -1577,7 +1591,7 @@
 <translation id="966787709310836684">મેનૂ</translation>
 <translation id="979450713603643090">આછો ગુલાબી</translation>
 <translation id="982713511914535780">બૅટરી ડિસ્ચાર્જ થવાનું પરીક્ષણ ચાલુ કરો</translation>
-<translation id="98515147261107953">લેન્ડસ્કૅપ</translation>
+<translation id="98515147261107953">લૅન્ડસ્કેપ</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
 <translation id="995062385528875723">ઉચ્ચારણવાળા અક્ષરો, લેટિન ભાષામાં ન હોય એવા મૂળાક્ષરો કે પ્રતીકોનો ઉપયોગ કરી શકાતો નથી</translation>
 </translationbundle>

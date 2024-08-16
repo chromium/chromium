@@ -76,6 +76,8 @@ class RenderingTest : public testing::Test,
   virtual void OnParentDrawDataUpdated() {}
   void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) override {}
+  void SetPreferredFrameInterval(
+      base::TimeDelta preferred_frame_interval) override {}
 
  protected:
   RenderingTest();

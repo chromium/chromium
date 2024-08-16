@@ -70,6 +70,9 @@ enum class AppListSearchResultType;
 
 namespace {
 
+// TODO: b/345303965 - Finalize this string.
+constexpr std::u16string_view kAnnouncementViewName = u"Picker";
+
 bool IsSupportedLocalFileFormat(const base::FilePath& file_path) {
   for (std::string_view extension :
        {".jpg", ".jpeg", ".png", ".gif", ".webp"}) {
@@ -97,7 +100,8 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
   results.reserve(files.size());
   for (PickerFileSuggester::DriveFile& file : files) {
     results.push_back(ash::PickerSearchResult::DriveFile(
-        std::move(file.title), std::move(file.url), file.local_path));
+        std::move(file.id), std::move(file.title), std::move(file.url),
+        file.local_path));
   }
   return results;
 }
@@ -105,7 +109,8 @@ std::vector<ash::PickerSearchResult> CreateSearchResultsForRecentDriveFiles(
 std::unique_ptr<app_list::SearchProvider> CreateDriveSearchProvider(
     Profile* profile) {
   auto provider = std::make_unique<app_list::DriveSearchProvider>(
-      profile, /*should_filter_shared_files=*/false);
+      profile, /*should_filter_shared_files=*/false,
+      /*should_filter_directories=*/true);
   if (base::FeatureList::IsEnabled(ash::features::kPickerCloud)) {
     provider->SetQuerySource(
         drivefs::mojom::QueryParameters::QuerySource::kCloudOnly);
@@ -163,8 +168,8 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
       }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(ash::PickerSearchResult::DriveFile(
-            result->title(), *result->url(), result->filePath(),
-            result->best_match()));
+            result->DriveId(), result->title(), *result->url(),
+            result->filePath(), result->best_match()));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "
@@ -233,7 +238,7 @@ app_list::CategoriesList CreateRankerCategories() {
 
 PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
                                    user_manager::UserManager* user_manager)
-    : controller_(controller) {
+    : announcer_(kAnnouncementViewName), controller_(controller) {
   controller_->SetClient(this);
 
   // As `PickerClientImpl` is initialised in
@@ -268,7 +273,8 @@ void PickerClientImpl::StartCrosSearch(
   switch (*category) {
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
-    case ash::PickerCategory::kExpressions:
+    case ash::PickerCategory::kEmojisGifs:
+    case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:
@@ -311,6 +317,17 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
 void PickerClientImpl::StopCrosQuery() {
   CHECK(search_engine_);
   search_engine_->StopQuery();
+}
+
+bool PickerClientImpl::IsEligibleForEditor() {
+  ash::input_method::EditorMediator* editor_mediator =
+      GetEditorMediator(profile_);
+  if (editor_mediator == nullptr) {
+    return false;
+  }
+
+  return editor_mediator->GetEditorMode() !=
+         ash::input_method::EditorMode::kHardBlocked;
 }
 
 PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
@@ -369,8 +386,9 @@ void PickerClientImpl::GetRecentDriveFileResults(size_t max_files,
 }
 
 void PickerClientImpl::GetSuggestedLinkResults(
+    size_t max_results,
     SuggestedLinksCallback callback) {
-  link_suggester_->GetSuggestedLinks(std::move(callback));
+  link_suggester_->GetSuggestedLinks(max_results, std::move(callback));
 }
 
 bool PickerClientImpl::IsFeatureAllowedForDogfood() {
@@ -437,6 +455,10 @@ std::optional<ash::PickerWebPasteTarget> PickerClientImpl::GetWebPasteTarget() {
   return std::nullopt;
 }
 
+void PickerClientImpl::Announce(std::u16string_view message) {
+  announcer_.Announce(std::u16string(message));
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);
@@ -472,6 +494,10 @@ void PickerClientImpl::SetProfile(Profile* profile) {
   file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
   link_suggester_ = std::make_unique<PickerLinkSuggester>(profile_);
   thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
+
+  if (controller_ != nullptr) {
+    controller_->OnClientProfileSet();
+  }
 }
 
 std::unique_ptr<app_list::SearchProvider>
@@ -496,7 +522,8 @@ PickerClientImpl::CreateSearchProviderForCategory(
   switch (category) {
     case ash::PickerCategory::kEditorWrite:
     case ash::PickerCategory::kEditorRewrite:
-    case ash::PickerCategory::kExpressions:
+    case ash::PickerCategory::kEmojisGifs:
+    case ash::PickerCategory::kEmojis:
     case ash::PickerCategory::kClipboard:
     case ash::PickerCategory::kDatesTimes:
     case ash::PickerCategory::kUnitsMaths:

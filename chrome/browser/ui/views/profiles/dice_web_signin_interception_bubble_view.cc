@@ -81,7 +81,7 @@ std::u16string InterceptionTypeToIdentityPillText(
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       // These intercept type do not show a bubble and should not need to change
       // the identity pill text.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -106,7 +106,7 @@ std::optional<std::u16string> InteractionTypeToIdentityPillAccessibilityLabel(
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       // These intercept type do not show a bubble and should not need to change
       // the identity pill text.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -140,8 +140,8 @@ std::string_view GetChromeSigninReactionString(
     case SigninInterceptionResult::kAcceptedWithExistingProfile:
     case SigninInterceptionResult::kIgnored:
     case SigninInterceptionResult::kNotDisplayed:
-      NOTREACHED_NORETURN() << "These results should not be recorded or not "
-                               "expected for the Chrome Signin Bubble.";
+      NOTREACHED() << "These results should not be recorded or not "
+                      "expected for the Chrome Signin Bubble.";
   }
 }
 

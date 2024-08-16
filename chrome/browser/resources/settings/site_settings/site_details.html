@@ -111,15 +111,15 @@
                   [[numCookies_]]
                 </div>
               </div>
-              <div id="fpsMembership" class="secondary"
-                  hidden$="[[!fpsMembership_]]">
-                [[fpsMembership_]]
+              <div id="rwsMembership" class="secondary"
+                  hidden$="[[!rwsMembership_]]">
+                [[rwsMembership_]]
               </div>
             </div>
-            <template is="dom-if" if="[[fpsEnterprisePref_]]">
+            <template is="dom-if" if="[[rwsEnterprisePref_]]">
               <div id="fpsPolicyContainer">
                 <cr-policy-pref-indicator
-                    id="fpsPolicy" pref="[[fpsEnterprisePref_]]"
+                    id="rwsPolicy" pref="[[rwsEnterprisePref_]]"
                     icon-aria-label="[[label]]" focus-row-control
                     focus-type="policy">
                 </cr-policy-pref-indicator>
@@ -162,23 +162,23 @@
           label="$i18n{siteSettingsNotifications}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.JAVASCRIPT]]"
-          icon="settings:code" label="$i18n{siteSettingsJavascript}">
+          icon="privacy:code" label="$i18n{siteSettingsJavascript}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.IMAGES]]"
-          icon="settings:photo" label="$i18n{siteSettingsImages}">
+          icon="privacy:imagesmode" label="$i18n{siteSettingsImages}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.POPUPS]]"
           icon="cr:open-in-new" label="$i18n{siteSettingsPopups}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.ADS]]"
-          icon="settings:ads" label="$i18n{siteSettingsAds}">
+          icon="privacy:web-asset" label="$i18n{siteSettingsAds}">
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.BACKGROUND_SYNC]]"
           icon="cr:sync" label="$i18n{siteSettingsBackgroundSync}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.SOUND]]"
-          icon="settings:volume-up" label="$i18n{siteSettingsSound}"
+          icon="privacy:volume-up" label="$i18n{siteSettingsSound}"
           use-automatic-label="[[blockAutoplayEnabled]]">
       </site-details-permission>
       <site-details-permission
@@ -222,7 +222,7 @@
 <if expr="is_chromeos or is_win">
       <site-details-permission
           category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
-          icon="settings:protected-content"
+          icon="privacy:sync-saved-locally"
           label="$i18n{siteSettingsProtectedContentIdentifiers}">
       </site-details-permission>
 </if>
@@ -243,7 +243,7 @@
       </template>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.MIXEDSCRIPT]]"
-          icon="settings:insecure-content"
+          icon="privacy:warning"
           label="$i18n{siteSettingsInsecureContent}">
       </site-details-permission>
       <site-details-permission
@@ -253,7 +253,7 @@
       </site-details-permission>
       <site-details-permission
           category="[[contentSettingsTypesEnum_.FEDERATED_IDENTITY_API]]"
-          icon="settings:federated-identity-api"
+          icon="privacy:account-circle"
           label="$i18n{siteSettingsFederatedIdentityApi}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.AR]]"

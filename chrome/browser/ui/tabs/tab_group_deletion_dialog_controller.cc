@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -73,10 +74,11 @@ DialogText GetDialogText(Profile* profile,
                          DeletionDialogController::DialogType type,
                          int tab_count,
                          int group_count) {
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
-  bool is_sync_enabled = saved_tab_group_service &&
-                         saved_tab_group_service->AreSavedTabGroupsSynced();
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(profile);
+  bool is_sync_enabled =
+      wrapper_service &&
+      wrapper_service->AreSavedTabGroupsSyncedForProfile(profile);
 
   std::u16string email =
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_DELETION_DIALOG_MISSING_EMAIL);

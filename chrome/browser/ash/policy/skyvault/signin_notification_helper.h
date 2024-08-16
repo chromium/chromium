@@ -16,6 +16,8 @@ namespace policy::skyvault_ui_utils {
 inline constexpr char kDownloadSignInNotificationPrefix[] =
     "skyvault-download-signin-";
 
+inline constexpr char kMigrationSignInNotification[] = "skyvault-migration";
+
 // The notification button index.
 enum NotificationButtonIndex {
   kSignInButton = 0,

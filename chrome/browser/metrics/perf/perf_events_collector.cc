@@ -548,7 +548,7 @@ void PerfCollector::SetCollectionParamsFromVariationParams(
     auto split = val.find(" ");
     if (split == std::string::npos)
       continue;  // Just drop invalid commands.
-    std::string weight_str = std::string(val.begin(), val.begin() + split);
+    std::string weight_str = val.substr(0, split);
 
     double weight;
     if (!(base::StringToDouble(weight_str, &weight) && weight > 0.0))

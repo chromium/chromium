@@ -145,7 +145,7 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
                      base::Unretained(this)));
 
 #if BUILDFLAG(IS_ANDROID)
-  chrome::enterprise_util::AndroidEnterpriseInfo::GetInstance()
+  enterprise_util::AndroidEnterpriseInfo::GetInstance()
       ->GetAndroidEnterpriseInfoState(base::BindOnce(
           &StubResolverConfigReader::OnAndroidOwnedStateCheckComplete,
           weak_factory_.GetWeakPtr()));

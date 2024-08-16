@@ -10,6 +10,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -41,7 +42,7 @@ CryptoModulePasswordDialogView::CryptoModulePasswordDialogView(
   SetCloseCallback(
       base::BindOnce(&CryptoModulePasswordDialogView::DialogAcceptedOrCancelled,
                      base::Unretained(this), kCancelled));
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   Init(hostname, slot_name, reason);
@@ -102,7 +103,7 @@ void CryptoModulePasswordDialogView::Init(const std::string& hostname,
           IDS_CRYPTO_MODULE_AUTH_DIALOG_TEXT_CERT_EXPORT, slot16);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

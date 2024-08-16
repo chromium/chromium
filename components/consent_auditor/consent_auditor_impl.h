@@ -53,7 +53,7 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
       override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:

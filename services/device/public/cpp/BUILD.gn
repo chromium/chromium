@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//services/device/public/cpp/compute_pressure/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 
 component("device_features") {
@@ -54,8 +55,6 @@ source_set("test_support") {
     "test/mock_usb_mojo_device.h",
     "test/scoped_geolocation_overrider.cc",
     "test/scoped_geolocation_overrider.h",
-    "test/scoped_pressure_manager_overrider.cc",
-    "test/scoped_pressure_manager_overrider.h",
     "test/test_wake_lock_provider.cc",
     "test/test_wake_lock_provider.h",
   ]
@@ -111,5 +110,12 @@ source_set("test_support") {
     public_deps += [ "//services/device/public/cpp/hid" ]
 
     deps += [ "//services/device/hid" ]
+  }
+
+  if (enable_compute_pressure) {
+    sources += [
+      "test/scoped_pressure_manager_overrider.cc",
+      "test/scoped_pressure_manager_overrider.h",
+    ]
   }
 }

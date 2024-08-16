@@ -266,6 +266,7 @@ class SellerWorkletTest : public testing::Test {
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
     browser_signal_buyer_and_seller_reporting_id_ = std::nullopt;
+    browser_signal_selected_buyer_and_seller_reporting_id_ = std::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
@@ -636,6 +637,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_,
         browser_signal_buyer_and_seller_reporting_id_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_render_url_, bid_, bid_currency_,
         browser_signal_desireability_,
         browser_signal_highest_scoring_other_bid_,
@@ -701,6 +703,7 @@ class SellerWorkletTest : public testing::Test {
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_,
         browser_signal_buyer_and_seller_reporting_id_,
+        browser_signal_selected_buyer_and_seller_reporting_id_,
         browser_signal_render_url_, bid_, bid_currency_,
         browser_signal_desireability_,
         browser_signal_highest_scoring_other_bid_,
@@ -819,6 +822,7 @@ class SellerWorkletTest : public testing::Test {
   void OnDisconnectWithReason(uint32_t custom_reason,
                               const std::string& description) {
     DCHECK(!disconnect_reason_);
+    LOG(WARNING) << "Worklet disconnect with reason: " << description;
 
     disconnect_reason_ = description;
     if (disconnect_run_loop_) {
@@ -855,6 +859,8 @@ class SellerWorkletTest : public testing::Test {
   std::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
   std::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
+  std::optional<std::string>
+      browser_signal_selected_buyer_and_seller_reporting_id_;
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
@@ -3094,6 +3100,18 @@ TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
       /*expected_report_url=*/std::nullopt);
 }
 
+TEST_F(SellerWorkletTest, ReportResultSelectedBuyerAndSellerReportingId) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgeAuctionDealSupport);
+  browser_signal_selected_buyer_and_seller_reporting_id_ = "selectable_id1";
+
+  RunReportResultCreatedScriptExpectingResult(
+      R"(browserSignals.selectedBuyerAndSellerReportingId === "selectable_id1" ? 2 : 1)",
+      /*extra_code=*/std::string(), "2",
+      /*expected_report_url=*/std::nullopt);
+}
+
 TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
@@ -3974,6 +3992,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_,
           browser_signal_buyer_and_seller_reporting_id_,
+          browser_signal_selected_buyer_and_seller_reporting_id_,
           browser_signal_render_url_, bid_, bid_currency_,
           browser_signal_desireability_,
           browser_signal_highest_scoring_other_bid_,
@@ -4071,9 +4090,10 @@ TEST_F(SellerWorkletTest,
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_,
-      browser_signal_buyer_and_seller_reporting_id_, browser_signal_render_url_,
-      bid_, bid_currency_, browser_signal_desireability_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_buyer_and_seller_reporting_id_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_render_url_, bid_, bid_currency_,
+      browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_,
@@ -4172,9 +4192,10 @@ TEST_F(
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_,
-      browser_signal_buyer_and_seller_reporting_id_, browser_signal_render_url_,
-      bid_, bid_currency_, browser_signal_desireability_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_buyer_and_seller_reporting_id_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_render_url_, bid_, bid_currency_,
+      browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_,
@@ -4285,6 +4306,7 @@ TEST_F(
             browser_signals_other_seller_.Clone(),
             browser_signal_interest_group_owner_,
             browser_signal_buyer_and_seller_reporting_id_,
+            browser_signal_selected_buyer_and_seller_reporting_id_,
             browser_signal_render_url_, bid_, bid_currency_,
             browser_signal_desireability_,
             browser_signal_highest_scoring_other_bid_,
@@ -4491,9 +4513,10 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       direct_from_seller_auction_signals_header_ad_slot_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_,
-      browser_signal_buyer_and_seller_reporting_id_, browser_signal_render_url_,
-      bid_, bid_currency_, browser_signal_desireability_,
-      browser_signal_highest_scoring_other_bid_,
+      browser_signal_buyer_and_seller_reporting_id_,
+      browser_signal_selected_buyer_and_seller_reporting_id_,
+      browser_signal_render_url_, bid_, bid_currency_,
+      browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
       browser_signal_highest_scoring_other_bid_currency_,
       browser_signals_component_auction_report_result_params_.Clone(),
       browser_signal_data_version_,
@@ -5777,27 +5800,39 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerScoreAd}));
   }
 
   {
@@ -5862,27 +5897,39 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
         auction_worklet::TestAuctionSharedStorageHost::RequestType;
     using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
-    EXPECT_THAT(test_shared_storage_host.observed_requests(),
-                testing::ElementsAre(Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kSet,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = true},
-                                     Request{.type = RequestType::kAppend,
-                                             .key = u"a",
-                                             .value = u"b",
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kDelete,
-                                             .key = u"a",
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false},
-                                     Request{.type = RequestType::kClear,
-                                             .key = std::u16string(),
-                                             .value = std::u16string(),
-                                             .ignore_if_present = false}));
+    EXPECT_THAT(
+        test_shared_storage_host.observed_requests(),
+        testing::ElementsAre(
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kSet,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = true,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kAppend,
+                    .key = u"a",
+                    .value = u"b",
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kDelete,
+                    .key = u"a",
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult},
+            Request{.type = RequestType::kClear,
+                    .key = std::u16string(),
+                    .value = std::u16string(),
+                    .ignore_if_present = false,
+                    .source_auction_worklet_function =
+                        mojom::AuctionWorkletFunction::kSellerReportResult}));
   }
 
   {
@@ -5956,10 +6003,13 @@ TEST_F(SellerWorkletTwoThreadsSharedStorageAPIEnabledTest,
   using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
 
   EXPECT_THAT(test_shared_storage_host0.observed_requests(),
-              testing::ElementsAre(Request{.type = RequestType::kSet,
-                                           .key = u"a",
-                                           .value = u"b",
-                                           .ignore_if_present = false}));
+              testing::ElementsAre(
+                  Request{.type = RequestType::kSet,
+                          .key = u"a",
+                          .value = u"b",
+                          .ignore_if_present = false,
+                          .source_auction_worklet_function =
+                              mojom::AuctionWorkletFunction::kSellerScoreAd}));
 }
 
 class SellerWorkletRealTimeTest : public SellerWorkletTest {
@@ -6045,6 +6095,42 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
   run_loop.Run();
 }
 
+TEST_F(SellerWorkletRealTimeTest, ScoreAdJsonTimeout) {
+  seller_timeout_ = base::Milliseconds(20);
+  const char kReturnVal[] = R"({
+    allowComponentAuction: true,
+    desirability: 5,
+    ad: {
+      get field() { while(true) {} }
+    }
+  })";
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript(kReturnVal));
+  auto seller_worklet = CreateWorklet();
+  ASSERT_TRUE(seller_worklet);
+  base::RunLoop run_loop;
+  browser_signals_other_seller_ =
+      mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
+          url::Origin::Create(GURL("https://top.seller.test")));
+  RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/0,
+                           /*expected_errors=*/
+                           {"https://url.test/ timeout serializing `ad` field "
+                            "of scoreAd() return value."},
+                           mojom::ComponentAuctionModifiedBidParamsPtr(),
+                           /*expected_data_version=*/std::nullopt,
+                           /*expected_debug_loss_report_url=*/std::nullopt,
+                           /*expected_debug_win_report_url=*/std::nullopt,
+                           mojom::RejectReason::kNotAvailable,
+                           /*expected_pa_requests=*/{},
+                           /*expected_real_time_contributions=*/{},
+                           /*expected_bid_in_seller_currency=*/std::nullopt,
+                           /*expected_score_ad_timeout=*/true,
+                           /*expected_signals_fetch_latency=*/std::nullopt,
+                           /*expected_code_ready_latency=*/std::nullopt,
+                           run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 // Tests both reporting latency, and default reporting timeout.
 TEST_F(SellerWorkletRealTimeTest, ReportResultLatency) {
   // We use an infinite loop since we have some notion of how long a timeout
@@ -6105,6 +6191,27 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultTimeoutFromAuctionConfig) {
       /*expected_reporting_latency_timeout=*/true,
       /*expected_errors=*/
       {"https://url.test/ execution of `reportResult` timed out."});
+}
+
+TEST_F(SellerWorkletRealTimeTest, ReportResultJsonTimeout) {
+  const char kReturnVal[] = R"({
+    desirability: 5,
+    ad: {
+      get field() { while(true) {} }
+    }
+  })";
+  auction_ad_config_non_shared_params_.reporting_timeout =
+      base::Milliseconds(30);
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateReportToScript(kReturnVal));
+  RunReportResultExpectingResult(
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
+      /*expected_ad_beacon_map=*/{},
+      /*expected_pa_requests=*/{},
+      /*expected_reporting_latency_timeout=*/true,
+      /*expected_errors=*/
+      {"https://url.test/ timeout serializing reportResult() return value."});
 }
 
 class SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest

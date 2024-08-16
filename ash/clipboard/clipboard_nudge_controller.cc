@@ -80,12 +80,11 @@ NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
     case kZeroStateNudge:
       return NudgeCatalogName::kClipboardHistoryZeroState;
     case kScreenshotNotificationNudge:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kDuplicateCopyNudge:
       return NudgeCatalogName::kClipboardHistoryDuplicateCopy;
   }
-  return NudgeCatalogName::kTestCatalogName;
+  NOTREACHED();
 }
 
 ui::ImageModel GetImage(ClipboardNudgeType type) {
@@ -129,7 +128,7 @@ const char* GetCappedNudgeShownCountPrefKey(ClipboardNudgeType type) {
       return kShownCountDuplicateCopyNudge;
     case kScreenshotNotificationNudge:
     case kZeroStateNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -400,7 +399,7 @@ void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
       base::UmaHistogramBoolean(kClipboardHistoryZeroStateNudgeShowCount, true);
       break;
     case ClipboardNudgeType::kScreenshotNotificationNudge:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ClipboardNudgeType::kDuplicateCopyNudge:
       CHECK(chromeos::features::IsClipboardHistoryRefreshEnabled());
       duplicate_copy_nudge_recorder_.OnNudgeShown();

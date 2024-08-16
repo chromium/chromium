@@ -266,6 +266,20 @@ static void PromiseRejectHandler(v8::PromiseRejectMessage data,
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   v8::Local<v8::Value> exception = data.GetValue();
+  if (V8PerIsolateData::From(isolate)->HasInstance(
+          DOMException::GetStaticWrapperTypeInfo(), exception)) {
+    // Try to get the stack & location from a wrapped DOMException object.
+    CHECK(exception->IsObject());
+    auto private_error = V8PrivateProperty::GetSymbol(
+        isolate, kPrivatePropertyDOMExceptionError);
+    v8::Local<v8::Value> error;
+    if (private_error.GetOrUndefined(exception.As<v8::Object>())
+            .ToLocal(&error) &&
+        !error->IsUndefined()) {
+      exception = error;
+    }
+  }
+
   String error_message;
   SanitizeScriptErrors sanitize_script_errors = SanitizeScriptErrors::kSanitize;
   std::unique_ptr<SourceLocation> location;
@@ -356,7 +370,7 @@ void V8Initializer::FailedAccessCheckCallbackInMainThread(
   // V8 to pass in more contextual information, so that we can build a full
   // ExceptionState.
   ExceptionState exception_state(
-      holder->GetIsolate(), ExceptionContextType::kUnknown, nullptr, nullptr);
+      holder->GetIsolate(), v8::ExceptionContext::kUnknown, nullptr, nullptr);
   BindingSecurity::FailedAccessCheckFor(holder->GetIsolate(),
                                         WrapperTypeInfo::Unwrap(data), holder,
                                         exception_state);
@@ -394,8 +408,8 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
                                 v8::Local<v8::Value> source,
                                 bool is_code_like) {
   v8::Isolate* isolate = context->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kOperationInvoke, "eval", "");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
+                                 "eval", "");
 
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
@@ -668,7 +682,7 @@ v8::MaybeLocal<v8::Promise> HostImportModuleDynamically(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(
       script_state,
-      ExceptionContext(ExceptionContextType::kUnknown, "", "import"));
+      ExceptionContext(v8::ExceptionContext::kUnknown, "", "import"));
 
   String invalid_attribute_key;
   if (module_request.HasInvalidImportAttributeKey(&invalid_attribute_key)) {

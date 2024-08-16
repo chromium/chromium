@@ -25,10 +25,12 @@ static_library("settings") {
     "//ash/webui/personalization_app/search:mojo_bindings",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/date_time/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom",
+    "//chrome/browser/ui/webui/ash/settings/pages/files",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
@@ -61,7 +63,6 @@ static_library("settings") {
     "//ash/webui/personalization_app",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/drive",
@@ -73,7 +74,22 @@ static_library("settings") {
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/resources/settings_shared:resources",
     "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps",
+    "//chrome/browser/ui/webui/ash/settings/pages/date_time",
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
     "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/services/hats",
+    "//chrome/browser/ui/webui/ash/settings/services/metrics",
+    "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/cellular_setup",
@@ -87,8 +103,19 @@ static_library("settings") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/webui/ash/settings/search" ]
+  allow_circular_includes_from = [
+    "//chrome/browser/ui/webui/ash/settings/pages/device",
+    "//chrome/browser/ui/webui/ash/settings/pages/languages",
+    "//chrome/browser/ui/webui/ash/settings/pages/main",
+    "//chrome/browser/ui/webui/ash/settings/pages/multitasking",
+    "//chrome/browser/ui/webui/ash/settings/pages/people",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage",
+    "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
+    "//chrome/browser/ui/webui/ash/settings/search",
+  ]
 
   if (is_chrome_branded) {
     deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
@@ -104,6 +131,7 @@ source_set("unit_tests") {
     ":settings",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/pages/reset",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//components/prefs:test_support",

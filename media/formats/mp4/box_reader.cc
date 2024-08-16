@@ -27,7 +27,7 @@ BufferReader::BufferReader(const uint8_t* buf, const size_t buf_size)
     :  // TODO(crbug.com/40284755): BufferReader should be receiving a span,
        // the construction of the span here is unsound as there's no way to
        // tell the size is correct from here.
-      UNSAFE_BUFFERS(buf_(buf, buf_size)) {}
+      UNSAFE_TODO(buf_(buf, buf_size)) {}
 
 BufferReader::~BufferReader() = default;
 

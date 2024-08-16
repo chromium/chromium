@@ -183,7 +183,8 @@ void AutofillSigninPromoTabHelper::OnPrimaryAccountChanged(
   // We only want to move the data if the sign in event has the correct access
   // point, so if it was performed from the tab that was opened after clicking
   // the sign in promo.
-  if (event_details.GetAccessPoint() != state_->access_point_) {
+  if (event_details.GetSetPrimaryAccountAccessPoint() !=
+      state_->access_point_) {
     Reset();
     return;
   }

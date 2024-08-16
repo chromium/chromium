@@ -98,14 +98,11 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
   }
 #if !defined(NDEBUG)
   if (event->IsWorkspaceEvent())
-    NOTREACHED_IN_MIGRATION()
-        << "Can't get the state for Workspace event" << event->type();
+    NOTREACHED() << "Can't get the state for Workspace event" << event->type();
   if (event->IsCompoundEvent())
-    NOTREACHED_IN_MIGRATION()
-        << "Can't get the state for Compound event:" << event->type();
+    NOTREACHED() << "Can't get the state for Compound event:" << event->type();
   if (event->IsBoundsEvent())
-    NOTREACHED_IN_MIGRATION()
-        << "Can't get the state for Bounds event:" << event->type();
+    NOTREACHED() << "Can't get the state for Bounds event:" << event->type();
 #endif
   return WindowStateType::kNormal;
 }

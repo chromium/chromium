@@ -214,11 +214,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "test_ash_chrome_cipd_yaml",
-    label = "//chrome/test:test_ash_chrome_cipd_yaml",
-)
-
-targets.compile_target(
     name = "gn_all",
     label = "//:gn_all",
 )

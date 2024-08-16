@@ -129,6 +129,6 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
     case kMenuScenarioHistogramTabGroupsPanelEntry:
       return kTabGroupsPanelEntryActionsHistogram;
     case kMenuScenarioHistogramCount:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

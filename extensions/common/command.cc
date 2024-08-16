@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -290,6 +291,10 @@ std::string Command::CommandPlatform() {
 #elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/40220501): Change this once we decide what string should be
   // used for Fuchsia.
+  return values::kKeybindingPlatformLinux;
+#elif BUILDFLAG(IS_DESKTOP_ANDROID)
+  // For now, we use linux keybindings on desktop android.
+  // TODO(https://crbug.com/356905053): Should this be ChromeOS keybindings?
   return values::kKeybindingPlatformLinux;
 #else
 #error Unsupported platform

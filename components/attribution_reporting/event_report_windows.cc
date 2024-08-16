@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -213,12 +212,13 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
         SourceRegistrationError::kBothEventReportWindowFieldsFound);
   } else if (singular_window) {
     ASSIGN_OR_RETURN(
-        base::TimeDelta report_window, ParseLegacyDuration(*singular_window),
+        base::TimeDelta report_window,
+        ParseLegacyDuration(*singular_window,
+                            /*clamp_min=*/kMinReportWindow,
+                            /*clamp_max=*/expiry),
         [](ParseError) {
           return SourceRegistrationError::kEventReportWindowValueInvalid;
         });
-
-    report_window = std::clamp(report_window, kMinReportWindow, expiry);
 
     return EventReportWindows(report_window, source_type);
   } else if (multiple_windows) {
@@ -252,12 +252,11 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
 
   base::TimeDelta start_time = base::Seconds(0);
   if (const base::Value* start_time_value = dict->Find(kStartTime)) {
-    std::optional<int> int_value = start_time_value->GetIfInt();
-    if (!int_value.has_value()) {
-      return base::unexpected(
-          SourceRegistrationError::kEventReportWindowsStartTimeInvalid);
-    }
-    start_time = base::Seconds(*int_value);
+    ASSIGN_OR_RETURN(
+        int int_value, ParseInt(*start_time_value), [](ParseError) {
+          return SourceRegistrationError::kEventReportWindowsStartTimeInvalid;
+        });
+    start_time = base::Seconds(int_value);
     if (start_time.is_negative() || start_time > expiry) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsStartTimeInvalid);
@@ -282,13 +281,16 @@ EventReportWindows::ParseWindowsJSON(const base::Value& v,
 
   base::TimeDelta start_duration = start_time;
   for (const auto& item : *end_times_list) {
-    const std::optional<int> item_int = item.GetIfInt();
-    if (!item_int.has_value() || item_int.value() <= 0) {
+    ASSIGN_OR_RETURN(const int item_int, ParseInt(item), [](ParseError) {
+      return SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid;
+    });
+
+    if (item_int <= 0) {
       return base::unexpected(
           SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid);
     }
 
-    base::TimeDelta end_time = base::Seconds(*item_int);
+    base::TimeDelta end_time = base::Seconds(item_int);
     if (end_time > expiry) {
       end_time = expiry;
     }

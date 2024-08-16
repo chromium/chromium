@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1300115153046603471">APN е од стандарден и тип <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">Датум на создавање</translation>
 <translation id="1308754910631152188">Се ажурира (завршено е <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
 <translation id="1310380015393971138">Нема достапна мрежа <ph name="NETWORK_NAME" /></translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">Уметничка галерија</translation>
 <translation id="1836553715834333258">Системска боја</translation>
 <translation id="183675228220305365">реалист</translation>
-<translation id="1837537071599385610">Водич за барања</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1840474674287087346">Боја на работната површина</translation>
 <translation id="184095011128924488">креативна</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">Контроли</translation>
 <translation id="2652403576514495859">овозможете или вклучете/исклучете диктирање</translation>
 <translation id="2653659639078652383">Испрати</translation>
-<translation id="2653807227758181366">Опишете го тапетот што сакате да го создадете или користете примерок на барање</translation>
 <translation id="2654647726140493436">Додека трае ажурирањето, не исклучувајте го вашиот уред <ph name="DEVICE_TYPE" /> или не исклучувајте го кабелот за напојување на <ph name="DEVICE_TYPE" /></translation>
 <translation id="2656001153562991489">Ексклузивно за Chromebook Plus</translation>
 <translation id="2665671725390405060">Слушнете го изговорот</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Неодамнешни заднини овозможени од Google AI</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
 <translation id="2786429550992142861">ленено платно</translation>
+<translation id="2787237339470862294">Јазиков не е поддржан во моментов</translation>
 <translation id="2787435249130282949">посветла тастатура</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="3201315366910775591">Други луѓе може да ги ажурираат споделените албуми</translation>
 <translation id="3211671540163313381">Мапирање клуч на навигациски копчиња</translation>
-<translation id="3224812403568276799">Кога ќе го дозволите ова, „Диктафон“ ќе користи напредна аудиоанализа за да открие различни гласови автоматски и на секој од нив да му додели етикета како „Говорител 1“ и „Говорител 2“.
-
-Ова може да го исклучите во „Поставки“ кога сакате.</translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3226657629376379887">Мени на дејства за распоред</translation>
 <translation id="3227186760713762082">Поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
@@ -465,6 +462,7 @@
 <translation id="346423161771747987">Струја</translation>
 <translation id="346539236881580388">Фотографирај пак</translation>
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
+<translation id="3485555238092220889">дејство за пристапност</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3487866404496702283">Повратни информации за функцијата mahi</translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
@@ -509,6 +507,7 @@
 <translation id="3708186454126126312">Претходно поврзани</translation>
 <translation id="3715651196924935218">Излези од лебдечкиот прозорец</translation>
 <translation id="3716250181321371108">Создајте контрола</translation>
+<translation id="3716830479327464973">Кога ќе го дозволите ова, „Диктафон“ ќе ги анализира вашите аудиоснимки:</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
 <translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
@@ -535,6 +534,7 @@
 <translation id="3869314628814282185">тул</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
 <translation id="3877066159641251281">Слушнете го преводот</translation>
+<translation id="3880601782712134623">за да открива различни гласови автоматски и на секој од нив да му доделува етикета како „Говорник 1“ и „Говорник 2“</translation>
 <translation id="3885327323343477505">Променете го штедачот на екранот</translation>
 <translation id="3889914174935857450">Датум на ресетирање</translation>
 <translation id="3897092660631435901">Мени</translation>
@@ -638,6 +638,7 @@
 <translation id="4422041425070339732">стрелка надолу</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> е исклучена</translation>
+<translation id="4428840632568803690">Говорник <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Билетот на Kerberos истекува наскоро</translation>
 <translation id="4431821876790500265">Прикажи го извештајот</translation>
 <translation id="4443192710976771874">црвена</translation>
@@ -673,6 +674,7 @@
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4594021849294327751">Создавај транскрипција</translation>
+<translation id="4607282946861182308">Не може да се создадат слики од ова. Обидете се со друго барање.</translation>
 <translation id="4609350030397390689">Осветленоста на тастатурата се намали</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притиснете Enter за да го откажете налогот за печатење.</translation>
 <translation id="463791356324567266">Се откажува скенирањето…</translation>
@@ -759,6 +761,7 @@
 <translation id="5049856988445523908">SIM-картичката е заклучена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
 <translation id="5051044138948155788">Ова е единствената страница. Ќе бидете пренасочени на екранот за започнување на скенирањето.</translation>
+<translation id="5078711626843651677">Гласовните модели се складираат привремено на уредот додека не заврши доделувањето етикети на говорниците. Ова може да го исклучите во „Поставки“ кога сакате.</translation>
 <translation id="5078983345702708852">футуристичка</translation>
 <translation id="5087864757604726239">назад</translation>
 <translation id="5088172560898466307">Име на хостот на серверот</translation>
@@ -813,9 +816,11 @@
 <translation id="5318334351163689047">Неуспешни TCP-барања</translation>
 <translation id="53196409393069519">Да се вклучи транскрипцијата?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">Име</translation>
 <translation id="5332948983412042822">Може да изберете нова сега</translation>
 <translation id="5333530671332546086">Непозната состојба на портал</translation>
 <translation id="5335373365677455232">розова</translation>
+<translation id="5344619683981067131">Избраниот текст се заменува со предлог</translation>
 <translation id="5346687412805619883">Локална мрежа</translation>
 <translation id="5358174242040570474">Нешто тргна наопаку. Обидете се повторно да изберете тапет или повторно отворете ја апликацијата.</translation>
 <translation id="5372659122375744710">WiFi мрежата не е безбедна</translation>
@@ -867,6 +872,7 @@
 <translation id="5662240986744577912">вклучување/исклучување „Заштита на приватноста“</translation>
 <translation id="5669267381087807207">Се активира</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">Опишете го тапетот што сакате да го создадете</translation>
 <translation id="5680504961595602662">Нереална слика на <ph name="SURREAL_LANDSCAPE" /> со <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">цреши</translation>
 <translation id="5691511426247308406">Семејни</translation>
@@ -974,7 +980,6 @@
 <translation id="6231648282154119906">Како дел од „Подобрената заштита“ што ја избравте, „Безбедно прелистување со Google“ ќе ги скенира сомнителните датотеки автоматски</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6234024205316847054">Прикажи прегледи</translation>
-<translation id="6235460611964961764">Рачно ресетирајте го потрошениот интернет</translation>
 <translation id="6243280677745499710">Поставен во моментов</translation>
 <translation id="6250316632541035980">сланина и јајца</translation>
 <translation id="6265268291107409527">Избраното копче е <ph name="KEYS" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@
 <translation id="680983167891198932">Клуч</translation>
 <translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
 <translation id="6853312040151791195">Брзина на празнење</translation>
+<translation id="6862416241246624313">Повратните информации се испратени</translation>
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">светловиолетова</translation>
 <translation id="6889786074662672253">Додека се рестартира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ова може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
@@ -1108,7 +1114,9 @@
 <translation id="6905163627763043954">Испробајте</translation>
 <translation id="6905724422583748843">Назад на <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Капакот на скенерот е отворен. Затворете го и обидете се повторно.</translation>
+<translation id="6910845598686542904">за да пресметува модели на гласовите откриени на снимката</translation>
 <translation id="6911383237894364323">Не може да се поврзе со серверите за аудиовизуелни содржини</translation>
+<translation id="6930242544192836755">Времетраење</translation>
 <translation id="6930597342185648547">За заднината</translation>
 <translation id="6939667434404433010">Пребарајте го името на снимката</translation>
 <translation id="6939766318048400022">Кафуле</translation>
@@ -1291,6 +1299,7 @@
 <translation id="7802764839223122985">Недостасува копче. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7811024689617730980">Изберете ден за автоматско ресетирање од 1 до 31, вклучувајќи ги и тие два дена</translation>
 <translation id="7813073042185856802">планина</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7824219488248240180">постимпресионист</translation>
@@ -1329,6 +1338,7 @@
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8017679124341497925">Кратенката е изменета</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
+<translation id="8028993641010258682">Големина</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Овозможете режим во автоматска боја</translation>
 <translation id="8041089156583427627">Испратете повратни информации</translation>
@@ -1365,6 +1375,7 @@
 <translation id="8208861521865154048">Поволности</translation>
 <translation id="8226628635270268143">Изберете ги омилените фотографии и албуми</translation>
 <translation id="8227119283605456246">Прикачи датотека</translation>
+<translation id="8227488649450500937">Испробајте некое од овие барања или погледнете го <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водичот за барања<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Не успеа да се пингува стандардниот мрежен портал</translation>
 <translation id="8238771987802558562">Изберете APN</translation>
 <translation id="8246209727385807362">Непознат оператор</translation>
@@ -1570,6 +1581,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="950520315903467048">Недостасува копче за <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">за да ги споредува гласовите на снимката со цел транскрипцијата да прикаже што кажал секој од говорниците, а и кога</translation>
 <translation id="952992212772159698">Не е активиран</translation>
 <translation id="95718197892796296">глина</translation>
 <translation id="960719561871045870">Код на оператор</translation>

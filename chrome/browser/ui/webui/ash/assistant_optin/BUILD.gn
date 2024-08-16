@@ -17,6 +17,7 @@ static_library("assistant_optin") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
@@ -34,7 +35,6 @@ static_library("assistant_optin") {
     "//ash/webui/common:trusted_types_util",
     "//build:buildflag_header_h",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:resources",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/login/ui",

@@ -22,8 +22,8 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/product_comparison_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -169,7 +169,7 @@ class ProductSpecificationsSyncBridgeObserver
 class ProductSpecificationsSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
     AddInitialSpecifics();
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
@@ -177,7 +177,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
         .WillByDefault(
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     bridge_ = std::make_unique<ProductSpecificationsSyncBridge>(
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), base::DoNothing(), observer());
     base::RunLoop().RunUntilIdle();
     initial_store_ = GetAllStoreData();
@@ -187,7 +187,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   ProductSpecificationsSyncBridge& bridge() { return *bridge_; }
 
   void AddInitialSpecifics() {
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     for (uint64_t i = 0; i < kInitUuid.size(); i++) {
       sync_pb::ProductComparisonSpecifics product_comparison_specifics;
@@ -219,7 +219,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   }
 
   void CommitToStoreAndWait(
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
     base::RunLoop loop;
     store_->CommitWriteBatch(
         std::move(batch),
@@ -242,7 +242,7 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
            std::map<std::string, sync_pb::ProductComparisonSpecifics>*
                storage_key_to_specifics,
            const std::optional<syncer::ModelError>& error,
-           std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
+           std::unique_ptr<syncer::DataTypeStore::RecordList> data_records) {
           for (auto& record : *data_records.get()) {
             sync_pb::ProductComparisonSpecifics specifics;
             specifics.ParseFromString(record.value);
@@ -319,9 +319,9 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
     return set.ToProto();
   }
 
-  syncer::ModelTypeStore* store() { return store_.get(); }
+  syncer::DataTypeStore* store() { return store_.get(); }
 
-  syncer::MockModelTypeChangeProcessor& processor() { return processor_; }
+  syncer::MockDataTypeLocalChangeProcessor& processor() { return processor_; }
 
   void UpdateSpecifics(const sync_pb::ProductComparisonSpecifics& specifics) {
     bridge().UpdateSpecifics(specifics);
@@ -342,10 +342,10 @@ class ProductSpecificationsSyncBridgeTest : public testing::Test {
   }
 
  protected:
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   testing::NiceMock<ProductSpecificationsSyncBridgeObserver> observer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
   std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_entries_;
   std::map<std::string, sync_pb::ProductComparisonSpecifics> initial_store_;
@@ -603,7 +603,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestSupportedFieldsMetadataCache) {
   entity_metadata.mutable_possibly_trimmed_base_specifics()
       ->mutable_product_comparison()
       ->set_name(kInitName[0]);
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store()->CreateWriteBatch();
   batch->GetMetadataChangeList()->UpdateMetadata(kInitUuid[0], entity_metadata);
   CommitToStoreAndWait(std::move(batch));
@@ -614,7 +614,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest, TestSupportedFieldsMetadataCache) {
   base::RunLoop loop;
   std::unique_ptr<ProductSpecificationsSyncBridge> new_bridge =
       std::make_unique<ProductSpecificationsSyncBridge>(
-          syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+          syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store()),
           processor().CreateForwardingProcessor(),
           base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
                          loop.QuitClosure()),
@@ -627,7 +627,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
        TestNoSupportedFieldsMetadataCache) {
   sync_pb::EntityMetadata entity_metadata;
   // Simulate entity with no supported field in cache.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store()->CreateWriteBatch();
   batch->GetMetadataChangeList()->UpdateMetadata(kInitUuid[0], entity_metadata);
   CommitToStoreAndWait(std::move(batch));
@@ -638,7 +638,7 @@ TEST_F(ProductSpecificationsSyncBridgeTest,
   base::RunLoop loop;
   std::unique_ptr<ProductSpecificationsSyncBridge> new_bridge =
       std::make_unique<ProductSpecificationsSyncBridge>(
-          syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store()),
+          syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store()),
           processor().CreateForwardingProcessor(),
           base::BindOnce([](base::OnceClosure done) { std::move(done).Run(); },
                          loop.QuitClosure()),

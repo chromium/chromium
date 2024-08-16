@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include <memory>
@@ -479,7 +484,7 @@ EnterpriseReportingPrivateGetCertificateFunction::Run() {
   // If AutoSelectCertificateForUrl is not set at the machine level, this
   // operation is not supported and should return immediately with the
   // appropriate status field value.
-  if (!chrome::enterprise_util::IsMachinePolicyPref(
+  if (!enterprise_util::IsMachinePolicyPref(
           prefs::kManagedAutoSelectCertificateForUrls)) {
     api::enterprise_reporting_private::Certificate ret;
     ret.status = extensions::api::enterprise_reporting_private::
@@ -629,7 +634,7 @@ bool EnterpriseReportingPrivateEnqueueRecordFunction::IsProfileAffiliated(
   if (profile_is_affiliated_for_testing_) {
     return true;
   }
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
+  return enterprise_util::IsProfileAffiliated(profile);
 }
 
 void EnterpriseReportingPrivateEnqueueRecordFunction::

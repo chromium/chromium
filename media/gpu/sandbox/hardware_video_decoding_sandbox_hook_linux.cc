@@ -88,7 +88,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnIntel(
   VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(USE_VAAPI)
 }
 
@@ -125,7 +125,7 @@ bool HardwareVideoDecodingPreSandboxHookForVaapiOnAMD(
   VaapiWrapper::PreSandboxInitialization(/*allow_disabling_global_lock=*/true);
   return true;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(USE_VAAPI)
 }
 
@@ -173,7 +173,7 @@ bool HardwareVideoDecodingPreSandboxHookForV4L2(
   permissions.push_back(BrokerFilePermission::ReadWrite(kDmaHeapPath));
   return true;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
 }
 

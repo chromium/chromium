@@ -111,8 +111,8 @@ static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
 PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
                                      PaintFlags paint_flags) {
   const auto& object = paint_layer_.GetLayoutObject();
-  if (UNLIKELY(object.NeedsLayout() &&
-               !object.ChildLayoutBlockedByDisplayLock())) {
+  if (object.NeedsLayout() && !object.ChildLayoutBlockedByDisplayLock())
+      [[unlikely]] {
     // Skip if we need layout. This should never happen. See crbug.com/1423308
     // and crbug.com/330051489.
     return kFullyPainted;
@@ -133,14 +133,12 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
 
   std::optional<CheckAncestorPositionVisibilityScope>
       check_position_visibility_scope;
-  if (RuntimeEnabledFeatures::CSSPositionVisibilityEnabled()) {
-    if (paint_layer_.InvisibleForPositionVisibility() ||
-        paint_layer_.HasAncestorInvisibleForPositionVisibility()) {
-      return kFullyPainted;
-    }
-    if (paint_layer_.GetLayoutObject().IsStackingContext()) {
-      check_position_visibility_scope.emplace(paint_layer_);
-    }
+  if (paint_layer_.InvisibleForPositionVisibility() ||
+      paint_layer_.HasAncestorInvisibleForPositionVisibility()) {
+    return kFullyPainted;
+  }
+  if (paint_layer_.GetLayoutObject().IsStackingContext()) {
+    check_position_visibility_scope.emplace(paint_layer_);
   }
 
   // A paint layer should always have LocalBorderBoxProperties when it's ready

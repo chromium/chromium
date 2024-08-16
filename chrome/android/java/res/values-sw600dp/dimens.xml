@@ -18,7 +18,7 @@ found in the LICENSE file.
     <dimen name="custom_tabs_control_container_height">64dp</dimen>
 
     <!-- NTP dimensions -->
-    <dimen name="ntp_search_box_transition_length">60dp</dimen>
+    <dimen name="ntp_search_box_transition_start_offset">60dp</dimen>
     <dimen name="ntp_wide_card_lateral_margins">48dp</dimen>
 
     <!-- Recent tabs page -->

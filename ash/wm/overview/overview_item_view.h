@@ -69,11 +69,13 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool CanAcceptEvent(const ui::Event& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
+  void UpdateAccessibleDescription();
+
   // The `OverviewItem` whose item widget owns and hosts this view. Please note
   // that `item_widget_` may outlive its corresponding `OverviewItem` which will
   // make `overview_item_` null while `this` is still alive. `overview_item_`

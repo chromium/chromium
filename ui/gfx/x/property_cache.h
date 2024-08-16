@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(X11) PropertyCache : public EventObserver {
     size_t len;
     const T* const data = GetAs<const T>(response, &len);
     if (data && len > 0) {
-      UNSAFE_BUFFERS(return base::span<const T>(data, len));
+      UNSAFE_TODO(return base::span<const T>(data, len));
     } else {
       return base::span<const T>();
     }

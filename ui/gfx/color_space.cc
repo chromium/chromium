@@ -230,6 +230,7 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
       PrimaryID::ADOBE_RGB,
       PrimaryID::APPLE_GENERIC_RGB,
       PrimaryID::WIDE_GAMUT_COLOR_SPIN,
+      PrimaryID::EBU_3213_E,
   };
   for (PrimaryID id : kIDsToCheck) {
     skcms_Matrix3x3 matrix;
@@ -482,6 +483,7 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(PrimaryID, ADOBE_RGB)
     PRINT_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
     PRINT_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
+    PRINT_ENUM_CASE(PrimaryID, EBU_3213_E)
     case PrimaryID::CUSTOM:
       ss << skia::SkColorSpacePrimariesToString(GetPrimaries());
       break;
@@ -857,6 +859,9 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
 
     case ColorSpace::PrimaryID::ADOBE_RGB:
       return SkNamedPrimariesExt::kA98RGB;
+
+    case ColorSpace::PrimaryID::EBU_3213_E:
+      return SkNamedPrimariesExt::kITU_T_H273_Value22;
   }
   return primaries;
 }

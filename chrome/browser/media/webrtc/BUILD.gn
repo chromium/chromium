@@ -18,6 +18,8 @@ source_set("webrtc") {
     "chrome_camera_pan_tilt_zoom_permission_context_delegate.h",
     "chrome_screen_enumerator.cc",
     "chrome_screen_enumerator.h",
+    "delegated_source_list_capturer.cc",
+    "delegated_source_list_capturer.h",
     "desktop_capturer_wrapper.cc",
     "desktop_capturer_wrapper.h",
     "desktop_media_list.cc",
@@ -263,4 +265,16 @@ source_set("webrtc") {
         [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
   }
   defines = [ "ZLIB_CONST" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "tab_desktop_media_list_mock_observer.cc",
+    "tab_desktop_media_list_mock_observer.h",
+  ]
+  deps = [
+    ":webrtc",
+    "//testing/gmock",
+  ]
 }

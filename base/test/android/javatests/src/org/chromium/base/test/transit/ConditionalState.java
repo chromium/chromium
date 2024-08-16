@@ -146,7 +146,7 @@ public abstract class ConditionalState {
 
         List<Condition> enterConditions = new ArrayList<>();
         Elements elements = getElements();
-        for (ElementInState<?> element : elements.getElementsInState()) {
+        for (Element<?> element : elements.getElements()) {
             Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 enterConditions.add(enterCondition);

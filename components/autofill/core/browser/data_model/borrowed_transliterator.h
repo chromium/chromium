@@ -10,6 +10,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
 
@@ -25,23 +26,30 @@ class BorrowedTransliterator {
   virtual ~BorrowedTransliterator();
 
   // Use ICU transliteration to remove diacritics, fold case and transliterate
-  // Latin to ASCII.
+  // Latin to ASCII. If a `country_code` is provided, German transliteration is
+  // applied on German speaking countries.
   // See http://userguide.icu-project.org/transforms/general
-  void Transliterate(icu::UnicodeString& text) const;
+  void Transliterate(
+      icu::UnicodeString& text,
+      AddressCountryCode country_code = AddressCountryCode("")) const;
 
  private:
   static base::Lock& GetLock();
-  static icu::Transliterator* GetTransliterator();
+  std::unique_ptr<icu::Transliterator>& GetTransliterator(
+      const AddressCountryCode& country_code) const;
 
   base::AutoLock auto_lock_;
 };
 
 // Apply the transliteration to a full string to convert it to lower case and to
 // remove the diacritics. This function also converts other Latin characters to
-// ascii (ł -> l, ß -> ss). It does not perform German transliteration (ö
-// becomes o, not oe).
-// TODO(crbug.com/328968064): Perform German transliteration.
-std::u16string RemoveDiacriticsAndConvertToLowerCase(std::u16string_view value);
+// ascii (ł -> l, ß -> ss) and applies German transliteration on German speaking
+// countries when a `country_code` is provided. Note that the function does not
+// apply German transliteration unconditionally because it's incorrect in many
+// languages.
+std::u16string RemoveDiacriticsAndConvertToLowerCase(
+    std::u16string_view value,
+    const AddressCountryCode& country_code = AddressCountryCode(""));
 
 }  // namespace autofill
 

@@ -396,7 +396,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         mSignInState = signInState;
 
         if (!SigninFeatureMap.isEnabled(SigninFeatures.SKIP_CHECK_FOR_ACCOUNT_MANAGEMENT_ON_SIGNIN)
-                && SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
                 && !getUserAcceptedAccountManagement()) {
             isAccountManaged(
                     mSignInState.mCoreAccountInfo,
@@ -428,16 +427,9 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             seedThenReloadAllAccountsFromSystem(mSignInState.mCoreAccountInfo.getId());
             notifySignInAllowedChanged();
 
-            if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                    || mSignInState.shouldTurnSyncOn()) {
-                Log.d(TAG, "Checking if account has policy management enabled");
-                fetchAndApplyCloudPolicy(
-                        mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
-            } else {
-                // Sign-in without sync doesn't enforce enterprise policy, so skip that
-                // step.
-                finishSignInAfterPolicyEnforced();
-            }
+            Log.d(TAG, "Checking if account has policy management enabled");
+            fetchAndApplyCloudPolicy(
+                    mSignInState.mCoreAccountInfo, this::finishSignInAfterPolicyEnforced);
         } else {
             Log.i(TAG, "Signin starts (enabling sync: %b).", mSignInState.shouldTurnSyncOn());
             AccountInfoServiceProvider.get()
@@ -447,18 +439,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
                                 mSignInState.mCoreAccountInfo = accountInfo;
                                 notifySignInAllowedChanged();
 
-                                if (SigninFeatureMap.isEnabled(
-                                                SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                                        || mSignInState.shouldTurnSyncOn()) {
-                                    Log.d(TAG, "Checking if account has policy management enabled");
-                                    fetchAndApplyCloudPolicy(
-                                            mSignInState.mCoreAccountInfo,
-                                            this::finishSignInAfterPolicyEnforced);
-                                } else {
-                                    // Sign-in without sync doesn't enforce enterprise policy, so
-                                    // skip that step.
-                                    finishSignInAfterPolicyEnforced();
-                                }
+                                Log.d(TAG, "Checking if account has policy management enabled");
+                                fetchAndApplyCloudPolicy(
+                                        mSignInState.mCoreAccountInfo,
+                                        this::finishSignInAfterPolicyEnforced);
                             });
         }
     }
@@ -625,20 +609,19 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // Only one signOut at a time!
         assert mSignOutState == null;
 
-        // Grab the management domain before nativeSignOut() potentially clears it.
-        String managementDomain = getManagementDomain();
-        mSignOutState =
-                new SignOutState(
-                        signOutCallback,
-                        (forceWipeUserData || managementDomain != null)
-                                ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
-                                : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
-        Log.i(
-                TAG,
-                "Signing out, dataWipeAction: %d",
-                (forceWipeUserData || managementDomain != null)
+        // Check the management domain before nativeSignOut() potentially clears it.
+        boolean shouldWipeBecauseOfAccountManagement =
+                getManagementDomain() != null
+                        && (!ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                                || mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+        @SignOutState.DataWipeAction
+        int dataWipeAction =
+                (forceWipeUserData || shouldWipeBecauseOfAccountManagement)
                         ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
-                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
+                        : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY;
+        mSignOutState = new SignOutState(signOutCallback, dataWipeAction);
+        Log.i(TAG, "Signing out, dataWipeAction: %d", dataWipeAction);
 
         mIdentityMutator.clearPrimaryAccount(signoutSource);
 

@@ -115,7 +115,7 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroupsWithError) {
   base::RunLoop run_loop;
   handler_->GetAllGroups(base::BindOnce(
       [](base::RunLoop* run_loop, bool success,
-         std::vector<data_sharing_internals::mojom::GroupDataPtr> result) {
+         std::vector<data_sharing::mojom::GroupDataPtr> result) {
         ASSERT_FALSE(success);
         run_loop->Quit();
       },
@@ -133,15 +133,15 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroups) {
   base::RunLoop run_loop;
   handler_->GetAllGroups(base::BindOnce(
       [](base::RunLoop* run_loop, bool success,
-         std::vector<data_sharing_internals::mojom::GroupDataPtr> result) {
+         std::vector<data_sharing::mojom::GroupDataPtr> result) {
         ASSERT_TRUE(success);
         ASSERT_EQ(result.size(), 1u);
         ASSERT_EQ(result[0]->group_id, kGroup1Id);
-        ASSERT_EQ(result[0]->name, kGroup1Name);
+        ASSERT_EQ(result[0]->display_name, kGroup1Name);
         ASSERT_EQ(result[0]->members.size(), 1u);
         ASSERT_EQ(result[0]->members[0]->display_name, kMemberName);
         ASSERT_EQ(result[0]->members[0]->role,
-                  data_sharing_internals::mojom::RoleType::OWNER);
+                  data_sharing::mojom::MemberRole::kOwner);
         ASSERT_EQ(result[0]->access_token, kAccessToken);
         run_loop->Quit();
       },

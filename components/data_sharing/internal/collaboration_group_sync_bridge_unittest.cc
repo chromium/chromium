@@ -14,10 +14,10 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/protocol/collaboration_group_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,8 +100,8 @@ class MockObserver : public CollaborationGroupSyncBridge::Observer {
 class CollaborationGroupSyncBridgeTest : public testing::Test {
  public:
   CollaborationGroupSyncBridgeTest()
-      : model_type_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : data_type_store_(
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~CollaborationGroupSyncBridgeTest() override = default;
 
   void TearDown() override { bridge_->RemoveObserver(&observer_); }
@@ -113,8 +113,8 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<CollaborationGroupSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            model_type_store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
+            data_type_store_.get()));
 
     bridge_->AddObserver(&observer_);
 
@@ -129,13 +129,14 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
 
   CollaborationGroupSyncBridge& bridge() { return *bridge_; }
 
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>& mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>&
+  mock_processor() {
     return mock_processor_;
   }
 
   testing::NiceMock<MockObserver>& observer() { return observer_; }
 
-  syncer::ModelTypeStore& model_type_store() { return *model_type_store_; }
+  syncer::DataTypeStore& data_type_store() { return *data_type_store_; }
 
   std::vector<sync_pb::CollaborationGroupSpecifics> GetBridgeSpecifics() {
     return ExtractSpecificsFromDataBatch(bridge().GetAllDataForDebugging());
@@ -144,8 +145,8 @@ class CollaborationGroupSyncBridgeTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
-  std::unique_ptr<syncer::ModelTypeStore> model_type_store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::DataTypeStore> data_type_store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<MockObserver> observer_;
   std::unique_ptr<CollaborationGroupSyncBridge> bridge_;
 };
@@ -272,10 +273,10 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldStoreAndLoadMetadata) {
   // Simulate the initial sync merge.
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge().CreateMetadataChangeList();
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
+  metadata_changes->UpdateDataTypeState(data_type_state);
   bridge().MergeFullSyncData(std::move(metadata_changes),
                              syncer::EntityChangeList());
 
@@ -324,10 +325,10 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
   // Mimics initial sync with some entities and metadata.
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge().CreateMetadataChangeList();
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
+  metadata_changes->UpdateDataTypeState(data_type_state);
 
   syncer::EntityChangeList intitial_entity_changes;
   intitial_entity_changes.push_back(
@@ -349,25 +350,24 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldApplyDisableSyncChanges) {
   // Verify that data and metadata was removed from disk as well.
   {
     base::RunLoop run_loop;
-    base::MockOnceCallback<syncer::ModelTypeStore::ReadAllDataCallback::RunType>
+    base::MockOnceCallback<syncer::DataTypeStore::ReadAllDataCallback::RunType>
         get_all_data_callback;
     EXPECT_CALL(get_all_data_callback,
                 Run(NoModelError(), /*data_records*/ Pointee(IsEmpty())))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    model_type_store().ReadAllData(get_all_data_callback.Get());
+    data_type_store().ReadAllData(get_all_data_callback.Get());
     run_loop.Run();
   }
 
   // Verify that metadata was removed from disk.
   {
     base::RunLoop run_loop;
-    base::MockOnceCallback<
-        syncer::ModelTypeStore::ReadMetadataCallback::RunType>
+    base::MockOnceCallback<syncer::DataTypeStore::ReadMetadataCallback::RunType>
         get_metadata_callback;
     EXPECT_CALL(get_metadata_callback,
                 Run(NoModelError(), IsEmptyMetadataBatch()))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    model_type_store().ReadAllMetadata(get_metadata_callback.Get());
+    data_type_store().ReadAllMetadata(get_metadata_callback.Get());
     run_loop.Run();
   }
 }

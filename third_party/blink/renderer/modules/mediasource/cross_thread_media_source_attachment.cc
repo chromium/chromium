@@ -476,7 +476,7 @@ bool CrossThreadMediaSourceAttachment::RunExclusively(
 
 void CrossThreadMediaSourceAttachment::Unregister() {
   // MSE-in-Worker does NOT use object URLs, so this should not be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 MediaSourceTracer*

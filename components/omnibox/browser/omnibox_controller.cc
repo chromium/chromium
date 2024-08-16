@@ -73,8 +73,7 @@ void OmniboxController::StopAutocomplete(bool clear_result) const {
 void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
   auto page_classification =
-      client_->GetPageClassification(OmniboxFocusSource::OMNIBOX,
-                                     /*is_prefetch=*/true);
+      client_->GetPageClassification(/*is_prefetch=*/true);
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           page_classification)) {
     return;

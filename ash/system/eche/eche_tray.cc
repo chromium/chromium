@@ -290,7 +290,7 @@ void EcheTray::Initialize() {
   SetVisiblePreferred(visibility);
 }
 
-void EcheTray::CloseBubble() {
+void EcheTray::CloseBubbleInternal() {
   if (bubble_)
     HideBubble();
 }
@@ -693,8 +693,7 @@ void EcheTray::InitBubble(
             eche_app::mojom::StreamStatus::kStreamStatusInitializing);
         break;
       case eche_app::mojom::AppStreamLaunchEntryPoint::UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   init_stream_timestamp_ = base::TimeTicks::Now();

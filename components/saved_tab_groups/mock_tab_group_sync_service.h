@@ -63,17 +63,20 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MOCK_METHOD(void,
               UpdateLocalTabId,
               (const LocalTabGroupID&, const base::Uuid&, const LocalTabID&));
+  MOCK_METHOD(void,
+              ConnectLocalTabGroup,
+              (const base::Uuid&, const LocalTabGroupID&));
   MOCK_METHOD(bool,
               IsRemoteDevice,
               (const std::optional<std::string>&),
               (const));
   MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
 
-  MOCK_METHOD(syncer::ModelTypeSyncBridge*, bridge, ());
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(syncer::DataTypeSyncBridge*, bridge, ());
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetSavedTabGroupControllerDelegate,
               ());
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetSharedTabGroupControllerDelegate,
               ());
   MOCK_METHOD(std::unique_ptr<ScopedLocalObservationPauser>,

@@ -153,7 +153,6 @@ class OmniboxClient {
   // UMA opted-in users.  Examines the user's profile to determine if the
   // current page is the user's home page.
   virtual metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source,
       bool is_prefetch) = 0;
 
   // Returns the security level that the toolbar should display.
@@ -239,6 +238,12 @@ class OmniboxClient {
 
   // Focuses the `WebContents`, i.e. the web page of the current tab.
   virtual void FocusWebContents() {}
+
+  // Called when the user presses the thumbs down button on a suggestion.
+  // Displays the Feedback form for submitting detailed feedback on why they
+  // disliked the suggestion.
+  virtual void ShowFeedbackPage(const std::u16string& input_text,
+                                const GURL& destination_url) {}
 
   virtual void OnAutocompleteAccept(
       const GURL& destination_url,

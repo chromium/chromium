@@ -76,9 +76,8 @@ void MojoDataPump::ReceiveMore(MojoResult result,
   scoped_refptr<net::IOBuffer> io_buffer;
   if (result == MOJO_RESULT_OK) {
     io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(read_size_);
-    result = receive_stream_->ReadData(
-        MOJO_READ_DATA_FLAG_NONE, base::as_writable_bytes(io_buffer->span()),
-        actually_read_bytes);
+    result = receive_stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       io_buffer->span(), actually_read_bytes);
   }
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     receive_stream_watcher_.ArmOrNotify();
@@ -100,8 +99,7 @@ void MojoDataPump::SendMore(MojoResult result,
 
   size_t actually_written_bytes = 0;
   if (result == MOJO_RESULT_OK) {
-    base::span<const uint8_t> bytes =
-        base::as_bytes(pending_write_buffer_->span());
+    base::span<const uint8_t> bytes = pending_write_buffer_->span();
     bytes = bytes.first(base::checked_cast<size_t>(pending_write_buffer_size_));
     result = send_stream_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
                                      actually_written_bytes);

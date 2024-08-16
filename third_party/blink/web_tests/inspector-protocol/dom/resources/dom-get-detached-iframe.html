@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    <iframe src="iframe_content.html" width="600" height="400"></iframe>
+    <script>
+        var iframe = document.querySelector('iframe');
+    </script>
+    <script>
+      document.querySelector('iframe').parentNode.removeChild(document.querySelector('iframe'));
+    </script>
+</body>
+</html>

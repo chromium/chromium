@@ -17,7 +17,7 @@
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace power_bookmarks {
@@ -46,8 +46,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
 
   // For sync codebase only: gets a weak reference to the sync controller
   // delegate.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url`. Use `power_type` to
   // restrict which type is returned or use POWER_TYPE_UNSPECIFIED to return

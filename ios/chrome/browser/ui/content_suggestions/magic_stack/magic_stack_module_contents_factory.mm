@@ -76,7 +76,7 @@
       return [self setUpListViewForConfig:setUpListConfig];
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

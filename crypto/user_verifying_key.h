@@ -69,6 +69,10 @@ class CRYPTO_EXPORT UserVerifyingSigningKey {
 
   // Get a reference to the label used to create or retrieve this key.
   virtual const UserVerifyingKeyLabel& GetKeyLabel() const = 0;
+
+  // Returns true if the underlying key is stored in "hardware". Something like
+  // ARM TrustZone would count as hardware for these purposes.
+  virtual bool IsHardwareBacked() const;
 };
 
 // Reference-counted wrapper for UserVeriyingSigningKey.

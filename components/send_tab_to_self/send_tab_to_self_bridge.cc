@@ -25,19 +25,18 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
 
 namespace send_tab_to_self {
 
 namespace {
 
-using syncer::ModelTypeStore;
+using syncer::DataTypeStore;
 
 const base::TimeDelta kDedupeTime = base::Seconds(5);
 
@@ -64,7 +63,7 @@ std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
     base::Time now,
     std::map<std::string, std::unique_ptr<SendTabToSelfEntry>>* entries,
     std::string* local_personalizable_device_name,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(entries);
   DCHECK(entries->empty());
   DCHECK(local_personalizable_device_name);
@@ -73,7 +72,7 @@ std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
   *local_personalizable_device_name =
       syncer::GetPersonalizableDeviceNameBlocking();
 
-  for (const syncer::ModelTypeStore::Record& r : *record_list) {
+  for (const syncer::DataTypeStore::Record& r : *record_list) {
     auto specifics = std::make_unique<SendTabToSelfLocal>();
     if (specifics->ParseFromString(r.value)) {
       (*entries)[specifics->specifics().guid()] =
@@ -89,12 +88,12 @@ std::optional<syncer::ModelError> ParseLocalEntriesOnBackendSequence(
 }  // namespace
 
 SendTabToSelfBridge::SendTabToSelfBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     base::Clock* clock,
-    syncer::OnceModelTypeStoreFactory create_store_callback,
+    syncer::OnceDataTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
     syncer::DeviceInfoTracker* device_info_tracker)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       clock_(clock),
       history_service_(history_service),
       device_info_tracker_(device_info_tracker),
@@ -122,7 +121,7 @@ SendTabToSelfBridge::~SendTabToSelfBridge() {
 
 std::unique_ptr<syncer::MetadataChangeList>
 SendTabToSelfBridge::CreateMetadataChangeList() {
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> SendTabToSelfBridge::MergeFullSyncData(
@@ -144,8 +143,7 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
   // opened.
   std::vector<const SendTabToSelfEntry*> opened;
   std::vector<std::string> removed;
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& guid = change->storage_key();
@@ -313,8 +311,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
       guid, url, trimmed_title, shared_time, local_device_name_,
       target_device_cache_guid);
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   // This entry is new. Add it to the store and model.
   auto entity_data = CopyToEntityData(entry->AsLocalProto().specifics());
 
@@ -338,8 +335,7 @@ void SendTabToSelfBridge::DeleteEntry(const std::string& guid) {
     return;
   }
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   DeleteEntryWithBatch(guid, batch.get());
 
@@ -357,8 +353,7 @@ void SendTabToSelfBridge::DismissEntry(const std::string& guid) {
 
   entry->SetNotificationDismissed(true);
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   auto entity_data = CopyToEntityData(entry->AsLocalProto().specifics());
 
@@ -380,8 +375,7 @@ void SendTabToSelfBridge::MarkEntryOpened(const std::string& guid) {
 
   entry->MarkOpened();
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   auto entity_data = CopyToEntityData(entry->AsLocalProto().specifics());
 
@@ -450,7 +444,7 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
 }
 
 // static
-std::unique_ptr<syncer::ModelTypeStore>
+std::unique_ptr<syncer::DataTypeStore>
 SendTabToSelfBridge::DestroyAndStealStoreForTest(
     std::unique_ptr<SendTabToSelfBridge> bridge) {
   return std::move(bridge->store_);
@@ -517,7 +511,7 @@ void SendTabToSelfBridge::NotifySendTabToSelfModelLoaded() {
 
 void SendTabToSelfBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -580,7 +574,7 @@ void SendTabToSelfBridge::OnCommit(
 }
 
 void SendTabToSelfBridge::Commit(
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<DataTypeStore::WriteBatch> batch) {
   store_->CommitWriteBatch(std::move(batch),
                            base::BindOnce(&SendTabToSelfBridge::OnCommit,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -681,7 +675,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
 
 void SendTabToSelfBridge::DeleteEntryWithBatch(
     const std::string& guid,
-    ModelTypeStore::WriteBatch* batch) {
+    DataTypeStore::WriteBatch* batch) {
   // Assure that an entry with that guid exists.
   DCHECK(GetEntryByGUID(guid) != nullptr);
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -698,8 +692,7 @@ void SendTabToSelfBridge::DeleteEntryWithBatch(
 }
 
 void SendTabToSelfBridge::DeleteEntries(const std::vector<GURL>& urls) {
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   std::vector<std::string> removed_guids;
 
@@ -730,8 +723,7 @@ void SendTabToSelfBridge::DeleteAllEntries() {
     return;
   }
 
-  std::unique_ptr<ModelTypeStore::WriteBatch> batch =
-      store_->CreateWriteBatch();
+  std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
   std::vector<std::string> all_guids = GetAllGuids();
 

@@ -10,13 +10,9 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "url/mojom/url.mojom";
 
 // This interface is implemented by the browser to give renderers the ability to
-// create and revoke blob URLs. This interface is currently exposed as follows:
-//  - When the kSupportPartitionedBlobUrl feature is enabled, this interface is
-//    directly exposed to the renderer either via BrowserInterfaceBrokers or as
-//    a navigation-associated interface.
-//  - Otherwise, BlobRegistry exposes a method to get a instance of this
-//    interface for a particular origin. This approach is deprecated and
-//    will be removed in a future release.
+// create and revoke blob URLs. This interface is directly exposed to the
+// renderer either via BrowserInterfaceBrokers or as a navigation-associated
+// interface.
 interface BlobURLStore {
   // Registers a public Blob URL. When the connection to the BlobURLStore closes
   // all URLs registered through it will be revoked.

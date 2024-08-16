@@ -20,6 +20,7 @@
 class Browser;
 class Profile;
 class AvatarToolbarButton;
+enum class AvatarDelayType;
 
 namespace ui {
 class ColorProvider;
@@ -84,9 +85,12 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   // Called by the AvatarToolbarButton to notify the delegate about events.
   void OnThemeChanged(const ui::ColorProvider* color_provider);
 
-  // Overrides the duration of the avatar toolbar button text that is displayed
-  // for a specific amount of time.
-  static void SetTextDurationForTesting(base::TimeDelta duration);
+  // Testing functions: check `AvatarToolbarButton` equivalent functions.
+  [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
+  CreateScopedInfiniteDelayOverrideForTesting(AvatarDelayType delay_type);
+  void TriggerTimeoutForTesting(AvatarDelayType delay_type);
+  [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
+  CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 
  private:
   std::u16string GetProfileName() const;

@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property clip-path value 'path(nonzero, 'M10,10h80v80h-80zM25,25h50v50h-50z')'
+  assert_equals: expected "path(\\"M 10 10 h 80 v 80 h -80 Z M 25 25 h 50 v 50 h -50 Z\\")" but got "path(\\"M 10 10 H 90 V 90 H 10 Z M 25 25 H 75 V 75 H 25 Z\\")"
+[FAIL] Property clip-path value 'path(evenodd, 'M10,10h80v80h-80zM25,25h50v50h-50z')'
+  assert_equals: expected "path(evenodd, \\"M 10 10 h 80 v 80 h -80 Z M 25 25 h 50 v 50 h -50 Z\\")" but got "path(evenodd, \\"M 10 10 H 90 V 90 H 10 Z M 25 25 H 75 V 75 H 25 Z\\")"
+[FAIL] Property clip-path value 'path(evenodd, 'M10,10h80v80h-80zM25,25h50v50h-50')'
+  assert_equals: expected "path(evenodd, \\"M 10 10 h 80 v 80 h -80 Z M 25 25 h 50 v 50 h -50\\")" but got "path(evenodd, \\"M 10 10 H 90 V 90 H 10 Z M 25 25 H 75 V 75 H 25\\")"
+Harness: the test ran to completion.
+

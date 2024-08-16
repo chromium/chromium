@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (-0.3) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (0) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (0.3) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (-0.3) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (0) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [--foo] at (0.3) should be [none]
+  assert_equals: expected "none " but got "- - foo "
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (-0.3) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (0) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+[FAIL] CSS Transitions with transition-behavior:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (0.3) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (-0.3) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (0) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+[FAIL] CSS Transitions with transition-property:all and transition-behavor:allow-discrete: property <position-try-fallbacks> from [none] to [flip-block] at (0.3) should be [none]
+  assert_equals: expected "none " but got "flip - block "
+Harness: the test ran to completion.
+

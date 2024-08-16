@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Bantu Sempurnakan Fitur dan Performa Chrome</translation>
 <translation id="1333745675627230582">Mainkan Game Chrome Dino</translation>
 <translation id="1352919863522755794">Pengelola Sandi Google tidak dapat memeriksa sandi Anda. Coba periksa koneksi internet Anda.</translation>
+<translation id="1380565463006545725">Rasakan Kecanggihan Chrome Shopping</translation>
 <translation id="139623527619433858">Gunakan Chrome untuk iPad secara Default</translation>
 <translation id="1407843355326180937">Login ke situs ini dan Chrome untuk mendapatkan bookmark Anda dan lainnya di semua perangkat.</translation>
 <translation id="1436059927646026729">Buka Tab Terbaru Saya di Chrome</translation>
@@ -35,6 +36,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="1554731936187952550">Anda memiliki keamanan terkuat Chrome terhadap situs berbahaya</translation>
 <translation id="1615715390546812898">Menelusuri dengan Suara di Chrome.</translation>
 <translation id="1657395063736185342">Telusuri Visual di Chrome</translation>
+<translation id="1670609221633730681">Tips Chrome: Pilih posisi kolom URL Anda</translation>
 <translation id="1675955119303651351">Beberapa data Chrome Anda belum disimpan di Akun Google Anda.
         Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="1682483655351012182">Sinkronkan Data Chrome Anda</translation>
@@ -113,12 +115,14 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="3984746313391923992">Organisasi mengharuskan Anda tetap logout dari Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4064699917955374540">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda.</translation>
+<translation id="4066411101507716142">Akses Chrome lebih cepat dari Dok Layar Utama iPad Anda.</translation>
 <translation id="4067858366537947361">Buka Tab Samaran Chrome</translation>
 <translation id="4093042601582616698">Jadikan Chrome sebagai Browser Default?</translation>
 <translation id="417201473131094001">Tidak didukung di Chrome Canary</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4251174643044751591">Membuka Halaman Setelan Metode Pembayaran di Chrome.</translation>
 <translation id="4286914711740227883">Hapus Data Penjelajahan di Chrome</translation>
+<translation id="430839890088895017">Tips Chrome: Pindahkan Chrome ke Dok</translation>
 <translation id="4453284704333523777">Kelola Setelan Chrome</translation>
 <translation id="4523886039239821078">Beberapa add-on (add-on) menyebabkan Chrome mogok. Uninstal:</translation>
 <translation id="4633328489441962921">Chrome tidak dapat memeriksa update</translation>
@@ -182,6 +186,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="6272822675004864999">Untuk menerima notifikasi dari Chrome, aktifkan notifikasi di aplikasi Settings iOS Anda.</translation>
 <translation id="630693926528731525">Sandi Anda tidak dibagikan. Periksa koneksi internet dan pastikan Anda login ke Chrome. Lalu, coba lagi.</translation>
 <translation id="6348855835728304880">Akses sandi Chrome dan lainnya di seluruh aplikasi lain pada perangkat ini.</translation>
+<translation id="6373751563207403289">Pemeriksaan Keamanan melindungi Anda dari pelanggaran data, situs yang tidak aman, dan lainnya. Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="6374691158439235563">Selesaikan Penyiapan Chrome</translation>
 <translation id="6389317667633680932">Pelajari beragam fitur baru yang membantu Anda mengoptimalkan penggunaan Chrome.</translation>
 <translation id="6412673304250309937">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
@@ -234,8 +239,10 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="746684838091935575">3 Pilih Chrome</translation>
 <translation id="7492574581995589075">Organisasi Anda menonaktifkan kemampuan untuk menggunakan dan menyimpan data Chrome di Akun Google Anda. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
 <translation id="7581063337314642333">Buka Petak Tab di Chrome</translation>
+<translation id="7642373780953416937">Menerima notifikasi terkait masalah privasi atau keamanan apa pun yang otomatis dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="7662994914830945754">Untuk melihat tab Chrome Anda dari perangkat lain, login dan aktifkan sinkronisasi</translation>
 <translation id="7669869107155339016">Buka Setelan Chrome.</translation>
+<translation id="7683540977001394271">Akses Chrome lebih cepat dari Dok Layar Utama iPhone Anda.</translation>
 <translation id="769104993356536261">Gunakan Tindakan Chrome di iOS</translation>
 <translation id="7693590760643069321">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera</translation>
@@ -249,6 +256,7 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome 
 <translation id="8006014511203279255">Gunakan Chrome kapan saja dengan mengetuk link di pesan atau aplikasi lainnya.</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
 <translation id="804638182476029347">Izinkan notifikasi Chrome mendapatkan notifikasi diskon</translation>
+<translation id="804756029368067824">Setel Chrome sebagai browser default agar mudah memantau harga dan mendapatkan analisis harga untuk barang yang ingin Anda beli.</translation>
 <translation id="8065292699993359127">Buka URL di Chrome dalam mode Samaran</translation>
 <translation id="8069507567842347179">Paket ini telah dilacak di Chrome.</translation>
 <translation id="8136856065410661948">Ini akan digunakan untuk mengambil acara dari Chrome dan Google Lens lalu membuatnya di Apple Calendar.</translation>
@@ -276,6 +284,7 @@ Data Anda dienkripsi dengan frasa sandi pada <ph name="TIME" />. Masukkan frasa 
   2. Ketuk Aplikasi Browser Default
   3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Notifikasi terkait masalah privasi atau keamanan apa pun yang dideteksi oleh Chrome untuk Anda.</translation>
 <translation id="8558480467877843976">Anda kini dapat menggunakan Chrome kapan saja dengan mengakses atau mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="8603022514504485810">Pengelola Sandi Google tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Maksimalkan penggunaan Chrome</translation>

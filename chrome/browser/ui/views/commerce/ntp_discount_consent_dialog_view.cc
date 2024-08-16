@@ -8,22 +8,22 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/constrained_window/constrained_window_views.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_delegate.h"
-
 #include "chrome/browser/ui/commerce/commerce_prompt.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace {
 // TODO(crbug.com/40226507): These are approved one-off dialog style, we will
@@ -50,7 +50,7 @@ NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
     ActionCallback callback)
     : callback_(std::move(callback)) {
   // Set up dialog properties.
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
   SetOwnedByWidget(true);
   // TODO(meiliang@): Set text for the button.

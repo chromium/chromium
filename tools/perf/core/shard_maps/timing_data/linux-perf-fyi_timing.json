@@ -1,1 +1,14 @@
-[]
+[
+    {
+        "duration": "36.0",
+        "name": "speedometer2-minorms/Speedometer2"
+    },
+    {
+        "duration": "37.0",
+        "name": "speedometer2/Speedometer2"
+    },
+    {
+        "duration": "45.0",
+        "name": "speedometer3/Speedometer3"
+    }
+]

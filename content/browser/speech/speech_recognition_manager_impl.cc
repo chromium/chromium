@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/soda/soda_util.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/resource_context.h"
+#include "content/public/browser/speech_recognition_audio_forwarder_config.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -36,8 +39,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "media/audio/audio_device_description.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,11 +52,9 @@
 #include "content/browser/speech/speech_recognizer_impl_android.h"
 #elif !BUILDFLAG(IS_FUCHSIA)
 #include "components/soda/constants.h"
-#include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/browser/speech/soda_speech_recognition_engine_impl.h"
 #include "media/base/media_switches.h"
-#include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -151,42 +156,14 @@ SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
 }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionAvailable(
     const SpeechRecognitionSessionConfig& config) {
-  if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
-      !speech::IsOnDeviceSpeechRecognitionSupported()) {
-    return false;
-  }
-
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  DCHECK(soda_installer);
-
-  // Check whether the language supported.
-  bool is_language_supported = false;
-  speech::LanguageCode lang_code = speech::LanguageCode::kNone;
-  const std::string language = l10n_util::GetLanguage(config.language);
-  for (auto const& available_lang : soda_installer->GetAvailableLanguages()) {
-    if (l10n_util::GetLanguage(available_lang) == language) {
-      is_language_supported = true;
-      lang_code = speech::GetLanguageCode(available_lang);
-      break;
-    }
-  }
-
-  if (!is_language_supported) {
-    return false;
-  }
-
-  if (!soda_installer->IsSodaInstalled(lang_code)) {
-    return false;
-  }
-
-  // TODO(crbug.com/40286514): Check other params.
-
-  return true;
-}
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+  return speech::IsOnDeviceSpeechRecognitionAvailable(config.language);
+#else
+  return false;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+}
 
 SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
     media::AudioSystem* audio_system,
@@ -213,21 +190,93 @@ SpeechRecognitionManagerImpl::~SpeechRecognitionManagerImpl() {
 
 int SpeechRecognitionManagerImpl::CreateSession(
     const SpeechRecognitionSessionConfig& config) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return CreateSession(std::move(config), mojo::NullReceiver(),
+                       mojo::NullRemote(), std::nullopt);
+}
 
+int SpeechRecognitionManagerImpl::CreateSession(
+    const SpeechRecognitionSessionConfig& config,
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionSession>
+        session_receiver,
+    mojo::PendingRemote<media::mojom::SpeechRecognitionSessionClient>
+        client_remote,
+    std::optional<SpeechRecognitionAudioForwarderConfig>
+        audio_forwarder_config) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   const int session_id = GetNextSessionID();
   DCHECK(!SessionExists(session_id));
+
+  // If on-device speech recognition must be used but is not available, throw a
+  // language-not-supported error and don't create the session.
+  if (config.on_device && !config.allow_cloud_fallback &&
+      !IsOnDeviceSpeechRecognitionAvailable(config)) {
+    mojo::Remote<media::mojom::SpeechRecognitionSessionClient> client(
+        std::move(client_remote));
+    client->ErrorOccurred(media::mojom::SpeechRecognitionError::New(
+        media::mojom::SpeechRecognitionErrorCode::kLanguageNotSupported,
+        media::mojom::SpeechAudioErrorDetails::kNone));
+    client->Ended();
+    return session_id;
+  }
 
   // Set-up the new session.
   auto session = std::make_unique<Session>();
   session->id = session_id;
   session->config = config;
   session->context = config.initial_context;
+  session->use_microphone = !audio_forwarder_config.has_value();
 
 #if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<SpeechRecognitionEngine> speech_recognition_engine;
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (IsOnDeviceSpeechRecognitionAvailable(config)) {
+  if (IsOnDeviceSpeechRecognitionAvailable(config) &&
+      audio_forwarder_config.has_value()) {
+    CHECK_GT(audio_forwarder_config.value().channel_count, 0);
+    CHECK_GT(audio_forwarder_config.value().sample_rate, 0);
+    // The speech recognition service process will create and manage the speech
+    // recognition session instead of the browser. Raw audio will be passed
+    // directly to the speech recognition process and speech recognition events
+    // will be returned directly to the renderer, bypassing the browser
+    // entirely.
+    if (!speech_recognition_context_.is_bound()) {
+      raw_ptr<SpeechRecognitionManagerDelegate>
+          speech_recognition_mgr_delegate =
+              SpeechRecognitionManagerImpl::GetInstance()
+                  ? SpeechRecognitionManagerImpl::GetInstance()->delegate()
+                  : nullptr;
+
+      CHECK(speech_recognition_mgr_delegate);
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+          speech_recognition_context_receiver =
+              speech_recognition_context_.BindNewPipeAndPassReceiver();
+      speech_recognition_mgr_delegate->BindSpeechRecognitionContext(
+          std::move(speech_recognition_context_receiver));
+    }
+
+    media::mojom::SpeechRecognitionOptionsPtr options =
+        media::mojom::SpeechRecognitionOptions::New();
+    options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
+    options->enable_formatting = false;
+    options->recognizer_client_type =
+        media::mojom::RecognizerClientType::kLiveCaption;
+    options->skip_continuously_empty_audio = true;
+
+    speech_recognition_context_->BindWebSpeechRecognizer(
+        std::move(session_receiver), std::move(client_remote),
+        std::move(audio_forwarder_config.value().audio_forwarder),
+        audio_forwarder_config.value().channel_count,
+        audio_forwarder_config.value().sample_rate, std::move(options),
+        config.continuous);
+
+    // The session is managed by the speech recognition service directly thus
+    // does not need to be associated with a session id in the browser.
+    return 0;
+  }
+#endif  //! BUILDFLAG(IS_FUCHSIA)
+
+  std::unique_ptr<SpeechRecognitionEngine> speech_recognition_engine;
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (UseOnDeviceSpeechRecognition(config)) {
     std::unique_ptr<SodaSpeechRecognitionEngineImpl>
         soda_speech_recognition_engine =
             std::make_unique<SodaSpeechRecognitionEngineImpl>(config);
@@ -249,7 +298,9 @@ int SpeechRecognitionManagerImpl::CreateSession(
     remote_engine_config.language = config.language;
     remote_engine_config.grammars = config.grammars;
     remote_engine_config.audio_sample_rate =
-        SpeechRecognizerImpl::kAudioSampleRate;
+        audio_forwarder_config.has_value()
+            ? audio_forwarder_config.value().sample_rate
+            : SpeechRecognizerImpl::kAudioSampleRate;
     remote_engine_config.audio_num_bits_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample;
     remote_engine_config.filter_profanities = config.filter_profanities;
@@ -270,10 +321,15 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
   session->recognizer = new SpeechRecognizerImpl(
       this, audio_system_, session_id, config.continuous,
-      config.interim_results, std::move(speech_recognition_engine));
+      config.interim_results, std::move(speech_recognition_engine),
+      audio_forwarder_config.has_value()
+          ? std::make_optional<SpeechRecognitionAudioForwarderConfig>(
+                audio_forwarder_config.value())
+          : std::nullopt);
+
 #else
   session->recognizer = new SpeechRecognizerImplAndroid(this, session_id);
-#endif
+#endif  //! BUILDFLAG(IS_ANDROID)
 
   sessions_[session_id] = std::move(session);
 
@@ -302,7 +358,13 @@ void SpeechRecognitionManagerImpl::StartSession(int session_id) {
 
   primary_session_id_ = session_id;
 
-  if (delegate_) {
+  if (!sessions_[session_id]->use_microphone) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SpeechRecognitionManagerImpl::DispatchEvent,
+                       weak_factory_.GetWeakPtr(), session_id, EVENT_START));
+
+  } else if (delegate_) {
     delegate_->CheckRecognitionIsAllowed(
         session_id,
         base::BindOnce(
@@ -577,6 +639,17 @@ void SpeechRecognitionManagerImpl::OnRecognitionEnd(int session_id) {
 SpeechRecognitionSessionContext SpeechRecognitionManagerImpl::GetSessionContext(
     int session_id) {
   return GetSession(session_id)->context;
+}
+
+bool SpeechRecognitionManagerImpl::UseOnDeviceSpeechRecognition(
+    const SpeechRecognitionSessionConfig& config) {
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+  return config.on_device &&
+         (speech::IsOnDeviceSpeechRecognitionAvailable(config.language) ||
+          !config.allow_cloud_fallback);
+#else
+  return false;
+#endif
 }
 
 void SpeechRecognitionManagerImpl::AbortAllSessionsForRenderFrame(

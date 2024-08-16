@@ -53,10 +53,6 @@ void PixelTestOutputSurface::SwapBuffersCallback() {
       gfx::PresentationFeedback(base::TimeTicks::Now(), base::TimeDelta(), 0));
 }
 
-bool PixelTestOutputSurface::IsDisplayedAsOverlayPlane() const {
-  return false;
-}
-
 void PixelTestOutputSurface::SetUpdateVSyncParametersCallback(
     viz::UpdateVSyncParametersCallback callback) {}
 

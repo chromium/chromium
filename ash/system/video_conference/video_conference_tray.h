@@ -131,7 +131,7 @@ class ASH_EXPORT VideoConferenceTray
   IconButton* toggle_bubble_button() { return toggle_bubble_button_; }
 
   // TrayBackgroundView:
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   std::u16string GetAccessibleNameForTray() override;

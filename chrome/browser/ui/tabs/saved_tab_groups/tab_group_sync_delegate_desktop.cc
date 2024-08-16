@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 
+#include <map>
+
 #include "base/containers/contains.h"
+#include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
@@ -16,6 +19,9 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/gfx/range/range.h"
 
 namespace tab_groups {
 namespace {
@@ -110,7 +116,39 @@ void TabGroupSyncDelegateDesktop::CloseLocalTabGroup(
 
 void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
     const SavedTabGroup& group) {
-  // TODO(b/346871861): Implement.
+  if (!group.local_group_id().has_value()) {
+    return;
+  }
+
+  const LocalTabGroupID& group_id = group.local_group_id().value();
+  if (!listener_->IsTrackingLocalTabGroup(group_id)) {
+    // Start tracking this TabGroup if we are not already tracking it.
+    Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+    CHECK(browser);
+
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    CHECK(tab_strip_model);
+    CHECK(tab_strip_model->SupportsTabGroups());
+
+    TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group_id);
+    CHECK(tab_group);
+
+    const gfx::Range tab_range = tab_group->ListTabs();
+    std::map<content::WebContents*, base::Uuid> web_contents_to_uuid;
+
+    for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+      CHECK(web_contents);
+
+      web_contents_to_uuid.emplace(
+          web_contents,
+          group.saved_tabs()[i - tab_range.start()].saved_tab_guid());
+    }
+
+    listener_->ConnectToLocalTabGroup(group, std::move(web_contents_to_uuid));
+  } else {
+    listener_->UpdateLocalGroupFromSync(group_id);
+  }
 }
 
 std::vector<LocalTabGroupID>

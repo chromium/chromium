@@ -145,8 +145,6 @@ void AutoPictureInPictureTabHelper::MediaSessionInfoChanged(
   is_playing_ =
       session_info && session_info->playback_state ==
                           media_session::mojom::MediaPlaybackState::kPlaying;
-  has_sufficiently_visible_video_ =
-      session_info && session_info->meets_visibility_threshold;
 }
 
 void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
@@ -164,14 +162,22 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture()) {
+    MaybeGetVisibility();
     return;
   }
+
+  EnterAutoPictureInPicture();
+}
+
+void AutoPictureInPictureTabHelper::EnterAutoPictureInPicture() {
   auto_picture_in_picture_activation_time_ =
       base::TimeTicks::Now() + blink::kActivationLifespan;
   content::MediaSession::Get(web_contents())->EnterAutoPictureInPicture();
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
+  get_visibility_weak_factory_.InvalidateWeakPtrs();
+
   if (!is_in_auto_picture_in_picture_) {
     return;
   }
@@ -189,9 +195,11 @@ void AutoPictureInPictureTabHelper::MaybeStartOrStopObservingTabStrip() {
   }
 }
 
-bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
+bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
+    HasSufficientlyVisibleVideo has_sufficiently_visible_video) const {
   // The tab must either have playback or be using camera/microphone to autopip.
-  if (!MeetsVideoPlaybackConditions() && !IsUsingCameraOrMicrophone()) {
+  if (!MeetsVideoPlaybackConditions(has_sufficiently_visible_video) &&
+      !IsUsingCameraOrMicrophone()) {
     return false;
   }
 
@@ -224,7 +232,8 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture() const {
   return true;
 }
 
-bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
+bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions(
+    HasSufficientlyVisibleVideo has_sufficiently_visible_video) const {
   if (!base::FeatureList::IsEnabled(
           media::kAutoPictureInPictureForVideoPlayback)) {
     return false;
@@ -232,7 +241,8 @@ bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
 
   // TODO(crbug.com/328637466): Make sure that there is a video that is
   // currently audible.
-  return has_audio_focus_ && is_playing_ && has_sufficiently_visible_video_;
+  return has_audio_focus_ && is_playing_ &&
+         (has_sufficiently_visible_video == HasSufficientlyVisibleVideo::kYes);
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
@@ -251,6 +261,32 @@ ContentSetting AutoPictureInPictureTabHelper::GetCurrentContentSetting() const {
     return CONTENT_SETTING_BLOCK;
   }
   return setting;
+}
+
+void AutoPictureInPictureTabHelper::MaybeGetVisibility() {
+  get_visibility_weak_factory_.InvalidateWeakPtrs();
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents());
+  if (!media_session || is_in_picture_in_picture_) {
+    return;
+  }
+
+  media_session->GetVisibility(
+      base::BindOnce(&AutoPictureInPictureTabHelper::GetVideoVisibility,
+                     get_visibility_weak_factory_.GetWeakPtr()));
+}
+
+void AutoPictureInPictureTabHelper::GetVideoVisibility(
+    bool has_sufficiently_visible_video) {
+  if (!has_sufficiently_visible_video || is_in_picture_in_picture_) {
+    return;
+  }
+
+  if (!IsEligibleForAutoPictureInPicture(HasSufficientlyVisibleVideo::kYes)) {
+    return;
+  }
+
+  EnterAutoPictureInPicture();
 }
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {

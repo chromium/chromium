@@ -112,6 +112,7 @@ enum SerializationTag : uint8_t {
                              // pemCertificate:WebCoreString
   kRTCEncodedAudioFrameTag = 'A',  // uint32_t -> transferred audio frame ID
   kRTCEncodedVideoFrameTag = 'V',  // uint32_t -> transferred video frame ID
+  kRTCDataChannel = 'p',  // uint32_t -> transferred webrtc datachannel ID
 
   kAudioDataTag = 'a',          // uint32_t -> transferred audio data
   kVideoFrameTag = 'v',         // uint32_t -> transferred video frame ID

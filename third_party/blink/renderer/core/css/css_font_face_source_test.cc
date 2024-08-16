@@ -58,8 +58,8 @@ TEST(CSSFontFaceSourceTest, HashCollision) {
 
   // Even if the hash values collide, fontface cache should return different
   // value for different fonts, values determined experimentally.
-  constexpr float kEqualHashesFirst = 5326;
-  constexpr float kEqualHashesSecond = 210362;
+  constexpr float kEqualHashesFirst = 46317;
+  constexpr float kEqualHashesSecond = 67002;
   EXPECT_EQ(SimulateHashCalculation(kEqualHashesFirst),
             SimulateHashCalculation(kEqualHashesSecond));
   EXPECT_NE(font_face_source->GetFontDataForSize(kEqualHashesFirst),

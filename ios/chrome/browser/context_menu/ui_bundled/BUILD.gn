@@ -120,6 +120,7 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:launch_configuration",
     "//ios/web/common:features",
     "//ios/web/public/test:element_selector",
+    "//net",
     "//net:test_support",
     "//ui/base",
     "//url",

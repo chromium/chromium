@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
@@ -169,15 +170,14 @@ MessageType DecodeMessageType(const std::string& value) {
 
 int ConstructGCMVersion(const std::string& chrome_version) {
   // Major Chrome version is passed as GCM version.
-  size_t pos = chrome_version.find('.');
-  if (pos == std::string::npos) {
+  auto parts = base::SplitStringOnce(chrome_version, '.');
+  if (!parts) {
     NOTREACHED_IN_MIGRATION();
     return 0;
   }
 
   int gcm_version = 0;
-  base::StringToInt(std::string_view(chrome_version.c_str(), pos),
-                    &gcm_version);
+  base::StringToInt(parts->first, &gcm_version);
   return gcm_version;
 }
 
@@ -192,11 +192,12 @@ bool DeserializeInstanceIDData(const std::string& serialized_data,
                                std::string* instance_id,
                                std::string* extra_data) {
   DCHECK(instance_id && extra_data);
-  std::size_t pos = serialized_data.find(',');
-  if (pos == std::string::npos)
+  auto parts = base::SplitStringOnce(serialized_data, '.');
+  if (!parts) {
     return false;
-  *instance_id = serialized_data.substr(0, pos);
-  *extra_data = serialized_data.substr(pos + 1);
+  }
+  *instance_id = parts->first;
+  *extra_data = parts->second;
   return !instance_id->empty() && !extra_data->empty();
 }
 

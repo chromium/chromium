@@ -19,6 +19,7 @@ build_webui("build") {
     "device_info_table.ts",
     "runtime_changelog_table.ts",
     "session_info_table.ts",
+    "session_statistics_table.ts",
   ]
 
   non_web_component_files = [

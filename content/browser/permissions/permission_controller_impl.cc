@@ -773,19 +773,6 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
   return id;
 }
 
-PermissionControllerImpl::SubscriptionId
-PermissionControllerImpl::SubscribeToPermissionStatusChange(
-    PermissionType permission,
-    RenderProcessHost* render_process_host,
-    const url::Origin& requesting_origin,
-    bool should_include_device_status,
-    const base::RepeatingCallback<void(PermissionStatus)>& callback) {
-  return SubscribeToPermissionStatusChange(
-      permission, render_process_host,
-      /*render_frame_host=*/nullptr, requesting_origin.GetURL(),
-      should_include_device_status, callback);
-}
-
 void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(
     SubscriptionId subscription_id) {
   Subscription* subscription = subscriptions_.Lookup(subscription_id);

@@ -109,7 +109,7 @@ class BrowserSideSender
     ASSERT_EQ(data.size(), actually_written_bytes);
 
     char nul_char = '\0';
-    rv = handle.WriteData(base::as_bytes(base::span_from_ref(nul_char)),
+    rv = handle.WriteData(base::byte_span_from_ref(nul_char),
                           MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     ASSERT_EQ(1u, actually_written_bytes);

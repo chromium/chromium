@@ -12,6 +12,7 @@ source_set("ui") {
     "panel_content_consumer.h",
     "panel_content_view_controller.h",
     "panel_content_view_controller.mm",
+    "trait_collection_change_delegate.h",
   ]
   deps = [
     ":public",
@@ -43,6 +44,8 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "contextual_panel_egtest.mm" ]
   deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

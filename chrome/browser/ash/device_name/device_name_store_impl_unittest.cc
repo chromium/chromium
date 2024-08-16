@@ -60,10 +60,7 @@ class DeviceNameStoreImplTest : public ::testing::Test {
     ASSERT_TRUE(mock_profile_manager_.SetUp());
     scoped_cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
 
-    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    fake_user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
   }
 
   void TearDown() override {
@@ -166,12 +163,13 @@ class DeviceNameStoreImplTest : public ::testing::Test {
   // Test backing store for prefs.
   TestingPrefServiceSimple local_state_;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_;
+
   TestingProfileManager mock_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<OwnerSettingsServiceAsh> owner_settings_service_ash_;
-  ScopedCrosSettingsTestHelper scoped_cros_settings_test_helper_;
   base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<FakeDeviceNameApplier, DanglingUntriaged> fake_device_name_applier_;

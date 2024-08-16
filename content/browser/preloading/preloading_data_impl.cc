@@ -126,7 +126,7 @@ PreloadingURLMatchCallback PreloadingData::GetSameURLMatcher(
 
 // static
 PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
-    PrefetchService* prefetch_service,
+    PrefetchService& prefetch_service,
     const PrefetchContainer::Key& predicted) {
   return base::BindRepeating(
       [](base::WeakPtr<PrefetchService> prefetch_service,
@@ -143,7 +143,7 @@ PreloadingURLMatchCallback PreloadingDataImpl::GetPrefetchServiceMatcher(
         return prefetch_container &&
                prefetch_container->GetPrefetchContainerKey() == predicted;
       },
-      prefetch_service ? prefetch_service->GetWeakPtr() : nullptr, predicted);
+      prefetch_service.GetWeakPtr(), predicted);
 }
 
 // static

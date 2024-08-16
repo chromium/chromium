@@ -74,15 +74,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="DevTools.ColorConvertedFrom" enum="DevToolsColorConvertedFrom"
-    expires_after="2024-09-01">
-  <owner>ergunsh@chromium.org</owner>
-  <owner>changhaohan@chromium.org</owner>
-  <owner>bmeurer@google.com</owner>
-  <owner>yangguo@chromium.org</owner>
-  <summary>Records the color conversion menu usage.</summary>
-</histogram>
-
 <histogram name="DevTools.ColorPickerOpenedFrom"
     enum="DevToolsColorPickerOpenedFrom" expires_after="2024-12-01">
   <owner>ergunsh@chromium.org</owner>
@@ -178,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.ExperimentDisabledAtLaunch"
-    enum="DevtoolsExperiments" expires_after="2024-12-08">
+    enum="DevtoolsExperiments" expires_after="2025-02-10">
   <owner>yangguo@chromium.org</owner>
   <owner>changhaohan@chromium.org</owner>
   <summary>
@@ -214,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IsSameOriginDebuggerAttachedInAnotherRenderer"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -225,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IsSameOriginDebuggerPausedInAnotherRenderer"
-    enum="Boolean" expires_after="2024-12-08">
+    enum="Boolean" expires_after="2025-02-10">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -245,7 +236,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2024-12-01">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2025-02-02">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -254,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelOpenedFrom"
-    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2024-12-01">
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2025-02-02">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -263,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2024-12-01">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2025-02-02">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>
@@ -306,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="DevTools.Launch" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
 <!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
 
   <owner>yangguo@chromium.org</owner>
@@ -607,7 +598,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>danilsomsikov@google.com</owner>
   <owner>hablich@chromium.org</owner>
   <summary>

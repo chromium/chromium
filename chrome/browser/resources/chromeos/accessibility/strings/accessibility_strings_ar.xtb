@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">بني وردي</translation>
 <translation id="249330843868392562">فتح إعدادات تحويل النص إلى كلام</translation>
 <translation id="2497706219848005458">أصفر مخضر</translation>
+<translation id="2512979179176933762">إظهار النوافذ</translation>
 <translation id="2523609930580546572">‏برنامج ChromeVox التعليمي</translation>
 <translation id="2525706221823668172">‏اختصارات لوحة المفاتيح لـ Chromebook</translation>
 <translation id="2553108862507765288">خطأ نحوي</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">أزرق معدني</translation>
 <translation id="4253168017788158739">ملاحظة</translation>
 <translation id="4254798249533888099">متفرع</translation>
+<translation id="4259220820964911921">‏هل تريد تفعيل التحكّم في ميزة FaceGaze؟</translation>
 <translation id="4271220233568730077">التعبير الرياضي التالي</translation>
 <translation id="4275397969489577657">تفعيل ميزة تسجيل بث الحدث</translation>
 <translation id="4278486392851938658">ليس هناك رابط سابق تم الانتقال إليه.</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">ملحق</translation>
 <translation id="5761219715606611783">‏أحسنت. لقد تعلمت أساسيات استخدام ChromeVox. يمكنك الاطّلاع على البرنامج التعليمي مجددًا أو الخروج منه عن طريق استخدام أحد الأزرار الواردة أدناه.</translation>
 <translation id="5776001898637896684">‏الإضافة "تحويل النص إلى كلام" في Google Enhanced Network</translation>
+<translation id="5783252477644995371">‏يتيح لك التحكّم في ميزة FaceGaze توجيه المؤشر من خلال الإشارة بالوجه بالإضافة إلى إمكانية تنفيذ بعض الإجراءات، مثل النقر بزر الماوس الأيسر باستخدام إيماءات الوجه مثل الابتسامة</translation>
 <translation id="5805940204952508776">النقر بإصبعين</translation>
 <translation id="5819072574982403430">عنصر متفرع</translation>
 <translation id="5822819874379903994">فيروزي داكن</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">ليس هناك مربع اختيار تالٍ.</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8476408756881832830">‏إيقاف التشغيل مؤقتًا أثناء تحدُّث ChromeVox</translation>
-<translation id="8476508772960940536">نظرة عامة للنافذة</translation>
 <translation id="8480873377842220259">ستتعرَّف الآن على بعض طلبات التنقُّل الأساسي. يمكنك الضغط مع الاستمرار على مفتاح البحث ثم الضغط على مفاتيح الأسهم للتنقُّل على الشاشة. للمواصلة، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين.</translation>
 <translation id="8503360654911991865">خفض دقة التنقل</translation>
 <translation id="8520472399088452386">زر الدوران</translation>

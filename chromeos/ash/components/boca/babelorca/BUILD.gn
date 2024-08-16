@@ -11,17 +11,36 @@ static_library("babelorca") {
   sources = [
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
+    "request_data_wrapper.cc",
+    "request_data_wrapper.h",
+    "response_callback_wrapper.h",
+    "response_callback_wrapper_impl.h",
+    "tachyon_authed_client.h",
+    "tachyon_authed_client_impl.cc",
+    "tachyon_authed_client_impl.h",
+    "tachyon_client.h",
+    "tachyon_client_impl.cc",
+    "tachyon_client_impl.h",
+    "tachyon_constants.h",
+    "tachyon_registrar.cc",
+    "tachyon_registrar.h",
+    "tachyon_utils.cc",
+    "tachyon_utils.h",
     "token_data_wrapper.h",
     "token_fetcher.h",
-    "token_manager.cc",
     "token_manager.h",
+    "token_manager_impl.cc",
+    "token_manager_impl.h",
   ]
 
   deps = [
     "//base",
+    "//chromeos/ash/components/boca/babelorca/proto",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//google_apis",
+    "//net",
+    "//services/network/public/cpp",
   ]
 }
 
@@ -29,13 +48,21 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "fake_token_fetcher.cc",
-    "fake_token_fetcher.h",
+    "fakes/fake_tachyon_authed_client.cc",
+    "fakes/fake_tachyon_authed_client.h",
+    "fakes/fake_tachyon_client.cc",
+    "fakes/fake_tachyon_client.h",
+    "fakes/fake_token_fetcher.cc",
+    "fakes/fake_token_fetcher.h",
+    "fakes/fake_token_manager.cc",
+    "fakes/fake_token_manager.h",
   ]
 
   deps = [
     ":babelorca",
     "//base",
+    "//net/traffic_annotation",
+    "//third_party/protobuf:protobuf_lite",
   ]
 }
 
@@ -44,7 +71,11 @@ source_set("unit_tests") {
 
   sources = [
     "oauth_token_fetcher_unittest.cc",
-    "token_manager_unittest.cc",
+    "response_callback_wrapper_impl_unittest.cc",
+    "tachyon_authed_client_impl_unittest.cc",
+    "tachyon_client_impl_unittest.cc",
+    "tachyon_registrar_unittest.cc",
+    "token_manager_impl_unittest.cc",
   ]
 
   deps = [
@@ -52,9 +83,15 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca/babelorca/proto",
+    "//chromeos/ash/components/boca/babelorca/proto:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -20,7 +20,7 @@ class MockSecurityEventSyncBridge : public SecurityEventSyncBridge {
 
   MOCK_METHOD1(RecordSecurityEvent, void(sync_pb::SecurityEventSpecifics));
   MOCK_METHOD0(GetControllerDelegate,
-               base::WeakPtr<syncer::ModelTypeControllerDelegate>());
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
 };
 
 MATCHER_P(HasTimestampAndContainsGaiaPasswordReuse, event, "") {

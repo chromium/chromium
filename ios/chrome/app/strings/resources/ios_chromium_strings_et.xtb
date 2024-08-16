@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Chromiumis lukustamisrežiimi keelamiseks lülitage see iPhone'is välja.</translation>
 <translation id="159029779861043703">Chromium kaitseb teie delikaatseid isikuandmeid näotuvastuse abil.</translation>
 <translation id="1591119736686995611">Avab Chromiumi vahelehtede ruudustiku.</translation>
+<translation id="16001233025397167">Ohutuskontroll kaitseb teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chromium teie eest tuvastab.</translation>
 <translation id="1611584326765829247">Lubage Chromiumil aidata teil pakke jälgida</translation>
 <translation id="1617663976202781617">Chromiumi andmete sünkroonimine</translation>
 <translation id="1647558790457890304">Chromiumi seaded</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Teie organisatsioon nõuab, et logiksite Chromiumi kasutamiseks sisse.</translation>
 <translation id="2450140762465183767">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="2478931088402984578">Valige <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Kasutage Chromiumi pakutavaid ostuvõimalusi</translation>
 <translation id="252374538254180121">Chromiumi määramine vaikebrauseriks</translation>
 <translation id="2574528844022712255">Kuva Chromiumi järjehoidjad</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
@@ -103,6 +105,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3855938650519180865">Mis on Chromiumis uut?</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="3904484643286601695">Chromiumi seadetes saate igal ajal oma valikuid värskendada.</translation>
+<translation id="3983291422281996849">Määrake Chromium oma vaikebrauseriks, et hõlpsasti jälgida hindu ja saada hinnastatistikat toodete kohta, mida soovite osta.</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
@@ -133,6 +136,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="4736424910885271643">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chromiumi andmed sellest seadmest</translation>
 <translation id="4790638144988730920">Jätkake Google’i kontol Chromiumi andmete kasutamist.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
+<translation id="4904452304169763785">Hoiatab privaatsus- või turvaprobleemidest, mille Chromium teie eest tuvastab.</translation>
 <translation id="4962295957157529683">Lõpetage teises avatud Chromiumi aknas pooleliolev toiming.</translation>
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4996471330284142407">Chromium on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
@@ -144,6 +148,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5131565040785979529">Teie organisatsioon <ph name="DOMAIN" /> haldab kontot, millele olete sisse logitud, ja Chromiumi kasutamist.</translation>
 <translation id="5146749061471423558">Järjehoidjate lisamine Chromiumisse</translation>
 <translation id="5171868502429358653">Logige Chromiumi sisse</translation>
+<translation id="5203483872492817335">Avage Chromium kiiremini oma iPadi avakuva doki kaudu.</translation>
 <translation id="5213683223491576284">Avab Chromiumis paroolihalduri.</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5242782538551259282">Teatud Chromiumi andmeid pole veel teie Google’i kontole salvestatud.
@@ -175,6 +180,7 @@ Tasub teada
   • Kui Chromium jookseb kokku, võivad kokkujooksmise üksikasjad sisaldada isiklikku teavet.
 
   • Kui sünkroonite oma ajaloo Google’i kontoga, võivad mõõdikud sisaldada teavet ka teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chromium automaatselt teie eest tuvastab.</translation>
 <translation id="5945387852661427312">Logite sisse kontoga, mida haldab <ph name="DOMAIN" />, ja annate selle administraatorile üle Chromiumi andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chromiumist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="5951593919357934226">Kasutage Chromiumi parimal moel.</translation>
 <translation id="5983312940147103417">Chromiumi täiustamine</translation>
@@ -225,6 +231,7 @@ Tasub teada
 Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromiumi märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="7222001353246886083">Otsige Chromiumis ${searchPhrase}</translation>
+<translation id="7228180817326917122">Chromiumi nõuanne: valige aadressiriba asukoht</translation>
 <translation id="725427773388857052">Chromium aitab teid kaitsta andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest</translation>
 <translation id="7269362888766543920">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Proovige need desinstallida.</translation>
 <translation id="7285031092584344905">Pääsete muudes rakendustes juurde oma Chromiumi paroolidele ja muule teabele.</translation>
@@ -247,6 +254,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="7928628054454574139">Kui muudes rakendustes linke puudutate, avaneb alati Chromium</translation>
 <translation id="7931842119211730154">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>
 <translation id="7934404985878918282">Kuva Chromiumi lugemisloend</translation>
+<translation id="7947765692209663835">Avage Chromium kiiremini oma iPhone'i avakuva doki kaudu.</translation>
 <translation id="7971753607796745700">Lisa Chromiumi lugemisloendi üksus</translation>
 <translation id="7980860476903281594">Chromium jagab teie asukohateavet saitidega, millele olete loa andnud.</translation>
 <translation id="7994322153108931467">Lülitage iOS-i seadetes märguanded sisse, et saada Chromiumi kohta kasulikke nõuandeid.</translation>
@@ -265,6 +273,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8386869251364507178">Chromiumi toimingud</translation>
 <translation id="8409374867500149834">Teil on Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="8458950033462118672">Saate Chromiumis linke avada automaatselt, muutes selle oma vaikebrauserirakenduseks.</translation>
+<translation id="8473874987831035139">Chromiumi nõuanne: teisaldage Chromium dokki</translation>
 <translation id="8502918057530111907">Selleks et hõlpsalt hinnastatistikat hankida, kasutage vaikimisi Chromiumi</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}}</translation>
 <translation id="858114650497379505">Saate paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>

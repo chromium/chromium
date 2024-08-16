@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
@@ -43,6 +45,27 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // made until after a specified time.
   virtual void InvalidateTryAgainAfterTime() = 0;
 
+  // Check whether a proxy chain list is available.
+  virtual bool IsProxyListAvailable() = 0;
+
+  // Notify the ConfigCache that QUIC proxies failed for a request, suggesting
+  // that QUIC may not work on this network.
+  virtual void QuicProxiesFailed() = 0;
+
+  // Return the currently cached proxy chain lists. This contains the lists of
+  // hostnames corresponding to each proxy chain that should be used. This
+  // may be empty even if `IsProxyListAvailable()` returned true.
+  virtual std::vector<net::ProxyChain> GetProxyChainList() = 0;
+
+  // Request a refresh of the proxy chain list. Call this when it's likely that
+  // the proxy chain list is out of date.
+  virtual void RequestRefreshProxyList() = 0;
+
+  // Callback function used by `IpProtectionProxyListManager` and
+  // `IpProtectionTokenCacheManager` to signal a possible geo change due to a
+  // refreshed proxy list or refill of tokens.
+  virtual void GeoObserved(const std::string& geo_id) = 0;
+
   // Set the token cache manager for the cache.
   virtual void SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer,
@@ -61,26 +84,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
   // Fetch the proxy chain list manager.
   virtual IpProtectionProxyListManager*
   GetIpProtectionProxyListManagerForTesting() = 0;
-
-  // Check whether a proxy chain list is available.
-  virtual bool IsProxyListAvailable() = 0;
-
-  // Notify the ConfigCache that QUIC proxies failed for a request, suggesting
-  // that QUIC may not work on this network.
-  virtual void QuicProxiesFailed() = 0;
-
-  // Return the currently cached proxy chain lists. This contains the lists of
-  // hostnames corresponding to each proxy chain that should be used. This
-  // may be empty even if `IsProxyListAvailable()` returned true.
-  virtual std::vector<net::ProxyChain> GetProxyChainList() = 0;
-
-  // Request a refresh of the proxy chain list. Call this when it's likely that
-  // the proxy chain list is out of date.
-  virtual void RequestRefreshProxyList() = 0;
-
-  // Callback function used by `IpProtectionProxyListManager` and
-  // `IpProtectionTokenCacheManager` to signal a geo change.
-  virtual void GeoChangeObserved(const std::string& geo_id) = 0;
 };
 
 }  // namespace network

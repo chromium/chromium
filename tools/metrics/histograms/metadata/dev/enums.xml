@@ -822,11 +822,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Other"/>
 </enum>
 
-<enum name="DevToolsColorConvertedFrom">
-  <int value="0" label="Color Swatch (Shift + Click menu)"/>
-  <int value="1" label="Color Picker"/>
-</enum>
-
 <enum name="DevToolsColorPickerOpenedFrom">
   <int value="0" label="Sources panel"/>
   <int value="1" label="Styles pane"/>
@@ -1421,6 +1416,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="33" label="text/javascript+sourcemapped"/>
   <int value="34" label="text/x.angular"/>
   <int value="35" label="text/x.vue"/>
+  <int value="36" label="text/javascript+snippet"/>
+  <int value="37" label="text/javascript+eval"/>
 </enum>
 
 <enum name="DevToolsNetworkPanelMoreFiltersItemSelected">

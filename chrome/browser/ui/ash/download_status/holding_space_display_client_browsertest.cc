@@ -35,11 +35,11 @@
 #include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/crosapi/mock_download_status_updater_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_test_util.h"
 #include "chrome/browser/ui/ash/mock_activation_change_observer.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -105,11 +105,6 @@ gfx::Image CreateHoldingSpaceIcon(const gfx::ImageSkia& icon,
 class HoldingSpaceDisplayClientBrowserTest
     : public HoldingSpaceUiBrowserTestBase {
  public:
-  HoldingSpaceDisplayClientBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSysUiDownloadsIntegrationV2);
-  }
-
   // HoldingSpaceUiBrowserTestBase:
   void SetUpOnMainThread() override {
     HoldingSpaceUiBrowserTestBase::SetUpOnMainThread();

@@ -96,10 +96,13 @@ enum InitialRttEstimateSource {
   INITIAL_RTT_SOURCE_MAX,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum FindMatchingIpSessionResult {
   MATCHING_IP_SESSION_FOUND,
   CAN_POOL_BUT_DIFFERENT_IP,
   CANNOT_POOL_WITH_EXISTING_SESSIONS,
+  POOLED_WITH_DIFFERENT_IP_SESSION,
   FIND_MATCHING_IP_SESSION_RESULT_MAX
 };
 
@@ -142,11 +145,39 @@ void HistogramCreateSessionFailure(enum CreateSessionFailure error) {
                             CREATION_ERROR_MAX);
 }
 
-void HistogramFindMatchingIpSessionResult(FindMatchingIpSessionResult result,
-                                          std::string_view host) {
+void LogFindMatchingIpSessionResult(const NetLogWithSource& net_log,
+                                    FindMatchingIpSessionResult result,
+                                    QuicChromiumClientSession* session,
+                                    const url::SchemeHostPort& destination) {
+  NetLogEventType type =
+      NetLogEventType::QUIC_SESSION_POOL_CANNOT_POOL_WITH_EXISTING_SESSIONS;
+  switch (result) {
+    case MATCHING_IP_SESSION_FOUND:
+      type = NetLogEventType::QUIC_SESSION_POOL_MATCHING_IP_SESSION_FOUND;
+      break;
+    case POOLED_WITH_DIFFERENT_IP_SESSION:
+      type =
+          NetLogEventType::QUIC_SESSION_POOL_POOLED_WITH_DIFFERENT_IP_SESSION;
+      break;
+    case CAN_POOL_BUT_DIFFERENT_IP:
+      type = NetLogEventType::QUIC_SESSION_POOL_CAN_POOL_BUT_DIFFERENT_IP;
+      break;
+    case CANNOT_POOL_WITH_EXISTING_SESSIONS:
+    case FIND_MATCHING_IP_SESSION_RESULT_MAX:
+      break;
+  }
+  net_log.AddEvent(type, [&] {
+    base::Value::Dict dict;
+    dict.Set("destination", destination.Serialize());
+    if (session != nullptr) {
+      session->net_log().source().AddToEventParameters(dict);
+    }
+    return dict;
+  });
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.FindMatchingIpSessionResult",
                             result, FIND_MATCHING_IP_SESSION_RESULT_MAX);
-  if (IsGoogleHost(host) && !host.ends_with(".googlevideo.com")) {
+  if (IsGoogleHost(destination.host()) &&
+      !destination.host().ends_with(".googlevideo.com")) {
     UMA_HISTOGRAM_ENUMERATION(
         "Net.QuicSession.FindMatchingIpSessionResultGoogle", result,
         FIND_MATCHING_IP_SESSION_RESULT_MAX);
@@ -361,23 +392,14 @@ void QuicSessionRequest::SetSession(
   session_ = std::move(session);
 }
 
-QuicSessionPool::QuicSessionAliasKey::QuicSessionAliasKey(
-    url::SchemeHostPort destination,
-    QuicSessionKey session_key)
-    : destination_(std::move(destination)),
-      session_key_(std::move(session_key)) {}
+QuicEndpoint::QuicEndpoint(quic::ParsedQuicVersion quic_version,
+                           IPEndPoint ip_endpoint,
+                           ConnectionEndpointMetadata metadata)
+    : quic_version(quic_version),
+      ip_endpoint(ip_endpoint),
+      metadata(metadata) {}
 
-bool QuicSessionPool::QuicSessionAliasKey::operator<(
-    const QuicSessionAliasKey& other) const {
-  return std::tie(destination_, session_key_) <
-         std::tie(other.destination_, other.session_key_);
-}
-
-bool QuicSessionPool::QuicSessionAliasKey::operator==(
-    const QuicSessionAliasKey& other) const {
-  return destination_ == other.destination_ &&
-         session_key_ == other.session_key_;
-}
+QuicEndpoint::~QuicEndpoint() = default;
 
 QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
     std::unique_ptr<quic::ProofVerifier> proof_verifier,
@@ -490,10 +512,14 @@ QuicSessionPool::QuicSessionPool(
           kQuicYieldAfterDurationMilliseconds)),
       default_network_(handles::kInvalidNetworkHandle),
       connectivity_monitor_(default_network_),
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      tick_clock_(base::DefaultTickClock::GetInstance()),
       ssl_config_service_(ssl_config_service),
       use_network_anonymization_key_for_crypto_configs_(
           NetworkAnonymizationKey::IsPartitioningEnabled()),
-      report_ecn_(quic_context->params()->report_ecn) {
+      report_ecn_(quic_context->params()->report_ecn),
+      skip_dns_with_origin_frame_(
+          quic_context->params()->skip_dns_with_origin_frame) {
   DCHECK(transport_security_state_);
   DCHECK(http_server_properties_);
   if (params_.disable_tls_zero_rtt) {
@@ -537,6 +563,47 @@ bool QuicSessionPool::CanUseExistingSession(
   return FindExistingSession(session_key, destination) != nullptr;
 }
 
+QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
+    const QuicSessionKey& session_key,
+    const url::SchemeHostPort& destination) const {
+  auto active_session_it = active_sessions_.find(session_key);
+  if (active_session_it != active_sessions_.end()) {
+    return active_session_it->second;
+  }
+
+  for (const auto& key_value : active_sessions_) {
+    QuicChromiumClientSession* session = key_value.second;
+    // Check received origins and "remote" (alternative service and origin have
+    // different hostnames) alt-svc for this active session.
+    if (!skip_dns_with_origin_frame_ ||
+        !session->received_origins().contains(destination)) {
+      const auto& it = all_sessions_.find(session);
+      CHECK(it != all_sessions_.end());
+      if (destination != it->second.destination()) {
+        continue;
+      }
+    }
+    if (session->CanPool(session_key.host(), session_key)) {
+      return session;
+    }
+  }
+
+  return nullptr;
+}
+
+bool QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
+    const QuicSessionAliasKey& session_alias_key,
+    const ServiceEndpoint& service_endpoint,
+    const std::set<std::string>& dns_aliases,
+    bool use_dns_aliases) {
+  return HasMatchingIpSession(session_alias_key,
+                              service_endpoint.ipv6_endpoints, dns_aliases,
+                              use_dns_aliases) ||
+         HasMatchingIpSession(session_alias_key,
+                              service_endpoint.ipv4_endpoints, dns_aliases,
+                              use_dns_aliases);
+}
+
 int QuicSessionPool::RequestSession(
     const QuicSessionKey& session_key,
     url::SchemeHostPort destination,
@@ -563,6 +630,12 @@ int QuicSessionPool::RequestSession(
       FindExistingSession(session_key, destination);
   if (existing_session) {
     LogUsingExistingSession(net_log, existing_session, destination);
+    if (!HasActiveSession(session_key)) {
+      QuicSessionAliasKey key(destination, session_key);
+      std::set<std::string> dns_aliases;
+      ActivateAndMapSessionToAliasKey(existing_session, key,
+                                      std::move(dns_aliases));
+    }
     request->SetSession(existing_session->CreateHandle(std::move(destination)));
     return OK;
   }
@@ -573,16 +646,6 @@ int QuicSessionPool::RequestSession(
     active_job->second->AssociateWithNetLogSource(net_log);
     active_job->second->AddRequest(request);
     return ERR_IO_PENDING;
-  }
-
-  // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
-  // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
-  if (!task_runner_) {
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  }
-
-  if (!tick_clock_) {
-    tick_clock_ = base::DefaultTickClock::GetInstance();
   }
 
   // If a proxy is in use, then a traffic annotation is required.
@@ -624,6 +687,27 @@ int QuicSessionPool::RequestSession(
     request->SetSession(session->CreateHandle(std::move(destination)));
   }
   return rv;
+}
+
+std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
+    QuicSessionAttempt::Delegate* delegate,
+    const QuicSessionKey& session_key,
+    QuicEndpoint quic_endpoint,
+    int cert_verify_flags,
+    base::TimeTicks dns_resolution_start_time,
+    base::TimeTicks dns_resolution_end_time,
+    bool use_dns_aliases,
+    std::set<std::string> dns_aliases) {
+  CHECK(!HasActiveSession(session_key));
+  CHECK(!HasActiveJob(session_key));
+
+  return std::make_unique<QuicSessionAttempt>(
+      delegate, quic_endpoint.ip_endpoint, std::move(quic_endpoint.metadata),
+      quic_endpoint.quic_version, cert_verify_flags, dns_resolution_start_time,
+      dns_resolution_end_time,
+      params_.retry_on_alternate_network_before_handshake, use_dns_aliases,
+      std::move(dns_aliases),
+      CreateCryptoConfigHandle(session_key.network_anonymization_key()));
 }
 
 void QuicSessionPool::OnSessionGoingAway(QuicChromiumClientSession* session) {
@@ -1110,6 +1194,10 @@ void QuicSessionPool::set_is_quic_known_to_work_on_current_network(
 
 base::TimeDelta QuicSessionPool::GetTimeDelayForWaitingJob(
     const QuicSessionKey& session_key) {
+  if (time_delay_for_waiting_job_for_testing_.has_value()) {
+    return *time_delay_for_waiting_job_for_testing_;
+  }
+
   // If |is_quic_known_to_work_on_current_network_| is false, then one of the
   // following is true:
   // 1) This is startup and QuicSessionPool::CreateSession() and
@@ -1160,8 +1248,8 @@ const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
 void QuicSessionPool::ActivateSessionForTesting(
     const url::SchemeHostPort& destination,
     QuicChromiumClientSession* session) {
-  all_sessions_.emplace(session, QuicSessionPool::QuicSessionAliasKey(
-                                     destination, session->quic_session_key()));
+  all_sessions_.emplace(
+      session, QuicSessionAliasKey(destination, session->quic_session_key()));
   ActivateSession(all_sessions_[session], session, std::set<std::string>());
 }
 
@@ -1169,6 +1257,11 @@ void QuicSessionPool::DeactivateSessionForTesting(
     QuicChromiumClientSession* session) {
   OnSessionGoingAway(session);
   all_sessions_.erase(session);
+}
+
+void QuicSessionPool::SetTimeDelayForWaitingJobForTesting(
+    base::TimeDelta delay) {
+  time_delay_for_waiting_job_for_testing_ = delay;
 }
 
 quic::ParsedQuicVersion QuicSessionPool::SelectQuicVersion(
@@ -1213,27 +1306,6 @@ void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
   base::UmaHistogramBoolean("Net.QuicSession.ConnectionIpPooled", pooled);
 }
 
-QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
-    const QuicSessionKey& session_key,
-    const url::SchemeHostPort& destination) const {
-  auto active_session_it = active_sessions_.find(session_key);
-  if (active_session_it != active_sessions_.end()) {
-    return active_session_it->second;
-  }
-
-  for (const auto& key_value : active_sessions_) {
-    QuicChromiumClientSession* session = key_value.second;
-    const auto& it = all_sessions_.find(session);
-    CHECK(it != all_sessions_.end());
-    if (destination == it->second.destination() &&
-        session->CanPool(session_key.host(), session_key)) {
-      return session;
-    }
-  }
-
-  return nullptr;
-}
-
 bool QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
@@ -1251,16 +1323,13 @@ bool QuicSessionPool::HasMatchingIpSession(
       if (!session->CanPool(server_id.host(), key.session_key())) {
         continue;
       }
-      active_sessions_[key.session_key()] = session;
-
       std::set<std::string> dns_aliases;
       if (use_dns_aliases) {
         dns_aliases = aliases;
       }
-
-      MapSessionToAliasKey(session, key, std::move(dns_aliases));
-      HistogramFindMatchingIpSessionResult(MATCHING_IP_SESSION_FOUND,
-                                           server_id.host());
+      ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
+      LogFindMatchingIpSessionResult(net_log_, MATCHING_IP_SESSION_FOUND,
+                                     session, key.destination());
       return true;
     }
   }
@@ -1273,17 +1342,28 @@ bool QuicSessionPool::HasMatchingIpSession(
     if (loop_count >= kMaxLoopCount) {
       break;
     }
-    if (entry.second->CanPool(server_id.host(), key.session_key())) {
-      can_pool = true;
-      break;
+    QuicChromiumClientSession* session = entry.second;
+    if (!session->CanPool(server_id.host(), key.session_key())) {
+      continue;
+    }
+    can_pool = true;
+    if (session->received_origins().contains(key.destination())) {
+      std::set<std::string> dns_aliases;
+      if (use_dns_aliases) {
+        dns_aliases = aliases;
+      }
+      ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
+      LogFindMatchingIpSessionResult(net_log_, POOLED_WITH_DIFFERENT_IP_SESSION,
+                                     session, key.destination());
+      return true;
     }
   }
   if (can_pool) {
-    HistogramFindMatchingIpSessionResult(CAN_POOL_BUT_DIFFERENT_IP,
-                                         server_id.host());
+    LogFindMatchingIpSessionResult(net_log_, CAN_POOL_BUT_DIFFERENT_IP,
+                                   /*session=*/nullptr, key.destination());
   } else {
-    HistogramFindMatchingIpSessionResult(CANNOT_POOL_WITH_EXISTING_SESSIONS,
-                                         server_id.host());
+    LogFindMatchingIpSessionResult(net_log_, CANNOT_POOL_WITH_EXISTING_SESSIONS,
+                                   /*session=*/nullptr, key.destination());
   }
   return false;
 }
@@ -1617,7 +1697,7 @@ bool QuicSessionPool::CreateSessionHelper(
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), metadata, params_.report_ecn,
-      net_log);
+      params_.enable_origin_frame, net_log);
 
   all_sessions_[*session] = std::move(key);  // owning pointer
   writer->set_delegate(*session);
@@ -1640,8 +1720,7 @@ void QuicSessionPool::ActivateSession(const QuicSessionAliasKey& key,
                                       std::set<std::string> dns_aliases) {
   DCHECK(!HasActiveSession(key.session_key()));
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicActiveSessions", active_sessions_.size());
-  active_sessions_[key.session_key()] = session;
-  MapSessionToAliasKey(session, key, std::move(dns_aliases));
+  ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
   const IPEndPoint peer_address =
       ToIPEndPoint(session->connection()->peer_address());
   DCHECK(!base::Contains(ip_aliases_[peer_address], session));
@@ -1897,9 +1976,11 @@ void QuicSessionPool::ProcessGoingAwaySession(
       session->quic_session_key().network_anonymization_key());
 }
 
-void QuicSessionPool::MapSessionToAliasKey(QuicChromiumClientSession* session,
-                                           QuicSessionAliasKey key,
-                                           std::set<std::string> dns_aliases) {
+void QuicSessionPool::ActivateAndMapSessionToAliasKey(
+    QuicChromiumClientSession* session,
+    QuicSessionAliasKey key,
+    std::set<std::string> dns_aliases) {
+  active_sessions_[key.session_key()] = session;
   dns_aliases_by_session_key_[key.session_key()] = std::move(dns_aliases);
   session_aliases_[session].insert(std::move(key));
 }

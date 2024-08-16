@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.components.search_engines;
 
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -10,11 +12,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Java counterpart of the native `SearchEngineChoiceService`. This singleton is responsible for
@@ -26,13 +26,31 @@ import java.util.Optional;
 public class SearchEngineChoiceService {
     private static SearchEngineChoiceService sInstance;
 
-    private SearchEngineCountryDelegate mDelegate;
-    private final List<Long> mPtrToNativeCallbacks = new ArrayList<>();
-    // To understand whether we already got a reply from `SearchEngineCountryDelegate`, we need to
-    // differentiate between "null result" and "no result yet", thus the optional.
-    private @Nullable Optional<String> mPlayCountryRequestResult;
+    /**
+     * Gets reset to {@code null} after the device country is obtained.
+     *
+     * <p>TODO(b/355054098): Rely on disconnections inside the delegate instead of giving it up to
+     * garbage collection. This will allow reconnecting if we need the delegate for other purposes.
+     */
+    private @Nullable SearchEngineCountryDelegate mDelegate;
+
+    /**
+     * Cached status associated with initiating a device country fetch when the object is
+     * instantiated.
+     *
+     * <p>Possible states:
+     *
+     * <ul>
+     *   <li>Pending: The fetch is not completed.
+     *   <li>Fulfilled: The fetch succeeded, the value should be a non-null String. (note: it might
+     *       still be an invalid or unknown country code!)
+     *   <li>Rejected: An error occurred.
+     * </ul>
+     */
+    private final Promise<String> mDeviceCountryPromise;
 
     /** Returns the instance of the singleton. Creates the instance if needed. */
+    @MainThread
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
@@ -48,62 +66,97 @@ public class SearchEngineChoiceService {
     public static void setInstanceForTests(SearchEngineChoiceService instance) {
         ThreadUtils.checkUiThread();
         sInstance = instance;
+        if (instance != null) {
+            ResettersForTesting.register(() -> setInstanceForTests(null)); // IN-TEST
+        }
     }
 
     @VisibleForTesting
-    public SearchEngineChoiceService(SearchEngineCountryDelegate delegate) {
+    public SearchEngineChoiceService(@NonNull SearchEngineCountryDelegate delegate) {
         ThreadUtils.checkUiThread();
         mDelegate = delegate;
 
-        mDelegate
-                .getDeviceCountry()
+        mDeviceCountryPromise = mDelegate.getDeviceCountry();
+
+        mDeviceCountryPromise
                 .then(
-                        (deviceCountry) -> {
-                            processResponseFromPlayApi(deviceCountry);
-                        },
-                        (exception) -> {
-                            processResponseFromPlayApi(null);
+                        (String countryCode) -> {
+                            assert countryCode != null
+                                    : "Contract violation, country code should be null";
+                            return countryCode;
+                        })
+                .andFinally(
+                        () -> {
+                            // We request the country code once per run, so it is safe to free up
+                            // the delegate now.
+                            mDelegate = null;
                         });
+    }
+
+    /**
+     * Returns a promise that will resolve to a CLDR country code, see
+     * https://www.unicode.org/cldr/charts/45/supplemental/territory_containment_un_m_49.html.
+     * Fulfilled promises are guaranteed to return a non-nullable string, but rejected ones also
+     * need to be handled, indicating some error in obtaining the device country.
+     *
+     * <p>TODO(b/328040066): Ensure this is ACL'ed.
+     */
+    @MainThread
+    public Promise<String> getDeviceCountry() {
+        ThreadUtils.checkUiThread();
+        return mDeviceCountryPromise;
+    }
+
+    /**
+     * Returns whether the app should attempt to prompt the user to complete their choices of system
+     * default apps.
+     *
+     * <p>This call might be relying on cached data, and {@link #shouldShowDeviceChoiceDialog}
+     * should be called afterwards to ensure that the dialog is actually required.
+     */
+    @MainThread
+    public boolean isDeviceChoiceDialogEligible() {
+        if (mDelegate == null) return false;
+        return mDelegate.isDeviceChoiceDialogEligible();
+    }
+
+    /**
+     * Returns a {@link Promise} that will be fulfilled with whether the app should prompt the user
+     * to complete their choices of default system apps.
+     */
+    @MainThread
+    public Promise<Boolean> shouldShowDeviceChoiceDialog() {
+        ThreadUtils.checkUiThread();
+        if (mDelegate == null) return Promise.rejected();
+        return mDelegate.shouldShowDeviceChoiceDialog();
+    }
+
+    private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {
+        if (mDeviceCountryPromise.isPending()) {
+            // When `SearchEngineCountryDelegate` replies with the result - the result will be
+            // reported to native using the queued callback.
+            mDeviceCountryPromise.then(
+                    deviceCountry ->
+                            SearchEngineChoiceServiceJni.get()
+                                    .processCountryFromPlayApi(ptrToNativeCallback, deviceCountry),
+                    ignoredException ->
+                            SearchEngineChoiceServiceJni.get()
+                                    .processCountryFromPlayApi(ptrToNativeCallback, null));
+            return;
+        }
+        // The result is ready - call native so it can save the result in prefs.
+        SearchEngineChoiceServiceJni.get()
+                .processCountryFromPlayApi(
+                        ptrToNativeCallback,
+                        mDeviceCountryPromise.isFulfilled()
+                                ? mDeviceCountryPromise.getResult()
+                                : null);
     }
 
     @CalledByNative
     private static void requestCountryFromPlayApi(long ptrToNativeCallback) {
         ThreadUtils.checkUiThread();
         getInstance().requestCountryFromPlayApiInternal(ptrToNativeCallback);
-    }
-
-    private void requestCountryFromPlayApiInternal(long ptrToNativeCallback) {
-        if (mPlayCountryRequestResult != null) {
-            // The result is ready - call native so it can save the result in prefs.
-            SearchEngineChoiceServiceJni.get()
-                    .processCountryFromPlayApi(
-                            ptrToNativeCallback, mPlayCountryRequestResult.orElse(null));
-            return;
-        }
-        // When `SearchEngineCountryDelegate` replies with the result - the result will be reported
-        // to native using the saved callback.
-        mPtrToNativeCallbacks.add(ptrToNativeCallback);
-    }
-
-    /**
-     * Saves the result of the device country request and propagates to native callbacks waiting for
-     * this result.
-     *
-     * @param deviceCountry the country code string or null if there was an error.
-     */
-    private void processResponseFromPlayApi(@Nullable String deviceCountry) {
-        ThreadUtils.checkUiThread();
-        assert mPlayCountryRequestResult == null;
-        mPlayCountryRequestResult = Optional.ofNullable(deviceCountry);
-        for (long ptrToNativeCallback : mPtrToNativeCallbacks) {
-            // `mPtrToNativeCallbacks` can be non-empty only after the native is loaded, so it is
-            // safe to call JNI here.
-            SearchEngineChoiceServiceJni.get()
-                    .processCountryFromPlayApi(ptrToNativeCallback, deviceCountry);
-        }
-        mPtrToNativeCallbacks.clear();
-        // We request the country code once per run, so it is safe to free up the delegate now.
-        mDelegate = null;
     }
 
     @NativeMethods

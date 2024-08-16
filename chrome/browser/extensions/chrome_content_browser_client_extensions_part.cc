@@ -243,7 +243,7 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // (https://crbug.com/1197360).
   if (url.SchemeIs(kExtensionScheme) &&
       !registry->enabled_extensions().GetExtensionOrAppByURL(url)) {
-    return GURL(chrome::kExtensionInvalidRequestURL);
+    return GURL(extensions::kExtensionInvalidRequestURL);
   }
 
   // Don't translate to effective URLs in all other cases.

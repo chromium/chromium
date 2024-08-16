@@ -257,7 +257,8 @@ class NearbySharingServiceImpl
 
   bool IsBluetoothPresent() const;
   bool IsBluetoothPowered() const;
-  bool HasAvailableConnectionMediums();
+  bool HasAvailableAdvertisingMediums();
+  bool HasAvailableDiscoveryMediums();
   void InvalidateSurfaceState();
   bool ShouldStopNearbyProcess();
   void OnProcessShutdownTimerFired();

@@ -27,11 +27,13 @@
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -289,7 +291,6 @@ Iban GetServerIban() {
   Iban iban(Iban::InstrumentId(1234567));
   iban.set_prefix(u"FR76");
   iban.set_suffix(u"0189");
-  iban.set_length(27);
   iban.set_nickname(u"My doctor's IBAN");
   return iban;
 }
@@ -298,7 +299,6 @@ Iban GetServerIban2() {
   Iban iban(Iban::InstrumentId(1234568));
   iban.set_prefix(u"BE71");
   iban.set_suffix(u"8676");
-  iban.set_length(16);
   iban.set_nickname(u"My sister's IBAN");
   return iban;
 }
@@ -307,7 +307,6 @@ Iban GetServerIban3() {
   Iban iban(Iban::InstrumentId(1234569));
   iban.set_prefix(u"DE91");
   iban.set_suffix(u"6789");
-  iban.set_length(22);
   iban.set_nickname(u"My IBAN");
   return iban;
 }
@@ -872,8 +871,9 @@ void GenerateTestAutofillPopup(
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));
-  autofill_external_delegate->OnSuggestionsReturned(field.global_id(),
-                                                    suggestions);
+  autofill_metrics::SuggestionRankingContext context;
+  autofill_external_delegate->OnSuggestionsReturned(
+      field.global_id(), suggestions, std::move(context));
 }
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
@@ -1000,6 +1000,16 @@ Suggestion CreateAutofillSuggestion(SuggestionType type,
   suggestion.type = type;
   suggestion.main_text.value = main_text_value;
   suggestion.payload = payload;
+  return suggestion;
+}
+
+Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
+                                    const std::u16string& minor_text_value,
+                                    bool apply_deactivated_style) {
+  Suggestion suggestion;
+  suggestion.main_text.value = main_text_value;
+  suggestion.minor_text.value = minor_text_value;
+  suggestion.apply_deactivated_style = apply_deactivated_style;
   return suggestion;
 }
 

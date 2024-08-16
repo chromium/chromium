@@ -58,7 +58,7 @@ LoginsResultOrError ProcessExactAndPSLForms(
   for (auto& form : absl::get<LoginsResult>(logins_or_error)) {
     switch (GetMatchResult(form, digest)) {
       case MatchResult::NO_MATCH:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case MatchResult::EXACT_MATCH:
       case MatchResult::FEDERATED_MATCH:
         form.match_type = PasswordForm::MatchType::kExact;

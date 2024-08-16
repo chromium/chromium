@@ -152,7 +152,12 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     return;
   }
 
-  CHECK(!IsFluentScrollbarEnabled());
+  // If Fluent scrollbars are enabled but there is no `thumb_color_`, that means
+  // that the scrollbar's bounds or thumb have no dimensions so we can exit
+  // early.
+  if (IsFluentScrollbarEnabled()) {
+    return;
+  }
 
   // The thumb sqs must be non-opaque so that the track and buttons will not be
   // occluded in viz by the thumb's 'quad_layer_rect'.

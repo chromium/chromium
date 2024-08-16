@@ -293,7 +293,7 @@ void SerialChooserController::OpenPermissionPreferences() const {
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

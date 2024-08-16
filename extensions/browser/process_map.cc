@@ -14,14 +14,18 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "extensions/common/constants.h"
@@ -44,6 +48,7 @@ bool ProcessHasWebUIBindings(int process_id) {
 // extension with the specified `extension_id`.
 bool IsWebViewProcessForExtension(int process_id,
                                   const ExtensionId& extension_id) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
   if (!web_view_state->IsGuest(process_id)) {
     return false;
@@ -54,6 +59,9 @@ bool IsWebViewProcessForExtension(int process_id,
   bool found_info = web_view_state->GetOwnerInfo(process_id, &owner_process_id,
                                                  &webview_owner);
   return found_info && webview_owner == extension_id;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -194,8 +202,9 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   if (!extension) {
     // Note that blob/filesystem schemes associated with an inner URL of
     // chrome-untrusted will be considered regular pages.
-    if (url && url->SchemeIs(content::kChromeUIUntrustedScheme))
+    if (url && url->SchemeIs(content::kChromeUIUntrustedScheme)) {
       return mojom::ContextType::kUntrustedWebUi;
+    }
 
     return mojom::ContextType::kWebPage;
   }

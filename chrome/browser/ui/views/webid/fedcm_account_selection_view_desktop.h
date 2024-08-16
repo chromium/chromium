@@ -28,7 +28,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   public AccountSelectionViewBase::Observer,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
-                                  TabStripModelObserver,
                                   views::WidgetObserver,
                                   public LensOverlayController::Observer {
  public:
@@ -100,15 +99,13 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // FedCmModalDialogView::Observer
   void OnPopupWindowDestroyed() override;
 
-  // content::WebContentsObserver
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void PrimaryPageChanged(content::Page& page) override;
+  void OnTabForegrounded();
+  void OnTabBackgrounded();
+  // Closes the widget and notifies the delegate.
+  void Close();
 
-  // TabStripModelObserver
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
 
   void SetInputEventActivationProtectorForTesting(
       std::unique_ptr<views::InputEventActivationProtector>);
@@ -299,9 +296,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Returns the SheetType to be used for metrics reporting.
   SheetType GetSheetType();
-
-  // Closes the widget and notifies the delegate.
-  void Close();
 
   // Notify the delegate that the widget was closed with reason
   // `dismiss_reason`.

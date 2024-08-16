@@ -20,6 +20,7 @@
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
@@ -118,7 +119,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
   }
 
   SidePanelCoordinator* side_panel_coordinator() {
-    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+    return browser()->GetFeatures().side_panel_coordinator();
   }
 
   syncer::SyncService* sync_service() {

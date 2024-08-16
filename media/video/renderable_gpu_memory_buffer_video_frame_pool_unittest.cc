@@ -38,7 +38,7 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
     case media::PIXEL_FORMAT_ABGR:
       return gfx::ColorSpace::CreateSRGB();
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -144,7 +144,7 @@ class RenderableGpuMemoryBufferVideoFramePoolTest
         si_format = viz::SinglePlaneFormat::kRGBA_8888;
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     if (is_mappable_si_enabled) {
       EXPECT_CALL(*context,

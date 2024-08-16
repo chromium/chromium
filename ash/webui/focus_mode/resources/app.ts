@@ -107,6 +107,13 @@ function onReceiveNewPlaybackStatus(newPlaybackStatus: PlaybackStatus) {
     });
     playbackStatus = newPlaybackStatus;
   }
+
+  // Track playback is complete. Reset `currentTrack` to null until the new
+  // track is loaded.
+  if (newPlaybackStatus.state == 'ended' ||
+      newPlaybackStatus.state == 'switchedtonext') {
+    currentTrack = null;
+  }
 }
 
 function isEventData(data: any): boolean {

@@ -11,20 +11,26 @@
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink-forward.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_device_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_power_preference.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
+#include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -60,10 +66,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
-  const base::UnguessableToken& handle() const { return webnn_handle_; }
+  const blink::WebNNContextToken& handle() const { return webnn_handle_; }
 
   // IDL interface:
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
+
+  void destroy(ScriptState* script_state, ExceptionState& exception_state);
 
   ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
                                          MLGraph* graph,
@@ -110,23 +118,28 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
                                            MLBuffer* src_buffer,
                                            ExceptionState& exception_state);
 
+  ScriptPromise<void> readBuffer(ScriptState* script_state,
+                                 MLBuffer* src_buffer,
+                                 DOMArrayBufferBase* dst_data,
+                                 ExceptionState& exception_state);
+
+  ScriptPromise<void> readBuffer(ScriptState* script_state,
+                                 MLBuffer* src_buffer,
+                                 MaybeShared<DOMArrayBufferView> dst_data,
+                                 ExceptionState& exception_state);
+
   void dispatch(ScriptState* script_state,
                 MLGraph* graph,
                 const MLNamedBuffers& inputs,
                 const MLNamedBuffers& outputs,
                 ExceptionState& exception_state);
 
-  void CreateWebNNGraphBuilder(
-      mojo::PendingAssociatedReceiver<webnn::mojom::blink::WebNNGraphBuilder>
-          pending_receiver,
-      ExceptionState& exception_state);
-
-  // Creates platform specific buffer described by `buffer_info`.
-  void CreateWebNNBuffer(
-      webnn::mojom::blink::BufferInfoPtr buffer_info,
-      webnn::mojom::blink::WebNNContext::CreateBufferCallback callback);
+  MLGraphBuilder* CreateWebNNGraphBuilder(ScriptState* script_state,
+                                          ExceptionState& exception_state);
 
   const MLOpSupportLimits* opSupportLimits(ScriptState* script_state);
+
+  void OnGraphCreated(MLGraph* graph);
 
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
@@ -165,7 +178,15 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   webnn::ContextProperties properties_;
 
   // Identifies this `WebNNContext` mojo instance in the service process.
-  const base::UnguessableToken webnn_handle_;
+  const blink::WebNNContextToken webnn_handle_;
+
+  // Keep a set of unresolved `ScriptPromiseResolver`s which will be
+  // rejected when the Mojo pipe is unexpectedly disconnected.
+  HeapHashSet<Member<ScriptPromiseResolver<MLBuffer>>> pending_resolvers_;
+
+  HeapHashSet<WeakMember<MLGraph>> graphs_;
+  HeapHashSet<WeakMember<MLGraphBuilder>> graph_builders_;
+  HeapHashSet<WeakMember<MLBuffer>> buffers_;
 };
 
 }  // namespace blink

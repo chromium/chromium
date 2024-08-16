@@ -40,6 +40,8 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_marker_group_before_);
     visitor->Trace(generated_scroll_marker_group_after_);
     visitor->Trace(generated_scroll_marker_);
+    visitor->Trace(generated_scroll_next_button_);
+    visitor->Trace(generated_scroll_prev_button_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
     ElementRareDataField::Trace(visitor);
@@ -53,6 +55,8 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   Member<PseudoElement> generated_scroll_marker_group_before_;
   Member<PseudoElement> generated_scroll_marker_group_after_;
   Member<PseudoElement> generated_scroll_marker_;
+  Member<PseudoElement> generated_scroll_next_button_;
+  Member<PseudoElement> generated_scroll_prev_button_;
   Member<PseudoElement> backdrop_;
 
   Member<TransitionPseudoElementData> transition_data_;
@@ -62,7 +66,8 @@ inline bool PseudoElementData::HasPseudoElements() const {
   return generated_before_ || generated_after_ || generated_marker_ ||
          backdrop_ || generated_first_letter_ || transition_data_ ||
          generated_scroll_marker_group_before_ ||
-         generated_scroll_marker_group_after_ || generated_scroll_marker_;
+         generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
+         generated_scroll_next_button_ || generated_scroll_prev_button_;
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
@@ -74,6 +79,8 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollMarkerGroupBefore, nullptr);
   SetPseudoElement(kPseudoIdScrollMarkerGroupAfter, nullptr);
   SetPseudoElement(kPseudoIdScrollMarker, nullptr);
+  SetPseudoElement(kPseudoIdScrollNextButton, nullptr);
+  SetPseudoElement(kPseudoIdScrollPrevButton, nullptr);
   if (transition_data_) {
     transition_data_->ClearPseudoElements();
     transition_data_ = nullptr;
@@ -109,6 +116,14 @@ inline void PseudoElementData::SetPseudoElement(
     case kPseudoIdScrollMarker:
       previous_element = generated_scroll_marker_;
       generated_scroll_marker_ = element;
+      break;
+    case kPseudoIdScrollNextButton:
+      previous_element = generated_scroll_next_button_;
+      generated_scroll_next_button_ = element;
+      break;
+    case kPseudoIdScrollPrevButton:
+      previous_element = generated_scroll_prev_button_;
+      generated_scroll_prev_button_ = element;
       break;
     case kPseudoIdBackdrop:
       previous_element = backdrop_;
@@ -158,6 +173,12 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
   if (kPseudoIdScrollMarker == pseudo_id) {
     return generated_scroll_marker_.Get();
   }
+  if (kPseudoIdScrollNextButton == pseudo_id) {
+    return generated_scroll_next_button_.Get();
+  }
+  if (kPseudoIdScrollPrevButton == pseudo_id) {
+    return generated_scroll_prev_button_.Get();
+  }
 // Workaround for CPU bug. This avoids compiler optimizing
 // this group of if conditions into switch. See http://crbug.com/855390.
 #if defined(ARCH_CPU_ARMEL)
@@ -198,6 +219,12 @@ PseudoElementData::GetPseudoElements() const {
   }
   if (generated_scroll_marker_) {
     result.push_back(generated_scroll_marker_);
+  }
+  if (generated_scroll_next_button_) {
+    result.push_back(generated_scroll_next_button_);
+  }
+  if (generated_scroll_prev_button_) {
+    result.push_back(generated_scroll_prev_button_);
   }
   return result;
 }

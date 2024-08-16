@@ -17,6 +17,7 @@ static_library("online_reauth") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/login/saml",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/login/auth",
@@ -55,8 +56,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/saml:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth",

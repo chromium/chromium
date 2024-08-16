@@ -1150,6 +1150,28 @@ TEST_F(LockStateControllerInformedRestoreTest, ShutdownInOverview) {
   EXPECT_FALSE(base::PathExists(file_path()));
 }
 
+TEST_F(LockStateControllerInformedRestoreTest, ShutdownInGuest) {
+  SimulateUserLogin("foo@example.com", user_manager::UserType::kGuest);
+
+  // Create an empty file to simulate an old informed restore image.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  base::HistogramTester histogram_tester;
+  CreateTestWindow();
+  ASSERT_TRUE(Shell::Get()->session_controller()->IsUserGuest());
+
+  // Request shutdown while in guest mode.
+  RequestShutdownWithoutFailTimer();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kScreenshotOnShutdownStatus),
+      testing::ElementsAre(base::Bucket(
+          ScreenshotOnShutdownStatus::kFailedInGuestOrPublicUserSession, 1)));
+  // The informed restore image should not be taken if it is in the guest
+  // session. The existing informed restore image should be deleted as well.
+  EXPECT_FALSE(lock_state_test_api_->mirror_wallpaper_layer());
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
 TEST_F(LockStateControllerInformedRestoreTest, ShutdownInLockScreen) {
   // Create an empty file to simulate an old informed restore image.
   ASSERT_TRUE(base::WriteFile(file_path(), ""));

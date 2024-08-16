@@ -339,7 +339,7 @@ int ContentSettingBubbleContents::GetSelectedRadioOption() {
     if ((*i)->GetChecked())
       return i - radio_group_.begin();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ContentSettingBubbleContents::OnThemeChanged() {

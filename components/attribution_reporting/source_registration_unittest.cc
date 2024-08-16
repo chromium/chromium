@@ -148,7 +148,17 @@ TEST(SourceRegistrationTest, Parse) {
           ValueIs(Field(&SourceRegistration::expiry, base::Seconds(172800))),
       },
       {
+          "expiry_valid_int_trailing_zero",
+          R"json({"expiry":172800.0,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Seconds(172800))),
+      },
+      {
           "expiry_wrong_type",
+          R"json({"expiry":false,"destination":"https://d.example"})json",
+          ErrorIs(SourceRegistrationError::kExpiryValueInvalid),
+      },
+      {
+          "expiry_not_int",
           R"json({"expiry":1728000.1,"destination":"https://d.example"})json",
           ErrorIs(SourceRegistrationError::kExpiryValueInvalid),
       },
@@ -175,6 +185,11 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "expiry_clamped_max",
           R"json({"expiry":2592001,"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Days(30))),
+      },
+      {
+          "expiry_clamped_gt_max_int32",
+          R"json({"expiry": 2147483648, "destination": "https://d.example"})json",
           ValueIs(Field(&SourceRegistration::expiry, base::Days(30))),
       },
       {
@@ -237,7 +252,21 @@ TEST(SourceRegistrationTest, Parse) {
                         base::Seconds(86401))),
       },
       {
+          "aggregatable_report_window_valid_int_trailing_zero",
+          R"json({"aggregatable_report_window":86401.0,
+          "destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::aggregatable_report_window,
+                        base::Seconds(86401))),
+      },
+      {
           "aggregatable_report_window_wrong_type",
+          R"json({"aggregatable_report_window":false,
+          "destination":"https://d.example"})json",
+          ErrorIs(
+              SourceRegistrationError::kAggregatableReportWindowValueInvalid),
+      },
+      {
+          "aggregatable_report_window_not_int",
           R"json({"aggregatable_report_window":86401.1,
           "destination":"https://d.example"})json",
           ErrorIs(
@@ -275,6 +304,14 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"aggregatable_report_window":259200,"expiry":172800,"destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::aggregatable_report_window,
                         base::Seconds(172800))),
+      },
+      {
+          "aggregatable_report_window_clamped_gt_max_int32",
+          R"json({
+            "aggregatable_report_window": 2147483648,
+            "expiry": 127800,
+            "destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::expiry, base::Seconds(127800))),
       },
       {
           "debug_key_valid",
@@ -381,10 +418,6 @@ TEST(SourceRegistrationTest, ToJson) {
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
             "trigger_specs": [],
-            "aggregatable_debug_reporting": {
-              "budget": 0,
-              "key_piece": "0x0"
-            },
             "destination_limit_priority": "0"
           })json",
       },
@@ -541,10 +574,6 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
               "trigger_specs": [],
-              "aggregatable_debug_reporting": {
-                "budget": 0,
-                "key_piece": "0x0"
-              },
               "destination_limit_priority": "0"
           })json",
       },
@@ -564,10 +593,6 @@ TEST(SourceRegistrationTest, SerializeDestinationLimit) {
               "source_event_id": "0",
               "trigger_data_matching": "modulus",
               "trigger_specs": [],
-              "aggregatable_debug_reporting": {
-                "budget": 0,
-                "key_piece": "0x0"
-              },
               "destination_limit_priority": "123"
           })json",
       },

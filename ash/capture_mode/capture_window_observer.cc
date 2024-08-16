@@ -130,7 +130,8 @@ void CaptureWindowObserver::OnWindowParentChanged(aura::Window* window,
   // Move the capture mode widgets to the new root and repaint the capture
   // region when the window parent changes. E.g, `window_` is moved to another
   // display.
-  capture_mode_session_->MaybeChangeRoot(window_->GetRootWindow());
+  capture_mode_session_->MaybeChangeRoot(window_->GetRootWindow(),
+                                         /*root_window_will_shutdown=*/false);
   RepaintCaptureRegion();
 }
 

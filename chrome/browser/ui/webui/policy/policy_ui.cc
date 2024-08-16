@@ -1,4 +1,9 @@
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -16,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/profiles/profile.h"
@@ -255,13 +261,20 @@ void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 bool PolicyUI::ShouldLoadTestPage(Profile* profile) {
-  // Test page should only load if testing is enabled and the profile is not
-  // managed by cloud.
-  return policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
-                                               chrome::GetChannel()) &&
-         !policy::ManagementServiceFactory::GetForProfile(profile)
-              ->HasManagementAuthority(
-                  policy::EnterpriseManagementAuthority::CLOUD);
+  // Test page should only load if testing is enabled.
+  if (!policy::utils::IsPolicyTestingEnabled(profile->GetPrefs(),
+                                             chrome::GetChannel())) {
+    return false;
+  }
+  // The test page is not allowed if the profile is cloud managed unless
+  // we are already using the test policies.
+  if (policy::ManagementServiceFactory::GetForProfile(profile)
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD) &&
+      !profile->GetProfilePolicyConnector()->IsUsingLocalTestPolicyProvider()) {
+    return false;
+  }
+  return true;
 }
 
 // static

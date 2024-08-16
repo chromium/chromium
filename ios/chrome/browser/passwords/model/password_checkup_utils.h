@@ -81,8 +81,8 @@ std::vector<password_manager::CredentialUIEntry> GetPasswordsForWarningType(
 // Returns string containing the timestamp of the `last_completed_check`.
 // `use_title_case` indicates whether the returned string should be in title
 // case or in sentence case. If the check finished less than 1 minute ago string
-// will look like "Last check just now.", otherwise "Last check X
-// minutes/hours... ago.". If check never run string will be "Check never run.".
+// will look like "Checked just now", otherwise "Last check X
+// minutes/hours... ago.". If check never run string will be "Check never run".
 NSString* FormatElapsedTimeSinceLastCheck(
     std::optional<base::Time> last_completed_check,
     bool use_title_case = false);

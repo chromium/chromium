@@ -162,7 +162,8 @@ base::Value::List CaptionsHandler::GetAvailableLanguagePacks() {
   std::vector<std::string> enabled_and_available_languages;
   std::vector<base::Value::Dict> available_language_packs;
   {
-    auto enabled_languages = speech::GetLiveCaptionEnabledLanguages();
+    auto enabled_languages =
+        speech::SodaInstaller::GetInstance()->GetLiveCaptionEnabledLanguages();
     auto available_languages =
         speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
     auto available_languages_set = std::unordered_set<std::string>(

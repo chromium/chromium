@@ -239,7 +239,7 @@ class MigrateToProfileAddressProfileTest: public BaseAddressBubblesControllerTes
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
-        /*options=*/{.is_migration_to_account = true},
+        /*is_migration_to_account=*/true,
         base::BindOnce(&MigrateToProfileAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }

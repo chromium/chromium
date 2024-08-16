@@ -54,21 +54,36 @@ bool IsValueInRange(int value, std::optional<int> max_value) {
 
 base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
                                            std::optional<int> max_value) {
-  std::optional<int> int_value = dict.FindInt(kValue);
-  if (!int_value.has_value() || !IsValueInRange(*int_value, max_value)) {
+  const base::Value* value = dict.Find(kValue);
+  if (!value) {
     return base::unexpected(ParseError());
   }
-  return *int_value;
+
+  ASSIGN_OR_RETURN(int int_value, ParseInt(*value));
+
+  if (!IsValueInRange(int_value, max_value)) {
+    return base::unexpected(ParseError());
+  }
+  return int_value;
 }
 
 base::expected<int, AggregatableDebugReportingConfigError> ParseBudget(
     const base::Value::Dict& dict) {
-  std::optional<int> int_value = dict.FindInt(kBudget);
-  if (!int_value.has_value() || !IsAggregatableValueInRange(*int_value)) {
+  const base::Value* value = dict.Find(kBudget);
+  if (!value) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kBudgetInvalid);
   }
-  return *int_value;
+
+  ASSIGN_OR_RETURN(int int_value, ParseInt(*value), [](ParseError) {
+    return AggregatableDebugReportingConfigError::kBudgetInvalid;
+  });
+
+  if (!IsAggregatableValueInRange(int_value)) {
+    return base::unexpected(
+        AggregatableDebugReportingConfigError::kBudgetInvalid);
+  }
+  return int_value;
 }
 
 base::expected<absl::uint128, ParseError> ParseKeyPiece(
@@ -433,8 +448,10 @@ SourceAggregatableDebugReportingConfig::operator=(
 
 void SourceAggregatableDebugReportingConfig::Serialize(
     base::Value::Dict& dict) const {
+  // `budget_` is 0 when aggregatable debug reporting is not opted in.
   if (!base::FeatureList::IsEnabled(
-          features::kAttributionAggregatableDebugReporting)) {
+          features::kAttributionAggregatableDebugReporting) ||
+      budget_ == 0) {
     return;
   }
 

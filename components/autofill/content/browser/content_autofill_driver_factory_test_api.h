@@ -39,6 +39,7 @@ class ContentAutofillDriverFactoryTestApi
       content::RenderFrameHost* rfh,
       std::unique_ptr<ContentAutofillDriver> new_driver);
 
+  ContentAutofillDriver* GetOrCreateDriver(content::RenderFrameHost* rfh);
   ContentAutofillDriver* GetDriver(content::RenderFrameHost* rfh);
 
  private:

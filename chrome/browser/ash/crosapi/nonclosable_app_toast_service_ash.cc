@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "chrome/browser/ash/nonclosable_app_ui_utils.h"
+#include "chromeos/ash/components/nonclosable_app_ui/nonclosable_app_ui_utils.h"
 
 namespace crosapi {
 

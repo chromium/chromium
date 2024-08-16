@@ -198,9 +198,8 @@ void WebViewAutofillClientIOS::ShowAutofillSettings(
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    SaveAddressProfilePromptOptions options,
+    bool is_migration_to_account,
     AddressProfileSavePromptCallback callback) {
-  // TODO(crbug.com/40164489): Respect SaveAddressProfilePromptOptions.
   [bridge_ confirmSaveAddressProfile:profile
                      originalProfile:original_profile
                             callback:std::move(callback)];
@@ -219,10 +218,6 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
-  NOTREACHED_IN_MIGRATION();
-}
-
-void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED_IN_MIGRATION();
 }
 

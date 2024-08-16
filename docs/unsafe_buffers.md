@@ -44,12 +44,14 @@ perhaps when working with C-style external APIs. These must
 always be accompanied by a `// SAFETY:` comment explaining in detail
 how the code has been evaluated to be safe for all possible input.
 
-To allow for incremental conversion, the use of a safety comment with
-a TODO() is permitted, along the lines of
-`// SAFETY: TODO(crbug.com/xxxxxx): resolve safety issues`.
-
 Code introducing UNSAFE_BUFFERS() macro invocations without corresponding
 `// SAFETY:` comment should be summarily rejected during code review.
+
+To allow for incremental conversion, code can be temporarily opted out by
+using the `UNSAFE_TODO()` macro. This provides the same functionality as
+the `UNSAFE_BUFFERS()` macro, but allows easier searching for code in need
+of revision. Add TODO() comment, along the lines of
+`// TODO(crbug.com/xxxxxx): resolve safety issues`.
 
 ## Container-based ecosystem
 

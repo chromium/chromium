@@ -96,7 +96,7 @@ bool FillH264PictureFromSliceHeader(const H264SPS* sps,
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return true;
 }

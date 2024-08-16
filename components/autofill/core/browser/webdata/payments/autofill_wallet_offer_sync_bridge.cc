@@ -13,14 +13,14 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
@@ -51,14 +51,14 @@ void AutofillWalletOfferSyncBridge::CreateForWebDataServiceAndBackend(
   web_data_service->GetDBUserData()->SetUserData(
       &kAutofillWalletOfferSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletOfferSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_WALLET_OFFER,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
 
 // static
-syncer::ModelTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
+syncer::DataTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletOfferSyncBridge*>(
       web_data_service->GetDBUserData()->GetUserData(
@@ -66,9 +66,9 @@ syncer::ModelTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
 }
 
 AutofillWalletOfferSyncBridge::AutofillWalletOfferSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* web_data_backend)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
 
@@ -84,7 +84,7 @@ AutofillWalletOfferSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_OFFER,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -110,7 +110,7 @@ AutofillWalletOfferSyncBridge::ApplyIncrementalSyncChanges(
 std::unique_ptr<syncer::DataBatch>
 AutofillWalletOfferSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
   // This data type is never synced "up" so this doesn't need to be implemented.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -199,7 +199,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on committing transactions on shutdown). We need to commit
-  // even if the wallet data has not changed because the model type state incl.
+  // even if the wallet data has not changed because the data type state incl.
   // the progress marker always changes.
   web_data_backend_->CommitChanges();
 

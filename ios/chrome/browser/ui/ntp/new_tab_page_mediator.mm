@@ -283,7 +283,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   // Handle customization prefs
   if (preferenceName == prefs::kHomeCustomizationMostVisitedEnabled ||
       preferenceName == prefs::kHomeCustomizationMagicStackEnabled ||
-      preferenceName == prefs::kHomeCustomizationDiscoverEnabled) {
+      preferenceName == prefs::kArticlesForYouEnabled) {
     [self updateModuleVisibilityForConsumer];
     [self.NTPContentDelegate updateModuleVisibility];
   }
@@ -325,7 +325,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (BOOL)updatedFeedHeaderVisible {
   return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
          _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
-         _prefService->GetBoolean(prefs::kHomeCustomizationDiscoverEnabled) &&
          !IsFeedAblationEnabled() &&
          IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
          !_isSafeMode &&
@@ -370,8 +369,6 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
       prefs::kHomeCustomizationMostVisitedEnabled, _prefChangeRegistrar.get());
   _prefObserverBridge->ObserveChangesForPreference(
       prefs::kHomeCustomizationMagicStackEnabled, _prefChangeRegistrar.get());
-  _prefObserverBridge->ObserveChangesForPreference(
-      prefs::kHomeCustomizationDiscoverEnabled, _prefChangeRegistrar.get());
 }
 
 - (void)updateAccountErrorBadge {

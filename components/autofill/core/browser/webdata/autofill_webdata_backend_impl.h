@@ -53,7 +53,7 @@ class AutofillWebDataBackendImpl
       scoped_refptr<WebDatabaseBackend> web_database_backend,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-      const base::RepeatingCallback<void(syncer::ModelType)>&
+      const base::RepeatingCallback<void(syncer::DataType)>&
           on_autofill_changed_by_sync_callback);
 
   AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
@@ -73,7 +73,7 @@ class AutofillWebDataBackendImpl
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
   void NotifyOfIbanChanged(const IbanChange& change) override;
-  void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) override;
+  void NotifyOnAutofillChangedBySync(syncer::DataType data_type) override;
   void NotifyOnServerCvcChanged(const ServerCvcChange& change) override;
   void CommitChanges() override;
 
@@ -278,7 +278,7 @@ class AutofillWebDataBackendImpl
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
-  base::RepeatingCallback<void(syncer::ModelType)>
+  base::RepeatingCallback<void(syncer::DataType)>
       on_autofill_changed_by_sync_callback_;
   base::RepeatingCallback<void(const AutofillProfileChange&)>
       on_autofill_profile_changed_cb_;

@@ -10,8 +10,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "url/gurl.h"
 
 namespace webapk {
@@ -19,17 +19,17 @@ FakeWebApkDatabaseFactory::FakeWebApkDatabaseFactory() = default;
 
 FakeWebApkDatabaseFactory::~FakeWebApkDatabaseFactory() = default;
 
-syncer::ModelTypeStore* FakeWebApkDatabaseFactory::GetStore() {
+syncer::DataTypeStore* FakeWebApkDatabaseFactory::GetStore() {
   // Lazily instantiate to avoid performing blocking operations in tests that
   // never use WebApks at all.
   if (!store_) {
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
   }
   return store_.get();
 }
 
-syncer::OnceModelTypeStoreFactory FakeWebApkDatabaseFactory::GetStoreFactory() {
-  return syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
+syncer::OnceDataTypeStoreFactory FakeWebApkDatabaseFactory::GetStoreFactory() {
+  return syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
 }
 
 Registry FakeWebApkDatabaseFactory::ReadRegistry() {
@@ -38,10 +38,10 @@ Registry FakeWebApkDatabaseFactory::ReadRegistry() {
 
   GetStore()->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data_records) {
         DCHECK(!error);
 
-        for (const syncer::ModelTypeStore::Record& record : *data_records) {
+        for (const syncer::DataTypeStore::Record& record : *data_records) {
           std::unique_ptr<WebApkProto> proto = std::make_unique<WebApkProto>();
           const bool parsed = proto->ParseFromString(record.value);
           if (!parsed) {
@@ -61,7 +61,7 @@ void FakeWebApkDatabaseFactory::WriteProtos(
     const std::vector<const WebApkProto*>& protos) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       GetStore()->CreateWriteBatch();
 
   for (const WebApkProto* proto : protos) {

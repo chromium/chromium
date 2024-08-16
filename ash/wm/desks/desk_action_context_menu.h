@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_DESK_ACTION_CONTEXT_MENU_H_
 
 #include "ash/public/cpp/desk_profiles_delegate.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -86,10 +87,12 @@ class DeskActionContextMenu : public views::ContextMenuController,
     kDynamicProfileStart,
   };
 
-  explicit DeskActionContextMenu(Config config);
+  DeskActionContextMenu(Config config, DeskMiniView* mini_view);
   DeskActionContextMenu(const DeskActionContextMenu&) = delete;
   DeskActionContextMenu& operator=(const DeskActionContextMenu&) = delete;
   ~DeskActionContextMenu() override;
+
+  views::MenuItemView* root_menu_item_view() { return root_menu_item_view_; }
 
   // Closes the context menu if one is running.
   void MaybeCloseMenu();
@@ -112,11 +115,15 @@ class DeskActionContextMenu : public views::ContextMenuController,
 
   Config config_;
 
+  // Cache the `DeskMiniView` this menu is associated with, so we can use it to
+  // access the `OverviewGrid` later.
+  raw_ptr<DeskMiniView> mini_view_;
+
   ui::SimpleMenuModel context_menu_model_;
   std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
-  // The root menu item view. Cached for testing.
+  // The root menu item view. Cached for tooltips and accessible names.
   raw_ptr<views::MenuItemView> root_menu_item_view_ = nullptr;
 };
 

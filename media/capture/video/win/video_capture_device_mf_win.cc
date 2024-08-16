@@ -67,7 +67,7 @@ ULONGLONG CaptureModeToExtendedPlatformFlags(
       return KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_ON |
              KSCAMERA_EXTENDEDPROP_EYEGAZECORRECTION_STARE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::EyeGazeCorrectionMode ExtendedPlatformFlagsToCaptureMode(

@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
-#include "ash/webui/boca_ui/boca_app_client.h"
-#include "ash/webui/boca_ui/proto/bundle.pb.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 
 namespace ash {
 

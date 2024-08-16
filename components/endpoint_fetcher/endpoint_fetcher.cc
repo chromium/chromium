@@ -27,6 +27,16 @@ const int kNumRetries = 3;
 constexpr base::TimeDelta kDefaultTimeOut = base::Milliseconds(30000);
 }  // namespace
 
+EndpointFetcher::RequestParams::Builder::Builder()
+    : request_params_(std::make_unique<RequestParams>()) {}
+
+EndpointFetcher::RequestParams::Builder::~Builder() = default;
+
+EndpointFetcher::RequestParams
+EndpointFetcher::RequestParams::Builder::Build() {
+  return *request_params_;
+}
+
 EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
     const std::string& oauth_consumer_name,
@@ -61,7 +71,8 @@ EndpointFetcher::EndpointFetcher(
     const std::vector<std::string>& headers,
     const std::vector<std::string>& cors_exempt_headers,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
-    version_info::Channel channel)
+    version_info::Channel channel,
+    const std::optional<RequestParams> request_params)
     : auth_type_(CHROME_API_KEY),
       url_(url),
       http_method_(http_method),
@@ -75,7 +86,8 @@ EndpointFetcher::EndpointFetcher(
       identity_manager_(nullptr),
       consent_level_(std::nullopt),
       sanitize_response_(true),
-      channel_(channel) {}
+      channel_(channel),
+      request_params_(request_params) {}
 
 EndpointFetcher::EndpointFetcher(
     const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
@@ -212,7 +224,8 @@ void EndpointFetcher::PerformRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = http_method_;
   resource_request->url = url_;
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->credentials_mode = GetCredentialsMode();
+
   if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
     resource_request->headers.SetHeader(kContentTypeKey, content_type_);
   }
@@ -248,7 +261,7 @@ void EndpointFetcher::PerformRequest(
   if (base::EqualsCaseInsensitiveASCII(http_method_, "POST")) {
     simple_url_loader_->AttachStringForUpload(post_data_, content_type_);
   }
-  simple_url_loader_->SetRetryOptions(kNumRetries,
+  simple_url_loader_->SetRetryOptions(GetMaxRetries(),
                                       network::SimpleURLLoader::RETRY_ON_5XX);
   simple_url_loader_->SetTimeoutDuration(timeout_);
   simple_url_loader_->SetAllowHttpErrorResults(true);
@@ -334,6 +347,34 @@ void EndpointFetcher::OnSanitizationResult(
   // any the below callback. Do not access The EndpointFetcher
   // or its members after the callback.
   std::move(endpoint_fetcher_callback).Run(std::move(response));
+}
+
+network::mojom::CredentialsMode EndpointFetcher::GetCredentialsMode() {
+  if (!request_params_.has_value()) {
+    return network::mojom::CredentialsMode::kOmit;
+  }
+  if (!request_params_.value().credentials_mode.has_value()) {
+    return network::mojom::CredentialsMode::kOmit;
+  }
+  switch (request_params_.value().credentials_mode.value()) {
+    case CredentialsMode::kOmit:
+      return network::mojom::CredentialsMode::kOmit;
+    case CredentialsMode::kInclude:
+      return network::mojom::CredentialsMode::kInclude;
+  }
+  DCHECK(0) << base::StringPrintf(
+      "Credentials mode %d not currently supported by EndpointFetcher\n",
+      static_cast<int>(request_params_.value().credentials_mode.value()));
+}
+
+int EndpointFetcher::GetMaxRetries() {
+  if (!request_params_.has_value()) {
+    return kNumRetries;
+  }
+  if (!request_params_.value().max_retries.has_value()) {
+    return kNumRetries;
+  }
+  return request_params_.value().max_retries.value();
 }
 
 std::string EndpointFetcher::GetUrlForTesting() {

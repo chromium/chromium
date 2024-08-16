@@ -100,10 +100,6 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   return config;
 }
 
-bool IsEnabledContextualPageActions() {
-  return base::FeatureList::IsEnabled(features::kContextualPageActions);
-}
-
 std::unique_ptr<Config> GetConfigForContextualPageActions(
     content::BrowserContext* context) {
   auto config = std::make_unique<Config>();
@@ -149,7 +145,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
   }
-  if (IsEnabledContextualPageActions()) {
+  if (base::FeatureList::IsEnabled(features::kContextualPageActions)) {
     configs.emplace_back(GetConfigForContextualPageActions(context));
   }
 

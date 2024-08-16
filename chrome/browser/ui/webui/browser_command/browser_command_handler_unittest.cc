@@ -50,6 +50,7 @@ std::vector<Command> supported_commands = {
     Command::kStartSavedTabGroupTutorial,
     Command::kOpenAISettings,
     Command::kOpenSafetyCheckFromWhatsNew,
+    Command::kOpenPaymentsSettings,
 };
 
 const ui::ElementContext kTestContext1(1);
@@ -362,6 +363,7 @@ TEST_F(BrowserCommandHandlerTest, OpenSafetyCheckCommand) {
 }
 
 TEST_F(BrowserCommandHandlerTest, OpenSafetyCheckFromWhatsNewCommand) {
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenSafetyCheckFromWhatsNew));
   // The OpenSafetyCheck command opens a new settings window with the Safety
   // Check, and the correct disposition.
   ClickInfoPtr info = ClickInfo::New();
@@ -692,4 +694,18 @@ TEST_F(BrowserCommandHandlerTest, OpenAISettingsCommand) {
   // AI settings and the correct disposition.
   EXPECT_CALL(*command_handler_, OpenAISettings());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenAISettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenPaymentsSettingsCommand) {
+  // The OpenPaymentsSettings command opens a new settings window with the
+  // Payments settings sub page, and the correct disposition.
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenPaymentsSettings));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPaymentsSubPage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenPaymentsSettings, std::move(info)));
 }

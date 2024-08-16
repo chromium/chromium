@@ -48,12 +48,12 @@ const bookmarks::BookmarkNode* FindFolderById(
 // to display a slighly different wording for the default folders.
 NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
-// Returns the model type for a node, based on where `bookmark_node` exists in
-// `bookmar_model`, i.e. under which permanent folder it exists.
+// Returns the storage type for a node, based on where `bookmark_node` exists
+// in `bookmark_model`, i.e. under which permanent folder it exists.
 // `bookmark_node` is the bookmark to query. It must not be null.
-// `bookmark_model` is bookmark model. It must not be null.
-// `bookmark_model` must contain `bookmark_node`.
-// This function is linear in time in the depth of the bookmark_node.
+// `bookmark_model` is bookmark model. It must not be null. `bookmark_model`
+// must contain `bookmark_node`. This function is linear in time in the depth of
+// the bookmark_node.
 BookmarkStorageType GetBookmarkStorageType(
     const bookmarks::BookmarkNode* bookmark_node,
     const bookmarks::BookmarkModel* bookmark_model);

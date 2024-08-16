@@ -106,7 +106,7 @@ public class FakeRwsPrivacySandboxBridge implements PrivacySandboxBridge.Natives
     }
 
     @Override
-    public void promptActionOccurred(Profile profile, int action) {}
+    public void promptActionOccurred(Profile profile, int action, int surfaceType) {}
 
     @Override
     public void topicsToggleChanged(Profile profile, boolean newValue) {}

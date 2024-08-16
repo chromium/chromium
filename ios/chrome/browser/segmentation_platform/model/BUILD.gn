@@ -6,8 +6,6 @@ import("//components/optimization_guide/features.gni")
 
 source_set("model") {
   sources = [
-    "otr_web_state_observer.h",
-    "otr_web_state_observer.mm",
     "segmentation_platform_config.h",
     "segmentation_platform_config.mm",
     "segmentation_platform_service_factory.h",
@@ -37,6 +35,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/browser_state:incognito_session_tracker",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/sync/model",
@@ -74,7 +73,12 @@ source_set("segmented_default_browser") {
     "//base",
     "//components/segmentation_platform/public",
   ]
-  deps = [ "//components/segmentation_platform/embedder/default_model" ]
+  deps = [
+    "//components/segmentation_platform/embedder/default_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+  ]
 }
 
 source_set("segmented_default_browser_tests") {
@@ -98,7 +102,6 @@ source_set("segmented_default_browser_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "otr_web_state_observer_unittest.mm",
     "segmentation_platform_service_factory_unittest.mm",
     "ukm_data_manager_test_utils.h",
     "ukm_data_manager_test_utils.mm",

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace content {
@@ -56,7 +57,19 @@ class NavigationTransitionData {
     // Cache-Control: no-store
     kCacheMissCCNS = 9,
 
-    kMaxValue = kCacheMissCCNS
+    // Screenshot was evicted because the tab was invisible for a long duration.
+    kCacheMissInvisible = 10,
+
+    // Screenshot was not captured because user had prefers-reduced-motion
+    // turned on when the navigation committed.
+    kCacheMissPrefersReducedMotion = 11,
+
+    // Screenshot is not displayed since it is captured in a different
+    // orientation (horizontal or vertical) compared to the current screen
+    // orientation.
+    kCacheMissScreenshotOrientation = 12,
+
+    kMaxValue = kCacheMissScreenshotOrientation
   };
 
   NavigationTransitionData() = default;
@@ -80,14 +93,6 @@ class NavigationTransitionData {
   }
   bool is_copied_from_embedder() const { return is_copied_from_embedder_; }
 
-  void set_main_frame_background_color(
-      const std::optional<SkColor4f>& main_frame_background_color) {
-    main_frame_background_color_ = main_frame_background_color;
-  }
-  const std::optional<SkColor4f>& main_frame_background_color() const {
-    return main_frame_background_color_;
-  }
-
   void set_cache_hit_or_miss_reason(
       std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason) {
     cache_hit_or_miss_reason_ = cache_hit_or_miss_reason;
@@ -103,12 +108,12 @@ class NavigationTransitionData {
     ++copy_output_request_sequence_number_;
   }
 
+  const SkBitmap& favicon() const { return favicon_; }
+  void set_favicon(const SkBitmap& favicon) { favicon_ = favicon; }
+
  private:
   // Whether this screenshot is supplied by the embedder.
   bool is_copied_from_embedder_ = false;
-
-  // Used to compose a fallback screenshot when no valid screenshot available.
-  std::optional<SkColor4f> main_frame_background_color_;
 
   // Used to map a screenshot for the last frame of this navigation entry
   // captured in Viz and sent back to the browser process. The token is set when
@@ -130,6 +135,9 @@ class NavigationTransitionData {
 
   // Used to record UMA in `BackForwardTransitionAnimator`
   std::optional<CacheHitOrMissReason> cache_hit_or_miss_reason_;
+
+  // The favicon used to compose the fallback UX.
+  SkBitmap favicon_;
 };
 
 }  // namespace content

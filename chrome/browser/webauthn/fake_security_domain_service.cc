@@ -108,7 +108,7 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
       return AddMember(request);
     } else {
       CHECK(false) << "Unhandled security domain service path: " << path;
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 

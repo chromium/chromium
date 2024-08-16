@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/app_list/views/search_box_view.h"
 
 #include <map>
@@ -35,6 +40,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/user_education/user_education_class_properties.h"
+#include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
@@ -230,7 +236,7 @@ std::u16string GetCategoryMenuItemTooltip(
       tooltip_id = IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_WEBSITES_TOOLTIP;
       break;
     case AppListSearchControlCategory::kCannotToggle:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return l10n_util::GetStringUTF16(tooltip_id);
 }
@@ -291,7 +297,10 @@ class CheckBoxMenuItemView : public views::MenuItemView {
       : views::MenuItemView(parent,
                             command,
                             views::MenuItemView::Type::kNormal),
-        view_delegate_(view_delegate) {}
+        view_delegate_(view_delegate) {
+    // Set the role of the toggleable menu items to checkbox.
+    GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
+  }
 
   CheckBoxMenuItemView(const CheckBoxMenuItemView&) = delete;
   CheckBoxMenuItemView& operator=(const CheckBoxMenuItemView&) = delete;
@@ -300,8 +309,6 @@ class CheckBoxMenuItemView : public views::MenuItemView {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::MenuItemView::GetAccessibleNodeData(node_data);
-    // Set the role of the toggleable menu items to checkbox.
-    node_data->role = ax::mojom::Role::kMenuItemCheckBox;
     node_data->SetCheckedState(
         view_delegate_->IsCategoryEnabled(
             static_cast<AppListSearchControlCategory>(GetCommand()))
@@ -395,7 +402,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
         break;
       case AppListSearchControlCategory::kCannotToggle:
         // There shouldn't be a "Cannot toggle" option.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // Toggle the checkbox icon.
@@ -552,6 +559,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->GetViewAccessibility().SetName(assistant_button_label);
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
 }
 
 SearchBoxView::~SearchBoxView() {
@@ -658,6 +667,7 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
 
       if (features::IsWelcomeTourEnabled()) {
         welcome_tour_metrics::RecordInteraction(
+            user_education_util::GetLastActiveUserPrefService(),
             welcome_tour_metrics::Interaction::kSearch);
       }
     } else if (!current_query_.empty() && query.empty()) {
@@ -960,7 +970,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
 
 void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (HasAutocompleteText()) {
-    node_data->role = ax::mojom::Role::kTextField;
     node_data->SetValue(l10n_util::GetStringFUTF16(
         IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE, search_box()->GetText()));
   }

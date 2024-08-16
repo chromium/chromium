@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -179,7 +180,7 @@ const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
 
 BASE_FEATURE(kAvifGainmapHdrImages,
              "AvifGainmapHdrImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAvoidForcedLayoutOnInitialEmptyDocumentInSubframe,
              "AvoidForcedLayoutOnInitialEmptyDocumentInSubframe",
@@ -753,7 +754,7 @@ BASE_FEATURE(kEventTimingFallbackToModalDialogStart,
 // pointerdown) as an interaction in performance event timing.
 BASE_FEATURE(kEventTimingHandleOrphanPointerup,
              "EventTimingHandleOrphanPointerup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether LCP calculations should exclude low-entropy images. If
 // enabled, then the associated parameter sets the cutoff, expressed as the
@@ -1380,9 +1381,6 @@ BASE_FEATURE(kPreloadSystemFonts,
 const base::FeatureParam<std::string> kPreloadSystemFontsTargets{
     &kPreloadSystemFonts, "preload_system_fonts_targets", "[]"};
 
-const base::FeatureParam<bool> kPreloadSystemFontsFromPage{
-    &kPreloadSystemFonts, "preload_system_fonts_from_page", false};
-
 const base::FeatureParam<int> kPreloadSystemFontsRequiredMemoryGB{
     &kPreloadSystemFonts, "preload_system_fonts_required_memory_gb", 4};
 
@@ -1724,9 +1722,20 @@ const base::FeatureParam<bool> kPartialLowEndModeExcludeCanvasFontCache{
 
 // When enabled, this flag partitions the :visited link hashtable by <link url,
 // top-level site, frame origin>.
-// TODO(crbug.com/329102369): complete the partitioned hashtable implementation.
 BASE_FEATURE(kPartitionVisitedLinkDatabase,
              "PartitionVisitedLinkDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, this flag partitions the :visited link hashtable by <link url,
+// top-level site, frame origin> AND adds the "self link" <link url, link as a
+// schemeful site, link as an origin> for each link :visited from a top-level or
+// same-origin subframe to the hashtable as well.
+// NOTE: users need only enable kPartitionVisitedLinkDatabaseWithSelfLinks
+// to achieve partitioning AND self links. You do NOT need to enable
+// kPartitionVisitedLinkDatabase as well, though doing so is a no-op and will
+// not change the behavior of this feature.
+BASE_FEATURE(kPartitionVisitedLinkDatabaseWithSelfLinks,
+             "PartitionVisitedLinkDatabaseWithSelfLinks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of the PaintCache for Path2D objects that are rasterized
@@ -2294,7 +2303,8 @@ BASE_FEATURE(kStopInBackground,
              "stop-in-background",
 // b/248036988 - Disable this for Chromecast on Android builds to prevent apps
 // that play audio in the background from stopping.
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID) && \
+    !BUILDFLAG(IS_DESKTOP_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -2317,7 +2327,7 @@ BASE_FEATURE(kStylusRichGestures,
 // Enables third party script regex matching for detecting technologies.
 BASE_FEATURE(kThirdPartyScriptDetection,
              "ThirdPartyScriptDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThreadedBodyLoader,
              "ThreadedBodyLoader",
@@ -2374,6 +2384,10 @@ BASE_FEATURE(kUACHOverrideBlank,
 BASE_FEATURE(kEmulateLoadStartedForInspectorOncePerResource,
              "kEmulateLoadStartedForInspectorOncePerResource",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlinkSchedulerDiscreteInputMatchesResponsivenessMetrics,
+             "BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBlinkSchedulerPrioritizeNavigationIPCs,
              "BlinkSchedulerPrioritizeNavigationIPCs",
@@ -2481,6 +2495,11 @@ BASE_FEATURE(kWebAppManifestLockScreen,
 BASE_FEATURE(kWebAudioBypassOutputBuffering,
              "WebAudioBypassOutputBuffering",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Update echo cancellation output device on AudioContext construction.
+BASE_FEATURE(kWebAudioContextConstructorEchoCancellation,
+             "WebAudioContextConstructorEchoCancellation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
@@ -2615,9 +2634,10 @@ bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
 BASE_FEATURE(kExpandCompositedCullRect,
              "ExpandCompositedCullRect",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kPixelDistanceToExpand(&kExpandCompositedCullRect,
-                                                     "pixels",
-                                                     4000);
+const base::FeatureParam<int>
+    kCullRectPixelDistanceToExpand(&kExpandCompositedCullRect, "pixels", 4000);
+const base::FeatureParam<double>
+    kCullRectExpansionDPRCoef(&kExpandCompositedCullRect, "dpr_coef", 0);
 BASE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpiredInBlink,
              "TreatHTTPExpiresHeaderValueZeroAsExpiredInBlink",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2632,7 +2652,7 @@ BASE_FEATURE(kNoThrottlingVisibleAgent,
 
 BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              "RenderSizeInScoreAdBrowserSignals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",

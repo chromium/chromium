@@ -17,6 +17,7 @@
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
 #include "android_webview/browser/variations/variations_seed_loader.h"
 #include "android_webview/common/aw_switches.h"
@@ -68,6 +69,9 @@ bool g_signature_verification_enabled = true;
 // These prefs go in the JsonPrefStore, and will persist across runs. Other
 // prefs go in the InMemoryPrefStore, and will be lost when the process ends.
 const char* const kPersistentPrefsAllowlist[] = {
+    // Restricted content blocking.
+    android_webview::prefs::kShouldBlockRestrictedContent,
+
     // Origin Trial config overrides.
     embedder_support::prefs::kOriginTrialPublicKey,
     embedder_support::prefs::kOriginTrialDisabledFeatures,
@@ -173,6 +177,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
       pref_registry.get());
   AwTracingDelegate::RegisterPrefs(pref_registry.get());
   AwBrowserContextStore::RegisterPrefs(pref_registry.get());
+  AwSupervisedUserUrlClassifier::RegisterPrefs(pref_registry.get());
 
   PrefServiceFactory pref_service_factory;
 

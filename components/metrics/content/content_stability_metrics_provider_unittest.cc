@@ -142,8 +142,7 @@ TEST_F(ContentStabilityMetricsProviderTest, RenderProcessObserver) {
   content::ChildProcessTerminationInfo failed_launch_details;
   failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   failed_launch_details.exit_code = 1;
-  provider.OnRenderProcessHostCreated(host);
-  provider.RenderProcessExited(host, failed_launch_details);
+  provider.OnRenderProcessHostCreationFailed(host, failed_launch_details);
 
   // Verify metrics.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
@@ -208,8 +207,8 @@ TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
   content::ChildProcessTerminationInfo failed_launch_details;
   failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   failed_launch_details.exit_code = 1;
-  provider.OnRenderProcessHostCreated(extension_host);
-  provider.RenderProcessExited(extension_host, failed_launch_details);
+  provider.OnRenderProcessHostCreationFailed(extension_host,
+                                             failed_launch_details);
 
   // Verify metrics.
   histogram_tester.ExpectBucketCount("Stability.Counts2",

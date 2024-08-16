@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +21,6 @@ class RectF;
 namespace blink {
 
 class AffineTransform;
-class LayoutUnit;
 class PropertyTreeState;
 class TransformPaintPropertyNode;
 
@@ -55,12 +55,13 @@ class PLATFORM_EXPORT CullRect {
                             const PropertyTreeState& source,
                             const PropertyTreeState& destination,
                             const std::optional<CullRect>& old_cull_rect,
-                            bool disable_expansion);
+                            float expansion_ratio);
 
   const gfx::Rect& Rect() const { return rect_; }
 
   bool HasScrolledEnough(const gfx::Vector2dF& delta,
-                         const TransformPaintPropertyNode&);
+                         const TransformPaintPropertyNode&,
+                         float expansion_ratio);
 
   String ToString() const { return String(rect_.ToString()); }
 
@@ -71,7 +72,7 @@ class PLATFORM_EXPORT CullRect {
   std::pair<bool, bool> ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation,
-      bool disable_expansion);
+      float expansion_ratio);
 
   // Returns false if the rect is clipped to be invisible. Otherwise returns
   // true, even if the cull rect is empty due to a special 3d transform in case
@@ -82,7 +83,8 @@ class PLATFORM_EXPORT CullRect {
 
   bool ChangedEnough(const std::pair<bool, bool>& expanded,
                      const CullRect& old_cull_rect,
-                     const std::optional<gfx::Rect>& expansion_bounds) const;
+                     const std::optional<gfx::Rect>& expansion_bounds,
+                     float expansion_ratio) const;
 
   gfx::Rect rect_;
 };

@@ -82,14 +82,15 @@ if (swift_whole_module_optimization == -1) {
 # would be to have inputs to tools (https://crbug.com/621119).
 tool_versions = exec_script(
         "get_tool_mtime.py",
-        rebase_path([
-                      "//build/toolchain/apple/filter_libtool.py",
-                      "//build/toolchain/apple/linker_driver.py",
-                      "//build/toolchain/ios/compile_xcassets.py",
-                      "//build/toolchain/ios/const_extract_protocols.json",
-                      "//build/toolchain/ios/swiftc.py",
-                    ],
-                    root_build_dir),
+        rebase_path(
+            [
+              "//build/toolchain/apple/compile_xcassets.py",
+              "//build/toolchain/apple/filter_libtool.py",
+              "//build/toolchain/apple/linker_driver.py",
+              "//build/toolchain/apple/swift_const_gather_protocols.json",
+              "//build/toolchain/apple/swiftc.py",
+            ],
+            root_build_dir),
         "trim scope")
 
 # Shared toolchain definition. Invocations should set current_os to set the
@@ -629,7 +630,7 @@ template("single_apple_toolchain") {
     # disallow future uses of Swift on macOS. https://crbug.com/965663.
     if (toolchain_args.current_os == "ios") {
       tool("swift") {
-        _tool = rebase_path("//build/toolchain/ios/swiftc.py", root_build_dir)
+        _tool = rebase_path("//build/toolchain/apple/swiftc.py", root_build_dir)
 
         depfile = "{{target_out_dir}}/{{module_name}}.d"
         depsformat = "gcc"
@@ -685,7 +686,7 @@ template("single_apple_toolchain") {
         # be considered dirty if they change) without having to be parsed
         # by the script.
         _env_vars = "TOOL_VERSION=${tool_versions.swiftc} " +
-                    "JSON_VERSION=${tool_versions.const_extract_protocols}"
+                    "JSON_VERSION=${tool_versions.swift_const_gather_protocols}"
 
         # Include the version of the compiler on the command-line. This causes
         # `ninja` to consider all the compilation output to be dirty when the
@@ -744,9 +745,9 @@ template("single_apple_toolchain") {
 
         _src_dir = rebase_path("//", root_build_dir)
         _gen_dir = rebase_path(root_gen_dir, root_build_dir)
-        _const_gather_protocols_file =
-            rebase_path("//build/toolchain/ios/const_extract_protocols.json",
-                        root_build_dir)
+        _const_gather_protocols_file = rebase_path(
+                "//build/toolchain/apple/swift_const_gather_protocols.json",
+                root_build_dir)
 
         command =
             "$_env_vars $python_path $_tool --module-name {{module_name}} " +
@@ -765,7 +766,7 @@ template("single_apple_toolchain") {
     # disallow future uses of xcassets on macOS. https://crbug.com/965663.
     if (toolchain_args.current_os == "ios") {
       tool("compile_xcassets") {
-        _tool = rebase_path("//build/toolchain/ios/compile_xcassets.py",
+        _tool = rebase_path("//build/toolchain/apple/compile_xcassets.py",
                             root_build_dir)
 
         _env_vars = "TOOL_VERSION=${tool_versions.compile_xcassets}"

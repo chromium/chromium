@@ -2197,6 +2197,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="MATCHING_IP_SESSION_FOUND"/>
   <int value="1" label="CAN_POOL_BUT_DIFFERENT_IP"/>
   <int value="2" label="CANNOT_POOL_WITH_EXISTING_SESSIONS"/>
+  <int value="3" label="POOLED_WITH_DIFFERENT_IP_SESSION"/>
 </enum>
 
 <enum name="QuicHandshakeFailureReason">
@@ -2622,6 +2623,25 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Virtual"/>
   <int value="3" label="Both"/>
 </enum>
+
+<!-- LINT.IfChange(TrustTokenOperationStatus) -->
+
+<enum name="TrustTokenOperationStatus">
+  <int value="0" label="PST succeeded"/>
+  <int value="1" label="Invalid argument"/>
+  <int value="2" label="Missing issuer keys"/>
+  <int value="3" label="Failed precondition"/>
+  <int value="4" label="Resource exhausted"/>
+  <int value="5" label="PST already exists"/>
+  <int value="6" label="Resource limited"/>
+  <int value="7" label="PST unauthorized"/>
+  <int value="8" label="Bad response"/>
+  <int value="9" label="Internal error"/>
+  <int value="10" label="Unknown error"/>
+  <int value="11" label="Operation fulfilled locally"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->
 
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>

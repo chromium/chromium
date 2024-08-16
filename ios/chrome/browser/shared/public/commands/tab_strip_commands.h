@@ -48,6 +48,10 @@ class WebStateID;
                                 groupItem:(TabGroupItem*)tabGroupItem
                                sourceView:(UIView*)sourceView;
 
+// Displays a snackbar after closing tab groups locally.
+- (void)showTabStripTabGroupSnackbarAfterClosingGroups:
+    (int)numberOfClosedGroups;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_TAB_STRIP_COMMANDS_H_

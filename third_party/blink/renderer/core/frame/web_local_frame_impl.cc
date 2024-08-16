@@ -694,7 +694,7 @@ WebLocalFrame* WebLocalFrame::FromFrameToken(
 
 WebLocalFrame* WebLocalFrame::FrameForCurrentContext() {
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-  if (UNLIKELY(!isolate)) {
+  if (!isolate) [[unlikely]] {
     return nullptr;
   }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -1383,8 +1383,7 @@ void WebLocalFrameImpl::RemoveSpellingMarkers() {
 void WebLocalFrameImpl::RemoveSpellingMarkersUnderWords(
     const WebVector<WebString>& words) {
   Vector<String> converted_words;
-  converted_words.Append(words.data(),
-                         base::checked_cast<wtf_size_t>(words.size()));
+  converted_words.AppendSpan(base::span(words));
   GetFrame()->RemoveSpellingMarkersUnderWords(converted_words);
 }
 
@@ -2746,6 +2745,7 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
     bool has_transient_user_activation,
     const WebSecurityOrigin& initiator_origin,
     bool is_browser_initiated,
+    bool has_ua_visual_transition,
     std::optional<scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK(GetFrame());
@@ -2759,7 +2759,7 @@ blink::mojom::CommitResult WebLocalFrameImpl::CommitSameDocumentNavigation(
       has_transient_user_activation, initiator_origin.Get(),
       /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
       mojom::blink::TriggeringEventInfo::kNotFromEvent, is_browser_initiated,
-      soft_navigation_heuristics_task_id);
+      has_ua_visual_transition, soft_navigation_heuristics_task_id);
 }
 
 bool WebLocalFrameImpl::IsLoading() const {
@@ -3155,19 +3155,17 @@ Node* WebLocalFrameImpl::ContextMenuImageNodeInner() const {
 
 void WebLocalFrameImpl::WaitForDebuggerWhenShown() {
   DCHECK(frame_->IsLocalRoot());
-  DevToolsAgentImpl()->WaitForDebuggerWhenShown();
+  DevToolsAgentImpl(/*create_if_necessary=*/true)->WaitForDebuggerWhenShown();
 }
 
-void WebLocalFrameImpl::SetDevToolsAgentImpl(WebDevToolsAgentImpl* agent) {
-  DCHECK(!dev_tools_agent_);
-  dev_tools_agent_ = agent;
-}
-
-WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl() {
-  if (!frame_->IsLocalRoot())
+WebDevToolsAgentImpl* WebLocalFrameImpl::DevToolsAgentImpl(
+    bool create_if_necessary) {
+  if (!frame_->IsLocalRoot()) {
     return nullptr;
-  if (!dev_tools_agent_)
+  }
+  if (!dev_tools_agent_ && create_if_necessary) {
     dev_tools_agent_ = WebDevToolsAgentImpl::CreateForFrame(this);
+  }
   return dev_tools_agent_.Get();
 }
 
@@ -3321,12 +3319,13 @@ void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
     base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback) {
   TouchStartEventListener* touch_start_event_listener =
       MakeGarbageCollected<TouchStartEventListener>(std::move(callback));
-  AddEventListenerOptionsResolved options;
-  options.setPassive(true);
-  options.SetPassiveSpecified(true);
-  options.setCapture(true);
+  AddEventListenerOptionsResolved* options =
+      MakeGarbageCollected<AddEventListenerOptionsResolved>();
+  options->setPassive(true);
+  options->SetPassiveSpecified(true);
+  options->setCapture(true);
   GetFrame()->DomWindow()->addEventListener(
-      event_type_names::kTouchstart, touch_start_event_listener, &options);
+      event_type_names::kTouchstart, touch_start_event_listener, options);
 }
 
 void WebLocalFrameImpl::BlockParserForTesting() {

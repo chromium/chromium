@@ -70,7 +70,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_prefs.h"
@@ -347,8 +346,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::kGeneratedHttpsFirstModePref] =
       settings_api::PrefType::kNumber;
-  (*s_allowlist)[::prefs::kSafeBrowsingEsbOptInWithFriendlierSettings] =
-      settings_api::PrefType::kBoolean;
 
   // Tracking protection page
   (*s_allowlist)[::prefs::kCookieControlsMode] =
@@ -551,8 +548,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[::prefs::kLiveTranslateTargetLanguageCode] =
       settings_api::PrefType::kString;
-#endif
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   (*s_allowlist)[::prefs::kAccessibilityMainNodeAnnotationsEnabled] =
       settings_api::PrefType::kBoolean;
 #endif
@@ -737,6 +732,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityReducedAnimationsEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted] =
+          settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityFaceGazeCursorSpeedUp] =
@@ -765,6 +763,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityDisableTrackpadEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFlashNotificationsEnabled] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityFlashNotificationsColor] =
+      settings_api::PrefType::kNumber;
 
   // Text to Speech.
   (*s_allowlist)[::prefs::kTextToSpeechLangToVoiceName] =
@@ -789,6 +791,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kList;
   (*s_allowlist)[guest_os::prefs::kGuestOsUSBNotificationEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[guest_os::prefs::kGuestOsUSBPersistentPassthroughEnabled] =
+      settings_api::PrefType::kBoolean;
+  (*s_allowlist)[guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices] =
+      settings_api::PrefType::kDictionary;
   (*s_allowlist)[crostini::prefs::kCrostiniPortForwarding] =
       settings_api::PrefType::kList;
   (*s_allowlist)[guest_os::prefs::kGuestOSPathsSharedToVms] =

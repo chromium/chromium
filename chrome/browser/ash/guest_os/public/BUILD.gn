@@ -67,7 +67,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/borealis/testing:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os:test_support",

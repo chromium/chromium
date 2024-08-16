@@ -72,7 +72,18 @@ class FileSystemObserverTest : public InProcessBrowserTest {
 #if BUILDFLAG(IS_WIN)
     // Convert path to long format to avoid mixing long and 8.3 formats in test.
     ASSERT_TRUE(temp_dir_.Set(base::MakeLongFilePath(temp_dir_.Take())));
-#endif  // BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_MAC)
+    // Temporary files in Mac are created under /var/, which is a symlink that
+    // resolves to /private/var/. Set `temp_dir_` directly to the resolved file
+    // path, given that the expected FSEvents event paths are reported as
+    // resolved paths.
+    base::FilePath resolved_path =
+        base::MakeAbsoluteFilePath(temp_dir_.GetPath());
+    if (!resolved_path.empty()) {
+      temp_dir_.Take();
+      ASSERT_TRUE(temp_dir_.Set(resolved_path));
+    }
+#endif
     ASSERT_TRUE(embedded_test_server()->Start());
     test_url_ = embedded_test_server()->GetURL("/title1.html");
 
@@ -119,20 +130,16 @@ class FileSystemObserverTest : public InProcessBrowserTest {
   }
 
   bool SupportsReportingModifiedPath() const {
-    // TODO(crbug.com/321980270): Some platforms do not support reporting the
-    // modified path.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
     return true;
 #else
     return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
   }
 
-  bool SupportsChangeInfo() const {
-    // TODO(crbug.com/321980270): Reporting change info and the modified path
-    // are both only supported on inotify and Windows, for now.
-    return SupportsReportingModifiedPath();
-  }
+  bool SupportsChangeInfo() const { return SupportsReportingModifiedPath(); }
 
  protected:
   base::ScopedTempDir temp_dir_;
@@ -278,7 +285,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
 
     ASSERT_TRUE(base::WriteFile(file, "content"));
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
-
     const std::string expected_change_type =
         SupportsChangeInfo() ? "modified" : "unknown";
 

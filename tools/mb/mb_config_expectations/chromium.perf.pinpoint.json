@@ -222,6 +222,18 @@
       "use_remoteexec": true
     }
   },
+  "mac-arm-builder-perf-local": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64"
+    }
+  },
   "mac-arm-builder-perf-pgo": {
     "gn_args": {
       "enable_keystone_registration_framework": false,

@@ -6,26 +6,38 @@
 #define SERVICES_WEBNN_WEBNN_OBJECT_IMPL_H_
 
 #include "base/component_export.h"
-#include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
+namespace internal {
+// Supported WebNN token types. The list can be expanded as needed.
+// Adding a new type must be explicitly instantiated in the cpp.
+template <typename T, typename... U>
+concept IsAnyOf = (std::same_as<T, U> || ...);
+template <typename T>
+concept IsSupportedTokenType =
+    IsAnyOf<T, blink::WebNNBufferToken, blink::WebNNContextToken>;
+}  // namespace internal
+
+template <typename WebNNTokenType>
+  requires internal::IsSupportedTokenType<WebNNTokenType>
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNObjectImpl {
  public:
-  WebNNObjectImpl();
-  virtual ~WebNNObjectImpl();
+  WebNNObjectImpl() = default;
+  virtual ~WebNNObjectImpl() = default;
 
   WebNNObjectImpl(const WebNNObjectImpl&) = delete;
   WebNNObjectImpl& operator=(const WebNNObjectImpl&) = delete;
 
-  const base::UnguessableToken& handle() const { return handle_; }
+  const WebNNTokenType& handle() const { return handle_; }
 
   // Defines a "transparent" comparator so that unique_ptr keys to
   // WebNNObjectImpl instances can be compared against tokens for lookup in
   // associative containers like base::flat_set.
   template <typename WebNNObjectImplType>
   struct Comparator {
-    using is_transparent = base::UnguessableToken;
+    using is_transparent = WebNNTokenType;
 
     template <class Deleter = std::default_delete<WebNNObjectImplType>>
     bool operator()(
@@ -36,20 +48,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNObjectImpl {
 
     template <class Deleter = std::default_delete<WebNNObjectImplType>>
     bool operator()(
-        const base::UnguessableToken& lhs,
+        const WebNNTokenType& lhs,
         const std::unique_ptr<WebNNObjectImplType, Deleter>& rhs) const {
       return lhs < rhs->handle();
     }
 
     template <class Deleter = std::default_delete<WebNNObjectImplType>>
     bool operator()(const std::unique_ptr<WebNNObjectImplType, Deleter>& lhs,
-                    const base::UnguessableToken& rhs) const {
+                    const WebNNTokenType& rhs) const {
       return lhs->handle() < rhs;
     }
   };
 
  private:
-  const base::UnguessableToken handle_;
+  const WebNNTokenType handle_;
 };
 
 }  // namespace webnn

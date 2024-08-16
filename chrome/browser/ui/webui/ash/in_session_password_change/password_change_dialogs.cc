@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -68,8 +69,8 @@ void BasePasswordDialog::AdjustWidgetInitParams(
   params->type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
 }
 
-ui::ModalType BasePasswordDialog::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType BasePasswordDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 // static

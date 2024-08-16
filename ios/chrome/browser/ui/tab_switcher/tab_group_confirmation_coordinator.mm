@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
@@ -56,11 +57,6 @@
 
 - (void)start {
   CHECK(self.action);
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(deviceOrientationDidChange)
-             name:UIDeviceOrientationDidChangeNotification
-           object:nil];
 
   if (_sourceView) {
     _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
@@ -91,14 +87,27 @@
                                       style:UIAlertActionStyleDestructive];
   [_actionSheetCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                                      action:^{
-                                       [weakSelf dismissActionSheetCoordinator];
+                                       [weakSelf stop];
                                      }
                                       style:UIAlertActionStyleCancel];
   [_actionSheetCoordinator start];
+
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(TabGroupConfirmationCommands)];
 }
 
 - (void)stop {
   [self dismissActionSheetCoordinator];
+
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(TabGroupConfirmationCommands)];
+}
+
+#pragma mark - TabGroupConfirmationCommands
+
+- (void)dismissTabGroupConfirmation {
+  [self stop];
 }
 
 #pragma mark - Private
@@ -110,15 +119,9 @@
   }
 }
 
-- (void)deviceOrientationDidChange {
-  [self dismissActionSheetCoordinator];
-}
-
 // Stops the action sheet coordinator currently showned and nullifies the
 // instance.
 - (void)dismissActionSheetCoordinator {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-
   [_actionSheetCoordinator stop];
   _actionSheetCoordinator = nil;
 }

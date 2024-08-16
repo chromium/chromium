@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
 #include "chrome/browser/companion/core/utils.h"
@@ -89,6 +94,12 @@ void DataSharingUI::BindInterface(
     mojo::PendingReceiver<data_sharing::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void DataSharingUI::ApiInitComplete() {
+  if (delegate_) {
+    delegate_->ApiInitComplete();
+  }
 }
 
 void DataSharingUI::CreatePageHandler(

@@ -25,6 +25,7 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/label_button.h"
@@ -47,7 +48,7 @@ void AutoConfirmDialog(base::OnceCallback<void(bool)> callback) {
           FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -99,7 +100,7 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       parent_web_contents_(web_contents->GetWeakPtr()),
       callback_(std::move(callback)) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 

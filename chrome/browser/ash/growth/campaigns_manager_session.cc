@@ -7,11 +7,14 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
@@ -38,6 +41,9 @@
 namespace {
 
 CampaignsManagerSession* g_instance = nullptr;
+
+// The time to trigger delayed campaigns.
+constexpr base::TimeDelta kTimeToTriggerDelayedCampaigns = base::Minutes(5);
 
 bool IsWebBrowserAppId(const std::string& app_id) {
   return app_id == app_constants::kChromeAppId ||
@@ -79,6 +85,21 @@ std::optional<std::string> GetAppGroupId() {
 
   // For non web browser, get group id by app id.
   return growth::GetAppGroupId(app_id);
+}
+
+base::TimeDelta GetTimeToTriggerDelayedCampaigns() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          ash::switches::kGrowthCampaignsDelayedTriggerTimeInSecs)) {
+    const auto& value = command_line->GetSwitchValueASCII(
+        ash::switches::kGrowthCampaignsDelayedTriggerTimeInSecs);
+
+    double seconds;
+    CHECK(base::StringToDouble(value, &seconds));
+    return base::Seconds(seconds);
+  }
+
+  return kTimeToTriggerDelayedCampaigns;
 }
 
 void MaybeTriggerSlot(growth::Slot slot) {
@@ -166,6 +187,17 @@ void MaybeTriggerCampaignsWhenCampaignsLoaded() {
   CHECK(campaigns_manager);
 
   growth::Trigger trigger(growth::TriggerType::kCampaignsLoaded);
+  campaigns_manager->SetTrigger(std::move(trigger));
+
+  MaybeTriggerSlot(growth::Slot::kNudge);
+  MaybeTriggerSlot(growth::Slot::kNotification);
+}
+
+void MaybeTriggerDelayedCampaigns() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  CHECK(campaigns_manager);
+
+  growth::Trigger trigger(growth::TriggerType::kDelayedOneShotTimer);
   campaigns_manager->SetTrigger(std::move(trigger));
 
   MaybeTriggerSlot(growth::Slot::kNudge);
@@ -317,6 +349,11 @@ CampaignsManagerSession::~CampaignsManagerSession() {
 }
 
 void CampaignsManagerSession::OnSessionStateChanged() {
+  // Stop the timer to avoid triggering campaigns if the session is not active.
+  if (delayed_timer_.IsRunning()) {
+    delayed_timer_.Stop();
+  }
+
   if (session_manager::SessionManager::Get()->session_state() ==
       session_manager::SessionState::LOCKED) {
     if (scoped_observation_.IsObserving()) {
@@ -493,6 +530,12 @@ void CampaignsManagerSession::OnLoadCampaignsCompleted() {
   }
 
   MaybeTriggerCampaignsWhenCampaignsLoaded();
+  StartDelayedTimer();
+}
+
+void CampaignsManagerSession::StartDelayedTimer() {
+  delayed_timer_.Start(FROM_HERE, GetTimeToTriggerDelayedCampaigns(),
+                       base::BindOnce(&MaybeTriggerDelayedCampaigns));
 }
 
 void CampaignsManagerSession::CacheAppOpenContext(

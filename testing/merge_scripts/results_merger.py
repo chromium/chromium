@@ -3,9 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import copy
+import functools
 import json
 import sys
 
@@ -124,8 +123,7 @@ def _merge_json_test_result_format(shard_results_list):
           'Invalid json test results (missing %s)' % missing)
 
     # Curry merge_values for this result_json.
-    merge = lambda key, merge_func: merge_value(result_json, merged_results,
-                                                key, merge_func)
+    merge = functools.partial(merge_value, result_json, merged_results)
 
     # Traverse the result_json's test trie & merged_results's test tries in
     # DFS order & add the n to merged['tests'].
@@ -197,9 +195,9 @@ def merge_tries(source, dest):
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
-              "%s:%s: %r not mergable, curr_node: %r\ndest_node: %r" %
+              '%s:%s: %r not mergable, curr_node: %r\ndest_node: %r' %
               (prefix, k, v, curr_node, dest_node))
-        pending_nodes.append(("%s:%s" % (prefix, k), dest_node[k], v))
+        pending_nodes.append(('%s:%s' % (prefix, k), dest_node[k], v))
       else:
         dest_node[k] = v
   return dest
@@ -250,7 +248,7 @@ def merge_value(source, dest, key, merge_func):
   try:
     dest[key] = merge_func(source[key], dest[key])
   except MergeException as e:
-    message = "MergeFailure for %s\n%s" % (key, e.args[0])
+    message = 'MergeFailure for %s\n%s' % (key, e.args[0])
     e.args = (message, ) + e.args[1:]
     raise
   del source[key]
@@ -258,7 +256,7 @@ def merge_value(source, dest, key, merge_func):
 
 def main(files):
   if len(files) < 2:
-    sys.stderr.write("Not enough JSON files to merge.\n")
+    sys.stderr.write('Not enough JSON files to merge.\n')
     return 1
   sys.stderr.write('Starting with %s\n' % files[0])
   result = json.load(open(files[0]))
@@ -269,5 +267,5 @@ def main(files):
   return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))

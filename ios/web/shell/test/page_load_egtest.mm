@@ -17,7 +17,13 @@ const char kHtmlFile[] = "/chromium_logo_page.html";
 @implementation PageLoadTestCase
 
 // Tests that a simple page loads successfully.
-- (void)testPageLoad {
+// TODO(crbug.com/354699341): Test is flaky on iPad device.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testPageLoad testPageLoad
+#else
+#define MAYBE_testPageLoad DISABLED_testPageLoad
+#endif
+- (void)MAYBE_testPageLoad {
   const GURL pageURL = self.testServer->GetURL(kHtmlFile);
 
   [ShellEarlGrey loadURL:pageURL];

@@ -1116,7 +1116,7 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   const gfx::Point anchor_point(kMonitorBounds.width() / 2,
                                 kMonitorBounds.bottom() + 1 -
                                     kMenuSize.height() +
-                                    border_and_shadow_insets.top());
+                                    border_and_shadow_insets.height());
 
   MenuBoundsOptions options = {
       .anchor_bounds = gfx::Rect(anchor_point, gfx::Size()),
@@ -1126,7 +1126,7 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   // Case 1: There is insufficient space for the menu below `anchor_point` and
   // there is no cached menu position. The menu should show above the anchor.
   options.menu_size = kMenuSize;
-  EXPECT_GT(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+  EXPECT_GT(options.anchor_bounds.y() - border_and_shadow_insets.height() +
                 kMenuSize.height(),
             kMonitorBounds.bottom());
   CalculateBubbleMenuBoundsWithoutInsets(options);
@@ -1143,7 +1143,7 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   // Case 3: There is enough space for the menu below `anchor_point`. The cached
   // menu position is above the anchor. The menu should show above the anchor.
   constexpr gfx::Size kUpdatedSize(kMenuSize.width(), kMenuSize.height() / 2);
-  EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+  EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.height() +
                 kUpdatedSize.height(),
             kMonitorBounds.bottom());
   options.menu_size = kUpdatedSize;
@@ -1170,7 +1170,7 @@ TEST_F(MenuControllerTest, VerifyContextMenuBubblePositionAfterSizeChanges) {
   const gfx::Point anchor_point(kMonitorBounds.width() / 2,
                                 kMonitorBounds.bottom() + 1 -
                                     kMenuSize.height() +
-                                    border_and_shadow_insets.top());
+                                    border_and_shadow_insets.height());
 
   MenuBoundsOptions options = {
       .anchor_bounds = gfx::Rect(anchor_point, gfx::Size()),
@@ -1180,7 +1180,7 @@ TEST_F(MenuControllerTest, VerifyContextMenuBubblePositionAfterSizeChanges) {
   // Case 1: There is insufficient space for the menu below `anchor_point` and
   // there is no cached menu position. The menu should show above the anchor.
   options.menu_size = kMenuSize;
-  EXPECT_GT(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+  EXPECT_GT(options.anchor_bounds.y() - border_and_shadow_insets.height() +
                 kMenuSize.height(),
             kMonitorBounds.bottom());
   CalculateBubbleMenuBoundsWithoutInsets(options);
@@ -1198,7 +1198,7 @@ TEST_F(MenuControllerTest, VerifyContextMenuBubblePositionAfterSizeChanges) {
   // Case 3: There is enough space for the menu below `anchor_point`. The cached
   // menu position is above the anchor. The menu should show above the anchor.
   constexpr gfx::Size kUpdatedSize(kMenuSize.width(), kMenuSize.height() / 2);
-  EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.top() +
+  EXPECT_LE(options.anchor_bounds.y() - border_and_shadow_insets.height() +
                 kUpdatedSize.height(),
             kMonitorBounds.bottom());
   options.menu_size = kUpdatedSize;

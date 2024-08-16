@@ -1509,6 +1509,37 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // included in your view's `AXNodeData`.
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) {}
 
+  // This method allows lazy loading of some accessibility attributes. It is
+  // used only for accessibility attributes that can be expensive to compute
+  // and/or heavy to store, such as long string attributes. Views that override
+  // this method must not call the ViewAccessibility setters directly in the
+  // function implementation, but instead should set the attributes directly on
+  // the `data` object.
+  //
+  // Accessibility initialization happens once in the lifetime of a view: either
+  // when accessibility usage is suddenly enabled or when the view is first
+  // added to the views hierarchy after accessibility is enabled. This method
+  // must only be called on attributes that haven't been set in the
+  // ViewAccessibility cache before, otherwise it defeats the purpose of the
+  // lazy loading.
+  //
+  // Here's an example of how to use this method:
+  //
+  // class MyView : public View {
+  //  public:
+  //  void MyView::OnAccessibilityInitializing(ui::AXNodeData* data) {
+  //    std::string very_long_name = ComputeVeryLongName();
+  //    data->SetName(very_long_name);
+  //  }
+  //  void MyView::OnNameChanged() {
+  //    // Only set the expensive name when the view is initialized.
+  //    if (GetViewAccessibility().is_initialized()) {
+  //      GetViewAccessibility().SetName(ComputeVeryLongName());
+  //    }
+  //  }
+  // };
+  virtual void OnAccessibilityInitializing(ui::AXNodeData* data) {}
+
   // DEPRECATED: Use `ViewAccessibility::SetName` instead.
   //
   // Sets/gets the accessible name.

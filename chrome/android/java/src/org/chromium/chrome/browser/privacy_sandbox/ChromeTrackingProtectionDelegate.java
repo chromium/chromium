@@ -44,7 +44,7 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
 
     @Override
     public boolean shouldDisplayIpProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1);
     }
 
@@ -62,7 +62,7 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
 
     @Override
     public boolean shouldDisplayFingerprintingProtection() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING);
     }
 

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -80,16 +81,17 @@ class SoundscapesDownloaderTest : public testing::Test {
     return config;
   }
 
-  void ServeConfig(GURL url,
-                   network::TestURLLoaderFactory& test_url_loader_factory) {
+  void ServeConfigOk(GURL url,
+                     network::TestURLLoaderFactory& test_url_loader_factory) {
     test_url_loader_factory.SimulateResponseForPendingRequest(
         url.spec(), kTestConfig, net::HTTP_OK);
   }
 
-  void ServeNotFound(GURL url,
-                     network::TestURLLoaderFactory& test_url_loader_factory) {
-    test_url_loader_factory.SimulateResponseForPendingRequest(
-        url.spec(), "", net::HTTP_NOT_FOUND);
+  void ServeConfigFailed(GURL url,
+                         network::TestURLLoaderFactory& test_url_loader_factory,
+                         net::HttpStatusCode error) {
+    test_url_loader_factory.SimulateResponseForPendingRequest(url.spec(), "",
+                                                              error);
   }
 
   scoped_refptr<FakeSharedURLLoaderFactory> fake_url_loader_factory_;
@@ -103,7 +105,7 @@ TEST_F(SoundscapesDownloaderTest, Construct) {
   EXPECT_TRUE(downloader);
 }
 
-TEST_F(SoundscapesDownloaderTest, FetchFailure) {
+TEST_F(SoundscapesDownloaderTest, FetchFailureNoRetry) {
   auto downloader = SoundscapesDownloader::CreateForTesting(
       MakeConfiguration(kValidPath), fake_url_loader_factory_);
 
@@ -120,12 +122,100 @@ TEST_F(SoundscapesDownloaderTest, FetchFailure) {
         run_loop.Quit();
       }));
 
-  ServeNotFound(GURL(kHost).Resolve(kValidPath),
-                fake_url_loader_factory_->test_url_loader_factory());
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_NOT_FOUND);
 
   run_loop.Run();
 
   EXPECT_FALSE(result);
+}
+
+TEST_F(SoundscapesDownloaderTest, FetchFailureWithFailedRetry) {
+  auto downloader = SoundscapesDownloader::CreateForTesting(
+      MakeConfiguration(kValidPath), fake_url_loader_factory_);
+
+  bool result = true;
+  SoundscapeConfiguration config;
+
+  base::RunLoop run_loop;
+  downloader->FetchConfiguration(base::BindLambdaForTesting(
+      [&](std::optional<SoundscapeConfiguration> configuration) {
+        result = !!configuration;
+        if (result) {
+          config = std::move(*configuration);
+        }
+        run_loop.Quit();
+      }));
+
+  // Initial request: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #1: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #2: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #3: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  run_loop.Run();
+  EXPECT_FALSE(result);
+}
+
+TEST_F(SoundscapesDownloaderTest, FetchFailureWithSuccessfulRetry) {
+  auto downloader = SoundscapesDownloader::CreateForTesting(
+      MakeConfiguration(kValidPath), fake_url_loader_factory_);
+
+  bool result = true;
+  SoundscapeConfiguration config;
+
+  base::RunLoop run_loop;
+  downloader->FetchConfiguration(base::BindLambdaForTesting(
+      [&](std::optional<SoundscapeConfiguration> configuration) {
+        result = !!configuration;
+        if (result) {
+          config = std::move(*configuration);
+        }
+        run_loop.Quit();
+      }));
+
+  // Initial request: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #1: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #2: failed with 500.
+  ServeConfigFailed(GURL(kHost).Resolve(kValidPath),
+                    fake_url_loader_factory_->test_url_loader_factory(),
+                    net::HTTP_INTERNAL_SERVER_ERROR);
+
+  // Retry #3: succeeded.
+  ServeConfigOk(GURL(kHost).Resolve(kValidPath),
+                fake_url_loader_factory_->test_url_loader_factory());
+
+  run_loop.Run();
+  EXPECT_TRUE(result);
+
+  ASSERT_THAT(config.playlists, testing::SizeIs(4));
+  EXPECT_THAT(config.playlists[2],
+              testing::Field(&SoundscapePlaylist::name, testing::Eq("Flow")));
+  EXPECT_THAT(config.playlists[2],
+              testing::Field(&SoundscapePlaylist::tracks, testing::SizeIs(2)));
 }
 
 TEST_F(SoundscapesDownloaderTest, FetchSuccess) {
@@ -144,8 +234,8 @@ TEST_F(SoundscapesDownloaderTest, FetchSuccess) {
         run_loop.Quit();
       }));
 
-  ServeConfig(GURL(kHost).Resolve(kValidPath),
-              fake_url_loader_factory_->test_url_loader_factory());
+  ServeConfigOk(GURL(kHost).Resolve(kValidPath),
+                fake_url_loader_factory_->test_url_loader_factory());
 
   run_loop.Run();
   EXPECT_TRUE(result);

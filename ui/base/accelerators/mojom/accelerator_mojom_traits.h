@@ -23,8 +23,7 @@ struct EnumTraits<ui::mojom::AcceleratorKeyState, ui::Accelerator::KeyState> {
       case ui::Accelerator::KeyState::RELEASED:
         return ui::mojom::AcceleratorKeyState::RELEASED;
     }
-    NOTREACHED_IN_MIGRATION();
-    return ui::mojom::AcceleratorKeyState::PRESSED;
+    NOTREACHED();
   }
 
   static bool FromMojom(ui::mojom::AcceleratorKeyState input,
@@ -37,8 +36,7 @@ struct EnumTraits<ui::mojom::AcceleratorKeyState, ui::Accelerator::KeyState> {
         *out = ui::Accelerator::KeyState::RELEASED;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

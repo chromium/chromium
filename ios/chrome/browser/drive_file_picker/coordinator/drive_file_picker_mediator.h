@@ -7,12 +7,17 @@
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
+@protocol DriveFilePickerMediatorDelegate;
+
 namespace web {
 class WebState;
 }
 
 // Mediator of the Drive file picker.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
+
+// A delegate to browse a given drive folder or search in drive.
+@property(nonatomic, weak) id<DriveFilePickerMediatorDelegate> delegate;
 
 // Initializes the mediator with a given `webState`.
 - (instancetype)initWithWebState:(web::WebState*)webState

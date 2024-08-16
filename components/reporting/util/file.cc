@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -90,7 +91,7 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
   std::string result;
   result.resize(file_info.size - offset);
   const int read_result =
-      file.Read(offset, result.data(), file_info.size - offset);
+      UNSAFE_TODO(file.Read(offset, result.data(), file_info.size - offset));
   if (read_result != file_info.size - offset) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_READ_FILE,
@@ -117,7 +118,7 @@ Status AppendLine(const base::FilePath& file_path,
   }
 
   const std::string line = base::StrCat({data, "\n"});
-  const int write_count = file.Write(0, line.data(), line.size());
+  const int write_count = UNSAFE_TODO(file.Write(0, line.data(), line.size()));
   if (write_count < 0 || static_cast<size_t>(write_count) < line.size()) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_WRITE_FILE,
@@ -168,7 +169,7 @@ Status MaybeWriteFile(const base::FilePath& file_path,
                                                   file_path.MaybeAsASCII()}));
   }
 
-  const int write_count = file.Write(0, data.data(), data.size());
+  const int write_count = UNSAFE_TODO(file.Write(0, data.data(), data.size()));
   if (write_count < 0 || static_cast<size_t>(write_count) < data.size()) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_WRITE_FILE,

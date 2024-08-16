@@ -11,6 +11,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -34,7 +35,7 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
   SetTitle(l10n_util::GetPluralStringFUTF16(IDS_ABANDON_DOWNLOAD_DIALOG_TITLE,
                                             download_count));
   SetShowCloseButton(false);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetModalType(ui::mojom::ModalType::kWindow);
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -72,7 +73,7 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
     case Browser::DownloadCloseType::kOk:
       // This dialog should have been created within the same thread invocation
       // as the original test, so it's never ok to close.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   auto message_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(message_id),

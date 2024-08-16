@@ -30,9 +30,6 @@ class ContentNotificationService : public KeyedService {
   // notification.
   virtual void SendNAUForConfiguration(
       ContentNotificationNAUConfiguration* configuration) = 0;
-
-  // KeyedService implementation.
-  void Shutdown() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_SERVICE_H_

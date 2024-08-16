@@ -134,8 +134,9 @@ std::optional<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
   EXPECT_TRUE(function->GetError().empty())
       << "Unexpected error: " << function->GetError();
   const base::Value::List* results = function->GetResultListForTest();
-  if (!results || results->empty())
+  if (!results || results->empty()) {
     return std::nullopt;
+  }
   return (*results)[0].Clone();
 }
 

@@ -46,15 +46,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTrackingProtectionSilentOnboardedSince,
                              base::Time());
 
-  // Tracking Protection Reminder Prefs
-  registry->RegisterIntegerPref(
-      prefs::kTrackingProtectionReminderStatus,
-      static_cast<int>(TrackingProtectionReminderStatus::kUnset));
-
-  // Tracking Protection Survey Prefs
-  registry->RegisterTimePref(prefs::kTrackingProtectionSurveyWindowStartTime,
-                             base::Time());
-
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrack, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -73,6 +64,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kIpProtectionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kIpProtectionInitializedByDogfood,
+                                false);
   registry->RegisterBooleanPref(
       prefs::kFingerprintingProtectionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);

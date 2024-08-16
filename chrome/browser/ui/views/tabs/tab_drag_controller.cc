@@ -35,8 +35,7 @@
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -436,12 +435,20 @@ TabDragController::Liveness TabDragController::Init(
     ref->detach_behavior_ = NOT_DETACHABLE;
   }
 #else
-  // If the dragged tabstrip exists in a PWA, and any of the dragged views
-  // are the Pinned Home tab, then the tabs should not be detachable from
-  // the window.
+  // Tabs should not be detachable from the window if any of the following are
+  // true:
+  // 1. The app window is locked for OnTask. Not applicable for web browser
+  //    scenarios.
+  // 2. The dragged tab strip exists in a PWA, and any of the dragged views
+  //    are the Pinned Home tab.
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (source_browser->IsLockedForOnTask()) {
+    ref->detach_behavior_ = NOT_DETACHABLE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
@@ -451,7 +458,7 @@ TabDragController::Liveness TabDragController::Init(
       }
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 
   const gfx::Point start_point_in_source_context =
       views::View::ConvertPointFromScreen(source_context,
@@ -516,7 +523,7 @@ TabDragController::Liveness TabDragController::Init(
                            kVariableTimer);
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -662,11 +669,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
 
   bring_to_front_timer_.Stop();
 
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DragState old_state = current_state_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (current_state_ == DragState::kNotStarted) {
     if (!CanStartDrag(point_in_screen))
       return;  // User hasn't dragged far enough yet.
@@ -735,18 +737,6 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         drag_offset = GetWindowOffset(point_in_screen);
       }
 
-      // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      static bool reported = false;
-      if (in_move_loop_ && !reported) {
-        reported = true;
-        LOG(ERROR) << "Before the move loop is nested, Drag() is called with a "
-                      "DraggingState that equals "
-                   << static_cast<std::underlying_type<DragState>::type>(
-                          old_state)
-                   << ".";
-      }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       RunMoveLoop(drag_offset);
       return;
     }
@@ -967,19 +957,6 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   }
 
   const bool tab_strip_changed = (target_context != attached_context_);
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && tab_strip_changed && !reported) {
-    reported = true;
-    LOG(ERROR) << "Before the move loop is nested, tab strip change is "
-                  "detected. (target_context == nullptr) is "
-               << (target_context == nullptr)
-               << ", and (attached_context_ == nullptr) is "
-               << (attached_context_ == nullptr);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   last_point_in_screen_ = point_in_screen;
 
   if (current_state_ == DragState::kDraggingUsingSystemDragAndDrop &&
@@ -1025,15 +1002,6 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
                "point_in_screen", point_in_screen.ToString());
 
   if (!target_context) {
-// TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    static bool reported = false;
-    if (in_move_loop_ && !reported) {
-      reported = true;
-      LOG(ERROR)
-          << "Before the move loop is nested, target context is nullified.";
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     DetachIntoNewBrowserAndRunMoveLoop(point_in_screen);
     return DRAG_BROWSER_RESULT_STOP;
   }
@@ -1389,23 +1357,6 @@ TabDragController::Liveness TabDragController::GetTargetTabStripForPoint(
   *context = current_state_ == DragState::kDraggingWindow
                  ? attached_context_.get()
                  : nullptr;
-// TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !context && !reported) {
-    reported = true;
-    if (current_state_ != DragState::kDraggingWindow) {
-      LOG(ERROR) << "Before the move loop is nested, context is nullified "
-                    "because current_state_ is "
-                 << static_cast<std::underlying_type<DragState>::type>(
-                        current_state_)
-                 << " instead of kDraggingWindow.";
-    } else {
-      LOG(ERROR) << "Before the move loop is nested, context is nullified "
-                    "because attached context is nullified.";
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return Liveness::ALIVE;
 }
 
@@ -1611,15 +1562,6 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
 
-    // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    static bool reported = false;
-    if (in_move_loop_ && !reported) {
-      reported = true;
-      LOG(ERROR) << "Before the move loop is nested, all the tabs in a browser "
-                    "are being dragged.";
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     RunMoveLoop(GetWindowOffset(point_in_screen));
     return;
   }
@@ -1699,15 +1641,6 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
       return;
     }
   }
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !reported) {
-    reported = true;
-    LOG(ERROR) << "Before the move loop is nested, not all the tabs in a "
-                  "browser are being dragged.";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   RunMoveLoop(drag_offset);
 }
 
@@ -1721,10 +1654,6 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // in which case the observation is already established.
   widget_observation_.Reset();
   widget_observation_.Observe(move_loop_widget_.get());
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DragState old_state = current_state_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   current_state_ = DragState::kDraggingWindow;
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   if (can_release_capture_) {
@@ -1755,23 +1684,6 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // lower in the stack. This is a CHECK() as there may be security
   // implications to attempting a nested run loop.
 
-  // TODO:(crbug.com/1411147) Remove debug log in tab_drag_controller.cc
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  static bool reported = false;
-  if (in_move_loop_ && !reported) {
-    reported = true;
-    if (!ref) {
-      LOG(ERROR) << "The enclosing tab drag controller is already gone during "
-                    "a nested move loop.";
-    } else {
-      LOG(ERROR) << "The enclosing tab drag controller is still alive during a "
-                    "nested move loop.";
-    }
-    LOG(ERROR) << "Before the move loop is nested, the previous DragState is "
-               << static_cast<std::underlying_type<DragState>::type>(old_state)
-               << ".";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK(!in_move_loop_);
   in_move_loop_ = true;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
@@ -2886,23 +2798,19 @@ void TabDragController::MaybePauseTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
 
-  if (!saved_tab_group_service ||
-      !saved_tab_group_service->model()->Contains(group_.value())) {
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+
+  if (!wrapper_service || !wrapper_service->GetGroup(group_.value())) {
     return;
   }
 
-  paused_saved_group_id_ =
-      saved_tab_group_service->model()->Get(group_.value())->saved_guid();
-  saved_tab_group_service->PauseTrackingLocalTabGroup(group_.value());
+  observation_pauser_ = wrapper_service->CreateScopedLocalObserverPauser();
 }
 
 void TabDragController::MaybeResumeTrackingSavedTabGroup() {
-  if (!header_drag_ ||
-      !paused_saved_group_id_.has_value()) {
+  if (!header_drag_ || !observation_pauser_) {
     return;
   }
 
@@ -2910,15 +2818,13 @@ void TabDragController::MaybeResumeTrackingSavedTabGroup() {
       BrowserView::GetBrowserViewForNativeWindow(
           GetAttachedBrowserWidget()->GetNativeWindow())
           ->browser();
-  tab_groups::SavedTabGroupKeyedService* const saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser->profile());
 
-  if (!saved_tab_group_service) {
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser->profile());
+
+  if (!wrapper_service) {
     return;
   }
 
-  saved_tab_group_service->ResumeTrackingLocalTabGroup(
-      paused_saved_group_id_.value(), group_.value());
-  paused_saved_group_id_ = std::nullopt;
+  observation_pauser_.reset();
 }

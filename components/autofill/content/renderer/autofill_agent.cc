@@ -964,42 +964,6 @@ void AutofillAgent::ApplyFieldsAction(
     mojom::ActionPersistence action_persistence,
     const std::vector<FormFieldData::FillData>& fields) {
   CHECK(!fields.empty());
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  // If `last_queried_element_` is null or not focused, Autofill was either
-  // triggered from another frame or the `last_queried_element_` has been
-  // detached from the DOM or the focus was moved otherwise.
-  //
-  // If `last_queried_element_` is from a different form than `form`, then
-  // Autofill was triggered from a different form in the same frame, and either
-  // this is a subframe and both forms should be filled, or focus has changed
-  // right after the user accepted the suggestions.
-  //
-  // In these cases, we set `last_queried_element_` to some form field as if
-  // Autofill had been triggered from that field. This is necessary because
-  // currently AutofillAgent relies on `last_queried_element_` in many places.
-  const bool last_queried_element_needs_update =
-      !last_queried_element || !last_queried_element.Focused() ||
-      !base::Contains(fields,
-                      form_util::GetFormRendererId(
-                          form_util::GetOwningForm(last_queried_element)),
-                      &FormFieldData::FillData::host_form_id);
-  if (last_queried_element_needs_update &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
-    for (const FormFieldData::FillData& field : fields) {
-      last_queried_element =
-          form_util::GetFormControlByRendererId(field.renderer_id);
-      if (last_queried_element) {
-        last_queried_element_ = FieldRef(last_queried_element);
-        break;
-      }
-    }
-  }
-  if (!last_queried_element &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
-    return;
-  }
   WebDocument document = GetDocument();
   if (!document) {
     return;
@@ -1097,15 +1061,6 @@ void AutofillAgent::FieldTypePredictionsAvailable(
 }
 
 void AutofillAgent::ClearPreviewedForm() {
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  // TODO(crbug.com/40564702): It is very rare, but it looks like the |element_|
-  // can be null if a provisional load was committed immediately prior to
-  // clearing the previewed form.
-  if (!last_queried_element &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillDontUpdateLastQueriedElementOnFill)) {
-    return;
-  }
   // `password_generation_agent_` can be null in WebView.
   // TODO(crbug.com/326213028): Clear fields previewed by
   // `PasswordGenerationAgent` directly using `PasswordGenerationAgent`.
@@ -2008,7 +1963,7 @@ void AutofillAgent::OnInferredFormSubmission(mojom::SubmissionSource source) {
     case mojom::SubmissionSource::FORM_SUBMISSION:
     // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
       if (base::FeatureList::IsEnabled(
               features::kAutofillUnifyAndFixFormTracking)) {

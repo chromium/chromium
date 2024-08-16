@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,26 +17,41 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -43,6 +60,7 @@
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,27 +70,6 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/views/widget/native_widget_aura.h"
 #endif  // USE_AURA
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-#include "base/callback_list.h"
-#include "base/functional/bind.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_features.h"
-#include "components/enterprise/connectors/common.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
-#include "components/enterprise/data_controls/core/browser/test_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/common/policy_types.h"
-#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#endif
 
 class BrowserViewTest : public InProcessBrowserTest {
  public:
@@ -186,7 +183,21 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
   BrowserView::GetBrowserViewForBrowser(browser2)->GetWidget()->CloseNow();
 }
 
-// Verifies that page and devtools WebViews are being correctly layed out
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
+  browser()->SetLockedForOnTask(true);
+  EXPECT_FALSE(browser_view()->CanMinimize());
+  EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
+  browser()->SetLockedForOnTask(false);
+  EXPECT_TRUE(browser_view()->CanMinimize());
+  EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
+}
+#endif
+
+// Verifies that page and devtools WebViews are being correctly laid out
 // when DevTools is opened/closed/updated/undocked.
 // TODO(crbug.com/40834238): Re-enable; currently failing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
@@ -253,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DISABLED_DevToolsUpdatesBrowserWindow) {
 // Verifies that the side panel's rounded corner is being correctly layed out.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, SidePanelRoundedCornerLayout) {
   SidePanelCoordinator* coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser()));
+      (browser())->GetFeatures().side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
   coordinator->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_EQ(side_panel()->bounds().x(),
@@ -416,8 +427,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
             nullptr);
 }
 #endif  // !BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
 
 namespace {
 
@@ -699,5 +708,3 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)

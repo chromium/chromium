@@ -42,6 +42,10 @@ using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
 
 namespace policy {
 
+BASE_FEATURE(kPolicyFetchWithSha256,
+             "PolicyFetchWithSha256",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 #if BUILDFLAG(IS_WIN)
@@ -142,7 +146,7 @@ em::DevicePolicyRequest::Reason TranslateFetchReason(PolicyFetchReason reason) {
     case PolicyFetchReason::kUserRequest:
       return Request::USER_REQUEST;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 em::PolicyValidationReportRequest::ValidationResultType
@@ -507,7 +511,8 @@ void CloudPolicyClient::RegisterWithOidcResponse(
     const RegistrationParameters& parameters,
     const std::string& oauth_token,
     const std::string& oidc_id_token,
-    const std::string& client_id) {
+    const std::string& client_id,
+    const base::TimeDelta& timeout_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!oidc_id_token.empty());
   CHECK(!oauth_token.empty());
@@ -523,6 +528,12 @@ void CloudPolicyClient::RegisterWithOidcResponse(
 
   auto config =
       std::make_unique<RegistrationJobConfiguration>(std::move(params));
+
+  // Set a limit for OIDC registration so the loading state doesn't hang
+  // forever.
+  if (timeout_duration > base::TimeDelta()) {
+    config->SetTimeoutDuration(timeout_duration);
+  }
 
   em::DeviceRegisterRequest* request =
       config->request()->mutable_register_request();
@@ -583,6 +594,14 @@ void CloudPolicyClient::SetOAuthTokenAsAdditionalAuth(
   oauth_token_ = oauth_token;
 }
 
+em::PolicyFetchRequest::SignatureType
+CloudPolicyClient::GetPolicyFetchRequestSignatureType() {
+  if (base::FeatureList::IsEnabled(policy::kPolicyFetchWithSha256)) {
+    return em::PolicyFetchRequest::SHA256_RSA;
+  }
+  return em::PolicyFetchRequest::SHA1_RSA;
+}
+
 void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -618,6 +637,8 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
 
   // Build policy fetch requests.
   em::DevicePolicyRequest* policy_request = request->mutable_policy_request();
+  const em::PolicyFetchRequest::SignatureType signature_type =
+      GetPolicyFetchRequestSignatureType();
   for (const auto& type_to_fetch : types_to_fetch_) {
     em::PolicyFetchRequest* fetch_request = policy_request->add_requests();
     fetch_request->set_policy_type(type_to_fetch.first);
@@ -626,7 +647,7 @@ void CloudPolicyClient::FetchPolicy(PolicyFetchReason reason) {
     }
 
     // Request signed policy blobs to help prevent tampering on the client.
-    fetch_request->set_signature_type(em::PolicyFetchRequest::SHA1_RSA);
+    fetch_request->set_signature_type(signature_type);
     if (public_key_version_valid_) {
       fetch_request->set_public_key_version(public_key_version_);
     }

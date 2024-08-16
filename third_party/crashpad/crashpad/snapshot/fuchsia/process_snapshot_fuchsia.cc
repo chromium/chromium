@@ -115,8 +115,7 @@ crashpad::ProcessID ProcessSnapshotFuchsia::ProcessID() const {
 crashpad::ProcessID ProcessSnapshotFuchsia::ParentProcessID() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   // TODO(scottmg): https://crashpad.chromium.org/bug/196
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void ProcessSnapshotFuchsia::SnapshotTime(timeval* snapshot_time) const {

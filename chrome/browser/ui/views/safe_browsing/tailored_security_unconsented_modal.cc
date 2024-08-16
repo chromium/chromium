@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -96,7 +97,7 @@ void TailoredSecurityUnconsentedModal::ShowForWebContents(
 TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
   auto* bodyLabel = AddChildView(std::make_unique<views::Label>(

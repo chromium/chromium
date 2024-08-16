@@ -57,43 +57,6 @@ source_set("tracking_protection_onboarding") {
   public_deps = [ "//base" ]
 }
 
-source_set("tracking_protection_reminder_service") {
-  sources = [
-    "tracking_protection_reminder_service.cc",
-    "tracking_protection_reminder_service.h",
-  ]
-
-  deps = [
-    ":features",
-    ":privacy_sandbox_notice_constants",
-    ":privacy_sandbox_notice_storage",
-    ":tracking_protection_onboarding",
-    ":tracking_protection_prefs",
-    "//components/keyed_service/core:core",
-    "//components/prefs",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
-source_set("tracking_protection_survey_service") {
-  sources = [
-    "tracking_protection_survey_service.cc",
-    "tracking_protection_survey_service.h",
-  ]
-
-  deps = [
-    ":features",
-    ":tracking_protection_onboarding",
-    ":tracking_protection_prefs",
-    ":tracking_protection_reminder_service",
-    "//components/keyed_service/core:core",
-    "//components/prefs",
-  ]
-
-  public_deps = [ "//base" ]
-}
-
 source_set("tracking_protection_settings") {
   sources = [
     "tracking_protection_settings.cc",
@@ -200,9 +163,7 @@ if (use_blink) {
 
     deps = [
       ":privacy_sandbox_prefs",
-      ":tracking_protection_reminder_service",
       ":tracking_protection_settings",
-      ":tracking_protection_survey_service",
       "//components/browsing_topics/common:common",
       "//components/content_settings/core/browser",
       "//components/content_settings/core/browser:cookie_settings",
@@ -259,8 +220,6 @@ source_set("unit_tests") {
   sources = [
     "privacy_sandbox_notice_storage_unittest.cc",
     "tracking_protection_onboarding_unittest.cc",
-    "tracking_protection_reminder_service_unittest.cc",
-    "tracking_protection_survey_service_unittest.cc",
   ]
 
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
@@ -272,9 +231,7 @@ source_set("unit_tests") {
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
-    ":tracking_protection_reminder_service",
     ":tracking_protection_settings",
-    ":tracking_protection_survey_service",
     "//base/test:test_support",
     "//components/content_settings/core/common",
     "//components/prefs:test_support",

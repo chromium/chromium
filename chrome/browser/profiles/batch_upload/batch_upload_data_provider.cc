@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
+
+BatchUploadDataContainer::BatchUploadDataContainer(int section_title_id,
+                                                   int dialog_subtitle_id)
+    : section_title_id(section_title_id),
+      dialog_subtitle_id(dialog_subtitle_id) {}
+
+BatchUploadDataContainer::BatchUploadDataContainer(
+    BatchUploadDataContainer&& other) = default;
+
+BatchUploadDataContainer& BatchUploadDataContainer::operator=(
+    BatchUploadDataContainer&& other) = default;
+
+BatchUploadDataContainer::~BatchUploadDataContainer() = default;
+
+BatchUploadDataProvider::~BatchUploadDataProvider() = default;

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -24,10 +25,13 @@
 #include "net/base/session_usage.h"
 #include "net/base/url_util.h"
 #include "net/http/bidirectional_stream_impl.h"
+#include "net/http/http_stream_key.h"
+#include "net/http/http_stream_pool.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/quic/quic_session_key.h"
@@ -220,6 +224,7 @@ std::unique_ptr<HttpStreamRequest> HttpStreamFactory::JobController::Start(
       source_net_log.source());
 
   RunLoop(OK);
+
   return request;
 }
 
@@ -847,6 +852,13 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         SelectQuicVersion(alternative_service_info_.advertised_versions());
     DCHECK_NE(quic_version, quic::ParsedQuicVersion::Unsupported());
   }
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3) &&
+      proxy_info_.is_direct() && !is_websocket_) {
+    SwitchToHttpStreamPool(quic_version);
+    return OK;
+  }
+
   // Getting ALPN for H3 from DNS has a lot of preconditions. Among them:
   // - proxied connections perform DNS on the proxy, so they can't get supported
   //   ALPNs from DNS
@@ -1143,6 +1155,11 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
 }
 
 void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
+  if (switched_to_http_stream_pool_) {
+    factory_->OnJobControllerComplete(this);
+    return;
+  }
+
   if (main_job_ || alternative_job_ || dns_alpn_h3_job_) {
     return;
   }
@@ -1476,6 +1493,55 @@ bool HttpStreamFactory::JobController::IsQuicAllowedForHost(
 
   std::string lowered_host = base::ToLowerASCII(host);
   return base::Contains(host_allowlist, lowered_host);
+}
+
+void HttpStreamFactory::JobController::SwitchToHttpStreamPool(
+    quic::ParsedQuicVersion quic_version) {
+  CHECK(request_info_.socket_tag == SocketTag());
+  CHECK_EQ(stream_type_, HttpStreamRequest::HTTP_STREAM);
+
+  switched_to_http_stream_pool_ = true;
+
+  bool disable_cert_network_fetches =
+      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+  HttpStreamKey stream_key(
+      url::SchemeHostPort(origin_url_), request_info_.privacy_mode,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, disable_cert_network_fetches);
+
+  if (is_preconnect_) {
+    int rv = session_->http_stream_pool()->Preconnect(
+        stream_key, num_streams_, quic_version,
+        base::BindOnce(&JobController::OnPoolPreconnectsComplete,
+                       ptr_factory_.GetWeakPtr()));
+    if (rv != ERR_IO_PENDING) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&JobController::OnPoolPreconnectsComplete,
+                                    ptr_factory_.GetWeakPtr(), rv));
+    }
+    return;
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
+                                ptr_factory_.GetWeakPtr(),
+                                std::move(stream_key), quic_version));
+}
+
+void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
+  CHECK(switched_to_http_stream_pool_);
+  factory_->OnPreconnectsCompleteInternal();
+  MaybeNotifyFactoryOfCompletion();
+}
+
+void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
+    HttpStreamKey stream_key,
+    quic::ParsedQuicVersion quic_version) {
+  CHECK(request_);
+  CHECK(delegate_);
+
+  // `request_` and `delegate_` will be reset later.
+  delegate_->OnSwitchesToHttpStreamPool(std::move(stream_key), quic_version);
 }
 
 }  // namespace net

@@ -25,9 +25,9 @@
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
@@ -308,7 +308,7 @@ void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
   web_data_service->GetDBUserData()->SetUserData(
       &kAutofillWalletMetadataSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletMetadataSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::AUTOFILL_WALLET_METADATA,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
@@ -324,9 +324,9 @@ AutofillWalletMetadataSyncBridge::FromWebDataService(
 }
 
 AutofillWalletMetadataSyncBridge::AutofillWalletMetadataSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* web_data_backend)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
   scoped_observation_.Observe(web_data_backend_.get());
@@ -345,7 +345,7 @@ AutofillWalletMetadataSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::AUTOFILL_WALLET_METADATA,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -677,7 +677,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
   // Commit the transaction to make sure the data and the metadata with the
   // new progress marker is written down (especially on Android where we
   // cannot rely on committing transactions on shutdown). We need to commit
-  // even if !|is_any_local_modified| because the model type state or local
+  // even if !|is_any_local_modified| because the data type state or local
   // metadata may have changed.
   web_data_backend_->CommitChanges();
 

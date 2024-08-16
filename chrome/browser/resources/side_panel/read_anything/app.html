@@ -112,13 +112,13 @@
     font-size: 1em;
   }
 
-  /* Not using :host because ReadAnythingElement does not use ShadowDOM. */
+  /* Not using :host because AppElement does not use ShadowDOM. */
   read-anything-app:not([images-enabled]) figure {
     display: none;
   }
 </style>
 <div id="appFlexParent" on-keydown="onKeyDown_">
-  <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
+  <div id="toolbar-container">
     <read-anything-toolbar
         is-speech-active="[[speechPlayingState.isSpeechActive]]"
         is-audio-currently-playing="[[speechPlayingState.isAudioCurrentlyPlaying]]"
@@ -136,7 +136,7 @@
         on-preview-voice="onPreviewVoice_"
         on-voice-menu-close="onVoiceMenuClose_"
         on-play-pause-click="onPlayPauseClick_"
-        on-font-size-change="updateFontSize_"
+        on-font-size-change="onFontSizeChange_"
         on-font-change="onFontChange_"
         on-rate-change="resetSpeechPostSettingChange_"
         on-next-granularity-click="playNextGranularity_"

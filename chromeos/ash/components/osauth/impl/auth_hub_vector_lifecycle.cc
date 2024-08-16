@@ -205,7 +205,7 @@ void AuthHubVectorLifecycle::ProceedIfAllFactorsStarted() {
       case EngineAttemptStatus::kIdle:
       case EngineAttemptStatus::kCleaningUp:
       case EngineAttemptStatus::kFinishing:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   owner_->OnAttemptStarted(*current_attempt_, present, failed);

@@ -21,7 +21,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/rectify_callback.h"
 #include "base/types/is_instantiation.h"
@@ -144,11 +143,6 @@ class InteractiveTestPrivate {
       InteractionSequence::AbortedCallback aborted_callback_for_testing) {
     aborted_callback_for_testing_ = std::move(aborted_callback_for_testing);
   }
-
-  // Places a callback in the message queue to bounce an event off of the pivot
-  // element, then responds by executing `task`.
-  template <typename T>
-  static MultiStep PostTask(std::string_view description, T&& task);
 
  private:
   friend class ui::test::InteractiveTestTest;
@@ -334,48 +328,6 @@ bool InteractiveTestPrivate::AddStateObserver(
       std::make_unique<StateObserverElementT<V>>(id, context,
                                                  std::move(state_observer)));
   return true;
-}
-
-// static
-template <typename T>
-InteractiveTestPrivate::MultiStep InteractiveTestPrivate::PostTask(
-    std::string_view description,
-    T&& task) {
-  MultiStep result;
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": PostTask()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetStartCallback(base::BindOnce([](ui::TrackedElement* el) {
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](ElementIdentifier id, ElementContext context) {
-                      auto* const el =
-                          ui::ElementTracker::GetElementTracker()
-                              ->GetFirstMatchingElement(id, context);
-                      if (el) {
-                        ui::ElementTracker::GetFrameworkDelegate()
-                            ->NotifyCustomEvent(el,
-                                                kInteractiveTestPivotEventType);
-                      }
-                      // If there is no pivot element, the test sequence has
-                      // been aborted and there's no need to send an additional
-                      // error.
-                    },
-                    el->identifier(), el->context()));
-          }))));
-  result.emplace_back(std::move(
-      InteractionSequence::StepBuilder()
-          .SetDescription(base::StrCat({description, ": WaitForComplete()"}))
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
-          .SetType(InteractionSequence::StepType::kCustomEvent,
-                   kInteractiveTestPivotEventType)
-          .SetStartCallback(
-              base::RectifyCallback<InteractionSequence::StepStartCallback>(
-                  std::move(task)))));
-  return result;
 }
 
 // Similar to `std::invocable<T, Args...>`, but does not put constraints on the

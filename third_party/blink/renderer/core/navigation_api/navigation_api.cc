@@ -113,7 +113,7 @@ String DetermineNavigationType(WebFrameLoadType type) {
     case WebFrameLoadType::kReplaceCurrentItem:
       return "replace";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 NavigationApi::NavigationApi(LocalDOMWindow* window)
@@ -483,7 +483,7 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   {
     if (options->hasState()) {
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kOperationInvoke,
+                                     v8::ExceptionContext::kOperation,
                                      "Navigation", "navigate");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
@@ -496,7 +496,7 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
   }
 
   FrameLoadRequest request(window_, ResourceRequest(completed_url));
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
 
   if (options->history() == V8NavigationHistoryBehavior::Enum::kPush) {
     LocalFrame* frame = window_->GetFrame();
@@ -547,7 +547,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   {
     if (options->hasState()) {
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kOperationInvoke,
+                                     v8::ExceptionContext::kOperation,
                                      "Navigation", "reload");
       serialized_state = SerializeState(options->state(), exception_state);
       if (exception_state.HadException()) {
@@ -562,7 +562,7 @@ NavigationResult* NavigationApi::reload(ScriptState* script_state,
   }
 
   FrameLoadRequest request(window_, ResourceRequest(window_->Url()));
-  request.SetClientRedirectReason(ClientNavigationReason::kFrameNavigation);
+  request.SetClientNavigationReason(ClientNavigationReason::kFrameNavigation);
 
   return PerformNonTraverseNavigation(script_state, request,
                                       std::move(serialized_state), options,
@@ -853,6 +853,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       params->source_element->GetExecutionContext() == window_) {
     init->setSourceElement(params->source_element);
   }
+  init->setHasUAVisualTransition(params->has_ua_visual_transition);
 
   auto* navigate_event = NavigateEvent::Create(
       window_, event_type_names::kNavigate, init, controller);

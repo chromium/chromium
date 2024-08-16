@@ -18,7 +18,10 @@ namespace content {
 
 class NavigationRequest;
 
-struct NavigationTransitionUtils {
+class NavigationTransitionUtils {
+ public:
+  NavigationTransitionUtils() = delete;
+
   // See ScreenshotCallback in NavigationTransitionTestUtils.
   using ScreenshotCallback =
       base::RepeatingCallback<void(int nav_entry_index,
@@ -49,7 +52,7 @@ struct NavigationTransitionUtils {
   // process.
   static void SetSameDocumentNavigationEntryScreenshotToken(
       NavigationRequest& navigation_request,
-      const blink::SameDocNavigationScreenshotDestinationToken&
+      std::optional<blink::SameDocNavigationScreenshotDestinationToken>
           destination_token);
 
   // Used by tests to deterministically validate the memory budgeting / eviction

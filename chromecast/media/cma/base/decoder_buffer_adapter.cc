@@ -24,7 +24,7 @@ EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
     case ::media::EncryptionScheme::kCbcs:
       return EncryptionScheme::kAesCbc;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

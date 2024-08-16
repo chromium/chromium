@@ -53,8 +53,9 @@ inline LayoutUnit MinimumValueForLength(
     const Length& length,
     LayoutUnit maximum_value,
     const Length::EvaluationInput& input = {}) {
-  if (LIKELY(length.IsFixed()))
+  if (length.IsFixed()) [[likely]] {
     return LayoutUnit(length.Value());
+  }
 
   return MinimumValueForLengthInternal(length, maximum_value, input);
 }

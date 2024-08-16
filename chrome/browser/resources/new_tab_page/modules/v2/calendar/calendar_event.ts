@@ -9,11 +9,13 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
 import {I18nMixinLit} from '../../../i18n_setup.js';
+import {WindowProxy} from '../../../window_proxy.js';
 
 import {getCss} from './calendar_event.css.js';
 import {getHtml} from './calendar_event.html.js';
-import {toJsTimestamp} from './common.js';
+import {CalendarAction, recordCalendarAction, toJsTimestamp} from './common.js';
 
+const kAttachmentScrollFadeBuffer: number = 4;
 const kMillisecondsInMinute: number = 60000;
 const kMinutesInHour: number = 60;
 
@@ -46,11 +48,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   static override get properties() {
     return {
-      doubleBooked: {
-        type: Boolean,
-        reflect: true,
-      },
-
+      doubleBooked: {type: Boolean},
       event: {type: Object},
 
       expanded: {
@@ -58,6 +56,9 @@ export class CalendarEventElement extends CalendarEventElementBase {
         reflect: true,
       },
 
+      index: {type: Number},
+      moduleName: {type: String},
+      attachmentListClass_: {type: String},
       formattedStartTime_: {type: String},
       timeStatus_: {type: String},
     };
@@ -66,9 +67,30 @@ export class CalendarEventElement extends CalendarEventElementBase {
   doubleBooked: boolean;
   event: CalendarEvent;
   expanded: boolean;
+  index: number;
+  moduleName: string;
 
+  protected attachmentListClass_: string;
   protected formattedStartTime_: string;
+  protected intersectionObserver_: IntersectionObserver;
   protected timeStatus_: string;
+
+  override updated(changedProperties: PropertyValues<this>) {
+    if ((changedProperties.has('event') || changedProperties.has('expanded')) &&
+        (this.expanded && this.showAttachments_())) {
+      const attachmentList = this.renderRoot.querySelector('#attachmentList');
+      if (attachmentList && attachmentList.children.length > 1) {
+        this.intersectionObserver_ =
+            new IntersectionObserver(() => this.updateAttachmentListClass_(), {
+              root: attachmentList,
+              threshold: 1.0,
+            });
+        this.intersectionObserver_.observe(attachmentList.children[0]);
+        this.intersectionObserver_.observe(
+            attachmentList.children[attachmentList.children.length - 1]);
+      }
+    }
+  }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -77,8 +99,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
       this.formattedStartTime_ = this.computeFormattedStartTime_();
     }
 
-    if (changedProperties.has('event') || changedProperties.has('expanded') ||
-        changedProperties.has('doubleBooked')) {
+    if (changedProperties.has('event') || changedProperties.has('expanded')) {
       this.timeStatus_ = this.computeTimeStatus_();
     }
   }
@@ -95,13 +116,13 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   private computeTimeStatus_(): string {
     if (!this.expanded) {
-      return this.doubleBooked ? this.i18n('modulesCalendarDoubleBooked') : '';
+      return '';
     }
 
     // Start time of event in milliseconds since Windows epoch.
     const startTime = toJsTimestamp(this.event.startTime);
     // Current time in milliseconds since Windows epoch.
-    const now = Date.now().valueOf();
+    const now = WindowProxy.getInstance().now().valueOf();
 
     const minutesUntilMeeting =
         Math.round((startTime - now) / kMillisecondsInMinute);
@@ -119,13 +140,32 @@ export class CalendarEventElement extends CalendarEventElementBase {
   }
 
   protected openAttachment_(e: Event) {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    window.location.href = this.event.attachments[index]!.resourceUrl.url;
+    WindowProxy.getInstance().navigate(
+        this.event.attachments[index]!.resourceUrl.url);
   }
 
   protected openVideoConference_() {
-    window.location.href = this.event.conferenceUrl!.url;
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    recordCalendarAction(
+        CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
+    WindowProxy.getInstance().navigate(this.event.conferenceUrl!.url);
+  }
+
+  protected recordHeaderClick_() {
+    this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
+    let action = CalendarAction.BASIC_EVENT_HEADER_CLICKED;
+    if (this.expanded) {
+      action = CalendarAction.EXPANDED_EVENT_HEADER_CLICKED;
+    } else if (this.doubleBooked) {
+      action = CalendarAction.DOUBLE_BOOKED_EVENT_HEADER_CLICKED;
+    }
+    recordCalendarAction(action, this.moduleName);
+    chrome.metricsPrivate.recordSmallCount(
+        `NewTabPage.${this.moduleName}.EventClickIndex`, this.index);
   }
 
   protected showConferenceButton_(): boolean {
@@ -138,6 +178,29 @@ export class CalendarEventElement extends CalendarEventElementBase {
 
   protected showLocation_(): boolean {
     return !!this.event.location;
+  }
+
+  protected updateAttachmentListClass_() {
+    const attachmentList = this.renderRoot.querySelector('#attachmentList');
+    if (!attachmentList) {
+      this.attachmentListClass_ = '';
+      return;
+    }
+    const scrollableRight =
+        (attachmentList!.scrollWidth - attachmentList!.scrollLeft -
+         kAttachmentScrollFadeBuffer) > attachmentList!.clientWidth;
+    const scrollableLeft =
+        attachmentList!.scrollLeft - kAttachmentScrollFadeBuffer > 0;
+
+    if (scrollableRight && scrollableLeft) {
+      this.attachmentListClass_ = 'scrollable';
+    } else if (scrollableRight) {
+      this.attachmentListClass_ = 'scrollable-right';
+    } else if (scrollableLeft) {
+      this.attachmentListClass_ = 'scrollable-left';
+    } else {
+      this.attachmentListClass_ = '';
+    }
   }
 }
 

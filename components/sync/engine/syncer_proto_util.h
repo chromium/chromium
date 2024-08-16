@@ -9,7 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/syncer_error.h"
 
@@ -26,7 +26,7 @@ class ServerConnectionManager;
 struct SyncProtocolError;
 
 // Returns the types to migrate from the data in |response|.
-ModelTypeSet GetTypesToMigrate(const sync_pb::ClientToServerResponse& response);
+DataTypeSet GetTypesToMigrate(const sync_pb::ClientToServerResponse& response);
 
 // Builds a SyncProtocolError from the data in |error|.
 SyncProtocolError ConvertErrorPBToSyncProtocolError(
@@ -52,7 +52,7 @@ class SyncerProtoUtil {
       const sync_pb::ClientToServerMessage& msg,
       sync_pb::ClientToServerResponse* response,
       SyncCycle* cycle,
-      ModelTypeSet* partial_failure_data_types);
+      DataTypeSet* partial_failure_data_types);
 
   // Specifies where entity's position should be updated from the data in
   // GetUpdates message.
@@ -100,7 +100,7 @@ class SyncerProtoUtil {
   static SyncerError HandleClientToServerMessageResponse(
       const sync_pb::ClientToServerResponse& response,
       SyncCycle* cycle,
-      ModelTypeSet* partial_failure_data_types);
+      DataTypeSet* partial_failure_data_types);
 
   static base::TimeDelta GetThrottleDelay(
       const sync_pb::ClientToServerResponse& response);

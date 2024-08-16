@@ -728,6 +728,16 @@ base::Value::Dict DecodeDeviceLocalAccountInfoProto(
                    static_cast<int>(
                        em::DeviceLocalAccountInfoProto::EPHEMERAL_MODE_UNSET));
   }
+  if (entry.has_isolated_kiosk_app()) {
+    if (entry.isolated_kiosk_app().has_web_bundle_id()) {
+      entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskBundleId,
+                     entry.isolated_kiosk_app().web_bundle_id());
+    }
+    if (entry.isolated_kiosk_app().has_update_manifest_url()) {
+      entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyIwaKioskUpdateUrl,
+                     entry.isolated_kiosk_app().update_manifest_url());
+    }
+  }
   return entry_dict;
 }
 

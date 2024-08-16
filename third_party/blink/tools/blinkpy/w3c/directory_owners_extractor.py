@@ -103,7 +103,7 @@ class DirectoryOwnersExtractor:
         """
         abs_start_path = (start_path if self.filesystem.isabs(start_path) else
                           self.finder.path_from_chromium_base(start_path))
-        directory = (abs_start_path.rstrip('/')
+        directory = (self.filesystem.normpath(abs_start_path)
                      if self.filesystem.isdir(abs_start_path) else
                      self.filesystem.dirname(abs_start_path))
         if not directory.startswith(self.finder.web_tests_dir()):

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "url/gurl.h"
 
@@ -68,7 +69,7 @@ bool ExtendedUpdatesDialog::ShouldShowCloseButton() const {
 
 ExtendedUpdatesDialog::ExtendedUpdatesDialog()
     : SystemWebDialogDelegate(GetUrl(), std::u16string()) {
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
 }
 
 }  // namespace ash::extended_updates

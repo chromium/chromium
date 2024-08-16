@@ -643,7 +643,8 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
 
   // Simulates the URL of the prefetch being navigated to and the prefetch being
   // considered for serving.
-  prefetch_container->OnReturnPrefetchToServe(/*served=*/true);
+  prefetch_container->OnReturnPrefetchToServe(/*served=*/true,
+                                              GURL("https://test.com"));
 
   // Simulate a successful DNS probe for this prefetch. Not this will also
   // update the status of the prefetch to
@@ -894,7 +895,8 @@ TEST_P(PrefetchContainerTest, BlockUntilHeadHistograms) {
     if (test_case.block_until_head) {
       task_environment()->FastForwardBy(test_case.block_until_head_duration);
     }
-    prefetch_container.OnReturnPrefetchToServe(test_case.served);
+    prefetch_container.OnReturnPrefetchToServe(test_case.served,
+                                               GURL("https://test.com"));
   }
 
   histogram_tester.ExpectBucketCount(

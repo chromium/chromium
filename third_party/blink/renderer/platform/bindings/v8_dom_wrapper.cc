@@ -47,7 +47,7 @@ v8::Local<v8::Object> V8DOMWrapper::CreateWrapper(ScriptState* script_state,
 
   v8::Local<v8::Object> wrapper;
   auto* per_context_data = script_state->PerContextData();
-  if (LIKELY(per_context_data)) {
+  if (per_context_data) [[likely]] {
     wrapper = per_context_data->CreateWrapperFromCache(isolate, type);
     CHECK(!wrapper.IsEmpty());
   } else {

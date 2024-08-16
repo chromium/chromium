@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -31,7 +32,6 @@ class Profile;
 
 namespace content {
 class WebContents;
-class BrowserContext;
 }
 
 namespace gfx {
@@ -79,18 +79,18 @@ void ShowExtensionMultipleUninstallDialog(
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
 
-// Shows a dialog when `extension_ids` were disabled due to the MV2 deprecation.
+// Shows a dialog with `extensions_info` when those extensions were disabled due
+// to the MV2 deprecation.
 void ShowMv2DeprecationDisabledDialog(
     Browser* browser,
-    const std::vector<ExtensionId>& extension_ids,
+    std::vector<Mv2DisabledDialogController::ExtensionInfo>& extensions_info,
     base::OnceClosure remove_callback,
     base::OnceClosure manage_callback,
     base::OnceClosure close_callback);
 
 // Shows a dialog when the user triggers the warning dismissal for an extension
 // affected by the MV2 deprecation.
-void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
-                                  gfx::NativeWindow parent,
+void ShowMv2DeprecationKeepDialog(Browser* browser,
                                   const Extension& extension,
                                   base::OnceClosure accept_callback,
                                   base::OnceClosure cancel_callback);

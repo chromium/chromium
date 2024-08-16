@@ -224,7 +224,7 @@ To mitigate the issue, there are several options:
 
 #### Option 1: Fully Enabling `base::Feature`, e.g. `kMyFeature`
 
-And letting Origin Trial decides when your feature (via runtime enabled feature
+And letting Origin Trial decide when your feature (via runtime enabled feature
 flag `blink::features::MyFeature`) is available, as suggested in the above
 quote. The `base::Feature` can be enabled via a remote Finch config, or by
 updating the default value in C++.
@@ -279,10 +279,13 @@ how often users use your feature. You can do it in two ways.
 
 #### Increment counter in your C++ code
 
-1. Add your feature counter to end of [`web_feature.mojom`]:
+1. Add your feature counter to the end of [`webdx_feature.mojom`] (or
+   [`web_feature.mojom`] if it's a feature that's somehow not expected to be
+   described in the [web platform dx
+   repository](https://github.com/web-platform-dx/web-features/))"
 
     ```cpp
-    enum WebFeature {
+    enum WebDXFeature {
       // ...
       kLastFeatureBeforeYours = 1235,
       // Here, increment the last feature count before yours by 1.
@@ -292,7 +295,7 @@ how often users use your feature. You can do it in two ways.
     };
     ```
 
-2. Run [`update_use_counter_feature_enum.py`] to update the UMA mapping.
+2. Run [`update_use_counter_feature_enum.py`] to update the UMA mappings.
 
 3. Increment your feature counter in C++ code.
 
@@ -306,27 +309,31 @@ how often users use your feature. You can do it in two ways.
       }
     ```
 
-#### Update counter with \[Measure\] IDL attribute
+#### Update counter with \[MeasureAs\] IDL attribute
 
-1. Add \[[Measure]\] IDL attribute
+1. Add \[[MeasureAs="WebDXFeature::kMyFeature"]\] IDL attribute
 
     ```cpp
     partial interface Navigator {
-      [RuntimeEnabled=MyFeature, Measure]
+      [RuntimeEnabled=MyFeature, MeasureAs="WebDXFeature::kMyFeature"]
       readonly attribute MyFeatureManager myFeature;
     ```
 
-2. The code to increment your feature counter will be generated in V8
-    automatically. But it requires you to follow \[[Measure]\] IDL attribute
-    naming convention when you will add your feature counter to
-    [`web_feature.mojom`].
+   Alternatively, if your feature counter doesn't fit as a WebDXFeature use
+   counter, make it a WebFeature instead and drop the WebDXFeature:: prefix (and
+   quotes) in the \[[MeasureAs]\] attribute above, or use \[[Measure]\] instead
+   and follow the \[[Measure]\] IDL attribute naming convention.
+
+2. Add your use counter to [`webdx_feature.mojom`] (or alternatively to
+   [`web_feature.mojom`]). The code to increment your feature counter will be
+   generated in the V8 bindings code automatically.
 
     ```cpp
-    enum WebFeature {
+    enum WebDXFeature {
       // ...
       kLastFeatureBeforeYours = 1235,
       // Here, increment the last feature count before yours by 1.
-      kV8Navigator_MyFeature_AttributeGetter = 1236,
+      kMyFeature = 1236,
 
       kNumberOfFeatures,  // This enum value must be last.
     };
@@ -439,6 +446,7 @@ If you are building with `is_debug=false`, then you will also need to add
 [RuntimeEnabled]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#RuntimeEnabled
 [origin_trials/webexposed]: /third_party/blink/web_tests/http/tests/origin_trials/webexposed/
 [`runtime_enabled_features.json5`]: /third_party/blink/renderer/platform/runtime_enabled_features.json5
+[`webdx_feature.mojom`]: /third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom
 [`web_feature.mojom`]: /third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [`update_use_counter_feature_enum.py`]: /tools/metrics/histograms/update_use_counter_feature_enum.py
 [Measure]: /third_party/blink/renderer/bindings/IDLExtendedAttributes.md#Measure

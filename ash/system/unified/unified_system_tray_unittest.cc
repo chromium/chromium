@@ -687,14 +687,9 @@ TEST_P(UnifiedSystemTrayTest, TrayBackgroundColorAfterSwitchToTabletMode) {
             ShelfConfig::Get()->GetShelfControlButtonColor(widget));
 
   tablet_mode_controller->SetEnabledForTest(true);
-  if (chromeos::features::IsJellyEnabled()) {
-    EXPECT_EQ(tray->layer()->background_color(),
-              widget->GetColorProvider()->GetColor(
-                  cros_tokens::kCrosSysSystemBaseElevated));
-  } else {
-    EXPECT_EQ(tray->layer()->background_color(),
-              ShelfConfig::Get()->GetShelfControlButtonColor(widget));
-  }
+  EXPECT_EQ(tray->layer()->background_color(),
+            widget->GetColorProvider()->GetColor(
+                cros_tokens::kCrosSysSystemBaseElevated));
 
   tablet_mode_controller->SetEnabledForTest(false);
   EXPECT_EQ(tray->layer()->background_color(),

@@ -164,8 +164,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       break;
     default:
       snap_region = SnapRegion::kInvalid;
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Compute size of the side of the window bound that should be proportional
@@ -221,8 +220,7 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
       snap_bounds.set_y(work_area.bottom() - axis_length);
       break;
     case SnapRegion::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return snap_bounds;
 }

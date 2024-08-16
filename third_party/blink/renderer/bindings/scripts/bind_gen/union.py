@@ -305,7 +305,9 @@ def make_factory_methods(cg_context):
             target_node.append(CxxBlockNode(body=scope_node))
         else:
             target_node.append(
-                CxxUnlikelyIfNode(cond=cond_text, body=scope_node))
+                CxxUnlikelyIfNode(cond=cond_text,
+                                  attribute=None,
+                                  body=scope_node))
 
     # 2. If the union type includes a nullable type and V is null or undefined,
     #   ...
@@ -408,14 +410,16 @@ def make_factory_methods(cg_context):
         # Create an IDL sequence from an iterable object.
         scope_node = SymbolScopeNode()
         body.append(
-            CxxUnlikelyIfNode(cond="${v8_value}->IsObject()", body=scope_node))
+            CxxUnlikelyIfNode(cond="${v8_value}->IsObject()",
+                              attribute=None,
+                              body=scope_node))
         scope_node.extend([
             T("ScriptIterator script_iterator = ScriptIterator::FromIterable("
               "${isolate}, ${v8_value}.As<v8::Object>(), "
               "${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=T("return nullptr;")),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=T("return nullptr;")),
         ])
 
         def blink_value_from_iterator(union_member):
@@ -428,9 +432,9 @@ def make_factory_methods(cg_context):
                        "${exception_state});"),
                       native_value_tag(
                           union_member.idl_type.unwrap().element_type)),
-                    CxxUnlikelyIfNode(
-                        cond="UNLIKELY(${exception_state}.HadException())",
-                        body=T("return nullptr;")),
+                    CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                                      attribute="[[unlikely]]",
+                                      body=T("return nullptr;")),
                 ])
                 return node
 

@@ -1069,6 +1069,11 @@ interface NetworkContext {
   GetStoredTrustTokenCounts()
       => (array<StoredTrustTokensForIssuer> tokens);
 
+  // Returns map of issuer to list of toplevel/last redemption pairs.
+  GetPrivateStateTokenRedemptionRecords()
+      => (map<url.mojom.Origin, array<ToplevelRedemptionRecord>>
+          issuer_redemption_record_map);
+
   // Deletes all Trust Tokens issued by |issuer|.
   //
   // This method is narrower as ClearTrustTokenData. ClearTrustTokenData

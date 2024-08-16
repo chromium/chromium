@@ -30,10 +30,10 @@ export function getHtml(this: DisclosureAppElement) {
   </div>
 
   <div id="actionsContainer">
-    <cr-button class="tonal-button" @click=${this.declineDisclosure()}>
+    <cr-button class="tonal-button" @click=${this.declineDisclosure}>
       ${this.i18n('declineDisclosure')}
     </cr-button>
-    <cr-button class="action-button" @click=${this.acceptDisclosure()}>
+    <cr-button class="action-button" @click=${this.acceptDisclosure}>
       ${this.i18n('acceptDisclosure')}
     </cr-button>
   </div>`;

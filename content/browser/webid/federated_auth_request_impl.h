@@ -376,6 +376,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint,
       blink::mojom::FederatedAuthRequestResult result);
+  void SendSuccessfulTokenRequestMetrics(const GURL& idp_config_url);
 
   void CleanUp();
 

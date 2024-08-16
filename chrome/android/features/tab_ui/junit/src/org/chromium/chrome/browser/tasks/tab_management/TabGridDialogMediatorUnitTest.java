@@ -58,6 +58,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -70,6 +71,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -77,6 +79,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
@@ -142,9 +145,8 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Runnable mShowShareBottomSheetRunnable;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private Runnable mShowColorPickerPopupRunnable;
-    @Mock private Runnable mShowInviteFlowUIRunnable;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -225,10 +227,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
@@ -830,10 +831,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
@@ -1094,6 +1094,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onReset(null);
 
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         verifyNoMoreInteractions(mDialogController);
     }
 
@@ -1101,6 +1102,7 @@ public class TabGridDialogMediatorUnitTest {
     public void finishedHiding() {
         mMediator.finishedHidingDialogView();
 
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mDialogController).postHiding();
     }
@@ -1117,6 +1119,7 @@ public class TabGridDialogMediatorUnitTest {
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, COLOR_2);
 
         mMediator.onReset(tabGroup);
+        verify(mDialogController).removeMessageCardItem(MessageType.COLLABORATION_ACTIVITY);
         mMediator.setSelectedTabGroupColor(COLOR_3);
 
         // Assert that the color has changed both in the property model and the model filter.
@@ -1251,10 +1254,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
 
@@ -1306,10 +1308,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
@@ -1356,10 +1357,9 @@ public class TabGridDialogMediatorUnitTest {
                         mSnackbarManager,
                         /* SharedImageTilesCoordinator= */ null,
                         mBottomSheetController,
-                        mShowShareBottomSheetRunnable,
+                        mDataSharingTabManager,
                         /* componentName= */ "",
                         mShowColorPickerPopupRunnable,
-                        mShowInviteFlowUIRunnable,
                         mActionConfirmationManager);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for
@@ -1427,7 +1427,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mMediator.onToolbarMenuItemClick(R.id.close_tab, TAB1_ID);
         verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ true);
+                .closeTabs(TabClosureParams.closeTabs(tabGroup).hideTabGroups(true).build());
 
         verifyNoInteractions(mActionConfirmationManager);
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Close"));
@@ -1441,8 +1441,7 @@ public class TabGridDialogMediatorUnitTest {
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
         mMediator.onToolbarMenuItemClick(R.id.delete_tab, TAB1_ID);
-        verify(mTabGroupModelFilter)
-                .closeMultipleTabs(tabGroup, /* canUndo= */ true, /* hideTabGroups= */ false);
+        verify(mTabGroupModelFilter).closeTabs(TabClosureParams.closeTabs(tabGroup).build());
         assertEquals(1, mActionTester.getActionCount("TabGridDialogMenu.Delete"));
 
         when(mTabGroupModelFilter.isIncognitoBranded()).thenReturn(false);
@@ -1620,6 +1619,24 @@ public class TabGridDialogMediatorUnitTest {
 
         verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.capture());
         assertFalse(mCurrentTabModelFilterSupplier.hasObservers());
+    }
+
+    @Test
+    public void testShowOrUpdateCollaborationActivityMessageCard() {
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
+
+        mModel.set(TabGridDialogProperties.IS_TAB_GROUP_SHARED, true);
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(true);
+
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController, never()).addMessageCardItem(/* position= */ eq(0), any());
+
+        when(mDialogController.messageCardExists(MessageType.COLLABORATION_ACTIVITY))
+                .thenReturn(false);
+        mMediator.showOrUpdateCollaborationActivityMessageCard();
+        verify(mDialogController).addMessageCardItem(/* position= */ eq(0), any());
     }
 
     private Tab prepareTab(int id, String title) {

@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Et website, du besøger, kan på et senere tidspunkt anmode Chrome om at se dine interesser med henblik på at personligt tilpasse de annoncer, du får vist. Chrome kan dele op til 3 interesser.</translation>
 <translation id="2563121210305478421">Vil du genstarte Chrome?</translation>
 <translation id="2569974318947988067">Chrome vil forsøge at opgradere navigationen til HTTPS</translation>
+<translation id="2571392474191184472">Din organisation administrerer Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -442,6 +443,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7177959540995930968">Du kan få flere oplysninger om disse funktioner i Chrome-indstillingerne.</translation>
 <translation id="7193885263065350793">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine eksisterende Chrome-data adskilt. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
 <translation id="7295052994004373688">Dette sprog bruges til at vise Google Chrome-brugerfladen</translation>
 <translation id="7296210096911315575">Vigtige oplysninger om brug og sikkerhed</translation>
 <translation id="7302361266603927550">Nogle af dine Chrome-data er endnu ikke gemt på din Google-konto. Prøv at vente et par minutter, før du logger ud. Hvis du logger ud nu, slettes disse data.</translation>
@@ -575,6 +577,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8999117580775242387">Når HTTPS er utilgængelig, anvender Chrome en usikker forbindelse uden at advare dig</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
+<translation id="9014771989710951291">Flere organisationer administrerer Chrome</translation>
 <translation id="9024318700713112071">Angiv Chrome som din standardbrowser</translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
 <translation id="9090566250983691233">Se, hvorfor Chrome blokerer visse filer</translation>

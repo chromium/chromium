@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #import "components/content_settings/core/common/content_settings.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -262,7 +262,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)flushFakeSyncServerToDisk;
 
 // Gets the number of entities of the given `type`.
-- (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type [[nodiscard]];
+- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type [[nodiscard]];
 
 // Adds typed URL into HistoryService.
 - (void)addHistoryServiceTypedURL:(const GURL&)URL;
@@ -290,7 +290,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
 // Triggers a sync cycle for a `type`.
-- (void)triggerSyncCycleForType:(syncer::ModelType)type;
+- (void)triggerSyncCycleForType:(syncer::DataType)type;
 
 // Deletes an autofill profile from the fake sync server with `GUID`, if it
 // exists. If it doesn't exist, nothing is done.
@@ -306,7 +306,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Waits until sync server contains `count` entities of the given `type` and
 // `name`. Folders are not included in this count.
 // If the condition is not met within a timeout a GREYAssert is induced.
-- (void)waitForSyncServerEntitiesWithType:(syncer::ModelType)type
+- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
                                      name:(const std::string&)UTF8Name
                                     count:(size_t)count
                                   timeout:(base::TimeDelta)timeout;

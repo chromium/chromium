@@ -839,7 +839,7 @@ const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowAppIcon() {
   return nullptr;
 }
 
-void DesktopNativeWidgetAura::InitModalType(ui::ModalType modal_type) {
+void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   // 99% of the time, we should not be asked to create a
   // DesktopNativeWidgetAura that is modal. We only support window modal
   // dialogs on the same lines as non AURA.
@@ -1264,8 +1264,10 @@ void DesktopNativeWidgetAura::OnPaint(const ui::PaintContext& context) {
 void DesktopNativeWidgetAura::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
-  GetWidget()->DeviceScaleFactorChanged(old_device_scale_factor,
-                                        new_device_scale_factor);
+  if (Widget* widget = GetWidget()) {
+    widget->DeviceScaleFactorChanged(old_device_scale_factor,
+                                     new_device_scale_factor);
+  }
 }
 
 void DesktopNativeWidgetAura::OnWindowDestroying(aura::Window* window) {

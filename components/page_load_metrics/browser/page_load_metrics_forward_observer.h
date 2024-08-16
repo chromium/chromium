@@ -178,6 +178,7 @@ class PageLoadMetricsForwardObserver final
   void OnSharedStorageSelectURLCalled() override;
   void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override;
+  void OnAdAuctionComplete() override;
 
   // Holds the forward target observer running in the parent PageLoadTracker.
   base::WeakPtr<PageLoadMetricsObserverInterface> parent_observer_;

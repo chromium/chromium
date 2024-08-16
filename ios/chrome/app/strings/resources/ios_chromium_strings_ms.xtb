@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Untuk melumpuhkan Mod Kunci Semua pada Chromium, matikan mod tersebut pada iPhone anda.</translation>
 <translation id="159029779861043703">Chromium memastikan data sensitif anda selamat dengan Face ID.</translation>
 <translation id="1591119736686995611">Membuka Tab Grid Chromium.</translation>
+<translation id="16001233025397167">Semakan Keselamatan memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi. Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan oleh Chromium untuk anda.</translation>
 <translation id="1611584326765829247">Benarkan Chromium membantu anda menjejaki bungkusan anda</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
 <translation id="1647558790457890304">Tetapan Chromium</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium.</translation>
 <translation id="2450140762465183767">Kini anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="2478931088402984578">Pilih <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Manfaatkan Kuasa Chromium Shopping</translation>
 <translation id="252374538254180121">Tetapkan Chromium sebagai Penyemak Imbas Lalai</translation>
 <translation id="2574528844022712255">Lihat Penanda Halaman Chromium</translation>
 <translation id="2590893390871230428">Segerakkan Data Chromium Anda</translation>
@@ -103,6 +105,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="3855938650519180865">Item Baharu dalam Chromium</translation>
 <translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
 <translation id="3904484643286601695">Anda boleh mengemaskinikan pilihan anda pada bila-bila masa dalam Tetapan Chromium.</translation>
+<translation id="3983291422281996849">Tetapkan Chromium sebagai penyemak imbas lalai anda untuk menjejaki harga dengan mudah dan mendapatkan cerapan harga untuk barang yang mahu anda beli.</translation>
 <translation id="4005283307739974863">Buka dan Jalankan Pemeriksaan Keselamatan dalam Chromium.</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
@@ -117,6 +120,7 @@ Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan
 <translation id="4432744876818348753">Log masuk untuk memanfaatkan Chromium sepenuhnya</translation>
 <translation id="4445228361214254027">Organisasi anda mematikan keupayaan untuk menggunakan dan menyimpan data Chromium pada Google Account anda. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
 <translation id="4498832288620833153">Menambahkan URL yang diinput pada senarai bacaan anda dalam Chromium.</translation>
+<translation id="451793238785269934">Suapan tersuai yang dibuat untuk anda. Termasuk News, Sukan dan Cuaca.</translation>
 <translation id="452436063477828504">Pastikan anda dapat menggunakan data Chromium pada bila-bila masa dalam Google Account anda</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
@@ -133,6 +137,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam 
 <translation id="4736424910885271643">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chromium anda akan dikosongkan daripada peranti ini</translation>
 <translation id="4790638144988730920">Kekal menggunakan data Chromium dalam Google Account anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
+<translation id="4904452304169763785">Makluman tentang sebarang masalah privasi atau keselamatan yang dikesan oleh Chromium untuk anda.</translation>
 <translation id="4962295957157529683">Selesaikan perkara yang anda lakukan pada tetingkap Chromium lain yang terbuka.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4996471330284142407">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
@@ -144,6 +149,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam 
 <translation id="5131565040785979529">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium digunakan.</translation>
 <translation id="5146749061471423558">Tambahkan Penanda Halaman pada Chromium</translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
+<translation id="5203483872492817335">Akses Chromium dengan lebih pantas daripada Dok Skrin Utama iPad anda.</translation>
 <translation id="5213683223491576284">Buka Password Manager dalam Chromium.</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
 <translation id="5242782538551259282">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
@@ -175,6 +181,7 @@ Perkara yang perlu dipertimbangkan:
   • Jika Chromium ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
 
   • Jika anda menyegerakkan sejarah anda kepada Google Account anda, metrik mungkin merangkumi maklumat URL yang anda lawati.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan secara automatik oleh Chromium untuk anda.</translation>
 <translation id="5945387852661427312">Anda mengelog masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chromium anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan mengelog keluar daripada Chromium akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="5951593919357934226">Dapatkan manfaat sepenuhnya daripada Chromium.</translation>
 <translation id="5983312940147103417">Jadikan Chromium Lebih Baik</translation>
@@ -225,6 +232,7 @@ Perkara yang perlu dipertimbangkan:
 Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Pemberitahuan Chromium dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="7222001353246886083">Cari ${searchPhrase} pada Chromium</translation>
+<translation id="7228180817326917122">Petua Chromium: Pilih kedudukan bar alamat anda</translation>
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>
 <translation id="7269362888766543920">Beberapa alat tambah menyebabkan Chromium ranap. Sila cuba menyahpasang alat tambah tersebut.</translation>
 <translation id="7285031092584344905">Akses kata laluan Chromium anda dan pelbagai lagi merentas apl lain.</translation>
@@ -247,6 +255,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="7928628054454574139">Buka Chromium pada bila-bila masa anda mengetik pautan dalam apl lain</translation>
 <translation id="7931842119211730154">Kunci Tab Inkognito Apabila Anda Menutup Chromium</translation>
 <translation id="7934404985878918282">Lihat Senarai Bacaan Chromium</translation>
+<translation id="7947765692209663835">Akses Chromium dengan lebih pantas daripada Dok Skrin Utama iPhone anda.</translation>
 <translation id="7971753607796745700">Tambahkan Item Senarai Bacaan pada Chromium</translation>
 <translation id="7980860476903281594">Chromium berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
 <translation id="7994322153108931467">Untuk mendapatkan petua berguna Chromium, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
@@ -260,11 +269,13 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8235427517854598594">Jadikan Chromium Penyemak Imbas Lalai Anda?</translation>
 <translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
 <translation id="8254729934443216898">Terokai ciri baharu yang membantu anda memanfaatkan Chromium sepenuhnya.</translation>
+<translation id="829047622686389424">Suapan tersuai yang dibuat untuk anda.</translation>
 <translation id="8303579360494576778">Urus Kaedah Pembayaran dalam Chromium</translation>
 <translation id="830951810931292870">Buka URL yang dimasukkan pada Chromium dalam Inkognito.</translation>
 <translation id="8386869251364507178">Tindakan Chromium</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="8458950033462118672">Anda boleh membuka pautan dalam Chromium secara automatik dengan menjadikan Chromium sebagai Apl Penyemak Imbas Lalai anda.</translation>
+<translation id="8473874987831035139">Petua Chromium: Alihkan Chromium kepada Dok</translation>
 <translation id="8502918057530111907">Gunakan Chromium secara Lalai untuk Mendapatkan Cerapan Harga dengan Mudah</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}}</translation>
 <translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>

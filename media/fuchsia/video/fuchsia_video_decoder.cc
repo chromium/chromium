@@ -119,7 +119,7 @@ class FuchsiaVideoDecoder::OutputMailbox {
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
       gfx::GpuMemoryBufferHandle gmb_handle,
       gfx::Size& size,
-      gfx::BufferFormat& buffer_format,
+      viz::SharedImageFormat& format,
       gfx::ClientNativePixmapFactory* pixmap_factory,
       const gfx::ColorSpace& color_space)
       : raster_context_provider_(raster_context_provider),
@@ -129,23 +129,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
                                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                      gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE;
 
-    // The GMB is either YUV_420_BIPLANAR (SIF kNV12) or YVU_420 (SIF kYV12).
-    auto shared_image_format = viz::MultiPlaneFormat::kNV12;
-    switch (buffer_format) {
-      case gfx::BufferFormat::YUV_420_BIPLANAR:
-        break;
-      case gfx::BufferFormat::YVU_420:
-        shared_image_format = viz::MultiPlaneFormat::kYV12;
-        break;
-      default:
-        NOTREACHED_NORETURN();
-    }
-    shared_image_format.SetPrefersExternalSampler();
-
+    // Note that the shared image prefers external sampler.
+    format.SetPrefersExternalSampler();
     shared_image_ =
         raster_context_provider_->SharedImageInterface()->CreateSharedImage(
-            {shared_image_format, size, color_space, usage,
-             "FuchsiaVideoDecoder"},
+            {format, size, color_space, usage, "FuchsiaVideoDecoder"},
             std::move(gmb_handle));
 
     create_sync_token_ = raster_context_provider_->SharedImageInterface()
@@ -573,19 +561,20 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
       fidl::ToUnderlying(output_format_.image_format.pixel_format.type));
 
   VideoPixelFormat pixel_format;
-  gfx::BufferFormat buffer_format;
+  // The GMB is either kNV12 or kYV12.
+  viz::SharedImageFormat si_format;
   VkFormat vk_format;
   switch (sysmem_pixel_format) {
     case fuchsia::images2::PixelFormat::NV12:
       pixel_format = PIXEL_FORMAT_NV12;
-      buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+      si_format = viz::MultiPlaneFormat::kNV12;
       vk_format = VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
       break;
 
     case fuchsia::images2::PixelFormat::I420:
     case fuchsia::images2::PixelFormat::YV12:
       pixel_format = PIXEL_FORMAT_I420;
-      buffer_format = gfx::BufferFormat::YVU_420;
+      si_format = viz::MultiPlaneFormat::kYV12;
       vk_format = VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
       break;
 
@@ -620,8 +609,8 @@ void FuchsiaVideoDecoder::OnStreamProcessorOutputPacket(
     gmb_handle.native_pixmap_handle.buffer_index = buffer_index;
 
     output_mailboxes_[buffer_index] = new OutputMailbox(
-        raster_context_provider_, std::move(gmb_handle), coded_size,
-        buffer_format, client_native_pixmap_factory_.get(),
+        raster_context_provider_, std::move(gmb_handle), coded_size, si_format,
+        client_native_pixmap_factory_.get(),
         current_config_.color_space_info().ToGfxColorSpace());
   } else {
     raster_context_provider_->SharedImageInterface()->UpdateSharedImage(
@@ -760,7 +749,7 @@ void FuchsiaVideoDecoder::SetBufferCollectionTokenForGpu(
   raster_context_provider_->SharedImageInterface()
       ->RegisterSysmemBufferCollection(
           std::move(service_handle), token.Unbind().TakeChannel(),
-          gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
+          viz::MultiPlaneFormat::kNV12, gfx::BufferUsage::GPU_READ,
           use_overlays_for_video_ /*register_with_image_pipe*/);
 
   // Exact number of buffers sysmem will allocate is unknown here.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -77,7 +82,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
     // Read the size of the JavaScript script from Fuzzilli.
     uint64_t script_size = 0;
     ctrl_read_file.ReadAtCurrentPosAndCheck(
-        base::as_writable_bytes(base::make_span(&script_size, 1u)));
+        base::as_writable_bytes(base::span_from_ref(script_size)));
 
     // Read the JavaScript script from Fuzzilli.
     std::vector<uint8_t> buffer(script_size + 1);
@@ -90,8 +95,7 @@ int LLVMFuzzerRunDriverImpl(int* argc,
 
     // Fuzzilli status is similar to the Linux return status. Lower 8 bits are
     // used for signals, and higher 8 bits for return code.
-    ctrl_write_file.WriteAtCurrentPosAndCheck(
-        base::as_bytes(base::make_span(&status, 1u)));
+    ctrl_write_file.WriteAtCurrentPosAndCheck(base::byte_span_from_ref(status));
 
     // After every iteration, we reset the coverage edges so that we can mark
     // which edges are hit in the next iteration. This is needed by Fuzzilli

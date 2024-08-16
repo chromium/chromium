@@ -1,0 +1,15 @@
+{
+  "name": "Test",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Test",
+  "content_scripts": [
+    {
+      "matches": [ "http://*.example.com/*" ],
+      "js": [ "content_script.js" ]
+    }
+  ],
+  "background": {"scripts": ["background.js"]},
+  "web_accessible_resources": ["war.js"],
+  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"]
+}

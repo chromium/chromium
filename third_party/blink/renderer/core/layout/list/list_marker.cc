@@ -266,7 +266,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       if (!child->IsLayoutImage() ||
           To<LayoutImage>(child)->ImageResource()->ImagePtr() !=
               list_style_image->Data()) {
-        if (UNLIKELY(IsA<LayoutTextCombine>(child->Parent()))) {
+        if (IsA<LayoutTextCombine>(child->Parent())) [[unlikely]] {
           DestroyLayoutObject(child->Parent());
         } else {
           DestroyLayoutObject(child);
@@ -339,7 +339,7 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style,
   DCHECK(font_data);
   if (!font_data)
     return LayoutUnit();
-  if (UNLIKELY(style.SpecifiedFontSize() == 0)) {
+  if (style.SpecifiedFontSize() == 0) [[unlikely]] {
     // See http://crbug.com/1228157
     return LayoutUnit();
   }

@@ -65,6 +65,56 @@ std::optional<const extensions::Extension*> MaybeGetExtension(
   return std::nullopt;
 }
 
+struct GetExtensionAndStorageFrontendResult {
+  raw_ptr<const extensions::Extension> extension;
+  extensions::StorageAreaNamespace storage_namespace;
+  raw_ptr<extensions::StorageFrontend> frontend;
+
+  std::optional<std::string> error;
+};
+
+GetExtensionAndStorageFrontendResult GetExtensionAndStorageFrontend(
+    const std::string target_id_,
+    const protocol::String& extension_id,
+    const protocol::String& storage_area) {
+  GetExtensionAndStorageFrontendResult result;
+
+  result.extension = nullptr;
+  result.frontend = nullptr;
+
+  auto host = content::DevToolsAgentHost::GetForId(target_id_);
+  CHECK(host);
+
+  content::BrowserContext* context = host->GetBrowserContext();
+
+  if (!context) {
+    result.error = "No associated browser context.";
+    return result;
+  }
+
+  std::optional<const extensions::Extension*> optional_extension =
+      MaybeGetExtension(extension_id, host);
+
+  if (!optional_extension) {
+    result.error = "Extension not found.";
+    return result;
+  }
+
+  const extensions::StorageAreaNamespace namespace_result =
+      extensions::StorageAreaFromString(storage_area);
+
+  if (namespace_result == extensions::StorageAreaNamespace::kInvalid) {
+    result.error = "Storage area is invalid.";
+    return result;
+  }
+
+  result.extension = *optional_extension;
+  result.storage_namespace = namespace_result;
+  result.frontend = extensions::StorageFrontend::Get(context);
+
+  return result;
+}
+
 }  // namespace
 
 ExtensionsHandler::ExtensionsHandler(protocol::UberDispatcher* dispatcher,
@@ -115,39 +165,17 @@ void ExtensionsHandler::GetStorageItems(
     const protocol::String& storage_area,
     protocol::Maybe<protocol::Array<protocol::String>> keys,
     std::unique_ptr<ExtensionsHandler::GetStorageItemsCallback> callback) {
-  auto host = content::DevToolsAgentHost::GetForId(target_id_);
-  CHECK(host);
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
 
-  content::BrowserContext* context = host->GetBrowserContext();
-
-  if (!context) {
+  if (result.error) {
     std::move(callback)->sendFailure(
-        protocol::Response::InvalidRequest("No associated browser context."));
+        protocol::Response::InvalidRequest(*result.error));
     return;
   }
 
-  std::optional<const extensions::Extension*> extension =
-      MaybeGetExtension(id, host);
-
-  if (!extension) {
-    std::move(callback)->sendFailure(
-        protocol::Response::InvalidRequest("Extension not found."));
-    return;
-  }
-
-  const extensions::StorageAreaNamespace storage_namespace =
-      extensions::StorageAreaFromString(storage_area);
-
-  if (storage_namespace == extensions::StorageAreaNamespace::kInvalid) {
-    std::move(callback)->sendFailure(
-        protocol::Response::InvalidRequest("Storage area is invalid."));
-    return;
-  }
-
-  extensions::StorageFrontend* frontend =
-      extensions::StorageFrontend::Get(context);
-  frontend->GetValues(
-      *extension, storage_namespace,
+  result.frontend->GetValues(
+      result.extension.get(), result.storage_namespace,
       keys ? std::optional(keys.value()) : std::nullopt,
       base::BindOnce(&ExtensionsHandler::OnGetStorageItemsFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -165,4 +193,99 @@ void ExtensionsHandler::OnGetStorageItemsFinished(
   base::Value::Dict data = std::move(*result.data);
   std::move(callback)->sendSuccess(
       std::make_unique<base::Value::Dict>(std::move(data)));
+}
+
+void ExtensionsHandler::SetStorageItems(
+    const protocol::String& id,
+    const protocol::String& storage_area,
+    std::unique_ptr<protocol::DictionaryValue> values,
+    std::unique_ptr<SetStorageItemsCallback> callback) {
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
+
+  if (result.error) {
+    std::move(callback)->sendFailure(
+        protocol::Response::InvalidRequest(*result.error));
+    return;
+  }
+
+  result.frontend->Set(
+      result.extension.get(), result.storage_namespace, values->Clone(),
+      base::BindOnce(&ExtensionsHandler::OnSetStorageItemsFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExtensionsHandler::OnSetStorageItemsFinished(
+    std::unique_ptr<SetStorageItemsCallback> callback,
+    extensions::StorageFrontend::ResultStatus status) {
+  if (!status.success) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError(*status.error));
+    return;
+  }
+
+  std::move(callback)->sendSuccess();
+}
+
+void ExtensionsHandler::RemoveStorageItems(
+    const protocol::String& id,
+    const protocol::String& storage_area,
+    std::unique_ptr<protocol::Array<protocol::String>> keys,
+    std::unique_ptr<RemoveStorageItemsCallback> callback) {
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
+
+  if (result.error) {
+    std::move(callback)->sendFailure(
+        protocol::Response::InvalidRequest(*result.error));
+    return;
+  }
+
+  result.frontend->Remove(
+      result.extension.get(), result.storage_namespace, *keys,
+      base::BindOnce(&ExtensionsHandler::OnRemoveStorageItemsFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExtensionsHandler::OnRemoveStorageItemsFinished(
+    std::unique_ptr<RemoveStorageItemsCallback> callback,
+    extensions::StorageFrontend::ResultStatus status) {
+  if (!status.success) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError(*status.error));
+    return;
+  }
+
+  std::move(callback)->sendSuccess();
+}
+
+void ExtensionsHandler::ClearStorageItems(
+    const protocol::String& id,
+    const protocol::String& storage_area,
+    std::unique_ptr<ClearStorageItemsCallback> callback) {
+  GetExtensionAndStorageFrontendResult result =
+      GetExtensionAndStorageFrontend(target_id_, id, storage_area);
+
+  if (result.error) {
+    std::move(callback)->sendFailure(
+        protocol::Response::InvalidRequest(*result.error));
+    return;
+  }
+
+  result.frontend->Clear(
+      result.extension.get(), result.storage_namespace,
+      base::BindOnce(&ExtensionsHandler::OnClearStorageItemsFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ExtensionsHandler::OnClearStorageItemsFinished(
+    std::unique_ptr<ClearStorageItemsCallback> callback,
+    extensions::StorageFrontend::ResultStatus status) {
+  if (!status.success) {
+    std::move(callback)->sendFailure(
+        protocol::Response::ServerError(*status.error));
+    return;
+  }
+
+  std::move(callback)->sendSuccess();
 }

@@ -61,7 +61,8 @@ void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
     ConstraintSpaceBuilder space_builder(GetConstraintSpace().GetWritingMode(),
                                          child.Style().GetWritingDirection(),
                                          /* is_new_fc */ true);
-    LogicalSize child_size = converter.ToLogical({width, new_rect.Height()});
+    LogicalSize child_size =
+        converter.ToLogical(PhysicalSize(width, new_rect.Height()));
     space_builder.SetAvailableSize(child_size);
     space_builder.SetIsFixedInlineSize(true);
     space_builder.SetIsFixedBlockSize(true);

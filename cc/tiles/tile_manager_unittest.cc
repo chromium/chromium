@@ -216,9 +216,11 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterTilePriorityQueue) {
   // Renew all of the tile priorities.
   gfx::Rect viewport(50, 50, 100, 100);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -559,10 +561,12 @@ TEST_F(TileManagerTilePriorityQueueTest,
       gfx::AxisTransform2d(1.7f, gfx::Vector2dF()),
       active_layer()->raster_source());
 
-  pending_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f,
-                                                   5.0, Occlusion(), true);
-  active_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f, 5.0,
-                                                  Occlusion(), true);
+  pending_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   std::set<Tile*> all_expected_tiles;
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -634,10 +638,12 @@ TEST_F(TileManagerTilePriorityQueueTest,
       gfx::AxisTransform2d(1.7f, gfx::Vector2dF()),
       active_layer()->raster_source());
 
-  pending_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f,
-                                                   5.0, Occlusion(), true);
-  active_layer()->tilings()->UpdateTilePriorities(gfx::Rect(viewport), 1.f, 5.0,
-                                                  Occlusion(), true);
+  pending_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  active_layer()->tilings()->UpdateTilePriorities(
+      gfx::Rect(viewport), 1.f, 5.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   std::set<Tile*> all_expected_tiles;
   for (size_t i = 0; i < pending_layer()->num_tilings(); ++i) {
@@ -898,9 +904,11 @@ TEST_F(TileManagerTilePriorityQueueTest, EvictionTilePriorityQueue) {
   // Renew all of the tile priorities.
   gfx::Rect viewport(50, 50, 100, 100);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -1099,14 +1107,18 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   pending_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   active_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   active_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   all_tiles.clear();
@@ -1199,9 +1211,11 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // Renew all of the tile priorities.
   gfx::Rect viewport(layer_bounds);
   pending_layer()->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
   pending_child_layer->picture_layer_tiling_set()->UpdateTilePriorities(
-      viewport, 1.0f, 1.0, Occlusion(), true);
+      viewport, 1.0f, 1.0, Occlusion(), true,
+      TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Populate all tiles directly from the tilings.
   std::set<Tile*> all_pending_tiles;
@@ -1375,7 +1389,8 @@ TEST_F(TileManagerTilePriorityQueueTest,
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   std::vector<Tile*> all_tiles = tiling->AllTilesForTesting();
   // Sanity check.
   EXPECT_EQ(3364u, all_tiles.size());
@@ -1388,8 +1403,9 @@ TEST_F(TileManagerTilePriorityQueueTest,
   // 3. Third iteration ensures that no tiles are returned, since they were all
   //    marked as ready to draw.
   for (int i = 0; i < 3; ++i) {
-    std::unique_ptr<TilingSetRasterQueueAll> queue(
-        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    std::unique_ptr<TilingSetRasterQueueAll> queue =
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+    EXPECT_TRUE(queue);
 
     // There are 3 bins in TilePriority.
     bool have_tiles[3] = {};
@@ -1487,9 +1503,10 @@ TEST_F(TileManagerTilePriorityQueueTest,
       tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true);
-  tiling_set->UpdateTilePriorities(moved_viewport, 1.0f, 2.0, Occlusion(),
-                                   true);
+  tiling_set->UpdateTilePriorities(viewport, 1.0f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
+  tiling_set->UpdateTilePriorities(moved_viewport, 1.0f, 2.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   const int soon_border_outset = 312;
   gfx::Rect soon_rect = moved_viewport;
@@ -1500,8 +1517,9 @@ TEST_F(TileManagerTilePriorityQueueTest,
   PrioritizedTile last_tile;
   int eventually_bin_order_correct_count = 0;
   int eventually_bin_order_incorrect_count = 0;
-  std::unique_ptr<TilingSetRasterQueueAll> queue(
-      new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+  std::unique_ptr<TilingSetRasterQueueAll> queue =
+      TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+  EXPECT_TRUE(queue);
   for (; !queue->IsEmpty(); queue->Pop()) {
     if (!last_tile.tile())
       last_tile = queue->Top();
@@ -1660,9 +1678,13 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect,      // Skewport rect.
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
-    std::unique_ptr<TilingSetRasterQueueAll> queue(
-        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
-    EXPECT_TRUE(queue->IsEmpty());
+    std::unique_ptr<TilingSetRasterQueueAll> queue =
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+    if (features::IsCCSlimmingEnabled()) {
+      EXPECT_FALSE(queue);
+    } else {
+      EXPECT_TRUE(queue);
+    }
   }
 
   // This is the behavior difference between FakePictureLayerTilingClient
@@ -1677,8 +1699,9 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         intersecting_rect,      // Skewport rect.
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
-    std::unique_ptr<TilingSetRasterQueueAll> queue(
-        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    std::unique_ptr<TilingSetRasterQueueAll> queue =
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+    EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
 
@@ -1688,8 +1711,9 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         non_intersecting_rect,  // Skewport rect.
         intersecting_rect,      // Soon rect.
         intersecting_rect);     // Eventually rect.
-    std::unique_ptr<TilingSetRasterQueueAll> queue(
-        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    std::unique_ptr<TilingSetRasterQueueAll> queue =
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+    EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
   {
@@ -1698,8 +1722,9 @@ TEST_F(TileManagerTilePriorityQueueTest, RasterQueueAllUsesCorrectTileBounds) {
         non_intersecting_rect,  // Skewport rect.
         non_intersecting_rect,  // Soon rect.
         intersecting_rect);     // Eventually rect.
-    std::unique_ptr<TilingSetRasterQueueAll> queue(
-        new TilingSetRasterQueueAll(tiling_set.get(), false, false));
+    std::unique_ptr<TilingSetRasterQueueAll> queue =
+        TilingSetRasterQueueAll::Create(tiling_set.get(), false, false);
+    EXPECT_TRUE(queue);
     EXPECT_FALSE(queue->IsEmpty());
   }
 }
@@ -2286,11 +2311,16 @@ TEST_F(PartialRasterTileManagerTest, CancelledTasksHaveNoContentId) {
   // Add tilings/tiles for the layer.
   UpdateDrawProperties(host_impl()->pending_tree());
 
-  // Build the raster queue and invalidate the top tile.
-  std::unique_ptr<RasterTilePriorityQueue> queue(host_impl()->BuildRasterQueue(
-      SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
-  EXPECT_FALSE(queue->IsEmpty());
-  queue->Top().tile()->SetInvalidated(gfx::Rect(), kInvalidatedId);
+  // Build the raster queue and invalidate the top tile. The lifetime of the
+  // queue can't outlive |host_impl| or the queue will contain dangling
+  // pointers so wrap it in a scope.
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(
+        host_impl()->BuildRasterQueue(SAME_PRIORITY_FOR_BOTH_TREES,
+                                      RasterTilePriorityQueue::Type::ALL));
+    EXPECT_FALSE(queue->IsEmpty());
+    queue->Top().tile()->SetInvalidated(gfx::Rect(), kInvalidatedId);
+  }
 
   // PrepareTiles to schedule tasks. Due to the FakeTileTaskManagerImpl,
   // these tasks will immediately be canceled.
@@ -2389,11 +2419,15 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Add tilings/tiles for the layer.
   UpdateDrawProperties(pending_tree);
 
-  // Build the raster queue and invalidate the top tile.
-  std::unique_ptr<RasterTilePriorityQueue> queue(host_impl->BuildRasterQueue(
-      SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
-  EXPECT_FALSE(queue->IsEmpty());
-  queue->Top().tile()->SetInvalidated(gfx::Rect(), kInvalidatedId);
+  // Build the raster queue and invalidate the top tile. The lifetime of the
+  // queue can't outlive |host_impl| or the queue will contain dangling
+  // pointers so wrap it in a scope.
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(host_impl->BuildRasterQueue(
+        SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
+    EXPECT_FALSE(queue->IsEmpty());
+    queue->Top().tile()->SetInvalidated(gfx::Rect(), kInvalidatedId);
+  }
 
   // PrepareTiles to schedule tasks. Due to the
   // VerifyPreviousContentRasterBufferProvider, these tasks will verified and
@@ -2475,24 +2509,28 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   UpdateDrawProperties(pending_tree);
 
   // Build the raster queue and invalidate the top tile if partial raster is
-  // enabled.
-  std::unique_ptr<RasterTilePriorityQueue> queue(host_impl->BuildRasterQueue(
-      SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
-  ASSERT_FALSE(queue->IsEmpty());
-  Tile* tile = queue->Top().tile();
-  if (partial_raster_enabled)
-    tile->SetInvalidated(gfx::Rect(200, 200), kInvalidatedId);
+  // enabled. The lifetime of the queue can't outlive |host_impl| or the
+  // queue will contain dangling pointers, so wrap it in a scope.
+  {
+    std::unique_ptr<RasterTilePriorityQueue> queue(host_impl->BuildRasterQueue(
+        SAME_PRIORITY_FOR_BOTH_TREES, RasterTilePriorityQueue::Type::ALL));
+    ASSERT_FALSE(queue->IsEmpty());
+    Tile* tile = queue->Top().tile();
+    if (partial_raster_enabled) {
+      tile->SetInvalidated(gfx::Rect(200, 200), kInvalidatedId);
+    }
 
-  // PrepareTiles to schedule tasks. Due to the
-  // VerifyPreviousContentRasterBufferProvider, these tasks will verified and
-  // cancelled.
-  host_impl->tile_manager()->PrepareTiles(host_impl->global_tile_state());
+    // PrepareTiles to schedule tasks. Due to the
+    // VerifyPreviousContentRasterBufferProvider, these tasks will verified and
+    // cancelled.
+    host_impl->tile_manager()->PrepareTiles(host_impl->global_tile_state());
 
-  // Tile will have 1 dependent decode task if we decode images only in the
-  // invalidated rect. Otherwise it will have 4.
-  EXPECT_EQ(
-      host_impl->tile_manager()->decode_tasks_for_testing(tile->id()).size(),
-      partial_raster_enabled ? 1u : 4u);
+    // Tile will have 1 dependent decode task if we decode images only in the
+    // invalidated rect. Otherwise it will have 4.
+    EXPECT_EQ(
+        host_impl->tile_manager()->decode_tasks_for_testing(tile->id()).size(),
+        partial_raster_enabled ? 1u : 4u);
+  }
 
   // Free our host_impl before the verifying_task_manager we passed it, as it
   // will use that class in clean up.

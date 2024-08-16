@@ -128,8 +128,11 @@ class FocusModeControllerMultiUserTest : public NoSessionAshTestBase {
  public:
   FocusModeControllerMultiUserTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_feature_(features::kFocusMode) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_.InitWithFeatures(
+        /*enabled_features=*/{features::kFocusMode, features::kFocusModeYTM},
+        /*disabled_features=*/{});
+  }
   ~FocusModeControllerMultiUserTest() override = default;
 
   TestingPrefServiceSimple* user_1_prefs() { return user_1_prefs_; }

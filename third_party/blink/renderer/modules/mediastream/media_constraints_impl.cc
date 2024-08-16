@@ -596,6 +596,52 @@ bool ValidateAndCopyConstraintSet(
     }
   }
 
+  if (constraints_in->hasExposureCompensation()) {
+    CopyDoubleConstraint(constraints_in->exposureCompensation(),
+                         naked_treatment,
+                         constraint_buffer.exposure_compensation);
+  }
+
+  if (constraints_in->hasExposureTime()) {
+    CopyDoubleConstraint(constraints_in->exposureTime(), naked_treatment,
+                         constraint_buffer.exposure_time);
+  }
+
+  if (constraints_in->hasColorTemperature()) {
+    CopyDoubleConstraint(constraints_in->colorTemperature(), naked_treatment,
+                         constraint_buffer.color_temperature);
+  }
+
+  if (constraints_in->hasIso()) {
+    CopyDoubleConstraint(constraints_in->iso(), naked_treatment,
+                         constraint_buffer.iso);
+  }
+
+  if (constraints_in->hasBrightness()) {
+    CopyDoubleConstraint(constraints_in->brightness(), naked_treatment,
+                         constraint_buffer.brightness);
+  }
+
+  if (constraints_in->hasContrast()) {
+    CopyDoubleConstraint(constraints_in->contrast(), naked_treatment,
+                         constraint_buffer.contrast);
+  }
+
+  if (constraints_in->hasSaturation()) {
+    CopyDoubleConstraint(constraints_in->saturation(), naked_treatment,
+                         constraint_buffer.saturation);
+  }
+
+  if (constraints_in->hasSharpness()) {
+    CopyDoubleConstraint(constraints_in->sharpness(), naked_treatment,
+                         constraint_buffer.sharpness);
+  }
+
+  if (constraints_in->hasFocusDistance()) {
+    CopyDoubleConstraint(constraints_in->focusDistance(), naked_treatment,
+                         constraint_buffer.focus_distance);
+  }
+
   if (constraints_in->hasPan()) {
     CopyBooleanOrDoubleConstraint(constraints_in->pan(), naked_treatment,
                                   constraint_buffer.pan);
@@ -619,6 +665,12 @@ bool ValidateAndCopyConstraintSet(
   if (constraints_in->hasBackgroundBlur()) {
     CopyBooleanConstraint(constraints_in->backgroundBlur(), naked_treatment,
                           constraint_buffer.background_blur);
+  }
+
+  if (constraints_in->hasBackgroundSegmentationMask()) {
+    CopyBooleanConstraint(constraints_in->backgroundSegmentationMask(),
+                          naked_treatment,
+                          constraint_buffer.background_segmentation_mask);
   }
 
   if (constraints_in->hasEyeGazeCorrection()) {
@@ -844,6 +896,37 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setDeviceId(ConvertString(input.device_id, naked_treatment));
   if (!input.group_id.IsUnconstrained())
     output->setGroupId(ConvertString(input.group_id, naked_treatment));
+  if (!input.exposure_compensation.IsUnconstrained()) {
+    output->setExposureCompensation(
+        ConvertDouble(input.exposure_compensation, naked_treatment));
+  }
+  if (!input.exposure_time.IsUnconstrained()) {
+    output->setExposureTime(
+        ConvertDouble(input.exposure_time, naked_treatment));
+  }
+  if (!input.color_temperature.IsUnconstrained()) {
+    output->setColorTemperature(
+        ConvertDouble(input.color_temperature, naked_treatment));
+  }
+  if (!input.iso.IsUnconstrained()) {
+    output->setIso(ConvertDouble(input.iso, naked_treatment));
+  }
+  if (!input.brightness.IsUnconstrained()) {
+    output->setBrightness(ConvertDouble(input.brightness, naked_treatment));
+  }
+  if (!input.contrast.IsUnconstrained()) {
+    output->setContrast(ConvertDouble(input.contrast, naked_treatment));
+  }
+  if (!input.saturation.IsUnconstrained()) {
+    output->setSaturation(ConvertDouble(input.saturation, naked_treatment));
+  }
+  if (!input.sharpness.IsUnconstrained()) {
+    output->setSharpness(ConvertDouble(input.sharpness, naked_treatment));
+  }
+  if (!input.focus_distance.IsUnconstrained()) {
+    output->setFocusDistance(
+        ConvertDouble(input.focus_distance, naked_treatment));
+  }
   if (!input.pan.IsUnconstrained())
     output->setPan(ConvertBooleanOrDouble(input.pan, naked_treatment));
   if (!input.tilt.IsUnconstrained())
@@ -856,6 +939,10 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
   if (!input.background_blur.IsUnconstrained()) {
     output->setBackgroundBlur(
         ConvertBoolean(input.background_blur, naked_treatment));
+  }
+  if (!input.background_segmentation_mask.IsUnconstrained()) {
+    output->setBackgroundSegmentationMask(
+        ConvertBoolean(input.background_segmentation_mask, naked_treatment));
   }
   if (!input.eye_gaze_correction.IsUnconstrained()) {
     output->setEyeGazeCorrection(

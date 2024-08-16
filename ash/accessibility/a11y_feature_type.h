@@ -20,6 +20,7 @@ enum class A11yFeatureType {
   kDisableTrackpad,
   kDockedMagnifier,
   kFaceGaze,
+  kFlashNotifications,
   kFloatingMenu,
   kFocusHighlight,
   kFullscreenMagnifier,

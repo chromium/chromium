@@ -136,7 +136,7 @@ public class PureJavaExceptionReporterTest {
     public void verifyCrashKeys() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    CrashKeys.getInstance().set(CrashKeyIndex.LOADED_DYNAMIC_MODULE, "foo");
+                    CrashKeys.getInstance().set(CrashKeyIndex.INSTALLED_MODULES, "foo");
                 });
 
         TestPureJavaExceptionReporter reporter = new TestPureJavaExceptionReporter();
@@ -144,8 +144,6 @@ public class PureJavaExceptionReporterTest {
         String minidumpString = readFileToString(reporter.getMinidumpFile());
 
         Assert.assertTrue(
-                minidumpString.contains(CrashKeys.getKey(CrashKeyIndex.LOADED_DYNAMIC_MODULE)));
-        Assert.assertFalse(
-                minidumpString.contains(CrashKeys.getKey(CrashKeyIndex.ACTIVE_DYNAMIC_MODULE)));
+                minidumpString.contains(CrashKeys.getKey(CrashKeyIndex.INSTALLED_MODULES)));
     }
 }

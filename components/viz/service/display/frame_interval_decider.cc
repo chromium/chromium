@@ -10,11 +10,52 @@
 
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
 namespace viz {
+
+namespace {
+
+std::unique_ptr<base::trace_event::TracedValue>
+FrameIntervalMatcherInputsTracedValue(
+    const FrameIntervalMatcher::Inputs& inputs) {
+  auto traced_value = std::make_unique<base::trace_event::TracedValue>();
+
+  for (const auto& [frame_sink_id, interval_inputs] : inputs.inputs_map) {
+    auto frame_sink_scope = traced_value->BeginDictionaryScopedWithCopiedName(
+        frame_sink_id.ToString());
+    traced_value->SetInteger("time_diff_us",
+                             static_cast<int>((inputs.aggregated_frame_time -
+                                               interval_inputs.frame_time)
+                                                  .InMicroseconds()));
+    traced_value->SetBoolean("has_input", interval_inputs.has_input);
+    traced_value->SetBoolean(
+        "only_content",
+        interval_inputs.has_only_content_frame_interval_updates);
+
+    int index = 0;
+    for (const ContentFrameIntervalInfo& content_info :
+         interval_inputs.content_interval_info) {
+      auto content_info_scope =
+          traced_value->BeginDictionaryScopedWithCopiedName(
+              base::StringPrintf("content_info_%d", index));
+      traced_value->SetString(
+          "type", ContentFrameIntervalTypeToString(content_info.type));
+      traced_value->SetInteger(
+          "interval_us",
+          static_cast<int>(content_info.frame_interval.InMicroseconds()));
+      traced_value->SetInteger("duplicate_count", content_info.duplicate_count);
+      index++;
+    }
+  }
+
+  return traced_value;
+}
+}  // namespace
 
 FrameIntervalDecider::ScopedAggregate::ScopedAggregate(
     FrameIntervalDecider& decider,
@@ -37,8 +78,7 @@ void FrameIntervalDecider::ScopedAggregate::OnSurfaceWillBeDrawn(
                              surface->GetFrameIntervalInputs());
 }
 
-FrameIntervalDecider::FrameIntervalDecider(Client& client) : client_(client) {}
-
+FrameIntervalDecider::FrameIntervalDecider() = default;
 FrameIntervalDecider::~FrameIntervalDecider() = default;
 
 void FrameIntervalDecider::UpdateSettings(
@@ -66,6 +106,10 @@ void FrameIntervalDecider::Decide(
   FrameIntervalMatcher::Inputs matcher_inputs(settings_);
   matcher_inputs.aggregated_frame_time = frame_time;
   matcher_inputs.inputs_map = std::move(inputs_map);
+
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
+                      "FrameIntervalMatcherInputs", "inputs",
+                      FrameIntervalMatcherInputsTracedValue(matcher_inputs));
 
   // Run through matchers in order and use the first non-null result.
   std::optional<Result> match_result;
@@ -111,9 +155,16 @@ void FrameIntervalDecider::Decide(
   if (frame_time - current_result_frame_time_ >
           settings_.increase_frame_interval_timeout ||
       MayDecreaseFrameInterval(current_result_, match_result)) {
+    TRACE_EVENT_INSTANT(
+        "viz", "FrameIntervalDeciderResult", "result",
+        FrameIntervalMatcher::ResultToString(match_result.value()),
+        "matcher_type",
+        FrameIntervalMatcher::MatcherTypeToString(matcher_type));
     current_result_frame_time_ = frame_time;
     current_result_ = match_result;
-    client_->SetFrameInterval(match_result.value(), matcher_type);
+    if (settings_.result_callback) {
+      settings_.result_callback.Run(match_result.value(), matcher_type);
+    }
   }
 }
 

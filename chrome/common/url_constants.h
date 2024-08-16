@@ -261,10 +261,6 @@ inline constexpr char kDownloadBlockedLearnMoreURL[] =
 inline constexpr char kExtensionControlledSettingLearnMoreURL[] =
     "https://support.google.com/chrome?p=ui_settings_api_extension";
 
-// URL used to indicate that an extension resource load request was invalid.
-inline constexpr char kExtensionInvalidRequestURL[] =
-    "chrome-extension://invalid/";
-
 // Link for creating family group with Google Families.
 inline constexpr char16_t kFamilyGroupCreateURL[] =
     u"https://myaccount.google.com/family/create?utm_source=cpwd";
@@ -273,8 +269,8 @@ inline constexpr char16_t kFamilyGroupCreateURL[] =
 inline constexpr char16_t kFamilyGroupViewURL[] =
     u"https://myaccount.google.com/family/details?utm_source=cpwd";
 
-// "Learn more" URL for first party sets.
-inline constexpr char kFirstPartySetsLearnMoreURL[] =
+// "Learn more" URL for related website sets.
+inline constexpr char kRelatedWebsiteSetsLearnMoreURL[] =
     "https://support.google.com/chrome?p=cpn_cookies"
     "#zippy=%2Callow-related-sites-to-access-your-activity";
 
@@ -310,6 +306,10 @@ inline constexpr char kGoogleAccountChooserURL[] =
 // URL of the Google Account page showing the known user devices.
 inline constexpr char kGoogleAccountDeviceActivityURL[] =
     "https://myaccount.google.com/device-activity?utm_source=chrome";
+
+// URL of the two factor authentication setup required intersitial.
+inline constexpr char kGoogleTwoFactorIntersitialURL[] =
+    "https://myaccount.google.com/interstitials/twosvrequired";
 
 // URL of the Google Password Manager.
 inline constexpr char kGooglePasswordManagerURL[] =

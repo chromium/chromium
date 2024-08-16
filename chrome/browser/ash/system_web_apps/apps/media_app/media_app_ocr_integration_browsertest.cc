@@ -42,9 +42,7 @@ constexpr char kFilePdfTall[] = "tall.pdf";
 
 class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppOcrIntegrationTest() {
-    feature_list_.InitWithFeatures({ash::features::kMediaAppPdfA11yOcr}, {});
-  }
+  MediaAppOcrIntegrationTest() {}
 
   void SetUpOnMainThread() override {
     SystemWebAppIntegrationTest::SetUpOnMainThread();
@@ -59,9 +57,6 @@ class MediaAppOcrIntegrationTest : public ash::SystemWebAppIntegrationTest {
                                  params);
     observer.Wait();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Waits for the number of active Browsers in the test process to reach `count`.

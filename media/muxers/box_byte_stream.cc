@@ -80,7 +80,7 @@ void BoxByteStream::WriteBytes(const void* buf, size_t len) {
   while (!writer_->Write(
       // TODO(crbug.com/40284755): The caller must have provided a valid buf/len
       // pair. This method should receive a span instead of a pointer.
-      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(buf), len)))) {
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(buf), len)))) {
     GrowWriter();
   }
   position_ += len;

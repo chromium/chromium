@@ -74,7 +74,7 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kR_F16) {
     return "R_F16";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int BitsPerPixelForTrueSinglePlaneFormat(SharedImageFormat format) {
@@ -104,7 +104,7 @@ int BitsPerPixelForTrueSinglePlaneFormat(SharedImageFormat format) {
   } else if (format == SinglePlaneFormat::kETC1) {
     return 4;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
@@ -477,7 +477,7 @@ int SharedImageFormat::BitsPerPixel() const {
       // Legacy multiplanar formats are not supported.
       CHECK(0);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {

@@ -34,7 +34,7 @@
 class PrefService;
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace password_manager {
@@ -114,7 +114,7 @@ class PasswordStore : public PasswordStoreInterface {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   base::CallbackListSubscription AddSyncEnabledOrDisabledCallback(
@@ -143,7 +143,8 @@ class PasswordStore : public PasswordStoreInterface {
   };
 
   // Called on the main thread after initialization is completed.
-  // |success| is true if initialization was successful.
+  // |success| is true if initialization was successful. Invokes
+  // |post_init_callback_|.
   void OnInitCompleted(bool success);
 
   // Notifies observers that password store data may have been changed. If
@@ -188,6 +189,11 @@ class PasswordStore : public PasswordStoreInterface {
   raw_ptr<PrefService> prefs_ = nullptr;
 
   base::Time construction_time_;
+
+  // Any call to |this| before backend initialization is complete is preserved
+  // here to be executed afterwards by chaining in FIFO order. Callback is
+  // invoked inside OnInitCompleted().
+  base::OnceClosure post_init_callback_ = base::DoNothing();
 };
 
 }  // namespace password_manager

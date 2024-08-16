@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Розово-коричневый</translation>
 <translation id="249330843868392562">Открыть настройки озвучивания текста</translation>
 <translation id="2497706219848005458">Зеленовато-желтый</translation>
+<translation id="2512979179176933762">показать окна</translation>
 <translation id="2523609930580546572">Руководство по ChromeVox</translation>
 <translation id="2525706221823668172">Быстрые клавиши Chromebook</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Стальной синий</translation>
 <translation id="4253168017788158739">Примечание</translation>
 <translation id="4254798249533888099">Дерево</translation>
+<translation id="4259220820964911921">Включить функцию "Отслеживание лица"?</translation>
 <translation id="4271220233568730077">Перейти к следующему математическому выражению</translation>
 <translation id="4275397969489577657">Включить ведение журнала событий</translation>
 <translation id="4278486392851938658">Предыдущей открытой ссылки нет</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Приложение</translation>
 <translation id="5761219715606611783">Отлично! Вы изучили основы работы касанием с ChromeVox. Посмотрите руководство ещё раз или выйдите из него, нажав одну из кнопок ниже.</translation>
 <translation id="5776001898637896684">Расширение для синтеза речи в сервисе Google Enhanced Network</translation>
+<translation id="5783252477644995371">С функцией "Отслеживание лица" вы можете передвигать курсор, поворачивая голову, и выполнять другие действия, такие как нажатие на левую кнопку мыши, используя мимические жесты, например улыбку.</translation>
 <translation id="5805940204952508776">Коснитесь двумя пальцами</translation>
 <translation id="5819072574982403430">Элемент дерева</translation>
 <translation id="5822819874379903994">Темно-бирюзовый</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">Следующего флажка нет</translation>
 <translation id="8473540203671727883">Произносить текст под указателем мыши</translation>
 <translation id="8476408756881832830">Останавливать его во время чтения ChromeVox</translation>
-<translation id="8476508772960940536">режим обзора</translation>
 <translation id="8480873377842220259">Сейчас вы узнаете основные правила навигации. Чтобы перемещаться по экрану, нажимайте на стрелки, удерживая клавишу Поиск. Чтобы продолжить, нажмите Поиск + Стрелка вправо.</translation>
 <translation id="8503360654911991865">Уменьшить точность навигации</translation>
 <translation id="8520472399088452386">Счетчик</translation>

@@ -65,6 +65,8 @@ namespace autofill {
 namespace {
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+using SaveCardOfferUserDecision =
+    payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
 
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
@@ -418,9 +420,10 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   // legal_message_lines_ to optional.
   client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value())
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -703,16 +706,17 @@ void CreditCardSaveManager::OfferCardLocalSave() {
     if (observer_for_testing_) {
       observer_for_testing_->OnOfferLocalSave();
     }
-    AutofillClient::CardSaveType card_save_type =
-        AutofillClient::CardSaveType::kCardSaveOnly;
+    payments::PaymentsAutofillClient::CardSaveType card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!card_save_candidate_.cvc().empty() &&
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+      card_save_type =
+          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
         card_save_candidate_,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             // TODO(crbug.com/40280819): Refactor SaveCreditCardOptions.
             .with_show_prompt(show_save_prompt_.value_or(true))
             .with_card_save_type(card_save_type),
@@ -728,9 +732,10 @@ void CreditCardSaveManager::OfferCardLocalSave() {
 void CreditCardSaveManager::OfferCvcLocalSave() {
   client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardLocally(
       card_save_candidate_,
-      AutofillClient::SaveCreditCardOptions()
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
           .with_show_prompt(show_save_prompt_.value_or(false))
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
+          .with_card_save_type(
+              payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -759,16 +764,17 @@ void CreditCardSaveManager::OfferCardUploadSave() {
           return server_card->HasSameNumberAs(upload_request_.card) &&
                  !server_card->HasSameExpirationDateAs(upload_request_.card);
         });
-    AutofillClient::CardSaveType card_save_type =
-        AutofillClient::CardSaveType::kCardSaveOnly;
+    payments::PaymentsAutofillClient::CardSaveType card_save_type =
+        payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
     // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
     if (!upload_request_.card.cvc().empty() &&
         payments_data_manager().IsPaymentCvcStorageEnabled()) {
-      card_save_type = AutofillClient::CardSaveType::kCardSaveWithCvc;
+      card_save_type =
+          payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
     }
     client_->GetPaymentsAutofillClient()->ConfirmSaveCreditCardToCloud(
         upload_request_.card, legal_message_lines_,
-        AutofillClient::SaveCreditCardOptions()
+        payments::PaymentsAutofillClient::SaveCreditCardOptions()
             .with_has_multiple_legal_lines(legal_message_lines_.size() > 1)
             .with_should_request_name_from_user(should_request_name_from_user_)
             .with_should_request_expiration_date_from_user(
@@ -804,9 +810,9 @@ void CreditCardSaveManager::OfferCardUploadSave() {
 }
 
 void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
-    AutofillClient::SaveCardOfferUserDecision user_decision) {
+    SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
-    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+    case SaveCardOfferUserDecision::kAccepted:
       // Log how many CreditCardSave strikes the card had when it was saved.
       LogStrikesPresentWhenCardSaved(
           /*is_local=*/true,
@@ -826,17 +832,17 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       payments_data_manager().OnAcceptedLocalCreditCardSave(
           card_save_candidate_);
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
-    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+    case SaveCardOfferUserDecision::kDeclined:
+    case SaveCardOfferUserDecision::kIgnored:
       OnUserDidIgnoreOrDeclineSave(card_save_candidate_.LastFourDigits());
       break;
   }
 }
 
 void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
-    AutofillClient::SaveCardOfferUserDecision user_decision) {
+    SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
-    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+    case SaveCardOfferUserDecision::kAccepted:
       // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
       // is later removed and we want to offer local CVC save for this card
       // again.
@@ -846,7 +852,7 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
       payments_data_manager().UpdateLocalCvc(card_save_candidate_.guid(),
                                              card_save_candidate_.cvc());
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case SaveCardOfferUserDecision::kDeclined:
       // If the user rejected save and the offer-to-save bubble, treat
       // that as a final strike and block this feature.
       if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
@@ -860,7 +866,7 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
         }
       }
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+    case SaveCardOfferUserDecision::kIgnored:
       if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
         // If the user ignored save and the offer-to-save bubble or
         // infobar was actually shown (NOT just the icon if on desktop), count
@@ -1099,10 +1105,10 @@ int CreditCardSaveManager::GetDetectedValues() const {
 }
 
 void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
+    SaveCardOfferUserDecision user_decision,
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
   switch (user_decision) {
-    case AutofillClient::SaveCardOfferUserDecision::kAccepted:
+    case SaveCardOfferUserDecision::kAccepted:
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       // On mobile, requesting cardholder name is a two step flow.
@@ -1125,8 +1131,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
       OnUserDidAcceptUploadHelper(user_provided_card_details);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
-    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+    case SaveCardOfferUserDecision::kDeclined:
+    case SaveCardOfferUserDecision::kIgnored:
       OnUserDidIgnoreOrDeclineSave(upload_request_.card.LastFourDigits());
       break;
   }
@@ -1135,10 +1141,10 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
 }
 
 void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
-    AutofillClient::SaveCardOfferUserDecision user_decision,
+    SaveCardOfferUserDecision user_decision,
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
   switch (user_decision) {
-    case AutofillClient::SaveCardOfferUserDecision::kAccepted: {
+    case SaveCardOfferUserDecision::kAccepted: {
       // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
       // is later removed and we want to offer upload CVC save for this card
       // again.
@@ -1164,7 +1170,7 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
       }
       break;
     }
-    case AutofillClient::SaveCardOfferUserDecision::kDeclined:
+    case SaveCardOfferUserDecision::kDeclined:
       // If the user rejected save and the offer-to-save bubble, treat
       // that as a final strike and block this feature.
       if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
@@ -1180,7 +1186,7 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
         }
       }
       break;
-    case AutofillClient::SaveCardOfferUserDecision::kIgnored:
+    case SaveCardOfferUserDecision::kIgnored:
       if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
         // If the user ignored save and the offer-to-save bubble or
         // infobar was actually shown (NOT just the icon if on desktop), count

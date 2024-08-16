@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
+#include "build/buildflag.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
@@ -24,11 +25,11 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_store/password_model_type_controller_delegate_android.h"
+#include "components/password_manager/core/browser/password_store/password_data_type_controller_delegate_android.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -77,21 +78,17 @@ std::unique_ptr<os_crypt_async::Encryptor> ConvertToUniquePtr(
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
 std::optional<PasswordStoreChangeList> MaybeRecordPasswordDeletionViaSync(
-    base::RepeatingCallback<
-        void(password_manager::IsAccountStore,
-             metrics_util::PasswordManagerCredentialRemovalReason)>
+    base::RepeatingCallback<void(password_manager::IsAccountStore)>
         write_prefs_callback,
     std::optional<PasswordStoreChangeList> password_store_change_list,
     bool is_account_store) {
-  bool hasCredentialRemoval = std::any_of(
-      password_store_change_list.value().begin(),
-      password_store_change_list.value().end(), [](PasswordStoreChange change) {
+  bool hasCredentialRemoval = base::ranges::any_of(
+      password_store_change_list.value(), [](PasswordStoreChange change) {
         return change.type() == PasswordStoreChange::REMOVE;
       });
   if (hasCredentialRemoval) {
     write_prefs_callback.Run(
-        password_manager::IsAccountStore(is_account_store),
-        metrics_util::PasswordManagerCredentialRemovalReason::kSync);
+        password_manager::IsAccountStore(is_account_store));
   }
   return password_store_change_list;
 }
@@ -174,8 +171,8 @@ bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
     return true;
   }
 
-  // Login database is empty, disable saving if M4 feature is enabled.
-  return !features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
+  // Login database is empty, disable saving.
+  return false;
 #endif
 }
 
@@ -197,41 +194,15 @@ void PasswordStoreBuiltInBackend::InitBackend(
   if (pref_service_->GetBoolean(prefs::kClearingUndecryptablePasswords)) {
     base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
   }
-
-  auto clearing_undecryptable_passwords_cb = base::BindPostTaskToCurrentDefault(
-      base::BindRepeating(&PasswordStoreBuiltInBackend::
-                              SetClearingUndecryptablePasswordsIsEnabledPref,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &LoginDatabaseAsyncHelper::SetClearingUndecryptablePasswordsCb,
-          base::Unretained(helper_.get()),
-          std::move(clearing_undecryptable_passwords_cb)));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_IOS)
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoginDatabaseAsyncHelper::
-                         SetIsDeletingUndecryptableLoginsDisabledByPolicy,
-                     base::Unretained(helper_.get()),
-                     !pref_service_->GetBoolean(
-                         prefs::kDeletingUndecryptablePasswordsEnabled)));
 #endif
 
-#endif  // !BUILDFLAG(IS_ANDROID)
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&LoginDatabaseAsyncHelper::CreateSyncBackend,
+                                base::Unretained(helper_.get())));
 
   auto init_database_callback = base::BindOnce(
       &PasswordStoreBuiltInBackend::OnEncryptorReceived,
-      weak_ptr_factory_.GetWeakPtr(),
-      base::BindRepeating(
-          &MaybeRecordPasswordDeletionViaSync,
-          base::BindRepeating(
-              &PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs,
-              weak_ptr_factory_.GetWeakPtr()))
-          .Then(std::move(remote_form_changes_received)),
+      weak_ptr_factory_.GetWeakPtr(), std::move(remote_form_changes_received),
       std::move(sync_enabled_or_disabled_cb), std::move(completion));
 
   if (!os_crypt_async_) {
@@ -239,8 +210,10 @@ void PasswordStoreBuiltInBackend::InitBackend(
     return;
   }
   subscription_ = os_crypt_async_->GetInstance(
-      base::BindOnce(&ConvertToUniquePtr)
-          .Then(std::move(init_database_callback)),
+      metrics_util::TimeCallback(
+          base::BindOnce(&ConvertToUniquePtr)
+              .Then(std::move(init_database_callback)),
+          "PasswordManager.OsCryptAsync.GetInstanceTime"),
       os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
 }
 
@@ -423,15 +396,10 @@ SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
   return this;
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-  if (password_manager::features::
-          IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
-    return std::make_unique<PasswordModelTypeConrollerDelegateAndroid>();
-  }
-#endif
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   DCHECK(helper_);
   // Note that a callback is bound for
   // GetSyncControllerDelegate() because this getter itself
@@ -439,10 +407,13 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
   // care of that.
   // Since the controller delegate can (only in theory) invoke the factory after
   // `Shutdown` was called, it only returns nullptr then to prevent a UAF.
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+  return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
       background_task_runner_,
       base::BindRepeating(&LoginDatabaseAsyncHelper::GetSyncControllerDelegate,
                           base::Unretained(helper_.get())));
+#else
+  return std::make_unique<PasswordDataTypeControllerDelegateAndroid>();
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }
 
 void PasswordStoreBuiltInBackend::OnSyncServiceInitialized(
@@ -531,8 +502,7 @@ void PasswordStoreBuiltInBackend::OnInitComplete(
 }
 
 void PasswordStoreBuiltInBackend::OnEncryptorReceived(
-    base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
-        remote_form_changes_received,
+    RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion,
     std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
@@ -540,31 +510,50 @@ void PasswordStoreBuiltInBackend::OnEncryptorReceived(
   base::UmaHistogramBoolean("PasswordManager.OnEncryptorReceived.Success",
                             !encryptor);
 
+  // Piggyback on |remote_form_changes_received| to record password deletion
+  // coming from sync.
+  auto remote_form_changes_with_store_callback =
+      base::BindRepeating(
+          &MaybeRecordPasswordDeletionViaSync,
+          base::BindRepeating(
+              &PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs,
+              weak_ptr_factory_.GetWeakPtr()))
+          .Then(std::move(remote_form_changes_received));
+
+  base::RepeatingClosure on_undecryptable_passwords_removed =
+#if BUILDFLAG(IS_ANDROID)
+      base::DoNothing();
+#else
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &PasswordStoreBuiltInBackend::
+              SetClearingUndecryptablePasswordsIsEnabledPref,
+          weak_ptr_factory_.GetWeakPtr()));
+#endif
+
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &LoginDatabaseAsyncHelper::Initialize,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          std::move(remote_form_changes_received),
-          std::move(sync_enabled_or_disabled_cb), std::move(encryptor)),
+          std::move(remote_form_changes_with_store_callback),
+          std::move(sync_enabled_or_disabled_cb),
+          std::move(on_undecryptable_passwords_removed), std::move(encryptor)),
       base::BindOnce(&PasswordStoreBuiltInBackend::OnInitComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(completion)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 void PasswordStoreBuiltInBackend::
-    SetClearingUndecryptablePasswordsIsEnabledPref(bool value) {
+    SetClearingUndecryptablePasswordsIsEnabledPref() {
   CHECK(pref_service_);
-  pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, value);
+  pref_service_->SetBoolean(prefs::kClearingUndecryptablePasswords, true);
 }
 #endif
 
 void PasswordStoreBuiltInBackend::WritePasswordRemovalReasonPrefs(
-    IsAccountStore is_account_store,
-    metrics_util::PasswordManagerCredentialRemovalReason removal_reason) {
-  AddPasswordRemovalReason(pref_service_,
-                           password_manager::IsAccountStore(is_account_store),
-                           removal_reason);
+    IsAccountStore is_account_store) {
+  AddPasswordRemovalReason(
+      pref_service_, password_manager::IsAccountStore(is_account_store),
+      metrics_util::PasswordManagerCredentialRemovalReason::kSync);
 }
-
 }  // namespace password_manager

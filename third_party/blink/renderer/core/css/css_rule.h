@@ -117,8 +117,6 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
   // The CSSOM spec states that "setting the cssText attribute must do nothing."
   void setCSSText(const String&) {}
 
-  virtual void UseCountForSignalAffected() {}
-
  protected:
   explicit CSSRule(CSSStyleSheet* parent);
 

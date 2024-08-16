@@ -77,6 +77,7 @@ export const getSortedModifiers = (modifierStrings: string[]): string[] => {
 // The keys in this map are pulled from the file:
 // ui/events/keycodes/dom/dom_code_data.inc
 export const KeyToIconNameMap: {[key: string]: string|undefined} = {
+  'Accessibility': 'accessibility',
   'ArrowDown': 'arrow-down',
   'ArrowLeft': 'arrow-left',
   'ArrowRight': 'arrow-right',
@@ -117,6 +118,18 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'Standby': 'lock',
   'ZoomToggle': 'fullscreen',
 };
+
+// <if expr="_google_chrome" >
+export const KeyToInternalIconNameMap: {[key: string]: string|undefined} = {
+  'RightAlt': 'right-alt',
+};
+
+export const KeyToInternalIconNameRefreshOnlyMap:
+    {[key: string]: string|undefined} = {
+      'LaunchApplication1': 'overview-refresh',
+      'BrightnessUp': 'brightness-up-refresh',
+    };
+// </if>
 
 /**
  * Map the modifier keys to the bit value. Currently the modifiers only

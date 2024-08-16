@@ -125,6 +125,8 @@ std::string FrameIntervalMatcher::MatcherTypeToString(
       return "VideoConference";
     case FrameIntervalMatcherType::kOnlyAnimatingImage:
       return "kOnlyAnimatingImage";
+    case FrameIntervalMatcherType::kOnlyScrollBarFadeOut:
+      return "OnlyScrollBarFadeOut";
   }
 }
 
@@ -223,9 +225,10 @@ std::optional<FrameIntervalMatcher::Result> VideoConferenceMatcher::Match(
   for (auto supported_interval :
        matcher_inputs.settings->fixed_intervals.value().supported_intervals) {
     base::TimeDelta delta = min_interval.value() - supported_interval;
-    if (AreAlmostEqual(min_interval.value(), supported_interval,
-                       matcher_inputs.settings->epsilon) ||
-        (delta.is_positive() && delta < min_delta)) {
+    if ((AreAlmostEqual(min_interval.value(), supported_interval,
+                        matcher_inputs.settings->epsilon) ||
+         delta.is_positive()) &&
+        delta.magnitude() < min_delta) {
       closest_supported_interval = supported_interval;
       min_delta = delta.magnitude();
     }
@@ -239,6 +242,14 @@ std::optional<FrameIntervalMatcher::Result> OnlyAnimatingImageMatcher::Match(
     const Inputs& matcher_inputs) {
   return MatchContentIntervalType(matcher_inputs,
                                   ContentFrameIntervalType::kAnimatingImage);
+}
+
+DefineSimpleMatcherConstructorDestructor(OnlyScrollBarFadeOutAnimationMatcher,
+                                         kOnlyScrollBarFadeOut);
+std::optional<FrameIntervalMatcher::Result>
+OnlyScrollBarFadeOutAnimationMatcher::Match(const Inputs& matcher_inputs) {
+  return MatchContentIntervalType(
+      matcher_inputs, ContentFrameIntervalType::kScrollBarFadeOutAnimation);
 }
 
 }  // namespace viz

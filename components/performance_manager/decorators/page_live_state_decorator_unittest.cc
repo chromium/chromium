@@ -18,10 +18,12 @@
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace performance_manager {
 
@@ -53,6 +55,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsActiveTabChanged,
     kOnIsPinnedTabChanged,
     kOnIsDevToolsOpenChanged,
+    kOnAccessibilityModeChanged,
   };
 
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {
@@ -104,6 +107,10 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
   void OnIsDevToolsOpenChanged(const PageNode* page_node) override {
     latest_function_called_ = ObserverFunction::kOnIsDevToolsOpenChanged;
+    page_node_passed_ = page_node;
+  }
+  void OnAccessibilityModeChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnAccessibilityModeChanged;
     page_node_passed_ = page_node;
   }
 
@@ -325,6 +332,36 @@ TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PageLiveStateDecoratorTest, OnAccessibilityModeChanged) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  const auto expect_mode_on_graph = [&node](ui::AXMode accessibility_mode) {
+    RunInGraph([&node, accessibility_mode]() {
+      ASSERT_TRUE(node);
+      auto* data =
+          PageLiveStateDecorator::Data::GetOrCreateForPageNode(node.get());
+      ASSERT_TRUE(data);
+      EXPECT_EQ(data->GetAccessibilityMode(), accessibility_mode);
+    });
+  };
+
+  // All mode flags off by default.
+  ASSERT_NO_FATAL_FAILURE(expect_mode_on_graph(ui::AXMode()));
+
+  // Pretend that the property changed and make sure that the PageNode data gets
+  // updated.
+  PageLiveStateDecorator::SetAccessibilityMode(web_contents(),
+                                               ui::kAXModeComplete);
+  ASSERT_NO_FATAL_FAILURE(expect_mode_on_graph(ui::kAXModeComplete));
+
+  // Switch back to the default state.
+  PageLiveStateDecorator::SetAccessibilityMode(web_contents(), ui::AXMode());
+  ASSERT_NO_FATAL_FAILURE(expect_mode_on_graph(ui::AXMode()));
+
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnAccessibilityModeChanged);
+}
 
 TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
   base::WeakPtr<PageNode> node =

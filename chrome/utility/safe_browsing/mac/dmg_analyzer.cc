@@ -83,7 +83,7 @@ bool MachOFeatureExtractor::ExtractFeatures(
     return false;
 
   if (!bfe_->ExtractImageFeaturesFromData(
-          buffer_.data(), buffer_.size(), 0, result->mutable_image_headers(),
+          buffer_, 0, result->mutable_image_headers(),
           result->mutable_signature()->mutable_signed_data())) {
     return false;
   }
@@ -197,7 +197,7 @@ bool DMGAnalyzer::ResumeExtraction() {
       } else {
         results()->archived_binary.RemoveLast();
       }
-    } else if (base::FeatureList::IsEnabled(kNestedArchives)) {
+    } else {
       DownloadFileType_InspectionType file_type =
           GetFileType(base::FilePath(path));
       if (file_type == DownloadFileType::ZIP ||

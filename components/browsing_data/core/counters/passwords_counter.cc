@@ -25,7 +25,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -44,10 +43,7 @@ bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
 
   // TODO(crbug.com/344640768): The IsGmsCoreUpdateRequired() check isn't
   // perfect, it causes the string to say "synced" in cases when it shouldn't.
-  std::string gms_version_str =
-      base::android::BuildInfo::GetInstance()->gms_version_code();
-  if (password_manager::IsGmsCoreUpdateRequired(pref_service, sync_service,
-                                                gms_version_str)) {
+  if (password_manager::IsGmsCoreUpdateRequired(pref_service, sync_service)) {
     return false;
   }
 

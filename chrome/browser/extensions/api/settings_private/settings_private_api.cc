@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "content/public/common/page_zoom.h"
 #include "extensions/browser/extension_function_registry.h"

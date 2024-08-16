@@ -21,6 +21,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
+#include "components/input/utils.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -121,7 +122,9 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
     mojom::CompositorFrameSinkClient* client,
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
-    bool is_root)
+    bool is_root,
+    std::optional<mojo::PendingRemote<blink::mojom::RenderInputRouterClient>>
+        rir_client)
     : client_(client),
       frame_sink_manager_(frame_sink_manager),
       surface_manager_(frame_sink_manager->surface_manager()),
@@ -133,6 +136,16 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
           features::kBlitRequestsForViewTransition)) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
+
+  if (rir_client.has_value()) {
+    DCHECK(rir_client->is_valid());
+    DCHECK(input::TransferInputToViz() && !is_root);
+    render_input_router_.emplace(
+        /* host= */ nullptr,
+        /* fling_scheduler */ nullptr,
+        /* delegate= */ nullptr,
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
 }
 
 CompositorFrameSinkSupport::~CompositorFrameSinkSupport() {
@@ -599,6 +612,10 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
+  // `render_input_router_` shouldn't have been initialized for non-layer tree
+  // frame sinks.
+  DCHECK(!render_input_router_.has_value() ||
+         type == mojom::CompositorFrameSinkType::kLayerTree);
 
   if (frame_sink_manager_->frame_counter()) {
     frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,
@@ -939,7 +956,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       if (const auto& size_for_testing =
               frame_sink_manager_
                   ->copy_output_request_result_size_for_testing();  // IN-TEST
-          UNLIKELY(!size_for_testing.IsEmpty())) {
+          !size_for_testing.IsEmpty()) [[unlikely]] {
         SetCopyOutoutRequestResultSize(copy_request.get(), gfx::Rect(),
                                        size_for_testing,
                                        prev_surface->size_in_pixels());
@@ -1612,13 +1629,13 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
     case CompositorFrameTransitionDirective::Type::kSave:
       // The save directive is used to start a new transition sequence. Ensure
       // we don't have any existing state for this transition.
-      if (UNLIKELY(frame_sink_manager_->ClearSurfaceAnimationManager(
-              transition_token))) {
+      if (frame_sink_manager_->ClearSurfaceAnimationManager(transition_token))
+          [[unlikely]] {
         view_transition_token_to_animation_manager_.erase(transition_token);
         return;
       }
-      if (UNLIKELY(view_transition_token_to_animation_manager_.erase(
-              transition_token))) {
+      if (view_transition_token_to_animation_manager_.erase(transition_token))
+          [[unlikely]] {
         return;
       }
 

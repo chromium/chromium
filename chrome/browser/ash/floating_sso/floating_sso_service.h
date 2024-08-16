@@ -11,13 +11,13 @@
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 class PrefService;
@@ -29,9 +29,9 @@ class FloatingSsoService : public KeyedService,
  public:
   FloatingSsoService(
       PrefService* prefs,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       network::mojom::CookieManager* cookie_manager,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 
@@ -43,7 +43,7 @@ class FloatingSsoService : public KeyedService,
   // network::mojom::CookieChangeListener:
   void OnCookieChange(const net::CookieChangeInfo& change) override;
 
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
   FloatingSsoSyncBridge* GetBridgeForTesting() { return &bridge_; }
 

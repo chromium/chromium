@@ -18,15 +18,10 @@ invoke an arbitrary executable.
 """
 
 import json
-import os
 import sys
 
+import common
 import gpu_integration_test_adapter
-
-# Add src/testing/ into sys.path for importing common without pylint errors.
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from scripts import common
 
 
 def main():

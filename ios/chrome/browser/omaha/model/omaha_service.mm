@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/device_util.h"
+#import "base/location.h"
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial.h"
@@ -30,7 +31,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state_metrics/model/browser_state_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/common/channel_info.h"
@@ -361,9 +362,31 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
   }
 
   OmahaService* service = GetInstance();
-  service->StartInternal();
+  service->StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
-  service->set_upgrade_recommended_callback(callback);
+  if (IsOmahaServiceRefactorEnabled()) {
+    base::RepeatingCallback<void(const UpgradeRecommendedDetails&)>
+        wrapped_callback_that_notifies_observers = base::BindRepeating(
+            [](OmahaService* service, UpgradeRecommendedCallback callback,
+               const UpgradeRecommendedDetails& details) {
+              // `OmahaService` is never destroyed due to `NoDestructor`,
+              // ensuring the `base::Unretained(service)` reference below
+              // remains valid throughout its lifetime.
+              service->task_runner_->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&OmahaService::NotifyObservers,
+                                 base::Unretained(service), details));
+
+              callback.Run(details);
+            },
+            service, callback);
+
+    service->set_upgrade_recommended_callback(
+        wrapped_callback_that_notifies_observers);
+  } else {
+    service->set_upgrade_recommended_callback(callback);
+  }
+
   // This should only be called once.
   DCHECK(!service->pending_url_loader_factory_ ||
          !service->url_loader_factory_);
@@ -385,11 +408,64 @@ void OmahaService::CheckNow(OneOffCallback callback) {
     if (!service->started_) {
       return;
     }
-    web::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&OmahaService::CheckNowOnIOThread,
-                       base::Unretained(service), std::move(callback)));
+
+    if (IsOmahaServiceRefactorEnabled()) {
+      CHECK(service->task_runner_);
+
+      base::OnceCallback<void(UpgradeRecommendedDetails)>
+          wrapped_callback_that_notifies_observers = base::BindOnce(
+              [](OmahaService* service, OneOffCallback callback,
+                 const UpgradeRecommendedDetails details) {
+                // `OmahaService` is never destroyed due to `NoDestructor`,
+                // ensuring the `base::Unretained(service)` reference below
+                // remains valid throughout its lifetime.
+                service->task_runner_->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(&OmahaService::NotifyObservers,
+                                   base::Unretained(service), details));
+
+                std::move(callback).Run(details);
+              },
+              service, std::move(callback));
+
+      web::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&OmahaService::CheckNowOnIOThread,
+                         base::Unretained(service),
+                         std::move(wrapped_callback_that_notifies_observers)));
+    } else {
+      web::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&OmahaService::CheckNowOnIOThread,
+                         base::Unretained(service), std::move(callback)));
+    }
   }
+}
+
+void OmahaService::AddObserver(OmahaServiceObserver* observer) {
+  if (OmahaService::IsEnabled()) {
+    GetInstance()->RegisterObserver(observer);
+  }
+}
+
+void OmahaService::RemoveObserver(OmahaServiceObserver* observer) {
+  if (OmahaService::IsEnabled()) {
+    GetInstance()->UnregisterObserver(observer);
+  }
+}
+
+void OmahaService::RegisterObserver(OmahaServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  observers_.AddObserver(observer);
+}
+
+void OmahaService::UnregisterObserver(OmahaServiceObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  observers_.RemoveObserver(observer);
 }
 
 void OmahaService::CheckNowOnIOThread(OneOffCallback callback) {
@@ -417,13 +493,23 @@ OmahaService::OmahaService(bool schedule)
       application_install_date_(0),
       sending_install_event_(false) {}
 
-OmahaService::~OmahaService() {}
+OmahaService::~OmahaService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-void OmahaService::StartInternal() {
+  for (auto& observer : observers_) {
+    observer.ServiceWillShutdown(this);
+  }
+
+  DCHECK(observers_.empty());
+}
+
+void OmahaService::StartInternal(
+    const scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (started_) {
     return;
   }
   started_ = true;
+  task_runner_ = task_runner;
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
@@ -631,6 +717,15 @@ std::string OmahaService::GetCurrentPingContent() {
       request_id, ios::device_util::GetRandomId(),
       std::string(version_info::GetVersionNumber()), GetChannelString(),
       base::Time::FromTimeT(application_install_date_), ping_content);
+}
+
+void OmahaService::NotifyObservers(UpgradeRecommendedDetails details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  for (auto& observer : observers_) {
+    observer.UpgradeRecommendedDetailsChanged(details);
+  }
 }
 
 void OmahaService::SendPing() {

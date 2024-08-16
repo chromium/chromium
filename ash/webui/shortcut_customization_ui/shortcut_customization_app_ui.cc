@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 
 #include <memory>
@@ -164,6 +169,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"subcategoryAccessibilityNavigation",
        IDS_SHORTCUT_CUSTOMIZATION_SUBCATEGORY_ACCESSIBILITY_NAVIGATION},
       {"noShortcutAssigned", IDS_SHORTCUT_CUSTOMIZATION_NO_SHORTCUT_ASSIGNED},
+      {"iconLabelAccessibility",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ACCESSIBILITY},
       {"iconLabelArrowDown", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_DOWN},
       {"iconLabelArrowLeft", IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ARROW_LEFT},
       {"iconLabelArrowRight",
@@ -249,13 +256,19 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
     source->AddLocalizedString(
         "blockRightAltKey",
         IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
+    source->AddLocalizedString("iconLabelRightAlt",
+                               IDS_KEYBOARD_RIGHT_ALT_LABEL);
   } else {
     source->AddLocalizedString("blockRightAltKey",
                                IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+    source->AddLocalizedString(
+        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
 #else
   source->AddLocalizedString("blockRightAltKey",
                              IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+  source->AddLocalizedString("iconLabelRightAlt",
+                             IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
 #endif
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",

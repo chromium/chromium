@@ -165,14 +165,6 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     OnError();
     return;
   }
-  std::optional<base::win::ScopedHandle> impersonation_token;
-  if (ImpersonateNamedPipeClient(pending_named_pipe_handle_.Get())) {
-    HANDLE token = nullptr;
-    if (OpenThreadToken(GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE, &token)) {
-      info->impersonation_token = base::win::ScopedHandle(token);
-    }
-    RevertToSelf();
-  }
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(pending_named_pipe_handle_)));
   if (!endpoint.is_valid()) {

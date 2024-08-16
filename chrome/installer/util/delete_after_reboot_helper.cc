@@ -10,6 +10,11 @@
 // This implementation really is not fast, so do not use it where that will
 // matter.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/delete_after_reboot_helper.h"
 
 #include <string>

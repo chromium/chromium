@@ -36,8 +36,9 @@ void InputEventActivationProtector::MaybeUpdateViewProtectedTimeStamp(
 
 bool InputEventActivationProtector::IsPossiblyUnintendedInteraction(
     const ui::Event& event) {
-  if (UNLIKELY(base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableInputEventActivationProtectionForTesting))) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableInputEventActivationProtectionForTesting))
+      [[unlikely]] {
     return false;
   }
 

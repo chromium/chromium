@@ -42,11 +42,16 @@ mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
 SignedWebBundleIntegrityBlock ParseIntegrityBlockFromValue(
     const cbor::Value& integrity_block);
 
+SignedWebBundleIntegrityBlock ParseIntegrityBlock(
+    base::span<const uint8_t> swbn);
+
 base::expected<void, SignedWebBundleSignatureVerifier::Error> VerifySignatures(
     const SignedWebBundleSignatureVerifier& signature_verifier,
     const base::File& file,
     const SignedWebBundleIntegrityBlock& integrity_block);
 
+web_package::IntegrityBlockAttributes GetAttributesForSignedWebBundleId(
+    const std::string& signed_web_bundle_id);
 }  // namespace web_package::test
 
 #endif  // COMPONENTS_WEB_PACKAGE_TEST_SUPPORT_SIGNED_WEB_BUNDLES_SIGNATURE_VERIFIER_TEST_UTILS_H_

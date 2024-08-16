@@ -19,6 +19,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/toast/system_toast_view.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -127,8 +128,7 @@ class ToastOverlay::ToastHoverObserver : public ui::EventObserver {
         on_hover_state_changed_.Run(/*is_hovering=*/false);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -177,6 +177,8 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   params.activatable = toast_data.activatable
                            ? views::Widget::InitParams::Activatable::kYes
                            : views::Widget::InitParams::Activatable::kNo;
+  params.init_properties_container.SetProperty(kStayInOverviewOnActivationKey,
+                                               true);
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetVisibilityChangedAnimationsEnabled(true);
   overlay_widget_->SetContentsView(overlay_view_.get());

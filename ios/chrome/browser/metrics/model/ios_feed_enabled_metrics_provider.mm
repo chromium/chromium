@@ -7,23 +7,38 @@
 #import "base/metrics/histogram_functions.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-IOSFeedEnabledMetricsProvider::IOSFeedEnabledMetricsProvider(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+namespace {
 
-IOSFeedEnabledMetricsProvider::~IOSFeedEnabledMetricsProvider() {}
+// Returns whether the Feed can be displayed according for `prefs`.
+bool CanDisplayFeed(PrefService* prefs) {
+  BOOL is_feed_enabled_by_user =
+      prefs->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      (IsHomeCustomizationEnabled() ||
+       prefs->GetBoolean(feed::prefs::kArticlesListVisible));
+  return is_feed_enabled_by_user &&
+         prefs->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
+         !IsFeedAblationEnabled();
+}
+
+}  // namespace
+
+IOSFeedEnabledMetricsProvider::IOSFeedEnabledMetricsProvider() = default;
+
+IOSFeedEnabledMetricsProvider::~IOSFeedEnabledMetricsProvider() = default;
 
 void IOSFeedEnabledMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  BOOL policy_allows_feed =
-      pref_service_->GetBoolean(prefs::kNTPContentSuggestionsEnabled);
-  BOOL can_feed_be_shown =
-      policy_allows_feed && !IsFeedAblationEnabled() &&
-      pref_service_->GetBoolean(prefs::kArticlesForYouEnabled) &&
-      pref_service_->GetBoolean(feed::prefs::kArticlesListVisible);
-  base::UmaHistogramBoolean("ContentSuggestions.Feed.CanBeShown",
-                            can_feed_be_shown);
+  // Log whether the Feed can be displayed for each loaded BrowserStates.
+  for (ChromeBrowserState* browser_state :
+       GetApplicationContext()->GetProfileManager()->GetLoadedBrowserStates()) {
+    base::UmaHistogramBoolean(kFeedEnabledHistogram,
+                              CanDisplayFeed(browser_state->GetPrefs()));
+  }
 }

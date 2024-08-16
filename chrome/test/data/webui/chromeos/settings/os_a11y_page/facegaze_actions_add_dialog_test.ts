@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AddDialogPage, FaceGazeAddActionDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrSettingsPrefs, CrSliderElement, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
+import {CrButtonElement, CrSettingsPrefs, CrSliderElement, FaceGazeSubpageBrowserProxyImpl, IronListElement, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -15,8 +15,11 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
+import {TestFaceGazeSubpageBrowserProxy} from './test_facegaze_subpage_browser_proxy.js';
+
 suite('<facegaze-actions-add-dialog>', () => {
   let faceGazeAddActionDialog: FaceGazeAddActionDialogElement;
+  let browserProxy: TestFaceGazeSubpageBrowserProxy;
   let prefElement: SettingsPrefsElement;
 
   async function initPage() {
@@ -157,6 +160,8 @@ suite('<facegaze-actions-add-dialog>', () => {
   }
 
   setup(() => {
+    browserProxy = new TestFaceGazeSubpageBrowserProxy();
+    FaceGazeSubpageBrowserProxyImpl.setInstanceForTesting(browserProxy);
     clearBody();
     Router.getInstance().navigateTo(routes.MANAGE_FACEGAZE_SETTINGS);
   });
@@ -164,6 +169,7 @@ suite('<facegaze-actions-add-dialog>', () => {
   teardown(() => {
     prefElement.remove();
     Router.getInstance().resetRouteForTesting();
+    browserProxy.reset();
   });
 
   test(
@@ -407,5 +413,40 @@ suite('<facegaze-actions-add-dialog>', () => {
             faceGazeAddActionDialog.shadowRoot!.querySelector<CrButtonElement>(
                 '#faceGazeThresholdPreviousButton');
         assertNull(previousButton);
+      });
+
+  test(
+      'browser proxy sends event when page changes to and from threshold page',
+      async () => {
+        await initPage();
+        assertActionsListNoSelection();
+        setActionsListSelection();
+
+        const actionNextButton = getActionNextButton();
+        assertFalse(actionNextButton.disabled);
+        actionNextButton.click();
+        flush();
+        assertGesturesListNoSelection();
+        setGesturesListSelection();
+        assertEquals(
+            0, browserProxy.getCallCount('toggleGestureInfoForSettings'));
+
+        const gestureNextButton = getGestureNextButton();
+        assertFalse(gestureNextButton.disabled);
+        gestureNextButton.click();
+        flush();
+        assertEquals(
+            1, browserProxy.getCallCount('toggleGestureInfoForSettings'));
+        assertTrue(browserProxy.getArgs('toggleGestureInfoForSettings')[0][0]);
+        assertGestureSlider();
+        assertNullGesturesList();
+
+        const previousButton = getThresholdPreviousButton();
+        assertFalse(previousButton.disabled);
+        previousButton.click();
+        flush();
+        assertEquals(
+            2, browserProxy.getCallCount('toggleGestureInfoForSettings'));
+        assertFalse(browserProxy.getArgs('toggleGestureInfoForSettings')[1][0]);
       });
 });

@@ -26,9 +26,9 @@
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -167,17 +167,15 @@ BrowserLiveTabContext::GetSavedTabGroupIdForGroup(
   }
 
   Profile* profile = browser_->profile();
-  tab_groups::SavedTabGroupKeyedService* const service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile);
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(profile);
+  CHECK(wrapper_service.get());
 
-  const tab_groups::SavedTabGroup* const saved_group =
-      service->model()->Get(group);
+  const std::optional<tab_groups::SavedTabGroup> saved_group =
+      wrapper_service->GetGroup(group);
 
-  if (!saved_group) {
-    return std::nullopt;
-  }
-
-  return saved_group->saved_guid();
+  return saved_group ? std::make_optional(saved_group->saved_guid())
+                     : std::nullopt;
 }
 
 bool BrowserLiveTabContext::IsTabPinned(int index) const {
@@ -208,10 +206,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     int tab_index,
     bool select,
     sessions::tab_restore::Type original_session_type) {
-  tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
-      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-          browser_->profile());
-  CHECK(saved_tab_group_service);
+  const auto wrapper_service =
+      tab_groups::TabGroupServiceWrapper::GetForProfile(browser_->profile());
+  CHECK(wrapper_service.get());
 
   SessionStorageNamespace* storage_namespace =
       tab.platform_data
@@ -229,13 +226,14 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       group_id.has_value() && !saved_group_id.has_value();
   const bool group_deleted_from_model =
       group_id.has_value() && saved_group_id.has_value() &&
-      !saved_tab_group_service->model()->Contains(saved_group_id.value());
+      !wrapper_service->GetGroup(saved_group_id.value()).has_value();
   if (is_normal_tab || is_grouped_tab_unsaved || group_deleted_from_model) {
     // This is either a normal tab or tab in an unsaved group.
     web_contents = chrome::AddRestoredTab(
         browser_, tab.navigations, tab_index, tab.normalized_navigation_index(),
         tab.extension_app_id, group_id, select, tab.pinned, base::TimeTicks(),
-        storage_namespace, tab.user_agent_override, tab.extra_data,
+        base::Time(), storage_namespace, tab.user_agent_override,
+        tab.extra_data,
         /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
 
     if (is_grouped_tab_unsaved || group_deleted_from_model) {
@@ -243,23 +241,38 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
           group_id.value(), tab.group_visual_data.value());
 
       // Save the group if it was not saved.
-      if (!saved_tab_group_service->model()->Contains(group_id.value()) &&
+      if (!wrapper_service->GetGroup(group_id.value()).has_value() &&
           tab_groups::IsTabGroupsSaveV2Enabled()) {
-        saved_tab_group_service->SaveGroup(tab.group.value());
+        tab_groups::SavedTabGroup saved_tab_group(
+            tab.group_visual_data->title(), tab.group_visual_data->color(), {},
+            std::nullopt, std::nullopt, tab.group.value());
+        saved_tab_group.AddTabLocally(
+            tab_groups::SavedTabGroupUtils::
+                CreateSavedTabGroupTabFromWebContents(
+                    web_contents, saved_tab_group.saved_guid()));
+
+        const base::Uuid saved_group_guid = saved_tab_group.saved_guid();
+        wrapper_service->AddGroup(std::move(saved_tab_group));
+        wrapper_service->ConnectLocalTabGroup(saved_group_guid,
+                                              tab.group.value());
       }
     }
   } else {
-    CHECK(saved_tab_group_service->model()->Contains(saved_group_id.value()));
+    CHECK(wrapper_service->GetGroup(saved_group_id.value()).has_value());
 
-    auto* saved_group =
-        saved_tab_group_service->model()->Get(saved_group_id.value());
+    const std::optional<tab_groups::SavedTabGroup> saved_group =
+        wrapper_service->GetGroup(saved_group_id.value());
     group_id = saved_group->local_group_id();
 
     if (!group_id.has_value()) {
       // Open the group in this browser if it is closed.
-      group_id = saved_tab_group_service->OpenSavedTabGroupInBrowser(
-          browser_, saved_group_id.value(),
-          tab_groups::OpeningSource::kOpenedFromTabRestore);
+      wrapper_service->OpenTabGroup(
+          saved_group_id.value(),
+          std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+              browser_, tab_groups::OpeningSource::kOpenedFromTabRestore));
+
+      group_id =
+          wrapper_service->GetGroup(saved_group_id.value())->local_group_id();
     } else {
       Browser* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
@@ -285,8 +298,8 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       web_contents = chrome::AddRestoredTab(
           browser_, tab.navigations, tab_index,
           tab.normalized_navigation_index(), tab.extension_app_id, group_id,
-          select, tab.pinned, base::TimeTicks(), storage_namespace,
-          tab.user_agent_override, tab.extra_data,
+          select, tab.pinned, base::TimeTicks(), base::Time(),
+          storage_namespace, tab.user_agent_override, tab.extra_data,
           /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
     } else {
       // Do nothing if the tab wasn't added to the group.

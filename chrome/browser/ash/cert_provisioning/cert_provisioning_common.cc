@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
 #include <optional>
@@ -354,15 +359,15 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
 }
 
 std::string GenerateCertProvisioningId() {
-  return base::UnguessableToken::Create().ToString();
+  std::string result = base::UnguessableToken::Create().ToString();
+  // Server-side stores the id and expects it to be <=32 characters long.
+  CHECK_LE(result.size(), 32u);
+  return result;
 }
 
 std::string MakeInvalidationListenerType(const std::string& cert_prov_id) {
   constexpr char kCertProvPrefix[] = "cert-";
-  std::string result = base::StrCat({kCertProvPrefix, cert_prov_id});
-  // Server-side stores the type and expects it to be <=128 characters long.
-  CHECK_LE(result.size(), 128u);
-  return result;
+  return base::StrCat({kCertProvPrefix, cert_prov_id});
 }
 
 bool ShouldOnlyUseInvalidations() {

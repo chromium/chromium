@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_STORE_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_STORE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -172,6 +173,9 @@ class TrustTokenStore {
   virtual void SetRedemptionRecord(const SuitableTrustTokenOrigin& issuer,
                                    const SuitableTrustTokenOrigin& top_level,
                                    const TrustTokenRedemptionRecord& record);
+
+  // Return redemption records per issuer/toplevel origin
+  [[nodiscard]] virtual IssuerRedemptionRecordMap GetRedemptionRecords();
 
   // Attempts to retrieve the stored RR for the given pair of (issuer,
   // top-level) origins.

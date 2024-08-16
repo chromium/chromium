@@ -49,17 +49,21 @@ BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     : BrowsingTopicsPageLoadDataTracker(
           page,
           /*redirect_count=*/0,
-          /*redirect_with_topics_invoked_count=*/0) {}
+          /*redirect_with_topics_invoked_count=*/0,
+          /*source_id_before_redirects=*/
+          page.GetMainDocument().GetPageUkmSourceId()) {}
 
 BrowsingTopicsPageLoadDataTracker::BrowsingTopicsPageLoadDataTracker(
     content::Page& page,
     int redirect_count,
-    int redirect_with_topics_invoked_count)
+    int redirect_with_topics_invoked_count,
+    ukm::SourceId source_id_before_redirects)
     : content::PageUserData<BrowsingTopicsPageLoadDataTracker>(page),
       hashed_main_frame_host_(HashMainFrameHostForStorage(
           page.GetMainDocument().GetLastCommittedOrigin().host())),
       redirect_count_(redirect_count),
-      redirect_with_topics_invoked_count_(redirect_with_topics_invoked_count) {
+      redirect_with_topics_invoked_count_(redirect_with_topics_invoked_count),
+      source_id_before_redirects_(source_id_before_redirects) {
   source_id_ = page.GetMainDocument().GetPageUkmSourceId();
 
   // TODO(yaoxia): consider dropping the permissions policy checks. We require
@@ -98,6 +102,18 @@ void BrowsingTopicsPageLoadDataTracker::OnBrowsingTopicsApiUsed(
         "BrowsingTopics.PageLoad.OnTopicsFirstInvoked."
         "RedirectWithTopicsInvokedCount",
         redirect_with_topics_invoked_count_, kExclusiveMaxBucket);
+
+    if (redirect_with_topics_invoked_count_ >= 1) {
+      ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
+      ukm::builders::BrowsingTopics_TopicsRedirectChainDetected builder(
+          source_id_before_redirects_);
+
+      builder.SetNumberOfPagesCallingTopics(
+          redirect_with_topics_invoked_count_ + 1);
+
+      builder.Record(ukm_recorder->Get());
+    }
+
     topics_invoked_ = true;
   }
 

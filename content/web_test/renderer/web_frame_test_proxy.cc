@@ -609,7 +609,7 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
       event_name = "ActiveDescendantChanged";
       break;
     case ax::mojom::Event::kAriaAttributeChangedDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ax::mojom::Event::kBlur:
       event_name = "Blur";
       break;

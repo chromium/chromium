@@ -46,7 +46,7 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
   query: string = '';
   errorMessage: string = '';
   protected isAnyRowCollapsed: boolean = true;
-  protected filteredItems: RelatedWebsiteSet[] = [];
+  filteredItems: RelatedWebsiteSet[] = [];
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 
@@ -67,12 +67,13 @@ export class RelatedWebsiteSetsListContainerElement extends CrLitElement {
   }
 
   private hasMatch_(set: RelatedWebsiteSet): boolean {
-    if (set.primarySite.toLowerCase().includes(this.query)) {
+    const normalizedQuery = this.query.toLowerCase().trim();
+    if (set.primarySite.toLowerCase().includes(normalizedQuery)) {
       return true;
     }
 
     for (const member of set.memberSites) {
-      if (member.site.toLowerCase().includes(this.query)) {
+      if (member.site.toLowerCase().includes(normalizedQuery)) {
         return true;
       }
     }

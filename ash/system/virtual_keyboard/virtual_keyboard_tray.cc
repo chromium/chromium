@@ -56,9 +56,7 @@ VirtualKeyboardTray::VirtualKeyboardTray(
   // First sets the image with non-Jelly color to get the image dimension and
   // create the correct paddings, and then updates the color if Jelly is
   // enabled.
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active());
-  }
+  UpdateTrayItemColor(is_active());
 
   // The Shell may not exist in some unit tests.
   if (Shell::HasInstance()) {
@@ -127,7 +125,6 @@ void VirtualKeyboardTray::HideBubbleWithView(
 void VirtualKeyboardTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kShelfKeyboardNewuiIcon,
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer

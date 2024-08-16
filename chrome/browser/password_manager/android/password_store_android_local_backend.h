@@ -10,7 +10,7 @@
 
 namespace syncer {
 class SyncService;
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace password_manager {
@@ -76,7 +76,7 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   void RecordAddLoginAsyncCalledFromTheStore() override;
@@ -86,8 +86,7 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
 
  private:
   // PasswordStoreAndroidBackend implementation.
-  PasswordStoreBackendErrorRecoveryType RecoverOnErrorAndReturnResult(
-      AndroidBackendAPIErrorCode error) override;
+  void RecoverOnError(AndroidBackendAPIErrorCode error) override;
   void OnCallToGMSCoreSucceeded() override;
   std::string GetAccountToRetryOperation() override;
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType

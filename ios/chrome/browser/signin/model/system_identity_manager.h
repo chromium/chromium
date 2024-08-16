@@ -197,6 +197,10 @@ class SystemIdentityManager {
   // is invoked on the calling sequence when the operation completes.
   virtual void ForgetIdentity(id<SystemIdentity> identity,
                               ForgetIdentityCallback callback) = 0;
+  // Returns true if the identity was removed by calling `ForgetIdentity()`.
+  // Returns false If the identity was not removed or disappeared without
+  // calling `ForgetIdentity()`.
+  virtual bool IdentityRemovedByUser(NSString* gaia_id) = 0;
 
   // Asynchronously retrieves access tokens for `identity` with `scopes`. The
   // callback is invoked on the calling sequence when the operation completes.
@@ -255,7 +259,7 @@ class SystemIdentityManager {
 
  protected:
   // Invokes `OnIdentityListChanged(...)` for all observers.
-  void FireIdentityListChanged(bool notify_user);
+  void FireIdentityListChanged();
 
   // Invokes `OnIdentityUpdated(...)` for all observers.
   void FireIdentityUpdated(id<SystemIdentity> identity);

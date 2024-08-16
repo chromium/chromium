@@ -281,6 +281,9 @@ function getLogSource(logSource: number) {
   if (logSource == 6) {
     return 'MODEL_EXECUTION';
   }
+  if (logSource == 7) {
+    return 'NTP_MODULE';
+  }
   return logSource.toString();
 }
 

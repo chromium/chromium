@@ -56,6 +56,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
@@ -294,6 +295,16 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_bookmarks) {
 }
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_more_tools) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, AppMenuViewAccessibleProperties) {
+  menu_button()->ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
+  auto* app_menu_view = menu_button()->app_menu()->GetZoomAppMenuViewForTest();
+  ui::AXNodeData data;
+
+  ASSERT_TRUE(app_menu_view);
+  app_menu_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMenu);
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

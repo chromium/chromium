@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 #include <atomic>
@@ -308,7 +313,7 @@ TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
       expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_CHROME;
       break;
     default:  // Crash types that are not tested but should be tested.
-      NOTREACHED_NORETURN() << "Encountered untested crash type " << type();
+      NOTREACHED() << "Encountered untested crash type " << type();
   }
   EXPECT_EQ(fatal_crash_telemetry.type(), expected_crash_type);
 }

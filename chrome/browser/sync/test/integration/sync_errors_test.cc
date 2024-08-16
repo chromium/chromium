@@ -21,10 +21,10 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/sync_protocol_error.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -43,12 +43,12 @@ namespace {
 
 constexpr int64_t kUserEventTimeUsec = 123456;
 
-syncer::ModelTypeSet GetThrottledDataTypes(
+syncer::DataTypeSet GetThrottledDataTypes(
     syncer::SyncServiceImpl* sync_service) {
   base::RunLoop loop;
-  syncer::ModelTypeSet throttled_types;
+  syncer::DataTypeSet throttled_types;
   sync_service->GetThrottledDataTypesForTest(
-      base::BindLambdaForTesting([&](syncer::ModelTypeSet result) {
+      base::BindLambdaForTesting([&](syncer::DataTypeSet result) {
         throttled_types = result;
         loop.Quit();
       }));
@@ -57,10 +57,10 @@ syncer::ModelTypeSet GetThrottledDataTypes(
 }
 
 size_t GetTypeNonTombstoneEntitiesCount(
-    syncer::ModelTypeControllerDelegate* model_type_controller_delegate) {
+    syncer::DataTypeControllerDelegate* data_type_controller_delegate) {
   base::RunLoop loop;
   size_t result = 0;
-  model_type_controller_delegate->GetTypeEntitiesCountForDebugging(
+  data_type_controller_delegate->GetTypeEntitiesCountForDebugging(
       base::BindLambdaForTesting(
           [&result, &loop](const syncer::TypeEntitiesCount& count) {
             result = count.non_tombstone_entities;
@@ -72,18 +72,18 @@ size_t GetTypeNonTombstoneEntitiesCount(
 
 class TypeDisabledChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit TypeDisabledChecker(SyncServiceImpl* service, syncer::ModelType type)
+  explicit TypeDisabledChecker(SyncServiceImpl* service, syncer::DataType type)
       : SingleClientStatusChangeChecker(service), type_(type) {}
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for type " << syncer::ModelTypeToDebugString(type_)
+    *os << "Waiting for type " << syncer::DataTypeToDebugString(type_)
         << " to become disabled";
     return !service()->GetActiveDataTypes().Has(type_);
   }
 
  private:
-  syncer::ModelType type_;
+  syncer::DataType type_;
 };
 
 // Wait for a commit message containing the expected user event (even if the
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, EncryptionObsoleteErrorTest) {
 
 IN_PROC_BROWSER_TEST_F(SyncErrorTest, DisableDatatypeWhileRunning) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  syncer::ModelTypeSet synced_datatypes =
+  syncer::DataTypeSet synced_datatypes =
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_TRUE(synced_datatypes.Has(syncer::HISTORY));
   ASSERT_TRUE(synced_datatypes.Has(syncer::SESSIONS));
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
 
   // Check that the server doesn't have this event yet.
   for (const sync_pb::SyncEntity& entity :
-       GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS)) {
+       GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_EVENTS)) {
     ASSERT_NE(kUserEventTimeUsec,
               entity.specifics().user_event().event_time_usec());
   }
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
 IN_PROC_BROWSER_TEST_F(SyncErrorTest,
                        ShouldResendUncommittedEntitiesAfterBrowserRestart) {
   // Make sure the PRE_ test didn't successfully commit the event.
-  ASSERT_THAT(GetFakeServer()->GetSyncEntitiesByModelType(syncer::USER_EVENTS),
+  ASSERT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::USER_EVENTS),
               IsEmpty());
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
   // Set the preference to false initially which should get synced.
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   EXPECT_TRUE(FakeServerPrefMatchesValueChecker(
-                  syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                  syncer::DataType::PREFERENCES, prefs::kHomePageIsNewTabPage,
                   preferences_helper::ConvertPrefValueToValueInSpecifics(
                       base::Value(false)))
                   .Wait());
@@ -415,25 +415,25 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // The preference should remain unsynced (still set to the previous value).
   EXPECT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                syncer::DataType::PREFERENCES, prefs::kHomePageIsNewTabPage,
                 GetFakeServer())
                 ->value(),
             "false");
 
   // PREFERENCES should now be throttled.
   EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)),
-            syncer::ModelTypeSet({syncer::PREFERENCES}));
+            syncer::DataTypeSet({syncer::PREFERENCES}));
 
   // Unthrottle PREFERENCES to verify that sync can resume.
-  GetFakeServer()->SetThrottledTypes(syncer::ModelTypeSet());
+  GetFakeServer()->SetThrottledTypes(syncer::DataTypeSet());
 
   // Eventually (depending on throttling delay, which is short in tests) the
   // preference should be committed.
-  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(syncer::ModelType::PREFERENCES,
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(syncer::DataType::PREFERENCES,
                                                 prefs::kHomePageIsNewTabPage,
                                                 "true")
                   .Wait());
-  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::ModelTypeSet());
+  EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::DataTypeSet());
 }
 
 }  // namespace

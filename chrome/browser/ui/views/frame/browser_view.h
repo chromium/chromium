@@ -111,11 +111,9 @@ enum class InstallableWebAppCheckResult;
 struct WebAppBannerData;
 }  // namespace webapps
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
 namespace enterprise_watermark {
 class WatermarkView;
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
@@ -605,6 +603,7 @@ class BrowserView : public BrowserWindow,
   void MaybeShowProfileSwitchIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
+      const std::optional<std::string>& histogram_name,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
@@ -726,7 +725,6 @@ class BrowserView : public BrowserWindow,
       const views::ViewHierarchyChangedDetails& details) override;
   void AddedToWidget() override;
   void PaintChildren(const views::PaintInfo& paint_info) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
@@ -821,9 +819,7 @@ class BrowserView : public BrowserWindow,
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   void ApplyWatermarkSettings(const std::string& watermark_text);
-#endif
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void ApplyScreenshotSettings(bool allow);
@@ -1190,6 +1186,8 @@ class BrowserView : public BrowserWindow,
 
   // The side panel aligned to the left or the right side of the browser window
   // depending on the kSidePanelHorizontalAlignment pref's value.
+  // Conceptually this member should exist if and only if the
+  // side_panel_coordinator is created.
   raw_ptr<SidePanel, AcrossTasksDanglingUntriaged> unified_side_panel_ =
       nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged>

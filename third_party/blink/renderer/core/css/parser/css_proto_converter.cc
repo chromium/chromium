@@ -50,7 +50,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "-internal-media-controls-overlay-cast-button",
     "-internal-multi-select-focus",
     "-internal-popover-in-top-layer",
-    "-internal-shadow-host-has-appearance",
+    "-internal-shadow-host-has-non-auto-appearance",
     "-internal-spatial-navigation-focus",
     "-internal-video-persistent",
     "-internal-video-persistent-ancestor",

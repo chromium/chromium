@@ -16,6 +16,7 @@
 #include <string>
 #include <utility>
 
+#include "base/types/fixed_array.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
@@ -58,14 +59,14 @@ TEST_P(SecureHashTest, TestUpdateSHA256) {
       break;
   }
 
-  uint8_t output3[hash_length_];
+  base::FixedArray<uint8_t> output3(hash_length_);
 
   std::unique_ptr<crypto::SecureHash> ctx(
       crypto::SecureHash::Create(algorithm_));
   ctx->Update(input3.data(), input3.size());
   ctx->Update(input3.data(), input3.size());
 
-  ctx->Finish(output3, sizeof(output3));
+  ctx->Finish(output3.data(), output3.size());
   for (size_t i = 0; i < hash_length_; i++)
     EXPECT_EQ(expected_hash_of_input_3[i], static_cast<int>(output3[i]));
 }
@@ -106,9 +107,9 @@ TEST_P(SecureHashTest, TestClone) {
       break;
   }
 
-  uint8_t output1[hash_length_];
-  uint8_t output2[hash_length_];
-  uint8_t output3[hash_length_];
+  base::FixedArray<uint8_t> output1(hash_length_);
+  base::FixedArray<uint8_t> output2(hash_length_);
+  base::FixedArray<uint8_t> output3(hash_length_);
 
   std::unique_ptr<crypto::SecureHash> ctx1(
       crypto::SecureHash::Create(algorithm_));
@@ -121,18 +122,19 @@ TEST_P(SecureHashTest, TestClone) {
 
   // Updating ctx1 and ctx2 with input2 should produce equivalent results.
   ctx1->Update(input2.data(), input2.size());
-  ctx1->Finish(output1, sizeof(output1));
+  ctx1->Finish(output1.data(), output1.size());
 
   ctx2->Update(input2.data(), input2.size());
-  ctx2->Finish(output2, sizeof(output2));
+  ctx2->Finish(output2.data(), output2.size());
 
-  EXPECT_EQ(0, memcmp(output1, output2, hash_length_));
-  EXPECT_EQ(
-      0, memcmp(output1, expected_hash_of_input_1_and_2.data(), hash_length_));
+  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
+  EXPECT_EQ(0, memcmp(output1.data(), expected_hash_of_input_1_and_2.data(),
+                      hash_length_));
 
   // Finish() ctx3, which should produce the hash of input1.
-  ctx3->Finish(&output3, sizeof(output3));
-  EXPECT_EQ(0, memcmp(output3, expected_hash_of_input_1.data(), hash_length_));
+  ctx3->Finish(output3.data(), output3.size());
+  EXPECT_EQ(
+      0, memcmp(output3.data(), expected_hash_of_input_1.data(), hash_length_));
 }
 
 TEST_P(SecureHashTest, TestLength) {
@@ -145,25 +147,25 @@ TEST_P(SecureHashTest, Equality) {
   std::string input1(10001, 'a');  // 'a' repeated 10001 times
   std::string input2(10001, 'd');  // 'd' repeated 10001 times
 
-  uint8_t output1[hash_length_];
-  uint8_t output2[hash_length_];
+  base::FixedArray<uint8_t> output1(hash_length_);
+  base::FixedArray<uint8_t> output2(hash_length_);
 
   // Call Update() twice on input1 and input2.
   std::unique_ptr<crypto::SecureHash> ctx1(
       crypto::SecureHash::Create(algorithm_));
   ctx1->Update(input1.data(), input1.size());
   ctx1->Update(input2.data(), input2.size());
-  ctx1->Finish(output1, sizeof(output1));
+  ctx1->Finish(output1.data(), output1.size());
 
   // Call Update() once one input1 + input2 (concatenation).
   std::unique_ptr<crypto::SecureHash> ctx2(
       crypto::SecureHash::Create(algorithm_));
   std::string input3 = input1 + input2;
   ctx2->Update(input3.data(), input3.size());
-  ctx2->Finish(output2, sizeof(output2));
+  ctx2->Finish(output2.data(), output2.size());
 
   // The hash should be the same.
-  EXPECT_EQ(0, memcmp(output1, output2, hash_length_));
+  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
 }
 
 INSTANTIATE_TEST_SUITE_P(

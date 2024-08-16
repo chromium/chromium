@@ -177,7 +177,8 @@ class ThrottleManagerTest
 
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
         web_contents, test_support_->prefs(),
-        test_support_->tracking_protection_settings(), dealer_handle_.get());
+        test_support_->tracking_protection_settings(), dealer_handle_.get(),
+        /*is_incognito=*/false);
 
     Observe(web_contents);
 
@@ -623,17 +624,17 @@ TEST_P(ThrottleManagerEnabledTest, CreateHelperForWebContents) {
     // protection filter feature is not enabled.
     FingerprintingProtectionWebContentsHelper::CreateForWebContents(
         web_contents.get(), test_support.prefs(), tracking_protection_settings,
-        dealer_handle());
+        dealer_handle(), /*is_incognito=*/false);
     EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
                   web_contents.get()),
               nullptr);
   }
 
-  // If the fingerprinting protection filter feature is enabled,\
+  // If the fingerprinting protection filter feature is enabled,
   // CreateForWebContents() should create and attach an instance.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle());
+      dealer_handle(), /*is_incognito=*/false);
   auto* helper = FingerprintingProtectionWebContentsHelper::FromWebContents(
       web_contents.get());
   EXPECT_NE(helper, nullptr);
@@ -641,7 +642,7 @@ TEST_P(ThrottleManagerEnabledTest, CreateHelperForWebContents) {
   // A second call should not attach a different instance.
   FingerprintingProtectionWebContentsHelper::CreateForWebContents(
       web_contents.get(), test_support.prefs(), tracking_protection_settings,
-      dealer_handle());
+      dealer_handle(), /*is_incognito=*/false);
   EXPECT_EQ(FingerprintingProtectionWebContentsHelper::FromWebContents(
                 web_contents.get()),
             helper);

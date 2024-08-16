@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
 
+#include <string>
+
 #include "ash/public/cpp/notification_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -104,7 +106,7 @@ void ShowSignInNotification(
           false;
       rich_notification_data.vector_small_image =
           &vector_icons::kNotificationDownloadIcon;
-
+      // TODO(b/356326503): Fix the strings.
       auto notification_id = base::StrCat(
           {kDownloadSignInNotificationPrefix, base::NumberToString(id)});
       message_center::Notification notification(
@@ -143,7 +145,36 @@ void ShowSignInNotification(
       break;
 
     case ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration:
-      // TODO(b/342339756): Implement the sign-in UI for migration.
+      message_center::RichNotificationData optional_fields;
+      optional_fields.never_timeout = true;
+      auto notification = ash::CreateSystemNotificationPtr(
+          message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
+          kMigrationSignInNotification,
+          l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_MESSAGE),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          message_center::NotifierId(), optional_fields,
+          base::MakeRefCounted<SignInNotificationDelegate>(
+              profile, kMigrationSignInNotification,
+              std::move(signin_callback)),
+          vector_icons::kBusinessIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+      notification->set_fullscreen_visibility(
+          message_center::FullscreenVisibility::OVER_USER);
+      notification->set_accent_color(
+          ash::kSystemNotificationColorCriticalWarning);
+      notification->set_accent_color_id(cros_tokens::kColorAlert);
+
+      notification->set_buttons(
+          {message_center::ButtonInfo(l10n_util::GetStringUTF16(
+              IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_BUTTON))});
+
+      NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+          NotificationHandler::Type::TRANSIENT, *notification,
+          /*metadata=*/nullptr);
       break;
   }
 }

@@ -20,6 +20,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -37,7 +38,10 @@ enum DeviceDisplayState {
   IMAGE_UNAVAILABLE = 2,
 }
 
-export class PerDeviceSubsectionHeaderElement extends PolymerElement {
+const PerDeviceSubsectionHeaderElementBase = I18nMixin(PolymerElement);
+
+export class PerDeviceSubsectionHeaderElement extends
+    PerDeviceSubsectionHeaderElementBase {
   static get is() {
     return 'per-device-subsection-header' as const;
   }
@@ -142,6 +146,16 @@ export class PerDeviceSubsectionHeaderElement extends PolymerElement {
 
   shouldShowDeviceIcon(): boolean {
     return this.deviceDisplayState === DeviceDisplayState.IMAGE_UNAVAILABLE;
+  }
+
+  getAriaLabel(): string {
+    let label = `${this.i18n('deviceNameLabel')} ${this.name}`;
+    if (this.batteryInfo?.batteryPercentage) {
+      label += ` ${
+          this.i18n(
+              'deviceBatteryLabel', this?.batteryInfo.batteryPercentage)}`;
+    }
+    return label;
   }
 }
 

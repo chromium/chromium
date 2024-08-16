@@ -114,6 +114,62 @@ suite('<facegaze-actions-card>', () => {
                     .actions_enabled.value);
   });
 
+  test('actions disables controls if feature is disabled', async () => {
+    await initPage();
+
+    faceGazeActionsCard.disabled = true;
+    await flushTasks();
+
+    const addButton = getAddButton();
+    assertTrue(addButton.disabled);
+
+    faceGazeActionsCard.disabled = false;
+    await flushTasks();
+    assertFalse(addButton.disabled);
+  });
+
+  test(
+      'actions disables configuration controls if toggle is turned off',
+      async () => {
+        await initPage();
+
+        faceGazeActionsCard.set(
+            'prefs.settings.a11y.face_gaze.actions_enabled.value', true);
+        await flushTasks();
+
+        const addButton = getAddButton();
+        assertFalse(addButton.disabled);
+
+        faceGazeActionsCard.set(
+            'prefs.settings.a11y.face_gaze.actions_enabled.value', false);
+        await flushTasks();
+
+        assertTrue(addButton.disabled);
+      });
+
+  test('actions initializes command pairs from prefs', async () => {
+    prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+
+    await CrSettingsPrefs.initialized;
+    faceGazeActionsCard = document.createElement('facegaze-actions-card');
+    faceGazeActionsCard.prefs = prefElement.prefs;
+
+    const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
+    const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
+    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+        .value[expectedGesture] = expectedMacro;
+
+    document.body.appendChild(faceGazeActionsCard);
+    flush();
+
+    assertTrue(isCommandPairSetInPrefs(expectedMacro, expectedGesture));
+
+    const commandPairs = faceGazeActionsCard.get(
+        FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME);
+    assertEquals(1, commandPairs.length);
+  });
+
   test('actions update prefs with added command pair', async () => {
     await initPage();
 

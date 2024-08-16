@@ -26,6 +26,10 @@
 // presents an error alert.
 @property(nonatomic, assign) BOOL didPresentStopPriceTrackingErrorAlertForItem;
 
+// Indicates whether the mediator successfully showed the notification prompt.
+@property(nonatomic, assign)
+    BOOL didPresentPushNotificationPermissionAlertForItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PRICE_INSIGHTS_COORDINATOR_TEST_PRICE_INSIGHTS_CONSUMER_H_

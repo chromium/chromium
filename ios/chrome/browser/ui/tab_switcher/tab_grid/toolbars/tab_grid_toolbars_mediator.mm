@@ -7,13 +7,16 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
-@interface TabGridToolbarsMediator () <WebStateListObserving>
+@interface TabGridToolbarsMediator () <TabGridModeObserving,
+                                       WebStateListObserving>
 
 @end
 
@@ -28,12 +31,17 @@
 
   // YES if buttons are disabled.
   BOOL _isDisabled;
+
+  TabGridModeHolder* _modeHolder;
 }
 
-- (instancetype)init {
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder {
   self = [super init];
   if (self) {
+    CHECK(modeHolder);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
   }
   return self;
 }
@@ -46,6 +54,9 @@
     _webStateListObserver.reset();
     _webStateList = nullptr;
   }
+
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
 }
 
 #pragma mark - GridToolbarsMutator
@@ -60,9 +71,7 @@
   _configuration = configuration;
 
   self.topToolbarConsumer.page = configuration.page;
-  self.topToolbarConsumer.mode = configuration.mode;
   self.bottomToolbarConsumer.page = configuration.page;
-  self.bottomToolbarConsumer.mode = configuration.mode;
 
   // TODO(crbug.com/40273478): Add all buttons management.
   [self configureSelectionModeButtons];
@@ -148,7 +157,30 @@
   [self updateTabCount:_webStateList->count()];
 }
 
+#pragma mark - TabGridModeObserving
+
+- (void)tabGridModeDidChange:(TabGridModeHolder*)modeHolder {
+  self.topToolbarConsumer.mode = modeHolder.mode;
+  self.bottomToolbarConsumer.mode = modeHolder.mode;
+}
+
 #pragma mark - Setters
+
+- (void)setTopToolbarConsumer:(TabGridTopToolbar*)topToolbarConsumer {
+  if (_topToolbarConsumer == topToolbarConsumer) {
+    return;
+  }
+  _topToolbarConsumer = topToolbarConsumer;
+  _topToolbarConsumer.mode = _modeHolder.mode;
+}
+
+- (void)setBottomToolbarConsumer:(TabGridBottomToolbar*)bottomToolbarConsumer {
+  if (_bottomToolbarConsumer == bottomToolbarConsumer) {
+    return;
+  }
+  _bottomToolbarConsumer = bottomToolbarConsumer;
+  _bottomToolbarConsumer.mode = _modeHolder.mode;
+}
 
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {

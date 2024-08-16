@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -140,6 +141,8 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   UpdateIsCollapsed();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 }
 
 TabGroupHeader::~TabGroupHeader() = default;
@@ -264,7 +267,6 @@ void TabGroupHeader::OnFocus() {
 }
 
 void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTabList;
   node_data->AddState(ax::mojom::State::kEditable);
 
   std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());

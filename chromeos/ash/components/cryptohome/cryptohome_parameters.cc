@@ -12,6 +12,7 @@
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -21,24 +22,6 @@ namespace cryptohome {
 namespace {
 
 using ::ash::ChallengeResponseKey;
-
-const std::string GetCryptohomeId(const AccountId& account_id) {
-  switch (account_id.GetAccountType()) {
-    case AccountType::GOOGLE: {
-      return account_id.GetUserEmail();
-    }
-    case AccountType::ACTIVE_DIRECTORY: {
-      // Always use the account id key, authpolicyd relies on it!
-      return account_id.GetAccountIdKey();
-    }
-    case AccountType::UNKNOWN: {
-      return account_id.GetUserEmail();
-    }
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return account_id.GetUserEmail();
-}
 
 }  //  anonymous namespace
 

@@ -98,7 +98,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
 
   // AutofillWebDataServiceObserverOnUISequence:
-  void OnAutofillChangedBySync(syncer::ModelType model_type) override;
+  void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(
@@ -224,12 +224,15 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       const GURL& card_art_url) const;
 
   // Returns all virtual card usage data linked to the credit card.
-  virtual std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
+  virtual base::span<const VirtualCardUsageData> GetVirtualCardUsageData()
+      const;
 
   // Returns the credit cards to suggest to the user. Those have been deduped
   // and ordered by frecency with the expired cards put at the end of the
-  // vector.
-  std::vector<CreditCard*> GetCreditCardsToSuggest() const;
+  // vector. `should_use_legacy_algorithm` indicates if we should rank credit
+  // cards using the legacy ranking algorithm.
+  std::vector<CreditCard*> GetCreditCardsToSuggest(
+      bool should_use_legacy_algorithm = false) const;
 
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
@@ -388,7 +391,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns whether a row to give the option of showing cards from the user's
   // account should be shown in the dropdown.
-  bool ShouldShowCardsFromAccountOption() const;
+  virtual bool ShouldShowCardsFromAccountOption() const;
 
   // Triggered when a user selects the option to see cards from their account.
   // Records the sync transport consent.
@@ -544,8 +547,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Virtual card usage data, which contains information regarding usages of a
   // virtual card related to a specific merchant website.
-  std::vector<std::unique_ptr<VirtualCardUsageData>>
-      autofill_virtual_card_usage_data_;
+  std::vector<VirtualCardUsageData> autofill_virtual_card_usage_data_;
 
   // The customized card art images for the URL.
   std::map<GURL, std::unique_ptr<gfx::Image>> credit_card_art_images_;

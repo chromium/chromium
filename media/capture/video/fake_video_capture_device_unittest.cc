@@ -372,6 +372,16 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
                                    mojom::BackgroundBlurMode::BLUR));
   EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
 
+  ASSERT_TRUE(state->supported_background_segmentation_mask_states);
+  EXPECT_EQ(2u, state->supported_background_segmentation_mask_states->size());
+  EXPECT_EQ(1,
+            base::ranges::count(
+                *state->supported_background_segmentation_mask_states, false));
+  EXPECT_EQ(1,
+            base::ranges::count(
+                *state->supported_background_segmentation_mask_states, true));
+  EXPECT_FALSE(state->current_background_segmentation_mask_state);
+
   ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
   EXPECT_EQ(2u, state->supported_eye_gaze_correction_modes->size());
   EXPECT_EQ(1, base::ranges::count(*state->supported_eye_gaze_correction_modes,

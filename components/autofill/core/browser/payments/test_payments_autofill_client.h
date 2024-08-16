@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/test/mock_iban_manager.h"
 #include "components/autofill/core/browser/payments/test/test_credit_card_risk_based_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill {
 
@@ -102,7 +103,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,
-      const std::vector<bool>& card_acceptabilities) override;
+      base::span<const Suggestion> suggestions) override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 

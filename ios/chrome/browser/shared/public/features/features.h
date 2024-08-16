@@ -45,6 +45,10 @@ const base::TimeDelta TimeDelayForSafetyCheckAutorun();
 // Feature to enable Safety Check Push Notifications.
 BASE_DECLARE_FEATURE(kSafetyCheckNotifications);
 
+// Feature to enable the refactored implementation of the `OmahaService`, using
+// new `OmahaServiceObserver`(s) for Omaha clients. Acts as a killswitch.
+BASE_DECLARE_FEATURE(kOmahaServiceRefactor);
+
 // Safety Check Notifications experiment variations.
 extern const char kSafetyCheckNotificationsExperimentType[];
 
@@ -310,42 +314,6 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
-// Feature flag to enable the bottom omnibox FRE promo.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoFRE);
-
-// Feature flag to enable the bottom omnibox app-launch promo.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoAppLaunch);
-
-// Feature param under kBottomOmniboxPromoFRE or kBottomOmniboxPromoAppLaunch to
-// skip the promo conditions for testing.
-extern const char kBottomOmniboxPromoParam[];
-extern const char kBottomOmniboxPromoParamForced[];
-
-// Type of bottom omnibox promo.
-enum class BottomOmniboxPromoType {
-  // kBottomOmniboxPromoFRE.
-  kFRE,
-  // kBottomOmniboxPromoAppLaunch.
-  kAppLaunch,
-  // Any promo type.
-  kAny,
-};
-
-// Whether the bottom omnibox promo of `type` is enabled.
-bool IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType type);
-
-// Feature flag to change the default proposed position in omnibox promos.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoDefaultPosition);
-
-// Feature param under kBottomOmniboxPromoDefaultPosition to select the default
-// position.
-extern const char kBottomOmniboxPromoDefaultPositionParam[];
-extern const char kBottomOmniboxPromoDefaultPositionParamTop[];
-extern const char kBottomOmniboxPromoDefaultPositionParamBottom[];
-
-// Feature flag to enable region filter for the bottom omnibox promos.
-BASE_DECLARE_FEATURE(kBottomOmniboxPromoRegionFilter);
-
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
@@ -365,6 +333,9 @@ bool IsSafetyCheckMagicStackEnabled();
 
 // Whether Safety Check Push Notifications should be sent to the user.
 bool IsSafetyCheckNotificationsEnabled();
+
+// Whether the refactored implementation of the `OmahaService` is enabled.
+bool IsOmahaServiceRefactorEnabled();
 
 // Returns the experiment type for the Safety Check Notifications feature.
 SafetyCheckNotificationsExperimentalArm
@@ -680,9 +651,15 @@ BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 // Feature flag to enable Tips Notifications.
 BASE_DECLARE_FEATURE(kIOSTipsNotifications);
 
-// Feature param to specify how much time after the app starts to trigger
-// Tips notifications.
-extern const char kIOSTipsNotificationsTriggerTimeParam[];
+// Feature param to specify how much time should elapse before a Tip
+// notification should trigger for an unclassified user.
+extern const char kIOSTipsNotificationsUnknownTriggerTimeParam[];
+// Feature param to specify how much time should elapse before a Tip
+// notification should trigger, for an "Active Seeker" user.
+extern const char kIOSTipsNotificationsActiveSeekerTriggerTimeParam[];
+// Feature param to specify how much time should elapse before a Tip
+// notification should trigger, for a "Less Engaged" user.
+extern const char kIOSTipsNotificationsLessEngagedTriggerTimeParam[];
 
 // Feature param containing a bitfield to specify which notifications should be
 // enabled. Bits are assigned based on the enum `TipsNotificationType`.
@@ -779,5 +756,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // Overridable through Finch.
 extern const base::FeatureParam<base::TimeDelta>
     kIdentityConfirmationMinTimeSinceSignin;
+
+// Feature flag to enable the registration of customized UITrait arrays. This
+// feature flag is related to the effort to remove invocations of
+// 'traitCollectionDidChange' which was deprecated in iOS 17.
+BASE_DECLARE_FEATURE(kEnableTraitCollectionRegistration);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

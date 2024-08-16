@@ -79,7 +79,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
@@ -87,7 +87,6 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void ShowDeleteAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;

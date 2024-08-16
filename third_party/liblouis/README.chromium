@@ -3,7 +3,7 @@ Short Name: liblouis
 URL: https://github.com/liblouis/liblouis
 Version: 3.22.0
 CPEPrefix: cpe:/a:liblouis:liblouis:3.22.0
-License: LGPL3 and GPL3
+License: LGPLv3
 License Android Compatible: No
 License File: LICENSE
 Security Critical: yes

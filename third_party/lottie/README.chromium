@@ -2,6 +2,7 @@ Name: Lottie Web
 Short Name: lottie-web
 URL: https://github.com/airbnb/lottie-web
 Version: v5.5.2
+Revision: f80e20477c2dc899e886e6c48c912ed8f15d8ffa
 License: MIT
 License File: LICENSE
 Security Critical: no

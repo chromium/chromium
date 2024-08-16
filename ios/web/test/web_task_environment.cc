@@ -26,7 +26,7 @@ base::test::TaskEnvironment::MainThreadType ConvertMainThreadType(
       return base::test::TaskEnvironment::MainThreadType::IO;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

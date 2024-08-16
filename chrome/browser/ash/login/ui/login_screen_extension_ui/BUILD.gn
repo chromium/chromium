@@ -21,6 +21,7 @@ static_library("login_screen_extension_ui") {
   public_deps = [
     "//ash",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//ui/base",
     "//ui/base:types",
     "//ui/gfx",

@@ -88,7 +88,8 @@ inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
   // the line. However, when it has self-painting layer, the fragment stored in
   // |LayoutBlockFlow| will be painted. Check |IsHiddenForPaint| of the fragment
   // in the inline formatting context.
-  if (UNLIKELY(fragment.IsAtomicInline() && fragment.HasSelfPaintingLayer())) {
+  if (fragment.IsAtomicInline() && fragment.HasSelfPaintingLayer())
+      [[unlikely]] {
     const LayoutObject* layout_object = fragment.GetLayoutObject();
     if (layout_object->IsInLayoutNGInlineFormattingContext()) {
       InlineCursor cursor;
@@ -199,8 +200,9 @@ bool HitTestCulledInlineAncestors(HitTestResult& result,
                                   const PhysicalOffset& physical_offset) {
   // Ellipsis can appear under a different parent from the ellipsized object
   // that it can confuse culled inline logic.
-  if (UNLIKELY(item.IsEllipsis()))
+  if (item.IsEllipsis()) [[unlikely]] {
     return false;
+  }
   // To be passed as |accumulated_offset| to LayoutInline::HitTestCulledInline,
   // where it equals the physical offset of the containing block in paint layer.
   const PhysicalOffset fallback_accumulated_offset =
@@ -443,7 +445,7 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   std::optional<GraphicsContextStateSaver> graphics_context_state_saver;
   const auto* const text_combine =
       DynamicTo<LayoutTextCombine>(box_fragment_.GetLayoutObject());
-  if (UNLIKELY(text_combine)) {
+  if (text_combine) [[unlikely]] {
     if (text_combine->NeedsAffineTransformInPaint()) {
       if (original_phase == PaintPhase::kForeground)
         PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
@@ -526,9 +528,11 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
 
   // If the caret's node's fragment's containing block is this block, and
   // the paint action is PaintPhaseForeground, then paint the caret.
-  if (original_phase == PaintPhase::kForeground && LIKELY(!recorder)) {
-    DCHECK(!text_combine || !text_combine->NeedsAffineTransformInPaint());
-    PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
+  if (original_phase == PaintPhase::kForeground) {
+    if (!recorder) [[likely]] {
+      DCHECK(!text_combine || !text_combine->NeedsAffineTransformInPaint());
+      PaintCaretsIfNeeded(paint_state, paint_info, paint_offset);
+    }
   }
 
   if (ShouldPaintSelfOutline(original_phase)) {
@@ -536,8 +540,8 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     PaintObject(info, paint_offset);
   }
 
-  if (UNLIKELY(text_combine) &&
-      TextCombinePainter::ShouldPaint(*text_combine)) {
+  if (text_combine && TextCombinePainter::ShouldPaint(*text_combine))
+      [[unlikely]] {
     if (recorder) {
       // Paint text decorations and emphasis marks without scaling and share.
       DCHECK(text_combine->NeedsAffineTransformInPaint());
@@ -636,12 +640,13 @@ void BoxFragmentPainter::PaintObject(const PaintInfo& paint_info,
       (!fragment.Children().empty() || fragment.HasItems() ||
        inline_box_cursor_) &&
       !paint_info.DescendantPaintingBlocked()) {
-    if (is_visible && UNLIKELY(paint_phase == PaintPhase::kForeground &&
-                               fragment.IsCSSBox() && style.HasColumnRule()))
+    if (is_visible && paint_phase == PaintPhase::kForeground &&
+        fragment.IsCSSBox() && style.HasColumnRule()) [[unlikely]] {
       PaintColumnRules(paint_info, paint_offset);
+    }
 
     if (paint_phase != PaintPhase::kFloat) {
-      if (UNLIKELY(inline_box_cursor_)) {
+      if (inline_box_cursor_) [[unlikely]] {
         // Use the descendants cursor for this painter if it is given.
         // Self-painting inline box paints only parts of the container block.
         // Adjust |paint_offset| because it is the offset of the inline box, but
@@ -729,14 +734,15 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
   // a fragment with inline children, without a paint fragment. See:
   // http://crbug.com/1022545
   if (!items_ || layout_object->NeedsLayout()) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
   // MathML operators paint text (for example enlarged/stretched) content
   // themselves using MathMLPainter.
-  if (UNLIKELY(box_fragment_.IsMathMLOperator()))
+  if (box_fragment_.IsMathMLOperator()) [[unlikely]] {
     return;
+  }
 
   // Trying to rule out a null GraphicsContext, see: https://crbug.com/1040298
   CHECK(&paint_info.context);
@@ -773,8 +779,8 @@ void BoxFragmentPainter::PaintLineBoxes(const PaintInfo& paint_info,
       child_paint_info.phase != PaintPhase::kMask &&
       child_paint_info.phase != PaintPhase::kDescendantOutlinesOnly &&
       child_paint_info.phase != PaintPhase::kOutline) {
-    if (UNLIKELY(
-            ShouldPaintDescendantBlockBackgrounds(child_paint_info.phase))) {
+    if (ShouldPaintDescendantBlockBackgrounds(child_paint_info.phase))
+        [[unlikely]] {
       // When block-in-inline, block backgrounds need to be painted.
       PaintBoxDecorationBackgroundForBlockInInline(&children, child_paint_info,
                                                    paint_offset);
@@ -1566,7 +1572,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
   while (*cursor) {
     const FragmentItem* item = cursor->CurrentItem();
     DCHECK(item);
-    if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // really layout-clean.
       NOTREACHED_IN_MIGRATION();
@@ -1598,7 +1604,7 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
         }
         break;
       case FragmentItem::kInvalid:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -2048,15 +2054,16 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
 
   // Now hit test ourselves.
   if (hit_test_self) {
-    if (UNLIKELY(!IsVisibleToHitTest(fragment,
-                                     hit_test.result->GetHitTestRequest())))
+    if (!IsVisibleToHitTest(fragment, hit_test.result->GetHitTestRequest()))
+        [[unlikely]] {
       return false;
-    if (UNLIKELY(fragment.IsOpaque()))
+    }
+    if (fragment.IsOpaque()) [[unlikely]] {
       return false;
-  } else if (UNLIKELY(fragment.IsOpaque() &&
-                      hit_test.result->HasListBasedResult() &&
-                      IsVisibleToHitTest(
-                          fragment, hit_test.result->GetHitTestRequest()))) {
+    }
+  } else if (fragment.IsOpaque() && hit_test.result->HasListBasedResult() &&
+             IsVisibleToHitTest(fragment, hit_test.result->GetHitTestRequest()))
+      [[unlikely]] {
     // Opaque fragments should not hit, but they are still ancestors in the DOM
     // tree. They should be added to the list-based result as ancestors if
     // descendants hit.
@@ -2064,8 +2071,8 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
   }
   if (hit_test_self) {
     PhysicalRect bounds_rect(physical_offset, size);
-    if (UNLIKELY(
-            hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())) {
+    if (hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())
+        [[unlikely]] {
       // We'll include overflow from children here (in addition to self-overflow
       // caused by filters), because we want to record a match if we hit the
       // overflow of a child below the stop node. This matches legacy behavior
@@ -2074,7 +2081,7 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
       bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
     }
-    if (UNLIKELY(pointer_events_bounding_box)) {
+    if (pointer_events_bounding_box) [[unlikely]] {
       bounds_rect = PhysicalRect::EnclosingRect(
           GetPhysicalFragment().GetLayoutObject()->ObjectBoundingBox());
     }
@@ -2155,15 +2162,18 @@ bool BoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
                                          const InlineBackwardCursor& cursor) {
   DCHECK(text_item.IsText());
 
-  if (hit_test.phase != HitTestPhase::kForeground)
+  if (hit_test.phase != HitTestPhase::kForeground) {
     return false;
-  if (!IsVisibleToHitTest(text_item, hit_test.result->GetHitTestRequest()))
+  }
+  if (!IsVisibleToHitTest(text_item, hit_test.result->GetHitTestRequest())) {
     return false;
+  }
 
   if (text_item.IsSvgText() && text_item.HasSvgTransformForBoundingBox()) {
     const gfx::QuadF quad = text_item.SvgUnscaledQuad();
-    if (!hit_test.location.Intersects(quad))
+    if (!hit_test.location.Intersects(quad)) {
       return false;
+    }
     return hit_test.AddNodeToResultWithContentOffset(
         text_item.NodeForHitTest(), cursor.ContainerFragment(), quad,
         hit_test.inline_root_offset);
@@ -2173,13 +2183,15 @@ bool BoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
       DynamicTo<LayoutTextCombine>(box_fragment_.GetLayoutObject());
 
   // TODO(layout-dev): Clip to line-top/bottom.
-  const PhysicalRect rect =
-      UNLIKELY(text_combine)
-          ? text_combine->ComputeTextBoundsRectForHitTest(
-                text_item, hit_test.inline_root_offset)
-          : text_item.ComputeTextBoundsRectForHitTest(
-                hit_test.inline_root_offset,
-                hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
+  PhysicalRect rect;
+  if (text_combine) [[unlikely]] {
+    rect = text_combine->ComputeTextBoundsRectForHitTest(
+        text_item, hit_test.inline_root_offset);
+  } else {
+    rect = text_item.ComputeTextBoundsRectForHitTest(
+        hit_test.inline_root_offset,
+        hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow());
+  }
   if (!hit_test.location.Intersects(rect))
     return false;
 
@@ -2348,7 +2360,7 @@ bool BoxFragmentPainter::HitTestChildBoxItem(
 bool BoxFragmentPainter::HitTestChildren(
     const HitTestContext& hit_test,
     const PhysicalOffset& accumulated_offset) {
-  if (UNLIKELY(inline_box_cursor_)) {
+  if (inline_box_cursor_) [[unlikely]] {
     InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
     if (descendants) {
       return HitTestChildren(hit_test, GetPhysicalFragment(), descendants,
@@ -2392,8 +2404,9 @@ bool BoxFragmentPainter::HitTestBlockChildren(
   auto children = box_fragment_.Children();
   for (const PhysicalFragmentLink& child : base::Reversed(children)) {
     const auto& block_child = To<PhysicalBoxFragment>(*child);
-    if (UNLIKELY(block_child.IsLayoutObjectDestroyedOrMoved()))
+    if (block_child.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
     if (block_child.HasSelfPaintingLayer() || block_child.IsFloating())
       continue;
 
@@ -2474,7 +2487,7 @@ bool BoxFragmentPainter::HitTestItemsChildren(
   for (InlineBackwardCursor cursor(children); cursor;) {
     const FragmentItem* item = cursor.Current().Item();
     DCHECK(item);
-    if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // really layout-clean.
       NOTREACHED_IN_MIGRATION();
@@ -2552,8 +2565,9 @@ bool BoxFragmentPainter::HitTestFloatingChildren(
   auto children = container.Children();
   for (const PhysicalFragmentLink& child : base::Reversed(children)) {
     const PhysicalFragment& child_fragment = *child.fragment;
-    if (UNLIKELY(child_fragment.IsLayoutObjectDestroyedOrMoved()))
+    if (child_fragment.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
     if (child_fragment.HasSelfPaintingLayer())
       continue;
 
@@ -2600,8 +2614,9 @@ bool BoxFragmentPainter::HitTestFloatingChildItems(
        cursor.MoveToPreviousSibling()) {
     const FragmentItem* item = cursor.Current().Item();
     DCHECK(item);
-    if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved()))
+    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
+    }
     if (item->Type() == FragmentItem::kBox) {
       if (const PhysicalBoxFragment* child_box = item->BoxFragment()) {
         if (child_box->HasSelfPaintingLayer())

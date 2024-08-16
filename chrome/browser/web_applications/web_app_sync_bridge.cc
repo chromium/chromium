@@ -42,15 +42,15 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/entity_data.h"
@@ -191,15 +191,15 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_proto,
 WebAppSyncBridge::WebAppSyncBridge(WebAppRegistrarMutable* registrar)
     : WebAppSyncBridge(
           registrar,
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEB_APPS,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
                                   chrome::GetChannel()))) {}
 
 WebAppSyncBridge::WebAppSyncBridge(
     WebAppRegistrarMutable* registrar,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       registrar_(registrar) {
   DCHECK(registrar_);
 }
@@ -811,7 +811,7 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
 
 std::unique_ptr<syncer::MetadataChangeList>
 WebAppSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> WebAppSyncBridge::MergeFullSyncData(

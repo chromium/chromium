@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/boca_ui/boca_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -28,6 +33,7 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       browser_context, kChromeBocaAppUntrustedURL);
 
+  source->AddResourcePath("", IDR_ASH_BOCA_UI_INDEX_HTML);
   source->AddResourcePaths(
       base::make_span(kAshBocaUiResources, kAshBocaUiResourcesSize));
 
@@ -55,6 +61,17 @@ BocaUI::BocaUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
+
+  // Enables the page to load images. The page is restricted to only loading
+  // images from data URLs passed to the page.
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc, "img-src data:;");
+
+  // For testing
+  host_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources chrome-untrusted://webui-test "
+      "'self';");
 
   // Register common permissions for chrome-untrusted:// pages.
   // TODO(crbug.com/40710326): Remove this after common permissions are

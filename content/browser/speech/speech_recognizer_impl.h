@@ -16,8 +16,13 @@
 #include "content/browser/speech/speech_recognizer.h"
 #include "content/common/content_export.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
+#include "media/mojo/mojom/speech_recognizer.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace media {
 class AudioBus;
@@ -27,6 +32,7 @@ class AudioSystem;
 namespace content {
 
 class SpeechRecognitionEventListener;
+struct SpeechRecognitionAudioForwarderConfig;
 
 // Handles speech recognition for a session (identified by |session_id|), taking
 // care of audio capture, silence detection/endpointer and interaction with the
@@ -35,7 +41,8 @@ class CONTENT_EXPORT SpeechRecognizerImpl
     : public SpeechRecognizer,
       public media::AudioCapturerSource::CaptureCallback,
       public SpeechRecognitionEngine::Delegate,
-      public speech::SpeechRecognizerFsm {
+      public speech::SpeechRecognizerFsm,
+      public media::mojom::SpeechRecognitionAudioForwarder {
  public:
   static constexpr int kAudioSampleRate = 16000;
   static constexpr media::ChannelLayout kChannelLayout =
@@ -53,7 +60,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                        int session_id,
                        bool continuous,
                        bool provisional_results,
-                       std::unique_ptr<SpeechRecognitionEngine> engine);
+                       std::unique_ptr<SpeechRecognitionEngine> engine,
+                       std::optional<SpeechRecognitionAudioForwarderConfig>
+                           audio_forwarder_config);
 
   SpeechRecognizerImpl(const SpeechRecognizerImpl&) = delete;
   SpeechRecognizerImpl& operator=(const SpeechRecognizerImpl&) = delete;
@@ -73,7 +82,8 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   ~SpeechRecognizerImpl() override;
 
   // Callback from AudioSystem.
-  void OnDeviceInfo(const std::optional<media::AudioParameters>& params);
+  void OnAudioParametersReceived(
+      const std::optional<media::AudioParameters>& params);
 
   // speech::SpeechRecognizerFsm implementation.
   // Process a new audio chunk in the audio pipeline (endpointer, vumeter, etc).
@@ -115,6 +125,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                       const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}
 
+  // media::mojom::blink::SpeechRecognitionAudioForwarder methods.
+  void AddAudioFromRenderer(media::mojom::AudioDataS16Ptr buffer) override;
+
   // SpeechRecognitionEngineDelegate methods.
   void OnSpeechRecognitionEngineResults(
       const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results)
@@ -133,6 +146,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
 
   raw_ptr<media::AudioSystem, DanglingUntriaged> audio_system_;
   std::unique_ptr<SpeechRecognitionEngine> recognition_engine_;
+  int sample_rate_;
   speech::Endpointer endpointer_;
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   int num_samples_recorded_;
@@ -140,6 +154,10 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   bool provisional_results_;
   bool end_of_utterance_;
   std::string device_id_;
+  media::AudioParameters audio_parameters_;
+  bool use_audio_capturer_source_ = true;
+  mojo::Receiver<media::mojom::SpeechRecognitionAudioForwarder>
+      audio_forwarder_receiver_;
   media::AudioParameters device_params_;
 
   class OnDataConverter;

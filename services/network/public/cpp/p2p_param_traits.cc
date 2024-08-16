@@ -49,7 +49,7 @@ EnumTraits<network::mojom::EcnMarking, rtc::EcnMarking>::ToMojom(
     case rtc::EcnMarking::kCe:
       return network::mojom::EcnMarking::kCe;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::EcnMarking, rtc::EcnMarking>::FromMojom(

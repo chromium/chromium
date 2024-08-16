@@ -148,7 +148,8 @@ std::u16string NotificationCenterTray::GetAccessibleNameForBubble() {
 }
 
 std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME);
+  return notification_icons_controller_->GetAccessibleNameString().value_or(
+      l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_ACCESSIBLE_NAME));
 }
 
 void NotificationCenterTray::HandleLocaleChange() {}
@@ -177,7 +178,7 @@ void NotificationCenterTray::UpdateTrayItemColor(bool is_active) {
   }
 }
 
-void NotificationCenterTray::CloseBubble() {
+void NotificationCenterTray::CloseBubbleInternal() {
   if (!bubble_) {
     return;
   }

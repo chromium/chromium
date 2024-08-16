@@ -1123,7 +1123,7 @@ experimental domain Extensions
     returns
       # Extension id.
       string id
-  # Gets data from extension storage in the given `area`. If `keys` is
+  # Gets data from extension storage in the given `storageArea`. If `keys` is
   # specified, these are used to filter the result.
   command getStorageItems
     parameters
@@ -1135,6 +1135,32 @@ experimental domain Extensions
       optional array of string keys
     returns
       object data
+  # Removes `keys` from extension storage in the given `storageArea`.
+  command removeStorageItems
+    parameters
+      # ID of extension.
+      string id
+      # StorageArea to remove data from.
+      StorageArea storageArea
+      # Keys to remove.
+      array of string keys
+  # Clears extension storage in the given `storageArea`.
+  command clearStorageItems
+    parameters
+      # ID of extension.
+      string id
+      # StorageArea to remove data from.
+      StorageArea storageArea
+  # Sets `values` in extension storage in the given `storageArea`. The provided `values`
+  # will be merged with existing values in the storage area.
+  command setStorageItems
+    parameters
+      # ID of extension.
+      string id
+      # StorageArea to set data in.
+      StorageArea storageArea
+      # Values to set.
+      object values
 
 # Defines commands and events for Autofill.
 experimental domain Autofill
@@ -2660,6 +2686,8 @@ domain DOM
       first-line-inherited
       scroll-marker
       scroll-marker-group
+      scroll-next-button
+      scroll-prev-button
       scrollbar
       scrollbar-thumb
       scrollbar-button
@@ -2777,6 +2805,12 @@ domain DOM
       optional boolean isSVG
       optional CompatibilityMode compatibilityMode
       optional BackendNode assignedSlot
+
+  # A structure to hold the top-level node of a detached tree and an array of its retained descendants.
+  type DetachedElementInfo extends object
+    properties
+      Node treeNode
+      array of NodeId retainedNodeIds
 
   # A structure holding an RGBA color.
   type RGBA extends object
@@ -3287,6 +3321,12 @@ domain DOM
       Runtime.RemoteObjectId objectId
     returns
       string path
+
+  # Returns list of detached nodes
+  experimental command getDetachedDomNodes
+    returns
+      # The list of detached nodes
+      array of DetachedElementInfo detachedNodes
 
   # Enables console to refer to the node with given id via $x (see Command Line API for more details
   # $x functions).
@@ -8369,14 +8409,16 @@ domain Page
 
   experimental type ClientNavigationReason extends string
     enum
+      anchorClick
       formSubmissionGet
       formSubmissionPost
       httpHeaderRefresh
-      scriptInitiated
+      initialFrameNavigation
       metaTagRefresh
+      other
       pageBlockInterstitial
       reload
-      anchorClick
+      scriptInitiated
 
   experimental type ClientNavigationDisposition extends string
     enum
@@ -9496,6 +9538,15 @@ domain Page
       FrameId frameId
       # Frame's new url.
       string url
+      # Navigation type
+      enum navigationType
+        # Navigation due to fragment navigation.
+        fragment
+        # Navigation due to history API usage.
+        historyApi
+        # Navigation due to other reasons.
+        other
+
 
   # Compressed image data requested by the `startScreencast`.
   experimental event screencastFrame
@@ -12612,3 +12663,67 @@ experimental domain PWA
       # supported yet.
       optional boolean linkCapturing
       optional DisplayMode displayMode
+
+# This domain allows configuring virtual Bluetooth devices to test
+# the web-bluetooth API.
+experimental domain BluetoothEmulation
+  # Indicates the various states of Central.
+  type CentralState extends string
+    enum
+      absent
+      powered-off
+      powered-on
+
+  # Stores the manufacturer data
+  type ManufacturerData extends object
+    properties
+      # Company identifier
+      # https://bitbucket.org/bluetooth-SIG/public/src/main/assigned_numbers/company_identifiers/company_identifiers.yaml
+      # https://usb.org/developers
+      integer key
+      # Manufacturer-specific data
+      binary data
+
+  # Stores the byte data of the advertisement packet sent by a Bluetooth device.
+  type ScanRecord extends object
+    properties
+      optional string name
+      optional array of string uuids
+      # Stores the external appearance description of the device.
+      optional integer appearance
+      # Stores the transmission power of a broadcasting device.
+      optional integer txPower
+      # Key is the company identifier and the value is an array of bytes of
+      # manufacturer specific data.
+      optional array of ManufacturerData manufacturerData
+
+  # Stores the advertisement packet information that is sent by a Bluetooth device.
+  type ScanEntry extends object
+    properties
+      string deviceAddress
+      integer rssi
+      ScanRecord scanRecord
+
+  # Enable the BluetoothEmulation domain.
+  command enable
+    parameters
+      # State of the simulated central.
+      CentralState state
+
+  # Disable the BluetoothEmulation domain.
+  command disable
+
+  # Simulates a peripheral with |address|, |name| and |knownServiceUuids|
+  # that has already been connected to the system.
+  command simulatePreconnectedPeripheral
+    parameters
+      string address
+      string name
+      array of ManufacturerData manufacturerData
+      array of string knownServiceUuids
+
+  # Simulates an advertisement packet described in |entry| being received by
+  # the central.
+  command simulateAdvertisement
+    parameters
+      ScanEntry entry

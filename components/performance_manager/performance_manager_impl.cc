@@ -125,7 +125,7 @@ class TaskRunnerWithSynchronousRunOnUIThread
     // base/timer/timer.cc, we manually verified that no `TaskRunner` obtained
     // from `PerformanceManager(Impl)::GetTaskRunner()` is passed to
     // `base::TimerBase::SetTaskRunner()`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   base::DelayedTaskHandle PostCancelableDelayedTaskAt(
@@ -137,7 +137,7 @@ class TaskRunnerWithSynchronousRunOnUIThread
     // There is no call to this method on the Performance Manager `TaskRunner`.
     //
     // See notes in `PostCancelableDelayedTask`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool PostDelayedTaskAt(base::subtle::PostDelayedTaskPassKey pass_key,
@@ -148,7 +148,7 @@ class TaskRunnerWithSynchronousRunOnUIThread
     // There is no call to this method on the Performance Manager `TaskRunner`.
     //
     // See notes in `PostCancelableDelayedTask`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool RunOrPostTask(base::subtle::RunOrPostTaskPassKey,
@@ -157,7 +157,7 @@ class TaskRunnerWithSynchronousRunOnUIThread
     // There is no call to this method on the Performance Manager `TaskRunner`.
     // The only call is in ipc/ipc_mojo_bootstrap.cc and it's trivial to verify
     // that it doesn't target this `TaskRunner`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool RunsTasksInCurrentSequence() const override {

@@ -189,6 +189,8 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   void MaybeUnpauseOcclusionTracker(base::TimeDelta delay);
   void ResetPauser();
 
+  bool IsDeskBarOpen() const;
+
   // Collection of DelayedAnimationObserver objects that own widgets that may be
   // still animating after overview mode ends. If shell needs to shut down while
   // those animations are in progress, the animations are shut down and the
@@ -253,6 +255,11 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
   // overview mode as finished its enter animation. Otherwise, we must mark
   // all windows as visible immediately.
   bool windows_have_snapshot_ = false;
+
+  // For metrics purposes only. When entering overview, records whether the
+  // desk bar was shown immediately in the first frame (as opposed to after
+  // the animation completes or not at all).
+  bool desk_bar_shown_immediately_ = false;
 
   OverviewWindowOcclusionCalculator overview_window_occlusion_calculator_;
 

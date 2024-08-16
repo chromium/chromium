@@ -204,7 +204,10 @@ class IsolatedWebAppPolicyManager {
   base::Value GetDebugValue() const;
 
  private:
-  void ProcessPolicy();
+  void CleanupAndProcessPolicyOnSessionStart();
+  int GetPendingInitCount();
+  void SetPendingInitCount(int pending_count);
+  void ProcessPolicy(base::OnceClosure finished_closure);
   void DoProcessPolicy(AllAppsLock& lock, base::Value::Dict& debug_info);
   void OnPolicyProcessed();
 
@@ -225,7 +228,7 @@ class IsolatedWebAppPolicyManager {
 
   void MaybeStartNextInstallTask();
 
-  void CleanupOrphanedBundles();
+  void CleanupOrphanedBundles(base::OnceClosure finished_closure);
 
   // Keeps track of the last few processing logs for debugging purposes.
   // Automatically discards older logs to keep at most `kMaxEntries`.

@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -1055,43 +1056,87 @@ TEST_F(AnchorElementMetricsSenderTest,
 TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kNavigationPredictor, {{"max_intersection_observations", "10"},
+      features::kNavigationPredictor, {{"max_intersection_observations", "3"},
                                        {"random_anchor_sampling_period", "1"}});
 
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
   LoadURL(source);
-  main_resource.Complete("");
+  main_resource.Complete(R"html(
+    <body></body>
+  )html");
 
-  auto add_anchor = [&]() {
+  auto add_anchor = [&](String inner_text, int height) {
     auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
-    anchor->setInnerText("foo");
+    anchor->setInnerText(inner_text);
     anchor->setHref("https://foo.com");
+    anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
+                                   String::Format("%dpx", height));
+    anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
     GetDocument().body()->appendChild(anchor);
+    return anchor;
   };
 
-  // Add 10 anchors; they should all be observed by the IntersectionObserver.
-  for (int i = 0; i < 10; i++) {
-    add_anchor();
-  }
-  ProcessEvents(10);
+  // Add 3 anchors; they should all be observed by the IntersectionObserver.
+  auto* anchor_1 = add_anchor("one", 100);
+  auto* anchor_2 = add_anchor("two", 200);
+  auto* anchor_3 = add_anchor("three", 300);
+
+  ProcessEvents(3);
   ASSERT_EQ(1u, hosts_.size());
   auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
                                     ->GetIntersectionObserverForTesting();
-  EXPECT_EQ(hosts_[0]->elements_.size(), 10u);
-  EXPECT_EQ(intersection_observer->Observations().size(), 10u);
+  EXPECT_EQ(hosts_[0]->elements_.size(), 3u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 3u);
 
-  // Add another anchor; the IntersectionObserver should be disconnected.
-  add_anchor();
-  ProcessEvents(11);
-  EXPECT_EQ(hosts_[0]->elements_.size(), 11u);
-  EXPECT_EQ(intersection_observer->Observations().size(), 0u);
+  auto observations = [&]() -> HeapVector<Member<HTMLAnchorElement>> {
+    HeapVector<Member<HTMLAnchorElement>> observed_anchors;
+    base::ranges::transform(
+        intersection_observer->Observations(),
+        std::back_inserter(observed_anchors),
+        [](IntersectionObservation* observation) {
+          return To<HTMLAnchorElement>(observation->Target());
+        });
+    return observed_anchors;
+  };
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_1, anchor_2, anchor_3));
 
-  // Add another anchor; it should not be observed by the IntersectionObserver.
-  add_anchor();
-  ProcessEvents(12);
-  EXPECT_EQ(hosts_[0]->elements_.size(), 12u);
-  EXPECT_EQ(intersection_observer->Observations().size(), 0u);
+  // Remove anchor 1.
+  anchor_1->remove();
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_2, anchor_3));
+
+  // Readd anchor 1.
+  GetDocument().body()->appendChild(anchor_1);
+  ProcessEvents(3);
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_1, anchor_2, anchor_3));
+
+  // Add a fourth anchor (larger than all existing anchors). It should be
+  // observed instead of anchor 1.
+  auto* anchor_4 = add_anchor("four", 400);
+  ProcessEvents(4);
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
+
+  // Add a fifth anchor (smaller than all existing anchors). The observations
+  // should not change (i.e. it should not be observed).
+  auto* anchor_5 = add_anchor("five", 50);
+  ProcessEvents(5);
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
+
+  // Remove anchor 2. It should no longer be observed, and anchor_1 (the
+  // largest unobserved anchor) should be observed in its place.
+  anchor_2->remove();
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_1, anchor_3, anchor_4));
+
+  // Remove anchor 5. There should be no changes in anchors observed.
+  anchor_5->remove();
+  EXPECT_THAT(observations(),
+              ::testing::UnorderedElementsAre(anchor_1, anchor_3, anchor_4));
 }
 
 TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {

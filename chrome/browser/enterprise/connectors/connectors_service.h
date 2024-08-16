@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

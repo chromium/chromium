@@ -33,7 +33,7 @@ inline constexpr char kStopShowingTabGroupConfirmationOnTabClose[] =
 // it's created.
 inline constexpr char kAutoPinNewTabGroups[] = "auto_pin_new_tab_groups";
 
-// Whether the ModelTypeStore has been migrated from storing
+// Whether the DataTypeStore has been migrated from storing
 // SavedTabGroupSpecifics to SavedTabGroupData.
 inline constexpr char kSavedTabGroupSpecificsToDataMigration[] =
     "saved_tab_groups.specifics_to_data_migration";

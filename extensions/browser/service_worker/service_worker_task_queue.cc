@@ -43,6 +43,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
 
@@ -249,7 +250,8 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
     int render_process_id,
     const ExtensionId& extension_id,
     int64_t service_worker_version_id,
-    int thread_id) {
+    int thread_id,
+    const blink::ServiceWorkerToken& service_worker_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
@@ -273,7 +275,7 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
   ProcessManager::Get(browser_context_)
       ->StartTrackingServiceWorkerRunningInstance(
           {extension_id, render_process_id, service_worker_version_id,
-           thread_id});
+           thread_id, service_worker_token});
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
 
@@ -532,6 +534,12 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
   }
   option.scope = extension.url();
 
+  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
+    ++worker_reregistration_attempts_[context_id.token];
+  } else {
+    worker_reregistration_attempts_[context_id.token] = 0;
+  }
+
   content::ServiceWorkerContext* service_worker_context =
       GetServiceWorkerContext(extension.id());
   service_worker_context->RegisterServiceWorker(
@@ -562,7 +570,10 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   // TODO(lazyboy): Run orphaned tasks with nullptr ContextInfo.
   pending_tasks_map_.erase(context_id);
   worker_state_map_.erase(context_id);
-  worker_registered_.erase(context_id);
+  bool worker_previously_registered = worker_registered_.erase(context_id);
+  // If an extension/worker is unloaded/disabled before the registration
+  // callback then we might still have this record to delete.
+  worker_reregistration_attempts_.erase(context_id.token);
 
   // Erase any registrations that might still have been pending being fully
   // stored.
@@ -581,7 +592,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       blink::StorageKey::CreateFirstParty(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id,
-                     *activation_token));
+                     *activation_token, worker_previously_registered));
 
   StopObserving(service_worker_context);
 }
@@ -645,6 +656,13 @@ bool ServiceWorkerTaskQueue::HasPendingTasks(
   return tasks ? !tasks->empty() : false;
 }
 
+bool ServiceWorkerTaskQueue::ShouldRetryRegistrationRequest(
+    base::UnguessableToken activation_token) {
+  auto iter = worker_reregistration_attempts_.find(activation_token);
+  CHECK(iter != worker_reregistration_attempts_.end());
+  return iter->second < 3;
+}
+
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     const SequencedContextId& context_id,
     RegistrationReason reason,
@@ -652,10 +670,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     blink::ServiceWorkerStatusCode status_code) {
   const bool success = status_code == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerRegistrationState", success);
-  if (g_test_observer) {
-    g_test_observer->OnWorkerRegistered(context_id.extension_id);
-  }
+      "Extensions.ServiceWorkerBackground.WorkerRegistrationState2", success);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionId& extension_id = context_id.extension_id;
@@ -663,9 +678,15 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
   if (!extension) {
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
   if (!IsCurrentActivation(extension_id, context_id.token)) {
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
 
@@ -674,13 +695,13 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
   if (reason == RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH) {
     base::UmaHistogramBoolean(
-        "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated",
+        "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated2",
         success);
     if (!success) {
       // TODO(crbug.com/346732739): Create a test for this if it is feasible.
       base::UmaHistogramEnumeration(
           "Extensions.ServiceWorkerBackground.RegistrationMismatchMitigated_"
-          "FailStatus",
+          "FailStatus2",
           status_code);
     }
     if (g_test_observer) {
@@ -688,9 +709,39 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     }
   }
 
+  // If the registration failed due to timeout then retry registration.
+  if (status_code == blink::ServiceWorkerStatusCode::kErrorTimeout &&
+      ShouldRetryRegistrationRequest(context_id.token)) {
+    // TODO(jlulejian): Consider doing this with a post task with delay and/or
+    // with net::BackoffEntry to give more opportunity for the (hopefully
+    // intermittent) timeout to resolve.
+    ServiceWorkerTaskQueue::RegisterServiceWorker(
+        RegistrationReason::RE_REGISTER_ON_TIMEOUT, context_id, *extension);
+    return;
+  }
+
+  // We aren't retrying anymore so record success and emit metrics.
+  if (reason == RegistrationReason::RE_REGISTER_ON_TIMEOUT) {
+    if (success) {
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          true);
+    } else {
+      // We've exhausted all retry attempts or hit a status code on retry other
+      // than blink::ServiceWorkerStatusCode::kErrorTimeout that we will not
+      // retry.
+      base::UmaHistogramBoolean(
+          "Extensions.ServiceWorkerBackground."
+          "WorkerRegistrationRetryAttemptsResult",
+          false);
+    }
+    worker_reregistration_attempts_.erase(context_id.token);
+  }
+
   if (!success) {
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.Registration_FailStatus",
+        "Extensions.ServiceWorkerBackground.Registration_FailStatus2",
         status_code);
     std::string msg = base::StringPrintf(
         "Service worker registration failed. Status code: %d",
@@ -702,6 +753,9 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
 
     ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                                 std::move(error));
+    if (g_test_observer) {
+      g_test_observer->OnWorkerRegistered(context_id.extension_id);
+    }
     return;
   }
   base::UmaHistogramTimes("Extensions.ServiceWorkerBackground.RegistrationTime",
@@ -718,46 +772,54 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     // worker's internal state is on the UI thread rather than the IO thread.
     RunTasksAfterStartWorker(context_id);
   }
+
+  if (g_test_observer) {
+    g_test_observer->OnWorkerRegistered(context_id.extension_id);
+  }
 }
 
 void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
     const ExtensionId& extension_id,
     const base::UnguessableToken& activation_token,
+    bool worker_previously_registered,
     blink::ServiceWorkerStatusCode status) {
-  bool success = status == blink::ServiceWorkerStatusCode::kOk;
+  // When unregistering the worker we should've already deactivated the
+  // extension.
+  CHECK(!IsCurrentActivation(extension_id, activation_token));
+
+  bool success = false;
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    success = true;
+  } else if (status == blink::ServiceWorkerStatusCode::kErrorNotFound &&
+             !worker_previously_registered) {
+    // If worker was not successfully registered before then a not found error
+    // is expected.
+    success = true;
+  }
+
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
-      "DeactivateExtension",
+      "DeactivateExtension2",
       success);
 
-  if (g_test_observer) {
-    g_test_observer->WorkerUnregistered(extension_id);
-  }
-
-  // Extension run with |activation_token| was already deactivated.
-  if (!IsCurrentActivation(extension_id, activation_token)) {
-    if (!success) {
-      base::UmaHistogramEnumeration(
-          "Extensions.ServiceWorkerBackground."
-          "WorkerUnregistrationFailureStatus_"
-          "DeactivateExtension_NotCurrentActivation",
-          status);
-    }
-    return;
-  }
-
+  // TODO(crbug.com/346732739): Handle this better than just logging an error
+  // message.
   if (!success) {
-    // TODO(crbug.com/346732739): Handle this case.
-    LOG(ERROR) << "Failed to unregister service worker!";
+    LOG(ERROR) << "Failed to unregister service worker for extension id: "
+               << extension_id << " error status was: " << (int)status;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus3",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "DeactivateExtension",
+        "DeactivateExtension3",
         status);
+  }
+
+  if (g_test_observer) {
+    g_test_observer->WorkerUnregistered(extension_id);
   }
 }
 
@@ -916,8 +978,8 @@ void ServiceWorkerTaskQueue::OnDestruct(
   StopObserving(context);
 }
 
-// Listens to worker stops and removes invalid `WorkerId` from `WorkerIdSet`, if
-// it finds it.
+// Listens to worker stops and removes stopped worker from `WorkerIdSet`, if it
+// finds it.
 void ServiceWorkerTaskQueue::OnStopped(int64_t version_id, const GURL& scope) {
   // TODO(crbug.com/40936639): Confirming this is true in order to allow for
   // synchronous notification of this status change.

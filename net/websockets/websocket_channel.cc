@@ -967,10 +967,10 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     size = payload_length;
     auto [code_span, body_span] =
         body->span().split_at<kWebSocketCloseCodeLength>();
-    base::as_writable_bytes(code_span).copy_from(base::U16ToBigEndian(code));
+    code_span.copy_from(base::U16ToBigEndian(code));
     static_assert(sizeof(code) == kWebSocketCloseCodeLength,
                   "they should both be two");
-    body_span.copy_from(reason);
+    body_span.copy_from(base::as_byte_span(reason));
   }
 
   return SendFrameInternal(true, WebSocketFrameHeader::kOpCodeClose,

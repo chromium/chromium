@@ -310,6 +310,9 @@ class AbstractProtoFetcher {
 template <typename Response>
 class TypedProtoFetcher : public AbstractProtoFetcher {
  public:
+  // Called when fetch completes. The response contains value iff the status
+  // doesn't signal error (see ProtoFetcherStatus::IsOK). In not-OK situations,
+  // the response is empty.
   using Callback = base::OnceCallback<void(const ProtoFetcherStatus&,
                                            std::unique_ptr<Response>)>;
   TypedProtoFetcher() = delete;

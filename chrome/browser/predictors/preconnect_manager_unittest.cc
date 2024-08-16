@@ -401,19 +401,19 @@ TEST_F(PreconnectManagerTest, TestStartOneUrlPreconnect_MultipleTimes) {
 // related to the second request are dispatched on the network.
 TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
   GURL main_frame_url_1("http://google.com");
-  net::NetworkAnonymizationKey network_anonymization_key_1 =
+  net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(main_frame_url_1);
   size_t count = PreconnectManager::kMaxInflightPreresolves;
   std::vector<PreconnectRequest> requests;
   for (size_t i = 0; i < count + 1; ++i) {
     std::string url = base::StringPrintf("http://cdn%" PRIuS ".google.com", i);
     requests.emplace_back(url::Origin::Create(GURL(url)), 1,
-                          network_anonymization_key_1);
+                          network_anonymization_key);
   }
 
-  GURL main_frame_url_2("http://google2.com");
-  net::NetworkAnonymizationKey network_anonymization_key_2 =
-      CreateNetworkAnonymizationKey(main_frame_url_1);
+  // This is same origin to `main_frame_url_1` because that ensures both URLs
+  // would, in real usage, have the same NetworkAnonymizationKey.
+  GURL main_frame_url_2("http://google.com/2");
 
   EXPECT_CALL(
       *mock_delegate_,
@@ -433,7 +433,7 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
     EXPECT_CALL(*mock_network_context_,
                 PreconnectSockets(1, requests[i].origin.GetURL(),
                                   network::mojom::CredentialsMode::kInclude,
-                                  network_anonymization_key_1));
+                                  network_anonymization_key));
   }
 
   preconnect_manager_->Start(
@@ -446,14 +446,14 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
   preconnect_manager_->Stop(main_frame_url_2);
   for (size_t i = 0; i < count - 1; ++i) {
     mock_network_context_->CompleteHostLookup(
-        requests[i].origin.host(), network_anonymization_key_1, net::OK);
+        requests[i].origin.host(), network_anonymization_key, net::OK);
   }
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url_2));
   // Preconnect to |requests[count-1].origin| finishes after |main_frame_url_2|
   // is stopped. Finishing of |requests[count-1].origin| should cause preconnect
   // manager to clear all internal state related to |main_frame_url_2|.
-  mock_network_context_->CompleteHostLookup(
-      requests[count - 1].origin.host(), network_anonymization_key_1, net::OK);
+  mock_network_context_->CompleteHostLookup(requests[count - 1].origin.host(),
+                                            network_anonymization_key, net::OK);
   VerifyAndClearExpectations();
 
   // Now, restart the preconnect request.
@@ -478,16 +478,16 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
   EXPECT_CALL(*mock_network_context_,
               PreconnectSockets(1, requests[count - 1].origin.GetURL(),
                                 network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key_2));
+                                network_anonymization_key));
   EXPECT_CALL(*mock_network_context_,
               PreconnectSockets(1, requests[count].origin.GetURL(),
                                 network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key_2));
+                                network_anonymization_key));
 
-  mock_network_context_->CompleteHostLookup(
-      requests[count - 1].origin.host(), network_anonymization_key_2, net::OK);
-  mock_network_context_->CompleteHostLookup(
-      requests[count].origin.host(), network_anonymization_key_2, net::OK);
+  mock_network_context_->CompleteHostLookup(requests[count - 1].origin.host(),
+                                            network_anonymization_key, net::OK);
+  mock_network_context_->CompleteHostLookup(requests[count].origin.host(),
+                                            network_anonymization_key, net::OK);
 }
 
 // Starts preconnect request for two webpages. The preconnect request for the

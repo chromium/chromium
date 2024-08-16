@@ -62,6 +62,7 @@ HttpStreamPool::Group::Group(HttpStreamPool* pool,
     : pool_(pool),
       stream_key_(std::move(stream_key)),
       spdy_session_key_(std::move(spdy_session_key)),
+      quic_session_key_(stream_key_.ToQuicSessionKey()),
       net_log_(
           NetLogWithSource::Make(http_network_session()->net_log(),
                                  NetLogSourceType::HTTP_STREAM_POOL_GROUP)) {
@@ -83,6 +84,8 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
+    bool enable_alternative_services,
+    quic::ParsedQuicVersion quic_version,
     const NetLogWithSource& net_log) {
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_STREAM, [&] {
@@ -102,18 +105,27 @@ std::unique_ptr<HttpStreamRequest> HttpStreamPool::Group::RequestStream(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_REQUEST_BOUND, net_log_.source());
 
   EnsureInFlightJob();
-  return in_flight_job_->RequestStream(delegate, priority, allowed_bad_certs,
-                                       enable_ip_based_pooling, net_log);
+  return in_flight_job_->RequestStream(
+      delegate, priority, allowed_bad_certs, enable_ip_based_pooling,
+      enable_alternative_services, quic_version, net_log);
 }
 
 int HttpStreamPool::Group::Preconnect(size_t num_streams,
+                                      quic::ParsedQuicVersion quic_version,
                                       CompletionOnceCallback callback) {
+  net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_PRECONNECT, [&] {
+    base::Value::Dict dict;
+    dict.Set("num_streams", static_cast<int>(num_streams));
+    return dict;
+  });
   EnsureInFlightJob();
-  return in_flight_job_->Preconnect(num_streams, std::move(callback));
+  return in_flight_job_->Preconnect(num_streams, quic_version,
+                                    std::move(callback));
 }
 
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK_LE(ActiveStreamSocketCount(), pool_->max_stream_sockets_per_group());
 
@@ -123,15 +135,17 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   auto handle = std::make_unique<HttpStreamPoolHandle>(this, std::move(socket),
                                                        generation_);
   handle->set_connect_timing(connect_timing);
+  handle->set_reuse_type(reuse_type);
   return handle;
 }
 
 std::unique_ptr<HttpStream> HttpStreamPool::Group::CreateTextBasedStream(
     std::unique_ptr<StreamSocket> socket,
+    StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
   CHECK(IsNegotiatedProtocolTextBased(socket->GetNegotiatedProtocol()));
   return std::make_unique<HttpBasicStream>(
-      CreateHandle(std::move(socket), std::move(connect_timing)),
+      CreateHandle(std::move(socket), reuse_type, std::move(connect_timing)),
       /*is_for_get_to_http_proxy=*/false);
 }
 
@@ -161,11 +175,11 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
 
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
 
   if (idle_stream_sockets_.empty()) {
     return nullptr;
@@ -237,17 +251,29 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
              : std::nullopt;
 }
 
-void HttpStreamPool::Group::Refresh() {
+void HttpStreamPool::Group::Refresh(
+    std::string_view net_log_close_reason_utf8) {
   ++generation_;
-  CleanupIdleStreamSockets(CleanupMode::kForce);
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
   if (in_flight_job_) {
     in_flight_job_->CancelInFlightAttempts();
   }
 }
 
+void HttpStreamPool::Group::CloseIdleStreams(
+    std::string_view net_log_close_reason_utf8) {
+  CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
+}
+
 void HttpStreamPool::Group::CancelRequests(int error) {
   if (in_flight_job_) {
     in_flight_job_->CancelRequests(error);
+  }
+}
+
+void HttpStreamPool::Group::OnRequiredHttp11() {
+  if (in_flight_job_) {
+    in_flight_job_->OnRequiredHttp11();
   }
 }
 
@@ -258,10 +284,12 @@ void HttpStreamPool::Group::OnJobComplete() {
 }
 
 void HttpStreamPool::Group::CleanupTimedoutIdleStreamSocketsForTesting() {
-  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly);
+  CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, "For testing");
 }
 
-void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
+void HttpStreamPool::Group::CleanupIdleStreamSockets(
+    CleanupMode mode,
+    std::string_view net_log_close_reason_utf8) {
   const base::TimeTicks now = base::TimeTicks::Now();
 
   // Iterate though the idle sockets to delete any disconnected ones.
@@ -280,6 +308,9 @@ void HttpStreamPool::Group::CleanupIdleStreamSockets(CleanupMode mode) {
     }
 
     if (should_delete) {
+      it->stream_socket->NetLog().AddEventWithStringParams(
+          NetLogEventType::HTTP_STREAM_POOL_CLOSING_SOCKET, "reason",
+          net_log_close_reason_utf8);
       it = idle_stream_sockets_.erase(it);
       pool_->DecrementTotalIdleStreamCount();
     } else {

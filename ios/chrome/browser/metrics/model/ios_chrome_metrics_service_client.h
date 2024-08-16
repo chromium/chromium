@@ -12,10 +12,11 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -24,12 +25,17 @@
 #include "components/ukm/observers/history_delete_observer.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/variations/synthetic_trial_registry.h"
-#include "ios/chrome/browser/metrics/model/incognito_web_state_observer.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
+
+// TODO(crbug.com/358356195): Remove this typedef when this header is updated
+// to use ProfileManagerIOS.
+class ProfileManagerIOS;
+using ChromeBrowserStateManager = ProfileManagerIOS;
 
 namespace metrics {
 class MetricsService;
@@ -46,11 +52,11 @@ class UkmService;
 
 // IOSChromeMetricsServiceClient provides an implementation of
 // MetricsServiceClient that depends on //ios/chrome/.
-class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
-                                      public metrics::MetricsServiceClient,
+class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
                                       public ukm::UkmConsentStateObserver,
-                                      public web::GlobalWebStateObserver {
+                                      public web::GlobalWebStateObserver,
+                                      public ChromeBrowserStateManagerObserver {
  public:
   IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
   IOSChromeMetricsServiceClient& operator=(
@@ -101,9 +107,13 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   void WebStateDidStartLoading(web::WebState* web_state) override;
   void WebStateDidStopLoading(web::WebState* web_state) override;
 
-  // IncognitoWebStateObserver:
-  void OnIncognitoWebStateAdded() override;
-  void OnIncognitoWebStateRemoved() override;
+  // ChromeBrowserStateManagerObserver:
+  void OnChromeBrowserStateManagerDestroyed(
+      ChromeBrowserStateManager* manager) override;
+  void OnChromeBrowserStateCreated(ChromeBrowserStateManager* manager,
+                                   ChromeBrowserState* browser_state) override;
+  void OnChromeBrowserStateLoaded(ChromeBrowserStateManager* manager,
+                                  ChromeBrowserState* browser_state) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -135,8 +145,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // user is performing work. This is useful to allow some features to sleep,
   // until the machine becomes active, such as precluding UMA uploads unless
   // there was recent activity.
-  // Returns true if registration was successful.
-  bool RegisterForNotifications();
+  void RegisterForNotifications();
 
   // Register to observe events on a browser state's services.
   // Returns true if registration was successful.
@@ -148,7 +157,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
-  base::ThreadChecker thread_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointer to the MetricsStateManager.
   raw_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -168,8 +177,13 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
+  // Observation of the ChromeBrowserStateManager.
+  base::ScopedObservation<ChromeBrowserStateManager,
+                          ChromeBrowserStateManagerObserver>
+      browser_state_manager_observation_{this};
+
   // Whether we registered all notification listeners successfully.
-  bool notification_listeners_active_;
+  bool notification_listeners_active_ = true;
 
   // The IOSChromeStabilityMetricsProvider instance that was registered with
   // MetricsService. Has the same lifetime as `metrics_service_`.
@@ -184,6 +198,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
+
+  // Subscription for receiving callbacks when the number of incognito tabs
+  // open in the application transition from 0 to 1 or 1 to 0.
+  base::CallbackListSubscription incognito_session_tracker_subscription_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_CLIENT_H_

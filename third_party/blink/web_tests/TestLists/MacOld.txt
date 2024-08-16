@@ -81,7 +81,6 @@ virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html
 virtual/scalefactor200/fast/hidpi/static/validation-bubble-appearance-hidpi.html
-virtual/stable/webexposed/global-interface-listing-platform-specific.html
 virtual/text-antialias/basic/001.html
 virtual/text-antialias/basic/generic-family-reset.html
 virtual/text-antialias/complex-path-with-no-subpixel-fonts.html
@@ -107,5 +106,4 @@ virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timeli
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-004.htm
 virtual/threaded/external/wpt/css/css-backgrounds/border-image-image-type-005.htm
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-captures-clip-path.htm
-webexposed/global-interface-listing-platform-specific.html
 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html

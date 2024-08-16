@@ -125,11 +125,12 @@ class CrosDisplayConfigTest : public AshTestBase {
     return result;
   }
 
-  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList() {
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
+      bool single_unified = false) {
     std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_info_list;
     base::RunLoop run_loop;
     cros_display_config_->GetDisplayUnitInfoList(
-        /*single_unified=*/false,
+        single_unified,
         base::BindOnce(
             [](std::vector<crosapi::mojom::DisplayUnitInfoPtr>* result_ptr,
                base::OnceClosure callback,
@@ -323,6 +324,38 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnified) {
   // Restore extended mode.
   cros_display_config()->SetUnifiedDesktopEnabled(false);
   EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+}
+
+// Make sure that available zoom factors can be correctly set
+// in unified desktoip mode.
+TEST_F(CrosDisplayConfigTest, SetLayoutUnifiedWithZoomFactors) {
+  UpdateDisplay("1920x1080/r,1920x1080,1920x1080");
+  EXPECT_FALSE(display_manager()->IsInUnifiedMode());
+
+  // Enable unified desktop. Enables unified mode.
+  cros_display_config()->SetUnifiedDesktopEnabled(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+
+  auto display_unit_info_ptr_list =
+      GetDisplayUnitInfoList(/*single_unified=*/true);
+
+  ASSERT_EQ(1u, display_unit_info_ptr_list.size());
+  auto zoom_factors =
+      display_unit_info_ptr_list[0]->available_display_zoom_factors;
+
+  auto primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+
+  for (auto zoom_factor : zoom_factors) {
+    auto properties = crosapi::mojom::DisplayConfigProperties::New();
+    properties->display_zoom_factor = zoom_factor;
+    crosapi::mojom::DisplayConfigResult result = SetDisplayProperties(
+        base::NumberToString(primary_id), std::move(properties));
+    EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
+    EXPECT_TRUE(display_manager()->IsInUnifiedMode());
+    EXPECT_EQ(zoom_factor,
+              display_manager()->GetDisplayInfo(primary_id).zoom_factor());
+  }
 }
 
 TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredDefaultWithOneDisplay) {

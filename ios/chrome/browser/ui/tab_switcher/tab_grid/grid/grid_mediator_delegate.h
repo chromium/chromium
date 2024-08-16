@@ -18,17 +18,14 @@ class WebStateID;
 // TODO(crbug.com/40273478): This delegate should be completely refactor.
 @protocol GridMediatorDelegate <NSObject>
 
-// Displays an action sheet at `anchor` confirming that selected `items` are
-// going to be closed.
-- (void)
-    showCloseItemsConfirmationActionSheetWithBaseGridMediator:
-        (BaseGridMediator*)baseGridMediator
-                                                      itemIDs:
-                                                          (const std::set<
-                                                              web::WebStateID>&)
-                                                              itemIDs
-                                                       anchor:(UIBarButtonItem*)
-                                                                  buttonAnchor;
+// Displays an action sheet at `anchor` confirming that selected `tabIDs` and
+// `groupIDs` are going to be closed.
+- (void)baseGridMediator:(BaseGridMediator*)baseGridMediator
+    showCloseConfirmationWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                           groupIDs:
+                               (const std::set<tab_groups::TabGroupId>&)groupIDs
+                           tabCount:(int)tabCount
+                             anchor:(UIBarButtonItem*)buttonAnchor;
 
 // Displays a share menu for `items` at `anchor`.
 - (void)baseGridMediator:(BaseGridMediator*)baseGridMediator

@@ -136,7 +136,7 @@ Suggestion CreateSuggestionWithChildren(
 
 class TestPopupViewViews : public PopupViewViews {
  public:
-  using GetOptionalPositionAndPlaceArrowOnPopupOverride =
+  using GetOptimalPositionAndPlaceArrowOnPopupOverride =
       base::RepeatingCallback<gfx::Rect(
           const gfx::Rect&,
           const gfx::Rect&,
@@ -147,30 +147,30 @@ class TestPopupViewViews : public PopupViewViews {
   ~TestPopupViewViews() override = default;
 
   void set_get_optional_position_and_place_arrow_on_popup_override(
-      GetOptionalPositionAndPlaceArrowOnPopupOverride callback) {
-    get_optional_position_and_place_arrow_on_popup_override_ =
+      GetOptimalPositionAndPlaceArrowOnPopupOverride callback) {
+    get_optimal_position_and_place_arrow_on_popup_override_ =
         std::move(callback);
   }
 
  protected:
-  gfx::Rect GetOptionalPositionAndPlaceArrowOnPopup(
+  gfx::Rect GetOptimalPositionAndPlaceArrowOnPopup(
       const gfx::Rect& element_bounds,
       const gfx::Rect& max_bounds_for_popup,
       const gfx::Size& preferred_size,
       base::span<const views::BubbleArrowSide> preferred_popup_sides) override {
-    if (get_optional_position_and_place_arrow_on_popup_override_) {
-      return get_optional_position_and_place_arrow_on_popup_override_.Run(
+    if (get_optimal_position_and_place_arrow_on_popup_override_) {
+      return get_optimal_position_and_place_arrow_on_popup_override_.Run(
           element_bounds, max_bounds_for_popup, preferred_size,
           preferred_popup_sides);
     }
-    return PopupViewViews::GetOptionalPositionAndPlaceArrowOnPopup(
+    return PopupViewViews::GetOptimalPositionAndPlaceArrowOnPopup(
         element_bounds, max_bounds_for_popup, preferred_size,
         preferred_popup_sides);
   }
 
  private:
-  GetOptionalPositionAndPlaceArrowOnPopupOverride
-      get_optional_position_and_place_arrow_on_popup_override_;
+  GetOptimalPositionAndPlaceArrowOnPopupOverride
+      get_optimal_position_and_place_arrow_on_popup_override_;
 };
 
 }  // namespace
@@ -400,6 +400,16 @@ TEST_F(PopupViewViewsTest, ExpandedCollapsedAccessiblityStateTest) {
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+}
+
+TEST_F(PopupViewViewsTest, AccessibleProperties) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry});
+  ui::AXNodeData node_data;
+
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kListBox, node_data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA),
+            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
@@ -1168,7 +1178,7 @@ TEST_F(PopupViewViewsTest,
       {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry});
 
   MockFunction<TestPopupViewViews::
-                   GetOptionalPositionAndPlaceArrowOnPopupOverride::RunType>
+                   GetOptimalPositionAndPlaceArrowOnPopupOverride::RunType>
       mock_position_calculator;
   view().set_get_optional_position_and_place_arrow_on_popup_override(
       base::BindLambdaForTesting(mock_position_calculator.AsStdFunction()));
@@ -1308,10 +1318,17 @@ TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   raw_ptr<PopupViewViews> view_ptr = widget->SetContentsView(std::move(view));
   view_ptr->Show(AutoselectFirstSuggestion(false));
 
+// Official builds strip fatal messages, expecting silent death in this case.
+#if defined(NDEBUG) && defined(OFFICIAL_BUILD)
+  std::string expected_message = "\n";
+#else
+  std::string expected_message = "can_open_sub_popup";
+#endif  // defined(NDEBUG) && defined(OFFICIAL_BUILD)
+
   ASSERT_DEATH(
       view_ptr->SetSelectedCell(CellIndex{0, CellType::kControl},
                                 PopupCellSelectionSource::kNonUserInput),
-      "can_open_sub_popup");
+      expected_message);
 }
 #endif
 

@@ -9,6 +9,7 @@
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
@@ -16,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -44,7 +46,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void StopSearch() override {}
   void StartEmojiSearch(std::u16string_view query,
                         EmojiSearchResultsCallback callback) override {}
-  void InsertResultOnNextFocus(const PickerSearchResult& result) override {}
+  void CloseWidgetThenInsertResultOnNextFocus(
+      const PickerSearchResult& result) override {}
   void OpenResult(const PickerSearchResult& result) override {}
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override {}
@@ -61,6 +64,9 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   std::vector<PickerSearchResult> GetSuggestedEmoji() override { return {}; }
   bool IsGifsEnabled() override { return true; }
   PickerModeType GetMode() override { return PickerModeType::kNoSelection; }
+  PickerCapsLockPosition GetCapsLockPosition() override {
+    return PickerCapsLockPosition::kTop;
+  }
 
  private:
   PickerSessionMetrics session_metrics_;
@@ -138,6 +144,19 @@ TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {
   EXPECT_FALSE(picker_widget->IsClosed());
 
   bubble_view->GetWidget()->CloseNow();
+}
+
+TEST_F(PickerWidgetTest, CreatesCenteredWidget) {
+  FakePickerViewDelegate delegate;
+  auto widget =
+      PickerWidget::CreateCentered(&delegate, gfx::Rect(10, 10, 10, 10));
+  widget->Show();
+
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().CenterPoint(),
+            display::Screen::GetScreen()
+                ->GetPrimaryDisplay()
+                .work_area()
+                .CenterPoint());
 }
 
 }  // namespace

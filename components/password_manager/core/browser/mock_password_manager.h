@@ -107,6 +107,10 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               GetSubmittedCredentials,
               (),
               (const, override));
+  MOCK_METHOD(bool,
+              HaveFormManagersReceivedData,
+              (const PasswordManagerDriver*),
+              (const override));
 #if BUILDFLAG(IS_IOS)
   MOCK_METHOD(void,
               OnSubframeFormSubmission,

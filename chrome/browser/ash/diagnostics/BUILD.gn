@@ -29,7 +29,16 @@ source_set("unit_tests") {
   deps = [
     ":diagnostics",
     "//base",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/login/login_state",
+    "//components/account_id",
+    "//components/prefs:test_support",
+    "//components/user_manager",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

@@ -135,7 +135,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       case BufferType::kBitstream:
         return bitstream_buffer_.has_value();
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool SubmitSlice() override {
@@ -355,7 +355,7 @@ std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
       return std::make_unique<ScopedD3D12ResourceBuffer>(
           this, compressed_bitstream_.Get(), media_log_);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

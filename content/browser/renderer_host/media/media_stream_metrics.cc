@@ -80,7 +80,7 @@ MediaStreamRequestResult2 MapResultToResult2(
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordMediaDeviceUpdateResponseMetric(

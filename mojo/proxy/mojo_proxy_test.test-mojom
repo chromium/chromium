@@ -1,0 +1,39 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_proxy.test.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+interface TestService {
+  // Returns `x` unmodified. Used to exercise basic end-to-end communication
+  // through a mojo_proxy instance.
+  Echo(int32 x) => (int32 x);
+
+  // Returns `x` scaled by an implementation-defined value. Used to exercise
+  // basic end-to-end communication through a mojo_proxy instance with some
+  // additional routing validation.
+  Scale(int32 x) => (int32 scaled_x);
+
+  // Reads a file's contents and sends back a new file with the same contents,
+  // reversed. Used to exercise biridrectional platform handle transmission
+  // through a mojo_proxy instance.
+  FlipFile(mojo_base.mojom.File file) => (mojo_base.mojom.File reversed_file);
+
+  // Reads a memory region's contents and sends back a new region with the
+  // same contents, reversed. Used to exercise bidirectional Mojo shared buffer
+  // transmission through a mojo_proxy instance.
+  FlipMemory(mojo_base.mojom.ReadOnlySharedMemoryRegion region)
+      => (mojo_base.mojom.ReadOnlySharedMemoryRegion region);
+
+  // Binds another TestService pipe to the receiving instance. Used to exercise
+  // message pipe transfer through a mojo_proxy instance, from host to target.
+  BindReceiver(pending_receiver<TestService> receiver);
+
+  // Binds another TestService pipe to the receiving instance and passes back
+  // a corresponding remote. Used to exercise message pipe transfer through a
+  // mojo_proxy instance, from target to host.
+  BindNewRemote() => (pending_remote<TestService> remote);
+};

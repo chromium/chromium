@@ -76,15 +76,12 @@ void DataProtectionNavigationController::TabForegrounded(
     tabs::TabInterface* tab) {
   content::WebContents* contents = tab->GetContents();
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   enterprise_data_protection::DataProtectionNavigationObserver::
       GetDataProtectionSettings(
           profile, contents,
           base::BindOnce(
               &DataProtectionNavigationController::ApplyDataProtectionSettings,
               weak_ptr_factory_.GetWeakPtr(), web_contents()->GetWeakPtr()));
-#endif
 }
 
 void DataProtectionNavigationController::DidStartNavigation(
@@ -136,7 +133,6 @@ void DataProtectionNavigationController::
   }
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   if (!settings.watermark_text.empty()) {
     browser_view->ApplyWatermarkSettings(settings.watermark_text);
   } else {
@@ -144,7 +140,6 @@ void DataProtectionNavigationController::
     // finishes loading.
     clear_watermark_text_on_page_load_ = true;
   }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   if (!on_delay_apply_data_protection_settings_if_empty_called_for_testing_
            .is_null()) {
@@ -176,17 +171,12 @@ void DataProtectionNavigationController::ApplyDataProtectionSettings(
     return;
   }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   browser_view->ApplyWatermarkSettings(settings.watermark_text);
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   browser_view->ApplyScreenshotSettings(settings.allow_screenshots);
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 }
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
-    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 void DataProtectionNavigationController::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
@@ -227,12 +217,10 @@ void DataProtectionNavigationController::
   if (!browser_view) {
     return;
   }
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   if (clear_watermark_text_on_page_load_) {
     browser_view->ApplyWatermarkSettings(std::string());
     clear_watermark_text_on_page_load_ = false;
   }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   if (clear_screenshot_protection_on_page_load_) {
@@ -241,9 +229,6 @@ void DataProtectionNavigationController::
   }
 #endif
 }
-
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
-        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 // Called when the associated tab will enter the background.
 void DataProtectionNavigationController::WillDiscardContents(

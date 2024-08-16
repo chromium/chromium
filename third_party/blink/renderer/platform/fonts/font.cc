@@ -229,7 +229,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     return true;
   }
 
-  if (UNLIKELY(run.DirectionalOverride())) {
+  if (run.DirectionalOverride()) [[unlikely]] {
     // If directional override, create a new string with Unicode directional
     // override characters.
     const String text_with_override =
@@ -336,48 +336,6 @@ float Font::Width(const TextRun& run, gfx::RectF* glyph_bounds) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
   return shaper.Width(run, glyph_bounds);
-}
-
-float Font::BidiWidth(const TextRun& run, gfx::RectF* glyph_bounds) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-
-  if (run.length() == 0) {
-    return 0;
-  }
-
-  // Run bidi algorithm on the given text. Step 5 of:
-  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  String text16 = run.ToStringView().ToString();
-  text16.Ensure16Bit();
-  BidiParagraph bidi;
-  bidi.SetParagraph(text16, run.Direction());
-  BidiParagraph::Runs runs;
-  bidi.GetLogicalRuns(text16, &runs);
-
-  if (runs.size() == 1 && run.Direction() == runs[0].Direction()) {
-    return shaper.Width(run, glyph_bounds);
-  }
-
-  float width = 0;
-  for (const BidiParagraph::Run& logical_run : runs) {
-    // Measure each run.
-    TextRun text_run(
-        StringView(run.ToStringView(), logical_run.start, logical_run.Length()),
-        logical_run.Direction(), /* directional_override */ false);
-    text_run.SetNormalizeSpace(true);
-    gfx::RectF run_glyph_bounds;
-    float run_width = shaper.Width(text_run, &run_glyph_bounds);
-
-    // Accumulate the position and the glyph bounding box.
-    if (glyph_bounds) {
-      run_glyph_bounds.Offset(width, 0);
-      glyph_bounds->Union(run_glyph_bounds);
-    }
-    width += run_width;
-  }
-
-  return width;
 }
 
 namespace {  // anonymous namespace
@@ -528,8 +486,9 @@ void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
 void Font::WillUseFontData(const String& text) const {
   const FontDescription& font_description = GetFontDescription();
   const FontFamily& family = font_description.Family();
-  if (UNLIKELY(family.FamilyName().empty()))
+  if (family.FamilyName().empty()) [[unlikely]] {
     return;
+  }
   if (FontSelector* font_selector = GetFontSelector()) {
     font_selector->WillUseFontData(font_description, family, text);
     return;

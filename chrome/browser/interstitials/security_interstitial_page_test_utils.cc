@@ -5,6 +5,7 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "chrome/common/chrome_features.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -77,18 +78,36 @@ bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab) {
 }
 
 bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
-  return IsShowingInterstitial(tab) &&
-         (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
-                                       "this site does not support HTTPS.") ||
-          IsInterstitialDisplayingText(
-              tab->GetPrimaryMainFrame(),
-              "You usually connect to this site securely") ||
-          IsInterstitialDisplayingText(
-              tab->GetPrimaryMainFrame(),
-              "You usually connect to sites securely") ||
-          IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
-                                       "this site does not support HTTPS and "
-                                       "you are in Incognito mode"));
+  return GetHFMInterstitialType(tab) != HFMInterstitialType::kNone;
+}
+
+HFMInterstitialType GetHFMInterstitialType(content::WebContents* tab) {
+  if (!IsShowingInterstitial(tab)) {
+    return HFMInterstitialType::kNone;
+  }
+  if (IsInterstitialDisplayingText(
+          tab->GetPrimaryMainFrame(),
+          "You usually connect to this site securely")) {
+    return HFMInterstitialType::kSiteEngagement;
+  }
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                   "You usually connect to sites securely")) {
+    return HFMInterstitialType::kTypicallySecure;
+  }
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                   "this site does not support HTTPS and "
+                                   "you are in Incognito mode")) {
+    return HFMInterstitialType::kIncognito;
+  }
+  bool use_new_interstitial = base::FeatureList::IsEnabled(
+      features::kHttpsFirstModeInterstitialAugust2024Refresh);
+  std::string substring = use_new_interstitial
+                              ? "doesn’t support a secure connection"
+                              : "this site does not support HTTPS.";
+  if (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(), substring)) {
+    return HFMInterstitialType::kStandard;
+  }
+  return HFMInterstitialType::kNone;
 }
 
 }  // namespace chrome_browser_interstitials

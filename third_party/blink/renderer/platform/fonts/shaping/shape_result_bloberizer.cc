@@ -154,8 +154,9 @@ void ShapeResultBloberizer::CommitPendingRun() {
     builder_rotation_ = pending_canvas_rotation_;
   }
 
-  if (UNLIKELY(!current_character_indexes_.empty()))
+  if (!current_character_indexes_.empty()) [[unlikely]] {
     CommitText();
+  }
 
   SkFont run_font =
       pending_font_data_->PlatformData().CreateSkFont(&font_description_);
@@ -442,7 +443,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
   float advance = 0;
   auto results = result_buffer.results_;
 
-  if (UNLIKELY(type_ == Type::kEmitText)) {
+  if (type_ == Type::kEmitText) [[unlikely]] {
     unsigned word_offset = 0;
     ClusterStarts cluster_starts;
     for (const auto& word_result : results) {
@@ -484,8 +485,9 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     }
   }
 
-  if (UNLIKELY(type_ == Type::kEmitText))
+  if (type_ == Type::kEmitText) [[unlikely]] {
     CommitText();
+  }
 
   advance_ = advance;
 }
@@ -514,7 +516,7 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
 
   DVLOG(4) << "FillGlyphsNG slow path";
   unsigned run_offset = 0;
-  if (UNLIKELY(type_ == Type::kEmitText)) {
+  if (type_ == Type::kEmitText) [[unlikely]] {
     ClusterStarts cluster_starts;
     result->ForEachGlyph(initial_advance, from, to, run_offset,
                          ClusterStarts::Accumulate,
@@ -528,8 +530,9 @@ ShapeResultBloberizer::FillGlyphsNG::FillGlyphsNG(
       result->ForEachGlyph(initial_advance, from, to, run_offset,
                            AddGlyphToBloberizer, static_cast<void*>(&context));
 
-  if (UNLIKELY(type_ == Type::kEmitText))
+  if (type_ == Type::kEmitText) [[unlikely]] {
     CommitText();
+  }
 }
 
 ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(

@@ -66,20 +66,14 @@ std::vector<std::string> ParseURIList(const SelectionData& data) {
 
 std::string RefCountedMemoryToString(
     const scoped_refptr<base::RefCountedMemory>& memory) {
-  if (!memory.get()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
-  }
+  CHECK(memory.get());
 
   return std::string(base::as_string_view(*memory));
 }
 
 std::u16string RefCountedMemoryToString16(
     const scoped_refptr<base::RefCountedMemory>& memory) {
-  if (!memory.get()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::u16string();
-  }
+  CHECK(memory.get());
 
   auto in_bytes = base::span(*memory);
   std::u16string out;
@@ -175,45 +169,39 @@ std::string SelectionData::GetText() const {
       type_ == x11::GetAtom(kMimeTypeLinuxText) ||
       type_ == x11::GetAtom(kMimeTypeTextUtf8)) {
     return RefCountedMemoryToString(memory_);
-  } else if (type_ == x11::GetAtom(kMimeTypeLinuxString) ||
-             type_ == x11::GetAtom(kMimeTypeText)) {
+  } else {
+    // BTW, I looked at COMPOUND_TEXT, and there's no way we're going to
+    // support that. Yuck.
+    CHECK(type_ == x11::GetAtom(kMimeTypeLinuxString) ||
+          type_ == x11::GetAtom(kMimeTypeText));
     std::string result;
     base::ConvertToUtf8AndNormalize(RefCountedMemoryToString(memory_),
                                     base::kCodepageLatin1, &result);
     return result;
-  } else {
-    // BTW, I looked at COMPOUND_TEXT, and there's no way we're going to
-    // support that. Yuck.
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
   }
 }
 
 std::u16string SelectionData::GetHtml() const {
   std::u16string markup;
 
-  if (type_ == x11::GetAtom(kMimeTypeHTML)) {
-    const unsigned char* data = GetData();
-    size_t size = GetSize();
+  CHECK_EQ(type_, x11::GetAtom(kMimeTypeHTML));
+  const unsigned char* data = GetData();
+  size_t size = GetSize();
 
-    // If the data starts with U+FEFF, i.e., Byte Order Mark, assume it is
-    // UTF-16, otherwise assume UTF-8.
-    if (size >= 2 && reinterpret_cast<const char16_t*>(data)[0] == u'\uFEFF') {
-      markup.assign(reinterpret_cast<const char16_t*>(data) + 1,
-                    (size / 2) - 1);
-    } else {
-      base::UTF8ToUTF16(reinterpret_cast<const char*>(data), size, &markup);
-    }
-
-    // If there is a terminating NULL, drop it.
-    if (!markup.empty() && markup.at(markup.length() - 1) == '\0')
-      markup.resize(markup.length() - 1);
-
-    return markup;
+  // If the data starts with U+FEFF, i.e., Byte Order Mark, assume it is
+  // UTF-16, otherwise assume UTF-8.
+  if (size >= 2 && reinterpret_cast<const char16_t*>(data)[0] == u'\uFEFF') {
+    markup.assign(reinterpret_cast<const char16_t*>(data) + 1, (size / 2) - 1);
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return markup;
+    base::UTF8ToUTF16(reinterpret_cast<const char*>(data), size, &markup);
   }
+
+  // If there is a terminating NULL, drop it.
+  if (!markup.empty() && markup.at(markup.length() - 1) == '\0') {
+    markup.resize(markup.length() - 1);
+  }
+
+  return markup;
 }
 
 void SelectionData::AssignTo(std::string* result) const {

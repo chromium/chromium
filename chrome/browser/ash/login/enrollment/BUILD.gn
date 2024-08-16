@@ -109,7 +109,6 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/app_mode/test:browser_tests",
     "//chrome/browser/ash/login/app_mode/test:test_support",
     "//chrome/browser/ash/login/ui",
@@ -144,7 +143,10 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "enrollment_screen_unittest.cc" ]
+  sources = [
+    "enrollment_screen_unittest.cc",
+    "enrollment_uma_unittest.cc",
+  ]
 
   deps = [
     ":enrollment",
@@ -153,7 +155,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/screens:test_support",
     "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/policy/enrollment",

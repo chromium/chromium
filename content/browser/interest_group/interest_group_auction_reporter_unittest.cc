@@ -32,6 +32,7 @@
 #include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/interest_group_pa_report_util.h"
 #include "content/browser/interest_group/mock_auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
@@ -63,9 +64,6 @@
 
 namespace content {
 namespace {
-
-using PrivateAggregationKey =
-    InterestGroupAuctionReporter::PrivateAggregationKey;
 
 InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
     blink::AuctionConfig* auction_config) {
@@ -129,6 +127,7 @@ class EventReportingAttestationBrowserClient : public TestContentBrowserClient {
 // to auction worklets and sending reports. All tests use mock auction worklets.
 // Passing arguments correctly to reporting worklets is not covered by these
 // tests, but rather by the AuctionRunner tests.
+// TODO(crbug.com/334053709): Add test with reporting IDs.
 class InterestGroupAuctionReporterTest
     : public RenderViewHostTestHarness,
       public AuctionWorkletManager::Delegate {
@@ -199,8 +198,9 @@ class InterestGroupAuctionReporterTest
     std::vector<std::string> k_anon_keys_to_join{
         HashedKAnonKeyForAdBid(interest_group,
                                (*interest_group.ads)[0].render_url()),
-        HashedKAnonKeyForAdNameReporting(interest_group,
-                                         (*interest_group.ads)[0]),
+        HashedKAnonKeyForAdNameReporting(
+            interest_group, (*interest_group.ads)[0],
+            /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
     };
     k_anon_keys_to_join_ =
         base::flat_set<std::string>(std::move(k_anon_keys_to_join));

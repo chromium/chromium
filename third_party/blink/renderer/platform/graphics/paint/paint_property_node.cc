@@ -151,7 +151,7 @@ void PropertyTreePrinter::BuildTreeString(StringBuilder& string_builder,
 }
 
 const PaintPropertyNode& PropertyTreePrinter::RootNode() {
-  const auto* node = nodes_.back();
+  const auto* node = nodes_.back().Get();
   while (!node->IsRoot()) {
     node = node->Parent();
   }

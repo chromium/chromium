@@ -97,7 +97,6 @@ class ContentTranslateDriver : public TranslateDriver,
   const GURL& GetVisibleURL() override;
   ukm::SourceId GetUkmSourceId() override;
   bool HasCurrentPage() const override;
-  void OpenUrlInNewTab(const GURL& url) override;
 
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(

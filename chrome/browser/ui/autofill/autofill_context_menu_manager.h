@@ -66,6 +66,10 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // available for the field.
   void MaybeAddAutofillFeedbackItem();
 
+  // Conditionally adds the item to trigger filling with prediction
+  // improvements.
+  void MaybeAddAutofillPredictionImprovementsItem();
+
   // Conditionally adds the address, payments and / or passwords Autofill manual
   // fallbacks to the context menu model depending on whether there's data to
   // suggest.
@@ -75,6 +79,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // currently focused field.
   bool ShouldAddPlusAddressManualFallbackItem(
       ContentAutofillDriver& autofill_driver);
+
+  // Returns if the item to trigger prediction improvements should be added.
+  bool ShouldAddPredictionImprovementsItem();
 
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.
@@ -133,6 +140,11 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
 
   void LogSelectPasswordManualFallbackContextMenuEntryAccepted();
 
+  // Triggers the filling with prediction improvements flow.
+  void ExecutePredictionImprovementsCommand(
+      const LocalFrameToken& frame_token,
+      ContentAutofillDriver& autofill_driver);
+
   // Triggers the feedback flow for Autofill command.
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
                                       AutofillManager& manager);
@@ -154,11 +166,9 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteFallbackForAddressesCommand(
       ContentAutofillDriver& autofill_driver);
 
-  // Gets the `AutofillField` described by the `params_` from the `manager`.
-  // The `frame_token` is used to map from the `params_` renderer id to a global
-  // id.
-  AutofillField* GetAutofillField(AutofillManager& manager,
-                                  const LocalFrameToken& frame_token) const;
+  // Gets the `AutofillField` described by the `params_` from the
+  // `autofill_driver`'s manager.
+  AutofillField* GetAutofillField(AutofillDriver& autofill_driver) const;
 
   // Dangling on linux-lacros-rel in:
   // AutofillContextMenuManagerFeedbackUILacrosBrowserTest

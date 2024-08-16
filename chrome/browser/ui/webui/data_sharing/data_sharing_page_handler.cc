@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 DataSharingPageHandler::DataSharingPageHandler(
-    TopChromeWebUIController* webui_controller,
+    DataSharingUI* webui_controller,
     mojo::PendingReceiver<data_sharing::mojom::PageHandler> receiver,
     mojo::PendingRemote<data_sharing::mojom::Page> page)
     : webui_controller_(webui_controller),
@@ -26,15 +28,21 @@ DataSharingPageHandler::DataSharingPageHandler(
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, /*oauth_consumer_name=*/"data_sharing", /*scopes=*/
       {GaiaConstants::kPeopleApiReadWriteOAuth2Scope,
+       GaiaConstants::kPeopleApiReadOnlyOAuth2Scope,
        GaiaConstants::kClearCutOAuth2Scope},
       base::BindOnce(&DataSharingPageHandler::OnAccessTokenFetched,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);
 #else
   // For non-branded build return an empty access token to bypass the
-  // authentication flow.
-  OnAccessTokenFetched(GoogleServiceAuthError(GoogleServiceAuthError::NONE),
-                       signin::AccessTokenInfo("", base::Time::Now(), ""));
+  // authentication flow. Delay the call to make sure this class is accessible
+  // through `DataSharingUI`.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DataSharingPageHandler::OnAccessTokenFetched,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     GoogleServiceAuthError(GoogleServiceAuthError::NONE),
+                     signin::AccessTokenInfo("", base::Time::Now(), "")));
 #endif
 }
 
@@ -45,6 +53,11 @@ void DataSharingPageHandler::ShowUI() {
   if (embedder) {
     embedder->ShowUI();
   }
+}
+
+void DataSharingPageHandler::ApiInitComplete() {
+  api_initialized_ = true;
+  webui_controller_->ApiInitComplete();
 }
 
 Profile* DataSharingPageHandler::GetProfile() {
@@ -62,4 +75,11 @@ void DataSharingPageHandler::OnAccessTokenFetched(
   }
   // Note: We do not do anything special for empty tokens.
   page_->OnAccessTokenFetched(access_token_info.token);
+}
+
+void DataSharingPageHandler::ReadGroups(
+    std::vector<std::string> group_ids,
+    data_sharing::mojom::Page::ReadGroupsCallback callback) {
+  CHECK(api_initialized_);
+  page_->ReadGroups(group_ids, std::move(callback));
 }

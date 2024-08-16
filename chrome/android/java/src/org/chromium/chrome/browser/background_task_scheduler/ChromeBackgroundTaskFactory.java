@@ -10,13 +10,11 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationTriggerBackgroundTask;
 import org.chromium.chrome.browser.notifications.scheduler.NotificationSchedulerTask;
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.omaha.OmahaService;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFetchTask;
-import org.chromium.chrome.browser.services.gcm.GCMBackgroundTask;
 import org.chromium.chrome.browser.services.gcm.GCMNativeBackgroundTask;
 import org.chromium.chrome.browser.webapps.WebApkUpdateTask;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -60,11 +58,7 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.OMAHA_JOB_ID:
                 return new OmahaService();
             case TaskIds.GCM_BACKGROUND_TASK_JOB_ID:
-                if (ChromeFeatureList.sGcmNativeBackgroundTask.isEnabled()) {
-                    return new GCMNativeBackgroundTask();
-                } else {
-                    return new GCMBackgroundTask();
-                }
+                return new GCMNativeBackgroundTask();
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
                 return new OfflineBackgroundTask();
             case TaskIds.DOWNLOAD_SERVICE_JOB_ID:

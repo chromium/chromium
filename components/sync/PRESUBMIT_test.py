@@ -83,10 +83,10 @@ MOCK_PROTOFILE_CONTENTS = ('\n'
   )
 
 
-# Format string used as the contents of a mock model_type.cc
-# in order to test presubmit parsing of the ModelTypeInfoMap in that file.
-MOCK_MODELTYPE_CONTENTS =('\n'
-  'const ModelTypeInfo kModelTypeInfoMap[] = {\n'
+# Format string used as the contents of a mock data_type.cc
+# in order to test presubmit parsing of the DataTypeInfoMap in that file.
+MOCK_DATATYPE_CONTENTS =('\n'
+  'const DataTypeInfo kDataTypeInfoMap[] = {\n'
   '// Some comment \n'
   '{APP_SETTINGS, "APP_SETTING", "app_settings", "App settings",\n'
   'sync_pb::EntitySpecifics::kAppSettingFieldNumber, 13},\n'
@@ -94,7 +94,7 @@ MOCK_MODELTYPE_CONTENTS =('\n'
   '};\n')
 
 
-class ModelTypeInfoChangeTest(unittest.TestCase):
+class DataTypeInfoChangeTest(unittest.TestCase):
   """Unit testing class that contains tests for sync/PRESUBMIT.py.
   """
   def test_ValidChangeMultiLine(self):
@@ -126,11 +126,11 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     self.assertEqual(1, len(results))
     self.assertTrue('notification type' in results[0].message)
 
-  def testInvalidChangeInconsistentModelType(self):
+  def testInvalidChangeInconsistentDataType(self):
     results = self._testChange('{AUTOFILL, "AUTOFILL", "autofill",\n'
      '"Autofill Extra",sync_pb::EntitySpecifics::kAutofillFieldNumber, 6},')
     self.assertEqual(1, len(results))
-    self.assertTrue('model type string' in results[0].message)
+    self.assertTrue('data type string' in results[0].message)
 
   def testInvalidChangeNotTitleCased(self):
     results = self._testChange('{AUTOFILL, "AUTOFILL", "autofill",\n'
@@ -191,13 +191,13 @@ class ModelTypeInfoChangeTest(unittest.TestCase):
     mock_input_api.files = files
     return PRESUBMIT.CheckChangeOnCommit(mock_input_api, MockOutputApi())
 
-  def _testChange(self, modeltype_literal):
+  def _testChange(self, datatype_literal):
     files = [
       MockFile(os.path.abspath('./protocol/entity_specifics.proto'),
         MOCK_PROTOFILE_CONTENTS),
       MockFile(os.path.abspath('./protocol/proto_visitors.h'), ''),
-      MockFile(os.path.abspath('./base/model_type.cc'),
-        MOCK_MODELTYPE_CONTENTS % (modeltype_literal))
+      MockFile(os.path.abspath('./base/data_type.cc'),
+        MOCK_DATATYPE_CONTENTS % (datatype_literal))
     ]
     return self._testChangeWithFiles(files)
 

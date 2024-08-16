@@ -20,7 +20,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/model_type.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
@@ -229,7 +229,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       break;
     case SyncSettingsAccountState::kSignedIn:
       BOOL would_clear_data_on_signout =
-          _authenticationService->ShouldClearDataOnSignOut();
+          _authenticationService->ShouldClearDataForSignedInPeriodOnSignOut();
       [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
       TableViewTextHeaderFooterItem* headerItem =
           [[TableViewTextHeaderFooterItem alloc]
@@ -739,18 +739,18 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
 
   // Types that are disabled by policy will be ignored.
-  syncer::ModelTypeSet requestedTypes;
+  syncer::DataTypeSet requestedTypes;
   for (syncer::UserSelectableType userSelectableType : kAccountSwitchItems) {
     if (![self isManagedSyncSettingsDataType:userSelectableType]) {
       requestedTypes.Put(
-          syncer::UserSelectableTypeToCanonicalModelType(userSelectableType));
+          syncer::UserSelectableTypeToCanonicalDataType(userSelectableType));
     }
   }
 
   __weak __typeof__(self) weakSelf = self;
   _syncService->GetLocalDataDescriptions(
       requestedTypes,
-      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+      base::BindOnce(^(std::map<syncer::DataType, syncer::LocalDataDescription>
                            description) {
         [weakSelf localDataDescriptionsFetchedWithDescription:description
                                                     firstLoad:firstLoad];
@@ -759,7 +759,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 // Saves the local data description, and update the batch upload section.
 - (void)localDataDescriptionsFetchedWithDescription:
-            (std::map<syncer::ModelType, syncer::LocalDataDescription>)
+            (std::map<syncer::DataType, syncer::LocalDataDescription>)
                 description
                                           firstLoad:(BOOL)firstLoad {
   self.localPasswordsToUpload = 0;

@@ -5,7 +5,7 @@
 package org.chromium.base.task;
 
 /** Used to capture stacks of where tasks are posted from. */
-public class TaskOriginException extends Exception {
+class TaskOriginException extends Exception {
 
     TaskOriginException() {
         super("vvv This is where the task was posted. vvv");

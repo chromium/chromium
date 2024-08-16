@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/tabs/tab_style.h"
 
 #include "chrome/browser/ui/layout_constants.h"
@@ -172,7 +177,7 @@ SkColor ChromeRefresh2023TabStyle::GetTabBackgroundColor(
       return color_provider.GetColor(kInactiveColorIds[hovered][frame_active]);
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

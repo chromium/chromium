@@ -33,15 +33,14 @@
 #include "chromeos/ash/components/timer_factory/fake_timer_factory.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,7 +146,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
  protected:
   WifiConfigurationBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     network_test_helper_ = std::make_unique<NetworkTestHelper>();
   }
 
@@ -180,10 +179,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
     histogram_tester.ExpectTotalCount(kTotalCountHistogram, 0);
   }
 
-  syncer::OnceModelTypeStoreFactory CreateDelayedStoreCallback() {
-    return base::BindOnce(
-        &WifiConfigurationBridgeTest::OnModelTypeStoreCallback,
-        base::Unretained(this));
+  syncer::OnceDataTypeStoreFactory CreateDelayedStoreCallback() {
+    return base::BindOnce(&WifiConfigurationBridgeTest::OnDataTypeStoreCallback,
+                          base::Unretained(this));
   }
 
   void InitializeSyncStore() {
@@ -191,8 +189,8 @@ class WifiConfigurationBridgeTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void OnModelTypeStoreCallback(syncer::ModelType type,
-                                syncer::ModelTypeStore::InitCallback callback) {
+  void OnDataTypeStoreCallback(syncer::DataType type,
+                               syncer::DataTypeStore::InitCallback callback) {
     init_callback_ = std::move(callback);
   }
 
@@ -222,7 +220,7 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
   // This can only be called before InitializeSyncStore().
   void PresaveSyncedNetwork(const WifiConfigurationSpecifics& proto) {
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
         store_->CreateWriteBatch();
     std::string storage_key =
         NetworkIdentifier::FromProto(proto).SerializeToString();
@@ -239,7 +237,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
     run_loop.Run();
   }
 
-  syncer::MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  syncer::MockDataTypeLocalChangeProcessor* processor() {
+    return &mock_processor_;
+  }
 
   WifiConfigurationBridge* bridge() { return bridge_.get(); }
 
@@ -267,9 +267,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  syncer::ModelTypeStore::InitCallback init_callback_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  syncer::DataTypeStore::InitCallback init_callback_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<WifiConfigurationBridge> bridge_;
   std::unique_ptr<TestSyncedNetworkUpdater> synced_network_updater_;
   std::unique_ptr<FakeLocalNetworkCollector> local_network_collector_;

@@ -6,13 +6,42 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/service/variations_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 class NewTabPageUtilBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    // Disable the field trial testing config as the tests in this file care
+    // about whether features are overridden or not.
+    cmd->AppendSwitch(variations::switches::kDisableFieldTrialTestingConfig);
+    cmd->AppendSwitch(optimization_guide::switches::kDebugLoggingEnabled);
+  }
+
+  OptimizationGuideKeyedService* GetOptimizationGuideKeyedService() {
+    return OptimizationGuideKeyedServiceFactory::GetForProfile(
+        browser()->profile());
+  }
+
+  void CheckInternalsLog(std::string_view message) {
+    auto* logger =
+        GetOptimizationGuideKeyedService()->GetOptimizationGuideLogger();
+    EXPECT_THAT(logger->recent_log_messages_,
+                testing::Contains(testing::Field(
+                    &OptimizationGuideLogger::LogMessage::message,
+                    testing::HasSubstr(message))));
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
 };
@@ -64,16 +93,20 @@ IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilBrowserTest, EnableDriveByToT) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_TRUE(IsDriveModuleEnabled());
+  CheckInternalsLog("Drive module enabled: default feature flag value");
 #else
   EXPECT_FALSE(IsDriveModuleEnabled());
+  CheckInternalsLog("Drive module disabled: default feature flag value");
 #endif
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilEnableFlagBrowserTest, EnableDriveByFlag) {
   EXPECT_TRUE(IsDriveModuleEnabled());
+  CheckInternalsLog("Drive module enabled: feature flag forced on");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageUtilDisableFlagBrowserTest,
                        DisableDriveByFlag) {
   EXPECT_FALSE(IsDriveModuleEnabled());
+  CheckInternalsLog("Drive module disabled: feature flag forced off");
 }

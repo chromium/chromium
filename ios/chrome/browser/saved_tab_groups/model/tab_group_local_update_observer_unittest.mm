@@ -28,6 +28,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
@@ -143,6 +147,27 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
     return saved_tabs;
   }
 
+  void SetUpNavigationContext(web::FakeWebState* web_state) {
+    navigation_item_ = web::NavigationItem::Create();
+    navigation_item_->SetTransitionType(ui::PAGE_TRANSITION_TYPED);
+
+    auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+    navigation_manager->SetLastCommittedItem(navigation_item_.get());
+
+    web_state->SetNavigationManager(std::move(navigation_manager));
+    web_state->SetBrowserState(browser_state_.get());
+
+    navigation_context_ = std::make_unique<web::FakeNavigationContext>();
+    navigation_context_->SetWebState(web_state);
+
+    navigation_context_->SetUrl(GURL(kTestURL));
+    navigation_context_->SetHasCommitted(true);
+    navigation_context_->SetPageTransition(ui::PAGE_TRANSITION_LINK);
+    navigation_context_->SetHasUserGesture(true);
+    navigation_context_->SetIsRendererInitiated(false);
+    navigation_context_->SetIsPost(false);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
@@ -154,6 +179,8 @@ class TabGroupLocalUpdateObserverTest : public PlatformTest {
   std::unique_ptr<TabGroupLocalUpdateObserver> local_observer_;
   raw_ptr<MockTabGroupSyncService> mock_service_;
   const std::u16string kNewTitle = u"title to update";
+  std::unique_ptr<web::NavigationItem> navigation_item_;
+  std::unique_ptr<web::FakeNavigationContext> navigation_context_;
 };
 
 // Tests that the service is correctly updated when the title of a tab that was
@@ -263,7 +290,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdate) {
   EXPECT_CALL(*mock_service_, UpdateTab(tab_group_id, web_state_id.identifier(),
                                         _, GURL(kTestURL), _));
   web_state->SetCurrentURL(GURL(kTestURL));
-  web_state->OnNavigationFinished(nullptr);
+  SetUpNavigationContext(web_state);
+  web_state->OnNavigationFinished(navigation_context_.get());
 }
 
 // Tests that the service is not updated when the new active tab is not in the
@@ -302,7 +330,8 @@ TEST_F(TabGroupLocalUpdateObserverTest, NavigationUpdateSyncPaused) {
                         GURL(kTestURL), std::make_optional(0ul)))
       .Times(0);
   web_state->SetCurrentURL(GURL(kTestURL));
-  web_state->OnNavigationFinished(nullptr);
+  SetUpNavigationContext(web_state);
+  web_state->OnNavigationFinished(navigation_context_.get());
 }
 
 // Tests that the service is correctly updated when a tab is added to a newly

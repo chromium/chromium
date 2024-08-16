@@ -49,7 +49,7 @@ void BuildPackedH264SPS(H26xAnnexBBitstreamBuilder& bitstream_builder,
   } else if (sps.pic_order_cnt_type == 1) {
     // Ignoring the content of this branch as we don't produce
     // sps.pic_order_cnt_type == 1
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bitstream_builder.AppendUE(sps.max_num_ref_frames);

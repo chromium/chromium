@@ -16,6 +16,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -77,13 +78,6 @@ const char kHistogramGWSDomainLookupStart[] =
 const char kHistogramGWSDomainLookupEnd[] =
     HISTOGRAM_PREFIX "DomainLookupTiming.NavigationToDomainLookupEnd";
 
-const char kGwsAFTStartMarkName[] = "SearchAFTStart";
-const char kGwsAFTEndMarkName[] = "trigger:SearchAFTEnd";
-const char kGwsHeaderChunkStartMarkName[] = "SearchHeadStart";
-const char kGwsHeaderChunkEndMarkName[] = "SearchHeadEnd";
-const char kGwsBodyChunkStartMarkName[] = "SearchBodyStart";
-const char kGwsBodyChunkEndMarkName[] = "SearchBodyEnd";
-
 }  // namespace internal
 
 GWSPageLoadMetricsObserver::GWSPageLoadMetricsObserver() = default;
@@ -96,18 +90,6 @@ GWSPageLoadMetricsObserver::OnStart(
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     // Emit a trigger to allow trace collection tied to gws navigations.
     base::trace_event::EmitNamedTrigger("gws-navigation-start");
-  }
-
-  // TODO(crbug.com/354748643): Change this to mutual exclusive condition with
-  // the previous condition.
-  // The current implementation of `IsGoogleSearchResultUrl` may match to
-  // Google Homepage as well, hence when using `else-if` clause, we might not
-  // trigger this event. To avoid this, we create a separate path for this until
-  // we get `IsGoogleSearchResultUrl` fixed.
-  if (page_load_metrics::IsGoogleSearchHomepageUrl(
-          navigation_handle->GetURL())) {
-    // Emit a trigger to allow trace collection tied to gws hp navigations.
-    base::trace_event::EmitNamedTrigger("gws-navigation-start-hp");
   }
 
   return CONTINUE_OBSERVING;

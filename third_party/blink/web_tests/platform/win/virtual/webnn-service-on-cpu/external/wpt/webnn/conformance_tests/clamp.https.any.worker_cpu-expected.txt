@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] clamp float32 0D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 1D constant tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 1D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 2D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 3D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 4D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 5D tensor default options
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 4D tensor default options.maxValue and specified negative options.minValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 2D tensor default options.maxValue and specified positive options.minValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 5D tensor default options.minValue and specified negative options.maxValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 3D tensor default options.minValue and specified positive options.maxValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 5D tensor specified both negative options.minValue and options.maxValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 3D tensor specified negative options.minValue and positive options.maxValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+[FAIL] clamp float32 1D tensor specified both positive options.minValue and options.maxValue
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': The range of clamp is not supported in tflite schema."
+Harness: the test ran to completion.
+

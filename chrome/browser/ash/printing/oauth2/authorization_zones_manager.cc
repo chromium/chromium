@@ -23,12 +23,12 @@
 #include "chrome/browser/ash/printing/oauth2/profile_auth_servers_sync_bridge.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chromeos/printing/uri.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -72,7 +72,7 @@ class AuthorizationZonesManagerImpl
       : client_ids_database_(ClientIdsDatabase::Create()),
         sync_bridge_(ProfileAuthServersSyncBridge::Create(
             this,
-            ModelTypeStoreServiceFactory::GetForProfile(profile)
+            DataTypeStoreServiceFactory::GetForProfile(profile)
                 ->GetStoreFactory())),
         url_loader_factory_(profile->GetURLLoaderFactory()),
         auth_zone_creator_(base::BindRepeating(AuthorizationZone::Create,
@@ -83,8 +83,8 @@ class AuthorizationZonesManagerImpl
       Profile* profile,
       CreateAuthZoneCallback auth_zone_creator,
       std::unique_ptr<ClientIdsDatabase> client_ids_database,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory store_factory)
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory store_factory)
       : client_ids_database_(std::move(client_ids_database)),
         sync_bridge_(ProfileAuthServersSyncBridge::CreateForTesting(
             this,
@@ -212,7 +212,7 @@ class AuthorizationZonesManagerImpl
     return it_server->second.get();
   }
 
-  syncer::ModelTypeSyncBridge* GetModelTypeSyncBridge() override {
+  syncer::DataTypeSyncBridge* GetDataTypeSyncBridge() override {
     return sync_bridge_.get();
   }
 
@@ -275,8 +275,8 @@ AuthorizationZonesManager::CreateForTesting(
     Profile* profile,
     CreateAuthZoneCallback auth_zone_creator,
     std::unique_ptr<ClientIdsDatabase> client_ids_database,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory store_factory) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory store_factory) {
   DCHECK(profile);
   return std::make_unique<AuthorizationZonesManagerImpl>(
       profile, std::move(auth_zone_creator), std::move(client_ids_database),

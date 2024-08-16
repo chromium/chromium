@@ -106,7 +106,7 @@ class AuthenticationService : public KeyedService,
       signin::ConsentLevel consent_level) const;
 
   // Returns true if data should be cleared on sign-out.
-  virtual bool ShouldClearDataOnSignOut() const;
+  virtual bool ShouldClearDataForSignedInPeriodOnSignOut() const;
 
   // Retrieves the identity of the currently authenticated user or `nil` if
   // either the user is not authenticated, or is authenticated through
@@ -181,29 +181,22 @@ class AuthenticationService : public KeyedService,
   // `invalid_identity` is an additional identity to consider invalid. It can be
   // nil if there is no such additional identity to ignore.
   //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out.
-  //
   // `device_restore` should be true only when called from `Initialize()` and
   // Chrome is started after a device restore.
   void HandleForgottenIdentity(id<SystemIdentity> invalid_identity,
-                               bool should_prompt,
                                bool device_restore);
 
   // Checks if the authenticated identity was removed by calling
   // `HandleForgottenIdentity`. Reloads the OAuth2 token service accounts if the
   // authenticated identity is still present.
-  //
-  // `should_prompt` indicates whether the user should be prompted with the
-  // resign-in infobar if the method signs the user out of Chrome.
-  void ReloadCredentialsFromIdentities(bool should_prompt);
+  void ReloadCredentialsFromIdentities();
 
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // ChromeAccountManagerService::Observer implementation.
-  void OnIdentityListChanged(bool notify_user) override;
+  void OnIdentityListChanged() override;
   void OnAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                   id<RefreshAccessTokenError> error) override;
 

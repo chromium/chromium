@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/win/direct_write.h"
 
 namespace gfx {
@@ -25,7 +26,7 @@ TextParameters GetTextParameters() {
   static TextParameters text_parameters;
   static std::once_flag flag;
   std::call_once(flag, [&] {
-    text_parameters.contrast = SK_GAMMA_CONTRAST;
+    text_parameters.contrast = FontUtilWin::TextGammaContrast();
     text_parameters.gamma = SK_GAMMA_EXPONENT;
     // Only apply values from `IDWriteRenderingParams` if the user has
     // the appropriate registry keys set. Otherwise, `IDWriteRenderingParams`
@@ -90,6 +91,19 @@ float FontUtilWin::GetContrastFromRegistry() {
 // static
 float FontUtilWin::GetGammaFromRegistry() {
   return GetTextParameters().gamma;
+}
+
+// static
+float FontUtilWin::TextGammaContrast() {
+  static const bool increase_contrast =
+      base::FeatureList::IsEnabled(features::kIncreaseWindowsTextContrast);
+  if (increase_contrast) {
+    // On Windows, SK_GAMMA_CONTRAST is currently 0.5. This flag increases it
+    // to 1.0.
+    return 1.0f;
+  } else {
+    return SK_GAMMA_CONTRAST;
+  }
 }
 
 }  // namespace gfx

@@ -141,7 +141,7 @@ class DownloadItemModel : public DownloadUIModel,
   void DetermineAndSetShouldPreferOpeningInBrowser(
       const base::FilePath& target_path,
       bool is_filetype_handled_safely) override;
-  bool IsEncryptedArchive() const override;
+  bool IsTopLevelEncryptedArchive() const override;
   bool IsExtensionDownload() const override;
 
   // download::DownloadItem::Observer implementation.

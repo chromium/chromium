@@ -365,6 +365,7 @@ public class TemplateUrlService {
 
     /**
      * Adds a search engine, set by Play API.
+     *
      * @param name The name of the search engine to be added.
      * @param keyword The keyword of the search engine to be added.
      * @param searchUrl Search url of the search engine to be added.
@@ -375,12 +376,11 @@ public class TemplateUrlService {
      * @param imageUrlPostParams The POST param name to use for the image payload transmitted.
      * @param imageTranslateUrl Url for image translation.
      * @param imageTranslateSourceLanguageParamKey Key of the url parameter identifying the source
-     *                                             language for an image translation.
+     *     language for an image translation.
      * @param imageTranslateTargetLanguageParamKey Key of the url parameter identifying the target
-     *                                             language for an image translation.
-     * @param setAsDefault If true, set as default search provider.
+     *     language for an image translation.
      * @return True if search engine was successfully added, false if search engine from Play API
-     *         with such keyword already existed (e.g. from previous attempt to set search engine).
+     *     with such keyword already existed (e.g. from previous attempt to set search engine).
      */
     public boolean setPlayAPISearchEngine(
             String name,
@@ -393,8 +393,7 @@ public class TemplateUrlService {
             String imageUrlPostParams,
             String imageTranslateUrl,
             String imageTranslateSourceLanguageParamKey,
-            String imageTranslateTargetLanguageParamKey,
-            boolean setAsDefault) {
+            String imageTranslateTargetLanguageParamKey) {
         return TemplateUrlServiceJni.get()
                 .setPlayAPISearchEngine(
                         mNativeTemplateUrlServiceAndroid,
@@ -409,8 +408,7 @@ public class TemplateUrlService {
                         imageUrlPostParams,
                         imageTranslateUrl,
                         imageTranslateSourceLanguageParamKey,
-                        imageTranslateTargetLanguageParamKey,
-                        setAsDefault);
+                        imageTranslateTargetLanguageParamKey);
     }
 
     public String addSearchEngineForTesting(String keyword, int ageInDays) {
@@ -525,8 +523,7 @@ public class TemplateUrlService {
                 String imageUrlPostParams,
                 String imageTranslateUrl,
                 String imageTranslateSourceLanguageParamKey,
-                String imageTranslateTargetLanguageParamKey,
-                boolean setAsDefault);
+                String imageTranslateTargetLanguageParamKey);
 
         void getTemplateUrls(
                 long nativeTemplateUrlServiceAndroid,

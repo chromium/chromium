@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace plus_addresses {
@@ -36,7 +36,7 @@ class PlusAddressSettingService : public KeyedService {
   virtual void SetHasAcceptedNotice() = 0;
 
   // Returns a controller delegate for the `sync_bridge_` owned by this service.
-  virtual std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  virtual std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegate() = 0;
 };
 

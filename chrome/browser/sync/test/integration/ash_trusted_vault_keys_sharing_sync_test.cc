@@ -5,6 +5,8 @@
 #include <optional>
 #include <ostream>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -154,7 +156,7 @@ class TrustedVaultStateNotifiedToCrosapiObserverChecker
                "crosapi observer.";
         return recoverability_state_changed_notified_;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:
@@ -171,7 +173,6 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
-            ash::standalone_browser::features::kLacrosOnly,
             trusted_vault::kChromeOSTrustedVaultUseWebUIDialog,
             trusted_vault::kChromeOSTrustedVaultClientShared,
         },
@@ -192,6 +193,7 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SyncTest::SetUpCommandLine(command_line);
 
+    command_line->AppendSwitch(ash::switches::kEnableLacrosForTesting);
     ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
     const GURL& base_url = embedded_https_test_server().base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());

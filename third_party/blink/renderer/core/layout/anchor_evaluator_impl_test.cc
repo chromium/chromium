@@ -14,10 +14,9 @@
 namespace blink {
 namespace {
 
-class AnchorEvaluatorImplTest : public RenderingTest,
-                                private ScopedCSSAnchorPositioningForTest {
+class AnchorEvaluatorImplTest : public RenderingTest {
  public:
-  AnchorEvaluatorImplTest() : ScopedCSSAnchorPositioningForTest(true) {}
+  AnchorEvaluatorImplTest() = default;
 
   const PhysicalAnchorQuery* AnchorQuery(const Element& element) const {
     const LayoutBlockFlow* container =

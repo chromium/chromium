@@ -98,13 +98,13 @@ class BrowserLauncherTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
+  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
+  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 
   // Required to create startup data.
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
-  ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
   BrowserLauncher browser_launcher_;

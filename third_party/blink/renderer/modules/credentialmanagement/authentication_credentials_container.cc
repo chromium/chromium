@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_all_accepted_credentials_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_large_blob_inputs.h"
@@ -34,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_properties_output.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_report_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
@@ -1955,9 +1957,61 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   mojom::blink::PublicKeyCredentialReportOptionsPtr mojo_options;
   if (options->hasPublicKey()) {
+    int report_count = options->publicKey()->hasAllAcceptedCredentials() +
+                       options->publicKey()->hasUnknownCredentialId() +
+                       options->publicKey()->hasCurrentUserDetails();
+    // This checks if there are more than two reports simultaneously; if so, the
+    // call is rejected. This will be removed once each report has its own
+    // method.
+    if (report_count > 1) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Multiple reports at the same time are not supported for this "
+          "credential type."));
+      return promise;
+    }
+
+    if (options->publicKey()->hasAllAcceptedCredentials()) {
+      const AllAcceptedCredentialsOptions& credentials_options =
+          *options->publicKey()->allAcceptedCredentials();
+
+      Vector<char> decoded_user_id;
+      if (!WTF::Base64UnpaddedURLDecode(credentials_options.userId(),
+                                        decoded_user_id)) {
+        resolver->RejectWithTypeError("Invalid base64url string for userId.");
+        return promise;
+      }
+
+      for (WTF::String credential_id :
+           credentials_options.allAcceptedCredentialsIds()) {
+        Vector<char> decoded_cred_id;
+        if (!WTF::Base64UnpaddedURLDecode(credential_id, decoded_cred_id)) {
+          resolver->RejectWithTypeError(
+              "Invalid base64url string for allAcceptedCredentialsIds.");
+          return promise;
+        }
+      }
+    } else if (options->publicKey()->hasCurrentUserDetails()) {
+      Vector<char> decoded_user_id;
+      if (!WTF::Base64UnpaddedURLDecode(
+              options->publicKey()->currentUserDetails()->userId(),
+              decoded_user_id)) {
+        resolver->RejectWithTypeError("Invalid base64url string for userId.");
+        return promise;
+      }
+    } else if (options->publicKey()->hasUnknownCredentialId()) {
+      Vector<char> decoded_cred_id;
+      if (!WTF::Base64UnpaddedURLDecode(
+              options->publicKey()->unknownCredentialId(), decoded_cred_id)) {
+        resolver->RejectWithTypeError(
+            "Invalid base64url string for unknownCredentialId.");
+        return promise;
+      }
+    }
     mojo_options =
         MojoPublicKeyCredentialReportOptions::From(*options->publicKey());
   }
@@ -1976,7 +2030,7 @@ ScriptPromise<IDLUndefined> AuthenticationCredentialsContainer::report(
   } else {
     resolver->Resolve();
   }
-  return resolver->Promise();
+  return promise;
 }
 
 void AuthenticationCredentialsContainer::Trace(Visitor* visitor) const {
@@ -2122,6 +2176,15 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   } else {
     DCHECK_EQ("optional", options.mediation());
     mediation_requirement = CredentialMediationRequirement::kOptional;
+  }
+
+  if (identity_options.hasMediation()) {
+    resolver->GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "The 'mediation' parameter should be used outside of 'identity' in "
+            "the FedCM API call."));
   }
 
   mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;

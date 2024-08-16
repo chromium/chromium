@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] softplus float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 0D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+[FAIL] softplus float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test softplus float32 actual 5.625 should be close enough to expected 5.630208969116211 by the acceptable 18 ULP distance, but they have 10924 ULP distance expected true got false
+Harness: the test ran to completion.
+

@@ -10,10 +10,10 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/plus_addresses/settings/plus_address_setting_service_impl.h"
 #import "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
 // static
 PlusAddressSettingServiceFactory*
@@ -34,7 +34,7 @@ PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "PlusAddressSettingServiceImpl",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -44,7 +44,7 @@ PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
-          ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+          DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
               ->GetStoreFactory()));
 }
 

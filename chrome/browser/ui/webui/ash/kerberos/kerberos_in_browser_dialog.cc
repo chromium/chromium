@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -53,8 +54,8 @@ KerberosInBrowserDialog::~KerberosInBrowserDialog() {
   g_dialog = nullptr;
 }
 
-ui::ModalType KerberosInBrowserDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType KerberosInBrowserDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {

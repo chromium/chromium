@@ -98,6 +98,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -111,7 +112,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -393,8 +393,9 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
   // This test doesn't make sense in non-touch mode since it expects the WebUI
   // tab strip to be active. This test is instantiated with and without touch
   // mode.
-  if (!ui::TouchUiController::Get()->touch_ui())
+  if (!ui::TouchUiController::Get()->touch_ui()) {
     return;
+  }
 
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
@@ -1035,6 +1036,17 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
       << SkColorGetB(active_frame_color);
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
+                       AccessibleProperties) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+  ui::AXNodeData data;
+
+  frame_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kTitleBar, data.role);
+}
+
 namespace {
 
 constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
@@ -1487,47 +1499,6 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
-// TODO(crbug.com/40286309): Port this kiosk test to Lacros?
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-
-class KioskBrowserNonClientFrameViewChromeOSTest
-    : public TopChromeMdParamTest<ash::WebKioskBaseTest> {
- public:
-  KioskBrowserNonClientFrameViewChromeOSTest() = default;
-  KioskBrowserNonClientFrameViewChromeOSTest(
-      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
-  KioskBrowserNonClientFrameViewChromeOSTest& operator=(
-      const KioskBrowserNonClientFrameViewChromeOSTest&) = delete;
-  ~KioskBrowserNonClientFrameViewChromeOSTest() override = default;
-};
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_P(KioskBrowserNonClientFrameViewChromeOSTest,
-                       ToggleTabletModeBrowserCaptionVisibilityTest) {
-  InitializeRegularOnlineKiosk();
-
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-  auto* browser_view =
-      BrowserView::GetBrowserViewForBrowser(BrowserList::GetInstance()->get(0));
-  auto* frame_view = ChromeOSBrowserUITest::GetFrameViewChromeOS(browser_view);
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-
-  auto* widget = browser_view->GetWidget();
-  auto* immersive_controller = chromeos::ImmersiveFullscreenController::Get(
-      views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
-  EXPECT_FALSE(immersive_controller->IsEnabled());
-
-  // Enter tablet mode.
-  ASSERT_NO_FATAL_FAILURE(
-      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
-
-  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
-  EXPECT_FALSE(immersive_controller->IsEnabled());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using LockedFullscreenBrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<ChromeOSBrowserUITest>;
 
@@ -1645,7 +1616,6 @@ class BrowserNonClientFrameViewAshThemeChangeTest
     : public InProcessBrowserTest,
       public testing::WithParamInterface<
           std::tuple<ThemeChangeTestMode,
-                     /*prefer_manifest_background_color=*/bool,
                      /*should_animate_theme_changes=*/bool>> {
  public:
   BrowserNonClientFrameViewAshThemeChangeTest() {
@@ -1659,8 +1629,6 @@ class BrowserNonClientFrameViewAshThemeChangeTest
                 /*dark_mode_background_color=*/SK_ColorBLACK);
         auto* delegate = static_cast<ash::UnittestingSystemAppDelegate*>(
             system_web_app_installation_->GetDelegate());
-        delegate->SetPreferManifestBackgroundColor(
-            PreferManifestBackgroundColor());
         delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
         // When system colored SWAs were introduced for Jelly,
         // `UseSystemThemeColor()` overrode other styling information in the
@@ -1679,13 +1647,9 @@ class BrowserNonClientFrameViewAshThemeChangeTest
     return std::get<0>(GetParam());
   }
 
-  // Returns whether the web app under test prefers manifest background colors
-  // over web contents background colors.
-  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
-
   // Returns whether theme changes should be animated for the web app under test
   // given test parameterization.
-  bool ShouldAnimateThemeChanges() const { return std::get<2>(GetParam()); }
+  bool ShouldAnimateThemeChanges() const { return std::get<1>(GetParam()); }
 
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
@@ -1740,15 +1704,12 @@ INSTANTIATE_TEST_SUITE_P(
     BrowserNonClientFrameViewAshThemeChangeTest,
     testing::Combine(testing::Values(ThemeChangeTestMode::kSWA,
                                      ThemeChangeTestMode::kNonSWA),
-                     /*prefer_manifest_background_color=*/testing::Bool(),
                      /*should_animate_theme_changes=*/testing::Bool()),
     [](const testing::TestParamInfo<
         std::tuple<ThemeChangeTestMode,
-                   /*prefer_manifest_background_color=*/bool,
                    /*should_animate_theme_changes=*/bool>>& info) {
       ThemeChangeTestMode test_mode = std::get<0>(info.param);
-      bool prefer_manifest_background_color = std::get<1>(info.param);
-      bool should_animate_theme_changes = std::get<2>(info.param);
+      bool should_animate_theme_changes = std::get<1>(info.param);
 
       std::stringstream name;
       switch (test_mode) {
@@ -1760,9 +1721,6 @@ INSTANTIATE_TEST_SUITE_P(
           break;
       }
 
-      if (prefer_manifest_background_color) {
-        name << "_PreferManifestBackgroundColor";
-      }
       if (should_animate_theme_changes) {
         name << "_ShouldAnimateThemeChanges";
       }
@@ -1774,7 +1732,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
                        ThemeChange) {
   // Skip test parameterizations for non-system web apps that don't make sense.
   if (GetThemeChangeTestMode() == ThemeChangeTestMode::kNonSWA &&
-      (PreferManifestBackgroundColor() || ShouldAnimateThemeChanges())) {
+      ShouldAnimateThemeChanges()) {
     GTEST_SKIP();
   }
 
@@ -1812,13 +1770,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshThemeChangeTest,
   ToggleColorMode();
   EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
             browser->app_controller()->GetBackgroundColor().value());
-  if (PreferManifestBackgroundColor()) {
-    EXPECT_NE(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  } else {
-    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
-              web_contents->GetBackgroundColor().value());
-  }
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            web_contents->GetBackgroundColor().value());
 
   // If theme changes should be animated, the layer associated with the
   // `contents_web_view` native view should be immediately hidden.
@@ -1869,5 +1822,4 @@ INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewChromeOSTest);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTestNoWebUiTabStrip);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewAshTest);
-INSTANTIATE_TEST_SUITE(KioskBrowserNonClientFrameViewChromeOSTest);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

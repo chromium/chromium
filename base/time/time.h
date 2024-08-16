@@ -1253,6 +1253,14 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // realtime clock to establish a reference point.  This function will return
   // the same value for the duration of the application, but will be different
   // in future application runs.
+  // DEPRECATED:
+  // Because TimeTicks increments can get suspended on some platforms (e.g. Mac)
+  // and because this function returns a static value, this value will not get
+  // suspension time into account on those platforms.
+  // As TimeTicks is intended to be used to track a process duration and not an
+  // absolute time, if you plan to use this function, please consider using a
+  // Time instead.
+  // TODO(crbug.com/355423207): Remove function.
   static TimeTicks UnixEpoch();
 
   static void SetSharedUnixEpoch(TimeTicks);

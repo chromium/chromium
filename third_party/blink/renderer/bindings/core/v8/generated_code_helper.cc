@@ -201,13 +201,14 @@ std::optional<size_t> FindIndexInEnumStringTable(
     ExceptionState& exception_state) {
   const String& str_value = NativeValueTraits<IDLString>::NativeValue(
       isolate, value, exception_state);
-  if (UNLIKELY(exception_state.HadException()))
+  if (exception_state.HadException()) [[unlikely]] {
     return std::nullopt;
+  }
 
   std::optional<size_t> index =
       FindIndexInEnumStringTable(str_value, enum_value_table);
 
-  if (UNLIKELY(!index.has_value())) {
+  if (!index.has_value()) [[unlikely]] {
     exception_state.ThrowTypeError("The provided value '" + str_value +
                                    "' is not a valid enum value of type " +
                                    enum_type_name + ".");
@@ -254,13 +255,12 @@ bool IsEsIterableObject(v8::Isolate* isolate,
 
   // step 9.1. Let method be ? GetMethod(V, @@iterator).
   // https://tc39.es/ecma262/#sec-getmethod
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> iterator_key = v8::Symbol::GetIterator(isolate);
   v8::Local<v8::Value> iterator_value;
   if (!value.As<v8::Object>()
            ->Get(isolate->GetCurrentContext(), iterator_key)
            .ToLocal(&iterator_value)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return false;
   }
 
@@ -315,6 +315,7 @@ v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
             .As<v8::FunctionTemplate>();
     function_template->Inherit(interface_template);
     function_template->SetClassName(V8AtomicString(isolate, func_name));
+    function_template->SetExceptionContext(v8::ExceptionContext::kConstructor);
     per_isolate_data->AddV8Template(world, callback_key, function_template);
   }
 
@@ -388,9 +389,9 @@ void PerformAttributeSetCEReactionsReflect(
     const char* interface_name,
     const char* attribute_name) {
   v8::Isolate* isolate = info.GetIsolate();
-  ExceptionState exception_state(isolate, ExceptionContextType::kAttributeSet,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kAttributeSet,
                                  interface_name, attribute_name);
-  if (UNLIKELY(info.Length() < 1)) {
+  if (info.Length() < 1) [[unlikely]] {
     exception_state.ThrowTypeError(
         ExceptionMessages::NotEnoughArguments(1, info.Length()));
     return;
@@ -401,8 +402,9 @@ void PerformAttributeSetCEReactionsReflect(
   Element* blink_receiver = V8Element::ToWrappableUnsafe(isolate, info.This());
   auto&& arg_value = NativeValueTraits<IDLType>::NativeValue(isolate, info[0],
                                                              exception_state);
-  if (UNLIKELY(exception_state.HadException()))
+  if (exception_state.HadException()) [[unlikely]] {
     return;
+  }
 
   (blink_receiver->*MemFunc)(content_attribute, arg_value);
 }

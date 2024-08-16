@@ -73,7 +73,8 @@
                   "a": { "value": 321, "filtering_id": "65535" },
                   "b": 654
                 },
-                "aggregatable_filtering_id_max_bytes": 2
+                // ensure validity of trailing zero
+                "aggregatable_filtering_id_max_bytes": 2.0
               }
             }
           }
@@ -184,7 +185,6 @@
                "attribution_destination": "https://destination.test",
                "reporting_origin": "https://reporter.test",
                "scheduled_report_time": "2",
-               "source_registration_time": "0",
                "version": "1.0"
             }
          },
@@ -240,7 +240,6 @@
                "attribution_destination": "https://different-destination.test",
                "reporting_origin": "https://reporter.test",
                "scheduled_report_time": "6",
-               "source_registration_time": "0",
                "version": "1.0"
             }
          },
@@ -270,7 +269,6 @@
                "attribution_destination": "https://destination.test",
                "reporting_origin": "https://reporter.test",
                "scheduled_report_time": "3601",
-               "source_registration_time": "0",
                "version": "1.0"
             }
          },

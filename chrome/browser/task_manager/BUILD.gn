@@ -1,0 +1,247 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//components/nacl/features.gni")
+
+# The public interface for task_manager does not allow circular dependencies.
+source_set("task_manager") {
+  sources = [
+    "providers/browser_process_task.h",
+    "providers/browser_process_task_provider.h",
+    "providers/child_process_task.h",
+    "providers/child_process_task_provider.h",
+    "providers/fallback_task_provider.h",
+    "providers/per_profile_worker_task_tracker.h",
+    "providers/render_process_host_task_provider.h",
+    "providers/spare_render_process_host_task_provider.h",
+    "providers/task.h",
+    "providers/task_provider.h",
+    "providers/task_provider_observer.h",
+    "providers/web_contents/back_forward_cache_task.h",
+    "providers/web_contents/background_contents_tag.h",
+    "providers/web_contents/background_contents_task.h",
+    "providers/web_contents/devtools_tag.h",
+    "providers/web_contents/devtools_task.h",
+    "providers/web_contents/extension_tag.h",
+    "providers/web_contents/extension_task.h",
+    "providers/web_contents/fenced_frame_task.h",
+    "providers/web_contents/guest_tag.h",
+    "providers/web_contents/guest_task.h",
+    "providers/web_contents/isolated_web_app_task.h",
+    "providers/web_contents/no_state_prefetch_tag.h",
+    "providers/web_contents/no_state_prefetch_task.h",
+    "providers/web_contents/prerender_task.h",
+    "providers/web_contents/printing_tag.h",
+    "providers/web_contents/printing_task.h",
+    "providers/web_contents/renderer_task.h",
+    "providers/web_contents/subframe_task.h",
+    "providers/web_contents/tab_contents_tag.h",
+    "providers/web_contents/tab_contents_task.h",
+    "providers/web_contents/tool_tag.h",
+    "providers/web_contents/tool_task.h",
+    "providers/web_contents/web_app_tag.h",
+    "providers/web_contents/web_app_task.h",
+    "providers/web_contents/web_contents_tag.h",
+    "providers/web_contents/web_contents_tags_manager.h",
+    "providers/web_contents/web_contents_task_provider.h",
+    "providers/worker_task.h",
+    "providers/worker_task_provider.h",
+    "sampling/shared_sampler.h",
+    "sampling/task_group.h",
+    "sampling/task_group_sampler.h",
+    "sampling/task_manager_impl.h",
+    "task_manager_interface.h",
+    "task_manager_observer.h",
+    "web_contents_tags.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//components/favicon/core",
+    "//components/nacl/common:buildflags",
+    "//components/sessions:session_id",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/buildflags",
+    "//extensions/common:mojom",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/common/tokens:tokens_headers",
+    "//ui/gfx",
+  ]
+
+  if (is_win) {
+    sources += [ "sampling/shared_sampler_win_defines.h" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "providers/arc/arc_process_task.h",
+      "providers/arc/arc_process_task_provider.h",
+      "providers/crosapi/crosapi_task.h",
+      "providers/vm/crostini_process_task.h",
+      "providers/vm/plugin_vm_process_task.h",
+      "providers/vm/vm_process_task.h",
+      "providers/vm/vm_process_task_provider.h",
+      "sampling/arc_shared_sampler.h",
+    ]
+    public_deps += [
+      "//ash/components/arc/mojom",
+      "//ash/components/arc/session:connection_holder",
+      "//chrome/browser/ash/arc/process",
+      "//chromeos/ash/components/dbus/concierge",
+      "//chromeos/ash/components/process_snapshot",
+      "//chromeos/crosapi/mojom",
+      "//components/arc",
+    ]
+  }
+  if (is_chromeos_lacros) {
+    sources += [ "providers/crosapi/task_manager_controller_lacros.h" ]
+    public_deps += [ "//chromeos/crosapi/mojom" ]
+  }
+}
+
+# The implementation must be linked into the same binary as the public
+# interface. This does have circular dependencies with //chrome/browser and
+# //chrome/browser/ui.
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "providers/browser_process_task.cc",
+    "providers/browser_process_task_provider.cc",
+    "providers/child_process_task.cc",
+    "providers/child_process_task_provider.cc",
+    "providers/fallback_task_provider.cc",
+    "providers/per_profile_worker_task_tracker.cc",
+    "providers/render_process_host_task_provider.cc",
+    "providers/spare_render_process_host_task_provider.cc",
+    "providers/task.cc",
+    "providers/task_provider.cc",
+    "providers/web_contents/back_forward_cache_task.cc",
+    "providers/web_contents/background_contents_tag.cc",
+    "providers/web_contents/background_contents_task.cc",
+    "providers/web_contents/devtools_tag.cc",
+    "providers/web_contents/devtools_task.cc",
+    "providers/web_contents/extension_tag.cc",
+    "providers/web_contents/extension_task.cc",
+    "providers/web_contents/fenced_frame_task.cc",
+    "providers/web_contents/guest_tag.cc",
+    "providers/web_contents/guest_task.cc",
+    "providers/web_contents/isolated_web_app_task.cc",
+    "providers/web_contents/no_state_prefetch_tag.cc",
+    "providers/web_contents/no_state_prefetch_task.cc",
+    "providers/web_contents/prerender_task.cc",
+    "providers/web_contents/printing_tag.cc",
+    "providers/web_contents/printing_task.cc",
+    "providers/web_contents/renderer_task.cc",
+    "providers/web_contents/subframe_task.cc",
+    "providers/web_contents/tab_contents_tag.cc",
+    "providers/web_contents/tab_contents_task.cc",
+    "providers/web_contents/tool_tag.cc",
+    "providers/web_contents/tool_task.cc",
+    "providers/web_contents/web_app_tag.cc",
+    "providers/web_contents/web_app_task.cc",
+    "providers/web_contents/web_contents_tag.cc",
+    "providers/web_contents/web_contents_tags_manager.cc",
+    "providers/web_contents/web_contents_task_provider.cc",
+    "providers/worker_task.cc",
+    "providers/worker_task_provider.cc",
+    "sampling/task_group.cc",
+    "sampling/task_group_sampler.cc",
+    "sampling/task_manager_impl.cc",
+    "task_manager_interface.cc",
+    "task_manager_observer.cc",
+    "web_contents_tags.cc",
+  ]
+
+  deps = [
+    ":task_manager",
+    "//base",
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/app/theme:theme_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/extensions",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/task_manager",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//components/guest_view/browser",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/public/common:result_codes",
+    "//extensions:extensions_browser_resources",
+    "//extensions:extensions_browser_resources_grit",
+    "//extensions/browser",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//gpu/ipc/common",
+    "//mojo/public/cpp/bindings",
+    "//printing/buildflags",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//sql",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  if (is_win) {
+    sources += [ "sampling/shared_sampler_win.cc" ]
+  } else {
+    sources += [ "sampling/shared_sampler_stub.cc" ]
+  }
+  if (is_chromeos) {
+    deps += [ "//components/nacl/common:buildflags" ]
+  }
+  if (enable_nacl) {
+    deps += [ "//components/nacl/browser" ]
+  }
+  if (is_chromeos_ash) {
+    sources += [
+      "providers/arc/arc_process_task.cc",
+      "providers/arc/arc_process_task_provider.cc",
+      "providers/crosapi/crosapi_task.cc",
+      "providers/crosapi/crosapi_task_provider_ash.cc",
+      "providers/crosapi/crosapi_task_provider_ash.h",
+      "providers/vm/crostini_process_task.cc",
+      "providers/vm/plugin_vm_process_task.cc",
+      "providers/vm/vm_process_task.cc",
+      "providers/vm/vm_process_task_provider.cc",
+      "sampling/arc_shared_sampler.cc",
+    ]
+    deps += [
+      "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc/session",
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/ash",
+      "//chrome/browser/ash/arc/process",
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/crostini",
+      "//chrome/browser/ash/plugin_vm",
+      "//chromeos/ash/components/dbus/concierge",
+      "//components/arc",
+    ]
+  }
+  if (is_chromeos_lacros) {
+    sources += [ "providers/crosapi/task_manager_controller_lacros.cc" ]
+  }
+}

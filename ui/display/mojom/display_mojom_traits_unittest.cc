@@ -370,7 +370,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentAndNativeModesNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 19;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
   const DisplayMode display_mode({13, 11}, true, 40.0f);
 
@@ -428,7 +429,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotCurrentModeNull) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("z/b");
   const int64_t product_code = 9;
   const int32_t year_of_manufacture = 1776;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrEnabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrEnabled;
 
   const DisplayMode display_mode({13, 11}, true, 50.0f);
 
@@ -486,7 +488,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotExternal) {
   const base::FilePath sys_path = base::FilePath::FromUTF8Unsafe("a/cb");
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrDisabled;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrDisabled;
 
   const DisplayMode display_mode({1024, 768}, false, 60.0f);
   const DisplayMode display_current_mode({1440, 900}, false, 59.89f);
@@ -549,7 +552,8 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
   const base::FilePath sys_path;
   const int64_t product_code = 139;
   const int32_t year_of_manufacture = 2018;
-  const VariableRefreshRateState variable_refresh_rate_state = kVrrNotCapable;
+  const VariableRefreshRateState variable_refresh_rate_state =
+      VariableRefreshRateState::kVrrNotCapable;
 
   const DisplayMode display_mode({2560, 1700}, false, 95.96f);
 

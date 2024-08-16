@@ -255,11 +255,8 @@ TEST_F(HttpClientTest, TestSendDifferentRequestMethod) {
       auto pendingRequest = GetLastPendingRequest()->request;
       EXPECT_EQ(pendingRequest.method, method);
 
-      std::string content_type_val, method_val;
-      pendingRequest.headers.GetHeader("TestMethod", &method_val);
-      pendingRequest.headers.GetHeader("Content-Type", &content_type_val);
-      EXPECT_EQ(content_type_val, content_type);
-      EXPECT_EQ(method_val, method);
+      EXPECT_EQ(pendingRequest.headers.GetHeader("Content-Type"), content_type);
+      EXPECT_EQ(pendingRequest.headers.GetHeader("TestMethod"), method);
     }
 
     Respond(GURL(request.url), TestHttpResponse());

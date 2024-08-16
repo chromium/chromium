@@ -16,6 +16,8 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsCitationBackground] = {
       ui::kColorSysBaseContainer};
+  mixer[kColorProductSpecificationsDetailChipBackground] = {
+      ui::kColorSysBaseContainer};
   mixer[kColorProductSpecificationsDisclosureBackground] = {
       ui::kColorPrimaryBackground};
   mixer[kColorProductSpecificationsDisclosureForeground] = {
@@ -27,6 +29,8 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsDisclosureSummaryBackground] = {
       ui::kColorSysSurface4};
   mixer[kColorProductSpecificationsDivider] = {ui::kColorSysDivider};
+  mixer[kColorProductSpecificationsHorizontalCarouselScrollbarThumb] = {
+      ui::kColorSysTonalOutline};
   mixer[kColorProductSpecificationsIcon] = {ui::kColorIcon};
   mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsPrimaryTitle] = {

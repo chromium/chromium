@@ -199,8 +199,7 @@ void TabletModeWindowState::UpdateWindowPosition(
                                              /*float_state=*/false);
       break;
     case WindowState::BoundsChangeAnimationType::kAnimateZero:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -301,8 +300,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // PIP windows are not managed by TabletModeWindowManager even if the
       // window is in tablet mode. PIP window uses DefaultState instead, not
       // TabletModeWindowState.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case WM_EVENT_TRUSTED_PIN:
       if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
         UpdateWindow(window_state, WindowStateType::kTrustedPinned,

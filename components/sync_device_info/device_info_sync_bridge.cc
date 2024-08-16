@@ -28,16 +28,16 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
@@ -51,9 +51,9 @@ using sync_pb::DeviceInfoSpecifics;
 using sync_pb::FeatureSpecificFields;
 using sync_pb::SharingSpecificFields;
 
-using Record = ModelTypeStore::Record;
-using RecordList = ModelTypeStore::RecordList;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using Record = DataTypeStore::Record;
+using RecordList = DataTypeStore::RecordList;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 namespace {
 
@@ -192,7 +192,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToSharingInfo(specifics),
       SpecificsToPhoneAsASecurityKeyInfo(specifics),
       specifics.invalidation_fields().instance_id_token(),
-      GetModelTypeSetFromSpecificsFieldNumberList(
+      GetDataTypeSetFromSpecificsFieldNumberList(
           specifics.invalidation_fields().interested_data_type_ids()),
       SpecificsToFloatingWorkspaceLastSigninTime(specifics));
 }
@@ -296,9 +296,9 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     specifics->mutable_invalidation_fields()->set_instance_id_token(
         info.fcm_registration_token());
   }
-  for (const ModelType data_type : info.interested_data_types()) {
+  for (const DataType data_type : info.interested_data_types()) {
     specifics->mutable_invalidation_fields()->add_interested_data_type_ids(
-        GetSpecificsFieldNumberFromModelType(data_type));
+        GetSpecificsFieldNumberFromDataType(data_type));
   }
 
   return specifics;
@@ -375,10 +375,10 @@ DeviceInfoSyncBridge::ImmutableDeviceInfoAndSpecifics::
 
 DeviceInfoSyncBridge::DeviceInfoSyncBridge(
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
-    OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+    OnceDataTypeStoreFactory store_factory,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<DeviceInfoPrefs> device_info_prefs)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       local_device_info_provider_(std::move(local_device_info_provider)),
       device_info_prefs_(std::move(device_info_prefs)) {
   DCHECK(local_device_info_provider_);
@@ -413,7 +413,7 @@ void DeviceInfoSyncBridge::RefreshLocalDeviceInfoIfNeeded() {
 }
 
 void DeviceInfoSyncBridge::SetCommittedAdditionalInterestedDataTypesCallback(
-    base::RepeatingCallback<void(const ModelTypeSet&)> callback) {
+    base::RepeatingCallback<void(const DataTypeSet&)> callback) {
   new_interested_data_types_callback_ = std::move(callback);
 }
 
@@ -581,7 +581,7 @@ void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
   }
 }
 
-ModelTypeSyncBridge::CommitAttemptFailedBehavior
+DataTypeSyncBridge::CommitAttemptFailedBehavior
 DeviceInfoSyncBridge::OnCommitAttemptFailed(
     syncer::SyncCommitError commit_error) {
   // DeviceInfo is normally committed once a day and hence it's important to
@@ -675,7 +675,7 @@ void DeviceInfoSyncBridge::NotifyObservers() {
 // static
 std::optional<ModelError> DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
     ClientIdToDeviceInfo* all_data,
-    std::unique_ptr<ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<DataTypeStore::RecordList> record_list) {
   DCHECK(all_data);
   DCHECK(all_data->empty());
   DCHECK(record_list);
@@ -729,7 +729,7 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
 
 void DeviceInfoSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<ModelTypeStore> store) {
+    std::unique_ptr<DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -786,18 +786,18 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   // In the regular case for sync being disabled, wait for MergeFullSyncData()
   // before initializing the LocalDeviceInfoProvider.
   if (!syncer::IsInitialSyncDone(
-          metadata_batch->GetModelTypeState().initial_sync_state()) &&
+          metadata_batch->GetDataTypeState().initial_sync_state()) &&
       metadata_batch->GetAllMetadata().empty() && all_data_.empty()) {
     change_processor()->ModelReadyToSync(std::move(metadata_batch));
     return;
   }
 
   const std::string local_cache_guid_in_metadata =
-      metadata_batch->GetModelTypeState().cache_guid();
+      metadata_batch->GetDataTypeState().cache_guid();
 
   // Protect against corrupt local data.
   if (!syncer::IsInitialSyncDone(
-          metadata_batch->GetModelTypeState().initial_sync_state()) ||
+          metadata_batch->GetDataTypeState().initial_sync_state()) ||
       local_cache_guid_in_metadata.empty() ||
       all_data_.count(local_cache_guid_in_metadata) == 0) {
     // Data or metadata is off. Just throw everything away and start clean.
@@ -893,7 +893,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
 
   // Initiate an additional GetUpdates request if there are new data types
   // enabled (on successful commit).
-  const ModelTypeSet new_data_types =
+  const DataTypeSet new_data_types =
       Difference(current_info->interested_data_types(),
                  previous_device_info.interested_data_types());
   if (new_interested_data_types_callback_ && !new_data_types.empty()) {
@@ -916,7 +916,7 @@ void DeviceInfoSyncBridge::SendLocalData() {
 }
 
 void DeviceInfoSyncBridge::SendLocalDataWithBatch(
-    std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<DataTypeStore::WriteBatch> batch) {
   CHECK(store_);
   DCHECK(local_device_info_provider_->GetLocalDeviceInfo());
   DCHECK(change_processor()->IsTrackingMetadata());

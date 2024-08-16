@@ -161,7 +161,7 @@ class FakeFSBDelegate : public FileSystemBackendDelegate {
 
   storage::WatcherManager* GetWatcherManager(
       storage::FileSystemType type) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:

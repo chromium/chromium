@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -868,9 +869,13 @@ base::FilePath Server::InverseResolveFSURL(
   }
 
   if (best_size > 0) {
+    const std::string relative_path = base::UnescapeURLComponent(
+        fs_url_as_string.substr(best_size),
+        base::UnescapeRule::SPACES |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
     return storage::StringToFilePath(
         base::StrCat({file_manager::util::kFuseBoxMediaSlashPath, best_subdir,
-                      fs_url_as_string.substr(best_size)}));
+                      relative_path}));
   }
 
   return base::FilePath();

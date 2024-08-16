@@ -1127,7 +1127,7 @@ bool Label::HasTextBeingDragged() const {
 }
 
 void Label::SetTextBeingDragged(bool value) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int Label::GetViewHeight() const {
@@ -1155,7 +1155,7 @@ void Label::OnAfterPointerAction(bool text_changed, bool selection_changed) {
 }
 
 bool Label::PasteSelectionClipboard() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void Label::UpdateSelectionClipboard() {
@@ -1193,7 +1193,7 @@ void Label::ExecuteCommand(int command_id, int event_flags) {
       UpdateSelectionClipboard();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

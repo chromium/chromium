@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -15,8 +16,8 @@ namespace {
 
 sync_pb::NigoriLocalData MakeSomeNigoriLocalData() {
   sync_pb::NigoriLocalData result;
-  result.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  result.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   result.mutable_entity_metadata()->set_sequence_number(1);
   result.mutable_nigori_model()->set_encrypt_everything(true);
   return result;

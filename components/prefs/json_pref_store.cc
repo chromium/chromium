@@ -143,9 +143,9 @@ std::optional<std::string> DoSerialize(base::ValueView value,
     // Failed to serialize prefs file. Backup the existing prefs file and
     // crash.
     BackupPrefsFile(path);
-    NOTREACHED_NORETURN() << "Failed to serialize preferences : " << path
-                          << "\nBacked up under "
-                          << path.ReplaceExtension(kBadExtension);
+    NOTREACHED() << "Failed to serialize preferences : " << path
+                 << "\nBacked up under "
+                 << path.ReplaceExtension(kBadExtension);
   }
   return output;
 }

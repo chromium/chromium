@@ -75,6 +75,7 @@ class PersonalizationAppSeaPenProviderImpl
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
       const mojom::SeaPenQueryPtr& query,
+      bool preview_mode,
       base::OnceCallback<void(bool success)> callback) override;
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>

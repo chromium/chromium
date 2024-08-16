@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 
 #include <sys/sysinfo.h>
@@ -94,8 +99,7 @@ const char* DnsQueryToString(mojom::ArcDnsQuery query) {
     case mojom::ArcDnsQuery::ANDROID_API_HOST_NAME:
       return "AndroidApi";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
@@ -123,8 +127,7 @@ const char* WaylandTimingEventToString(mojom::WaylandTimingEvent event) {
     case mojom::WaylandTimingEvent::kZcrVsyncTimingUpdate:
       return ".ZcrVsyncTimingUpdate";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 struct LoadAverageHistogram {
   const char* name;

@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
 <translation id="1333745675627230582">Chrome'i dinosaurusemängu mängimine</translation>
 <translation id="1352919863522755794">Google'i paroolihalduril ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
+<translation id="1380565463006545725">Kasutage Chrome'i pakutavaid ostuvõimalusi</translation>
 <translation id="139623527619433858">Kasutage iPadi puhul vaikimisi Chrome'i</translation>
 <translation id="1407843355326180937">Logige sisse sellele saidile ja Chrome’i, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="1436059927646026729">Ava Chrome'is minu viimane vaheleht</translation>
@@ -35,6 +36,7 @@ Tasub teada
 <translation id="1554731936187952550">Teil on Chrome'i tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="1615715390546812898">Chrome'is hääle abil otsimine.</translation>
 <translation id="1657395063736185342">Otsi Chrome'is visuaale</translation>
+<translation id="1670609221633730681">Chrome'i nõuanne: valige oma aadressiriba asukoht</translation>
 <translation id="1675955119303651351">Teatud Chrome’i andmeid pole veel teie Google’i kontole salvestatud.
         Oodake enne väljalogimist paar minutit. Kui logite kohe välja, siis need andmed kustutatakse.</translation>
 <translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
@@ -113,12 +115,14 @@ Tasub teada
 <translation id="3984746313391923992">Teie organisatsioon nõuab, et jääksite Chrome'ist väljalogituks.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4064699917955374540">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontol kinnitage, et see olete teie.</translation>
+<translation id="4066411101507716142">Avage Chrome kiiremini oma iPadi avakuva doki kaudu.</translation>
 <translation id="4067858366537947361">Chrome'i inkognito vahekaardi avamine</translation>
 <translation id="4093042601582616698">Kas soovite Chrome'i vaikebrauseriks määrata?</translation>
 <translation id="417201473131094001">Ei toetata versioonis Chrome Canary</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
 <translation id="4251174643044751591">Avab Chrome'is makseviisi seadete lehe.</translation>
 <translation id="4286914711740227883">Chrome'is sirvimisandmete kustutamine</translation>
+<translation id="430839890088895017">Chrome'i nõuanne: teisaldage Chrome dokki</translation>
 <translation id="4453284704333523777">Chrome'i seadete haldamine</translation>
 <translation id="4523886039239821078">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Desinstallige need:</translation>
 <translation id="4633328489441962921">Chrome ei saa värskendusi otsida</translation>
@@ -182,6 +186,7 @@ Tasub teada
 <translation id="6272822675004864999">Chrome'ilt märguannete saamiseks lülitage iOS-i seadetes märguanded sisse.</translation>
 <translation id="630693926528731525">Teie parooli ei jagatud. Kontrollige internetiühendust ja veenduge, et oleksite Chrome'i sisse logitud. Seejärel proovige uuesti.</translation>
 <translation id="6348855835728304880">Pääsete selles seadmes juurde oma Chrome'i paroolidele ja muule teabele.</translation>
+<translation id="6373751563207403289">Ohutuskontroll kaitseb teid andmetega seotud rikkumiste, ebaturvaliste veebisaitide ja muu eest. Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chrome teie eest tuvastab.</translation>
 <translation id="6374691158439235563">Chrome'i seadistamise lõpuleviimine</translation>
 <translation id="6389317667633680932">Avastage uusi funktsioone, mis aitavad teil Chrome'i parimal moel kasutada.</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
@@ -234,8 +239,10 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="746684838091935575">3. Valige Chrome.</translation>
 <translation id="7492574581995589075">Teie organisatsioon on Chrome’i andmete kasutamise ja Google’i kontole salvestamise välja lülitanud. Uued järjehoidjad, paroolid ja muu sisu salvestatakse ainult sellesse seadmesse.</translation>
 <translation id="7581063337314642333">Ava Chrome'is vahelehtede ruudustik</translation>
+<translation id="7642373780953416937">Saate hoiatusi mis tahes privaatsus- ja turvaprobleemide kohta, mille Chrome automaatselt teie eest tuvastab.</translation>
 <translation id="7662994914830945754">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige sisse ja lülitage sisse sünkroonimine</translation>
 <translation id="7669869107155339016">Avage Chrome'i seaded.</translation>
+<translation id="7683540977001394271">Avage Chrome kiiremini oma iPhone'i avakuva doki kaudu.</translation>
 <translation id="769104993356536261">Chrome'i toimingute kasutamine iOS-is</translation>
 <translation id="7693590760643069321">Nüüd saate kasutada Chrome'i iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
@@ -249,6 +256,7 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'
 <translation id="8006014511203279255">Saate Chrome'i kasutada igal ajal, kui puudutate sõnumites või muudes rakendustes linke.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="804638182476029347">Hinnaalanduse märguannete saamiseks lubage Chrome’i märguanded</translation>
+<translation id="804756029368067824">Määrake Chrome oma vaikebrauseriks, et hõlpsasti jälgida hindu ja saada hinnastatistikat toodete kohta, mida soovite osta.</translation>
 <translation id="8065292699993359127">Ava URL-id Chrome'is inkognito režiimis</translation>
 <translation id="8069507567842347179">Seda saadetist on Chrome'is juba jälgitud.</translation>
 <translation id="8136856065410661948">Seda kasutatakse Chrome'i ja Google Lensi kaudu teie Apple'i rakenduses Calendar sündmuste loomiseks.</translation>
@@ -276,6 +284,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
   2. Puudutage valikut Vaikebrauserirakendus.
   3. Valige Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Hoiatab privaatsus- või turvaprobleemidest, mille Chrome teie eest tuvastab.</translation>
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="8603022514504485810">Google'i paroolihalduril ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Kasutage Chrome'i parimal moel</translation>

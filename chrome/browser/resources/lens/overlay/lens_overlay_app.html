@@ -14,24 +14,32 @@
     position: absolute;
   }
 
-  #buttonContainer {
+  .button-container {
     display: flex;
-    gap: 12px;
-    inset-block-start: 28px;
-    inset-inline-end: 30px;
     pointer-events: none;
     position: absolute;
   }
 
-  :host(:not([initial-flash-animation-has-ended])) #buttonContainer {
+  :host(:not([initial-flash-animation-has-ended])) .button-container {
     opacity: 0;
     visibility: hidden;
+  }
+
+  #optionsButtonContainer {
+    gap: 12px;
+    inset-block-start: 28px;
+    inset-inline-end: 30px;
+  }
+
+  #translateButtonContainer {
+    inset-block-start: 21px;
+    inset-inline-start: 25px;
   }
 
   .action-button {
     --cr-icon-button-icon-size: 20px;
     --cr-icon-button-size: 36px;
-    --cr-icon-button-fill-color: white;
+    --cr-icon-button-fill-color: var(--color-overlay-icon);
     background-color: rgba(var(--color-scrim-rgb), 0.6);
     pointer-events: all;
   }
@@ -163,7 +171,9 @@
     --color-scrim-rgb: [[skColorToRgb_(theme.scrim)]];
     --color-surface-container-highest-light: [[skColorToHex_(theme.surfaceContainerHighestLight)]];
     --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
-    --color-selection-element: [[skColorToHex_(theme.selectionElement)]];">
+    --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
+    --color-overlay-icon: white;
+    --color-overlay-button-label: white;">
   <cr-toast id="copyToast" duration="4000">
     <div>$i18n{copyToastMessage}</div>
     <cr-button on-click="onHideToastClick">
@@ -181,7 +191,12 @@
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <div id="buttonContainer">
+  <template is="dom-if" if="[[isTranslateButtonVisible]]">
+    <div id="translateButtonContainer" class="button-container">
+      <translate-button></translate-button>
+    </div>
+  </template>
+  <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"
           class="action-button" on-click="onMoreOptionsButtonClick"

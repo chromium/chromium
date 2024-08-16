@@ -155,6 +155,7 @@ class FaceGazeTestUtils {
     Config& WithCursorLocation(const gfx::Point& location);
     Config& WithBufferSize(int size);
     Config& WithCursorAcceleration(bool acceleration);
+    Config& WithDialogAccepted(bool accepted);
     Config& WithGesturesToMacros(
         const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros);
     Config& WithGestureConfidences(
@@ -166,6 +167,7 @@ class FaceGazeTestUtils {
     const gfx::Point& cursor_location() const { return cursor_location_; }
     int buffer_size() const { return buffer_size_; }
     bool use_cursor_acceleration() const { return use_cursor_acceleration_; }
+    bool dialog_accepted() const { return dialog_accepted_; }
     const std::optional<base::flat_map<FaceGazeGesture, MacroName>>&
     gestures_to_macros() const {
       return gestures_to_macros_;
@@ -187,6 +189,7 @@ class FaceGazeTestUtils {
     gfx::Point cursor_location_;
     int buffer_size_;
     bool use_cursor_acceleration_;
+    bool dialog_accepted_;
 
     // Optional properties.
     std::optional<base::flat_map<FaceGazeGesture, MacroName>>

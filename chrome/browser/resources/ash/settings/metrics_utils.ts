@@ -43,6 +43,11 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  'guest_os.usb_persistent_passthrough_enabled': {
+    setting: Setting.kGuestUsbPersistentPassthrough,
+    type: PrefType.BOOLEAN,
+  },
+
   // Date and time settings
   'settings.clock.use_24hour_clock': {
     setting: Setting.k24HourClock,
@@ -95,6 +100,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.NUMBER,
   },
   // os_a11y_page/audio_and_captions_page.ts
+  'settings.a11y.flash_notifications_enabled': {
+    setting: Setting.kFlashNotifications,
+    type: PrefType.BOOLEAN,
+  },
   'accessibility.captions.live_caption_enabled': {
     setting: Setting.kLiveCaption,
     type: PrefType.BOOLEAN,

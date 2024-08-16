@@ -50,8 +50,7 @@ std::string WallpaperMetricsManager::ToResultHistogram(WallpaperType type) {
       return "Ash.Wallpaper.SeaPen.Result2";
     case WallpaperType::kOneShot:
     case WallpaperType::kCount:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

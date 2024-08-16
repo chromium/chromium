@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL je skrajšan</translation>
 <translation id="1448064542941920355">Zmanjšanje povečave/pomanjšave</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> spletnem mestu}one{<ph name="SITE_COUNT" /> spletnem mestu}two{<ph name="SITE_COUNT" /> spletnih mestih}few{<ph name="SITE_COUNT" /> spletnih mestih}other{<ph name="SITE_COUNT" /> spletnih mestih}}</translation>
+<translation id="1500473259453106018">Skrij kartico z znižanji cen na zavihkih</translation>
 <translation id="1510341833810331442">Spletna mesta ne smejo shranjevati podatkov v napravi.</translation>
 <translation id="1547123415014299762">Piškotki drugih spletnih mest so dovoljeni.</translation>
 <translation id="1568470248891039841">Spletna mesta, ki jih obiščete, lahko vdelajo vsebino z drugih spletnih mest, na primer slike, oglase in besedilo. Ta druga spletna mesta lahko zahtevajo dovoljenje za uporabo podatkov, ki so jih shranila o vas med brskanjem po spletnem mestu. <ph name="BEGIN_LINK" />Preberite več o vdelani vsebini<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Izbriši podatke brskanja …</translation>
 <translation id="3242646949159196181">Če je ta možnost vklopljena, spletna mesta lahko predvajajo zvok. Če je ta možnost izklopljena, spletna mesta ne smejo predvajati zvoka.</translation>
+<translation id="3273479183583863618">Znižanja cen na zavihkih</translation>
 <translation id="3277252321222022663">Spletnim mestom dovoli dostop do tipal (priporočeno)</translation>
 <translation id="3285500645985761267">Sorodnim spletnim mestom dovolite ogled vaše dejavnosti v skupini</translation>
 <translation id="3295019059349372795">11. poglavje: Čudovito Smaragdno mesto</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Opustitev in prikaz naslednjega razpoložljivega dejanja.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
+<translation id="3779154269823594982">Spremeni gesla</translation>
 <translation id="3797520601150691162">Brez uporabe temne teme za določeno spletno mesto</translation>
 <translation id="3803367742635802571">Obiskana spletna mesta bodo morda nehala delovati, kot je predvideno</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Izberite elemente</translation>
 <translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
+<translation id="6870169401250095575">Skrij kartico za varnostno preverjanje</translation>
 <translation id="6912998170423641340">Spletnim mestom prepreči branje besedila in slik v odložišču</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6950072572526089586">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
 <translation id="789180354981963912">Blokiranje piškotkov tretjih oseb v anonimnem načinu:</translation>
 <translation id="7940722705963108451">Opomni me</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}one{<ph name="FPS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}two{<ph name="FPS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}few{<ph name="FPS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}other{<ph name="FPS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="FPS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini.}}</translation>
 <translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7990211076305263060">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo mikrofona. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati mikrofona.</translation>
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Skrij kartico za nadaljevanje s tem zavihkom}one{Skrij kartico za nadaljevanje s temi zavihki}two{Skrij kartico za nadaljevanje s temi zavihki}few{Skrij kartico za nadaljevanje s temi zavihki}other{Skrij kartico za nadaljevanje s temi zavihki}}</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Spletnim mestom prepreči povezovanje z napravami</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="8541410041357371550">To spletno mesto pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}one{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}two{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletni mesti <ph name="FPS_OWNER" />.}few{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletna mesta <ph name="FPS_OWNER" />.}other{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletnih mest <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Upravljajo starši</translation>
 <translation id="9039697262778250930">Morda boste odjavljeni s teh spletnih mest.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. Definiral(-a) jo je <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Želite izbrisati piškotke?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenja za aplikacijo <ph name="APP_NAME" />.</translation>

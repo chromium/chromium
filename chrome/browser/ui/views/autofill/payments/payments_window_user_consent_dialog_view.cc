@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
@@ -55,7 +56,7 @@ PaymentsWindowUserConsentDialogResult GetDialogResultForClosedReason(
       // There is no close button present for the consent dialog, so this should
       // never be reached. It is also a tab-modal dialog, so it should never
       // lose focus.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case views::Widget::ClosedReason::kUnspecified:
       return PaymentsWindowUserConsentDialogResult::kTabOrBrowserClosed;
     case views::Widget::ClosedReason::kEscKeyPressed:
@@ -79,7 +80,7 @@ PaymentsWindowUserConsentDialogView::PaymentsWindowUserConsentDialogView(
   RegisterWindowWillCloseCallback(
       base::BindOnce(&PaymentsWindowUserConsentDialogView::OnDialogClosing,
                      weak_ptr_factory_.GetWeakPtr()));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(

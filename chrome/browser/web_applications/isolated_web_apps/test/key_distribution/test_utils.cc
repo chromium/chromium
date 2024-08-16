@@ -76,11 +76,11 @@ UpdateKeyDistributionInfo(const base::Version& version,
 
 base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
 UpdateKeyDistributionInfo(const base::Version& version,
-                          const IwaKeyDistribution& kr_proto) {
+                          const IwaKeyDistribution& kd_proto) {
   base::ScopedTempDir component_install_dir;
   CHECK(component_install_dir.CreateUniqueTempDir());
   auto path = component_install_dir.GetPath().AppendASCII("krc");
-  CHECK(base::WriteFile(path, kr_proto.SerializeAsString()));
+  CHECK(base::WriteFile(path, kd_proto.SerializeAsString()));
   return UpdateKeyDistributionInfo(version, path);
 }
 
@@ -103,7 +103,12 @@ UpdateKeyDistributionInfo(
 
 base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
 InstallIwaKeyDistributionComponent(const base::Version& version,
-                                   const IwaKeyDistribution& kr_proto) {
+                                   const IwaKeyDistribution& kd_proto) {
+  CHECK(base::FeatureList::IsEnabled(
+      component_updater::kIwaKeyDistributionComponent))
+      << "The `IwaKeyDistribution` feature must be enabled for the component "
+         "installation to succeed.";
+
   using Installer =
       component_updater::IwaKeyDistributionComponentInstallerPolicy;
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -125,7 +130,7 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
 
   CHECK(base::CreateDirectory(install_dir));
   CHECK(base::WriteFile(install_dir.Append(Installer::kDataFileName),
-                        kr_proto.SerializeAsString()));
+                        kd_proto.SerializeAsString()));
 
   // Write a manifest file. This is needed for component updater to detect any
   // existing component on disk.
@@ -144,6 +149,26 @@ InstallIwaKeyDistributionComponent(const base::Version& version,
   CHECK(base::DeletePathRecursively(install_dir));
 
   return result;
+}
+
+base::expected<void, IwaKeyDistributionInfoProvider::ComponentUpdateError>
+InstallIwaKeyDistributionComponent(
+    const base::Version& version,
+    const std::string& web_bundle_id,
+    std::optional<base::span<const uint8_t>> expected_key) {
+  IwaKeyRotations::KeyRotationInfo kr_info;
+  if (expected_key) {
+    kr_info.set_expected_key(base::Base64Encode(*expected_key));
+  }
+
+  IwaKeyRotations key_rotations;
+  key_rotations.mutable_key_rotations()->emplace(web_bundle_id,
+                                                 std::move(kr_info));
+
+  IwaKeyDistribution key_distribution;
+  *key_distribution.mutable_key_rotation_data() = std::move(key_rotations);
+
+  return InstallIwaKeyDistributionComponent(version, key_distribution);
 }
 
 }  // namespace web_app::test

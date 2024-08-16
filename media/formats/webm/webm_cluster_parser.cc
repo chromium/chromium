@@ -360,7 +360,7 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data_ptr, int size) {
   auto data =
       // TODO(crbug.com/40284755): This function should receive a span, not a
       // pointer/size pair.
-      UNSAFE_BUFFERS(base::span(data_ptr, base::checked_cast<size_t>(size)));
+      UNSAFE_TODO(base::span(data_ptr, base::checked_cast<size_t>(size)));
   switch (id) {
     case kWebMIdSimpleBlock:
       return ParseBlock(true, data.data(), data.size(), nullptr, 0, -1, 0,

@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_BROWSER_VIEW_RENDERER_CLIENT_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -56,6 +57,9 @@ class BrowserViewRendererClient {
   // Called when the view tree force dark state changes
   virtual void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) = 0;
+
+  virtual void SetPreferredFrameInterval(
+      base::TimeDelta preferred_frame_interval) = 0;
 
  protected:
   virtual ~BrowserViewRendererClient() {}

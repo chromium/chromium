@@ -74,7 +74,7 @@ FatalCrashTelemetry::SessionType GetSessionType(
     case user_manager::UserType::kWebKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -328,8 +328,8 @@ FatalCrashEventsObserver::GetFatalCrashTelemetryCrashType(
     case CrashEventInfo::CrashType::kUnknown:
       [[fallthrough]];
     default:  // Other types added by healthD that are unknown here yet.
-      NOTREACHED_NORETURN()
-          << "Encountered unhandled or unknown crash type " << crash_type;
+      NOTREACHED() << "Encountered unhandled or unknown crash type "
+                   << crash_type;
   }
 }
 

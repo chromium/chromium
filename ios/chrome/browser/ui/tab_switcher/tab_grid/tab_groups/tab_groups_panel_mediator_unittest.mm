@@ -5,18 +5,26 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/mock_tab_group_sync_service.h"
 #import "components/saved_tab_groups/saved_tab_group.h"
 #import "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #import "components/saved_tab_groups/types.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -53,12 +61,25 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 
 class TabGroupsPanelMediatorTest : public PlatformTest {
  protected:
-  TabGroupsPanelMediatorTest() : web_state_list_(&web_state_list_delegate_) {}
+  TabGroupsPanelMediatorTest() : web_state_list_(&web_state_list_delegate_) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    // Create a regular browser.
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_list_ =
+        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_->AddBrowser(browser_.get());
+    mode_holder_ = [[TabGridModeHolder alloc] init];
+  }
 
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<BrowserList> browser_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   ::testing::NiceMock<tab_groups::MockTabGroupSyncService>
       tab_group_sync_service_;
+  TabGridModeHolder* mode_holder_;
 };
 
 // Tests that the service observation starts and stops when the mediator is
@@ -72,7 +93,8 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Released) {
       initWithTabGroupSyncService:&strict_tab_group_sync_service
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
 
   // Expect the observation end when the mediator is released.
   EXPECT_CALL(strict_tab_group_sync_service, RemoveObserver(_)).Times(1);
@@ -90,7 +112,8 @@ TEST_F(TabGroupsPanelMediatorTest, StartStopObserving_Disconnect) {
       initWithTabGroupSyncService:&strict_tab_group_sync_service
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
 
   {
     EXPECT_CALL(strict_tab_group_sync_service, RemoveObserver(_)).Times(1);
@@ -105,7 +128,8 @@ TEST_F(TabGroupsPanelMediatorTest, RecordUMAWhenSelected) {
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(kSelectTabGroupsUMA));
 
@@ -129,7 +153,8 @@ TEST_F(TabGroupsPanelMediatorTest, NotSelected_NoToolbarsDelegateOrConfig) {
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
   mediator.toolbarsMutator = toolbars_mutator;
@@ -147,7 +172,8 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:YES];
+                 disabledByPolicy:YES
+                      browserList:browser_list_];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
   mediator.toolbarsMutator = toolbars_mutator;
@@ -158,7 +184,6 @@ TEST_F(TabGroupsPanelMediatorTest, DisabledByPolicy_DisabledToolbarsConfig) {
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
 
   // All buttons are disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -187,7 +212,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
   mediator.toolbarsMutator = toolbars_mutator;
@@ -198,7 +224,6 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
 
   // Done button is disabled.
   EXPECT_FALSE(toolbars_mutator.configuration.doneButton);
@@ -234,7 +259,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   FakeTabGridToolbarsMediator* toolbars_mutator =
       [[FakeTabGridToolbarsMediator alloc] init];
   mediator.toolbarsMutator = toolbars_mutator;
@@ -245,7 +271,6 @@ TEST_F(TabGroupsPanelMediatorTest,
             static_cast<id<TabGridToolbarsGridDelegate>>(mediator));
   EXPECT_NE(toolbars_mutator.configuration, nil);
   EXPECT_EQ(TabGridPageTabGroups, toolbars_mutator.configuration.page);
-  EXPECT_EQ(TabGridModeNormal, toolbars_mutator.configuration.mode);
 
   // Done button is enabled.
   EXPECT_TRUE(toolbars_mutator.configuration.doneButton);
@@ -274,7 +299,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   // Prepare a consumer.
   FakeTabGroupsPanelConsumer* consumer =
       [[FakeTabGroupsPanelConsumer alloc] init];
@@ -303,7 +329,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   EXPECT_NE(observer, nullptr);
   // Prepare a consumer.
   FakeTabGroupsPanelConsumer* consumer =
@@ -336,7 +363,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   EXPECT_NE(observer, nullptr);
   // Prepare a consumer.
   FakeTabGroupsPanelConsumer* consumer =
@@ -368,7 +396,8 @@ TEST_F(TabGroupsPanelMediatorTest,
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   EXPECT_NE(observer, nullptr);
   // Set no saved tab group.
   std::vector<tab_groups::SavedTabGroup> groups = {};
@@ -402,7 +431,8 @@ TEST_F(TabGroupsPanelMediatorTest, PopulatesSortedGroups) {
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   EXPECT_NE(observer, nullptr);
   // Set a consumer.
   FakeTabGroupsPanelConsumer* consumer =
@@ -433,7 +463,8 @@ TEST_F(TabGroupsPanelMediatorTest, UpdateGroup) {
       initWithTabGroupSyncService:&tab_group_sync_service_
               regularWebStateList:&web_state_list_
                     faviconLoader:nullptr
-                 disabledByPolicy:NO];
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
   EXPECT_NE(observer, nullptr);
   // Set a consumer.
   FakeTabGroupsPanelConsumer* consumer =
@@ -452,4 +483,67 @@ TEST_F(TabGroupsPanelMediatorTest, UpdateGroup) {
 
   EXPECT_EQ(consumer.items.count, 1u);
   EXPECT_EQ(consumer.reconfigureItemCallCount, 1u);
+}
+
+// Tests that a group which doesn't exist locally is deleted from the tab group
+// sync service.
+TEST_F(TabGroupsPanelMediatorTest, DeleteRemoteGroup) {
+  auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:sync_service.get()
+              regularWebStateList:&web_state_list_
+                    faviconLoader:nullptr
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
+
+  // Set a saved tab group.
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  sync_service->AddGroup(group);
+  EXPECT_TRUE(sync_service->GetGroup(group.saved_guid()).has_value());
+
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
+  item.savedTabGroupID = group.saved_guid();
+  [mediator deleteSyncedTabGroup:item.savedTabGroupID];
+
+  EXPECT_FALSE(sync_service->GetGroup(group.saved_guid()).has_value());
+}
+
+// Tests that a group which exists locally is deleted from the tab group sync
+// service.
+TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
+  auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
+  TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
+      initWithTabGroupSyncService:sync_service.get()
+              regularWebStateList:&web_state_list_
+                    faviconLoader:nullptr
+                 disabledByPolicy:NO
+                      browserList:browser_list_];
+
+  // Create a web state.
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  // Create a tab group.
+  tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
+  tab_groups::TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
+      u"Test Group", tab_groups::TabGroupColorId::kGrey);
+  const TabGroup* tab_group =
+      browser_->GetWebStateList()->CreateGroup({0}, visual_data, tab_group_id);
+
+  // Set a saved tab group with a local ID of the tab group created above.
+  tab_groups::SavedTabGroup group = tab_groups::test::CreateTestSavedTabGroup();
+  group.SetLocalGroupId(tab_group->tab_group_id());
+  sync_service->AddGroup(group);
+  EXPECT_EQ(1u, browser_->GetWebStateList()->GetGroups().size());
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+
+  TabGroupsPanelItem* item = [[TabGroupsPanelItem alloc] init];
+  item.savedTabGroupID = group.saved_guid();
+  [mediator deleteSyncedTabGroup:item.savedTabGroupID];
+
+  // Check if the number of groups and tabs is 0.
+  EXPECT_EQ(0u, browser_->GetWebStateList()->GetGroups().size());
+  EXPECT_EQ(0, browser_->GetWebStateList()->count());
 }

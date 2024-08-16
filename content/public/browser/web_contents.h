@@ -259,10 +259,17 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
         network::mojom::WebSandboxFlags::kNone;
 
     // Value used to set the last time the WebContents was made active, this is
+    // the value that'll be returned by GetLastActiveTimeTicks(). If this is
+    // left default initialized then the value is not passed on to the
+    // WebContents and GetLastActiveTimeTicks() will return the WebContents'
+    // creation time.
+    base::TimeTicks last_active_time_ticks;
+
+    // Value used to set the last time the WebContents was made active, this is
     // the value that'll be returned by GetLastActiveTime(). If this is left
     // default initialized then the value is not passed on to the WebContents
     // and GetLastActiveTime() will return the WebContents' creation time.
-    base::TimeTicks last_active_time;
+    base::Time last_active_time;
 
     // Code location responsible for creating the CreateParams.  This is used
     // mostly for debugging (e.g. to help attribute specific scenarios or
@@ -847,9 +854,17 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // directly to determine its aggregate audio state.
   virtual void OnAudioStateChanged() = 0;
 
+  // Get/Set the last time ticks that the WebContents was made active (either
+  // when it was created or shown with WasShown()). Note: GetLastActiveTimeTicks
+  // and GetLastActiveTime can get desynced if the process is suspended or if
+  // the clock is adjusted.
+  virtual base::TimeTicks GetLastActiveTimeTicks() = 0;
+
   // Get/Set the last time that the WebContents was made active (either when it
   // was created or shown with WasShown()).
-  virtual base::TimeTicks GetLastActiveTime() = 0;
+  // Note: GetLastActiveTimeTicks and GetLastActiveTime can get desynced if the
+  // process is suspended or if the clock is adjusted.
+  virtual base::Time GetLastActiveTime() = 0;
 
   // Invoked when the WebContents becomes shown/hidden. A hidden WebContents
   // isn't painted on the screen.

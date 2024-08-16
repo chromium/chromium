@@ -136,6 +136,10 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
 
   std::optional<webrtc::AudioDeviceModule::Stats> GetStats() const override;
 
+  const String& GetOutputDeviceForAecForTesting() {
+    return output_device_id_for_aec_;
+  }
+
  private:
   using CapturerList =
       std::list<raw_ptr<ProcessedLocalAudioSource, CtnExperimental>>;

@@ -24,8 +24,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -136,23 +134,5 @@ public class ContextualPageActionControllerUnitTest {
 
         verify(mMockAdaptiveToolbarController)
                 .showDynamicAction(AdaptiveToolbarButtonVariant.UNKNOWN);
-    }
-
-    @Test
-    public void buttonNotShownWhenUiDisabled() {
-        mMockConfiguration.screenWidthDp = 450;
-        setMockSegmentationResult(AdaptiveToolbarButtonVariant.PRICE_TRACKING);
-        TestValues testValues = new TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "enable_ui", "false");
-        FeatureList.setTestValues(testValues);
-
-        createContextualPageActionController();
-        mTabSupplier.set(mMockTab);
-
-        verify(mMockAdaptiveToolbarController, never()).showDynamicAction(anyInt());
-        // Even if the UI is disabled segmentation should be called.
-        verify(mMockControllerJni).computeContextualPageAction(any(), any(), any());
     }
 }

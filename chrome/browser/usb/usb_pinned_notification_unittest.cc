@@ -40,7 +40,7 @@ class UsbPinnedNotificationTest : public DevicePinnedNotificationTestBase {
     return l10n_util::GetPluralStringFUTF16(IDS_WEBUSB_SYSTEM_TRAY_ICON_TITLE,
                                             static_cast<int>(num_connections));
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
@@ -102,7 +102,7 @@ class UsbPinnedNotificationTest : public DevicePinnedNotificationTestBase {
         extension_names[0].c_str(), extension_names[1].c_str(),
         extension_names.size() - 2));
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 };

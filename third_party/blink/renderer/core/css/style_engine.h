@@ -36,8 +36,8 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
@@ -307,13 +307,17 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
 
   unsigned MaxDirectAdjacentSelectors() const {
-    return GetRuleFeatureSet().MaxDirectAdjacentSelectors();
+    return GetRuleFeatureSet()
+        .GetRuleInvalidationData()
+        .MaxDirectAdjacentSelectors();
   }
   bool UsesFirstLineRules() const {
-    return GetRuleFeatureSet().UsesFirstLineRules();
+    return GetRuleFeatureSet().GetRuleInvalidationData().UsesFirstLineRules();
   }
   bool UsesWindowInactiveSelector() const {
-    return GetRuleFeatureSet().UsesWindowInactiveSelector();
+    return GetRuleFeatureSet()
+        .GetRuleInvalidationData()
+        .UsesWindowInactiveSelector();
   }
 
   // Set when we recalc the style of any element that depends on layout.
@@ -1058,7 +1062,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   //
   // This data member should be initialized in the constructor in order to avoid
   // including full mojom headers from this header.
-  mojom::blink::PreferredColorScheme preferred_color_scheme_;
+  mojom::blink::PreferredColorScheme preferred_color_scheme_ =
+      mojom::blink::PreferredColorScheme::kLight;
 
   // We pass the used value of color-scheme from the iframe element in the
   // embedding document. If the color-scheme of the owner element and the root
@@ -1067,7 +1072,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   //
   // This data member should be initialized in the constructor in order to avoid
   // including full mojom headers from this header.
-  mojom::blink::ColorScheme owner_color_scheme_;
+  mojom::blink::ColorScheme owner_color_scheme_ =
+      mojom::blink::ColorScheme::kLight;
 
   // The color of the canvas backdrop for the used color-scheme.
   Color color_scheme_background_;

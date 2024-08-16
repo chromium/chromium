@@ -16,8 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "tools/android/forwarder2/socket.h"
 
-using std::string_view;
-
 namespace {
 
 

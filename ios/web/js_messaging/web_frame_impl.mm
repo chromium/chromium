@@ -6,13 +6,19 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
 #import "base/logging.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
+#import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_content_world.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -234,13 +240,28 @@ WebFrameImpl::ExecuteJavaScriptCallbackAdapter(
 }
 
 void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
-  DLOG(WARNING) << "Script execution of:" << base::SysNSStringToUTF16(script)
-                << "\nfailed with error: "
-                << base::SysNSStringToUTF16(
-                       error.userInfo[NSLocalizedDescriptionKey])
-                << "\nand exception: "
-                << base::SysNSStringToUTF16(
-                       error.userInfo[@"WKJavaScriptExceptionMessage"]);
+  std::u16string executed_script = base::SysNSStringToUTF16(script);
+  std::u16string error_string =
+      base::SysNSStringToUTF16(error.userInfo[NSLocalizedDescriptionKey]);
+  std::u16string exception =
+      base::SysNSStringToUTF16(error.userInfo[@"WKJavaScriptExceptionMessage"]);
+
+  DLOG(WARNING) << "Script execution of:" << executed_script
+                << "\nfailed with error: " << error_string
+                << "\nand exception: " << exception;
+
+  UMA_HISTOGRAM_BOOLEAN("IOS.Javascript.ScriptExecutionFailed",
+                        /**/ true);
+
+  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors)) {
+    SCOPED_CRASH_KEY_STRING256("JavaScript", "script",
+                               base::UTF16ToUTF8(executed_script));
+    SCOPED_CRASH_KEY_STRING256("JavaScript", "error",
+                               base::UTF16ToUTF8(error_string));
+    SCOPED_CRASH_KEY_STRING256("JavaScript", "exception",
+                               base::UTF16ToUTF8(exception));
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(

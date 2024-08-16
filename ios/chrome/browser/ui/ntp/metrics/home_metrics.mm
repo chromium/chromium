@@ -188,6 +188,21 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
       }
       break;
     }
+    case ContentSuggestionsModuleType::kPriceTrackingPromo: {
+      // Increment freshness pref since it is an impression of
+      // the latest Tab Resumption results as the top module, but only if there
+      // has been a freshness signal.
+      int freshness_impression_count = local_state->GetInteger(
+          prefs::
+              kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
+      if (freshness_impression_count >= 0) {
+        local_state->SetInteger(
+            prefs::
+                kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness,
+            freshness_impression_count + 1);
+      }
+      break;
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:

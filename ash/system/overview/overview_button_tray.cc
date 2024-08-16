@@ -137,7 +137,6 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 void OverviewButtonTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   icon_->SetImage(GetIconImage());
 }
 
@@ -229,7 +228,7 @@ void OverviewButtonTray::UpdateIconVisibility() {
 
 gfx::ImageSkia OverviewButtonTray::GetIconImage() {
   SkColor color;
-  if (GetColorProvider() && chromeos::features::IsJellyEnabled()) {
+  if (GetColorProvider()) {
     color = GetColorProvider()->GetColor(
         is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                     : cros_tokens::kCrosSysOnSurface);

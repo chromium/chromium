@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace syncer {
@@ -37,7 +37,7 @@ class DeviceInfoSyncClient {
 
   // A list of enabled data types, std::nullopt if the invalidation service is
   // not initialized yet.
-  virtual std::optional<ModelTypeSet> GetInterestedDataTypes() const = 0;
+  virtual std::optional<DataTypeSet> GetInterestedDataTypes() const = 0;
 
   // Returns registration information for using a phone-as-a-security-key, or
   // else one of the special `Status` values to indicate that the information

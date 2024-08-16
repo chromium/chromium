@@ -37,7 +37,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   explicit BlinkRootsHandler(v8::Isolate* isolate) : isolate_(isolate) {}
 
   bool IsRoot(const v8::TracedReference<v8::Value>& handle) final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // ResetRoot() clears references to V8 wrapper objects in all worlds. It is

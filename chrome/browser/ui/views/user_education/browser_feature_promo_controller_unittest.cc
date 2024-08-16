@@ -35,6 +35,7 @@
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -446,6 +447,8 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     EXPECT_CALL(*tracker, ShouldTriggerHelpUI(_))
         .Times(AnyNumber())
         .WillRepeatedly(Return(false));
+    EXPECT_CALL(*tracker, ListEvents)
+        .WillRepeatedly(Return(feature_engagement::Tracker::EventList()));
 
     return tracker;
   }
@@ -469,6 +472,32 @@ TEST_F(BrowserFeaturePromoControllerTest, NotifyFeatureUsedIfValidIsValid) {
   EXPECT_CALL(*mock_tracker_, NotifyUsedEvent(testing::Ref(kTestIPHFeature)))
       .Times(1);
   controller_->NotifyFeatureUsedIfValid(kTestIPHFeature);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       FeatureEngagementTrackerEvents_DoNotBlockPromo) {
+  feature_engagement::EventConfig config;
+  config.name = "foo";
+  config.comparator = feature_engagement::Comparator(
+      feature_engagement::ComparatorType::LESS_THAN, 2);
+  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
+      .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 1}}));
+  EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(kTestIPHFeature)))
+      .WillOnce(Return(true));
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            controller_->CanShowPromo(kTestIPHFeature));
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       FeatureEngagementTrackerEvents_DoBlockPromo) {
+  feature_engagement::EventConfig config;
+  config.name = "foo";
+  config.comparator = feature_engagement::Comparator(
+      feature_engagement::ComparatorType::LESS_THAN, 2);
+  EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
+      .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 2}}));
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            controller_->CanShowPromo(kTestIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, AsksBackendIfPromoShouldBeShown) {

@@ -4,11 +4,21 @@
 
 #import "ios/chrome/browser/tabs/model/tabs_closer.h"
 
+#import <optional>
+
 #import "base/functional/bind.h"
 #import "base/scoped_observation.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
+#import "base/uuid.h"
+#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/saved_tab_group.h"
+#import "components/saved_tab_groups/saved_tab_group_tab.h"
 #import "components/sessions/core/tab_restore_service.h"
+#import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -21,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -28,6 +39,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -111,6 +123,12 @@ class ScopedTestWebStateListObserver final : public WebStateListObserver {
       scoped_observation_{this};
 };
 
+// Creates a FakeTabGroupSyncService.
+std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
+    web::BrowserState* context) {
+  return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+}
+
 }  // namespace
 
 class TabsCloserTest : public PlatformTest {
@@ -126,7 +144,14 @@ class TabsCloserTest : public PlatformTest {
         TestSessionRestorationService::GetTestingFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateFakeTabGroupSyncService));
     browser_state_ = std::move(builder).Build();
+
+    fake_tab_group_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(
+        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
+            browser_state_.get()));
 
     // Initialize the AuthenticationService.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -143,6 +168,10 @@ class TabsCloserTest : public PlatformTest {
   sessions::TabRestoreService* restore_service() {
     return IOSChromeTabRestoreServiceFactory::GetForBrowserState(
         browser_state_.get());
+  }
+
+  tab_groups::FakeTabGroupSyncService* tab_group_service() {
+    return fake_tab_group_service_;
   }
 
   // Appends a fake WebState in `browser_` using `policy` and `opener`.
@@ -184,6 +213,7 @@ class TabsCloserTest : public PlatformTest {
   std::unique_ptr<ChromeBrowserState> browser_state_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
+  tab_groups::FakeTabGroupSyncService* fake_tab_group_service_;
 };
 
 // Tests how a TabsCloser behaves when presented with a Browser containing
@@ -717,4 +747,113 @@ TEST_F(TabsCloserTest, UndoCloseTabs_Reentrancy) {
 
   tabs_closer.UndoCloseTabs();
   EXPECT_TRUE(observer.CheckThatUndoCloseTabsWasNotPossible());
+}
+
+// Checks that close all/undo is correctly updating the TabGroupSyncService,
+// both when it hasn't been modified and when it has been modified.
+TEST_F(TabsCloserTest, UndoCloseTabs_SavedTabs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTabGroupsInGrid, kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
+
+  WebStateList* web_state_list = browser()->GetWebStateList();
+  WebStateListBuilderFromDescription builder(web_state_list);
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      "| a [ 0 b ] c d [ 1 e ]", browser()->GetBrowserState()));
+
+  // Add the two groups.
+  tab_groups::FakeTabGroupSyncService* service = tab_group_service();
+  tab_groups::TabGroupId first_local_id =
+      web_state_list->GetGroupOfWebStateAt(1)->tab_group_id();
+  web::WebStateID first_tab_id =
+      web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
+  base::Uuid first_group_id = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab first_tab(
+      GURL("http://first-tab.com"), u"first tab", first_group_id,
+      std::make_optional(0), base::Uuid::GenerateRandomV4(),
+      first_tab_id.identifier());
+  tab_groups::SavedTabGroup first_saved_group(
+      u"first title", tab_groups::TabGroupColorId::kBlue, {first_tab},
+      std::make_optional(0), first_group_id, first_local_id);
+  service->AddGroup(first_saved_group);
+
+  tab_groups::TabGroupId second_local_id =
+      web_state_list->GetGroupOfWebStateAt(4)->tab_group_id();
+  base::Uuid second_group_id = base::Uuid::GenerateRandomV4();
+  web::WebStateID second_tab_id =
+      web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
+  tab_groups::SavedTabGroupTab second_tab(
+      GURL("http://second-tab.com"), u"second tab", second_group_id,
+      std::make_optional(0), base::Uuid::GenerateRandomV4(),
+      second_tab_id.identifier());
+  tab_groups::SavedTabGroup second_saved_group(
+      u"second title", tab_groups::TabGroupColorId::kBlue, {second_tab},
+      std::make_optional(0), second_group_id, second_local_id);
+  service->AddGroup(second_saved_group);
+
+  TabsCloser tabs_closer(browser(), TabsCloser::ClosePolicy::kRegularTabs);
+
+  // First check: no modification between Close All and Undo.
+
+  // Close all.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+
+  // Check that the two groups are still in the service, with no local group /
+  // tab.
+  EXPECT_TRUE(service->GetGroup(first_group_id));
+  EXPECT_FALSE(service->GetGroup(first_group_id)->local_group_id().has_value());
+  EXPECT_FALSE(service->GetGroup(first_group_id)
+                   ->saved_tabs()[0]
+                   .local_tab_id()
+                   .has_value());
+  EXPECT_TRUE(service->GetGroup(second_group_id));
+  EXPECT_FALSE(
+      service->GetGroup(second_group_id)->local_group_id().has_value());
+  EXPECT_FALSE(service->GetGroup(second_group_id)
+                   ->saved_tabs()[0]
+                   .local_tab_id()
+                   .has_value());
+
+  // Undo.
+  tabs_closer.UndoCloseTabs();
+
+  // Check that the group are re-associated.
+  EXPECT_EQ(2ul, web_state_list->GetGroups().size());
+  EXPECT_EQ(5, web_state_list->count());
+  EXPECT_TRUE(service->GetGroup(first_group_id));
+  EXPECT_EQ(first_local_id,
+            service->GetGroup(first_group_id)->local_group_id().value());
+  EXPECT_TRUE(service->GetGroup(second_group_id));
+  EXPECT_EQ(second_local_id,
+            service->GetGroup(second_group_id)->local_group_id().value());
+
+  // Second check: a group has been removed between Close All and Undo.
+
+  // Close all.
+  EXPECT_EQ(tabs_closer.CloseTabs(), 5);
+
+  // Check that the two groups are still in the service, with no local group /
+  // tab.
+  EXPECT_TRUE(service->GetGroup(first_group_id));
+  EXPECT_FALSE(service->GetGroup(first_group_id)->local_group_id().has_value());
+  EXPECT_TRUE(service->GetGroup(second_group_id));
+  EXPECT_FALSE(
+      service->GetGroup(second_group_id)->local_group_id().has_value());
+
+  // Remove a group from a sync update.
+  service->RemoveGroup(first_group_id);
+
+  // Undo.
+  tabs_closer.UndoCloseTabs();
+
+  // Check that the first group deleted (but not its tabs) and the second is
+  // re-associated.
+  EXPECT_EQ(1ul, web_state_list->GetGroups().size());
+  EXPECT_EQ(5, web_state_list->count());
+  EXPECT_FALSE(service->GetGroup(first_group_id));
+  EXPECT_EQ(second_local_id,
+            web_state_list->GetGroupOfWebStateAt(4)->tab_group_id());
+  EXPECT_TRUE(service->GetGroup(second_group_id));
+  EXPECT_EQ(second_local_id,
+            service->GetGroup(second_group_id)->local_group_id().value());
 }

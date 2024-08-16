@@ -28,15 +28,21 @@
 #else
   self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
 #endif
-  if (!IsSegmentedDefaultBrowserPromoEnabled()) {
-    self.titleText = l10n_util::GetNSString(
-        UseIPadTailoredStringForDefaultBrowserPromo()
-            ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-            : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
-    self.subtitleText = l10n_util::GetNSString(
-        UseIPadTailoredStringForDefaultBrowserPromo()
-            ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
-            : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
+  if (![self.titleText length] || ![self.subtitleText length]) {
+    // Sets default promo text if title and subtitle text are not explicitly
+    // set.
+    CHECK(![self.titleText length]);
+    CHECK(![self.subtitleText length]);
+    [self setPromoTitle:
+              l10n_util::GetNSString(
+                  UseIPadTailoredStringForDefaultBrowserPromo()
+                      ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+                      : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)];
+    [self setPromoSubtitle:
+              l10n_util::GetNSString(
+                  UseIPadTailoredStringForDefaultBrowserPromo()
+                      ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+                      : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)];
   }
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);

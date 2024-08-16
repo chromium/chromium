@@ -386,7 +386,7 @@ TEST(SignatureVerifierTest, VerifyRSAPSS) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::RSA_PSS_SHA256,
                                   kPSSSignatureGood, kPSSPublicKey));
   for (uint8_t b : kPSSMessage) {
-    verifier.VerifyUpdate(base::make_span(&b, 1u));
+    verifier.VerifyUpdate(base::span_from_ref(b));
   }
   EXPECT_TRUE(verifier.VerifyFinal());
 

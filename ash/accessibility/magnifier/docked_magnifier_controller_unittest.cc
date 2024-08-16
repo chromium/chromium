@@ -40,6 +40,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -155,7 +156,7 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
   std::unique_ptr<views::Widget> CreateLockSystemModalWindow(
       const gfx::Rect& bounds) {
     auto* widget_delegate_view = new views::WidgetDelegateView();
-    widget_delegate_view->SetModalType(ui::MODAL_TYPE_SYSTEM);
+    widget_delegate_view->SetModalType(ui::mojom::ModalType::kSystem);
     return CreateTestWidget(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         widget_delegate_view, kShellWindowId_LockSystemModalContainer, bounds);

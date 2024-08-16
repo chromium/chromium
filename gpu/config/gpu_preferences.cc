@@ -80,7 +80,7 @@ std::string GrContextTypeToString(GrContextType type) {
     case GrContextType::kGraphiteMetal:
       return "GraphiteMetal";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 GpuPreferences::GpuPreferences() = default;

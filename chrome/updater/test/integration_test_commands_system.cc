@@ -114,7 +114,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const std::string& tag,
                             const std::string& child_window_text_to_find,
                             const bool always_launch_cmd,
-                            const bool verify_app_logo_loaded) const override {
+                            const bool verify_app_logo_loaded,
+                            const bool expect_success) const override {
     RunCommand(
         "install_updater_and_app",
         {
@@ -125,6 +126,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
             Param("always_launch_cmd", BoolToString(always_launch_cmd)),
             Param("verify_app_logo_loaded",
                   BoolToString(verify_app_logo_loaded)),
+            Param("expect_success", BoolToString(expect_success)),
         });
   }
 
@@ -210,10 +212,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                             const std::string& install_data_index,
                             UpdateService::Priority priority,
                             const base::Version& from_version,
-                            const base::Version& to_version) const override {
-    updater::test::ExpectUpdateSequence(updater_scope_, test_server, app_id,
-                                        install_data_index, priority,
-                                        from_version, to_version);
+                            const base::Version& to_version,
+                            bool do_fault_injection) const override {
+    updater::test::ExpectUpdateSequence(
+        updater_scope_, test_server, app_id, install_data_index, priority,
+        from_version, to_version, do_fault_injection);
   }
 
   void ExpectUpdateSequenceBadHash(
@@ -233,10 +236,11 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                              const std::string& install_data_index,
                              UpdateService::Priority priority,
                              const base::Version& from_version,
-                             const base::Version& to_version) const override {
-    updater::test::ExpectInstallSequence(updater_scope_, test_server, app_id,
-                                         install_data_index, priority,
-                                         from_version, to_version);
+                             const base::Version& to_version,
+                             bool do_fault_injection) const override {
+    updater::test::ExpectInstallSequence(
+        updater_scope_, test_server, app_id, install_data_index, priority,
+        from_version, to_version, do_fault_injection);
   }
 
   void ExpectVersionActive(const std::string& version) const override {

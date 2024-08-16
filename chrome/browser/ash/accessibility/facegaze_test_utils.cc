@@ -152,6 +152,8 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
   cursor_location_ = gfx::Point(600, 400);
   buffer_size_ = 1;
   use_cursor_acceleration_ = false;
+  dialog_accepted_ = true;
+
   return *this;
 }
 
@@ -175,6 +177,12 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBufferSize(int size) {
 FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithCursorAcceleration(
     bool acceleration) {
   use_cursor_acceleration_ = acceleration;
+  return *this;
+}
+
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithDialogAccepted(
+    bool accepted) {
+  dialog_accepted_ = accepted;
   return *this;
 }
 
@@ -247,6 +255,12 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
       .UpdateDisplay(kDefaultDisplaySize);
   event_generator_ = std::make_unique<ui::test::EventGenerator>(
       Shell::Get()->GetPrimaryRootWindow());
+
+  // Before enabling FaceGaze, ensure that the dialog accepted pref matches
+  // what is specified in the config.
+  GetPrefs()->SetBoolean(
+      prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
+      config.dialog_accepted());
 
   FaceGazeTestUtils::SetUpMediapipeDir();
   ASSERT_FALSE(AccessibilityManager::Get()->IsFaceGazeEnabled());

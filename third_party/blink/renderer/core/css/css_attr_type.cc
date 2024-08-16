@@ -64,12 +64,20 @@ std::optional<CSSSyntaxDefinition> CSSAttrType::ConvertToCSSSyntaxDefinition()
   String syntax;
   switch (category) {
     case Category::kUnknown:
-      return std::nullopt;
     case Category::kString:
-      syntax = "<string>";
-      break;
+      // The "string" type has special handling because
+      // it's not equivalent to <string>: the latter involves
+      // quotes, and the former does not.
+      // https://drafts.csswg.org/css-values-5/#attr-types
+      [[fallthrough]];
+    case Category::kFlex:
+    case Category::kFrequency:
+      // <flex> are not part of CSSSyntaxDefinition,
+      // so we need to handle them separately. <frequency> is not
+      // supported yet.
+      return std::nullopt;
     case Category::kIdent:
-      syntax = "<ident>";
+      syntax = "<custom-ident>";
       break;
     case Category::kColor:
       syntax = "<color>";
@@ -88,13 +96,6 @@ std::optional<CSSSyntaxDefinition> CSSAttrType::ConvertToCSSSyntaxDefinition()
       break;
     case Category::kTime:
       syntax = "<time>";
-      break;
-    case Category::kFrequency:
-      syntax = "<frequency>";
-      break;
-    case Category::kFlex:
-      // TODO(crbug.com/40320391): Support parsing from <flex>.
-      syntax = "<flex>";
       break;
     case Category::kDimensionUnit:
       syntax = "<number>";

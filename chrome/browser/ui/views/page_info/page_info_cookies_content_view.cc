@@ -196,10 +196,10 @@ void PageInfoCookiesContentView::SetCookieInfo(
       IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
       cookie_info.allowed_sites_count));
 
-  bool is_fps_allowed = base::FeatureList::IsEnabled(
+  bool is_rws_allowed = base::FeatureList::IsEnabled(
                             privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
-                        cookie_info.fps_info;
-  SetFpsCookiesInfo(cookie_info.fps_info, is_fps_allowed);
+                        cookie_info.rws_info;
+  SetRwsCookiesInfo(cookie_info.rws_info, is_rws_allowed);
 
   PreferredSizeChanged();
   if (!initialized_callback_.is_null()) {
@@ -349,56 +349,56 @@ void PageInfoCookiesContentView::OnToggleButtonPressed() {
       ax::mojom::Event::kAlert, true);
 }
 
-void PageInfoCookiesContentView::SetFpsCookiesInfo(
-    std::optional<CookiesFpsInfo> fps_info,
-    bool is_fps_allowed) {
-  if (is_fps_allowed) {
-    InitFpsButton(fps_info->is_managed);
-    fps_button_->SetVisible(true);
+void PageInfoCookiesContentView::SetRwsCookiesInfo(
+    std::optional<CookiesRwsInfo> rws_info,
+    bool is_rws_allowed) {
+  if (is_rws_allowed) {
+    InitRwsButton(rws_info->is_managed);
+    rws_button_->SetVisible(true);
 
-    const std::u16string fps_button_title =
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE);
-    const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, fps_info->owner_name);
+    const std::u16string rws_button_title =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TITLE);
+    const std::u16string rws_button_subtitle = l10n_util::GetStringFUTF16(
+        IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE, rws_info->owner_name);
 
-    // Update the text displaying the name of FPS owner.
-    fps_button_->SetTitleText(fps_button_title);
-    fps_button_->SetSubtitleText(fps_button_subtitle);
-  } else if (fps_button_) {
-    fps_button_->SetVisible(false);
+    // Update the text displaying the name of RWS owner.
+    rws_button_->SetTitleText(rws_button_title);
+    rws_button_->SetSubtitleText(rws_button_subtitle);
+  } else if (rws_button_) {
+    rws_button_->SetVisible(false);
   }
-  if (!fps_histogram_recorded_) {
-    fps_histogram_recorded_ = true;
+  if (!rws_histogram_recorded_) {
+    rws_histogram_recorded_ = true;
     base::UmaHistogramBoolean("Security.PageInfo.Cookies.HasFPSInfo",
-                              is_fps_allowed);
+                              is_rws_allowed);
   }
 }
 
-void PageInfoCookiesContentView::InitFpsButton(bool is_managed) {
-  if (fps_button_) {
+void PageInfoCookiesContentView::InitRwsButton(bool is_managed) {
+  if (rws_button_) {
     return;
   }
 
-  // Create the fps_button with temporary values for title and subtitle
+  // Create the `rws_button_` with temporary values for title and subtitle
   // as we don't have data yet, it will be updated.
-  fps_button_ = cookies_buttons_container_view_->AddChildView(
+  rws_button_ = cookies_buttons_container_view_->AddChildView(
       std::make_unique<RichHoverButton>(
           base::BindRepeating(
-              &PageInfoCookiesContentView::FpsSettingsButtonClicked,
+              &PageInfoCookiesContentView::RwsSettingsButtonClicked,
               base::Unretained(this)),
-          PageInfoViewFactory::GetFpsIcon(),
+          PageInfoViewFactory::GetRwsIcon(),
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES), std::u16string(),
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP),
           /*secondary_text=*/u" ", PageInfoViewFactory::GetLaunchIcon(),
           is_managed ? std::optional<ui::ImageModel>(
                            PageInfoViewFactory::GetEnforcedByPolicyIcon())
                      : std::nullopt));
-  fps_button_->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
+  rws_button_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
 }
 
-void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
-  presenter_->OpenAllSitesViewFilteredToFps();
+void PageInfoCookiesContentView::RwsSettingsButtonClicked(ui::Event const&) {
+  presenter_->OpenAllSitesViewFilteredToRws();
 }
 
 void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
@@ -462,6 +462,6 @@ std::u16string PageInfoCookiesContentView::GetStatusLabel(
       return l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_3PC_LIMITED_SUBTITLE);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

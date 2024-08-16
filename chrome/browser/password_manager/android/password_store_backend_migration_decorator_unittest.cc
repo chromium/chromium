@@ -56,8 +56,6 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
     prefs_.registry()->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt,
                                           0);
     prefs_.registry()->RegisterBooleanPref(
-        prefs::kRequiresMigrationAfterSyncStatusChange, false);
-    prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
     prefs_.registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
@@ -559,9 +557,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   // Migration should be scheduled.
   EXPECT_EQ(1, GetPendingMainThreadTaskCount());
 
-  FastForwardBy(
-      base::Seconds(password_manager::features::
-                        GetLocalPasswordsMigrationToAndroidBackendDelay()));
+  FastForwardBy(kLocalPasswordsMigrationToAndroidBackendDelay);
   // Migration should be started by now.
   EXPECT_EQ(0, GetPendingMainThreadTaskCount());
 }

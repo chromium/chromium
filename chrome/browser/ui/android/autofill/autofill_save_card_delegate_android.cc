@@ -16,7 +16,7 @@ AutofillSaveCardDelegateAndroid::AutofillSaveCardDelegateAndroid(
         payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
         payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
         callback,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     content::WebContents* web_contents)
     : AutofillSaveCardDelegate(std::move(callback), options) {
   device_lock_bridge_ = std::make_unique<DeviceLockBridge>();
@@ -43,8 +43,10 @@ void AutofillSaveCardDelegateAndroid::OnAfterDeviceLockUi(
     bool is_device_lock_requirement_met) {
   OnFinishedGatheringConsent(
       /*user_decision=*/is_device_lock_requirement_met
-          ? AutofillClient::SaveCardOfferUserDecision::kAccepted
-          : AutofillClient::SaveCardOfferUserDecision::kIgnored,
+          ? payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                kAccepted
+          : payments::PaymentsAutofillClient::SaveCardOfferUserDecision::
+                kIgnored,
       is_device_lock_requirement_met
           ? user_provided_details
           : AutofillClient::UserProvidedCardDetails());

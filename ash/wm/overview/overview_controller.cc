@@ -30,9 +30,11 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/layer.h"
@@ -59,6 +61,22 @@ constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
     base::Milliseconds(500);
 
 constexpr base::TimeDelta kEnterExitPresentationMaxLatency = base::Seconds(2);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(DeskBarVisibility)
+enum class DeskBarVisibility {
+  // Desk bar is shown in the first overview frame.
+  kShownImmediately = 0,
+  // Desk bar is shown after the first overview frame (usually after the
+  // enter-overview animation is complete).
+  kShownAfterFirstFrame = 1,
+  // Desk bar was never shown during the overview session.
+  kNotShown = 2,
+  kMaxValue = kNotShown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:DeskBarVisibility)
 
 // Returns the enter/exit type that should be used if `kNormal` enter/exit type
 // was originally requested. Used in two cases:
@@ -410,8 +428,15 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
         kExitOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
+        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
     presentation_time_recorder->RequestNext();
+
+    base::UmaHistogramEnumeration(
+        "Ash.Overview.DeskBarVisibility",
+        desk_bar_shown_immediately_
+            ? DeskBarVisibility::kShownImmediately
+            : (IsDeskBarOpen() ? DeskBarVisibility::kShownAfterFirstFrame
+                               : DeskBarVisibility::kNotShown));
 
     // Suspend occlusion tracker until the exit animation is complete.
     exit_pauser_ = PauseOcclusionTracker(occlusion_pause_duration_for_end_);
@@ -472,14 +497,18 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnEndingAnimationComplete(/*canceled=*/false);
   } else {
     DCHECK(CanEnterOverview());
+    base::trace_event::EmitNamedTrigger("ash-overview-start");
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
 
     auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
         kEnterOverviewPresentationHistogram, "",
-        kEnterExitPresentationMaxLatency);
+        kEnterExitPresentationMaxLatency, /*emit_trace_event=*/true);
     presentation_time_recorder->RequestNext();
+
+    base::UmaHistogramCounts100("Ash.Overview.DeskCount",
+                                DesksController::Get()->desks().size());
 
     if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
@@ -571,6 +600,8 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // visible the instant they are visible.
     if (start_animations_.empty())
       OnStartingAnimationComplete(/*canceled=*/false);
+
+    desk_bar_shown_immediately_ = IsDeskBarOpen();
 
     if (!last_overview_session_time_.is_null()) {
       UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
@@ -682,6 +713,12 @@ void OverviewController::ResetPauser() {
   if (overview_session_) {
     overview_session_->set_ignore_activations(ignore_activations);
   }
+}
+
+bool OverviewController::IsDeskBarOpen() const {
+  CHECK(overview_session_);
+  return overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+      ->desks_bar_view();
 }
 
 void OverviewController::UpdateRoundedCornersAndShadow() {

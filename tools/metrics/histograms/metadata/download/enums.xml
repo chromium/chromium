@@ -31,6 +31,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Opened existing duplicate"/>
 </enum>
 
+<enum name="BooleanOpenInline">
+  <int value="0" label="Open in external app"/>
+  <int value="1" label="Open inline"/>
+</enum>
+
 <enum name="BooleanReplaced">
   <int value="0" label="Did Not Replace"/>
   <int value="1" label="Replaced"/>

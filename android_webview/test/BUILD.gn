@@ -182,7 +182,6 @@ base_webview_instrumentation_apk("webview_instrumentation_apk") {
 android_resources("webview_instrumentation_apk_resources") {
   sources = [
     "../javatests/res/raw/add_two_numbers.wasm",
-    "../javatests/res/values/strings.xml",
     "shell/res/layout/testshell_activity.xml",
     "shell/res/raw/resource_file.html",
     "shell/res/raw/resource_icon.png",
@@ -581,6 +580,7 @@ test("android_webview_unittests") {
     "//components/embedder_support/android:util",
     "//components/embedder_support/android/metrics:metrics",
     "//components/flags_ui:flags_ui",
+    "//components/ip_protection:browser",
     "//components/ip_protection:ip_protection",
     "//components/metrics",
     "//components/metrics:component_metrics",

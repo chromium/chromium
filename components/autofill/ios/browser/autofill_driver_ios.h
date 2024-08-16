@@ -17,7 +17,6 @@
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#import "ios/web/public/js_messaging/web_frame_user_data.h"
 #import "url/origin.h"
 
 namespace web {
@@ -69,12 +68,8 @@ class AutofillDriverRouter;
 // AutofillDriverIOS is final because its constructor and destructor calls
 // AutofillManager::SetLifecycleState(), which must be called at the very
 // end/beginning of con-/destruction.
-//
-// TODO: crbug.com/355907668 - Move ownership to AutofillDriverIOSFactory.
-class AutofillDriverIOS final
-    : public AutofillDriver,
-      public AutofillManager::Observer,
-      public web::WebFrameUserData<AutofillDriverIOS> {
+class AutofillDriverIOS final : public AutofillDriver,
+                                public AutofillManager::Observer {
  public:
   // Returns the AutofillDriverIOS for `web_state` and `web_frame`. Creates the
   // driver if necessary.
@@ -88,6 +83,14 @@ class AutofillDriverIOS final
   static AutofillDriverIOS* FromWebStateAndLocalFrameToken(
       web::WebState* web_state,
       LocalFrameToken token);
+
+  AutofillDriverIOS(web::WebState* web_state,
+                    web::WebFrame* web_frame,
+                    AutofillClient* client,
+                    AutofillDriverRouter* router,
+                    id<AutofillDriverIOSBridge> bridge,
+                    const std::string& app_locale,
+                    base::PassKey<AutofillDriverIOSFactory>);
 
   ~AutofillDriverIOS() override;
 
@@ -125,7 +128,8 @@ class AutofillDriverIOS final
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;
-  void TriggerFormExtractionInDriverFrame() override;
+  void TriggerFormExtractionInDriverFrame(
+      AutofillDriverRouterAndFormForestPassKey pass_key) override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)
       override;
@@ -179,7 +183,6 @@ class AutofillDriverIOS final
   void Unregister();
 
  private:
-  friend class AutofillDriverIOSFactory;
   friend class AutofillDriverIOSTestApi;
 
   // Represents the last form or formless field where the user entered data.
@@ -192,13 +195,6 @@ class AutofillDriverIOS final
     // TODO: crbug.com/40266699 - Convert to FieldGlobalId.
     FieldRendererId formless_field;
   };
-
-  AutofillDriverIOS(web::WebState* web_state,
-                    web::WebFrame* web_frame,
-                    AutofillClient* client,
-                    AutofillDriverRouter* router,
-                    id<AutofillDriverIOSBridge> bridge,
-                    const std::string& app_locale);
 
   void SetParent(base::WeakPtr<AutofillDriverIOS> parent);
 
@@ -229,10 +225,6 @@ class AutofillDriverIOS final
   bool DetectFormSubmissionAfterFormRemoval(
       const std::set<FormRendererId>& removed_forms,
       const std::set<FieldRendererId>& removed_unowned_fields) const;
-
-  // Only used by the AutofillDriverIOSFactory.
-  // Other callers should use FromWebStateAndWebFrame() instead.
-  using web::WebFrameUserData<AutofillDriverIOS>::FromWebFrame;
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(

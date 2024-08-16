@@ -6,7 +6,11 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/search/ntp_features.h"
+#include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
 
 namespace {
@@ -48,9 +52,38 @@ bool IsCartModuleEnabled() {
 bool IsDriveModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpDriveModule.name)) {
-    return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
+    const bool force_enabled =
+        base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
+    LogDriveModuleEnablement(force_enabled, force_enabled
+                                                ? "feature flag forced on"
+                                                : "feature flag forced off");
+    return force_enabled;
   }
-  return IsOsSupportedForDrive();
+  const bool default_enabled = IsOsSupportedForDrive();
+  LogDriveModuleEnablement(default_enabled, default_enabled
+                                                ? "default feature flag value"
+                                                : "default feature flag value");
+  return default_enabled;
+}
+
+bool IsDriveModuleEnabledForProfile(Profile* profile) {
+  if (!IsDriveModuleEnabled()) {
+    return false;
+  }
+
+  // TODO(crbug.com/40837656): Explore not requiring sync for the drive
+  // module to be enabled.
+  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
+    LogDriveModuleEnablement(false, "no sync");
+    return false;
+  }
+
+  if (!NewTabPageUI::IsManagedProfile(profile)) {
+    LogDriveModuleEnablement(false, "account not managed");
+    return false;
+  }
+  return true;
 }
 
 bool IsEnUSLocaleOnlyFeatureEnabled(const base::Feature& ntp_feature) {
@@ -69,4 +102,11 @@ std::string GetVariationsServiceCountryCode(
   country_code = variations_service->GetStoredPermanentCountry();
   return country_code.empty() ? variations_service->GetLatestCountry()
                               : country_code;
+}
+
+void LogDriveModuleEnablement(bool enabled, const std::string& reason) {
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::NTP_MODULE,
+      OptimizationGuideLogger::GetInstance())
+      << "Drive module " << (enabled ? "enabled: " : "disabled: ") << reason;
 }

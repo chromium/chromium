@@ -8,15 +8,12 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
-
-import java.util.Map;
 
 /** Selects host browser to launch, showing a dialog to select browser if necessary. */
 public class LaunchHostBrowserSelector {
@@ -76,13 +73,7 @@ public class LaunchHostBrowserSelector {
             return;
         }
 
-        Map<String, ResolveInfo> infos =
-                WebApkUtils.getInstalledBrowserResolveInfos(mContext.getPackageManager());
-        if (!infos.isEmpty()) {
-            showChooseHostBrowserDialog(infos, selectCallback);
-        } else {
-            showInstallHostBrowserDialog(metadata, selectCallback);
-        }
+        showInstallHostBrowserDialog(metadata, selectCallback);
     }
 
     /** Launches the Play Store with the host browser's page. */
@@ -91,28 +82,6 @@ public class LaunchHostBrowserSelector {
             mParentActivity.startActivity(createInstallIntent(hostBrowserPackageName));
         } catch (ActivityNotFoundException e) {
         }
-    }
-
-    /** Shows a dialog to choose the host browser. */
-    private void showChooseHostBrowserDialog(
-            Map<String, ResolveInfo> infos, Callback selectCallback) {
-        ChooseHostBrowserDialog.DialogListener listener =
-                new ChooseHostBrowserDialog.DialogListener() {
-                    @Override
-                    public void onHostBrowserSelected(String selectedHostBrowser) {
-                        HostBrowserUtils.writeHostBrowserToSharedPref(
-                                mContext, selectedHostBrowser);
-                        selectCallback.onBrowserSelected(
-                                selectedHostBrowser, /* dialogShown= */ true);
-                    }
-
-                    @Override
-                    public void onQuit() {
-                        selectCallback.onBrowserSelected(null, /* dialogShown= */ true);
-                    }
-                };
-        ChooseHostBrowserDialog.show(
-                mParentActivity, listener, infos, mContext.getString(R.string.name));
     }
 
     /** Shows a dialog to install the host browser. */

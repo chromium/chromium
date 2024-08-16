@@ -187,6 +187,9 @@ extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 BASE_DECLARE_FEATURE(kTabOrganization);
 bool IsTabOrganization();
 
+BASE_DECLARE_FEATURE(kTabstripDeclutter);
+bool IsTabstripDeclutter();
+
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
 BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
@@ -246,6 +249,7 @@ BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
 
 BASE_DECLARE_FEATURE(kManagementToolbarButton);
+BASE_DECLARE_FEATURE(kManagementToolbarButtonForTrustedManagementSources);
 
 BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 

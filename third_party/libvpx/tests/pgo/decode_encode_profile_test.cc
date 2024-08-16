@@ -4,7 +4,7 @@
 
 // Implementation of a PGO test for the decoder and encoder
 
-#include "third_party/googletest/src/include/gtest/gtest.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libvpx/source/libvpx/test/codec_factory.h"
 #include "third_party/libvpx/source/libvpx/test/i420_video_source.h"
 #include "third_party/libvpx/source/libvpx/test/util.h"

@@ -465,8 +465,9 @@ ShapeResultCharacterData& ShapeResult::CharacterData(unsigned offset) {
 
 bool ShapeResult::IsStartSafeToBreak() const {
   // Empty is likely a |SubRange| at the middle of a cluster or a ligature.
-  if (UNLIKELY(runs_.empty()))
+  if (runs_.empty()) [[unlikely]] {
     return false;
+  }
   const RunInfo* run = nullptr;
   const HarfBuzzRunGlyphData* glyph_data = nullptr;
   if (IsLtr()) {
@@ -969,7 +970,7 @@ float ShapeResult::ApplySpacingImpl(
 
       // |offset| is non-zero only when justifying CJK characters that follow
       // non-CJK characters.
-      if (UNLIKELY(offset)) {
+      if (offset) [[unlikely]] {
         if (run->IsHorizontal()) {
           run->glyph_data_.AddOffsetWidthAt(i, offset);
         } else {
@@ -1105,7 +1106,7 @@ void ShapeResult::ApplyTextAutoSpacing(
 #endif
 
   EnsurePositionData();
-  if (LIKELY(IsLtr())) {
+  if (IsLtr()) [[likely]] {
     ApplyTextAutoSpacingCore<TextDirection::kLtr>(offsets_with_spacing.begin(),
                                                   offsets_with_spacing.end());
   } else {
@@ -1120,7 +1121,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
                                            Iterator offset_end) {
   DCHECK(offset_begin != offset_end);
   Iterator current_offset = offset_begin;
-  if (UNLIKELY(current_offset->offset == StartIndex())) {
+  if (current_offset->offset == StartIndex()) [[unlikely]] {
     // Enter this branch if the previous item's direction is RTL and current
     // item's direction is LTR. In this case, spacing cannot be added to the
     // advance of the previous run, otherwise it might be a wrong position after
@@ -1131,7 +1132,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
       current_offset++;
     } else {
       for (auto& run : runs_) {
-        if (UNLIKELY(!run)) {
+        if (!run) [[unlikely]] {
           continue;
         }
         DCHECK_EQ(run->start_index_, current_offset->offset);
@@ -1159,7 +1160,7 @@ void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
   }
 
   for (auto& run : runs_) {
-    if (UNLIKELY(!run)) {
+    if (!run) [[unlikely]] {
       continue;
     }
     if (current_offset == offset_end) {
@@ -1244,7 +1245,7 @@ const ShapeResult* ShapeResult::UnapplyAutoSpacing(
 
   // Remove the auto-spacing from the last glyph.
   for (const Member<RunInfo>& run : base::Reversed(sub_range->runs_)) {
-    if (UNLIKELY(!run->NumGlyphs())) {
+    if (!run->NumGlyphs()) [[unlikely]] {
       continue;
     }
     HarfBuzzRunGlyphData& last_glyph = run->glyph_data_.back();
@@ -1360,7 +1361,7 @@ void ShapeResult::RunInfo::LimitNumGlyphs(unsigned start_glyph,
     unsigned last_cluster = right_glyph_info->cluster;
     unsigned max_cluster =
         start_cluster + HarfBuzzRunGlyphData::kMaxCharacterIndex;
-    if (UNLIKELY(last_cluster > max_cluster)) {
+    if (last_cluster > max_cluster) [[unlikely]] {
       // Limit at |max_cluster| in LTR. If |max_cluster| is 100:
       //   0 1 2 ... 98 99 99 101 101 103 ...
       //                     ^ limit here.
@@ -1385,7 +1386,7 @@ void ShapeResult::RunInfo::LimitNumGlyphs(unsigned start_glyph,
     unsigned last_cluster = left_glyph_info->cluster;
     unsigned max_cluster =
         start_cluster + HarfBuzzRunGlyphData::kMaxCharacterIndex;
-    if (UNLIKELY(last_cluster > max_cluster)) {
+    if (last_cluster > max_cluster) [[unlikely]] {
       // Limit the right edge, which is in the reverse order in RTL.
       // If |min_cluster| is 3:
       //   103 102 ... 4 4 2 2 ...
@@ -1416,7 +1417,7 @@ void ShapeResult::RunInfo::LimitNumGlyphs(unsigned start_glyph,
   // num_glyphs maybe still larger than kMaxGlyphs after it was reduced to fit
   // to kMaxCharacterIndex. Reduce to kMaxGlyphs if so.
   *num_glyphs_removed_out = 0;
-  if (UNLIKELY(num_glyphs > HarfBuzzRunGlyphData::kMaxGlyphs)) {
+  if (num_glyphs > HarfBuzzRunGlyphData::kMaxGlyphs) [[unlikely]] {
     const unsigned old_num_glyphs = num_glyphs;
     num_glyphs = HarfBuzzRunGlyphData::kMaxGlyphs;
 
@@ -1492,7 +1493,7 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
                            advance};
 
     // Offset is primarily used when painting glyphs. Keep it in physical.
-    if (UNLIKELY(pos.x_offset || pos.y_offset)) {
+    if (pos.x_offset || pos.y_offset) [[unlikely]] {
       has_vertical_offsets |= (pos.y_offset != 0);
       const GlyphOffset offset(HarfBuzzPositionToFloat(pos.x_offset),
                                -HarfBuzzPositionToFloat(pos.y_offset));
@@ -1726,8 +1727,9 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
   // Runs in RTL result are in visual order, and that new runs should be
   // prepended. Reorder appended runs.
   DCHECK_EQ(IsRtl(), target->IsRtl());
-  if (UNLIKELY(IsRtl() && target->runs_.size() != target_run_size_before))
+  if (IsRtl() && target->runs_.size() != target_run_size_before) [[unlikely]] {
     target->ReorderRtlRuns(target_run_size_before);
+  }
 
   target->has_vertical_offsets_ |= has_vertical_offsets_;
 
@@ -2253,7 +2255,7 @@ void AddRunInfoRanges(const ShapeResult::RunInfo& run_info,
   for (const auto& glyph : run_info.glyph_data_) {
     // TODO(crbug.com/1147011): This should not happen, but crash logs indicate
     // that this is happening.
-    if (UNLIKELY(glyph.character_index >= character_widths.size())) {
+    if (glyph.character_index >= character_widths.size()) [[unlikely]] {
       NOTREACHED_IN_MIGRATION();
       character_widths.Grow(glyph.character_index + 1);
     }

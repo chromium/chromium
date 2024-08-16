@@ -64,7 +64,7 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
           stride +
       1;
 
-  if (checked_output_size.ValueOrDie() < 0) {
+  if (checked_output_size.ValueOrDie() <= 0) {
     return base::unexpected(ErrorWithLabel(
         label, "The input size is too small to fill the window."));
   }
@@ -489,7 +489,7 @@ ValidateSplitAndInferOutput(const ContextProperties& context_properties,
       outputs.push_back(*std::move(split_descriptor));
     }
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   return outputs;
@@ -1181,7 +1181,7 @@ base::expected<OperandDescriptor, std::string> ValidateResample2dAndInferOutput(
     output_shape[axes[0]] = sizes[0];
     output_shape[axes[1]] = sizes[1];
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   return OperandDescriptor::Create(input.data_type(), output_shape);
@@ -2249,6 +2249,24 @@ base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,
   if (axes.size() != std::set<uint32_t>(axes.begin(), axes.end()).size()) {
     return base::unexpected(ErrorWithLabel(
         label, "Two or more values are same in the axes sequence."));
+  }
+
+  return base::ok();
+}
+
+base::expected<void, std::string> ValidateBuffer(
+    const ContextProperties& context_properties,
+    OperandDescriptor descriptor) {
+  // TODO(crbug.com/343638938): Consider adding more constraints to MLBuffer
+  // creation, such as whether an MLBuffer...
+  // - may be empty
+  // - may have a max size (in addition to `OperandDescriptor` restrictions)
+
+  // TODO(crbug.com/356905054): Consider adding `DataTypeLimits` specific to
+  // `MLBuffer` rather than using `input`.
+  if (!context_properties.data_type_limits.input.Has(descriptor.data_type())) {
+    return base::unexpected(NotSupportedMLBufferTypeError(
+        descriptor.data_type(), context_properties.data_type_limits.input));
   }
 
   return base::ok();

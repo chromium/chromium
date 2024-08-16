@@ -20,13 +20,19 @@
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/google/core/common/google_util.h"
+#include "components/manta/anchovy/anchovy_requests.h"
+#include "components/manta/manta_status.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/image_annotation/image_annotation_metrics.h"
+#include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "url/gurl.h"
 
 namespace image_annotation {
@@ -35,6 +41,52 @@ namespace {
 
 constexpr size_t kImageAnnotationMaxResponseSize = 1024 * 1024;  // 1MB.
 constexpr size_t kServerLangsMaxResponseSize = 1024;             // 1KB.
+
+const std::map<std::string, mojom::AnnotationType>& annotation_types() {
+  static const base::NoDestructor<std::map<std::string, mojom::AnnotationType>>
+      kAnnotationTypes({{"OCR", mojom::AnnotationType::kOcr},
+                        {"CAPTION", mojom::AnnotationType::kCaption},
+                        {"LABEL", mojom::AnnotationType::kLabel}});
+
+  return *kAnnotationTypes;
+}
+
+net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("image_annotation", R"(
+        semantics {
+          sender: "Get Image Descriptions from Google"
+          description:
+            "Chrome can provide image labels (which include detected objects, "
+            "extracted text and generated captions) to screen readers (for "
+            "visually-impaired users) by sending images to Google's servers. "
+            "If image labeling is enabled for a page, Chrome will send the "
+            "URLs and pixels of all images on the page to Google's servers, "
+            "which will return labels for content identified inside the "
+            "images. This content is made accessible to screen reading "
+            "software. Chrome fetches the list of supported languages from "
+            "the servers and uses that to determine what language to request "
+            "descriptions in."
+          trigger: "A page containing images is loaded for a user who has "
+                   "automatic image labeling enabled. At most once per day, "
+                   "Chrome fetches the list of supported languages as a "
+                   "separate network request."
+          data: "Image pixels and URLs. No user identifier is sent along with "
+                "the data."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via the context menu "
+            "for images, or via 'Get Image Descriptions' in Chrome's "
+            "settings under Accessibility. This feature is disabled by default."
+          chrome_policy {
+            AccessibilityImageLabelsEnabled {
+              AccessibilityImageLabelsEnabled: false
+            }
+          }
+        })");
+}
 
 // For a given source ID and requested description language, returns the unique
 // image ID string that can be used to look up results from a server response.
@@ -184,11 +236,6 @@ mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
 // classified as containing adult content.
 std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
     const base::Value& desc_engine) {
-  static const base::NoDestructor<std::map<std::string, mojom::AnnotationType>>
-      kAnnotationTypes({{"OCR", mojom::AnnotationType::kOcr},
-                        {"CAPTION", mojom::AnnotationType::kCaption},
-                        {"LABEL", mojom::AnnotationType::kLabel}});
-
   bool adult = false;
   std::vector<mojom::AnnotationPtr> results;
 
@@ -231,8 +278,8 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
       continue;
     }
 
-    const auto type_lookup = kAnnotationTypes->find(*type);
-    if (type_lookup == kAnnotationTypes->end()) {
+    const auto type_lookup = annotation_types().find(*type);
+    if (type_lookup == annotation_types().end()) {
       continue;
     }
 
@@ -454,6 +501,31 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
   }
 
   return out;
+}
+
+mojom::AnnotationPtr CreateAnnotationFromMantaResponse(
+    const base::Value::Dict& result_data) {
+  auto* text = result_data.FindString("text");
+  CHECK(text);
+
+  auto* type = result_data.FindString("type");
+  CHECK(type);
+  auto score = result_data.FindDouble("score");
+  CHECK(score.has_value());
+
+  std::optional<mojom::AnnotationType> annotation_type;
+
+  if (auto itr = annotation_types().find(*type);
+      itr != annotation_types().end()) {
+    annotation_type = itr->second;
+  }
+
+  CHECK(annotation_type.has_value());
+
+  auto annotation =
+      mojom::Annotation::New(annotation_type.value(), score.value(), *text);
+
+  return annotation;
 }
 
 }  // namespace
@@ -706,44 +778,8 @@ std::unique_ptr<network::SimpleURLLoader> Annotator::MakeRequestLoader(
     resource_request->headers.SetHeader(kGoogApiKeyHeader, api_key);
   }
 
-  const net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("image_annotation", R"(
-        semantics {
-          sender: "Get Image Descriptions from Google"
-          description:
-            "Chrome can provide image labels (which include detected objects, "
-            "extracted text and generated captions) to screen readers (for "
-            "visually-impaired users) by sending images to Google's servers. "
-            "If image labeling is enabled for a page, Chrome will send the "
-            "URLs and pixels of all images on the page to Google's servers, "
-            "which will return labels for content identified inside the "
-            "images. This content is made accessible to screen reading "
-            "software. Chrome fetches the list of supported languages from "
-            "the servers and uses that to determine what language to request "
-            "descriptions in."
-          trigger: "A page containing images is loaded for a user who has "
-                   "automatic image labeling enabled. At most once per day, "
-                   "Chrome fetches the list of supported languages as a "
-                   "separate network request."
-          data: "Image pixels and URLs. No user identifier is sent along with "
-                "the data."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "You can enable or disable this feature via the context menu "
-            "for images, or via 'Get Image Descriptions' in Chrome's "
-            "settings under Accessibility. This feature is disabled by default."
-          chrome_policy {
-            AccessibilityImageLabelsEnabled {
-              AccessibilityImageLabelsEnabled: false
-            }
-          }
-        })");
-
   return network::SimpleURLLoader::Create(std::move(resource_request),
-                                          traffic_annotation);
+                                          GetTrafficAnnotation());
 }
 
 void Annotator::OnJpgImageDataReceived(
@@ -791,26 +827,124 @@ void Annotator::SendRequestBatchToServer() {
       std::min<size_t>(server_request_queue_.size(), batch_size_);
   const auto end = server_request_queue_.end();
 
-  // The set of (source ID, desc lang) pairs relevant for this request.
-  std::set<RequestKey> request_keys;
-  for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
-    request_keys.insert({it->source_id, it->desc_lang_tag});
+  // Use anchovy if the flag is enabled.
+
+  if (features::IsImageDescriptionsAlternateRoutingEnabled()) {
+    CHECK(anchovy_provider_);
+    // The set of (source ID, desc lang) pairs relevant for this request.
+    std::set<RequestKey> request_keys;
+    for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
+      RequestKey key = {it->source_id, it->desc_lang_tag};
+      request_keys.insert(key);
+      manta::anchovy::ImageDescriptionRequest request = {
+          it->source_id, it->desc_lang_tag, it->image_bytes};
+      const auto now = base::Time::Now();
+      anchovy_provider_->GetImageDescription(
+          request, GetTrafficAnnotation(),
+          base::BindOnce(&Annotator::OnMantaResponseReceived,
+                         weak_factory_.GetWeakPtr(), key, now));
+    }
+  } else {
+    // The set of (source ID, desc lang) pairs relevant for this request.
+    std::set<RequestKey> request_keys;
+    for (std::deque<ServerRequestInfo>::iterator it = begin; it != end; it++) {
+      request_keys.insert({it->source_id, it->desc_lang_tag});
+    }
+
+    // Kick off server communication.
+    std::unique_ptr<network::SimpleURLLoader> url_loader =
+        MakeRequestLoader(pixels_server_url_, api_key_);
+    url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
+                                      "application/json");
+    ongoing_server_requests_.push_back(std::move(url_loader));
+    ongoing_server_requests_.back()->DownloadToString(
+        url_loader_factory_.get(),
+        base::BindOnce(&Annotator::OnServerResponseReceived,
+                       weak_factory_.GetWeakPtr(), request_keys,
+                       --ongoing_server_requests_.end()),
+        kImageAnnotationMaxResponseSize);
   }
 
-  // Kick off server communication.
-  std::unique_ptr<network::SimpleURLLoader> url_loader =
-      MakeRequestLoader(pixels_server_url_, api_key_);
-  url_loader->AttachStringForUpload(FormatJsonRequest(begin, end),
-                                    "application/json");
-  ongoing_server_requests_.push_back(std::move(url_loader));
-  ongoing_server_requests_.back()->DownloadToString(
-      url_loader_factory_.get(),
-      base::BindOnce(&Annotator::OnServerResponseReceived,
-                     weak_factory_.GetWeakPtr(), request_keys,
-                     --ongoing_server_requests_.end()),
-      kImageAnnotationMaxResponseSize);
-
   server_request_queue_.erase(begin, end);
+}
+
+void Annotator::OnMantaResponseReceived(const RequestKey& request_key,
+                                        const base::Time request_time,
+                                        base::Value::Dict dict,
+                                        manta::MantaStatus status) {
+  const auto now = base::Time::Now();
+  const auto delta = now - request_time;
+  ReportServerLatency(delta);
+
+  if (dict.empty()) {
+    ProcessResult(request_key, {});
+    return;
+  }
+
+  auto* results_list = dict.FindList("results");
+
+  if (!results_list || results_list->size() == 0) {
+    ProcessResult(request_key, {});
+    return;
+  }
+
+  if (status.status_code == manta::MantaStatusCode::kOk) {
+    // Find the result with the best score.
+    base::Value::Dict* best = nullptr;
+    std::optional<double> best_score;
+
+    // Store OCR values separately.
+    base::Value::Dict* best_ocr = nullptr;
+    std::optional<double> best_ocr_score;
+
+    for (auto& result : *results_list) {
+      auto* result_dict = result.GetIfDict();
+      CHECK(result_dict);
+      auto score = result_dict->FindDouble("score");
+      CHECK(score.has_value());
+      auto* type = result_dict->FindString("type");
+      CHECK(type);
+
+      // The better score in image descriptions is the larger number.
+      if (*type == "OCR") {
+        ReportOcrAnnotation(*score, false);
+        if (!best_ocr_score.has_value() || *score > *best_ocr_score) {
+          best_ocr_score = score;
+          best_ocr = result_dict;
+        }
+      } else {
+        if (auto itr = annotation_types().find(*type);
+            itr != annotation_types().end()) {
+          ReportDescAnnotation(itr->second, *score, false);
+        }
+        if (!best_score.has_value() || *score > *best_score) {
+          best_score = score;
+          best = result_dict;
+        }
+      }
+    }
+
+    std::vector<mojom::AnnotationPtr> annotations;
+
+    if (best) {
+      annotations.push_back(CreateAnnotationFromMantaResponse(*best));
+    }
+
+    if (best_ocr) {
+      annotations.push_back(CreateAnnotationFromMantaResponse(*best_ocr));
+    }
+
+    // Add all annotations for the image.
+    std::string image_id = MakeImageId(request_key.first, request_key.second);
+    std::map<std::string, mojom::AnnotateImageResultPtr> results;
+    results[image_id] =
+        mojom::AnnotateImageResult::NewAnnotations(std::move(annotations));
+    // Process the result from manta.
+    ProcessResult(request_key, std::move(results));
+  } else {
+    LOG(ERROR) << "\nRequest for: " << request_key.first << " Failed: \n"
+               << base::ToString(status.status_code);
+  }
 }
 
 void Annotator::OnServerResponseReceived(
@@ -860,50 +994,56 @@ void Annotator::OnResponseJsonParsed(const std::set<RequestKey>& request_keys,
   }
 }
 
+void Annotator::ProcessResult(
+    const RequestKey& request_key,
+    const std::map<std::string, mojom::AnnotateImageResultPtr>& results) {
+  pending_requests_.erase(request_key);
+
+  // The lookup will be successful if there is a valid result (i.e. not an
+  // error and not a malformed result) for this (source ID, desc lang) pair.
+  const auto result_lookup =
+      results.find(MakeImageId(request_key.first, request_key.second));
+
+  // Populate the result struct for this image and copy it into the cache if
+  // necessary.
+  if (result_lookup != results.end()) {
+    cached_results_.insert(
+        std::make_pair(request_key, result_lookup->second.Clone()));
+  }
+
+  // This should not happen, since only this method removes entries of
+  // |request_infos_|, and this method should only execute once per request
+  // key.
+  const auto request_info_it = request_infos_.find(request_key);
+  if (request_info_it == request_infos_.end()) {
+    LOG(ERROR) << "Could not find request key in request_infos_: "
+               << request_key.first << "," << request_key.second;
+    return;
+  }
+
+  const auto image_result = result_lookup != results.end()
+                                ? result_lookup->second.Clone()
+                                : mojom::AnnotateImageResult::NewErrorCode(
+                                      mojom::AnnotateImageError::kFailure);
+  const auto client_result = result_lookup != results.end()
+                                 ? ClientResult::kSucceeded
+                                 : ClientResult::kFailed;
+
+  // Notify clients of success or failure.
+  // TODO(crbug.com/41432508): explore server retry strategies.
+  for (auto& info : request_info_it->second) {
+    std::move(info.callback).Run(image_result.Clone());
+    ReportClientResult(client_result);
+  }
+  request_infos_.erase(request_info_it);
+}
+
 void Annotator::ProcessResults(
     const std::set<RequestKey>& request_keys,
     const std::map<std::string, mojom::AnnotateImageResultPtr>& results) {
   // Process each request key for which we expect to have results.
   for (const RequestKey& request_key : request_keys) {
-    pending_requests_.erase(request_key);
-
-    // The lookup will be successful if there is a valid result (i.e. not an
-    // error and not a malformed result) for this (source ID, desc lang) pair.
-    const auto result_lookup =
-        results.find(MakeImageId(request_key.first, request_key.second));
-
-    // Populate the result struct for this image and copy it into the cache if
-    // necessary.
-    if (result_lookup != results.end()) {
-      cached_results_.insert(
-          std::make_pair(request_key, result_lookup->second.Clone()));
-    }
-
-    // This should not happen, since only this method removes entries of
-    // |request_infos_|, and this method should only execute once per request
-    // key.
-    const auto request_info_it = request_infos_.find(request_key);
-    if (request_info_it == request_infos_.end()) {
-      LOG(ERROR) << "Could not find request key in request_infos_: "
-                 << request_key.first << "," << request_key.second;
-      continue;
-    }
-
-    const auto image_result = result_lookup != results.end()
-                                  ? result_lookup->second.Clone()
-                                  : mojom::AnnotateImageResult::NewErrorCode(
-                                        mojom::AnnotateImageError::kFailure);
-    const auto client_result = result_lookup != results.end()
-                                   ? ClientResult::kSucceeded
-                                   : ClientResult::kFailed;
-
-    // Notify clients of success or failure.
-    // TODO(crbug.com/41432508): explore server retry strategies.
-    for (auto& info : request_info_it->second) {
-      std::move(info.callback).Run(image_result.Clone());
-      ReportClientResult(client_result);
-    }
-    request_infos_.erase(request_info_it);
+    ProcessResult(request_key, results);
   }
 }
 

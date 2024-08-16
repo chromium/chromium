@@ -3,12 +3,21 @@
 // found in the LICENSE file.
 
 import {PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {isMac} from 'chrome://resources/js/platform.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertCheckboxMenuButton, createMockPdfPluginForTest, enterFullscreenWithUserGesture, finishInkStroke, getRequiredElement, openToolbarMenu} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const viewerToolbar = viewer.$.toolbar;
+const controller = PluginController.getInstance();
+const mockPlugin = createMockPdfPluginForTest();
+controller.setPluginForTesting(mockPlugin);
+
+function getUndoRedoModifier() {
+  return isMac ? 'meta' : 'ctrl';
+}
 
 chrome.test.runTests([
   // Test that clicking the annotation button toggles annotation mode.
@@ -66,10 +75,6 @@ chrome.test.runTests([
   async function testToggleAnnotationModeSendsMessage() {
     chrome.test.assertFalse(viewerToolbar.annotationMode);
 
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
-
     viewerToolbar.toggleAnnotation();
     chrome.test.assertTrue(viewerToolbar.annotationMode);
 
@@ -118,9 +123,7 @@ chrome.test.runTests([
   },
   // Test the behavior of the undo and redo buttons.
   function testUndoRedo() {
-    const controller = PluginController.getInstance();
-    const mockPlugin = createMockPdfPluginForTest();
-    controller.setPluginForTesting(mockPlugin);
+    mockPlugin.clearMessages();
 
     const undoButton =
         getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
@@ -173,6 +176,149 @@ chrome.test.runTests([
 
     chrome.test.assertFalse(undoButton.disabled);
     chrome.test.assertTrue(redoButton.disabled);
+    chrome.test.succeed();
+  },
+  // Test that the undo and redo buttons are disabled when a text form field is
+  // focused.
+  function testUndoRedoButtonsDisabledOnFormFieldFocus() {
+    mockPlugin.clearMessages();
+
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    // Exit annotation mode, since form fields can only be focused outside of
+    // annotation mode.
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    const undoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo');
+    const redoButton =
+        getRequiredElement<HTMLButtonElement>(viewerToolbar, '#redo');
+
+    // Draw two strokes and undo, so that both undo and redo buttons are
+    // enabled.
+    finishInkStroke(controller);
+    finishInkStroke(controller);
+
+    undoButton.click();
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    mockPlugin.clearMessages();
+
+    // Simulate focusing on a text form field. Both buttons should be disabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'text'}}));
+
+    chrome.test.assertTrue(undoButton.disabled);
+    chrome.test.assertTrue(redoButton.disabled);
+
+    // Simulate focusing on a non-text form field. Both buttons should be
+    // enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
+
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+
+    // Simulate removing focus from the form. Both buttons should be enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'none'}}));
+
+    chrome.test.assertFalse(undoButton.disabled);
+    chrome.test.assertFalse(redoButton.disabled);
+    chrome.test.succeed();
+  },
+  // Test the behavior of the undo redo keyboard shortcuts.
+  function testUndoRedoKeyboardShortcuts() {
+    mockPlugin.clearMessages();
+
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    // Enable annotation mode.
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    finishInkStroke(controller);
+
+    // Undo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+
+    mockPlugin.clearMessages();
+
+    // Redo shortcut.
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+    chrome.test.succeed();
+  },
+  // Test that the undo and redo keyboard shortcuts are disabled when a text
+  // form field is focused.
+  function testUndoRedoShortcutsDisabledOnFormFieldFocus() {
+    mockPlugin.clearMessages();
+
+    chrome.test.assertTrue(viewerToolbar.annotationMode);
+
+    // Draw two strokes and undo, so that both undo and redo buttons are
+    // enabled.
+    finishInkStroke(controller);
+    finishInkStroke(controller);
+
+    getRequiredElement<HTMLButtonElement>(viewerToolbar, '#undo').click();
+
+    // Exit annotation mode, since form fields can only be focused outside of
+    // annotation mode.
+    viewerToolbar.toggleAnnotation();
+    chrome.test.assertFalse(viewerToolbar.annotationMode);
+
+    mockPlugin.clearMessages();
+
+    // Simulate focusing on a text form field. Both shortcuts should be
+    // disabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'text'}}));
+
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') === undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') === undefined);
+
+    // Simulate focusing on a non-text form field. Both shortcuts should be
+    // enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'non-text'}}));
+
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
+
+    mockPlugin.clearMessages();
+
+    // Simulate removing focus from the form. Both shortcuts should be enabled.
+    mockPlugin.dispatchEvent(new MessageEvent(
+        'message', {data: {type: 'formFocusChange', focused: 'none'}}));
+
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'z');
+    keyDownOn(viewerToolbar, 0, getUndoRedoModifier(), 'y');
+
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationUndo') !== undefined);
+    chrome.test.assertTrue(
+        mockPlugin.findMessage('annotationRedo') !== undefined);
     chrome.test.succeed();
   },
 ]);

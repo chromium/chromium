@@ -339,7 +339,7 @@ test("app_shell_unittests") {
 
   data_deps = [
     # "//gin", # TODO(dpranke): Either gin or v8 data is needed ...
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (use_aura) {

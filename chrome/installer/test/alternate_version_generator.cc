@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 // The file contains the implementation of the mini_installer re-versioner.
 // The main function (GenerateNextVersion) does the following in a temp dir:
 // - Extracts and unpacks setup.exe and the Chrome-bin folder from

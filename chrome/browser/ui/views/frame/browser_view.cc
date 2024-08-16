@@ -39,6 +39,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -91,6 +93,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
@@ -343,11 +346,6 @@
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
-#include "chrome/browser/enterprise/watermark/watermark_view.h"
-#endif
 
 using base::UserMetricsAction;
 using content::WebContents;
@@ -949,11 +947,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   watermark_view_ = contents_container->AddChildView(
       std::make_unique<enterprise_watermark::WatermarkView>());
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
       devtools_web_view_, contents_web_view_, watermark_view_));
@@ -1031,6 +1026,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
 }
 
 void BrowserView::ToggleCompactModeUI() {
@@ -1067,11 +1064,9 @@ BrowserView::~BrowserView() {
     global_registry->set_registry_for_active_window(nullptr);
   }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
   // `watermark_view_` is a raw pointer to a child view, so it needs to be set
   // to null before `RemoveAllChildViews()` is called to avoid dangling.
   watermark_view_ = nullptr;
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -2473,7 +2468,8 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
   // owned by BrowserView.
   window_management_subscription_id_ =
       controller->SubscribeToPermissionStatusChange(
-          blink::PermissionType::WINDOW_MANAGEMENT, rfh->GetProcess(), origin,
+          blink::PermissionType::WINDOW_MANAGEMENT,
+          /*render_process_host*/ nullptr, rfh, origin.GetURL(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
@@ -2505,12 +2501,9 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
 bool BrowserView::IsBorderlessModeEnabled() const {
   return borderless_mode_enabled_ && window_management_permission_granted_;
 }
-
 void BrowserView::ShowChromeLabs() {
-  if (toolbar()->chrome_labs_button() &&
-      toolbar()->chrome_labs_button()->GetVisible()) {
-    toolbar()->chrome_labs_button()->GetChromeLabsCoordinator()->ShowOrHide();
-  }
+  CHECK(IsChromeLabsEnabled());
+  browser_->GetFeatures().chrome_labs_coordinator()->ShowOrHide();
 }
 
 views::WebView* BrowserView::GetContentsWebView() {
@@ -4010,6 +4003,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.parent = parent->GetNativeView();
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
+    params.is_overlay = true;
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
 
     // When the overlay is used some Views are moved to the overlay_widget. When
@@ -4456,8 +4450,9 @@ void BrowserView::AddedToWidget() {
   // TODO(pbos): Investigate whether the side panels should be creatable when
   // the ToolbarView does not create a button for them. This specifically seems
   // to hit web apps. See https://crbug.com/1267781.
-  unified_side_panel_->AddObserver(
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser((browser_.get())));
+  auto* side_panel_coordinator =
+      browser_->GetFeatures().side_panel_coordinator();
+  unified_side_panel_->AddObserver(side_panel_coordinator);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
@@ -4532,10 +4527,6 @@ void BrowserView::PaintChildren(const views::PaintInfo& paint_info) {
     startup_metric_utils::GetBrowser().RecordBrowserWindowFirstPaint(
         base::TimeTicks::Now());
   }
-}
-
-void BrowserView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kClient;
 }
 
 void BrowserView::OnThemeChanged() {
@@ -5162,12 +5153,14 @@ void BrowserView::MaybeShowProfileSwitchIPH() {
 
 void BrowserView::ShowHatsDialog(
     const std::string& site_id,
+    const std::optional<std::string>& histogram_name,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
   // Self deleting on close.
-  new HatsNextWebDialog(browser(), site_id, std::move(success_callback),
+  new HatsNextWebDialog(browser(), site_id, histogram_name,
+                        std::move(success_callback),
                         std::move(failure_callback), product_specific_bits_data,
                         product_specific_string_data);
 }
@@ -5519,13 +5512,11 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
   }
 }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
     watermark_view_->SetString(watermark_text);
   }
 }
-#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 void BrowserView::ApplyScreenshotSettings(bool allow) {

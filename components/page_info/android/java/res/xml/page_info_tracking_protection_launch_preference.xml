@@ -16,7 +16,7 @@ found in the LICENSE file.
         android:key="storage_in_use" />
 
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
-        android:key="fps_in_use"
+        android:key="rws_in_use"
         app:allowDividerBelow="true" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference

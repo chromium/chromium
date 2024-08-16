@@ -31,7 +31,7 @@ def ParseWord(word_string):
       parts.append(int(word_string[1:end_ix]))
       word_string = word_string[end_ix:]
     else:
-      assert (False)
+      assert False
     word_string = word_string.lstrip()
   return parts
 
@@ -57,7 +57,7 @@ def GenerateConversionContents(words):
       if isinstance(part, str):
         building_string += 'std::string("' + part + '")'
       else:
-        if (part > max_part):
+        if part > max_part:
           max_part = part
         building_string += ('token_to_string(token.inner_tokens(' + str(part) +
                             '), depth)')
@@ -140,5 +140,5 @@ def main(argv):
     f.write(conversion_contents)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main(sys.argv)

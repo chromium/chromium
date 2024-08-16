@@ -5207,6 +5207,16 @@ class MockObjectHost : public blink::mojom::RemoteObjectHost {
   }
 
   mojo::PendingRemote<blink::mojom::RemoteObjectHost> GetRemote() {
+    if (receiver_.is_bound()) {
+      // When a new RenderFrame is created for a navigation we call this
+      // function again from `RemoteObjectInjector::RenderFrameCreated()`,
+      // so unbind the previous connection with the previous RenderFrame if
+      // needed. Note that we might lose some in-flight messages with the
+      // previous RenderFrame in this case, so this is not perfect.
+      // TODO(https://crbug.com/40615943): Add better support for RemoteObjects
+      // on RenderFrame swaps, if needed.
+      receiver_.reset();
+    }
     return receiver_.BindNewPipeAndPassRemote();
   }
 

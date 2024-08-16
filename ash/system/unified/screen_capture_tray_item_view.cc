@@ -46,13 +46,6 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemMetadata::
 ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
     : TrayItemView(shelf) {
   CreateImageView();
-  const gfx::VectorIcon* icon = &kPrivacyIndicatorsScreenShareIcon;
-  if (!chromeos::features::IsJellyEnabled()) {
-    image_view()->SetImage(gfx::CreateVectorIcon(gfx::IconDescription(
-        *icon, kUnifiedTrayIconSize,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary))));
-  }
   UpdateLabelOrImageViewColor(/*active=*/false);
 
   multi_capture_service_client_observation_.Observe(
@@ -73,9 +66,6 @@ std::u16string ScreenCaptureTrayItemView::GetTooltipText(
 }
 
 void ScreenCaptureTrayItemView::UpdateLabelOrImageViewColor(bool active) {
-  if (!chromeos::features::IsJellyEnabled()) {
-    return;
-  }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
   image_view()->SetImage(ui::ImageModel::FromVectorIcon(

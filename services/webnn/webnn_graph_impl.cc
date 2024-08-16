@@ -69,10 +69,10 @@ bool ValidateWebNNBuffers(
 
 // Return false if the same buffer was specified in inputs and outputs.
 bool ValidateWebNNBuffersUsage(
-    const base::flat_map<std::string, base::UnguessableToken>& named_inputs,
-    const base::flat_map<std::string, base::UnguessableToken>& named_outputs) {
+    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
   // Validate that output buffers are unique.
-  std::set<base::UnguessableToken> output_buffers;
+  std::set<blink::WebNNBufferToken> output_buffers;
   for (const auto& named_output : named_outputs) {
     output_buffers.insert(named_output.second);
   }
@@ -148,8 +148,8 @@ void WebNNGraphImpl::Compute(
 }
 
 void WebNNGraphImpl::Dispatch(
-    const base::flat_map<std::string, base::UnguessableToken>& named_inputs,
-    const base::flat_map<std::string, base::UnguessableToken>& named_outputs) {
+    const base::flat_map<std::string, blink::WebNNBufferToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNBufferToken>& named_outputs) {
   if (!ValidateWebNNBuffersUsage(named_inputs, named_outputs)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);
     return;

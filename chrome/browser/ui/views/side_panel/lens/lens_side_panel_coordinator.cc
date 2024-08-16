@@ -17,6 +17,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_unified_side_panel_view.h"
@@ -75,7 +76,7 @@ void LensSidePanelCoordinator::UpdateActionItem() {
 }
 
 SidePanelCoordinator* LensSidePanelCoordinator::GetSidePanelCoordinator() {
-  return SidePanelUtil::GetSidePanelCoordinatorForBrowser(&GetBrowser());
+  return GetBrowser().GetFeatures().side_panel_coordinator();
 }
 
 LensSidePanelCoordinator::~LensSidePanelCoordinator() {
@@ -87,7 +88,7 @@ void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
   lens_side_panel_view_ = nullptr;
   // Remove entry from side panel entry if it exists.
   auto* registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
+      GetBrowser().GetFeatures().side_panel_coordinator()->GetWindowRegistry();
   if (registry) {
     registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
   }
@@ -186,7 +187,7 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
     const content::OpenURLParams& params) {
   base::RecordAction(base::UserMetricsAction("LensUnifiedSidePanel.LensQuery"));
   auto* registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(&GetBrowser());
+      GetBrowser().GetFeatures().side_panel_coordinator()->GetWindowRegistry();
 
   // check if the view is already registered
   if (registry->GetEntryForKey(

@@ -25,14 +25,11 @@ OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
 
 bool OverscrollRefreshHandler::PullStart(
     OverscrollAction type,
-    float startx,
-    float starty,
     std::optional<BackGestureEventSwipeEdge> initiating_edge) {
   CHECK_EQ(type == OverscrollAction::HISTORY_NAVIGATION,
            initiating_edge.has_value());
   return Java_OverscrollRefreshHandler_start(
-      AttachCurrentThread(), j_overscroll_refresh_handler_, type, startx,
-      starty,
+      AttachCurrentThread(), j_overscroll_refresh_handler_, type,
       static_cast<int>(initiating_edge ? initiating_edge.value()
                                        : BackGestureEventSwipeEdge::RIGHT));
 }

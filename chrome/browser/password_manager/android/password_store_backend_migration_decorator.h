@@ -19,6 +19,10 @@ namespace password_manager {
 
 class BuiltInBackendToAndroidBackendMigrator;
 
+// Exposed here for testing.
+inline constexpr base::TimeDelta kLocalPasswordsMigrationToAndroidBackendDelay =
+    base::Seconds(5);
+
 // This backend migrates local passwords from `built_in_backend` to
 // `android_backend`. Migration is scheduled after InitBackend() call. While
 // migration is ongoing password saving is suppressed. Before migration is
@@ -84,7 +88,7 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion) override;
   SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
   void RecordAddLoginAsyncCalledFromTheStore() override;

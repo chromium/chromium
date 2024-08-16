@@ -209,7 +209,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_CREDIT_CARD_BENEFIT_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(125, "justinleewells@chromium.org",
+          .SetMetadata(125, "alexandertekle@google.com",
                        "Triggered after a credit card benefit is displayed for "
                        "the first time.")));
 
@@ -248,7 +248,7 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_AUTOFILL_VIRTUAL_CARD_STANDALONE_CVC_SUGGESTION_IPH_BUBBLE_LABEL_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(118, "alexandertekle@chromium.org",
+          .SetMetadata(118, "alexandertekle@google.com",
                        "Triggered after autofill popup appears.")));
 
   // kIPHAutofillVirtualCardSuggestionFeature:
@@ -260,6 +260,19 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(100, "siyua@chromium.org",
                        "Triggered after autofill popup appears.")));
+
+  // kIPHAutofillDisabledVirtualCardSuggestionFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillDisabledVirtualCardSuggestionFeature,
+          kAutofillCreditCardSuggestionEntryElementId,
+          IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP,
+          IDS_AUTOFILL_DISABLED_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(130, "hvs@google.com",
+                       "Triggered after autofill popup appears for disabled "
+                       "virtual card.")));
 
   // kIPHCreatePlusAddressSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -721,7 +734,7 @@ void MaybeRegisterChromeFeaturePromos(
                          "defaulted to saved for the first time.")));
 
     registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
+        FeaturePromoSpecification::CreateForCustomAction(
             feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
             kToolbarAppMenuButtonElementId,
             IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
@@ -771,45 +784,6 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(92, "tluk@chromium.org",
                                  "Triggered once when there are more than 8 "
                                  "tabs in the tab strip.")));
-
-  // kIPHTrackingProtectionOnboardingFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHTrackingProtectionOnboardingFeature,
-          kLocationIconElementId,
-          IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_BODY,
-          IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_SETTINGS_BUTTON_LABEL,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowSettingsSubPage(browser,
-                                            chrome::kCookieSettingsSubPage);
-              }))
-          .SetBubbleTitleText(IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_TITLE)
-          .SetPromoSubtype(
-              FeaturePromoSpecification::PromoSubtype::kLegalNotice)
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
-          .SetBubbleIcon(&views::kEyeCrossedIcon)
-          .SetCustomActionIsDefault(false)
-          .SetMetadata(
-              120, "boujane@google.com",
-              "Privacy standbox tracking protection onboarding notice.")));
-
-  // kIPHTrackingProtectionReminderFeature:
-  registry.RegisterFeature(std::move(std::move(
-      FeaturePromoSpecification::CreateForToastPromo(
-          feature_engagement::kIPHTrackingProtectionReminderFeature,
-          kCookieControlsIconElementId, IDS_TRACKING_PROTECTION_REMINDER_LABEL,
-          IDS_TRACKING_PROTECTION_REMINDER_A11Y_LABEL,
-          FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(
-              120, "boujane@google.com",
-              "Privacy standbox tracking protection reminder notice."))));
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // kIPHWebUITabStripFeature:
@@ -931,6 +905,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionDismissText(IDS_PROMO_DISMISS_BUTTON)
           .SetBubbleTitleText(IDS_DISCARD_RING_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          // See: crbug.com/358451018
+          .OverrideFocusOnShow(false)
           .SetMetadata(126, "agale@chromium.org",
                        "Triggered when a tab is discarded.")));
 
@@ -1036,6 +1012,26 @@ void MaybeRegisterChromeFeaturePromos(
           .SetInAnyContext(true)
           .SetMetadata(127, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
+
+  // kIPHToolbarManagementButtonFeature
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHToolbarManagementButtonFeature,
+          kToolbarManagementButtonElementId,
+          IDS_MANAGEMENT_DIALOG_BROWSER_MANAGED, IDS_LEARN_MORE,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* const browser =
+                    chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowEnterpriseManagementPageInTabbedBrowser(browser);
+              }))
+          .SetMetadata(129, "ydago@chromium.org",
+                       "Triggered after a user uses managed browser where the "
+                       "toolbar management button is visible.")));
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

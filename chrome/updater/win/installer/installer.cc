@@ -32,7 +32,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
-#include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/windows_version.h"
@@ -165,20 +164,16 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
 
 std::optional<base::FilePath> FindOfflineDir(
     const base::FilePath& unpack_path) {
-  const base::FilePath base_offline_dir =
-      unpack_path.Append(L"bin").Append(L"Offline");
-  if (!base::PathExists(base_offline_dir)) {
-    return std::nullopt;
-  }
-  base::FileEnumerator file_enumerator(base_offline_dir, false,
-                                       base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator file_enumerator(
+      unpack_path.Append(L"bin").Append(L"Offline"), false,
+      base::FileEnumerator::DIRECTORIES);
   for (base::FilePath path = file_enumerator.Next(); !path.empty();
        path = file_enumerator.Next()) {
     if (IsGuid(path.BaseName().value())) {
       return path;
     }
   }
-  return std::nullopt;
+  return {};
 }
 
 // Finds and writes to disk resources of type 'B7' (7zip archive). Returns false
@@ -312,7 +307,7 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
   CHECK(::IsUserAnAdmin());
 
-  if (command_line.HasSwitch(kCmdLineDeElevationId)) {
+  if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
     VLOG(1) << __func__ << "Unexpected de-elevation loop! "
             << command_line.GetCommandLineString();
     return ProcessExitResult(UNEXPECTED_DE_ELEVATION_LOOP);
@@ -322,74 +317,17 @@ ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
       base::win::ScopedCOMInitializer::kMTA);
   CHECK(com_initializer.Succeeded());
 
-  // Deelevate the metainstaller. The de-elevation uses Windows explorer to run
-  // the child process at Medium integrity. Explorer does not provide a way to
-  // get the child process pid or handle. To allow waiting for the child
-  // process, this parent process takes the following steps:
-  // * Creates a unique guid, and sends it to the child process via command line
-  // parameter `kCmdLineDeElevationId`, to allow for identifying the child
-  // process `pid` and waiting for it.
-  // * Waits for the child process to write a default REG_DWORD value under
-  // `HKEY_CURRENT_USER\Software\Google\Update{guid}` that contains the child
-  // process pid.
-  // * Gets a handle to the child process via the pid.
-  // * Finally, the parent process cleans up the
-  // `HKEY_CURRENT_USER\Software\Google\Update{guid}` key, which also signals to
-  // the child process to proceed with installing at Medium integrity.
-  GUID unique_guid = {0};
-  HRESULT hr = ::CoCreateGuid(&unique_guid);
-  if (FAILED(hr)) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, hr);
-  }
-
-  const std::wstring unique_id = StringFromGuid(unique_guid);
-  hr = RunDeElevated(command_line.GetProgram().value(), [&] {
-    base::CommandLine de_elevate_command_line = command_line;
-    de_elevate_command_line.AppendSwitchNative(kCmdLineDeElevationId,
-                                               unique_id);
-    return de_elevate_command_line.GetArgumentsString();
-  }());
-  if (FAILED(hr)) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, hr);
-  }
-
-  DWORD pid = 0;
-  const auto deadline = base::TimeTicks::Now() + base::Seconds(30);
-  while (true) {
-    if (base::TimeTicks::Now() >= deadline) {
-      return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
-                               ERROR_TIMEOUT);
-    }
-
-    if (base::win::RegKey(
-            HKEY_CURRENT_USER,
-            base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-            Wow6432(KEY_READ))
-            .ReadValueDW(nullptr, &pid) == ERROR_SUCCESS) {
-      break;
-    }
-
-    base::PlatformThread::Sleep(base::Milliseconds(100));
-  }
-
-  if (!pid) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, E_UNEXPECTED);
-  }
-
-  base::Process child = base::Process::Open(pid);
-  if (!child.IsValid()) {
-    return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER,
-                             HRESULTFromLastError());
-  }
-
-  base::win::RegKey(HKEY_CURRENT_USER,
-                    base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-                    Wow6432(DELETE))
-      .DeleteKey(L"");
-  int exit_code = 0;
-  return child.WaitForExit(&exit_code)
-             ? ProcessExitResult(UPDATER_EXIT_CODE, exit_code)
-             : ProcessExitResult(WAIT_FOR_PROCESS_FAILED, ::GetLastError());
+  // De-elevate the metainstaller.
+  ASSIGN_OR_RETURN(
+      DWORD result, RunDeElevated([&] {
+        base::CommandLine de_elevate_command_line = command_line;
+        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+        return de_elevate_command_line;
+      }()),
+      [](HRESULT error) {
+        return ProcessExitResult(FAILED_TO_DE_ELEVATE_METAINSTALLER, error);
+      });
+  return ProcessExitResult(UPDATER_EXIT_CODE, result);
 }
 
 ProcessExitResult InstallerMain(HMODULE module) {
@@ -437,43 +375,6 @@ ProcessExitResult InstallerMain(HMODULE module) {
     }
   } else if (::IsUserAnAdmin() && !IsSystemInstall(scope) && IsUACOn()) {
     return HandleRunDeElevated(command_line);
-  } else if (command_line.HasSwitch(kCmdLineDeElevationId)) {
-    // The de-elevated metainstaller takes the following steps:
-    // * Reads the command line parameter `kCmdLineDeElevationId`.
-    // * Writes the pid for the current process under
-    // `HKEY_CURRENT_USER\Software\Google\Update{guid}`.
-    // * Waits for the parent process to clean up the
-    // `HKEY_CURRENT_USER\Software\Google\Update{guid}` key.
-    // * Finally, proceeds with installing at Medium integrity.
-    const std::wstring unique_id =
-        command_line.GetSwitchValueNative(kCmdLineDeElevationId);
-    const LONG result =
-        base::win::RegKey(
-            HKEY_CURRENT_USER,
-            base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-            Wow6432(KEY_WRITE))
-            .WriteValue(nullptr, ::GetCurrentProcessId());
-    if (result != ERROR_SUCCESS) {
-      return ProcessExitResult(FAILED_DE_ELEVATED_METAINSTALLER, result);
-    }
-
-    const auto deadline = base::TimeTicks::Now() + base::Seconds(30);
-    while (true) {
-      if (base::TimeTicks::Now() >= deadline) {
-        return ProcessExitResult(FAILED_DE_ELEVATED_METAINSTALLER,
-                                 ERROR_TIMEOUT);
-      }
-
-      if (!base::win::RegKey(
-               HKEY_CURRENT_USER,
-               base::StrCat({COMPANY_KEY, L"Update", unique_id}).c_str(),
-               Wow6432(KEY_READ))
-               .Valid()) {
-        break;
-      }
-
-      base::PlatformThread::Sleep(base::Milliseconds(100));
-    }
   }
 
   base::CommandLine::Init(0, nullptr);

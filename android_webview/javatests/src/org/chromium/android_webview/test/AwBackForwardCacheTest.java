@@ -411,6 +411,7 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         settings.setAttributionBehavior(AwSettings.ATTRIBUTION_DISABLED);
         settings.setForceDarkMode(AwSettings.FORCE_DARK_OFF);
         settings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
+        settings.setShouldFocusFirstNode(true);
         settings.setSpatialNavigationEnabled(false);
         settings.setEnableSupportedHardwareAcceleratedFeatures(false);
         settings.setFullscreenSupported(false);

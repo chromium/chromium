@@ -722,12 +722,31 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (!self.webStateList) {
     return;
   }
-  auto indexToKeepSearchCriteria = WebStateSearchCriteria(item.identifier);
+  int indexToKeep = GetWebStateIndex(self.webStateList,
+                                     WebStateSearchCriteria(item.identifier));
+
+  int closedGroupCount = 0;
+  if (IsTabGroupSyncEnabled()) {
+    for (const TabGroup* group : _webStateList->GetGroups()) {
+      // Remove the local tab group mapping if the `indexToKeep` is not in the
+      // group.
+      if (!group->range().contains(indexToKeep) &&
+          _tabGroupSyncService->GetGroup(group->tab_group_id())) {
+        _tabGroupSyncService->RemoveLocalTabGroupMapping(group->tab_group_id());
+        closedGroupCount++;
+      }
+    }
+  }
+
   // Closes all non-pinned items except for `item`.
-  CloseOtherWebStates(
-      *(self.webStateList),
-      GetWebStateIndex(self.webStateList, indexToKeepSearchCriteria),
-      WebStateList::CLOSE_USER_ACTION);
+  CloseOtherWebStates(*(self.webStateList), indexToKeep,
+                      WebStateList::CLOSE_USER_ACTION);
+
+  // Show the tab group snackbar if some groups have been closed.
+  if (IsTabGroupSyncEnabled() && closedGroupCount > 0) {
+    [self.tabStripHandler
+        showTabStripTabGroupSnackbarAfterClosingGroups:closedGroupCount];
+  }
 }
 
 - (void)createNewGroupWithItem:(TabSwitcherItem*)item {
@@ -818,6 +837,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   if (IsTabGroupSyncEnabled()) {
     tab_groups::utils::CloseTabGroupLocally(
         tabGroupItem.tabGroup, self.webStateList, _tabGroupSyncService);
+    [self.tabStripHandler showTabStripTabGroupSnackbarAfterClosingGroups:1];
   } else {
     CloseAllWebStatesInGroup(*self.webStateList, tabGroupItem.tabGroup,
                              WebStateList::CLOSE_USER_ACTION);
@@ -1089,8 +1109,8 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 }
 
 - (NSArray<UIDragItem*>*)allSelectedDragItems {
-  NOTREACHED_NORETURN() << "You should not be able to drag and drop multiple "
-                           "items. There is no selection mode in tab strip.";
+  NOTREACHED() << "You should not be able to drag and drop multiple "
+                  "items. There is no selection mode in tab strip.";
 }
 
 #pragma mark - Private

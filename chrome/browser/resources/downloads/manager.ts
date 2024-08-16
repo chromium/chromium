@@ -88,7 +88,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
       spinnerActive_: {
         type: Boolean,
-        notify: true,
       },
 
       bypassPromptItemId_: {
@@ -255,8 +254,9 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     // scrolls the download into view.
     if (this.items_.slice(0, 5).some(download => download.id === item.id)) {
       this.logEsbPromotionRowViewed();
+      return true;
     }
-    return true;
+    return false;
   }
 
   private logEsbPromotionRowViewed() {
@@ -495,6 +495,10 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
 
   private onSearchChanged_() {
     this.inSearchMode_ = this.searchService_.isSearching();
+  }
+
+  private onSpinnerActiveChanged_(event: CustomEvent<{value: boolean}>) {
+    this.spinnerActive_ = event.detail.value;
   }
 
   private removeItem_(index: number) {

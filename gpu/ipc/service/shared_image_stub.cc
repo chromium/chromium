@@ -571,7 +571,7 @@ void SharedImageStub::OnUnregisterDxgiFence(const Mailbox& mailbox,
 void SharedImageStub::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
     zx::channel sysmem_token,
-    gfx::BufferFormat format,
+    const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
   if (!service_handle || !sysmem_token) {

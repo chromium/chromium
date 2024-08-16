@@ -70,6 +70,10 @@ import java.util.concurrent.ExecutionException;
 
 /** This class handles saving and loading tab state from the persistent storage. */
 public class TabPersistentStore {
+    public static final String CLIENT_TAG_REGULAR = "Regular";
+    public static final String CLIENT_TAG_CUSTOM = "Custom";
+    public static final String CLIENT_TAG_ARCHIVED = "Archived";
+
     private static final String TAG = "tabmodel";
     private static final String TAG_MIGRATION = "fb_migration";
 
@@ -287,6 +291,7 @@ public class TabPersistentStore {
         }
     }
 
+    private final String mClientTag;
     private final TabPersistencePolicy mPersistencePolicy;
     private final TabModelSelector mTabModelSelector;
     private final TabCreatorManager mTabCreatorManager;
@@ -327,14 +332,17 @@ public class TabPersistentStore {
     /**
      * Creates an instance of a TabPersistentStore.
      *
+     * @param clientTag The client tag used to record metrics.
      * @param modelSelector The {@link TabModelSelector} to restore to and save from.
      * @param tabCreatorManager The {@link TabCreatorManager} to use.
      */
     public TabPersistentStore(
+            String clientTag,
             TabPersistencePolicy policy,
             TabModelSelector modelSelector,
             TabCreatorManager tabCreatorManager,
             TabWindowManager tabWindowManager) {
+        mClientTag = clientTag;
         mPersistencePolicy = policy;
         mTabModelSelector = modelSelector;
         mTabCreatorManager = tabCreatorManager;
@@ -1363,7 +1371,13 @@ public class TabPersistentStore {
         final int count = stream.readInt();
         final int incognitoCount = skipIncognitoCount ? -1 : stream.readInt();
         final int incognitoActiveIndex = stream.readInt();
-        final int standardActiveIndex = stream.readInt();
+        int standardActiveIndex = stream.readInt();
+        if (standardActiveIndex < incognitoCount) {
+            // See https://crbug.com/354041918. This is equal to the original standard active index
+            // + incognitoCount. If there are not standard tabs, that would be -1 + incognitoCount,
+            // which unexpectedly maps to the last incognito tab. Adjust here.
+            standardActiveIndex = TabModel.INVALID_TAB_INDEX;
+        }
         if (count < 0 || incognitoActiveIndex >= count || standardActiveIndex >= count) {
             throw new IOException();
         }
@@ -1661,13 +1675,11 @@ public class TabPersistentStore {
                 for (TabPersistentStoreObserver observer : mObservers) observer.onStateMerged();
             }
 
+            recordLegacyTabCountMetrics();
+            recordTabCountMetrics();
             cleanUpPersistentData();
             onStateLoaded();
             mTabLoader = null;
-            RecordHistogram.recordCount1MHistogram(
-                    "Tabs.Startup.TabCount.Regular", mTabModelSelector.getModel(false).getCount());
-            RecordHistogram.recordCount1MHistogram(
-                    "Tabs.Startup.TabCount.Incognito", mTabModelSelector.getModel(true).getCount());
             Log.d(
                     TAG,
                     "Loaded tab lists; counts: "
@@ -1681,10 +1693,25 @@ public class TabPersistentStore {
         }
     }
 
+    protected void recordLegacyTabCountMetrics() {
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.TabCount.Regular", mTabModelSelector.getModel(false).getCount());
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.TabCount.Incognito", mTabModelSelector.getModel(true).getCount());
+    }
+
+    private void recordTabCountMetrics() {
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.TabCount2." + mClientTag + ".Regular",
+                mTabModelSelector.getModel(false).getCount());
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.TabCount2." + mClientTag + ".Incognito",
+                mTabModelSelector.getModel(true).getCount());
+    }
+
     /**
      * Manages loading of {@link TabState}. Also used to track if a load is in progress and the tab
-     * details of that load.
-     * TODO(b/298058408) deprecate TabLoader
+     * details of that load. TODO(b/298058408) deprecate TabLoader
      */
     private class TabLoader {
         public final TabRestoreDetails mTabToRestore;

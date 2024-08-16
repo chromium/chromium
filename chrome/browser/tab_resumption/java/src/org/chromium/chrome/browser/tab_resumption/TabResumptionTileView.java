@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_DEFAULT;
+import static org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.DISPLAY_TEXT_MAX_LINES_WITH_REASON;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -26,6 +30,9 @@ public class TabResumptionTileView extends RelativeLayout {
     static final String SEPARATE_PERIOD = ". ";
 
     private RoundedCornerImageView mIconView;
+    private TextView mTilePreInfoView;
+    private TextView mTileDisplayView;
+
     private final int mSalientImageCornerRadiusPx;
 
     public TabResumptionTileView(Context context, @Nullable AttributeSet attrs) {
@@ -40,6 +47,8 @@ public class TabResumptionTileView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         mIconView = findViewById(R.id.tile_icon);
+        mTilePreInfoView = findViewById(R.id.tile_pre_info_text);
+        mTileDisplayView = findViewById(R.id.tile_display_text);
     }
 
     void destroy() {
@@ -60,14 +69,19 @@ public class TabResumptionTileView extends RelativeLayout {
             @Nullable String appChipText,
             String displayText,
             String postInfoText) {
-        // TODO(b/337858147): Change the visibility and text of TextView R.id.tile_pre_info_text
-        // for Tab resumption V2 UX.
-        ((TextView) findViewById(R.id.tile_pre_info_text)).setText(preInfoText);
-        ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
+        boolean showPreInfoText = !TextUtils.isEmpty(preInfoText);
+        mTilePreInfoView.setText(preInfoText);
+        mTilePreInfoView.setVisibility(showPreInfoText ? VISIBLE : GONE);
+
+        mTileDisplayView.setMaxLines(
+                showPreInfoText
+                        ? DISPLAY_TEXT_MAX_LINES_WITH_REASON
+                        : DISPLAY_TEXT_MAX_LINES_DEFAULT);
+        mTileDisplayView.setText(displayText);
         ((TextView) findViewById(R.id.tile_post_info_text)).setText(postInfoText);
 
         StringBuilder stringBuilder = new StringBuilder();
-        if (preInfoText != null) {
+        if (showPreInfoText) {
             stringBuilder.append(preInfoText);
             stringBuilder.append(SEPARATE_COMMA);
         }

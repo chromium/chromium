@@ -32,6 +32,10 @@ struct MahiPageInfo {
   // Repersents if the web page is distillalbe.
   // Null if the distillablity has not been checked yet.
   bool? IsDistillable@5;
+
+  // Represents if the page is from a incognito window.
+  [MinVersion=1]
+  bool is_incognito@6;
 };
 
 [Stable, Extensible]

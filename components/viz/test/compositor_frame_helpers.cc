@@ -107,6 +107,12 @@ RenderPassBuilder& RenderPassBuilder::AddBackdropFilter(
   return *this;
 }
 
+RenderPassBuilder& RenderPassBuilder::SetTransformToRootTarget(
+    const gfx::Transform& transform) {
+  pass_->transform_to_root_target = transform;
+  return *this;
+}
+
 RenderPassBuilder& RenderPassBuilder::AddStubCopyOutputRequest(
     base::WeakPtr<CopyOutputRequest>* request_out) {
   auto request = std::make_unique<StubCopyOutputRequest>();

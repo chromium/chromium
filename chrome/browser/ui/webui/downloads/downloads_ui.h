@@ -21,16 +21,12 @@ class RefCountedMemory;
 }
 
 class DownloadsDOMHandler;
+class DownloadsUI;
 
-class DownloadsUIConfig : public content::WebUIConfig {
+class DownloadsUIConfig : public content::DefaultWebUIConfig<DownloadsUI> {
  public:
   DownloadsUIConfig();
   ~DownloadsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 class DownloadsUI : public ui::MojoWebUIController,

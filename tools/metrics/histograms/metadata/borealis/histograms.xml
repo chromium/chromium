@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Audio.Xrun.Alsa.Output" units="count"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>normanbt@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.HighestDirtyPagesDaily" units="KiB"
-    expires_after="2024-08-25">
+    expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.InodeRatioAtStartup" units="KiB"
-    expires_after="2024-08-25">
+    expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.VMUsageToTotalSpacePercentageAtStartup"
-    units="%" expires_after="2024-08-25">
+    units="%" expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.VMUsageToTotalUsagePercentageAtStartup"
-    units="%" expires_after="2024-08-25">
+    units="%" expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Shutdown.Attempt" enum="BooleanAttempted"
-    expires_after="2024-08-25">
+    expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.fsckResult" enum="FsckResult"
-    expires_after="2024-08-25">
+    expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.fsckTime" units="ms"
-    expires_after="2024-08-25">
+    expires_after="2024-11-14">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

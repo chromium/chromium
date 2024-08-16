@@ -246,7 +246,7 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
     // page, and there is no API to access (or dismiss) UI bubbles/infobars.
     return false;
   }
-  PasswordManagerSettingsService* settings_service =
+  password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
@@ -282,7 +282,7 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
     return false;
   }
 #endif
-  PasswordManagerSettingsService* settings_service =
+  password_manager::PasswordManagerSettingsService* settings_service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn);
@@ -419,11 +419,8 @@ void ChromePasswordManagerClient::FocusedInputChanged(
   }
 
   if (web_contents()->GetFocusedFrame()) {
-    bool manual_generation_available =
-        password_manager_util::ManualPasswordGenerationEnabled(driver) &&
-        password_manager_.HaveFormManagersReceivedData(driver);
     GetOrCreatePasswordAccessory()->RefreshSuggestionsForField(
-        focused_field_type, manual_generation_available);
+        focused_field_type);
   }
 
   PasswordGenerationController::GetOrCreate(web_contents())
@@ -1199,6 +1196,15 @@ void ChromePasswordManagerClient::RefreshPasswordManagerSettingsIfNeeded()
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void ChromePasswordManagerClient::OpenPasswordDetailsBubble(
+    const PasswordForm& form) {
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(web_contents());
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnOpenPasswordDetailsBubble(form);
+  }
+}
+
 std::unique_ptr<
     password_manager::PasswordCrossDomainConfirmationPopupController>
 ChromePasswordManagerClient::ShowCrossDomainConfirmationPopup(

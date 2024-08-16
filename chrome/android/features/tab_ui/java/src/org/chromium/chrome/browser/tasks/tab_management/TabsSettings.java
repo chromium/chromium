@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
@@ -56,7 +57,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
         boolean isTabGroupSyncAutoOpenConfigurable =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+                TabGroupSyncFeatures.isTabGroupSyncEnabled(getProfile())
                         && ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH);
         if (!isTabGroupSyncAutoOpenConfigurable) {

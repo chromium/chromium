@@ -417,27 +417,18 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/WebContentsStatics.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionActionMenuDelegate.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
-    "java/src/org/chromium/content_public/browser/webid/IdentityCredentialsDelegateFactory.java",
   ]
 
-  public_deps = [ ":identity_credentials_java" ]
-}
-
-# TODO(crbug.com/40279841) simplify these build targets once GMSCore publishes identity-credentials.
-android_library("identity_credentials_java") {
-  sources = [
-    "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java",
-    "java/src/org/chromium/content_public/browser/webid/IdentityCredentialsDelegate.java",
-  ]
-  deps = [ "//base:base_java" ]
-  jar_excluded_patterns = [ "*/IdentityCredentialsDelegateImpl.class" ]
+  public_deps = [ ":identity_credentials_public_impl_java" ]
 }
 
 android_library("identity_credentials_public_impl_java") {
-  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegateImpl.java" ]
+  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java" ]
   deps = [
-    ":identity_credentials_java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
+    "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 }
 

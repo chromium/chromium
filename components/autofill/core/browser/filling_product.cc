@@ -33,8 +33,10 @@ std::string FillingProductToString(FillingProduct filling_product) {
       return "PlusAddresses";
     case FillingProduct::kStandaloneCvc:
       return "VirtualCard.StandaloneCvc";
+    case FillingProduct::kPredictionImprovements:
+      return "PredictionImprovements";
   };
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
@@ -101,7 +103,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return FillingProduct::kNone;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
@@ -127,7 +129,7 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
     case FieldTypeGroup::kIban:
       return FillingProduct::kIban;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FillingProduct GetPreferredSuggestionFillingProduct(

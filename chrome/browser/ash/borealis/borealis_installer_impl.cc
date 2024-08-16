@@ -159,7 +159,7 @@ class BorealisInstallerImpl::Installation
                 "Unexpected DLC failure, please file feedback."};
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // As part of its installation we perform a dry run of borealis. This ensures

@@ -365,6 +365,11 @@ void CommandBufferService::SetContextLostReason(
   state_.context_lost_reason = reason;
 }
 
+bool CommandBufferService::ShouldYield() {
+  return client_->OnCommandBatchProcessed() ==
+         CommandBufferServiceClient::kPauseExecution;
+}
+
 void CommandBufferService::SetScheduled(bool scheduled) {
   TRACE_EVENT2("gpu", "CommandBufferService:SetScheduled", "this",
                static_cast<void*>(this), "scheduled", scheduled);

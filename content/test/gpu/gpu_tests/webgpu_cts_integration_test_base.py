@@ -19,6 +19,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
+from gpu_tests.util import websocket_utils as wsu
 from typ import expectations_parser
 
 import gpu_path_util
@@ -230,6 +231,11 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls) -> None:
     super().SetUpProcess()
+
+    # TODO(crbug.com/344009517): Remove this and the associated logging once
+    # we can determine what is causing flaky websocket connection timeouts.
+    if host_information.IsWindows() and host_information.IsNvidiaGpu():
+      wss.WebsocketServer.enable_extra_logging = True
 
     cls.websocket_server = wss.WebsocketServer()
     cls.websocket_server.StartServer()
@@ -583,7 +589,8 @@ class WebGpuCtsIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         'window.setupWebsocket != undefined')
     self.tab.action_runner.ExecuteJavaScript('window.setupWebsocket("%s")' %
                                              cls.websocket_server.server_port)
-    cls.websocket_server.WaitForConnection()
+    cls.websocket_server.WaitForConnection(
+        wsu.GetScaledConnectionTimeout(self.child.jobs))
 
     # Wait for the page to set up the websocket.
     response = cls.websocket_server.Receive(MESSAGE_TIMEOUT_CONNECTION_ACK)

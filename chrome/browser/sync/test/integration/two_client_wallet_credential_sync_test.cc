@@ -6,10 +6,9 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/wallet_helper.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "content/public/test/browser_test.h"
 
@@ -44,8 +43,6 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
   bool TestUsesSelfNotifications() override { return false; }
 
   bool SetUpSyncAndInitialize() {
-    test_clock_.SetNow(base::Time::FromSecondsSinceUnixEpoch(25));
-
     if (!SetupSync()) {
       return false;
     }
@@ -71,7 +68,6 @@ class TwoClientWalletCredentialSyncTest : public SyncTest {
   }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   base::test::ScopedFeatureList features_;
 };
 

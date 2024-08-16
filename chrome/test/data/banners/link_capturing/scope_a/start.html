@@ -1,44 +1,56 @@
 <html>
+
 <head>
   <title>Web app scope_a test page for link capturing tests</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <script>navigator.serviceWorker.register('/banners/service_worker.js');</script>
+  <script src="../launch_detector.js"></script>
   <script>
-    function setLinksForScopeB(url, target, opener) {
-      console.log('setting links and buttons for scope B: ' + url);
-      var links = document.getElementsByClassName('linkB');
-      for (let link of links) {
-        link.setAttribute('href', url);
-      }
-      var buttons = document.getElementsByClassName('btnB');
-      for (let button of buttons) {
-        button.addEventListener("click", () => {
-          window.open(url, target, opener === 'noopener' ? 'noopener' : '');
-        });
-      }
-    }
+    let serviceWorkerRegistration = undefined;
+    let aDestinationUrl = new URL("destination.html", window.location.href).href;
+    let bDestinationUrl = new URL("../scope_b/destination.html", window.location.href).href;
 
-    function simulateClick(anchor_name, properties) {
-      let evt = new MouseEvent("click", properties);
-      let target = document.getElementById(anchor_name);
-      return target.dispatchEvent(evt);
+    function triggerNotificationForUrlOpen(url) {
+      console.assert(serviceWorkerRegistration);
+      console.assert(url);
+      serviceWorkerRegistration.showNotification("Fake notification to open " + url,
+        { data: { url: url } })
     }
 
     function notifyReady(delay) {
+      // Launches can simply focus this window without navigating, so start listening.
+      listenForNextLaunchParams(delay);
       if (delay <= 0) {
         domAutomationController.send('ReadyForLinkCaptureTesting')
         return;
       }
 
       setTimeout(() => {
-          console.log("Delay start for a bit (" + delay + ")");
-          domAutomationController.send('ReadyForLinkCaptureTesting')
-        }, delay);
+        console.log("Delay start for a bit (" + delay + ")");
+        domAutomationController.send('ReadyForLinkCaptureTesting')
+      }, delay);
     }
 
-    // Pro-tip: Use `delay` to slow down execution of the test (so that you can
-    // see what is happening during manual runs).
-    notifyReady(/*delay=*/ 0);
+    window.addEventListener("load", async () => {
+      navigator.serviceWorker.register("sw.js");
+      serviceWorkerRegistration = await navigator.serviceWorker.ready;
+      console.assert(serviceWorkerRegistration);
+
+      var links = document.getElementsByClassName('linkB');
+      for (let link of links) {
+        link.setAttribute('href', bDestinationUrl);
+      }
+      var buttons = document.getElementsByClassName('btnB');
+      for (let button of buttons) {
+        button.addEventListener("click", () => {
+          let target = button.getAttribute("data-target");
+          let rel = button.getAttribute("data-rel");
+          window.open(bDestinationUrl, target, rel);
+        });
+      }
+
+      // Pro-tip: Use `delay` to slow down execution of the test (so that you can
+      // see what is happening during manual runs).
+      notifyReady(/*delay=*/ 0);
+    });
   </script>
 </head>
 
@@ -79,18 +91,36 @@
 <a href="scope_b.html" target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="linkB">target="noframe" rel=opener</a><br>
 <a href="scope_b.html" target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="linkB">target="noframe" rel=noopener</a><br>
 <!-- Buttons to another scope (Note: onclick handlers are provided programmatically, see setLinksForScopeB  above). -->
-<button id="id-BTN-A_TO_B-SELF-OPENER" class="btnB">window.open(url, '_self')</button><br>
-<button id="id-BTN-A_TO_B-SELF-NO_OPENER" class="btnB">window.open(url, '_self',' 'noopener')</button><br>
-<button id="id-BTN-A_TO_B-FRAME-OPENER" class="btnB">window.open(url, 'iframe')</button><br>
-<button id="id-BTN-A_TO_B-FRAME-NO_OPENER" class="btnB">window.open(url, 'iframe',' 'noopener')</button><br>
-<button id="id-BTN-A_TO_B-BLANK-OPENER" class="btnB">window.open(url, '_blank')</button><br>
-<button id="id-BTN-A_TO_B-BLANK-NO_OPENER" class="btnB">window.open(url, '_blank',' 'noopener')</button><br>
-<button id="id-BTN-A_TO_B-NO_FRAME-OPENER" class="btnB">window.open(url, 'noframe')</button><br>
-<button id="id-BTN-A_TO_B-NO_FRAME-NO_OPENER" class="btnB">window.open(url, 'noframe', 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-SELF-OPENER" class="btnB" data-target="_self" data-rel="opener">window.open(url,
+  '_self')</button><br>
+<button id="id-BTN-A_TO_B-SELF-NO_OPENER" class="btnB" data-target="_self" data-rel="noopener">window.open(url,
+  '_self',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-OPENER" class="btnB" data-target="iframe" data-rel="opener">window.open(url,
+  'iframe')</button><br>
+<button id="id-BTN-A_TO_B-FRAME-NO_OPENER" class="btnB" data-target="iframe" data-rel="noopener">
+  window.open(url, 'iframe' ,' 'noopener' )</button><br>
+<button id="id-BTN-A_TO_B-BLANK-OPENER" class="btnB" data-target="_blank" data-rel="opener">window.open(url,
+  '_blank')</button><br>
+<button id="id-BTN-A_TO_B-BLANK-NO_OPENER" class="btnB" data-target="_blank" data-rel="noopener">window.open(url,
+  '_blank',' 'noopener')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-OPENER" class="btnB" data-target="no_frame" data-rel="opener">window.open(url,
+  'noframe')</button><br>
+<button id="id-BTN-A_TO_B-NO_FRAME-NO_OPENER" class="btnB" data-target="no_frame" data-rel="noopener">window.open(url,
+  'noframe', 'noopener')</button><br>
+</td>
+<td>
+  <!-- Buttons to trigger the service worker to open the url in a new client. -->
+  <button id="id-BTN_SW-A_TO_A-BLANK-NO_OPENER" onclick="javascript:triggerNotificationForUrlOpen(aDestinationUrl)">Open
+    Scope A from Service
+    Worker</button><br>
+  <button id="id-BTN_SW-A_TO_B-BLANK-NO_OPENER" onclick="javascript:triggerNotificationForUrlOpen(bDestinationUrl)">Open
+    Scope B from Service
+    Worker</button><br>
 </td>
 <td>
   <iframe src="about:blank" name="iframe" />
 </td>
-</tr></table>
+</tr>
+</table>
 </body>
 </html>

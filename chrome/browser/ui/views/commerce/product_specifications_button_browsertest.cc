@@ -265,12 +265,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest, ClickButton) {
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        NotifyShowEntryPoint) {
-  product_specifications_button()->ShowEntryPointWithTitle("title");
+  product_specifications_button()->ShowEntryPointWithTitle(u"title");
 
   ASSERT_TRUE(product_specifications_button()
                   ->expansion_animation_for_testing()
                   ->IsShowing());
-  ASSERT_EQ(product_specifications_button()->GetText(),
-            l10n_util::GetStringFUTF16(IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT,
-                                       u"title"));
+  ASSERT_EQ(product_specifications_button()->GetText(), u"title");
+  ASSERT_EQ(product_specifications_button()->GetTooltipText(), u"title");
 }

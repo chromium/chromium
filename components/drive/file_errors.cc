@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "base/notreached.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace drive {
 
@@ -52,6 +53,35 @@ std::string FileErrorToString(FileError error) {
       << "Unexpected FileError "
       << static_cast<std::underlying_type_t<FileError>>(error);
   return "";
+}
+
+bool IsFileErrorOk(FileError error) {
+  switch (error) {
+    case FILE_ERROR_OK:
+    case FILE_ERROR_OK_WITH_MORE_RESULTS:
+      return true;
+    case FILE_ERROR_FAILED:
+    case FILE_ERROR_IN_USE:
+    case FILE_ERROR_EXISTS:
+    case FILE_ERROR_NOT_FOUND:
+    case FILE_ERROR_ACCESS_DENIED:
+    case FILE_ERROR_TOO_MANY_OPENED:
+    case FILE_ERROR_NO_MEMORY:
+    case FILE_ERROR_NO_SERVER_SPACE:
+    case FILE_ERROR_NOT_A_DIRECTORY:
+    case FILE_ERROR_INVALID_OPERATION:
+    case FILE_ERROR_SECURITY:
+    case FILE_ERROR_ABORT:
+    case FILE_ERROR_NOT_A_FILE:
+    case FILE_ERROR_NOT_EMPTY:
+    case FILE_ERROR_INVALID_URL:
+    case FILE_ERROR_NO_CONNECTION:
+    case FILE_ERROR_NO_LOCAL_SPACE:
+    case FILE_ERROR_SERVICE_UNAVAILABLE:
+      return false;
+  }
+
+  NOTREACHED() << "Unexpected FileError " << base::to_underlying(error);
 }
 
 base::File::Error FileErrorToBaseFileError(FileError error) {

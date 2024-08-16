@@ -61,7 +61,7 @@
 #include "components/history/core/browser/url_utils.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/error_delegate_util.h"
@@ -84,7 +84,7 @@ using favicon::FaviconBitmapID;
 using favicon::FaviconBitmapIDSize;
 using favicon::FaviconBitmapType;
 using favicon::IconMapping;
-using syncer::ClientTagBasedModelTypeProcessor;
+using syncer::ClientTagBasedDataTypeProcessor;
 
 /* The HistoryBackend consists of two components:
 
@@ -415,7 +415,7 @@ void HistoryBackend::Init(
 
   history_sync_bridge_ = std::make_unique<HistorySyncBridge>(
       this, db_ ? db_->GetHistoryMetadataDB() : nullptr,
-      std::make_unique<ClientTagBasedModelTypeProcessor>(
+      std::make_unique<ClientTagBasedDataTypeProcessor>(
           syncer::HISTORY,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               history_database_params.channel)));
@@ -2015,7 +2015,7 @@ std::vector<QueryURLResult> HistoryBackend::QueryURLs(
   return results;
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 HistoryBackend::GetHistorySyncControllerDelegate() {
   if (history_sync_bridge_) {
     return history_sync_bridge_->change_processor()->GetControllerDelegate();

@@ -60,7 +60,7 @@ class CORE_EXPORT HTMLFormControlElementWithState
   }
   void SetUserHasEditedTheFieldAndBlurred();
 
-  void ForceUserValid() { force_user_valid_ = true; }
+  void ForceUserValid();
 
   bool MatchesUserInvalidPseudo();
   bool MatchesUserValidPseudo();

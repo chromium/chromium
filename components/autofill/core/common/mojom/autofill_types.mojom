@@ -238,9 +238,9 @@ enum SubmissionReadinessState {
   // forms.
   kNoPasswordField = 8,
 
-  // One or more child frames are detected within the password form. They may
-  // contain a CAPTCHA or other input fields, so don't trigger submission.
-  kHasChildFrames = 9,
+  // A child frame which is likely to be CAPTCHA was detected within the
+  // password form. Do not trigger submission in this case.
+  kLikelyHasCaptcha = 9,
 };
 
 // autofill::FrameToken (components/autofill/core/common/unique_ids.h)
@@ -425,6 +425,7 @@ struct FormData {
   array<FormFieldData> fields;
   array<FieldRendererId> username_predictions;
   bool is_gaia_with_skip_save_password_form;
+  bool likely_contains_captcha;
 };
 
 // autofill::FormFieldDataPredictions
@@ -634,4 +635,6 @@ enum AutofillSuggestionTriggerSource {
   // Password manager renderer received password suggestions from the browser
   // after the field was focused (likely due to autofocus on the page load).
   kPasswordManagerProcessedFocusedField,
+  // Prediction improvements was invoked.
+  kPredictionImprovements,
 };

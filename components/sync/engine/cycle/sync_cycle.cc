@@ -28,9 +28,9 @@ SyncCycleSnapshot SyncCycle::TakeSnapshot() const {
 SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin) const {
   ProgressMarkerMap download_progress_markers;
-  for (ModelType type : ModelTypeSet::All()) {
+  for (DataType type : DataTypeSet::All()) {
     const UpdateHandler* update_handler =
-        context_->model_type_registry()->GetUpdateHandler(type);
+        context_->data_type_registry()->GetUpdateHandler(type);
     if (update_handler == nullptr) {
       continue;
     }
@@ -47,7 +47,7 @@ SyncCycleSnapshot SyncCycle::TakeSnapshotWithOrigin(
       context_->notifications_enabled(), status_controller_->sync_start_time(),
       status_controller_->poll_finish_time(), get_updates_origin,
       context_->poll_interval(),
-      context_->model_type_registry()->HasUnsyncedItems());
+      context_->data_type_registry()->HasUnsyncedItems());
 
   return snapshot;
 }

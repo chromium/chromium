@@ -202,7 +202,7 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
     case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
     case ContentBrowserClient::URLLoaderFactoryType::kDevTools:
     case ContentBrowserClient::URLLoaderFactoryType::kEarlyHints:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -71,7 +71,7 @@ using ::base::android::ToJavaIntArray;
 
 PersonalDataManagerAndroid::PersonalDataManagerAndroid(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj,
+    jobject obj,
     PersonalDataManager* personal_data_manager,
     PrefService* prefs)
     : weak_java_obj_(env, obj),
@@ -772,7 +772,7 @@ void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
     iban->set_record_type(Iban::RecordType::kLocalIban);
   } else {
     // Support for server IBANs isn't available yet on Android.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 
@@ -876,7 +876,7 @@ JNI_PersonalDataManager_GetBasicCardIssuerNetwork(
 
   if (static_cast<bool>(jempty_if_invalid) &&
       !IsValidCreditCardNumber(card_number)) {
-    return jni_zero::g_empty_string.AsLocalRef(env);
+    return ConvertUTF8ToJavaString(env, "");
   }
   return ConvertUTF8ToJavaString(
       env, data_util::GetPaymentRequestData(GetCardNetwork(card_number))

@@ -153,7 +153,7 @@ static inline WhitespaceMode RecomputeWhiteSpaceMode(
   auto check_whitespace = [](auto* buffer, size_t length) {
     WhitespaceMode result = WhitespaceMode::kNewlineThenWhitespace;
     for (size_t i = 1; i < length; ++i) {
-      if (LIKELY(buffer[i] == ' ')) {
+      if (buffer[i] == ' ') [[likely]] {
         continue;
       } else if (IsHTMLSpecialWhitespace(buffer[i])) {
         result = WhitespaceMode::kAllWhitespace;
@@ -403,11 +403,14 @@ void HTMLConstructionSite::FlushPendingText() {
       break_index = string.length();
     }
     unsigned substring_view_length = break_index - current_position;
-    StringView substring_view =
-        LIKELY(!current_position && substring_view_length >= string.length())
-            ? string
-            : string.SubstringView(current_position,
-                                   break_index - current_position);
+    StringView substring_view;
+    if (!current_position && substring_view_length >= string.length())
+        [[likely]] {
+      substring_view = string;
+    } else {
+      substring_view = string.SubstringView(current_position,
+                                            break_index - current_position);
+    }
     String substring =
         TryCanonicalizeString(substring_view, pending_text_.whitespace_mode);
 
@@ -893,7 +896,7 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
 
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
-    DeclarativeShadowRootMode declarative_shadow_root_type) {
+    String declarative_shadow_root_mode) {
   // Regardless of whether a declarative shadow root is being attached, the
   // template element is always created. If the template is a valid declarative
   // Shadow Root (has a valid attribute value and parent element), then the
@@ -904,11 +907,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (declarative_shadow_root_type != DeclarativeShadowRootMode::kNone &&
+  if (!declarative_shadow_root_mode.IsNull() &&
       IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
-    CHECK(declarative_shadow_root_type == DeclarativeShadowRootMode::kOpen ||
-          declarative_shadow_root_type == DeclarativeShadowRootMode::kClosed);
-    // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
                                 ? FocusDelegation::kDelegateFocus
@@ -921,16 +921,19 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             html_names::kShadowrootserializableAttr);
     bool clonable = template_stack_item->GetAttributeItem(
         html_names::kShadowrootclonableAttr);
+    const auto* reference_target_attr =
+        RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()
+            ? template_stack_item->GetAttributeItem(
+                  html_names::kShadowrootreferencetargetAttr)
+            : nullptr;
+    const auto& reference_target =
+        reference_target_attr ? reference_target_attr->Value() : g_null_atom;
     HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
 
-    ShadowRootMode type =
-        declarative_shadow_root_type == DeclarativeShadowRootMode::kOpen
-            ? ShadowRootMode::kOpen
-            : ShadowRootMode::kClosed;
     bool success = host->AttachDeclarativeShadowRoot(
-        *template_element, type, focus_delegation, slot_assignment_mode,
-        serializable, clonable);
+        *template_element, declarative_shadow_root_mode, focus_delegation,
+        slot_assignment_mode, serializable, clonable, reference_target);
     // If the shadow root attachment fails, e.g. if the host element isn't a
     // valid shadow host, then we leave should_attach_template true, so that
     // a "normal" template element gets attached to the DOM tree.

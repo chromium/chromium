@@ -291,9 +291,7 @@ void HTMLIFrameElement::ParseAttribute(
       }
     }
   } else if (name == html_names::kAdauctionheadersAttr &&
-             GetExecutionContext() &&
-             RuntimeEnabledFeatures::FledgeNegativeTargetingEnabled(
-                 GetExecutionContext())) {
+             GetExecutionContext()) {
     if (!GetExecutionContext()->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kOther,
@@ -629,9 +627,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
         !FastGetAttribute(html_names::kBrowsingtopicsAttr).IsNull();
   }
 
-  if (RuntimeEnabledFeatures::FledgeNegativeTargetingEnabled(
-          GetExecutionContext()) &&
-      GetExecutionContext()->IsSecureContext()) {
+  if (GetExecutionContext()->IsSecureContext()) {
     attributes->ad_auction_headers =
         !FastGetAttribute(html_names::kAdauctionheadersAttr).IsNull();
   }

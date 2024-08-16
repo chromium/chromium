@@ -32,7 +32,7 @@ CHROME_PATCH_FILE_SUFFIX = "_patch"  # prefixed by options.output_name
 COMPRESSED_ARCHIVE_SUFFIX = ".packed.7z"
 
 COMPRESSED_FILE_EXT = ".packed.7z"  # extension of patch archive file
-COURGETTE_EXEC = "courgette64.exe"
+ZUCCHINI_EXEC = "zucchini.exe"
 MINI_INSTALLER_INPUT_FILE = "packed_files.txt"
 PATCH_FILE_EXT = '.diff'
 SETUP_EXEC = "setup.exe"
@@ -208,8 +208,8 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
 
 
 def GenerateDiffPatch(options, orig_file, new_file, patch_file):
-    if (options.diff_algorithm == "COURGETTE"):
-        exe_file = os.path.join(options.last_chrome_installer, COURGETTE_EXEC)
+    if (options.diff_algorithm == "ZUCCHINI"):
+        exe_file = os.path.join(options.last_chrome_installer, ZUCCHINI_EXEC)
         cmd = '%s -gen "%s" "%s" "%s"' % (exe_file, orig_file, new_file,
                                           patch_file)
     else:
@@ -720,7 +720,7 @@ def _ParseOptions():
         '--last_chrome_installer',
         help='Generate differential installer. The value of this parameter '
         'specifies the directory that contains base versions of '
-        'setup.exe, courgette64.exe (if --diff_algorithm is COURGETTE) '
+        'setup.exe, zucchini.exe (if --diff_algorithm is ZUCCHINI) '
         '& chrome.7z.')
     parser.add_option(
         '-f',
@@ -732,7 +732,7 @@ def _ParseOptions():
         '--diff_algorithm',
         default='BSDIFF',
         help='Diff algorithm to use when generating differential patches '
-        '{BSDIFF|COURGETTE}.')
+        '{BSDIFF|ZUCCHINI}.')
     parser.add_option('-n',
                       '--output_name',
                       default='chrome',

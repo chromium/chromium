@@ -38,9 +38,6 @@ class ExtensionsRendererClient {
   // (third_party/WebKit/public/web/WebFrame.h) for additional context.
   virtual int GetLowestIsolatedWorldId() const = 0;
 
-  // Returns the associated Dispatcher.
-  virtual Dispatcher* GetDispatcher() = 0;
-
   // Notifies the client when an extension is added or removed.
   // TODO(devlin): Make a RendererExtensionRegistryObserver?
   virtual void OnExtensionLoaded(const Extension& extension) {}
@@ -57,9 +54,18 @@ class ExtensionsRendererClient {
   // Initialize the single instance.
   static void Set(ExtensionsRendererClient* client);
 
+  Dispatcher* dispatcher() { return dispatcher_.get(); }
+
+  void SetDispatcherForTesting(std::unique_ptr<Dispatcher> dispatcher);
+
  protected:
+  void CreateDispatcher();
+
+ private:
   std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
       api_providers_;
+
+  std::unique_ptr<Dispatcher> dispatcher_;
 };
 
 }  // namespace extensions

@@ -19,7 +19,6 @@ import {dummyV2Descriptor} from './v2/dummy/module.js';
 // </if>
 import {fileSuggestionDescriptor} from './v2/file_suggestion/module.js';
 import {mostRelevantTabResumptionDescriptor} from './v2/most_relevant_tab_resumption/module.js';
-import {tabResumptionDescriptor} from './v2/tab_resumption/module.js';
 
 const modulesRedesignedEnabled: boolean =
     loadTimeData.getBoolean('modulesRedesignedEnabled');
@@ -27,11 +26,7 @@ export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(
     modulesRedesignedEnabled ? fileSuggestionDescriptor : driveDescriptor);
 
-if (loadTimeData.getBoolean('mostRelevantTabResumptionEnabled')) {
-  descriptors.push(mostRelevantTabResumptionDescriptor);
-} else {
-  descriptors.push(tabResumptionDescriptor);
-}
+descriptors.push(mostRelevantTabResumptionDescriptor);
 descriptors.push(googleCalendarDescriptor);
 descriptors.push(outlookCalendarDescriptor);
 

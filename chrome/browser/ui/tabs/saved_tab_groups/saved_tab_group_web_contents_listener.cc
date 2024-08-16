@@ -6,6 +6,7 @@
 
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_service_wrapper.h"
@@ -13,6 +14,7 @@
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/utils.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -20,41 +22,6 @@
 
 namespace tab_groups {
 namespace {
-
-bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
-  ui::PageTransition page_transition = navigation_handle->GetPageTransition();
-  if (navigation_handle->IsPost()) {
-    return false;
-  }
-  if (!ui::IsValidPageTransitionType(page_transition)) {
-    return false;
-  }
-  if (ui::PageTransitionIsRedirect(page_transition)) {
-    return false;
-  }
-
-  if (!ui::PageTransitionIsMainFrame(page_transition)) {
-    return false;
-  }
-
-  if (!navigation_handle->HasCommitted()) {
-    return false;
-  }
-
-  if (!navigation_handle->ShouldUpdateHistory()) {
-    return false;
-  }
-
-  // For renderer initiated navigation, in most cases these navigations will be
-  // auto triggered on restoration. So there is no need to save them.
-  if (navigation_handle->IsRendererInitiated() &&
-      !navigation_handle->HasUserGesture()) {
-    return false;
-  }
-
-  return SavedTabGroupUtils::IsURLValidForSavedTabGroups(
-      navigation_handle->GetURL());
-}
 
 // Returns whether this navigation is user triggered main frame navigation.
 bool IsUserTriggeredMainFrameNavigation(
@@ -102,40 +69,27 @@ bool IsURLInRedirectChain(const GURL& url,
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
-    base::Token token,
+    const LocalTabID& saved_tab_group_tab_id,
     TabGroupServiceWrapper* wrapper_service)
-    : token_(token),
+    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
       web_contents_(web_contents),
-      favicon_driver_(
-          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
       wrapper_service_(wrapper_service) {
   Observe(web_contents_);
-  if (favicon_driver_) {
-    favicon_driver_->AddObserver(this);
-  }
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle,
-    base::Token token,
+    const LocalTabID& saved_tab_group_tab_id,
     TabGroupServiceWrapper* wrapper_service)
-    : token_(token),
+    : saved_tab_group_tab_id_(saved_tab_group_tab_id),
       web_contents_(web_contents),
-      favicon_driver_(
-          favicon::ContentFaviconDriver::FromWebContents(web_contents)),
       wrapper_service_(wrapper_service),
       handle_from_sync_update_(navigation_handle) {
   Observe(web_contents_);
-  if (favicon_driver_) {
-    favicon_driver_->AddObserver(this);
-  }
 }
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
-  if (favicon_driver_) {
-    favicon_driver_->RemoveObserver(this);
-  }
   TabGroupSyncTabState::Reset(web_contents());
 }
 
@@ -151,7 +105,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
   }
 
   // Dont navigate to the new URL if its not valid for sync.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url)) {
+  if (!IsURLValidForSavedTabGroups(url)) {
     return;
   }
 
@@ -181,62 +135,26 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     TabGroupSyncTabState::Reset(web_contents());
   }
 
-  if (!IsSaveableNavigation(navigation_handle)) {
+  if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
     return;
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(token_);
+  SavedTabGroupTab* tab = group->GetTab(saved_tab_group_tab_id_);
   CHECK(tab);
 
   wrapper_service_->SetFaviconForTab(
-      group->local_group_id().value(), token_,
+      group->local_group_id().value(), saved_tab_group_tab_id_,
       favicon::TabFaviconFromWebContents(web_contents_));
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              web_contents_->GetTitle(),
-                              web_contents_->GetURL(), /*position=*/
-                              std::nullopt);
+  wrapper_service_->UpdateTab(
+      group->local_group_id().value(), saved_tab_group_tab_id_,
+      web_contents_->GetTitle(), web_contents_->GetURL(), /*position=*/
+      std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
   TabGroupSyncTabState::Reset(web_contents());
-}
-
-void SavedTabGroupWebContentsListener::TitleWasSet(
-    content::NavigationEntry* entry) {
-  // Don't update the title if the URL should not be synced.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(entry->GetURL())) {
-    return;
-  }
-
-  std::optional<SavedTabGroup> group = saved_group();
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              entry->GetTitleForDisplay(), entry->GetURL(),
-                              /*position=*/std::nullopt);
-}
-
-void SavedTabGroupWebContentsListener::OnFaviconUpdated(
-    favicon::FaviconDriver* favicon_driver,
-    FaviconDriverObserver::NotificationIconType notification_icon_type,
-    const GURL& icon_url,
-    bool icon_url_changed,
-    const gfx::Image& image) {
-  // Don't update the favicon if the URL should not be synced.
-  if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(
-          favicon_driver->GetActiveURL())) {
-    return;
-  }
-
-  std::optional<SavedTabGroup> group = saved_group();
-  SavedTabGroupTab* tab = group->GetTab(token_);
-
-  wrapper_service_->SetFaviconForTab(
-      group->local_group_id().value(), token_,
-      favicon::TabFaviconFromWebContents(web_contents_));
-  wrapper_service_->UpdateTab(group->local_group_id().value(), token_,
-                              tab->title(), tab->url(),
-                              /*position=*/std::nullopt);
 }
 
 void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
@@ -251,12 +169,11 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   }
 }
 
-const std::optional<SavedTabGroup>
-SavedTabGroupWebContentsListener::saved_group() {
+const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {
   std::vector<SavedTabGroup> all_groups = wrapper_service_->GetAllGroups();
   auto iter = base::ranges::find_if(
       all_groups, [&](const SavedTabGroup& potential_group) {
-        return potential_group.ContainsTab(token_);
+        return potential_group.ContainsTab(saved_tab_group_tab_id_);
       });
   CHECK(iter != all_groups.end());
 

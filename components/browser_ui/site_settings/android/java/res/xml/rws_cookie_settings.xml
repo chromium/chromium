@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+      android:key="subtitle"
+      app:allowDividerBelow="false" />
+
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+      android:key="bullet_one"
+      android:summary="@string/website_settings_category_cookie_subpage_bullet_one"
+      android:icon="@drawable/permission_cookie"
+      app:iconTint="@color/default_icon_color_tint_list"
+      app:allowDividerBelow="false" />
+
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+      android:key="bullet_two"
+      android:icon="@drawable/ic_block"
+      app:iconTint="@color/default_icon_color_tint_list"
+      app:allowDividerBelow="false" />
+
+  <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+      android:key="allow_rws"
+      android:title="@string/website_settings_category_cookie_rws_toggle_title"
+      android:summary="@string/website_settings_category_cookie_rws_toggle_description"
+      android:persistent="false"
+      app:allowDividerBelow="false" />
+
+</PreferenceScreen>

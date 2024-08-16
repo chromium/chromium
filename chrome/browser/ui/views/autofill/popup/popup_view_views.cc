@@ -199,6 +199,10 @@ PopupViewViews::PopupViewViews(
       controller_(controller),
       parent_(parent) {
   InitViews();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
 PopupViewViews::PopupViewViews(
@@ -213,18 +217,16 @@ PopupViewViews::PopupViewViews(
       controller_(controller),
       search_bar_config_(std::move(search_bar_config)) {
   InitViews();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
 }
 
 PopupViewViews::~PopupViewViews() = default;
 
 void PopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
-
   if (!controller_) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
 void PopupViewViews::OnMouseEntered(const ui::MouseEvent& event) {
@@ -311,7 +313,7 @@ bool PopupViewViews::Show(
         break;
       default:
         // All Compose SuggestionTypes should already be handled.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -745,7 +747,7 @@ PopupViewViews::GetPopupScreenLocation() const {
       case views::BubbleBorder::Arrow::RIGHT_TOP:
         return ArrowPosition::kRightTop;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   views::Border* border = GetWidget()->GetRootView()->GetBorder();
@@ -786,6 +788,8 @@ void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
   // educational messages. The promo bubble should only be shown once in one
   // session and has a limit for how many times it can be shown at most in a
   // period of time.
+  browser->window()->MaybeShowFeaturePromo(
+      feature_engagement::kIPHAutofillDisabledVirtualCardSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature);
   browser->window()->MaybeShowFeaturePromo(
@@ -967,8 +971,13 @@ void PopupViewViews::CreateSuggestionViews() {
   // No suggestions (or only footer ones, which are not filterable) with
   // a non-empty filter query means that there are no results matching
   // the query. Show a corresponding message.
-  if ((kSuggestions.empty() || IsFooterItem(kSuggestions, 0u)) && search_bar_ &&
-      controller_->HasFilteredOutSuggestions()) {
+  if ((kSuggestions.empty() ||
+       base::ranges::all_of(kSuggestions,
+                            [](const Suggestion& suggestion) {
+                              return suggestion.filtration_policy ==
+                                     Suggestion::FiltrationPolicy::kStatic;
+                            })) &&
+      search_bar_ && controller_->HasFilteredOutSuggestions()) {
     suggestions_container_->AddChildView(
         std::make_unique<PopupNoSuggestionsView>(
             search_bar_config_->no_results_message));
@@ -1027,8 +1036,11 @@ void PopupViewViews::CreateSuggestionViews() {
           // Set appropriate element ids for IPH targets, it is important to
           // set them earlier to make sure the elements are discoverable later
           // during popup's visibility change and the promo bubble showing.
-          if (feature_for_iph ==
-              &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature) {
+          if (feature_for_iph == &feature_engagement::
+                                     kIPHAutofillVirtualCardSuggestionFeature ||
+              feature_for_iph ==
+                  &feature_engagement::
+                      kIPHAutofillDisabledVirtualCardSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillCreditCardSuggestionEntryElementId);
           } else if (feature_for_iph ==
@@ -1220,7 +1232,7 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
       GetPreferredPopupSides(
           /*is_root_popup=*/!parent_, prefer_prev_arrow_side,
           /*prev_arrow=*/border ? border->arrow() : BubbleBorder::Arrow::NONE);
-  popup_bounds = GetOptionalPositionAndPlaceArrowOnPopup(
+  popup_bounds = GetOptimalPositionAndPlaceArrowOnPopup(
       element_bounds, content_area_bounds, preferred_size,
       preferred_popup_sides);
 

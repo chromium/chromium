@@ -22,17 +22,21 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/condition_variable.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -77,6 +81,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/unexportable_key.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
@@ -124,6 +129,7 @@ using trusted_vault::MockTrustedVaultConnection;
 constexpr int32_t kSecretVersion = 417;
 constexpr uint8_t kSecurityDomainSecret[32] = {0};
 constexpr char kEmail[] = "test@gmail.com";
+constexpr char kEmailLocalPartOnly[] = "test";
 // This value is derived by the Sync testing code from `kEmail` but is needed
 // directly in these tests in order to simulate the `StoreKeys` calls to the
 // `EnclaveManager`.
@@ -364,6 +370,22 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
            e => window.domAutomationController.send('error ' + e));
 })())";
 
+static constexpr char kAbortableGetAssertion[] = R"((() => {
+  window.enclaveAbortSignal = new AbortController();
+  navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    userVerification: 'discouraged',
+    allowCredentials: [],
+  },
+  signal: window.enclaveAbortSignal.signal,
+  });
+})())";
+
+static constexpr char kAbort[] = R"((() => {
+  window.enclaveAbortSignal.abort();
+})())";
+
 static constexpr char kGetAssertionUvDiscouragedWithCredId[] = R"((() => {
   return navigator.credentials.get({ publicKey: {
     challenge: new Uint8Array([0]),
@@ -567,11 +589,20 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       run_loop_ = std::make_unique<base::RunLoop>();
       waiting_for_loading_enclave_timeout_ = true;
       run_loop_->Run();
+      Reset();
     }
 
     // Call this before the state transition you are looking to observe.
     void SetStepToObserve(AuthenticatorRequestDialogModel::Step step) {
+      ASSERT_FALSE(run_loop_);
       step_ = step;
+      run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    // Call this to observer the next step change, whatever it might be.
+    void ObserveNextStep() {
+      ASSERT_FALSE(run_loop_);
+      observe_next_step_ = true;
       run_loop_ = std::make_unique<base::RunLoop>();
     }
 
@@ -581,16 +612,16 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       ASSERT_TRUE(run_loop_);
       run_loop_->Run();
       // When waiting for `kClosed` the model is deleted at this point.
-      if (step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
+      if (!observe_next_step_ &&
+          step_ != AuthenticatorRequestDialogModel::Step::kClosed) {
         CHECK_EQ(step_, model_->step());
       }
-      step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
-      run_loop_.reset();
+      Reset();
     }
 
     // AuthenticatorRequestDialogModel::Observer:
     void OnStepTransition() override {
-      if (run_loop_ && step_ == model_->step()) {
+      if (run_loop_ && (observe_next_step_ || step_ == model_->step())) {
         run_loop_->QuitWhenIdle();
       }
     }
@@ -605,11 +636,18 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       model_ = nullptr;
     }
 
+    void Reset() {
+      step_ = AuthenticatorRequestDialogModel::Step::kNotStarted;
+      observe_next_step_ = false;
+      run_loop_.reset();
+    }
+
    private:
     raw_ptr<AuthenticatorRequestDialogModel> model_;
     AuthenticatorRequestDialogModel::Step step_ =
         AuthenticatorRequestDialogModel::Step::kNotStarted;
     bool waiting_for_loading_enclave_timeout_ = false;
+    bool observe_next_step_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
   };
 
@@ -885,7 +923,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     } else if (script_result == "\"IsUVPAA: false\"") {
       return false;
     }
-    NOTREACHED_NORETURN() << "unexpected IsUVPAA result: " << script_result;
+    NOTREACHED() << "unexpected IsUVPAA result: " << script_result;
   }
 
   void SetBiometricsEnabled(bool enabled) {
@@ -2382,6 +2420,30 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
     delegate_observer()->WaitForDelegateDestruction();
   }
 
+  // For Google-internal users, the username in the create request is just the
+  // local part of the email address. Enclave should not appear for those cases
+  // either.
+  {
+    CheckRegistrationStateNotRequested();
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(
+        web_contents, base::ReplaceStringPlaceholders(kMakeCredentialGoogle,
+                                                      {kEmailLocalPartOnly},
+                                                      /*offsets=*/nullptr));
+    delegate_observer()->WaitForUI();
+    EXPECT_TRUE(
+        base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+          return absl::holds_alternative<
+              AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+        }));
+    dialog_model()->CancelAuthenticatorRequest();
+    std::string script_result;
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+    delegate_observer()->WaitForDelegateDestruction();
+  }
+
   // But trying to create a passkey for a different account is fine.
   {
     trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
@@ -3053,9 +3115,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   }
   model_observer()->WaitForStep();
 
-  model_observer()->SetStepToObserve(
-      AuthenticatorRequestDialogController::Step::kMechanismSelection);
-  dialog_model()->StartOver();
+  // The second time simulate pressing the "Use [phone]" button.
+  model_observer()->ObserveNextStep();
+  dialog_model()->ContactPriorityPhone();
   model_observer()->WaitForStep();
 
   // Cancel and send a new request so newly-enumerated credentials will be used.
@@ -3405,6 +3467,115 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // operation is happening without any UI.
   ASSERT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+}
+
+// Allows a `BlockingUnexportableKeyProvider` to block inside a thread-pool
+// thread so that the main test can synchronize with it on the UI thread.
+class BlockingUnexportableKeyProviderRendezvous {
+ public:
+  void Block() {
+    base::ScopedAllowBaseSyncPrimitivesForTesting locks_allowed;
+    base::AutoLock locked(lock_);
+
+    blocked_ = true;
+    while (!ready_to_continue_) {
+      condition_.Wait();
+    }
+  }
+
+  bool IsBlocked() {
+    base::AutoLock locked(lock_);
+    return blocked_;
+  }
+
+  void Continue() {
+    base::AutoLock locked(lock_);
+    CHECK(!ready_to_continue_);
+
+    ready_to_continue_ = true;
+    condition_.Broadcast();
+  }
+
+ private:
+  base::Lock lock_;
+  base::ConditionVariable condition_{&lock_};
+  bool blocked_ GUARDED_BY(lock_) = false;
+  bool ready_to_continue_ GUARDED_BY(lock_) = false;
+};
+
+BlockingUnexportableKeyProviderRendezvous&
+GetBlockingUnexportableKeyProviderRendezvous() {
+  static base::NoDestructor<BlockingUnexportableKeyProviderRendezvous> instance;
+  return *instance;
+}
+
+// An `UnexportableKeyProvider` that blocks inside `SelectAlgorithm` and waits
+// for the UI thread to synchronize with it. It doesn't implement any other
+// functions.
+class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
+ public:
+  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    CHECK(!acceptable_algorithms.empty());
+
+    // This function runs in a thread-pool thread.
+    GetBlockingUnexportableKeyProviderRendezvous().Block();
+    return acceptable_algorithms[0];
+  }
+
+  std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    NOTREACHED();
+  }
+
+  std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
+      base::span<const uint8_t> wrapped_key) override {
+    NOTREACHED();
+  }
+
+  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override {
+    NOTREACHED();
+  }
+};
+
+std::unique_ptr<crypto::UnexportableKeyProvider>
+BlockingUnexportableKeyProviderFactory() {
+  return std::make_unique<BlockingUnexportableKeyProvider>();
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       CancelRacesTPMCheck) {
+  // https://crbug.com/352532554
+
+  // Set the UnexportableKeyProvider to one that will block inside
+  // `SelectAlgorithm` so that we can simulate a slow TPM check.
+  mock_hw_provider_.reset();
+  crypto::internal::SetUnexportableKeyProviderForTesting(
+      BlockingUnexportableKeyProviderFactory);
+
+  // Start a WebAuthn request. It'll block when checking the TPM.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  EXPECT_TRUE(content::ExecJs(web_contents, kAbortableGetAssertion));
+
+  // Wait until the request is blocked on checking the TPM.
+  auto run_loop = std::make_unique<base::RunLoop>();
+  while (!GetBlockingUnexportableKeyProviderRendezvous().IsBlocked()) {
+    run_loop->RunUntilIdle();
+  }
+
+  // Cancel the outstanding request.
+  EXPECT_TRUE(content::ExecJs(web_contents, kAbort));
+
+  // Let the TPM check complete.
+  GetBlockingUnexportableKeyProviderRendezvous().Continue();
+  run_loop->RunUntilIdle();
+
+  // This test is successful if it doesn't crash. It reliably crashed prior to
+  // the fix for https://crbug.com/352532554.
 }
 
 }  // namespace

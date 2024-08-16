@@ -242,7 +242,7 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "This builder may trigger tests on multiple Android versions.",
     mirrors = [
-        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
+        "ci/Android Release (Pixel 2)",  # Pixel 2 on Pie
         # TODO(crbug.com/352811552): Drop Pie after 14 is fully on CQ
         "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
         "ci/android-14-arm64-rel",  # Pixel 7 on Android 14
@@ -571,10 +571,12 @@ try_.builder(
         configs = [
             "ci/android-cronet-x64-dbg",
             "use_clang_coverage",
+            "use_java_coverage",
             "partial_code_coverage_instrumentation",
         ],
     ),
     contact_team_email = "cronet-team@google.com",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -586,6 +588,7 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.builder(
@@ -674,10 +677,12 @@ try_.builder(
         configs = [
             "ci/android-cronet-x86-dbg",
             "use_clang_coverage",
+            "use_java_coverage",
             "partial_code_coverage_instrumentation",
         ],
     ),
     contact_team_email = "cronet-team@google.com",
+    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
@@ -689,6 +694,7 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.builder(
@@ -1386,6 +1392,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
             cq.location_filter(path_regexp = "components/viz/.+"),
+            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "gpu/.+"),
             cq.location_filter(path_regexp = "media/audio/.+"),
@@ -1433,6 +1440,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
             cq.location_filter(path_regexp = "components/viz/.+"),
+            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "gpu/.+"),
             cq.location_filter(path_regexp = "media/audio/.+"),

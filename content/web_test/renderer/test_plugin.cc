@@ -341,10 +341,6 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   layer_->SetNeedsDisplay();
 }
 
-bool TestPlugin::IsPlaceholder() {
-  return false;
-}
-
 v8::Local<v8::Object> TestPlugin::V8ScriptableObject(v8::Isolate* isolate) {
   if (scriptable_object_.IsEmpty()) {
     scriptable_object_.Reset(isolate, ScriptableObject::Create(isolate));

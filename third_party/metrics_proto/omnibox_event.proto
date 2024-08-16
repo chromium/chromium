@@ -101,8 +101,7 @@ message OmniboxEventProto {
 
     // chrome://newtab/.  For modern versions of Chrome, this is only reported
     // when an extension is replacing the new tab page. Otherwise, new tab
-    // page interactions will be reported as NTP_REALBOX,
-    // INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS or
+    // page interactions will be reported as NTP_REALBOX, or
     // INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS.
     // For old versions of Chrome, this was reported for the default New Tab
     // Page.
@@ -135,7 +134,7 @@ message OmniboxEventProto {
     // The new tab page in which this omnibox interaction first started with the
     // user having focus in the fakebox. This is replaced by NTP_REALBOX.
     // DEPRECATED on Aug 17, 2020.
-    INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS = 8;
+    OBSOLETE_INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS = 8;
 
     // The user is on a search result page that does not do search term
     // replacement. This means the URL of the SRP is shown in the omnibox.

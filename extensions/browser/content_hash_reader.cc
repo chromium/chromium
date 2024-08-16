@@ -53,37 +53,23 @@ std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
   ContentHash::TreeHashVerificationResult verification =
       content_hash->VerifyTreeHashRoot(relative_path,
                                        base::OptionalToPtr(root));
-
-  // Extensions sometimes request resources that do not have an entry in
-  // computed_hashes.json or verified_content.json. This can happen, for
-  // example, when an extension sends an XHR to a resource. This should not be
-  // considered as a failure.
-  if (verification != ContentHash::TreeHashVerificationResult::SUCCESS) {
-    base::FilePath full_path =
-        content_hash->extension_root().Append(relative_path);
-    // Making a request to a non-existent file or to a directory should not
-    // result in content verification failure.
-    // TODO(proberge): This logic could be simplified if |content_verify_job|
-    // kept track of whether the file being verified was successfully read.
-    // A content verification failure should be triggered if there is a mismatch
-    // between the file read state and the existence of verification hashes.
-    if (verification == ContentHash::TreeHashVerificationResult::NO_ENTRY &&
-        (!base::PathExists(full_path) || base::DirectoryExists(full_path))) {
-      // Expected failure: no hashes for non-existing resource.
-      return base::WrapUnique(new ContentHashReader(
-          InitStatus::NO_HASHES_FOR_NON_EXISTING_RESOURCE));
+  switch (verification) {
+    case ContentHash::TreeHashVerificationResult::SUCCESS: {
+      auto hash_reader =
+          base::WrapUnique(new ContentHashReader(InitStatus::SUCCESS));
+      hash_reader->block_size_ = block_size;
+      hash_reader->hashes_ = std::move(block_hashes);
+      return hash_reader;
     }
-
-    // Failure: no hashes when resource need them.
-    return base::WrapUnique(
-        new ContentHashReader(InitStatus::NO_HASHES_FOR_RESOURCE));
+    case ContentHash::TreeHashVerificationResult::NO_ENTRY: {
+      return base::WrapUnique(
+          new ContentHashReader(InitStatus::NO_HASHES_FOR_RESOURCE));
+    }
+    case ContentHash::TreeHashVerificationResult::HASH_MISMATCH: {
+      return base::WrapUnique(
+          new ContentHashReader(InitStatus::HASHES_DAMAGED));
+    }
   }
-
-  auto hash_reader =
-      base::WrapUnique(new ContentHashReader(InitStatus::SUCCESS));
-  hash_reader->block_size_ = block_size;
-  hash_reader->hashes_ = std::move(block_hashes);
-  return hash_reader;  // Success.
 }
 
 int ContentHashReader::block_count() const {

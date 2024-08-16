@@ -46,7 +46,6 @@ source_set("unit_tests") {
     ":exo",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini:test_support",

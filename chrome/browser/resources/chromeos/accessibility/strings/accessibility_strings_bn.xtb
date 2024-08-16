@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">লালচে বাদামি</translation>
 <translation id="249330843868392562">টেক্সট টু স্পিচ সেটিংস খুলুন</translation>
 <translation id="2497706219848005458">সবুজাভ হলুদ</translation>
+<translation id="2512979179176933762">উইন্ডো দেখুন</translation>
 <translation id="2523609930580546572">ChromeVox টিউটোরিয়াল</translation>
 <translation id="2525706221823668172">Chromebook এর কীবোর্ড শর্টকাটগুলি</translation>
 <translation id="2553108862507765288">ব্যাকরণগত ভুল</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">ইস্পাত নীল</translation>
 <translation id="4253168017788158739">টিকা</translation>
 <translation id="4254798249533888099">ট্রী</translation>
+<translation id="4259220820964911921">ফেস কন্ট্রোল চালু করতে চান?</translation>
 <translation id="4271220233568730077">পরবর্তী গাণিতিক</translation>
 <translation id="4275397969489577657">ইভেন্ট স্ট্রিম লগ-ইন চালু করুন</translation>
 <translation id="4278486392851938658">কোনও পূর্ববর্তী ঘুরে দেখা লিঙ্ক নেই</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">পরিশিষ্ট</translation>
 <translation id="5761219715606611783">দারুণ! আপনি ChromeVox-এর 'টাচ' ফিচারের প্রাথমিক ধারণা অর্জন করেছেন। আপনি আবার টিউটোরিয়ালটি দেখতে পারেন বা নিচের বোতামে ক্লিক করে এই টিউটোরিয়াল থেকে বেরিয়ে আসতে পারেন।</translation>
 <translation id="5776001898637896684">Google Enhanced Network-এর টেক্সট-টু-স্পিচ এক্সটেনশন</translation>
+<translation id="5783252477644995371">ফেস কন্ট্রোল আপনাকে ফেস পয়েন্টিংয়ের সাথে কার্সর কন্ট্রোল দেয় এবং কিছু কাজ করার সুবিধা দেয়, যেমন হাসির মতো ফেসিয়াল জেসচারের মাধ্যমে বাঁদিকে ক্লিক করা</translation>
 <translation id="5805940204952508776">দুটি আঙ্গুল দিয়ে ট্যাপ করুন</translation>
 <translation id="5819072574982403430">ট্রি আইটেম</translation>
 <translation id="5822819874379903994">গাঢ় ফিরোজা</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">কোনও পরবর্তী চেকবক্স নেই</translation>
 <translation id="8473540203671727883">মাউস কার্সারের নিচে থাকা টেক্সট পড়ুন</translation>
 <translation id="8476408756881832830">ChromeVox কথা বলতে থাকলে প্লেব্যাক সাময়িকভাবে থামান</translation>
-<translation id="8476508772960940536">এক নজরে উইন্ডো</translation>
 <translation id="8480873377842220259">এবার আপনি বেসিক নেভিগেশন সম্পর্কে আরও জানতে পারবেন। স্ক্রিনের চারদিকে নেভিগেট করতে, আপনি Search কী ধরে রেখে Arrow কীগুলি প্রেস করতে পারেন। চালিয়ে যেতে, Search + Right Arrow কী প্রেস করুন।</translation>
 <translation id="8503360654911991865">নেভিগেশন কণিকাভাবটি কমান</translation>
 <translation id="8520472399088452386">ঘূর্ণন বোতাম</translation>

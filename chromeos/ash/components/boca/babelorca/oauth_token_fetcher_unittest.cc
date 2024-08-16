@@ -19,7 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace babelorca {
+namespace ash::babelorca {
 namespace {
 
 constexpr char kOAuthToken[] = "test-token";
@@ -176,4 +176,4 @@ TEST_F(OAuthTokenFetcherTest, RespondAfterMaxRetries) {
 }
 
 }  // namespace
-}  // namespace babelorca
+}  // namespace ash::babelorca

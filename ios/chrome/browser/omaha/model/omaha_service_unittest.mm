@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -135,7 +136,7 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -163,7 +164,7 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
       "<ping active=\"1\" ad=\"-2\" rd=\"-2\"/></app></request>";
 
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -195,7 +196,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
 
   // First install.
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -232,7 +233,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
 TEST_F(OmahaServiceTest, SendPingSuccess) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -261,7 +262,7 @@ TEST_F(OmahaServiceTest, SendPingSuccess) {
 
 TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -282,7 +283,7 @@ TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
 
 TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -323,7 +324,7 @@ TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
 TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -356,7 +357,7 @@ TEST_F(OmahaServiceTest, CallbackForScheduledNotUsedOnErrorResponse) {
 TEST_F(OmahaServiceTest, OneOffSuccess) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -391,7 +392,7 @@ TEST_F(OmahaServiceTest, OneOffSuccess) {
 TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -428,7 +429,7 @@ TEST_F(OmahaServiceTest, OngoingPingOneOffCallbackUsed) {
 TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -472,7 +473,7 @@ TEST_F(OmahaServiceTest, OneOffCallbackUsedOnlyOnce) {
 TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -514,7 +515,7 @@ TEST_F(OmahaServiceTest, ScheduledPingDuringOneOffDropped) {
 
 TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -554,7 +555,7 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
 TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -589,7 +590,7 @@ TEST_F(OmahaServiceTest, SendInstallEventSuccess) {
 TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -636,7 +637,7 @@ TEST_F(OmahaServiceTest, SendPingReceiveUpdate) {
 TEST_F(OmahaServiceTest, SendPingFailure) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -689,7 +690,7 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   std::string version_string(version_info::GetVersionNumber());
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
@@ -703,7 +704,7 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   OmahaService service2(false);
-  service2.StartInternal();
+  service2.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   EXPECT_EQ(service.number_of_tries_, 5);
@@ -729,7 +730,7 @@ TEST_F(OmahaServiceTest, BackoffTest) {
 TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -766,7 +767,7 @@ TEST_F(OmahaServiceTest, ActivePingAfterInstallEventTest) {
 TEST_F(OmahaServiceTest, NonSpammingTest) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -801,7 +802,7 @@ TEST_F(OmahaServiceTest, NonSpammingTest) {
 
 TEST_F(OmahaServiceTest, InstallRetryTest) {
   OmahaService service(false);
-  service.StartInternal();
+  service.StartInternal(base::SequencedTaskRunner::GetCurrentDefault());
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));

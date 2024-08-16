@@ -15,10 +15,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -67,6 +69,38 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
 base::expected<std::reference_wrapper<const WebApp>, std::string>
 GetIsolatedWebAppById(const WebAppRegistrar& registrar,
                       const webapps::AppId& iwa_id);
+
+enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
+
+// Queries the `IwaKeyDistributionInfoProvider` whether there's
+// `KeyRotationInfo` associated with the given `web_bundle_id`.
+//   * If there's no key found, returns `kNoKeyRotation`.
+//   * If the rotated key is null, reflects this in `debug_log` and returns
+//     `kKeyBlocked`.
+//   * Otherwise, writes the key data into `debug_log` and returns `kKeyFound.`
+KeyRotationLookupResult LookupRotatedKey(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    base::optional_ref<base::Value::Dict> debug_log = std::nullopt);
+
+// Provides the key rotation data associated with a particular IWA.
+struct KeyRotationData {
+  const raw_ref<const std::vector<uint8_t>> rotated_key;
+
+  // Tells whether the current app installation contains the rotated key
+  // (`iwa.isolation_data.integrity_block_data`).
+  bool current_installation_has_rk;
+
+  // Tells whether the pending update (if any) for the app contains the rotated
+  // key (`iwa.isolation_data.pending_update_info.integrity_block_data`).
+  bool pending_update_has_rk;
+};
+
+// Computes the key rotation data as outlined above.
+// This function must only be called if the result of invoking
+// `LookupRotatedKey()` has yielded `kKeyFound` (will CHECK otherwise).
+KeyRotationData GetKeyRotationData(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const WebApp::IsolationData& isolation_data);
 
 // This is a helper class that contains methods which are shared between both
 // install and update commands.

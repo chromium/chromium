@@ -28,8 +28,8 @@ const CGFloat kHeaderIconMargin = 8;
 const CGFloat kIdentityAvatarPadding = 8;
 const CGFloat kSignedOutIdentityIconSize = 24;
 const CGFloat kCustomizationMenuIconSize = 16;
-const CGFloat kCustomizationMenuButtonDimension = 32;
-const CGFloat kCustomizationMenuButtonCornerRadius = 8;
+const CGFloat kCustomizationMenuButtonDimension = 37;
+const CGFloat kCustomizationMenuButtonCornerRadius = 11;
 
 UIColor* NTPBackgroundColor() {
   return [UIColor colorNamed:kBackgroundColor];

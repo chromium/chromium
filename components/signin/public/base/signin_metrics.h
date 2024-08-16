@@ -237,6 +237,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO = 66,
   // Signin using the account menu.
   ACCESS_POINT_ACCOUNT_MENU = 67,
+  // Signin via Product Specifications.
+  ACCESS_POINT_PRODUCT_SPECIFICATIONS = 68,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

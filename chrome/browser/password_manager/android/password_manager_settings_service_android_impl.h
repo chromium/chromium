@@ -29,7 +29,7 @@ struct PasswordManagerSettingGmsAccessResult {
 // password manager prefs queries, taking into account managed prefs and
 // the possibility of communicating with GMS.
 class PasswordManagerSettingsServiceAndroidImpl
-    : public PasswordManagerSettingsService,
+    : public password_manager::PasswordManagerSettingsService,
       public password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::
           Consumer,
       public syncer::SyncServiceObserver {

@@ -200,6 +200,11 @@ using ConvertToContentUrlsCallback =
     base::OnceCallback<void(const std::vector<GURL>& content_urls,
                             const std::vector<base::FilePath>& paths_to_share)>;
 
+// Converts the given FileSystemURL to a file path which can be passed to
+// ConvertPathToArcUrl().
+base::FilePath ConvertFileSystemURLToPathForSharingWithArc(
+    const storage::FileSystemURL& file_system_url);
+
 // Asynchronously converts Chrome OS file system URLs to content:// URLs.
 // Always returns a vector of the same size as |file_system_urls|.
 // Empty GURLs are filled in the vector if conversion fails.

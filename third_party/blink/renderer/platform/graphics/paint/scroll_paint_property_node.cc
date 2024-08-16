@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -48,11 +49,17 @@ PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
   return PaintPropertyChangeType::kUnchanged;
 }
 
+void ScrollPaintPropertyNode::State::Trace(Visitor* visitor) const {
+  visitor->Trace(overflow_clip_node);
+}
+
+ScrollPaintPropertyNode::ScrollPaintPropertyNode(RootTag)
+    : PaintPropertyNodeBase(kRoot),
+      state_{InfiniteIntRect(), InfiniteIntRect().size()} {}
+
 const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
-  DEFINE_STATIC_REF(
-      ScrollPaintPropertyNode, root,
-      base::AdoptRef(new ScrollPaintPropertyNode(
-          nullptr, State{InfiniteIntRect(), InfiniteIntRect().size()})));
+  DEFINE_STATIC_LOCAL(Persistent<ScrollPaintPropertyNode>, root,
+                      (MakeGarbageCollected<ScrollPaintPropertyNode>(kRoot)));
   return *root;
 }
 
@@ -71,7 +78,7 @@ std::unique_ptr<JSONObject> ScrollPaintPropertyNode::ToJSON() const {
     json->SetString("contentsSize", String(state_.contents_size.ToString()));
   if (state_.overflow_clip_node) {
     json->SetString("overflowClipNode",
-                    String::Format("%p", state_.overflow_clip_node.get()));
+                    String::Format("%p", state_.overflow_clip_node.Get()));
   }
   if (state_.user_scrollable_horizontal || state_.user_scrollable_vertical) {
     json->SetString(

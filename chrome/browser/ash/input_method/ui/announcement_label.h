@@ -25,9 +25,6 @@ class AnnouncementLabel : public views::Label {
   explicit AnnouncementLabel(const std::u16string& name);
   ~AnnouncementLabel() override;
 
-  // views::Label overrides
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // Make announcement to ChromeVox with the given text after a delay of N
   // milliseconds specified by the param delay.
   void AnnounceAfterDelay(const std::u16string& text, base::TimeDelta delay);
@@ -35,6 +32,8 @@ class AnnouncementLabel : public views::Label {
  private:
   // Callback used for delaying announcements
   void DoAnnouncement(const std::u16string text);
+
+  void UpdateAccessibleDescription();
 
   // Used to delay the ChromeVox announcements. A delay is required as
   // announcements can "override" each other if they are triggered at

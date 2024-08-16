@@ -33,7 +33,8 @@
   <settings-toggle-button
       id="faceGazeActionsEnabledButton"
       label="$i18n{faceGazeActionsEnabledLabel}"
-      pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}">
+      pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}"
+      disabled="[[disabled]]">
   </settings-toggle-button>
   <dom-repeat items="[[commandPairs_]]">
     <template>
@@ -45,14 +46,16 @@
           <cros-chip
               type="input"
               label="[[getGestureDisplayText_(item.gesture)]]"
-              on-click="onConfigureGestureButtonClick_">
+              on-click="onConfigureGestureButtonClick_"
+              disabled="[[disableConfigureControls_]]">
           </cros-chip>
         </template>
         <template is="dom-if" if="[[!item.gesture]]" restamp>
           <cros-chip
               type="input"
               label="Assign a gesture"
-              on-click="onAssignGestureButtonClick_">
+              on-click="onAssignGestureButtonClick_"
+              disabled="[[disableConfigureControls_]]">
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
           </cros-chip>
         </template>
@@ -65,7 +68,8 @@
     <cr-button
         id="addActionButton"
         class="button"
-        on-click="onAddActionButtonClick_">
+        on-click="onAddActionButtonClick_"
+        disabled="[[disableConfigureControls_]]">
       <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
       $i18n{faceGazeActionsAddAction}
     </cr-button>

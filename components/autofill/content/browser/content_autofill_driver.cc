@@ -268,7 +268,8 @@ void ContentAutofillDriver::Reset(ContentAutofillDriverFactoryPassKey) {
   owner_->router().UnregisterDriver(*this, /*driver_is_dying=*/false);
 }
 
-void ContentAutofillDriver::TriggerFormExtractionInDriverFrame() {
+void ContentAutofillDriver::TriggerFormExtractionInDriverFrame(
+    AutofillDriverRouterAndFormForestPassKey pass_key) {
   if (!IsActive()) {
     LOG(WARNING) << "Skipped Autofill message for inactive frame";
     return;

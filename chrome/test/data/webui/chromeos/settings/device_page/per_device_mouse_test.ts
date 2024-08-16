@@ -32,7 +32,7 @@ suite('<settings-per-device-mouse>', function() {
           'per-device-subsection-header', subsections[i]!.shadowRoot,
           PerDeviceSubsectionHeaderElement);
       const name =
-          subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
+          subsectionHeader.shadowRoot!.querySelector('h2')!.textContent!.trim();
       assertEquals(fakeMice[i]!.name, name);
     }
     assertFalse(subsections[0]!.get('isLastDevice'));
@@ -49,7 +49,7 @@ suite('<settings-per-device-mouse>', function() {
           'per-device-subsection-header', subsections[i]!.shadowRoot,
           PerDeviceSubsectionHeaderElement);
       const name =
-          subsectionHeader.shadowRoot!.querySelector('h2')!.textContent;
+          subsectionHeader.shadowRoot!.querySelector('h2')!.textContent!.trim();
       assertEquals(fakeMice2[i]!.name, name);
     }
     assertTrue(subsections[fakeMice2.length - 1]!.get('isLastDevice'));

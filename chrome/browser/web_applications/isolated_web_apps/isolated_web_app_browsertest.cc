@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <optional>
 #include <string_view>
 
@@ -27,6 +32,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -42,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -724,9 +731,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   app->TrustSigningKey();
   ASSERT_OK_AND_ASSIGN(auto url_info, app->Install(profile()));
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
-
-  content::TestNavigationObserver navigation_observer(
-      content::WebContents::FromRenderFrameHost(app_frame));
+  content::WebContents* app_contents =
+      content::WebContents::FromRenderFrameHost(app_frame);
+  content::TestNavigationObserver navigation_observer(app_contents);
   ASSERT_TRUE(
       ExecJs(app_frame, content::JsReplace(R"(
           const blobSource = `
@@ -748,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppApiAccessBrowserTest,
   EXPECT_THAT(navigation_observer.last_net_error_code(), Eq(net::OK));
   EXPECT_THAT(navigation_observer.last_navigation_url().spec(),
               StartsWith("blob:" + url_info.origin().GetURL().spec()));
-
+  app_frame = app_contents->GetPrimaryMainFrame();
   EXPECT_THAT(EvalJs(app_frame, "location.href").ExtractString(),
               StartsWith("blob:"));
   EXPECT_THAT(EvalJs(app_frame, "window.origin"),
@@ -1026,7 +1033,10 @@ var kApplicationServerKey = new Uint8Array([
 
   size_t last_slash = push_messaging_endpoint.rfind('/');
   ASSERT_NE(last_slash, std::string::npos);
-  ASSERT_EQ(features::kPushMessagingGcmEndpointUrl.Get(),
+  ASSERT_EQ(base::FeatureList::IsEnabled(
+                features::kPushMessagingGcmEndpointEnvironment)
+                ? push_messaging::GetGcmEndpointForChannel(chrome::GetChannel())
+                : kPushMessagingGcmEndpoint,
             push_messaging_endpoint.substr(0, last_slash + 1));
   PushMessagingAppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);

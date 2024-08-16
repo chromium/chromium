@@ -278,6 +278,18 @@ TEST_P(HTMLVideoElementTest,
   EXPECT_CALL((*MockMediaPlayer()),
               RecordVideoOcclusionState(expected_occlusion_state));
   RequestVisibility(base::DoNothing());
+
+  // Verify that `RecordVideoOcclusionState` is also called when the document is
+  // not in the `DocumentUpdateReason::kPaintClean` lifecycle state.
+  //
+  // Set the lifecycle state to a value < `DocumentUpdateReason::kPaintClean`.
+  // This will cause the tracker to used the cached
+  // `meets_visibility_threshold_` value when we request visibility.
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_CALL((*MockMediaPlayer()),
+              RecordVideoOcclusionState(expected_occlusion_state));
+  RequestVisibility(base::DoNothing());
 }
 
 TEST_P(HTMLVideoElementTest,

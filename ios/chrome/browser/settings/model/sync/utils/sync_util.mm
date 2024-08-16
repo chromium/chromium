@@ -74,7 +74,7 @@ std::u16string GetIdentityErrorInfoBarTitle(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_ITS_YOU_TITLE);
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -103,7 +103,7 @@ NSString* GetIdentityErrorInfoBarMessage(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_MAKE_SURE_YOU_CAN_ALWAYS_USE_CHROME_DATA_MESSAGE);
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -125,7 +125,7 @@ NSString* GetIdentityErrorInfoBarButtonLabel(
           IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL);
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

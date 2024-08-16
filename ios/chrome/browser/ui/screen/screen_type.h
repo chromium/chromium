@@ -11,7 +11,6 @@ typedef NS_ENUM(NSInteger, ScreenType) {
   kHistorySync,
   kDefaultBrowserPromo,
   kChoice,
-  kOmniboxPosition,
   kDockingPromo,
 
   // It isn't a screen, but a signal that no more screen should be

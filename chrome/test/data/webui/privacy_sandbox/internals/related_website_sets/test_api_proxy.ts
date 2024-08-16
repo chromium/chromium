@@ -9,7 +9,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestRelatedWebsiteSetsPageHandler extends TestBrowserProxy
     implements RelatedWebsiteSetsPageHandlerInterface {
-  private relatedWebsiteSetsInfo_?: GetRelatedWebsiteSetsResponse;
+  relatedWebsiteSetsInfo: GetRelatedWebsiteSetsResponse = {};
 
   constructor() {
     super([
@@ -19,9 +19,9 @@ export class TestRelatedWebsiteSetsPageHandler extends TestBrowserProxy
 
   getRelatedWebsiteSets() {
     this.methodCalled('getRelatedWebsiteSets');
-    return this.relatedWebsiteSetsInfo_ === undefined ?
+    return this.relatedWebsiteSetsInfo === undefined ?
         Promise.reject('RELATED_WEBSITE_SETS_INVALID') :
-        Promise.resolve({relatedWebsiteSetsInfo: this.relatedWebsiteSetsInfo_});
+        Promise.resolve({relatedWebsiteSetsInfo: this.relatedWebsiteSetsInfo});
   }
 }
 

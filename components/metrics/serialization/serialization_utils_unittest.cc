@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -238,9 +239,8 @@ TEST_F(SerializationUtilsTest, ReadLongMessageTest) {
   std::string message(SerializationUtils::kMessageMaxLength + 1, 'c');
 
   int32_t message_size = message.length() + sizeof(int32_t);
-  test_file.WriteAtCurrentPos(reinterpret_cast<const char*>(&message_size),
-                              sizeof(message_size));
-  test_file.WriteAtCurrentPos(message.c_str(), message.length());
+  test_file.WriteAtCurrentPos(base::byte_span_from_ref(message_size));
+  test_file.WriteAtCurrentPos(base::as_byte_span(message));
   test_file.Close();
 
   std::unique_ptr<MetricSample> crash =

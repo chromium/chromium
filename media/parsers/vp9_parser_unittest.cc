@@ -76,7 +76,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
     context_file_.Close();
   }
 
-  void Initialize(const std::string& filename, bool parsing_compressed_header) {
+  void Initialize(std::string_view filename, bool parsing_compressed_header) {
     base::FilePath file_path = GetTestDataFilePath(filename);
 
     stream_ = std::make_unique<base::MemoryMappedFile>();
@@ -91,7 +91,8 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
     vp9_parser_ = std::make_unique<Vp9Parser>(parsing_compressed_header);
 
     if (parsing_compressed_header) {
-      base::FilePath context_path = GetTestDataFilePath(filename + ".context");
+      base::FilePath context_path =
+          GetTestDataFilePath(std::string(filename).append(".context"));
       context_file_.Initialize(context_path,
                                base::File::FLAG_OPEN | base::File::FLAG_READ);
       ASSERT_TRUE(context_file_.IsValid());

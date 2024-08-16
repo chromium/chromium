@@ -15,8 +15,8 @@
         <span>${this.interimResult_}</span>
       </div>
       <div text="error">
-        <iron-pages id="errors" selected="${this.getErrorText_()}"
-            attr-for-selected="error" fallback-selection="other">
+        <cr-page-selector id="errors" selected="${this.getErrorText_()}"
+            attr-for-selected="error">
           <span error="no-speech">$i18n{noVoice}</span>
           <span error="audio-capture">$i18n{audioError}</span>
           <span error="network">$i18n{networkError}</span>
@@ -24,7 +24,7 @@
           <span error="language-not-supported">$i18n{languageError}</span>
           <span error="no-match">$i18n{noTranslation}</span>
           <span error="other">$i18n{otherError}</span>
-        </iron-pages>
+        </cr-page-selector>
         <iron-pages id="errorLinks" selected="${this.getErrorLink_()}"
             attr-for-selected="link" fallback-selection="none">
           <span link="none"></span>

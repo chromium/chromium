@@ -184,9 +184,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void ChildPreferredSizeChanged(views::View* child) override;
   void AddedToWidget() override;
 
-  // AccessiblePaneView:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;

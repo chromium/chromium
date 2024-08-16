@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -43,7 +44,7 @@ class DialogDelegate : public ui::WebDialogDelegate {
   }
 
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;

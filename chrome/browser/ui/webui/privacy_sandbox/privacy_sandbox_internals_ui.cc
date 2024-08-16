@@ -1,6 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -100,8 +105,8 @@ void PrivacySandboxInternalsUI::BindInterface(
     mojo::PendingReceiver<
         private_state_tokens::mojom::PrivateStateTokensPageHandler> receiver) {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
-    private_state_tokens_handler_ =
-        std::make_unique<PrivateStateTokensHandler>(std::move(receiver));
+    private_state_tokens_handler_ = std::make_unique<PrivateStateTokensHandler>(
+        web_ui(), std::move(receiver));
   }
 }
 #endif

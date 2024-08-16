@@ -5,7 +5,10 @@
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  enable_request_header_integrity = false
+  enable_request_header_integrity = is_chrome_branded
 
   channel_name_header_name = ""
+  copyright_header_name = ""
+  lastchange_year_header_name = ""
+  validate_header_name = ""
 }

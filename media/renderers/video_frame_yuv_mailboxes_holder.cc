@@ -42,7 +42,7 @@ viz::SharedImageFormat PlaneSharedImageFormat(int num_channels,
     case 4:
       return viz::SinglePlaneFormat::kRGBA_8888;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns multiplanar format equivalent of a VideoPixelFormat.
@@ -68,7 +68,7 @@ viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
     case PIXEL_FORMAT_I420A:
       return viz::MultiPlaneFormat::kI420A;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

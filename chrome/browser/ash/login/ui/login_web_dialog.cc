@@ -9,13 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -54,7 +54,7 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
                                           base::Unretained(this)));
   RegisterOnDialogClosedCallback(
       base::BindOnce(&LoginWebDialog::OnDialogClosing, base::Unretained(this)));
-  set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+  set_dialog_modal_type(ui::mojom::ModalType::kSystem);
   set_dialog_content_url(url);
   set_minimum_dialog_size(kMinSize);
   set_dialog_title(title);

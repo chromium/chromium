@@ -154,7 +154,7 @@ TEST_F(ClipboardProviderTest, NotFromOmniboxFocus) {
 
 TEST_F(ClipboardProviderTest, EmptyClipboard) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   ClearClipboard();
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
@@ -169,7 +169,7 @@ TEST_F(ClipboardProviderTest, EmptyClipboard) {
 // empty on start.
 TEST_F(ClipboardProviderTest, ClipboardIsCurrentURL) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   SetClipboardUrl(GURL(kCurrentURL));
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
@@ -202,7 +202,7 @@ TEST_F(ClipboardProviderTest, MatchesUrl) {
 
 TEST_F(ClipboardProviderTest, MatchesText) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   SetClipboardText(kClipboardText);
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
@@ -216,7 +216,7 @@ TEST_F(ClipboardProviderTest, MatchesText) {
 
 TEST_F(ClipboardProviderTest, MatchesImage) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
   scoped_refptr<base::RefCountedMemory> image_bytes =
@@ -233,7 +233,7 @@ TEST_F(ClipboardProviderTest, MatchesImage) {
 
 TEST_F(ClipboardProviderTest, DeleteMatch) {
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   SetClipboardText(kClipboardText);
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
@@ -251,7 +251,7 @@ TEST_F(ClipboardProviderTest, CreateBlankURLMatchOnStart) {
 
   SetClipboardUrl(GURL(kClipboardURL));
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
       false);
@@ -268,7 +268,7 @@ TEST_F(ClipboardProviderTest, CreateBlankTextMatchOnStart) {
   feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   SetClipboardText(kClipboardText);
   provider_->Start(
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS),
@@ -287,7 +287,7 @@ TEST_F(ClipboardProviderTest, CreateBlankImageMatchOnStart) {
   feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
   SetClipboardImage(test_image);
@@ -305,7 +305,7 @@ TEST_F(ClipboardProviderTest, SkipImageMatchGivenWantAsynchronousMatchesFalse) {
   feature_list.InitAndEnableFeature(omnibox::kClipboardSuggestionContentHidden);
 
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
   SetClipboardImage(test_image);
@@ -325,7 +325,7 @@ TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
   EXPECT_CALL(*client_.get(), GetSchemeClassifier())
       .WillOnce(testing::ReturnRef(classifier_));
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   AutocompleteMatch match = provider_->NewBlankURLMatch();
   CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
   waiter.WaitForMatchUpdated();
@@ -337,7 +337,7 @@ TEST_F(ClipboardProviderTest, CreateURLMatchWithContent) {
 TEST_F(ClipboardProviderTest, CreateTextMatchWithContent) {
   SetClipboardText(kClipboardText);
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   AutocompleteMatch match = provider_->NewBlankTextMatch();
   CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
   waiter.WaitForMatchUpdated();
@@ -351,7 +351,7 @@ TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
   gfx::Image test_image = gfx::test::CreateImage(/*width=*/10, /*height=*/10);
   SetClipboardImage(test_image);
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
   AutocompleteMatch match = provider_->NewBlankImageMatch();
   CreateMatchWithContentCallbackWaiter waiter(provider_, &match);
   waiter.WaitForMatchUpdated();
@@ -365,7 +365,7 @@ TEST_F(ClipboardProviderTest, CreateImageMatchWithContent) {
 TEST_F(ClipboardProviderTest, Android_MergedWithPZPSGroupOnNTP) {
   SetClipboardText(kClipboardText);
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   AutocompleteInput input(std::u16string(), metrics::OmniboxEventProto::NTP,
                           classifier_);
@@ -386,7 +386,7 @@ TEST_F(ClipboardProviderTest, Android_MergedWithPZPSGroupOnNTP) {
 TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionOnSearchActivity) {
   SetClipboardText(kClipboardText);
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   AutocompleteInput input(std::u16string(),
                           metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET,
@@ -407,7 +407,7 @@ TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionOnSearchActivity) {
 TEST_F(ClipboardProviderTest, Android_StandaloneSuggestionInNonNTPContext) {
   SetClipboardText(kClipboardText);
   client_->set_template_url_service(
-      search_engines_test_environment_.ReleaseTemplateURLService());
+      search_engines_test_environment_.template_url_service());
 
   AutocompleteInput input =
       CreateAutocompleteInput(metrics::OmniboxFocusType::INTERACTION_FOCUS);

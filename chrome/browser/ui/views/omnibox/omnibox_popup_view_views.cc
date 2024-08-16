@@ -181,6 +181,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   UpdateExpandedCollapsedAccessibleState();
   UpdateAccessibleActiveDescendantForInvokingView();
 }
@@ -337,6 +338,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
     result_view->SetMatch(match);
     // Set visibility of the result view based on whether the group is hidden.
     result_view->SetVisible(!group_hidden && !row_hidden);
+    result_view->UpdateAccessibilityProperties();
 
     const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
     if (bitmap) {
@@ -611,7 +613,6 @@ void OmniboxPopupViewViews::SetSuggestionGroupVisibility(
 }
 
 void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
   if (!IsOpen()) {
     node_data->AddState(ax::mojom::State::kInvisible);
   }

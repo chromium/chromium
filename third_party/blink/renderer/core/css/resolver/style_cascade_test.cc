@@ -88,12 +88,10 @@ class TestCascadeResolver {
 struct AddOptions {
   CascadeOrigin origin = CascadeOrigin::kAuthor;
   unsigned link_match_type = CSSSelector::kMatchAll;
-  CSSSelector::Signal signal = CSSSelector::Signal::kNone;
   unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style = false;
   bool is_try_style = false;
   bool is_try_tactics_style = false;
-  bool is_invisible = false;
 };
 
 class TestCascade {
@@ -146,12 +144,10 @@ class TestCascade {
     cascade_.MutableMatchResult().AddMatchedProperties(
         set, options.origin,
         {.link_match_type = options.link_match_type,
-         .signal = options.signal,
          .layer_order = options.layer_order,
          .is_inline_style = options.is_inline_style,
          .is_try_style = options.is_try_style,
-         .is_try_tactics_style = options.is_try_tactics_style,
-         .is_invisible = options.is_invisible});
+         .is_try_tactics_style = options.is_try_tactics_style});
   }
 
   void Apply(CascadeFilter filter = CascadeFilter()) {
@@ -434,15 +430,6 @@ class StyleCascadeTest : public PageTestBase {
       const HeapHashMap<CSSPropertyName, Member<const CSSValue>>& map,
       String name) {
     return CssText(map.at(PropertyName(name)));
-  }
-
-  bool IsUseCounted(mojom::WebFeature feature) {
-    return GetDocument().IsUseCounted(feature);
-  }
-
-  void ClearUseCounter(mojom::WebFeature feature) {
-    GetDocument().ClearUseCounterForTesting(feature);
-    DCHECK(!IsUseCounted(feature));
   }
 };
 
@@ -4176,16 +4163,16 @@ class TopAnchorEvaluator : public AnchorEvaluator {
   std::optional<LayoutUnit> Evaluate(
       const AnchorQuery&,
       const ScopedCSSName* position_anchor,
-      const std::optional<InsetAreaOffsets>&) override {
+      const std::optional<PositionAreaOffsets>&) override {
     if (GetMode() == Mode::kTop) {
       return LayoutUnit(1);
     }
     return std::nullopt;
   }
-  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+  std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
       const ScopedCSSName*,
-      InsetArea) override {
-    return InsetAreaOffsets();
+      PositionArea) override {
+    return PositionAreaOffsets();
   }
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override {
@@ -4276,153 +4263,6 @@ TEST_F(StyleCascadeTest, SubstitutingLhCycles) {
 
   EXPECT_EQ("0px", cascade.ComputedValue("--y"));
   EXPECT_EQ("0px", cascade.ComputedValue("--z"));
-}
-
-TEST_F(StyleCascadeTest, SignalBareDeclarationShift_NoSignal) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green");
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
-}
-
-TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Overwritten) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kBareDeclarationShift});
-  cascade.Add("color:red");  // Overwrites signal.
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
-}
-
-TEST_F(StyleCascadeTest, SignalBareDeclarationShift_NoChange) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green");
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kBareDeclarationShift});
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
-}
-
-TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Uncontested) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kBareDeclarationShift});
-  cascade.Apply();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
-}
-
-TEST_F(StyleCascadeTest, SignalBareDeclarationShift_Winning) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:red");
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kBareDeclarationShift});
-  cascade.Apply();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSBareDeclarationShift));
-}
-
-TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_NoSignal) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green");
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Overwritten) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
-  cascade.Add("color:red");  // Overwrites signal.
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_NoChange) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green");
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
-  cascade.Apply();
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Uncontested) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
-  cascade.Apply();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, SignalNestedGroupRuleSpecificity_Winning) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("color:red");
-  cascade.Add("color:green",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
-  cascade.Apply();
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, NoInvisibleRule) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px");
-  cascade.Add("top:2px");
-  cascade.Apply();
-  EXPECT_EQ("2px", cascade.ComputedValue("top"));
-}
-
-TEST_F(StyleCascadeTest, InvisibleRuleHigherPriority) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px");
-  cascade.Add("top:2px", {.is_invisible = true});
-  cascade.Apply();
-  EXPECT_EQ("1px", cascade.ComputedValue("top"));
-}
-
-TEST_F(StyleCascadeTest, InvisibleRuleLowerPriority) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px", {.is_invisible = true});
-  cascade.Add("top:2px");
-  cascade.Apply();
-  EXPECT_EQ("2px", cascade.ComputedValue("top"));
-}
-
-TEST_F(StyleCascadeTest, RevertToInvisibleRule) {
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px", {.origin = CascadeOrigin::kUserAgent});
-  cascade.Add("top:2px",
-              {.origin = CascadeOrigin::kUser, .is_invisible = true});
-  cascade.Add("top:revert", {.origin = CascadeOrigin::kAuthor});
-  cascade.Apply();
-  EXPECT_EQ("1px", cascade.ComputedValue("top"));
-}
-
-TEST_F(StyleCascadeTest, SignalingInvisibleRule) {
-  ClearUseCounter(WebFeature::kCSSNestedGroupRuleSpecificity);
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px");
-  cascade.Add("top:2px",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity,
-               .is_invisible = true});
-  cascade.Apply();
-  EXPECT_EQ("1px", cascade.ComputedValue("top"));
-  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
-}
-
-TEST_F(StyleCascadeTest, SignalAgainstInvisible) {
-  ClearUseCounter(WebFeature::kCSSNestedGroupRuleSpecificity);
-  TestCascade cascade(GetDocument());
-  cascade.Add("top:1px");
-  cascade.Add("top:2px", {.is_invisible = true});
-  cascade.Add("top:2px",
-              {.signal = CSSSelector::Signal::kNestedGroupRuleSpecificity});
-  cascade.Apply();
-  EXPECT_EQ("2px", cascade.ComputedValue("top"));
-  // This case should not trigger the use counter, because signals should only
-  // be processed for the invisible pass of the cascade, i.e. the cascade as
-  // it would be with invisible rules included. With invisible rules
-  // included, the signaling declaration doesn't matter, because we already
-  // had 2px in the cascade.
-  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSNestedGroupRuleSpecificity));
 }
 
 TEST_F(StyleCascadeTest, CSSFunctionTrivial) {

@@ -23,6 +23,7 @@
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -78,9 +79,6 @@ class PdfInkModule {
     // Gets current zoom factor.
     virtual float GetZoom() const = 0;
 
-    // Notifies the client that a stroke has finished drawing or erasing.
-    virtual void StrokeFinished() {}
-
     // Notifies the client to invalidate the `rect`.  Coordinates are
     // screen-based, based on the same viewport origin that was used to specify
     // the `blink::WebMouseEvent` positions during stroking.
@@ -88,6 +86,12 @@ class PdfInkModule {
 
     // Returns whether the page at `index` is visible or not.
     virtual bool IsPageVisible(int index) = 0;
+
+    // Notifies the client that a stroke has finished drawing or erasing.
+    virtual void StrokeFinished() {}
+
+    // Asks the client to change the cursor to `bitmap`.
+    virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
 
     // Returns the 0-based page index for the given `point` if it is on a
     // visible page, or -1 if `point` is not on a visible page.
@@ -109,6 +113,9 @@ class PdfInkModule {
 
   // Returns whether the message was handled or not.
   bool OnMessage(const base::Value::Dict& message);
+
+  // Informs PdfInkModule that the plugin geometry changed.
+  void OnGeometryChanged();
 
   // For testing only. Returns the current `PdfInkBrush` used to draw strokes,
   // or nullptr if there is no brush.
@@ -275,6 +282,8 @@ class PdfInkModule {
 
   void ApplyUndoRedoDiscards(
       const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
+
+  void MaybeSetCursor();
 
   const raw_ref<Client> client_;
 

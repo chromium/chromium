@@ -229,7 +229,7 @@ void RecordParentAccessUsage(const AccountId& child_account_id,
           ParentAccessControllerImpl::UMAUsage::kReauhLoginScreen);
       return;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown SupervisedAction";
+  NOTREACHED() << "Unknown SupervisedAction";
 }
 
 PinRequestView::SubmissionResult ParentAccessControllerImpl::OnPinSubmitted(

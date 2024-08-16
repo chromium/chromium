@@ -1175,7 +1175,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
-      invalidate: ["accent-color", "background-current-color", "border-visual", "color"],
+      invalidate: ["accent-color", "background-current-color", "border-visual", "color", "outline"],
     },
     {
       name: "direction",
@@ -1838,7 +1838,6 @@
       converter: "ConvertAnchorName",
       keywords: ["none"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       invalidate: ["layout"],
     },
@@ -2966,6 +2965,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
+      valid_for_marker: true,
       valid_for_permission_element: true,
     },
     {
@@ -3017,7 +3017,7 @@
         "table-row", "table-column-group", "table-column", "table-cell",
         "table-caption", "-webkit-box", "-webkit-inline-box", "flex",
         "inline-flex", "grid", "inline-grid", "contents", "flow-root", "none",
-        "flow", "math", "ruby", "ruby-text"
+        "flow", "math", "ruby", "ruby-text", "masonry", "inline-masonry"
       ],
       typedom_types: ["Keyword"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
@@ -3344,7 +3344,7 @@
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
       style_builder_template_args: {
-        type: "Column",
+        type: "GridTemplateColumns",
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
@@ -3362,7 +3362,7 @@
       type_name: "ComputedGridTrackList",
       style_builder_template: "grid",
       style_builder_template_args: {
-        type: "Row",
+        type: "GridTemplateRows",
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
@@ -3834,6 +3834,50 @@
       typedom_types: ["Keyword"],
       default_value: "luminance",
       invalidate: ["paint"],
+    },
+    {
+      name: "masonry-template-tracks",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      layout_dependent: true,
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/computed_grid_track_list.h"],
+      default_value: "ComputedGridTrackList::DefaultMasonryTrackList()",
+      type_name: "ComputedGridTrackList",
+      style_builder_template: "grid",
+      style_builder_template_args: {
+        type: "MasonryTemplateTracks",
+      },
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
+      name: "masonry-track-end",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
+      default_value: "GridPosition()",
+      type_name: "GridPosition",
+      keywords: ["auto"],
+      typedom_types: ["Keyword"],
+      converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
+    },
+    {
+      name: "masonry-track-start",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "external",
+      include_paths: ["third_party/blink/renderer/core/style/grid_position.h"],
+      default_value: "GridPosition()",
+      type_name: "GridPosition",
+      keywords: ["auto"],
+      typedom_types: ["Keyword"],
+      converter: "ConvertGridPosition",
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSMasonryLayout",
     },
     {
       name: "math-shift",
@@ -4535,7 +4579,7 @@
       // @position-try-styling rely on this being high-priority, so that
       // declarations from @position-try blocks can be applied conditionally
       // based on whether or not we're out-of-flow positioned. Also, it needs to
-      // have a priority higher than inset-area which is already at priority:1.
+      // have a priority higher than position-area which is already at priority:1.
       priority: 2,
       valid_for_permission_element: true,
       invalidate: ["clip", "layout", "scroll-anchor"],
@@ -4553,10 +4597,9 @@
       converter: "ConvertPositionAnchor",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSAnchorPositioning",
       valid_for_permission_element: true,
       valid_for_position_try: true,
-      // Needs to be applied before inset-area which in turn needs to be applied
+      // Needs to be applied before position-area which in turn needs to be applied
       // before inset properties.
       priority: 2,
       invalidate: ["layout", "paint"],
@@ -4591,7 +4634,6 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSPositionTryOrder",
     },
     {
       name: "position-visibility",
@@ -4607,7 +4649,6 @@
       keywords: ["always", "anchors-visible", "no-overflow"],
       typedom_types: ["Keyword"],
       invalidate: ["layout", "paint"],
-      runtime_flag: "CSSPositionVisibility",
     },
     {
       name: "quotes",
@@ -5440,6 +5481,12 @@
       runtime_flag: "CSSTextAutoSpace",
     },
     {
+      name: "text-box",
+      longhands: ["text-box-trim", "text-box-edge"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSTextBoxTrim",
+    },
+    {
       name: "text-box-edge",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
@@ -5459,7 +5506,7 @@
       field_group: "box",
       field_template: "keyword",
       default_value: "none",
-      keywords: ["none", "start", "end", "both"],
+      keywords: ["none", "trim-start", "trim-end", "trim-both"],
       typedom_types: ["Keyword"],
       invalidate: ["layout"],
       runtime_flag: "CSSTextBoxTrim",
@@ -5973,12 +6020,26 @@
       field_group: "*",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       converter: "ConvertViewTransitionClass",
-      type_name: "Vector<AtomicString>",
-      default_value: "Vector<AtomicString, 0>()",
+      type_name: "ScopedCSSNameList",
+      default_value: "nullptr",
+      wrapper_pointer_name: "Member",
       field_template: "external",
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSViewTransitionClass",
+    },
+    {
+      name: "view-transition-group",
+      field_group: "*",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      converter: "ConvertViewTransitionGroup",
+      type_name: "StyleViewTransitionGroup",
+      default_value: "StyleViewTransitionGroup::Normal()",
+      include_paths: ["third_party/blink/renderer/core/style/style_view_transition_group.h"],
+      field_template: "external",
+      keywords: ["normal", "contain", "nearest"],
+      typedom_types: ["Keyword"],
+      runtime_flag: "NestedViewTransition",
     },
     {
       name: "view-transition-name",
@@ -7606,30 +7667,43 @@
       runtime_flag: "ViewTransitionOnNavigation",
     },
     {
-      name: "inset-area",
+      name: "position-area",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       style_builder_custom_functions: ["value", "inherit"],
       field_group: "*",
       field_template: "external",
-      include_paths: ["third_party/blink/renderer/core/style/inset_area.h"],
-      converter: "ConvertInsetArea",
-      default_value: "InsetArea()",
-      type_name: "InsetArea",
+      include_paths: ["third_party/blink/renderer/core/style/position_area.h"],
+      converter: "ConvertPositionArea",
+      default_value: "PositionArea()",
+      type_name: "PositionArea",
       keywords: [
         "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
         "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
       ],
       typedom_types: ["Keyword"],
       valid_for_position_try: true,
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionAreaProperty",
       valid_for_permission_element: true,
-      // inset-area needs to be applied before inset properties since
+      // position-area needs to be applied before inset properties since
       // anchor() functions compute relative to the containing block that is
-      // modified by inset-area in AnchorEvaluatorImpl.
+      // modified by position-area in AnchorEvaluatorImpl.
       priority: 1,
       invalidate: ["layout", "out-of-flow", "paint"],
     },
+    {
+      name: "inset-area",
+      surrogate_for: "position-area",
+      runtime_flag: "CSSInsetAreaProperty",
 
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      keywords: [
+        "none", "top", "bottom", "center", "left", "right", "x-start", "x-end",
+        "y-start", "y-end", "start", "end", "self-start", "self-end", "all"
+      ],
+      typedom_types: ["Keyword"],
+      valid_for_position_try: true,
+      priority: 1,
+    },
     // Shorthands
     {
       name: "animation",
@@ -8171,7 +8245,6 @@
       name: "position-try",
       longhands: ["position-try-order", "position-try-options"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSPositionTryOrder",
     },
     {
       // Variant of the "position-try" shorthand which has the new

@@ -57,8 +57,8 @@ source_set("model") {
     "signin_client_factory.h",
     "signin_error_controller_factory.cc",
     "signin_error_controller_factory.h",
-    "signin_metrics_service_factory.cc",
     "signin_metrics_service_factory.h",
+    "signin_metrics_service_factory.mm",
   ]
   deps = [
     ":capabilities_types",
@@ -93,6 +93,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -185,6 +186,8 @@ source_set("system_identity") {
 
 source_set("system_identity_manager") {
   sources = [
+    "account_profile_mapper.h",
+    "account_profile_mapper.mm",
     "refresh_access_token_error.h",
     "system_identity_interaction_manager.h",
     "system_identity_manager.h",
@@ -197,6 +200,8 @@ source_set("system_identity_manager") {
     ":capabilities_types",
     ":system_identity",
     "//components/signin/internal/identity_manager",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }
 
@@ -226,6 +231,7 @@ source_set("fake_system_identity_manager") {
     ":fake_system_identity",
     ":system_identity",
     ":system_identity_manager",
+    ":test_account_info",
     ":test_constants",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -260,6 +266,22 @@ source_set("fake_system_identity") {
   deps = [
     ":system_identity",
     "//base",
+  ]
+}
+
+source_set("test_account_info") {
+  testonly = true
+  sources = [
+    "test_account_info.h",
+    "test_account_info.mm",
+    "test_account_info_builder.h",
+    "test_account_info_builder.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/signin/public/identity_manager:tribool",
   ]
 }
 
@@ -347,6 +369,7 @@ source_set("unit_tests") {
   sources = [
     "account_capabilities_fetcher_ios_unittest.mm",
     "account_consistency_browser_agent_unittest.mm",
+    "account_profile_mapper_unittest.mm",
     "authentication_service_observer_bridge_unittest.mm",
     "authentication_service_unittest.mm",
     "chrome_account_manager_service_observer_bridge_unittest.mm",
@@ -389,6 +412,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

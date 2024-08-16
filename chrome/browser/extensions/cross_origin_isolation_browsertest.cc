@@ -7,7 +7,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -18,6 +17,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
 
   // Prevent navigation from a web frame to a non-web accessible resource.
   {
-    GURL invalid_request_url = GURL(chrome::kExtensionInvalidRequestURL);
+    GURL invalid_request_url = GURL(kExtensionInvalidRequestURL);
     net::Error err_blocked_by_client = net::ERR_BLOCKED_BY_CLIENT;
 
     // Navigate the main frame with a renderer initiated navigation to a blank

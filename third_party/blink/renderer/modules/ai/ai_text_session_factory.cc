@@ -47,7 +47,7 @@ void AITextSessionFactory::CanCreateTextSession(
       AIMetrics::AIAPI::kCanCreateSession);
   if (!GetAIRemote().is_connected()) {
     std::move(callback).Run(
-        AIModelAvailability::kNo,
+        AICapabilityAvailability::kNo,
         mojom::blink::ModelAvailabilityCheckResult::kNoServiceNotRunning);
     return;
   }
@@ -55,25 +55,25 @@ void AITextSessionFactory::CanCreateTextSession(
   GetAIRemote()->CanCreateTextSession(WTF::BindOnce(
       [](AITextSessionFactory* factory, CanCreateTextSessionCallback callback,
          mojom::blink::ModelAvailabilityCheckResult result) {
-        AIModelAvailability availability;
+        AICapabilityAvailability availability;
         if (result == mojom::blink::ModelAvailabilityCheckResult::kReadily) {
-          availability = AIModelAvailability::kReadily;
+          availability = AICapabilityAvailability::kReadily;
         } else if (result ==
                    mojom::blink::ModelAvailabilityCheckResult::kAfterDownload) {
           // TODO(crbug.com/345357441): Implement the
           // `ontextmodeldownloadprogress` event.
-          availability = AIModelAvailability::kAfterDownload;
+          availability = AICapabilityAvailability::kAfterDownload;
         } else {
           // If the text session cannot be created, logs the error message to
           // the console.
-          availability = AIModelAvailability::kNo;
+          availability = AICapabilityAvailability::kNo;
           factory->GetExecutionContext()->AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
               ConvertModelAvailabilityCheckResultToDebugString(result));
         }
         base::UmaHistogramEnumeration(
-            AIMetrics::GetAIModelAvailabilityMetricName(
+            AIMetrics::GetAICapabilityAvailabilityMetricName(
                 AIMetrics::AISessionType::kText),
             availability);
         std::move(callback).Run(availability, result);
@@ -83,6 +83,7 @@ void AITextSessionFactory::CanCreateTextSession(
 
 void AITextSessionFactory::CreateTextSession(
     mojom::blink::AITextSessionSamplingParamsPtr sampling_params,
+    const WTF::String& system_prompt,
     CreateTextSessionCallback callback) {
   base::UmaHistogramEnumeration(
       AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kText),
@@ -96,6 +97,7 @@ void AITextSessionFactory::CreateTextSession(
       MakeGarbageCollected<AITextSession>(GetExecutionContext(), task_runner_);
   GetAIRemote()->CreateTextSession(
       text_session->GetModelSessionReceiver(), std::move(sampling_params),
+      system_prompt,
       WTF::BindOnce(
           [](CreateTextSessionCallback callback, AITextSession* text_session,
              bool success) {

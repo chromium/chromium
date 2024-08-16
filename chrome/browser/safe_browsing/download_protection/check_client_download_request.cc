@@ -271,7 +271,7 @@ void CheckClientDownloadRequest::LogDeepScanningPrompt(bool did_prompt) const {
 
   base::UmaHistogramBoolean("SBClientDownload.ServerRequestsDeepScanningPrompt",
                             did_prompt);
-  if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
     base::UmaHistogramBoolean(
         "SBClientDownload.ServerRequestsDeepScanningPromptPasswordProtected",
         did_prompt);
@@ -376,7 +376,7 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
     return false;
   }
 
-  if (DownloadItemWarningData::IsEncryptedArchive(item_)) {
+  if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
     return false;
   }
 
@@ -434,7 +434,7 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
-  if (!DownloadItemWarningData::IsEncryptedArchive(item_)) {
+  if (!DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
     return false;
   }
 
@@ -462,7 +462,7 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kEncryptedArchivesMetadata);
+  return true;
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {

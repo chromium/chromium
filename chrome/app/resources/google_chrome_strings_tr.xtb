@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan ilgi alanlarınızı göstermesini isteyebilir. Chrome en çok 3 ilgi alanı paylaşabilir.</translation>
 <translation id="2563121210305478421">Chrome yeniden başlatılsın mı?</translation>
 <translation id="2569974318947988067">Chrome, gezinmeleri HTTPS'ye yükseltmeye çalışır</translation>
+<translation id="2571392474191184472">Chrome'u kuruluşunuz yönetiyor</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chrome profilinde açık. Göz atma işlemlerinizi ayrı tutmak isterseniz Chrome, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="2580411288591421699">Şu anda çalışmakta olan Google Chrome ile aynı sürüm yüklenemez. Lütfen Google Chrome'u kapatın ve tekrar deneyin.</translation>
 <translation id="2586406160782125153">Bu işlem, tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
@@ -211,6 +212,7 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome, Windows 10 veya daha sonraki bir sürümü gerektirir.</translation>
 <translation id="3835168907083856002">Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chrome profili oluşturacak</translation>
+<translation id="383928141529488001">Google Chrome'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lütfen tüm Google Chrome pencerelerini kapatıp tekrar deneyin.</translation>
 <translation id="3865754807470779944">Chrome sürümü <ph name="PRODUCT_VERSION" /> yüklendi</translation>
 <translation id="3873044882194371212">Bağlantıyı Chrome &amp;gizli penceresinde aç</translation>
@@ -419,6 +421,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>
 <translation id="6943584222992551122">Bu kullanıcının göz atma verileri bu cihazdan silinecektir. Verileri kurtarmak için Chrome'da <ph name="USER_EMAIL" /> olarak oturum açın.</translation>
 <translation id="6967962315388095737">Google Chrome Beta'nın mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
+<translation id="6979589607440534284">Chrome'un bazı dosyaları neden engellediğini öğrenin, yeni sekmede açılır</translation>
 <translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Yükleme İşlemi Durduruldu.</translation>
@@ -441,6 +444,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7177959540995930968">Chrome ayarlarından bu özellikler hakkında daha fazla bilgi edinebilirsiniz.</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chrome kuruluşunuz tarafından kapatılır.</translation>
 <translation id="7242029209006116544">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chrome verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz.<ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Chrome'u <ph name="MANAGER" /> yönetiyor</translation>
 <translation id="7295052994004373688">Bu dil, Google Chrome kullanıcı arayüzünü görüntülemek için kullanılır</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7302361266603927550">Chrome verilerinizden bazıları henüz Google Hesabınıza kaydedilmedi. Oturumunuzu kapatmadan önce birkaç dakika bekleyin. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
@@ -574,6 +578,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8989968390305463310">Tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Silme işlemi otomatik olarak gerçekleştirilir. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam edebilir.</translation>
 <translation id="8999117580775242387">Chrome, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>
+<translation id="9014771989710951291">Chrome'u birden fazla kuruluş yönetiyor</translation>
 <translation id="9024318700713112071">Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="9053892488859122171">ChromeOS Flex sistemi</translation>
 <translation id="9090566250983691233">Chrome'un bazı dosyaları neden engellediğini öğrenin</translation>

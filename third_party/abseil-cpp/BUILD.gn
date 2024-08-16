@@ -82,7 +82,13 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/hash",
     "//third_party/abseil-cpp/absl/log:absl_check",
     "//third_party/abseil-cpp/absl/log:absl_log",
+    "//third_party/abseil-cpp/absl/log:absl_vlog_is_on",
     "//third_party/abseil-cpp/absl/log:die_if_null",
+    "//third_party/abseil-cpp/absl/log:globals",
+    "//third_party/abseil-cpp/absl/log:initialize",
+    "//third_party/abseil-cpp/absl/log:log_entry",
+    "//third_party/abseil-cpp/absl/log:log_sink",
+    "//third_party/abseil-cpp/absl/log:log_sink_registry",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
@@ -137,6 +143,9 @@ source_set("absl_full") {
 
   if (build_with_chromium) {
     visibility = [
+      # Used by some test executables, but not by anything that is a
+      # part of Chrome.
+      "//components/optimization_guide/internal/*",
       "//third_party/fuzztest:*",
 
       # GoogleTest doesn't actually need absl_full, but this makes gn check

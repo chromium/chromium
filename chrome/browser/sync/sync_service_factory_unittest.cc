@@ -21,8 +21,8 @@
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
@@ -80,17 +80,17 @@ class SyncServiceFactoryTest : public testing::Test {
   ~SyncServiceFactoryTest() override = default;
 
   // Returns the collection of default datatypes.
-  syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(53 == syncer::GetNumModelTypes(),
+  syncer::DataTypeSet DefaultDatatypes() {
+    static_assert(53 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
                   "ios/c/b/sync/model/sync_service_factory_unittest.cc");
 
-    syncer::ModelTypeSet datatypes;
+    syncer::DataTypeSet datatypes;
 
     // These preprocessor conditions and their order should be in sync with
-    // preprocessor conditions in ChromeSyncClient::CreateModelTypeControllers:
+    // preprocessor conditions in ChromeSyncClient::CreateDataTypeControllers:
 
     // ChromeSyncClient types.
     datatypes.Put(syncer::READING_LIST);
@@ -224,10 +224,10 @@ TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
 TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  const syncer::ModelTypeSet default_types = DefaultDatatypes();
+  syncer::DataTypeSet types = sync_service->GetRegisteredDataTypesForTest();
+  const syncer::DataTypeSet default_types = DefaultDatatypes();
   EXPECT_EQ(default_types.size(), types.size());
-  for (syncer::ModelType type : default_types) {
+  for (syncer::DataType type : default_types) {
     EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
   }
 }

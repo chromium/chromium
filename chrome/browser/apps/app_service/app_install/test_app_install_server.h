@@ -33,7 +33,11 @@ class TestAppInstallServer {
 
   // Sets up a response for a test web app installation, and returns the Package
   // ID and App ID for the app.
-  SetupIds SetupDefaultServerResponse();
+  SetupIds SetUpWebAppResponse();
+
+  // Sets up a response for a test website shortcut installation, and returns
+  // the Package ID and App ID for the website.
+  SetupIds SetUpWebsiteResponse();
 
   // Sets up a response for the app with `package_id` to install through a given
   // URL.
@@ -55,6 +59,7 @@ class TestAppInstallServer {
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
+  SetupIds SetUpWebAppInstallInternal(PackageType package_type);
 
   net::EmbeddedTestServer server_;
   std::map<std::string, std::unique_ptr<net::test_server::BasicHttpResponse>>

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -26,6 +29,9 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
     /**
      * Build the coordinator that manages the edge-to-edge bottom chin.
      *
+     * @param androidView The Android view for the bottom chin.
+     * @param keyboardVisibilityDelegate A {@link KeyboardVisibilityDelegate} for watching keyboard
+     *     visibility events.
      * @param layoutManager The {@link LayoutManager} for adding new scene overlays.
      * @param edgeToEdgeController The {@link EdgeToEdgeController} for observing the edge-to-edge
      *     status and window bottom insets.
@@ -35,11 +41,15 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
      *     browser controls heights.
      */
     public EdgeToEdgeBottomChinCoordinator(
+            View androidView,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
             @NonNull BottomControlsStacker bottomControlsStacker) {
         this(
+                androidView,
+                keyboardVisibilityDelegate,
                 layoutManager,
                 edgeToEdgeController,
                 navigationBarColorProvider,
@@ -49,6 +59,8 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
 
     @VisibleForTesting
     EdgeToEdgeBottomChinCoordinator(
+            View androidView,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull LayoutManager layoutManager,
             @NonNull EdgeToEdgeController edgeToEdgeController,
             @NonNull NavigationBarColorProvider navigationBarColorProvider,
@@ -65,13 +77,16 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
                         .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, initNavBarColor)
                         .build();
         PropertyModelChangeProcessor.create(
-                model, sceneLayer, EdgeToEdgeBottomChinViewBinder::bind);
+                model,
+                new EdgeToEdgeBottomChinViewBinder.ViewHolder(androidView, sceneLayer),
+                EdgeToEdgeBottomChinViewBinder::bind);
         mLayoutManager.createCompositorMCP(
                 model, sceneLayer, EdgeToEdgeBottomChinViewBinder::bindCompositorMCP);
 
         mMediator =
                 new EdgeToEdgeBottomChinMediator(
                         model,
+                        keyboardVisibilityDelegate,
                         mLayoutManager,
                         edgeToEdgeController,
                         navigationBarColorProvider,

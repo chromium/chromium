@@ -5,15 +5,13 @@
 #ifndef EXTENSIONS_COMMON_CONTEXT_DATA_H_
 #define EXTENSIONS_COMMON_CONTEXT_DATA_H_
 
-#include <memory>
-
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace extensions {
 
 // ContextData is an interface that supports a simple API to verify whether
-// a given context is an isolated application. It is used as a base class for
+// a given context is an isolated context. It is used as a base class for
 // FrameContextData, which is an abstract class that's used by concrete classes
 // to implement both the ContextData and FrameContextData APIs. This class
 // allows browser- and renderer-based code to implement these APIs based off
@@ -22,8 +20,7 @@ namespace extensions {
 class ContextData {
  public:
   virtual ~ContextData() = default;
-  virtual std::unique_ptr<ContextData> Clone() const = 0;
-  virtual bool IsIsolatedApplication() const = 0;
+  virtual bool HasIsolatedContextCapability() const = 0;
 };
 
 }  // namespace extensions

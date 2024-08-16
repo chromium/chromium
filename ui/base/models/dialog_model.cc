@@ -121,9 +121,8 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
   model_callback = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogCanceled() instead.
-  model_button.emplace(
-      base::BindRepeating([](const Event&) { NOTREACHED_IN_MIGRATION(); }),
-      params);
+  model_button.emplace(base::BindRepeating([](const Event&) { NOTREACHED(); }),
+                       params);
 
   return *this;
 }

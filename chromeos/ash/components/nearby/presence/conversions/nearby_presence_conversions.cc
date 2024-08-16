@@ -201,7 +201,7 @@ mojo_base::mojom::AbslStatusCode ConvertStatusToMojom(absl::Status status) {
       return mojo_base::mojom::AbslStatusCode::kUnauthenticated;
     case absl::StatusCode::
         kDoNotUseReservedForFutureExpansionUseDefaultInSwitchInstead_:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

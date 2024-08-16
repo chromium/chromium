@@ -6,7 +6,11 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_H_
 
 #include <string>
+#include <vector>
 
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/plus_addresses/plus_address_types.h"
 
 namespace url {
@@ -35,8 +39,19 @@ class PlusAddressHttpClient {
   // On success, the facet of the returned `PlusProfile` is set to the `origin`
   // by the server.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed) = 0;
+
+  using PreallocatePlusAddressesResult =
+      base::expected<std::vector<PreallocatedPlusAddress>,
+                     PlusAddressRequestError>;
+  using PreallocatePlusAddressesCallback =
+      base::OnceCallback<void(PreallocatePlusAddressesResult)>;
+
+  // Initiates a request for preallocated plus addresses and runs `callback`
+  // with the response.
+  virtual void PreallocatePlusAddresses(
+      PreallocatePlusAddressesCallback callback) = 0;
 
   // Initiates a request to get all plus addresses from the remote enterprise-
   // specified server and runs `on_completed` when the request is completed.

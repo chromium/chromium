@@ -171,7 +171,19 @@ void InteractiveTestPrivate::OnSequenceAborted(
       DCHECK_EQ(OnIncompatibleAction::kHaltTest, on_incompatible_action_);
     }
   } else {
-    GTEST_FAIL() << "Interactive test failed " << data;
+    std::ostringstream additional_message;
+    if (data.aborted_reason == InteractionSequence::AbortedReason::
+                                   kElementHiddenBetweenTriggerAndStepStart) {
+      additional_message
+          << "\nNOTE: Please check for one of the following common mistakes:\n"
+             " - A RunLoop whose type is not set to kNestableTasksAllowed. "
+             "Change the type and try again.\n"
+             " - A check being performed on an element that has been hidden. "
+             "Wrap waiting for the hide and subsequent checks in a "
+             "WithoutDelay() to avoid possible access-after-delete.";
+    }
+    GTEST_FAIL() << "Interactive test failed " << data
+                 << additional_message.str();
   }
 }
 

@@ -65,8 +65,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/dummy_producer.cc",
       "perfetto/dummy_producer.h",
       "perfetto/interning_index.h",
-      "perfetto/metadata_data_source.cc",
-      "perfetto/metadata_data_source.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
       "perfetto/perfetto_producer.cc",
@@ -139,7 +137,6 @@ target(tracing_lib_type, "cpp") {
 
     public_deps += [
       "//components/tracing:startup_tracing",
-      "//components/variations:variations",
       "//mojo/public/cpp/bindings",
       "//services/tracing/public/mojom",
     ]

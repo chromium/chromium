@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/lazy_filler.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom-forward.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
 
@@ -131,6 +132,7 @@ class CONTENT_EXPORT ContextRecycler {
 
   void AddSharedStorageBindings(
       mojom::AuctionSharedStorageHost* shared_storage_host,
+      mojom::AuctionWorkletFunction source_auction_worklet_function,
       bool shared_storage_permissions_policy_allowed);
   SharedStorageBindings* shared_storage_bindings() {
     return shared_storage_bindings_.get();

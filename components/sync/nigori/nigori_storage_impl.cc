@@ -10,6 +10,7 @@
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
 #include "components/os_crypt/sync/os_crypt.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
 
 namespace syncer {
 

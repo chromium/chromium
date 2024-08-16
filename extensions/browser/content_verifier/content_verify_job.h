@@ -50,7 +50,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
     // been fetched yet).
     MISSING_ALL_HASHES,
 
-    // Failed because hashes files exist, but are unreadabale or damaged, and
+    // Failed because hashes files exist, but are unreadable or damaged, and
     // content verifier was not able to compute new hashes.
     CORRUPTED_HASHES,
 
@@ -126,6 +126,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Starts the verification process with the content verification hashes.
   void StartWithContentHash(scoped_refptr<const ContentHash> hash);
 
+  // Called once both the content has been read and the relevant hashes have
+  // been fetched.
+  void OnDoneReadingAndHashesReady();
+
+  // Called once a hash mismatch is found.
+  void OnHashMismatch();
+
   // Same as BytesRead, but is run without acquiring lock.
   void BytesReadImpl(const char* data, int count, MojoResult read_result);
 
@@ -138,15 +145,11 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Dispatches the failure callback with the given reason.
   void DispatchFailureCallback(FailureReason reason);
 
-  // Called when our ContentHashReader has finished initializing.
-  void OnHashesReady(std::unique_ptr<const ContentHashReader> hash_reader);
-
   // Reports the job has completed (successfully or with a failure).
   void ReportJobFinished(FailureReason reason);
 
-  // True if BytesRead has seen some errors that can be ignored from content
-  // verification's perspective.
-  bool has_ignorable_read_error_ = false;
+  // Indicates the read error, if any, of the verified file.
+  MojoResult read_error_ = MOJO_RESULT_OK;
 
   // Indicates whether the caller has told us they are done calling BytesRead.
   bool done_reading_ = false;

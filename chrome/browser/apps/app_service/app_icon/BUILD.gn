@@ -140,8 +140,8 @@ source_set("unit_tests") {
 
     deps += [
       "//ash/components/arc:arc_test_support",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/crostini:test_support",
     ]
@@ -168,8 +168,4 @@ source_set("test_support") {
     "//components/services/app_service",
     "//skia",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
-  }
 }

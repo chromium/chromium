@@ -189,9 +189,13 @@ class ToolbarController : public views::MenuDelegate,
   // action is successful.
   virtual bool EndPopOut(ui::ElementIdentifier identifier);
 
-  // Returns true if layout manager of `toolbar_container_view_` hides any
-  // toolbar elements.
-  bool ShouldShowOverflowButton(gfx::Size size) const;
+  // Returns true if any overflow-able elements are hidden when
+  // `toolbar_container_view_` is set to `size`. This excludes the overflow
+  // button itself from the calculation, providing a much more accurate idea of
+  // whether overflow would happen. Because of this, however, it must fully
+  // recalculate the layout which could be expensive; call this method as little
+  // as possible.
+  bool ShouldShowOverflowButton(gfx::Size size);
 
   // Return true if any buttons overflow.
   bool InOverflowMode() const;

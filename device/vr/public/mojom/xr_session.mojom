@@ -6,6 +6,7 @@ module device.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Used primarily in logging to indicate why a session was rejecting to aid
 // developer debuggability. To this end, rather than re-using an existing enum
@@ -131,4 +132,27 @@ struct XRSessionOptions {
 
   // ID of this request, used for tracing.
   uint64 trace_id;
+};
+
+// WebXR logging frame that is sent periodically to measure the
+// performance of the WebXR session.
+struct XrFrameStatistics {
+    // The trace_id is used to correlate the frame statistics with the
+    // session creation request. Check same trace_id in XRSessionOptions.
+    uint64 trace_id;
+    // The time span for which these reported statistics are reported.
+    mojo_base.mojom.TimeDelta duration;
+    // The number of frames that were sent to the device in the
+    // specified duration.
+    uint64 num_frames;
+    // The number of frames that were dropped by the device.
+    uint64 dropped_frames;
+};
+
+struct XrLogMessage {
+    // The trace_id is used to correlate the frame statistics with the
+    // session creation request. Check same trace_id in XRSessionOptions.
+    uint64 trace_id;
+    // The console message to be logged.
+    string message;
 };

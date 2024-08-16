@@ -103,7 +103,7 @@ class AutofillClientProviderTest : public AutofillClientProviderBaseTest {
         features::kAutofillVirtualViewStructureAndroid,
         {{features::kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck
               .name,
-          "true"}});
+          "skip_all_checks"}});
   }
 
  private:

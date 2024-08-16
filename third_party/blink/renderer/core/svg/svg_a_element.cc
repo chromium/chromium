@@ -144,7 +144,7 @@ void SVGAElement::DefaultEventHandler(Event& event) {
         return;
       }
       frame_request.SetNavigationPolicy(navigation_policy);
-      frame_request.SetClientRedirectReason(
+      frame_request.SetClientNavigationReason(
           ClientNavigationReason::kAnchorClick);
       frame_request.SetSourceElement(this);
       frame_request.SetTriggeringEventInfo(
@@ -176,7 +176,8 @@ Element* SVGAElement::interestTargetElement() {
     return nullptr;
   }
 
-  return GetElementAttribute(svg_names::kInteresttargetAttr);
+  return GetElementAttributeResolvingReferenceTarget(
+      svg_names::kInteresttargetAttr);
 }
 
 AtomicString SVGAElement::interestAction() const {

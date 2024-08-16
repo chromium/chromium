@@ -1391,6 +1391,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
+          /*has_ua_visual_transition*/ false,
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
@@ -1539,6 +1540,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*data_url_as_string=*/std::string(),
 #endif
           /*is_browser_initiated=*/false,
+          /*has_ua_visual_transition*/ false,
           /*document_ukm_source_id=*/ukm::kInvalidSourceId,
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
@@ -1705,7 +1707,8 @@ NavigationRequest::NavigationRequest(
               ? std::make_optional(FencedFrameProperties(common_params_->url))
               : std::nullopt),
       embedder_shared_storage_context_(embedder_shared_storage_context),
-      has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()) {
+      has_ad_auction_headers_attribute_(frame_tree_node->ad_auction_headers()),
+      request_method_(common_params_->method) {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::NavigationRequest",
                          TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
                                              TRACE_ID_LOCAL(navigation_id_)),
@@ -1980,8 +1983,11 @@ NavigationRequest::NavigationRequest(
       // sent back to the renderer in the CommitNavigation IPC. The renderer
       // will then send it back with the post body so that we can access it
       // along with the body in FrameNavigationEntry::page_state_.
-      headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                        &commit_params_->post_content_type);
+      if (std::optional<std::string> content_type =
+              headers.GetHeader(net::HttpRequestHeaders::kContentType);
+          content_type) {
+        commit_params_->post_content_type = std::move(content_type).value();
+      }
     }
 
     TopicsHeaderValueResult topics_header_value_result =
@@ -2786,8 +2792,12 @@ void NavigationRequest::BeginNavigationImpl() {
     if (IsSameDocument()) {
       render_frame_host_ = frame_tree_node_->current_frame_host()->GetSafeRef();
 
-      auto* site_instance = render_frame_host_.value()->GetSiteInstance();
-      DCHECK(site_instance->HasSite());
+      // The SiteInstance should have a site already from the navigation that
+      // committed the document, unless the scheme does not require a site. Same
+      // document navigations cannot change scheme or origin, so it should be
+      // equivalent to check the current vs destination UrlInfo.
+      DCHECK(render_frame_host_.value()->GetSiteInstance()->HasSite() ||
+             !SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo()));
 
       WillCommitWithoutUrlLoader();
       return;
@@ -2870,7 +2880,7 @@ void NavigationRequest::
         return;
       case GetFrameHostForNavigationFailed::kIntentionalDefer:
         // We will not defer RFH creation for requests without a URL loader
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -4065,8 +4075,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // Propagate the tentative origin to commit value (for data: URLs that will be
   // rendered) to the UrlInfo, to make sure the nonce remains the same
   // throughout the navigation.
-  if (GetURL().SchemeIs(url::kDataScheme) &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+  if (GetURL().SchemeIs(url::kDataScheme)) {
     // The function for computing the request's origin depends on the stage of
     // the request, but the same opaque nonce value is preserved across both
     // functions for data: URLs.
@@ -4583,7 +4592,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
           return;
         case GetFrameHostForNavigationFailed::kIntentionalDefer:
           // We only defer RFH creation when the navigation is not started yet.
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
 
@@ -5049,7 +5058,7 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
         return;
       case GetFrameHostForNavigationFailed::kIntentionalDefer:
         // We only defer RFH creation when the navigation is not started yet.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -8767,6 +8776,10 @@ bool NavigationRequest::IsPost() {
   return common_params().method == "POST";
 }
 
+std::string NavigationRequest::GetRequestMethod() {
+  return request_method_;
+}
+
 const blink::mojom::Referrer& NavigationRequest::GetReferrer() {
   return *sanitized_referrer_;
 }
@@ -9563,7 +9576,7 @@ void NavigationRequest::OnCookiesAccessed(
       for (const net::CookieWithAccessResult& cookie_with_access_result :
            allowed.cookie_access_result_list) {
         if (cookie_with_access_result.cookie.IsHttpOnly()) {
-          http_only_cookie_modification_count += details->count;
+          http_only_cookie_modification_count++;
         }
       }
       if (cookie_change_listener_) {
@@ -10702,8 +10715,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
   // the nonce from the origin and that of the site URL to match, which will let
   // us uniquely identify the correct data: SiteInstance.
   if (common_params().url.SchemeIs(url::kDataScheme) &&
-      tentative_data_origin_to_commit_.has_value() &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+      tentative_data_origin_to_commit_.has_value()) {
     return std::make_pair(tentative_data_origin_to_commit_.value(),
                           "data: URL");
   }
@@ -10735,8 +10747,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
       common_params().url,
       common_params().initiator_origin.value_or(url::Origin()));
 
-  if (common_params().url.SchemeIs(url::kDataScheme) &&
-      base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+  if (common_params().url.SchemeIs(url::kDataScheme)) {
     // Cache the origin for data: URLs, so that its nonce remains stable.
     tentative_data_origin_to_commit_ = resolved_origin;
   }
@@ -10802,8 +10813,7 @@ blink::mojom::PageSwapEventParamsPtr NavigationRequest::WillDispatchPageSwap() {
 
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
     case blink::mojom::NavigationType::SAME_DOCUMENT:
-      NOTREACHED_NORETURN()
-          << "Same-document navigations shouldn't fire pageswap";
+      NOTREACHED() << "Same-document navigations shouldn't fire pageswap";
   }
 
   return page_swap_event_params;

@@ -144,6 +144,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual std::optional<password_manager::PasswordForm>
   GetSubmittedCredentials() const = 0;
 
+  // Checks whether all |FormFetcher|s belonging to the |driver|-corresponding
+  // frame have finished fetching logins.
+  // Used to determine whether manual password generation can be offered
+  // Automatic password generation already waits for that signal.
+  virtual bool HaveFormManagersReceivedData(
+      const PasswordManagerDriver* driver) const = 0;
+
 #if BUILDFLAG(IS_IOS)
   // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
   // this method does not wait for OnPasswordFormsRendered before invoking

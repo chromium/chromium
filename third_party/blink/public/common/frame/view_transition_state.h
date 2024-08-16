@@ -44,6 +44,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
       captured_css_properties;
 
   std::vector<std::string> class_list;
+  std::string containing_group_name;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

@@ -41,9 +41,14 @@ class ASH_EXPORT NearbyShareFeaturePodController
 
   // NearbyShareController::Observer
   void OnHighVisibilityEnabledChanged(bool enabled) override;
+  void OnVisibilityChanged(
+      ::nearby_share::mojom::Visibility visibility) override;
 
  private:
   void UpdateButton(bool enabled);
+  void UpdateQSv2Button();
+  void ToggleTileOn();
+  void ToggleTileOff();
 
   base::TimeDelta RemainingHighVisibilityTime() const;
 

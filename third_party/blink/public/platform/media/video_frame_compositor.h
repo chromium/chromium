@@ -147,9 +147,9 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   virtual void SetOnFramePresentedCallback(OnNewFramePresentedCB present_cb);
 
   // Gets the metadata for the last frame that was presented to the compositor.
-  // Used to populate the VideoFrameMetadata of video.requestVideoFrameCallback
-  // callbacks. See https://wicg.github.io/video-rvfc/.
-  // Can be called on any thread.
+  // Used to populate the VideoFrameCallbackMetadata of
+  // video.requestVideoFrameCallback callbacks. See
+  // https://wicg.github.io/video-rvfc/. Can be called on any thread.
   virtual std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
   GetLastPresentedFrameMetadata();
 

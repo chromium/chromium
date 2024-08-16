@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/android/webid/jni_headers/Account_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/ClientIdMetadata_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityCredentialTokenError_jni.h"
+#include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderData_jni.h"
 #include "chrome/browser/ui/android/webid/jni_headers/IdentityProviderMetadata_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
@@ -49,7 +50,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
       ConvertUTF8ToJavaString(env, account.name),
       ConvertUTF8ToJavaString(env, account.given_name),
       url::GURLAndroid::FromNativeGURL(env, account.picture), decoded_picture,
-      account.login_state == Account::LoginState::kSignIn);
+      account.login_state == Account::LoginState::kSignIn,
+      account.browser_trusted_login_state == Account::LoginState::kSignIn);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
@@ -103,6 +105,23 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaAccounts(
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
+}
+
+ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderData(
+    JNIEnv* env,
+    const std::optional<content::IdentityProviderData>& new_accounts_idp) {
+  if (!new_accounts_idp) {
+    return ScopedJavaLocalRef<jobject>(env, nullptr);
+  }
+  return Java_IdentityProviderData_Constructor(
+      env, new_accounts_idp->idp_for_display,
+      ConvertToJavaAccounts(env, new_accounts_idp->accounts),
+      ConvertToJavaIdentityProviderMetadata(env,
+                                            new_accounts_idp->idp_metadata),
+      ConvertToJavaClientIdMetadata(env, new_accounts_idp->client_metadata),
+      static_cast<jint>(new_accounts_idp->rp_context),
+      new_accounts_idp->request_permission,
+      new_accounts_idp->has_login_status_mismatch);
 }
 
 Account ConvertFieldsToAccount(JNIEnv* env,
@@ -197,8 +216,9 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> client_id_metadata_obj =
       ConvertToJavaClientIdMetadata(env,
                                     identity_provider_data[0].client_metadata);
+  ScopedJavaLocalRef<jobject> new_account_idp_obj =
+      ConvertToJavaIdentityProviderData(env, new_account_idp);
 
-  // TODO(crbug.com/41490360): Use `new_account_idp` on Android.
   // TODO(crbug.com/329235198): Support auto re-authn on Android.
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display,
@@ -207,7 +227,7 @@ bool AccountSelectionViewAndroid::Show(
       sign_in_mode == Account::SignInMode::kAuto &&
           rp_mode == blink::mojom::RpMode::kWidget,
       static_cast<jint>(identity_provider_data[0].rp_context),
-      identity_provider_data[0].request_permission);
+      identity_provider_data[0].request_permission, new_account_idp_obj);
   return true;
 }
 

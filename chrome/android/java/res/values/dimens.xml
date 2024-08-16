@@ -133,8 +133,8 @@ found in the LICENSE file.
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
     <dimen name="mvt_container_top_margin">23dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
-    <dimen name="ntp_search_box_transition_length">16dp</dimen>
-    <dimen name="ntp_search_box_transition_length_polish_offset">4dp</dimen>
+    <dimen name="ntp_search_box_transition_start_offset">16dp</dimen>
+    <dimen name="ntp_search_box_transition_end_offset">4dp</dimen>
     <dimen name="ntp_search_box_lateral_margin_tablet">100dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
@@ -220,6 +220,7 @@ found in the LICENSE file.
     <!-- Search in CCT specific dimensions for presenting interactable Omnibox -->
     <dimen name="custom_tabs_location_bar_active_height">40dp</dimen>
     <dimen name="custom_tabs_url_bar_active_height">48dp</dimen>
+    <dimen name="custom_tabs_url_bar_bg_horizontal_padding">4dp</dimen>
 
     <!-- Account chooser dialog dimensions -->
     <dimen name="account_chooser_dialog_margin">24dp</dimen>
@@ -259,16 +260,6 @@ found in the LICENSE file.
 
     <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
     <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
-
-    <!-- Defaults for TabbedModeFirstRunActivity values. -->
-    <item type="dimen" name="dialog_fixed_width_major">100%</item>
-    <item type="dimen" name="dialog_fixed_width_minor">100%</item>
-    <item type="dimen" name="dialog_fixed_height_major">100%</item>
-    <item type="dimen" name="dialog_fixed_height_minor">100%</item>
-    <item type="dimen" name="dialog_fixed_width_major_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_width_minor_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_height_major_automotive">100%</item>
-    <item type="dimen" name="dialog_fixed_height_minor_automotive">100%</item>
 
     <!-- History Navigation UI Item -->
     <dimen name="navigation_bubble_size">44dp</dimen>
@@ -384,4 +375,6 @@ found in the LICENSE file.
     <!-- Autofill dialog dimensions. -->
     <dimen name="autofill_dialog_progress_bar_size">36dp</dimen>
 
+    <!-- tab strip context menu-->
+    <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
 </resources>

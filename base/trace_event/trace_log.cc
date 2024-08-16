@@ -245,8 +245,7 @@ void WriteDebugAnnotations(base::trace_event::TraceEvent* trace_event,
       } break;
 
       default:
-        NOTREACHED_IN_MIGRATION() << "Don't know how to serialize this value";
-        break;
+        NOTREACHED() << "Don't know how to serialize this value";
     }
   }
 }
@@ -948,8 +947,7 @@ TraceLog::InternalTraceOptions TraceLog::GetInternalOptionsFromTraceConfig(
     case RECORD_AS_MUCH_AS_POSSIBLE:
       return ret | kInternalRecordAsMuchAsPossible;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kInternalNone;
+  NOTREACHED();
 }
 
 TraceConfig TraceLog::GetCurrentTraceConfig() const {

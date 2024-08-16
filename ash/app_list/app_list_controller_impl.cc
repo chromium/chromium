@@ -257,6 +257,7 @@ void MaybeLogWelcomeTourInteraction(AppListShowSource show_source) {
   if (features::IsWelcomeTourEnabled() &&
       IsAppListShowSourceUserTriggered(show_source)) {
     welcome_tour_metrics::RecordInteraction(
+        GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kLauncher);
   }
 }
@@ -1250,7 +1251,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
       case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
         break;
       case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1267,8 +1268,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
                                         is_tablet_mode, last_show_timestamp_);
           break;
         case AppListLaunchType::kApp:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case AppListLaunchedFrom::kLaunchedFromContinueTask:
@@ -1282,8 +1282,7 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
     case AppListLaunchedFrom::kLaunchedFromQuickAppAccess:
     case AppListLaunchedFrom::kLaunchedFromAppsCollections:
     case AppListLaunchedFrom::kLaunchedFromDiscoveryChip:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   base::RecordAction(base::UserMetricsAction("AppList_OpenSearchResult"));
@@ -1356,8 +1355,7 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
     case AppListLaunchedFrom::kLaunchedFromSearchBox:
     case AppListLaunchedFrom::kLaunchedFromShelf:
     case AppListLaunchedFrom::DEPRECATED_kLaunchedFromSuggestionChip:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (client_)

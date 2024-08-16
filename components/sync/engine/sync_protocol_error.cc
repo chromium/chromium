@@ -29,7 +29,7 @@ const char* GetSyncErrorTypeString(SyncProtocolErrorType type) {
     ENUM_CASE(CONFLICT);
     ENUM_CASE(INVALID_MESSAGE);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const char* GetClientActionString(ClientAction action) {

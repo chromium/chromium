@@ -14,6 +14,7 @@
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
 
 namespace syncer {
@@ -126,7 +127,7 @@ void TestSyncService::SetInitialSyncFeatureSetupComplete(
   }
 }
 
-void TestSyncService::SetFailedDataTypes(const ModelTypeSet& types) {
+void TestSyncService::SetFailedDataTypes(const DataTypeSet& types) {
   failed_data_types_ = types;
 }
 
@@ -165,8 +166,8 @@ void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
 }
 
 void TestSyncService::SetDownloadStatusFor(
-    const ModelTypeSet& types,
-    ModelTypeDownloadStatus download_status) {
+    const DataTypeSet& types,
+    DataTypeDownloadStatus download_status) {
   for (const auto type : types) {
     download_statuses_[type] = download_status;
   }
@@ -274,28 +275,27 @@ bool TestSyncService::IsSetupInProgress() const {
   return outstanding_setup_in_progress_handles_ > 0;
 }
 
-ModelTypeSet TestSyncService::GetPreferredDataTypes() const {
+DataTypeSet TestSyncService::GetPreferredDataTypes() const {
   return user_settings_.GetPreferredDataTypes();
 }
 
-ModelTypeSet TestSyncService::GetActiveDataTypes() const {
+DataTypeSet TestSyncService::GetActiveDataTypes() const {
   if (GetTransportState() != TransportState::ACTIVE) {
-    return ModelTypeSet();
+    return DataTypeSet();
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (user_settings_.IsSyncFeatureDisabledViaDashboard()) {
-    return ModelTypeSet();
+    return DataTypeSet();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 
-ModelTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync()
-    const {
+DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
   DCHECK_NE(GetTransportState(), TransportState::INITIALIZING)
       << "Realistic behavior not implemented for INITIALIZING";
   if (GetTransportState() != TransportState::CONFIGURING) {
-    return ModelTypeSet();
+    return DataTypeSet();
   }
   return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
@@ -306,15 +306,15 @@ void TestSyncService::StopAndClear() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
+void TestSyncService::OnDataTypeRequestsSyncStartup(DataType type) {}
 
-void TestSyncService::TriggerRefresh(const ModelTypeSet& types) {
+void TestSyncService::TriggerRefresh(const DataTypeSet& types) {
   if (trigger_refresh_cb_) {
     trigger_refresh_cb_.Run(types);
   }
 }
 
-void TestSyncService::DataTypePreconditionChanged(ModelType type) {}
+void TestSyncService::DataTypePreconditionChanged(DataType type) {}
 
 void TestSyncService::AddObserver(SyncServiceObserver* observer) {
   observers_.AddObserver(observer);
@@ -375,22 +375,18 @@ void TestSyncService::RemoveProtocolEventObserver(
 void TestSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) {}
 
-SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
-    ModelType type) const {
+SyncService::DataTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
+    DataType type) const {
   if (download_statuses_.contains(type)) {
     return download_statuses_.at(type);
   }
-  return ModelTypeDownloadStatus::kUpToDate;
+  return DataTypeDownloadStatus::kUpToDate;
 }
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-bool TestSyncService::SupportsExplicitPassphrasePlatformClient() {
-  return !!send_passphrase_to_platform_client_cb_;
-}
-
 void TestSyncService::SendExplicitPassphraseToPlatformClient() {
-  if (SupportsExplicitPassphrasePlatformClient()) {
+  if (send_passphrase_to_platform_client_cb_) {
     send_passphrase_to_platform_client_cb_.Run();
   }
 }
@@ -400,18 +396,18 @@ void TestSyncService::Shutdown() {
     observer.OnSyncShutdown(this);
 }
 
-void TestSyncService::SetTypesWithUnsyncedData(const ModelTypeSet& types) {
+void TestSyncService::SetTypesWithUnsyncedData(const DataTypeSet& types) {
   unsynced_types_ = types;
 }
 
 void TestSyncService::GetTypesWithUnsyncedData(
-    ModelTypeSet requested_types,
-    base::OnceCallback<void(ModelTypeSet)> cb) const {
+    DataTypeSet requested_types,
+    base::OnceCallback<void(DataTypeSet)> cb) const {
   std::move(cb).Run(base::Intersection(requested_types, unsynced_types_));
 }
 
 void TestSyncService::SetLocalDataDescriptions(
-    const std::map<ModelType, LocalDataDescription>& local_data_descriptions) {
+    const std::map<DataType, LocalDataDescription>& local_data_descriptions) {
   local_data_descriptions_ = local_data_descriptions;
 }
 
@@ -422,11 +418,11 @@ void TestSyncService::SetPassphrasePlatformClientCallback(
 }
 
 void TestSyncService::GetLocalDataDescriptions(
-    ModelTypeSet types,
-    base::OnceCallback<void(std::map<ModelType, LocalDataDescription>)>
+    DataTypeSet types,
+    base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
         callback) {
-  std::map<ModelType, LocalDataDescription> result;
-  for (ModelType type : types) {
+  std::map<DataType, LocalDataDescription> result;
+  for (DataType type : types) {
     if (auto it = local_data_descriptions_.find(type);
         it != local_data_descriptions_.end()) {
       result.insert(*it);
@@ -435,10 +431,10 @@ void TestSyncService::GetLocalDataDescriptions(
   std::move(callback).Run(std::move(result));
 }
 
-void TestSyncService::TriggerLocalDataMigration(ModelTypeSet types) {}
+void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
 
 void TestSyncService::SetTriggerRefreshCallback(
-    const base::RepeatingCallback<void(syncer::ModelTypeSet)>&
+    const base::RepeatingCallback<void(syncer::DataTypeSet)>&
         trigger_refresh_cb) {
   trigger_refresh_cb_ = trigger_refresh_cb;
 }

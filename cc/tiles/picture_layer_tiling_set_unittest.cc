@@ -241,9 +241,9 @@ class PictureLayerTilingSetTestWithResources : public testing::Test {
     gfx::Rect content_rect(content_bounds);
 
     Region remaining(content_rect);
-    PictureLayerTilingSet::CoverageIterator iter(
-        set.get(), max_contents_scale, content_rect, ideal_contents_scale);
-    for (; iter; ++iter) {
+    for (auto iter =
+             set->Cover(content_rect, max_contents_scale, ideal_contents_scale);
+         iter; ++iter) {
       gfx::Rect geometry_rect = iter.geometry_rect();
       EXPECT_TRUE(content_rect.Contains(geometry_rect));
       ASSERT_TRUE(remaining.Contains(geometry_rect));
@@ -334,7 +334,8 @@ TEST(PictureLayerTilingSetTest, TileSizeChange) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(tile_size1, pending_set->tiling_at(0)->tile_size());
 
   // The tiles should get the correct size.
@@ -360,7 +361,8 @@ TEST(PictureLayerTilingSetTest, TileSizeChange) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 2.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(tile_size2, pending_set->tiling_at(0)->tile_size());
 
   // Tiles should have the new correct size.
@@ -394,7 +396,8 @@ TEST(PictureLayerTilingSetTest, TileSizeChange) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 3.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(tile_size3, pending_set->tiling_at(0)->tile_size());
 
   // Tiles are resized for the new size.
@@ -449,7 +452,8 @@ TEST(PictureLayerTilingSetTest, ModifyPendingTilingSetTwiceInOneVsync) {
   // Set a priority rect so we get tiles.
   // Note that the current_frame_time_in_seconds parameter is 1.0.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   // The pending tiling should get the right tile size.
   EXPECT_EQ(tile_size1, pending_set->tiling_at(0)->tile_size());
   // The pending tiling should have tiles.
@@ -474,7 +478,8 @@ TEST(PictureLayerTilingSetTest, ModifyPendingTilingSetTwiceInOneVsync) {
   // Re-update priority rect so we get new tiles.
   // Note that the current_frame_time_in_seconds parameter is still 1.0.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   // The pending tiling should get the new tile size.
   EXPECT_EQ(tile_size2, pending_set->tiling_at(0)->tile_size());
   // The pending tiling should have tiles.
@@ -558,7 +563,8 @@ TEST(PictureLayerTilingSetTest, SkewportLimits) {
   tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
   EXPECT_TRUE(tiling_set->TilingsNeedUpdate(viewport, 1.0));
 
-  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Move viewport down 50 pixels in 0.5 seconds.
   gfx::Rect down_skewport =
@@ -647,11 +653,13 @@ TEST(PictureLayerTilingSetTest, ComputeSkewportExtremeCases) {
   gfx::Rect viewport2(-7088, -91738, 14212, 8350);
   gfx::Rect viewport3(-12730024, -158883296, 24607540, 14454512);
   double time = 1.0;
-  tiling_set->UpdateTilePriorities(viewport1, 1.f, time, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport1, 1.f, time, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   time += 0.016;
   EXPECT_TRUE(
       tiling_set->ComputeSkewport(viewport2, time, 1.f).Contains(viewport2));
-  tiling_set->UpdateTilePriorities(viewport2, 1.f, time, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport2, 1.f, time, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   time += 0.016;
   EXPECT_TRUE(
       tiling_set->ComputeSkewport(viewport3, time, 1.f).Contains(viewport3));
@@ -661,7 +669,8 @@ TEST(PictureLayerTilingSetTest, ComputeSkewportExtremeCases) {
   PictureLayerTiling* tiling = tiling_set->AddTiling(
       gfx::AxisTransform2d(1000.f, gfx::Vector2dF()), raster_source);
   EXPECT_TRUE(tiling_set->TilingsNeedUpdate(viewport3, time));
-  tiling_set->UpdateTilePriorities(viewport3, 1.f, time, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport3, 1.f, time, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_TRUE(tiling->GetCurrentVisibleRectForTesting().IsEmpty());
 }
 
@@ -679,7 +688,8 @@ TEST(PictureLayerTilingSetTest, ComputeSkewport) {
       CreateTilingSet(&client);
   tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Move viewport down 50 pixels in 0.5 seconds.
   gfx::Rect down_skewport =
@@ -741,38 +751,44 @@ TEST(PictureLayerTilingSetTest, SkewportThroughUpdateTilePriorities) {
       CreateTilingSet(&client);
   tiling_set->AddTiling(gfx::AxisTransform2d(), raster_source);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Move viewport down 50 pixels in 0.5 seconds.
   gfx::Rect viewport_50 = gfx::Rect(0, 50, 100, 100);
   gfx::Rect skewport_50 = tiling_set->ComputeSkewport(viewport_50, 1.5, 1.f);
 
   EXPECT_EQ(gfx::Rect(0, 50, 100, 200), skewport_50);
-  tiling_set->UpdateTilePriorities(viewport_50, 1.f, 1.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_50, 1.f, 1.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   gfx::Rect viewport_100 = gfx::Rect(0, 100, 100, 100);
   gfx::Rect skewport_100 = tiling_set->ComputeSkewport(viewport_100, 2.0, 1.f);
 
   EXPECT_EQ(gfx::Rect(0, 100, 100, 200), skewport_100);
-  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 2.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 2.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Advance time, but not the viewport.
   gfx::Rect result = tiling_set->ComputeSkewport(viewport_100, 2.5, 1.f);
   // Since the history did advance, we should still get a skewport but a smaller
   // one.
   EXPECT_EQ(gfx::Rect(0, 100, 100, 150), result);
-  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 2.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 2.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Advance time again.
   result = tiling_set->ComputeSkewport(viewport_100, 3.0, 1.f);
   EXPECT_EQ(viewport_100, result);
-  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 3.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_100, 1.f, 3.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Ensure we have a skewport.
   gfx::Rect viewport_150 = gfx::Rect(0, 150, 100, 100);
   gfx::Rect skewport_150 = tiling_set->ComputeSkewport(viewport_150, 3.5, 1.f);
   EXPECT_EQ(gfx::Rect(0, 150, 100, 150), skewport_150);
-  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Advance the viewport, but not the time.
   gfx::Rect viewport_200 = gfx::Rect(0, 200, 100, 100);
@@ -780,19 +796,23 @@ TEST(PictureLayerTilingSetTest, SkewportThroughUpdateTilePriorities) {
   EXPECT_EQ(gfx::Rect(0, 200, 100, 300), skewport_200);
 
   // Ensure that continued calls with the same value, produce the same skewport.
-  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(gfx::Rect(0, 200, 100, 300), skewport_200);
-  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_150, 1.f, 3.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(gfx::Rect(0, 200, 100, 300), skewport_200);
 
-  tiling_set->UpdateTilePriorities(viewport_200, 1.f, 3.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_200, 1.f, 3.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // This should never happen, but advance the viewport yet again keeping the
   // time the same.
   gfx::Rect viewport_250 = gfx::Rect(0, 250, 100, 100);
   gfx::Rect skewport_250 = tiling_set->ComputeSkewport(viewport_250, 3.5, 1.f);
   EXPECT_EQ(viewport_250, skewport_250);
-  tiling_set->UpdateTilePriorities(viewport_250, 1.f, 3.5, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport_250, 1.f, 3.5, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
 }
 
 TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
@@ -819,7 +839,8 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   gfx::Rect viewport_in_content_space =
       gfx::ScaleToEnclosedRect(viewport, 0.25f);
 
-  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.f, 1.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   auto prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   // Compute the soon border.
@@ -909,7 +930,8 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   EXPECT_EQ(35, skewport_in_content_space.height());
 
   EXPECT_TRUE(tiling_set->TilingsNeedUpdate(viewport, 2.0));
-  tiling_set->UpdateTilePriorities(viewport, 1.f, 2.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.f, 2.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   have_now = false;
@@ -961,7 +983,8 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   EXPECT_FLOAT_EQ(4.f, priority.distance_to_visible);
 
   // Change the underlying layer scale.
-  tiling_set->UpdateTilePriorities(viewport, 2.0f, 3.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 2.0f, 3.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   priority = prioritized_tiles[tiling->TileAt(5, 1)].priority();
@@ -977,7 +1000,8 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   tiling = tiling_set->AddTiling(gfx::AxisTransform2d(0.2f, gfx::Vector2dF()),
                                  raster_source);
   tiling->set_resolution(HIGH_RESOLUTION);
-  tiling_set->UpdateTilePriorities(viewport, 1.0f, 4.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 1.0f, 4.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   priority = prioritized_tiles[tiling->TileAt(5, 1)].priority();
@@ -989,7 +1013,8 @@ TEST(PictureLayerTilingTest, ViewportDistanceWithScale) {
   priority = prioritized_tiles[tiling->TileAt(3, 4)].priority();
   EXPECT_FLOAT_EQ(60.f, priority.distance_to_visible);
 
-  tiling_set->UpdateTilePriorities(viewport, 0.5f, 5.0, Occlusion(), true);
+  tiling_set->UpdateTilePriorities(viewport, 0.5f, 5.0, Occlusion(), true,
+                                   TileMemoryLimitPolicy::ALLOW_ANYTHING);
   prioritized_tiles = tiling->UpdateAndGetAllPrioritizedTilesForTesting();
 
   priority = prioritized_tiles[tiling->TileAt(5, 1)].priority();
@@ -1029,15 +1054,18 @@ TEST(PictureLayerTilingTest, InvalidateAfterComputeTilePriorityRects) {
   double time = 1.;
   gfx::Rect viewport(0, 0, 100, 100);
   EXPECT_TRUE(
-      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
   EXPECT_FALSE(
-      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
 
   // This will invalidate tilings.
   tiling_set->Invalidate(Region());
 
   EXPECT_TRUE(
-      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      tiling_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
 }
 
 TEST(PictureLayerTilingTest, InvalidateAfterUpdateRasterSourceForCommit) {
@@ -1066,32 +1094,38 @@ TEST(PictureLayerTilingTest, InvalidateAfterUpdateRasterSourceForCommit) {
   pending_set->UpdateTilingsToCurrentRasterSourceForCommit(raster_source,
                                                            Region(), 1.f, 1.f);
   // UpdateTilePriorities for pending set gets called during UDP in commit.
-  EXPECT_TRUE(pending_set->UpdateTilePriorities(viewport, 1.f, time,
-                                                Occlusion(), true));
+  EXPECT_TRUE(
+      pending_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                        TileMemoryLimitPolicy::ALLOW_ANYTHING));
   // The active set doesn't have tilings yet.
   EXPECT_FALSE(
-      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
 
   // On activation tilings are copied from pending set to active set.
   active_set->UpdateTilingsToCurrentRasterSourceForActivation(
       raster_source, pending_set.get(), Region(), 1.f, 1.f);
   // Pending set doesn't have any tilings now.
-  EXPECT_FALSE(pending_set->UpdateTilePriorities(viewport, 1.f, time,
-                                                 Occlusion(), true));
+  EXPECT_FALSE(
+      pending_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                        TileMemoryLimitPolicy::ALLOW_ANYTHING));
   // UpdateTilePriorities for active set gets called during UDP in draw.
   EXPECT_TRUE(
-      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
 
   // Even though frame time and viewport haven't changed since last commit we
   // update tile priorities because of potential invalidations.
   pending_set->UpdateTilingsToCurrentRasterSourceForCommit(raster_source,
                                                            Region(), 1.f, 1.f);
   // UpdateTilePriorities for pending set gets called during UDP in commit.
-  EXPECT_TRUE(pending_set->UpdateTilePriorities(viewport, 1.f, time,
-                                                Occlusion(), true));
+  EXPECT_TRUE(
+      pending_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                        TileMemoryLimitPolicy::ALLOW_ANYTHING));
   // No changes for active set until activation.
   EXPECT_FALSE(
-      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true));
+      active_set->UpdateTilePriorities(viewport, 1.f, time, Occlusion(), true,
+                                       TileMemoryLimitPolicy::ALLOW_ANYTHING));
 }
 
 TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
@@ -1118,7 +1152,8 @@ TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Make sure all tiles are generated.
   EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
@@ -1140,7 +1175,8 @@ TEST(PictureLayerTilingSetTest, TilingTranslationChanges) {
 
   // Set a different priority rect to get one tile.
   pending_set->UpdateTilePriorities(gfx::Rect(1, 1), 1.f, 1.0, Occlusion(),
-                                    false);
+                                    false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   EXPECT_EQ(1u, pending_set->tiling_at(0)->AllTilesForTesting().size());
 
   // Commit the pending to the active tree again.
@@ -1181,7 +1217,8 @@ TEST(PictureLayerTilingSetTest, LcdChanges) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
 
   // Make sure all tiles are generated.
   EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
@@ -1201,7 +1238,8 @@ TEST(PictureLayerTilingSetTest, LcdChanges) {
 
   // Set a priority rect so we get tiles.
   pending_set->UpdateTilePriorities(gfx::Rect(layer_bounds), 1.f, 1.0,
-                                    Occlusion(), false);
+                                    Occlusion(), false,
+                                    TileMemoryLimitPolicy::ALLOW_ANYTHING);
   // We should have created all tiles because lcd state changed.
   EXPECT_EQ(4u, pending_set->tiling_at(0)->AllTilesForTesting().size());
 }

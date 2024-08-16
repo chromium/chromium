@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -82,13 +83,13 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void Start();
   void Shutdown();
 
-  // Call this before reading a file within an extension. Returns and starts a
-  // content verify job if the specified resource requires content verification,
-  // otherwise returns nullptr.
-  scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
+  // Call this before reading a file within an extension. Returns a verify job
+  // to be used for content verification.
+  static scoped_refptr<ContentVerifyJob> CreateAndStartJobFor(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
-      const base::FilePath& relative_path);
+      const base::FilePath& relative_path,
+      scoped_refptr<ContentVerifier> verifier);
 
   // ExtensionRegistryObserver interface
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -182,6 +183,9 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   void StartOnIO();
   void ShutdownOnIO();
 
+  // Called after a verification job is created.
+  void OnJobCreated(scoped_refptr<ContentVerifyJob> job);
+
   // If a verification is needed, starts the verification job and returns true.
   // Otherwise, returns false without starting the job.
   bool StartJob(const scoped_refptr<ContentVerifyJob>& job);
@@ -218,9 +222,6 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // and we can start verifying files.
   void OnExtensionDataReady(const ExtensionId& extension_id);
 
-  // Called to remove all pending jobs for the extension.
-  void RemovePendingJobsForId(const ExtensionId& extension_id);
-
   // Called (typically by a verification job) to indicate that verification
   // failed while reading some file in `extension_id`. `failed_file_types` and
   // `manifest_version` indicate additional data about which file was detected
@@ -244,7 +245,8 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
 
   // Jobs which are waiting for the extension data to be ready. Updated and
   // accessed only on IO thread.
-  std::vector<scoped_refptr<ContentVerifyJob>> pending_jobs_;
+  std::unordered_map<ExtensionId, std::vector<scoped_refptr<ContentVerifyJob>>>
+      pending_jobs_;
 
   // Set to true once we've begun shutting down on UI thread.
   // Updated and accessed only on UI thread.

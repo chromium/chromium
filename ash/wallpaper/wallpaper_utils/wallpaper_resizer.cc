@@ -109,8 +109,7 @@ gfx::ImageSkia Resize(const gfx::ImageSkia image,
         }
         break;
       case NUM_WALLPAPER_LAYOUT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   // Generating the bitmap right now is both acceptable and desirable since it's

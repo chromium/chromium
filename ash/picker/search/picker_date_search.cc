@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/picker/search/picker_date_search.h"
 
 #include <map>
@@ -11,14 +16,15 @@
 
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash {
@@ -58,47 +64,57 @@ constexpr auto kDayOfWeekToNumber =
         {"friday", 5},
         {"saturday", 6},
     });
-constexpr std::u16string_view kNumberToDayOfWeek[] = {
-    u"Sunday",   u"Monday", u"Tuesday", u"Wednesday",
-    u"Thursday", u"Friday", u"Saturday"};
 
-constexpr std::tuple<std::u16string_view, std::u16string_view>
-    kSuggestedDates[] = {
-        {u"today", u"Today's date"},
-        {u"tomorrow", u"Tomorrow's date"},
-        {u"2 weeks from now", u"Two weeks from now"},
+constexpr std::u16string_view kSuggestedDates[] = {
+    {u"Today"},
+    {u"Tomorrow"},
+    {u"2 weeks from now"},
 };
 
-PickerSearchResult MakeResult(const base::Time time,
-                              std::u16string_view secondary_text = u"") {
+std::u16string GetLocalizedDayOfWeek(const base::Time& time) {
+  return base::LocalizedTimeFormatWithPattern(time, "EEEE");
+}
+
+// The result of parsing a date expression query.
+struct ResolvedDate {
+  base::Time time;
+
+  // Some optional text to disambiguate the date when the original query is
+  // ambiguous.
+  std::optional<std::u16string> disambiguation_text;
+};
+
+PickerSearchResult MakeResult(const ResolvedDate& date) {
   return PickerSearchResult::Text(
-      base::LocalizedTimeFormatWithPattern(time, "LLLd"), secondary_text,
+      base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
+      date.disambiguation_text.value_or(u""),
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface),
       PickerSearchResult::TextData::Source::kDate);
 }
 
-PickerSearchResult OverrideSecondaryText(PickerSearchResult result,
-                                         std::u16string_view secondary_text) {
-  const PickerSearchResult::TextData& data =
-      std::get<PickerSearchResult::TextData>(result.data());
-  return PickerSearchResult::Text(data.primary_text, secondary_text, data.icon,
-                                  data.source);
+PickerSearchResult MakeSuggestedResult(std::u16string_view query_text,
+                                       const ResolvedDate& date) {
+  CHECK(!date.disambiguation_text.has_value());
+  return PickerSearchResult::SearchRequest(
+      query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
+      ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
+                                     cros_tokens::kCrosSysOnSurface));
 }
 
 void HandleSpecificDayQueries(const base::Time& now,
                               std::string_view query,
-                              std::vector<PickerSearchResult>& results) {
+                              std::vector<ResolvedDate>& resolved_dates) {
   const auto day_lookup = kTextToDays.find(query);
   if (day_lookup == kTextToDays.end()) {
     return;
   }
-  results.push_back(MakeResult(now + base::Days(day_lookup->second)));
+  resolved_dates.push_back({.time = now + base::Days(day_lookup->second)});
 }
 
 void HandleDaysOrWeeksAwayQueries(const base::Time& now,
                                   std::string_view query,
-                                  std::vector<PickerSearchResult>& results) {
+                                  std::vector<ResolvedDate>& resolved_dates) {
   std::string number, unit, suffix;
   if (!RE2::FullMatch(query, *kDaysOrWeeksAwayRegex, &number, &unit, &suffix)) {
     return;
@@ -119,12 +135,12 @@ void HandleDaysOrWeeksAwayQueries(const base::Time& now,
   if (suffix == "ago") {
     x = -x;
   }
-  results.push_back(MakeResult(now + base::Days(x)));
+  resolved_dates.push_back({.time = now + base::Days(x)});
 }
 
 void HandleDayOfWeekQueries(const base::Time& now,
                             std::string_view query,
-                            std::vector<PickerSearchResult>& results) {
+                            std::vector<ResolvedDate>& resolved_dates) {
   std::string prefix, target_day_of_week_str;
   if (!RE2::FullMatch(query, *kDayOfWeekRegex, &prefix,
                       &target_day_of_week_str)) {
@@ -139,67 +155,96 @@ void HandleDayOfWeekQueries(const base::Time& now,
   int day_diff = target_day_of_week - current_day_of_week;
   if (prefix.empty() || prefix == "this ") {
     if (target_day_of_week < current_day_of_week) {
-      results.push_back(
-          MakeResult(now + base::Days(day_diff + kDaysPerWeek),
-                     base::StrCat({u"this coming ",
-                                   kNumberToDayOfWeek[target_day_of_week]})));
-      results.push_back(
-          MakeResult(now + base::Days(day_diff),
-                     base::StrCat({u"this past ",
-                                   kNumberToDayOfWeek[target_day_of_week]})));
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff + kDaysPerWeek),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY,
+              localized_day_of_week),
+      });
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY,
+              std::move(localized_day_of_week)),
+      });
     } else {
-      results.push_back(MakeResult(now + base::Days(day_diff)));
+      resolved_dates.push_back({.time = now + base::Days(day_diff)});
     }
   } else if (prefix == "next ") {
     if (target_day_of_week > current_day_of_week) {
-      results.push_back(
-          MakeResult(now + base::Days(day_diff + kDaysPerWeek),
-                     base::StrCat({kNumberToDayOfWeek[target_day_of_week],
-                                   u" next week"})));
-      results.push_back(
-          MakeResult(now + base::Days(day_diff),
-                     base::StrCat({u"this coming ",
-                                   kNumberToDayOfWeek[target_day_of_week]})));
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff + kDaysPerWeek),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_NEXT_WEEK, localized_day_of_week),
+      });
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_COMING_DAY,
+              std::move(localized_day_of_week)),
+      });
     } else {
-      results.push_back(MakeResult(now + base::Days(day_diff + kDaysPerWeek)));
+      resolved_dates.push_back(
+          {.time = now + base::Days(day_diff + kDaysPerWeek)});
     }
   } else if (prefix == "last ") {
     if (target_day_of_week < current_day_of_week) {
-      results.push_back(
-          MakeResult(now + base::Days(day_diff - kDaysPerWeek),
-                     base::StrCat({kNumberToDayOfWeek[target_day_of_week],
-                                   u" last week"})));
-      results.push_back(
-          MakeResult(now + base::Days(day_diff),
-                     base::StrCat({u"this past ",
-                                   kNumberToDayOfWeek[target_day_of_week]})));
+      std::u16string localized_day_of_week =
+          GetLocalizedDayOfWeek(now + base::Days(day_diff));
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff - kDaysPerWeek),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_LAST_WEEK, localized_day_of_week),
+      });
+      resolved_dates.push_back({
+          .time = now + base::Days(day_diff),
+          .disambiguation_text = l10n_util::GetStringFUTF16(
+              IDS_PICKER_DATE_DISAMBIGUATION_THIS_PAST_DAY,
+              std::move(localized_day_of_week)),
+      });
     } else {
-      results.push_back(MakeResult(now + base::Days(day_diff - kDaysPerWeek)));
+      resolved_dates.push_back(
+          {.time = now + base::Days(day_diff - kDaysPerWeek)});
     }
   }
 }
+
+std::vector<ResolvedDate> ResolveQuery(const base::Time& now,
+                                       std::u16string_view query) {
+  std::vector<ResolvedDate> resolved_dates;
+  std::string clean_query = base::UTF16ToUTF8(base::TrimWhitespace(
+      base::i18n::ToLower(query), base::TrimPositions::TRIM_ALL));
+  HandleSpecificDayQueries(now, clean_query, resolved_dates);
+  HandleDaysOrWeeksAwayQueries(now, clean_query, resolved_dates);
+  HandleDayOfWeekQueries(now, clean_query, resolved_dates);
+  return resolved_dates;
+}
+
 }  // namespace
 
 std::vector<PickerSearchResult> PickerDateSearch(const base::Time& now,
                                                  std::u16string_view query) {
+  std::vector<ResolvedDate> resolved_dates = ResolveQuery(now, query);
   std::vector<PickerSearchResult> results;
-  std::string clean_query = base::UTF16ToUTF8(base::TrimWhitespace(
-      base::i18n::ToLower(query), base::TrimPositions::TRIM_ALL));
-  HandleSpecificDayQueries(now, clean_query, results);
-  HandleDaysOrWeeksAwayQueries(now, clean_query, results);
-  HandleDayOfWeekQueries(now, clean_query, results);
+  results.reserve(resolved_dates.size());
+  for (const ResolvedDate& resolved_date : resolved_dates) {
+    results.push_back(MakeResult(resolved_date));
+  }
   return results;
 }
 
 std::vector<PickerSearchResult> PickerSuggestedDateResults() {
   std::vector<PickerSearchResult> results;
 
-  for (const auto& date : kSuggestedDates) {
-    std::vector<PickerSearchResult> query_results =
-        PickerDateSearch(base::Time::Now(), std::get<0>(date));
-    for (const auto& result : query_results) {
-      results.push_back(OverrideSecondaryText(result, std::get<1>(date)));
-    }
+  for (const std::u16string_view query : kSuggestedDates) {
+    std::vector<ResolvedDate> resolved_dates =
+        ResolveQuery(base::Time::Now(), query);
+    CHECK_EQ(resolved_dates.size(), 1u);
+    results.push_back(MakeSuggestedResult(query, resolved_dates[0]));
   }
 
   return results;

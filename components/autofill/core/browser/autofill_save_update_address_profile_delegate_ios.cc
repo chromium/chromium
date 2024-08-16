@@ -27,13 +27,13 @@ AutofillSaveUpdateAddressProfileDelegateIOS::
         const AutofillProfile* original_profile,
         std::optional<std::u16string> user_email,
         const std::string& locale,
-        AutofillClient::SaveAddressProfilePromptOptions options,
+        bool is_migration_to_account,
         AutofillClient::AddressProfileSavePromptCallback callback)
     : locale_(locale),
       profile_(profile),
       original_profile_(base::OptionalFromPtr(original_profile)),
       address_profile_save_prompt_callback_(std::move(callback)),
-      is_migration_to_account_(options.is_migration_to_account),
+      is_migration_to_account_(is_migration_to_account),
       user_email_(user_email) {}
 
 AutofillSaveUpdateAddressProfileDelegateIOS::

@@ -18,7 +18,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -167,7 +167,7 @@ void PresentationReceiverWindowView::Init() {
   // ContentSubresourceFilterThrottleManager has it as a dependency.
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
 
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   ChromePasswordManagerClient::CreateForWebContents(web_contents);
@@ -181,8 +181,7 @@ void PresentationReceiverWindowView::Init() {
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       web_contents,
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-          web_contents));
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -258,13 +257,13 @@ const LocationBarModel* PresentationReceiverWindowView::GetLocationBarModel()
 
 ContentSettingBubbleModelDelegate*
 PresentationReceiverWindowView::GetContentSettingBubbleModelDelegate() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PresentationReceiverWindowView::ExecuteCommandWithDisposition(
     int id,
     WindowOpenDisposition disposition) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {

@@ -24,6 +24,7 @@ namespace {
 constexpr char kSafeBrowsing[] = "safe_browsing";
 constexpr char kNotificationPermissions[] = "notification_permissions";
 constexpr char kRevokedPermissions[] = "revoked_permissions";
+constexpr char kPasswords[] = "passwords";
 
 std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
   switch (module) {
@@ -33,8 +34,10 @@ std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
       return kNotificationPermissions;
     case safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS:
       return kRevokedPermissions;
+    case safety_hub::SafetyHubModuleType::PASSWORDS:
+      return kPasswords;
     default:
-      NOTREACHED_NORETURN() << "Module not supported on Android.";
+      NOTREACHED() << "Module not supported on Android.";
   }
 }
 

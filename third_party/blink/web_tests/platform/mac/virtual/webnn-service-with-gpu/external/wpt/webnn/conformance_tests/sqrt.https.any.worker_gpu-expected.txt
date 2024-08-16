@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] sqrt float32 0D scalar
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2 should be close enough to expected 2.001115560531616 by the acceptable 1 ULP distance, but they have 4679 ULP distance expected true got false
+[FAIL] sqrt float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+[FAIL] sqrt float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+[FAIL] sqrt float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+[FAIL] sqrt float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+[FAIL] sqrt float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+[FAIL] sqrt float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test sqrt float32 actual 2.69140625 should be close enough to expected 2.693697690963745 by the acceptable 1 ULP distance, but they have 9611 ULP distance expected true got false
+Harness: the test ran to completion.
+

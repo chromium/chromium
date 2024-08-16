@@ -18,6 +18,7 @@
 namespace media {
 
 // Kill switches in case things explode. Remove after M132.
+// TODO(crbug.com/355485812): Re-enable this flag.
 BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
              "AllowOnlyAudioCodecsDuringDemuxing",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -74,16 +75,18 @@ size_t WriteToFile(base::File* file,
   size_t bytes_written = 0;
 
   if (file->IsValid()) {
-    // Append each of data1, data2 and data3.
-    if (!data1.empty())
+    if (!data1.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data1.data(), data1.size()));
-    if (!data2.empty())
+          file->WriteAtCurrentPos(base::as_byte_span(data1)).value_or(0);
+    }
+    if (!data2.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data2.data(), data2.size()));
-    if (!data3.empty())
+          file->WriteAtCurrentPos(base::as_byte_span(data2)).value_or(0);
+    }
+    if (!data3.empty()) {
       bytes_written +=
-          std::max(0, file->WriteAtCurrentPos(data3.data(), data3.size()));
+          file->WriteAtCurrentPos(base::as_byte_span(data3)).value_or(0);
+    }
   }
 
   return bytes_written;

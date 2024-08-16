@@ -220,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents);
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
 
   // Ensure the registry is currently empty.
   GURL url("web+search:testing");

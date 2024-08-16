@@ -23,6 +23,7 @@
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/script/pending_script.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
@@ -101,7 +102,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   // Helper functions used by our parent classes.
   void DidNotifySubtreeInsertionsToDocument();
-  void ChildrenChanged();
+  void ChildrenChanged(const ContainerNode::ChildrenChange&);
   void HandleSourceAttribute(const String& source_url);
   void HandleAsyncAttribute();
   void Removed();

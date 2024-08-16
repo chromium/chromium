@@ -211,9 +211,9 @@ public abstract class PageInfoControllerDelegate {
     public abstract boolean showTrackingProtectionUI();
 
     /**
-     * @return Whether the 3PCD 100% Tracking Protection UI should be shown.
+     * @return Whether the Tracking Protection with ACT Features UI should be shown.
      */
-    public abstract boolean showTrackingProtectionLaunchUI();
+    public abstract boolean showTrackingProtectionACTFeaturesUI();
 
     /**
      * @return Whether all 3PCs are blocked when Tracking Protection is on.

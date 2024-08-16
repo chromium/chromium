@@ -109,7 +109,7 @@ void MandatoryReauthManager::StartDeviceAuthentication(
   // once it is supported. Currently, the message is "Verify it's you".
   Authenticate(std::move(authentication_complete_callback));
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
@@ -231,7 +231,7 @@ void MandatoryReauthManager::OnUserAcceptedOptInPrompt() {
       &MandatoryReauthManager::OnOptInAuthenticationStepCompleted,
       weak_ptr_factory_.GetWeakPtr()));
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

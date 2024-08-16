@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs_impl.h"
@@ -22,7 +23,13 @@
 
 namespace updater {
 
-TEST(PrefsTest, PrefsCommitPendingWrites) {
+// TODO(crbug.com/360158404): Flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrefsCommitPendingWrites DISABLED_PrefsCommitPendingWrites
+#else
+#define MAYBE_PrefsCommitPendingWrites PrefsCommitPendingWrites
+#endif
+TEST(PrefsTest, MAYBE_PrefsCommitPendingWrites) {
   base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());

@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -48,7 +49,7 @@ int AdSizeToPixels(double size, blink::AdSize::LengthUnit unit) {
       return static_cast<int>(size / 100.0 * screen_height);
     }
     case blink::AdSize::LengthUnit::kInvalid:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -324,6 +325,11 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   if (it != urn_uuid_to_url_map_.end()) {
     properties = FencedFrameProperties(it->second);
+  }
+
+  if (properties.has_value() && properties->ad_auction_data().has_value()) {
+    base::UmaHistogramBoolean("Ads.InterestGroup.Auction.AdNavigationStarted",
+                              true);
   }
 
   observer->OnFencedFrameURLMappingComplete(properties);

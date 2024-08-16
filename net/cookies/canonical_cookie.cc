@@ -802,10 +802,6 @@ bool CanonicalCookie::HasEquivalentDataMembers(
   return GetAllDataMembersAsTuple(*this) == GetAllDataMembersAsTuple(other);
 }
 
-bool CanonicalCookie::DataMembersPrecede(const CanonicalCookie& other) const {
-  return GetAllDataMembersAsTuple(*this) < GetAllDataMembersAsTuple(other);
-}
-
 void CanonicalCookie::PostIncludeForRequestURL(
     const CookieAccessResult& access_result,
     const CookieOptions& options_used,

@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -234,7 +235,9 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
                                true, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kSuccessNewInstall);
   auto& registrar = provider()->registrar_unsafe();
-  EXPECT_TRUE(registrar.IsLocallyInstalled(kWebAppId));
+  EXPECT_TRUE(registrar.IsInstallState(kWebAppId,
+                                       {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                                        proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -250,7 +253,9 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
@@ -268,7 +273,9 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
             "test app");
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
@@ -283,7 +290,9 @@ TEST_F(FetchManifestAndInstallCommandTest,
                 CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
                 FallbackBehavior::kAllowFallbackDataAlways),
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -302,7 +311,9 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                            CreateDialogCallback(
                                false, mojom::UserDisplayMode::kStandalone)),
             webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(0, fake_ui_manager().num_reparent_tab_calls());
 }
 
@@ -719,7 +730,9 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kCancelledDueToMainFrameNavigation);
-  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsInstallState(
+      kWebAppId, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+                  proto::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

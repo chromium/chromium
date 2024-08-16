@@ -27,8 +27,8 @@
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/mock_reading_list_model_observer.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -42,8 +42,8 @@
 
 using fake_server::FakeServer;
 using sync_pb::SyncEnums;
-using syncer::ModelType;
-using syncer::ModelTypeSet;
+using syncer::DataType;
+using syncer::DataTypeSet;
 
 namespace {
 
@@ -72,22 +72,22 @@ class GetUpdatesObserver : public FakeServer::Observer {
     get_updates_origins_.Put(message.get_updates().get_updates_origin());
     for (const sync_pb::DataTypeProgressMarker& progress_marker :
          message.get_updates().from_progress_marker()) {
-      ModelType type = syncer::GetModelTypeFromSpecificsFieldNumber(
+      DataType type = syncer::GetDataTypeFromSpecificsFieldNumber(
           progress_marker.data_type_id());
-      DCHECK_NE(type, ModelType::UNSPECIFIED);
+      DCHECK_NE(type, DataType::UNSPECIFIED);
       updated_types_.Put(type);
     }
   }
 
   GetUpdatesOriginSet GetAllOrigins() const { return get_updates_origins_; }
 
-  ModelTypeSet GetUpdatedTypes() const { return updated_types_; }
+  DataTypeSet GetUpdatedTypes() const { return updated_types_; }
 
  private:
   const raw_ptr<FakeServer> fake_server_;
 
   GetUpdatesOriginSet get_updates_origins_;
-  ModelTypeSet updated_types_;
+  DataTypeSet updated_types_;
 };
 
 class SingleClientCommonSyncTest : public SyncTest {
@@ -113,15 +113,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
-  // Some data types may use preconditions in the model type controller to
+  // Some data types may use preconditions in the data type controller to
   // postpone their startup. Since such data types were paused (even for a short
   // period), an additional GetUpdates request may be sent during initialization
   // for them.
   // TODO(crbug.com/40264154): remove once GetUpdates is not issued anymore.
   GetUpdatesObserver::GetUpdatesOriginSet get_updates_origins_to_exclude{
       SyncEnums::PROGRAMMATIC};
-  ModelTypeSet types_to_exclude{ModelType::ARC_PACKAGE, ModelType::HISTORY,
-                                ModelType::CONTACT_INFO, ModelType::NIGORI};
+  DataTypeSet types_to_exclude{DataType::ARC_PACKAGE, DataType::HISTORY,
+                               DataType::CONTACT_INFO, DataType::NIGORI};
 
   // Verify that there were no unexpected GetUpdates requests during Sync
   // initialization.
@@ -148,8 +148,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // BOOKMARKS has no unsynced data.
   {
     base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
-    EXPECT_CALL(callback, Run(ModelTypeSet())).WillOnce([&]() { loop.Quit(); });
+    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
+    EXPECT_CALL(callback, Run(DataTypeSet())).WillOnce([&]() { loop.Quit(); });
     GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
                                                 callback.Get());
     loop.Run();
@@ -168,8 +168,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // BOOKMARKS now has local changes not yet synced with the server.
   {
     base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
-    EXPECT_CALL(callback, Run(ModelTypeSet({syncer::BOOKMARKS})))
+    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
+    EXPECT_CALL(callback, Run(DataTypeSet({syncer::BOOKMARKS})))
         .WillOnce([&]() { loop.Quit(); });
     GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
                                                 callback.Get());
@@ -186,8 +186,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // BOOKMARKS has no unsynced data.
   {
     base::RunLoop loop;
-    base::MockOnceCallback<void(syncer::ModelTypeSet)> callback;
-    EXPECT_CALL(callback, Run(ModelTypeSet())).WillOnce([&]() { loop.Quit(); });
+    base::MockOnceCallback<void(syncer::DataTypeSet)> callback;
+    EXPECT_CALL(callback, Run(DataTypeSet())).WillOnce([&]() { loop.Quit(); });
     GetSyncService(0)->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
                                                 callback.Get());
     loop.Run();
@@ -437,32 +437,32 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
   // the Sync-the-feature model) should have been cleared.
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::BOOKMARKS), 1);
+      syncer::DataTypeHistogramValue(syncer::BOOKMARKS), 1);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::PASSWORDS), 1);
+      syncer::DataTypeHistogramValue(syncer::PASSWORDS), 1);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::READING_LIST), 1);
+      syncer::DataTypeHistogramValue(syncer::READING_LIST), 1);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
+      syncer::DataTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::SEARCH_ENGINES), 1);
+      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES), 1);
 
   // But for data types that use a single model in both transport mode and
   // Sync-the-feature mode (and that support transport mode in the first place),
   // the metadata should *not* have been cleared.
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::DEVICE_INFO), 0);
+      syncer::DataTypeHistogramValue(syncer::DEVICE_INFO), 0);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::SHARING_MESSAGE), 0);
+      syncer::DataTypeHistogramValue(syncer::SHARING_MESSAGE), 0);
   histograms.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::ModelTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
+      syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -493,10 +493,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
                        AppliesSyncTypesListDisabledPolicyImmediately) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::ModelType::PASSWORDS));
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::ModelType::BOOKMARKS));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::PASSWORDS));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 
   base::Value::List disabled_types;
   disabled_types.Append("bookmarks");
@@ -515,14 +515,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPolicySyncTest,
   // Also, Sync should immediately start reconfiguring (without any additional
   // waiting), and as such the now-disabled type should not be active anymore.
   // (Other data types may or may not be active here, depending on timing.)
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::ModelType::BOOKMARKS));
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 
   // Wait for some other data type to become active again.
   PasswordSyncActiveChecker(GetSyncService(0)).Wait();
   // The policy-disabled type should still be inactive.
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::ModelType::BOOKMARKS));
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::DataType::BOOKMARKS));
 }
 
 }  // namespace

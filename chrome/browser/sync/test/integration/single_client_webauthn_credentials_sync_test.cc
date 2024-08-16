@@ -18,8 +18,8 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   // The client tag hash used should follow sync's usual rules. (Android's
   // implementation of passkeys uses a different client tag hash format.)
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::WEBAUTHN_CREDENTIAL);
+      fake_server_->GetSyncEntitiesByDataType(syncer::WEBAUTHN_CREDENTIAL);
   EXPECT_EQ(entities.size(), 1u);
   EXPECT_EQ(entities.front().specifics().webauthn_credential().sync_id(),
             sync_id);
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_TRUE(change_checker.Wait());
 
   EXPECT_THAT(GetFakeServer()->GetCommittedDeletionOrigins(
-                  syncer::ModelType::WEBAUTHN_CREDENTIAL),
+                  syncer::DataType::WEBAUTHN_CREDENTIAL),
               ElementsAre(syncer::MatchesDeletionOrigin(
                   version_info::GetVersionNumber(), kLocation)));
 }

@@ -30,7 +30,6 @@
 #include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/storage_access_api/status.h"
-#include "services/network/counted_cookie_access_details_set.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -43,8 +42,12 @@ class SiteForCookies;
 
 namespace network {
 
-using CookieAccessDetailsList =
-    std::vector<network::mojom::CookieAccessDetailsPtr>;
+struct CookieWithAccessResultComparer {
+  bool operator()(
+      const net::CookieWithAccessResult& cookie_with_access_result1,
+      const net::CookieWithAccessResult& cookie_with_access_result2) const;
+};
+
 using CookieAccesses =
     std::set<net::CookieWithAccessResult, CookieWithAccessResultComparer>;
 using CookieAccessesByURLAndSite =
@@ -183,13 +186,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   // reflect that.
   void OnCookieSettingsChanged();
 
-  void SetShouldDeDupCookieAccessDetailsForTesting(bool should_dedup);
-  void SetMaxCookieCacheCountForTesting(size_t count);
-
  private:
   using SharedVersionType = std::atomic<uint64_t>;
-  static_assert(SharedVersionType::is_always_lock_free,
-                "Usage of SharedVersionType across processes might be unsafe");
 
   // Function to be called when an event is known to potentially invalidate
   // cookies the other side could have cached.
@@ -333,17 +331,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   // Stores queued cookie access events that will be sent after a short delay,
   // controlled by `cookies_access_timer_`.
-  CookieAccessDetails cookie_access_details_;
-  // We use this list rather than |cookie_access_details_| if de-duping is
-  // disabled (i.e., if |should_dedup_cookie_access_details_| is false. We also
-  // use it when deduping if DCHECK is enabled in order to check that the
-  // ordering of the deduplicated list is correct.
-  CookieAccessDetailsList cookie_access_details_list_;
-  bool should_dedup_cookie_access_details_ = true;
+  std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
   base::RetainingOneShotTimer cookies_access_timer_;
-  size_t estimated_cookie_access_details_size_ = 0u;
-  size_t estimated_deduped_cookie_access_details_size_ = 0u;
-  size_t cookie_access_details_count_ = 0u;
 
   mojo::SharedMemoryVersionController shared_memory_version_controller_;
 

@@ -22,7 +22,13 @@ FacilitatedPaymentsController::FacilitatedPaymentsController(
           web_contents,
           this)) {}
 
-FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
+FacilitatedPaymentsController::~FacilitatedPaymentsController() {
+  if (java_object_) {
+    payments::facilitated::
+        Java_FacilitatedPaymentsPaymentMethodsControllerBridge_onNativeDestroyed(
+            base::android::AttachCurrentThread(), java_object_);
+  }
+}
 
 bool FacilitatedPaymentsController::Show(
     base::span<const autofill::BankAccount> bank_account_suggestions,

@@ -36,7 +36,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
       std::optional<base::RepeatingCallback<void(Event)>> event_callback,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
-      const CableEidArray& decrypted_eid);
+      const CableEidArray& decrypted_eid,
+      // If true, the peer device must support processing CTAP messages
+      // otherwise a handshake error results. If false, the user commits to
+      // checking `features()` first.
+      bool must_support_ctap);
 
   // This constructor is used for pairing-initiated connections. If the given
   // |Pairing| is reported by the tunnel server to be invalid (which can happen
@@ -60,11 +64,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   bool MatchAdvert(const std::array<uint8_t, kAdvertSize>& advert);
 
   // FidoDevice:
+  void DiscoverSupportedProtocolAndDeviceInfo(base::OnceClosure done) override;
   CancelToken DeviceTransact(std::vector<uint8_t> command,
                              DeviceCallback callback) override;
+  CancelToken DeviceTransactJSON(std::vector<uint8_t> json,
+                                 DeviceCallback callback);
   void Cancel(CancelToken token) override;
   std::string GetId() const override;
   FidoTransportProtocol DeviceTransport() const override;
+  FidoTunnelDevice* GetTunnelDevice() override;
+  base::flat_set<Feature> features() const;
   base::WeakPtr<FidoDevice> GetWeakPtr() override;
 
   // GetNumEstablishedConnectionInstancesForTesting returns the current number
@@ -171,7 +180,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     EstablishedConnection(const EstablishedConnection&) = delete;
     EstablishedConnection& operator=(const EstablishedConnection&) = delete;
 
-    void Transact(std::vector<uint8_t> message, DeviceCallback callback);
+    void Transact(MessageType msg_type,
+                  std::vector<uint8_t> message,
+                  DeviceCallback callback);
     void Close();
 
    private:
@@ -206,28 +217,32 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
     base::OneShotTimer timer_;
     DeviceCallback callback_;
+    std::optional<MessageType> expected_reply_type_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 
+  CancelToken DoTransact(MessageType type,
+                         std::vector<uint8_t> msg,
+                         DeviceCallback callback);
   void OnTunnelReady(
       WebSocketAdapter::Result result,
       std::optional<std::array<uint8_t, kRoutingIdSize>> routing_id,
       WebSocketAdapter::ConnectSignalSupport connect_signal_support);
   void OnTunnelData(std::optional<base::span<const uint8_t>> data);
   void OnError();
-  void DeviceTransactReady(std::vector<uint8_t> command,
-                           DeviceCallback callback);
   bool ProcessConnectSignal(base::span<const uint8_t> data);
 
   State state_ = State::kConnecting;
   absl::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
   const std::optional<base::RepeatingCallback<void(Event)>> event_callback_;
-  std::vector<uint8_t> pending_message_;
-  DeviceCallback pending_callback_;
+  const bool must_support_ctap_;
+  std::optional<base::flat_set<Feature>> features_;
+  base::OnceClosure discover_callback_;
   std::optional<HandshakeInitiator> handshake_;
   std::optional<HandshakeHash> handshake_hash_;
   std::vector<uint8_t> getinfo_response_bytes_;
+  std::optional<bool> supports_json_;
 
   // These fields are |nullptr| when in state |kReady|.
   std::unique_ptr<WebSocketAdapter> websocket_client_;

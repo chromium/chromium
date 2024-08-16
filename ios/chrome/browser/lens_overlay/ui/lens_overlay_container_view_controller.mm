@@ -9,15 +9,6 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
-namespace {
-
-// The close button top padding.
-const CGFloat closeButtonTopPadding = 10.0;
-// The close button trailing padding.
-const CGFloat closeButtonTrailingPadding = 16.0;
-
-}  // namespace
-
 @implementation LensOverlayContainerViewController {
   // The overlay commands handler.
   id<LensOverlayCommands> _overlayCommandsHandler;
@@ -41,19 +32,6 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
   self.view.accessibilityIdentifier = kLenscontainerViewAccessibilityIdentifier;
 
-  self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self.view addSubview:self.closeButton];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.closeButton.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:closeButtonTopPadding],
-    [self.closeButton.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-closeButtonTrailingPadding]
-  ]];
-
   if (!self.selectionViewController) {
     return;
   }
@@ -65,11 +43,9 @@ const CGFloat closeButtonTrailingPadding = 16.0;
       NO;
   [NSLayoutConstraint activateConstraints:@[
     [self.selectionViewController.view.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:80.0f],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [self.selectionViewController.view.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-80.0f],
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
     [self.selectionViewController.view.leftAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor],
     [self.selectionViewController.view.rightAnchor
@@ -79,40 +55,10 @@ const CGFloat closeButtonTrailingPadding = 16.0;
   [self.selectionViewController didMoveToParentViewController:self];
 }
 
-- (UIButton*)closeButton {
-  if (_closeButton) {
-    return _closeButton;
-  }
-
-  _closeButton = [[UIButton alloc] init];
-
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:20
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleLarge];
-
-  configuration.image = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                     symbolConfiguration),
-      @[ UIColor.whiteColor, [UIColor colorWithWhite:0 alpha:0.2] ]);
-  _closeButton.configuration = configuration;
-
-  [_closeButton addTarget:self
-                   action:@selector(closeButtonPressed)
-         forControlEvents:UIControlEventTouchUpInside];
-
-  _closeButton.accessibilityIdentifier =
-      kLenscontainerViewCloseButtonAccessibilityIdentifier;
-
-  return _closeButton;
-}
-
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self closeButtonPressed];
+  [self closeOverlayRequested];
   return YES;
 }
 
@@ -134,12 +80,12 @@ const CGFloat closeButtonTrailingPadding = 16.0;
 
 #pragma mark - Actions
 
-- (void)closeButtonPressed {
+- (void)closeOverlayRequested {
   [_overlayCommandsHandler destroyLensUI:YES];
 }
 
 - (void)escapeButtonPressed {
-  [self closeButtonPressed];
+  [self closeOverlayRequested];
 }
 
 @end

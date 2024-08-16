@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/wm/window_animations.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -98,7 +98,7 @@ std::optional<ash::ShelfAction> AdvanceApp(
   // bounce the window to signal nothing happened.
   if (items.size() == 1u && active_item) {
     DCHECK(active_item_window);
-    ash_util::BounceWindow(active_item_window);
+    ash::BounceWindow(active_item_window);
     return ash::SHELF_ACTION_NONE;
   }
 

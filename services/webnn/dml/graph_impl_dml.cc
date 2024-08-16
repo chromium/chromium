@@ -103,9 +103,29 @@ DML_TENSOR_DATA_TYPE GetTensorDataType(OperandDataType type) {
       return DML_TENSOR_DATA_TYPE_INT32;
     case OperandDataType::kUint32:
       return DML_TENSOR_DATA_TYPE_UINT32;
+  }
+}
+
+OperandDataType DmlDataTypeToOperand(DML_TENSOR_DATA_TYPE type) {
+  switch (type) {
+    case DML_TENSOR_DATA_TYPE_FLOAT32:
+      return OperandDataType::kFloat32;
+    case DML_TENSOR_DATA_TYPE_FLOAT16:
+      return OperandDataType::kFloat16;
+    case DML_TENSOR_DATA_TYPE_INT8:
+      return OperandDataType::kInt8;
+    case DML_TENSOR_DATA_TYPE_UINT8:
+      return OperandDataType::kUint8;
+    case DML_TENSOR_DATA_TYPE_INT64:
+      return OperandDataType::kInt64;
+    case DML_TENSOR_DATA_TYPE_UINT64:
+      return OperandDataType::kUint64;
+    case DML_TENSOR_DATA_TYPE_INT32:
+      return OperandDataType::kInt32;
+    case DML_TENSOR_DATA_TYPE_UINT32:
+      return OperandDataType::kUint32;
     default:
-      LOG(ERROR) << "[WebNN] This data type is not supported.";
-      NOTREACHED_NORETURN();
+      NOTREACHED() << "[WebNN] This data type is not supported.";
   }
 }
 
@@ -132,7 +152,7 @@ DML_REDUCE_FUNCTION MapReduceKindToReduceFuntion(mojom::Reduce::Kind kind) {
     case mojom::Reduce::Kind::kSumSquare:
       return DML_REDUCE_FUNCTION_SUM_SQUARE;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CheckInputDataTypeForReduce(mojom::Reduce::Kind kind,
@@ -426,7 +446,7 @@ uint64_t BuildConstantOperandForFloatValue(mojom::GraphInfoPtr& graph_info,
     default:
       LOG(ERROR) << "[WebNN] The data type must be one of the floating point "
                     "data types.";
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   CHECK(graph_info->constant_id_to_buffer_map
@@ -550,7 +570,7 @@ struct ActivationOperatorDesc {
       return {DML_OPERATOR_ACTIVATION_TANH,
               &absl::get<DML_ACTIVATION_TANH_OPERATOR_DESC>(desc)};
     } else {
-      NOTREACHED_NORETURN() << "The activation type is not supported.";
+      NOTREACHED() << "The activation type is not supported.";
     }
   }
 };
@@ -710,7 +730,7 @@ ActivationOperatorDesc CreateOperatorDescForFusibleActivation(
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
     default:
-      NOTREACHED_NORETURN() << "The operation is not a fusible activation.";
+      NOTREACHED() << "The operation is not a fusible activation.";
   }
 }
 
@@ -1188,7 +1208,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
       graph_info->id_to_operand_map.size() + 1, 0);
 
   for (uint64_t graph_output_id : graph_info->output_operands) {
-    ++node_output_edge_counts[graph_output_id];
+    ++node_output_edge_counts.at(graph_output_id);
   }
 
   // Iterate from the end of operations instead from the beginning, so we
@@ -1201,7 +1221,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
         GetOperationConnectivity(operation.get());
 
     for (uint64_t input_id : operation_connectivity.input_ids) {
-      ++node_output_edge_counts[input_id];
+      ++node_output_edge_counts.at(input_id);
     }
 
     // Try to find standalone activations that can be fused into preceding
@@ -1666,6 +1686,7 @@ const OperatorNode* CreateBinaryOperator(const TensorDesc& a_tensor,
 }
 
 void CreateOperatorNodeForBinary(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
     const std::map<const Operation*, const Operation*>&
@@ -1693,11 +1714,17 @@ void CreateOperatorNodeForBinary(
     input_b_tensor_desc.BroadcastTo(output_dimensions);
   }
 
+  CHECK_EQ(input_a_tensor_desc.GetDataType(),
+           input_b_tensor_desc.GetDataType());
+
+  const OperandDataType input_data_type =
+      DmlDataTypeToOperand(input_a_tensor_desc.GetDataType());
   const std::string& label = binary->label;
   const OperatorNode* binary_node = nullptr;
   std::array<const NodeOutput*, 2> inputs = {input_a, input_b};
   switch (binary->kind) {
     case mojom::ElementWiseBinary::Kind::kAdd: {
+      CHECK(context_properties.data_type_limits.add_input.Has(input_data_type));
       std::optional<const Operation*> fusible_activation =
           GetFusibleActivationFromOperation(
               operation_to_fusible_standalone_activation_map, operation);
@@ -1729,24 +1756,28 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kDiv: {
+      CHECK(context_properties.data_type_limits.div_input.Has(input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_DIVIDE_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_DIVIDE, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMax: {
+      CHECK(context_properties.data_type_limits.max_input.Has(input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MAX_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_MAX, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMin: {
+      CHECK(context_properties.data_type_limits.min_input.Has(input_data_type));
       binary_node = CreateBinaryOperator<DML_ELEMENT_WISE_MIN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
           graph_builder, DML_OPERATOR_ELEMENT_WISE_MIN, inputs, label);
       break;
     }
     case mojom::ElementWiseBinary::Kind::kMul: {
+      CHECK(context_properties.data_type_limits.mul_input.Has(input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1754,6 +1785,7 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kSub: {
+      CHECK(context_properties.data_type_limits.sub_input.Has(input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_SUBTRACT_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1761,6 +1793,7 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kPow: {
+      CHECK(context_properties.data_type_limits.pow_input.Has(input_data_type));
       DML_ELEMENT_WISE_POW_OPERATOR_DESC element_wise_operator_desc{
           .InputTensor = &input_a_tensor_desc.GetDMLTensorDesc(),
           .ExponentTensor = &input_b_tensor_desc.GetDMLTensorDesc(),
@@ -1771,6 +1804,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kEqual: {
+      CHECK(
+          context_properties.data_type_limits.equal_input.Has(input_data_type));
       binary_node =
           CreateBinaryOperator<DML_ELEMENT_WISE_LOGICAL_EQUALS_OPERATOR_DESC>(
               input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1779,6 +1814,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreater: {
+      CHECK(context_properties.data_type_limits.greater_input.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1787,6 +1824,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kGreaterOrEqual: {
+      CHECK(context_properties.data_type_limits.greater_or_equal_input.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_GREATER_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1796,6 +1835,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesser: {
+      CHECK(context_properties.data_type_limits.lesser_input.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1804,6 +1845,8 @@ void CreateOperatorNodeForBinary(
       break;
     }
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual: {
+      CHECK(context_properties.data_type_limits.lesser_or_equal_input.Has(
+          input_data_type));
       binary_node = CreateBinaryOperator<
           DML_ELEMENT_WISE_LOGICAL_LESS_THAN_OR_EQUAL_OPERATOR_DESC>(
           input_a_tensor_desc, input_b_tensor_desc, output_tensor_desc,
@@ -1989,7 +2032,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForPool2d(
     }
     default:
       LOG(ERROR) << "[WebNN] Invalid Pool2d operator type";
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
@@ -2203,52 +2246,79 @@ void CreateOperatorNodeForNeg(const IdToOperandMap& id_to_operand_map,
 }
 
 void CreateOperatorNodeForElementWiseUnary(
+    const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::ElementWiseUnaryPtr& operation,
     GraphBuilderDml& graph_builder,
     IdToNodeOutputMap& id_to_node_output_map) {
-  const NodeOutput* input = GetNodeOutputForOperand(
-      id_to_node_output_map, operation->input_operand_id);
-  const DML_TENSOR_DATA_TYPE input_data_type =
-      input->GetTensorDesc().GetDataType();
-
+  const OperandDataType input_data_type =
+      DmlDataTypeToOperand(GetNodeOutputForOperand(id_to_node_output_map,
+                                                   operation->input_operand_id)
+                               ->GetTensorDesc()
+                               .GetDataType());
   switch (operation->kind) {
     case mojom::ElementWiseUnary::Kind::kAbs: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type) ||
-            input_data_type == DML_TENSOR_DATA_TYPE_INT32 ||
-            input_data_type == DML_TENSOR_DATA_TYPE_INT8);
+      CHECK(context_properties.data_type_limits.abs_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ABS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_ABS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kCast: {
+      return CreateOperatorNodeForUnary<DML_CAST_OPERATOR_DESC,
+                                        DML_OPERATOR_CAST>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kCeil: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(
+          context_properties.data_type_limits.ceil_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_CEIL_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_CEIL>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties.data_type_limits.cos_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_COS_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_COS>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kErf: {
+      CHECK(context_properties.data_type_limits.erf_input.Has(input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ERF_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_ERF>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kExp: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties.data_type_limits.exp_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_EXP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_EXP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(
+          context_properties.data_type_limits.floor_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_FLOOR_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_FLOOR>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      CHECK(context_properties.data_type_limits.identity_input.Has(
+          input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kLog: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties.data_type_limits.log_input.Has(input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_LOG_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      CHECK(context_properties.data_type_limits.logical_not_input.Has(
+          input_data_type));
+      return CreateOperatorNodeForUnary<
+          DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
+          DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
     // TODO(crbug.com/40943114): Implement the negate operator directly by
@@ -2256,57 +2326,34 @@ void CreateOperatorNodeForElementWiseUnary(
     // DML_FEATURE_LEVEL_5_0.
     // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#availability
     case mojom::ElementWiseUnary::Kind::kNeg: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type) ||
-            input_data_type == DML_TENSOR_DATA_TYPE_INT32 ||
-            input_data_type == DML_TENSOR_DATA_TYPE_INT8);
+      CHECK(context_properties.data_type_limits.neg_input.Has(input_data_type));
       return CreateOperatorNodeForNeg(id_to_operand_map, operation,
                                       graph_builder, id_to_node_output_map);
     }
-    case mojom::ElementWiseUnary::Kind::kSin: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
-      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,
-                                        DML_OPERATOR_ELEMENT_WISE_SIN>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
-    case mojom::ElementWiseUnary::Kind::kTan: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
-      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_TAN_OPERATOR_DESC,
-                                        DML_OPERATOR_ELEMENT_WISE_TAN>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
-    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
-      CHECK_EQ(input_data_type, DML_TENSOR_DATA_TYPE_UINT8);
-      return CreateOperatorNodeForUnary<
-          DML_ELEMENT_WISE_LOGICAL_NOT_OPERATOR_DESC,
-          DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
-    case mojom::ElementWiseUnary::Kind::kIdentity: {
-      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC,
-                                        DML_OPERATOR_ELEMENT_WISE_IDENTITY>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
-    case mojom::ElementWiseUnary::Kind::kSqrt: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
-      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SQRT_OPERATOR_DESC,
-                                        DML_OPERATOR_ELEMENT_WISE_SQRT>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
-    case mojom::ElementWiseUnary::Kind::kErf: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
-      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_ERF_OPERATOR_DESC,
-                                        DML_OPERATOR_ELEMENT_WISE_ERF>(
-          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
-    }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
-      CHECK(kDmlFloatDataTypes.contains(input_data_type));
+      CHECK(context_properties.data_type_limits.reciprocal_input.Has(
+          input_data_type));
       return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_RECIP_OPERATOR_DESC,
                                         DML_OPERATOR_ELEMENT_WISE_RECIP>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
-    case mojom::ElementWiseUnary::Kind::kCast: {
-      return CreateOperatorNodeForUnary<DML_CAST_OPERATOR_DESC,
-                                        DML_OPERATOR_CAST>(
+    case mojom::ElementWiseUnary::Kind::kSin: {
+      CHECK(context_properties.data_type_limits.sin_input.Has(input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SIN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_SIN>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt: {
+      CHECK(
+          context_properties.data_type_limits.sqrt_input.Has(input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_SQRT_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_SQRT>(
+          id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kTan: {
+      CHECK(context_properties.data_type_limits.tan_input.Has(input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_TAN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_TAN>(
           id_to_operand_map, operation, graph_builder, id_to_node_output_map);
     }
   }
@@ -5364,6 +5411,7 @@ void GraphImplDml::OnInitializationComplete(
 
 // static
 base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
+    const ContextProperties& context_properties,
     scoped_refptr<Adapter> adapter,
     mojom::GraphInfoPtr& graph_info,
     GraphBuilderDml& graph_builder,
@@ -5461,7 +5509,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
         CreateOperatorNodeForBinary(
-            id_to_operand_map, operation.get(),
+            context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);
         break;
@@ -5473,8 +5521,9 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       }
       case mojom::Operation::Tag::kElementWiseUnary: {
         CreateOperatorNodeForElementWiseUnary(
-            id_to_operand_map, operation->get_element_wise_unary(),
-            graph_builder, id_to_node_output_map);
+            context_properties, id_to_operand_map,
+            operation->get_element_wise_unary(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kExpand: {
@@ -5758,9 +5807,9 @@ void GraphImplDml::CreateAndBuild(
   std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
   GraphBufferBindingInfo graph_buffer_binding_info;
   base::expected<void, mojom::ErrorPtr> create_operator_result =
-      GraphImplDml::CreateAndBuildInternal(adapter, graph_info, graph_builder,
-                                           constant_id_to_input_index_map,
-                                           graph_buffer_binding_info);
+      GraphImplDml::CreateAndBuildInternal(
+          context->properties(), adapter, graph_info, graph_builder,
+          constant_id_to_input_index_map, graph_buffer_binding_info);
 
   // TODO(crbug.com/349649099): Handle context lost for operator creation
   // failures.

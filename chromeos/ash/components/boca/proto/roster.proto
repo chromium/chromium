@@ -1,0 +1,29 @@
+// Imported from
+// //depot/google3/google/internal/chrome/cros/edu/schooltools/v1/roster.proto
+
+syntax = "proto3";
+
+package boca;
+
+option optimize_for = LITE_RUNTIME;
+
+message Roster {
+  string roster_id = 1;
+
+  string title = 2;
+
+  repeated StudentGroup student_groups = 3;
+}
+
+message StudentGroup {
+  string title = 1;
+
+  repeated UserIdentity students = 2;
+}
+
+message UserIdentity {
+  string gaia_id = 1;
+  string email = 2;
+  string full_name = 3;
+  string photo_url = 4;
+}

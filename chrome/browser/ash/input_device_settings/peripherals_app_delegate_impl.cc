@@ -7,14 +7,16 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_app_icon_loader.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
-#include "chrome/browser/apps/peripherals/proto/peripherals.pb.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/version_info/version_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace ash {
 
@@ -96,28 +98,6 @@ std::string BuildRequestBody(const std::string& device_key) {
   return peripherals_proto.SerializeAsString();
 }
 
-std::optional<mojom::CompanionAppInfo> ConvertPeripheralsResponseProto(
-    base::expected<apps::proto::PeripheralsGetResponse, apps::QueryError>
-        query_response) {
-  if (!query_response.has_value()) {
-    return std::nullopt;
-  }
-
-  const apps::proto::PeripheralsGetResponse& response = query_response.value();
-  mojom::CompanionAppInfo info;
-  info.action_link = response.action_link();
-  info.app_name = response.name();
-  info.icon_url = response.icon().url();
-  auto package_id = apps::PackageId::FromString(response.package_id());
-  info.package_id = package_id.value().ToString();
-  info.state = apps_util::GetAppWithPackageId(
-                   &*ProfileManager::GetActiveUserProfile(), package_id.value())
-                       .has_value()
-                   ? mojom::CompanionAppState::kInstalled
-                   : mojom::CompanionAppState::kAvailable;
-  return info;
-}
-
 }  // namespace
 
 PeripheralsAppDelegateImpl::PeripheralsAppDelegateImpl() = default;
@@ -125,14 +105,79 @@ PeripheralsAppDelegateImpl::~PeripheralsAppDelegateImpl() = default;
 
 void PeripheralsAppDelegateImpl::GetCompanionAppInfo(
     const std::string& device_key,
-    base::OnceCallback<void(const std::optional<mojom::CompanionAppInfo>&)>
-        callback) {
+    GetCompanionAppInfoCallback callback) {
+  Profile* active_user_profile = ProfileManager::GetActiveUserProfile();
+
   QueryAlmanacApi<apps::proto::PeripheralsGetResponse>(
-      *ProfileManager::GetActiveUserProfile()->GetURLLoaderFactory().get(),
-      kTrafficAnnotation, BuildRequestBody(device_key),
-      kPeripheralsAlmanacEndpoint, kMaxResponseSizeInBytes,
+      *active_user_profile->GetURLLoaderFactory().get(), kTrafficAnnotation,
+      BuildRequestBody(device_key), kPeripheralsAlmanacEndpoint,
+      kMaxResponseSizeInBytes,
       /*error_histogram_name=*/std::nullopt,
-      base::BindOnce(&ConvertPeripheralsResponseProto)
-          .Then(std::move(callback)));
+      base::BindOnce(
+          &PeripheralsAppDelegateImpl::ConvertPeripheralsResponseProto,
+          weak_factory_.GetWeakPtr(), active_user_profile->GetWeakPtr(),
+          std::move(callback)));
 }
+
+void PeripheralsAppDelegateImpl::ConvertPeripheralsResponseProto(
+    base::WeakPtr<Profile> active_user_profile_weak_ptr,
+    GetCompanionAppInfoCallback callback,
+    base::expected<apps::proto::PeripheralsGetResponse, apps::QueryError>
+        query_response) {
+  Profile* profile = active_user_profile_weak_ptr.get();
+  if (!profile) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (!query_response.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const auto& response = query_response.value();
+  auto package_id = apps::PackageId::FromString(response.package_id());
+  if (!package_id.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  mojom::CompanionAppInfo info;
+  info.action_link = response.action_link();
+  info.app_name = response.name();
+  info.package_id = package_id.value().ToString();
+  info.state =
+      apps_util::GetAppWithPackageId(&*profile, package_id.value()).has_value()
+          ? mojom::CompanionAppState::kInstalled
+          : mojom::CompanionAppState::kAvailable;
+
+  icon_loader_ = std::make_unique<apps::AlmanacAppIconLoader>(*profile);
+  auto icon = response.icon();
+  apps::AppInstallIcon app_install_icon{
+      .url = GURL(icon.url()),
+      .width_in_pixels = icon.width_in_pixels(),
+      .mime_type = "image/svg+xml",
+      .is_masking_allowed = icon.is_masking_allowed()};
+  // Callback execution is not critical if object is deleted before icon load.
+  // This should rarely occur as the InputDeviceSettingsController, the primary
+  // user of this delegate, is initialized in shell and typically persistent.
+  icon_loader_->GetAppIcon(
+      app_install_icon.url, app_install_icon.mime_type,
+      app_install_icon.is_masking_allowed,
+      base::BindOnce(&PeripheralsAppDelegateImpl::OnAppIconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(info)));
+}
+
+void PeripheralsAppDelegateImpl::OnAppIconLoaded(
+    GetCompanionAppInfoCallback callback,
+    mojom::CompanionAppInfo info,
+    apps::IconValuePtr icon_value) {
+  icon_loader_.reset();
+  if (icon_value) {
+    info.icon_url = webui::GetBitmapDataUrl(*icon_value->uncompressed.bitmap());
+  }
+  std::move(callback).Run(info);
+}
+
 }  // namespace ash

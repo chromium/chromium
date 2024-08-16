@@ -49,7 +49,7 @@ class FakeExtensionWebRequestReporter
 
   void Clone(mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver)
       override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void RunUntilCalled() { run_loop_.Run(); }

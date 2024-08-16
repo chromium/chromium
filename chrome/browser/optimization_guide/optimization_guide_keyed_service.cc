@@ -383,7 +383,8 @@ void OptimizationGuideKeyedService::Initialize() {
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }
 
-  optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
+  optimization_guide_logger_ = OptimizationGuideLogger::GetInstance();
+  DCHECK(optimization_guide_logger_);
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
@@ -474,6 +475,10 @@ void OptimizationGuideKeyedService::Initialize() {
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()
                   : nullptr);
+
+      RecordModelExecutionFeatureSyntheticFieldTrial(
+          optimization_guide::UserVisibleFeatureKey::kHistorySearch,
+          "HistorySearch");
     }
   }
 
@@ -801,4 +806,14 @@ void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
     return;
   }
   model_execution_features_controller_->RemoveObserver(observer);
+}
+
+void OptimizationGuideKeyedService::
+    RecordModelExecutionFeatureSyntheticFieldTrial(
+        optimization_guide::UserVisibleFeatureKey feature,
+        const std::string_view feature_name) {
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
+      ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }

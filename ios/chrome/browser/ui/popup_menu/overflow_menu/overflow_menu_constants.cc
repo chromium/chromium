@@ -115,7 +115,7 @@ ActionType ActionTypeForStringName(std::string action) {
   } else if (action == "LensOverlay") {
     return overflow_menu::ActionType::LensOverlay;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 // LINT.ThenChange(:actionTypeToString)

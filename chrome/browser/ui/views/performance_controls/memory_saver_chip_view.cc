@@ -164,7 +164,7 @@ void MemorySaverChipView::OnExecuting(
 }
 
 const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {
-  return kMemorySaverChromeRefreshIcon;
+  return kPerformanceSpeedometerIcon;
 }
 
 views::BubbleDialogDelegate* MemorySaverChipView::GetBubble() const {

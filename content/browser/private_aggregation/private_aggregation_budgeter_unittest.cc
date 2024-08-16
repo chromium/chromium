@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -743,6 +744,132 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
     histograms.ExpectUniqueSample(
         "PrivacySandbox.PrivateAggregation.Budgeter.BudgetValidityStatus2",
         test_case.expected_status, 1);
+    run_loop.Run();
+  }
+}
+
+TEST_F(PrivateAggregationBudgeterTest,
+       EnoughBudgetIfNotEnoughOverallMetricRecorded) {
+  CreateAndInitializeBudgeterThenWait();
+
+  PrivateAggregationBudgetKey budget_key = CreateBudgetKey();
+
+  constexpr int64_t kLargerScopeDuration =
+      PrivateAggregationBudgeter::kLargerScopeValues.budget_scope_duration
+          .InMicroseconds();
+  constexpr int64_t kWindowDuration =
+      PrivateAggregationBudgetKey::TimeWindow::kDuration.InMicroseconds();
+
+  int64_t latest_window_start = budget_key.time_window()
+                                    .start_time()
+                                    .ToDeltaSinceWindowsEpoch()
+                                    .InMicroseconds();
+
+  int64_t oldest_window_start =
+      latest_window_start + kWindowDuration - kLargerScopeDuration;
+
+  constexpr int kMaxSmallerScopeBudget =
+      PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope;
+  constexpr int kMaxLargerScopeBudget =
+      PrivateAggregationBudgeter::kLargerScopeValues.max_budget_per_scope;
+
+  const struct {
+    std::string_view description;
+    std::optional<bool> expected_status;
+    int amount_to_consume;
+    int minimum_histogram_value;
+    int smaller_scope_budget_used;
+    int larger_scope_budget_used;
+  } kTestCases[] = {
+      {
+          "amount is approved",
+          /*expected_status=*/std::nullopt,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/0,
+          /*larger_scope_budget_used=*/0,
+      },
+      {
+          "insufficent small scope budget, but minimum would succeed",
+          /*expected_status=*/true,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/kMaxSmallerScopeBudget - 100,
+          /*larger_scope_budget_used=*/0,
+      },
+      {
+          "insufficent small scope budget, minimum would also fail",
+          /*expected_status=*/false,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/kMaxSmallerScopeBudget - 1,
+          /*larger_scope_budget_used=*/0,
+      },
+      {
+          "insufficent large scope budget, but minimum would succeed",
+          /*expected_status=*/true,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/0,
+          /*larger_scope_budget_used=*/kMaxLargerScopeBudget - 100,
+      },
+      {
+          "insufficent large scope budget, minimum would also fail",
+          /*expected_status=*/false,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/0,
+          /*larger_scope_budget_used=*/kMaxLargerScopeBudget - 1,
+      },
+      {
+          "requested more than the total budget",
+          /*expected_status=*/std::nullopt,
+          /*amount_to_consume=*/kMaxSmallerScopeBudget + 1,
+          /*minimum_histogram_value=*/10,
+          /*smaller_scope_budget_used=*/0,
+          /*larger_scope_budget_used=*/0,
+      },
+      {
+          "minimum_histogram_value 0",
+          /*expected_status=*/std::nullopt,
+          /*amount_to_consume=*/1000,
+          /*minimum_histogram_value=*/0,
+          /*smaller_scope_budget_used=*/0,
+          /*larger_scope_budget_used=*/0,
+      }};
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    base::HistogramTester histograms;
+    base::RunLoop run_loop;
+
+    if (test_case.smaller_scope_budget_used) {
+      AddBudgetValueAtTimestamp(budget_key, test_case.smaller_scope_budget_used,
+                                latest_window_start);
+    }
+    if (test_case.larger_scope_budget_used) {
+      AddBudgetValueAtTimestamp(budget_key, test_case.larger_scope_budget_used,
+                                oldest_window_start);
+    }
+
+    budgeter()->ConsumeBudget(
+        /*budget=*/test_case.amount_to_consume, budget_key,
+        test_case.minimum_histogram_value,
+        base::BindLambdaForTesting([&](RequestResult result) {
+          DeleteAllBudgetData();
+          run_loop.Quit();
+        }));
+
+    constexpr std::string_view kHistogram =
+        "PrivacySandbox.PrivateAggregation.Budgeter."
+        "EnoughBudgetForAnyValueIfNotEnoughOverall";
+
+    if (test_case.expected_status.has_value()) {
+      histograms.ExpectUniqueSample(kHistogram,
+                                    test_case.expected_status.value(), 1);
+    } else {
+      histograms.ExpectTotalCount(kHistogram, 0);
+    }
     run_loop.Run();
   }
 }

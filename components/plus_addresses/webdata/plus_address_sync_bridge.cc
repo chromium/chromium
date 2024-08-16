@@ -14,8 +14,8 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -28,16 +28,16 @@
 namespace plus_addresses {
 
 PlusAddressSyncBridge::PlusAddressSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     scoped_refptr<WebDatabaseBackend> db_backend,
     DataChangedBySyncCallback notify_data_changed_by_sync)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       db_backend_(std::move(db_backend)),
       notify_data_changed_by_sync_(std::move(notify_data_changed_by_sync)) {
   CHECK(db_backend_);
   // Initializing the database from disk can fail.
   if (!db_backend_->database()) {
-    ModelTypeSyncBridge::change_processor()->ReportError(
+    DataTypeSyncBridge::change_processor()->ReportError(
         {FROM_HERE, "Failed to initialize database."});
     return;
   }
@@ -46,12 +46,11 @@ PlusAddressSyncBridge::PlusAddressSyncBridge(
   auto metadata = std::make_unique<syncer::MetadataBatch>();
   if (!GetPlusAddressTable()->GetAllSyncMetadata(syncer::PLUS_ADDRESS,
                                                  *metadata)) {
-    ModelTypeSyncBridge::change_processor()->ReportError(
+    DataTypeSyncBridge::change_processor()->ReportError(
         {FROM_HERE, "Failed to read PLUS_ADDRESS metadata."});
     return;
   }
-  ModelTypeSyncBridge::change_processor()->ModelReadyToSync(
-      std::move(metadata));
+  DataTypeSyncBridge::change_processor()->ModelReadyToSync(std::move(metadata));
 }
 
 PlusAddressSyncBridge::~PlusAddressSyncBridge() = default;
@@ -213,7 +212,7 @@ PlusAddressSyncBridge::TransferMetadataChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
   syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
       GetPlusAddressTable(), syncer::PLUS_ADDRESS,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
   static_cast<syncer::InMemoryMetadataChangeList*>(metadata_change_list.get())
       ->TransferChangesTo(&sync_metadata_store_change_list);

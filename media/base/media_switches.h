@@ -63,7 +63,7 @@ MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
 MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 #endif
 
-#if defined(USE_CRAS)
+#if BUILDFLAG(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
 MEDIA_EXPORT extern const char kSystemAecEnabled[];
 #endif
@@ -302,6 +302,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaEngagementHTTPSOnly);
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT extern const base::FeatureParam<std::string>
     kMediaFoundationClearKeyCdmPathForTesting;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableFaultyGPUForMediaFoundation);
 #endif  // BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningExperiment);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLearningFramework);
@@ -368,6 +369,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kVaapiVp9SModeHWEncoding);
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kV4L2FlatStatefulVideoDecoder);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kV4L2H264TemporalLayerHWEncoding);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoBlitColorAccuracy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoFrameUseClientSITextureTarget);
@@ -396,6 +398,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kRequestSystemAudioFocus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioLatencyFromHAL);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUsePooledSharedImageVideoProvider);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecSoftwareDecoder);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecCallsInSeparateProcess);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)

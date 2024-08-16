@@ -20,6 +20,7 @@ class WorkerNodeImpl;
 // graph.
 struct GraphImplOperations {
   using FrameNodeImplVisitor = base::FunctionRef<bool(FrameNodeImpl*)>;
+  using PageNodeImplVisitor = base::FunctionRef<bool(PageNodeImpl*)>;
   using WorkerNodeImplVisitor = base::FunctionRef<bool(WorkerNodeImpl*)>;
 
   // Returns the collection of page nodes that are associated with the given
@@ -58,6 +59,12 @@ struct GraphImplOperations {
                                      FrameNodeImplVisitor visitor);
   static bool VisitFrameTreePostOrder(const PageNodeImpl* page,
                                       FrameNodeImplVisitor visitor);
+
+  // Traverses the tree of embedded pages rooted at `page`, invoking `visitor`
+  // for each page node. Returns false if `visitor` returns false (stopping the
+  // traversal at that point); otherwise, returns `true`.
+  static bool VisitPageAndEmbedsPreOrder(PageNodeImpl* page,
+                                         PageNodeImplVisitor visitor);
 
   // Returns true if the given |frame| is in the frame tree associated with the
   // given |page|.

@@ -51,14 +51,6 @@ export class HeaderMenuElement extends PolymerElement {
     }));
   }
 
-  private onAddToNewGroupClick_() {
-    this.close();
-    this.dispatchEvent(new CustomEvent('add-to-new-group-click', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
   private onSeeAllClick_() {
     this.close();
     this.dispatchEvent(new CustomEvent('see-all-click', {

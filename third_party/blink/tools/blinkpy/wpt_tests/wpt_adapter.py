@@ -136,7 +136,6 @@ class StructuredLogAdapter(logging.Handler):
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
         'android_webview': 'webview',
-        'chrome': 'chrome',
         'chrome_android': 'android',
     }
 
@@ -169,15 +168,8 @@ class WPTAdapter:
                           != 'headless_shell')
 
         if options.product in cls.PORT_NAME_BY_PRODUCT:
-            port = host.port_factory.get(
-                cls.PORT_NAME_BY_PRODUCT[options.product], options)
-        else:
-            port = host.port_factory.get(port_name, options)
-
-        if options.product == 'headless_shell':
-            port.set_option_default('driver_name', port.HEADLESS_SHELL_NAME)
-        elif options.product == 'chrome':
-            port.set_option_default('driver_name', port.CHROME_NAME)
+            port_name = cls.PORT_NAME_BY_PRODUCT[options.product]
+        port = host.port_factory.get(port_name, options)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)
 
@@ -406,6 +398,7 @@ class WPTAdapter:
             self.paths, all_test_names, _ = finder.find_tests(
                 self.paths,
                 test_lists=self.options.test_list,
+                exclude_test_lists=self.options.exclude_test_lists,
                 filter_files=self.options.isolated_script_test_filter_file,
                 fastest_percentile=None,
                 filters=self.options.isolated_script_test_filter)
@@ -784,12 +777,6 @@ def main(argv) -> int:
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
     try:
         adapter = WPTAdapter.from_args(host, argv)
-        if adapter.product.name == 'chrome' and not host.platform.is_linux():
-            logger.error(
-                '`run_wpt_tests.py --product=chrome` does not yet support '
-                'non-Linux platforms; follow https://crbug.com/1512219 for '
-                'status.')
-            return exit_code
         if (adapter.product.name == 'chrome_ios'
                 and adapter.options.xcode_build_version):
             _install_xcode(adapter.options.xcode_build_version)

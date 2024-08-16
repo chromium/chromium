@@ -15,6 +15,8 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
 
@@ -36,6 +38,12 @@ class TestSharedImageInterface : public SharedImageInterface {
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage) override;
+
+  MOCK_METHOD4(DoCreateSharedImage,
+               void(const gfx::Size& size,
+                    const viz::SharedImageFormat& format,
+                    gpu::SurfaceHandle surface_handle,
+                    gfx::BufferUsage buffer_usage));
 
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
@@ -77,7 +85,7 @@ class TestSharedImageInterface : public SharedImageInterface {
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,
-                                      gfx::BufferFormat format,
+                                      const viz::SharedImageFormat& format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe) override;
 #endif  // BUILDFLAG(IS_FUCHSIA)

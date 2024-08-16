@@ -123,7 +123,7 @@ EnergyMetricsProviderLinux::CaptureMetrics() {
     uint64_t absolute_energy;
     if (!base::ReadFromFD(
             event.fd.get(),
-            base::as_writable_chars(base::make_span(&absolute_energy, 1u)))) {
+            base::as_writable_chars(base::span_from_ref(absolute_energy)))) {
       LOG(ERROR) << "Failed to read absolute energy of " << event.metric_type;
       continue;
     }

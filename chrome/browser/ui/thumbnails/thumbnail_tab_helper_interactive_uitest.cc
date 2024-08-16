@@ -116,7 +116,7 @@ class ThumbnailTabHelperUpdatedInteractiveTest
 
   auto CheckTabHasThumbnailData(int tab_index, bool has_data) {
     return CheckResult(
-        [=]() {
+        [=, this]() {
           return ThumbnailTabHelper::FromWebContents(
                      browser()->tab_strip_model()->GetWebContentsAt(tab_index))
               ->thumbnail()

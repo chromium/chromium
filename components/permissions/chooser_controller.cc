@@ -88,11 +88,11 @@ bool ChooserController::ShouldShowAdapterOffView() const {
 }
 
 int ChooserController::GetAdapterOffMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChooserController::GetTurnAdapterOnLinkTextMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ChooserController::ShouldShowAdapterUnauthorizedView() const {
@@ -100,11 +100,11 @@ bool ChooserController::ShouldShowAdapterUnauthorizedView() const {
 }
 
 int ChooserController::GetBluetoothUnauthorizedMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int ChooserController::GetAuthorizeBluetoothLinkTextMessageId() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace permissions

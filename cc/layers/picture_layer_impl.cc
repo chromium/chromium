@@ -331,10 +331,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                         append_quads_data);
 
   if (ShowDebugBorders(DebugBorderType::LAYER)) {
-    for (PictureLayerTilingSet::CoverageIterator iter(
-             tilings_.get(), max_contents_scale,
-             shared_quad_state->visible_quad_layer_rect,
-             ideal_contents_scale_key());
+    for (auto iter =
+             tilings_->Cover(shared_quad_state->visible_quad_layer_rect,
+                             max_contents_scale, ideal_contents_scale_key());
          iter; ++iter) {
       SkColor4f color;
       float width;
@@ -413,10 +412,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   only_used_low_res_last_append_quads_ = true;
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
-  for (PictureLayerTilingSet::CoverageIterator iter(
-           tilings_.get(), max_contents_scale,
-           shared_quad_state->visible_quad_layer_rect,
-           ideal_contents_scale_key());
+  for (auto iter =
+           tilings_->Cover(shared_quad_state->visible_quad_layer_rect,
+                           max_contents_scale, ideal_contents_scale_key());
        iter; ++iter) {
     gfx::Rect geometry_rect = iter.geometry_rect();
     if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
@@ -591,7 +589,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   SanityCheckTilingState();
 }
 
-bool PictureLayerImpl::UpdateTiles() {
+bool PictureLayerImpl::UpdateTiles(TileMemoryLimitPolicy memory_limit_policy) {
   if (!CanHaveTilings()) {
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
@@ -667,7 +665,8 @@ bool PictureLayerImpl::UpdateTiles() {
   bool updated = tilings_->UpdateTilePriorities(
       viewport_rect_for_tile_priority_in_content_space_,
       ideal_contents_scale_key(), current_frame_time_in_seconds,
-      occlusion_in_content_space, can_require_tiles_for_activation);
+      occlusion_in_content_space, can_require_tiles_for_activation,
+      memory_limit_policy);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
   return updated;
@@ -1119,8 +1118,8 @@ void PictureLayerImpl::GetContentsResourceId(
   float dest_scale = MaximumTilingContentsScale();
   gfx::Rect content_rect =
       gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), dest_scale);
-  PictureLayerTilingSet::CoverageIterator iter(
-      tilings_.get(), dest_scale, content_rect, ideal_contents_scale_key());
+  auto iter =
+      tilings_->Cover(content_rect, dest_scale, ideal_contents_scale_key());
 
   // Mask resource not ready yet.
   if (!iter || !*iter) {
@@ -1703,7 +1702,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   float maximum_area = max_visible_bounds_at_max_scale.width() *
                        max_visible_bounds_at_max_scale.height();
   // Clamp the scale to make the rastered content not larger than the viewport.
-  if (UNLIKELY(maximum_area > squared_viewport_area)) {
+  if (maximum_area > squared_viewport_area) [[unlikely]] {
     raster_contents_scale_.Scale(
         1.f / std::sqrt(maximum_area / squared_viewport_area));
   }
@@ -2001,9 +2000,9 @@ void PictureLayerImpl::AsValueInto(
   state->EndArray();
 
   state->BeginArray("coverage_tiles");
-  for (PictureLayerTilingSet::CoverageIterator iter(
-           tilings_.get(), MaximumTilingContentsScale(), gfx::Rect(bounds()),
-           ideal_contents_scale_key());
+  for (auto iter =
+           tilings_->Cover(gfx::Rect(bounds()), MaximumTilingContentsScale(),
+                           ideal_contents_scale_key());
        iter; ++iter) {
     state->BeginDictionary();
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
 
 #include "ash/webui/eche_app_ui/url_constants.h"
@@ -19,16 +24,10 @@ namespace ash {
 namespace eche_app {
 
 UntrustedEcheAppUIConfig::UntrustedEcheAppUIConfig()
-    : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  kChromeUIEcheAppGuestHost) {}
+    : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
+                         kChromeUIEcheAppGuestHost) {}
 
 UntrustedEcheAppUIConfig::~UntrustedEcheAppUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                const GURL& url) {
-  return std::make_unique<UntrustedEcheAppUI>(web_ui);
-}
 
 UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {

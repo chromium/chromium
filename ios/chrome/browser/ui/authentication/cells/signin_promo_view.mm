@@ -279,7 +279,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
       break;
     case SigninPromoViewStyleOnlyButton:
       // This style has no image.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   DCHECK_EQ(kProfileImageHeightWidth, image.size.height);
   DCHECK_EQ(kProfileImageHeightWidth, image.size.width);
@@ -327,7 +327,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
     }
     case SigninPromoViewStyleOnlyButton:
       // This style has no image.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

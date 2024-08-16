@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -34,7 +35,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -139,7 +140,7 @@ public class TabGroupListMediator {
                 @Override
                 public void syncStateChanged() {
                     boolean enabled =
-                            mSyncService.getActiveDataTypes().contains(ModelType.SAVED_TAB_GROUP);
+                            mSyncService.getActiveDataTypes().contains(DataType.SAVED_TAB_GROUP);
                     mPropertyModel.set(TabGroupListProperties.SYNC_ENABLED, enabled);
                 }
             };
@@ -386,8 +387,7 @@ public class TabGroupListMediator {
         } else if (state == TabGroupState.IN_CURRENT) {
             int rootId = mFilter.getRootIdFromStableId(savedTabGroup.localId.tabGroupId);
             List<Tab> tabsToClose = mFilter.getRelatedTabListForRootId(rootId);
-            mFilter.closeMultipleTabs(
-                    tabsToClose, /* canUndo= */ false, /* hideTabGroups= */ false);
+            mFilter.closeTabs(TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
         } else {
             mTabGroupSyncService.removeGroup(savedTabGroup.syncId);
         }

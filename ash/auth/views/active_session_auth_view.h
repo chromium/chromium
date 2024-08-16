@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -94,6 +95,11 @@ class ASH_EXPORT ActiveSessionAuthView : public views::View,
 
   void SetHasPin(bool has_pin);
   bool HasPin() const;
+  void SetPinStatus(const std::u16string& status_str);
+
+  // Enables or disables the input area of the view. The header area (e.g.,
+  // close button) remains accessible even in the disabled state.
+  void SetInputEnabled(bool enabled);
 
   // Actions:
   void Close();

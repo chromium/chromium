@@ -23,10 +23,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_holder.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mode_observing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 @interface TabGridMediator () <PrefObserverDelegate,
-                               SupervisedUserCapabilitiesObserving>
+                               SupervisedUserCapabilitiesObserving,
+                               TabGridModeObserving>
 @end
 
 @implementation TabGridMediator {
@@ -45,18 +48,24 @@
   // Observer to track changes to supervision-related capabilities.
   std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
       _supervisedUserCapabilitiesObserver;
+  // Holder for the current mode of the TabGrid.
+  TabGridModeHolder* _modeHolder;
 }
 
 - (instancetype)initWithIdentityManager:
                     (signin::IdentityManager*)identityManager
                             prefService:(PrefService*)prefService
-               featureEngagementTracker:(feature_engagement::Tracker*)tracker {
+               featureEngagementTracker:(feature_engagement::Tracker*)tracker
+                             modeHolder:(TabGridModeHolder*)modeHolder {
   self = [super init];
   if (self) {
     CHECK(identityManager);
     CHECK(prefService);
     CHECK(tracker);
+    CHECK(modeHolder);
     _engagementTracker = tracker;
+    _modeHolder = modeHolder;
+    [_modeHolder addObserver:self];
 
     if (base::FeatureList::IsEnabled(
             supervised_user::
@@ -85,6 +94,9 @@
   _supervisedUserCapabilitiesObserver.reset();
   _identityManager = nil;
   _consumer = nil;
+
+  [_modeHolder removeObserver:self];
+  _modeHolder = nil;
 }
 
 #pragma mark - Public
@@ -92,10 +104,6 @@
 - (void)setActivePage:(TabGridPage)page {
   [self notifyPageMutatorAboutPage:page];
   [_currentPageMutator setPageAsActive];
-}
-
-- (void)setModeOnCurrentPage:(TabGridMode)mode {
-  [_currentPageMutator switchToMode:mode];
 }
 
 - (void)setConsumer:(id<TabGridConsumer>)consumer {
@@ -173,6 +181,12 @@
   [_currentPageMutator currentlySelectedGrid:YES];
 }
 
+#pragma mark - TabGridModeObserving
+
+- (void)tabGridModeDidChange:(TabGridModeHolder*)modeHolder {
+  [self.consumer setMode:modeHolder.mode];
+}
+
 #pragma mark - TabGridMutator
 
 - (void)pageChanged:(TabGridPage)currentPage
@@ -211,7 +225,7 @@
 }
 
 - (void)quitSearchMode {
-  [self setModeOnCurrentPage:TabGridModeNormal];
+  _modeHolder.mode = TabGridMode::kNormal;
 }
 
 @end

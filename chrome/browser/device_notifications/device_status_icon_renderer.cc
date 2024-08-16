@@ -50,7 +50,7 @@ std::u16string GetOriginConnectionCountLabel(Profile* profile,
         connection_count, base::UTF8ToUTF16(name));
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

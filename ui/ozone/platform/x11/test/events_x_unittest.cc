@@ -85,6 +85,10 @@ std::string FlooredEventLocationString(const x11::Event& xev) {
       .ToString();
 }
 
+x11::Input::Fp1616 ToFp1616(int x) {
+  return static_cast<x11::Input::Fp1616>(x * (1 << 16));
+}
+
 }  // namespace
 
 class EventsXTest : public testing::Test {
@@ -218,6 +222,26 @@ TEST_F(EventsXTest, EnterLeaveEvent) {
                             });
   EXPECT_EQ(ui::EventType::kMouseExited, ui::EventTypeFromXEvent(event));
   EXPECT_EQ("30,40", ui::EventLocationFromXEvent(event).ToString());
+  EXPECT_EQ("230,240", ui::EventSystemLocationFromXEvent(event).ToString());
+}
+
+TEST_F(EventsXTest, XInputEnterLeaveEvent) {
+  x11::Event event(false, x11::Input::CrossingEvent{
+                              .opcode = x11::Input::CrossingEvent::Enter,
+                              .root_x = ToFp1616(110),
+                              .root_y = ToFp1616(120),
+                              .event_x = ToFp1616(10),
+                              .event_y = ToFp1616(20),
+                          });
+  EXPECT_EQ("110,120", ui::EventSystemLocationFromXEvent(event).ToString());
+
+  event = x11::Event(false, x11::Input::CrossingEvent{
+                                .opcode = x11::Input::CrossingEvent::Leave,
+                                .root_x = ToFp1616(230),
+                                .root_y = ToFp1616(240),
+                                .event_x = ToFp1616(30),
+                                .event_y = ToFp1616(40),
+                            });
   EXPECT_EQ("230,240", ui::EventSystemLocationFromXEvent(event).ToString());
 }
 

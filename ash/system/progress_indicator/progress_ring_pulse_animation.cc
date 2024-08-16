@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/progress_indicator/progress_ring_pulse_animation.h"
 
 #include "base/dcheck_is_on.h"
@@ -98,7 +103,7 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
 
   // This LOC should never be reached as the correct key frames for the current
   // animation `fraction` should have been found in the loop above.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

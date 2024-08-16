@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -9,8 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/printing/printers_sync_bridge.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -26,7 +27,7 @@ class PrintersSyncBridgeTest : public testing::Test {
  public:
   PrintersSyncBridgeTest() : task_environment_() {
     bridge_ = std::make_unique<PrintersSyncBridge>(
-        syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
+        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         base::BindRepeating(
             base::IgnoreResult(&base::debug::DumpWithoutCrashing), FROM_HERE,
             base::Minutes(5)));

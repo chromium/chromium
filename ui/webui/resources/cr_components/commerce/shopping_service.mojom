@@ -7,6 +7,7 @@ module shopping_service.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // This is a specialized version of shopping_specifics proto. The
 // struct here has most of the same information with the proto but
@@ -166,6 +167,15 @@ struct ProductSpecificationsProduct {
   array<ProductSpecificationsDescriptionText> summary;
 };
 
+// Describes whether different parts of the Compare feature are enabled.
+struct ProductSpecificationsFeatureState {
+  bool is_syncing_tab_compare;
+  bool can_load_full_page_ui;
+  bool can_manage_sets;
+  bool can_fetch_data;
+  bool is_allowed_for_enterprise;
+};
+
 // This struct represents information acquired from the product specifications
 // backend.
 struct ProductSpecifications {
@@ -207,6 +217,7 @@ interface ShoppingServiceHandlerFactory {
 };
 
 // Browser-side handler for requests from WebUI page.
+// TODO(b/359684506): Move feature-specific functions to separate handlers.
 interface ShoppingServiceHandler {
   // Returns all the tracked product info from bookmarks.
   GetAllPriceTrackedBookmarkProductInfo()
@@ -275,8 +286,11 @@ interface ShoppingServiceHandler {
   // called when the current page is bookmarked.
   ShowBookmarkEditorForCurrentUrl();
 
-  // Show the product specifications set based on the uuid.
-  ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid);
+  // Show the product specifications set based on the uuid, `in_new_tab`
+  // indicates whether the browser should open the set in a new tab or
+  // current tab.
+  ShowProductSpecificationsSetForUuid(mojo_base.mojom.Uuid uuid,
+      bool in_new_tab);
 
   // Show feedback form for price insights.
   ShowFeedbackForPriceInsights();
@@ -311,6 +325,24 @@ interface ShoppingServiceHandler {
   // Updates the user's accepted disclosure version for product specifications.
   SetProductSpecificationAcceptedDisclosureVersion(
       ProductSpecificationsDisclosureVersion version);
+
+  // If eligible, show the product specifications disclosure. 'urls' are the
+  // member URLs of the current product specifications set, and `name` is the
+  // set name. `disclosure_shown` is returned to indicate whether this attempt
+  // succeeded (i.e. whether the disclosure is shown).
+  MaybeShowProductSpecificationDisclosure(array<url.mojom.Url> urls,
+      string name) => (bool disclosure_shown);
+
+  // Gets called when user has explicitly declined the product specification
+  // disclosure.
+  DeclineProductSpecificationDisclosure();
+
+  // Sync user account for compare feature.
+  ShowSyncSetupFlow();
+
+  // Get access state for compare feature.
+  GetProductSpecificationsFeatureState()
+      => (ProductSpecificationsFeatureState state);
 };
 
 // WebUI-side handler for requests from the browser.

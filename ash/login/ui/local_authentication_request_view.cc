@@ -32,6 +32,7 @@
 #include "components/account_id/account_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -133,7 +134,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,
     const std::u16string& description,
-    Delegate* delegate,
+    base::WeakPtr<Delegate> delegate,
     std::unique_ptr<UserContext> user_context)
     : local_authentication_callback_(std::move(local_authentication_callback)),
       delegate_(delegate),
@@ -141,12 +142,11 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       default_description_(description),
       auth_performer_(UserDataAuthClient::Get()),
       user_context_(std::move(user_context)) {
-  //  MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
+  //  ModalType::kSystem is used to get a semi-transparent background behind the
   //  local authentication request view, when it is used directly on a widget.
   //  The overlay consumes all the inputs from the user, so that they can only
   //  interact with the local authentication request view while it is visible.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  const bool is_jelly = chromeos::features::IsJellyEnabled();
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   // Main view contains all other views aligned vertically and centered.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -162,9 +162,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   // Set Backgground color and shape.
   SetPaintToLayer();
   layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  ui::ColorId background_color_id =
-      is_jelly ? cros_tokens::kCrosSysSystemBaseElevated
-               : static_cast<ui::ColorId>(kColorAshShieldAndBase80);
+  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id,
       kLocalAuthenticationRequestViewRoundedCornerRadiusDp));
@@ -230,9 +228,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
       &LocalAuthenticationRequestView::OnClose, base::Unretained(this)));
   close_button_->SetPreferredSize(
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
-  const ui::ColorId icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshIconColorPrimary;
+  const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, icon_color_id,
@@ -256,11 +252,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    const ui::ColorId text_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshTextColorPrimary;
-    label->SetEnabledColorId(text_color_id);
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -313,6 +305,8 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   add_spacer(kSubmitButtonBottomMarginDp);
 
   SetPreferredSize(GetLocalAuthenticationRequestViewSize());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
@@ -320,7 +314,6 @@ LocalAuthenticationRequestView::~LocalAuthenticationRequestView() = default;
 void LocalAuthenticationRequestView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   views::DialogDelegateView::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetNameChecked(description_label_->GetText());
 }
 

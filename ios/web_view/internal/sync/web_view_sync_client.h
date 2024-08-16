@@ -12,7 +12,7 @@
 
 namespace syncer {
 class DeviceInfoSyncService;
-class ModelTypeStoreService;
+class DataTypeStoreService;
 }  // namespace syncer
 
 namespace ios_web_view {
@@ -22,7 +22,7 @@ class WebViewSyncClient : public syncer::SyncClient {
   explicit WebViewSyncClient(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      syncer::ModelTypeStoreService* model_type_store_service,
+      syncer::DataTypeStoreService* data_type_store_service,
       syncer::DeviceInfoSyncService* device_info_sync_service,
       syncer::SyncInvalidationsService* sync_invalidations_service);
 

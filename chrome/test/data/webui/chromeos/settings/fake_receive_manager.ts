@@ -133,4 +133,8 @@ export class FakeReceiveManager extends TestBrowserProxy implements
       this.observer_.onHighVisibilityChanged(inHighVisibility);
     }
   }
+
+  setNextResultForTest(nextResult: boolean): void {
+    this.nextResult_ = nextResult;
+  }
 }

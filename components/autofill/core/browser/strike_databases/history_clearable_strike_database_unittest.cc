@@ -8,10 +8,9 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -79,7 +78,8 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<StrikeDatabase> strike_database_service_;
   std::unique_ptr<HistoryClearableStrikeDatabase<TestStrikeDatabaseTraits>>
@@ -95,12 +95,12 @@ class HistoryClearableStrikeDatabaseTest : public ::testing::Test {
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
        RemoveStrikesByOriginWithinDeletionWindow) {
-  base::Time start_time = AutofillClock::Now();
+  base::Time start_time = base::Time::Now();
   // Both strikes are added within the deletion window, but the second should
   // be ruled out by the filter.
   strike_database_->AddStrike(kUrl1.host());
   strike_database_->AddStrike(kUrl2.host());
-  base::Time end_time = AutofillClock::Now();
+  base::Time end_time = base::Time::Now();
 
   EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
   EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
@@ -126,14 +126,11 @@ TEST_F(HistoryClearableStrikeDatabaseTest, RemoveStrikesByOrigin) {
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeAfterDeletionWindow) {
-  TestAutofillClock test_autofill_clock;
-  test_autofill_clock.SetNow(AutofillClock::Now());
-
-  base::Time start_time = AutofillClock::Now();
+  base::Time start_time = base::Time::Now();
   strike_database_->AddStrike(kUrl1.host());
-  test_autofill_clock.Advance(base::Minutes(1));
-  base::Time end_time = AutofillClock::Now();
-  test_autofill_clock.Advance(base::Minutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
+  base::Time end_time = base::Time::Now();
+  task_environment_.FastForwardBy(base::Minutes(1));
 
   // Now update the time stamp of this entry by adding another strike.
   // By this, the entry should not be deleted.
@@ -146,15 +143,12 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
 TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeBeforeDeletionWindow) {
   // The strike is added before the deletion window.
-  TestAutofillClock test_autofill_clock;
-  test_autofill_clock.SetNow(AutofillClock::Now());
-
   strike_database_->AddStrike(kUrl1.host());
-  test_autofill_clock.Advance(base::Minutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
 
-  base::Time start_time = AutofillClock::Now();
-  test_autofill_clock.Advance(base::Minutes(1));
-  base::Time end_time = AutofillClock::Now();
+  base::Time start_time = base::Time::Now();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  base::Time end_time = base::Time::Now();
 
   ClearStrikesByOriginAndTime(delete_all_urls_rows_, start_time, end_time);
 

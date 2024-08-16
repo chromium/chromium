@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/time/time.h"
@@ -16,6 +17,10 @@
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "windows.h"
@@ -79,17 +84,22 @@ bool CopyFileAndSync(const base::FilePath& from, const base::FilePath& to) {
   std::vector<char> buffer(kBufferSize);
 
   for (;;) {
-    int bytes_read = infile.ReadAtCurrentPos(&buffer[0], kBufferSize);
-    if (bytes_read < 0)
+    std::optional<size_t> bytes_read =
+        infile.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    if (!bytes_read.has_value()) {
       return false;
-    if (bytes_read == 0)
+    }
+    if (bytes_read.value() == 0) {
       break;
-    for (int bytes_written = 0; bytes_written < bytes_read;) {
-      int bytes_written_partial = outfile.WriteAtCurrentPos(
-          &buffer[bytes_written], bytes_read - bytes_written);
-      if (bytes_written_partial < 0)
+    }
+    auto span_to_write = base::as_byte_span(buffer).first(bytes_read.value());
+    while (!span_to_write.empty()) {
+      std::optional<size_t> bytes_written_partial =
+          outfile.WriteAtCurrentPos(span_to_write);
+      if (!bytes_written_partial.has_value()) {
         return false;
-      bytes_written += bytes_written_partial;
+      }
+      span_to_write = span_to_write.subspan(bytes_written_partial.value());
     }
   }
 
@@ -169,6 +179,28 @@ base::File NativeFileUtil::CreateOrOpen(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::EnsureFileExists(const base::FilePath& path,
                                                    bool* created) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    if (ContentUriExists(path)) {
+      if (created) {
+        *created = false;
+      }
+      return base::File::FILE_OK;
+    }
+    base::File file = OpenContentUri(
+        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    if (file.IsValid()) {
+      if (created) {
+        *created = true;
+      }
+      return base::File::FILE_OK;
+    }
+    if (created) {
+      *created = false;
+    }
+    return base::File::FILE_ERROR_NOT_FOUND;
+  }
+#endif
   if (!base::DirectoryExists(path.DirName()))
     // If its parent does not exist, should return NOT_FOUND error.
     return base::File::FILE_ERROR_NOT_FOUND;
@@ -253,6 +285,16 @@ base::File::Error NativeFileUtil::Touch(const base::FilePath& path,
 
 base::File::Error NativeFileUtil::Truncate(const base::FilePath& path,
                                            int64_t length) {
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    if (length != 0) {
+      return base::File::FILE_ERROR_FAILED;
+    }
+    base::File file = OpenContentUri(
+        path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    return file.error_details();
+  }
+#endif
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   if (!file.IsValid())
     return file.error_details();

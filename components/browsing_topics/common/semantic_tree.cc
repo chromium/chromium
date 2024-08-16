@@ -882,7 +882,7 @@ const RepresentativenessMap& GetRepresentativenessMapForCurrentTaxonomy() {
           }());
       return *kRepresentativenessMapV2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace

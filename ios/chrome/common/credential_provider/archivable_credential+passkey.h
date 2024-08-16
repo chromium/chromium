@@ -25,6 +25,7 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
 
 // Convenience initializer from a WebauthnCredentialSpecifics.
 - (instancetype)initWithFavicon:(NSString*)favicon
+                           gaia:(NSString*)gaia
                         passkey:(const sync_pb::WebauthnCredentialSpecifics&)
                                     passkey;
 

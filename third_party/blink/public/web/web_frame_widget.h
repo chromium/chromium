@@ -253,6 +253,10 @@ class WebFrameWidget : public WebWidget {
   // defined by the associated `webView`.
   virtual void SetZoomLevel(double zoom_level) = 0;
 
+  // Returns the cumulative effect of the CSS "zoom" property on the embedding
+  // element of this widget (if any) and all of its WebFrame ancestors.
+  virtual double GetCSSZoomFactor() const = 0;
+
   // Update the LocalSurfaceId used for frames produced by this widget.
   virtual void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) = 0;
 

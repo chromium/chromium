@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
@@ -40,8 +41,11 @@ class ConstructTraits {
     return object;
   }
 
-  static void NotifyNewElements(T* array, size_t len) {
-    Allocator::template NotifyNewObjects<T, Traits>(array, len);
+  static void NotifyNewElements(base::span<T> elements) {
+    if (elements.empty()) {
+      return;
+    }
+    Allocator::template NotifyNewObjects<T, Traits>(elements);
   }
 };
 

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -33,6 +34,14 @@ class COMPONENT_EXPORT(MAGIC_BOOST_VIEWS) ExperimentBadge : public views::View {
   raw_ptr<views::Label> label_ = nullptr;
 };
 
+BEGIN_VIEW_BUILDER(COMPONENT_EXPORT(MAGIC_BOOST_VIEWS),
+                   ExperimentBadge,
+                   views::View)
+END_VIEW_BUILDER
+
 }  // namespace chromeos
+
+DEFINE_VIEW_BUILDER(COMPONENT_EXPORT(MAGIC_BOOST_VIEWS),
+                    chromeos::ExperimentBadge)
 
 #endif  // CHROMEOS_COMPONENTS_MAGIC_BOOST_PUBLIC_CPP_VIEWS_EXPERIMENT_BADGE_H_

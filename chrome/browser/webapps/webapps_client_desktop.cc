@@ -12,14 +12,17 @@
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
@@ -164,9 +167,28 @@ bool WebappsClientDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   CHECK(browser_context);
   Profile* profile = Profile::FromBrowserContext(browser_context);
   CHECK(profile);
-  return web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(
-             profile->GetPrefs())
-      .IsBlockedByGuardrails(web_app::GenerateAppIdFromManifestId(manifest_id));
+
+  if (!manifest_id.is_empty() &&
+      web_app::WebAppPrefGuardrails::GetForMlInstallPrompt(profile->GetPrefs())
+          .IsBlockedByGuardrails(
+              web_app::GenerateAppIdFromManifestId(manifest_id))) {
+    return true;
+  }
+
+  // Do not copy this. This is a temporary hack to help not bother users before
+  // the ML triggering is moved to triggering IPH for a new install entry point.
+  // crbug.com/356401517
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForBrowserContext(profile);
+  user_education::FeaturePromoResult synthetic_result =
+      user_education_service->feature_promo_session_policy().CanShowPromo(
+          {.weight =
+               user_education::FeaturePromoSessionPolicy::PromoWeight::kHeavy,
+           .priority =
+               user_education::FeaturePromoSessionPolicy::PromoPriority::kLow},
+          /*currently_showing=*/std::nullopt);
+  return synthetic_result.failure() ==
+         user_education::FeaturePromoResult::kBlockedByGracePeriod;
 }
 
 segmentation_platform::SegmentationPlatformService*
@@ -179,6 +201,17 @@ WebappsClientDesktop::GetSegmentationPlatformService(
   CHECK(browser_context);
   return segmentation_platform::SegmentationPlatformServiceFactory::
       GetForProfile(Profile::FromBrowserContext(browser_context));
+}
+
+std::optional<webapps::AppId> WebappsClientDesktop::GetAppIdForWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  web_app::WebAppTabHelper* helper =
+      web_app::WebAppTabHelper::FromWebContents(web_contents);
+  if (!helper) {
+    return std::nullopt;
+  }
+  return helper->app_id();
 }
 
 }  // namespace webapps

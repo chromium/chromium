@@ -89,6 +89,9 @@ struct WebAppInstallParams {
 
   // Used only by ExternallyManagedInstallCommand.
   // Has the same meaning as WebAppInstallFlow::kCreateShortcut
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead, or use
+  // shortcuts::CreateShortcutForWebContents().
   bool install_as_shortcut = false;
 
   std::vector<std::string> additional_search_terms;
@@ -116,6 +119,9 @@ enum class WebAppInstallFlow {
   // to this enum.
   kUnknown,
   // The 'Create Shortcut' flow for adding the current page as a shortcut app.
+  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
+  // as an app, install it as a 'diy' app instead (currently by using
+  // kInstallSite). Or use shortcuts::CreateShortcutForWebContents().
   kCreateShortcut,
   // The 'Install Site' flow for installing the current site with an app
   // experience determined by the site.

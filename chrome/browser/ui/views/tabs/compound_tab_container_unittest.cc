@@ -678,65 +678,50 @@ TEST_F(CompoundTabContainerTest, DropIndexForDragLocationIsCorrect) {
   EXPECT_EQ((DropIndex{.index = 0,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kDontIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab1).left_center() +
-                                         gfx::Vector2d(1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab1).left_center() + gfx::Vector2d(1, 0))));
   EXPECT_EQ((DropIndex{.index = 1,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kDontIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab1).right_center() +
-                                         gfx::Vector2d(-1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab1).right_center() + gfx::Vector2d(-1, 0))));
   EXPECT_EQ((DropIndex{.index = 1,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab2).left_center() +
-                                         gfx::Vector2d(1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab2).left_center() + gfx::Vector2d(1, 0))));
   EXPECT_EQ((DropIndex{.index = 2,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kDontIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab2).right_center() +
-                                         gfx::Vector2d(-1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab2).right_center() + gfx::Vector2d(-1, 0))));
   EXPECT_EQ((DropIndex{.index = 2,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kDontIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab3).left_center() +
-                                         gfx::Vector2d(1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab3).left_center() + gfx::Vector2d(1, 0))));
   EXPECT_EQ((DropIndex{.index = 3,
                        .relative_to_index = kInsertBeforeIndex,
                        .group_inclusion = kDontIncludeInGroup}),
-            tab_container_->GetDropIndex(
-                MakeEventForDragLocation(bounds_in_ctc(tab3).right_center() +
-                                         gfx::Vector2d(-1, 0)),
-                true));
+            tab_container_->GetDropIndex(MakeEventForDragLocation(
+                bounds_in_ctc(tab3).right_center() + gfx::Vector2d(-1, 0))));
 
   // Check dragging in the center of each tab.
-  EXPECT_EQ(
-      (DropIndex{.index = 0,
-                 .relative_to_index = kReplaceIndex,
-                 .group_inclusion = kDontIncludeInGroup}),
-      tab_container_->GetDropIndex(
-          MakeEventForDragLocation(bounds_in_ctc(tab1).CenterPoint()), true));
-  EXPECT_EQ(
-      (DropIndex{.index = 1,
-                 .relative_to_index = kReplaceIndex,
-                 .group_inclusion = kDontIncludeInGroup}),
-      tab_container_->GetDropIndex(
-          MakeEventForDragLocation(bounds_in_ctc(tab2).CenterPoint()), true));
-  EXPECT_EQ(
-      (DropIndex{.index = 2,
-                 .relative_to_index = kReplaceIndex,
-                 .group_inclusion = kDontIncludeInGroup}),
-      tab_container_->GetDropIndex(
-          MakeEventForDragLocation(bounds_in_ctc(tab3).CenterPoint()), true));
+  EXPECT_EQ((DropIndex{.index = 0,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab1).CenterPoint())));
+  EXPECT_EQ((DropIndex{.index = 1,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab2).CenterPoint())));
+  EXPECT_EQ((DropIndex{.index = 2,
+                       .relative_to_index = kReplaceIndex,
+                       .group_inclusion = kDontIncludeInGroup}),
+            tab_container_->GetDropIndex(
+                MakeEventForDragLocation(bounds_in_ctc(tab3).CenterPoint())));
 
   // Check dragging over group header.
   // The left half of the header should drop outside the group.
@@ -744,17 +729,13 @@ TEST_F(CompoundTabContainerTest, DropIndexForDragLocationIsCorrect) {
       (DropIndex{.index = 1,
                  .relative_to_index = kInsertBeforeIndex,
                  .group_inclusion = kDontIncludeInGroup}),
-      tab_container_->GetDropIndex(
-          MakeEventForDragLocation(bounds_in_ctc(group_header).CenterPoint() +
-                                   gfx::Vector2d(-1, 0)),
-          true));
+      tab_container_->GetDropIndex(MakeEventForDragLocation(
+          bounds_in_ctc(group_header).CenterPoint() + gfx::Vector2d(-1, 0))));
   // The right half of the header should drop inside the group.
   EXPECT_EQ(
       (DropIndex{.index = 1,
                  .relative_to_index = kInsertBeforeIndex,
                  .group_inclusion = kIncludeInGroup}),
-      tab_container_->GetDropIndex(
-          MakeEventForDragLocation(bounds_in_ctc(group_header).CenterPoint() +
-                                   gfx::Vector2d(1, 0)),
-          true));
+      tab_container_->GetDropIndex(MakeEventForDragLocation(
+          bounds_in_ctc(group_header).CenterPoint() + gfx::Vector2d(1, 0))));
 }

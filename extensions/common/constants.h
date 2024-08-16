@@ -18,6 +18,10 @@ namespace extensions {
 // Scheme we serve extension content from.
 inline constexpr char kExtensionScheme[] = "chrome-extension";
 
+// URL used to indicate that an extension resource load request was invalid.
+inline constexpr char kExtensionInvalidRequestURL[] =
+    "chrome-extension://invalid/";
+
 // The name of the manifest inside an extension.
 inline constexpr base::FilePath::CharType kManifestFilename[] =
     FILE_PATH_LITERAL("manifest.json");
@@ -384,6 +388,12 @@ inline constexpr char kAmazonLunaAppIdFR[] = "khklcoifabacgdieoekhmfcilgfmdmbh";
 
 // The extension id of the Amazon Luna .it Italy PWA.
 inline constexpr char kAmazonLunaAppIdIT[] = "agcdabkknemgfgbjdpckaehhncgkfcdi";
+
+// The extension id of the Amazon Luna .nl Netherlands PWA.
+inline constexpr char kAmazonLunaAppIdNL[] = "opkohmiamoeiojmgmhgelaaieecjifod";
+
+// The extension id of the Amazon Luna .pl Poland PWA.
+inline constexpr char kAmazonLunaAppIdPL[] = "alddamigfjonblpigkpieckmhbjdgadd";
 
 // The extension id of the Amazon Luna .co.uk UK PWA.
 inline constexpr char kAmazonLunaAppIdUK[] = "aolalpmkbpdlpjhmhhmcobipjkhlimkj";

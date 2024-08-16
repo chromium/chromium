@@ -14,6 +14,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,3 +65,72 @@ TEST_F(SupervisedUserBrowserUtilsTest, GetAccountGivenName) {
   ASSERT_NE(nullptr, profile());
   EXPECT_EQ(kChildGivenName, supervised_user::GetAccountGivenName(*profile()));
 }
+
+enum class ExtensionsPermissionStatus { kEnabled, kDisabled };
+
+// Tests for the method AreExtensionsPermissionsEnabled which
+// depends on enabling platform-specific feature flags.
+class SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature
+    : public SupervisedUserBrowserUtilsTest,
+      public testing::WithParamInterface<ExtensionsPermissionStatus> {
+ public:
+  SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    if (AreExtensionsPermitted()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::
+              kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+    }
+#endif
+  }
+
+  bool AreExtensionsPermitted() const {
+    return GetParam() == ExtensionsPermissionStatus::kEnabled;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
+       AreExtensionsPermissionsEnabledWithSupervisedUser) {
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_EQ(supervised_user::AreExtensionsPermissionsEnabled(profile()),
+            AreExtensionsPermitted());
+#else
+  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+}
+
+TEST_P(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
+       AreExtensionsPermissionsEnabledWithNonSupervisedUser) {
+  profile()->AsTestingProfile()->SetIsSupervisedProfile(false);
+
+  EXPECT_FALSE(supervised_user::AreExtensionsPermissionsEnabled(profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    testing::Values(ExtensionsPermissionStatus::kEnabled,
+                    ExtensionsPermissionStatus::kDisabled),
+#else
+    // ChromeOS has supervised user extension permissions on by default.
+    testing::Values(ExtensionsPermissionStatus::kEnabled),
+#endif
+    [](const testing::TestParamInfo<ExtensionsPermissionStatus> info) {
+      // Generate the test suffix from boolean param.
+      switch (info.param) {
+        case ExtensionsPermissionStatus::kEnabled:
+          return "with_enabled_extension_permissions";
+        case ExtensionsPermissionStatus::kDisabled:
+          return "with_disabled_extension_permissions";
+      }
+    });

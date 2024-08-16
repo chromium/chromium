@@ -65,7 +65,7 @@ class PLATFORM_EXPORT HanKerning {
     Compute(text, start, end, font_data, font_description, options, features);
   }
   ~HanKerning() {
-    if (UNLIKELY(features_)) {
+    if (features_) [[unlikely]] {
       ResetFeatures();
     }
   }

@@ -17,13 +17,10 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {
-
-using password_manager::features::
-    GetLocalPasswordsMigrationToAndroidBackendDelay;
 
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
@@ -77,7 +74,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BindOnce(&BuiltInBackendToAndroidBackendMigrator::
                          StartMigrationOfLocalPasswords,
                      migrator_->GetWeakPtr()),
-      base::Seconds(GetLocalPasswordsMigrationToAndroidBackendDelay()));
+      kLocalPasswordsMigrationToAndroidBackendDelay);
 }
 
 void PasswordStoreBackendMigrationDecorator::Shutdown(
@@ -101,9 +98,7 @@ bool PasswordStoreBackendMigrationDecorator::IsAbleToSavePasswords() {
   // Suppress saving while the migration of local passwords is ongoing, to avoid
   // the migration "forgetting" any new passwords.
   return active_backend()->IsAbleToSavePasswords() &&
-         !(migrator_ && migrator_->migration_in_progress_type() ==
-                            BuiltInBackendToAndroidBackendMigrator::
-                                MigrationType::kForLocalUsers);
+         !(migrator_ && migrator_->migration_in_progress());
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
@@ -125,7 +120,7 @@ void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
@@ -207,7 +202,7 @@ PasswordStoreBackendMigrationDecorator::GetSmartBubbleStatsStore() {
   return nullptr;
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }

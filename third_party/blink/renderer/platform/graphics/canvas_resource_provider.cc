@@ -1422,9 +1422,9 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (IsPrinting() && clear_frame_) {
     return;
   }
-  if (UNLIKELY(recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_) ||
-      UNLIKELY(recorder_->ReleasableImageBytesUsed() >
-               max_pinned_image_bytes_)) {
+  if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
+      recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
+      [[unlikely]] {
     FlushCanvas(FlushReason::kRecordingLimitExceeded);
   }
 }

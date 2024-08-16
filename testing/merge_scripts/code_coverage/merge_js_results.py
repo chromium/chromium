@@ -8,13 +8,10 @@ Called by merge_results.py
 """
 
 import argparse
-import json
 import logging
 import os
-import subprocess
 import sys
 
-import merge_lib as profile_merger
 import merge_js_lib as javascript_merger
 
 
@@ -68,9 +65,8 @@ def main():
     logging.info('Excluding uninteresting lines from coverage')
     javascript_merger.exclude_uninteresting_lines(coverage_file_path)
 
-    logging.info(
-        'Remapping all paths relative to the src dir and removing any ' +
-        'files in the out dir')
+    logging.info('Remapping all paths relative to the src dir and removing any '
+                 'files in the out dir')
     javascript_merger.remap_paths_to_relative(coverage_file_path,
                                               params.chromium_src_dir,
                                               params.build_dir)

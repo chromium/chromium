@@ -87,14 +87,12 @@ build_webui("build") {
     "screens/common/app_downloading.ts",
     "screens/common/app_launch_splash.ts",
     "screens/common/assistant_optin.ts",
-    "screens/common/autolaunch.ts",
     "screens/common/categories_selection.ts",
     "screens/common/choobe.ts",
     "screens/common/consolidated_consent.ts",
     "screens/common/device_disabled.ts",
     "screens/common/display_size.ts",
     "screens/common/drive_pinning.ts",
-    "screens/common/enable_kiosk.ts",
     "screens/common/error_message.ts",
     "screens/common/family_link_notice.ts",
     "screens/common/gaia_info.ts",
@@ -252,12 +250,12 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/quick_unlock_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
-    "//tools/typescript/definitions/quick_unlock_private.d.ts",
   ]
 
   ts_composite = true

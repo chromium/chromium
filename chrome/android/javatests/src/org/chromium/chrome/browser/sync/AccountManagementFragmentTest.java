@@ -45,12 +45,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
@@ -70,7 +65,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -84,16 +79,13 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /** Tests {@link AccountManagementFragment}. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
@@ -118,23 +110,6 @@ public class AccountManagementFragmentTest {
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
-    public static class ReplaceProfileIsChildWithAccountCapabilitiesParams
-            implements ParameterProvider {
-        private static List<ParameterSet> sReplaceProfileIsChildWithAccountCapabilities =
-                Arrays.asList(
-                        new ParameterSet()
-                                .value(true)
-                                .name("MigrateProfileIsChildFlagParamsEnabled"),
-                        new ParameterSet()
-                                .value(false)
-                                .name("MigrateProfileIsChildFlagParamsDisabled"));
-
-        @Override
-        public List<ParameterSet> getParameters() {
-            return sReplaceProfileIsChildWithAccountCapabilities;
-        }
-    }
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -142,15 +117,6 @@ public class AccountManagementFragmentTest {
         mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
         when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(false);
-    }
-
-    @ParameterAnnotations.UseMethodParameterBefore(
-            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
-    public void enableFlag(boolean isReplaceProfileIsChildWithAccountCapabilitiesFlagEnabled) {
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.REPLACE_PROFILE_IS_CHILD_WITH_ACCOUNT_CAPABILITIES_ON_ANDROID,
-                isReplaceProfileIsChildWithAccountCapabilitiesFlagEnabled);
     }
 
     @Test
@@ -240,10 +206,7 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(
-            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
-    public void testAccountManagementViewForChildAccount(
-            boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
+    public void testAccountManagementViewForChildAccount() throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
                 signinTestRule.addChildTestAccountThenWaitForSignin();
@@ -267,10 +230,7 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(
-            ReplaceProfileIsChildWithAccountCapabilitiesParams.class)
-    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount(
-            boolean isMigrateAccountManagementSettingsToCapabilitiesFlagEnabled) throws Exception {
+    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
                 signinTestRule.addChildTestAccountThenWaitForSignin();
@@ -299,7 +259,7 @@ public class AccountManagementFragmentTest {
     @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutUserWithoutShowingSignOutDialog() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();
@@ -320,7 +280,7 @@ public class AccountManagementFragmentTest {
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignOutShowsUnsavedDataDialog() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
-        fakeSyncService.setTypesWithUnsyncedData(Set.of(ModelType.BOOKMARKS));
+        fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         mSettingsActivityTestRule.startSettingsActivity();

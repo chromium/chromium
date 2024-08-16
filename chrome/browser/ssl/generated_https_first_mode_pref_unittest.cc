@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
+
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
@@ -11,7 +14,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ssl/generated_https_first_mode_pref.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -62,7 +64,6 @@ class GeneratedHttpsFirstModePrefTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  // network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -178,30 +179,30 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(10).get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 
-  // With HFM-in-Incognito feature disabled, check that trying to set the
-  // generated pref to kEnabledIncognito fails and the underlying pref remains
+  // With Balanced Mode feature disabled, check that trying to set the
+  // generated pref to kEnabledBalanced fails and the underlying pref remains
   // disabled.
   EXPECT_EQ(pref.SetPref(
                 std::make_unique<base::Value>(
-                    static_cast<int>(HttpsFirstModeSetting::kEnabledIncognito))
+                    static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
                     .get()),
             settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED);
 
-  // With HFM-in-Incognito feature disabled, check that setting the underlying
-  // Incognito pref to `true` does not change the generated pref from kDisabled.
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
+  // With Balanced Mode feature disabled, check that setting the underlying
+  // Balanced pref to `true` does not change the generated pref from kDisabled.
+  prefs()->SetUserPref(prefs::kHttpsFirstBalancedMode,
                        std::make_unique<base::Value>(true));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
 }
 
-// Variant of UpdatePreference, but with the HFM-in-Incognito feature flag
-// enabled. The new settings are not enabled, and so should not control the
-// HFM-in-Incognito pref (which is default enabled).
-TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePref_HttpsFirstModeIncognito) {
+// Variant of UpdatePreference, but with the Balanced Mode feature flag enabled.
+// The full set of Settings are available (Full, Balanced, and Disabled) and
+// they should fully control the underlying prefs and vice-versa.
+TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePref_HttpsFirstModeNewSettings) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kHttpsFirstModeIncognito);
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
 
   GeneratedHttpsFirstModePref pref(profile());
 
@@ -212,136 +213,55 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePref_HttpsFirstModeIncognito) {
                        .get()),
       settings_private::SetPrefResult::SUCCESS);
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsFirstModeIncognito));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
 
   EXPECT_EQ(pref.SetPref(
                 std::make_unique<base::Value>(
-                    static_cast<int>(HttpsFirstModeSetting::kEnabledIncognito))
+                    static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
                     .get()),
-            settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED);
+            settings_private::SetPrefResult::SUCCESS);
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
 
   EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(
                              static_cast<int>(HttpsFirstModeSetting::kDisabled))
                              .get()),
             settings_private::SetPrefResult::SUCCESS);
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  // If new settings are not enabled, the HFM-in-Incognito pref should remain
-  // the default `true` regardless of the setting being disabled.
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsFirstModeIncognito));
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsFirstBalancedMode));
 
   // Check that changing the underlying preference correctly updates the
   // generated pref.
   prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
                        std::make_unique<base::Value>(true));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
-                       std::make_unique<base::Value>(true));
-  EXPECT_EQ(
-      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kEnabledFull);
-
-  prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
-                       std::make_unique<base::Value>(false));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
-                       std::make_unique<base::Value>(true));
-  // With NewSettings disabled, this will still be kDisabled.
-  EXPECT_EQ(
-      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
-
-  prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
-                       std::make_unique<base::Value>(false));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
-                       std::make_unique<base::Value>(false));
-  EXPECT_EQ(
-      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kDisabled);
-
-  prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
-                       std::make_unique<base::Value>(true));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
+  prefs()->SetUserPref(prefs::kHttpsFirstBalancedMode,
                        std::make_unique<base::Value>(false));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kEnabledFull);
 
-  // Confirm that a type mismatch is reported as such.
-  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(true).get()),
-            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-
-  // Confirm that an integer value outside the enum range is reported as a type
-  // mismatch.
-  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(10).get()),
-            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-}
-
-// Variant of UpdatePreference, but with the HFM-in-Incognito and NewSettings
-// feature flags enabled. The full set of Settings are available (Full,
-// Incognito, and Disabled) and they should fully control the underlying prefs
-// and vice-versa.
-TEST_F(GeneratedHttpsFirstModePrefTest,
-       UpdatePref_HttpsFirstModeIncognitoNewSettings) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kHttpsFirstModeIncognito,
-                            features::kHttpsFirstModeIncognitoNewSettings},
-      /*disabled_features=*/{});
-
-  GeneratedHttpsFirstModePref pref(profile());
-
-  // Check setting the generated pref updates the underlying preference.
-  EXPECT_EQ(
-      pref.SetPref(std::make_unique<base::Value>(
-                       static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
-                       .get()),
-      settings_private::SetPrefResult::SUCCESS);
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsFirstModeIncognito));
-
-  EXPECT_EQ(pref.SetPref(
-                std::make_unique<base::Value>(
-                    static_cast<int>(HttpsFirstModeSetting::kEnabledIncognito))
-                    .get()),
-            settings_private::SetPrefResult::SUCCESS);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kHttpsFirstModeIncognito));
-
-  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(
-                             static_cast<int>(HttpsFirstModeSetting::kDisabled))
-                             .get()),
-            settings_private::SetPrefResult::SUCCESS);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kHttpsFirstModeIncognito));
-
-  // Check that changing the underlying preference correctly updates the
-  // generated pref.
   prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
-                       std::make_unique<base::Value>(true));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
+                       std::make_unique<base::Value>(false));
+  prefs()->SetUserPref(prefs::kHttpsFirstBalancedMode,
                        std::make_unique<base::Value>(true));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kEnabledFull);
+      HttpsFirstModeSetting::kEnabledBalanced);
 
   prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
                        std::make_unique<base::Value>(false));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
-                       std::make_unique<base::Value>(true));
-  EXPECT_EQ(
-      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
-      HttpsFirstModeSetting::kEnabledIncognito);
-
-  prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
-                       std::make_unique<base::Value>(false));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
+  prefs()->SetUserPref(prefs::kHttpsFirstBalancedMode,
                        std::make_unique<base::Value>(false));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
 
+  // If (somehow) both prefs are set to True, we should treat that as being
+  // fully-enabled.
   prefs()->SetUserPref(prefs::kHttpsOnlyModeEnabled,
                        std::make_unique<base::Value>(true));
-  prefs()->SetUserPref(prefs::kHttpsFirstModeIncognito,
-                       std::make_unique<base::Value>(false));
+  prefs()->SetUserPref(prefs::kHttpsFirstBalancedMode,
+                       std::make_unique<base::Value>(true));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kEnabledFull);
@@ -359,6 +279,9 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 // Check that the management state (e.g. enterprise controlled pref) of the
 // underlying preference is applied to the generated preference.
 TEST_F(GeneratedHttpsFirstModePrefTest, ManagementState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
   GeneratedHttpsFirstModePref pref(profile());
   EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
@@ -388,4 +311,150 @@ TEST_F(GeneratedHttpsFirstModePrefTest, ManagementState) {
                              static_cast<int>(HttpsFirstModeSetting::kDisabled))
                              .get()),
             settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+}
+
+// Variant of ManagementState, but with the Balanced Mode feature flag enabled.
+// The full set of Settings are available (Full, Balanced, and Disabled) and
+// both underlying prefs can be controlled by enetprise policy.
+TEST_F(GeneratedHttpsFirstModePrefTest,
+       ManagementState_HttpsFirstModeNewSettings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  GeneratedHttpsFirstModePref pref(profile());
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kNone);
+
+  // Emulate a recommended "force_enabled" policy value, where the fully enabled
+  // pref has a recommended value of "true".
+  prefs()->SetRecommendedPref(prefs::kHttpsOnlyModeEnabled,
+                              std::make_unique<base::Value>(true));
+  prefs()->SetRecommendedPref(prefs::kHttpsFirstBalancedMode,
+                              std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kRecommended);
+  EXPECT_EQ(static_cast<HttpsFirstModeSetting>(
+                pref.GetPrefObject().recommended_value->GetInt()),
+            HttpsFirstModeSetting::kEnabledFull);
+
+  // Emulate a recommended "force_balanced_enabled" policy value, where the
+  // recommended prefs have fully enabled as false and balanced as true.
+  prefs()->SetRecommendedPref(prefs::kHttpsOnlyModeEnabled,
+                              std::make_unique<base::Value>(false));
+  prefs()->SetRecommendedPref(prefs::kHttpsFirstBalancedMode,
+                              std::make_unique<base::Value>(true));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kRecommended);
+  EXPECT_EQ(static_cast<HttpsFirstModeSetting>(
+                pref.GetPrefObject().recommended_value->GetInt()),
+            HttpsFirstModeSetting::kEnabledBalanced);
+
+  // Emulate an enforced "force_enabled" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(true));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledFull);
+
+  // Emulate an enforced "force_balanced_enabled" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(true));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kEnabledBalanced);
+
+  // Check that the generated pref cannot be changed when the backing pref is
+  // managed.
+  EXPECT_EQ(pref.SetPref(std::make_unique<base::Value>(
+                             static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                             .get()),
+            settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
+
+  // Emulate an enforced "disallowed" policy value.
+  prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
+                          std::make_unique<base::Value>(false));
+  prefs()->SetManagedPref(prefs::kHttpsFirstBalancedMode,
+                          std::make_unique<base::Value>(false));
+  EXPECT_EQ(pref.GetPrefObject().enforcement,
+            settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref.GetPrefObject().controlled_by,
+            settings_api::ControlledBy::kDevicePolicy);
+  EXPECT_EQ(
+      static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
+      HttpsFirstModeSetting::kDisabled);
+}
+
+// Tests the collection of settings changed metrics.
+TEST_F(GeneratedHttpsFirstModePrefTest, SettingChangedMetricsLogged) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
+  base::HistogramTester histograms;
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Emulate changing the UI setting to fully enabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", true,
+                               1);
+
+  // Emulate changing the UI to disabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged", false,
+                               1);
+}
+
+// Tests the collection of settings changed metrics, with the
+// HttpsFirstBalancedMode feature flag enabled.
+TEST_F(GeneratedHttpsFirstModePrefTest,
+       SettingChangedMetricsLogged_BalancedMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kHttpsFirstBalancedMode);
+
+  base::HistogramTester histograms;
+
+  GeneratedHttpsFirstModePref pref(profile());
+
+  // Emulate changing the UI setting to fully enabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledFull))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 1);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledFull, 1);
+
+  // Emulate changing the UI setting to balanced mode.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 2);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kEnabledBalanced, 1);
+
+  // Emulate changing the UI to disabled.
+  pref.SetPref(std::make_unique<base::Value>(
+                   static_cast<int>(HttpsFirstModeSetting::kDisabled))
+                   .get());
+  histograms.ExpectTotalCount("Security.HttpsFirstMode.SettingChanged2", 3);
+  histograms.ExpectBucketCount("Security.HttpsFirstMode.SettingChanged2",
+                               HttpsFirstModeSetting::kDisabled, 1);
 }

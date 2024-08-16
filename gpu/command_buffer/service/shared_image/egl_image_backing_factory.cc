@@ -94,7 +94,7 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool EGLImageBackingFactory::IsSupported(SharedImageUsageSet usage,

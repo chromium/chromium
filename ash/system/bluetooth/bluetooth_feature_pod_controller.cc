@@ -23,6 +23,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
@@ -85,6 +86,10 @@ std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
 
 QsFeatureCatalogName BluetoothFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kBluetooth;
+}
+
+bool BluetoothFeaturePodController::IsBluetoothAvailable() const {
+  return system_state_ != BluetoothSystemState::kUnavailable;
 }
 
 void BluetoothFeaturePodController::OnIconPressed() {
@@ -184,6 +189,11 @@ int BluetoothFeaturePodController::
 }
 
 std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_SHORT);
+  }
   if (!IsButtonToggled()) {
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT);
@@ -209,6 +219,11 @@ std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
 }
 
 std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
+  if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP);
+  }
   if (!first_connected_device_.has_value())
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP);
@@ -244,7 +259,8 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   if (!tile_) {
     return;
   }
-  if (system_state_ == BluetoothSystemState::kUnavailable) {
+  if (!chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+      !IsBluetoothAvailable()) {
     tile_->SetVisible(false);
     tile_->SetEnabled(false);
     return;
@@ -265,6 +281,13 @@ void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   tile_->SetSubLabel(ComputeButtonSubLabel());
 
   if (!tile_->IsToggled()) {
+    if (chromeos::features::IsBluetoothWifiQSPodRefreshEnabled() &&
+        !IsBluetoothAvailable()) {
+      tile_->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_UNAVAILABLE_TOOLTIP));
+      tile_->icon_button()->SetEnabled(false);
+      return;
+    }
     std::u16string tooltip = l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
         l10n_util::GetStringUTF16(

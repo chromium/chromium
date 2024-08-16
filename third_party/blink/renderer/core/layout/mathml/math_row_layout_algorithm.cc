@@ -93,7 +93,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       should_layout_remaining_items_with_zero_block_stretch_size = false;
     }
 
-    if (UNLIKELY(should_layout_remaining_items_with_zero_block_stretch_size)) {
+    if (should_layout_remaining_items_with_zero_block_stretch_size)
+        [[unlikely]] {
       // "If LNotToStretch is empty, perform layout with stretch size constraint
       // 0 on all the items of LToStretch."
       for (LayoutInputNode child = Node().FirstChild(); child;

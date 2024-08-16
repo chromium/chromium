@@ -21,9 +21,7 @@ using base::android::JavaParamRef;
 
 // InfoBarContainerAndroid ----------------------------------------------------
 
-InfoBarContainerAndroid::InfoBarContainerAndroid(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
+InfoBarContainerAndroid::InfoBarContainerAndroid(JNIEnv* env, jobject obj)
     : infobars::InfoBarContainer(NULL),
       weak_java_infobar_container_(env, obj) {}
 

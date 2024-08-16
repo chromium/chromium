@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">csúszka</translation>
 <translation id="1211441953136645838">záró jegyzet</translation>
 <translation id="1281252709823657822">párbeszédpanel</translation>
+<translation id="1306460908038601864">Ki</translation>
 <translation id="1335095011850992622">készítők</translation>
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1359897965706325498">szalaghirdetés</translation>
+<translation id="1480676835519562650">több is választható, <ph name="COUNT" />/<ph name="SELECTED" /> van kiválasztva.</translation>
 <translation id="1589122976691792535">régió</translation>
 <translation id="1650423536718072820">kiemelt idézet</translation>
+<translation id="1681022320378710418">aktuális idő</translation>
+<translation id="1727839386348365796">Pipetta</translation>
 <translation id="1821985195704844674">farács</translation>
 <translation id="1823704031293214298">oldallábléc</translation>
 <translation id="1838681052457320736">értesítés párbeszédpanele</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">törlés</translation>
 <translation id="1907737156431278478">példa</translation>
 <translation id="1930711995431081526">állapot</translation>
+<translation id="2031987842108996681">Vörös csatorna</translation>
 <translation id="2158401438286456825">oldallista</translation>
 <translation id="2291999235780842123">jelölőnégyzet</translation>
 <translation id="2311842470354187719">oldaltörés</translation>
 <translation id="2335594187091864976">dátum- és időválasztó</translation>
 <translation id="2508569020611168319">laplista</translation>
+<translation id="2530182415807757784">több is választható, egy sincs kiválasztva.</translation>
+<translation id="2634240155926812724">Zöld csatorna</translation>
 <translation id="2657045182931379222">grafikus objektum</translation>
 <translation id="2674318244760992338">lábléc</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">jegyzet</translation>
 <translation id="3175736971608411871">időzítő</translation>
 <translation id="3199563858620722075">legördülő lista</translation>
+<translation id="3220661731597678625">aktuális lépés</translation>
+<translation id="3329013043687509092">Telítettség</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3557673793733683882"><ph name="HEADING_LEVEL" />. címsor</translation>
 <translation id="3670698553867754311">hétválasztó</translation>
 <translation id="3706100364254443312">váltás</translation>
 <translation id="3808586225841795776">kifejezés</translation>
+<translation id="3914173277599553213">Kötelező</translation>
 <translation id="3920932319529768807">összefoglalás</translation>
 <translation id="3924558731517983934">alkalmazás</translation>
 <translation id="3944740393230681990">prológus</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">borító</translation>
 <translation id="4757246831282535685">lappanel</translation>
 <translation id="479989351350248267">search</translation>
+<translation id="4912200001568447310">aktuális elem</translation>
 <translation id="4912536737030637138">bibliográfiai bejegyzés</translation>
 <translation id="492244087561876220">megjegyzés</translation>
+<translation id="4924138096460353083">meghatározatlan</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> kiválasztva</translation>
 <translation id="5022314756875057021">sorcsoport</translation>
 <translation id="5034860022980953847">folyamatjelző</translation>
 <translation id="5093189678851173835">mottó</translation>
+<translation id="509897012892853729">Kék csatorna</translation>
 <translation id="512758898067543763">sorfejléc</translation>
 <translation id="5143125788380636750">végszó</translation>
 <translation id="5406322316791861025">alak</translation>
+<translation id="5425179576310518467">aktuális dátum</translation>
 <translation id="5453733299334684579">faelem</translation>
 <translation id="546643433018805598">alsó index</translation>
 <translation id="5476505524087279545">Megjelölés eltávolítása</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">gomb</translation>
 <translation id="5693537480074347398">felső index</translation>
 <translation id="576709008726043716">bevezetés</translation>
+<translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="591047860372322273">keresőmező</translation>
+<translation id="5916664084637901428">Be</translation>
 <translation id="5987525920412732405">léptetőnyíl</translation>
 <translation id="6023896073578205740">listamező</translation>
 <translation id="6119846243427417423">Aktiválás</translation>
 <translation id="6150588977291308318">bibliográfia</translation>
 <translation id="6164829606128959761">mérő</translation>
 <translation id="6166809985690652833">utószó</translation>
+<translation id="6212595056017402527">aktuális oldal</translation>
 <translation id="6213469881011901533">szószedet</translation>
+<translation id="6281588256137006900">Világosság</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">köszönetnyilvánítás</translation>
 <translation id="648732519525291180">időválasztó</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">bekezdésszintű idézet</translation>
 <translation id="693476918119313863">fejléc</translation>
 <translation id="6981594929165378967">beszúrás</translation>
+<translation id="698788488269350478">kibontva.</translation>
 <translation id="7034405885550056553">javaslat</translation>
+<translation id="7102274145889307184">aktuális hely</translation>
 <translation id="7139483182332611405">bevezető</translation>
 <translation id="7198226213493847604">menüt megnyitó előugró gomb</translation>
 <translation id="7214187073215825913">tartalom adatai</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">tárgymutató</translation>
 <translation id="7740050170769002709">HTML-tartalom</translation>
 <translation id="7802800022689234070">plusz tartalom kibontására szolgáló háromszög</translation>
+<translation id="7852167693871241274">Színárnyalat csúszkája</translation>
 <translation id="7891486169920085145">felosztó</translation>
+<translation id="7962328325860248200">A(z) <ph name="ACCNAME" /> fiók nincs kiválasztva</translation>
 <translation id="8034303206267677282">fontos</translation>
 <translation id="8053789581856978548">keresés a szövegmezőben</translation>
 <translation id="8057695513531652401">közlés</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">fejezet</translation>
 <translation id="8851136666856101339">fő</translation>
 <translation id="8861621546968757188">párbeszédpanelt megnyitó előugró gomb</translation>
+<translation id="8889402386540077796">Színárnyalat</translation>
+<translation id="894736920926684893">Formátumkapcsoló</translation>
 <translation id="9002566407876343676">megnyitás</translation>
 <translation id="901834265349196618">e-mail</translation>
 <translation id="9048119486235211610">navigáció</translation>

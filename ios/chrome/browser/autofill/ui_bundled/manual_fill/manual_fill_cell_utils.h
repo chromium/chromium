@@ -11,6 +11,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_site_info.h"
 
+@class TableViewCell;
+
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
 
@@ -188,10 +190,6 @@ UIButton* CreateOverflowMenuButton();
 // desired location within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);
 
-// Returns YES if the button used to fill the current form with the manual fill
-// entity data should be shown.
-BOOL ShouldCreateAutofillFormButton(BOOL show_button);
-
 // Creates the button used to fill the current form with the manual fill entity
 // data.
 UIButton* CreateAutofillFormButton();
@@ -206,5 +204,24 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 // subtitle for the site name label.
 NSMutableAttributedString* CreateSiteNameLabelAttributedText(
     ManualFillSiteInfo* siteInfo);
+
+// Sets the cell's container and its overflow menu button's accessibility label
+// with the given `accessibility_context`. `accessibility_context` contains
+// information on the position of the cell and its title (if any). Adding this
+// information to the accessibility labels gives more context on the UI
+// elements, and, therefore, allows accessibility users to better differentiate
+// the different cells and their buttons.
+void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
+                                             UIButton* overflow_menu_button,
+                                             UIButton* autofill_form_button,
+                                             NSString* accessibility_context);
+
+// Set up the cell accessibility elements so that the cell itself is accessible
+// as a container and the accessibility subviews are read in the right order.
+// Without setting the cell's accessibility elements, VoiceOver would read the
+// elements following the view's hierarchy, meaning that it would follow the
+// back to front order instead of the top to bottom order.
+void SetUpCellAccessibilityElements(TableViewCell* cell,
+                                    NSArray<UIView*>* accessibilityElements);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

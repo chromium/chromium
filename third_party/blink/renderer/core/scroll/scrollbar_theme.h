@@ -118,9 +118,7 @@ class CORE_EXPORT ScrollbarTheme {
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const gfx::Rect&);
-  virtual SkColor4f ThumbColor(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
-  }
+  virtual SkColor4f ThumbColor(const Scrollbar&) const { NOTREACHED(); }
 
   virtual bool ShouldCenterOnThumb(const Scrollbar&,
                                    const WebMouseEvent&) const {
@@ -210,7 +208,7 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool UsesNinePatchThumbResource() const { return false; }
   virtual bool UsesSolidColorThumb() const { return false; }
   virtual gfx::Insets SolidColorThumbInsets(const Scrollbar& scrollbar) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   virtual bool UsesNinePatchTrackAndButtonsResource() const { return false; }
 
@@ -235,13 +233,13 @@ class CORE_EXPORT ScrollbarTheme {
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
   virtual gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   virtual bool AllowsHitTest() const { return true; }

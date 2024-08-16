@@ -111,11 +111,13 @@ enum class SystemSettingsPane {
   // Printers & Scanners
   kPrintersScanners,
 
+  // Privacy & Security
+  kPrivacySecurity,
+
   // Privacy & Security > Accessibility
   kPrivacySecurity_Accessibility,
 
   // Privacy & Security > Bluetooth
-  // Available on macOS 11 and later.
   kPrivacySecurity_Bluetooth,
 
   // Privacy & Security > Camera

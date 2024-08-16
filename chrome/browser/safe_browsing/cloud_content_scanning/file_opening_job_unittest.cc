@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -49,7 +50,7 @@ class FileOpeningJobTest : public testing::Test {
           base::StringPrintf("foo%d.txt", next_file_id_));
       ++next_file_id_;
       base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(/*data*/ "foo", /*size*/ 3);
+      file.WriteAtCurrentPos(base::byte_span_from_cstring("foo"));
 
       auto request = std::make_unique<FileAnalysisRequest>(
           enterprise_connectors::AnalysisSettings(), path, path.BaseName(),

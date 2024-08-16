@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/shelf/shelf_app_button.h"
 
 #include <algorithm>
@@ -52,6 +57,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skbitmap_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
@@ -66,8 +72,6 @@ namespace {
 
 constexpr int kStatusIndicatorRadiusDip = 2;
 constexpr int kStatusIndicatorMaxSize = 10;
-constexpr int kStatusIndicatorActiveSize = 8;
-constexpr int kStatusIndicatorRunningSize = 4;
 constexpr int kStatusIndicatorActiveSizeJellyEnabled = 12;
 constexpr int kStatusIndicatorRunningSizeJellyEnabled = 6;
 constexpr int kStatusIndicatorThickness = 2;
@@ -233,8 +237,7 @@ class ShelfAppButton::AppStatusIndicatorView
   METADATA_HEADER(AppStatusIndicatorView, views::View)
 
  public:
-  AppStatusIndicatorView()
-      : jelly_enabled_(chromeos::features::IsJellyEnabled()) {
+  AppStatusIndicatorView() {
     // Make sure the events reach the parent view for handling.
     SetCanProcessEventsWithinSubtree(false);
     status_change_animation_ = std::make_unique<gfx::SlideAnimation>(this);
@@ -261,19 +264,12 @@ class ShelfAppButton::AppStatusIndicatorView
     }
 
     gfx::ScopedCanvas scoped(canvas);
-    if (!jelly_enabled_) {
-      canvas->SaveLayerAlpha(GetAlpha());
-    }
 
     const float dsf = canvas->UndoDeviceScaleFactor();
     gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
     cc::PaintFlags flags;
-    if (jelly_enabled_) {
-      flags.setColor(GetJellyColor());
-    } else {
-      flags.setColor(
-          GetColorProvider()->GetColor(kColorAshAppStateIndicatorColor));
-    }
+    flags.setColor(GetJellyColor());
+
     // Active and running indicators look a little different in the new UI.
     flags.setAntiAlias(true);
     flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
@@ -299,21 +295,14 @@ class ShelfAppButton::AppStatusIndicatorView
   }
 
   float GetStrokeLength() {
-    bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-    int status_indicator_active_size =
-        is_jelly_enabled ? kStatusIndicatorActiveSizeJellyEnabled
-                         : kStatusIndicatorActiveSize;
-    int status_indicator_running_size =
-        is_jelly_enabled ? kStatusIndicatorRunningSizeJellyEnabled
-                         : kStatusIndicatorRunningSize;
-
     if (status_change_animation_->is_animating()) {
       return status_change_animation_->CurrentValueBetween(
-          status_indicator_running_size, status_indicator_active_size);
+          kStatusIndicatorRunningSizeJellyEnabled,
+          kStatusIndicatorActiveSizeJellyEnabled);
     }
 
-    return active_ ? status_indicator_active_size
-                   : status_indicator_running_size;
+    return active_ ? kStatusIndicatorActiveSizeJellyEnabled
+                   : kStatusIndicatorRunningSizeJellyEnabled;
   }
 
   SkColor GetJellyColor() {
@@ -405,7 +394,6 @@ class ShelfAppButton::AppStatusIndicatorView
       ShelfAppButtonAnimation::GetInstance()->RemoveObserver(this);
   }
 
-  const bool jelly_enabled_;
   bool show_attention_ = false;
   bool active_ = false;
   bool horizontal_shelf_ = true;
@@ -496,16 +484,14 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-  if (chromeos::features::IsJellyEnabled()) {
-    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  } else {
-    views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  }
+  views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   // The focus ring should have an inset of half the focus border thickness, so
   // the parent view won't clip it.
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets::VH(views::FocusRing::kDefaultHaloThickness / 2, 0), 0));
+
+  UpdateAccessibleDescription();
 }
 
 ShelfAppButton::~ShelfAppButton() {
@@ -722,21 +708,6 @@ void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(!accessible_name.empty()
                          ? accessible_name
                          : shelf_view_->GetTitleForView(this));
-
-  switch (app_status_) {
-    case AppStatus::kBlocked:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_BLOCKED_APP));
-      break;
-    case AppStatus::kPaused:
-      node_data->SetDescription(
-          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-              IDS_SHELF_ITEM_PAUSED_APP));
-      break;
-    default:
-      break;
-  }
 }
 
 bool ShelfAppButton::ShouldEnterPushedState(const ui::Event& event) {
@@ -762,6 +733,7 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
     progress_ = item.progress;
     app_status_ = item.app_status;
     UpdateProgressRingBounds();
+    UpdateAccessibleDescription();
   }
 
   const ShelfID active_id = shelf_view_->model()->active_shelf_id();
@@ -1465,6 +1437,24 @@ void ShelfAppButton::OnAnimatedInFromPromiseApp(
   UpdateMainAndMaybeHostBadgeIconImage();
 
   callback.Run();
+}
+
+void ShelfAppButton::UpdateAccessibleDescription() {
+  switch (app_status_) {
+    case AppStatus::kBlocked:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_BLOCKED_APP));
+      break;
+    case AppStatus::kPaused:
+      GetViewAccessibility().SetDescription(
+          ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
+              IDS_SHELF_ITEM_PAUSED_APP));
+      break;
+    default:
+      GetViewAccessibility().RemoveDescription();
+      break;
+  }
 }
 
 BEGIN_METADATA(ShelfAppButton)

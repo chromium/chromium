@@ -28,10 +28,10 @@ class GLSurfaceEGLTest : public testing::Test {
   void SetUp() override {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
     display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementationParts(kGLImplementationEGLANGLE), true);
+        GLImplementationParts(kGLImplementationEGLANGLE));
 #else
     display_ = GLSurfaceTestSupport::InitializeOneOffImplementation(
-        GLImplementationParts(kGLImplementationEGLGLES2), true);
+        GLImplementationParts(kGLImplementationEGLGLES2));
 #endif
   }
 

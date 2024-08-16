@@ -27,8 +27,9 @@ class InkBrush {
 
   virtual float GetSize() const = 0;
 
-  // Note that this method does not necessarily correspond 1:1 to the method in
+  // Note that these methods do not necessarily correspond 1:1 to the method in
   // the Ink library. It is provided for convenience when testing.
+  virtual float GetCornerRoundingForTesting() const = 0;
   virtual float GetOpacityForTesting() const = 0;
 };
 

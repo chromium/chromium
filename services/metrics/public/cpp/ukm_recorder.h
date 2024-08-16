@@ -21,7 +21,7 @@
 
 class ChromePermissionsClient;
 class DIPSNavigationHandle;
-class DIPSService;
+class DIPSServiceImpl;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
 
@@ -41,6 +41,7 @@ class RenderFrameHostImpl;
 
 namespace extensions {
 class ExtensionMessagePort;
+class ManifestV2ExperimentManager;
 }
 
 namespace weblayer {
@@ -127,16 +128,19 @@ class METRICS_EXPORT UkmRecorder {
                                             const GURL& redirect_url);
 
   // Gets a new SourceId of EXTENSION_ID type and updates the source URL
-  // from the extension message port. This method should only be called in the
-  // ExtensionMessagePort class.
+  // from the extension message port. This method should only be called by
+  // approved cases, indicated by the PassKeys.
   static SourceId GetSourceIdForExtensionUrl(
       base::PassKey<extensions::ExtensionMessagePort>,
       const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::ManifestV2ExperimentManager>,
+      const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
-  // given domain. This method should only be called in the DIPSService class
-  // for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSService>,
+  // given domain. This method should only be called in the DIPSServiceImpl
+  // class for sites in the DIPS database. `site` must be a registrable domain.
+  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSServiceImpl>,
                                          const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only

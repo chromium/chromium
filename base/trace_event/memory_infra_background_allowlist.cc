@@ -52,6 +52,7 @@ constexpr auto kDumpProviderAllowlist =
 #endif
         "ContextProviderCommandBuffer",
         "DOMStorage",
+        "DawnSharedContext",
         "DevTools",
         "DiscardableSharedMemoryManager",
         "DownloadService",
@@ -160,6 +161,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "font_caches/shape_caches",
         "frame_evictor",
         "gpu/command_buffer_memory/buffer_0x?",
+        "gpu/dawn",
         "gpu/discardable_cache/cache_0x?",
         "gpu/discardable_cache/cache_0x?/avg_image_size",
         "gpu/gl/buffers/context_group_0x?",
@@ -203,8 +205,6 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "malloc/partitions/allocator/thread_cache/main_thread",
         "malloc/partitions/aligned",
         "malloc/partitions/original",
-        "malloc/partitions/nonscannable",
-        "malloc/partitions/nonquarantinable",
         "malloc/sys_malloc",
         "malloc/win_heap",
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

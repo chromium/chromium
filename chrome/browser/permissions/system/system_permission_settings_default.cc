@@ -34,11 +34,15 @@ class PlatformHandleImpl : public PlatformHandle {
     std::move(callback).Run();
     NOTREACHED();
   }
+
+  std::unique_ptr<ScopedObservation> Observe(
+      SystemPermissionChangedCallback observer) override {
+    return nullptr;
+  }
 };
 
 }  // namespace
 
-// static
 std::unique_ptr<PlatformHandle> PlatformHandle::Create() {
   return std::make_unique<PlatformHandleImpl>();
 }

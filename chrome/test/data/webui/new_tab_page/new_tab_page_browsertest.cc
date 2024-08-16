@@ -103,12 +103,23 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
 #endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest general')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarMetrics) {
+  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEvent) {
   RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
-          "mocha.run()");
+          "runMochaSuite('NewTabPageModulesCalendarEventTest general')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEventMetrics) {
+  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarEventTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {
@@ -190,23 +201,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LensUploadDialog) {
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
-}
-
-class NewTabPageModulesTabResumptionModuleTest : public NewTabPageBrowserTest {
- protected:
-  NewTabPageModulesTabResumptionModuleTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTabResumptionModuleTest, Core) {
-  RunTest("new_tab_page/modules/v2/tab_resumption/module_test.js",
-          "runMochaSuite('NewTabPageModulesTabResumptionModuleTest Core')");
 }
 
 class NewTabPageModulesMostRelevantTabResumptionModuleTest

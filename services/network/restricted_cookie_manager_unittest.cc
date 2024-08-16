@@ -4,16 +4,13 @@
 
 #include "services/network/restricted_cookie_manager.h"
 
-#include <initializer_list>
 #include <set>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -78,18 +75,6 @@ net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
   return future.Take();
 }
 
-constexpr char kCookieAccessDetailsSizeHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedCookieAccessDetailsSize";
-
-constexpr char kDeDupedCookieAccessDetailsSizeHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedDeDupedCookieAccessDetailsSize";
-
-constexpr char kDeDupedCookieAccessDetailsSizeReductionHistogramName[] =
-    "Net.RestrictedCookieManager."
-    "EstimatedDeDupedCookieAccessDetailsSizeReduction";
-
 }  // namespace
 
 class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
@@ -129,20 +114,6 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
 
   std::vector<CookieOp>& recorded_activity() { return recorded_activity_; }
 
-  size_t deduplicated_cookie_access_details_count() const {
-    return deduplicated_cookie_access_details_count_;
-  }
-
-  size_t cookie_access_details_count() const {
-    return cookie_access_details_count_;
-  }
-
-  void ClearRecordedActivityAndCounts() {
-    recorded_activity_.clear();
-    deduplicated_cookie_access_details_count_ = 0;
-    cookie_access_details_count_ = 0;
-  }
-
   mojo::PendingRemote<mojom::CookieAccessObserver> GetRemote() {
     mojo::PendingRemote<mojom::CookieAccessObserver> remote;
     receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
@@ -157,23 +128,18 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override {
     for (auto& details : details_vector) {
-      cookie_access_details_count_ += details->count;
-      for (size_t i = 0; i < details->count; ++i) {
-        for (const auto& cookie_and_access_result : details->cookie_list) {
-          CookieOp op;
-          op.type = details->type;
-          op.url = details->url;
-          op.site_for_cookies = details->site_for_cookies;
-          op.cookie_or_line =
-              std::move(cookie_and_access_result->cookie_or_line);
-          op.status = cookie_and_access_result->access_result.status;
-          op.is_ad_tagged = details->is_ad_tagged;
-          recorded_activity_.push_back(std::move(op));
-        }
+      for (const auto& cookie_and_access_result : details->cookie_list) {
+        CookieOp op;
+        op.type = details->type;
+        op.url = details->url;
+        op.site_for_cookies = details->site_for_cookies;
+        op.cookie_or_line = std::move(cookie_and_access_result->cookie_or_line);
+        op.status = cookie_and_access_result->access_result.status;
+        op.is_ad_tagged = details->is_ad_tagged;
+        recorded_activity_.push_back(std::move(op));
       }
     }
 
-    deduplicated_cookie_access_details_count_ += details_vector.size();
     run_loop_->QuitClosure().Run();
   }
 
@@ -183,8 +149,6 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
   }
 
  private:
-  size_t deduplicated_cookie_access_details_count_ = 0;
-  size_t cookie_access_details_count_ = 0;
   std::vector<CookieOp> recorded_activity_;
   mojo::ReceiverSet<mojom::CookieAccessObserver> receivers_;
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -440,18 +404,6 @@ class RestrictedCookieManagerTest
 
   std::vector<RecordingCookieObserver::CookieOp>& recorded_activity() {
     return recording_client_.recorded_activity();
-  }
-
-  size_t deduplicated_cookie_access_details_count() const {
-    return recording_client_.deduplicated_cookie_access_details_count();
-  }
-
-  size_t cookie_access_details_count() const {
-    return recording_client_.cookie_access_details_count();
-  }
-
-  void ClearRecordedActivityAndCounts() {
-    recording_client_.ClearRecordedActivityAndCounts();
   }
 
   void WaitForCallback() { return recording_client_.WaitForCallback(); }
@@ -1976,55 +1928,6 @@ TEST_P(RestrictedCookieManagerTest, PartitionKeyWithNonce) {
     // Test that the nonced partition cannot observe the change.
     second_listener->WaitForChange();
     ASSERT_THAT(listener->observed_changes(), testing::SizeIs(0));
-  }
-}
-
-TEST_P(RestrictedCookieManagerTest, DeDuplicateAccesses) {
-  // Reduce the cache size in order to force duplicates. Alternatively, we could
-  // increase the cookie accesses timer delay and the number of cookies, but
-  // this approach avoids unduly increasing the test duration.
-  service_->SetMaxCookieCacheCountForTesting(5u);
-  constexpr int kNumberOfCookies = 10;
-  for (int i = 0; i < kNumberOfCookies; i++) {
-    std::string name = base::StringPrintf("cookie-name-%d", i);
-    SetSessionCookie(name.c_str(), "cookie-value", "example.com", "/");
-  }
-
-  for (bool should_dedup : {true, false}) {
-    ClearRecordedActivityAndCounts();
-    service_->SetShouldDeDupCookieAccessDetailsForTesting(should_dedup);
-    base::HistogramTester histogram_tester;
-    const int kNumberOfAccessesPerCookie = 2;
-    for (int i = 0; i < kNumberOfAccessesPerCookie; i++) {
-      for (int j = 0; j < kNumberOfCookies; j++) {
-        auto options = mojom::CookieManagerGetOptions::New();
-        options->name = base::StringPrintf("cookie-name-%d", j);
-        options->match_type = mojom::CookieMatchType::STARTS_WITH;
-        sync_service_->GetAllForUrl(
-            kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-            net::StorageAccessApiStatus::kNone, std::move(options));
-      }
-    }
-    WaitForCallback();
-    size_t full_size =
-        histogram_tester.GetTotalSum(kCookieAccessDetailsSizeHistogramName);
-    size_t deduped_size = histogram_tester.GetTotalSum(
-        kDeDupedCookieAccessDetailsSizeHistogramName);
-    size_t size_reduction = histogram_tester.GetTotalSum(
-        kDeDupedCookieAccessDetailsSizeReductionHistogramName);
-    if (should_dedup) {
-      EXPECT_GT(deduped_size, 0u);
-      EXPECT_GT(full_size, deduped_size);
-      EXPECT_GT(size_reduction, 0u);
-      EXPECT_GT(cookie_access_details_count(),
-                deduplicated_cookie_access_details_count());
-    } else {
-      EXPECT_EQ(deduped_size, 0u);
-      EXPECT_EQ(full_size, 0u);
-      EXPECT_EQ(size_reduction, 0u);
-      EXPECT_EQ(cookie_access_details_count(),
-                deduplicated_cookie_access_details_count());
-    }
   }
 }
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_worker.h"
 
 #include "services/network/public/cpp/ip_address_space_util.h"
+#include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
@@ -124,6 +125,13 @@ void ResourceLoadObserverForWorker::DidFailLoading(const KURL&,
                                                    IsInternalRequest) {
   probe::DidFailLoading(probe_, identifier, nullptr, error,
                         devtools_worker_token_);
+}
+
+bool ResourceLoadObserverForWorker::InterestedInAllRequests() {
+  if (probe_) {
+    return probe_->HasInspectorNetworkAgents();
+  }
+  return false;
 }
 
 void ResourceLoadObserverForWorker::Trace(Visitor* visitor) const {

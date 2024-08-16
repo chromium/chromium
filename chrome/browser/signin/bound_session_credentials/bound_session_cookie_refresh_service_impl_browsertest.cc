@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 
 #include <memory>
@@ -526,6 +531,15 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    // This callback is set after the service is initialized and sends the
+    // initial throttler params update.
+
+    // If the list of sessions is not empty on startup, this
+    // callback might be set before or after the service gets a cookie list from
+    // the cookie jar. Such tests should be ready to handle extra
+    // `SessionParamsUpdated()` events.
+    // TODO(alexilin): find a better solution for preparing the test state on
+    // startup.
     service()->SetBoundSessionParamsUpdatedCallbackForTesting(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplBrowserTest::
                                 SessionParamsUpdated,
@@ -613,7 +627,10 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   }
 
-  void SessionParamsUpdated() { params_updated_callback_.Run(); }
+  void SessionParamsUpdated() {
+    CHECK(params_updated_callback_);
+    params_updated_callback_.Run();
+  }
 
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
@@ -633,25 +650,47 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
                        CookieRotationOnStartup) {
-  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> throttler_params =
-      service()->GetBoundSessionThrottlerParams();
-  ASSERT_EQ(throttler_params.size(), 1U);
-  EXPECT_EQ(throttler_params[0]->domain, kDomain);
-  EXPECT_EQ(throttler_params[0]->path, "/");
-  base::Time cookie_expiration = throttler_params[0]->cookie_expiry_date;
+  base::Time cookie_expiration;
+  {
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+        throttler_params = service()->GetBoundSessionThrottlerParams();
+    ASSERT_EQ(throttler_params.size(), 1U);
+    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->path, "/");
+    cookie_expiration = throttler_params[0]->cookie_expiry_date;
+  }
+
+  if (cookie_expiration.is_null()) {
+    // The PRE_ test should have set the bound cookie, so the expiration time
+    // should not be null. `cookie_expiration` is populated asynchronously with
+    // the information from the cookie jar, and it might be not populated yet.
+    // Wait until `cookie_expiration` is populated to reduce the test flakiness:
+    // https://crbug.com/352744596
+    base::RunLoop bound_session_params_update;
+    ExpectSessionParamsUpdate(bound_session_params_update.QuitClosure());
+    bound_session_params_update.Run();
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+        throttler_params = service()->GetBoundSessionThrottlerParams();
+    ASSERT_EQ(throttler_params.size(), 1U);
+    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->path, "/");
+    cookie_expiration = throttler_params[0]->cookie_expiry_date;
+    ASSERT_FALSE(cookie_expiration.is_null());
+  }
 
   // Cookie rotation is set to happen on startup, as soon as the service
   // is created.
   server_host().WaitOnServerCookieRotationResponseBlocked();
-
   base::RunLoop bound_session_params_update;
   ExpectSessionParamsUpdate(bound_session_params_update.QuitClosure());
-
   ASSERT_TRUE(server_host().UnblockServerCookieRotationResponse());
   bound_session_params_update.Run();
+
   std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
       new_throttler_params = service()->GetBoundSessionThrottlerParams();
   ASSERT_EQ(new_throttler_params.size(), 1U);
+  EXPECT_EQ(new_throttler_params[0]->domain, kDomain);
+  EXPECT_EQ(new_throttler_params[0]->path, "/");
   EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
 }
 

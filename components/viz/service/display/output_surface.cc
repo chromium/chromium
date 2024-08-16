@@ -71,10 +71,6 @@ base::ScopedClosureRunner OutputSurface::GetCacheBackBufferCb() {
 }
 #endif
 
-gpu::Mailbox OutputSurface::GetOverlayMailbox() const {
-  return gpu::Mailbox();
-}
-
 void OutputSurface::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {

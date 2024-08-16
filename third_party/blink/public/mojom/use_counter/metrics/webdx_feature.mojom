@@ -41,6 +41,16 @@ module blink.mojom;
 // dashes. I.e. "view-transitions" becomes kViewTransitions. More discussion
 // about WebDX feature identifier naming can be found at
 // https://github.com/web-platform-dx/web-features/tree/main/docs#identifiers
+//
+// In the event that you're adding a use counter for a feature that is yet to be
+// defined by the WebDX community group, file an issue at
+// https://github.com/web-platform-dx/web-features/issues/new?assignees=&labels=feature+definition&projects=&template=new-feature.yml,
+// pick a name that you feel is likely to become the name that is used as the
+// identifier once agreed upon by the WebDX community group, and prefix the name
+// with DRAFT_. I.e. if the likely identifier name is sprocket, name your use
+// counter kDRAFT_Sprocket. Once the community group has agreed on the
+// identifier name, remove DRAFT_ from the use counter name here, and update the
+// name itself if necessary.
 
 enum WebDXFeature {
   kPageVisits = 0,
@@ -138,6 +148,13 @@ enum WebDXFeature {
   kCanvasReset = 92,
   kCanvasRoundrect = 93,
   kCanvasTextBaselines = 94,
+  kColorMix = 95,
+  kAriaAttributeReflection = 96,
+  kAnchorPositioning = 97,
+  kImageSet = 98,
+  kStructuredClone = 99,
+  kSlotAssign = 100,
+  kMasks = 101,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

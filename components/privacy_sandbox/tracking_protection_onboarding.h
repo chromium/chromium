@@ -121,9 +121,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     virtual void OnTrackingProtectionOnboardingUpdated(
         OnboardingStatus onboarding_status) {}
 
-    // Fired when the ShouldShowNotice is updated (to True or False).
-    virtual void OnShouldShowNoticeUpdated() {}
-
     // Fired when a profile's tracking protection silent onboarding state is
     // changed.
     virtual void OnTrackingProtectionSilentOnboardingUpdated(
@@ -195,13 +192,8 @@ class TrackingProtectionOnboarding : public KeyedService {
  private:
   friend class tpcd::experiment::EligibilityServiceTest;
 
-  FRIEND_TEST(TrackingProtectionOnboardingNoticeBrowserTest,
-              TreatsAsShownIfPreviouslyDismissed);
-
   // Called when the underlying onboarding pref is changed.
   virtual void OnOnboardingPrefChanged() const;
-  // Called when the notice has been acked.
-  virtual void OnOnboardingAckedChanged() const;
   // Called when the underlying silent onboarding pref is changed.
   virtual void OnSilentOnboardingPrefChanged() const;
 

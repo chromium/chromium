@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URLa moztuta dago</translation>
 <translation id="1448064542941920355">Gutxitu zooma</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webgune}other{<ph name="SITE_COUNT" /> webgune}}</translation>
+<translation id="1500473259453106018">Ezkutatu fitxetako prezio-jaitsieren txartela</translation>
 <translation id="1510341833810331442">Webguneek ez dute zure gailuan datuak gordetzeko baimenik</translation>
 <translation id="1547123415014299762">Hirugarrenen cookieak onartzen dira</translation>
 <translation id="1568470248891039841">Bisitatzen dituzun webguneek beste webgune batzuetako edukia kapsula dezakete; adibidez, irudiak, iragarkiak eta testua. Halaber, webgune horiek arakatu bitartean zuri buruz gorde duten informazioa erabiltzeko baimena eska dezakete. <ph name="BEGIN_LINK" />Lortu eduki kapsulatuari buruzko informazio gehiago<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3232293466644486101">Ezabatu arakatze-datuak…</translation>
 <translation id="3242646949159196181">Aktibatuta dagoenean, webguneek soinua erreproduzi dezakete. Desaktibatuta dagoenean, webguneek ezin dute erreproduzitu soinurik.</translation>
+<translation id="3273479183583863618">Fitxetako prezio-jaitsierak</translation>
 <translation id="3277252321222022663">Eman sentsoreak erabiltzeko baimena webguneei (gomendatua)</translation>
 <translation id="3285500645985761267">Eman taldean egiten dituzun jarduerak ikusteko baimena erlazionatutako webguneei</translation>
 <translation id="3295019059349372795">11. kapitulua: Esmeraldazko Oz hiri harrigarria</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Baztertu eta erakutsi erabilgarri dagoen hurrengo ekintza</translation>
 <translation id="3744111561329211289">Atzeko planoko sinkronizazioa</translation>
 <translation id="3763247130972274048">Sakatu birritan bideoaren ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
+<translation id="3779154269823594982">Aldatu pasahitzak</translation>
 <translation id="3797520601150691162">Ez aplikatu gai iluna webgune zehatz batean</translation>
 <translation id="3803367742635802571">Bisitatzen dituzun webguneek agian ez dute behar bezala funtzionatuko</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Hautatu elementuak</translation>
 <translation id="6840760312327750441">Fitxak taldekatzeko, eduki fitxa bat sakatuta eta, ondoren, arrasta ezazu beste batera.</translation>
 <translation id="6864395892908308021">Gailu honek ezin du irakurri NFC</translation>
+<translation id="6870169401250095575">Ezkutatu segurtasun-egiaztapenaren txartela</translation>
 <translation id="6912998170423641340">Ez utzi webguneei arbeleko testua eta irudiak ikusten</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6950072572526089586">Bisitatzen dituzun webguneek egiten ari zarenari buruzko informazioa gordetzen dute batzuetan, espero duzun moduan funtzionatu ahal izateko; adibidez, zure saioa hasita mantentzeko edo erosketa-saskian produktuak gordetzeko. Askotan, webguneek gailuan gordetzen dute informazio hori aldi baterako.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Baimendu webgune jakin baten audioa.</translation>
 <translation id="789180354981963912">Blokeatu hirugarrenen cookieak ezkutuko moduan:</translation>
 <translation id="7940722705963108451">Gogorarazi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="FPS_OWNER" /> domeinuaren webgune taldeko <ph name="FPS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
 <translation id="7986741934819883144">Hautatu kontaktu bat</translation>
 <translation id="7990211076305263060">Aktibatuta dagoenean, webguneek mikrofonoa erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili mikrofonoa.</translation>
 <translation id="8007176423574883786">Desaktibatu egin da gailu honetan</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Ezkutatu fitxa honekin aurrera egiteko txartela}other{Ezkutatu fitxa hauekin aurrera egiteko txartela}}</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8042586301629853791">Ordenatzeko irizpidea:</translation>
 <translation id="8067883171444229417">Erreproduzitu bideoa</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="8541410041357371550">Webgunea Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena du}other{<ph name="FPS_OWNER" /> domeinuko <ph name="FPS_MEMBERS_COUNT" /> webgunek cookieak erabiltzeko baimena dute}}</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>
 <translation id="8609465669617005112">Eraman gora</translation>
 <translation id="8617611086246832542">Aktibatuta dagoenean, webguneen ordenagailuetarako ikuspegia erakusten da. Desaktibatuta dagoenean, webguneen mugikorretarako ikuspegia erakusten da.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Gurasoek kudeatuta</translation>
 <translation id="9039697262778250930">Baliteke webgune horietako saioa amaitzea</translation>
 <translation id="9074739597929991885">Bluetootha</translation>
-<translation id="9090268041676521955">Egiten dituzun jarduerak ikus ditzakeen talde batean dago webgunea. <ph name="FPS_OWNER" /> domeinuak definitu du taldea.</translation>
 <translation id="9106233582039520022">Cookieak ezabatu nahi dituzu?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimenak <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>

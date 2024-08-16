@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
 namespace gfx {
 class Rect;
@@ -37,7 +38,10 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
                AutofillSuggestionTriggerSource trigger_source) override;
   void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      const std::vector<Suggestion>& suggestions) override;
+      const std::vector<Suggestion>& suggestions,
+      std::optional<autofill_metrics::SuggestionRankingContext>
+          suggestion_ranking_context =
+              autofill_metrics::SuggestionRankingContext()) override;
   bool HasActiveScreenReader() const override;
   void OnAutofillAvailabilityEvent(
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
@@ -98,6 +102,11 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
 
   // The results returned by the most recent Autofill query.
   std::vector<Suggestion> suggestions_;
+
+  // Contains information on the ranking of suggestions using the new and old
+  // ranking algorithm. Used for metrics logging.
+  std::optional<autofill_metrics::SuggestionRankingContext>
+      suggestion_ranking_context_;
 
   // |true| if the popup is hidden, |false| if the popup is shown.
   bool popup_hidden_ = true;

@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.BookmarkSpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
@@ -523,7 +523,7 @@ public class BookmarksTest {
             List<SyncEntity> entities =
                     mSyncTestRule
                             .getFakeServerHelper()
-                            .getSyncEntitiesByModelType(ModelType.BOOKMARKS);
+                            .getSyncEntitiesByDataType(DataType.BOOKMARKS);
             List<Bookmark> bookmarks = new ArrayList<Bookmark>(entities.size());
             for (SyncEntity entity : entities) {
                 String id = entity.getIdString();
@@ -558,7 +558,7 @@ public class BookmarksTest {
                 "There should be " + count + " remote bookmarks with name " + name + ".",
                 mSyncTestRule
                         .getFakeServerHelper()
-                        .verifyEntityCountByTypeAndName(count, ModelType.BOOKMARKS, name));
+                        .verifyEntityCountByTypeAndName(count, DataType.BOOKMARKS, name));
     }
 
     private void waitForClientBookmarkCount(int n) {
@@ -582,7 +582,7 @@ public class BookmarksTest {
                 () ->
                         mSyncTestRule
                                 .getFakeServerHelper()
-                                .verifyEntityCountByTypeAndName(count, ModelType.BOOKMARKS, name),
+                                .verifyEntityCountByTypeAndName(count, DataType.BOOKMARKS, name),
                 "Expected " + count + " remote bookmarks with name " + name + ".");
     }
 }

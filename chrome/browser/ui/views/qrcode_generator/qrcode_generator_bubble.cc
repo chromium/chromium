@@ -11,7 +11,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -97,19 +99,32 @@ QRCodeGeneratorBubble::QRCodeGeneratorBubble(
   base::RecordAction(base::UserMetricsAction("SharingQRCode.DialogLaunched"));
 }
 
-QRCodeGeneratorBubble::~QRCodeGeneratorBubble() = default;
+QRCodeGeneratorBubble::~QRCodeGeneratorBubble() {
+  if (qrcode_action_item_) {
+    qrcode_action_item_->SetIsShowingBubble(false);
+  }
+}
 
 void QRCodeGeneratorBubble::Show() {
   textfield_url_->SetText(base::UTF8ToUTF16(url_.possibly_invalid_spec()));
   textfield_url_->SelectAll(false);
   UpdateQRContent();
   ShowForReason(USER_GESTURE);
+  Browser* browser = chrome::FindLastActive();
+  if (browser && base::FeatureList::IsEnabled(features::kToolbarPinning)) {
+    qrcode_action_item_ = actions::ActionManager::Get().FindAction(
+        kActionQrCodeGenerator, browser->browser_actions()->root_action_item());
+    qrcode_action_item_->SetIsShowingBubble(true);
+  }
 }
 
 void QRCodeGeneratorBubble::Hide() {
   if (on_closing_)
     std::move(on_closing_).Run();
   CloseBubble();
+  if (qrcode_action_item_) {
+    qrcode_action_item_->SetIsShowingBubble(false);
+  }
 }
 
 void QRCodeGeneratorBubble::OnThemeChanged() {

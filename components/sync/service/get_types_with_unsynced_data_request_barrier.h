@@ -8,13 +8,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
 // A helper class for SyncServiceImpl's implementation of
 // GetTypesWithUnsyncedData. It accumulates the responses from each type's
-// ModelTypeController, and runs the supplied callback once they're all done.
+// DataTypeController, and runs the supplied callback once they're all done.
 class GetTypesWithUnsyncedDataRequestBarrier
     : public base::RefCounted<GetTypesWithUnsyncedDataRequestBarrier> {
  public:
@@ -22,23 +22,23 @@ class GetTypesWithUnsyncedDataRequestBarrier
   // `requested_types`, the `callback` will be run. `requested_types` must not
   // be empty.
   GetTypesWithUnsyncedDataRequestBarrier(
-      ModelTypeSet requested_types,
-      base::OnceCallback<void(ModelTypeSet)> callback);
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> callback);
 
   GetTypesWithUnsyncedDataRequestBarrier(
       const GetTypesWithUnsyncedDataRequestBarrier&) = delete;
   GetTypesWithUnsyncedDataRequestBarrier& operator=(
       const GetTypesWithUnsyncedDataRequestBarrier&) = delete;
 
-  void OnReceivedResultForType(const ModelType type, bool has_unsynced_data);
+  void OnReceivedResultForType(const DataType type, bool has_unsynced_data);
 
  private:
   friend class base::RefCounted<GetTypesWithUnsyncedDataRequestBarrier>;
   virtual ~GetTypesWithUnsyncedDataRequestBarrier();
 
-  ModelTypeSet awaiting_types_;
-  ModelTypeSet types_with_unsynced_data_;
-  base::OnceCallback<void(ModelTypeSet)> callback_;
+  DataTypeSet awaiting_types_;
+  DataTypeSet types_with_unsynced_data_;
+  base::OnceCallback<void(DataTypeSet)> callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

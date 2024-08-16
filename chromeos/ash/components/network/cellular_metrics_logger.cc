@@ -719,6 +719,7 @@ void CellularMetricsLogger::OnInitializationTimeout() {
   CheckForESimProfileStatusMetric();
   CheckForCellularUsageMetrics();
   CheckForCellularServiceCountMetric();
+  CheckForApnPolicyMetric();
 }
 
 void CellularMetricsLogger::LoggedInStateChanged() {
@@ -739,6 +740,11 @@ void CellularMetricsLogger::LoggedInStateChanged() {
   // the user logs in.
   is_service_count_logged_ = false;
   CheckForCellularServiceCountMetric();
+
+  // This flag ensures that the APN policy information is only logged
+  // when the user logs in.
+  is_apn_policy_logged_ = false;
+  CheckForApnPolicyMetric();
 }
 
 void CellularMetricsLogger::NetworkConnectionStateChanged(
@@ -1098,6 +1104,17 @@ void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
   UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.Policy.ServiceAtLogin.Count",
                            esim_policy_profiles);
   is_service_count_logged_ = true;
+}
+
+void CellularMetricsLogger::CheckForApnPolicyMetric() {
+  if (is_apn_policy_logged_) {
+    return;
+  }
+
+  base::UmaHistogramBoolean(
+      "Network.Ash.Cellular.Apn.Login.AllowApnModification",
+      managed_network_configuration_handler_->AllowApnModification());
+  is_apn_policy_logged_ = true;
 }
 
 void CellularMetricsLogger::CheckForCellularUsageMetrics() {

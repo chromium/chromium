@@ -268,8 +268,7 @@ DWORD CompletionIOPortThread::SetupWatch(WatcherEntry& watcher_entry) {
       watcher_entry.watched_handle.get(), &watcher_entry.buffer,
       kWatchBufferSizeBytes, /*bWatchSubtree=*/true,
       FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_SIZE |
-          FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME |
-          FILE_NOTIFY_CHANGE_ATTRIBUTES | FILE_NOTIFY_CHANGE_SECURITY,
+          FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_DIR_NAME,
       nullptr, &overlapped, nullptr);
   if (!success) {
     return ::GetLastError();

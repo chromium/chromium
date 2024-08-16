@@ -272,8 +272,9 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
         // Pick the display interval which is closest to the preferred interval
         // and less than or equal to the min_frame_sink_interval.
         base::TimeDelta delta = (*min_frame_sink_interval - supported_interval);
-        if (AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
-            (delta.is_positive() && delta < min_delta)) {
+        if ((AreAlmostEqual(*min_frame_sink_interval, supported_interval) ||
+             delta.is_positive()) &&
+            delta.magnitude() < min_delta) {
           new_preferred_interval = supported_interval;
           min_delta = delta.magnitude();
         }

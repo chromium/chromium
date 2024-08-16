@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
@@ -328,23 +329,23 @@ WebContents* ConstrainedWebDialogDelegateViews::GetWebContents() {
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMinimumSize() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogMaximumSize() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 gfx::Size
 ConstrainedWebDialogDelegateViews::GetConstrainedWebDialogPreferredSize()
     const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ConstrainedWebDialogDelegateViews::ResizeToGivenSize(
     const gfx::Size size) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ConstrainedDialogWebView::ConstrainedDialogWebView(
@@ -361,7 +362,7 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
           std::move(delegate),
           web_contents,
           this)) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   SetWebContents(GetWebContents());
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   if (!max_size.IsEmpty()) {

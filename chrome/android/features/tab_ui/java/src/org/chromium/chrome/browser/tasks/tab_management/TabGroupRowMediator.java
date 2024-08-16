@@ -77,6 +77,11 @@ class TabGroupRowMediator {
         builder.with(TabGroupRowProperties.OPEN_RUNNABLE, openRunnable);
         builder.with(TabGroupRowProperties.DELETE_RUNNABLE, deleteRunnable);
 
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            boolean isShared = (savedTabGroup.collaborationId != null);
+            builder.with(TabGroupRowProperties.IS_SHARED, isShared);
+        }
+
         return builder.build();
     }
 

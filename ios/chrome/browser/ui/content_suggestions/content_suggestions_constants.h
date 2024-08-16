@@ -30,7 +30,8 @@ enum class ContentSuggestionsModuleType {
   // Removed: kParcelTrackingSeeMore = 12,
   kSetUpListNotifications = 13,
   kPlaceholder = 14,
-  kMaxValue = kPlaceholder,
+  kPriceTrackingPromo = 15,
+  kMaxValue = kPriceTrackingPromo,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

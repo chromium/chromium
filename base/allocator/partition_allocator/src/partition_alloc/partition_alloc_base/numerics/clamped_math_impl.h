@@ -86,9 +86,10 @@ struct ClampedAddOp<T,
                   "provided types.");
     const V saturated = CommonMaxOrMin<V>(IsValueNegative(y));
     V result = {};
-    return PA_BASE_NUMERICS_LIKELY((CheckedAddOp<T, U>::Do(x, y, &result)))
-               ? result
-               : saturated;
+    if (CheckedAddOp<T, U>::Do(x, y, &result)) [[likely]] {
+      return result;
+    }
+    return saturated;
   }
 };
 
@@ -113,9 +114,10 @@ struct ClampedSubOp<T,
                   "provided types.");
     const V saturated = CommonMaxOrMin<V>(!IsValueNegative(y));
     V result = {};
-    return PA_BASE_NUMERICS_LIKELY((CheckedSubOp<T, U>::Do(x, y, &result)))
-               ? result
-               : saturated;
+    if (CheckedSubOp<T, U>::Do(x, y, &result)) [[likely]] {
+      return result;
+    }
+    return saturated;
   }
 };
 
@@ -137,9 +139,10 @@ struct ClampedMulOp<T,
     V result = {};
     const V saturated =
         CommonMaxOrMin<V>(IsValueNegative(x) ^ IsValueNegative(y));
-    return PA_BASE_NUMERICS_LIKELY((CheckedMulOp<T, U>::Do(x, y, &result)))
-               ? result
-               : saturated;
+    if (CheckedMulOp<T, U>::Do(x, y, &result)) [[likely]] {
+      return result;
+    }
+    return saturated;
   }
 };
 
@@ -155,7 +158,7 @@ struct ClampedDivOp<T,
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     V result = {};
-    if (PA_BASE_NUMERICS_LIKELY((CheckedDivOp<T, U>::Do(x, y, &result)))) {
+    if ((CheckedDivOp<T, U>::Do(x, y, &result))) [[likely]] {
       return result;
     }
     // Saturation goes to max, min, or NaN (if x is zero).
@@ -176,9 +179,10 @@ struct ClampedModOp<T,
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     V result = {};
-    return PA_BASE_NUMERICS_LIKELY((CheckedModOp<T, U>::Do(x, y, &result)))
-               ? result
-               : x;
+    if (CheckedModOp<T, U>::Do(x, y, &result)) [[likely]] {
+      return result;
+    }
+    return x;
   }
 };
 
@@ -196,11 +200,11 @@ struct ClampedLshOp<T,
   template <typename V = result_type>
   static constexpr V Do(T x, U shift) {
     static_assert(!std::is_signed_v<U>, "Shift value must be unsigned.");
-    if (PA_BASE_NUMERICS_LIKELY(shift < std::numeric_limits<T>::digits)) {
+    if (shift < std::numeric_limits<T>::digits) [[likely]] {
       // Shift as unsigned to avoid undefined behavior.
       V result = static_cast<V>(as_unsigned(x) << shift);
       // If the shift can be reversed, we know it was valid.
-      if (PA_BASE_NUMERICS_LIKELY(result >> shift == x)) {
+      if (result >> shift == x) [[likely]] {
         return result;
       }
     }
@@ -223,9 +227,10 @@ struct ClampedRshOp<T,
     static_assert(!std::is_signed_v<U>, "Shift value must be unsigned.");
     // Signed right shift is odd, because it saturates to -1 or 0.
     const V saturated = as_unsigned(V(0)) - IsValueNegative(x);
-    return PA_BASE_NUMERICS_LIKELY(shift < IntegerBitsPlusSign<T>::value)
-               ? saturated_cast<V>(x >> shift)
-               : saturated;
+    if (shift < IntegerBitsPlusSign<T>::value) [[likely]] {
+      return saturated_cast<V>(x >> shift);
+    }
+    return saturated;
   }
 };
 

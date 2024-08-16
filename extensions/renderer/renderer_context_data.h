@@ -11,17 +11,16 @@ namespace extensions {
 
 class RendererContextData : public ContextData {
  public:
-  // Returns true if the kIsolatedWebApps feature flag is enabled and the
-  // current context is for an Isolated Web App. This static method is used in
-  // the IsIsolatedApplication() implementation for this class and
+  // Returns true if the current context has an isolated context capability,
+  // such as for an Isolated Web App. This static method is used in the
+  // HasIsolatedContextCapability() implementation for this class and
   // RendererFrameContextData.
   static bool IsIsolatedWebAppContextAndEnabled();
 
   RendererContextData() = default;
   ~RendererContextData() override = default;
 
-  std::unique_ptr<ContextData> Clone() const override;
-  bool IsIsolatedApplication() const override;
+  bool HasIsolatedContextCapability() const override;
 };
 
 }  // namespace extensions

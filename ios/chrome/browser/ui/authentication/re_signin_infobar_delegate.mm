@@ -14,6 +14,8 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -26,7 +28,13 @@
 // static
 std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
     AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
+    AppState* app_state,
     id<SigninPresenter> signin_presenter) {
+  if (app_state.initStage != InitStageFinal) {
+    return nullptr;
+  }
+
   if (!authentication_service) {
     // Do not show the infobar on incognito.
     return nullptr;
@@ -54,15 +62,17 @@ std::unique_ptr<ReSignInInfoBarDelegate> ReSignInInfoBarDelegate::Create(
 
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
-  return base::WrapUnique(
-      new ReSignInInfoBarDelegate(authentication_service, signin_presenter));
+  return base::WrapUnique(new ReSignInInfoBarDelegate(
+      authentication_service, identity_manager, signin_presenter));
 }
 
 ReSignInInfoBarDelegate::ReSignInInfoBarDelegate(
     AuthenticationService* authentication_service,
+    signin::IdentityManager* identity_manager,
     id<SigninPresenter> signin_presenter)
     : authentication_service_(authentication_service),
       signin_presenter_(signin_presenter) {
+  identity_manager_observer_.Observe(identity_manager);
   CHECK(authentication_service_);
   CHECK(signin_presenter_);
 }
@@ -115,10 +125,25 @@ bool ReSignInInfoBarDelegate::Accept() {
 
   // Stop displaying the infobar once user interacted with it.
   authentication_service_->ResetReauthPromptForSignInAndSync();
+  identity_manager_observer_.Reset();
   return true;
 }
 
 void ReSignInInfoBarDelegate::InfoBarDismissed() {
   // Stop displaying the infobar once user interacted with it.
   authentication_service_->ResetReauthPromptForSignInAndSync();
+  identity_manager_observer_.Reset();
+}
+
+void ReSignInInfoBarDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      identity_manager_observer_.Reset();
+      infobar()->RemoveSelf();
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }

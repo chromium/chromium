@@ -55,7 +55,7 @@ class DownloadStatusChecker : public SingleClientStatusChangeChecker {
     *os << "Waiting for download status kUpToDate for WORKSPACE_DESK.";
 
     return service()->GetDownloadStatusFor(syncer::WORKSPACE_DESK) ==
-           syncer::SyncService::ModelTypeDownloadStatus::kUpToDate;
+           syncer::SyncService::DataTypeDownloadStatus::kUpToDate;
   }
 };
 

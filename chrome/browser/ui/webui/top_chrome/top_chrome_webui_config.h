@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_CONFIG_H_
 #define CHROME_BROWSER_UI_WEBUI_TOP_CHROME_TOP_CHROME_WEBUI_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 #include "base/functional/function_ref.h"
 #include "content/public/browser/webui_config.h"
@@ -71,7 +73,19 @@ class DefaultTopChromeWebUIConfig : public TopChromeWebUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override {
-    return std::make_unique<T>(web_ui);
+    // Disallow dual constructibility.
+    // The controller can be constructed either by T(WebUI*) or
+    // T(WebUI*, const GURL&), but not both.
+    static_assert(std::is_constructible_v<T, content::WebUI*> ||
+                  std::is_constructible_v<T, content::WebUI*, const GURL&>);
+    static_assert(!(std::is_constructible_v<T, content::WebUI*> &&
+                    std::is_constructible_v<T, content::WebUI*, const GURL&>));
+    if constexpr (std::is_constructible_v<T, content::WebUI*>) {
+      return std::make_unique<T>(web_ui);
+    }
+    if constexpr (std::is_constructible_v<T, content::WebUI*, const GURL&>) {
+      return std::make_unique<T>(web_ui, url);
+    }
   }
   bool IsPreloadable() override { return false; }
   std::optional<int> GetCommandIdForTesting() override { return std::nullopt; }

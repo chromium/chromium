@@ -152,6 +152,23 @@ INSTANTIATE_TEST_SUITE_P(
             .query = "SIN pi",
             .expected = "0",
         },
+
+        // Queries which could be interpreted as a partial non-math query.
+        {
+            .name = "PartialC",
+            .query = "c",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "PartialM",
+            .query = "m",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "PartialPi",
+            .query = "pi",
+            .expected = std::nullopt,
+        },
     }),
     [](const testing::TestParamInfo<FendCoreTestCase> &info) {
       return info.param.name;

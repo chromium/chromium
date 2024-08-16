@@ -9,11 +9,10 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/glanceables/common/glanceables_util.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/rounded_container.h"
@@ -34,6 +33,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
+#include "ash/wm/window_properties.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
@@ -46,7 +46,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -91,11 +90,6 @@ constexpr int kTimerTextfieldCornerRadius = 8;
 // Task view constants.
 constexpr auto kTaskViewContainerInsets = gfx::Insets::TLBR(4, 24, 22, 24);
 constexpr auto kTaskViewHeaderInsets = gfx::Insets::VH(18, 0);
-
-// Feedback button constants.
-constexpr auto kFeedbackButtonInsets = gfx::Insets::TLBR(16, 0, 4, 0);
-constexpr auto kFeedbackButtonPadding = gfx::Insets::VH(6, 12);
-constexpr int kFeedbackButtonIconTextSpacing = 8;
 
 constexpr int kToggleButtonLeftPadding = 8;
 
@@ -346,8 +340,6 @@ FocusModeDetailedView::FocusModeDetailedView(DetailedViewDelegate* delegate)
   CreateDoNotDisturbContainer();
   do_not_disturb_view_->SetVisible(!in_focus_session);
 
-  CreateFeedbackButton();
-
   scroll_content()->SizeToPreferredSize();
   if (!in_focus_session) {
     StartClockTimer();
@@ -402,6 +394,16 @@ void FocusModeDetailedView::AddedToWidget() {
   // The `TrayBubbleView` may not exist in unit tests.
   if (views::WidgetDelegate* bubble_view = GetWidget()->widget_delegate()) {
     bubble_view->SetCanActivate(true);
+    if (auto* window = GetWidget()->GetNativeWindow()) {
+      // Set window properties to stay in the overview mode when the focus panel
+      // gained the focus.
+      window->SetProperty(kStayInOverviewOnActivationKey, true);
+
+      // We should set a property to stay in overview mode when the focus panel
+      // was destroyed. For example, we click `Start` toggle button to start a
+      // focus session, we will close the bubble view.
+      window->SetProperty(kIgnoreWindowActivationKey, true);
+    }
   }
 }
 
@@ -498,6 +500,7 @@ void FocusModeDetailedView::CreateToggleView() {
               : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON),
       PillButton::Type::kPrimaryLargeWithoutIcon, /*icon=*/nullptr);
   toggle_button->SetUseLabelAsDefaultTooltip(false);
+  toggle_button->SetID(ViewId::kToggleFocusButton);
   toggle_view_->AddRightView(toggle_button.release());
   UpdateToggleButtonAccessibility(in_focus_session);
 
@@ -623,6 +626,7 @@ void FocusModeDetailedView::CreateTimerView() {
   // b/302038651.
   timer_textfield_ = textfield_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge));
+  timer_textfield_->SetID(ViewId::kTimerTextfield);
   timer_textfield_->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_CENTER);
   timer_textfield_->SetFontList(
@@ -833,43 +837,6 @@ void FocusModeDetailedView::OnDoNotDisturbToggleClicked() {
       do_not_disturb_toggle_button_->GetIsOn());
 }
 
-void FocusModeDetailedView::CreateFeedbackButton() {
-  auto* button_container =
-      scroll_content()->AddChildView(std::make_unique<views::BoxLayoutView>());
-  button_container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  button_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-  button_container->SetInsideBorderInsets(kFeedbackButtonInsets);
-
-  auto* feedback_button =
-      button_container->AddChildView(std::make_unique<PillButton>(
-          base::BindRepeating(&FocusModeDetailedView::OnFeedbackButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON),
-          PillButton::Type::kFloatingWithIconLeading));
-  feedback_button->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kFeedbackIcon,
-                                     cros_tokens::kCrosSysSecondary));
-  feedback_button->SetEnabledTextColorIds(kColorAshTextColorSecondary);
-  feedback_button->SetImageLabelSpacing(kFeedbackButtonIconTextSpacing);
-  feedback_button->SetBorder(views::CreateEmptyBorder(kFeedbackButtonPadding));
-
-  views::InkDropHost* const ink_drop = views::InkDrop::Get(feedback_button);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  ink_drop->GetInkDrop()->SetShowHighlightOnHover(true);
-  ink_drop->SetVisibleOpacity(1.0f);
-  ink_drop->SetBaseColorId(cros_tokens::kButtonBackgroundColorSecondaryHover);
-}
-
-void FocusModeDetailedView::OnFeedbackButtonPressed() {
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      ShellDelegate::FeedbackSource::kFocusMode,
-      /*description_template=*/"#FocusMode",
-      /*category_tag=*/std::string());
-}
-
 void FocusModeDetailedView::OnClockMinutePassed() {
   if (FocusModeController::Get()->in_focus_session()) {
     UpdateToggleButtonAccessibility(/*in_focus_session=*/true);
@@ -908,6 +875,14 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
           decrement);
 
   SetInactiveSessionDuration(adjusted_duration);
+
+  // Read the session duration after it is adjusted.
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(
+          base::UTF16ToUTF8(focus_mode_util::GetDurationString(
+              focus_mode_controller->session_duration(),
+              /*digital_format=*/false)));
 }
 
 void FocusModeDetailedView::UpdateTimerSettingViewUI() {

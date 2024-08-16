@@ -12,13 +12,18 @@
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -37,6 +43,8 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ContainsPartialText;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::SettingsMenuPrivacyButton;
+using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridGroupCellAtIndex;
 
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
@@ -46,6 +54,55 @@ const GURL mockURL("http://not-a-real-site.test/");
 
 // Link for my activity page.
 const char kMyActivityURL[] = "myactivity.google.com";
+
+// Returns the matcher for the tab group creation view.
+id<GREYMatcher> GroupCreationViewMatcher() {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns the matcher for `Create Group` button.
+id<GREYMatcher> CreateGroupButtonInGroupCreation() {
+  return grey_allOf(grey_accessibilityID(kCreateTabGroupCreateButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Creates a group with default title from a tab cell at index `tab_cell_index`
+// when no group is in the grid.
+void CreateDefaultGroupFromTabCellAtIndex(int tab_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
+      performAction:grey_longPress()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
+              IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 1))]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GroupCreationViewMatcher()];
+  [[EarlGrey selectElementWithMatcher:CreateGroupButtonInGroupCreation()]
+      performAction:grey_tap()];
+}
+
+// Identifier for cell at given `index` in the tab grid.
+NSString* IdentifierForTabCellAtIndex(unsigned int index) {
+  return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
+}
+
+// Matcher for the tab cell at the given `index`.
+id<GREYMatcher> TabCellMatcherAtIndex(unsigned int index) {
+  return grey_allOf(grey_accessibilityID(IdentifierForTabCellAtIndex(index)),
+                    grey_kindOfClassName(@"GridCell"),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Opens the tab group at `group_cell_index`.
+void OpenTabGroupAtIndex(int group_cell_index) {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
+                                                          group_cell_index)];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabCellMatcherAtIndex(0)];
+}
 
 }  // namespace
 
@@ -57,23 +114,50 @@ const char kMyActivityURL[] = "myactivity.google.com";
 
 - (void)setUp {
   [super setUp];
+
+  // Ensure that inactive tabs preference settings is set to its default state.
+  [ChromeEarlGrey setIntegerValue:0
+                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+  GREYAssertEqual(
+      0,
+      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      @"Inactive tabs preference is not set to default value.");
+
   [AutofillAppInterface clearCreditCardStore];
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
-  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+    GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                  @"Cannot setup histogram tester.");
+    [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  }
 }
 
 - (void)tearDown {
+  // Ensure that inactive tabs preference settings is set to its default state.
+  [ChromeEarlGrey setIntegerValue:0
+                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+  GREYAssertEqual(
+      0,
+      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      @"Inactive tabs preference is not set to default value.");
+
   [AutofillAppInterface clearCreditCardStore];
   [PasswordSettingsAppInterface clearPasswordStores];
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey resetBrowsingDataPrefs];
-  [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Cannot reset histogram tester.");
+
+  if (![self isRunningTest:@selector(testInactiveTabsForDeletion)]) {
+    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Cannot reset histogram tester.");
+  }
+
+  // Shutdown network process after tests run to avoid hanging from
+  // deleting browsing history.
+  [ChromeEarlGrey killWebKitNetworkProcess];
 
   [super tearDown];
 }
@@ -84,7 +168,22 @@ const char kMyActivityURL[] = "myactivity.google.com";
   config.features_enabled.push_back(kIOSQuickDelete);
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
+  config.features_enabled.push_back(kTabGroupsInGrid);
+  config.features_enabled.push_back(kTabGroupsIPad);
+  config.features_enabled.push_back(kModernTabStrip);
   return config;
+}
+
+// Relaunches the app with Inactive Tabs still enabled.
+- (void)relaunchAppWithInactiveTabsEnabled {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kIOSQuickDelete);
+  config.additional_args.push_back(
+      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
+      kTabInactivityThresholdParameterName + "/" +
+      kTabInactivityThresholdImmediateDemoParam);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // Opens Quick Delete from the Privacy page in Settings.
@@ -475,10 +574,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
 }
 
 // Tests that tabs are shown as a possible type to be deleted on the browsing
-// data row when tabs are selected as a data type for deletion.
-// It also tests that the tabs do not get closed when the deletion
-// of tabs is not selected. It also tests that the tabs get closed when the
-// deletion of tabs is selected.
+// data row when tabs are selected as a data type for deletion. It also tests
+// that the tabs get closed when the deletion of tabs is selected.
 - (void)testTabsForDeletion {
   // Set pref to close tabs.
   [ChromeEarlGrey setBoolValue:true
@@ -509,7 +606,167 @@ void ExpectClearBrowsingDataNavigationHistograms(
                         ButtonWithAccessibilityLabel(l10n_util::GetNSString(
                             IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
-  // Check that the tab has not been closed.
+  // Check that the tab has been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+
+  // Check that Quick Delete is not opened.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_nil()];
+
+  // Check that tab grid is shown. Quick Delete was opened from the three dot
+  // menu, and as such the animation should be triggered and the tab grid should
+  // be visible by the end.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+}
+
+// Tests that when Quick Delete is opened from Privacy Settings and tabs are
+// selected as a data type, that the privacy settings are still visible after
+// the deletion.
+- (void)testTabsForDeletionFromPrivacySettings {
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  [self openQuickDeleteFromPrivacySettings];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+
+  // Check that the tab has been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+
+  // Check that Quick Delete is not opened.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:[self quickDeleteTitle]];
+
+  // Quick Delete was opened from privacy settings, and as such no animation
+  // should be triggered, and the privacy settings should still be visible by
+  // the end.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_SETTINGS_PRIVACY_TITLE))]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that inactive tabs are shown as a possible type to be deleted on the
+// browsing data row when tabs are selected as a data type for deletion. It also
+// tests that the inactive tabs get closed when the deletion of tabs is
+// selected.
+- (void)testInactiveTabsForDeletion {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Inactive Tabs feature is "
+                           @"only supported on iPhone.");
+  }
+
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+
+  // Relaunch the app to create the inactive tab. Relaunces also creates a new
+  // NTP tab.
+  [self relaunchAppWithInactiveTabsEnabled];
+
+  // Load a url in the NTP tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1, @"Tab count should be 1");
+
+  // Open Quick Delete.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row and the tabs substring are presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 2))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+
+  // Check that the tabs have been closed.
+  [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tabs were not closed.");
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
+}
+
+// Tests that tabs in tab groups are shown as a possible type to be deleted on
+// the browsing data row when tabs are selected as a data type for deletion. It
+// also tests that the tabs in tab groups get closed when the deletion of tabs
+// is selected.
+- (void)testTabsForDeletionInTabGroup {
+  // Set pref to close tabs.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Load page in tab.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // Open tab grid and create a tab group.
+  [ChromeEarlGreyUI openTabGrid];
+  CreateDefaultGroupFromTabCellAtIndex(0);
+  OpenTabGroupAtIndex(0);
+
+  // Open tab is in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open Quick Delete.
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the browsing data row and the tabs substring are presented.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_TABS, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the browsing data button.
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:
+                        ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
+
+  // Check that the tab has been closed.
   [ChromeEarlGrey waitForWebStateNotContainingText:"Echo"];
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 0, @"Tabs were not closed.");
 }
@@ -666,73 +923,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that changing the state of one pref, updates the browsing data summary
-// across all open Quick Delete menus.
-- (void)testPrefChangeUpdatesInMultiwindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
-    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-
-  // Set the cache preference to true.
-  [ChromeEarlGrey setBoolValue:true
-                   forUserPref:browsing_data::prefs::kDeleteCache];
-
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
-  // Open a new window.
-  [ChromeEarlGrey openNewWindow];
-  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
-  [ChromeEarlGrey waitForForegroundWindowCount:2];
-
-  // In the first window, open quick delete and check that browsing data summary
-  // contains cache related information.
-  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
-                                                        WindowWithNumber(0)];
-
-  // Open Quick Delete menu.
-  [self openQuickDeleteFromThreeDotMenu:0];
-
-  // Assess that the browsing data summary contains the "cache" keyword.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // In the second window, open quick delete and check that browsing data
-  // summary contains cache related information.
-  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
-                                                        WindowWithNumber(1)];
-
-  // Open Quick Delete menu.
-  [self openQuickDeleteFromThreeDotMenu:1];
-
-  // Assess that the browsing data summary contains the "cache" keyword.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Set the cache preference to false.
-  [ChromeEarlGrey setBoolValue:false
-                   forUserPref:browsing_data::prefs::kDeleteCache];
-
-  // Focus on the first window.
-  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
-                                                        WindowWithNumber(0)];
-
-  // Assess that the summary is updated on the first page (i.e. cache pref is no
-  // longer displayed in the summary).
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
-      assertWithMatcher:grey_nil()];
-
-  // Focus on the second window.
-  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
-                                                        WindowWithNumber(1)];
-
-  // Assess that the cache pref is no longer displayed in the summary on the
-  // second window.
-  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
-      assertWithMatcher:grey_nil()];
-}
-
 // Tests that the number of tabs are not shown on the browsing data row when
-// tabs are not selected as a data type to be deleted.
+// tabs are not selected as a data type to be deleted. It also tests that the
+// tabs do not get closed when the deletion of tabs is not selected.
 - (void)testKeepTabs {
   // Load page in tab.
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -1064,7 +1257,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // recorded in the corrresponding histogram bucket.
 - (void)testOpenSearchHistoryMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  // Sign in is required to show to footer.
+  // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
@@ -1096,7 +1289,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
 // are recorded in the corrresponding histogram bucket.
 - (void)testOpenOtherFormsOfActivityMyActivityFooterLink {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  // Sign in is required to show to footer.
+  // Sign in is required to show the footer.
   [self signIn];
   // Open Quick Delete bottom sheet.
   [self openQuickDeleteFromThreeDotMenu];
@@ -1214,6 +1407,71 @@ void ExpectClearBrowsingDataNavigationHistograms(
                             IDS_IOS_DELETE_BROWSING_DATA_BUTTON))];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that changing the state of one pref, updates the browsing data summary
+// across all open Quick Delete menus.
+- (void)testPrefChangeUpdatesInMultiwindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  // Set the cache preference to true.
+  [ChromeEarlGrey setBoolValue:true
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  // Open a new window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // In the first window, open quick delete and check that browsing data summary
+  // contains cache related information.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:0];
+
+  // Assess that the browsing data summary contains the "cache" keyword.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // In the second window, open quick delete and check that browsing data
+  // summary contains cache related information.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Open Quick Delete menu.
+  [self openQuickDeleteFromThreeDotMenu:1];
+
+  // Assess that the browsing data summary contains the "cache" keyword.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Set the cache preference to false.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCache];
+
+  // Focus on the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Assess that the summary is updated on the first page (i.e. cache pref is no
+  // longer displayed in the summary).
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_nil()];
+
+  // Focus on the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Assess that the cache pref is no longer displayed in the summary on the
+  // second window.
+  [[EarlGrey selectElementWithMatcher:[self browsingDataSummaryWithCache]]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

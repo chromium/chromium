@@ -4,7 +4,7 @@
 
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
@@ -12,7 +12,7 @@ import {createSpeechSynthesisVoice, emitEvent, setSimpleAxTreeWithText, suppress
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordHighlighting', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
 
   // root htmlTag='#document' id=1

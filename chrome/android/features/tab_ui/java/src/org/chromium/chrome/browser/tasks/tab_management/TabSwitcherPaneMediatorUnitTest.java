@@ -242,8 +242,12 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     @SmallTest
     public void testLateTabModelFilterWhileVisible() {
+        when(mTabListEditorController.isVisible()).thenReturn(true);
         // Reset to simulate the UI is shown with no tab model filter set.
         mIsVisibleSupplier.set(false);
+        verify(mTabGridDialogController).hideDialog(false);
+        verify(mTabListEditorController).hide();
+        when(mTabListEditorController.isVisible()).thenReturn(false);
         mTabModelFilterSupplier.set(null);
         verify(mTabModelFilter, times(1)).addObserver(mTabModelObserverCaptor.capture());
 
@@ -332,9 +336,8 @@ public class TabSwitcherPaneMediatorUnitTest {
         mTabListEditorBackPressChangedSupplier.set(false);
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
 
-        verify(mTabGridDialogController).hideDialog(true);
         mIsAnimatingSupplier.set(true);
-        verify(mTabGridDialogController, times(2)).hideDialog(true);
+        verify(mTabGridDialogController).hideDialog(true);
         assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
         assertEquals(BackPressResult.SUCCESS, mMediator.handleBackPress());
         mIsAnimatingSupplier.set(false);

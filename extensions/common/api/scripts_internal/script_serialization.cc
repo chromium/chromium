@@ -124,7 +124,7 @@ api::scripts_internal::SerializedUserScript SerializeUserScript(
       case UserScript::Source::kStaticContentScript:
       case UserScript::Source::kWebUIScript:
         // We shouldn't be serialized these script types, ever.
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   serialized_script.source =

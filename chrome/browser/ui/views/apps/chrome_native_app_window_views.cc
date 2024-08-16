@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
 
 #include <stddef.h>
@@ -336,7 +341,7 @@ bool ChromeNativeAppWindowViews::AcceleratorPressed(
           DevToolsOpenedByAction::kInspectorModeShortcut);
       return true;
     default:
-      NOTREACHED_NORETURN() << "Unknown accelerator sent to app window.";
+      NOTREACHED() << "Unknown accelerator sent to app window.";
   }
 }
 

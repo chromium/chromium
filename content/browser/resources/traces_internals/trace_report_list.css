@@ -9,8 +9,22 @@
  * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
-:host h1 {
+:host {
+  height: 100%;
   display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 10px;
+  border-bottom: var(--cr-separator-line);
+}
+
+.header h1 {
+  font-size: 2.7rem;
 }
 
 h1 > .trace-counter {
@@ -100,12 +114,6 @@ h1 > .trace-counter {
   --iron-icon-fill-color: rgb(34, 135, 211);
 }
 
-.traces-header {
-  margin: 12px 0;
-  display: flex;
-  width: min-content;
-}
-
 .traces-header h1 {
   font-size: 3em;
   color: var(--cr-primary-text-color);
@@ -136,5 +144,14 @@ h1 > .trace-counter {
 .utility-bar {
   display: flex;
   justify-content: end;
-  margin-bottom: 8px;
+  margin: 0 12px 12px;
+  align-items: flex-end;
+}
+
+.report-list-container {
+  flex-direction: column;
+  display: flex;
+  height: 100%;
+  margin: 0 8px;
+  overflow-y: auto;
 }

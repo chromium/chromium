@@ -852,6 +852,12 @@ enum CSSSampleId {
     kBoxDecorationBreak = 796,
     kPositionTryFallbacks = 797,
     kInterpolateSize = 798,
+    kViewTransitionGroup = 799,
+    kPositionArea = 800,
+    kTextBox = 801,
+    kMasonryTrackEnd = 802,
+    kMasonryTrackStart = 803,
+    kMasonryTemplateTracks = 804,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

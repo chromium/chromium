@@ -41,6 +41,10 @@ bool PrefixSelector::ShouldContinueSelection() const {
   return (now - time_of_last_key_) < kTimeBeforeClearing;
 }
 
+base::WeakPtr<ui::TextInputClient> PrefixSelector::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PrefixSelector::SetCompositionText(
     const ui::CompositionText& composition) {}
 

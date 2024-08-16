@@ -13,12 +13,14 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -668,18 +670,6 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       Shell::Get()->anchored_nudge_manager();
   ASSERT_TRUE(nudge_manager);
 
-  // Display nudge for VKEY_INSERT.
-  controller()->ShowSixPackKeyRewritingNudge(
-      ui::VKEY_INSERT, ui::mojom::SixPackShortcutModifier::kSearch);
-
-  EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
-  EXPECT_EQ(
-      nudge_manager->GetNudgeBodyTextForTest(kSixPackKeyNoMatchNudgeId),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION));
-  CancelNudge(kSixPackKeyNoMatchNudgeId);
-  EXPECT_FALSE(nudge_manager->GetNudgeIfShown(kSixPackKeyNoMatchNudgeId));
-
   // Display nudge for VKEY_DELETE.
   controller()->ShowSixPackKeyRewritingNudge(
       ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kSearch);
@@ -800,6 +790,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyKeyboardFirstTimeConnected) {
+  base::HistogramTester histogram_tester;
   size_t expected_notification_count = 1;
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->device_key = "0001:0001";
@@ -824,6 +815,11 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
             message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "welcome_experience_keyboards_1"));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown,
+      /*expected_count=*/1u);
 
   mojom_keyboard->id = 2;
   mojom_keyboard->device_key = "0001:0002";
@@ -863,6 +859,7 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
        NotifyTouchpadFirstTimeConnected) {
+  base::HistogramTester histogram_tester;
   size_t expected_notification_count = 1;
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->device_key = "0001:0001";
@@ -887,7 +884,11 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
             message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "welcome_experience_touchpad_1"));
-
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown,
+      /*expected_count=*/1u);
   mojom_touchpad->id = 2;
   mojom_touchpad->device_key = "0001:0002";
 

@@ -616,7 +616,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
   // Localized strings.
   //
-
   virtual std::u16string GetLocalizedRoleDescriptionForUnlabeledImage() const;
   virtual std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const;

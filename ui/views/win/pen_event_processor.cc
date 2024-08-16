@@ -164,7 +164,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateMouseEvent(
       id_generator_->ReleaseNumber(pointer_id);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   std::unique_ptr<ui::Event> event = std::make_unique<ui::MouseEvent>(
       event_type, point, point, ui::EventTimeForNow(),
@@ -204,7 +204,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateTouchEvent(
       event_type = ui::EventType::kTouchMoved;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   const base::TimeTicks event_time = ui::EventTimeForNow();

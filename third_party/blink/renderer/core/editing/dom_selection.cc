@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/core/editing/dom_selection.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_composed_ranges_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -93,7 +94,12 @@ void DOMSelection::UpdateFrameSelection(
 }
 
 VisibleSelection DOMSelection::GetVisibleSelection() const {
-  return Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  return Selection().ComputeVisibleSelectionInDOMTree();
 }
 
 bool DOMSelection::IsAnchorFirstInSelection() const {
@@ -163,10 +169,13 @@ unsigned DOMSelection::extentOffset() const {
 bool DOMSelection::isCollapsed() const {
   if (!IsAvailable())
     return true;
-  Node* node = Selection()
-                   .ComputeVisibleSelectionInDOMTreeDeprecated()
-                   .Anchor()
-                   .AnchorNode();
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  Node* node =
+      Selection().ComputeVisibleSelectionInDOMTree().Anchor().AnchorNode();
   if (node && node->IsInShadowTree() &&
       DomWindow()->document()->AncestorInThisScope(node)) {
     return true;
@@ -198,8 +207,13 @@ String DOMSelection::direction() const {
   if (!IsAvailable()) {
     return "none";
   }
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
   if (!Selection().IsDirectional() ||
-      Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone()) {
+      Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return "none";
   }
   if (IsAnchorFirstInSelection()) {
@@ -213,8 +227,15 @@ unsigned DOMSelection::rangeCount() const {
     return 0;
   if (DocumentCachedRange())
     return 1;
-  if (Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsNone())
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  DomWindow()->document()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kSelection);
+
+  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return 0;
+  }
   // Any selection can be adjusted to Range for Document.
   if (IsSelectionOfDocument())
     return 1;
@@ -567,7 +588,7 @@ Range* DOMSelection::getRangeAt(unsigned index,
 
 // https://www.w3.org/TR/selection-api/#dom-selection-getcomposedranges
 const StaticRangeVector DOMSelection::getComposedRanges(
-    const HeapVector<Member<ShadowRoot>>& shadowRoots) const {
+    const GetComposedRangesOptions* options) const {
   StaticRangeVector ranges;
   // 1. If this is empty, return an empty array.
   if (!IsAvailable()) {
@@ -580,17 +601,17 @@ const StaticRangeVector DOMSelection::getComposedRanges(
   }
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
-  Node* startNode = range->startContainer();
-  unsigned startOffset = range->startOffset();
+  Node* startNode = range->composedStartContainer();
+  unsigned startOffset = range->composedStartOffset();
   // 3. Rescope startNode and startOffset with listed shadow roots.
-  Rescope(startNode, startOffset, shadowRoots, /*isEnd=*/false);
+  Rescope(startNode, startOffset, options->shadowRoots(), /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
-  Node* endNode = range->endContainer();
-  unsigned endOffset = range->endOffset();
+  Node* endNode = range->composedEndContainer();
+  unsigned endOffset = range->composedEndOffset();
   // 5. Rescope endNode and endOffset with listed shadow roots.
-  Rescope(endNode, endOffset, shadowRoots, /*isEnd=*/true);
+  Rescope(endNode, endOffset, options->shadowRoots(), /*isEnd=*/true);
 
   // 6. Return an array consisting of new StaticRange whose start node is
   // startNode, start offset is startOffset, end node is endNode, and end
@@ -610,11 +631,16 @@ void DOMSelection::Rescope(Node*& node,
   // 3. & 5. While node is a node, node's root is a shadow root, and
   // node's root is not a shadow-including inclusive ancestor of any of
   // shadowRoots, repeat these steps:
-  while (node && node->ContainingShadowRoot() &&
-         !shadowRoots.Contains(node->ContainingShadowRoot())) {
+  while (node) {
+    ShadowRoot* root = node->ContainingShadowRoot();
     Element* host = node->OwnerShadowHost();
-    if (!host) {
+    if (!root || !host) {
       return;
+    }
+    for (auto& shadowRoot : shadowRoots) {
+      if (root->IsShadowIncludingInclusiveAncestorOf(*shadowRoot)) {
+        return;
+      }
     }
     // 1. Set node to node's root's host's parent.
     node = host->parentNode();
@@ -767,10 +793,9 @@ bool DOMSelection::containsNode(const Node* n, bool allow_partial) const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  const EphemeralRange selected_range =
-      Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .ToNormalizedEphemeralRange();
+  const EphemeralRange selected_range = Selection()
+                                            .ComputeVisibleSelectionInDOMTree()
+                                            .ToNormalizedEphemeralRange();
   if (selected_range.IsNull())
     return false;
 
@@ -832,7 +857,7 @@ String DOMSelection::toString() {
       DomWindow()->document()->Lifecycle());
 
   const EphemeralRange range = Selection()
-                                   .ComputeVisibleSelectionInDOMTreeDeprecated()
+                                   .ComputeVisibleSelectionInDOMTree()
                                    .ToNormalizedEphemeralRange();
   return PlainText(
       range,

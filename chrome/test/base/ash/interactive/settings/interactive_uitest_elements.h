@@ -12,6 +12,12 @@ namespace ash::settings {
 // Top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery InternetPage();
 
+// The error toast shown on the internet page.
+WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToast();
+
+// The error toast shown on the internet page.
+WebContentsInteractionTestUtil::DeepQuery InternetPageErrorToastMessage();
+
 // The "more options" / "three dots" button on the network details page.
 WebContentsInteractionTestUtil::DeepQuery NetworkMoreDetailsMenuButton();
 
@@ -97,8 +103,26 @@ WebContentsInteractionTestUtil::DeepQuery ApnListFirstItemSublabel();
 // The n-th APN item in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListNthItem(int n);
 
-// The n-th APN item in APN list.
+// The n-th APN item name in APN list.
 WebContentsInteractionTestUtil::DeepQuery ApnListNthItemName(int n);
+
+// The n-th APN item action menu button in APN list.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemMenuButton(int n);
+
+// The n-th APN item action dots menu dialog of its APN item.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemDotsMenu(int n);
+
+// The n-th APN item disable button in its dots menu.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemDisableButton(int n);
+
+// The n-th APN item remove button in its dots menu.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemRemoveButton(int n);
+
+// The n-th APN item enable button in its dots menu.
+WebContentsInteractionTestUtil::DeepQuery ApnListNthItemEnableButton(int n);
+
+// The div that indicates the auto-detected APN in the APN list item.
+WebContentsInteractionTestUtil::DeepQuery ApnListItemAutoDetectedDiv();
 
 // The confirm button in the APNs selection dialog.
 WebContentsInteractionTestUtil::DeepQuery ApnSelectionConfirmButton();
@@ -195,6 +219,31 @@ WebContentsInteractionTestUtil::DeepQuery CellularDetailsConfigurableSection();
 
 // The proxy section row in cellular network details subpage.
 WebContentsInteractionTestUtil::DeepQuery CellularDetailsProxySection();
+
+// Elements related to SIM lock that are found within the advanced section of
+// the details page of a cellular network, or the dialog shown to unlock a
+// locked SIM either using a PIN or a PUK.
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockToggle();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockDialogs();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogButton();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockEnterPinDialogSubtext();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockEnterPinDialogPin();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogNew();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockChangePinDialogNewConfirm();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockChangePinDialogOld();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogDone();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPinDialogPin();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogButton();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPin();
+WebContentsInteractionTestUtil::DeepQuery CellularSimLockUnlockPukDialogPuk();
+WebContentsInteractionTestUtil::DeepQuery
+CellularSimLockUnlockPukDialogPinConfirm();
 
 // The cellular networks subpage menu rename button.
 WebContentsInteractionTestUtil::DeepQuery CellularSubpageMenuRenameButton();

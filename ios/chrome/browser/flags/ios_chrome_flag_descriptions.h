@@ -17,6 +17,10 @@ namespace flag_descriptions {
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];
 
+// Title and description for the flag that enables autofill across iframes.
+extern const char kAutofillAcrossIframesName[];
+extern const char kAutofillAcrossIframesDescription[];
+
 // Title and description for the flag to control upstreaming credit cards.
 extern const char kAutofillCreditCardUploadName[];
 extern const char kAutofillCreditCardUploadDescription[];
@@ -169,26 +173,6 @@ extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
 // omnibox position.
 extern const char kBottomOmniboxDefaultSettingName[];
 extern const char kBottomOmniboxDefaultSettingDescription[];
-
-// Title and description for the flag that enables the app-launch promo of
-// bottom omnibox.
-extern const char kBottomOmniboxPromoAppLaunchName[];
-extern const char kBottomOmniboxPromoAppLaunchDescription[];
-
-// Title and description for the flag that changes the default omnibox position
-// in the promos.
-extern const char kBottomOmniboxPromoDefaultPositionName[];
-extern const char kBottomOmniboxPromoDefaultPositionDescription[];
-
-// Title and description for the flag that enables the FRE promo of bottom
-// omnibox.
-extern const char kBottomOmniboxPromoFREName[];
-extern const char kBottomOmniboxPromoFREDescription[];
-
-// Title and description for the flag that enables region filter for the omnibox
-// position promos.
-extern const char kBottomOmniboxPromoRegionFilterName[];
-extern const char kBottomOmniboxPromoRegionFilterDescription[];
 
 // Title and description for the flag to control if initial uploading of crash
 // reports is delayed.
@@ -348,6 +332,11 @@ extern const char kEnableFollowIPHExpParamsDescription[];
 // Title and description for the flag to enable the Follow UI Updates.
 extern const char kEnableFollowUIUpdateName[];
 extern const char kEnableFollowUIUpdateDescription[];
+
+// Title and description for the flag to enable the registration of customizable
+// lists of UITraits.
+extern const char kEnableTraitCollectionRegistrationName[];
+extern const char kEnableTraitCollectionRegistrationDescription[];
 
 // Title and description for the flag to disable the Lens input selection
 // and camera experience.
@@ -566,15 +555,6 @@ extern const char kIOSTipsNotificationsDescription[];
 // Title and description for the flag to enable IPH for safari switcher.
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
-
-// Title and description for the flag to enable the tab swipe back/forward IPH.
-extern const char kIPHiOSSwipeBackForwardFeatureName[];
-extern const char kIPHiOSSwipeBackForwardFeatureDescription[];
-
-// Title and description for the flag to enable the swipe toolbar to switch tab
-// IPH.
-extern const char kIPHiOSSwipeToolbarToChangeTabFeatureName[];
-extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
 
 // Title and description for the flag to enable the Lens filters ablation mode.
 extern const char kLensFiltersAblationModeEnabledName[];
@@ -811,6 +791,11 @@ extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 // Title and description for the flag to enable salient images.
 extern const char kPageImageServiceSalientImageName[];
 extern const char kPageImageServiceSalientImageDescription[];
+
+// Title and description for the flag to enable the Last Visited feature in Page
+// Info for iOS.
+extern const char kPageInfoLastVisitedIOSName[];
+extern const char kPageInfoLastVisitedIOSDescription[];
 
 // Title and description for the flag to enable page visibility.
 extern const char kPageVisibilityPageContentAnnotationsName[];

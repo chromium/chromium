@@ -92,30 +92,12 @@ class ProcessNodeImpl;
 class WorkerNodeImpl;
 }  // namespace performance_manager
 
-// TODO(crbug.com/40485134): This is a hack to prevent new uses of
-// SupportsWeakPtr. The remaining uses are troublesome to fix, so we declare
-// these classes as friends so they have access to the constructor.
-namespace gl {
-class GLContext;
-class GLSurface;
-}  // namespace gl
-
-namespace ui {
-class MenuModel;
-class TextInputClient;
-}  // namespace ui
-
-namespace views {
-class WidgetDelegate;
-}  // namespace views
-
 namespace base {
 
 namespace sequence_manager::internal {
 class TaskQueueImpl;
 }
 
-template <typename T> class SupportsWeakPtr;
 template <typename T> class WeakPtr;
 
 namespace internal {
@@ -191,44 +173,6 @@ class BASE_EXPORT WeakReferenceOwner {
 
  private:
   scoped_refptr<WeakReference::Flag> flag_;
-};
-
-// This class provides a common implementation of common functions that would
-// otherwise get instantiated separately for each distinct instantiation of
-// SupportsWeakPtr<>.
-class SupportsWeakPtrBase {
- public:
-  // A safe static downcast of a WeakPtr<Base> to WeakPtr<Derived>. This
-  // conversion will only compile if Derived singly inherits from
-  // SupportsWeakPtr<Base>. See base::AsWeakPtr() below for a helper function
-  // that makes calling this easier.
-  //
-  // Precondition: t != nullptr
-  template<typename Derived>
-  static WeakPtr<Derived> StaticAsWeakPtr(Derived* t) {
-    static_assert(std::is_base_of_v<internal::SupportsWeakPtrBase, Derived>,
-                  "AsWeakPtr argument must inherit from SupportsWeakPtr");
-    using Base = typename decltype(ExtractSinglyInheritedBase(t))::Base;
-    // Ensure SupportsWeakPtr<Base>::AsWeakPtr() is called even if the subclass
-    // hides or overloads it.
-    WeakPtr<Base> weak = static_cast<SupportsWeakPtr<Base>*>(t)->AsWeakPtr();
-    return WeakPtr<Derived>(weak.CloneWeakReference(),
-                            static_cast<Derived*>(weak.ptr_));
-  }
-
- private:
-  // This class can only be instantiated if the constructor argument inherits
-  // from SupportsWeakPtr<T> in exactly one way.
-  template <typename T>
-  struct ExtractSinglyInheritedBase;
-  template <typename T>
-  struct ExtractSinglyInheritedBase<SupportsWeakPtr<T>> {
-    using Base = T;
-    explicit ExtractSinglyInheritedBase(SupportsWeakPtr<T>*);
-  };
-  template <typename T>
-  ExtractSinglyInheritedBase(SupportsWeakPtr<T>*)
-      -> ExtractSinglyInheritedBase<SupportsWeakPtr<T>>;
 };
 
 // Forward declaration from safe_ptr.h.
@@ -342,9 +286,7 @@ class TRIVIAL_ABI WeakPtr {
   bool WasInvalidated() const { return ptr_ && !ref_.IsValid(); }
 
  private:
-  friend class internal::SupportsWeakPtrBase;
   template <typename U> friend class WeakPtr;
-  friend class SupportsWeakPtr<T>;
   friend class WeakPtrFactory<T>;
   friend class WeakPtrFactory<std::remove_const_t<T>>;
 
@@ -482,73 +424,6 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
     weak_reference_owner_.BindToCurrentSequence();
   }
 };
-
-// TODO(crbug.com/40485134): This is a hack to prevent new uses of
-// SupportsWeakPtr. The remaining uses are troublesome to fix, so we declare
-// these classes as friends so they have access to the constructor. This
-// class is used in the unit tests.
-namespace weak_ptr_unittest {
-struct Target;
-}
-
-// A class may extend from SupportsWeakPtr to let others take weak pointers to
-// it. This avoids the class itself implementing boilerplate to dispense weak
-// pointers.  However, since SupportsWeakPtr's destructor won't invalidate
-// weak pointers to the class until after the derived class's members have been
-// destroyed, its use can lead to subtle use-after-destroy issues.
-// This class cannot be used in new code. See crbug.com/40485134.
-template <class T>
-class SupportsWeakPtr : public internal::SupportsWeakPtrBase {
- public:
-  SupportsWeakPtr(const SupportsWeakPtr&) = delete;
-  SupportsWeakPtr& operator=(const SupportsWeakPtr&) = delete;
-
-  WeakPtr<T> AsWeakPtr() {
-    return WeakPtr<T>(weak_reference_owner_.GetRef(), static_cast<T*>(this));
-  }
-
- protected:
-  ~SupportsWeakPtr() = default;
-
- private:
-  friend struct MultiplyDerivedProducer;
-  friend struct Producer;
-  friend struct weak_ptr_unittest::Target;
-  friend class gl::GLContext;
-  friend class gl::GLSurface;
-  friend class ui::MenuModel;
-  friend class ui::TextInputClient;
-  friend class views::WidgetDelegate;
-
-  // The constructor is private so only the declared friends can construct
-  // instances.
-  SupportsWeakPtr() = default;
-
-  internal::WeakReferenceOwner weak_reference_owner_;
-};
-
-// Helper function that uses type deduction to safely return a WeakPtr<Derived>
-// when Derived doesn't directly extend SupportsWeakPtr<Derived>, instead it
-// extends a Base that extends SupportsWeakPtr<Base>.
-//
-// EXAMPLE:
-//   class Base : public base::SupportsWeakPtr<Producer> {};
-//   class Derived : public Base {};
-//
-//   Derived derived;
-//   base::WeakPtr<Derived> ptr = base::AsWeakPtr(&derived);
-//
-// Note that the following doesn't work (invalid type conversion) since
-// Derived::AsWeakPtr() is WeakPtr<Base> SupportsWeakPtr<Base>::AsWeakPtr(),
-// and there's no way to safely cast WeakPtr<Base> to WeakPtr<Derived> at
-// the caller.
-//
-//   base::WeakPtr<Derived> ptr = derived.AsWeakPtr();  // Fails.
-
-template <typename Derived>
-WeakPtr<Derived> AsWeakPtr(Derived* t) {
-  return internal::SupportsWeakPtrBase::StaticAsWeakPtr<Derived>(t);
-}
 
 }  // namespace base
 

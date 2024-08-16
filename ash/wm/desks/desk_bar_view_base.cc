@@ -481,8 +481,7 @@ class DeskBarHoverObserver : public ui::EventObserver {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -582,16 +581,19 @@ class DeskBarViewBase::DeskIconButtonScaleAnimation
   // DeskBarViewBase::PostLayoutOperation:
   void InitializePreLayout() override {
     begin_x_ = bar_view_->GetFirstMiniViewXOffset();
-    current_bounds_ = button_->GetBoundsInScreen();
+    old_bounds_ = button_->GetBoundsInScreen();
   }
 
   void Run() override {
-    const gfx::RectF target_bounds = gfx::RectF(button_->GetBoundsInScreen());
+    const gfx::RectF new_bounds = gfx::RectF(button_->GetBoundsInScreen());
     gfx::Transform scale_transform;
     const int shift_x = begin_x_ - bar_view_->GetFirstMiniViewXOffset();
     scale_transform.Translate(shift_x, 0);
-    scale_transform.Scale(current_bounds_.width() / target_bounds.width(),
-                          current_bounds_.height() / target_bounds.height());
+    if (!old_bounds_.IsEmpty()) {
+      CHECK(!new_bounds.IsEmpty());
+      scale_transform.Scale(old_bounds_.width() / new_bounds.width(),
+                            old_bounds_.height() / new_bounds.height());
+    }
 
     PerformDeskIconButtonScaleAnimation(button_, bar_view_, scale_transform,
                                         shift_x);
@@ -602,7 +604,7 @@ class DeskBarViewBase::DeskIconButtonScaleAnimation
  private:
   const raw_ptr<DeskIconButton> button_;
   int begin_x_ = 0;
-  gfx::Rect current_bounds_;
+  gfx::Rect old_bounds_;
 };
 
 // Runs animations when the library button visibility changes.
@@ -1332,7 +1334,7 @@ void DeskBarViewBase::HandleDragEvent(DeskMiniView* mini_view,
       ContinueDragDesk(mini_view, location);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1358,7 +1360,7 @@ bool DeskBarViewBase::HandleReleaseEvent(DeskMiniView* mini_view,
       EndDragDesk(drag_view_, /*end_by_user=*/true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -1635,6 +1637,20 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
     ++mini_view_index;
   }
 
+  // Only record for `initializing_bar_view` since that's what impacts the
+  // presentation time and animation smoothness when entering overview.
+  if (initializing_bar_view && type_ == Type::kOverview) {
+    size_t total_layers_mirrored = 0;
+    for (const auto& mini_view : mini_views_) {
+      total_layers_mirrored +=
+          mini_view->desk_preview()->GetNumLayersMirrored();
+    }
+    // From local testing, 16 chrome browser windows (which metrics show is
+    // likely much more than what most users have) resulted in ~1000 layers.
+    base::UmaHistogramCounts1000("Ash.Overview.DeskBarNumLayersMirrored",
+                                 total_layers_mirrored);
+  }
+
   if (expanding_bar_view) {
     SwitchToExpandedState();
     return;
@@ -1903,10 +1919,10 @@ void DeskBarViewBase::MaybeUpdateDeskActionButtonTooltips() {
         desk->name().empty() && desk_index != -1
             ? desk_controller->GetDeskDefaultName(desk_index)
             : desk->name();
-    // The combine desks button only exists if the forest feature is disabled.
-    // The context menu button that would appear in its place does not need to
+    // The combine desks button only exists if the feature is disabled. The
+    // context menu button that would appear in its place does not need to
     // update its tooltip as it doesn't use a formatted string.
-    if (!features::IsForestFeatureEnabled()) {
+    if (!features::IsSavedDeskUiRevampEnabled()) {
       desk_action_view->combine_desks_button()->UpdateTooltip(
           combine_desk_tooltip);
     }

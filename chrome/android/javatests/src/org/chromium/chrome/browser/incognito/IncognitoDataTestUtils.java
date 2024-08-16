@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -210,8 +211,12 @@ public class IncognitoDataTestUtils {
     public static void closeTabs(ChromeActivityTestRule testRule) {
         ChromeActivity activity = testRule.getActivity();
         if (activity == null) return;
-        activity.getTabModelSelector().getModel(false).closeAllTabs();
-        activity.getTabModelSelector().getModel(true).closeAllTabs();
+        activity.getTabModelSelector()
+                .getModel(false)
+                .closeTabs(TabClosureParams.closeAllTabs().build());
+        activity.getTabModelSelector()
+                .getModel(true)
+                .closeTabs(TabClosureParams.closeAllTabs().build());
     }
 
     // Warming up CCT so that the native is initialized before we access feature flags.

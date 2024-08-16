@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.HomeScreen" enum="LaunchFromHomeScreen"
-    expires_after="2024-12-15">
+    expires_after="2025-12-15">
   <owner>dominickn@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.HomeScreenSource" enum="LaunchFromHomeScreenSource"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>dominickn@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.WebAppLaunchHandlerClientMode"
-    enum="WebAppLaunchHandlerClientMode" expires_after="2024-12-08">
+    enum="WebAppLaunchHandlerClientMode" expires_after="2025-12-08">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -323,7 +323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.CheckServiceWorker.Status"
-    enum="ServiceWorkerOfflineCapability" expires_after="2024-10-20">
+    enum="ServiceWorkerOfflineCapability" expires_after="2025-10-20">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -446,7 +446,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Engagement.{EngagementType}"
-    enum="SiteEngagementServiceEngagementType" expires_after="2025-06-21">
+    enum="SiteEngagementServiceEngagementType" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -561,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyDownloadedIconSizes" units="web apps"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -583,7 +585,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithEmptyIconFile" units="web apps"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -604,7 +606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithGeneratedIconFlag" units="web apps"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -630,7 +632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Icon.AppsWithMissingIconFile" units="web apps"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -758,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.IconDownloader.Result"
-    enum="WebAppIconDownloaderResult" expires_after="2024-08-04">
+    enum="WebAppIconDownloaderResult" expires_after="2025-08-04">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -770,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2024-09-15">
+    expires_after="2025-09-15">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -780,18 +782,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Webapp.Install.FaviconSize" units="pixels"
-    expires_after="2024-06-01">
-  <owner>eirage@chromium.org</owner>
-  <owner>src/chrome/android/webapk/OWNERS</owner>
-  <summary>
-    When PWA installable check is trying to download the favicon, records the
-    selected favicon size (concretely the width) in pixel.
-  </summary>
-</histogram>
-
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>alancutter@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -802,9 +794,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
-    expires_after="2025-06-21">
-  <owner>alancutter@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the mechanism and source from which a web app installation was
@@ -813,7 +806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Result" enum="BooleanSuccess"
-    expires_after="2024-12-01">
+    expires_after="2025-12-01">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -826,7 +819,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Source.Failure" enum="WebappInstallSource"
-    expires_after="2025-06-21">
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -836,7 +831,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.Source.Success" enum="WebappInstallSource"
-    expires_after="2025-06-21">
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -897,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.ByUserInMultipleProfiles" units="count"
-    expires_after="2024-09-10">
+    expires_after="2025-09-10">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1137,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchSource" enum="LaunchSource"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1147,10 +1144,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Media.SystemMediaControls"
-    enum="WebAppSystemMediaControlsEvent" expires_after="2024-09-10">
+    enum="WebAppSystemMediaControlsEvent" expires_after="2025-09-10">
   <owner>dmurph@chromium.org</owner>
   <owner>stahon@microsoft.com</owner>
-  <owner>stemiel@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
   <summary>
     Records events when Progressive Web Apps (PWAs) play audio as well as when
     PWA specific SystemMediaControls are interacted with in the operating
@@ -1181,7 +1178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.MlInstall.InstallSource" enum="WebappInstallSource"
-    expires_after="2024-09-10">
+    expires_after="2025-09-10">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1672,7 +1669,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsAreHealthyInSession"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-12-08">
   <owner>brettw@chromium.org</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
@@ -1683,7 +1680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.SystemApps.IconsFixedOnReinstall" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-12-08">
   <owner>brettw@chromium.org</owner>
   <owner>cros-web-apps-team@google.com</owner>
   <summary>
@@ -1719,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.UninstallDialogAction"
-    enum="WebappUninstallDialogAction" expires_after="2024-12-08">
+    enum="WebappUninstallDialogAction" expires_after="2025-12-08">
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
@@ -1732,7 +1729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestUpdateResult"
-    enum="WebAppManifestUpdateResult" expires_after="2024-10-28">
+    enum="WebAppManifestUpdateResult" expires_after="2025-10-28">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

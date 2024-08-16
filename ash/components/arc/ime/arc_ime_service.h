@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/ime.mojom-forward.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env_observer.h"
@@ -111,6 +112,7 @@ class ArcImeService : public KeyedService,
       const ash::KeyboardStateDescriptor& state) override;
 
   // Overridden from ui::TextInputClient:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -222,6 +224,7 @@ class ArcImeService : public KeyedService,
   raw_ptr<aura::Window> focused_arc_window_ = nullptr;
 
   std::unique_ptr<KeyEventResultReceiver> receiver_;
+  base::WeakPtrFactory<ArcImeService> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

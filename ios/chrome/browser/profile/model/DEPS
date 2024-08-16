@@ -1,0 +1,4 @@
+include_rules = [
+  # TODO(crbug.com/358267438): Remove once forwarding headers are removed.
+  "+ios/chrome/browser/browser_state/model"
+]

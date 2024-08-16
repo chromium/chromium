@@ -139,6 +139,14 @@
       Symbol: "kPseudoMediaControlsSegmentedTrack",
     },
     {
+      name: "-internal-select-autofill-preview",
+      Symbol: "kSelectAutofillPreview",
+    },
+    {
+      name: "-internal-select-autofill-preview-text",
+      Symbol: "kSelectAutofillPreviewText",
+    },
+    {
       name: "-webkit-calendar-picker-indicator",
       Symbol: "kPseudoCalendarPickerIndicator",
     },

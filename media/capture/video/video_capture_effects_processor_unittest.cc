@@ -42,7 +42,7 @@ size_t GetBitsPerPixel(VideoPixelFormat format) {
     case VideoPixelFormat::PIXEL_FORMAT_NV12:
       return 12;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

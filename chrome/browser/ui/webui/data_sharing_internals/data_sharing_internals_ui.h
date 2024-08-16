@@ -6,21 +6,19 @@
 #define CHROME_BROWSER_UI_WEBUI_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_UI_H_
 
 #include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals.mojom.h"
+#include "components/data_sharing/public/protocol/group_data.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class DataSharingInternalsPageHandlerImpl;
+class DataSharingInternalsUI;
 
-class DataSharingInternalsUIConfig : public content::WebUIConfig {
+class DataSharingInternalsUIConfig
+    : public content::DefaultWebUIConfig<DataSharingInternalsUI> {
  public:
   DataSharingInternalsUIConfig();
   ~DataSharingInternalsUIConfig() override;
-
-  // content::WebUIConfig:
-  std::unique_ptr<content::WebUIController> CreateWebUIController(
-      content::WebUI* web_ui,
-      const GURL& url) override;
 };
 
 // The WebUI controller for chrome://data-sharing-internals.

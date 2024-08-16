@@ -1,0 +1,7 @@
+Tests that DOM.pushNodeByPathToFrontend() works, including inside iframes
+localName for body: body
+localName for p: p
+localName for iframe: iframe
+localName for div inside iframe: div
+attributes for div inside iframe: framed,1
+

@@ -14,7 +14,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/model/follow_action_state.h"
@@ -40,6 +39,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -142,7 +142,6 @@ using base::UserMetricsAction;
 @synthesize mediator = _mediator;
 @synthesize presenter = _presenter;
 @synthesize UIUpdater = _UIUpdater;
-@synthesize bubblePresenter = _bubblePresenter;
 @synthesize viewController = _viewController;
 @synthesize baseViewController = _baseViewController;
 
@@ -230,11 +229,6 @@ using base::UserMetricsAction;
 
   self.viewController = tableViewController;
 
-  BOOL triggerNewIncognitoTabTip =
-      self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction;
-  self.bubblePresenter.incognitoTabTipBubblePresenter.triggerFollowUpAction =
-      NO;
-
   OverlayPresenter* overlayPresenter = OverlayPresenter::FromBrowser(
       self.browser, OverlayModality::kWebContentArea);
   self.contentBlockerMediator = [[BrowserContainerMediator alloc]
@@ -285,6 +279,7 @@ using base::UserMetricsAction;
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =
         HandlerForProtocol(dispatcher, FindInPageCommands);
+    mediator.helpHandler = HandlerForProtocol(dispatcher, HelpCommands);
     mediator.overflowMenuCustomizationHandler =
         HandlerForProtocol(dispatcher, OverflowMenuCustomizationCommands);
     mediator.pageInfoHandler = HandlerForProtocol(dispatcher, PageInfoCommands);
@@ -405,7 +400,6 @@ using base::UserMetricsAction;
                                     ->IsOffTheRecord()
                readingListModel:ReadingListModelFactory::GetForBrowserState(
                                     self.browser->GetBrowserState())
-      triggerNewIncognitoTabTip:triggerNewIncognitoTabTip
          browserPolicyConnector:GetApplicationContext()
                                     ->GetBrowserPolicyConnector()];
   self.mediator.engagementTracker =
@@ -449,6 +443,8 @@ using base::UserMetricsAction;
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.actionHandler.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
+  self.actionHandler.helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   self.actionHandler.delegate = self.mediator;
   self.actionHandler.navigationAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);

@@ -251,7 +251,7 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return std::string_view();
   };
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace media

@@ -118,6 +118,7 @@ static_library("android") {
     "//components/autofill/content/browser",
     "//components/password_manager/core/browser/form_parsing",
     "//components/prefs",
+    "//components/security_state/content",
     "//components/user_prefs",
     "//components/webauthn/android:android",
     "//content/public/browser",

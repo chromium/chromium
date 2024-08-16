@@ -16,7 +16,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
 using bookmarks::BookmarkModel;
@@ -49,9 +49,9 @@ PowerBookmarkService::~PowerBookmarkService() {
   backend_task_runner_->DeleteSoon(FROM_HERE, std::move(backend_));
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PowerBookmarkService::CreateSyncControllerDelegate() {
-  return std::make_unique<syncer::ProxyModelTypeControllerDelegate>(
+  return std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
       backend_task_runner_,
       base::BindRepeating(&PowerBookmarkBackend::GetSyncControllerDelegate,
                           base::Unretained(backend_.get())));

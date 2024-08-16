@@ -63,19 +63,6 @@ bool CookieInclusionStatus::operator!=(
   return !operator==(other);
 }
 
-bool CookieInclusionStatus::operator<(
-    const CookieInclusionStatus& other) const {
-  static_assert(NUM_EXCLUSION_REASONS <= sizeof(unsigned long) * CHAR_BIT,
-                "use .ullong() instead");
-  static_assert(NUM_WARNING_REASONS <= sizeof(unsigned long) * CHAR_BIT,
-                "use .ullong() instead");
-  return std::make_tuple(exclusion_reasons_.to_ulong(),
-                         warning_reasons_.to_ulong(), exemption_reason_) <
-         std::make_tuple(other.exclusion_reasons_.to_ulong(),
-                         other.warning_reasons_.to_ulong(),
-                         other.exemption_reason_);
-}
-
 bool CookieInclusionStatus::IsInclude() const {
   return exclusion_reasons_.none();
 }
@@ -383,7 +370,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
       reason = "ExemptionScheme";
       break;
     case ExemptionReason::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   };
   base::StrAppend(&out, {reason});
 

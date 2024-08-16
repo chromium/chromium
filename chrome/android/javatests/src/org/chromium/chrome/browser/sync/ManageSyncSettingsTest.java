@@ -110,8 +110,8 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
-import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -991,24 +991,20 @@ public class ManageSyncSettingsTest {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
                                     new HashMap<>();
                             localDataDescription.put(
-                                    ModelType.PASSWORDS,
+                                    DataType.PASSWORDS,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
                             localDataDescription.put(
-                                    ModelType.BOOKMARKS,
+                                    DataType.BOOKMARKS,
                                     new LocalDataDescription(0, new String[] {}, 0));
                             localDataDescription.put(
-                                    ModelType.READING_LIST,
+                                    DataType.READING_LIST,
                                     new LocalDataDescription(0, new String[] {}, 0));
                             args.getArgument(1, Callback.class).onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)
                 .getLocalDataDescriptions(
-                        eq(
-                                Set.of(
-                                        ModelType.BOOKMARKS,
-                                        ModelType.PASSWORDS,
-                                        ModelType.READING_LIST)),
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1039,24 +1035,20 @@ public class ManageSyncSettingsTest {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
                                     new HashMap<>();
                             localDataDescription.put(
-                                    ModelType.PASSWORDS,
+                                    DataType.PASSWORDS,
                                     new LocalDataDescription(0, new String[] {}, 0));
                             localDataDescription.put(
-                                    ModelType.BOOKMARKS,
+                                    DataType.BOOKMARKS,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
                             localDataDescription.put(
-                                    ModelType.READING_LIST,
+                                    DataType.READING_LIST,
                                     new LocalDataDescription(0, new String[] {}, 0));
                             args.getArgument(1, Callback.class).onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)
                 .getLocalDataDescriptions(
-                        eq(
-                                Set.of(
-                                        ModelType.BOOKMARKS,
-                                        ModelType.PASSWORDS,
-                                        ModelType.READING_LIST)),
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -1087,24 +1079,20 @@ public class ManageSyncSettingsTest {
                             HashMap<Integer, LocalDataDescription> localDataDescription =
                                     new HashMap<>();
                             localDataDescription.put(
-                                    ModelType.PASSWORDS,
+                                    DataType.PASSWORDS,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
                             localDataDescription.put(
-                                    ModelType.BOOKMARKS,
+                                    DataType.BOOKMARKS,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
                             localDataDescription.put(
-                                    ModelType.READING_LIST,
+                                    DataType.READING_LIST,
                                     new LocalDataDescription(1, new String[] {"example.com"}, 1));
                             args.getArgument(1, Callback.class).onResult(localDataDescription);
                             return null;
                         })
                 .when(mSyncService)
                 .getLocalDataDescriptions(
-                        eq(
-                                Set.of(
-                                        ModelType.BOOKMARKS,
-                                        ModelType.PASSWORDS,
-                                        ModelType.READING_LIST)),
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
                         any(Callback.class));
 
         mSyncTestRule.setUpAccountAndSignInForTesting();

@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/assistant/assistant.gni")
 
 assert(is_chromeos_ash)
 
@@ -20,8 +22,6 @@ static_library("ash") {
     "arc_vm_data_migration_confirmation_dialog.h",
     "ash_shell_init.cc",
     "ash_shell_init.h",
-    "ash_util.cc",
-    "ash_util.h",
     "ash_web_view_factory_impl.cc",
     "ash_web_view_factory_impl.h",
     "ash_web_view_impl.cc",
@@ -94,12 +94,6 @@ static_library("ash") {
     "tab_cluster_ui_client.h",
     "test_ime_controller.cc",
     "test_ime_controller.h",
-    "thumbnail_loader.cc",
-    "thumbnail_loader.h",
-    "touch_selection_menu_chromeos.cc",
-    "touch_selection_menu_chromeos.h",
-    "touch_selection_menu_runner_chromeos.cc",
-    "touch_selection_menu_runner_chromeos.h",
     "vpn_list_forwarder.cc",
     "vpn_list_forwarder.h",
     "wallpaper_controller_client_impl.cc",
@@ -143,11 +137,13 @@ static_library("ash") {
     "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/arc/wallpaper",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/eol",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/file_manager",
@@ -206,7 +202,6 @@ static_library("ash") {
     "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/ash/accessibility",
-    "//chrome/browser/ui/ash/ambient",
     "//chrome/browser/ui/ash/annotator",
     "//chrome/browser/ui/ash/boca",
     "//chrome/browser/ui/ash/capture_mode",
@@ -217,7 +212,6 @@ static_library("ash") {
     "//chrome/browser/ui/ash/global_media_controls",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/ash/keyboard",
-    "//chrome/browser/ui/ash/lobster",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/network",
     "//chrome/browser/ui/ash/picker",
@@ -227,6 +221,7 @@ static_library("ash") {
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/ash/user_education",
+    "//chrome/browser/ui/chromeos",
     "//chrome/browser/ui/chromeos/read_write_cards:read_write_cards_manager",
     "//chrome/browser/ui/quick_answers",
     "//chrome/browser/ui/webui/ash",
@@ -235,12 +230,15 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/browser/ui/webui/ash/set_time_dialog",
     "//chrome/browser/ui/webui/ash/settings",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
     "//chrome/browser/web_applications",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
@@ -296,6 +294,7 @@ static_library("ash") {
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/print_spooler",
     "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/eol",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lock_screen_apps",
@@ -330,6 +329,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/assistant_optin",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login/testapi",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice",
   ]
 }
 
@@ -337,8 +337,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "ash_test_util.cc",
-    "ash_test_util.h",
     "clipboard_history_test_util.cc",
     "clipboard_history_test_util.h",
     "mock_activation_change_observer.cc",
@@ -355,21 +353,13 @@ static_library("test_support") {
 
   deps = [
     ":ash",
-    "//ash",
     "//ash/public/cpp",
-    "//ash/public/mojom",
+    "//ash/webui/common/mojom:sea_pen",
     "//base",
-    "//base/test:test_support",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/app_service:constants",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/ash/system_web_apps",
+    "//components/user_manager",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/events:test_support",
+    "//ui/wm/public",
   ]
 }
 
@@ -401,7 +391,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/login/users:test_support",
@@ -411,6 +400,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/policy:onc",
     "//chrome/browser/ui/ash/assistant",
+    "//chrome/browser/ui/chromeos",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",
@@ -430,7 +420,6 @@ source_set("unit_tests") {
 
     # Gather unit tests from subdirectories.
     "//chrome/browser/ui/ash/accessibility:unit_tests",
-    "//chrome/browser/ui/ash/ambient:unit_tests",
     "//chrome/browser/ui/ash/annotator:unit_tests",
     "//chrome/browser/ui/ash/assistant:unit_tests",
     "//chrome/browser/ui/ash/birch:unit_tests",
@@ -468,11 +457,9 @@ source_set("browser_tests") {
     "float_controller_browsertest.cc",
     "google_one_offer_iph_tab_helper_browsertest.cc",
     "screen_orientation_delegate_chromeos_browsertest.cc",
-    "shelf_browsertest.cc",
     "snap_group_browsertest.cc",
     "system_tray_client_impl_browsertest.cc",
     "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
-    "thumbnail_loader_browsertest.cc",
     "volume_controller_browsertest.cc",
   ]
 
@@ -484,7 +471,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/lock",
@@ -509,6 +495,7 @@ source_set("browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
     "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
     "//chromeos/ash/components/settings",
     "//components/account_id",
@@ -530,7 +517,6 @@ source_set("browser_tests") {
     "//ui/events:test_support",
 
     # Gather browser tests from subdirectories.
-    "//chrome/browser/ui/ash/ambient:browser_tests",
     "//chrome/browser/ui/ash/annotator:browser_tests",
     "//chrome/browser/ui/ash/app_list:browser_tests",
     "//chrome/browser/ui/ash/birch:browser_tests",
@@ -550,18 +536,21 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/sharesheet:browser_tests",
     "//chrome/browser/ui/ash/shelf:browser_tests",
     "//chrome/browser/ui/ash/shelf/app_service:browser_tests",
+    "//chrome/browser/ui/ash/thumbnail_loader:browser_tests",
     "//chrome/browser/ui/ash/user_education:browser_tests",
     "//chrome/browser/ui/ash/user_education/views:browser_tests",
   ]
+
+  if (enable_assistant_integration_tests) {
+    deps += [ "//chrome/browser/ui/ash/assistant:browser_tests" ]
+  }
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [ "quick_settings_integration_test.cc" ]
+
+    sources_metadata = [ "quick_settings_integration_test.yaml" ]
 
     deps = [
       ":ash",

@@ -7,7 +7,6 @@ package org.chromium.base.test.transit;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.any;
@@ -26,30 +25,45 @@ import org.hamcrest.StringDescription;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.RawFailureHandler;
+import org.chromium.base.test.util.ViewPrinter;
+
+import java.util.ArrayList;
 
 /** {@link Condition}s related to Android {@link View}s. */
 public class ViewConditions {
+
+    private static final ViewPrinter.Options PRINT_SHALLOW_WITH_BOUNDS =
+            new ViewPrinter.Options()
+                    .setPrintChildren(false)
+                    .setPrintNonVisibleViews(true)
+                    .setPrintViewBounds(true);
+    private static final ViewPrinter.Options PRINT_SHALLOW =
+            new ViewPrinter.Options().setPrintChildren(false).setPrintNonVisibleViews(true);
+
     /** Fulfilled when a single matching View exists and is displayed. */
     public static class DisplayedCondition extends ConditionWithResult<View> {
         private final Matcher<View> mMatcher;
         private final Options mOptions;
         private View mViewMatched;
 
-        private static final String VERBOSE_DESCRIPTION =
-                "(view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() covers at"
-                        + " least <90> percent of the view's area)";
-        private static final String SUCCINCT_DESCRIPTION = "(getGlobalVisibleRect() > 90%)";
-
         public DisplayedCondition(Matcher<View> matcher, Options options) {
             super(/* isRunOnUiThread= */ false);
-            mMatcher = allOf(matcher, isDisplayingAtLeast(options.mDisplayedPercentageRequired));
+            mMatcher = matcher /*, withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)*/;
             mOptions = options;
         }
 
         @Override
         public String buildDescription() {
-            return "View: "
-                    + createMatcherDescription(mMatcher, VERBOSE_DESCRIPTION, SUCCINCT_DESCRIPTION);
+            StringBuilder description = new StringBuilder();
+            description
+                    .append("View: ")
+                    .append(StringDescription.toString(mMatcher))
+                    .append(" (>= ")
+                    .append(mOptions.mDisplayedPercentageRequired)
+                    .append("% displayed, ")
+                    .append(mOptions.mExpectEnabled ? "enabled" : "disabled")
+                    .append(")");
+            return description.toString();
         }
 
         @Override
@@ -60,7 +74,7 @@ public class ViewConditions {
 
             ViewInteraction viewInteraction =
                     onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
-            String[] message = new String[1];
+            ArrayList<String> messages = new ArrayList<>();
             try {
                 viewInteraction.perform(
                         new ViewAction() {
@@ -71,42 +85,86 @@ public class ViewConditions {
 
                             @Override
                             public String getDescription() {
-                                return "check exists and consistent";
+                                return "check existence, visibility and displayed percentage";
                             }
 
                             @Override
                             public void perform(UiController uiController, View view) {
-                                if (mViewMatched != null && mViewMatched != view) {
-                                    message[0] =
-                                            String.format(
-                                                    "Matched a different view, was %s, now %s",
-                                                    mViewMatched, view);
-                                }
                                 mViewMatched = view;
                             }
                         });
-                if (mOptions.mExpectEnabled) {
-                    if (!mViewMatched.isEnabled()) {
-                        return notFulfilled("View displayed but disabled").withoutResult();
-                    }
-                } else { // Expected a displayed but disabled View.
-                    if (mViewMatched.isEnabled()) {
-                        return notFulfilled("View displayed but enabled").withoutResult();
-                    }
-                }
-                return fulfilled(message[0]).withResult(mViewMatched);
             } catch (NoMatchingViewException
                     | NoMatchingRootException
                     | AmbiguousViewMatcherException e) {
-                if (mViewMatched != null) {
-                    throw new IllegalStateException(
-                            String.format(
-                                    "Had matched a view (%s), but now got %s",
-                                    mViewMatched, e.getClass().getSimpleName()),
-                            e);
-                }
                 return notFulfilled(e.getClass().getSimpleName()).withoutResult();
             }
+
+            // Assume found a View, or NoMatchingViewException would be thrown.
+            boolean fulfilled = true;
+            messages.add(ViewPrinter.describeView(mViewMatched, PRINT_SHALLOW_WITH_BOUNDS));
+
+            View view = mViewMatched;
+            int visibility = view.getVisibility();
+            if (visibility != View.VISIBLE) {
+                fulfilled = false;
+                messages.add(String.format("visibility = %s", visibilityIntToString(visibility)));
+            } else {
+                while (view.getParent() instanceof View) {
+                    view = (View) view.getParent();
+                    visibility = view.getVisibility();
+                    if (visibility != View.VISIBLE) {
+                        fulfilled = false;
+                        messages.add(
+                                String.format(
+                                        "visibility of ancestor [%s] = %s",
+                                        ViewPrinter.describeView(view, PRINT_SHALLOW),
+                                        visibilityIntToString(visibility)));
+                        break;
+                    }
+                }
+            }
+
+            // Since perform() above did not throw an Exception, mViewMatched is non-null.
+            if (mOptions.mDisplayedPercentageRequired > 0) {
+                DisplayedPortion portion = DisplayedPortion.ofView(mViewMatched);
+                if (portion.mPercentage < mOptions.mDisplayedPercentageRequired) {
+                    fulfilled = false;
+                    messages.add(
+                            String.format(
+                                    "%d%% displayed, expected >= %d%%",
+                                    portion.mPercentage, mOptions.mDisplayedPercentageRequired));
+                    messages.add("% displayed calculation: " + portion);
+                } else {
+                    messages.add(String.format("%d%% displayed", portion.mPercentage));
+                }
+            }
+            if (mOptions.mExpectEnabled) {
+                if (!mViewMatched.isEnabled()) {
+                    fulfilled = false;
+                    messages.add("disabled");
+                }
+            } else { // Expected a displayed but disabled View.
+                if (mViewMatched.isEnabled()) {
+                    fulfilled = false;
+                    messages.add("enabled");
+                }
+            }
+
+            String message = String.join("; ", messages);
+            if (fulfilled) {
+                return fulfilled(message).withResult(mViewMatched);
+            } else {
+                return notFulfilled(message).withoutResult();
+            }
+        }
+
+        private static String visibilityIntToString(int visibility) {
+            return switch (visibility) {
+                case View.VISIBLE -> "VISIBLE";
+                case View.INVISIBLE -> "INVISIBLE";
+                case View.GONE -> "GONE";
+                default -> "invalid";
+            };
         }
 
         /**
@@ -150,7 +208,7 @@ public class ViewConditions {
         private static final String VERBOSE_DESCRIPTION =
                 "(view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() to return"
                         + " non-empty rectangle)";
-        private static final String SUCCINCT_DESCRIPTION = "(getGlobalVisibleRect() > 0%)";
+        private static final String SUCCINCT_DESCRIPTION = "isDisplayed()";
 
         public NotDisplayedAnymoreCondition(Matcher<View> matcher) {
             super();
@@ -160,7 +218,8 @@ public class ViewConditions {
         @Override
         public String buildDescription() {
             return "No more view: "
-                    + createMatcherDescription(mMatcher, VERBOSE_DESCRIPTION, SUCCINCT_DESCRIPTION);
+                    + StringDescription.toString(mMatcher)
+                            .replace(VERBOSE_DESCRIPTION, SUCCINCT_DESCRIPTION);
         }
 
         @Override
@@ -178,14 +237,5 @@ public class ViewConditions {
                 return notFulfilled();
             }
         }
-    }
-
-    /** Returns a less verbose view matcher description. */
-    private static String createMatcherDescription(
-            Matcher<View> matcher, String verboseString, String succinctString) {
-        StringDescription d = new StringDescription();
-        matcher.describeTo(d);
-        String description = d.toString();
-        return description.replace(verboseString, succinctString);
     }
 }

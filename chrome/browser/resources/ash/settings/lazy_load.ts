@@ -225,7 +225,7 @@ export {SettingsMultideviceTaskContinuationItemElement} from './multidevice_page
 export {SettingsMultideviceWifiSyncDisabledLinkElement} from './multidevice_page/multidevice_wifi_sync_disabled_link.js';
 export {NearbyShareReceiveDialogElement} from './nearby_share_page/nearby_share_receive_dialog.js';
 export {SettingsNearbyShareSubpageElement} from './nearby_share_page/nearby_share_subpage.js';
-export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
+export {NotificationColor, SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
 export {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './os_a11y_page/audio_and_captions_page_browser_proxy.js';
 export {SettingsAxAnnotationsSectionElement} from './os_a11y_page/ax_annotations_section.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';

@@ -97,8 +97,8 @@ class CORE_EXPORT LayoutAlgorithm {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation() ||
-                 IsBreakInside(params.break_token))) {
+    if (params.space.HasBlockFragmentation() ||
+        IsBreakInside(params.break_token)) [[unlikely]] {
       SetupFragmentBuilderForFragmentation(
           params.space, params.node, params.break_token, &container_builder_);
     }
@@ -128,6 +128,7 @@ class CORE_EXPORT LayoutAlgorithm {
   }
 
   const BoxStrut& Borders() const { return container_builder_.Borders(); }
+  const BoxStrut& Scrollbar() const { return container_builder_.Scrollbar(); }
   const BoxStrut& Padding() const { return container_builder_.Padding(); }
   const BoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();

@@ -321,6 +321,7 @@ ScrollView::ScrollView(ScrollWithLayers scroll_with_layers)
   GetViewAccessibility().SetScrollXMax(horiz_sb_->GetMaxPosition());
   GetViewAccessibility().SetScrollYMin(vert_sb_->GetMinPosition());
   GetViewAccessibility().SetScrollYMax(vert_sb_->GetMaxPosition());
+  GetViewAccessibility().SetRole(ax::mojom::Role::kScrollView);
 
   // Just make sure the more_content indicators aren't visible for now. They'll
   // be added as child controls and appropriately made visible depending on
@@ -559,7 +560,7 @@ View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
       more_content_bottom_thickness_ = thickness;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   UpdateOverflowIndicatorVisibility(CurrentOffset());
@@ -957,15 +958,6 @@ void ScrollView::OnThemeChanged() {
   View::OnThemeChanged();
   UpdateBorder();
   UpdateBackground();
-}
-
-void ScrollView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  if (!contents_) {
-    return;
-  }
-
-  node_data->role = ax::mojom::Role::kScrollView;
 }
 
 bool ScrollView::HandleAccessibleAction(const ui::AXActionData& action_data) {

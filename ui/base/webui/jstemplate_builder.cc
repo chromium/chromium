@@ -45,10 +45,7 @@ void AppendLoadTimeData(std::string* output) {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);
 
-  if (load_time_data_src.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Unable to get loadTimeData src";
-    return;
-  }
+  CHECK(!load_time_data_src.empty()) << "Unable to get loadTimeData src";
 
   output->append("<script>");
   output->append(load_time_data_src);

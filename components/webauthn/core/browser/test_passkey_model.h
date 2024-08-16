@@ -22,8 +22,8 @@ class TestPasskeyModel : public PasskeyModel {
   // PasskeyModel:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetModelTypeControllerDelegate() override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetDataTypeControllerDelegate() override;
   bool IsReady() const override;
   bool IsEmpty() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;

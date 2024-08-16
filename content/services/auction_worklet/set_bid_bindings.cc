@@ -474,8 +474,9 @@ SetBidBindings::SemanticCheckBid(
   if (!idl.ad.has_value()) {
     ad_json = "null";
   } else {
-    AuctionV8Helper::Result json_result =
-        v8_helper_->ExtractJson(context, *idl.ad, &ad_json);
+    // Don't need a `script_timeout` here since one is already active.
+    AuctionV8Helper::Result json_result = v8_helper_->ExtractJson(
+        context, *idl.ad, /*script_timeout=*/nullptr, &ad_json);
     if (json_result == AuctionV8Helper::Result::kFailure) {
       return base::unexpected(IdlConvert::Status::MakeErrorMessage(
           base::StrCat({error_prefix, "bid has invalid ad value."})));

@@ -63,11 +63,11 @@ class PinnedToolbarActionsContainer
       const ui::DropTargetEvent& event) override;
 
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAdded(const actions::ActionId& id) override;
-  void OnActionRemoved(const actions::ActionId& id) override;
-  void OnActionMoved(const actions::ActionId& id,
-                     int from_index,
-                     int to_index) override;
+  void OnActionAddedLocally(const actions::ActionId& id) override;
+  void OnActionRemovedLocally(const actions::ActionId& id) override;
+  void OnActionMovedLocally(const actions::ActionId& id,
+                            int from_index,
+                            int to_index) override {}
   void OnActionsChanged() override;
 
   // views::DragController:

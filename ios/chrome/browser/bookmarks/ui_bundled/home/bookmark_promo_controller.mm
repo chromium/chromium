@@ -68,7 +68,7 @@
              accountSettingsPresenter:accountSettingsPresenter];
     _signinPromoViewMediator.consumer = self;
     _signinPromoViewMediator.dataTypeToWaitForInitialSync =
-        syncer::ModelType::BOOKMARKS;
+        syncer::DataType::BOOKMARKS;
     [self updateShouldShowSigninPromo];
   }
   return self;

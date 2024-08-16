@@ -195,7 +195,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                      feature_engagement::TrackerFactory::
                                          GetForBrowserState(
                                              self.browserState))];
-  self.omniboxCoordinator.bubblePresenter = self.bubblePresenter;
   self.omniboxCoordinator.focusDelegate = self.delegate;
 
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
@@ -445,7 +444,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   StoreURLInPasteboard(self.webState->GetVisibleURL());
   id<HelpCommands> helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
-  [helpHandler presentShareButtonHelpBubbleIfEligible];
+  [helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
 }
 
 - (void)locationBarRequestScribbleTargetFocus {

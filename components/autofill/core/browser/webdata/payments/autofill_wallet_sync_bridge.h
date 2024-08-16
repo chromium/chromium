@@ -14,10 +14,10 @@
 #include "base/supports_user_data.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 
 namespace autofill {
 
@@ -33,7 +33,7 @@ struct PaymentsCustomerData;
 // Sync bridge responsible for propagating local changes to the processor and
 // applying remote changes to the local database.
 class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
-                                 public syncer::ModelTypeSyncBridge {
+                                 public syncer::DataTypeSyncBridge {
  public:
   // Factory method that hides dealing with change_processor and also stores the
   // created bridge within |web_data_service|. This method should only be
@@ -43,11 +43,11 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
 
-  static syncer::ModelTypeSyncBridge* FromWebDataService(
+  static syncer::DataTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
   explicit AutofillWalletSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
 
   AutofillWalletSyncBridge(const AutofillWalletSyncBridge&) = delete;
@@ -55,7 +55,7 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
 
   ~AutofillWalletSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(

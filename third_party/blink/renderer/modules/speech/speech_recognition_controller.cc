@@ -86,10 +86,25 @@ void SpeechRecognitionController::Start(
   msg_params->max_hypotheses = max_alternatives;
   msg_params->continuous = continuous;
   msg_params->interim_results = interim_results;
+  msg_params->on_device = on_device;
+  msg_params->allow_cloud_fallback = allow_cloud_fallback;
   msg_params->client = std::move(session_client);
   msg_params->session_receiver = std::move(session_receiver);
 
+  if (audio_forwarder.is_valid()) {
+    msg_params->audio_forwarder = std::move(audio_forwarder);
+    msg_params->channel_count = audio_parameters.value().channels();
+    msg_params->sample_rate = audio_parameters.value().sample_rate();
+  }
+
   GetSpeechRecognizer()->Start(std::move(msg_params));
+}
+
+void SpeechRecognitionController::OnDeviceWebSpeechAvailable(
+    String language,
+    base::OnceCallback<void(bool)> callback) {
+  GetSpeechRecognizer()->OnDeviceWebSpeechAvailable(language,
+                                                    std::move(callback));
 }
 
 void SpeechRecognitionController::Trace(Visitor* visitor) const {

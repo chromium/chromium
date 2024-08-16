@@ -150,3 +150,13 @@ def CompactLargeAliasesIntoSharedSymbols(raw_symbols, max_count):
   num_removed = src_cursor - dst_cursor
   logging.debug('Converted %d aliases into %d shared-path symbols', num_removed,
                 num_shared_symbols)
+
+
+def RemoveAssetSuffix(path):
+  """Undo asset path suffixing. https://crbug.com/357131361"""
+  # E.g.: "assets/foo.pak+org.foo.bar+"
+  if path.endswith('+'):
+    suffix_idx = path.rfind('+', 0, len(path) - 1)
+    if suffix_idx != -1:
+      path = path[:suffix_idx]
+  return path

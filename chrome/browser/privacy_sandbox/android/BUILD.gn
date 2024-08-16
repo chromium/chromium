@@ -6,10 +6,7 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
 }
 
 android_library("java") {
@@ -43,7 +40,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsLearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsUtils.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionBridge.java",
   ]
   deps = [
     ":java_resources",
@@ -94,7 +90,6 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakeTrackingProtectionBridge.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FledgeFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridgeTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogTest.java",
@@ -102,7 +97,6 @@ android_library("javatests") {
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxTestUtils.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragmentTest.java",
-    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeTest.java",
   ]
   deps = [
     ":java",
@@ -215,8 +209,5 @@ android_resources("java_resources") {
 }
 
 java_cpp_enum("privacy_sandbox_enums") {
-  sources = [
-    "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
-    "//components/privacy_sandbox/tracking_protection_onboarding.h",
-  ]
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
 }

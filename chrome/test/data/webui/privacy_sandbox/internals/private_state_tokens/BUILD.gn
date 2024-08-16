@@ -9,9 +9,11 @@ assert(!is_android)
 build_webui_tests("build") {
   files = [
     "app_test.ts",
-    "container_test.ts",
+    "list_container_test.ts",
     "list_item_test.ts",
+    "metadata_test.ts",
     "sidebar_test.ts",
+    "test_api_proxy.ts",
     "test_data.ts",
     "toolbar_test.ts",
   ]

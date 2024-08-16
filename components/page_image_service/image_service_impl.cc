@@ -178,10 +178,10 @@ ImageServiceImpl::ImageServiceImpl(
       remote_suggestions_service_(remote_suggestions_service),
       history_consent_helper_(std::make_unique<ImageServiceConsentHelper>(
           sync_service,
-          syncer::ModelType::HISTORY_DELETE_DIRECTIVES)),
+          syncer::DataType::HISTORY_DELETE_DIRECTIVES)),
       bookmarks_consent_helper_(std::make_unique<ImageServiceConsentHelper>(
           sync_service,
-          syncer::ModelType::BOOKMARKS)),
+          syncer::DataType::BOOKMARKS)),
       autocomplete_scheme_classifier_(
           std::move(autocomplete_scheme_classifier)) {
   if (opt_guide && base::FeatureList::IsEnabled(

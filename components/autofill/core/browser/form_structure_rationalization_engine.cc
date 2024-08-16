@@ -190,7 +190,7 @@ std::optional<size_t> FindFieldMeetingCondition(
       case FieldLocation::kLastClassifiedPredecessor:
         return -1;
       case FieldLocation::kTriggerField:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case FieldLocation::kNextClassifiedSuccessor:
       case FieldLocation::kSuccessor:
         return 1;

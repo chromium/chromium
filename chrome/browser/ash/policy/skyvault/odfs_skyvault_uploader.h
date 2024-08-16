@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -62,9 +64,8 @@ class OdfsSkyvaultUploader
   //
   // Upon completion, invokes `upload_callback` with the following:
   // * `MigrationUploadError error` - Indicates the type of error encountered
-  // during the upload, if any.
-  //                                  See the `MigrationUploadError` enum for
-  //                                  possible values.
+  // during the upload, if any. See the `MigrationUploadError` enum for possible
+  // values.
   // * `storage::FileSystemURL url` - The URL of the uploaded file on OneDrive.
   // This will be empty if the upload failed.
   //
@@ -94,16 +95,27 @@ class OdfsSkyvaultUploader
   // Should cancel the whole upload, if possible.
   void Cancel();
 
+ protected:
+  OdfsSkyvaultUploader(
+      Profile* profile,
+      int64_t id,
+      const storage::FileSystemURL& file_system_url,
+      FileType file_type,
+      base::RepeatingCallback<void(int64_t)> progress_callback);
+  ~OdfsSkyvaultUploader() override;
+
+  // Returns the path to upload the file to.
+  virtual base::FilePath GetDestinationFolderPath(
+      file_system_provider::ProvidedFileSystemInterface* file_system);
+
+  // Requests the sign in to OneDrive.
+  virtual void RequestSignIn(
+      base::OnceCallback<void(base::File::Error)> on_sign_in_cb);
+
+  raw_ptr<Profile> profile_;
+
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
-
-  OdfsSkyvaultUploader(Profile* profile,
-                       int64_t id,
-                       const storage::FileSystemURL& file_system_url,
-                       FileType file_type,
-                       base::RepeatingCallback<void(int64_t)> progress_callback,
-                       std::optional<base::FilePath> target_path);
-  ~OdfsSkyvaultUploader() override;
 
   // Starts the upload flow.
   void Run(UploadDoneCallback upload_callback);
@@ -126,7 +138,6 @@ class OdfsSkyvaultUploader
   // Starts the IOTask to upload the file to OneDrive.
   void StartIOTask();
 
-  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   raw_ptr<::file_manager::io_task::IOTaskController> io_task_controller_;
 
@@ -139,9 +150,6 @@ class OdfsSkyvaultUploader
 
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
-
-  // Path to upload the file to. If empty, file is uploaded to the root folder.
-  std::optional<base::FilePath> target_path_;
 
   // The type of the file to be uploaded.
   FileType file_type_;
@@ -158,6 +166,39 @@ class OdfsSkyvaultUploader
   bool cancelled_ = false;
 
   base::WeakPtrFactory<OdfsSkyvaultUploader> weak_ptr_factory_{this};
+};
+
+// Similar to  OdfsSkyvaultUploader, but specialized for the migration flow:
+// - doesn't require the file to first be moved to tmp
+// - doesn't require progress updates
+// - uploads file to a dedicated folder on OneDrive, and not to root
+// - invokes different sign-in process, that ensures only one notification is
+// TODO(aidazolic): Fix the instantiation.
+class OdfsMigrationUploader : public OdfsSkyvaultUploader {
+ public:
+  static scoped_refptr<OdfsMigrationUploader> Create(
+      Profile* profile,
+      int64_t id,
+      const storage::FileSystemURL& file_system_url,
+      const base::FilePath& target_path);
+
+ private:
+  OdfsMigrationUploader(Profile* profile,
+                        int64_t id,
+                        const storage::FileSystemURL& file_system_url,
+                        const base::FilePath& target_path);
+  ~OdfsMigrationUploader() override;
+
+  // OdfsSkyvaultUploader:
+  base::FilePath GetDestinationFolderPath(
+      file_system_provider::ProvidedFileSystemInterface* file_system) override;
+  void RequestSignIn(
+      base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
+
+  // Path in OneDrive to upload the file to.
+  base::FilePath target_path_;
+
+  base::CallbackListSubscription subscription_;
 };
 
 }  // namespace ash::cloud_upload

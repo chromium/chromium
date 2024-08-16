@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/ui/ash/ash_util.h"
+#include "ash/utility/wm_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -43,7 +44,7 @@ ToastDialogView::ToastDialogView(const std::u16string& app_name,
                                  base::OnceClosure dismissed_callback) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetCloseCallback(std::move(dismissed_callback));
-  SetModalType(ui::MODAL_TYPE_NONE);
+  SetModalType(ui::mojom::ModalType::kNone);
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_LOCK_SCREEN_NOTE_APP_TOAST_DIALOG_TITLE, app_name));

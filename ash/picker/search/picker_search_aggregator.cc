@@ -4,8 +4,12 @@
 
 #include "ash/picker/search/picker_search_aggregator.h"
 
+#include <cstddef>
 #include <iterator>
+#include <set>
+#include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/picker/model/picker_search_results_section.h"
@@ -14,13 +18,16 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/functional/overloaded.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/url_matcher/url_matcher.h"
 
 namespace ash {
 
@@ -66,6 +73,104 @@ bool ShouldPromote(const PickerSearchResult& result) {
       result.data());
 }
 
+std::vector<GURL> LinksFromSearchResults(
+    base::span<const PickerSearchResult> results) {
+  std::vector<GURL> links;
+  for (const PickerSearchResult& link : results) {
+    auto* link_data =
+        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    if (link_data == nullptr) {
+      continue;
+    }
+    links.push_back(link_data->url);
+  }
+  return links;
+}
+
+std::vector<std::string> DriveIdsFromSearchResults(
+    base::span<const PickerSearchResult> results) {
+  std::vector<std::string> drive_ids;
+  for (const PickerSearchResult& file : results) {
+    auto* drive_data =
+        std::get_if<PickerSearchResult::DriveFileData>(&file.data());
+    if (drive_data == nullptr) {
+      continue;
+    }
+    if (!drive_data->id.has_value()) {
+      continue;
+    }
+    drive_ids.push_back(*drive_data->id);
+  }
+  return drive_ids;
+}
+
+void DeduplicateDriveLinksFromIds(std::vector<PickerSearchResult>& links,
+                                  std::vector<std::string> drive_ids) {
+  std::vector<base::MatcherStringPattern> patterns;
+  base::MatcherStringPattern::ID next_id = 0;
+  for (std::string& drive_id : drive_ids) {
+    patterns.emplace_back(std::move(drive_id), next_id);
+    ++next_id;
+  }
+
+  base::SubstringSetMatcher matcher;
+  bool success = matcher.Build(patterns);
+  // This may fail if the tree gets too many nodes (`kInvalidNodeId`, which is
+  // around ~8,400,000). Drive IDs are 44 characters long, so this would require
+  // having >190,000 Drive IDs in the worst case. This should never happen.
+  CHECK(success);
+
+  std::erase_if(links, [&matcher](const PickerSearchResult& link) {
+    auto* link_data =
+        std::get_if<PickerSearchResult::BrowsingHistoryData>(&link.data());
+    if (link_data == nullptr) {
+      return false;
+    }
+    return matcher.AnyMatch(link_data->url.spec());
+  });
+}
+
+void DeduplicateDriveFilesFromLinks(std::vector<PickerSearchResult>& files,
+                                    base::span<const GURL> links) {
+  std::vector<base::MatcherStringPattern> patterns;
+  for (size_t i = 0; i < files.size(); ++i) {
+    auto* drive_data =
+        std::get_if<PickerSearchResult::DriveFileData>(&files[i].data());
+    if (drive_data == nullptr) {
+      continue;
+    }
+    if (!drive_data->id.has_value()) {
+      continue;
+    }
+    // Pattern IDs need to be associated with the index of the file so we can
+    // remove them below.
+    patterns.emplace_back(*drive_data->id, i);
+  }
+
+  base::SubstringSetMatcher matcher;
+  bool success = matcher.Build(patterns);
+  CHECK(success);
+
+  std::set<size_t> matched_files;
+  for (const GURL& link : links) {
+    // Drive IDs are unlikely to overlap as they are random fixed-length
+    // strings, so the number of `matched_files` set insertions should be
+    // limited to `O(t)` for each call.
+    matcher.Match(link.spec(), &matched_files);
+  }
+  std::vector<PickerSearchResult*> results_to_remove;
+  for (size_t i : matched_files) {
+    results_to_remove.push_back(&files[i]);
+  }
+  base::flat_set<PickerSearchResult*> results_to_remove_set =
+      std::move(results_to_remove);
+
+  std::erase_if(files,
+                [&results_to_remove_set](const PickerSearchResult& file) {
+                  return results_to_remove_set.contains(&file);
+                });
+}
+
 }  // namespace
 
 PickerSearchAggregator::PickerSearchAggregator(
@@ -103,6 +208,28 @@ void PickerSearchAggregator::HandleSearchSourceResults(
   if (IsPostBurnIn()) {
     // Publish post-burn-in results and skip assignment.
     if (!results.empty()) {
+      if (section_type == PickerSectionType::kDriveFiles) {
+        if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
+          link_drive_dedupe_state_ = DriveIdsFromSearchResults(results);
+        } else if (auto* links = std::get_if<std::vector<GURL>>(
+                       &link_drive_dedupe_state_)) {
+          DeduplicateDriveFilesFromLinks(results, std::move(*links));
+          link_drive_dedupe_state_ = std::monostate();
+        } else {
+          NOTREACHED();
+        }
+      } else if (section_type == PickerSectionType::kLinks) {
+        if (std::holds_alternative<std::monostate>(link_drive_dedupe_state_)) {
+          link_drive_dedupe_state_ = LinksFromSearchResults(results);
+        } else if (auto* drive_ids = std::get_if<std::vector<std::string>>(
+                       &link_drive_dedupe_state_)) {
+          DeduplicateDriveLinksFromIds(results, std::move(*drive_ids));
+          link_drive_dedupe_state_ = std::monostate();
+        } else {
+          NOTREACHED();
+        }
+      }
+
       std::vector<PickerSearchResultsSection> sections;
       sections.emplace_back(section_type, std::move(results), has_more_results);
       current_callback_.Run(std::move(sections));
@@ -149,6 +276,26 @@ bool PickerSearchAggregator::IsPostBurnIn() const {
 }
 
 void PickerSearchAggregator::PublishBurnInResults() {
+  // This variable should only be set after burn-in.
+  CHECK(std::holds_alternative<std::monostate>(link_drive_dedupe_state_));
+
+  UnpublishedResults* link_results =
+      AccumulatedResultsForSection(PickerSectionType::kLinks);
+  UnpublishedResults* drive_results =
+      AccumulatedResultsForSection(PickerSectionType::kDriveFiles);
+  if (link_results != nullptr && drive_results != nullptr) {
+    DeduplicateDriveLinksFromIds(
+        link_results->results,
+        DriveIdsFromSearchResults(drive_results->results));
+  } else if (link_results != nullptr) {
+    // Link results came in before burn-in, and Drive results didn't.
+    link_drive_dedupe_state_ = LinksFromSearchResults(link_results->results);
+  } else if (drive_results != nullptr) {
+    // Drive results came in before burn-in, and link results didn't.
+    link_drive_dedupe_state_ =
+        DriveIdsFromSearchResults(drive_results->results);
+  }
+
   std::vector<PickerSearchResultsSection> sections;
   base::flat_set<PickerSectionType> published_types;
 
@@ -164,8 +311,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   // User generated results can be ranked amongst themselves.
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kClipboard,
        }) {
     if (UnpublishedResults* results = AccumulatedResultsForSection(type);
@@ -179,8 +326,8 @@ void PickerSearchAggregator::PublishBurnInResults() {
   // The remaining results are ranked based on a predefined order
   for (PickerSectionType type : {
            PickerSectionType::kLinks,
-           PickerSectionType::kLocalFiles,
            PickerSectionType::kDriveFiles,
+           PickerSectionType::kLocalFiles,
            PickerSectionType::kClipboard,
            PickerSectionType::kEditorWrite,
            PickerSectionType::kEditorRewrite,

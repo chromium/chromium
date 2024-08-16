@@ -285,10 +285,13 @@ void SecureDnsManager::UpdateTemplateUri() {
   cached_is_config_managed_ =
       local_state_->FindPreference(::prefs::kDnsOverHttpsMode)->IsManaged();
 
-  NetworkHandler::Get()
-      ->network_metadata_store()
-      ->SetSecureDnsTemplatesWithIdentifiersActive(
-          doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
+  // May be missing in tests.
+  if (NetworkHandler::Get()->network_metadata_store()) {
+    NetworkHandler::Get()
+        ->network_metadata_store()
+        ->SetSecureDnsTemplatesWithIdentifiersActive(
+            doh_templates_uri_resolver_->GetDohWithIdentifiersActive());
+  }
 }
 
 }  // namespace ash

@@ -73,7 +73,6 @@ Input before setting suggested values:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"
@@ -93,6 +92,13 @@ Input before setting suggested values:
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
 |           id="select-datalist-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -189,7 +195,6 @@ Input after setting suggestedValue:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"
@@ -210,6 +215,13 @@ Input after setting suggestedValue:
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
 |           id="select-datalist-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "
@@ -304,7 +316,6 @@ After resetting suggestedValue value:
 |       id="select-button"
 |       <button>
 |         pseudo="select-fallback-button"
-|         type="popover"
 |         shadow:pseudoId="select-fallback-button"
 |         <span>
 |           pseudo="select-fallback-button-text"
@@ -324,6 +335,13 @@ After resetting suggestedValue value:
 |         shadow:pseudoId="select-fallback-datalist"
 |         <slot>
 |           id="select-datalist-options"
+|     <div>
+|       popover="manual"
+|       pseudo="-internal-select-autofill-preview"
+|       shadow:pseudoId="-internal-select-autofill-preview"
+|       <div>
+|         pseudo="-internal-select-autofill-preview-text"
+|         shadow:pseudoId="-internal-select-autofill-preview-text"
 | "input.value: initial value"
 | "internals.suggestedValue(input): "
 | "inputWithPlaceholder.value: "

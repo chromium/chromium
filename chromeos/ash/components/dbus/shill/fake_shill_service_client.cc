@@ -439,7 +439,6 @@ ShillServiceClient::TestInterface* FakeShillServiceClient::GetTestInterface() {
 }
 
 // ShillServiceClient::TestInterface overrides.
-
 void FakeShillServiceClient::AddService(const std::string& service_path,
                                         const std::string& guid,
                                         const std::string& name,
@@ -600,11 +599,25 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
 
   if (property == shill::kCellularCustomApnListProperty) {
     const std::string* type = dict->FindString(shill::kTypeProperty);
-    if (type && *type == shill::kTypeCellular && value.GetList().size() > 0) {
-      // Set connected APN to the latest custom APN to simulate the behavior in
-      // Shill.
+    CHECK(type && *type == shill::kTypeCellular);
+    bool deafult_apn_found = false;
+    // Set connected APN to the latest custom default type APN to simulate the
+    // behavior in Shill. When no default type custom APNs are found, the
+    // default Modb APN should be used for connection.
+    for (const auto& custom_apn : value.GetList()) {
+      CHECK(custom_apn.is_dict());
+      const std::string* apn_types =
+          custom_apn.GetDict().FindString(shill::kApnTypesProperty);
+      if (!apn_types || *apn_types == shill::kApnTypeIA) {
+        continue;
+      }
+      dict->Set(shill::kCellularLastGoodApnProperty, custom_apn.Clone());
+      deafult_apn_found = true;
+      break;
+    }
+    if (!deafult_apn_found) {
       dict->Set(shill::kCellularLastGoodApnProperty,
-                value.GetList().front().Clone());
+                GetFakeDefaultModbApnDict());
     }
   }
 
@@ -675,6 +688,18 @@ bool FakeShillServiceClient::ClearConfiguredServiceProperties(
   }
   stub_services_.Set(service_path, std::move(properties_after_delete_entry));
   return true;
+}
+
+base::Value::Dict FakeShillServiceClient::GetFakeDefaultModbApnDict() {
+  return base::Value::Dict()
+      .Set(shill::kApnProperty, "default_apn")
+      .Set(shill::kApnNameProperty, "default_apn")
+      .Set(shill::kApnLocalizedNameProperty, "localized test apn")
+      .Set(shill::kApnUsernameProperty, "user name")
+      .Set(shill::kApnPasswordProperty, "password")
+      .Set(shill::kApnAuthenticationProperty, "chap")
+      .Set(shill::kApnTypesProperty, shill::kApnTypeDefault)
+      .Set(shill::kApnSourceProperty, shill::kApnSourceMoDb);
 }
 
 std::string FakeShillServiceClient::FindServiceMatchingGUID(

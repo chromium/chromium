@@ -111,6 +111,14 @@ mojom_component("tokens") {
           mojom = "blink.mojom.WebGPUExecutionContextToken"
           cpp = "::blink::WebGPUExecutionContextToken"
         },
+        {
+          mojom = "blink.mojom.WebNNContextToken"
+          cpp = "::blink::WebNNContextToken"
+        },
+        {
+          mojom = "blink.mojom.WebNNBufferToken"
+          cpp = "::blink::WebNNBufferToken"
+        },
       ]
       traits_headers = [
         "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",

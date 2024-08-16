@@ -628,9 +628,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // passwords.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        NudgeToUpdateGmsCore_OnSaveClicked) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EXPECT_CALL(*form_manager, Save());
@@ -655,9 +652,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // clicks the "Save" button.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        DontNudgeToUpdateGmsCore_OnSaveClicked) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
   EXPECT_CALL(*form_manager, Save());
@@ -751,10 +745,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        NudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
   SetPendingCredentials(kUsername, kPassword);
   std::vector<PasswordForm> single_form_best_matches = {
       CreatePasswordForm(kUsername, kPassword)};
@@ -783,10 +773,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // the update password message in case when there is no confirmation dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        DontNudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
   SetPendingCredentials(kUsername, kPassword);
   std::vector<PasswordForm> single_form_best_matches = {
       CreatePasswordForm(kUsername, kPassword)};
@@ -865,10 +851,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // update password message and the confirmation dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        NudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -901,10 +883,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // the update password message and the confirmation dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        DontNudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
-  base::test::ScopedFeatureList scoped_feature_state;
-  scoped_feature_state.InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());

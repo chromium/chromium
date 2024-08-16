@@ -48,7 +48,7 @@ bool GetMetaDataPaddingBytes(const char* data,
               // TODO(crbug.com/402847551): This span construction is unsound as
               // we can't know that the size is right, the function should be
               // receiving a span.
-              UNSAFE_BUFFERS(base::span(data, size)))
+              UNSAFE_TODO(base::span(data, size)))
               .first<sizeof(padding_bytes)>()));
   size -= sizeof(padding_bytes);
 

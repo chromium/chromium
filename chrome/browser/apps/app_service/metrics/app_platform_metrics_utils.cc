@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/app_constants/constants.h"
@@ -35,7 +34,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/user_manager/user.h"
@@ -180,14 +179,6 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
 
   if (type_name != AppTypeName::kWeb) {
     return type_name;
-  }
-  // TODO(b/321143888): When Shortstand is enabled, the window mode will
-  // always be kWindow. update.WindowMode is now used to check previous
-  // window mode for use by migration nudge. The WindowMode value for web
-  // apps will be updated to accurately represent the change after
-  // migration has been completed.
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    return GetWebAppTypeName();
   }
 
   switch (container) {
@@ -442,7 +433,7 @@ bool ShouldRecordAppKM(Profile* profile) {
   }
 
   switch (syncer::GetUploadToGoogleState(
-      SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
+      SyncServiceFactory::GetForProfile(profile), syncer::DataType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
     case syncer::UploadState::INITIALIZING:

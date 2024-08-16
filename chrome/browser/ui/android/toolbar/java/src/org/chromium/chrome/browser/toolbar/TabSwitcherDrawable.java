@@ -8,30 +8,60 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
+import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /** A drawable for the tab switcher icon. */
 public class TabSwitcherDrawable extends TintedDrawable {
+    @IntDef({
+        TabSwitcherDrawableLocation.TAB_TOOLBAR,
+        TabSwitcherDrawableLocation.HUB_TOOLBAR,
+        TabSwitcherDrawableLocation.TAB_SWITCHER_TOOLBAR,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TabSwitcherDrawableLocation {
+        int TAB_TOOLBAR = 0;
+        int HUB_TOOLBAR = 1;
+        int TAB_SWITCHER_TOOLBAR = 2;
+    }
+
+    private static final float LEFT_FRACTION = 3f / 4f;
+
     private final float mSingleDigitTextSize;
     private final float mDoubleDigitTextSize;
 
     private final Rect mTextBounds = new Rect();
+    private final Paint mNotificationPaint;
+    private final Paint mNotificationBgPaint;
     private final TextPaint mTextPaint;
+    private final Paint mIconPaint;
 
     // Tab Count Label
     private int mTabCount;
     private boolean mIncognito;
     private String mTextRenderedForTesting;
+    private Canvas mIconCanvas;
+    private Bitmap mIconBitmap;
+    private boolean mShouldShowNotificationIcon;
+    private @TabSwitcherDrawableLocation int mTabSwitcherDrawableLocation;
 
     /**
      * Creates a {@link TabSwitcherDrawable}.
@@ -41,15 +71,21 @@ public class TabSwitcherDrawable extends TintedDrawable {
      * @return A {@link TabSwitcherDrawable} instance.
      */
     public static TabSwitcherDrawable createTabSwitcherDrawable(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            @TabSwitcherDrawableLocation int tabSwitcherDrawableLocation) {
         Bitmap icon =
                 BitmapFactory.decodeResource(
                         context.getResources(), R.drawable.btn_tabswitcher_modern);
-        return new TabSwitcherDrawable(context, brandedColorScheme, icon);
+        return new TabSwitcherDrawable(
+                context, brandedColorScheme, icon, tabSwitcherDrawableLocation);
     }
 
     private TabSwitcherDrawable(
-            Context context, @BrandedColorScheme int brandedColorScheme, Bitmap bitmap) {
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            Bitmap bitmap,
+            @TabSwitcherDrawableLocation int tabSwitcherDrawableLocation) {
         super(context, bitmap);
         setTint(ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme));
         mSingleDigitTextSize =
@@ -60,8 +96,28 @@ public class TabSwitcherDrawable extends TintedDrawable {
         mTextPaint = new TextPaint();
         mTextPaint.setAntiAlias(true);
         mTextPaint.setTextAlign(Align.CENTER);
-        mTextPaint.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+        mTextPaint.setTypeface(Typeface.create("google-sans-medium", Typeface.BOLD));
         mTextPaint.setColor(getColorForState());
+
+        mIconPaint = new Paint();
+        mIconPaint.setAntiAlias(true);
+
+        mNotificationBgPaint = new Paint();
+        mNotificationBgPaint.setAntiAlias(true);
+        mNotificationBgPaint.setStyle(Paint.Style.FILL);
+        mNotificationBgPaint.setColor(Color.TRANSPARENT);
+        mNotificationBgPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+
+        mNotificationPaint = new Paint();
+        mNotificationPaint.setAntiAlias(true);
+        mNotificationPaint.setStyle(Paint.Style.FILL);
+        mNotificationPaint.setColor(SemanticColorUtils.getDefaultIconColorAccent1(context));
+
+        // Draw all icon components onto a local canvas before setting on the actual canvas.
+        mIconBitmap =
+                Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        mIconCanvas = new Canvas(mIconBitmap);
+        mTabSwitcherDrawableLocation = tabSwitcherDrawableLocation;
     }
 
     @Override
@@ -73,22 +129,49 @@ public class TabSwitcherDrawable extends TintedDrawable {
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
+        // Clear the canvas on each redraw.
+        mIconCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        super.draw(mIconCanvas);
 
+        Rect drawableBounds = getBounds();
         String textString = getTabCountString();
         mTextRenderedForTesting = textString;
         if (!textString.isEmpty()) {
             mTextPaint.getTextBounds(textString, 0, textString.length(), mTextBounds);
 
-            Rect drawableBounds = getBounds();
             int textX = drawableBounds.width() / 2;
             int textY =
                     drawableBounds.height() / 2
                             + (mTextBounds.bottom - mTextBounds.top) / 2
                             - mTextBounds.bottom;
 
-            canvas.drawText(textString, textX, textY, mTextPaint);
+            mIconCanvas.drawText(textString, textX, textY, mTextPaint);
         }
+
+        // Do not show the notification icon in tab view incognito.
+        if (mShouldShowNotificationIcon && shouldShowNotificationOnIncognito()) {
+            // Draw the notification bubble.
+            float ringWidth = drawableBounds.width() / 18f;
+            float ringHeight = drawableBounds.height() / 18f;
+            float notifFillLeft = (drawableBounds.width() * LEFT_FRACTION) - ringWidth;
+            float notifFillBottom = (drawableBounds.height() / 4f) + ringHeight;
+            float notifBgLeft = (drawableBounds.width() * LEFT_FRACTION) - (ringWidth * 2f);
+            float notifBgBottom = (drawableBounds.height() / 4f) + (ringHeight * 2f);
+            mIconCanvas.drawOval(
+                    notifBgLeft,
+                    drawableBounds.top,
+                    drawableBounds.right,
+                    notifBgBottom,
+                    mNotificationBgPaint);
+            mIconCanvas.drawOval(
+                    notifFillLeft,
+                    drawableBounds.top + ringHeight,
+                    drawableBounds.right - ringWidth,
+                    notifFillBottom,
+                    mNotificationPaint);
+        }
+
+        canvas.drawBitmap(mIconBitmap, 0, 0, mIconPaint);
     }
 
     /**
@@ -133,6 +216,35 @@ public class TabSwitcherDrawable extends TintedDrawable {
     public void setColorFilter(ColorFilter colorFilter) {
         super.setColorFilter(colorFilter);
         updatePaint();
+    }
+
+    /**
+     * This call is responsible for setting whether the notification bubble shows on the icon or
+     * not. Any non-test callsite should be guarded by the DATA_SHARING_ANDROID flag.
+     */
+    public void setNotificationIconStatus(boolean shouldShow) {
+        mShouldShowNotificationIcon = shouldShow;
+        invalidateSelf();
+    }
+
+    public void setNotificationBackground(@BrandedColorScheme int brandedColorScheme) {
+        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME
+                || brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
+            mNotificationBgPaint.setColor(Color.WHITE);
+            mNotificationBgPaint.setXfermode(null);
+        } else {
+            mNotificationBgPaint.setColor(Color.TRANSPARENT);
+            mNotificationBgPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        }
+    }
+
+    public void setIncognitoStatus(boolean isIncognito) {
+        mIncognito = isIncognito;
+    }
+
+    private boolean shouldShowNotificationOnIncognito() {
+        return !(mIncognito
+                && mTabSwitcherDrawableLocation == TabSwitcherDrawableLocation.TAB_TOOLBAR);
     }
 
     public String getTextRenderedForTesting() {

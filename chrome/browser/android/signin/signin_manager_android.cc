@@ -312,8 +312,7 @@ void SigninManagerAndroid::IsAccountManaged(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp) &&
-      base::FeatureList::IsEnabled(switches::kEnterprisePolicyOnSignin)) {
+  if (!base::FeatureList::IsEnabled(switches::kSeedAccountsRevamp)) {
     // Force seed the account, since requesting management status would require
     // access token, and this operation would result in a crash if done on a
     // non seeded account. See https://crbug.com/332900316.
@@ -390,10 +389,10 @@ std::string JNI_SigninManagerImpl_ExtractDomainName(JNIEnv* env,
 void SigninManagerAndroid::SetUserAcceptedAccountManagement(
     JNIEnv* env,
     bool accepted_account_management) {
-  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+  enterprise_util::SetUserAcceptedAccountManagement(
       profile_, accepted_account_management);
 }
 
 bool SigninManagerAndroid::GetUserAcceptedAccountManagement(JNIEnv* env) {
-  return chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+  return enterprise_util::UserAcceptedAccountManagement(profile_);
 }

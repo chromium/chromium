@@ -30,7 +30,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -129,14 +128,11 @@ public class NewTabPageLayout extends LinearLayout {
 
     private int mTileViewWidth;
     private Integer mInitialTileNum;
-    private boolean mIsSurfacePolishEnabled;
     private Boolean mIsMvtAllFilledLandscape;
     private Boolean mIsMvtAllFilledPortrait;
     private final int mTileViewIntervalPaddingTablet;
     private final int mTileViewEdgePaddingTablet;
-    // This offset is added to the transition length when the surface polish flag is enabled in
-    // order to make sure the animation is completed.
-    private float mTransitionLengthOffset;
+    private float mTransitionEndOffset;
     private boolean mIsTablet;
     private ObservableSupplier<Integer> mTabStripHeightSupplier;
     private boolean mIsInNarrowWindowOnTablet;
@@ -222,7 +218,6 @@ public class NewTabPageLayout extends LinearLayout {
         mUiConfig = uiConfig;
         mNewTabPageUma = uma;
         mWindowAndroid = windowAndroid;
-        mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mIsLogoPolishFlagEnabled = LogoUtils.isLogoPolishEnabled();
         mIsLogoPolishEnabled =
                 LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
@@ -247,25 +242,16 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(
                 lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
-        if (mIsSurfacePolishEnabled) {
-            int searchBoxHeight = mSearchBoxCoordinator.getView().getLayoutParams().height;
-            mSearchBoxBoundsVerticalInset =
-                    (searchBoxHeight
-                                    - getResources()
-                                            .getDimensionPixelSize(
-                                                    R.dimen.toolbar_height_no_shadow))
-                            / 2;
-        } else if (!mIsTablet) {
-            mSearchBoxBoundsVerticalInset =
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.ntp_search_box_bounds_vertical_inset_modern);
-        }
-        mTransitionLengthOffset =
-                mIsSurfacePolishEnabled && !mIsTablet
+        int searchBoxHeight = mSearchBoxCoordinator.getView().getLayoutParams().height;
+        mSearchBoxBoundsVerticalInset =
+                (searchBoxHeight
+                                - getResources()
+                                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow))
+                        / 2;
+        mTransitionEndOffset =
+                !mIsTablet
                         ? getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.ntp_search_box_transition_length_polish_offset)
+                                .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
                         : 0;
 
         updateSearchBoxWidth();
@@ -414,7 +400,7 @@ public class NewTabPageLayout extends LinearLayout {
                 mIsInMultiWindowModeOnTablet
                         ? LogoSizeForLogoPolish.SMALL
                         : mLogoSizeForLogoPolish);
-        mLogoCoordinator.initWithNative();
+        mLogoCoordinator.initWithNative(mProfile);
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
         setSearchProviderTopMargin();
         setSearchProviderBottomMargin();
@@ -488,16 +474,17 @@ public class NewTabPageLayout extends LinearLayout {
         final int scrollY = mScrollDelegate.getVerticalScrollOffset();
         // Use int pixel size instead of float dimension to avoid precision error on the percentage.
         final float transitionLength =
-                getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_length)
-                        + mTransitionLengthOffset;
+                getResources().getDimensionPixelSize(R.dimen.ntp_search_box_transition_start_offset)
+                        + mTransitionEndOffset;
         // Tab strip height is zero on phones, and may vary on tablets.
         int tabStripHeight = mTabStripHeightSupplier.get();
 
-        // |scrollY - searchBoxTop + tabStripHeight| gives the distance the search bar is from the
-        // top of the tab.
+        // When scrollY equals searchBoxTop + tabStripHeight -transitionStartOffset, it marks the
+        // start point of the transition. When scrollY equals searchBoxTop plus transitionEndOffset
+        // plus tabStripHeight, it marks the end point of the transition.
         return MathUtils.clamp(
                 (scrollY
-                                - (searchBoxTop + mTransitionLengthOffset)
+                                - (searchBoxTop + mTransitionEndOffset)
                                 + tabStripHeight
                                 + transitionLength)
                         / transitionLength,
@@ -849,7 +836,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean isSearchBoxOffscreen() {
         return !mScrollDelegate.isChildVisibleAtPosition(0)
                 || mScrollDelegate.getVerticalScrollOffset()
-                        > getSearchBoxView().getTop() + mTransitionLengthOffset;
+                        > getSearchBoxView().getTop() + mTransitionEndOffset;
     }
 
     /**

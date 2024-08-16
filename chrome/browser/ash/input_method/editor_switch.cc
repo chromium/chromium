@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/input_method/editor_switch.h"
 
 #include "ash/constants/ash_features.h"
@@ -11,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
-#include "chrome/browser/ash/input_method/editor_identity_utils.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -50,6 +54,9 @@ constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 std::vector<std::string> AllowedInputMethods() {
   std::vector<std::string> input_methods = EnglishInputMethods();
 
+  if (base::FeatureList::IsEnabled(features::kOrcaAfrikaans)) {
+    base::Extend(input_methods, AfrikaansInputMethods());
+  }
   if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
     base::Extend(input_methods, DanishInputMethods());
   }
@@ -73,6 +80,9 @@ std::vector<std::string> AllowedInputMethods() {
   }
   if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
     base::Extend(input_methods, NorwegianInputMethods());
+  }
+  if (base::FeatureList::IsEnabled(features::kOrcaPolish)) {
+    base::Extend(input_methods, PolishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
     base::Extend(input_methods, PortugeseInputMethods());

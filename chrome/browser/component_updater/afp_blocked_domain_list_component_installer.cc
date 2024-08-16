@@ -140,9 +140,8 @@ AntiFingerprintingBlockedDomainListComponentInstallerPolicy::
 
 void RegisterAntiFingerprintingBlockedDomainListComponent(
     ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(
-          fingerprinting_protection_filter::features::
-              kEnableFingerprintingProtectionFilter)) {
+  if (!fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
     return;
   }
 

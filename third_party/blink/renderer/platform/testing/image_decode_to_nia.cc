@@ -167,7 +167,7 @@ int main(int argc, char* argv[]) {
       WTF::SharedBuffer::Create(src.data(), src.size()), data_complete,
       blink::ImageDecoder::kAlphaNotPremultiplied,
       blink::ImageDecoder::kDefaultBitDepth, blink::ColorBehavior::kIgnore,
-      blink::Platform::GetMaxDecodedImageBytes());
+      cc::AuxImage::kDefault, blink::Platform::GetMaxDecodedImageBytes());
 
   const size_t frame_count = decoder->FrameCount();
   if (frame_count == 0) {

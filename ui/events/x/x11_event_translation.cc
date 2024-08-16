@@ -134,12 +134,21 @@ void SetEventSourceDeviceId(MouseEvent* event, const x11::Event& xev) {
 
 std::unique_ptr<MouseEvent> CreateMouseEvent(EventType type,
                                              const x11::Event& x11_event) {
-  // Ignore EventNotify and LeaveNotify events from children of |xwindow_|.
-  // NativeViewGLSurfaceGLX adds a child to |xwindow_|.
-  // https://crbug.com/792322
-  auto* crossing = x11_event.As<x11::CrossingEvent>();
-  if (crossing && crossing->detail == x11::NotifyDetail::Inferior)
-    return nullptr;
+  if (auto* crossing = x11_event.As<x11::CrossingEvent>()) {
+    // Ignore EventNotify and LeaveNotify events from children of the window.
+    if (crossing->detail == x11::NotifyDetail::Inferior) {
+      return nullptr;
+    }
+    // Ignore LeaveNotify grab events with a detail of Ancestor.  Some WMs
+    // will grab the container window during a click.  Don't generate a
+    // kMouseExited event in this case.
+    // https://crbug.com/41314367
+    if (crossing->detail == x11::NotifyDetail::Ancestor &&
+        crossing->mode == x11::NotifyMode::Grab &&
+        crossing->opcode == x11::CrossingEvent::LeaveNotify) {
+      return nullptr;
+    }
+  }
 
   PointerDetails details = GetStylusPointerDetailsFromXEvent(x11_event);
   auto event = std::make_unique<MouseEvent>(

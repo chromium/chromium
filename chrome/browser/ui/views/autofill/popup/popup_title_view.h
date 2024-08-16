@@ -23,9 +23,6 @@ class PopupTitleView : public views::View {
   PopupTitleView& operator=(const PopupTitleView&) = delete;
 
   ~PopupTitleView() override;
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 }  // namespace autofill

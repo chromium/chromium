@@ -226,11 +226,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
   switch (status) {
     case PrerenderFinalStatus::kActivated:
     case PrerenderFinalStatus::kDestroyed:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kLowEndDevice:
       return PreloadingEligibility::kLowMemory;
     case PrerenderFinalStatus::kInvalidSchemeRedirect:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kInvalidSchemeNavigation:
       return PreloadingEligibility::kHttpOrHttpsOnly;
     case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
@@ -252,11 +252,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kUaChangeRequiresReload:
     case PrerenderFinalStatus::kBlockedByClient:
     case PrerenderFinalStatus::kMixedContent:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kTriggerBackgrounded:
       return PreloadingEligibility::kHidden;
     case PrerenderFinalStatus::kMemoryLimitExceeded:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kDataSaverEnabled:
       return PreloadingEligibility::kDataSaverEnabled;
     case PrerenderFinalStatus::kTriggerUrlHasEffectiveUrl:
@@ -266,7 +266,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kStartFailed:
     case PrerenderFinalStatus::kTimeoutBackgrounded:
     case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
       return PreloadingEligibility::kCrossOrigin;
     case PrerenderFinalStatus::
@@ -282,13 +282,13 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed:
     case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
     case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPreloadingDisabled:
       return PreloadingEligibility::kPreloadingDisabled;
     case PrerenderFinalStatus::kBatterySaverEnabled:
       return PreloadingEligibility::kBatterySaverEnabled;
     case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
       return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
     case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
@@ -297,11 +297,11 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
         kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
     case PrerenderFinalStatus::
         kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kMemoryPressureOnTrigger:
       return PreloadingEligibility::kMemoryPressure;
     case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPrerenderingDisabledByDevTools:
       return PreloadingEligibility::kPreloadingDisabledByDevTools;
     case PrerenderFinalStatus::kSpeculationRuleRemoved:
@@ -309,7 +309,7 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kMaxNumOfRunningEagerPrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningNonEagerPrerendersExceeded:
     case PrerenderFinalStatus::kMaxNumOfRunningEmbedderPrerendersExceeded:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kPrerenderingUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kRedirectedPrerenderingUrlHasEffectiveUrl:
     case PrerenderFinalStatus::kActivationUrlHasEffectiveUrl:
@@ -319,12 +319,12 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kAllPrerenderingCanceled:
     case PrerenderFinalStatus::kWindowClosed:
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PrerenderFinalStatus::kSlowNetwork:
       return PreloadingEligibility::kSlowNetwork;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Represents a contract and ensures that the given prerender attempt is started
@@ -358,9 +358,10 @@ class PrerenderHostBuilder {
   // Public only for exceptional case.
   // TODO(crbug.com/40904828): Make this private again.
   void Drop();
-  bool IsDropped();
 
  private:
+  bool IsDropped() const;
+
   // Use raw pointer as PrerenderHostBuilder is alive only during
   // PrerenderHostRegistry::CreateAndStartHost(), and PreloadingAttempt should
   // outlive the function.
@@ -381,7 +382,7 @@ void PrerenderHostBuilder::Drop() {
   devtools_attempt_.reset();
 }
 
-bool PrerenderHostBuilder::IsDropped() {
+bool PrerenderHostBuilder::IsDropped() const {
   return devtools_attempt_ == nullptr;
 }
 
@@ -607,7 +608,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
             PrerenderFinalStatus::kPreloadingUnsupportedByWebContents);
         return RenderFrameHost::kNoFrameTreeNodeId;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     // Don't prerender when the initiator is in the background and its type is
@@ -792,17 +793,24 @@ int PrerenderHostRegistry::CreateAndStartHost(
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
     case PreloadingTriggerType::kSpeculationRuleFromAutoSpeculationRules:
       pending_prerenders_.push_back(frame_tree_node_id);
-      // Start the initial prerendering navigation of the pending request in
-      // the head of the queue if there's no running prerender and the initiator
-      // is in the foreground.
       if (running_prerender_host_id_ == RenderFrameHost::kNoFrameTreeNodeId) {
-        // No running prerender means that either no other prerenders are in the
-        // pending queue or the initiator continues to be in the background.
-        // Skip starting prerendering in the latter case.
-        if (IsBackground(initiator_web_contents.GetVisibility())) {
+        // Start the initial prerendering navigation of the pending request in
+        // the head of the queue if there's no running prerender and the
+        // initiator is in the foreground. If the initiator page is in the
+        // background, `StartPrerendering` will return a corresponding
+        // frame_tree_node_id if allowed by
+        // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
+        if (IsBackground(initiator_web_contents.GetVisibility()) &&
+            !initiator_web_contents.GetPrerenderHostRegistry()
+                 ->PrerenderCanBeStartedWhenInitiatorIsInBackground()) {
+          // Cancel if it is prerender-into-new-tab.
+          // TODO(crbug.com/350785853): Add queue
+          // mechanism and update test expectation.
+          if (web_contents() != &initiator_web_contents) {
+            return RenderFrameHost::kNoFrameTreeNodeId;
+          }
           break;
         }
-        CHECK_EQ(pending_prerenders_.size(), 1u);
         int started_frame_tree_node_id =
             StartPrerendering(RenderFrameHost::kNoFrameTreeNodeId);
         CHECK(started_frame_tree_node_id == frame_tree_node_id ||
@@ -879,10 +887,16 @@ int PrerenderHostRegistry::StartPrerendering(int frame_tree_node_id) {
       // prerendering requests during destruction.
       CHECK(prerender_host->initiator_web_contents());
 
-      // Don't start the pending prerender triggered by the background tab.
-      if (IsBackground(
-              prerender_host->initiator_web_contents()->GetVisibility())) {
-        return RenderFrameHost::kNoFrameTreeNodeId;
+      WebContentsImpl* initiator_web_contents = static_cast<WebContentsImpl*>(
+          prerender_host->initiator_web_contents().get());
+      if (IsBackground(initiator_web_contents->GetVisibility())) {
+        // The pending prerender triggered by the background tab will be started
+        // according to the conditions in
+        // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
+        if (!initiator_web_contents->GetPrerenderHostRegistry()
+                 ->PrerenderCanBeStartedWhenInitiatorIsInBackground()) {
+          return RenderFrameHost::kNoFrameTreeNodeId;
+        }
       }
 
       // Found the request to run.
@@ -1887,6 +1901,33 @@ PrerenderHostRegistry::GetTimerTaskRunner() {
 void PrerenderHostRegistry::SetTaskRunnerForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   timer_task_runner_for_testing_ = std::move(task_runner);
+}
+
+bool PrerenderHostRegistry::PrerenderCanBeStartedWhenInitiatorIsInBackground() {
+  // Allow at most 1 prerendering to be started if the initiator page is
+  // still in the background.
+
+  // There is a running prerender, so no extra prerender is allowed before
+  // this one is finished.
+  if (running_prerender_host_id_ != RenderFrameHost::kNoFrameTreeNodeId) {
+    return false;
+  }
+
+  // There are non-pending prerenders, which have finished the initial
+  // navigation and been waiting for activation. Don't start a new prerender.
+  if (prerender_host_by_frame_tree_node_id_.size() -
+          pending_prerenders_.size() >=
+      1) {
+    return false;
+  }
+
+  // One or more than prerenders for new tab finished or are running. Don't
+  // start a new prerender.
+  if (prerender_new_tab_handle_by_frame_tree_node_id_.size() >= 1) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace content

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -41,6 +42,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/values.h"
@@ -651,6 +653,8 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
   UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
@@ -674,6 +678,7 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
@@ -2513,10 +2518,6 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
 // install.
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
                        WindowedShortcutAppsHaveActivityIndicatorSet) {
-  // With shortstand enabled, we no longer allow creating windowed shortcut.
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP();
-  }
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(AddTabAtIndex(

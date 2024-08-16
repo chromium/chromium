@@ -27,7 +27,6 @@
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
-#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -49,6 +48,8 @@ FocusModeController* g_instance = nullptr;
 
 // The default Focus Mode session duration.
 constexpr base::TimeDelta kDefaultSessionDuration = base::Minutes(25);
+
+constexpr base::TimeDelta kSessionEndSoundDelay = base::Milliseconds(200);
 
 bool IsQuietModeOnSetByFocusMode() {
   auto* message_center = message_center::MessageCenter::Get();
@@ -138,8 +139,6 @@ FocusModeController::FocusModeController(
   g_instance = this;
 
   focus_mode_sounds_controller_ = std::make_unique<FocusModeSoundsController>();
-  youtube_music_controller_ =
-      std::make_unique<youtube_music::YouTubeMusicController>();
 
   focus_mode_sounds_controller_->AddObserver(this);
   tasks_model_.SetDelegate(weak_factory_.GetWeakPtr());
@@ -223,18 +222,24 @@ void FocusModeController::OnActiveUserSessionChanged(
 }
 
 void FocusModeController::OnSelectedPlaylistChanged() {
-  if (!in_focus_session()) {
-    return;
-  }
-
-  focus_mode_metrics_recorder_->SetHasSelectedSoundType(
-      focus_mode_sounds_controller_->selected_playlist());
-
+  // If a user swaps playlists or deselects the playlist, we should close the
+  // previous media widget. The reason we don't just reuse the existing widget
+  // with a new playlist is that we need to refresh the web view source title so
+  // that it's populated correctly in the media controls.
   if (media_widget_) {
     CloseMediaWidget();
   }
 
-  MaybeCreateMediaWidget();
+  if (focus_mode_metrics_recorder_) {
+    focus_mode_metrics_recorder_->SetHasSelectedSoundType(
+        focus_mode_sounds_controller_->selected_playlist());
+  }
+
+  // Only attempt to create the media widget if we are in an active focus
+  // session.
+  if (in_focus_session()) {
+    MaybeCreateMediaWidget();
+  }
 }
 
 void FocusModeController::OnSelectedTaskChanged(
@@ -307,7 +312,8 @@ void FocusModeController::ExtendSessionDuration() {
 
   std::string message;
   if (was_in_ending_moment) {
-    MaybeCreateMediaWidget();
+    PerformActionsForMusic();
+    paused_by_ending_moment_ = false;
 
     focus_mode_metrics_recorder_->RecordHistogramOnEndingMoment(
         focus_mode_histogram_names::EndingMomentBubbleClosedReason::kExtended);
@@ -526,6 +532,7 @@ FocusModeController::GetSystemMediaSessionInfo() {
 
 void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
+  paused_by_ending_moment_ = false;
   focus_mode_sounds_controller_->reset_paused_event_count();
   focus_mode_metrics_recorder_ =
       std::make_unique<FocusModeMetricsRecorder>(session_duration_);
@@ -598,7 +605,12 @@ void FocusModeController::OnTimerTick() {
           /*min=*/0, /*max=*/focus_mode_util::kCongratulatoryTitleNum - 1);
 
       if (media_widget_) {
-        CloseMediaWidget();
+        paused_by_ending_moment_ =
+            focus_mode_sounds_controller_->selected_playlist().state ==
+            focus_mode_util::SoundState::kPlaying;
+        if (paused_by_ending_moment_) {
+          focus_mode_sounds_controller_->PausePlayback();
+        }
       }
 
       // Set a timer to terminate the ending moment. If the focus tray bubble is
@@ -611,6 +623,16 @@ void FocusModeController::OnTimerTick() {
       } else {
         current_session_->set_persistent_ending();
       }
+
+      // Play sounds effect after 200ms delay.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce([]() {
+            if (Shell::HasInstance()) {
+              Shell::Get()->system_sounds_delegate()->Play(
+                  Sound::kFocusModeEndingMoment);
+            }
+          }),
+          kSessionEndSoundDelay);
 
       for (auto& observer : observers_) {
         observer.OnFocusModeChanged(/*in_focus_session=*/false);
@@ -737,10 +759,10 @@ bool FocusModeController::IsFocusTrayBubbleVisible() const {
   return false;
 }
 
-void FocusModeController::MaybeCreateMediaWidget() {
+bool FocusModeController::MaybeCreateMediaWidget() {
   if (media_widget_ ||
       focus_mode_sounds_controller_->selected_playlist().empty()) {
-    return;
+    return false;
   }
 
   CHECK(in_focus_session());
@@ -772,6 +794,7 @@ void FocusModeController::MaybeCreateMediaWidget() {
   focus_mode_media_view_ = media_widget_->SetContentsView(
       AshWebViewFactory::Get()->Create(web_view_params));
   focus_mode_media_view_->Navigate(GURL(chrome::kChromeUIFocusModeMediaURL));
+  return true;
 }
 
 void FocusModeController::CloseMediaWidget() {
@@ -779,6 +802,24 @@ void FocusModeController::CloseMediaWidget() {
   focus_mode_media_view_.ClearAndDelete();
   focus_mode_media_view_ = nullptr;
   media_widget_.reset();
+}
+
+void FocusModeController::PerformActionsForMusic() {
+  const auto& selected_playlist =
+      focus_mode_sounds_controller_->selected_playlist();
+  // Do nothing if there is no selected playlist, or a new media widget was
+  // created.
+  if (selected_playlist.empty() || MaybeCreateMediaWidget()) {
+    return;
+  }
+
+  // If the music was paused by the user before the ending moment, we should
+  // keep it in paused state after extending the session; otherwise, we will
+  // continue to play the existing music because it was paused by the ending
+  // moment.
+  if (paused_by_ending_moment_) {
+    focus_mode_sounds_controller_->ResumePlayingPlayback();
+  }
 }
 
 void FocusModeController::OnTasksReceived(

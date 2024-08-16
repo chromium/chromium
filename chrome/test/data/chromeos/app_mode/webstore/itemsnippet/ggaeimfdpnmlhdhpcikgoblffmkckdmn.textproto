@@ -1,0 +1,41 @@
+# proto-file: //chrome/browser/extensions/cws_item_service.proto"
+# proto-message: extensions.FetchItemSnippetResponse
+
+item_id: "ggaeimfdpnmlhdhpcikgoblffmkckdmn"
+
+manifest:
+  '{'
+  '  "manifest_version": 2,'
+  '  "name": "Test Kiosk App",'
+  '  "version": "1.0.0",'
+  '  "icons": {'
+  '    "16": "icon-16.png",'
+  '    "128": "icon-128.png"'
+  '  },'
+  '  "app": {'
+  '    "background": {'
+  '      "scripts": ['
+  '        "main.js"'
+  '      ]'
+  '    }'
+  '  },'
+  '  "kiosk_enabled": true,'
+  '  "permissions": ['
+  '    "power",'
+  '    "webview"'
+  '  ]'
+  '}'
+
+title: "Name of App 1"
+
+summary: "Description of App 1"
+
+logo_uri: "webstore/itemsnippet/icons/app_1_green16x16.png"
+
+user_count_string: "1234"
+
+rating_count: 999
+
+average_rating: 1
+
+rating_count_string: "999"

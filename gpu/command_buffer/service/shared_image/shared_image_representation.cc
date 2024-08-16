@@ -726,6 +726,19 @@ SkiaGraphiteImageRepresentation::BeginScopedReadAccess(
       graphite_textures);
 }
 
+std::string SkiaGraphiteImageRepresentation::WrappedTextureDebugLabel(
+    int plane) const {
+  std::string debug_label;
+  if (format().is_single_plane()) {
+    debug_label = base::StringPrintf("%s_%s", backing()->GetName(),
+                                     backing()->debug_label().c_str());
+  } else {
+    debug_label = base::StringPrintf("%s_%s_Plane%d", backing()->GetName(),
+                                     backing()->debug_label().c_str(), plane);
+  }
+  return debug_label;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // OverlayImageRepresentation
 
@@ -904,39 +917,6 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// VaapiImageRepresentation
-
-VaapiImageRepresentation::VaapiImageRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker,
-    VaapiDependencies* vaapi_deps)
-    : SharedImageRepresentation(manager, backing, tracker),
-      vaapi_deps_(vaapi_deps) {}
-
-VaapiImageRepresentation::~VaapiImageRepresentation() = default;
-
-VaapiImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<VaapiImageRepresentation> /* pass_key */,
-    VaapiImageRepresentation* representation)
-    : ScopedAccessBase(representation, AccessMode::kWrite) {}
-
-VaapiImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
-  representation()->EndAccess();
-}
-
-const media::VASurface*
-VaapiImageRepresentation::ScopedWriteAccess::va_surface() {
-  return representation()->vaapi_deps_->GetVaSurface();
-}
-
-std::unique_ptr<VaapiImageRepresentation::ScopedWriteAccess>
-VaapiImageRepresentation::BeginScopedWriteAccess() {
-  return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<VaapiImageRepresentation>(), this);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // MemoryImageRepresentation
 
 MemoryImageRepresentation::ScopedReadAccess::ScopedReadAccess(
@@ -1006,33 +986,50 @@ RasterImageRepresentation::BeginScopedWriteAccess(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// VideoDecodeImageRepresentation
+// VideoImageRepresentation
 
-VideoDecodeImageRepresentation::VideoDecodeImageRepresentation(
-    SharedImageManager* manager,
-    SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
+VideoImageRepresentation::VideoImageRepresentation(SharedImageManager* manager,
+                                                   SharedImageBacking* backing,
+                                                   MemoryTypeTracker* tracker)
     : SharedImageRepresentation(manager, backing, tracker) {}
 
-VideoDecodeImageRepresentation::~VideoDecodeImageRepresentation() = default;
+VideoImageRepresentation::~VideoImageRepresentation() = default;
 
-VideoDecodeImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
-    base::PassKey<VideoDecodeImageRepresentation> /* pass_key */,
-    VideoDecodeImageRepresentation* representation)
+VideoImageRepresentation::ScopedWriteAccess::ScopedWriteAccess(
+    base::PassKey<VideoImageRepresentation> /* pass_key */,
+    VideoImageRepresentation* representation)
     : ScopedAccessBase(representation, AccessMode::kWrite) {}
 
-VideoDecodeImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
+VideoImageRepresentation::ScopedWriteAccess::~ScopedWriteAccess() {
   representation()->EndWriteAccess();
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation::ScopedWriteAccess>
-VideoDecodeImageRepresentation::BeginScopedWriteAccess() {
+std::unique_ptr<VideoImageRepresentation::ScopedWriteAccess>
+VideoImageRepresentation::BeginScopedWriteAccess() {
   if (!BeginWriteAccess()) {
     return nullptr;
   }
 
   return std::make_unique<ScopedWriteAccess>(
-      base::PassKey<VideoDecodeImageRepresentation>(), this);
+      base::PassKey<VideoImageRepresentation>(), this);
+}
+VideoImageRepresentation::ScopedReadAccess::ScopedReadAccess(
+    base::PassKey<VideoImageRepresentation> /* pass_key */,
+    VideoImageRepresentation* representation)
+    : ScopedAccessBase(representation, AccessMode::kWrite) {}
+
+VideoImageRepresentation::ScopedReadAccess::~ScopedReadAccess() {
+  representation()->EndReadAccess();
+}
+
+std::unique_ptr<VideoImageRepresentation::ScopedReadAccess>
+VideoImageRepresentation::BeginScopedReadAccess() {
+  if (!BeginReadAccess()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ScopedReadAccess>(
+      base::PassKey<VideoImageRepresentation>(), this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

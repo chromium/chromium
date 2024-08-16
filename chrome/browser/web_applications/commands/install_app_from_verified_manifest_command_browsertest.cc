@@ -13,13 +13,16 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -27,6 +30,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -60,6 +64,40 @@ class InstallAppFromVerifiedManifestCommandTest : public WebAppBrowserTestBase {
   std::string GetIconUrl() {
     return https_server()->GetURL("/web_apps/blue-192.png").spec();
   }
+
+  // Returns a basic, installable manifest with "/" as the start URL and 1 icon.
+  std::string GetBasicManifest() {
+    const char kManifestTemplate[] = R"json({
+      "start_url": "/",
+      "name": "Test app",
+      "icons": [{
+        "src": "$1",
+        "sizes": "192x192",
+        "type": "image/png"
+      }]
+    })json";
+
+    return base::ReplaceStringPlaceholders(kManifestTemplate, {GetIconUrl()},
+                                           nullptr);
+  }
+
+  std::tuple<webapps::AppId, webapps::InstallResultCode> InstallAndAwaitResult(
+      const GURL& document_url,
+      const GURL& manifest_url,
+      const std::string& manifest,
+      webapps::AppId expected_id = "",
+      webapps::WebappInstallSource install_source =
+          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      bool is_diy_app = false,
+      std::optional<WebAppInstallParams> params = std::nullopt) {
+    base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+        result;
+    provider().command_manager().ScheduleCommand(
+        std::make_unique<InstallAppFromVerifiedManifestCommand>(
+            install_source, document_url, manifest_url, manifest, expected_id,
+            is_diy_app, std::move(params), result.GetCallback()));
+    return result.Take();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
@@ -85,16 +123,12 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
-  webapps::AppId result_id = result.Get<0>();
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
+
   EXPECT_EQ(result_id, expected_id);
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(result_id),
             "Test app");
@@ -131,16 +165,11 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
 
-  webapps::AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, expected_id);
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 }
 
@@ -163,16 +192,12 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
       kManifestTemplate, {GetIconUrl()}, nullptr);
 
   webapps::AppId expected_id = GenerateAppId("appid", kDocumentUrl);
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
 
-  webapps::AppId result_id = result.Get<0>();
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
+
   EXPECT_EQ(result_id, expected_id);
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
   EXPECT_TRUE(IsShortcutCreated(result_id, "Test app"));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(result_id),
@@ -198,16 +223,12 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   webapps::AppId existing_id =
       test::InstallDummyWebApp(profile(), "User installed app", kDocumentUrl);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, manifest, existing_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, existing_id,
+                            webapps::WebappInstallSource::EXTERNAL_DEFAULT);
 
-  webapps::AppId result_id = result.Get<0>();
   EXPECT_EQ(result_id, existing_id);
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
 
   // Existing install data should not be overwritten.
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(result_id),
@@ -260,15 +281,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
 
-  webapps::AppId result_id = result.Get<0>();
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
 
   SkColor small_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
@@ -293,15 +309,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   const GURL kManifestUrl("https://www.app.com/manifest.json");
   const char kManifest[] = "notjson";
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest,
-          /*expected_id=*/"", result.GetCallback()));
+  auto [_, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, kManifest);
 
-  EXPECT_EQ(result.Get<1>(),
+  EXPECT_EQ(result_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
@@ -314,15 +325,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
     "name": "Test app 2"
   })json";
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest,
-          /*expected_id=*/"", result.GetCallback()));
+  auto [_, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, kManifest);
 
-  EXPECT_EQ(result.Get<1>(),
+  EXPECT_EQ(result_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
@@ -335,15 +341,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
     "start_url": "/"
   })json";
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest,
-          /*expected_id=*/"", result.GetCallback()));
+  auto [_, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, kManifest);
 
-  EXPECT_EQ(result.Get<1>(),
+  EXPECT_EQ(result_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
@@ -363,15 +364,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
     }]
   })json";
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifest,
-          /*expected_id=*/"", result.GetCallback()));
+  auto [_, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, kManifest);
 
-  EXPECT_EQ(result.Get<1>(),
+  EXPECT_EQ(result_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
@@ -395,15 +391,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate, {GetIconUrl()}, nullptr);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, kExpectedId);
 
-  EXPECT_EQ(result.Get<1>(),
-            webapps::InstallResultCode::kExpectedAppIdCheckFailed);
+  EXPECT_EQ(result_code, webapps::InstallResultCode::kExpectedAppIdCheckFailed);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
@@ -436,14 +427,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate, {GetIconUrl()}, nullptr);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, kExpectedId);
 
-  EXPECT_EQ(result.Get<1>(),
+  EXPECT_EQ(result_code,
             webapps::InstallResultCode::kNotValidManifestForWebApp);
 }
 
@@ -476,15 +463,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
        https_server()->GetURL("/nocontent").spec()},
       nullptr);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, kExpectedId, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, kExpectedId);
 
-  EXPECT_EQ(result.Get<1>(),
-            webapps::InstallResultCode::kIconDownloadingFailed);
+  EXPECT_EQ(result_code, webapps::InstallResultCode::kIconDownloadingFailed);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
@@ -532,15 +514,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
 
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::INTERNAL_DEFAULT, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
 
-  webapps::AppId result_id = result.Get<0>();
-  EXPECT_TRUE(webapps::IsSuccess(result.Get<1>()));
+  EXPECT_TRUE(webapps::IsSuccess(result_code));
 
   SkColor small_icon_color =
       IconManagerReadAppIconPixel(provider().icon_manager(), result_id, 96);
@@ -592,15 +569,10 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, manifest, expected_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
 
-  EXPECT_EQ(result.Get<1>(),
-            webapps::InstallResultCode::kNoValidIconsInManifest);
+  EXPECT_EQ(result_code, webapps::InstallResultCode::kNoValidIconsInManifest);
 }
 
 IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
@@ -608,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   const GURL kDocumentUrl("https://www.app.com/");
   const GURL kStartUrl("https://www.app.com/home");
   const GURL kManifestUrl("https://www.app.com/manifest.json");
-  const char kManifestTemplate[] = R"json({
+  const char kManifest[] = R"json({
     "start_url": "/home",
     "name": "Test app",
     "launch_handler": {
@@ -618,15 +590,88 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kStartUrl);
-  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
-      result;
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<InstallAppFromVerifiedManifestCommand>(
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, kDocumentUrl,
-          kManifestUrl, kManifestTemplate, expected_id, result.GetCallback()));
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, kManifest, expected_id);
 
-  EXPECT_EQ(result.Get<1>(),
-            webapps::InstallResultCode::kNoValidIconsInManifest);
+  EXPECT_EQ(result_code, webapps::InstallResultCode::kNoValidIconsInManifest);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       DefaultToStandaloneUserDisplay) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id);
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(result_id)->user_display_mode(),
+      mojom::UserDisplayMode::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       OverrideUserDisplayModeWithParams) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  WebAppInstallParams params;
+  params.user_display_mode = mojom::UserDisplayMode::kBrowser;
+
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(result_id)->user_display_mode(),
+      mojom::UserDisplayMode::kBrowser);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppEffectiveDisplayMode(result_id),
+            DisplayMode::kBrowser);
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       SetAdditionalSearchTermsThroughParams) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  WebAppInstallParams params;
+  params.additional_search_terms = {"chocolate", "vanilla", "strawberry"};
+
+  auto [result_id, result_code] =
+      InstallAndAwaitResult(kDocumentUrl, kManifestUrl, manifest, expected_id,
+                            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                            /*is_diy_app=*/false, params);
+
+  EXPECT_THAT(provider()
+                  .registrar_unsafe()
+                  .GetAppById(result_id)
+                  ->additional_search_terms(),
+              testing::ElementsAre("chocolate", "vanilla", "strawberry"));
+}
+
+IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
+                       InstallAsDiyApp) {
+  const GURL kDocumentUrl("https://www.app.com/");
+  const GURL kManifestUrl("https://www.app.com/manifest.json");
+  std::string manifest = GetBasicManifest();
+  webapps::AppId expected_id =
+      GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);
+
+  auto [result_id, result_code] = InstallAndAwaitResult(
+      kDocumentUrl, kManifestUrl, manifest, expected_id,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON, /*is_diy_app=*/true);
+
+  EXPECT_TRUE(provider().registrar_unsafe().IsDiyApp(result_id));
 }
 
 }  // namespace web_app

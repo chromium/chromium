@@ -747,6 +747,7 @@ bool ValidateConv2d(const ContextProperties& context_properties,
 }
 
 bool ValidateElementWiseBinaryDataTypes(
+    const ContextProperties& context_properties,
     const mojom::Operand* lhs,
     const mojom::Operand* rhs,
     const mojom::Operand* output,
@@ -768,10 +769,48 @@ bool ValidateElementWiseBinaryDataTypes(
     }
   }
 
-  return true;
+  switch (operation.kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd:
+      return context_properties.data_type_limits.add_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kSub:
+      return context_properties.data_type_limits.sub_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMul:
+      return context_properties.data_type_limits.mul_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kDiv:
+      return context_properties.data_type_limits.div_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMax:
+      return context_properties.data_type_limits.max_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kMin:
+      return context_properties.data_type_limits.min_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kPow:
+      return context_properties.data_type_limits.pow_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kEqual:
+      return context_properties.data_type_limits.equal_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kGreater:
+      return context_properties.data_type_limits.greater_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+      return context_properties.data_type_limits.greater_or_equal_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLesser:
+      return context_properties.data_type_limits.lesser_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+      return context_properties.data_type_limits.lesser_or_equal_input.Has(
+          lhs->descriptor.data_type());
+  }
 }
 
-bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
+bool ValidateElementWiseBinary(const ContextProperties& context_properties,
+                               const IdToOperandMap& id_to_operand_map,
                                const mojom::ElementWiseBinary& operation,
                                base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(operation.lhs_operand_id) ||
@@ -789,7 +828,8 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  if (!ValidateElementWiseBinaryDataTypes(a, b, output, operation)) {
+  if (!ValidateElementWiseBinaryDataTypes(context_properties, a, b, output,
+                                          operation)) {
     return false;
   }
 
@@ -822,43 +862,74 @@ bool ValidateElu(const ContextProperties& context_properties,
   return true;
 }
 
-static constexpr auto kUnaryOperatorConstraints = base::MakeFixedFlatMap<
-    mojom::ElementWiseUnary::Kind,
-    webnn::SupportedDataTypes>({
-    {mojom::ElementWiseUnary::Kind::kAbs,
-     DataTypeConstraint::kFloat16To32Int8To32},
-    {mojom::ElementWiseUnary::Kind::kCeil, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kCos, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kExp, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kFloor, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kLog, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kNeg,
-     DataTypeConstraint::kFloat16To32Int8To32},
-    {mojom::ElementWiseUnary::Kind::kSin, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kTan, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kLogicalNot, DataTypeConstraint::kUint8},
-    {mojom::ElementWiseUnary::Kind::kIdentity, SupportedDataTypes::All()},
-    {mojom::ElementWiseUnary::Kind::kSqrt, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kErf, DataTypeConstraint::kFloat16To32},
-    {mojom::ElementWiseUnary::Kind::kReciprocal,
-     DataTypeConstraint::kFloat16To32},
-});
-
-bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
+bool ValidateElementWiseUnary(const ContextProperties& context_properties,
+                              const IdToOperandMap& id_to_operand_map,
                               const mojom::ElementWiseUnary& operation,
                               base::flat_set<uint64_t>& processed_operands) {
-  // List the validation of cast operator separately because its output data
-  // type is different from the input data type.
-  if (operation.kind == mojom::ElementWiseUnary::Kind::kCast) {
-    return ValidateCastOperation(id_to_operand_map, operation,
-                                 processed_operands);
+  switch (operation.kind) {
+    case mojom::ElementWiseUnary::Kind::kAbs:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.abs_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCast:
+      return ValidateCastOperation(id_to_operand_map, operation,
+                                   processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCeil:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.ceil_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kCos:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.cos_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kErf:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.erf_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kExp:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.exp_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kFloor:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.floor_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kIdentity:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.identity_input,
+          processed_operands);
+    case mojom::ElementWiseUnary::Kind::kLog:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.log_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.logical_not_input,
+          processed_operands);
+    case mojom::ElementWiseUnary::Kind::kNeg:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.neg_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kReciprocal:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.reciprocal_input,
+          processed_operands);
+    case mojom::ElementWiseUnary::Kind::kSin:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.sin_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kSqrt:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.sqrt_input, processed_operands);
+    case mojom::ElementWiseUnary::Kind::kTan:
+      return ValidateUnaryOperation(
+          id_to_operand_map, operation,
+          context_properties.data_type_limits.tan_input, processed_operands);
   }
-  const auto constraints_iterator =
-      kUnaryOperatorConstraints.find(operation.kind);
-  CHECK(constraints_iterator != kUnaryOperatorConstraints.end());
-  return ValidateUnaryOperation(id_to_operand_map, operation,
-                                constraints_iterator->second,
-                                processed_operands);
 }
 
 bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
@@ -1862,14 +1933,14 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateConv2d(context_properties, id_to_operand_map,
                             *operation.get_conv2d(), processed_operands);
     case mojom::Operation::Tag::kElementWiseBinary:
-      return ValidateElementWiseBinary(id_to_operand_map,
+      return ValidateElementWiseBinary(context_properties, id_to_operand_map,
                                        *operation.get_element_wise_binary(),
                                        processed_operands);
     case mojom::Operation::Tag::kElu:
       return ValidateElu(context_properties, id_to_operand_map,
                          *operation.get_elu(), processed_operands);
     case mojom::Operation::Tag::kElementWiseUnary:
-      return ValidateElementWiseUnary(id_to_operand_map,
+      return ValidateElementWiseUnary(context_properties, id_to_operand_map,
                                       *operation.get_element_wise_unary(),
                                       processed_operands);
     case mojom::Operation::Tag::kExpand:
@@ -2075,7 +2146,14 @@ WebNNGraphBuilderImpl::ValidateGraph(
   std::vector<uint64_t> graph_outputs;
   graph_outputs.reserve(graph_info.output_operands.size());
   base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
+  // The operand id must start from 1.
+  uint64_t expected_operand_id = 1;
   for (auto& [id, operand] : graph_info.id_to_operand_map) {
+    // Validate that the operand ids are increasing and contiguous.
+    if (id != expected_operand_id++) {
+      return std::nullopt;
+    }
+
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {

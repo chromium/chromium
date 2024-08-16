@@ -56,8 +56,8 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 }  // namespace
 
 SharingMessageBridgeImpl::SharingMessageBridgeImpl(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)) {
   // Current data type doesn't have persistent storage so it's ready to sync
   // immediately.
   this->change_processor()->ModelReadyToSync(
@@ -107,7 +107,7 @@ void SharingMessageBridgeImpl::SendSharingMessage(
                           metadata_change_list.get());
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 SharingMessageBridgeImpl::GetControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }
@@ -197,7 +197,7 @@ void SharingMessageBridgeImpl::OnCommitAttemptErrors(
   }
 }
 
-syncer::ModelTypeSyncBridge::CommitAttemptFailedBehavior
+syncer::DataTypeSyncBridge::CommitAttemptFailedBehavior
 SharingMessageBridgeImpl::OnCommitAttemptFailed(
     syncer::SyncCommitError commit_error) {
   // Full commit failed means we need to drop all entities and report an error

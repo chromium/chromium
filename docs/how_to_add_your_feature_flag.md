@@ -14,6 +14,10 @@ See also the following for definitions:
 
 ## Step 1: Adding a new `base::Feature`
 
+*** note
+**NOTE:** All files mentioned in Step 1 require the features to be listed in alphabetical order.
+***
+
 This step would be different depending on where you want to use the flag:
 
 ### To use the Flag in `content/` and its embedders
@@ -79,9 +83,9 @@ for WebView flags.
 
 You have to modify these five files in total.
 
-* [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc)
-* [chrome/browser/flag_descriptions.cc](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.cc)
-* [chrome/browser/flag_descriptions.h](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.h)
+* [chrome/browser/about_flags.cc](https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc) (Add your changes at the bottom of the list)
+* [chrome/browser/flag_descriptions.cc](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.cc) (Features should be alphabetically sorted)
+* [chrome/browser/flag_descriptions.h](https://cs.chromium.org/chromium/src/chrome/browser/flag_descriptions.h) (Features should be alphabetically sorted)
 * [tools/metrics/histograms/enums.xml](https://cs.chromium.org/chromium/src/tools/metrics/histograms/enums.xml)
 * [chrome/browser/flag-metadata.json](https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json)
 

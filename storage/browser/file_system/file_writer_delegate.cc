@@ -150,9 +150,8 @@ void FileWriterDelegate::Read() {
 
   DCHECK(data_pipe_);
   size_t num_bytes = 0;
-  MojoResult result = data_pipe_->ReadData(
-      MOJO_READ_DATA_FLAG_NONE, base::as_writable_bytes(io_buffer_->span()),
-      num_bytes);
+  MojoResult result = data_pipe_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                           io_buffer_->span(), num_bytes);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     data_pipe_watcher_.ArmOrNotify();
     return;

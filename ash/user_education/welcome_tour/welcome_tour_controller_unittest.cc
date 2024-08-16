@@ -56,6 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -166,7 +167,8 @@ MATCHER_P6(BubbleStep,
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          arg.next_button_callback().is_null() != has_next_button &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM &&
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
 }
 
@@ -189,7 +191,8 @@ MATCHER_P7(BubbleStep,
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem;
 }
 
 MATCHER_P8(BubbleStep,
@@ -214,7 +217,8 @@ MATCHER_P8(BubbleStep,
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
          &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
-         util::GetHelpBubbleModalType(ext_props) == ui::MODAL_TYPE_SYSTEM;
+         util::GetHelpBubbleModalType(ext_props) ==
+             ui::mojom::ModalType::kSystem;
 }
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
@@ -467,6 +471,51 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
       EXPECT_FALSE(WelcomeTourDialog::Get());
     }
   }
+}
+
+// Verifies that the Welcome Tour is started when the primary user session is
+// first activated and the last active user pref service is not null.
+TEST_F(WelcomeTourControllerTest, StartsTourWhenUserPrefServiceIsNotNull) {
+  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+
+  // Ensure controller exists.
+  auto* const welcome_tour_controller = WelcomeTourController::Get();
+  ASSERT_TRUE(welcome_tour_controller);
+
+  // Ensure delegate exists and disallow any tutorial registrations/starts.
+  auto* const user_education_delegate = this->user_education_delegate();
+  ASSERT_TRUE(user_education_delegate);
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
+  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
+
+  // Observe the `WelcomeTourController` for start/end events.
+  StrictMock<MockWelcomeTourControllerObserver> observer;
+  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
+      observation{&observer};
+  observation.Observe(welcome_tour_controller);
+
+  // Add a primary user without pref service for the first time. This should
+  // *not* trigger the Welcome Tour to start.
+  auto* const session_controller_client = GetSessionControllerClient();
+  session_controller_client->AddUserSession(
+      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
+      /*provide_pref_service=*/false, /*is_new_profile=*/true);
+
+  // Activate the primary user session. This should *not* trigger the Welcome
+  // Tour to start because the last active user pref service is null.
+  session_controller_client->SetSessionState(SessionState::ACTIVE);
+  Mock::VerifyAndClearExpectations(user_education_delegate);
+  Mock::VerifyAndClearExpectations(&observer);
+
+  // Set the pref service. This *should* trigger the Welcome Tour to be
+  // registered and started as well as notify observers.
+  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(1);
+  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(1);
+  EXPECT_CALL(observer, OnWelcomeTourStarted);
+
+  session_controller_client->ProvidePrefServiceForUser(primary_account_id);
+  Mock::VerifyAndClearExpectations(user_education_delegate);
+  Mock::VerifyAndClearExpectations(&observer);
 }
 
 // Verifies that the Welcome Tour can be aborted via the dialog.

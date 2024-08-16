@@ -67,6 +67,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
 #include "cc/layers/surface_layer_impl.h"
+#include "cc/layers/video_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/custom_metrics_recorder.h"
@@ -1061,19 +1062,20 @@ void LayerTreeHostImpl::AnimateInternal() {
   // DCHECK(monotonic_time == current_begin_frame_tracker_.Current().frame_time)
   //  << "Called animate with unknown frame time!?";
 
-  bool did_animate = false;
-
   // TODO(bokan): This should return did_animate, see TODO in
   // ElasticOverscrollController::Animate. crbug.com/551138.
   if (input_delegate_)
     input_delegate_->TickAnimations(monotonic_time);
 
-  did_animate |= AnimatePageScale(monotonic_time);
-  did_animate |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
-  did_animate |= AnimateScrollbars(monotonic_time);
-  did_animate |= AnimateBrowserControls(monotonic_time);
+  bool animated_others = AnimatePageScale(monotonic_time);
+  animated_others |= AnimateLayers(monotonic_time, /* is_active_tree */ true);
+  animated_others |= AnimateBrowserControls(monotonic_time);
 
-  if (did_animate) {
+  bool scroll_bar_fade_out_only_or_idle = false;
+  bool animated_scrollbars =
+      AnimateScrollbars(monotonic_time, scroll_bar_fade_out_only_or_idle);
+
+  if (animated_others || animated_scrollbars) {
     // Animating stuff can change the root scroll offset, so inform the
     // synchronous input handler.
     if (input_delegate_)
@@ -1081,7 +1083,12 @@ void LayerTreeHostImpl::AnimateInternal() {
 
     // If the tree changed, then we want to draw at the end of the current
     // frame.
-    SetNeedsRedrawOrUpdateDisplayTree(RedrawReason::kUntracked);
+    RedrawReason redraw_reason = RedrawReason::kUntracked;
+    if (!animated_others && animated_scrollbars &&
+        scroll_bar_fade_out_only_or_idle) {
+      redraw_reason = RedrawReason::kScrollbarFadeOutAnimation;
+    }
+    SetNeedsRedrawOrUpdateDisplayTree(redraw_reason);
   }
 }
 
@@ -1382,6 +1389,10 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   bool have_missing_animated_tiles = false;
   int num_of_layers_with_videos = 0;
 
+  const bool compute_video_layer_preferred_interval =
+      !features::UseSurfaceLayerForVideo() &&
+      features::IsUsingFrameIntervalDecider();
+
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
   for (EffectTreeLayerListIterator it(active_tree());
@@ -1420,6 +1431,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         if (layer->may_contain_video()) {
           num_of_layers_with_videos++;
           frame->may_contain_video = true;
+        }
+        if (compute_video_layer_preferred_interval &&
+            layer->GetLayerType() == mojom::LayerType::kVideo) {
+          VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
+          std::optional<base::TimeDelta> video_preferred_interval =
+              video_layer->GetPreferredRenderInterval();
+          if (video_preferred_interval) {
+            frame->video_layer_preferred_intervals[video_preferred_interval
+                                                       .value()]++;
+          }
         }
         layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         layer->AppendQuads(target_render_pass, &append_quads_data);
@@ -2849,15 +2870,44 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   metadata.frame_interval_inputs.has_input =
       frame_rate_estimator_.input_priority_mode();
 
-  std::optional<ImageAnimationController::ConsistentFrameDuration>
-      animating_image_duration =
-          image_animation_controller_.GetConsistentContentFrameDuration();
-  if (animating_image_duration) {
-    metadata.frame_interval_inputs.content_interval_info.push_back(
-        {viz::ContentFrameIntervalType::kAnimatingImage,
-         animating_image_duration->frame_duration,
-         animating_image_duration->num_images - 1u});
+  if (!frame->video_layer_preferred_intervals.empty() &&
+      frame->set_needs_redraw_reasons.Has(RedrawReason::kVideoLayer)) {
+    for (auto& [video_interval, count] :
+         frame->video_layer_preferred_intervals) {
+      metadata.frame_interval_inputs.content_interval_info.push_back(
+          {viz::ContentFrameIntervalType::kVideo, video_interval, count - 1u});
+    }
+    frame->set_needs_redraw_reasons.Remove(RedrawReason::kVideoLayer);
   }
+
+  if (frame->set_needs_redraw_reasons.Has(RedrawReason::kAnimatedImage)) {
+    std::optional<ImageAnimationController::ConsistentFrameDuration>
+        animating_image_duration =
+            image_animation_controller_.GetConsistentContentFrameDuration();
+    if (animating_image_duration) {
+      metadata.frame_interval_inputs.content_interval_info.push_back(
+          {viz::ContentFrameIntervalType::kAnimatingImage,
+           animating_image_duration->frame_duration,
+           animating_image_duration->num_images - 1u});
+      frame->set_needs_redraw_reasons.Remove(RedrawReason::kAnimatedImage);
+    }
+  }
+
+  if (frame->set_needs_redraw_reasons.Has(
+          RedrawReason::kScrollbarFadeOutAnimation)) {
+    // Lower fade out animation to 20hz somewhat arbitrarily since it's small
+    // and hard to notice a low frame rate.
+    metadata.frame_interval_inputs.content_interval_info.push_back(
+        {viz::ContentFrameIntervalType::kScrollBarFadeOutAnimation,
+         base::Hertz(20)});
+    frame->set_needs_redraw_reasons.Remove(
+        RedrawReason::kScrollbarFadeOutAnimation);
+  }
+
+  // If all RedrawReasons have been recorded in `content_interval_info` and
+  // removed, then can set `has_only_content_frame_interval_updates`.
+  metadata.frame_interval_inputs.has_only_content_frame_interval_updates =
+      frame->set_needs_redraw_reasons.empty();
 
   base::TimeDelta preferred_frame_interval;
   static const bool feature_allowed =
@@ -4551,10 +4601,17 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   return true;
 }
 
-bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time) {
+bool LayerTreeHostImpl::AnimateScrollbars(base::TimeTicks monotonic_time,
+                                          bool& fade_out_only_or_idle) {
   bool animated = false;
-  for (auto& pair : scrollbar_animation_controllers_)
-    animated |= pair.second->Animate(monotonic_time);
+  fade_out_only_or_idle = true;
+  for (auto& pair : scrollbar_animation_controllers_) {
+    bool fade_out_only = false;
+    if (pair.second->Animate(monotonic_time, fade_out_only)) {
+      animated = true;
+      fade_out_only_or_idle &= fade_out_only;
+    }
+  }
   return animated;
 }
 
@@ -4816,8 +4873,9 @@ void LayerTreeHostImpl::ActivationStateAsValueInto(
 
 void LayerTreeHostImpl::SetDebugState(
     const LayerTreeDebugState& new_debug_state) {
-  if (LayerTreeDebugState::Equal(debug_state_, new_debug_state))
+  if (debug_state_ == new_debug_state) {
     return;
+  }
 
   debug_state_ = new_debug_state;
   UpdateTileManagerMemoryPolicy(ActualManagedMemoryPolicy());
@@ -5487,7 +5545,7 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
   client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation,
-                                        RedrawReason::kUntracked);
+                                        RedrawReason::kAnimatedImage);
 }
 
 bool LayerTreeHostImpl::IsReadyToActivate() const {

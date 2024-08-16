@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
@@ -27,15 +26,11 @@ std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
 }
 
 PlatformHandle* GetPlatformHandle() {
-#if !BUILDFLAG(IS_ANDROID)
   if (instance_for_testing_) {
     return instance_for_testing_;
   }
   return CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
       .system_permissions_platform_handle();
-#else
-  return nullptr;
-#endif
 }
 
 }  // namespace
@@ -78,6 +73,12 @@ void OpenSystemSettings(content::WebContents* web_contents,
 void Request(ContentSettingsType type,
              SystemPermissionResponseCallback callback) {
   GetPlatformHandle()->Request(type, std::move(callback));
+}
+
+// static
+std::unique_ptr<ScopedObservation> Observe(
+    SystemPermissionChangedCallback observer) {
+  return GetPlatformHandle()->Observe(observer);
 }
 
 ScopedSettingsForTesting::ScopedSettingsForTesting(ContentSettingsType type,

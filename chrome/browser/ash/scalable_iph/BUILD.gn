@@ -11,10 +11,12 @@ static_library("scalable_iph") {
     "scalable_iph_delegate_impl.cc",
     "scalable_iph_delegate_impl.h",
   ]
+
   public_deps = [
     "//ash",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/printing",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/phonehub",
@@ -27,6 +29,7 @@ static_library("scalable_iph") {
     "//components/keyed_service/core",
     "//mojo/public/cpp/bindings",
   ]
+
   deps = [
     "//apps",
     "//ash/constants",
@@ -125,7 +128,6 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/ui",

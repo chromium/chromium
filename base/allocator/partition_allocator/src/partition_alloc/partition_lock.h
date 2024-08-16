@@ -50,8 +50,8 @@ class PA_LOCKABLE Lock {
       // Note that we don't rely on a DCHECK() in base::Lock(), as it would
       // itself allocate. Meaning that without this code, a reentrancy issue
       // hangs on Linux.
-      if (PA_UNLIKELY(owning_thread_ref_.load(std::memory_order_acquire) ==
-                      current_thread)) {
+      if (owning_thread_ref_.load(std::memory_order_acquire) == current_thread)
+          [[unlikely]] {
         // Trying to acquire lock while it's held by this thread: reentrancy
         // issue.
         PA_IMMEDIATE_CRASH();

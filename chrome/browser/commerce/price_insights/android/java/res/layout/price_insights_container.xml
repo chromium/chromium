@@ -14,91 +14,58 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:paddingTop="@dimen/price_insights_top_padding"
     android:paddingBottom="@dimen/price_insights_bottom_padding"
     android:paddingStart="@dimen/price_insights_general_padding"
     android:paddingEnd="@dimen/price_insights_general_padding"
     android:background="@drawable/price_insights_sheet_background">
 
-    <!-- Price tracking section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height= "wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/price_insights_general_padding"
-        android:background="@drawable/price_insights_sheet_top_corner_background">
-        <!-- Price tracking title and description -->
+    <!-- The handle bar section -->
+    <include layout="@layout/bottom_sheet_handlebar"/>
+
+    <!-- The scroll view wrapper -->
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
         <LinearLayout
-            android:id="@+id/price_tracking_title_and_description_layout"
-            android:layout_weight="1"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/price_insights_general_padding"
             android:orientation="vertical">
+
+            <!-- Price tracking section -->
+            <include layout="@layout/price_tracking_layout"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/price_insights_divider_height"/>
+
+            <!-- Price history section -->
+            <include layout="@layout/price_history_layout"/>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/price_insights_divider_height"/>
+
+            <!-- Jackpot url section -->
             <TextView
-                android:id="@+id/price_tracking_title"
-                android:layout_width="wrap_content"
+                android:id="@+id/open_jackpot_url_button"
+                android:contentDescription="@string/price_insights_open_url_button_content_description"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextMediumThick"
-                android:textAlignment="viewStart"
-                android:maxLines="1"
-                android:ellipsize="end"/>
-            <TextView
-                android:id="@+id/price_tracking_description"
-                android:layout_width="wrap_content"
-                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                android:layout_height="wrap_content"/>
+                android:paddingStart="@dimen/price_insights_open_jackpot_url_button_text_start_padding"
+                android:paddingEnd="@dimen/price_insights_general_padding"
+                android:paddingTop="@dimen/price_insights_general_padding"
+                android:paddingBottom="@dimen/price_insights_general_padding"
+                android:clickable="true"
+                android:focusable="true"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:background="@drawable/price_insights_sheet_bottom_corner_background"
+                android:foreground="?attr/selectableItemBackground"/>
+
+    <!-- End of scroll view wrapper -->
         </LinearLayout>
-        <!-- Price tracking button -->
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/price_tracking_button"
-            android:contentDescription="@string/price_insights_content_price_tracking_button_content_description"
-            android:drawablePadding="@dimen/price_insights_price_tracking_button_drawable_padding"
-            android:textAppearance="@style/TextAppearance.TextMediumThick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/FilledButton.Flat"/>
-    </LinearLayout>
-
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/price_insights_divider_height"/>
-
-    <!-- Price history section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/price_insights_general_padding"
-        android:background="@color/price_insights_sheet_bg_color">
-        <TextView
-            android:id="@+id/price_history_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-            android:textAlignment="viewStart"/>
-    </LinearLayout>
-
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/price_insights_divider_height"/>
-
-    <!-- Jackpot url section -->
-    <TextView
-        android:id="@+id/open_jackpot_url_button"
-        android:contentDescription="@string/price_insights_open_url_button_content_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="@dimen/price_insights_open_jackpot_url_button_text_start_padding"
-        android:paddingEnd="@dimen/price_insights_general_padding"
-        android:paddingTop="@dimen/price_insights_general_padding"
-        android:paddingBottom="@dimen/price_insights_general_padding"
-        android:clickable="true"
-        android:focusable="true"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
-        android:background="@drawable/price_insights_sheet_bottom_corner_background"
-        android:foreground="?attr/selectableItemBackground"/>
+    </ScrollView>
 
 </LinearLayout>

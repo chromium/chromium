@@ -138,16 +138,15 @@ void PopulateVideoFrameWithNoise(VideoFrame* frame) {
       // coded_size().
       // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
       // unbounded pointer.
-      UNSAFE_BUFFERS(
-          base::span(frame->writable_data(VideoFrame::Plane::kY),
-                     height * base::checked_cast<size_t>(
-                                  frame->stride(VideoFrame::Plane::kY))));
+      UNSAFE_TODO(base::span(frame->writable_data(VideoFrame::Plane::kY),
+                             height * base::checked_cast<size_t>(frame->stride(
+                                          VideoFrame::Plane::kY))));
   base::span<uint8_t> u_plane =
       // SAFETY: The U plane has a width specified by stride() and a height that
       // is half of coded_size(), rounding up.
       // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
       // unbounded pointer.
-      UNSAFE_BUFFERS(
+      UNSAFE_TODO(
           base::span(frame->writable_data(VideoFrame::Plane::kU),
                      half_height * base::checked_cast<size_t>(
                                        frame->stride(VideoFrame::Plane::kU))));
@@ -156,7 +155,7 @@ void PopulateVideoFrameWithNoise(VideoFrame* frame) {
       // is half of coded_size(), rounding up.
       // TODO(crbug.com/338570700): Make VideoFrame return a span instead of an
       // unbounded pointer.
-      UNSAFE_BUFFERS(
+      UNSAFE_TODO(
           base::span(frame->writable_data(VideoFrame::Plane::kV),
                      half_height * base::checked_cast<size_t>(
                                        frame->stride(VideoFrame::Plane::kV))));

@@ -35,6 +35,7 @@ source_set("price_notifications") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -43,20 +44,6 @@ source_set("price_notifications") {
     "//ios/chrome/browser/ui/price_notifications/cells",
     "//ios/web/public",
     "//url",
-  ]
-}
-
-source_set("price_notifications_iph") {
-  sources = [
-    "price_notifications_iph_coordinator.h",
-    "price_notifications_iph_coordinator.mm",
-  ]
-
-  deps = [
-    "//ios/chrome/browser/commerce/model/price_notifications",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

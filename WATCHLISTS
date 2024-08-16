@@ -201,11 +201,11 @@
                   '|chromeos/ash/services/assistant/'\
                   '|chromeos/ash/services/libassistant/'\
                   '|chromeos/services/assistant/'\
+                  '|chrome/browser/ash/ambient/'\
                   '|chrome/browser/ash/wallpaper_handlers/'\
                   '|chrome/browser/ash/system_web_apps/apps/personalization_app/'\
                   '|chrome/browser/resources/ash/settings/ambient_mode_page/'\
                   '|chrome/browser/ui/ash/.*wallpaper.*/'\
-                  '|chrome/browser/ui/ash/ambient/'\
                   '|chrome/browser/ui/ash/assistant/'\
                   '|chrome/browser/ui/webui/settings/ash/ambient_mode_handler'\
     },
@@ -747,7 +747,8 @@
                   '|services/resource_coordinator/',
     },
     'chrome_intelligence': {
-      'filepath': 'history_clusters'\
+      'filepath': 'autofill_prediction_improvements'\
+                  '|history_clusters'\
                   '|history_embeddings'\
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
@@ -755,6 +756,7 @@
                   '|model_execution'\
                   '|optimization_guide'\
                   '|optimization_hints'\
+                  '|page_content_annotations'\
                   '|services/on_device_model'\
                   '|third_party/eigen3'\
                   '|third_party/farmhash'\
@@ -769,7 +771,8 @@
                   '|third_party/tflite'\
                   '|third_party/tflite_support'\
                   '|third_party/utf'\
-                  '|third_party/xnnpack'
+                  '|third_party/xnnpack'\
+                  '|user_annotations'
     },
     'chrome_performance_manager': {
       'filepath': 'chrome/browser/performance_manager/'\
@@ -1532,7 +1535,7 @@
       'filepath': 'base/metrics/'\
                   '|chrome/android/java/src/org/chromium/chrome/browser/metrics/'\
                   '|chrome/browser/metrics/'\
-                  '|chrome/browser/ash/external_metrics'\
+                  '|chrome/browser/ash/external_metrics/'\
                   '|chrome/browser/extensions/api/metrics_private/'\
                   '|chrome/browser/ui/webui/metrics_handler'\
                   '|chromecast/browser/metrics/'\
@@ -2975,11 +2978,18 @@
     'ip_protection': ['aakallam+watch@chromium.org',
                       'awillia@chromium.org',
                       'brgoldstein@google.com',
-                      'djmitche@chromium.org'],
+                      'djmitche@chromium.org',
+                      'ciaramcmullin@google.com'],
     'ipcz': ['andreaorru+watch@chromium.org'],
-    'isolated_web_apps_apis': ['greengrape@google.com', 'simonha@google.com'],
-    'isolated_web_apps_core': ['greengrape@google.com', 'simonha@google.com'],
-    'isolated_web_apps_unmanaged_install': ['greengrape@google.com', 'simonha@google.com'],
+    'isolated_web_apps_apis': ['greengrape@google.com',
+                               'rmcelrath+watch@chromium.org',
+                               'simonha@google.com'],
+    'isolated_web_apps_core': ['greengrape@google.com',
+                               'rmcelrath+watch@chromium.org',
+                               'simonha@google.com'],
+    'isolated_web_apps_unmanaged_install': ['greengrape@google.com',
+                                            'rmcelrath+watch@chromium.org',
+                                            'simonha@google.com'],
     'kiosk': ['chromeos-kiosk-eng+watch@google.com'],
     'language': ['language-reviews@chromium.org'],
     'libaom': ['fgalligan@chromium.org',

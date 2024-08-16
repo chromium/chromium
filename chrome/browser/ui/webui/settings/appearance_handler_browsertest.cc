@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowForwardButton));
-  EXPECT_EQ(1u, actions_model->PinnedActionIds().size());
+  EXPECT_EQ(2u, actions_model->PinnedActionIds().size());
 
   base::Value::List args;
   browser()
@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
 
   EXPECT_FALSE(prefs->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kShowForwardButton));
-  EXPECT_EQ(0u, actions_model->PinnedActionIds().size());
+  ASSERT_EQ(1u, actions_model->PinnedActionIds().size());
+  EXPECT_EQ(kActionShowChromeLabs, actions_model->PinnedActionIds()[0]);
 }
 
 }  // namespace settings

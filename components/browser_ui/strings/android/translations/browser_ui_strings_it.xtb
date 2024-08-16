@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL troncato</translation>
 <translation id="1448064542941920355">Diminuisci lo zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sito}other{<ph name="SITE_COUNT" /> siti}}</translation>
+<translation id="1500473259453106018">Nascondi scheda Cali di prezzo nelle schede</translation>
 <translation id="1510341833810331442">I siti non sono autorizzati a salvare dati sul dispositivo</translation>
 <translation id="1547123415014299762">Sono consentiti i cookie di terze parti</translation>
 <translation id="1568470248891039841">I siti visitati possono incorporare contenuti di altri siti, ad esempio immagini, annunci e testo. Questi altri siti possono chiedere l'autorizzazione a usare le informazioni su di te che hanno salvato durante la tua navigazione dei siti. <ph name="BEGIN_LINK" />Scopri di più sui contenuti incorporati<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3232293466644486101">Elimina dati di navigazione…</translation>
 <translation id="3242646949159196181">Quando l'opzione è attiva, i siti possono riprodurre suoni. Quando l'opzione è disattivata, i siti non possono riprodurre l'audio.</translation>
+<translation id="3273479183583863618">Cali di prezzo nelle schede</translation>
 <translation id="3277252321222022663">Consenti ai siti di accedere ai sensori (opzione consigliata)</translation>
 <translation id="3285500645985761267">Consenti ai siti correlati di vedere le tue attività nel gruppo</translation>
 <translation id="3295019059349372795">Capitolo 11: La splendida Città di smeraldo di Oz</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">Chiudi e mostra la prossima azione disponibile</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3763247130972274048">Tocca due volte il video a sinistra o a destra per saltare di 10 secondi</translation>
+<translation id="3779154269823594982">Cambia le password</translation>
 <translation id="3797520601150691162">Non applicare il tema scuro a un sito specifico</translation>
 <translation id="3803367742635802571">I siti che visiti potrebbero non funzionare più come previsto</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Seleziona elementi</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6864395892908308021">Questo dispositivo non può leggere la tecnologia NFC</translation>
+<translation id="6870169401250095575">Nascondi scheda Controllo di sicurezza</translation>
 <translation id="6912998170423641340">Impedisci ai siti di leggere testo e immagini negli appunti</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6950072572526089586">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come previsto, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Consenti l'audio per un sito specifico.</translation>
 <translation id="789180354981963912">Blocca cookie di terze parti nella modalità di navigazione in incognito:</translation>
 <translation id="7940722705963108451">Ricordami</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sito del gruppo di siti di <ph name="FPS_OWNER" /> può vedere le tue attività nel gruppo}other{<ph name="FPS_MEMBERS_COUNT" /> siti del gruppo di siti di <ph name="FPS_OWNER" /> possono vedere le tue attività nel gruppo}}</translation>
 <translation id="7986741934819883144">Seleziona un contatto</translation>
 <translation id="7990211076305263060">Quando l'opzione è attiva, i siti potrebbero chiedere l'utilizzo del microfono. Quando l'opzione è disattivata, i siti non possono utilizzare il microfono.</translation>
 <translation id="8007176423574883786">Disattivata per questo dispositivo</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Nascondi scheda Continua con questa scheda}other{Nascondi scheda Continua con queste schede}}</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8042586301629853791">Ordina per:</translation>
 <translation id="8067883171444229417">Guarda il video</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Impedisci ai siti di connettersi ai dispositivi</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8541410041357371550">Questo sito riceve gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> sito <ph name="FPS_OWNER" />}other{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> siti <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Consentita (opzione consigliata)</translation>
 <translation id="8609465669617005112">Sposta su</translation>
 <translation id="8617611086246832542">Quando l'opzione è attiva, viene mostrata la visualizzazione dei siti web da computer. Quando l'opzione è disattivata, viene mostrata la visualizzazione mobile dei siti web.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Gestito dai genitori</translation>
 <translation id="9039697262778250930">Il tuo account potrebbe essere disconnesso da questi siti</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vuoi eliminare i cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Attiva le autorizzazioni per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>

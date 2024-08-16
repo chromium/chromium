@@ -51,10 +51,6 @@ static_library("nearby") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/mojom",
-
-    # TODO(b/353449134): Use //chrome/browser after fixing cyclic dependency from
-    # obj/chrome/browser/ash/nearby/nearby/nearby_dependencies_provider.o.
-    "//chrome/browser/nearby_sharing/instantmessaging/proto",
   ]
 }
 

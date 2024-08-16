@@ -29,6 +29,7 @@
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/performance_properties.h"
 #include "cc/layers/render_surface_impl.h"
+#include "cc/layers/scroll_hit_test_rect.h"
 #include "cc/layers/touch_action_region.h"
 #include "cc/mojom/layer_type.mojom.h"
 #include "cc/paint/element_id.h"
@@ -263,11 +264,16 @@ class CC_EXPORT LayerImpl {
 
   // Some properties on the LayerImpl are rarely set, and so are bundled
   // under a single unique_ptr.
-  struct RareProperties {
+  struct CC_EXPORT RareProperties {
+    RareProperties();
+    RareProperties(const RareProperties&);
+    ~RareProperties();
+
     // The bounds of elements marked for potential region capture, stored in
     // the coordinate space of this layer.
     viz::RegionCaptureBounds capture_bounds;
-    Region non_fast_scrollable_region;
+    Region main_thread_scroll_hit_test_region;
+    std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_handler_region;
   };
 
@@ -280,13 +286,27 @@ class CC_EXPORT LayerImpl {
 
   void ResetRareProperties() { rare_properties_.reset(); }
 
-  void SetNonFastScrollableRegion(const Region& region) {
+  void SetMainThreadScrollHitTestRegion(const Region& region) {
     if (rare_properties_ || !region.IsEmpty())
-      EnsureRareProperties().non_fast_scrollable_region = region;
+      EnsureRareProperties().main_thread_scroll_hit_test_region = region;
   }
-  const Region& non_fast_scrollable_region() const {
-    return rare_properties_ ? rare_properties_->non_fast_scrollable_region
-                            : Region::Empty();
+  const Region& main_thread_scroll_hit_test_region() const {
+    return rare_properties_
+               ? rare_properties_->main_thread_scroll_hit_test_region
+               : Region::Empty();
+  }
+
+  void SetNonCompositedScrollHitTestRects(
+      const std::vector<ScrollHitTestRect>& rects) {
+    if (rare_properties_ || !rects.empty()) {
+      EnsureRareProperties().non_composited_scroll_hit_test_rects = rects;
+    }
+  }
+  const std::vector<ScrollHitTestRect>* non_composited_scroll_hit_test_rects()
+      const {
+    return rare_properties_
+               ? &rare_properties_->non_composited_scroll_hit_test_rects
+               : nullptr;
   }
 
   void SetTouchActionRegion(TouchActionRegion);

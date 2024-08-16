@@ -115,7 +115,7 @@
       // If a metric should be recorded in this case, it should be handled in
       // HistorySyncCoordinator instance methods instead of this class method
       // to avoid duplicated recording.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -14,6 +14,8 @@ static_library("app_shortcuts") {
     "arc_app_shortcuts_request.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/components/arc/mojom",
@@ -42,7 +44,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc",
     "//chrome/test:test_support",
     "//content/test:test_support",

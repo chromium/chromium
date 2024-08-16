@@ -57,7 +57,7 @@ DownloadBubblePrimaryView::~DownloadBubblePrimaryView() = default;
 void DownloadBubblePrimaryView::LogVisibleTimeMetrics() const {
   std::string_view histogram_name = GetVisibleTimeHistogramName();
   if (!histogram_name.empty()) {
-    base::UmaHistogramMediumTimes(std::string(histogram_name),
+    base::UmaHistogramMediumTimes(histogram_name,
                                   base::Time::Now() - creation_time_);
   }
 }

@@ -30,6 +30,7 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -57,6 +58,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -89,6 +91,18 @@ bool ContainsAppWindows(Desk* desk) {
     return false;
   return desk->ContainsAppWindows() ||
          !DesksController::Get()->visible_on_all_desks_windows().empty();
+}
+
+// Returns true if the saved desks options are shown in the context menu, or if
+// they would have been shown but the Saved Desk UI revamp feature was not
+// enabled.
+bool ShouldRecordSavedDesksOptionsHistogram(Desk* desk,
+                                            DeskBarViewBase* bar_view) {
+  return desk->is_active() &&
+         (desk->ContainsAppWindows() ||
+          !DesksController::Get()->visible_on_all_desks_windows().empty()) &&
+         bar_view->type() == DeskBarViewBase::Type::kOverview &&
+         saved_desk_util::ShouldShowSavedDesksOptions();
 }
 
 }  // namespace
@@ -285,9 +299,9 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   CHECK(desk_);
 
   auto get_visible = [this]() -> bool {
-    // If Forest is enabled, then we still want to show the save desk options,
+    // If revamp is enabled, then we still want to show the save desk options,
     // even if we can't remove the desk.
-    if (!features::IsForestFeatureEnabled() &&
+    if (!features::IsSavedDeskUiRevampEnabled() &&
         !DesksController::Get()->CanRemoveDesks()) {
       return false;
     }
@@ -298,6 +312,15 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
     if (owner_bar_->IsDraggingDesk()) {
       return false;
     }
+
+    // Hide the action view if the context menu is shown, unless one of its
+    // children has focus. Otherwise, we may reach a state where nothing has
+    // focus, and spoken feedback will not work properly. See
+    // http://b/356456321,
+    if (context_menu_ && !desk_action_view_->ChildHasFocus()) {
+      return false;
+    }
+
     if (force_show_desk_buttons_) {
       return true;
     }
@@ -313,6 +336,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
     if (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus()) {
       return true;
     }
+
     return desk_profile_button_ && desk_profile_button_->HasFocus();
   };
 
@@ -321,7 +345,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
   // all desks.
-  if (features::IsForestFeatureEnabled()) {
+  if (features::IsSavedDeskUiRevampEnabled()) {
     auto* context_menu_button = desk_action_view_->context_menu_button();
     context_menu_button->SetVisible(context_menu_button->CanShow());
   } else {
@@ -330,7 +354,7 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
   }
   auto* close_all_button = desk_action_view_->close_all_button();
   close_all_button->SetVisible(close_all_button->CanShow());
-  desk_action_view_->SetVisible(visible && !is_context_menu_open_);
+  desk_action_view_->SetVisible(visible);
 
   // Only show the shortcut view on the first 8 desks in the desk button desk
   // bar. Update the shortcut label to show the desk number for the shortcut.
@@ -435,7 +459,6 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
       show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
                   : views::MenuAnchorPosition::kBubbleBottomRight;
 
-  // TODO(http://b/346636911): Account for incognito windows.
   // TODO(hewer): Clarify with UX if the On*ButtonPressed functions should
   // appear when the context menu is not on the current desk or for the desks
   // button.
@@ -489,18 +512,25 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
     return;
   }
 
-  is_context_menu_open_ = true;
   base::UmaHistogramBoolean(
       owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
           ? kDeskButtonDeskBarOpenContextMenuHistogramName
           : kOverviewDeskBarOpenContextMenuHistogramName,
       true);
-  UpdateDeskButtonVisibility();
+
+  // Holdback metrics for the Saved Desk UI revamp.
+  if (ShouldRecordSavedDesksOptionsHistogram(desk_, owner_bar_.get())) {
+    if (features::IsSavedDeskUiRevampEnabled()) {
+      base::UmaHistogramBoolean(kSavedDeskMenuOptionsShownHistogramName, true);
+    } else {
+      base::UmaHistogramBoolean(kSavedDeskButtonsShownHistogramName, true);
+    }
+  }
 
   desk_preview_->SetHighlightOverlayVisibility(true);
 
   context_menu_ =
-      std::make_unique<DeskActionContextMenu>(std::move(menu_config));
+      std::make_unique<DeskActionContextMenu>(std::move(menu_config), this);
   context_menu_->ShowContextMenuForView(
       this,
       show_on_top ? (base::i18n::IsRTL()
@@ -510,6 +540,9 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
                          ? desk_preview_->GetBoundsInScreen().bottom_right()
                          : desk_preview_->GetBoundsInScreen().bottom_left()),
       source);
+
+  // Visibility can be affected by the presence of a context menu.
+  UpdateDeskButtonVisibility();
 }
 
 void DeskMiniView::MaybeCloseContextMenu() {
@@ -819,7 +852,7 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 }
 
 void DeskMiniView::OnContextMenuClosed() {
-  is_context_menu_open_ = false;
+  context_menu_.reset();
 
   // This mini view's desk may have been destroyed already. In that case, we are
   // about to be destroyed and can't call functions that need a valid `desk_`.
@@ -853,12 +886,14 @@ void DeskMiniView::OnDeskPreviewPressed() {
 
 void DeskMiniView::OnSaveDeskAsTemplateButtonPressed() {
   CHECK(IsInOverviewSession());
+  base::UmaHistogramBoolean(kSaveAsTemplatePressedHistogramName, true);
   GetOverviewSession()->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kTemplate, root_window_);
 }
 
 void DeskMiniView::OnSaveDeskForLaterButtonPressed() {
   CHECK(IsInOverviewSession());
+  base::UmaHistogramBoolean(kSaveForLaterPressedHistogramName, true);
   GetOverviewSession()->saved_desk_presenter()->MaybeSaveActiveDeskAsSavedDesk(
       DeskTemplateType::kSaveAndRecall, root_window_);
 }

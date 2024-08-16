@@ -2571,7 +2571,7 @@ TEST_F(SharedStorageWorkletTest, Entries_FirstBatchError_Failure) {
 
   RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
   EXPECT_FALSE(run_result.success);
-  EXPECT_EQ(run_result.error_message, "OperationError: Internal error 12345");
+  EXPECT_EQ(run_result.error_message, "Error: Internal error 12345");
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
 }
@@ -2664,7 +2664,7 @@ TEST_F(SharedStorageWorkletTest, Entries_SecondBatchError_Failure) {
 
   RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
   EXPECT_FALSE(run_result.success);
-  EXPECT_EQ(run_result.error_message, "OperationError: Internal error 12345");
+  EXPECT_EQ(run_result.error_message, "Error: Internal error 12345");
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
 }

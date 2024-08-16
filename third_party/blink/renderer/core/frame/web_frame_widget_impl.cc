@@ -1345,8 +1345,10 @@ void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
 void WebFrameWidgetImpl::UpdateCompositorScrollState(
     const cc::CompositorCommitData& commit_data) {
   is_scroll_gesture_active_ = commit_data.is_scroll_active;
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     devtools->SetPageIsScrolling(is_scroll_gesture_active_);
+  }
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 
@@ -1680,7 +1682,8 @@ bool WebFrameWidgetImpl::ShouldAckSyntheticInputImmediately() {
 
 void WebFrameWidgetImpl::UpdateVisualProperties(
     const VisualProperties& visual_properties) {
-  SetZoomLevel(visual_properties.zoom_level);
+  SetZoomInternal(visual_properties.zoom_level,
+                  visual_properties.css_zoom_factor);
 
   // TODO(danakj): In order to synchronize updates between local roots, the
   // display mode should be propagated to RenderFrameProxies and down through
@@ -2172,35 +2175,39 @@ double WebFrameWidgetImpl::GetZoomLevel() {
   return zoom_level_;
 }
 
+void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
+  SetZoomInternal(zoom_level, css_zoom_factor_);
+}
+
 // There are four main values that go into zoom arithmetic:
 //
-// - "zoom level", a log-based value which represents browser zoom level and
-//   also the effects of the CSS "zoom" property.
-// - kTextSizeMultiplierRatio, a hard-coded constant used as the log base for
-//   zoom level.
-// - Hardware device pixel ratio, which is stored on WebView as
+// - "zoom level", a log-based value which represents the zoom level from the
+//   browser UI. The log base for zoom level is kTextSizeMultiplierRatio.
+// - "css zoom factor", which represents the effect of the CSS "zoom" property
+//   applied to the embedding point (e.g. <iframe>) of this widget, if any. For
+//   a top-level widget this is 1.0.
+// - Hardware device scale factor, which is stored on WebViewImpl as
 //   zoom_factor_for_device_scale_factor_.
-// - "zoom factor" (AKA "layout zoom factor"), which is calculated from the
-//   first three values, with override mechanisms for testing and device
-//   emulation.
-//
-// Here and elsewhere, the code tries to be consistent in its naming conventions
-// with respect to "zoom level" vs. "zoom factor".
-void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
-  if (ForMainFrame()) {
-    zoom_level = View()->ClampZoomLevel(zoom_level);
-  }
-  // Override the zoom level with the testing one if necessary.
-  if (zoom_level_for_testing_ != -INFINITY)
+// - "layout zoom factor", which is calculated from the previous three values,
+//   with override mechanisms for testing and device emulation. This is the
+//   value that is used by the rendering system.
+void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
+                                         double css_zoom_factor) {
+  zoom_level = View()->ClampZoomLevel(zoom_level);
+  if (zoom_level_for_testing_ != -INFINITY) {
     zoom_level = zoom_level_for_testing_;
-  bool zoom_level_changed = (zoom_level != zoom_level_);
+  }
+  bool zoom_changed =
+      (zoom_level != zoom_level_ || css_zoom_factor != css_zoom_factor_);
   zoom_level_ = zoom_level;
+  css_zoom_factor_ = css_zoom_factor;
 
   if (auto* local_frame = LocalRootImpl()->GetFrame()) {
     if (Document* document = local_frame->GetDocument()) {
-      double zoom_factor =
-          View()->ZoomLevelToZoomFactor(zoom_level, ForMainFrame());
-      if (zoom_level_changed) {
+      double layout_zoom_factor = View()->ZoomFactorForViewportLayout() *
+                                  View()->ZoomLevelToZoomFactor(zoom_level) *
+                                  css_zoom_factor;
+      if (zoom_changed) {
         // Set the layout shift exclusion window for the zoom level change.
         if (LocalFrameView* view = document->View()) {
           view->GetLayoutShiftTracker().NotifyZoomLevelChanged();
@@ -2213,19 +2220,19 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
             // factor.
             UMA_HISTOGRAM_CUSTOM_EXACT_LINEAR(
                 "Accessibility.Android.PageZoom.MainFrameZoomFactor",
-                zoom_factor * 100, 50, 300, 52);
+                layout_zoom_factor * 100, 50, 300, 52);
           }
 #endif
         }
       }
 
-      // zoom_factor may have changed even if zoom_level did not, so we
+      // layout_zoom_factor may have changed even if !zoom_changed, so we
       // unconditionally propagate to the local root frame.
       auto* plugin_document = DynamicTo<PluginDocument>(document);
       if (!plugin_document || !plugin_document->GetPluginView()) {
         // The local root is responsible for propagating to its connected tree
-        // of LocalFrame descendants.
-        local_frame->SetLayoutZoomFactor(zoom_factor);
+        // of Frame descendants.
+        local_frame->SetLayoutZoomFactor(layout_zoom_factor);
       }
     }
   }
@@ -2885,8 +2892,10 @@ void WebFrameWidgetImpl::ProcessInputEventSynchronouslyForTesting(
 WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {
   CHECK(LocalRootImpl());
 
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     devtools->DispatchBufferedTouchEvents();
+  }
 
   return LocalRootImpl()
       ->GetFrame()
@@ -2923,10 +2932,16 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
     return WebInputEventResult::kNotHandled;
   }
 
-  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl()) {
+  if (WebDevToolsAgentImpl* devtools =
+          LocalRootImpl()->DevToolsAgentImpl(/*create_if_necessary=*/false)) {
     auto result = devtools->HandleInputEvent(input_event);
     if (result != WebInputEventResult::kNotHandled)
       return result;
+  }
+
+  // If we are a mouse down potentially activate the paused debugger window.
+  if (input_event.GetType() == WebInputEvent::Type::kMouseDown) {
+    WebDevToolsAgentImpl::ActivatePausedDebuggerWindow(LocalRootImpl());
   }
 
   // Report the event to be NOT processed by WebKit, so that the browser can
@@ -3163,6 +3178,10 @@ const display::ScreenInfos& WebFrameWidgetImpl::GetOriginalScreenInfos() {
 
 gfx::Rect WebFrameWidgetImpl::WindowRect() {
   return widget_base_->WindowRect();
+}
+
+double WebFrameWidgetImpl::GetCSSZoomFactor() const {
+  return css_zoom_factor_;
 }
 
 gfx::Rect WebFrameWidgetImpl::ViewRect() {
@@ -4650,13 +4669,16 @@ void WebFrameWidgetImpl::UpdateViewportDescription(
 bool WebFrameWidgetImpl::UpdateScreenRects(
     const gfx::Rect& widget_screen_rect,
     const gfx::Rect& window_screen_rect) {
-  bool should_send = WindowRect().origin() != window_screen_rect.origin();
 
   if (device_emulator_) {
     device_emulator_->OnUpdateScreenRects(widget_screen_rect,
                                           window_screen_rect);
   }
-  if (should_send) {
+
+  // Check movement from the committed `WindowScreenRect()`, not `WindowRect()`,
+  // which may include pending updates from renderer-initiated moveTo|By calls.
+  if (widget_base_->WindowScreenRect().origin() !=
+      window_screen_rect.origin()) {
     EnqueueMoveEvent();
   }
 
@@ -5097,6 +5119,14 @@ bool WebFrameWidgetImpl::ShouldAutoDetermineCompositingToLCDTextSetting() {
 
 bool WebFrameWidgetImpl::WillBeDestroyed() const {
   return widget_base_->WillBeDestroyed();
+}
+
+void WebFrameWidgetImpl::DispatchNonBlockingEventForTesting(
+    std::unique_ptr<WebCoalescedInputEvent> event) {
+  widget_base_->widget_input_handler_manager()
+      ->DispatchEventOnInputThreadForTesting(
+          std::move(event),
+          mojom::blink::WidgetInputHandler::DispatchEventCallback());
 }
 
 }  // namespace blink

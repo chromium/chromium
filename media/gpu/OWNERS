@@ -3,9 +3,10 @@ dcastagna@chromium.org
 liberato@chromium.org
 sandersd@chromium.org
 
-# For chromeos/, linux/, v4l2/, and vaapi/ -specific changes.
+# For chromeos/, v4l2/, and vaapi/ -specific changes.
 andrescj@chromium.org
 frkoenig@chromium.org
+greenjustin@chromium.org
 hiroh@chromium.org
 jcliang@chromium.org
 jkardatzke@google.com

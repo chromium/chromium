@@ -9,7 +9,7 @@ bundle that need to be signed, as well as providing utilities to sign them.
 import os.path
 import re
 
-from signing import commands, invoker
+from signing import commands, invoker, logger
 
 
 class InvalidLipoArchCountException(ValueError):
@@ -22,10 +22,8 @@ class InvalidAppGeometryException(ValueError):
 
 class Invoker(invoker.Base):
 
-    def codesign(self, config, product, path, replace_existing_signature=False):
+    def codesign(self, config, product, path):
         command = ['codesign', '--sign', config.identity]
-        if replace_existing_signature:
-            command.append('--force')
         if config.notarize.should_notarize():
             # If the products will be notarized, the signature requires a secure
             # timestamp.
@@ -47,54 +45,6 @@ class Invoker(invoker.Base):
         commands.run_command(command)
 
 
-def _linker_signed_arm64_needs_force(path):
-    """Detects linker-signed arm64 code that can only be signed with --force
-    on this system.
-
-    Args:
-        path: A path to a code object to test.
-
-    Returns:
-        True if --force must be used with codesign --sign to successfully sign
-        the code, False otherwise.
-    """
-    # On macOS 11.0 and later, codesign handles linker-signed code properly
-    # without the --force hand-holding. Check OS >= 10.16 because that's what
-    # Python will think the OS is if it wasn't built with the 11.0 SDK or later.
-    if commands.macos_version() >= [10, 16]:
-        return False
-
-    # Look just for --arch=arm64 because that's the only architecture that has
-    # linker-signed code by default. If this were used with universal code (if
-    # there were any), --display without --arch would default to the native
-    # architecture, which almost certainly wouldn't be arm64 and therefore would
-    # be wrong.
-    (returncode, stdout, stderr) = commands.lenient_run_command_output(
-        ['codesign', '--display', '--verbose', '--arch=arm64', '--', path])
-
-    if returncode != 0:
-        # Problem running codesign? Don't make the error about this confusing
-        # function. Just return False and let some less obscure codesign
-        # invocation be the error. Not signed at all? No problem. No arm64 code?
-        # No problem either. Not code at all? File not found? Well, those don't
-        # count as linker-signed either.
-        return False
-
-    # Yes, codesign --display puts all of this on stderr.
-    match = re.search(rb'^CodeDirectory .* flags=(0x[0-9a-f]+)( |\().*$',
-                      stderr, re.MULTILINE)
-    if not match:
-        return False
-
-    flags = int(match.group(1), 16)
-
-    # This constant is from MacOSX11.0.sdk <Security/CSCommon.h>
-    # SecCodeSignatureFlags kSecCodeSignatureLinkerSigned.
-    LINKER_SIGNED_FLAG = 0x20000
-
-    return (flags & LINKER_SIGNED_FLAG) != 0
-
-
 def _binary_architectures_offsets(binary_path):
     """Returns a tuple of architecture offset pairs.
     Raises InvalidLipoArchCountException if the nfat_arch count does not match
@@ -110,6 +60,10 @@ def _binary_architectures_offsets(binary_path):
     """
     command = ['lipo', '-detailed_info', binary_path]
     output = commands.run_command_output(command)
+
+    # Log the detailed macho info. This includes the slice sizes, which will
+    # be helpful when recalculating padding for https://crbug.com/1300598.
+    logger.info('%s', output.decode('utf-8'))
 
     # Find the architecture for a non-universal binary.
     match = re.search(rb'^Non-fat file:.+architecture:\s(.+)$', output,
@@ -145,10 +99,7 @@ def sign_part(paths, config, part):
         part: The |model.CodeSignedProduct| to sign. The product's |path| must
             be in |paths.work|.
     """
-    replace_existing_signature = _linker_signed_arm64_needs_force(
-        os.path.join(paths.work, part.path))
-    config.invoker.signer.codesign(config, part, paths.work,
-                                   replace_existing_signature)
+    config.invoker.signer.codesign(config, part, paths.work)
 
 
 def verify_part(paths, part):

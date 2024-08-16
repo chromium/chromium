@@ -31,11 +31,8 @@
 #include "components/user_notes/user_notes_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "extensions/common/extension_features.h"
-#endif
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentState)
 DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
@@ -45,23 +42,20 @@ DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelContentState>,
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
-                                          SidePanelRegistry* global_registry) {
+                                          SidePanelRegistry* window_registry) {
   // Add reading list.
   ReadingListSidePanelCoordinator::GetOrCreateForBrowser(browser)
-      ->CreateAndRegisterEntry(global_registry);
+      ->CreateAndRegisterEntry(window_registry);
 
   // Add bookmarks.
   BookmarksSidePanelCoordinator::GetOrCreateForBrowser(browser)
-      ->CreateAndRegisterEntry(global_registry);
+      ->CreateAndRegisterEntry(window_registry);
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
     HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
-        ->CreateAndRegisterEntry(global_registry);
+        ->CreateAndRegisterEntry(window_registry);
   }
-
-  // Add read anything.
-  ReadAnythingCoordinator::GetOrCreateForBrowser(browser);
 
   // Create Search Companion coordinator.
   // Disable runtime checks so that coordinator can monitor the runtime changes
@@ -73,12 +67,11 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {
-    extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser);
+    extensions::ExtensionSidePanelManager::CreateForBrowser(browser,
+                                                            window_registry);
   }
-#endif
 
   return;
 }
@@ -99,12 +92,6 @@ std::unique_ptr<views::View> SidePanelUtil::DeregisterAndReturnView(
   std::unique_ptr<SidePanelEntry> entry =
       registry->DeregisterAndReturnEntry(key);
   return entry->CachedView() ? entry->GetContent() : nullptr;
-}
-
-SidePanelCoordinator* SidePanelUtil::GetSidePanelCoordinatorForBrowser(
-    Browser* browser) {
-  return static_cast<SidePanelCoordinator*>(
-      browser->GetFeatures().side_panel_ui());
 }
 
 void SidePanelUtil::RecordSidePanelOpen(

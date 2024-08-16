@@ -121,7 +121,7 @@ class TabLifecycleUnitTest : public ChromeRenderViewHostTestHarness {
         CreateTestWebContents();
     web_contents_ = test_web_contents.get();
     auto* tester = content::WebContentsTester::For(web_contents_);
-    tester->SetLastActiveTime(NowTicks());
+    tester->SetLastActiveTimeTicks(NowTicks());
     ResourceCoordinatorTabHelper::CreateForWebContents(web_contents_);
     // Commit an URL to allow discarding.
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(

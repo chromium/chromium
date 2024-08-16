@@ -325,6 +325,9 @@ if (current_toolchain == default_toolchain) {
       "//components/sync/android:explicit_passphrase_platform_client_stub_java",
       "//content/public/android:identity_credentials_public_impl_java",
     ]
+    if (defined(enable_data_sharing_internal) && enable_data_sharing_internal) {
+      deps += [ "//chrome/browser/data_sharing:delegate_public_impl_java" ]
+    }
     if (defined(enable_tinker_tank_internal) && enable_tinker_tank_internal) {
       deps +=
           [ "//chrome/browser/android/tinker_tank:delegate_public_impl_java" ]
@@ -403,6 +406,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/data_sharing:invitation_dialog_java",
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
+      "//chrome/browser/data_sharing:tab_group_ui_java",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device_reauth/android:java",
@@ -479,7 +483,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/share/android:java_resources",
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/single_tab/android:java",
-      "//chrome/browser/supervised_user:supervised_user_capabilites_java",
       "//chrome/browser/supervised_user:supervised_user_service_platform_delegate_java",
       "//chrome/browser/supervised_user:website_parent_approval_java",
       "//chrome/browser/sync/android:java",
@@ -619,7 +622,7 @@ if (current_toolchain == default_toolchain) {
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
       "//components/installedapp/android:java",
-      "//components/ip_protection/android_auth_client_lib/client:ip_protection_auth_client_java",
+      "//components/ip_protection/android/android_auth_client_lib/client:ip_protection_auth_client_java",
       "//components/javascript_dialogs/android:java",
       "//components/language/android:java",
       "//components/location/android:location_java",
@@ -694,7 +697,6 @@ if (current_toolchain == default_toolchain) {
       "//components/webxr/android:xr_java",
       "//components/zoom/android:java",
       "//content/public/android:content_java",
-      "//content/public/android:identity_credentials_java",
       "//content/public/common:common_java",
       "//device/gamepad:java",
       "//media/base/android:media_java",
@@ -796,8 +798,6 @@ if (current_toolchain == default_toolchain) {
     sources += internal_tab_management_java_sources
 
     srcjar_deps += [ ":chrome_jni_headers" ]
-
-    sources += data_sharing_java_sources
 
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
@@ -1050,6 +1050,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/data_sharing:java",
       "//chrome/browser/data_sharing:junit",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
+      "//chrome/browser/data_sharing:tab_group_ui_java",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device:junit",
@@ -1312,6 +1313,7 @@ if (current_toolchain == default_toolchain) {
       "//components/saved_tab_groups:java",
       "//components/schema_org/common:mojom_java",
       "//components/search_engines/android:java",
+      "//components/search_engines/android:junit",
       "//components/search_engines/android:test_utils_java",
       "//components/security_state/content/android:java",
       "//components/security_state/core:security_state_enums_java",
@@ -1374,7 +1376,6 @@ if (current_toolchain == default_toolchain) {
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/accessibility:ax_base_java",
-      "//ui/accessibility:ui_accessibility_features_java",
       "//ui/android:ui_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_junit_test_support",
@@ -1528,7 +1529,6 @@ if (current_toolchain == default_toolchain) {
       "javatests/src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogTest.java",
       "javatests/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
       "javatests/src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandlerTest.java",
-      "javatests/src/org/chromium/chrome/browser/init/ChainedTasksTest.java",
       "javatests/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
       "javatests/src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
       "javatests/src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
@@ -2117,9 +2117,12 @@ if (current_toolchain == default_toolchain) {
       "//content/test/data/media/session/",
       "//content/test/data/media/video-player.html",
       "//content/test/data/media/webrtc_test_utilities.js",
-      "//media/test/data/bear.mp4",
+      "//media/test/data/bear-av1.mp4",
+      "//media/test/data/bear-hevc-frag.mp4",
       "//media/test/data/bear-vp8-webvtt.webm",
       "//media/test/data/bear-vp8a.webm",
+      "//media/test/data/bear-vp9.webm",
+      "//media/test/data/bear.mp4",
       "//media/test/data/sfx.mp3",
     ]
 
@@ -3012,7 +3015,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
       "//chrome/browser/ui/android/plus_addresses:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
-      "//components/ip_protection/android_auth_client_lib/javatests:ip_protection_auth_javatests",
+      "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 
     data_deps = [ "//testing/buildbot/filters:chrome_public_test_apk_filters" ]
@@ -3025,7 +3028,7 @@ if (current_toolchain == default_toolchain) {
     additional_apks = [
       "//chrome/android/webapk/shell_apk:javatests_webapk",
       "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk",
-      "//components/ip_protection/android_auth_client_lib/testing/mock_service:ip_protection_auth_test_service_apk",
+      "//components/ip_protection/android/android_auth_client_lib/testing/mock_service:ip_protection_auth_test_service_apk",
       "//components/media_router/test/android/media_router_test_support:media_router_test_support_apk",
     ]
 
@@ -3764,7 +3767,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
     "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
-    "java/src/org/chromium/chrome/browser/historyreport/HistoryReportJniBridge.java",
     "java/src/org/chromium/chrome/browser/infobar/AutofillSaveCardInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/AutofillVirtualCardEnrollmentInfoBar.java",
     "java/src/org/chromium/chrome/browser/infobar/DuplicateDownloadInfoBar.java",
@@ -3817,7 +3819,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerErrorMessageHelperBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
-    "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
     "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionBlockedDialog.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionSettingsBridge.java",
@@ -4008,7 +4009,7 @@ chrome_common_shared_library("libchromefortest") {
     "//chrome/browser/supervised_user:test_support",
     "//components/crash/android:crash_android",
     "//components/external_intents/android:test_support",
-    "//components/ip_protection/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
+    "//components/ip_protection/android/android_auth_client_lib/cpp:ip_protection_auth_test_natives",
     "//components/minidump_uploader",
     "//components/paint_preview/player/android:test_support",
     "//components/sync",

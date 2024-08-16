@@ -127,6 +127,14 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
     this.updateChart();
   }
 
+  // Update the start time of the line chart when removing data. Also update the
+  // line chart and scrollbar to display latest data.
+  updateStartTime(startTime: number) {
+    this.startTime = Math.max(this.startTime, startTime);
+    this.updateScrollBar();
+    this.updateChart();
+  }
+
   // Update the visibility of line chart. We don't need to render the chart when
   // the chart is not visible.
   updateVisibility(isVisible: boolean) {
@@ -145,7 +153,7 @@ export class HealthdInternalsLineChartElement extends PolymerElement {
           '`initCanvasDrawer()` before calling this function.');
       return;
     }
-    this.canvasDrawer.setMaxValue(maxValue);
+    this.canvasDrawer.setFixedMaxValue(maxValue);
   }
 
   // Handle the wheeling, mouse dragging and touching events.

@@ -104,7 +104,7 @@ config("runtime_library") {
   # Rebase the value in that case since gn does not convert paths in compiler
   # flags (since it is not aware they are paths).
   _sdk_root = ios_sdk_path
-  if (use_system_xcode && (use_remoteexec || use_siso)) {
+  if (ios_use_xcode_symlinks) {
     _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 

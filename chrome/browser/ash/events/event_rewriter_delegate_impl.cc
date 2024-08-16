@@ -288,7 +288,7 @@ EventRewriterDelegateImpl::GetShortcutModifierForSixPackKey(
     case ui::KeyboardCode::VKEY_INSERT:
       return settings->six_pack_key_remappings->insert;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

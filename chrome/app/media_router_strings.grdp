@@ -44,25 +44,25 @@
 
   <!-- Issue Messaging -->
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_WITH_HOSTNAME" desc="Title of an issue to show when the user attempts to cast from a website and it times out while waiting for a cast session to start.">
-    Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>.
+    Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT" desc="Title of a generic issue to show when the user attempts to create a route and it times out while waiting for a cast session to start.">
-    Unable to cast.
+    Unable to cast
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_DESKTOP" desc="Title of an issue to show when the user attempts to create a route to mirror the desktop and it times out while waiting for a cast session to start.">
     Unable to cast screen.  Check to see if you confirmed the prompt to start sharing your screen.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB" desc="Title of an issue to show when the user attempts to create a route to mirror a tab and it times out while waiting for a cast session to start.">
-    Unable to cast tab.
+    Unable to cast tab
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_UNABLE_TO_CAST_DESKTOP" desc="Title of an issue to show when creating a route for desktop mirroring fails for a reason other than timeout.">
-    Unable to cast screen.
+    Unable to cast screen
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting a tab, but only its visual content can be cast and not its audio output.">
-    Casting tab audio is not supported on this device.
+    Casting tab audio is not supported on this device
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_DESKTOP_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting their screen, but only its visual content can be cast and not its audio output.">
-    Casting desktop audio is not supported on this device.
+    Casting desktop audio is not supported on this device
   </message>
   <if expr="is_macosx">
     <message name="IDS_MEDIA_ROUTER_ISSUE_MAC_SCREEN_CAPTURE_PERMISSION_ERROR" desc="Message shown when a macOS user attempts to cast their screen, but the Screen Recording system permission has not been granted.">
@@ -70,21 +70,20 @@
     </message>
   </if>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_PENDING_AUTHORIZATION" desc="Title of a notification shown while waiting for the user to accept or reject the cast request.">
-      Accept cast request on your <ph name="DEVICE_NAME">$1</ph>.
+      Accept cast request on your <ph name="DEVICE_NAME">$1</ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_USER_NOT_ALLOWED" desc="Title of an issue shown when the user rejects the cast request.">
-      Make sure to accept the cast request on your <ph name="DEVICE_NAME">$1</ph>.
+      Make sure to accept the cast request on your <ph name="DEVICE_NAME">$1</ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_NOTIFICATION_DISABLED" desc="Title of an issue shown when the notifications on the reciever device is disabled.">
-      Make sure notifications are turned on on your <ph name="DEVICE_NAME">$1</ph>.
+      Make sure notifications are turned on on your <ph name="DEVICE_NAME">$1</ph>
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_FAILED_TO_CAST" desc="Title of an issue shown when cast intialization failed with no clear reason">
       Failed to cast. Please try again.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CANNOT_TERMINATE" desc="Title of an issue shown when a Cast session cannot be stopped from Chrome side, and needs to be stopped using the remote control for the Cast device where the Cast session is running.">
-      Use remote to stop casting.
+      Use remote to stop casting
   </message>
-
 
 <!-- Sink List -->
   <message name="IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES" desc="Status text temporarily shown while searching for Cast devices but none have been found.">
@@ -94,10 +93,19 @@
     No devices found
   </message>
   <message name="IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON" desc="The accessibility label that gets read by screen readers for a button shown when no Cast device was found. Clicking on the button opens a new tab.">
-    No devices found. Open a help center article in a new tab.
+    No devices found. Open a help center article in a new tab
   </message>
   <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Google Cast help center explaining possible reasons why none are detected.">
     No cast destinations found. Need help?
+  </message>
+  <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON" desc="The accessibility label for a button shown when the browser does not have the permission to connect to devices on the local network.">
+    Permission to cast is rejected. Open a help center article in a new tab to learn more.
+  </message>
+  <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL" desc="The error message including the link to the OS settings page, shown when the browser does not have the permission to connect to devices on the local network.">
+    To cast, give Chrome access in <ph name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK">$1<ex>system settings</ex></ph>
+  </message>
+    <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK" desc="Text for the link to the OS settings page allowing useres to turn on the permission. This string will be embedded in a longer sentence that makes up the whole label.">
+    system settings
   </message>
   <message name="IDS_MEDIA_ROUTER_SINK_AVAILABLE" desc="Text shown as the status of a Cast destination that the user can Cast to." meaning="Device status shown in Cast dialog">
     Available

@@ -65,7 +65,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
     case SharedImageBackingType::kWrappedGraphiteTexture:
       return "WrappedGraphiteTexture";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -221,7 +221,7 @@ std::unique_ptr<SkiaImageRepresentation> SharedImageBacking::ProduceSkia(
       // handled here on addition.
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -256,13 +256,6 @@ std::unique_ptr<OverlayImageRepresentation> SharedImageBacking::ProduceOverlay(
   return nullptr;
 }
 
-std::unique_ptr<VaapiImageRepresentation> SharedImageBacking::ProduceVASurface(
-    SharedImageManager* manager,
-    MemoryTypeTracker* tracker,
-    VaapiDependenciesFactory* dep_factory) {
-  return nullptr;
-}
-
 std::unique_ptr<MemoryImageRepresentation> SharedImageBacking::ProduceMemory(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
@@ -275,10 +268,10 @@ std::unique_ptr<RasterImageRepresentation> SharedImageBacking::ProduceRaster(
   return nullptr;
 }
 
-std::unique_ptr<VideoDecodeImageRepresentation>
-SharedImageBacking::ProduceVideoDecode(SharedImageManager* manager,
-                                       MemoryTypeTracker* tracker,
-                                       VideoDecodeDevice device) {
+std::unique_ptr<VideoImageRepresentation> SharedImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
   return nullptr;
 }
 

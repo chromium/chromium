@@ -31,7 +31,8 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               (override));
   MOCK_METHOD(void,
               PromptActionOccurred,
-              (PrivacySandboxService::PromptAction),
+              (PrivacySandboxService::PromptAction,
+               PrivacySandboxService::SurfaceType),
               (override));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,

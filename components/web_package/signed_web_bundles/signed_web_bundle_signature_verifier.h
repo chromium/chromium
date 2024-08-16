@@ -84,13 +84,9 @@ class SignedWebBundleSignatureVerifier {
       SignatureVerificationCallback callback,
       base::expected<SHA512Digest, std::string> unsigned_web_bundle_hash) const;
 
-  base::expected<void, Error> VerifyWithHashForIntegrityBlockV1(
+  base::expected<void, Error> VerifyWithHashForIntegrityBlock(
       SHA512Digest unsigned_web_bundle_hash,
-      SignedWebBundleIntegrityBlock integrity_block_v1) const;
-
-  base::expected<void, Error> VerifyWithHashForIntegrityBlockV2(
-      SHA512Digest unsigned_web_bundle_hash,
-      SignedWebBundleIntegrityBlock integrity_block_v2) const;
+      SignedWebBundleIntegrityBlock integrity_block) const;
 
   // The chunk size in which the Signed Web Bundle is read for calculating its
   // SHA512 hash. Default is ~10mb.

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
@@ -17,18 +18,18 @@ namespace blink {
 // static
 PerformanceEventTiming* PerformanceEventTiming::Create(
     const AtomicString& event_type,
-    DOMHighResTimeStamp start_time,
-    DOMHighResTimeStamp processing_start,
-    DOMHighResTimeStamp processing_end,
+    EventTimingReportingInfo reporting_info,
     bool cancelable,
     Node* target,
     DOMWindow* source) {
   // TODO(npm): enable this DCHECK once https://crbug.com/852846 is fixed.
   // DCHECK_LE(start_time, processing_start);
-  DCHECK_LE(processing_start, processing_end);
+  DCHECK_LE(reporting_info.processing_start_time,
+            reporting_info.processing_end_time);
+  CHECK(source);
   return MakeGarbageCollected<PerformanceEventTiming>(
-      event_type, performance_entry_names::kEvent, start_time, processing_start,
-      processing_end, cancelable, target, source);
+      event_type, performance_entry_names::kEvent, std::move(reporting_info),
+      cancelable, target, source);
 }
 
 // static
@@ -37,29 +38,42 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
   PerformanceEventTiming* first_input =
       MakeGarbageCollected<PerformanceEventTiming>(
           entry->name(), performance_entry_names::kFirstInput,
-          entry->startTime(), entry->processingStart(), entry->processingEnd(),
-          entry->cancelable(), entry->target(), entry->source());
+          *entry->GetEventTimingReportingInfo(), entry->cancelable(),
+          entry->target(), entry->source());
   first_input->SetDuration(entry->duration());
-  first_input->SetInteractionIdAndOffset(entry->interactionId(),
-                                         entry->interactionOffset());
+  if (entry->HasKnownInteractionID()) {
+    first_input->SetInteractionIdAndOffset(entry->interactionId(),
+                                           entry->interactionOffset());
+  }
   return first_input;
 }
 
 PerformanceEventTiming::PerformanceEventTiming(
     const AtomicString& event_type,
     const AtomicString& entry_type,
-    DOMHighResTimeStamp start_time,
-    DOMHighResTimeStamp processing_start,
-    DOMHighResTimeStamp processing_end,
+    EventTimingReportingInfo reporting_info,
     bool cancelable,
     Node* target,
     DOMWindow* source)
-    : PerformanceEntry(event_type, start_time, 0.0, source),
+    : PerformanceEntry(
+          event_type,
+          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
+              ->MonotonicTimeToDOMHighResTimeStamp(
+                  reporting_info.creation_time),
+          0.0,
+          source),
       entry_type_(entry_type),
-      processing_start_(processing_start),
-      processing_end_(processing_end),
+      processing_start_(
+          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
+              ->MonotonicTimeToDOMHighResTimeStamp(
+                  reporting_info.processing_start_time)),
+      processing_end_(
+          DOMWindowPerformance::performance(*source->ToLocalDOMWindow())
+              ->MonotonicTimeToDOMHighResTimeStamp(
+                  reporting_info.processing_end_time)),
       cancelable_(cancelable),
-      target_(target) {}
+      target_(target),
+      reporting_info_(reporting_info) {}
 
 PerformanceEventTiming::~PerformanceEventTiming() = default;
 
@@ -82,7 +96,15 @@ Node* PerformanceEventTiming::target() const {
 }
 
 uint32_t PerformanceEventTiming::interactionId() const {
-  return interaction_id_;
+  return interaction_id_.value_or(0);
+}
+
+void PerformanceEventTiming::SetInteractionId(uint32_t interaction_id) {
+  interaction_id_ = interaction_id;
+}
+
+bool PerformanceEventTiming::HasKnownInteractionID() {
+  return interaction_id_.has_value();
 }
 
 uint32_t PerformanceEventTiming::interactionOffset() const {
@@ -94,33 +116,6 @@ void PerformanceEventTiming::SetInteractionIdAndOffset(
     uint32_t interaction_offset) {
   interaction_id_ = interaction_id;
   interaction_offset_ = interaction_offset;
-}
-
-base::TimeTicks PerformanceEventTiming::unsafeQueuedTimestamp() const {
-  return unsafe_queued_timestamp_;
-}
-
-void PerformanceEventTiming::SetUnsafeQueuedTimestamp(
-    base::TimeTicks timestamp) {
-  unsafe_queued_timestamp_ = timestamp;
-}
-
-base::TimeTicks PerformanceEventTiming::unsafeCommitFinishTimestamp() const {
-  return unsafe_commit_finish_timestamp_;
-}
-
-void PerformanceEventTiming::SetUnsafeCommitFinishTimestamp(
-    base::TimeTicks timestamp) {
-  unsafe_commit_finish_timestamp_ = timestamp;
-}
-
-base::TimeTicks PerformanceEventTiming::unsafePresentationTimestamp() const {
-  return unsafe_presentation_timestamp_;
-}
-
-void PerformanceEventTiming::SetUnsafePresentationTimestamp(
-    base::TimeTicks presentation_timestamp) {
-  unsafe_presentation_timestamp_ = presentation_timestamp;
 }
 
 void PerformanceEventTiming::SetDuration(double duration) {

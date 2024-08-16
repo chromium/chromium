@@ -14,6 +14,11 @@
 // panel in Tab Grid.
 - (void)selectTabGroupsPanelItem:(TabGroupsPanelItem*)item;
 
+// Tells the receiver to close the group associated with `item`. `sourceView` is
+// the view that the delete action originated from.
+- (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                      sourceView:(UIView*)sourceView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUPS_PANEL_MUTATOR_H_

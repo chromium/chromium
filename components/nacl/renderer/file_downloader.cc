@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "components/nacl/renderer/nexe_load_manager.h"
 #include "net/base/net_errors.h"
@@ -51,7 +52,8 @@ void FileDownloader::DidReceiveResponse(const blink::WebURLResponse& response) {
 
 void FileDownloader::DidReceiveData(const char* data, int data_length) {
   if (status_ == SUCCESS) {
-    if (file_.Write(total_bytes_received_, data, data_length) == -1) {
+    if (UNSAFE_TODO(file_.Write(total_bytes_received_, data, data_length)) ==
+        -1) {
       status_ = FAILED;
       return;
     }

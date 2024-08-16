@@ -36,7 +36,8 @@ namespace metrics::structured {
 // and the returned RepeatedPtrField isn't allocated from the same arena.
 // Events are flushed by serializing the proto and writing it into the path
 // provided. An estimation is used to determine the size of an event instead of
-// getting the actual size.
+// getting the actual size. This buffer is flushed when the designated resources
+// have been consumed.
 // TODO(b/347752634) Refactor ProfileObserver classes to use a single helper
 // class.
 class ArenaEventBuffer : public EventBuffer<StructuredEventProto>,

@@ -6,9 +6,10 @@
 #define IOS_CHROME_BROWSER_BROWSER_STATE_MODEL_CHROME_BROWSER_STATE_IMPL_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/sequenced_task_runner.h"
-#include "ios/chrome/browser/browser_state/model/chrome_browser_state_impl_io_data.h"
+#include "ios/chrome/browser/profile/model/profile_ios_impl_io_data.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace policy {
@@ -60,7 +61,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
 
   ChromeBrowserStateImpl(
       const base::FilePath& state_path,
-      const std::string& browser_state_name,
+      std::string_view browser_state_name,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       CreationMode creation_mode,
       Delegate* delegate);

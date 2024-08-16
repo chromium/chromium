@@ -144,7 +144,7 @@ void ApplyHostUreadaheadMode(StartParams* params) {
       break;
     }
     default: {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }
@@ -525,8 +525,7 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
 
   switch (state_) {
     case State::NOT_STARTED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case State::WAITING_FOR_NUM_CORES:
     case State::STARTING_MINI_INSTANCE:
       // OnMiniInstanceStarted() will restart a full instance.
@@ -540,8 +539,7 @@ void ArcSessionImpl::RequestUpgrade(UpgradeParams params) {
     case State::STOPPED:
       // These mean RequestUpgrade() is called twice or called after
       // stopped, which are invalid operations.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -900,8 +898,7 @@ std::ostream& operator<<(std::ostream& os, ArcSessionImpl::State state) {
 
   // Some compilers report an error even if all values of an enum-class are
   // covered exhaustively in a switch statement.
-  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "Invalid value " << static_cast<int>(state);
 }
 
 }  // namespace arc

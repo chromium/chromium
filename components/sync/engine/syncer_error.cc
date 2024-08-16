@@ -77,7 +77,7 @@ std::string SyncerError::ToString() const {
     case Type::kProtocolViolationError:
       return "Protocol violation error";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace syncer

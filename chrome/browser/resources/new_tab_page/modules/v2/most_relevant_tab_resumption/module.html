@@ -31,15 +31,14 @@
   #tabs {
     background-color: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
+    overflow: hidden;
     margin: 8px;
   }
 
   .tab {
     align-items: center;
     display: flex;
-    height: 52px;
-    padding-bottom: 2px;
-    padding-top: 2px;
+    height: 56px;
     position: relative;
     text-decoration: none;
     overflow: hidden;
@@ -66,15 +65,17 @@
   .icon {
     background-color: var(--color-new-tab-page-module-icon-background);
     border-radius: 8px;
-    height: 48px;
+    height: var(--ntp-module-icon-size);
     margin-inline: 8px;
-    width: 48px;
+    position: relative;
+    width: var(--ntp-module-icon-size);
   }
 
   .tab-info {
     color: var(--color-new-tab-page-secondary-foreground);
     min-width: 0;
     padding-inline-end: 16px;
+    position: relative;
   }
 
   .tab-title,

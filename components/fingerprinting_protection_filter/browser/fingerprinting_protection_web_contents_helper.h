@@ -48,7 +48,8 @@ class FingerprintingProtectionWebContentsHelper
       content::WebContents* web_contents,
       PrefService* pref_service,
       privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
-      subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle);
+      subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
+      bool is_incognito);
 
   FingerprintingProtectionWebContentsHelper(
       const FingerprintingProtectionWebContentsHelper&) = delete;

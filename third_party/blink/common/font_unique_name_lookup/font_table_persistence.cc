@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/pickle.h"
@@ -33,8 +34,8 @@ bool LoadFromFile(base::FilePath file_path,
 
     file_contents.resize(table_cache_file.GetLength());
 
-    if (table_cache_file.Read(0, file_contents.data(), file_contents.size()) <=
-        0) {
+    if (UNSAFE_TODO(table_cache_file.Read(0, file_contents.data(),
+                                          file_contents.size())) <= 0) {
       return false;
     }
   }
@@ -98,7 +99,8 @@ bool PersistToFile(const base::MappedReadOnlyRegion& name_table_region,
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    if (table_cache_file.Write(0, pickle.data_as_char(), pickle.size()) == -1) {
+    if (UNSAFE_TODO(table_cache_file.Write(0, pickle.data_as_char(),
+                                           pickle.size())) == -1) {
       table_cache_file.SetLength(0);
       return false;
     }

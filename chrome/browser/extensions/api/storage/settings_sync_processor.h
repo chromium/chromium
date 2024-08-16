@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/value_store/value_store_change.h"
 #include "extensions/common/extension_id.h"
 
@@ -31,7 +31,7 @@ namespace extensions {
 class SettingsSyncProcessor {
  public:
   SettingsSyncProcessor(const ExtensionId& extension_id,
-                        syncer::ModelType type,
+                        syncer::DataType type,
                         syncer::SyncChangeProcessor* sync_processor);
 
   SettingsSyncProcessor(const SettingsSyncProcessor&) = delete;
@@ -50,14 +50,14 @@ class SettingsSyncProcessor {
   // be taken, but this must be notified for internal bookkeeping.
   void NotifyChanges(const value_store::ValueStoreChangeList& changes);
 
-  syncer::ModelType type() { return type_; }
+  syncer::DataType type() { return type_; }
 
  private:
   // ID of the extension the changes are for.
   const ExtensionId extension_id_;
 
-  // Sync model type. Either EXTENSION_SETTING or APP_SETTING.
-  const syncer::ModelType type_;
+  // Sync data type. Either EXTENSION_SETTING or APP_SETTING.
+  const syncer::DataType type_;
 
   // The sync processor used to send changes to sync.
   const raw_ptr<syncer::SyncChangeProcessor, DanglingUntriaged> sync_processor_;

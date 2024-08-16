@@ -132,7 +132,8 @@ class KioskEnterpriseTest : public KioskBaseTest {
     accounts.emplace_back(policy::DeviceLocalAccountType::kKioskApp,
                           policy::DeviceLocalAccount::EphemeralMode::kUnset,
                           account_id, app_id, update_url);
-    policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
+    policy::SetDeviceLocalAccountsForTesting(owner_settings_service_.get(),
+                                             accounts);
     settings_helper_.SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
                                account_id);
     settings_helper_.SetString(kServiceAccountIdentity,
@@ -191,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, PrivateStore) {
+// TODO(crbug.com/344232409): flaky due to timeout.
+IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, DISABLED_PrivateStore) {
   SetTestApp(kTestEnterpriseKioskAppId);
 
   const char kPrivateStoreUpdate[] = "/private_store_update";
@@ -333,7 +335,8 @@ class KioskEnterpriseEphemeralTest
     std::vector<policy::DeviceLocalAccount> accounts;
     accounts.emplace_back(policy::DeviceLocalAccountType::kKioskApp,
                           ephemeral_mode, account_id, app_id, update_url);
-    policy::SetDeviceLocalAccounts(owner_settings_service_.get(), accounts);
+    policy::SetDeviceLocalAccountsForTesting(owner_settings_service_.get(),
+                                             accounts);
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 ephemeral_users_enabled);
   }

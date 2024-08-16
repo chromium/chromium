@@ -249,9 +249,7 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
 
 std::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
-    const base::CommandLine* command_line,
-    bool* fallback_to_software_gl) {
-  *fallback_to_software_gl = false;
+    const base::CommandLine* command_line) {
   bool overrideUseSoftwareGL =
       command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
 #if BUILDFLAG(IS_LINUX) || \
@@ -281,11 +279,6 @@ GetRequestedGLImplementationFromCommandLine(
   if (command_line->HasSwitch(switches::kUseANGLE) &&
       !command_line->HasSwitch(switches::kUseGL)) {
     gl_name = kGLImplementationANGLEName;
-  }
-
-  if (gl_name == "any") {
-    *fallback_to_software_gl = true;
-    return std::nullopt;
   }
 
   if ((gl_name == kGLImplementationANGLEName) &&

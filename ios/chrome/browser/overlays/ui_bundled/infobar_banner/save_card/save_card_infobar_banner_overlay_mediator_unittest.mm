@@ -88,9 +88,8 @@ TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOn) {
 TEST_F(SaveCardInfobarBannerOverlayMediatorTest, PresentModalWhenUploadOff) {
   InitInfobar(false);
 
-  EXPECT_CALL(*delegate_,
-              UpdateAndAccept(delegate_->cardholder_name(),
-                              delegate_->expiration_date_month(),
-                              delegate_->expiration_date_year(), _));
+  EXPECT_CALL(*delegate_, UpdateAndAccept(delegate_->cardholder_name(),
+                                          delegate_->expiration_date_month(),
+                                          delegate_->expiration_date_year()));
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }

@@ -107,7 +107,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
-#include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window_occlusion_tracker.h"
@@ -333,8 +333,9 @@ class SessionRestoreImpl : public BrowserListObserver {
           browser, tab.navigations, tab_index, selected_index,
           tab.extension_app_id, std::nullopt,
           disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB,  // selected
-          tab.pinned, base::TimeTicks(), nullptr, tab.user_agent_override,
-          tab.extra_data, /*from_session_restore=*/true,
+          tab.pinned, base::TimeTicks(), base::Time(), nullptr,
+          tab.user_agent_override, tab.extra_data,
+          /*from_session_restore=*/true,
           /*is_active_browser=*/std::nullopt);
       // Start loading the tab immediately.
       web_contents->GetController().LoadIfNecessary();
@@ -878,7 +879,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       int tab_index = i + initial_tab_count;
       RestoreTab(tab, browser, is_active_browser, restored_tabs, new_group_ids,
                  tab_index, is_selected_tab, last_active_time_ticks,
-                 did_show_browser);
+                 tab.last_active_time, did_show_browser);
     }
   }
 
@@ -894,7 +895,8 @@ class SessionRestoreImpl : public BrowserListObserver {
                                  tab_groups::TabGroupId>* new_group_ids,
                   const int tab_index,
                   bool is_selected_tab,
-                  base::TimeTicks last_active_time,
+                  base::TimeTicks last_active_time_ticks,
+                  base::Time last_active_time,
                   bool& did_show_browser) {
     // It's possible (particularly for foreign sessions) to receive a tab
     // without valid navigations. In that case, just skip it.
@@ -932,9 +934,9 @@ class SessionRestoreImpl : public BrowserListObserver {
     WebContents* web_contents = chrome::AddRestoredTab(
         browser, tab.navigations, tab_index, selected_index,
         tab.extension_app_id, new_group, is_selected_tab, tab.pinned,
-        last_active_time, session_storage_namespace.get(),
-        tab.user_agent_override, tab.extra_data,
-        true /* from_session_restore */, is_active_browser);
+        last_active_time_ticks, last_active_time,
+        session_storage_namespace.get(), tab.user_agent_override,
+        tab.extra_data, true /* from_session_restore */, is_active_browser);
     DCHECK(web_contents);
 
     RestoredTab restored_tab(web_contents, is_selected_tab,

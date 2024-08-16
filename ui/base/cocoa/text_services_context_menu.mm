@@ -26,8 +26,7 @@ base::i18n::TextDirection GetTextDirectionFromCommandId(int command_id) {
     case ui::TextServicesContextMenu::kWritingDirectionRtl:
       return base::i18n::RIGHT_TO_LEFT;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::i18n::UNKNOWN_DIRECTION;
+      NOTREACHED();
   }
 }
 
@@ -186,8 +185,7 @@ bool TextServicesContextMenu::IsCommandIdChecked(int command_id) const {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool TextServicesContextMenu::IsCommandIdEnabled(int command_id) const {
@@ -206,8 +204,7 @@ bool TextServicesContextMenu::IsCommandIdEnabled(int command_id) const {
       return IsSpeaking();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TextServicesContextMenu::ExecuteCommand(int command_id, int event_flags) {
@@ -224,7 +221,7 @@ void TextServicesContextMenu::ExecuteCommand(int command_id, int event_flags) {
       StopSpeaking();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

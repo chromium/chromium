@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<title>Test behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<iframe id="video-iframe" allow="media-playback-while-not-visible 'none'; autoplay *" style="display: none;" srcdoc="<!DOCTYPE html><video loop></video>"></iframe>
+<iframe id="audio-iframe" allow="media-playback-while-not-visible 'none'; autoplay *" style="display: none;" srcdoc="<!DOCTYPE html><audio loop></audio>"></iframe>
+<script>
+  internals.settings.setAutoplayPolicy('no-user-gesture-required');
+  console.log(internals.runtimeFlags.mediaPlaybackWhileNotVisiblePermissionPolicyEnabled)
+
+  async_test(function(t) {
+    let iframe = document.getElementById('video-iframe');
+
+    iframe.onload = t.step_func(function() {
+      let video = iframe.contentDocument.querySelector("video")
+      video.src = "content/test.ogv"
+      assert_true(video.paused);
+
+      video.play().then(t.unreached_func("Unrendered video element should not be allowed to play."), (e) => {
+        assert_true(e.name == 'AbortError');
+        t.done();
+      })
+    })
+  }, "When media-playback-while-not-visible permission policy is set, video elements in non-rendered iframes shouldn't be allowed to play");
+
+  async_test(function(t) {
+    let iframe = document.getElementById('audio-iframe');
+
+    iframe.onload = t.step_func(function() {
+      let audio = iframe.contentDocument.querySelector("audio")
+      audio.src = "content/test.oga"
+      assert_true(audio.paused);
+
+      audio.play().then(t.unreached_func("Unrendered audio element should not be allowed to play."), (e) => {
+        assert_true(e.name == 'AbortError');
+        t.done();
+      })
+    })
+  }, "When media-playback-while-not-visible permission policy is set, audio elements in non-rendered iframes shouldn't be allowed to play");
+</script>
+</body>

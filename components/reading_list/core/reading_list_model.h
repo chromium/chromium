@@ -25,7 +25,7 @@ class Location;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 // The reading list model contains two list of entries: one of unread urls, the
@@ -49,12 +49,12 @@ class ReadingListModel : public KeyedService {
   // Returns the delegate responsible for integrating with sync. This
   // corresponds to the regular sync mode, rather than transport-only sync (i.e.
   // the user opted into sync-the-feature).
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegate() = 0;
 
   // Same as above, but specifically for sync-the-transport (i.e. the user is
   // signed in but didn't opt into sync-the-feature).
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegateForTransportMode() = 0;
 
   // Returns true if the model is performing batch updates right now.

@@ -64,19 +64,11 @@ void SupervisedUserCapabilitiesObserver::OnExtendedAccountInfoUpdated(
     if (new_capability_value == signin::Tribool::kUnknown) {
       continue;
     }
-    // Update cache as capability values become available or change, then notify
-    // observers.
-    const auto iterator = capabilities_map_.find(name);
-    if (iterator == capabilities_map_.end() ||
-        iterator->second != new_capability_value) {
-      DCHECK_NE(new_capability_value, signin::Tribool::kUnknown);
-      capabilities_map_[name] = new_capability_value;
-      CapabilityUpdateState capability_update_state =
-          (new_capability_value == signin::Tribool::kTrue)
-              ? CapabilityUpdateState::kSetToTrue
-              : CapabilityUpdateState::kSetToFalse;
-      NotifyCapabilityChange(name, capability_update_state);
-    }
+    CapabilityUpdateState capability_update_state =
+        (new_capability_value == signin::Tribool::kTrue)
+            ? CapabilityUpdateState::kSetToTrue
+            : CapabilityUpdateState::kSetToFalse;
+    NotifyCapabilityChange(name, capability_update_state);
   }
 }
 
@@ -92,11 +84,9 @@ void SupervisedUserCapabilitiesObserver::OnPrimaryAccountChanged(
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       // Update and notify previously known capabilities.
-      for (const auto& kv : capabilities_map_) {
-        NotifyCapabilityChange(/*name=*/kv.first,
-                               CapabilityUpdateState::kDetached);
+      for (const std::string& name : GetSupervisedUserCapabilityNames()) {
+        NotifyCapabilityChange(name, CapabilityUpdateState::kDetached);
       }
-      capabilities_map_.clear();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;

@@ -392,7 +392,7 @@ void GaiaScreen::OnAccountStatusFetched(const std::string& user_email,
   }
   if (status.enrollment_required) {
     const std::string email_domain =
-        chrome::enterprise_util::GetDomainFromEmail(user_email);
+        enterprise_util::GetDomainFromEmail(user_email);
     // Cache email in case we will need to pass it to the enrollment screen.
     enrollment_nudge_email_ = user_email;
     view_->ShowEnrollmentNudge(email_domain);
@@ -415,9 +415,9 @@ bool GaiaScreen::ShouldFetchEnrollmentNudgePolicy(
     return false;
   }
   const std::string email_domain =
-      chrome::enterprise_util::GetDomainFromEmail(user_email);
+      enterprise_util::GetDomainFromEmail(user_email);
   // Enrollment nudging can't apply to users not belonging to a managed domain
-  return !chrome::enterprise_util::IsKnownConsumerDomain(email_domain);
+  return !enterprise_util::IsKnownConsumerDomain(email_domain);
 }
 
 void GaiaScreen::OnQuickStartButtonClicked() {

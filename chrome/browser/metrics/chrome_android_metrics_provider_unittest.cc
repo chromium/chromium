@@ -286,4 +286,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          ActivityType::kTrustedWebActivity,
                                          ActivityType::kWebapp,
                                          ActivityType::kWebApk,
+                                         ActivityType::kAuthTab,
                                          ActivityType::kPreFirstTab));

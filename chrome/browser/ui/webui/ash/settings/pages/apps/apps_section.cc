@@ -416,6 +416,12 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_DIALOG_ACCEPT},
       {"guestOsSharedUsbDevicesNotificationsLabel",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NOTIFICATION_LABEL},
+      {"guestOsSharedUsbPersistentPassthroughLabel",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_LABEL},
+      {"guestOsSharedUsbPersistentPassthroughDialogTitleEnable",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_DIALOG_TITLE_ENABLE},
+      {"guestOsSharedUsbPersistentPassthroughDialogTitleDisable",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_PERSISTENT_PASSTHROUGH_DIALOG_TITLE_DISABLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

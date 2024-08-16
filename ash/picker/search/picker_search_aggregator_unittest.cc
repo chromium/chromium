@@ -4,9 +4,13 @@
 
 #include "ash/picker/search/picker_search_aggregator.h"
 
+#include <optional>
+
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/search/picker_search_source.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -24,10 +28,13 @@ using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::Contains;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Optional;
 using ::testing::Property;
+using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 
 using MockSearchResultsCallback =
@@ -501,15 +508,6 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  &PickerSearchResult::TextData::primary_text,
                                  u"omnibox")))))),
           AllOf(Property("type", &PickerSearchResultsSection::type,
-                         PickerSectionType::kLocalFiles),
-                Property(
-                    "results", &PickerSearchResultsSection::results,
-                    ElementsAre(Property(
-                        "data", &PickerSearchResult::data,
-                        VariantWith<PickerSearchResult::LocalFileData>(Field(
-                            "title", &PickerSearchResult::LocalFileData::title,
-                            u"local")))))),
-          AllOf(Property("type", &PickerSearchResultsSection::type,
                          PickerSectionType::kDriveFiles),
                 Property("results", &PickerSearchResultsSection::results,
                          ElementsAre(Property(
@@ -518,6 +516,15 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
                                  "primary_text",
                                  &PickerSearchResult::TextData::primary_text,
                                  u"drive")))))),
+          AllOf(Property("type", &PickerSearchResultsSection::type,
+                         PickerSectionType::kLocalFiles),
+                Property(
+                    "results", &PickerSearchResultsSection::results,
+                    ElementsAre(Property(
+                        "data", &PickerSearchResult::data,
+                        VariantWith<PickerSearchResult::LocalFileData>(Field(
+                            "title", &PickerSearchResult::LocalFileData::title,
+                            u"local")))))),
           AllOf(
               Property("type", &PickerSearchResultsSection::type,
                        PickerSectionType::kClipboard),
@@ -899,6 +906,630 @@ TEST_F(PickerSearchAggregatorMultipleSourcesTest,
   aggregator.HandleSearchSourceResults(PickerSearchSource::kDrive,
                                        {PickerSearchResult::Text(u"drive")},
                                        /*has_more_results=*/true);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PreBurnInLinksAreDeduplicatedWithPreBurnInDriveFilesWhichCameBefore) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(UnorderedElementsAre(
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kDriveFiles),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  ElementsAre(
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              std::nullopt))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid1"))))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid2"))))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid3")))))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kLinks),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  ElementsAre(
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://example.com")))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://docs.google.com/notmatched")))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://drive.google.com/"
+                                       "notmatched"))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PreBurnInLinksAreDeduplicatedWithPreBurnInDriveFilesWhichCameAfter) {
+  MockSearchResultsCallback search_results_callback;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(UnorderedElementsAre(
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kDriveFiles),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  ElementsAre(
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              std::nullopt))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid1"))))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid2"))))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::DriveFileData>(Field(
+                              "id", &PickerSearchResult::DriveFileData::id,
+                              Optional(Eq("driveid3")))))))),
+          AllOf(
+              Property("type", &PickerSearchResultsSection::type,
+                       PickerSectionType::kLinks),
+              Property(
+                  "results", &PickerSearchResultsSection::results,
+                  ElementsAre(
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://example.com")))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://docs.google.com/notmatched")))),
+                      Property(
+                          "data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                              Field(
+                                  "url",
+                                  &PickerSearchResult::BrowsingHistoryData::url,
+                                  GURL("https://drive.google.com/"
+                                       "notmatched"))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PostBurnInLinksAreDeduplicatedWithPreBurnInDriveFiles) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kDriveFiles),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               std::nullopt))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid1"))))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid2"))))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid3")))))))))))
+      .Times(1);
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://example.com")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/notmatched")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/"
+                                     "notmatched"))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PostBurnInLinksAreDeduplicatedWithPostBurnInDriveFilesWhichCameBefore) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kDriveFiles),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               std::nullopt))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid1"))))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid2"))))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid3")))))))))))
+      .Times(1);
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://example.com")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/notmatched")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/"
+                                     "notmatched"))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PostBurnInDriveFilesAreDeduplicatedWithPreBurnInLinks) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://example.com")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/notmatched")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/driveid1")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field(
+                              "url",
+                              &PickerSearchResult::BrowsingHistoryData::url,
+                              GURL("https://docs.google.com/driveid1?edit")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/driveid2")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/"
+                                     "notmatched"))))))))))
+      .Times(1);
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kDriveFiles),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               std::nullopt))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid3")))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
+}
+
+TEST_F(PickerSearchAggregatorMultipleSourcesTest,
+       PostBurnInDriveFilesAreDeduplicatedWithPostBurnInLinksWhichCameBefore) {
+  MockSearchResultsCallback search_results_callback;
+  testing::InSequence seq;
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kLinks),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://example.com")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/notmatched")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://docs.google.com/driveid1")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field(
+                              "url",
+                              &PickerSearchResult::BrowsingHistoryData::url,
+                              GURL("https://docs.google.com/driveid1?edit")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/driveid2")))),
+                  Property(
+                      "data", &PickerSearchResult::data,
+                      VariantWith<PickerSearchResult::BrowsingHistoryData>(
+                          Field("url",
+                                &PickerSearchResult::BrowsingHistoryData::url,
+                                GURL("https://drive.google.com/"
+                                     "notmatched"))))))))))
+      .Times(1);
+  EXPECT_CALL(
+      search_results_callback,
+      Call(ElementsAre(AllOf(
+          Property("type", &PickerSearchResultsSection::type,
+                   PickerSectionType::kDriveFiles),
+          Property(
+              "results", &PickerSearchResultsSection::results,
+              ElementsAre(
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               std::nullopt))),
+                  Property("data", &PickerSearchResult::data,
+                           VariantWith<PickerSearchResult::DriveFileData>(Field(
+                               "id", &PickerSearchResult::DriveFileData::id,
+                               Optional(Eq("driveid3")))))))))))
+      .Times(1);
+
+  PickerSearchAggregator aggregator(
+      kBurnInPeriod,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&search_results_callback)));
+
+  task_environment().FastForwardBy(kBurnInPeriod);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kOmnibox,
+      {
+          PickerSearchResult::BrowsingHistory(GURL("https://example.com"), u"",
+                                              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/notmatched"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://docs.google.com/driveid1?edit"), u"",
+              ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/driveid2"), u"", ui::ImageModel()),
+          PickerSearchResult::BrowsingHistory(
+              GURL("https://drive.google.com/notmatched"), u"",
+              ui::ImageModel()),
+      },
+      /*has_more_results=*/true);
+  aggregator.HandleSearchSourceResults(
+      PickerSearchSource::kDrive,
+      {
+          PickerSearchResult::DriveFile(/*id=*/std::nullopt, /*title=*/u"",
+                                        GURL(), base::FilePath()),
+          PickerSearchResult::DriveFile("driveid1", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid2", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+          PickerSearchResult::DriveFile("driveid3", /*title=*/u"", GURL(),
+                                        base::FilePath()),
+      },
+      /*has_more_results=*/true);
 }
 
 }  // namespace

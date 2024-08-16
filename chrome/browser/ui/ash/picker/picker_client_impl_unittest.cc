@@ -51,6 +51,8 @@
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/views/accessibility/ax_event_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 
 namespace {
 
@@ -152,12 +154,14 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
   return service;
 }
 
-void AddSearchToHistory(TestingProfile* profile, GURL url) {
+void AddSearchToHistory(TestingProfile* profile,
+                        GURL url,
+                        base::Time last_visit = base::Time::Now()) {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   history->AddPageWithDetails(url, /*title=*/u"", /*visit_count=*/1,
                               /*typed_count=*/1,
-                              /*last_visit=*/base::Time::Now(),
+                              /*last_visit=*/last_visit,
                               /*hidden=*/false, history::SOURCE_BROWSED);
   profile->BlockUntilHistoryProcessesPendingRequests();
 }
@@ -550,22 +554,55 @@ TEST_F(PickerClientImplTest, GetRecentDriveFilesTruncates) {
 TEST_F(PickerClientImplTest, GetSuggestedLinkResultsReturnsLinks) {
   ash::PickerController controller;
   PickerClientImpl client(&controller, user_manager());
-  AddSearchToHistory(profile(), GURL("http://foo.com/history"));
+  const base::Time now = base::Time::Now();
+  AddSearchToHistory(profile(), GURL("http://a.com/history"),
+                     now - base::Seconds(1));
+  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
   TestFaviconService favicon_service;
   client.get_link_suggester_for_test()->set_favicon_service_for_test(
       &favicon_service);
 
   base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
-  client.GetSuggestedLinkResults(future.GetRepeatingCallback());
+  client.GetSuggestedLinkResults(100u, future.GetRepeatingCallback());
 
   EXPECT_THAT(
       future.Get(),
-      IsSupersetOf({Property(
+      ElementsAre(
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                  "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                  GURL("http://b.com/history")))),
+          Property(
+              "data", &ash::PickerSearchResult::data,
+              VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(Field(
+                  "url", &ash::PickerSearchResult::BrowsingHistoryData::url,
+                  GURL("http://a.com/history"))))));
+  EXPECT_EQ(favicon_service.page_url_, GURL("http://a.com/history"));
+}
+
+TEST_F(PickerClientImplTest, GetSuggestedLinkResultsAreTruncatedToMostRecent) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const base::Time now = base::Time::Now();
+  AddSearchToHistory(profile(), GURL("http://a.com/history"),
+                     now - base::Seconds(1));
+  AddSearchToHistory(profile(), GURL("http://b.com/history"), now);
+  TestFaviconService favicon_service;
+  client.get_link_suggester_for_test()->set_favicon_service_for_test(
+      &favicon_service);
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedLinkResults(1u, future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(
           "data", &ash::PickerSearchResult::data,
           VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
               Field("url", &ash::PickerSearchResult::BrowsingHistoryData::url,
-                    GURL("http://foo.com/history"))))}));
-  EXPECT_EQ(favicon_service.page_url_, GURL("http://foo.com/history"));
+                    GURL("http://b.com/history"))))));
+  EXPECT_EQ(favicon_service.page_url_, GURL("http://b.com/history"));
 }
 
 class PickerClientImplEditorTest : public PickerClientImplTest {
@@ -592,6 +629,38 @@ class PickerClientImplEditorTest : public PickerClientImplTest {
  private:
   ash::InputMethodAsh ime_{nullptr};
 };
+
+TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsFalseIfEditorDisabled) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kHardBlocked);
+
+  EXPECT_FALSE(client.IsEligibleForEditor());
+}
+
+TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsFalseIfHardBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kHardBlocked);
+
+  EXPECT_FALSE(client.IsEligibleForEditor());
+}
+
+TEST_F(PickerClientImplEditorTest,
+       IsEligibleForEditorReturnsTrueIfSoftBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kSoftBlocked);
+
+  EXPECT_TRUE(client.IsEligibleForEditor());
+}
 
 TEST_F(PickerClientImplEditorTest,
        CacheEditorContextReturnsNullCallbackWhenEditorFlagDisabled) {
@@ -679,6 +748,17 @@ TEST_F(PickerClientImplEditorTest,
   client.GetSuggestedEditorResults(future.GetCallback());
 
   EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(PickerClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  client.Announce(u"hello");
+
+  counter.WaitForEvent(ax::mojom::Event::kLiveRegionChanged);
 }
 
 // TODO: b/325540366 - Add PickerClientImpl tests.

@@ -89,7 +89,9 @@ std::unique_ptr<KeyedService>
 UnexportableKeyServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs())) {
+  // Do not create a service if all consumer features are disabled.
+  if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
+      !switches::IsChromeRefreshTokenBindingEnabled(profile->GetPrefs())) {
     return nullptr;
   }
 

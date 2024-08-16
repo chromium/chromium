@@ -111,10 +111,10 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
 };
 
 PA_ALWAYS_INLINE void SpinningMutex::Acquire() {
-  // Not marked PA_LIKELY(), as:
+  // Not marked `[[likely]]`, as:
   // 1. We don't know how much contention the lock would experience
   // 2. This may lead to weird-looking code layout when inlined into a caller
-  // with PA_(UN)LIKELY() annotations.
+  // with `[[(un)likely]]` attributes.
   if (Try()) {
     return;
   }
@@ -142,8 +142,8 @@ PA_ALWAYS_INLINE bool SpinningMutex::Try() {
 }
 
 PA_ALWAYS_INLINE void SpinningMutex::Release() {
-  if (PA_UNLIKELY(state_.exchange(kUnlocked, std::memory_order_release) ==
-                  kLockedContended)) {
+  if (state_.exchange(kUnlocked, std::memory_order_release) == kLockedContended)
+      [[unlikely]] {
     // |kLockedContended|: there is a waiter to wake up.
     //
     // Here there is a window where the lock is unlocked, since we just set it

@@ -93,6 +93,7 @@ bool ConstraintSetHasImageCapture(
          constraint_set->hasFocusDistance() || constraint_set->hasPan() ||
          constraint_set->hasTilt() || constraint_set->hasZoom() ||
          constraint_set->hasTorch() || constraint_set->hasBackgroundBlur() ||
+         constraint_set->hasBackgroundSegmentationMask() ||
          constraint_set->hasEyeGazeCorrection() ||
          constraint_set->hasFaceFraming();
 }

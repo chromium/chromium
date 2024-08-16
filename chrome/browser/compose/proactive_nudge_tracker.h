@@ -183,7 +183,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   void ShowTimerElapsed();
   void GotClassificationResult(
-      base::WeakPtr<State> state,
       const segmentation_platform::ClassificationResult& result);
   bool MatchesCurrentField(autofill::FormGlobalId form,
                            autofill::FieldGlobalId field);

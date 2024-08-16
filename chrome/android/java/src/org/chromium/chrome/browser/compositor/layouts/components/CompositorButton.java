@@ -38,14 +38,11 @@ public class CompositorButton extends StripLayoutView {
     public interface CompositorOnClickHandler {
         /**
          * Handles the click action.
+         *
          * @param time The time of the click action.
          */
         void onClick(long time);
     }
-
-    // Pre-allocated to avoid in-frame allocations.
-    private final RectF mBounds = new RectF();
-    private final RectF mCacheBounds = new RectF();
 
     private final CompositorOnClickHandler mClickHandler;
 
@@ -57,35 +54,32 @@ public class CompositorButton extends StripLayoutView {
     private int mIncognitoPressedResource;
 
     private float mOpacity;
-    private float mClickSlop;
     private boolean mIsPressed;
     private boolean mIsPressedFromMouse;
     private boolean mIsHovered;
-    private boolean mIsIncognito;
-    private boolean mIsEnabled;
-    private String mAccessibilityDescription = "";
     private String mAccessibilityDescriptionIncognito = "";
 
     /**
      * Default constructor for {@link CompositorButton}
-     * @param context      An Android context for fetching dimens.
-     * @param width        The button width.
-     * @param height       The button height.
+     *
+     * @param context An Android context for fetching dimens.
+     * @param width The button width.
+     * @param height The button height.
      * @param clickHandler The action to be performed on click.
      */
     public CompositorButton(
             Context context, float width, float height, CompositorOnClickHandler clickHandler) {
-        mBounds.set(0, 0, width, height);
+        super(false);
+        mDrawBounds.set(0, 0, width, height);
 
         mOpacity = 1.f;
         mIsPressed = false;
-        mIsIncognito = false;
-        mIsEnabled = true;
         setVisible(true);
 
         Resources res = context.getResources();
         float sPxToDp = 1.0f / res.getDisplayMetrics().density;
-        mClickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
+        float clickSlop = res.getDimension(R.dimen.compositor_button_slop) * sPxToDp;
+        setTouchTargetInsets(-clickSlop, -clickSlop, -clickSlop, -clickSlop);
 
         mClickHandler = clickHandler;
     }
@@ -112,35 +106,22 @@ public class CompositorButton extends StripLayoutView {
      * @param description A string describing the resource.
      */
     public void setAccessibilityDescription(String description, String incognitoDescription) {
-        mAccessibilityDescription = description;
+        super.setAccessibilityDescription(description);
         mAccessibilityDescriptionIncognito = incognitoDescription;
     }
 
     /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
     @Override
     public String getAccessibilityDescription() {
-        return mIsIncognito ? mAccessibilityDescriptionIncognito : mAccessibilityDescription;
+        return isIncognito()
+                ? mAccessibilityDescriptionIncognito
+                : super.getAccessibilityDescription();
     }
 
-    @Override
-    public void getTouchTarget(RectF outTarget) {
-        outTarget.set(mBounds);
-        // Get the whole touchable region.
-        outTarget.inset((int) -mClickSlop, (int) -mClickSlop);
-    }
-
-    /**
-     * @param x The x offset of the click.
-     * @param y The y offset of the click.
-     * @return Whether or not that click occurred inside of the button + slop area.
-     */
     @Override
     public boolean checkClickedOrHovered(float x, float y) {
-        if (mOpacity < 1.f || !isVisible() || !mIsEnabled) return false;
-
-        mCacheBounds.set(mBounds);
-        mCacheBounds.inset(-mClickSlop, -mClickSlop);
-        return mCacheBounds.contains(x, y);
+        if (mOpacity < 1.f || !isVisible()) return false;
+        return super.checkClickedOrHovered(x, y);
     }
 
     @Override
@@ -148,54 +129,11 @@ public class CompositorButton extends StripLayoutView {
         mClickHandler.onClick(time);
     }
 
-    /** {@link StripLayoutView} Implementation */
-    @Override
-    public float getDrawX() {
-        return mBounds.left;
-    }
-
-    @Override
-    public void setDrawX(float x) {
-        mBounds.right = x + mBounds.width();
-        mBounds.left = x;
-    }
-
-    @Override
-    public float getDrawY() {
-        return mBounds.top;
-    }
-
-    @Override
-    public void setDrawY(float y) {
-        mBounds.bottom = y + mBounds.height();
-        mBounds.top = y;
-    }
-
-    @Override
-    public float getWidth() {
-        return mBounds.width();
-    }
-
-    @Override
-    public void setWidth(float width) {
-        mBounds.right = mBounds.left + width;
-    }
-
-    @Override
-    public float getHeight() {
-        return mBounds.height();
-    }
-
-    @Override
-    public void setHeight(float height) {
-        mBounds.bottom = mBounds.top + height;
-    }
-
     /**
      * @param bounds A {@link RectF} representing the location of the button.
      */
     public void setBounds(RectF bounds) {
-        mBounds.set(bounds);
+        mDrawBounds.set(bounds);
     }
 
     /**
@@ -241,39 +179,11 @@ public class CompositorButton extends StripLayoutView {
     }
 
     /**
-     * @return The incognito state of the button.
-     */
-    public boolean isIncognito() {
-        return mIsIncognito;
-    }
-
-    /**
-     * @param state The incognito state of the button.
-     */
-    public void setIncognito(boolean state) {
-        mIsIncognito = state;
-    }
-
-    /**
-     * @return Whether or not the button can be interacted with.
-     */
-    public boolean isEnabled() {
-        return mIsEnabled;
-    }
-
-    /**
-     * @param enabled Whether or not the button can be interacted with.
-     */
-    public void setEnabled(boolean enabled) {
-        mIsEnabled = enabled;
-    }
-
-    /**
-     * @param slop  The additional area outside of the button to be considered when
-     *              checking click target bounds.
+     * @param slop The additional area outside of the button to be considered when checking click
+     *     target bounds.
      */
     public void setClickSlop(float slop) {
-        mClickSlop = slop;
+        setTouchTargetInsets(-slop, -slop, -slop, -slop);
     }
 
     /**

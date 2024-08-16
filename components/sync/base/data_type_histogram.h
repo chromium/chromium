@@ -5,13 +5,12 @@
 #ifndef COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_
 #define COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
 // The enum values are used for histogram suffixes. When adding a new type here,
-// extend also the "SyncModelTypeUpdateDrop" <histogram_suffixes> in
-// histograms.xml.
+// extend also the "Sync.DataTypeUpdateDrop" histogram in histograms.xml.
 enum class UpdateDropReason {
   kInconsistentClientTag,
   kCannotGenerateStorageKey,
@@ -26,34 +25,33 @@ enum class UpdateDropReason {
 
 // Records that a remote update of an entity of type |type| got dropped into a
 // |reason| related histogram.
-void SyncRecordModelTypeUpdateDropReason(UpdateDropReason reason,
-                                         ModelType type);
+void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason, DataType type);
 
-// Converts memory size |bytes| into kilobytes and records it into |model_type|
+// Converts memory size |bytes| into kilobytes and records it into |data_type|
 // related histogram for memory footprint of sync data.
-void SyncRecordModelTypeMemoryHistogram(ModelType model_type, size_t bytes);
+void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes);
 
-// Records |count| into a |model_type| related histogram for count of sync
+// Records |count| into a |data_type| related histogram for count of sync
 // entities.
-void SyncRecordModelTypeCountHistogram(ModelType model_type, size_t count);
+void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count);
 
-// Records the serialized byte size of a sync entity from `model_type`, both
+// Records the serialized byte size of a sync entity from `data_type`, both
 // with and without sync metadata (`total_bytes` and `specifics_bytes`
 // respectively). Meant to be called when the entity is committed.
-void SyncRecordModelTypeEntitySizeHistogram(ModelType model_type,
-                                            bool is_tombstone,
-                                            size_t specifics_bytes,
-                                            size_t total_bytes);
+void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
+                                           bool is_tombstone,
+                                           size_t specifics_bytes,
+                                           size_t total_bytes);
 
 // Records when the model (including both data and metadata) was cleared for a
-// given `model_type` due to
+// given `data_type` due to
 // `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
-void SyncRecordModelClearedOnceHistogram(ModelType model_type);
+void SyncRecordModelClearedOnceHistogram(DataType data_type);
 
-// Records the amount of unsynced entities for the given |model_type| upon
-// ModelTypeChangeProcessor::ModelReadyToSync() call.
-void SyncRecordModelTypeNumUnsyncedEntitiesOnModelReady(
-    ModelType model_type,
+// Records the amount of unsynced entities for the given |data_type| upon
+// DataTypeLocalChangeProcessor::ModelReadyToSync() call.
+void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
+    DataType data_type,
     size_t num_unsynced_entities);
 
 // These values are persisted to logs. Entries should not be renumbered and

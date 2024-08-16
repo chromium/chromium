@@ -22,6 +22,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
@@ -55,7 +56,7 @@ UINT GetMessageBoxFlagsFromType(chrome::MessageBoxType type) {
     case chrome::MESSAGE_BOX_TYPE_QUESTION:
       return flags | MB_YESNO | MB_ICONQUESTION;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 
@@ -174,41 +175,38 @@ chrome::MessageBoxResult MessageBoxDialog::Show(
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
-  if (!CanUseViewsMessageBox()) {
-    if (CanUseNativeMessageBox()) {
-      ShowNativeMessageBox(parent, title, message, type, yes_text, no_text,
-                           checkbox_text, std::move(callback));
-    } else {
-      LOG(ERROR) << "Unable to show message box: " << title << " - " << message;
-      std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_NO);
-    }
+  // Use a native message box if views is not available or no parent is given.
+  // This typically is used during browser startup and shutdown when there is
+  // no browser window to be used as a parent window.
+  if (CanUseNativeMessageBox() && (!CanUseViewsMessageBox() || !parent)) {
+    ShowNativeMessageBox(parent, title, message, type, yes_text, no_text,
+                         checkbox_text, std::move(callback));
     return chrome::MESSAGE_BOX_RESULT_DEFERRED;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // System modals are only supported on IS_CHROMEOS_ASH.
-  const bool is_system_modal = !parent;
-#else
-  // TODO(pbos): Consider whether we should disallow parentless MessageBoxes
-  // here. This currently fails from ShowProfileErrorDialog() which calls
-  // chrome::ShowWarningMessageBox*() without a parent. See
-  // https://crbug.com/1431697 which discovered this through a DCHECK failure.
-  const bool is_system_modal = false;
-#endif
+  if (!CanUseViewsMessageBox()) {
+    CHECK(!CanUseNativeMessageBox());
+    LOG(ERROR) << "Unable to show message box: " << title << " - " << message;
+    std::move(callback).Run(chrome::MESSAGE_BOX_RESULT_NO);
+    return chrome::MESSAGE_BOX_RESULT_DEFERRED;
+  }
 
   MessageBoxDialog* dialog = new MessageBoxDialog(
-      title, message, type, yes_text, no_text, checkbox_text, is_system_modal);
-  views::Widget* widget =
-      constrained_window::CreateBrowserModalDialogViews(dialog, parent);
+      title, message, type, yes_text, no_text, checkbox_text);
 
-#if BUILDFLAG(IS_MAC)
-  // Mac does not support system modal dialogs. If there is no parent window to
-  // attach to, move the dialog's widget on top so other windows do not obscure
-  // it.
-  if (!parent) {
+  // System modals have no parent and are only supported on ChromeOS Ash.
+  const bool is_modal = parent || BUILDFLAG(IS_CHROMEOS_ASH);
+  views::Widget* widget = nullptr;
+  if (is_modal) {
+    dialog->SetModalType(parent ? ui::mojom::ModalType::kWindow
+                                : ui::mojom::ModalType::kSystem);
+    widget = constrained_window::CreateBrowserModalDialogViews(dialog, parent);
+  } else {
+    widget =
+        views::DialogDelegate::CreateDialogWidget(dialog, nullptr, nullptr);
+    // Move the dialog's widget on top so other windows do not obscure it.
     widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   }
-#endif
 
   widget->Show();
   dialog->Run(std::move(callback));
@@ -266,17 +264,10 @@ MessageBoxDialog::MessageBoxDialog(std::u16string_view title,
                                    chrome::MessageBoxType type,
                                    std::u16string_view yes_text,
                                    std::u16string_view no_text,
-                                   std::u16string_view checkbox_text,
-                                   bool is_system_modal)
+                                   std::u16string_view checkbox_text)
     : window_title_(title),
       type_(type),
       message_box_view_(new views::MessageBoxView(std::u16string(message))) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SetModalType(is_system_modal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_WINDOW);
-#else
-  DCHECK(!is_system_modal);
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-#endif
   SetButtons(type_ == chrome::MESSAGE_BOX_TYPE_QUESTION
                  ? ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL
                  : ui::DIALOG_BUTTON_OK);

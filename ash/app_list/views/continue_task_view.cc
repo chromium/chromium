@@ -303,7 +303,7 @@ void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
       view_delegate_->SetHideContinueSection(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -363,9 +363,8 @@ ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return TaskResultType::kUnknown;
 }
 
 void ContinueTaskView::RemoveResult() {

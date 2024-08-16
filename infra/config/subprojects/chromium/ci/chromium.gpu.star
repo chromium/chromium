@@ -43,8 +43,6 @@ consoles.console_view(
 
 ci.gpu.linux_builder(
     name = "Android Release (Nexus 5X)",
-    # TODO(crbug.com/355671260): Disable on branch when removed from CQ.
-    branch_selector = branches.selector.ANDROID_BRANCHES,
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -88,8 +86,7 @@ ci.gpu.linux_builder(
 
 ci.gpu.linux_builder(
     name = "Android Release (Pixel 2)",
-    # TODO(crbug.com/355671260): Enable on branch when protmoted to CQ.
-    # branch_selector = branches.selector.ANDROID_BRANCHES,
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Runs GPU tests on Pixel 2 phones",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

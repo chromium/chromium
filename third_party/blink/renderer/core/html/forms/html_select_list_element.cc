@@ -431,7 +431,7 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       MakeGarbageCollected<PreviewPopoverInnerElement>(document);
   suggested_option_popover_->setAttribute(html_names::kPopoverAttr,
                                           keywords::kManual);
-  suggested_option_popover_->SetPopoverOwnerSelectListElement(this);
+  suggested_option_popover_->SetInternalImplicitAnchor(this);
   suggested_option_popover_->SetShadowPseudoId(
       AtomicString("-internal-selectlist-preview"));
   root.AppendChild(suggested_option_popover_);
@@ -606,11 +606,11 @@ bool HTMLSelectListElement::SetListboxPart(HTMLElement* new_listbox_part) {
     return false;
 
   if (listbox_part_) {
-    listbox_part_->SetPopoverOwnerSelectListElement(nullptr);
+    listbox_part_->SetInternalImplicitAnchor(nullptr);
   }
 
   if (new_listbox_part) {
-    new_listbox_part->SetPopoverOwnerSelectListElement(this);
+    new_listbox_part->SetInternalImplicitAnchor(this);
   } else {
     QueueCheckForMissingParts();
   }

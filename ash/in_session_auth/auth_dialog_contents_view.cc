@@ -120,6 +120,11 @@ AuthDialogContentsView::TestApi::GetPinTextInputView() const {
   return view_->pin_text_input_view_;
 }
 
+views::Label* AuthDialogContentsView::TestApi::GetDialogFingerprintLabel()
+    const {
+  return view_->GetFingerprintLabel();
+}
+
 // Consists of fingerprint icon view and a label.
 class AuthDialogContentsView::FingerprintView : public views::View {
   METADATA_HEADER(FingerprintView, views::View)
@@ -131,10 +136,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     METADATA_HEADER(FingerprintLabel, views::Label)
 
    public:
-    // views::View
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-      node_data->role = ax::mojom::Role::kStaticText;
-      node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
+    FingerprintLabel() {
+      GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
     }
   };
 
@@ -248,6 +251,8 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     }
   }
 
+  views::Label* GetLabelView() const { return label_; }
+
  private:
   void DisplayCurrentState() {
     SetVisible(state_ != FingerprintState::UNAVAILABLE);
@@ -306,8 +311,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
         }
         return IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_PASSWORD_REQUIRED;
       case FingerprintState::UNAVAILABLE:
-        NOTREACHED_IN_MIGRATION();
-        return 0;
+        NOTREACHED();
     }
   }
 
@@ -438,17 +442,14 @@ AuthDialogContentsView::AuthDialogContentsView(
 
   AddVerticalSpacing(kSpacingBeforeButtons);
   AddActionButtonsView();
-}
 
-AuthDialogContentsView::~AuthDialogContentsView() = default;
-
-void AuthDialogContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetName(
       l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE,
                                  base::UTF8ToUTF16(origin_name_)));
 }
+
+AuthDialogContentsView::~AuthDialogContentsView() = default;
 
 void AuthDialogContentsView::RequestFocus() {
   if (auth_methods_ == kAuthFingerprint) {
@@ -740,6 +741,10 @@ void AuthDialogContentsView::OnCancelButtonPressed(const ui::Event& event) {
 
 void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {
   WebAuthNDialogController::Get()->OpenInSessionAuthHelpPage();
+}
+
+views::Label* AuthDialogContentsView::GetFingerprintLabel() const {
+  return fingerprint_view_ ? fingerprint_view_->GetLabelView() : nullptr;
 }
 
 BEGIN_METADATA(AuthDialogContentsView)

@@ -1,0 +1,30 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Rewriter API
+// https://github.com/explainers-by-googlers/writing-assistance-apis
+
+enum AIRewriterTone { "as-is", "more-formal", "more-casual" };
+enum AIRewriterLength { "as-is", "shorter", "longer" };
+
+dictionary AIRewriterCreateOptions {
+  AbortSignal signal;
+  DOMString sharedContext;
+
+  AIRewriterTone tone = "as-is";
+  AIRewriterLength length = "as-is";
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIRewriterAPI
+]
+interface AIRewriterFactory {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AIRewriter> create(optional AIRewriterCreateOptions options = {});
+};

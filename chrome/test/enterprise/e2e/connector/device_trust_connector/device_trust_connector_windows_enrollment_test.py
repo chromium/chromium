@@ -104,8 +104,8 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
       client = result['ClientSignals']
       server = result['ServerSignals']
       self.assertEqual(client['deviceEnrollmentDomain'], 'beyondcorp.bigr.name')
-      self.assertEqual(client['safeBrowsingProtectionLevel'], 1)
-      self.assertEqual(client['trigger'], 1)
+      self.assertEqual(client['safeBrowsingProtectionLevel'], 'STANDARD')
+      self.assertEqual(client['trigger'], 'TRIGGER_BROWSER_NAVIGATION')
       self.assertEqual(server['keyTrustLevel'], 'CHROME_BROWSER_HW_KEY')
       self.assertIsNotNone(server['devicePermanentId'])
 

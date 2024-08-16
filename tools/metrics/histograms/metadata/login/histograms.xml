@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.StateKeyGenerationStatus"
-    enum="LoginStateKeyGenerationStatus" expires_after="2024-12-08">
+    enum="LoginStateKeyGenerationStatus" expires_after="2025-02-10">
   <owner>sergiyb@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@chromium.org</owner>
   <summary>

@@ -4,7 +4,9 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -35,6 +37,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -64,6 +67,13 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
     auto* const service = GetTutorialService();
     service->CancelTutorialIfRunning();
     service->tutorial_registry()->RemoveTutorialForTesting(kTestTutorialId);
+  }
+
+  static void ClearEventQueue() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  protected:
@@ -101,17 +111,20 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
   GetTutorialService()->StartTutorial(kTestTutorialId,
                                       browser()->window()->GetElementContext(),
                                       completed.Get(), aborted.Get());
+  ClearEventQueue();
   EXPECT_TRUE(GetTutorialService()->IsRunningTutorial());
 
   ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
       GetElement(kTabStripElementId), kCustomEventType1);
+  ClearEventQueue();
 
   InteractionTestUtilBrowser test_util;
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
             test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
+  ClearEventQueue();
 
   // Simulate click on close button.
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       completed, Run,
       views::test::InteractionTestUtilSimulatorViews::PressButton(
           static_cast<HelpBubbleViews*>(

@@ -68,9 +68,11 @@ class PLATFORM_EXPORT ImageFrameGenerator final
       const SkISize& full_size,
       bool is_multi_frame,
       ColorBehavior color_behavior,
+      cc::AuxImage aux_image,
       Vector<SkISize> supported_sizes) {
-    return base::AdoptRef(new ImageFrameGenerator(
-        full_size, is_multi_frame, color_behavior, std::move(supported_sizes)));
+    return base::AdoptRef(new ImageFrameGenerator(full_size, is_multi_frame,
+                                                  color_behavior, aux_image,
+                                                  std::move(supported_sizes)));
   }
 
   ImageFrameGenerator(const ImageFrameGenerator&) = delete;
@@ -143,6 +145,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   ImageFrameGenerator(const SkISize& full_size,
                       bool is_multi_frame,
                       ColorBehavior,
+                      cc::AuxImage,
                       Vector<SkISize> supported_sizes);
 
   friend class ImageFrameGeneratorTest;
@@ -162,6 +165,7 @@ class PLATFORM_EXPORT ImageFrameGenerator final
   const SkISize full_size_;
   // Parameters used to create internal ImageDecoder objects.
   const ColorBehavior decoder_color_behavior_;
+  const cc::AuxImage aux_image_;
   const bool is_multi_frame_;
   const Vector<SkISize> supported_sizes_;
 

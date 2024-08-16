@@ -117,9 +117,6 @@ class ScopedFakePowerManagerClientLifetime {
 class BatterySaverModeManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        ::features::kBatterySaverModeRenderTuning);
-
     auto source = std::make_unique<FakePowerMonitorSource>();
     power_monitor_source_ = source.get();
     base::PowerMonitor::Initialize(std::move(source));
@@ -180,8 +177,6 @@ class BatterySaverModeManagerTest : public ::testing::Test {
   bool child_process_tuning_enabled_ = false;
   bool freezing_enabled_ = false;
   std::unique_ptr<BatterySaverModeManager> manager_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Battery Saver is controlled by the OS on ChromeOS

@@ -195,8 +195,8 @@ export class DataSeries {
   }
 
   /**
-   * Find the index of point which time is greater than or equal to `time` by
-   * simple binary search.
+   * Find the minimum index of point which time is greater than or equal to
+   * `time` by simple binary search.
    */
   private findLowerBoundPointIndex(time: number): number {
     let lower: number = 0;
@@ -214,20 +214,30 @@ export class DataSeries {
   }
 
   /**
-   * Filter out data points which the `time` field is earlier than startTime.
+   * Filter out data points which the `time` field is earlier than `startTime`.
+   * Keep an additional buffer of data points to avoid modifying `dataPoints`
+   * too frequently.
+   *
+   * @param startTime - The new start time. Data points which time before this
+   *                    should be removed.
+   * @returns - Whether any data points are removed.
    */
-  removeOutdatedData(startTime: number) {
-    // TODO(b/353871773): Improve the performance of data points removing.
-    let numRemovedPoints: number = 0;
-    for (let i = 0; i < this.dataPoints.length; ++i) {
-      if (this.dataPoints[i].time <= startTime) {
-        numRemovedPoints += 1;
-      } else {
-        break;
-      }
+  removeOutdatedData(startTime: number): boolean {
+    // Retain one hour more of data points as buffer so we only need to update
+    // `dataPoints` every hour.
+    const dataRetentionBuffer: number = 1 * 60 * 60 * 1000;
+
+    // Find the index of the first data point within the buffer.
+    const bufferStartIndex: number =
+        this.findLowerBoundPointIndex(startTime - dataRetentionBuffer);
+
+    // If there are points outside the buffer, remove them and points in buffer.
+    if (bufferStartIndex > 0) {
+      const newStartIndex: number = this.findLowerBoundPointIndex(startTime);
+      assert(newStartIndex >= bufferStartIndex);
+      this.dataPoints.splice(0, newStartIndex);
+      return true;
     }
-    if (numRemovedPoints !== 0) {
-      this.dataPoints.splice(0, numRemovedPoints);
-    }
+    return false;
   }
 }

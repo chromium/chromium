@@ -271,6 +271,9 @@ InteractiveBrowserTestApi::WaitForWebContentsReady(
                          expected_url.value_or(GURL()).spec().c_str()));
   builder.SetElementID(webcontents_id);
   builder.SetContext(kDefaultWebContentsContextMode);
+  // Because we're checking the current specific state of the contents, this
+  // avoids further navigations breaking the test.
+  builder.SetStepStartMode(ui::InteractionSequence::StepStartMode::kImmediate);
   if (expected_url.has_value()) {
     builder.SetStartCallback(base::BindOnce(
         [](GURL expected_url, ui::InteractionSequence* seq,
@@ -530,19 +533,26 @@ InteractiveBrowserTestApi::WaitForStateChange(
   desc << "WaitForStateChange( " << state_change << ", "
        << (expect_timeout ? "true" : "false") << " )";
   const bool fail_on_close = !state_change.continue_across_navigation;
+  StepBuilder step1;
+  step1.SetDescription(base::StrCat({desc.str(), ": Queue Event"}))
+      .SetElementID(webcontents_id)
+      .SetContext(kDefaultWebContentsContextMode)
+      .SetMustRemainVisible(fail_on_close)
+      .SetStartCallback(base::BindOnce(
+          [](StateChange state_change, ui::TrackedElement* el) {
+            el->AsA<TrackedElementWebContents>()
+                ->owner()
+                ->SendEventOnStateChange(state_change);
+          },
+          state_change));
+  if (state_change.continue_across_navigation) {
+    // This is required to prevent failing if the element would otherwise be
+    // hidden due to a navigation between trigger and step start.
+    step1.SetStepStartMode(ui::InteractionSequence::StepStartMode::kImmediate);
+  }
+
   return Steps(
-      std::move(StepBuilder()
-                    .SetDescription(base::StrCat({desc.str(), ": Queue Event"}))
-                    .SetElementID(webcontents_id)
-                    .SetContext(kDefaultWebContentsContextMode)
-                    .SetMustRemainVisible(fail_on_close)
-                    .SetStartCallback(base::BindOnce(
-                        [](StateChange state_change, ui::TrackedElement* el) {
-                          el->AsA<TrackedElementWebContents>()
-                              ->owner()
-                              ->SendEventOnStateChange(state_change);
-                        },
-                        state_change))),
+      std::move(step1),
       std::move(
           StepBuilder()
               .SetDescription(base::StrCat({desc.str(), ": Wait For Event"}))

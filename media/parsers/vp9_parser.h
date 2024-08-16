@@ -392,7 +392,7 @@ class MEDIA_EXPORT Vp9Parser {
   // Returns |true| if a frame would have been sent to |ParseUncompressedHeader|
   //         |false| if there was an error parsing the superframe.
   std::unique_ptr<DecryptConfig> NextFrameDecryptContextForTesting();
-  std::string IncrementIVForTesting(const std::string& iv, uint32_t by);
+  std::string IncrementIVForTesting(std::string_view iv, uint32_t by);
 
   // Return current parsing context.
   const Context& context() const { return context_; }

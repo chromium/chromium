@@ -92,7 +92,7 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
 rtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
   switch (tos.ecn) {
     case net::ECN_NO_CHANGE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case net::ECN_NOT_ECT:
       return rtc::EcnMarking::kNotEct;
     case net::ECN_ECT1:

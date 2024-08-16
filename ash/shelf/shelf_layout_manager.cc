@@ -1010,8 +1010,7 @@ void ShelfLayoutManager::ProcessMouseEventFromShelf(
       ReleaseMouseDrag(event_in_screen);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -1815,8 +1814,7 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       // canceled.
       return hotseat_state();
   }
-  NOTREACHED_IN_MIGRATION();
-  return HotseatState::kNone;
+  NOTREACHED();
 }
 
 ShelfVisibilityState ShelfLayoutManager::CalculateShelfVisibility() {
@@ -2672,7 +2670,7 @@ void ShelfLayoutManager::ReleaseMouseDrag(
       CompleteDrag(mouse_in_screen);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   last_mouse_drag_position_in_screen_ = gfx::Point();
 }

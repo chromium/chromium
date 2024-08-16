@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
@@ -49,8 +50,9 @@ bool IsExtensionInstallBlockedByPolicy(
       break;
   }
 
-  if (extension_management->IsInstallationExplicitlyAllowed(extension_id))
+  if (extension_management->IsInstallationExplicitlyAllowed(extension_id)) {
     return false;
+  }
 
   // Extension is allowed by wildcard or update_url, checks required permissions
   // and manifest type.
@@ -110,9 +112,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
           supervised_user::
               kExposedParentalControlNeededForExtensionInstallation) &&
       !registry->GetInstalledExtension(extension_id) &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs()) &&
+      supervised_user::AreExtensionsPermissionsEnabled(profile) &&
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          *profile->GetPrefs()) &&
+          profile) &&
       !base::Contains(profile->GetPrefs()->GetDict(
                           prefs::kSupervisedUserApprovedExtensions),
                       extension_id)) {
@@ -126,14 +128,17 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     return kCustodianApprovalRequired;
   }
 
-  if (registry->enabled_extensions().Contains(extension_id))
+  if (registry->enabled_extensions().Contains(extension_id)) {
     return kEnabled;
+  }
 
-  if (registry->terminated_extensions().Contains(extension_id))
+  if (registry->terminated_extensions().Contains(extension_id)) {
     return kTerminated;
+  }
 
-  if (registry->blocklisted_extensions().Contains(extension_id))
+  if (registry->blocklisted_extensions().Contains(extension_id)) {
     return kBlocklisted;
+  }
 
   // When manifest version is not allowed, the extension is blocked and can't be
   // requested.
@@ -193,7 +198,9 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   }
 
   if (registry->disabled_extensions().Contains(extension_id)) {
-    return kDisabled;
+    bool is_corrupted = ExtensionPrefs::Get(profile)->HasDisableReason(
+        extension_id, disable_reason::DISABLE_CORRUPTED);
+    return is_corrupted ? kCorrupted : kDisabled;
   }
 
   return kInstallable;

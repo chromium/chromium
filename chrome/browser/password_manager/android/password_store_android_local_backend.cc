@@ -145,7 +145,7 @@ void PasswordStoreAndroidLocalBackend::DisableAutoSignInForOriginsAsync(
                                       std::move(completion));
 }
 
-std::unique_ptr<syncer::ModelTypeControllerDelegate>
+std::unique_ptr<syncer::DataTypeControllerDelegate>
 PasswordStoreAndroidLocalBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
@@ -175,11 +175,9 @@ PasswordStoreAndroidLocalBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-PasswordStoreBackendErrorRecoveryType
-PasswordStoreAndroidLocalBackend::RecoverOnErrorAndReturnResult(
+void PasswordStoreAndroidLocalBackend::RecoverOnError(
     AndroidBackendAPIErrorCode error) {
   should_disable_saving_due_to_error_ = true;
-  return PasswordStoreBackendErrorRecoveryType::kRecoverable;
 }
 
 void PasswordStoreAndroidLocalBackend::OnCallToGMSCoreSucceeded() {

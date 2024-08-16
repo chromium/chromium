@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
@@ -150,8 +150,8 @@ TEST(WebRtcVideoFrameAdapterTest, MapFullFrameIsZeroCopy) {
   const gfx::Rect kRect720p(0, 0, 1280, 720);
 
   // The strictness of the mock ensures zero copy.
-  scoped_refptr<MockSharedResources> resources =
-      new testing::StrictMock<MockSharedResources>();
+  auto resources =
+      base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
 
   auto frame_720p = CreateTestFrame(
       kSize720p, kRect720p, kSize720p, media::VideoFrame::STORAGE_OWNED_MEMORY,
@@ -180,8 +180,8 @@ TEST(WebRtcVideoFrameAdapterTest, MapScaledFrameCreatesNewFrame) {
 
   // Because the size we are going to request does not the frame we expect one
   // CreateFrame() to happen.
-  scoped_refptr<MockSharedResources> resources =
-      new testing::StrictMock<MockSharedResources>();
+  auto resources =
+      base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
       .WillOnce(testing::Invoke(
           [](media::VideoPixelFormat format, const gfx::Size& coded_size,
@@ -228,8 +228,8 @@ TEST(WebRtcVideoFrameAdapterTest,
   const gfx::Size kSize480p(853, 480);
   const gfx::Size kSize360p(640, 360);
 
-  scoped_refptr<MockSharedResources> resources =
-      new testing::StrictMock<MockSharedResources>();
+  auto resources =
+      base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
       .WillOnce(testing::Invoke(
           [](media::VideoPixelFormat format, const gfx::Size& coded_size,
@@ -280,8 +280,8 @@ TEST(WebRtcVideoFrameAdapterTest,
   const gfx::Rect kFullVisibleRect(20, 20, 1240, 680);  // 20 pixel border.
   const gfx::Size kFullNaturalSize(620, 340);           // Scaled down by 2.
 
-  scoped_refptr<MockSharedResources> resources =
-      new testing::StrictMock<MockSharedResources>();
+  auto resources =
+      base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
       .WillOnce(testing::Invoke(
           [](media::VideoPixelFormat format, const gfx::Size& coded_size,
@@ -344,8 +344,8 @@ TEST(WebRtcVideoFrameAdapterTest,
   const gfx::Size kSize480p(853, 480);
   const gfx::Size kSize360p(640, 360);
 
-  scoped_refptr<MockSharedResources> resources =
-      new testing::StrictMock<MockSharedResources>();
+  auto resources =
+      base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
       .Times(2)
       .WillRepeatedly(testing::Invoke(

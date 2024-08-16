@@ -132,7 +132,7 @@ wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
 wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DCompSurfaceDawnImageRepresentation::EndAccess() {

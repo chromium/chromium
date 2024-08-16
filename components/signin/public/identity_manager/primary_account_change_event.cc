@@ -92,17 +92,20 @@ PrimaryAccountChangeEvent::GetPreviousState() const {
   return previous_state_;
 }
 
-const absl::variant<signin_metrics::AccessPoint,
-                    signin_metrics::ProfileSignout>&
-PrimaryAccountChangeEvent::GetEventSource() const {
-  return event_source_;
-}
-
 std::optional<signin_metrics::AccessPoint>
-PrimaryAccountChangeEvent::GetAccessPoint() const {
+PrimaryAccountChangeEvent::GetSetPrimaryAccountAccessPoint() const {
   if (absl::holds_alternative<signin_metrics::AccessPoint>(event_source_)) {
     return std::optional<signin_metrics::AccessPoint>(
         absl::get<signin_metrics::AccessPoint>(event_source_));
+  }
+  return std::nullopt;
+}
+
+std::optional<signin_metrics::ProfileSignout>
+PrimaryAccountChangeEvent::GetClearPrimaryAccountSource() const {
+  if (absl::holds_alternative<signin_metrics::ProfileSignout>(event_source_)) {
+    return std::optional<signin_metrics::ProfileSignout>(
+        absl::get<signin_metrics::ProfileSignout>(event_source_));
   }
   return std::nullopt;
 }

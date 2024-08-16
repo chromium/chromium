@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
@@ -346,12 +345,6 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
                                       int event_flags,
                                       int64_t display_id,
                                       bool new_window) {
-  // Handle recording app launch source from the Shelf in Demo Mode.
-  if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
-    ash::DemoSession::RecordAppLaunchSourceIfInDemoMode(
-        ash::DemoSession::AppLaunchSource::kShelf);
-  }
-
   const std::string& app_id = id.app_id;
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);

@@ -12,22 +12,16 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
 namespace {
 
-using IteratorResult = SystemIdentityManager::IteratorResult;
-
-// Suffix used to know if the identity is managed or not. Ideally GCRSSOSevice
-// should be used, but the APIs are asynchronous, and to avoid cache issues,
-// for a temporary solution, this prefix is used.
-// TODO(crbug.com/331783685): Need another implementation to assign an identity
-// to a profile.
-NSString* const kGmailSuffix = @"@gmail.com";
+using IteratorResult = AccountProfileMapper::IteratorResult;
 
 // Filter class skipping restricted account.
 class SkipRestricted {
@@ -128,26 +122,9 @@ class Iterator {
  public:
   using ResultType = typename T::ResultType;
 
-  Iterator(T t,
-           F f,
-           ChromeAccountManagerService::VisibleIdentities visible_identities)
-      : t_(t), f_(f), visible_identities_(visible_identities) {}
+  Iterator(T t, F f) : t_(t), f_(f) {}
 
   IteratorResult Run(id<SystemIdentity> identity) {
-    switch (visible_identities_) {
-      case ChromeAccountManagerService::VisibleIdentities::kAll:
-        break;
-      case ChromeAccountManagerService::VisibleIdentities::kManagedOnly:
-        if ([identity.userEmail hasSuffix:kGmailSuffix]) {
-          return IteratorResult::kContinueIteration;
-        }
-        break;
-      case ChromeAccountManagerService::VisibleIdentities::kNonManagedOnly:
-        if (![identity.userEmail hasSuffix:kGmailSuffix]) {
-          return IteratorResult::kContinueIteration;
-        }
-        break;
-    }
     if (f_.ShouldFilter(identity)) {
       return IteratorResult::kContinueIteration;
     }
@@ -159,19 +136,16 @@ class Iterator {
  private:
   T t_;
   F f_;
-  ChromeAccountManagerService::VisibleIdentities visible_identities_;
 };
 
 // Helper function to iterator over ChromeIdentityService identities.
 template <typename T, typename F>
-typename T::ResultType IterateOverIdentities(
-    T t,
-    F f,
-    ChromeAccountManagerService::VisibleIdentities visible_identities) {
+typename T::ResultType IterateOverIdentities(T t, F f, size_t profile_index) {
   using Iter = Iterator<T, F>;
-  Iter iterator(std::move(t), std::move(f), visible_identities);
-  GetApplicationContext()->GetSystemIdentityManager()->IterateOverIdentities(
-      base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
+  Iter iterator(std::move(t), std::move(f));
+  GetApplicationContext()->GetAccountProfileMapper()->IterateOverIdentities(
+      base::BindRepeating(&Iter::Run, base::Unretained(&iterator)),
+      profile_index);
   return iterator.Result();
 }
 
@@ -187,8 +161,8 @@ PatternAccountRestriction PatternAccountRestrictionFromPreference(
 
 ChromeAccountManagerService::ChromeAccountManagerService(
     PrefService* pref_service,
-    VisibleIdentities visible_identities)
-    : pref_service_(pref_service), visible_identities_(visible_identities) {
+    size_t profile_index)
+    : pref_service_(pref_service), profile_index_(profile_index) {
   // pref_service is null in test environment. In prod environment pref_service
   // comes from GetApplicationContext()->GetLocalState() and couldn't be null.
   if (pref_service_) {
@@ -201,23 +175,25 @@ ChromeAccountManagerService::ChromeAccountManagerService(
     // Force initialisation of `restriction_`.
     UpdateRestriction();
   }
-
-  system_identity_manager_observation_.Observe(
-      GetApplicationContext()->GetSystemIdentityManager());
+  GetApplicationContext()->GetAccountProfileMapper()->AddObserver(
+      this, profile_index_);
 }
 
-ChromeAccountManagerService::~ChromeAccountManagerService() {}
+ChromeAccountManagerService::~ChromeAccountManagerService() {
+  GetApplicationContext()->GetAccountProfileMapper()->RemoveObserver(
+      this, profile_index_);
+}
 
 bool ChromeAccountManagerService::HasIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_},
-                               visible_identities_) != nil;
+                               profile_index_) != nil;
 }
 
 bool ChromeAccountManagerService::HasRestrictedIdentities() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                KeepRestricted{restriction_},
-                               visible_identities_) != nil;
+                               profile_index_) != nil;
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
@@ -239,7 +215,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
   return IterateOverIdentities(
       FindFirstIdentity{},
       CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
-      visible_identities_);
+      profile_index_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
@@ -255,13 +231,13 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
 NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
     const {
-  return IterateOverIdentities(
-      CollectIdentities{}, SkipRestricted{restriction_}, visible_identities_);
+  return IterateOverIdentities(CollectIdentities{},
+                               SkipRestricted{restriction_}, profile_index_);
 }
 
 id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
-  return IterateOverIdentities(
-      FindFirstIdentity{}, SkipRestricted{restriction_}, visible_identities_);
+  return IterateOverIdentities(FindFirstIdentity{},
+                               SkipRestricted{restriction_}, profile_index_);
 }
 
 UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
@@ -275,7 +251,7 @@ UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
 
 bool ChromeAccountManagerService::IsServiceSupported() const {
   return GetApplicationContext()
-      ->GetSystemIdentityManager()
+      ->GetAccountProfileMapper()
       ->IsSigninSupported();
 }
 
@@ -297,9 +273,9 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void ChromeAccountManagerService::OnIdentityListChanged(bool notify_user) {
+void ChromeAccountManagerService::OnIdentityListChanged() {
   for (auto& observer : observer_list_) {
-    observer.OnIdentityListChanged(notify_user);
+    observer.OnIdentityListChanged();
   }
 }
 
@@ -326,10 +302,7 @@ void ChromeAccountManagerService::OnIdentityAccessTokenRefreshFailed(
 
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(pref_service_);
-  // We want to notify the user that the account list has been updated. This
-  // might provide notifications with no changes (if the new restriction doesn't
-  // change the account list).
-  OnIdentityListChanged(/*notify_user=*/true);
+  OnIdentityListChanged();
 }
 
 ResizedAvatarCache*

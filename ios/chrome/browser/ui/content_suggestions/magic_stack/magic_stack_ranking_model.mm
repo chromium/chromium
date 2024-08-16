@@ -169,7 +169,8 @@
 
 - (void)tabResumptionHelperDidReceiveItem {
   CHECK(IsTabResumptionEnabled());
-  if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(
+          IsHomeCustomizationEnabled() ? _prefService : _localState)) {
     return;
   }
 
@@ -177,7 +178,8 @@
 }
 
 - (void)tabResumptionHelperDidReconfigureItem {
-  if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
+  if (tab_resumption_prefs::IsTabResumptionDisabled(
+          IsHomeCustomizationEnabled() ? _prefService : _localState)) {
     return;
   }
   TabResumptionItem* item = _tabResumptionMediator.itemConfig;
@@ -315,6 +317,13 @@
       segmentation_platform::kParcelTrackingFreshness,
       segmentation_platform::processing::ProcessedValue::FromFloat(
           parcelTrackingFreshnessImpressionCount));
+  int priceTrackingPromoFreshnessImpressionCount = _localState->GetInteger(
+      prefs::
+          kIosMagicStackSegmentationPriceTrackingPromoImpressionsSinceFreshness);
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kPriceTrackingPromoFreshness,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          priceTrackingPromoFreshnessImpressionCount));
   __weak MagicStackRankingModel* weakSelf = self;
   segmentation_platform::PredictionOptions options;
 
@@ -422,7 +431,7 @@
       case ContentSuggestionsModuleType::kSafetyCheck:
         if (!IsSafetyCheckMagicStackEnabled() ||
             safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
-                _localState)) {
+                IsHomeCustomizationEnabled() ? _prefService : _localState)) {
           break;
         }
         // If ShouldHideIrrelevantModules() is enabled and it is not the first
@@ -437,7 +446,7 @@
       case ContentSuggestionsModuleType::kParcelTracking:
         if (IsIOSParcelTrackingEnabled() &&
             !IsParcelTrackingDisabled(
-                GetApplicationContext()->GetLocalState()) &&
+                IsHomeCustomizationEnabled() ? _prefService : _localState) &&
             _parcelTrackingMediator.parcelTrackingItemToShow) {
           [magicStackOrder
               addObject:_parcelTrackingMediator.parcelTrackingItemToShow];
@@ -476,7 +485,8 @@
 // Returns YES if the tab resumption module should added into the Magic Stack.
 - (BOOL)shouldShowTabResumption {
   return IsTabResumptionEnabled() &&
-         !tab_resumption_prefs::IsTabResumptionDisabled(_localState) &&
+         !tab_resumption_prefs::IsTabResumptionDisabled(
+             IsHomeCustomizationEnabled() ? _prefService : _localState) &&
          _tabResumptionMediator.itemConfig;
 }
 

@@ -9,6 +9,7 @@ More details can be found in design doc: go/gn-args-in-starlark-dd
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
+load("//project.star", "settings")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 
@@ -201,7 +202,9 @@ def register_gn_args(builder_group, bucket, builder, gn_args, use_siso):
     """
 
     defaults = {}
-    if use_siso:
+
+    # TODO: jwata - Re-enable this logic for Chrome after the GN args config migration.
+    if use_siso and not settings.project.startswith("chrome"):
         defaults["use_siso"] = True
 
     # Function for formating GN config for GN config node creation.

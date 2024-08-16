@@ -181,6 +181,11 @@ public class LogoUtils {
     public static void setLogoViewLayoutParams(
             LogoView logoView, int logoHeight, int logoTopMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
+
+        if (layoutParams.height == logoHeight) {
+            return;
+        }
+
         layoutParams.height = logoHeight;
         layoutParams.topMargin = logoTopMargin;
         logoView.setLayoutParams(layoutParams);

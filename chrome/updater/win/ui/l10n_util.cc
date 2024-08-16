@@ -7,8 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/atl.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/i18n.h"
@@ -46,14 +49,23 @@ std::wstring GetPreferredLanguage() {
 std::wstring GetLocalizedString(UINT base_message_id,
                                 const std::wstring& lang) {
   // Map `base_message_id` to the base id for the current install mode.
-  UINT message_id =
+  const UINT message_id =
       static_cast<UINT>(base_message_id + GetLanguageOffset(lang));
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
     return std::wstring(image->achString, image->nLength);
   }
-  NOTREACHED_IN_MIGRATION() << "Unable to find resource id " << message_id;
+  const DWORD error_code = ::GetLastError();
+  base::debug::Alias(&base_message_id);
+  base::debug::Alias(&message_id);
+  base::debug::Alias(&error_code);
+  DEBUG_ALIAS_FOR_CSTR(dbg_lang, base::WideToUTF8(lang).c_str(), 16);
+  VLOG(2) << base_message_id << ", " << message_id << ", " << error_code << ", "
+          << lang;
+  NOTREACHED_IN_MIGRATION()
+      << "Unable to find resource, " << base_message_id << ", " << message_id
+      << ", " << error_code << ", " << lang;
   return std::wstring();
 }
 
@@ -99,7 +111,6 @@ std::wstring GetLocalizedMetainstallerErrorString(DWORD exit_code,
     METAINSTALLER_ERROR_SWITCH_ENTRY(UNABLE_TO_SET_DIRECTORY_ACL);
     METAINSTALLER_ERROR_SWITCH_ENTRY(INVALID_OPTION);
     METAINSTALLER_ERROR_SWITCH_ENTRY(FAILED_TO_DE_ELEVATE_METAINSTALLER);
-    METAINSTALLER_ERROR_SWITCH_ENTRY(FAILED_DE_ELEVATED_METAINSTALLER);
     METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_FILE_NOT_FOUND);
     METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_PATH_NOT_FOUND);
     METAINSTALLER_ERROR_SWITCH_ENTRY(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS);

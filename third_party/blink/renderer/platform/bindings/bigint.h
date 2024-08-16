@@ -68,7 +68,7 @@ inline BigInt ToBigInt(v8::Isolate* isolate,
                        v8::Local<v8::Value> value,
                        ExceptionState& exception_state) {
   // Fast case. The value is already a BigInt.
-  if (LIKELY(value->IsBigInt())) {
+  if (value->IsBigInt()) [[likely]] {
     return BigInt(value.As<v8::BigInt>());
   }
 

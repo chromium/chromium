@@ -26,6 +26,7 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
 
   ~ChromiumPacketSocketFactory() override;
 
+  // rtc::PacketSocketFactory implementation.
   rtc::AsyncPacketSocket* CreateUdpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,

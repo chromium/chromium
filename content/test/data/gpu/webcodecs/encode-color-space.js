@@ -4,13 +4,6 @@
 
 'use strict';
 
-// Use 16x16 aligned resolution since some platforms require that.
-// See https://crbug.com/1084702.
-// Also, some platforms require a resolution that isn't tiny (e.g. 160) to
-// use hardware acceleration.
-const FRAME_WIDTH = 640;
-const FRAME_HEIGHT = 480;
-
 function isRec709(colorSpace) {
   return colorSpace.primaries === 'bt709' && colorSpace.transfer === 'bt709' &&
       colorSpace.matrix === 'bt709' && colorSpace.fullRange === false;

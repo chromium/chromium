@@ -43,9 +43,6 @@ class WebState;
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
 
-// Bubble presenter for displaying IPH bubbles relating to the NTP.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
-
 // Currently selected feed.
 @property(nonatomic, readonly) FeedType selectedFeed;
 
@@ -77,8 +74,8 @@ class WebState;
 // Tell location bar has taken focus.
 - (void)locationBarDidBecomeFirstResponder;
 
-// Constrains the named layout guide for the feed header management button.
-- (void)constrainFeedHeaderManagementButtonNamedGuide;
+// Constrains the named layout guide for the feed IPH.
+- (void)constrainNamedGuideForFeedIPH;
 
 // Updates the new tab page based on if there is unseen content in the Following
 // feed.

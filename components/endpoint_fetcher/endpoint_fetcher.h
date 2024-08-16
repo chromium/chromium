@@ -18,6 +18,17 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 
+namespace {
+
+enum class CredentialsMode {
+  kOmit = 0,
+  kInclude = 1,
+};
+
+}  // namespace
+
+class EndpointFetcherTest;
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -69,6 +80,44 @@ using EndpointFetcherCallback =
 // added TODO(crbug.com/40640190).
 class EndpointFetcher {
  public:
+  // Parameters the client can configure for the request. This is part of our
+  // long term plan to move request parameters (e.g. URL, headers) to one
+  // centralized struct as adding additional parameters to the EndpointFetcher
+  // constructor does/will not scale. New parameters will be added here and
+  // existing parameters will be migrated (crbug.com/357567879).
+  struct RequestParams {
+    RequestParams() = default;
+    ~RequestParams() = default;
+
+    std::optional<CredentialsMode> credentials_mode;
+    std::optional<int> max_retries;
+
+    class Builder final {
+     public:
+      Builder();
+
+      Builder(const Builder&) = delete;
+      Builder& operator=(const Builder&) = delete;
+
+      ~Builder();
+
+      RequestParams Build();
+
+      Builder& SetCredentialsMode(const CredentialsMode& mode) {
+        request_params_->credentials_mode = mode;
+        return *this;
+      }
+
+      Builder& SetMaxRetries(const int retries) {
+        request_params_->max_retries = retries;
+        return *this;
+      }
+
+     private:
+      std::unique_ptr<RequestParams> request_params_;
+    };
+  };
+
   // Preferred constructor - forms identity_manager and url_loader_factory.
   // OAUTH authentication is used for this constructor.
   EndpointFetcher(
@@ -95,7 +144,8 @@ class EndpointFetcher {
       const std::vector<std::string>& headers,
       const std::vector<std::string>& cors_exempt_headers,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      version_info::Channel channel);
+      version_info::Channel channel,
+      const std::optional<RequestParams> request_params = std::nullopt);
 
   // Constructor if no authentication is needed.
   EndpointFetcher(
@@ -150,6 +200,7 @@ class EndpointFetcher {
       const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
+  friend class ::EndpointFetcherTest;
   void OnAuthTokenFetched(EndpointFetcherCallback callback,
                           GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
@@ -158,6 +209,9 @@ class EndpointFetcher {
   void OnSanitizationResult(std::unique_ptr<EndpointResponse> response,
                             EndpointFetcherCallback endpoint_fetcher_callback,
                             data_decoder::JsonSanitizer::Result result);
+
+  network::mojom::CredentialsMode GetCredentialsMode();
+  int GetMaxRetries();
 
   enum AuthType { CHROME_API_KEY, OAUTH, NO_AUTH };
   AuthType auth_type_;
@@ -186,6 +240,8 @@ class EndpointFetcher {
   const std::optional<signin::ConsentLevel> consent_level_;
   bool sanitize_response_;
   version_info::Channel channel_;
+
+  const std::optional<RequestParams> request_params_;
 
   // Members set in Fetch
   std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>

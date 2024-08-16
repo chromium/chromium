@@ -29,8 +29,6 @@ namespace {
 
 using MemoryStrategy = BlobMemoryController::Strategy;
 
-BlobRegistryImpl::URLStoreCreationHook* g_url_store_creation_hook = nullptr;
-
 }  // namespace
 
 class BlobRegistryImpl::BlobUnderConstruction {
@@ -610,12 +608,6 @@ void BlobRegistryImpl::GetBlobFromUUID(
   }
   BlobImpl::Create(context_->GetBlobDataFromUUID(uuid), std::move(blob));
   std::move(callback).Run();
-}
-
-// static
-void BlobRegistryImpl::SetURLStoreCreationHookForTesting(
-    URLStoreCreationHook* hook) {
-  g_url_store_creation_hook = hook;
 }
 
 void BlobRegistryImpl::BlobBuildAborted(const std::string& uuid) {

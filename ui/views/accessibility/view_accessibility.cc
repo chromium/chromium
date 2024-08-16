@@ -63,9 +63,14 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
 
 }  // namespace
 
-#define RETURN_IF_UNAVAILABLE() \
-  if (is_widget_closed_)        \
-    return;
+#define RETURN_IF_UNAVAILABLE()                                          \
+  if (is_widget_closed_) {                                               \
+    return;                                                              \
+  }                                                                      \
+  CHECK(initialization_state_ != State::kInitializing)                   \
+      << "Accessibility cache setters must not be used during complete " \
+         "initialization of the accessibility cache. Instead, set the "  \
+         "attributes directly on `AXNodeData` parameter.";
 
 #if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
 // static
@@ -408,21 +413,9 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
                                 const std::u16string& role_description) {
   RETURN_IF_UNAVAILABLE();
-  if (role_description == data_.GetString16Attribute(
-                              ax::mojom::StringAttribute::kRoleDescription)) {
-    // No changes to the role description, update the role and return early.
-    SetRole(role);
-    return;
-  }
-
-  if (!role_description.empty()) {
-    data_.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                             base::UTF16ToUTF8(role_description));
-  } else {
-    data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
-  }
 
   SetRole(role);
+  SetRoleDescription(role_description);
 }
 
 void ViewAccessibility::SetName(std::u16string name,
@@ -460,7 +453,7 @@ void ViewAccessibility::SetName(std::u16string name,
       data_.role = data.role;
     }
 
-    data_.SetName(name);
+    data_.SetNameChecked(name);
   }
 
   view_->OnAccessibleNameChanged(name);
@@ -524,11 +517,38 @@ ax::mojom::Role ViewAccessibility::GetCachedRole() const {
   return data_.role;
 }
 
+void ViewAccessibility::SetRoleDescription(
+    const std::u16string& role_description) {
+  if (role_description == data_.GetString16Attribute(
+                              ax::mojom::StringAttribute::kRoleDescription)) {
+    return;
+  }
+
+  if (!role_description.empty()) {
+    data_.AddStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                             base::UTF16ToUTF8(role_description));
+  } else {
+    RemoveRoleDescription();
+  }
+}
+
+void ViewAccessibility::SetRoleDescription(
+    const std::string& role_description) {
+  SetRoleDescription(base::UTF8ToUTF16(role_description));
+}
+
+void ViewAccessibility::RemoveRoleDescription() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kRoleDescription);
+}
+
 void ViewAccessibility::SetIsEditable(bool editable) {
   SetState(ax::mojom::State::kEditable, editable);
 }
 
 void ViewAccessibility::SetBounds(const gfx::RectF& bounds) {
+  if (bounds == data_.relative_bounds.bounds) {
+    return;
+  }
   data_.relative_bounds.bounds = bounds;
   NotifyEvent(ax::mojom::Event::kLocationChanged, false);
 }
@@ -647,6 +667,15 @@ void ViewAccessibility::SetTableColumnCount(int column_count) {
                         column_count);
 }
 
+void ViewAccessibility::ClearDescriptionAndDescriptionFrom() {
+  data_.SetDescriptionExplicitlyEmpty();
+}
+
+void ViewAccessibility::RemoveDescription() {
+  data_.RemoveStringAttribute(ax::mojom::StringAttribute::kDescription);
+  data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDescriptionFrom);
+}
+
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
@@ -700,7 +729,11 @@ void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
 }
 
 void ViewAccessibility::SetCheckedState(ax::mojom::CheckedState checked_state) {
+  if (checked_state == data_.GetCheckedState()) {
+    return;
+  }
   data_.SetCheckedState(checked_state);
+  NotifyEvent(ax::mojom::Event::kCheckedStateChanged, true);
 }
 
 void ViewAccessibility::RemoveCheckedState() {
@@ -810,6 +843,9 @@ void ViewAccessibility::RemoveContainerLiveStatus() {
 }
 
 void ViewAccessibility::SetValue(const std::string& value) {
+  if (value == data_.GetStringAttribute(ax::mojom::StringAttribute::kValue)) {
+    return;
+  }
   data_.AddStringAttribute(ax::mojom::StringAttribute::kValue, value);
   NotifyEvent(ax::mojom::Event::kValueChanged, true);
 }
@@ -833,6 +869,11 @@ void ViewAccessibility::SetDefaultActionVerb(
 
 void ViewAccessibility::RemoveDefaultActionVerb() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb);
+}
+
+void ViewAccessibility::SetAutoComplete(const std::string autocomplete) {
+  data_.AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
+                           autocomplete);
 }
 
 void ViewAccessibility::UpdateFocusableState() {
@@ -964,6 +1005,27 @@ void ViewAccessibility::set_accessibility_events_callback(
   accessibility_events_callback_ = std::move(callback);
 }
 
+void ViewAccessibility::CompleteCacheInitializationRecursive() {
+  internal::ScopedChildrenLock lock(view_);
+  initialization_state_ = State::kInitializing;
+
+  ui::AXNodeData data;
+  view_->OnAccessibilityInitializing(&data);
+
+#if DCHECK_IS_ON()
+  views::ViewAccessibilityUtils::ValidateAttributesNotSet(data, data_);
+#endif
+
+  // Merge it with the cache.
+  views::ViewAccessibilityUtils::Merge(/*source*/ data, /*destination*/ data_);
+
+  initialization_state_ = State::kInitialized;
+
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().CompleteCacheInitializationRecursive();
+  }
+}
+
 void ViewAccessibility::InitializeRoleIfNeeded() {
   RETURN_IF_UNAVAILABLE();
   if (data_.role != ax::mojom::Role::kUnknown) {
@@ -1017,6 +1079,14 @@ void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   // chance that the view was reparented to a non-closed widget. If so, we must
   // update `is_widget_closed_` in case the new widget is not closed.
   SetWidgetClosedRecursive(widget, widget->IsClosed());
+}
+
+void ViewAccessibility::CompleteCacheInitialization() {
+  if (initialization_state_ == State::kInitialized) {
+    return;
+  }
+
+  CompleteCacheInitializationRecursive();
 }
 
 void ViewAccessibility::PruneSubtree() {

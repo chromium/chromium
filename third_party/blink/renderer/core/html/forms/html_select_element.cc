@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
@@ -378,6 +379,25 @@ void HTMLSelectElement::ParseAttribute(
   } else if (params.name == html_names::kAccesskeyAttr) {
     // FIXME: ignore for the moment.
     //
+  } else if (params.name == html_names::kSelectedoptionelementAttr) {
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      HTMLSelectedOptionElement* old_selectedoption =
+          DynamicTo<HTMLSelectedOptionElement>(
+              getElementByIdIncludingDisconnected(*this, params.old_value));
+      HTMLSelectedOptionElement* new_selectedoption =
+          DynamicTo<HTMLSelectedOptionElement>(
+              getElementByIdIncludingDisconnected(*this, params.new_value));
+      if (old_selectedoption != new_selectedoption) {
+        if (old_selectedoption) {
+          // Clear out the contents of any <selectedoption> which we are
+          // removing the association from.
+          old_selectedoption->CloneContentsFromOptionElement(nullptr);
+        }
+        if (new_selectedoption) {
+          new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+        }
+      }
+    }
   } else {
     HTMLFormControlElementWithState::ParseAttribute(params);
   }
@@ -425,6 +445,15 @@ void HTMLSelectElement::OptionElementChildrenChanged(
     if (AXObjectCache* cache =
             GetLayoutObject()->GetDocument().ExistingAXObjectCache())
       cache->ChildrenChanged(this);
+  }
+
+  if (option.Selected()) {
+    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+      for (HTMLSelectedOptionElement* selectedoption :
+           TargetSelectedOptions()) {
+        selectedoption->CloneContentsFromOptionElement(&option);
+      }
+    }
   }
 }
 
@@ -952,9 +981,8 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
   }
 
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    for (HTMLSelectedOptionElement* selectedoption :
-         descendant_selectedoptions_) {
-      selectedoption->SelectedOptionElementChanged(element);
+    for (HTMLSelectedOptionElement* selectedoption : TargetSelectedOptions()) {
+      selectedoption->CloneContentsFromOptionElement(element);
     }
   }
 }
@@ -1643,6 +1671,10 @@ HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
   return select_type_->SlottedButton();
 }
 
+HTMLButtonElement* HTMLSelectElement::DisplayedButton() const {
+  return select_type_->DisplayedButton();
+}
+
 HTMLDataListElement* HTMLSelectElement::DisplayedDatalist() const {
   return select_type_->DisplayedDatalist();
 }
@@ -1654,11 +1686,13 @@ bool HTMLSelectElement::IsAppearanceBaseSelect() const {
 void HTMLSelectElement::SelectedOptionElementInserted(
     HTMLSelectedOptionElement* selectedoption) {
   descendant_selectedoptions_.insert(selectedoption);
+  selectedoption->CloneContentsFromOptionElement(SelectedOption());
 }
 
 void HTMLSelectElement::SelectedOptionElementRemoved(
     HTMLSelectedOptionElement* selectedoption) {
   descendant_selectedoptions_.erase(selectedoption);
+  selectedoption->CloneContentsFromOptionElement(nullptr);
 }
 
 bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
@@ -1669,6 +1703,112 @@ bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
     return false;
   }
   return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
+}
+
+HTMLSelectElement::SelectAutofillPreviewElement*
+HTMLSelectElement::GetAutofillPreviewElement() const {
+  return select_type_->GetAutofillPreviewElement();
+}
+
+HTMLSelectElement::SelectAutofillPreviewElement::SelectAutofillPreviewElement(
+    Document& document,
+    HTMLSelectElement* select)
+    : HTMLDivElement(document), select_(select) {
+  CHECK(select_);
+  SetHasCustomStyleCallbacks();
+}
+
+const ComputedStyle*
+HTMLSelectElement::SelectAutofillPreviewElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  HTMLButtonElement* button = select_->DisplayedButton();
+  if (!button || !button->GetComputedStyle()) {
+    return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
+  }
+
+  const ComputedStyle& button_style = button->ComputedStyleRef();
+  const ComputedStyle* original_style =
+      OriginalStyleForLayoutObject(style_recalc_context);
+  ComputedStyleBuilder style_builder(*original_style);
+  if (button_style.HasAuthorBorderRadius()) {
+    style_builder.SetBorderBottomLeftRadius(
+        button_style.BorderBottomLeftRadius());
+    style_builder.SetBorderBottomRightRadius(
+        button_style.BorderBottomRightRadius());
+    style_builder.SetBorderTopLeftRadius(button_style.BorderTopLeftRadius());
+    style_builder.SetBorderTopRightRadius(button_style.BorderTopRightRadius());
+  }
+  if (button_style.HasAuthorBorder()) {
+    style_builder.SetBorderColorFrom(button_style);
+
+    style_builder.SetBorderBottomWidth(button_style.BorderBottomWidth());
+    style_builder.SetBorderLeftWidth(button_style.BorderLeftWidth());
+    style_builder.SetBorderRightWidth(button_style.BorderRightWidth());
+    style_builder.SetBorderTopWidth(button_style.BorderTopWidth());
+
+    style_builder.SetBorderBottomStyle(button_style.BorderBottomStyle());
+    style_builder.SetBorderLeftStyle(button_style.BorderLeftStyle());
+    style_builder.SetBorderRightStyle(button_style.BorderRightStyle());
+    style_builder.SetBorderTopStyle(button_style.BorderTopStyle());
+  }
+
+  return style_builder.TakeStyle();
+}
+
+Node::InsertionNotificationRequest
+HTMLSelectElement::SelectAutofillPreviewElement::InsertedInto(
+    ContainerNode& container) {
+  select_->IncrementImplicitlyAnchoredElementCount();
+  return HTMLDivElement::InsertedInto(container);
+}
+
+void HTMLSelectElement::SelectAutofillPreviewElement::RemovedFrom(
+    ContainerNode& container) {
+  HTMLDivElement::RemovedFrom(container);
+  select_->DecrementImplicitlyAnchoredElementCount();
+}
+
+void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(select_);
+  HTMLDivElement::Trace(visitor);
+}
+
+HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
+  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  return DynamicTo<HTMLSelectedOptionElement>(
+      GetElementAttribute(html_names::kSelectedoptionelementAttr));
+}
+
+void HTMLSelectElement::setSelectedOptionElement(
+    HTMLSelectedOptionElement* new_selectedoption) {
+  CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+  auto* old_selectedoption = selectedOptionElement();
+  if (new_selectedoption) {
+    SetElementAttribute(html_names::kSelectedoptionelementAttr,
+                        new_selectedoption);
+  }
+
+  if (old_selectedoption != new_selectedoption) {
+    if (old_selectedoption) {
+      // Clear out the contents of any <selectedoption> which we are removing
+      // the association from.
+      old_selectedoption->CloneContentsFromOptionElement(nullptr);
+    }
+    if (new_selectedoption) {
+      new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+    }
+  }
+}
+
+HeapHashSet<Member<HTMLSelectedOptionElement>>
+HTMLSelectElement::TargetSelectedOptions() const {
+  HeapHashSet<Member<HTMLSelectedOptionElement>> selectedoptions =
+      descendant_selectedoptions_;
+  if (auto* attr_selectedoption = selectedOptionElement()) {
+    selectedoptions.insert(attr_selectedoption);
+  }
+  return selectedoptions;
 }
 
 }  // namespace blink

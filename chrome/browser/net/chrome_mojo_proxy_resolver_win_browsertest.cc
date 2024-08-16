@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/test/browser_test.h"
@@ -78,14 +77,8 @@ using ChromeMojoProxyResolverWinBrowserTest = InProcessBrowserTest;
 
 // Ensures the proxy resolver service is started correctly and stopped when no
 // resolvers are open.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ServiceLifecycle DISABLED_ServiceLifecycle
-#else
-#define MAYBE_ServiceLifecycle ServiceLifecycle
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_ServiceLifecycle) {
+                       ServiceLifecycle) {
   // Set up the ProxyResolverFactory.
   mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
       proxy_resolver_win(
@@ -124,14 +117,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
 
 // Same as above, but destroys the WindowsSystemProxyResolver, which should have
 // no impact on service lifetime.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_DestroyResolver DISABLED_DestroyResolver
-#else
-#define MAYBE_DestroyResolver DestroyResolver
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_DestroyResolver) {
+IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest, DestroyResolver) {
   mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
       proxy_resolver_win(
           ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(
@@ -157,14 +143,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
 }
 
 // Make sure the service can be started again after it's been stopped.
-// TODO(crbug.com/349437220): Flaky on win11-arm64
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_DestroyAndCreateService DISABLED_DestroyAndCreateService
-#else
-#define MAYBE_DestroyAndCreateService DestroyAndCreateService
-#endif
 IN_PROC_BROWSER_TEST_F(ChromeMojoProxyResolverWinBrowserTest,
-                       MAYBE_DestroyAndCreateService) {
+                       DestroyAndCreateService) {
   mojo::Remote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
       proxy_resolver_win(
           ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiverForTesting(

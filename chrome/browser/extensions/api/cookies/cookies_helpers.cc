@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/cookies/cookies_api_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -40,6 +39,9 @@ namespace GetAll = extensions::api::cookies::GetAll;
 namespace extensions {
 
 namespace {
+
+constexpr char kIdKey[] = "id";
+constexpr char kTabIdsKey[] = "tabIds";
 
 void AppendCookieToVectorIfMatchAndHasHostPermission(
     const net::CanonicalCookie cookie,
@@ -154,8 +156,8 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
 CookieStore CreateCookieStore(Profile* profile, base::Value::List tab_ids) {
   DCHECK(profile);
   base::Value::Dict dict;
-  dict.Set(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
+  dict.Set(kIdKey, GetStoreIdFromProfile(profile));
+  dict.Set(kTabIdsKey, std::move(tab_ids));
 
   auto cookie_store = CookieStore::FromValue(dict);
   CHECK(cookie_store);

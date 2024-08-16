@@ -5,6 +5,8 @@
 #include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -13,6 +15,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/request_header_integrity/internal/google_header_names.h"
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
@@ -59,13 +62,18 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSite) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(0u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(3u, request.headers.GetHeaderVector().size());
 }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_ANDROID)
 TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
+  ASSERT_NE(CHANNEL_NAME_HEADER_NAME, "X-Placeholder-1");
+  ASSERT_NE(LASTCHANGE_YEAR_HEADER_NAME, "X-Placeholder-2");
+  ASSERT_NE(VALIDATE_HEADER_NAME, "X-Placeholder-3");
+  ASSERT_NE(COPYRIGHT_HEADER_NAME, "X-Placeholder-4");
+
   chrome::ScopedChannelOverride override(
       chrome::ScopedChannelOverride::Channel::kStable);
   network::ResourceRequest request;
@@ -74,7 +82,14 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleTest, GoogleSiteWithBranding) {
   ASSERT_TRUE(request.headers.IsEmpty());
   bool ignored;
   throttle().WillStartRequest(&request, &ignored);
-  EXPECT_EQ(1u, request.headers.GetHeaderVector().size());
+  EXPECT_EQ(4u, request.headers.GetHeaderVector().size());
+  EXPECT_TRUE(request.headers.HasHeader(CHANNEL_NAME_HEADER_NAME));
+  EXPECT_TRUE(request.headers.HasHeader(LASTCHANGE_YEAR_HEADER_NAME));
+  EXPECT_TRUE(request.headers.HasHeader(VALIDATE_HEADER_NAME));
+  const std::optional<std::string> copyright =
+      request.headers.GetHeader(COPYRIGHT_HEADER_NAME);
+  ASSERT_TRUE(copyright.has_value());
+  EXPECT_NE(copyright->find("Copyright"), std::string::npos);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
         // !BUILDFLAG(IS_ANDROID)

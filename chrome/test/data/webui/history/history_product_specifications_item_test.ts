@@ -39,7 +39,7 @@ suite('ProductSpecificationsItemTest', () => {
 
   test('render labels', async () => {
     const label = productSpecificationsItem.$.link.textContent!;
-    assertEquals('Analyze example1 · 1 items', label.trim());
+    assertEquals('Compare example1 · 1 items', label.trim());
     const url = productSpecificationsItem.$.url.textContent!;
     assertEquals('chrome://compare/?id=ex1', url.trim());
   });
@@ -109,7 +109,7 @@ suite('ProductSpecificationsItemTest', () => {
           shoppingServiceApi.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
-          {value: 'ex1'},
+          [{value: 'ex1'}, true],
           shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
     });
 
@@ -121,7 +121,7 @@ suite('ProductSpecificationsItemTest', () => {
           shoppingServiceApi.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
-          {value: 'ex1'},
+          [{value: 'ex1'}, true],
           shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
     });
   });

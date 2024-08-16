@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -152,6 +153,8 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   DismissViewCallback _accountDetailsControllerDismissCallback;
 }
 
+@synthesize modelIdentityDataSource;
+
 - (instancetype)initWithBrowser:(Browser*)browser
               closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
              applicationCommandsHandler:
@@ -175,7 +178,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kSettingsAccountsTableViewId;
+  self.tableView.accessibilityIdentifier = kSettingsLegacyAccountsTableViewId;
 
   [self loadModel];
 }
@@ -250,11 +253,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       forSectionWithIdentifier:SectionIdentifierAccounts];
 
   NSString* authenticatedEmail = authenticatedIdentity.userEmail;
-  for (const auto& account :
-       [self.modelIdentityDataSource accountsWithRefreshTokens]) {
-    id<SystemIdentity> identity =
-        [self.modelIdentityDataSource identityForAccount:account];
-    if (!identity) {
+  for (const auto& identityViewItem :
+       [self.modelIdentityDataSource identityViewItems]) {
+    if (!identityViewItem) {
       // Ignore the case in which the identity is invalid at lookup time. This
       // may be due to inconsistencies between the identity service and
       // ProfileOAuth2TokenService.
@@ -262,8 +263,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     }
     // TODO(crbug.com/40691260): This re-ordering will be redundant once we
     // apply ordering changes to the account reconciler.
-    TableViewItem* item = [self accountItem:identity];
-    if ([identity.userEmail isEqualToString:authenticatedEmail]) {
+    TableViewItem* item =
+        [self accountItemWithIdentityViewItem:identityViewItem];
+    if ([identityViewItem.userEmail isEqualToString:authenticatedEmail]) {
       [model insertItem:item
           inSectionWithIdentifier:SectionIdentifierAccounts
                           atIndex:0];
@@ -271,7 +273,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
       [model addItem:item toSectionWithIdentifier:SectionIdentifierAccounts];
     }
 
-    [mutableIdentityMap setObject:item forKey:identity.gaiaID];
+    [mutableIdentityMap setObject:item forKey:identityViewItem.gaiaID];
   }
   _identityMap = mutableIdentityMap;
 
@@ -360,21 +362,21 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   return footer;
 }
 
-- (TableViewItem*)accountItem:(id<SystemIdentity>)identity {
+- (TableViewItem*)accountItemWithIdentityViewItem:
+    (IdentityViewItem*)identityViewItem {
   TableViewAccountItem* item =
       [[TableViewAccountItem alloc] initWithType:ItemTypeAccount];
-  [self updateAccountItem:item withIdentity:identity];
+  [self updateAccountItem:item withIdentityViewItem:identityViewItem];
   return item;
 }
 
 - (void)updateAccountItem:(TableViewAccountItem*)item
-             withIdentity:(id<SystemIdentity>)identity {
-  item.image = [self.modelIdentityDataSource
-      identityAvatarWithSizeForIdentity:identity
-                                   size:IdentityAvatarSize::TableViewIcon];
-  item.text = identity.userEmail;
-  item.identity = identity;
-  item.accessibilityIdentifier = identity.userEmail;
+     withIdentityViewItem:(IdentityViewItem*)identityViewItem {
+  item.image = identityViewItem.avatar;
+  item.text = identityViewItem.userEmail;
+  item.identity =
+      [self.modelIdentityDataSource identityWithGaiaID:identityViewItem.gaiaID];
+  item.accessibilityIdentifier = identityViewItem.accessibilityIdentifier;
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
 
@@ -988,14 +990,14 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   }
 }
 
-- (void)updateAccountIdentity:(id<SystemIdentity>)identity {
+- (void)updateIdentityViewItem:(IdentityViewItem*)identityViewItem {
   TableViewAccountItem* item =
       base::apple::ObjCCastStrict<TableViewAccountItem>(
-          [_identityMap objectForKey:identity.gaiaID]);
+          [_identityMap objectForKey:identityViewItem.gaiaID]);
   if (!item) {
     return;
   }
-  [self updateAccountItem:item withIdentity:identity];
+  [self updateAccountItem:item withIdentityViewItem:identityViewItem];
   NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:item];
   [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationAutomatic];

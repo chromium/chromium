@@ -59,7 +59,7 @@ class FaviconServiceImpl;
 }
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 class SyncableService;
 }  // namespace syncer
 
@@ -432,7 +432,7 @@ class HistoryService : public KeyedService,
                           DomainDiversityCallback callback,
                           base::CancelableTaskTracker* tracker);
 
-  // Returns, via a callback, unique domains (eLTD+1) visited within the time
+  // Returns, via a callback, unique domains (eTLD+1) visited within the time
   // range [`begin_time`, `end_time`) for local and synced visits sorted in
   // reverse-chronological order.
   using GetUniqueDomainsVisitedCallback =
@@ -836,7 +836,7 @@ class HistoryService : public KeyedService,
 
   // For sync codebase only: instantiates a controller delegate to interact with
   // HistorySyncBridge. Must be called from the UI thread.
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetHistorySyncControllerDelegate();
 
   // Sends the SyncService's TransportState `state` to the backend, which will

@@ -49,6 +49,8 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -646,6 +648,15 @@ void ListedElement::UpdateAncestorDisabledState() const {
   ancestor_disabled_state_ = disabled_fieldset_ancestor
                                  ? AncestorDisabledState::kDisabled
                                  : AncestorDisabledState::kEnabled;
+  if (!disabled_fieldset_ancestor && RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(ToHTMLElement())) {
+      if (auto* select = button->OwnerSelect()) {
+        ancestor_disabled_state_ = select->is_element_disabled_
+          ? AncestorDisabledState::kDisabled
+          : AncestorDisabledState::kEnabled;
+      }
+    }
+  }
 }
 
 void ListedElement::AncestorDisabledStateWasChanged() {

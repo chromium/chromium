@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">URL tam deyil</translation>
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
+<translation id="1500473259453106018">Tablarda qiymətin enməsi kartını gizlədin</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
 <translation id="1547123415014299762">Üçüncü tərəf kukilərinə icazə verilir</translation>
 <translation id="1568470248891039841">Daxil olduğunuz saytlar digər saytlardan şəkil, reklam və mətn kimi kontent daxil edə bilər. Sayta baxdıqda digər saytlar haqqınızda yadda saxlanan məlumatdan istifadə üçün icazə istəyə bilər. <ph name="BEGIN_LINK" />Daxil edilmiş kontent haqqında ətraflı<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3232293466644486101">Baxış datasını silin…</translation>
 <translation id="3242646949159196181">Aktiv ediləndə saytlar səs oxuda bilər. Aktiv ediləndə saytlar səs oxuda bilməz.</translation>
+<translation id="3273479183583863618">Tablarda qiymətin enməsi</translation>
 <translation id="3277252321222022663">Saytların sensorlara daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
 <translation id="3295019059349372795">Fəsil 11: Məftunedici Zümrüd Şəhəri Oz</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">İmtina edin və növbəti əlçatan əməliyyatı göstərin</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3763247130972274048">10 saniyə keçmək üçün videonun sol və ya sağına iki dəfə toxunun</translation>
+<translation id="3779154269823594982">Parolları dəyişin</translation>
 <translation id="3797520601150691162">Müəyyən sayta tünd tema tətbiq etməyin</translation>
 <translation id="3803367742635802571">Ziyarət etdiyiniz saytlar nəzərdə tutulduğu kimi fəaliyyətini dayandıra bilər</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Element seçin</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
 <translation id="6864395892908308021">Bu cihazda NFC dəstəklənmir</translation>
+<translation id="6870169401250095575">Təhlükəsizlik yoxlanışı kartını gizlədin</translation>
 <translation id="6912998170423641340">Saytların buferdəki mətn və şəkillərə girişini blok edin</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6950072572526089586">Daxil olduğunuz sayt düzgün işləmək üçün gördüyünüz iş haqqında məlumatı yadda saxlaya bilər. Bu məlumat sizi sayta daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətindəki məhsulları yadda saxlamaq üçündür. Adətən, saytlar bu məlumatı cihazda müvəqqəti yadda saxlayır.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Xüsusi sayt üçün səsə icazə verin.</translation>
 <translation id="789180354981963912">Anonim rejimdə üçüncü tərəf kukilərini bloklayın:</translation>
 <translation id="7940722705963108451">Mənə xatırladın</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="FPS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="FPS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
 <translation id="7986741934819883144">Kontakt seçin</translation>
 <translation id="7990211076305263060">Aktiv ediləndə saytlar mikrofondan istifadə icazəsi istəyə bilər. Deaktiv ediləndə saytlar mikrofondan istifadə edə bilməz.</translation>
 <translation id="8007176423574883786">Bu cihaz üçün söndürüldükdə</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{Bu tab ilə davam etmək kartını gizlədin}other{Bu tablar ilə davam etmək kartını gizlədin}}</translation>
 <translation id="802154636333426148">Endirmə alınmadı</translation>
 <translation id="8042586301629853791">Sıralama metodu:</translation>
 <translation id="8067883171444229417">Videonu oxudun</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">Saytların cihazlara qoşulmasını blok edin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8541410041357371550">Bu sayt həmçinin sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
 <translation id="857943718398505171">İcazə verilib (tövsiyə olunur)</translation>
 <translation id="8609465669617005112">Yuxarı köçürün</translation>
 <translation id="8617611086246832542">Aktiv ediləndə veb-saytların masaüstü görünüşü göstərilir. Deaktiv ediləndə veb saytların mobil görünüşü göstərilir.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Valideynləriniz tərəfindən idarə olunur</translation>
 <translation id="9039697262778250930">Bu saytlardan çıxarıla bilərsiniz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="FPS_OWNER" /> tərəfindən təyin edilib.</translation>
 <translation id="9106233582039520022">Kukilər silinsin?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="NUM_MORE" /> icazə}}</translation>
 <translation id="913657688200966289"><ph name="APP_NAME" /> üçün icazələri <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>

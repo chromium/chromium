@@ -30,6 +30,7 @@ class AuthenticationServiceDelegate {
   friend class FakeAuthenticationServiceDelegate;
 
   int clear_browsing_data_counter_ = 0;
+  int clear_browsing_data_from_signin_counter_ = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_DELEGATE_H_

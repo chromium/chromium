@@ -166,7 +166,7 @@ std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
       codec == VideoCodec::kAV1) {
     return std::make_unique<EncodedDataHelperIVF>(std::move(stream), codec);
   }
-  NOTREACHED_NORETURN() << "Unsupported codec " << GetCodecName(codec);
+  NOTREACHED() << "Unsupported codec " << GetCodecName(codec);
 }
 
 // static
@@ -516,8 +516,8 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
   if (ivf_frames.size() == 1) {
     return DecoderBuffer::CopyFrom(
         // TODO(crbug.com/40284755): spanify `IvfFrame`.
-        UNSAFE_BUFFERS(base::span(ivf_frames[0].data.get(),
-                                  ivf_frames[0].header.frame_size)));
+        UNSAFE_TODO(base::span(ivf_frames[0].data.get(),
+                               ivf_frames[0].header.frame_size)));
   }
 
   if (ivf_frames.size() > 3) {

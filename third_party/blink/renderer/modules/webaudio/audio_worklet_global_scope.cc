@@ -111,12 +111,11 @@ void AudioWorkletGlobalScope::registerProcessor(
 
   v8::Local<v8::Value> v8_parameter_descriptors;
   {
-    v8::TryCatch try_catch(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     if (!processor_ctor->CallbackObject()
              ->Get(current_context,
                    V8AtomicString(isolate, "parameterDescriptors"))
              .ToLocal(&v8_parameter_descriptors)) {
-      exception_state.RethrowV8Exception(try_catch.Exception());
       return;
     }
   }

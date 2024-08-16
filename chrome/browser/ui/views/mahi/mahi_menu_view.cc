@@ -26,6 +26,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -39,6 +41,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -200,6 +203,7 @@ MahiMenuView::MahiMenuView(Surface surface)
           views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_5));
   header_label->SetEnabledColorId(ui::kColorSysOnSurface);
   header_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  header_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
 
   header_left_container->AddChildView(
       std::make_unique<chromeos::ExperimentBadge>());
@@ -300,6 +304,11 @@ void MahiMenuView::RequestFocus() {
   settings_button_->RequestFocus();
 }
 
+void MahiMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_MAHI_MENU_TITLE));
+}
+
 void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
@@ -342,7 +351,7 @@ void MahiMenuView::OnButtonPressed(::chromeos::mahi::ButtonType button_type) {
       // This function only handles clicks of type 'kSummary',
       // 'kOutline' and `kSettings`. Other click types are not passed
       // here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(kMahiContextMenuButtonClickHistogram,
                                 histogram_button_type);
@@ -385,6 +394,8 @@ std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
                   .SetController(textfield_controller_.get())
                   .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
                   .SetPlaceholderText(
+                      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER))
+                  .SetAccessibleName(
                       l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER))
                   .SetProperty(
                       views::kFlexBehaviorKey,

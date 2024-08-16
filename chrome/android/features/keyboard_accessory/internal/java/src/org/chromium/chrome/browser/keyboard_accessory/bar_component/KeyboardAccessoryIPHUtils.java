@@ -43,6 +43,7 @@ class KeyboardAccessoryIPHUtils {
                 return;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
             case FeatureConstants.KEYBOARD_ACCESSORY_VIRTUAL_CARD_CVC_FILL_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
@@ -230,6 +231,8 @@ class KeyboardAccessoryIPHUtils {
                 return R.string.iph_keyboard_accessory_swipe_for_more;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
                 return R.string.iph_keyboard_accessory_payment_virtual_cards;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE:
+                return R.string.iph_keyboard_accessory_payment_virtual_cards_disabled;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
                 return R.string.iph_keyboard_accessory_payment_offer;
             case FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE:

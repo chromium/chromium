@@ -5,9 +5,9 @@
 #include "chrome/browser/webapps/chrome_webapps_client.h"
 
 #include "base/logging.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
@@ -28,6 +28,11 @@ infobars::ContentInfoBarManager*
 ChromeWebappsClient::GetInfoBarManagerForWebContents(
     content::WebContents* web_contents) {
   return infobars::ContentInfoBarManager::FromWebContents(web_contents);
+}
+
+std::optional<webapps::AppId> ChromeWebappsClient::GetAppIdForWebContents(
+    content::WebContents* web_contents) {
+  return std::nullopt;
 }
 
 }  // namespace webapps

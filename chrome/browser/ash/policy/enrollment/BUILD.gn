@@ -151,7 +151,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login/ui:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/enrollment/psm:test_support",

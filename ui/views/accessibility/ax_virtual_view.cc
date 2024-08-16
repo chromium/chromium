@@ -305,12 +305,12 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(size_t index) const {
     }
   }
 
-  NOTREACHED_NORETURN() << "|index| should be less than the child count.";
+  NOTREACHED() << "|index| should be less than the child count.";
 }
 
 #if !BUILDFLAG(IS_MAC)
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 

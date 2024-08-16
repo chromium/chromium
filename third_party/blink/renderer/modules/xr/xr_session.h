@@ -127,7 +127,8 @@ class XRSession final : public EventTarget,
             device::mojom::blink::XRInteractionMode interaction_mode,
             device::mojom::blink::XRSessionDeviceConfigPtr device_config,
             bool sensorless_session,
-            XRSessionFeatureSet enabled_feature_set);
+            XRSessionFeatureSet enabled_feature_set,
+            uint64_t trace_id);
   ~XRSession() override = default;
 
   XRSystem* xr() const { return xr_.Get(); }
@@ -382,6 +383,8 @@ class XRSession final : public EventTarget,
     return camera_image_size_;
   }
 
+  uint64_t GetTraceId() const { return trace_id_; }
+
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -616,6 +619,8 @@ class XRSession final : public EventTarget,
   int16_t last_frame_id_ = -1;
 
   bool emulated_position_ = false;
+
+  uint64_t trace_id_;
 };
 
 }  // namespace blink

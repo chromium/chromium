@@ -99,10 +99,20 @@ build_webui("build") {
 
   css_files = [
     "signin_shared.css",
+    "signin_shared_lit.css",
     "signin_vars.css",
     "tangible_sync_style_shared.css",
     "tangible_sync_style_shared_lit.css",
   ]
+
+  if (!is_chromeos_ash) {
+    css_files += [
+      "signin_reauth/signin_reauth_app.css",
+      "signin_error/signin_error_app.css",
+    ]
+  }
+
+  html_to_wrapper_template = "detect"
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
@@ -113,6 +123,11 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
+
+  ts_path_mappings =
+      [ "/signin_shared_lit.css.js|" +
+        rebase_path("$target_gen_dir/preprocessed/signin_shared_lit.css.ts",
+                    target_gen_dir) ]
 
   webui_context_type = "trusted"
 }

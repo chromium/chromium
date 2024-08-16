@@ -51,6 +51,8 @@ class AuthContainerUnitTest : public AshTestBase {
 
     test_api_password_ = std::make_unique<AuthInputRowView::TestApi>(
         test_api_->GetPasswordView());
+    test_pin_status_ =
+        std::make_unique<PinStatusView::TestApi>(test_api_->GetPinStatusView());
 
     mock_observer_ = std::make_unique<MockAuthContainerViewObserver>();
     container_view_->AddObserver(mock_observer_.get());
@@ -67,6 +69,7 @@ class AuthContainerUnitTest : public AshTestBase {
     test_api_pin_keyboard_.reset();
     test_api_pin_container_.reset();
     test_api_password_.reset();
+    test_pin_status_.reset();
     test_api_.reset();
     container_view_->RemoveObserver(mock_observer_.get());
     mock_observer_.reset();
@@ -81,6 +84,7 @@ class AuthContainerUnitTest : public AshTestBase {
   std::unique_ptr<PinKeyboardView::TestApi> test_api_pin_keyboard_;
   std::unique_ptr<PinContainerView::TestApi> test_api_pin_container_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_password_;
+  std::unique_ptr<PinStatusView::TestApi> test_pin_status_;
   std::unique_ptr<AuthContainerView::TestApi> test_api_;
   raw_ptr<AuthContainerView> container_view_ = nullptr;
 };
@@ -150,6 +154,21 @@ TEST_F(AuthContainerUnitTest, PinUITestWithKeyPress) {
   LeftClickOn(test_api_pin_input_->GetSubmitButton());
 }
 
+// Verify switch button is not operate with disabled input.
+TEST_F(AuthContainerUnitTest, DisabledSwitchTest) {
+  EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
+  container_view_->SetInputEnabled(false);
+  // The auth container content changes two times since at the two press the
+  // toggle.
+  EXPECT_CALL(*mock_observer_, OnContentsChanged()).Times(0);
+  // First click on the switch button.
+  LeftClickOn(test_api_->GetSwitchButton());
+
+  views::test::RunScheduledLayout(widget_.get());
+
+  EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
+}
+
 // Verify double switch button press shows password UI.
 TEST_F(AuthContainerUnitTest, DoubleSwitchTest) {
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
@@ -190,6 +209,24 @@ TEST_F(AuthContainerUnitTest, PasswordSubmitTest) {
   EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), kPassword);
 
   EXPECT_CALL(*mock_observer_, OnPasswordSubmit(kPassword));
+  // Click on Submit.
+  LeftClickOn(test_api_password_->GetSubmitButton());
+}
+
+// Verify password is not functioning with disabled input area.
+TEST_F(AuthContainerUnitTest, DisabledPasswordSubmitTest) {
+  container_view_->SetInputEnabled(false);
+  const std::u16string kPassword(u"password");
+  container_view_->GetFocusManager()->SetFocusedView(
+      test_api_password_->GetTextfield());
+  for (const char16_t c : kPassword) {
+    PressAndReleaseKey(ui::DomCodeToUsLayoutNonLocatedKeyboardCode(
+        ui::UsLayoutDomKeyToDomCode(ui::DomKey::FromCharacter(c))));
+  }
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
+
+  EXPECT_CALL(*mock_observer_, OnPasswordSubmit(std::u16string())).Times(0);
   // Click on Submit.
   LeftClickOn(test_api_password_->GetSubmitButton());
 }
@@ -243,6 +280,18 @@ TEST_F(AuthContainerUnitTest, ResetInputfieldsWithSwitchTest) {
 
   EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
   EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
+}
+
+TEST_F(AuthContainerUnitTest, SetPinStatusTest) {
+  const std::u16string status_message = u"Too many failed attempts.";
+  test_api_->GetView()->SetPinStatus(status_message);
+
+  EXPECT_EQ(test_pin_status_->GetCurrentText(), status_message);
+  EXPECT_TRUE(test_pin_status_->GetView()->GetVisible());
+
+  // Now set the status back to an empty string.
+  test_api_->GetView()->SetPinStatus(u"");
+  EXPECT_FALSE(test_pin_status_->GetView()->GetVisible());
 }
 
 }  // namespace

@@ -9,7 +9,7 @@ def CheckTastIsRequested(input_api, output_api):
   """
   if input_api.no_diffs:
     return []
-  keyword = 'CQ_INCLUDE_TRYBOTS=luci.chrome.try:chromeos-betty-pi-arc-chrome'
+  keyword = 'CQ_INCLUDE_TRYBOTS=luci.chrome.try:chromeos-betty-chrome'
   if not(keyword in input_api.change.DescriptionText()):
     return [output_api.PresubmitPromptWarning(
         'Changes in this directory are high risk for breaking ChromeOS inputs,'

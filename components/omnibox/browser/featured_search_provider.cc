@@ -53,6 +53,12 @@ std::string GetShowIPHPrefNameFor(IphType iph_type) {
       return omnibox::kShowFeaturedEnterpriseSiteSearchIPHPrefName;
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return omnibox::kShowHistoryEmbeddingsSettingsPromo;
+    case IphType::kHistoryEmbeddingsDisclaimer:
+      NOTREACHED();  // This is a non-dismissible disclaimer.
+    case IphType::kHistoryScopePromo:
+      return omnibox::kShowHistoryScopePromo;
+    case IphType::kHistoryEmbeddingsScopePromo:
+      return omnibox::kShowHistoryEmbeddingsScopePromo;
   }
 }
 
@@ -66,6 +72,12 @@ std::string IphTypeDebugString(IphType iph_type) {
       return "featured enterprise search";
     case IphType::kHistoryEmbeddingsSettingsPromo:
       return "history embeddings settings promo";
+    case IphType::kHistoryEmbeddingsDisclaimer:
+      return "history embeddings disclaimer";
+    case IphType::kHistoryScopePromo:
+      return "history scope promo";
+    case IphType::kHistoryEmbeddingsScopePromo:
+      return "history embeddings scope promo";
   }
 }
 
@@ -97,13 +109,16 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   const TemplateURL* keyword_turl =
       KeywordProvider::GetSubstitutingTemplateURLForInput(template_url_service_,
                                                           &keyword_input);
-  bool inHistoryScope =
+  bool is_history_scope =
       keyword_turl &&
       keyword_turl->starter_pack_id() == TemplateURLStarterPackData::kHistory;
 
-  if (inHistoryScope) {
-    if (ShouldShowHistoryEmbeddingsSettingsPromoIphMatch())
+  if (is_history_scope) {
+    if (ShouldShowHistoryEmbeddingsDisclaimerIphMatch()) {
+      AddHistoryEmbeddingsDisclaimerIphMatch();
+    } else if (ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()) {
       AddHistoryEmbeddingsSettingsPromoIphMatch();
+    }
     return;
   }
 
@@ -112,7 +127,11 @@ void FeaturedSearchProvider::Start(const AutocompleteInput& input,
   } else if (ShouldShowGeminiIPHMatch(input)) {
     AddIPHMatch(IphType::kGemini,
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH), u"@gemini",
-                u"", {});
+                u"", {}, true);
+  } else if (ShouldShowHistoryScopePromoIphMatch(input)) {
+    AddHistoryScopePromoIphMatch();
+  } else if (ShouldShowHistoryEmbeddingsScopePromoIphMatch(input)) {
+    AddHistoryEmbeddingsScopePromoIphMatch();
   }
 
   if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
@@ -247,17 +266,17 @@ void FeaturedSearchProvider::AddIPHMatch(IphType iph_type,
                                          const std::u16string& iph_contents,
                                          const std::u16string& matched_term,
                                          const std::u16string& iph_link_text,
-                                         const GURL& iph_link_url) {
+                                         const GURL& iph_link_url,
+                                         bool deletable) {
   // IPH suggestions are grouped after all other suggestions. But they still
   // need to score within top N suggestions to be shown.
   constexpr int kRelevanceScore = 5000;
-  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/false,
+  AutocompleteMatch match(this, kRelevanceScore, /*deletable=*/deletable,
                           AutocompleteMatchType::NULL_RESULT_MESSAGE);
 
   // Use this suggestion's contents field to display a message to the user that
   // cannot be acted upon.
   match.contents = iph_contents;
-  match.deletable = true;
   match.iph_type = iph_type;
   match.iph_link_text = iph_link_text;
   match.iph_link_url = iph_link_url;
@@ -373,19 +392,22 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
               l10n_util::GetStringFUTF16(
                   IDS_OMNIBOX_FEATURED_ENTERPRISE_SITE_SEARCH_IPH,
                   base::UTF8ToUTF16(base::JoinString(sites, ", "))),
-              u"", u"", {});
+              u"", u"", {}, true);
 }
 
 bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsSettingsPromoIphMatch()
     const {
-  // Conditions:
+  // Assumes this is only called when the user is in @history scope.
+  // Additional conditions:
   // - The settings is available - no need to ask the user to enable a setting
   //   that doesn't exist.
   // - The setting isn't already enabled - no need to the user to enable a
   //   setting that's already enabled.
+  // - The feature is allowed in the omnibox.
   // - The user has not deleted the IPH suggestion.
   return client_->IsHistoryEmbeddingsSettingVisible() &&
          !client_->IsHistoryEmbeddingsEnabled() &&
+         history_embeddings::kOmniboxScoped.Get() &&
          ShouldShowIPH(IphType::kHistoryEmbeddingsSettingsPromo);
 }
 
@@ -395,7 +417,61 @@ void FeaturedSearchProvider::AddHistoryEmbeddingsSettingsPromoIphMatch() {
                         u" ";
   std::u16string link_text = l10n_util::GetStringUTF16(
       IDS_OMNIBOX_HISTORY_EMBEDDINGS_SETTINGS_PROMO_IPH_LINK_TEXT);
-  GURL link_url = GURL("chrome://settings/ai");
+  GURL link_url = GURL("chrome://settings/historySearch");
   AddIPHMatch(IphType::kHistoryEmbeddingsSettingsPromo, text, u"", link_text,
-              link_url);
+              link_url, true);
+}
+
+bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsDisclaimerIphMatch()
+    const {
+  // Assumes this is only called when the user is in @history scope. Not limited
+  // by `ShouldShowIPH()` (i.e. shown count or dismissal) because this is a
+  // disclaimer.
+  return client_->IsHistoryEmbeddingsEnabled() &&
+         history_embeddings::kOmniboxScoped.Get();
+}
+
+void FeaturedSearchProvider::AddHistoryEmbeddingsDisclaimerIphMatch() {
+  std::u16string text =
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH) +
+      u" ";
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_OMNIBOX_HISTORY_EMBEDDINGS_DISCLAIMER_IPH_LINK_TEXT);
+  GURL link_url = GURL("chrome://settings/historySearch");
+  AddIPHMatch(IphType::kHistoryEmbeddingsDisclaimer, text, u"", link_text,
+              link_url, false);
+}
+
+bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
+    const AutocompleteInput& input) const {
+  // Shown in the zero state when history embeddings is disabled (not opted-in),
+  // but the embeddings is enabled for the omnibox. Doesn't check if the setting
+  // is visible. We want to guard this behind some meaningful param but it's not
+  // directly related to embeddings so it's ok to show to users who can't opt-in
+  // to embeddings.
+  return input.IsZeroSuggest() && !client_->IsHistoryEmbeddingsEnabled() &&
+         history_embeddings::kOmniboxScoped.Get() &&
+         ShouldShowIPH(IphType::kHistoryScopePromo);
+}
+
+void FeaturedSearchProvider::AddHistoryScopePromoIphMatch() {
+  std::u16string text =
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_SCOPE_PROMO_IPH);
+  AddIPHMatch(IphType::kHistoryScopePromo, text, u"@history", u"", {}, true);
+}
+
+bool FeaturedSearchProvider::ShouldShowHistoryEmbeddingsScopePromoIphMatch(
+    const AutocompleteInput& input) const {
+  // Shown in the zero state when history embeddings is enabled (& opted-in) for
+  // the omnibox.
+  return input.IsZeroSuggest() && client_->IsHistoryEmbeddingsEnabled() &&
+         history_embeddings::kOmniboxScoped.Get() &&
+         ShouldShowIPH(IphType::kHistoryEmbeddingsScopePromo);
+}
+
+void FeaturedSearchProvider::AddHistoryEmbeddingsScopePromoIphMatch() {
+  std::u16string text =
+      l10n_util::GetStringUTF16(IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PROMO_IPH);
+  AddIPHMatch(IphType::kHistoryEmbeddingsScopePromo, text, u"@history", u"", {},
+              true);
 }

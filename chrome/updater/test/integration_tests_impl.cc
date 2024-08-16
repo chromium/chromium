@@ -266,7 +266,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           UpdateService::Priority priority,
                           int event_type,
                           const base::Version& from_version,
-                          const base::Version& to_version) {
+                          const base::Version& to_version,
+                          bool do_fault_injection) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -274,6 +275,9 @@ void ExpectUpdateSequence(UpdaterScope scope,
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
+  if (do_fault_injection) {
+    test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  }
   test_server->ExpectOnce(
       {request::GetPathMatcher(test_server->update_path()),
        request::GetUpdaterUserAgentMatcher(),
@@ -293,6 +297,9 @@ void ExpectUpdateSequence(UpdaterScope scope,
                         crx_path, kDoNothingCRXRun, {}));
 
   // Second request: update download.
+  if (do_fault_injection) {
+    test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  }
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
   test_server->ExpectOnce(
@@ -300,6 +307,9 @@ void ExpectUpdateSequence(UpdaterScope scope,
       crx_bytes);
 
   // Third request: event ping.
+  if (do_fault_injection) {
+    test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher({base::StringPrintf(
@@ -472,7 +482,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& tag,
                           const std::string& child_window_text_to_find,
                           const bool always_launch_cmd,
-                          const bool verify_app_logo_loaded) {
+                          const bool verify_app_logo_loaded,
+                          const bool expect_success) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -491,7 +502,7 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   if (child_window_text_to_find.empty()) {
     int exit_code = -1;
     Run(scope, command_line, &exit_code);
-    ASSERT_EQ(exit_code, 0);
+    ASSERT_EQ(expect_success, exit_code == 0);
   } else {
 #if BUILDFLAG(IS_WIN)
     Run(scope, command_line, nullptr);
@@ -1185,9 +1196,11 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const std::string& install_data_index,
                           UpdateService::Priority priority,
                           const base::Version& from_version,
-                          const base::Version& to_version) {
+                          const base::Version& to_version,
+                          bool do_fault_injection) {
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
-                       /*event_type=*/3, from_version, to_version);
+                       /*event_type=*/3, from_version, to_version,
+                       do_fault_injection);
 }
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -1247,9 +1260,11 @@ void ExpectInstallSequence(UpdaterScope scope,
                            const std::string& install_data_index,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
-                           const base::Version& to_version) {
+                           const base::Version& to_version,
+                           bool do_fault_injection) {
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
-                       /*event_type=*/2, from_version, to_version);
+                       /*event_type=*/2, from_version, to_version,
+                       do_fault_injection);
 }
 
 // Runs multiple cycles of instantiating the update service, calling

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/commerce/core/shopping_service.h"
 
 #include <string>
@@ -21,6 +26,8 @@
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -594,6 +601,64 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_MaxCount) {
 
   ASSERT_EQ(
       10u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
+}
+
+TEST_P(ShoppingServiceTest, TestRecentUrls_ClearedOnHistoryDeletion) {
+  std::string url1 = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url1), false);
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web2(GURL(url2), false);
+
+  ASSERT_EQ(
+      0u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
+
+  OnWebWrapperSwitched(&web1);
+  OnWebWrapperSwitched(&web2);
+
+  std::vector<UrlInfo> urls =
+      shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
+  ASSERT_EQ(2u, urls.size());
+  ASSERT_EQ(urls[0].url, GURL(url2));
+  ASSERT_EQ(urls[1].url, GURL(url1));
+
+  // Fake an event from the history service for deleting all history entries.
+  history::DeletionInfo deletion_info(history::DeletionTimeRange::AllTime(),
+                                      false, {}, {}, {});
+  shopping_service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  // After history deletion the recently viewed tab list should be empty.
+  ASSERT_EQ(
+      0u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
+}
+
+TEST_P(ShoppingServiceTest, TestRecentUrls_SingleHistoryItemDeletion) {
+  std::string url1 = "http://example.com/foo";
+  MockWebWrapper web1(GURL(url1), false);
+  std::string url2 = "http://example.com/bar";
+  MockWebWrapper web2(GURL(url2), false);
+
+  ASSERT_EQ(
+      0u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
+
+  OnWebWrapperSwitched(&web1);
+  OnWebWrapperSwitched(&web2);
+
+  std::vector<UrlInfo> urls =
+      shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
+  ASSERT_EQ(2u, urls.size());
+  ASSERT_EQ(urls[0].url, GURL(url2));
+  ASSERT_EQ(urls[1].url, GURL(url1));
+
+  // Fake an event from the history service for deleting a single entry.
+  history::DeletionInfo deletion_info(history::DeletionTimeRange::Invalid(),
+                                      false, {history::URLRow(GURL(url1))}, {},
+                                      {});
+  shopping_service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  // After history deletion the recently viewed tab list should be empty.
+  // Deletion of any item should result in clearing all.
+  ASSERT_EQ(
+      0u, shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers().size());
 }
 
 TEST_P(ShoppingServiceTest, TestRecentUrls_CacheEntriesRetained) {

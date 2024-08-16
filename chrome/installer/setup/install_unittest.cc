@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/setup/install.h"
 
 #include <stddef.h>
@@ -19,12 +24,10 @@
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/version.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/shortcut.h"
-#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -32,7 +35,6 @@
 #include "chrome/installer/setup/install_worker.h"
 #include "chrome/installer/setup/installer_state.h"
 #include "chrome/installer/setup/setup_constants.h"
-#include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
@@ -366,46 +368,19 @@ TEST_P(CreateVisualElementsManifestTest, VisualElementsManifestCreated) {
 TEST(OsUpdateHandlerCmdTest, OsUpdated) {
   constexpr wchar_t kInstalledVersion[] = L"128.0.0.0";
   constexpr wchar_t kLastWindowsVersion[] = L"1.1.1.1";
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
+  constexpr wchar_t kCurWindowsVersion[] = L"1.1.1.2";
+  base::CommandLine setup_command_line(base::CommandLine::NO_PROGRAM);
   base::FilePath path(L"c:\\tmp");
-  installer::UpdateLastWindowsVersion(kLastWindowsVersion);
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, kInstalledVersion);
+  setup_command_line.ParseFromString(base::StrCat(
+      {L"c:\\tmp\\setup.exe ", kLastWindowsVersion, L"-", kCurWindowsVersion}));
+  const auto cmd_line = installer::GetOsUpdateHandlerCommand(
+      path, kInstalledVersion, setup_command_line);
   EXPECT_TRUE(cmd_line.has_value());
-  std::wstring expected_cmd_line = base::StrCat(
-      {L"\"", path.value(), L"\\", kInstalledVersion, L"\\",
-       installer::kOsUpdateHandlerExe, L"\" ", kLastWindowsVersion, L"-",
-       base::ASCIIToWide(base::win::OSInfo::GetInstance()
-                             ->Kernel32BaseVersion()
-                             .GetString())});
+  std::wstring expected_cmd_line =
+      base::StrCat({L"\"", path.value(), L"\\", kInstalledVersion, L"\\",
+                    installer::kOsUpdateHandlerExe, L"\" ", kLastWindowsVersion,
+                    L"-", kCurWindowsVersion});
   EXPECT_EQ(expected_cmd_line, cmd_line->GetCommandLineString());
-}
-
-// Test case where last version not stored in registry.
-TEST(OsUpdateHandlerCmdTest, FirstAttemptToRun) {
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
-  base::FilePath path(L"c:\\tmp");
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, L"128.0.0.0");
-  EXPECT_FALSE(cmd_line.has_value());
-}
-
-TEST(OsUpdateHandlerCmdTest, OsNotUpdated) {
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
-  base::FilePath path(L"c:\\tmp");
-  const auto current_os_version = base::ASCIIToWide(
-      base::win::OSInfo::GetInstance()->Kernel32BaseVersion().GetString());
-  installer::UpdateLastWindowsVersion(current_os_version);
-
-  const auto cmd_line =
-      installer::GetOsUpdateHandlerCommand(path, L"128.0.0.0");
-  EXPECT_FALSE(cmd_line.has_value());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

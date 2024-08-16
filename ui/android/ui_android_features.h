@@ -33,6 +33,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMirrorBackForwardGesturesInRTL);
 // rather than just the first one detected.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportAllAvailablePointerTypes);
 
+// Reports bottom overscrolls on the web page.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kReportBottomOverscrolls);
+
 // Kill switch to turn off validation in TextViewWithLeading that requires a
 // leading value to be configured.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRequireLeadingInTextViewWithLeading);

@@ -221,6 +221,11 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
   }
 }
 
+bool SavedTabGroupModelListener::IsTrackingLocalTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  return local_tab_group_listeners_.contains(group_id);
+}
+
 void SavedTabGroupModelListener::ConnectToLocalTabGroup(
     const SavedTabGroup& saved_tab_group,
     std::map<content::WebContents*, base::Uuid> web_contents_map) {

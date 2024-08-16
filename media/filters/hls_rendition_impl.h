@@ -123,6 +123,8 @@ class MEDIA_EXPORT HlsRenditionImpl : public HlsRendition {
   bool has_ever_played_ = false;
   bool requires_init_segment_ = true;
 
+  std::optional<hls::types::DecimalInteger> last_discontinuity_sequence_num_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<HlsRenditionImpl> weak_factory_{this};

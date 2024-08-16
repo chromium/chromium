@@ -88,7 +88,6 @@ public class ToolbarTablet extends ToolbarLayout
     private ImageButton mReloadButton;
     private ImageButton mBookmarkButton;
     private ImageButton mSaveOfflineButton;
-    private ToggleTabStackButton mSwitcherButton;
 
     private OnClickListener mBookmarkListener;
 
@@ -169,7 +168,6 @@ public class ToolbarTablet extends ToolbarLayout
         reloadIcon.addLevel(stopLevel, stopLevel, stopLevelDrawable);
         mReloadButton.setImageDrawable(reloadIcon);
 
-        mSwitcherButton = findViewById(R.id.tab_switcher_button);
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
 
@@ -536,7 +534,9 @@ public class ToolbarTablet extends ToolbarLayout
         // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
         ImageViewCompat.setImageTintList(mReloadButton, activityFocusTint);
-        ImageViewCompat.setImageTintList(mSwitcherButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(
+                (ImageView) getTabSwitcherButtonCoordinator().getContainerView(),
+                activityFocusTint);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
             ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
@@ -638,7 +638,6 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     void setTabSwitcherMode(boolean inTabSwitcherMode) {
         mIsInTabSwitcherMode = inTabSwitcherMode;
-        mSwitcherButton.setClickable(!inTabSwitcherMode);
         int importantForAccessibility =
                 inTabSwitcherMode
                         ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
@@ -656,6 +655,7 @@ public class ToolbarTablet extends ToolbarLayout
             ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
+            ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
             BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
@@ -665,6 +665,7 @@ public class ToolbarTablet extends ToolbarLayout
                 toolbarDataProvider,
                 tabController,
                 menuButtonCoordinator,
+                tabSwitcherButtonCoordinator,
                 historyDelegate,
                 partnerHomepageEnabledSupplier,
                 offlineDownloader,
@@ -687,25 +688,12 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
-        mSwitcherButton.setTabCountSupplier(tabCountSupplier, this::isIncognito);
         mTabCountSupplier = tabCountSupplier;
     }
 
     @Override
     void setBookmarkClickHandler(OnClickListener listener) {
         mBookmarkListener = listener;
-    }
-
-    @Override
-    void setOnTabSwitcherClickHandler(OnClickListener listener) {
-        mSwitcherButton.setOnTabSwitcherClickHandler(listener);
-    }
-
-    @Override
-    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TABLET_TAB_SWITCHER_LONG_PRESS_MENU)) {
-            mSwitcherButton.setOnTabSwitcherLongClickHandler(listener);
-        }
     }
 
     @Override
@@ -810,11 +798,6 @@ public class ToolbarTablet extends ToolbarLayout
     @Override
     public ImageView getHomeButton() {
         return mHomeButton;
-    }
-
-    @Override
-    public ToggleTabStackButton getTabSwitcherButton() {
-        return mSwitcherButton;
     }
 
     private void setToolbarButtonsVisible(boolean visible) {

@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -924,7 +926,7 @@ void AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown(
 void AutofillMetrics::LogCreditCardInfoBarMetric(
     InfoBarMetric metric,
     bool is_uploading,
-    AutofillClient::SaveCreditCardOptions options) {
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options) {
   DCHECK_LT(metric, NUM_INFO_BAR_METRICS);
 
   std::string destination = is_uploading ? ".Server" : ".Local";
@@ -955,7 +957,7 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
   }
 
   if (options.card_save_type ==
-      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+      payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc) {
     base::UmaHistogramEnumeration(base::StrCat({"Autofill.CreditCardInfoBar",
                                                 destination, ".SavingWithCvc"}),
                                   metric, NUM_INFO_BAR_METRICS);
@@ -1009,7 +1011,7 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
       return "ServerIbanUnmask";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -2595,8 +2597,6 @@ void AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
       }
     }
 
-    // TODO(crbug.com/40225658): Modify the enum object of SubmissionSource by
-    // assigning values (= 0, = 1, ...) and adding a comment to not change it.
     builder.SetSubmittedType1(submitted_type1)
         .SetSubmissionSource(static_cast<int>(form.submission_source()))
         .SetMillisecondsFromFormParsedUntilSubmission(
@@ -3090,20 +3090,6 @@ AutofillMetrics::UkmTimestampPin::UkmTimestampPin(
 AutofillMetrics::UkmTimestampPin::~UkmTimestampPin() {
   DCHECK(logger_->has_pinned_timestamp());
   logger_->set_pinned_timestamp(base::TimeTicks());
-}
-
-// static
-void AutofillMetrics::LogFieldParsingPageTranslationStatusMetric(bool metric) {
-  base::UmaHistogramBoolean("Autofill.ParsedFieldTypesWasPageTranslated",
-                            metric);
-}
-
-// static
-void AutofillMetrics::LogFieldParsingTranslatedFormLanguageMetric(
-    std::string_view locale) {
-  base::UmaHistogramSparse(
-      "Autofill.ParsedFieldTypesUsingTranslatedPageLanguage",
-      language::LanguageUsageMetrics::ToLanguageCodeHash(locale));
 }
 
 // static

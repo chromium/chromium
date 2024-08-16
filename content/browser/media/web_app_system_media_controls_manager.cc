@@ -4,6 +4,7 @@
 
 #include "content/browser/media/web_app_system_media_controls_manager.h"
 
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
@@ -159,7 +160,7 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
   // controls object.
   if (!existing_controls) {
 #if BUILDFLAG(IS_WIN)
-    // |window| is -1 if no HWND found.
+    // `window` is -1 if no HWND found.
     intptr_t window = GetHWNDFromWebContents(web_contents);
     std::unique_ptr<system_media_controls::SystemMediaControls>
         system_media_controls =
@@ -173,6 +174,11 @@ void WebAppSystemMediaControlsManager::OnFocusGained(
         system_media_controls =
             system_media_controls::SystemMediaControls::Create(
                 application_host);
+
+    if (on_system_media_controls_bridge_created_callback_for_testing_) {
+      system_media_controls->SetOnBridgeCreatedCallbackForTesting(
+          on_system_media_controls_bridge_created_callback_for_testing_);
+    }
 #endif  // BUILDFLAG(IS_WIN)
 
     if (!system_media_controls) {
@@ -285,6 +291,13 @@ WebAppSystemMediaControlsManager::GetAllControls() {
   }
 
   return vec;
+}
+
+void WebAppSystemMediaControlsManager::
+    SetOnSystemMediaControlsBridgeCreatedCallbackForTesting(
+        base::RepeatingCallback<void()> callback) {
+  on_system_media_controls_bridge_created_callback_for_testing_ =
+      std::move(callback);
 }
 
 void WebAppSystemMediaControlsManager::LogDataForDebugging() {

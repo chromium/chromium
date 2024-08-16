@@ -805,7 +805,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = gl_capabilities_.max_texture_image_units;
       return true;
     case GL_MAX_TEXTURE_SIZE:
-      *params = capabilities_.max_texture_size;
+      *params = gl_capabilities_.max_texture_size;
       return true;
     case GL_MAX_VARYING_VECTORS:
       *params = gl_capabilities_.max_varying_vectors;
@@ -859,7 +859,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_pixel_unpack_transfer_buffer_id_;
       return true;
     case GL_READ_FRAMEBUFFER_BINDING:
-      if (capabilities_.major_version >= 3 ||
+      if (gl_capabilities_.major_version >= 3 ||
           IsChromiumFramebufferMultisampleAvailable()) {
         *params = bound_read_framebuffer_;
         return true;
@@ -963,7 +963,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       break;
   }
 
-  if (capabilities_.major_version < 3) {
+  if (gl_capabilities_.major_version < 3) {
     return false;
   }
 
@@ -976,7 +976,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = bound_copy_write_buffer_;
       return true;
     case GL_MAJOR_VERSION:
-      *params = capabilities_.major_version;
+      *params = gl_capabilities_.major_version;
       return true;
     case GL_MAX_3D_TEXTURE_SIZE:
       *params = gl_capabilities_.max_3d_texture_size;
@@ -1062,7 +1062,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       *params = gl_capabilities_.min_program_texel_offset;
       return true;
     case GL_MINOR_VERSION:
-      *params = capabilities_.minor_version;
+      *params = gl_capabilities_.minor_version;
       return true;
     case GL_NUM_EXTENSIONS:
       UpdateCachedExtensionsIfNeeded();
@@ -1145,7 +1145,7 @@ bool GLES2Implementation::GetHelper(GLenum pname, GLint* params) {
       break;
   }
 
-  if (capabilities_.minor_version < 1) {
+  if (gl_capabilities_.minor_version < 1) {
     return false;
   }
 
@@ -2267,7 +2267,7 @@ void GLES2Implementation::PixelStorei(GLenum pname, GLint param) {
     case GL_PACK_SKIP_ROWS:
     case GL_UNPACK_IMAGE_HEIGHT:
     case GL_UNPACK_SKIP_IMAGES:
-      if (capabilities_.major_version < 3) {
+      if (gl_capabilities_.major_version < 3) {
         SetGLError(GL_INVALID_ENUM, "glPixelStorei", "invalid pname");
         return;
       }
@@ -2309,7 +2309,7 @@ void GLES2Implementation::PixelStorei(GLenum pname, GLint param) {
       break;
     case GL_UNPACK_ROW_LENGTH:
       unpack_row_length_ = param;
-      if (capabilities_.major_version < 3) {
+      if (gl_capabilities_.major_version < 3) {
         // In ES2 with EXT_unpack_subimage, it's handled on the client side
         // and there is no need to send it to the service side.
         return;
@@ -5309,7 +5309,7 @@ void GLES2Implementation::BindFramebufferHelper(GLenum target,
       break;
     case GL_READ_FRAMEBUFFER:
 #if EXPENSIVE_DCHECKS_ARE_ON()
-      DCHECK(capabilities_.major_version >= 3 ||
+      DCHECK(gl_capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
 #endif
       if (bound_read_framebuffer_ != framebuffer) {
@@ -5319,7 +5319,7 @@ void GLES2Implementation::BindFramebufferHelper(GLenum target,
       break;
     case GL_DRAW_FRAMEBUFFER:
 #if EXPENSIVE_DCHECKS_ARE_ON()
-      DCHECK(capabilities_.major_version >= 3 ||
+      DCHECK(gl_capabilities_.major_version >= 3 ||
              IsChromiumFramebufferMultisampleAvailable());
 #endif
       if (bound_framebuffer_ != framebuffer) {
@@ -6493,7 +6493,7 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       break;
     case GL_READBACK_SHADOW_COPIES_UPDATED_CHROMIUM:
     case GL_COMMANDS_COMPLETED_CHROMIUM:
-      if (!capabilities_.sync_query) {
+      if (!gl_capabilities_.sync_query) {
         SetGLError(GL_INVALID_OPERATION, "glBeginQueryEXT",
                    "not enabled for commands completed queries");
         return;
@@ -6519,8 +6519,9 @@ void GLES2Implementation::BeginQueryEXT(GLenum target, GLuint id) {
       }
       break;
     case GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN:
-      if (capabilities_.major_version >= 3)
+      if (gl_capabilities_.major_version >= 3) {
         break;
+      }
       [[fallthrough]];
     default:
       SetGLError(GL_INVALID_ENUM, "glBeginQueryEXT", "unknown query target");

@@ -323,13 +323,13 @@ void TransferredMediaStreamTrack::SendWheel(
     int wheel_delta_x,
     int wheel_delta_y,
     base::OnceCallback<void(DOMException*)> callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TransferredMediaStreamTrack::SetZoomLevel(
     int zoom_level,
     base::OnceCallback<void(DOMException*)> callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 #endif
 

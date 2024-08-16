@@ -338,7 +338,7 @@ std::string ToString(DisplayManager::MultiDisplayMode mode) {
     case DisplayManager::MultiDisplayMode::UNIFIED:
       return "unified";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Uses a piecewise linear function to map a brightness percent to sdr luminance

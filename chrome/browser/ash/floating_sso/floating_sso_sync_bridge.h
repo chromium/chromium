@@ -12,33 +12,33 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/conflict_resolution.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_base.h"
-#include "components/sync/model/model_type_store_with_in_memory_cache.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_base.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 
 namespace syncer {
+class DataTypeLocalChangeProcessor;
 struct EntityData;
 class MetadataBatch;
 class MetadataChangeList;
 class ModelError;
-class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 namespace ash::floating_sso {
 
-class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
+class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
  public:
   using CookieSpecificsEntries =
       std::map<std::string, sync_pb::CookieSpecifics>;
 
   explicit FloatingSsoSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory create_store_callback);
   ~FloatingSsoSyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge:
+  // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -66,7 +66,7 @@ class FloatingSsoSyncBridge : public syncer::ModelTypeSyncBridge {
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::CookieSpecifics>;
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<StoreWithCache> store,

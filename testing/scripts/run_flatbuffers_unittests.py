@@ -19,11 +19,12 @@ import json
 import os
 import sys
 
-# Add src/testing/ into sys.path for importing xvfb and common.
+import common
+
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+# //testing imports.
 import xvfb
-from scripts import common
 
 # pylint: disable=super-with-arguments
 
@@ -51,7 +52,7 @@ def main():
     # a non positive number).
     with open(tempfile_path) as f:
       output = f.read()
-      if "ALL TESTS PASSED\n" not in output:
+      if 'ALL TESTS PASSED\n' not in output:
         failures = [output]
 
   if args.isolated_script_test_output:

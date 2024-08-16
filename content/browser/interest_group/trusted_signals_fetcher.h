@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,8 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,6 +40,11 @@ namespace content {
 // implementation. Need to actually implement the API.
 class CONTENT_EXPORT TrustedSignalsFetcher {
  public:
+  static constexpr std::string_view kRequestMediaType =
+      "message/ad-auction-trusted-signals-request";
+  static constexpr std::string_view kResponseMediaType =
+      "message/ad-auction-trusted-signals-response";
+
   // All the data needed to request a particular bidding signals partition.
   //
   // TODO(https://crbug.com/333445540): Consider making some of these fields
@@ -130,8 +137,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
 
   using Callback = base::OnceCallback<void(SignalsFetchResult)>;
 
-  explicit TrustedSignalsFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  TrustedSignalsFetcher();
 
   // Virtual for tests.
   virtual ~TrustedSignalsFetcher();
@@ -142,6 +148,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `partitions` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchBiddingSignals(
+      network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_bidding_signals_url,
       const std::map<int, std::vector<BiddingPartition>>& compression_groups,
       Callback callback);
@@ -149,11 +156,28 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
   // `partitions` is a map of all partitions in the request, indexed by
   // compression group id. Virtual for tests.
   virtual void FetchScoringSignals(
+      network::mojom::URLLoaderFactory* url_loader_factory,
       const GURL& trusted_scoring_signals_url,
       const std::map<int, std::vector<ScoringPartition>>& compression_groups,
       Callback callback);
 
  private:
+  // Create a SimpleURLLoader and starts a request. Once the request body has
+  // been created, everything else (including response body parsing) is
+  // identical for bidding and scoring signals, as only the data inside
+  // compression groups is different for bidding and scoring signals, and that
+  // layer is not parsed by this class.
+  void StartRequest(network::mojom::URLLoaderFactory* url_loader_factory,
+                    const GURL& trusted_signals_url,
+                    std::string request_body,
+                    Callback callback);
+
+  void OnRequestComplete(std::unique_ptr<std::string> response_body);
+
+  // The URL being fetched. Cached for using in error strings.
+  GURL trusted_signals_url_;
+  Callback callback_;
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
 
 }  // namespace content

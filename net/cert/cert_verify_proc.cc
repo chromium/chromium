@@ -97,7 +97,7 @@ const char* CertTypeToString(X509Certificate::PublicKeyType cert_type) {
     case X509Certificate::kPublicKeyTypeECDSA:
       return "ECDSA";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void RecordPublicKeyHistogram(const char* chain_position,

@@ -328,7 +328,7 @@ void PrerenderHost::SetFocusedFrame(FrameTreeNode* node,
                                     SiteInstanceGroup* source) {
   // `node` can only become focused when `node`'s current RenderFrameHost is
   // active.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FrameTree* PrerenderHost::GetOwnedPictureInPictureFrameTree() {
@@ -491,14 +491,13 @@ void PrerenderHost::ReadyToCommitNavigation(
       navigation_request->response() &&
       navigation_request->response()->parsed_headers &&
       navigation_request->response()
-          ->parsed_headers->no_vary_search_with_parse_error &&
-      navigation_request->response()
-          ->parsed_headers->no_vary_search_with_parse_error
-          ->is_no_vary_search()) {
-    SetNoVarySearch(no_vary_search::ParseHttpNoVarySearchDataFromMojom(
-        navigation_request->response()
-            ->parsed_headers->no_vary_search_with_parse_error
-            ->get_no_vary_search()));
+          ->parsed_headers->no_vary_search_with_parse_error) {
+    MaybeSetNoVarySearch(
+        *navigation_request->response()
+             ->parsed_headers->no_vary_search_with_parse_error);
+  } else {
+    CHECK(!no_vary_search_.has_value());
+    CHECK(!no_vary_search_parse_error_.has_value());
   }
 
   // ReadyToCommitNavigation is called when the headers are received.
@@ -1207,7 +1206,7 @@ void PrerenderHost::SetFailureReason(
     case PrerenderFinalStatus::kActivated:
       // The activation path does not call this method, so it should never reach
       // this case.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1303,8 +1302,20 @@ void PrerenderHost::Cancel(PrerenderFinalStatus status) {
   registry->CancelHost(frame_tree_node_id_, status);
 }
 
-void PrerenderHost::SetNoVarySearch(net::HttpNoVarySearchData no_vary_search) {
+void PrerenderHost::MaybeSetNoVarySearch(
+    network::mojom::NoVarySearchWithParseError&
+        no_vary_search_with_parse_error) {
   CHECK(!no_vary_search_);
+  CHECK(!no_vary_search_parse_error_);
+  if (no_vary_search_with_parse_error.is_parse_error()) {
+    no_vary_search_parse_error_ =
+        no_vary_search_with_parse_error.get_parse_error();
+    return;
+  }
+  CHECK(no_vary_search_with_parse_error.is_no_vary_search());
+  net::HttpNoVarySearchData no_vary_search =
+      no_vary_search::ParseHttpNoVarySearchDataFromMojom(
+          no_vary_search_with_parse_error.get_no_vary_search());
   if (attempt_) {
     static_cast<PreloadingAttemptImpl*>(attempt_.get())
         ->SetNoVarySearchMatchPredicate(base::BindRepeating(
@@ -1366,6 +1377,12 @@ void PrerenderHost::OnWaitingForHeadersFinished(
     WaitingForHeadersFinishedReason reason) {
   // Prerender frame tree is alive. This check is also done by the caller.
   CHECK(frame_tree_);
+
+  base::UmaHistogramEnumeration(
+      "Prerender.Experimental.WaitingForHeadersFinishedReason" +
+          GetHistogramSuffix(),
+      reason);
+
   for (auto& observer : observers_) {
     observer.OnWaitingForHeadersFinished(navigation_handle, reason);
   }

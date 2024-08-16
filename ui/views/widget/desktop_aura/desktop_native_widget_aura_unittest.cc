@@ -23,6 +23,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -812,7 +813,7 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
 
   // This instance will be destroyed when the dialog is destroyed.
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget.GetNativeView());
@@ -868,7 +869,7 @@ TEST_F(DesktopNativeWidgetAuraTest, WindowModalityActivationTest) {
   widget_delegate.SetCanActivate(false);
 
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());

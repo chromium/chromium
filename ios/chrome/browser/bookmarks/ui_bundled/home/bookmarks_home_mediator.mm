@@ -100,7 +100,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     case BookmarksBatchUploadSectionIdentifier:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 @interface BookmarksHomeMediator () <AccountSettingsPresenter,
@@ -428,7 +428,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (void)triggerBatchUpload {
   self.syncService->TriggerLocalDataMigration(
-      syncer::ModelTypeSet({syncer::BOOKMARKS}));
+      syncer::DataTypeSet({syncer::BOOKMARKS}));
 
   ChromeBrowserState* browserState = [self originalBrowserState];
   PrefService* prefService = browserState->GetPrefs();
@@ -440,8 +440,8 @@ bool IsABookmarkNodeSectionForIdentifier(
                                       std::string user_email))completion {
   std::string user_email = self.syncService->GetAccountInfo().email;
   self.syncService->GetLocalDataDescriptions(
-      syncer::ModelTypeSet({syncer::BOOKMARKS}),
-      base::BindOnce(^(std::map<syncer::ModelType, syncer::LocalDataDescription>
+      syncer::DataTypeSet({syncer::BOOKMARKS}),
+      base::BindOnce(^(std::map<syncer::DataType, syncer::LocalDataDescription>
                            description) {
         auto it = description.find(syncer::BOOKMARKS);
         // GetLocalDataDescriptions() can return an empty result if data type is

@@ -841,14 +841,17 @@ void ExpectCandidateUninstalled(UpdaterScope scope) {
 }
 
 void Uninstall(UpdaterScope scope) {
-  // Note: "updater.exe --uninstall" is run from the build dir, not the install
-  // dir, because it is useful for tests to be able to run it to clean the
-  // system even if installation has failed or the installed binaries have
-  // already been removed.
-  base::FilePath path = GetSetupExecutablePath().DirName().Append(
-      FILE_PATH_LITERAL("updater_test.exe"));
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
+  // Note: the updater uninstall is run from the build dir, not the install dir,
+  // because it is useful for tests to be able to run it to clean the system
+  // even if installation has failed or the installed binaries have already been
+  // removed.
+
+  // The updater setup executable is used instead of `updater` because setup
+  // knows how to de-elevate when run at high integrity to uninstall a per-user
+  // install, which is what is done in the
+  // `IntegrationTestUserInSystem.ElevatedInstallOfUserUpdaterAndApp` test.
+  base::CommandLine command_line(GetSetupExecutablePath());
+  ASSERT_FALSE(command_line.GetProgram().empty());
   command_line.AppendSwitch(kUninstallSwitch);
   int exit_code = -1;
   Run(scope, command_line, &exit_code);
@@ -2070,7 +2073,7 @@ void ExpectAppVersion(UpdaterScope scope,
                       const base::Version& version) {
   const base::Version app_version =
       base::MakeRefCounted<PersistedData>(
-          scope, CreateGlobalPrefs(scope)->GetPrefService(), nullptr)
+          scope, CreateGlobalPrefsForTesting(scope)->GetPrefService(), nullptr)
           ->GetProductVersion(app_id);
   EXPECT_TRUE(app_version.IsValid());
   EXPECT_EQ(version, app_version);

@@ -26,6 +26,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -1066,7 +1067,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 
   // Create a modal dialog.
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());
@@ -1584,7 +1585,7 @@ TEST_F(DesktopWidgetTestInteractive,
   // Create a modal dialog.
   // This instance will be destroyed when the dialog is destroyed.
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kWindow);
   Widget* modal_dialog_widget = DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level->GetNativeView());
   modal_dialog_widget->SetBounds(gfx::Rect(0, 0, 100, 10));
@@ -2041,7 +2042,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 
   // Create a modal dialog.
   auto dialog_delegate = std::make_unique<DialogDelegateView>();
-  dialog_delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  dialog_delegate->SetModalType(ui::mojom::ModalType::kSystem);
 
   Widget* modal_dialog_widget = views::DialogDelegate::CreateDialogWidget(
       dialog_delegate.release(), nullptr, top_level_widget->GetNativeView());

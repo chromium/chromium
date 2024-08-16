@@ -25,7 +25,7 @@ class FakePlusAddressSettingService : public PlusAddressSettingService {
   bool GetIsPlusAddressesEnabled() const override;
   bool GetHasAcceptedNotice() const override;
   void SetHasAcceptedNotice() override;
-  std::unique_ptr<syncer::ModelTypeControllerDelegate>
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegate() override;
 
   void set_has_accepted_notice(bool has_accepted_notice) {

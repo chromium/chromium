@@ -62,11 +62,7 @@ public class CustomTabNightModeStateController implements DestroyObserver, Night
             return;
         }
 
-        mRequestedColorScheme =
-                IntentUtils.safeGetIntExtra(
-                        intent,
-                        CustomTabsIntent.EXTRA_COLOR_SCHEME,
-                        CustomTabsIntent.COLOR_SCHEME_SYSTEM);
+        mRequestedColorScheme = getRequestedColorScheme(intent);
         mAppCompatDelegate = delegate;
 
         updateNightMode();
@@ -76,6 +72,15 @@ public class CustomTabNightModeStateController implements DestroyObserver, Night
             mSystemNightModeMonitor.addObserver(mSystemNightModeObserver);
             mPowerSavingModeMonitor.addObserver(mPowerSaveModeObserver);
         }
+    }
+
+    private int getRequestedColorScheme(Intent intent) {
+        if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
+            return CustomTabsIntent.COLOR_SCHEME_SYSTEM;
+        }
+
+        return IntentUtils.safeGetIntExtra(
+                intent, CustomTabsIntent.EXTRA_COLOR_SCHEME, CustomTabsIntent.COLOR_SCHEME_SYSTEM);
     }
 
     // DestroyObserver implementation.

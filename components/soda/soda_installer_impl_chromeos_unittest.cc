@@ -167,7 +167,8 @@ TEST_F(SodaInstallerImplChromeOSTest, OnlyEnglishAvailable) {
 TEST_F(SodaInstallerImplChromeOSTest, SubSetCorrect) {
   std::vector<std::string> actual_langs =
       GetInstance()->GetAvailableLanguages();
-  auto expected_available_langs = speech::GetLiveCaptionEnabledLanguages();
+  auto expected_available_langs =
+      GetInstance()->GetLiveCaptionEnabledLanguages();
   EXPECT_THAT(actual_langs, ::testing::IsSubsetOf(expected_available_langs));
 }
 

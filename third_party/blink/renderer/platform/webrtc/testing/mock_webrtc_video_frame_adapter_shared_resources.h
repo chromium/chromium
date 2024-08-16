@@ -60,8 +60,9 @@ class MockSharedResources : public WebRtcVideoFrameAdapter::SharedResources {
         }));
   }
 
- private:
-  friend class base::RefCountedThreadSafe<MockSharedResources>;
+ protected:
+  friend class ThreadSafeRefCounted<MockSharedResources>;
+  ~MockSharedResources() override = default;
 };
 
 }  // namespace blink

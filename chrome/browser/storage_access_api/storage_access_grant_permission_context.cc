@@ -83,7 +83,7 @@ bool IsUserDecidedPersistableOutcome(RequestOutcome outcome) {
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -107,7 +107,7 @@ bool ShouldDisplayOutcomeInOmnibox(RequestOutcome outcome) {
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -126,7 +126,7 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
       return persist ? RequestOutcome::kDeniedByUser
                      : RequestOutcome::kReusedPreviousDecision;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -142,8 +142,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kGrantedByFirstPartySet:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
-      constraints.set_session_model(
-          content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+      constraints.set_decided_by_related_website_sets(true);
       return constraints;
 
     case RequestOutcome::kGrantedByAllowance:
@@ -157,8 +156,6 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kDeniedByUser:
       constraints.set_lifetime(
           permissions::kStorageAccessAPIExplicitPermissionLifetime);
-      constraints.set_session_model(
-          content_settings::mojom::SessionModel::DURABLE);
       return constraints;
 
     case RequestOutcome::kDeniedByPrerequisites:
@@ -171,7 +168,7 @@ content_settings::ContentSettingConstraints ComputeConstraints(
     case RequestOutcome::kAllowedBySameSite:
     case RequestOutcome::kDeniedAborted:
     case RequestOutcome::kAllowedByFedCM:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -564,14 +561,18 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
         ->GetContentSetting(requesting_origin, embedding_origin,
                             ContentSettingsType::STORAGE_ACCESS, &info);
 
-    switch (info.metadata.session_model()) {
-      case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
-      case content_settings::mojom::SessionModel::USER_SESSION:
-        outcome = RequestOutcome::kReusedImplicitGrant;
-        break;
-      case content_settings::mojom::SessionModel::DURABLE:
-      case content_settings::mojom::SessionModel::ONE_TIME:
-        break;
+    if (info.metadata.decided_by_related_website_sets()) {
+      outcome = RequestOutcome::kReusedImplicitGrant;
+    } else {
+      switch (info.metadata.session_model()) {
+        case content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION:
+        case content_settings::mojom::SessionModel::USER_SESSION:
+          outcome = RequestOutcome::kReusedImplicitGrant;
+          break;
+        case content_settings::mojom::SessionModel::DURABLE:
+        case content_settings::mojom::SessionModel::ONE_TIME:
+          break;
+      }
     }
   }
   NotifyPermissionSetInternal(
@@ -662,5 +663,5 @@ void StorageAccessGrantPermissionContext::UpdateContentSetting(
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }

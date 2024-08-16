@@ -89,7 +89,9 @@ int ParseAddressList(std::string_view host_list,
 // Base class shared by MockHostResolver and MockCachingHostResolver.
 class MockHostResolverBase : public HostResolver {
  private:
+  class RequestBase;
   class RequestImpl;
+  class ServiceEndpointRequestImpl;
   class ProbeRequestImpl;
   class MdnsListenerImpl;
 
@@ -205,7 +207,7 @@ class MockHostResolverBase : public HostResolver {
     std::optional<RuleResultOrError> default_result_;
   };
 
-  using RequestMap = std::map<size_t, RequestImpl*>;
+  using RequestMap = std::map<size_t, RequestBase*>;
 
   // A set of states in MockHostResolver. This is used to observe the internal
   // state variables after destructing a MockHostResolver.
@@ -404,7 +406,7 @@ class MockHostResolverBase : public HostResolver {
   friend class MockHostResolverFactory;
 
   // Returns the request with the given id.
-  RequestImpl* request(size_t id);
+  RequestBase* request(size_t id);
 
   // If > 0, |cache_invalidation_num| is the number of times a cached entry can
   // be read before it invalidates itself. Useful to force cache expiration
@@ -413,9 +415,9 @@ class MockHostResolverBase : public HostResolver {
                        int cache_invalidation_num,
                        RuleResolver rule_resolver);
 
-  // Handle resolution for |request|. Expected to be called only the RequestImpl
+  // Handle resolution for |request|. Expected to be called only the RequestBase
   // object itself.
-  int Resolve(RequestImpl* request);
+  int Resolve(RequestBase* request);
 
   // Resolve as IP or from |cache_| return cached error or
   // DNS_CACHE_MISS if failed.
@@ -429,7 +431,7 @@ class MockHostResolverBase : public HostResolver {
       std::vector<HostResolverEndpointResult>* out_endpoints,
       std::set<std::string>* out_aliases,
       std::optional<HostCache::EntryStaleness>* out_stale_info);
-  int DoSynchronousResolution(RequestImpl& request);
+  int DoSynchronousResolution(RequestBase& request);
 
   void AddListener(MdnsListenerImpl* listener);
   void RemoveCancelledListener(MdnsListenerImpl* listener);

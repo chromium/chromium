@@ -9,9 +9,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -357,4 +359,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
                                       true, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       ConvertPopupToTabbedBrowserShutdownRace) {
+  // Confirm we do not incorrectly start shutdown when converting a popup into a
+  // tab, in the case where the popup is the only active Browser object
+  Browser* popup_browser = Browser::Create(
+      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
+  chrome::AddTabAt(popup_browser, GURL(url::kAboutBlankURL), -1, true);
+  popup_browser->tab_strip_model()->ToggleSelectionAt(0);
+  browser()->tab_strip_model()->CloseAllTabs();
+  ConvertPopupToTabbedBrowser(popup_browser);
+  EXPECT_EQ(false, browser_shutdown::HasShutdownStarted());
+}
 }  // namespace chrome

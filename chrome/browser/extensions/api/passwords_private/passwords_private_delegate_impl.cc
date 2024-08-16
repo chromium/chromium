@@ -144,7 +144,7 @@ std::u16string GetReauthPurpose(
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX);
     case extensions::api::passwords_private::PlaintextReason::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_WIN)
   switch (reason) {
@@ -158,7 +158,7 @@ std::u16string GetReauthPurpose(
       return l10n_util::GetStringUTF16(
           IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
     case extensions::api::passwords_private::PlaintextReason::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #else
   return std::u16string();

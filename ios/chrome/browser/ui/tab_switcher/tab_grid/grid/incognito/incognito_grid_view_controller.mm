@@ -26,7 +26,7 @@
     // With the refactoring, the base class does the right thing.
     return [super headerForSectionAtIndexPath:indexPath];
   }
-  if (self.mode == TabGridModeNormal) {
+  if (self.mode == TabGridMode::kNormal) {
     return nil;
   }
   return [super headerForSectionAtIndexPath:indexPath];

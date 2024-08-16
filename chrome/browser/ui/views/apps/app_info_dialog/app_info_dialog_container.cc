@@ -12,6 +12,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_constants.h"
@@ -31,10 +32,10 @@
 namespace {
 
 #if BUILDFLAG(IS_MAC)
-const ui::ModalType kModalType = ui::MODAL_TYPE_CHILD;
+const ui::mojom::ModalType kModalType = ui::mojom::ModalType::kChild;
 const views::BubbleBorder::Shadow kShadowType = views::BubbleBorder::NO_SHADOW;
 #else
-const ui::ModalType kModalType = ui::MODAL_TYPE_WINDOW;
+const ui::mojom::ModalType kModalType = ui::mojom::ModalType::kWindow;
 const views::BubbleBorder::Shadow kShadowType =
     views::BubbleBorder::STANDARD_SHADOW;
 #endif

@@ -16,11 +16,9 @@ static_library("logger") {
     "reporting_pipeline.h",
   ]
 
-  # TODO(b:335294101): Move this to c/b/a/settings and add public_deps on that.
-  public_configs = [ "//build/config/linux/nss" ]
-
   public_deps = [
     "//base",
+    "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus/chromebox_for_meetings",
     "//chromeos/services/chromebox_for_meetings/public/cpp",
     "//chromeos/services/chromebox_for_meetings/public/mojom",
@@ -29,16 +27,9 @@ static_library("logger") {
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_provider",
     "//mojo/public/cpp/bindings",
-
-    # Due to a cycle we can't depend on c/b/ash but we need some of its
-    # public_deps.
-    # TODO(b:335294101): Move this to c/b/a/settings and add public_deps on
-    # that.
-    "//components/policy/core/common",
   ]
 
   deps = [
-    "//chrome/browser/ash/settings",
     "//chromeos/ash/components/chromebox_for_meetings",
     "//components/reporting/proto:record_constants",
     "//crypto",

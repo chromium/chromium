@@ -12,14 +12,14 @@
 #include "base/test/test_future.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,15 +55,14 @@ std::vector<SettingSpecifics> ExtractSpecificsFromBatch(
 class PlusAddressSettingSyncBridgeTest : public testing::Test {
  public:
   PlusAddressSettingSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     RecreateBridge();
   }
 
   void RecreateBridge() {
     bridge_ = std::make_unique<PlusAddressSettingSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
-            store_.get()));
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
     // Even though the test uses an in-memory store, it still posts tasks. Wait
     // for initialisation to complete.
     task_environment_.RunUntilIdle();
@@ -71,9 +70,9 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
   PlusAddressSettingSyncBridge& bridge() { return *bridge_; }
 
-  syncer::ModelTypeStore& store() { return *store_; }
+  syncer::DataTypeStore& store() { return *store_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -96,8 +95,8 @@ class PlusAddressSettingSyncBridgeTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingSyncBridge> bridge_;
 };
 
@@ -108,11 +107,11 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_InitialSync) {
 
 TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   // Simulate that some metadata is stored.
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
   auto write_batch = store().CreateWriteBatch();
-  write_batch->GetMetadataChangeList()->UpdateModelTypeState(model_type_state);
+  write_batch->GetMetadataChangeList()->UpdateDataTypeState(data_type_state);
   base::test::TestFuture<const std::optional<syncer::ModelError>&> write_result;
   store().CommitWriteBatch(std::move(write_batch), write_result.GetCallback());
   ASSERT_FALSE(write_result.Get());

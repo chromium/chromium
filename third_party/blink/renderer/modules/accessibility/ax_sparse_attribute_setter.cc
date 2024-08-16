@@ -56,7 +56,8 @@ void SetObjectAttribute(ax::mojom::blink::IntAttribute attribute,
   if (!element)
     return;
 
-  Element* target = element->GetElementAttribute(qualified_name);
+  Element* target =
+      element->GetElementAttributeResolvingReferenceTarget(qualified_name);
 
   if (!target)
     return;
@@ -84,7 +85,8 @@ void SetIntListAttribute(ax::mojom::blink::IntListAttribute attribute,
   if (!element)
     return;
   HeapVector<Member<Element>>* attr_associated_elements =
-      element->GetAttrAssociatedElements(qualified_name);
+      element->GetAttrAssociatedElements(qualified_name,
+                                         /*resolve_reference_target=*/true);
   if (!attr_associated_elements || attr_associated_elements->empty()) {
     return;
   }

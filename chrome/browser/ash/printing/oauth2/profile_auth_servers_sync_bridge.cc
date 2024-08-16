@@ -18,14 +18,14 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_base.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_base.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -69,10 +69,10 @@ std::set<GURL> ToSetOfUris(const std::set<std::string>& strs) {
 std::unique_ptr<ProfileAuthServersSyncBridge>
 ProfileAuthServersSyncBridge::Create(
     Observer* observer,
-    syncer::OnceModelTypeStoreFactory store_factory) {
+    syncer::OnceDataTypeStoreFactory store_factory) {
   DCHECK(observer);
   return base::WrapUnique(new ProfileAuthServersSyncBridge(
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PRINTERS_AUTHORIZATION_SERVERS,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),
@@ -82,8 +82,8 @@ ProfileAuthServersSyncBridge::Create(
 std::unique_ptr<ProfileAuthServersSyncBridge>
 ProfileAuthServersSyncBridge::CreateForTesting(
     Observer* observer,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory store_factory) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory store_factory) {
   DCHECK(observer);
   DCHECK(change_processor);
   return base::WrapUnique(new ProfileAuthServersSyncBridge(
@@ -110,10 +110,10 @@ void ProfileAuthServersSyncBridge::AddAuthorizationServer(
 }
 
 ProfileAuthServersSyncBridge::ProfileAuthServersSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory store_factory,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory store_factory,
     Observer* observer)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)),
+    : syncer::DataTypeSyncBridge(std::move(change_processor)),
       observer_(observer) {
   std::move(store_factory)
       .Run(syncer::PRINTERS_AUTHORIZATION_SERVERS,
@@ -123,7 +123,7 @@ ProfileAuthServersSyncBridge::ProfileAuthServersSyncBridge(
 
 void ProfileAuthServersSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -137,13 +137,13 @@ void ProfileAuthServersSyncBridge::OnStoreCreated(
 
 void ProfileAuthServersSyncBridge::OnReadAllData(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list) {
+    std::unique_ptr<syncer::DataTypeStore::RecordList> record_list) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
 
-  for (const syncer::ModelTypeStore::Record& r : *record_list) {
+  for (const syncer::DataTypeStore::Record& r : *record_list) {
     sync_pb::PrintersAuthorizationServerSpecifics specifics;
     if (!specifics.ParseFromString(r.value)) {
       change_processor()->ReportError(
@@ -175,7 +175,7 @@ void ProfileAuthServersSyncBridge::OnReadAllMetadata(
 
 std::unique_ptr<syncer::MetadataChangeList>
 ProfileAuthServersSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError>
@@ -186,7 +186,7 @@ ProfileAuthServersSyncBridge::MergeFullSyncData(
   // until the same URI is seen in the incoming `entity_data`.
   std::set<std::string> unsynced_local_uris = servers_uris_;
   std::set<std::string> added_local_uris;
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
@@ -226,7 +226,7 @@ ProfileAuthServersSyncBridge::ApplyIncrementalSyncChanges(
   std::set<std::string> added_local_uris;
   std::set<std::string> deleted_local_uris;
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const std::string& uri = change->storage_key();

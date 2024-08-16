@@ -555,7 +555,7 @@ bool ParseJpegPicture(base::span<const uint8_t> buffer,
   }
   base::span<const uint8_t> result_span = base::as_bytes(
       // TODO(crbug.com/40284755): Make this span part of JpegParseResult.
-      UNSAFE_BUFFERS(base::span(result->data, result->data_size)));
+      UNSAFE_TODO(base::span(result->data, result->data_size)));
 
   // Update the sizes: |result->data_size| should not include the EOI marker or
   // beyond.

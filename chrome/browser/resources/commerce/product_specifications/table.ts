@@ -174,7 +174,7 @@ export class TableElement extends PolymerElement {
 
   private showRow_(title: string, rowIndex: number): boolean {
     return this.showDescription_(title, rowIndex) ||
-        this.showSummary_(title, rowIndex);
+        this.showSummary_(title, rowIndex) || this.rowHasText_(title, rowIndex);
   }
 
   private computeCitationIndex_(
@@ -188,13 +188,30 @@ export class TableElement extends PolymerElement {
     return citationIndex + urlIndex;
   }
 
+  private rowHasText_(title: string, rowIndex: number): boolean {
+    const rowDetails = this.columns.map(
+        column => column.productDetails && column.productDetails[rowIndex]);
+
+    return rowDetails.some(
+        detail => detail && detail.title === title && detail.text);
+  }
+
   private showDescription_(title: string, rowIndex: number): boolean {
     const rowDetails = this.columns.map(
         column => column.productDetails && column.productDetails[rowIndex]);
 
     return rowDetails.some(detail => {
-      return detail && detail.title === title && detail.description &&
-          detail.description.length > 0 && detail.description !== 'N/A';
+      if (!detail || detail.title !== title) {
+        return false;
+      }
+      if (detail.text) {
+        // If we're showing text, we shouldn't have any description data.
+        assert(detail.description.length === 0);
+        return false;
+      }
+      return detail.description && detail.description.some(desc => {
+        return desc.description.length > 0 && desc.description !== 'N/A';
+      });
     });
   }
 

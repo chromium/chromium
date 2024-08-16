@@ -14,7 +14,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -50,7 +49,6 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -63,6 +61,7 @@ import java.util.function.BooleanSupplier;
 
 /** A coordinator for the top toolbar component. */
 public class TopToolbarCoordinator implements Toolbar {
+
     /** Observes toolbar URL expansion progress change. */
     public interface UrlExpansionObserver {
         /** Notified when toolbar URL expansion progress fraction changes. */
@@ -167,6 +166,7 @@ public class TopToolbarCoordinator implements Toolbar {
             ThemeColorProvider normalThemeColorProvider,
             MenuButtonCoordinator browsingModeMenuButtonCoordinator,
             ObservableSupplier<AppMenuButtonHelper> appMenuButtonHelperSupplier,
+            ToggleTabStackButtonCoordinator tabSwitcerButtonCoordinator,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
@@ -213,6 +213,7 @@ public class TopToolbarCoordinator implements Toolbar {
                 toolbarDataProvider,
                 tabController,
                 mMenuButtonCoordinator,
+                tabSwitcerButtonCoordinator,
                 historyDelegate,
                 partnerHomepageEnabledSupplier,
                 offlineDownloader,
@@ -251,26 +252,17 @@ public class TopToolbarCoordinator implements Toolbar {
     public void initializeWithNative(
             Profile profile,
             Runnable layoutUpdater,
-            OnClickListener tabSwitcherClickHandler,
             OnClickListener bookmarkClickHandler,
             OnClickListener customTabsBackClickHandler,
-            AppMenuDelegate appMenuDelegate,
             LayoutManager layoutManager,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             TopUiThemeColorProvider topUiThemeColorProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
-        Callback<Integer> tabSwitcherLongClickCallback =
-                menuItemId -> appMenuDelegate.onOptionsItemSelected(menuItemId, null);
-
         mToolbarLayout.setTabCountSupplier(
                 mTabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
         getLocationBar().updateVisualsForState();
-        mToolbarLayout.setOnTabSwitcherClickHandler(tabSwitcherClickHandler);
-        mToolbarLayout.setOnTabSwitcherLongClickHandler(
-                TabSwitcherActionMenuCoordinator.createOnLongClickListener(
-                        tabSwitcherLongClickCallback, profile));
         mToolbarLayout.setBookmarkClickHandler(bookmarkClickHandler);
         mToolbarLayout.setCustomTabCloseClickHandler(customTabsBackClickHandler);
         mToolbarLayout.setLayoutUpdater(layoutUpdater);
@@ -518,19 +510,11 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
-     * Gives inheriting classes the chance to do the necessary UI operations after Chrome is
-     * restored to a previously saved state.
-     */
-    public void onStateRestored() {
-        mToolbarLayout.onStateRestored();
-    }
-
-    /**
      * Triggered when the current tab or model has changed.
-     * <p>
-     * As there are cases where you can select a model with no tabs (i.e. having incognito
-     * tabs but no normal tabs will still allow you to select the normal model), this should
-     * not guarantee that the model's current tab is non-null.
+     *
+     * <p>As there are cases where you can select a model with no tabs (i.e. having incognito tabs
+     * but no normal tabs will still allow you to select the normal model), this should not
+     * guarantee that the model's current tab is non-null.
      */
     public void onTabOrModelChanged() {
         mToolbarLayout.onTabOrModelChanged();
@@ -707,6 +691,10 @@ public class TopToolbarCoordinator implements Toolbar {
     /** Notified when a navigation to a different page has occurred. */
     public void onNavigatedToDifferentPage() {
         mToolbarLayout.onNavigatedToDifferentPage();
+    }
+
+    public void onPageLoadStopped() {
+        mControlContainer.onPageLoadStopped();
     }
 
     /** Finish any toolbar animations. */

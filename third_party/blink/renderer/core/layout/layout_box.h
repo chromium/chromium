@@ -917,8 +917,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     // The offset is in the block direction (y for horizontal writing modes, x
     // for vertical writing modes).
-    if (LIKELY(!HasFlippedBlocksWritingMode()))
+    if (!HasFlippedBlocksWritingMode()) [[likely]] {
       return position;
+    }
     DCHECK(!IsHorizontalWritingMode());
     return Size().width - (position + width);
   }
@@ -1407,8 +1408,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     DCHECK_EQ(container_box, LocationContainer());
     LayoutPoint location = LocationInternal();
-    if (LIKELY(!container_box || !container_box->HasFlippedBlocksWritingMode()))
+    if (!container_box || !container_box->HasFlippedBlocksWritingMode())
+        [[likely]] {
       return PhysicalOffset(location);
+    }
 
     return PhysicalOffset(
         container_box->Size().width - Size().width - location.X(),

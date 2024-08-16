@@ -17,7 +17,6 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
@@ -27,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -229,7 +229,7 @@
             self.browser->GetBrowserState());
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
         self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-        self.bubblePresenter);
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands));
   }
 
   if (![self.textField isFirstResponder]) {
@@ -315,6 +315,10 @@
 
 - (UIView<TextFieldViewContaining>*)editView {
   return self.viewController.viewContainingTextField;
+}
+
+- (void)setThumbnailImage:(UIImage*)image {
+  [self.viewController setThumbnailImage:image];
 }
 
 #pragma mark Scribble

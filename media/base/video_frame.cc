@@ -187,7 +187,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
           break;
       }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Checks if |source_format| can be wrapped into a |target_format| frame.
@@ -1235,7 +1235,7 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_UNKNOWN:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -1349,6 +1349,9 @@ bool VideoFrame::HasMappableGpuBuffer() const {
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();
+  } else if (is_mappable_si_enabled_) {
+    CHECK(shared_images_[0]);
+    return !shared_images_[0]->IsSharedMemoryForVideoFrame();
   } else if (gpu_memory_buffer_) {
     return gpu_memory_buffer_->GetType() != gfx::SHARED_MEMORY_BUFFER;
   }
@@ -1485,7 +1488,7 @@ template <typename T>
 T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
-  if (UNLIKELY(!data)) {
+  if (!data) [[unlikely]] {
     return nullptr;
   }
 

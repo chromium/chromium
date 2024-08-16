@@ -458,9 +458,11 @@ bool AuctionV8Helper::InsertJsonValue(v8::Local<v8::Context> context,
 AuctionV8Helper::Result AuctionV8Helper::ExtractJson(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value,
+    TimeLimit* script_timeout,
     std::string* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::TryCatch try_catch(isolate());
+  TimeLimitScope time_limit_scope(script_timeout);
   v8::MaybeLocal<v8::String> maybe_json = v8::JSON::Stringify(context, value);
   if (try_catch.HasTerminated()) {
     return Result::kTimeout;

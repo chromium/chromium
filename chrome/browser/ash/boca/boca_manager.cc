@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 
 namespace ash {
@@ -16,8 +15,7 @@ BocaManager* BocaManager::GetForProfile(Profile* profile) {
       BocaManagerFactory::GetInstance()->GetForProfile(profile));
 }
 
-BocaManager::BocaManager(Profile* profile)
-    : boca_app_client_impl_{std::make_unique<BocaAppClientImpl>()} {}
+BocaManager::BocaManager(Profile* profile) {}
 
 BocaManager::~BocaManager() = default;
 

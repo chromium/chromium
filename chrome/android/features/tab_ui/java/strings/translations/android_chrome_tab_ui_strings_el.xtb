@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Πορτοκαλί</translation>
 <translation id="125153950246128346">Πατήστε για να δείτε μια άλλη καρτέλα</translation>
 <translation id="1273910660700874265">Επιλογές ομάδας καρτελών <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Αποχώρηση από την ομάδα</translation>
 <translation id="1419023007528516122">Με αυτή την ενέργεια θα διαγραφεί οριστικά η ομάδα από τη συσκευή σας</translation>
 <translation id="1486715732399361704">Μπορείτε να βρείτε εδώ όλες τις ομάδες καρτελών</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_MINS_ONE" /> λεπτό}other{Δημιουργήθηκε πριν από <ph name="NUM_MINS_MANY" /> λεπτά}}</translation>
@@ -37,20 +38,26 @@
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, άλλαξαν <ph name="ANY_CHANGED" />, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_ONE" /> ώρα}other{Δημιουργήθηκε πριν από <ph name="NUM_HOURS_MANY" /> ώρες}}</translation>
 <translation id="2801787514987684416">Προβολή πληροφοριών καταστήματος;</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Έκλεισε <ph name="ONE_CLOSED" /> καρτέλα}other{Έκλεισαν <ph name="MANY_CLOSED" /> καρτέλες}}</translation>
+<translation id="2894757982205307093">Νέα καρτέλα στην ομάδα</translation>
 <translation id="2928243913527329289">Google | Σχετικά με αυτό το κατάστημα</translation>
 <translation id="2977480621796371840">Κατάργηση από την ομάδα</translation>
+<translation id="29919168204617356">Οι ανενεργές καρτέλες θα κλείσουν αυτόματα. Μπορείτε να τις βρείτε στο Ιστορικό ανά πάσα στιγμή.</translation>
 <translation id="3008554597174452548">Διακοπή παρακολούθησης προϊόντος</translation>
 <translation id="3026391124054406831">Δημιουργήστε ομάδες για να οργανώσετε τις καρτέλες σας.</translation>
 <translation id="3051031624272448591">Μπορείτε να τις επαναφέρετε ανά πάσα στιγμή από το ιστορικό</translation>
 <translation id="3052964831964880138">Πτώση τιμής <ph name="PRICE_DROP" /> για <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Εικονίδιο χρώματος <ph name="COLOR_NAME" /> ομάδας καρτελών</translation>
 <translation id="3194464645767632461">αξιολόγηση</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, άλλαξαν <ph name="ANY_CHANGED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, άλλαξαν <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Θα λαμβάνετε ειδοποίηση όταν υπάρχει χαμηλότερη τιμή σε μια ανοικτή καρτέλα.</translation>
 <translation id="3322827343001922122">Άνοιγμα του μενού ενεργειών ομάδας καρτελών για την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Πρόταση: <ph name="NUMBER_OF_TABS" /> καρτέλες φαίνονται σχετικές. Να γίνει ομαδοποίηση;</translation>
 <translation id="3547352561153509682">Αυτή η ενέργεια θα διαγράψει την ομάδα από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Παράθυρο διαλόγου απόκρυψης ανενεργών καρτελών</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Μικρ. προεπ. φύλλου κοινής χρήσης.</translation>
 <translation id="381219490185664296">Να καταργηθεί η ομαδοποίηση της ομάδας καρτελών;</translation>
@@ -67,6 +74,7 @@
 <translation id="4159784952369912983">Μοβ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη της ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Ανάπτυξη της ομάδας καρτελών <ph name="TITLE_OF_GROUP" /> με <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="427987768447457592">Νέα ομάδα καρτελών</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{Άλλαξε <ph name="ONE_CHANGED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Άλλαξαν <ph name="MANY_CHANGED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Ανενεργή</translation>
 <translation id="4460014764210899310">Κατάργηση ομαδοποίησης</translation>
 <translation id="4590027107044272416">Τώρα μπορείτε να ανοίξετε μια νέα καρτέλα εδώ</translation>
@@ -88,6 +96,7 @@
 <translation id="5076161749301278626">Εμφάνιση αξιολογήσεων καταστήματος;</translation>
 <translation id="5082793167783849073">Συγκρίνετε γρήγορα σελίδες δημιουργώντας μια ομάδα. Για να ξεκινήσετε, αγγίξτε παρατεταμένα κάποιον σύνδεσμο.</translation>
 <translation id="5094423602314093681">Να καταργηθούν οι καρτέλες και να διαγραφεί η ομάδα;</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες}}</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Κλείσιμο της ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Κλείσιμο της ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="5339733443032484186">Η τελευταία καρτέλα σας</translation>
@@ -96,6 +105,7 @@
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, χρώμα <ph name="COLOR_NAME" />.}other{Κλείσιμο ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, χρώμα <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Δείτε πληροφορίες καταστήματος, η επιλογή είναι διαθέσιμη στο επάνω μέρος της οθόνης</translation>
+<translation id="5627941783489838464">Δεν υπάρχουν ενημερώσεις καρτελών</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Επαναφορά καρτέλας}other{Επαναφορά καρτελών}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> σύνδεσμος από το Chrome}other{<ph name="TABS_COUNT_MANY" /> σύνδεσμοι από το Chrome}}</translation>
 <translation id="575494663145460764">Θέλετε να λαμβάνετε ειδοποιήσεις για πτώσεις τιμών;</translation>
@@ -120,6 +130,8 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Μετακίνηση καρτέλας αριστερά</translation>
 <translation id="6615455863669487791">Εμφάνιση</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Άλλαξε <ph name="ONE_CHANGED" /> καρτέλα}other{Άλλαξαν <ph name="MANY_CHANGED" /> καρτέλες}}</translation>
+<translation id="6694634756612002311">Διαχείριση κοινοποίησης</translation>
 <translation id="6744956528665271406">Επεξεργασία χρώματος ομάδας</translation>
 <translation id="6856809498882026482">Απόκρυψη λειτουργίας πολλαπλής επιλογής</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Κοινοποίηση καρτέλας}other{Κοινοποίηση καρτελών}}</translation>
@@ -137,11 +149,13 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> έλεγχος από την Google}other{<ph name="REVIEWS_COUNT_MANY" /> έλεγχοι από την Google}}</translation>
 <translation id="7559245342362162951">Εμφάνιση καρτελών ομάδας σε πλέγμα πλήρους οθόνης</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7688386659311034820">Παράθυρο διαλόγου ανενεργών καρτελών</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Κοινοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κοινοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="7773714564112603605">Κατάργηση καρτέλας και διαγραφή ομάδας</translation>
 <translation id="7792771145871471484">Έλεγχος των προτάσεων.</translation>
 <translation id="7825973332242257878">Ομάδες καρτελών</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Ομαδοποίηση <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Ομαδοποίηση <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
+<translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> κριτική}other{Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> κριτικές}}</translation>
 <translation id="7885132941432959125">Μετακίνηση καρτέλας δεξιά</translation>
 <translation id="7939917283308035850">Επιλέχθηκε το <ph name="COLOR_NAME" /></translation>
@@ -158,7 +172,9 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Κλείσιμο <ph name="TABS_COUNT_ONE" /> επιλεγμένης καρτέλας}other{Κλείσιμο <ph name="TABS_COUNT_MANY" /> επιλεγμένων καρτελών}}</translation>
 <translation id="8398929769197326728">Νέος φάκελος - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{Προστέθηκε <ph name="ONE_ADDED" /> καρτέλα, έκλεισαν <ph name="ANY_CLOSED" />}other{Προστέθηκαν <ph name="MANY_ADDED" /> καρτέλες, έκλεισαν <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και θα διαγραφεί από όλες τις συσκευές</translation>
+<translation id="8633025649649592204">Πρόσφατη δραστηριότητα</translation>
 <translation id="870736955561925754">Να κλείσει η καρτέλα και να διαγραφεί η ομάδα;</translation>
 <translation id="8714939927607906138">Χαμηλότερη τιμή</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
@@ -170,6 +186,7 @@
 <translation id="8926389886865778422">Να μην ερωτηθώ ξανά</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Ανάπτυξη της ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Ανάπτυξη της ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="9090098097337832354">Κλείσιμο πληροφοριών σχετικά με αυτό το κατάστημα</translation>
+<translation id="9111228330448174435">Εμφάνιση παραθύρου διαλόγου κατά τη δημιουργία νέας ομάδας καρτελών</translation>
 <translation id="9150694013019234766">Κάντε εναλλαγή μεταξύ των καρτελών στην ομάδα καρτελών σας κοντά στο κάτω μέρος της οθόνης</translation>
 <translation id="9169594135889675189">Προσθήκη νέας καρτέλας στην ομάδα</translation>
 <translation id="9216898458513705996">Οι καρτέλες θα παραμείνουν ανοιχτές σε αυτή τη συσκευή, αλλά η ομάδα θα διαγραφεί από όλες τις συσκευές που είναι συνδεδεμένες στον λογαριασμό <ph name="USER_EMAIL" /></translation>

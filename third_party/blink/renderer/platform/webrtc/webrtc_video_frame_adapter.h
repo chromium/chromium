@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -21,6 +20,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     : public webrtc::VideoFrameBuffer {
  public:
   class PLATFORM_EXPORT SharedResources
-      : public base::RefCountedThreadSafe<SharedResources> {
+      : public ThreadSafeRefCounted<SharedResources> {
    public:
     explicit SharedResources(
         media::GpuVideoAcceleratorFactories* gpu_factories);
@@ -93,7 +93,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     media::VideoCaptureFeedback GetFeedback();
 
    protected:
-    friend class base::RefCountedThreadSafe<SharedResources>;
+    friend class ThreadSafeRefCounted<SharedResources>;
     virtual ~SharedResources();
 
    private:

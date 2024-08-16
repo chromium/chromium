@@ -157,7 +157,8 @@ enum class ModesetFlag {
 using ModesetFlags =
     base::EnumSet<ModesetFlag, ModesetFlag::kMinValue, ModesetFlag::kMaxValue>;
 
-enum VariableRefreshRateState {
+// Enum of possible states for variable refresh rates pertaining to a display.
+enum class VariableRefreshRateState {
   kVrrDisabled = 0,
   kVrrEnabled = 1,
   kVrrNotCapable = 2,

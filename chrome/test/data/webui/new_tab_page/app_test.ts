@@ -36,8 +36,6 @@ suite('NewTabPageAppTest', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // container-type is manually added, normally done in new_tab_page.html.
-    document.body.setAttribute('style', 'container-type:inline-size;');
 
     windowProxy = installMock(WindowProxy);
     handler = installMock(
@@ -741,6 +739,7 @@ suite('NewTabPageAppTest', () => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
         modulesRedesignedEnabled: false,
+        wideModulesEnabled: false,
       });
     });
 
@@ -749,10 +748,7 @@ suite('NewTabPageAppTest', () => {
           `module width defaults to search box width rule applied for width: ${
               pageWidth}px`,
           () => {
-            // container-type is manually added, normally done in
-            // new_tab_page.html
-            document.body.setAttribute(
-                'style', `width:${pageWidth}px; container-type:inline-size;`);
+            document.body.setAttribute('style', `width:${pageWidth}px`);
             const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
             middleSlotPromo.dispatchEvent(
                 new Event('ntp-middle-slot-promo-loaded'));
@@ -768,11 +764,10 @@ suite('NewTabPageAppTest', () => {
     });
 
     test('modules max width media rule applied', async () => {
+      const sampleMaxWidthPx = 768;
+      loadTimeData.overrideValues({wideModulesEnabled: true});
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      // Width value must match the @container query in app.html.
-      // container-type is manually added, normally done in new_tab_page.html
-      document.body.setAttribute(
-          'style', 'width:804px; container-type:inline-size');
+      document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
       app = document.createElement('ntp-app');
       document.body.appendChild(app);
       await microtasksFinished();
@@ -783,7 +778,7 @@ suite('NewTabPageAppTest', () => {
       modules.dispatchEvent(new Event('modules-loaded'));
       await microtasksFinished();
 
-      assertStyle(modules, 'width', '768px');
+      assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
     });
 
     modulesCommonTests('ntp-modules');

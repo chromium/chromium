@@ -20,6 +20,8 @@ static_library("picker") {
     "picker_thumbnail_loader.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash",
     "//ash/constants",
@@ -40,6 +42,7 @@ static_library("picker") {
     "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/favicon:favicon",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/thumbnail_loader",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/drivefs/mojom",

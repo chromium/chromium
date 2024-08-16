@@ -84,9 +84,6 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     : browser_context_(context),
       native_window_(native_window),
       media_app_page_(std::move(page)) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
-    return;
-  }
   auto* profile =
       Profile::FromBrowserContext(base::to_address(browser_context_));
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
@@ -161,8 +158,7 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
 }
 
 bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
-         accessibility_state_utils::IsScreenReaderEnabled();
+  return accessibility_state_utils::IsScreenReaderEnabled();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -654,9 +650,9 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
   ui::AXTreeUpdate update;
   serializer.MarkSubtreeDirty(manager.GetRoot()->id());
   if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
-    NOTREACHED_NORETURN() << "Failure to serialize should have already caused "
-                             "the process to crash due to the `crash_on_error` "
-                             "in `AXTreeSerializer` constructor call.";
+    NOTREACHED() << "Failure to serialize should have already caused "
+                    "the process to crash due to the `crash_on_error` "
+                    "in `AXTreeSerializer` constructor call.";
   }
   if (pending_serialized_updates_for_testing_) {
     ui::AXTreeUpdate simplified_update = update;

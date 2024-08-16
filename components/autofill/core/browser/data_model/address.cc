@@ -91,8 +91,7 @@ bool Address::MergeStructuredAddress(const Address& newer,
 std::optional<AlternativeStateNameMap::CanonicalStateName>
 Address::GetCanonicalizedStateName() const {
   return AlternativeStateNameMap::GetCanonicalStateName(
-      base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY)),
-      GetRawInfo(ADDRESS_HOME_STATE));
+      GetAddressCountryCode().value(), GetRawInfo(ADDRESS_HOME_STATE));
 }
 
 bool Address::IsStructuredAddressMergeable(const Address& newer) const {
@@ -115,9 +114,7 @@ AddressComponent* Address::Root() {
 }
 
 AddressCountryCode Address::GetAddressCountryCode() const {
-  std::string country_code =
-      base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
-  return AddressCountryCode(country_code);
+  return GetRoot().GetCountryCode();
 }
 
 std::u16string Address::GetRawInfo(FieldType type) const {
@@ -157,8 +154,7 @@ void Address::GetMatchingTypes(const std::u16string& text,
                                FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
-  std::string country_code =
-      base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
+  std::string country_code = GetRoot().GetCountryCode().value();
 
   // Check to see if the |text| canonicalized as a country name is a match.
   std::string entered_country_code =

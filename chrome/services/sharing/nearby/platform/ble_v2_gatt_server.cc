@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_server.h"
 
 #include "base/check.h"
@@ -29,7 +34,7 @@ device::BluetoothGattCharacteristic::Permissions ConvertPermission(
     case nearby::api::ble_v2::GattCharacteristic::Permission::kWrite:
       return device::BluetoothGattCharacteristic::Permission::PERMISSION_WRITE;
     case nearby::api::ble_v2::GattCharacteristic::Permission::kLast:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -47,7 +52,7 @@ device::BluetoothGattCharacteristic::Properties ConvertProperty(
     case nearby::api::ble_v2::GattCharacteristic::Property::kNotify:
       return device::BluetoothGattCharacteristic::Property::PROPERTY_NOTIFY;
     case nearby::api::ble_v2::GattCharacteristic::Property::kLast:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

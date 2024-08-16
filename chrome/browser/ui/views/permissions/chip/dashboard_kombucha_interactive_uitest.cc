@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
@@ -70,6 +71,20 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
   }
 
+  // Checks that the permission chip is visible and in the given mode.
+  // If `is_request` is false, should be in indicator mode instead.
+  auto CheckChipIsRequest(bool is_request) {
+    return CheckViewProperty(PermissionChipView::kElementIdForTesting,
+                             &PermissionChipView::GetIsRequestForTesting,
+                             is_request);
+  }
+
+  auto CheckChipText(int id_string) {
+    return CheckViewProperty(PermissionChipView::kElementIdForTesting,
+                             &PermissionChipView::GetText,
+                             l10n_util::GetStringUTF16(id_string));
+  }
+
   void SetPermission(ContentSettingsType type, ContentSetting setting) {
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
@@ -106,14 +121,15 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
                   NavigateWebContents(kWebContentsElementId, GetURL()),
                   ExecuteJs(kWebContentsElementId, "requestNotification"),
                   // Make sure the request chip is visible.
-                  WaitForShow(PermissionChipView::kRequestChipElementId),
+                  WaitForShow(PermissionChipView::kElementIdForTesting),
+                  CheckChipIsRequest(true),
                   // Make sure the permission popup bubble is visible.
                   WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
-                  PressButton(PermissionChipView::kRequestChipElementId),
+                  PressButton(PermissionChipView::kElementIdForTesting),
                   WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
                   // The permission chip is hidden because the permission
                   // request was dismissed instantly after a click.
-                  EnsureNotPresent(PermissionChipView::kRequestChipElementId));
+                  EnsureNotPresent(PermissionChipView::kElementIdForTesting));
 }
 
 // 1. Enable Camera permission
@@ -129,15 +145,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest, CameraUsingTest) {
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -176,15 +188,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -214,15 +222,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_IN_USE),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -257,15 +261,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_IN_USE),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -298,16 +298,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(
-          PermissionChipView::kIndicatorChipElementId,
-          &PermissionChipView::GetText,
-          l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_IN_USE)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_CAMERA_IN_USE),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -348,15 +343,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_CAMERA_NOT_ALLOWED)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_NOT_ALLOWED),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -380,15 +371,11 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_MICROPHONE_NOT_ALLOWED)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_MICROPHONE_NOT_ALLOWED),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -413,16 +400,12 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(
-          PermissionChipView::kIndicatorChipElementId,
-          &PermissionChipView::GetText,
-          l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_NOT_ALLOWED)),
-      // Request chip should be hidden.
-      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
-      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false),
+      CheckChipText(IDS_MICROPHONE_CAMERA_NOT_ALLOWED),
+      PressButton(PermissionChipView::kElementIdForTesting),
       WaitForShow(PageInfoMainView::kPermissionsElementId),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -454,15 +437,13 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForStateChange(kWebContentsElementId, GetCameraStreamStateChange()),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_IN_USE),
       ExecuteJs(kWebContentsElementId, "stopCamera"),
-      WaitForHide(PermissionChipView::kIndicatorChipElementId));
+      WaitForHide(PermissionChipView::kElementIdForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
@@ -473,14 +454,12 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestCamera"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
-      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
-                        &PermissionChipView::GetText,
-                        l10n_util::GetStringUTF16(IDS_CAMERA_NOT_ALLOWED)),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipIsRequest(false), CheckChipText(IDS_CAMERA_NOT_ALLOWED),
       // Blocked indicator disappears by itself after a short delay.
-      WaitForHide(PermissionChipView::kIndicatorChipElementId));
+      WaitForHide(PermissionChipView::kElementIdForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
@@ -491,12 +470,13 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForStateChange(kWebContentsElementId, GetMicStreamStateChange()),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      CheckChipText(IDS_MICROPHONE_IN_USE),
       ExecuteJs(kWebContentsElementId, "stopMic"),
-      WaitForHide(PermissionChipView::kIndicatorChipElementId));
+      WaitForHide(PermissionChipView::kElementIdForTesting));
 }
 
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
@@ -507,9 +487,33 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
-      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
-      WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
       // Blocked indicator disappears by itself after a short delay.
-      WaitForHide(PermissionChipView::kIndicatorChipElementId));
+      WaitForHide(PermissionChipView::kElementIdForTesting));
+}
+
+// Make sure PageInfo does not re-open on an indicator click.
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
+                       SuppressPageInfoReopen) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionChipView::kElementIdForTesting),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
+      WaitForShow(PermissionChipView::kElementIdForTesting),
+      // Clicking on LHS indicator opens PageInfo, the second click should hide
+      // PageInfo.
+      PressButton(PermissionChipView::kElementIdForTesting),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      PressButton(PermissionChipView::kElementIdForTesting),
+      WaitForHide(PageInfoMainView::kPermissionsElementId),
+      // Repeat again to make sure all flags are reset and can be reused.
+      PressButton(PermissionChipView::kElementIdForTesting),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      PressButton(PermissionChipView::kElementIdForTesting),
+      WaitForHide(PageInfoMainView::kPermissionsElementId));
 }

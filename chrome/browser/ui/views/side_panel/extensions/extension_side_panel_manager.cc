@@ -11,9 +11,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "content/public/browser/browser_context.h"
@@ -22,9 +23,9 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/memory/memory.h"
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
-#include "third_party/abseil-cpp/absl/memory/memory.h"
 
 namespace extensions {
 
@@ -54,43 +55,43 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
 ExtensionSidePanelManager::~ExtensionSidePanelManager() = default;
 
 // static
-ExtensionSidePanelManager* ExtensionSidePanelManager::GetOrCreateForBrowser(
-    Browser* browser) {
-  ExtensionSidePanelManager* manager = static_cast<ExtensionSidePanelManager*>(
-      browser->GetUserData(kExtensionSidePanelManagerKey));
-  if (!manager) {
-    // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
-    // std::make_unique<ExtensionSidePanelManager> to access a private
-    // constructor.
-    auto new_manager = absl::WrapUnique(new ExtensionSidePanelManager(
-        browser->profile(), browser, /*web_contents=*/nullptr,
-        SidePanelCoordinator::GetGlobalSidePanelRegistry(browser)));
-    manager = new_manager.get();
-    browser->SetUserData(kExtensionSidePanelManagerKey, std::move(new_manager));
-  }
-  return manager;
+void ExtensionSidePanelManager::CreateForBrowser(
+    Browser* browser,
+    SidePanelRegistry* window_registry) {
+  // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
+  // std::make_unique<ExtensionSidePanelManager> to access a private
+  // constructor.
+  auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
+      browser->profile(), browser, /*web_contents=*/nullptr, window_registry));
+  browser->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
 }
 
 // static
-ExtensionSidePanelManager* ExtensionSidePanelManager::GetOrCreateForWebContents(
-    Profile* profile,
-    content::WebContents* web_contents) {
+ExtensionSidePanelManager* ExtensionSidePanelManager::GetForBrowserForTesting(
+    Browser* browser) {
+  return static_cast<ExtensionSidePanelManager*>(
+      browser->GetUserData(kExtensionSidePanelManagerKey));
+}
+
+// static
+void ExtensionSidePanelManager::CreateForTab(Profile* profile,
+                                             content::WebContents* web_contents,
+                                             SidePanelRegistry* tab_registry) {
   DCHECK(web_contents);
 
-  ExtensionSidePanelManager* manager = static_cast<ExtensionSidePanelManager*>(
+  // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
+  // std::make_unique<ExtensionSidePanelManager> to access a private
+  // constructor.
+  auto manager = absl::WrapUnique(new ExtensionSidePanelManager(
+      profile, /*browser=*/nullptr, web_contents, tab_registry));
+  web_contents->SetUserData(kExtensionSidePanelManagerKey, std::move(manager));
+}
+
+// static
+ExtensionSidePanelManager* ExtensionSidePanelManager::GetForTabForTesting(
+    content::WebContents* web_contents) {
+  return static_cast<ExtensionSidePanelManager*>(
       web_contents->GetUserData(kExtensionSidePanelManagerKey));
-  if (!manager) {
-    // Use absl::WrapUnique(new ExtensionSidePanelManager(...)) instead of
-    // std::make_unique<ExtensionSidePanelManager> to access a private
-    // constructor.
-    auto new_manager = absl::WrapUnique(new ExtensionSidePanelManager(
-        profile, /*browser=*/nullptr, web_contents,
-        SidePanelRegistry::Get(web_contents)));
-    manager = new_manager.get();
-    web_contents->SetUserData(kExtensionSidePanelManagerKey,
-                              std::move(new_manager));
-  }
-  return manager;
 }
 
 ExtensionSidePanelCoordinator*
@@ -188,7 +189,11 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  coordinators_.erase(extension->id());
+  auto it = coordinators_.find(extension->id());
+  if (it != coordinators_.end()) {
+    it->second->DeregisterEntry();
+    coordinators_.erase(extension->id());
+  }
   MaybeRemoveActionItemForExtension(extension);
 }
 

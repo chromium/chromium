@@ -306,8 +306,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
                                             storage_partition)) {
     interstitial_state_->enabled_by_engagement_heuristic = true;
   }
-  if (IsBalanceModeEnabled() &&
-      (state && !state->HttpsFirstBalancedModeSuppressedForTesting())) {
+  if (IsBalancedModeEnabled(prefs) && state &&
+      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
     interstitial_state_->enabled_in_balanced_mode = true;
   }
 
@@ -699,17 +699,14 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
                                    *interstitial_state_);
   }
 
-  // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
-  // add the fallback hostname to the allowlist now before triggering fallback.
-  // HTTPS-First Mode handles this on the user proceeding through the
+  // If HTTPS-First Mode is not enabled (so no interstitial will be shown), or
+  // if the URL is one that balanced mode is excluding from warnings, add the
+  // fallback hostname to the allowlist now before triggering fallback.
+  // HTTPS-First Strict Mode handles this on the user proceeding through the
   // interstitial only.
-  // TODO(crbug.com/40248833): Distinguish HTTPS-First Mode and HTTPS-Upgrades
-  // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
-  // downgrade Page Info.
-  // TODO(crbug.com/40248833): Move this to a helper function
-  // `AddUrlToAllowlist()`, especially once this gets more complicated for
-  // HFM vs. Upgrades.
-  if (!IsInterstitialEnabled(*interstitial_state_)) {
+  if (!IsInterstitialEnabled(*interstitial_state_) ||
+      ShouldExcludeUrlFromInterstitial(*interstitial_state_,
+                                       tab_helper->fallback_url())) {
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
       state->AllowHttpForHost(

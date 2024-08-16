@@ -19,6 +19,11 @@ export interface AudioAndCaptionsPageBrowserProxy {
    * 'startup-sound-setting-retrieved' WebUI listener event.
    */
   getStartupSoundEnabled(): void;
+
+  /**
+   * Requests the system preview the flash notification feature.
+   */
+  previewFlashNotification(): void;
 }
 
 let instance: AudioAndCaptionsPageBrowserProxy|null = null;
@@ -43,5 +48,9 @@ export class AudioAndCaptionsPageBrowserProxyImpl implements
 
   getStartupSoundEnabled(): void {
     chrome.send('getStartupSoundEnabled');
+  }
+
+  previewFlashNotification(): void {
+    chrome.send('previewFlashNotification');
   }
 }

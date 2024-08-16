@@ -124,7 +124,7 @@ void ClassifyUrlNavigationThrottle::SetCheck(const GURL& url,
       return;
     }
   }
-  NOTREACHED_NORETURN() << "Mismatched verdict for url: " << url;
+  NOTREACHED() << "Mismatched verdict for url: " << url;
 }
 
 void ClassifyUrlNavigationThrottle::CheckURL() {

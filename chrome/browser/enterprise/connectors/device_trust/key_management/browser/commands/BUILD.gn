@@ -23,7 +23,10 @@ source_set("commands") {
   public_deps = [ "//base" ]
 
   deps = [
+    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//components/enterprise",
+    "//components/policy/core/common",
     "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
   ]
@@ -57,10 +60,12 @@ source_set("commands") {
       "mac_key_rotation_command.h",
     ]
     deps += [
+      "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//chrome/common:channel_info",
+      "//components/enterprise",
       "//components/version_info",
       "//services/network/public/cpp",
     ]
@@ -81,6 +86,9 @@ source_set("test_support") {
 
   public_deps = [
     ":commands",
+    "//chrome/browser/enterprise/connectors/device_trust:features",
+    "//components/enterprise",
+    "//components/policy/core/common",
     "//components/prefs",
     "//services/network/public/cpp",
     "//testing/gmock",
@@ -92,6 +100,8 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
+  sources = [ "key_rotation_command_factory_unittest.cc" ]
+
   deps = [
     ":commands",
     ":test_support",
@@ -99,11 +109,12 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
+    "//components/enterprise:test_support",
     "//testing/gtest",
   ]
 
   if (is_win) {
-    sources = [ "win_key_rotation_command_unittest.cc" ]
+    sources += [ "win_key_rotation_command_unittest.cc" ]
 
     deps += [
       "//chrome/install_static/test:test_support",
@@ -112,7 +123,7 @@ source_set("unit_tests") {
   }
 
   if (is_linux) {
-    sources = [ "linux_key_rotation_command_unittest.cc" ]
+    sources += [ "linux_key_rotation_command_unittest.cc" ]
 
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
@@ -121,7 +132,7 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
-    sources = [ "mac_key_rotation_command_unittest.cc" ]
+    sources += [ "mac_key_rotation_command_unittest.cc" ]
 
     deps += [
       "//chrome/browser",
@@ -131,7 +142,8 @@ source_set("unit_tests") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
-      "//components/enterprise/connectors",
+      "//components/enterprise:test_support",
+      "//components/enterprise/client_certificates/core:test_support",
       "//components/prefs:test_support",
       "//services/network:test_support",
     ]

@@ -421,6 +421,7 @@ class VIEWS_EXPORT Textfield : public View,
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // ui::TextInputClient overrides:
+  base::WeakPtr<ui::TextInputClient> AsWeakPtr() override;
   void SetCompositionText(const ui::CompositionText& composition) override;
   size_t ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
@@ -924,7 +925,6 @@ class VIEWS_EXPORT Textfield : public View,
           base::BindRepeating(&Textfield::OnEnabledChanged,
                               base::Unretained(this)));
 
-  // Used to bind callback functions to this object.
   base::WeakPtrFactory<Textfield> weak_ptr_factory_{this};
 
   // Used to bind drop callback functions to this object.

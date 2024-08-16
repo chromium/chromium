@@ -211,7 +211,7 @@ bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
     const policy::ProfileSeparationPolicies&
         intercepted_account_separation_policies) {
   // We should not move managed data.
-  if (chrome::enterprise_util::UserAcceptedAccountManagement(profile)) {
+  if (enterprise_util::UserAcceptedAccountManagement(profile)) {
     return false;
   }
 

@@ -3332,6 +3332,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.HistoryPage.OpenAppFilterSheet">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <description>
+    User opened the history app filter sheet. Reported when user taps the app
+    filter chip UI to bring up the sheet.
+  </description>
+</action>
+
 <action name="Android.HistoryPage.OpenItem">
   <owner>twellington@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -7538,6 +7547,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Compose.StartedSession.ContextMenu">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session is started from the context menu. This is
+    emitted once when a session is created.
+  </description>
+</action>
+
+<action name="Compose.StartedSession.ProactiveNudge">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session is started from the proactive nudge. This is
+    emitted once when a session is created.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -9142,6 +9169,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="DemoMode.DemoSessionStarts">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when a new demo session starts. It should count the number of demo
+    sessions.
+  </description>
+</action>
+
 <action name="DemoMode.ExitFromShelf">
   <owner>michaelpg@chromium.org</owner>
   <owner>wzang@chromium.org</owner>
@@ -9156,6 +9192,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded when user exits Demo Mode from the logout button in the system
     tray.
+  </description>
+</action>
+
+<action name="DemoMode.Setup.RetryButtonClicked">
+  <owner>wanghaifan@google.com</owner>
+  <owner>cros-demo-mode-eng@google.com</owner>
+  <description>
+    Recorded when the retry button during the demo mode setup process is
+    clicked. The retry button appears when there is a setup failure.
   </description>
 </action>
 
@@ -13915,6 +13960,68 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Parcel Tracking cell is toggled from the Magic Stack page
+    in the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MagicStackPage.SafetyCheck.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Safety Check cell is toggled from the Magic Stack page in
+    the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MagicStackPage.SetUpList.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Set Up list cell is toggled from the Magic Stack page in
+    the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Tab Resumption cell is toggled from the Magic Stack page
+    in the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MainPage.Feed.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Feed cell is toggled from the Home Customization menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MainPage.MagicStack.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Magic Stack cell is toggled from the Home Customization
+    menu.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.MainPage.MostVisited.Toggled">
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Most Visited cell is toggled from the Home Customization
+    menu.
+  </description>
+</action>
+
 <action name="IOS.InsecureFormCancel">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -14357,6 +14464,14 @@ should be able to be added at any place in this file.
   <description>
     Reported when Clear Browsing Data Settings UI was dismissed using swipe down
     gesture. iOS only.
+  </description>
+</action>
+
+<action name="IOSContextualPanelEntrypointLargeChipDismissedWithSwipe">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    Reported when the Contextual Panel's large chip entrypoint is swiped closed.
   </description>
 </action>
 
@@ -19539,6 +19654,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_ExpandIcon_OpenAddress">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Address Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_ExpandIcon_OpenPassword">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Password Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_ExpandIcon_OpenPaymenMethod">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user opened the Payment Method Manual Fallback view through the keyboard
+    accessory's expand icon. iOS only.
+  </description>
+</action>
+
 <action name="ManualFallback_OpenCreditCard">
   <owner>djean@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -21838,6 +21980,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGroupPanelOpenGroup">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User in the Tab Group panel of the Tab Grid opened a saved group.
+  </description>
+</action>
+
 <action name="MobileHandoffSettingsBack">
   <owner>lpromero@google.com</owner>
   <owner>ajuma@chromium.org</owner>
@@ -22768,6 +22919,22 @@ should be able to be added at any place in this file.
   <description>User pressed the stop option in the app menu.</description>
 </action>
 
+<action name="MobileMenuSwitchOutOfIncognito">
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User pressed 'Switch out of Incognito' in the tab switcher action menu.
+  </description>
+</action>
+
+<action name="MobileMenuSwitchToIncognito">
+  <owner>skavuluru@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    User pressed 'Switch to Incognito' in the tab switcher action menu.
+  </description>
+</action>
+
 <action name="MobileMenuTextZoom">
   <owner>rkgibson@google.com</owner>
   <description>User pressed 'Zoom Text' in the app menu</description>
@@ -23359,6 +23526,33 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MobileOpenGroupClosed">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently closed.
+  </description>
+</action>
+
+<action name="MobileOpenGroupOpenInBrowser">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently opened in the same browser.
+  </description>
+</action>
+
+<action name="MobileOpenGroupOpenInOtherBrowser">
+  <owner>lpromero@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User tried to open a group that is currently opened in another browser.
+  </description>
+</action>
+
 <action name="MobilePageLoaded" not_user_triggered="true">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -23445,6 +23639,14 @@ should be able to be added at any place in this file.
   <owner>noemies@google.com</owner>
   <description>
     Reported when Password Details Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
+<action name="MobilePasswordDetailsShowCopyContextMenu">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user taps a Password Details row that causes the Copy context
+    menu to be shown. iOS only.
   </description>
 </action>
 
@@ -26496,15 +26698,6 @@ should be able to be added at any place in this file.
 <action name="NewGuestWindow">
   <owner>rhalavati@chromium.org</owner>
   <description>The user opened a Guest window.</description>
-</action>
-
-<action name="NewIncognitoTabTipTargetSelected">
-  <obsolete>Deprecated 8/2023. Unused since a while ago.</obsolete>
-  <owner>gambard@chromium.org</owner>
-  <description>
-    The user opened the tools menu while the 'New Incognito Tab' in-product help
-    is displayed.
-  </description>
 </action>
 
 <action name="NewIncognitoWindow">
@@ -36228,6 +36421,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromProductSpecifications">
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Recorded when showing sync entry in product specifications.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromReadingList" not_user_triggered="true">
   <owner>myuu@google.com</owner>
   <owner>chrome-signin-team@chromium.org</owner>
@@ -37028,6 +37228,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromProductSpecifications">
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS.
   </description>
 </action>
 
@@ -43046,6 +43254,314 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.Dialog.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled the request while the WebAuthn dialog is
+    shown.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.ICloudShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed an ICloud Keychain Window to complete a
+    get assertion request.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndICloud"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    iCloud in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action
+    name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM,
+    iCloud and Chrome profile in the WebAuthn selection dialog. The dialog may
+    also contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    Chrome profile in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmAndWin"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from GPM and
+    Windows in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    GPM in the WebAuthn selection dialog. The dialog may also contain an entry
+    point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options from iCloud
+    and Chrome profile in the WebAuthn selection dialog. The dialog may also
+    contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    iCloud in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.Others"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options stored other
+    than GPM, iCloud, Windows or Chrome Profile in the WebAuthn selection
+    dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed only options from the Chrome profile in
+    the WebAuthn selection dialog. The dialog may also contain an entry point to
+    hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.MultipleOptionsShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed WebAuthn credential options only from
+    Windows in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from GPM in the WebAuthn selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Windows in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Profile in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.PriorityOptionShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed a single preferred WebAuthn credential
+    from Windows in the WebAuthn selection dialog. The dialog may also contain
+    an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.ICloud.Cancelled">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled a request in the ICloud Keychain Window.
+  </description>
+</action>
+
+<action name="WebAuthn.ICloud.Success">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when a request is successful (e.g. UV completed via biometrics) in
+    the ICloud Keychain Window.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.ICloudShown" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed an ICloud Keychain Window to complete a
+    make credential request.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndICloud"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    iCloud in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action
+    name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM, iCloud
+    or Chrome profile in the selection dialog. The dialog may also contain an
+    entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    Profile in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmAndWin"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM or
+    Windows in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.GpmOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in GPM in the
+    selection dialog. The dialog may also contain an entry point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ICloudAndProfile"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in iCloud or
+    Chrome profile in the selection dialog. The dialog may also contain an entry
+    point to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ICloudOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in iCloud in
+    the selection dialog. The dialog may also contain an entry point to hybrid
+    flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.Others"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys somewhere else
+    other than GPM, iCloud, Windows or Chrome Profile in the selection dialog.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.ProfileOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in Chrome
+    profile in the selection dialog. The dialog may also contain an entry point
+    to hybrid flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.MultipleOptionsShown.WinOnly"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user is displayed options to store passkeys in Windows
+    only in the selection dialog. The dialog may also contain an entry point to
+    hybrid flow.
+  </description>
+</action>
+
 <action name="WebsiteSettings_CookiesDialogOpened">
   <obsolete>
     Superseded by the WebsiteSettings.Action histogram on 2014-10-30.
@@ -43922,6 +44438,7 @@ should be able to be added at any place in this file.
   <suffix name="GeminiSiteSearchShortcut" label="Gemini Site Search Shortcut"/>
   <suffix name="GenerativeTheming" label="Generative Theming"/>
   <suffix name="GoogleLens" label="Google Lens"/>
+  <suffix name="GooglePayReauth" label="Google Pay Re-auth"/>
   <suffix name="HelpMeWrite" label="Help Me Write"/>
   <suffix name="SafetyCheck" label="Safety Check"/>
   <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
@@ -43983,6 +44500,7 @@ should be able to be added at any place in this file.
       label="For AddToHomescreen IPH feature."/>
   <suffix name="AddToHomescreenTextBubble"
       label="For AddToHomescreen IPH feature using text bubble (obsolete)."/>
+  <suffix name="AndroidTabDeclutter" label="For archived tabs on android."/>
   <suffix name="AppSpecificHistory" label="For App Specific History feature."/>
   <suffix name="AutoDarkOptOut" label="For AutoDarkOptOut dialog feature."/>
   <suffix name="AutoDarkUserEducationMessage"
@@ -43991,6 +44509,8 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessageOptIn feature."/>
   <suffix name="AutofillCreditCardBenefit"
       label="For Autofill credit card benefit message."/>
+  <suffix name="AutofillDisabledVirtualCardSuggestion"
+      label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
   <suffix name="AutofillManualFallback"
@@ -44185,8 +44705,6 @@ should be able to be added at any place in this file.
       label="For Enhanced Safe Browsing Promo feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
-  <suffix name="iOSOmniboxPositionFeature"
-      label="For the iOSOmniboxPositionFeature feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="iOSPageInfoRevamp"
@@ -44251,7 +44769,6 @@ should be able to be added at any place in this file.
       label="For LowUserEngagementDetector feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>
-  <suffix name="NewIncognitoTabTip" label="For NewIncognitoTabTip feature."/>
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>
   <suffix name="NewTabPageHomeButton"
@@ -44448,12 +44965,12 @@ should be able to be added at any place in this file.
   <suffix name="TabSwitcherButton" label="For tab switcher button."/>
   <suffix name="TabSwitcherFloatingActionButton"
       label="For tab switcher new tab floating action button."/>
+  <suffix name="ToolbarManagementButton"
+      label="For the toolbar managmeent button."/>
   <suffix name="TrackingProtectionOffboarding"
       label="for tracking protection offboarding notice (obsolete)"/>
   <suffix name="TrackingProtectionOnboarding"
       label="for tracking protection onboarding notice"/>
-  <suffix name="TrackingProtectionReminder"
-      label="For tracking protection reminder"/>
   <suffix name="TranslateMenuButton" label="For translate menu button."/>
   <suffix name="UpdatedConnectionSecurityIndicators"
       label="For updated omnibox connection security indicators."/>
@@ -44821,6 +45338,24 @@ should be able to be added at any place in this file.
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users closed all incognito tabs by long tap menu"/>
+  <affected-action name="MobileMenuCloseAllIncognitoTabs"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users switched to incognito by long tap menu"/>
+  <affected-action name="MobileMenuSwitchToIncognito"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="LongTapMenu"
+      label="Users switched out of incognito by long tap menu"/>
+  <affected-action name="MobileMenuSwitchOutOfIncognito"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
   <suffix name="AppMenu" label="Users opened a new tab by app menu"/>
   <suffix name="LongTapMenu" label="Users opened a new tab by long tap menu"/>
   <affected-action name="MobileMenuNewTab"/>
@@ -44998,6 +45533,7 @@ should be able to be added at any place in this file.
   <suffix name="HomeButton" label="Home button"/>
   <suffix name="MediaButton" label="Media button"/>
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
+  <suffix name="PinnedCastButton" label="Pinned cast button"/>
   <suffix name="PinnedClearBrowsingDataButton"
       label="Pinned clear browsing data button"/>
   <suffix name="PinnedCopyLinkButton" label="Pinned copy link button"/>

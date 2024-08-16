@@ -50,15 +50,15 @@ class CORE_EXPORT LiveNodeList : public NodeList, public LiveNodeListBase {
   void InvalidateCacheForAttribute(const QualifiedName*) const;
 
   // Collection IndexCache API.
-  bool CanTraverseBackward() const { return true; }
-  Element* TraverseToFirst() const;
-  Element* TraverseToLast() const;
-  Element* TraverseForwardToOffset(unsigned offset,
-                                   Element& current_node,
-                                   unsigned& current_offset) const;
-  Element* TraverseBackwardToOffset(unsigned offset,
-                                    Element& current_node,
-                                    unsigned& current_offset) const;
+  virtual bool CanTraverseBackward() const { return true; }
+  virtual Element* TraverseToFirst() const;
+  virtual Element* TraverseToLast() const;
+  virtual Element* TraverseForwardToOffset(unsigned offset,
+                                           Element& current_node,
+                                           unsigned& current_offset) const;
+  virtual Element* TraverseBackwardToOffset(unsigned offset,
+                                            Element& current_node,
+                                            unsigned& current_offset) const;
 
   void Trace(Visitor*) const override;
 

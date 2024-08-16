@@ -25,6 +25,12 @@ const int kCreateFlagsForWrite =
 const int kCreateFlagsForWriteAlways = base::File::FLAG_CREATE_ALWAYS |
                                        base::File::FLAG_WRITE |
                                        base::File::FLAG_ASYNC;
+#if BUILDFLAG(IS_ANDROID)
+// Android always opens Content-URI files for write with truncate for security.
+const int kOpenFlagsForWriteContentUri = base::File::FLAG_CREATE_ALWAYS |
+                                         base::File::FLAG_WRITE |
+                                         base::File::FLAG_ASYNC;
+#endif
 
 }  // namespace
 
@@ -115,6 +121,11 @@ int LocalFileStreamWriter::InitiateOpen(base::OnceClosure main_operation) {
   switch (open_or_create_) {
     case OPEN_EXISTING_FILE:
       open_flags = kOpenFlagsForWrite;
+#if BUILDFLAG(IS_ANDROID)
+      if (file_path_.IsContentUri()) {
+        open_flags = kOpenFlagsForWriteContentUri;
+      }
+#endif
       break;
     case CREATE_NEW_FILE:
       open_flags = kCreateFlagsForWrite;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/bookmark_provider.h"
 
 #include <stddef.h>
@@ -243,12 +238,12 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
   }
 
   // Boost the score if the bookmark's URL is referenced by other bookmarks.
-  const int kURLCountBoost[4] = {0, 75, 125, 150};
+  constexpr std::array<int, 4> kURLCountBoost = {0, 75, 125, 150};
 
   const size_t url_node_count = bookmark_model_->GetNodesByURL(url).size();
   DCHECK_GE(std::min(std::size(kURLCountBoost), url_node_count), 1U);
   relevance +=
-      kURLCountBoost[std::min(std::size(kURLCountBoost), url_node_count) - 1];
+      kURLCountBoost[std::min(kURLCountBoost.size(), url_node_count) - 1];
   relevance = std::min(kMaxBookmarkScore, relevance);
   return {relevance, url_node_count};
 }

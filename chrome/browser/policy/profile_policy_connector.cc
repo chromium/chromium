@@ -24,7 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -82,20 +82,6 @@
 #endif
 
 namespace policy {
-
-namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ProfileUnaffiliatedReason {
-  kUserUnmanaged = 0,
-  kUserByCloudAndDeviceUnmanaged = 1,
-  kUserByCloudAndDeviceByPlatform = 2,
-  kUserAndDeviceByCloudUnaffiliated = 3,
-  kMaxValue = kUserAndDeviceByCloudUnaffiliated,
-};
-
-}  // namespace
 
 namespace internal {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -588,11 +574,19 @@ void ProfilePolicyConnector::TriggerProxiedPoliciesWaitTimeoutForTesting() {
 
 base::flat_set<std::string> ProfilePolicyConnector::user_affiliation_ids()
     const {
+  if (!user_affiliation_ids_for_testing_.empty()) {
+    return user_affiliation_ids_for_testing_;
+  }
   auto* store = GetActualPolicyStore();
   if (!store || !store->has_policy())
     return {};
   const auto& ids = store->policy()->user_affiliation_ids();
   return {ids.begin(), ids.end()};
+}
+
+void ProfilePolicyConnector::SetUserAffiliationIdsForTesting(
+    const base::flat_set<std::string>& user_affiliation_ids) {
+  user_affiliation_ids_for_testing_ = user_affiliation_ids;
 }
 
 void ProfilePolicyConnector::OnPolicyServiceInitialized(PolicyDomain domain) {
@@ -731,26 +725,20 @@ void ProfilePolicyConnector::RevertUseLocalTestPolicyProvider() {
   }
 }
 
+bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
+  return local_test_policy_provider_ &&
+         local_test_policy_provider_->is_active();
+}
+
 void ProfilePolicyConnector::RecordAffiliationMetrics() {
-  auto* management_service = ManagementServiceFactory::GetForPlatform();
   const PolicyMap& chrome_policies = policy_service()->GetPolicies(
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
 
   base::UmaHistogramBoolean("Enterprise.ProfileAffiliation.IsAffiliated",
                             chrome_policies.IsUserAffiliated());
-  if (!chrome_policies.IsUserAffiliated()) {
-    ProfileUnaffiliatedReason reason =
-        ProfileUnaffiliatedReason::kUserUnmanaged;
-    if (IsManaged()) {
-      if (chrome_policies.GetDeviceAffiliationIds().size() > 0) {
-        reason = ProfileUnaffiliatedReason::kUserAndDeviceByCloudUnaffiliated;
-      } else if (management_service->IsBrowserManaged()) {
-        reason = ProfileUnaffiliatedReason::kUserByCloudAndDeviceByPlatform;
-      } else {
-        reason = ProfileUnaffiliatedReason::kUserByCloudAndDeviceUnmanaged;
-      }
-    }
 
+  if (!chrome_policies.IsUserAffiliated()) {
+    const auto reason = enterprise_util::GetUnaffiliatedReason(this);
     base::UmaHistogramEnumeration(
         "Enterprise.ProfileAffiliation.UnaffiliatedReason", reason);
   }

@@ -917,7 +917,7 @@ TEST(VideoFrameMetadata, ClearTextureMetadata) {
   VideoFrameMetadata copy_md;
   copy_md.MergeMetadataFrom(reference_md);
 
-  copy_md.ClearTextureFrameMedatada();
+  copy_md.ClearTextureFrameMetadata();
   EXPECT_FALSE(copy_md.is_webgpu_compatible);
   EXPECT_TRUE(copy_md.texture_origin_is_top_left);
   EXPECT_FALSE(copy_md.read_lock_fences_enabled);

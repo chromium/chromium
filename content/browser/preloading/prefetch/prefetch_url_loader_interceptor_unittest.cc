@@ -466,7 +466,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         PreloadingData::GetOrCreateForWebContents(web_contents());
     PreloadingURLMatchCallback matcher =
         PreloadingDataImpl::GetPrefetchServiceMatcher(
-            GetPrefetchService(),
+            *GetPrefetchService(),
             PrefetchContainer::Key(referring_document_token, prefetch_url));
 
     auto* attempt = static_cast<PreloadingAttemptImpl*>(
@@ -1012,8 +1012,28 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 0);
+  // kenoss@ is not sure what this test is checking.
+  //
+  // - `PrefetchProxy.AccurateTriggering` should be true if a navigation started
+  //   that is potentially matching to the prefetchand `PrefetchContainer` is
+  //   alive at the timing.
+  // - It is done in the above `MaybeCreateLoaderAndWait()`, which emulates part
+  //   of navigation, `PrefetchURLLoaderInterceptor::MaybeCreateLoader()`.
+  //
+  // So, the prefetch is recorded as accurate by the navigation to `kTestUrl`.
+  // But,
+  //
+  // - `ExpectCorrectUkmLogs()` emulates another part of navigation,
+  //   `PreloadingDataImpl::DidStart/FinishNavigation()`.
+  // - But there are discordance:
+  //   - `PrefetchURLLoaderInterceptor` uses `NavigationRequest` that is taken
+  //     from `FrameTreeNode`. `ExpectCorrectUkmLogs()` creates
+  //     `MockNavigationHandle`. They are different.
+  //   - In this test, URLs are different.
+  //
+  // TODO(https://crbug.com/359802755): Investigate more and use correct URLs.
   ExpectCorrectUkmLogs(GURL("http://Not.Accurate.Trigger/"),
-                       /*is_accurate_trigger=*/false,
+                       /*is_accurate_trigger=*/true,
                        PreloadingTriggeringOutcome::kFailure,
                        ToPreloadingFailureReason(
                            PrefetchStatus::kPrefetchNotUsedCookiesChanged));
@@ -1102,9 +1122,13 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
   EXPECT_FALSE(was_intercepted(kTestUrl).value());
 
   EXPECT_EQ(GetPrefetchService()->num_probes(), 1);
+  // Ditto to `ExpectCorrectUkmLogs()` in
+  // `DoNotInterceptNavigationCookiesChanged`.
+  //
+  // TODO(https://crbug.com/359802755): Investigate more and use correct URLs.
   ExpectCorrectUkmLogs(
       GURL("http://Not.Accurate.Trigger/"),
-      /*is_accurate_trigger=*/false, PreloadingTriggeringOutcome::kFailure,
+      /*is_accurate_trigger=*/true, PreloadingTriggeringOutcome::kFailure,
       ToPreloadingFailureReason(PrefetchStatus::kPrefetchNotUsedProbeFailed));
 }
 

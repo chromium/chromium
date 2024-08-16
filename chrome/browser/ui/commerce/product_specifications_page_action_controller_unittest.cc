@@ -58,6 +58,12 @@ class ProductSpecificationsPageActionControllerUnittest : public testing::Test {
     shopping_service_ = std::make_unique<MockShoppingService>();
     base::RepeatingCallback<void()> callback = notify_host_callback_.Get();
     account_checker_ = std::make_unique<MockAccountChecker>();
+    account_checker_->SetCountry("us");
+    account_checker_->SetLocale("en-us");
+    account_checker_->SetSignedIn(true);
+    account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
+    ON_CALL(*account_checker_, IsSyncTypeEnabled)
+        .WillByDefault(testing::Return(true));
     shopping_service_->SetAccountChecker(account_checker_.get());
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
         shopping_service_->GetClusterManager());
@@ -109,8 +115,40 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconShow) {
   ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
   ASSERT_TRUE(controller_->WantsExpandedUi());
   ASSERT_EQ(l10n_util::GetStringFUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD,
+                IDS_COMPARE_PAGE_ACTION_ADD,
                 base::UTF8ToUTF16(static_cast<std::string>(kSetTitle))),
+            controller_->GetProductSpecificationsLabel(false));
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       IconShow_DefaultLabel) {
+  EXPECT_CALL(*mock_cluster_manager_, GetProductGroupForCandidateProduct)
+      .Times(1);
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
+
+  // Before a navigation, the controller should be in an "undecided" state.
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->WantsExpandedUi());
+
+  // Mock that the product group title is long.
+  const std::string& long_title = "long long long long long long long title";
+  ProductGroup product_group(base::Uuid::GenerateRandomV4(), long_title,
+                             {GURL(kTestUrl2)}, base::Time());
+
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+
+  // Show page action with default title.
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_TRUE(controller_->WantsExpandedUi());
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT),
             controller_->GetProductSpecificationsLabel(false));
 }
 
@@ -137,8 +175,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
   ASSERT_FALSE(controller_->WantsExpandedUi());
-  ASSERT_EQ(l10n_util::GetStringUTF16(
-                IDS_PRODUCT_SPECIFICATIONS_PAGE_ACTION_ADD_DEFAULT),
+  ASSERT_EQ(l10n_util::GetStringUTF16(IDS_COMPARE_PAGE_ACTION_ADD_DEFAULT),
             controller_->GetProductSpecificationsLabel(false));
 }
 
@@ -210,7 +247,8 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   ASSERT_FALSE(controller_->IsInRecommendedSet());
 
   // First click would add the product to the product specifications set.
-  std::vector<GURL> expected_urls = {GURL(kTestUrl2), GURL(kTestUrl1)};
+  std::vector<UrlInfo> expected_urls = {UrlInfo(GURL(kTestUrl2), u""),
+                                        UrlInfo(GURL(kTestUrl1), u"")};
   EXPECT_CALL(*mock_product_specifications_service_,
               SetUrls(product_group->uuid, expected_urls))
       .Times(1);
@@ -218,7 +256,7 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   ASSERT_TRUE(controller_->IsInRecommendedSet());
 
   // Second click would remove the product from the product specifications set.
-  expected_urls = {GURL(kTestUrl2)};
+  expected_urls = {UrlInfo(GURL(kTestUrl2), u"")};
   EXPECT_CALL(*mock_product_specifications_service_,
               SetUrls(product_group->uuid, expected_urls))
       .Times(1);

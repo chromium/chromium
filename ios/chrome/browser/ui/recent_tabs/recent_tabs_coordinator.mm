@@ -132,7 +132,8 @@
                       sceneState:currentSceneState
                 disabledByPolicy:isDisabled
                engagementTracker:feature_engagement::TrackerFactory::
-                                     GetForBrowserState(browserState)];
+                                     GetForBrowserState(browserState)
+                      modeHolder:nil];
 
   // Set the consumer first before calling [self.mediator initObservers] and
   // then [self.mediator configureConsumer].

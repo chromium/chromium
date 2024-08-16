@@ -118,8 +118,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   void ExportPersonalFileSelected(const base::FilePath& path);
   void HandleExportPersonalPasswordSelected(const base::Value::List& args);
   void ExportPersonalSlotsUnlocked();
-  void ExportPersonalFileWritten(const int* write_errno,
-                                 const int* bytes_written);
+  void ExportPersonalFileWritten(const int* write_errno);
 
   // Import from PKCS #12 or cert file.  The sequence goes like:
   //  1. user click on import button -> HandleImportPersonal ->

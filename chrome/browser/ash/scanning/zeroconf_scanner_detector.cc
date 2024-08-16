@@ -262,6 +262,8 @@ class ZeroconfScannerDetectorImpl final : public ZeroconfScannerDetector {
     lister_entry->second->DiscoverNewDevices();
   }
 
+  void OnPermissionRejected() override {}
+
  private:
   // Creates a new device lister for the given |service_type| and adds it to the
   // ones managed by this object.

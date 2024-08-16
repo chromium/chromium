@@ -59,11 +59,11 @@ void AppearanceHandler::RegisterMessages() {
         "resetPinnedToolbarActions",
         base::BindRepeating(&AppearanceHandler::ResetPinnedToolbarActions,
                             base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "pinnedToolbarActionsAreDefault",
-        base::BindRepeating(&AppearanceHandler::PinnedToolbarActionsAreDefault,
-                            base::Unretained(this)));
   }
+  web_ui()->RegisterMessageCallback(
+      "pinnedToolbarActionsAreDefault",
+      base::BindRepeating(&AppearanceHandler::PinnedToolbarActionsAreDefault,
+                          base::Unretained(this)));
 }
 
 void AppearanceHandler::HandleUseTheme(ui::SystemTheme system_theme,
@@ -96,10 +96,12 @@ void AppearanceHandler::PinnedToolbarActionsAreDefault(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
+  const bool are_default =
+      !features::IsToolbarPinningEnabled() ||
+      PinnedToolbarActionsModel::Get(profile_)->IsDefault();
+
   AllowJavascript();
-  ResolveJavascriptCallback(
-      callback_id,
-      base::Value(PinnedToolbarActionsModel::Get(profile_)->IsDefault()));
+  ResolveJavascriptCallback(callback_id, base::Value(are_default));
 }
 
 }  // namespace settings

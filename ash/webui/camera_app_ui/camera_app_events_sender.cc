@@ -104,7 +104,7 @@ camera_app::mojom::RecordType GetRecordType(
   } else if (record_type_details->is_timelapse_video_details()) {
     return camera_app::mojom::RecordType::kTimelapse;
   } else {
-    NOTREACHED_NORETURN() << "Unexpected record type";
+    NOTREACHED() << "Unexpected record type";
   }
 }
 
@@ -289,7 +289,7 @@ void CameraAppEventsSender::SendOpenCameraEvent(
       camera_module_id = "others";
     }
   } else {
-    NOTREACHED_NORETURN() << "Unexpected camera module type";
+    NOTREACHED() << "Unexpected camera module type";
   }
   metrics::structured::StructuredMetricsClient::Record(std::move(
       cros_events::CameraApp_OpenCamera().SetCameraModuleId(camera_module_id)));

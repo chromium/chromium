@@ -119,10 +119,12 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
           /*mipmapped=*/false,
           /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
           supports_multiplanar_copy);
-      backend_textures.emplace_back(plane_size, plane_info, texture.Get());
+      backend_textures.emplace_back(skgpu::graphite::BackendTextures::MakeDawn(
+          plane_size, plane_info, texture.Get()));
     }
   } else {
-    backend_textures = {skgpu::graphite::BackendTexture(texture.Get())};
+    backend_textures = {
+        skgpu::graphite::BackendTextures::MakeDawn(texture.Get())};
   }
 
   return backend_textures;
@@ -157,7 +159,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
     auto surface = SkSurfaces::WrapBackendTexture(
         recorder_, backend_textures[plane], sk_color_type,
         backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
-        &surface_props);
+        &surface_props, /*textureReleaseProc=*/nullptr,
+        /*releaseContext=*/nullptr, WrappedTextureDebugLabel(plane));
     if (!surface) {
       DLOG(ERROR) << "Could not create SkSurface";
       dawn_scoped_access_.reset();

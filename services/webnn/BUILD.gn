@@ -63,7 +63,6 @@ component("webnn_service") {
     "webnn_graph_builder_impl.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
-    "webnn_object_impl.cc",
     "webnn_object_impl.h",
   ]
 
@@ -114,10 +113,14 @@ component("webnn_service") {
 
   if (is_mac) {
     sources += [
+      "coreml/buffer_impl_coreml.h",
+      "coreml/buffer_impl_coreml.mm",
       "coreml/context_impl_coreml.h",
       "coreml/context_impl_coreml.mm",
       "coreml/graph_impl_coreml.h",
       "coreml/graph_impl_coreml.mm",
+      "coreml/utils_coreml.h",
+      "coreml/utils_coreml.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
@@ -129,14 +132,16 @@ component("webnn_service") {
 
   if (webnn_use_tflite) {
     sources += [
+      # TODO(crbug.com/333392274): Use these headers on Mac, too.
+      "queueable_resource_state.h",
+      "queueable_resource_state_base.cc",
+      "queueable_resource_state_base.h",
+      "resource_task.cc",
+      "resource_task.h",
       "tflite/buffer_content.cc",
       "tflite/buffer_content.h",
       "tflite/buffer_impl_tflite.cc",
       "tflite/buffer_impl_tflite.h",
-      "tflite/buffer_state.cc",
-      "tflite/buffer_state.h",
-      "tflite/buffer_task.cc",
-      "tflite/buffer_task.h",
     ]
 
     if (is_chromeos) {

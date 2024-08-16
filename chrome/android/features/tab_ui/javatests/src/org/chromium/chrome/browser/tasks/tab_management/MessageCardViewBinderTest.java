@@ -112,15 +112,6 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @UiThreadTest
     @SmallTest
-    public void testBindingDescription_WithTemplate() {
-        mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE, "%s template");
-        mItemViewModel.set(MessageCardViewProperties.DESCRIPTION_TEXT, "test");
-        assertEquals("test template", getDescriptionText());
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
     public void testBindingAndClickingReviewHandler() {
         mReviewButtonClicked.set(false);
         mMessageServiceReviewCallbackRan.set(false);

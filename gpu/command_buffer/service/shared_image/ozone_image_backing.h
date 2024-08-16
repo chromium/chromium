@@ -32,7 +32,6 @@
 
 namespace gpu {
 class OzoneImageGLTexturesHolder;
-class VaapiDependencies;
 
 // Implementation of SharedImageBacking that uses a NativePixmap created via
 // an Ozone surface factory. The memory associated with the pixmap can be
@@ -92,10 +91,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;
-  std::unique_ptr<VaapiImageRepresentation> ProduceVASurface(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      VaapiDependenciesFactory* dep_factory) override;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
@@ -111,7 +106,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   friend class DawnOzoneImageRepresentation;
   friend class SkiaVkOzoneImageRepresentation;
   friend class VulkanOzoneImageRepresentation;
-  class VaapiOzoneImageRepresentation;
   class OverlayOzoneImageRepresentation;
 
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
@@ -128,8 +122,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                            FindsCompatibleContextAndReusesTexture);
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
                            CorrectlyDestroysAndMarksContextLost);
-
-  bool VaSync();
 
   void FlushAndSubmitIfNecessary(
       std::vector<GrBackendSemaphore> signal_semaphores,
@@ -162,9 +154,6 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
   bool UploadFromMemoryGraphite(const std::vector<SkPixmap>& pixmaps);
 #endif  // BUILDFLAG(USE_DAWN)
 
-  // Indicates if this backing produced a VASurface that may have pending work.
-  bool has_pending_va_writes_ = false;
-  std::unique_ptr<VaapiDependencies> vaapi_deps_;
   uint32_t reads_in_progress_ = 0;
   bool is_write_in_progress_ = false;
   int write_streams_count_;

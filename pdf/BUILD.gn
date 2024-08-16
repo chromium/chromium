@@ -216,6 +216,8 @@ if (enable_pdf) {
         "draw_utils/page_boundary_intersect.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
+        "pdf_ink_cursor.cc",
+        "pdf_ink_cursor.h",
         "pdf_ink_module.cc",
         "pdf_ink_module.h",
         "pdf_ink_transform.cc",
@@ -474,9 +476,12 @@ if (enable_pdf) {
       sources += [
         "draw_utils/page_boundary_intersect_unittest.cc",
         "pdf_ink_brush_unittest.cc",
+        "pdf_ink_cursor_unittest.cc",
         "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
+        "test/pdf_ink_test_helpers.cc",
+        "test/pdf_ink_test_helpers.h",
       ]
     }
 

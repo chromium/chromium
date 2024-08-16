@@ -241,9 +241,8 @@ class ResourceBundle::BitmapImageSource : public gfx::ImageSkiaSource {
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
-      NOTREACHED_IN_MIGRATION() << "Unable to load bitmap image with id "
-                                << resource_id_ << ", scale=" << scale;
-      return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
+      NOTREACHED() << "Unable to load bitmap image with id " << resource_id_
+                   << ", scale=" << scale;
 #endif
     }
 
@@ -322,11 +321,8 @@ void ResourceBundle::InitSharedInstanceWithPakFileRegion(
     const base::MemoryMappedFile::Region& region) {
   InitSharedInstance(nullptr);
   auto data_pack = std::make_unique<DataPack>(k100Percent);
-  if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
-    LOG(WARNING) << "failed to load pak file";
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(data_pack->LoadFromFileRegion(std::move(pak_file), region))
+      << "failed to load pak file";
   g_shared_instance_->locale_resources_data_ = std::move(data_pack);
   g_shared_instance_->InitDefaultFontList();
 }
@@ -379,11 +375,8 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
   auto data_pack = std::make_unique<DataPack>(k100Percent);
-  if (!data_pack->LoadFromFileRegion(std::move(pak_file), region)) {
-    LOG(WARNING) << "failed to load secondary pak file";
-    NOTREACHED_IN_MIGRATION();
-    return;
-  }
+  CHECK(data_pack->LoadFromFileRegion(std::move(pak_file), region))
+      << "failed to load secondary pak file";
   secondary_locale_resources_data_ = std::move(data_pack);
 }
 
@@ -597,12 +590,8 @@ gfx::Image& ResourceBundle::GetImageNamed(int resource_id) {
 
   if (image.IsEmpty()) {
     gfx::ImageSkia image_skia = CreateImageSkia(resource_id);
-    if (image_skia.isNull()) {
-      LOG(WARNING) << "Unable to load image with id " << resource_id;
-      NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
-      // The load failed to retrieve the image; show a debugging red square.
-      return GetEmptyImage();
-    }
+    CHECK(!image_skia.isNull())
+        << "Unable to load image with id " << resource_id;
     image_skia.SetReadOnly();
     image = gfx::Image(image_skia);
   }
@@ -642,14 +631,7 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
     return found->second;
 
   std::optional<LottieData> data = GetLottieData(resource_id);
-  if (!data) {
-    LOG(WARNING) << "Unable to load themed Lottie image with id "
-                 << resource_id;
-    NOTREACHED_IN_MIGRATION();  // Want to assert in debug mode.
-    // The load failed to retrieve the bytes string; show a debugging red
-    // square.
-    return GetEmptyImageModel();
-  }
+  CHECK(data) << "Unable to load themed Lottie image with id " << resource_id;
 
   // The bytes string was successfully loaded, so parse it and cache the
   // resulting image.
@@ -1122,9 +1104,7 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   }
 #endif
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unable to decode theme image resource " << resource_id;
-  return false;
+  NOTREACHED() << "Unable to decode theme image resource " << resource_id;
 }
 
 bool ResourceBundle::LoadBitmap(int resource_id,
@@ -1290,7 +1270,7 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
   *fell_back_to_1x = PNGContainsFallbackMarker(
       // TODO(crbug.com/40284755): DecodePNG should be receiving a span. We
       // can't tell that the size is correct from here.
-      UNSAFE_BUFFERS(base::span(buf, size)));
+      UNSAFE_TODO(base::span(buf, size)));
   return gfx::PNGCodec::Decode(buf, size, bitmap);
 }
 

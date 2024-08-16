@@ -1114,8 +1114,13 @@ std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
 MaybeCreateConsumeCodeCacheTask(std::optional<mojo_base::BigBuffer>& big_buffer,
                                 const String& encoding,
                                 v8::Isolate* isolate,
-                                bool& has_code_cache) {
+                                bool& has_code_cache,
+                                v8::ScriptType script_type) {
   CHECK(!has_code_cache);
+  if (script_type == v8::ScriptType::kModule) {
+    // Currently ModuleScript doesn't support off-thread cache consumption.
+    return nullptr;
+  }
   if (!big_buffer) {
     return nullptr;
   }
@@ -1462,7 +1467,8 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
 
   bool has_code_cache = false;
   if (auto consume_code_cache_task = MaybeCreateConsumeCodeCacheTask(
-          cached_metadata_, encoding_.GetName(), isolate_, has_code_cache)) {
+          cached_metadata_, encoding_.GetName(), isolate_, has_code_cache,
+          script_type())) {
     const uint64_t trace_id =
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
     TRACE_EVENT_WITH_FLOW1(
@@ -1607,7 +1613,7 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
       SuppressStreaming(NotStreamingReason::kScriptTooSmallBackground);
       return false;
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
       // Some other error occurred.
       watcher_.reset();

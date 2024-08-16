@@ -73,6 +73,12 @@ BASE_FEATURE(kAutofillAssociateForms,
 const base::FeatureParam<base::TimeDelta> kAutofillAssociateFormsTTL{
     &kAutofillAssociateForms, "associate_forms_ttl", base::Minutes(5)};
 
+// Autofill offers improvements on how field types and filling values are
+// predicted.
+BASE_FEATURE(kAutofillPredictionImprovementsEnabled,
+             "AutofillPredictionImprovementsEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Autofill always sets the phone number as parsed by
 // i18n::phonenumber.
 // TODO(crbug.com/40220393): Cleanup when launched.
@@ -264,6 +270,12 @@ const base::FeatureParam<bool> kAutofillEnableEmailHeuristicAutocompleteEmail{
     &kAutofillEnableEmailHeuristicOnlyAddressForms, "autocomplete_email",
     false};
 
+// Control if Autofill supports German transliteration.
+// TODO(crbug.com/328968064): Remove when/if launched.
+BASE_FEATURE(kAutofillEnableGermanTransliteration,
+             "AutofillEnableGermanTransliteration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/40734406): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
@@ -351,10 +363,10 @@ BASE_FEATURE(kAutofillFixCachingOnJavaScriptChanges,
              "AutofillFixCachingOnJavaScriptChanges",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Killswitch for not running logic in `AutofillAgent::ApplyFieldsAction` that
-// is responsible for updating `AutofillAgent::last_queried_element_`.
-BASE_FEATURE(kAutofillDontUpdateLastQueriedElementOnFill,
-             "AutofillDontUpdateLastQueriedElementOnFill",
+// Killswitch for not running logic in `form_util::ClearPreviewedElements` that
+// force-sets the selectionrange of the focused element.
+BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,
+             "AutofillDontUpdateSelectionRangeOnPreviewClearing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Killswitch for not trying to find a cached AutofillField from a FormFieldData
@@ -368,10 +380,10 @@ BASE_FEATURE(kAutofillFindCachedFieldsByIdOnly,
 // N depends on the parametrization of the feature.
 BASE_FEATURE(kAutofillSuggestionNStrikeModel,
              "AutofillSuggestionNStrikeModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kSuggestionStrikeLimit{
-    &kAutofillSuggestionNStrikeModel, "strike-limit", 5};
+    &kAutofillSuggestionNStrikeModel, "strike-limit", 3};
 
 // Makes disused suggestion suppression logic ignore the first
 // `kNumberOfIgnoredSuggestions` suggestions (in frecency order), so that the
@@ -565,6 +577,13 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If the feature is enabled, before triggering suggestion acceptance, the row
+// view checks that a substantial portion of its content was visible for some
+// minimum required period.
+BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
+             "AutofillPopupDontAcceptNonVisibleEnoughSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, the time measurement for when the popup was shown
 // is only made after the popup view has been painted once.
 // TODO: crbug.com/40279821 - Clean up when launched.
@@ -663,7 +682,7 @@ BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
 // TODO(crbug.com/40270486): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithTestAddresses,
              "AutofillTestFormWithTestAddresses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows silent profile updates even when the profile import requirements are
 // not met.
@@ -673,13 +692,12 @@ BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
 
 // Sends text change events for contenteditable elements. When this is off,
 // only input elements and maybe textarea elements send text change events.
-// Enabled by default for Mac and Windows platforms.
 BASE_FEATURE(kAutofillContentEditableChangeEvents,
              "AutofillContentEditableChangeEvents",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
+#if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 
@@ -894,6 +912,12 @@ BASE_FEATURE(kAutofillDisableProfileUpdates,
 // purposes and is not supposed to be launched.
 BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
              "AutofillDisableSilentProfileUpdates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for disabling suppressing suggestions based on the strike
+// database.
+BASE_FEATURE(kAutofillDisableSuggestionStrikeDatabase,
+             "AutofillDisableSuggestionStrikeDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables logging the content of chrome://autofill-internals to the terminal.

@@ -75,6 +75,15 @@ enum TextCaseSensitivity {
   kTextCaseUnicodeInsensitive
 };
 
+// Computes a standard StringHasher string for the given buffer,
+// with the caveat that the buffer may contain 8-bit data only.
+// In that case, it is converted from UChar to LChar on the fly,
+// so that we return the same hash as if we hashed the string as
+// LChar to begin with. This ensures that the same code points
+// are hashed to the same value, even if someone called e.g.
+// Ensure16Bit() on the string at some point.
+WTF_EXPORT unsigned ComputeHashForWideString(const UChar* str, unsigned length);
+
 enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
 typedef bool (*CharacterMatchFunctionPtr)(UChar);
@@ -249,10 +258,10 @@ class WTF_EXPORT StringImpl {
   void SetHash(wtf_size_t hash) const {
     // Multiple clients assume that StringHasher is the canonical string
     // hash function.
-    DCHECK(hash == (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
-                                   Characters8(), length_)
-                             : StringHasher::ComputeHashAndMaskTop8Bits(
-                                   Characters16(), length_)));
+    DCHECK_EQ(hash,
+              (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
+                              (const char*)Characters8(), length_)
+                        : ComputeHashForWideString(Characters16(), length_)));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }
@@ -617,7 +626,7 @@ class WTF_EXPORT StringImpl {
   void AssertHashIsCorrect() {
     DCHECK(HasHash());
     DCHECK_EQ(ExistingHash(), StringHasher::ComputeHashAndMaskTop8Bits(
-                                  Characters8(), length()));
+                                  (const char*)Characters8(), length()));
   }
 #endif
 

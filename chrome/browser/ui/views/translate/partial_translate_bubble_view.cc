@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/controls/md_text_button_with_down_arrow.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -64,6 +63,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -162,7 +162,7 @@ void PartialTranslateBubbleView::TabSelectedAt(int index) {
       ShowTranslated();
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -325,7 +325,7 @@ void PartialTranslateBubbleView::ExecuteCommand(int command_id,
       break;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -392,7 +392,7 @@ views::View* PartialTranslateBubbleView::GetCurrentView() const {
     case PartialTranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE:
       return advanced_view_target_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PartialTranslateBubbleView::ShowTranslated() {

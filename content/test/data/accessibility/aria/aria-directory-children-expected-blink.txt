@@ -1,6 +1,6 @@
 rootWebArea htmlTag='#document'
-++genericContainer ignored htmlTag='html'
-++++genericContainer ignored htmlTag='body'
+++genericContainer ignored
+++++genericContainer ignored
 ++++++list htmlTag='div'
 ++++++++listItem htmlTag='div'
 ++++++++++staticText name='an item in the directory'

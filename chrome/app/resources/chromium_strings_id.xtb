@@ -122,6 +122,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2915996080311180594">Mulai Ulang Nanti</translation>
 <translation id="2928420929544864228">Penginstalan selesai.</translation>
 <translation id="2945997411976714835">Error penginstalan: Proses penginstal gagal dimulai.</translation>
+<translation id="2970426615109535079">Organisasi Anda mengelola Chromium</translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="2977506796191543575">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="2987208172821108655">Chromium dapat menonaktifkan tab ini untuk meningkatkan pengalaman penjelajahan dan mengosongkan resource.</translation>
@@ -222,6 +223,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4423735387467980091">Menyesuaikan dan mengontrol Chromium</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> mengelola Chromium</translation>
 <translation id="4447409407328223819">Tentang Chrome for Testing</translation>
 <translation id="4501471624619070934">Penginstalan gagal karena akses dibatasi untuk negara ini.</translation>
 <translation id="4510853178268397146">Ekstensi ini belum memublikasikan praktik privasi, seperti cara ekstensi mengumpulkan dan menggunakan data. Chromium merekomendasikan agar Anda menghapusnya.</translation>
@@ -490,6 +492,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="8550334526674375523">Profil kerja ini sama sekali terpisah dari profil pribadi Anda.</translation>
 <translation id="8555465886620020932">Error layanan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium dapat memeriksa sandi saat Anda login dengan Akun Google</translation>
+<translation id="8576826849825683917">Beberapa organisasi mengelola Chromium</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Situs dapat menyimpan informasi tentang minat Anda ke Chromium. Misalnya, jika Anda mengunjungi suatu situs untuk membeli sepatu maraton, situs tersebut dapat menetapkan minat Anda sebagai lari maraton. Kemudian, jika Anda mengunjungi situs lain untuk mendaftar lomba lari, situs tersebut dapat menampilkan iklan sepatu lari berdasarkan minat Anda.</translation>
 <translation id="8619360774459241877">Meluncurkan Chromium...</translation>

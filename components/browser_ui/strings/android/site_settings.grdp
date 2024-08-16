@@ -224,7 +224,7 @@
   <message name="IDS_WEBSITE_SETTINGS_USAGE_CATEGORY" desc="The headline above the usage stats (how much storage the site is using) on the website details page.">
     Usage
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (First Party Sets) on the website details page.">
+  <message name="IDS_WEBSITE_SETTINGS_RELATED_SITES" desc="The headline above the related sites (Related Website Sets) on the website details page.">
     Related sites
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_CATEGORY" desc="The headline above all the permissions on the website details page.">
@@ -559,10 +559,10 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ADD_BLOCK_EXCEPTION_DESCRIPTION" desc="The description of a dialog box. Dialog to add a third-party cookie exception to block a site">
     Don't allow a site to use third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_FPS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
+  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
     Some features may not work. Related sites can still use third-party cookies.
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_FPS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
+  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
     Features on some sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
@@ -580,32 +580,32 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_TITLE" desc="First Party Sets toggle title in the cookie site settings subpage.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_TITLE" desc="Related Website Sets toggle title in the cookie site settings subpage.">
     Allow related sites to see your activity in the group
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_DESCRIPTION" desc="First Party Sets toggle description in the cookie site settings subpage.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_RWS_TOGGLE_DESCRIPTION" desc="Related Website Sets toggle description in the cookie site settings subpage.">
      A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
-  <message name="IDS_ALLSITES_FPS_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites settings page.">
+  <message name="IDS_ALLSITES_RWS_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites settings page.">
     {COUNT, plural,
-      =1 {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
-      other {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
+      =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
+      other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
   </message>
   <message name="IDS_RWS_SUMMARY" desc="Related Website Sets information, shown as item summary in the all sites settings page for every site which is in the RWS." translateable="false">
     {COUNT, plural,
       =1 {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}
       other {<ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group}}
   </message>
-  <message name="IDS_ALLSITES_FPS_LIST_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites list settings page.">
+  <message name="IDS_ALLSITES_RWS_LIST_SUMMARY" desc="Related Website Sets cookie info, shown as site summary in the all sites list settings page.">
     {COUNT, plural,
-      =1 {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
-      other {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
+      =1 {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
+      other {Cookies allowed for <ph name="RWS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="RWS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
   </message>
-  <message name="IDS_COOKIE_INFO_FPS_TITLE" desc="First Party Sets title in the cookies info page.">
+  <message name="IDS_COOKIE_INFO_RWS_TITLE" desc="Related Website Sets title in the cookies info page.">
       Related sites
    </message>
-  <message name="IDS_COOKIE_INFO_FPS_SUMMARY" desc="First Party Sets summary in the cookies info page.">
-    This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>
+  <message name="IDS_COOKIE_INFO_RWS_SUMMARY" desc="Related Website Sets summary in the cookies info page.">
+    This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Desktop Site -->

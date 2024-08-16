@@ -35,6 +35,8 @@ source_set("structured") {
     sources += [
       "flushed_map.cc",
       "flushed_map.h",
+      "storage_manager.cc",
+      "storage_manager.h",
     ]
   }
 

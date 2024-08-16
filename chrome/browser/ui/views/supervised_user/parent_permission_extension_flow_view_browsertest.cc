@@ -107,7 +107,7 @@ class ExtensionEnableFlowTestSupervised
           view_->AcceptDialog();
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
   }

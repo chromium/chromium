@@ -14,9 +14,8 @@
 
 namespace {
 
-using base::TimeTicks;
-using blink::CanvasRenderingContext;
-using blink::CanvasResourceProvider;
+using ::base::TimeTicks;
+using ::blink::CanvasRenderingContext;
 
 const char* const kHostTypeName_Canvas = ".Canvas";
 const char* const kHostTypeName_OffscreenCanvas = ".OffscreenCanvas";
@@ -141,8 +140,9 @@ void CanvasPerformanceMonitor::CurrentTaskDrawsToContext(
     // canvases per render task.
     measure_current_task_ = !(task_counter_++ % kSamplingProbabilityInv);
 
-    if (LIKELY(!measure_current_task_))
+    if (!measure_current_task_) [[likely]] {
       return;
+    }
 
     call_type_ = CallType::kOther;
     if (context->Host()) {
@@ -154,12 +154,13 @@ void CanvasPerformanceMonitor::CurrentTaskDrawsToContext(
     // TODO(crbug.com/1206028): Add support for CallType::kUserInput
   }
 
-  if (LIKELY(!measure_current_task_))
+  if (!measure_current_task_) [[likely]] {
     return;
+  }
 
   RenderingContextDescriptionCodec desc(context);
 
-  if (LIKELY(desc.IsValid())) {
+  if (desc.IsValid()) [[likely]] {
     rendering_context_descriptions_.insert(desc.GetKey());
   }
 }

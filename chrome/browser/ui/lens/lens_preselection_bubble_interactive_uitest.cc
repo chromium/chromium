@@ -24,6 +24,14 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
       const LensPreselectionBubbleInteractiveUiTest&) = delete;
   void operator=(const LensPreselectionBubbleInteractiveUiTest&) = delete;
 
+  void SetUp() override {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay, {
+                                          {"search-bubble", "false"},
+                                      });
+    InteractiveBrowserTest::SetUp();
+  }
+
   auto SetConnectionOffline() {
     return Do(base::BindLambdaForTesting([&]() {
       // Set the network connection type to being offline.
@@ -60,7 +68,7 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<views::Widget> preselection_widget_;
   std::unique_ptr<net::test::ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier;

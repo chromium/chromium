@@ -16,8 +16,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_util.h"
 
@@ -41,9 +41,9 @@ bool IsGoogleCookie(const net::CanonicalCookie& cookie) {
 
 FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     network::mojom::CookieManager* cookie_manager,
-    syncer::OnceModelTypeStoreFactory create_store_callback)
+    syncer::OnceDataTypeStoreFactory create_store_callback)
     : prefs_(prefs),
       cookie_manager_(cookie_manager),
       bridge_(std::move(change_processor), std::move(create_store_callback)),
@@ -158,11 +158,6 @@ bool FloatingSsoService::ShouldSyncCookie(
     return false;
   }
 
-  // Filter out Third-Party cookies.
-  if (cookie.IsEffectivelySameSiteNone()) {
-    return false;
-  }
-
   return true;
 }
 
@@ -179,7 +174,7 @@ void FloatingSsoService::OnConnectionError() {
   MaybeStartListening();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FloatingSsoService::GetControllerDelegate() {
   return bridge_.change_processor()->GetControllerDelegate();
 }

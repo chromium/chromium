@@ -11,8 +11,8 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/cycle/nudge_tracker.h"
 #include "components/sync/engine/syncer_error.h"
@@ -36,7 +36,7 @@ class SyncCycle;
 class Commit {
  public:
   using ContributionMap =
-      std::map<ModelType, std::unique_ptr<CommitContribution>>;
+      std::map<DataType, std::unique_ptr<CommitContribution>>;
 
   Commit(ContributionMap contributions,
          const sync_pb::ClientToServerMessage& message,
@@ -49,7 +49,7 @@ class Commit {
 
   // |extensions_activity| may be null.
   static std::unique_ptr<Commit> Init(
-      ModelTypeSet enabled_types,
+      DataTypeSet enabled_types,
       size_t max_entries,
       const std::string& account_name,
       const std::string& cache_guid,
@@ -64,7 +64,7 @@ class Commit {
                                      StatusController* status,
                                      ExtensionsActivity* extensions_activity);
 
-  ModelTypeSet GetContributingDataTypes() const;
+  DataTypeSet GetContributingDataTypes() const;
 
  private:
   // Report commit failure to each contribution.

@@ -12,7 +12,9 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom.h"
 
 namespace ash {
 class NearbyShareController;
@@ -28,6 +30,7 @@ class TimeTicks;
 class NearbyShareDelegateImpl
     : public ash::NearbyShareDelegate,
       public ash::SessionObserver,
+      public nearby_share::mojom::NearbyShareSettingsObserver,
       public ::NearbySharingService::Observer {
  public:
   // For testing. Allows overriding |ShowSettingsPage|.
@@ -62,6 +65,7 @@ class NearbyShareDelegateImpl
   void ShowNearbyShareSettings() const override;
   const gfx::VectorIcon& GetIcon(bool on_icon) const override;
   std::u16string GetPlaceholderFeatureName() const override;
+  ::nearby_share::mojom::Visibility GetVisibility() const override;
 
   // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
@@ -77,6 +81,19 @@ class NearbyShareDelegateImpl
       std::unique_ptr<SettingsOpener> settings_opener) {
     settings_opener_ = std::move(settings_opener);
   }
+
+  // nearby_share::mojom::NearbyShareSettingsObserver
+  void OnEnabledChanged(bool enabled) override;
+  void OnFastInitiationNotificationStateChanged(
+      ::nearby_share::mojom::FastInitiationNotificationState state) override;
+  void OnIsFastInitiationHardwareSupportedChanged(bool is_supported) override;
+  void OnDeviceNameChanged(const std::string& device_name) override;
+  void OnDataUsageChanged(::nearby_share::mojom::DataUsage data_usage) override;
+  void OnVisibilityChanged(
+      ::nearby_share::mojom::Visibility visibility) override;
+  void OnAllowedContactsChanged(
+      const std::vector<std::string>& visible_contact_ids) override;
+  void OnIsOnboardingCompleteChanged(bool is_complete) override;
 
  private:
   void AddNearbyShareServiceObservers();
@@ -96,6 +113,10 @@ class NearbyShareDelegateImpl
 
   // The time when high visibility is scheduled to be shut off.
   base::TimeTicks shutoff_time_;
+
+  raw_ptr<NearbyShareSettings> nearby_share_settings_;
+  mojo::Receiver<::nearby_share::mojom::NearbyShareSettingsObserver>
+      nearby_share_settings_receiver_{this};
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_DELEGATE_IMPL_H_

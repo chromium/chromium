@@ -231,9 +231,8 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
     }
   }
 
-  // Lens searchboxes.
-  // TODO(b/335234545): Revisit sending the page URL.
-  if (omnibox::IsLensSearchbox(page_class)) {
+  // Lens multimodal searchboxes.
+  if (omnibox::IsLensMultiModalSearchbox(page_class)) {
     if (focus_type_input_type ==
         std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
       return ResultType::kRemoteNoURL;
@@ -245,6 +244,14 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
   if (omnibox::IsNTPPage(page_class) ||
       !PageURLIsEligibleForSuggestRequest(input.current_url())) {
     return ResultType::kNone;
+  }
+
+  // Lens contextual searchbox.
+  if (omnibox::IsLensContextualSearchbox(page_class)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+      return ResultType::kRemoteSendURL;
+    }
   }
 
   // Open Web - does NOT include Search Results Page.
@@ -383,7 +390,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
   } else if (result_type == ResultType::kRemoteSendURL) {
     prefetch_loader = &srp_web_prefetch_loader_;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // If the app is currently in the background state, do not initiate ZPS
@@ -613,7 +620,7 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
   } else if (result_type == ResultType::kRemoteSendURL) {
     prefetch_loader = &srp_web_prefetch_loader_;
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   DCHECK_EQ(prefetch_loader->get(), source);

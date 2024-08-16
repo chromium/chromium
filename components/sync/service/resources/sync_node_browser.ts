@@ -26,7 +26,7 @@ function isChildOf(parentNode: SyncNode, node: SyncNode) {
   if (node.PARENT_ID !== '') {
     return node.PARENT_ID === parentNode.ID;
   } else {
-    return node.modelType === parentNode.modelType;
+    return node.dataType === parentNode.dataType;
   }
 }
 

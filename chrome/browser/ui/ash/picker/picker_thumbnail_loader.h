@@ -8,7 +8,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 
 class SkBitmap;
 

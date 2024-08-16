@@ -5,6 +5,7 @@ include_rules = [
   "+components/prefs",
   "+components/user_prefs",
   "+components/webauthn/android",
+  "+components/security_state/content",
   "+content/public/android",
   "+content/public/browser",
   "+ui",

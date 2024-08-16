@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">ロージー ブラウン</translation>
 <translation id="249330843868392562">テキスト読み上げの設定を開く</translation>
 <translation id="2497706219848005458">グリーン イエロー</translation>
+<translation id="2512979179176933762">ウィンドウを表示する</translation>
 <translation id="2523609930580546572">ChromeVox チュートリアル</translation>
 <translation id="2525706221823668172">Chromebook のキーボード ショートカット</translation>
 <translation id="2553108862507765288">文法上の誤り</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">スチールブルー</translation>
 <translation id="4253168017788158739">メモ</translation>
 <translation id="4254798249533888099">ツリー</translation>
+<translation id="4259220820964911921">フェイス コントロールを有効にしますか？</translation>
 <translation id="4271220233568730077">次の数式</translation>
 <translation id="4275397969489577657">イベント ストリームのログを有効にする</translation>
 <translation id="4278486392851938658">前にアクセスしたリンクはありません</translation>
@@ -709,6 +711,7 @@
 <translation id="5760594853119905566">付録</translation>
 <translation id="5761219715606611783">お疲れさまでした。ChromeVox の基本のタッチ操作はこれで終わりです。チュートリアルをもう一度確認する場合や終了する場合は、下のボタンを押してください。</translation>
 <translation id="5776001898637896684">Google Enhanced Network テキスト読み上げ拡張機能</translation>
+<translation id="5783252477644995371">フェイス コントロールでは、顔の向きでカーソルを操作したり、笑顔などの顔の動きで左クリックといった操作を行ったりできます</translation>
 <translation id="5805940204952508776">2 本の指でタップします</translation>
 <translation id="5819072574982403430">ツリー項目</translation>
 <translation id="5822819874379903994">ダーク ターコイズ</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">次のチェックボックスはありません</translation>
 <translation id="8473540203671727883">カーソル部分のテキストを読み上げる</translation>
 <translation id="8476408756881832830">ChromeVox の読み上げ中は再生を一時停止する</translation>
-<translation id="8476508772960940536">ウィンドウ概観</translation>
 <translation id="8480873377842220259">次は、基本操作をいくつか見ていきましょう。検索+矢印キーを押すと、画面上を移動できます。次へ進むには、検索+右矢印キーを押してください。</translation>
 <translation id="8503360654911991865">一度に移動する単位を大きくする</translation>
 <translation id="8520472399088452386">スピンボタン</translation>

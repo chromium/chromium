@@ -36,22 +36,6 @@
   "optimization_guide-chromeos": {
     "gtest_tests": [
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "chrome_ml_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_ml_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:chrome_ml_unittests/"
-      },
-      {
         "args": [
           "--gtest_filter=*OptimizationGuide*:*PageContentAnnotations*"
         ],
@@ -88,22 +72,6 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "optimization_guide_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-22.04",
-            "pool": "chrome.tests"
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "optimization_guide_unittests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal:optimization_guide_unittests/"
       }
     ]
   },

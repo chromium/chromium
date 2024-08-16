@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
@@ -30,7 +30,7 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.UiThreadCondition;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
@@ -42,24 +42,20 @@ import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends Station {
-    public static final ViewElement HUB_TOOLBAR = scopedViewElement(withId(R.id.hub_toolbar));
-    public static final ViewElement HUB_PANE_HOST = scopedViewElement(withId(R.id.hub_pane_host));
-    public static final ViewElement HUB_MENU_BUTTON =
-            scopedViewElement(
-                    allOf(
-                            isDescendantOfA(withId(R.id.hub_toolbar)),
-                            withId(org.chromium.chrome.R.id.menu_button)));
-    public static final ViewElement HUB_PANE_SWITCHER =
-            scopedViewElement(
-                    allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
+    public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
+    public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
+    public static final ViewSpec HUB_MENU_BUTTON =
+            viewSpec(
+                    isDescendantOfA(withId(R.id.hub_toolbar)),
+                    withId(org.chromium.chrome.R.id.menu_button));
+    public static final ViewSpec HUB_PANE_SWITCHER =
+            viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
-    public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
-            scopedViewElement(
-                    withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
+    public static final ViewSpec REGULAR_TOGGLE_TAB_BUTTON =
+            viewSpec(withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
 
-    public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
-            scopedViewElement(
-                    withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
+    public static final ViewSpec INCOGNITO_TOGGLE_TAB_BUTTON =
+            viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
 
     protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;

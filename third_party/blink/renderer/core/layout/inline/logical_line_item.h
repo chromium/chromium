@@ -306,13 +306,13 @@ class CORE_EXPORT LogicalLineItems : public GarbageCollected<LogicalLineItems> {
   explicit operator base::span<LogicalLineItem>() {
     return base::span(children_);
   }
-  using iterator = Vector<LogicalLineItem, 16>::iterator;
+  using iterator = HeapVector<LogicalLineItem, 16>::iterator;
   iterator begin() { return children_.begin(); }
   iterator end() { return children_.end(); }
-  using const_iterator = Vector<LogicalLineItem, 16>::const_iterator;
+  using const_iterator = HeapVector<LogicalLineItem, 16>::const_iterator;
   const_iterator begin() const { return children_.begin(); }
   const_iterator end() const { return children_.end(); }
-  using reverse_iterator = Vector<LogicalLineItem, 16>::reverse_iterator;
+  using reverse_iterator = HeapVector<LogicalLineItem, 16>::reverse_iterator;
   reverse_iterator rbegin() { return children_.rbegin(); }
   reverse_iterator rend() { return children_.rend(); }
   using const_reverse_iterator =

@@ -25,6 +25,7 @@ BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
+                   cc::AuxImage::kDefault,
                    max_decoded_bytes),
       decoded_offset_(0) {}
 

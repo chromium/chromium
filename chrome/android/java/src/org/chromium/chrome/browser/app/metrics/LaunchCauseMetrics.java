@@ -88,7 +88,8 @@ public abstract class LaunchCauseMetrics
         LaunchCause.WEBAPK_OTHER_DISTRIBUTOR,
         LaunchCause.HOME_SCREEN_SHORTCUT,
         LaunchCause.SHARE_INTENT,
-        LaunchCause.NFC
+        LaunchCause.NFC,
+        LaunchCause.AUTH_TAB,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
@@ -111,13 +112,14 @@ public abstract class LaunchCauseMetrics
         int HOME_SCREEN_SHORTCUT = 16;
         int SHARE_INTENT = 17;
         int NFC = 18;
+        int AUTH_TAB = 19;
 
-        int NUM_ENTRIES = 19;
+        int NUM_ENTRIES = 20;
     }
 
     /**
      * @param activity The Activity context to compute LaunchCause for, used for getting the correct
-     *         Display, etc.
+     *     Display, etc.
      */
     public LaunchCauseMetrics(final Activity activity) {
         mActivity = activity;
@@ -197,38 +199,38 @@ public abstract class LaunchCauseMetrics
      * Called after Chrome has launched and all information necessary to compute why Chrome was
      * launched is available.
      *
-     * Records UMA metrics for what caused Chrome to launch.
+     * <p>Records UMA metrics for what caused Chrome to launch, and returns the launch cause.
      */
-    public void recordLaunchCause() {
+    public @LaunchCause int recordLaunchCause() {
+        @LaunchCause int launchCause = LaunchCause.OTHER;
         if (!sRecordedLaunchCause) {
             sRecordedLaunchCause = true;
 
-            @LaunchCause int cause = LaunchCause.OTHER;
-
             if (mPerLaunchState.mReceivedIntent) {
-                cause = computeIntentLaunchCause();
+                launchCause = computeIntentLaunchCause();
             } else {
-                cause = computeNonIntentLaunchCause();
+                launchCause = computeNonIntentLaunchCause();
             }
 
-            if (DEBUG) logLaunchCause(cause);
+            if (DEBUG) logLaunchCause(launchCause);
 
             RecordHistogram.recordEnumeratedHistogram(
-                    LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
-            TraceEvent.startupLaunchCause(mActivityId, cause);
+                    LAUNCH_CAUSE_HISTOGRAM, launchCause, LaunchCause.NUM_ENTRIES);
+            TraceEvent.startupLaunchCause(mActivityId, launchCause);
         } else if (mPerLaunchState.mOtherChromeActivityLastFocused) {
             // Handle the case where we're intentionally transitioning between two Chrome
             // Activities while Chrome is in the foreground, and want to count that as a Launch.
-            @LaunchCause int cause = getIntentionalTransitionCauseOrOther();
-            if (cause != LaunchCause.OTHER) {
-                if (DEBUG) logLaunchCause(cause);
+            launchCause = getIntentionalTransitionCauseOrOther();
+            if (launchCause != LaunchCause.OTHER) {
+                if (DEBUG) logLaunchCause(launchCause);
                 RecordHistogram.recordEnumeratedHistogram(
-                        LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);
-                TraceEvent.startupLaunchCause(mActivityId, cause);
+                        LAUNCH_CAUSE_HISTOGRAM, launchCause, LaunchCause.NUM_ENTRIES);
+                TraceEvent.startupLaunchCause(mActivityId, launchCause);
             }
         }
         resetPerLaunchState();
         resetBetweenLaunchState();
+        return launchCause;
     }
 
     // If Chrome wasn't launched via an intent, it was either launched from Recents, Back button,

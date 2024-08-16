@@ -101,6 +101,8 @@ public class CustomTabHistoryIPHController {
     private boolean shouldShowIPH() {
         if (!ChromeFeatureList.sAppSpecificHistory.isEnabled()) return false;
 
+        if (mProfileSupplier.get().isOffTheRecord()) return false;
+
         var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         return (tracker.isInitialized()
                 && tracker.wouldTriggerHelpUI(FeatureConstants.CCT_HISTORY_FEATURE));

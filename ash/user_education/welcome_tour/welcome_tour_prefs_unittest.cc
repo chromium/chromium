@@ -22,14 +22,18 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
+using welcome_tour_metrics::kAllExperimentalArmsSet;
 using welcome_tour_metrics::kAllInteractionsSet;
 using welcome_tour_metrics::kAllPreventedReasonsSet;
 
+using welcome_tour_metrics::ExperimentalArm;
 using welcome_tour_metrics::Interaction;
 using welcome_tour_metrics::PreventedReason;
 
 // Constants -------------------------------------------------------------------
 
+static constexpr char kFirstExperimentalArm[] =
+    "ash.welcome_tour.v2.experimental_arm.first";
 static constexpr char kTimeOfFirstTourAborted[] =
     "ash.welcome_tour.v2.aborted.first_time";
 static constexpr char kTimeOfFirstTourCompletion[] =
@@ -61,6 +65,49 @@ class WelcomeTourPrefsTest : public testing::Test {
 };
 
 // Tests -----------------------------------------------------------------------
+
+// Expects that setting and fetching the first experimental arm will
+// work for all valid values, and handle invalid ones properly.
+TEST_F(WelcomeTourPrefsTest, ExperimentalArms) {
+  // The arm should by default be absent.
+  EXPECT_EQ(GetFirstExperimentalArm(pref_service()), std::nullopt);
+
+  // Expect that all valid values for `ExperimentalArm` can be set and fetched.
+  for (auto arm : kAllExperimentalArmsSet) {
+    EXPECT_TRUE(MarkFirstExperimentalArm(pref_service(), arm));
+    EXPECT_EQ(GetFirstExperimentalArm(pref_service()), arm);
+
+    // Clear the first experimental arm pref for the next loop.
+    // `MarkFirstExperimentalArm()` would exit early otherwise.
+    pref_service()->ClearPref(kFirstExperimentalArm);
+  }
+
+  // For any values that are out of bounds of the enum, it should default to
+  // `std::nullopt`.
+  pref_service()->SetUserPref(
+      kFirstExperimentalArm,
+      base::Value(static_cast<int>(ExperimentalArm::kMaxValue) + 1));
+  EXPECT_EQ(GetFirstExperimentalArm(pref_service()), std::nullopt);
+}
+
+// Expects the first experimental arm pref can be set exactly once.
+TEST_F(WelcomeTourPrefsTest, FirstExperimentalArm) {
+  // Should be unset by default.
+  EXPECT_EQ(GetFirstExperimentalArm(pref_service()), std::nullopt);
+
+  // The first time the mark method is called, it should succeed and mark the
+  // experimental arm with the given value.
+  EXPECT_TRUE(
+      MarkFirstExperimentalArm(pref_service(), ExperimentalArm::kHoldback));
+  EXPECT_EQ(GetFirstExperimentalArm(pref_service()),
+            ExperimentalArm::kHoldback);
+
+  // For any call beyond the first, the function should return false and the
+  // marked first experimental arm should not change.
+  EXPECT_FALSE(MarkFirstExperimentalArm(pref_service(), ExperimentalArm::kV2));
+  EXPECT_EQ(GetFirstExperimentalArm(pref_service()),
+            ExperimentalArm::kHoldback);
+}
 
 // Expects the first interaction time prefs can be set exactly once.
 TEST_F(WelcomeTourPrefsTest, FirstInteraction) {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <stddef.h>
 
 #include <memory>
@@ -1783,8 +1788,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 
   // Set RWS grants.
   content_settings::ContentSettingConstraints constraints;
-  constraints.set_session_model(
-      content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
+  constraints.set_session_model(content_settings::mojom::SessionModel::DURABLE);
+  constraints.set_decided_by_related_website_sets(true);
   settings_map->SetContentSettingDefaultScope(
       kPrimaryUrl, kSecondaryUrl, ContentSettingsType::STORAGE_ACCESS,
       CONTENT_SETTING_ALLOW, constraints);

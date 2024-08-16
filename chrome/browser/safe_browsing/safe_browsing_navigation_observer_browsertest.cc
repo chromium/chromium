@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -12,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -25,7 +28,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -213,6 +215,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
     observer_manager_.reset();
     // Cancel unfinished download if any.
     CancelDownloads();
+    CHECK_EQ(DownloadCoreService::BlockingShutdownCountAllProfiles(), 0);
   }
 
   // Most test cases will trigger downloads, though we don't really care if

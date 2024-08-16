@@ -20,7 +20,8 @@ PointerEvent::PointerEvent(const AtomicString& type,
                            const PointerEventInit* initializer,
                            base::TimeTicks platform_time_stamp,
                            MouseEvent::SyntheticEventType synthetic_event_type,
-                           WebMenuSourceType menu_source_type)
+                           WebMenuSourceType menu_source_type,
+                           bool prevent_counting_as_interaction)
     : MouseEvent(type,
                  initializer,
                  platform_time_stamp,
@@ -39,7 +40,8 @@ PointerEvent::PointerEvent(const AtomicString& type,
       is_primary_(false),
       coalesced_events_targets_dirty_(false),
       predicted_events_targets_dirty_(false),
-      persistent_device_id_(0) {
+      persistent_device_id_(0),
+      prevent_counting_as_interaction_(prevent_counting_as_interaction) {
   if (initializer->hasPointerId())
     pointer_id_ = initializer->pointerId();
   if (initializer->hasWidth())

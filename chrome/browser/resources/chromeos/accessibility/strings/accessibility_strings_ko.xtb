@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">로지 브라운</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
 <translation id="2497706219848005458">그린 옐로우</translation>
+<translation id="2512979179176933762">창을 표시합니다</translation>
 <translation id="2523609930580546572">ChromeVox 가이드</translation>
 <translation id="2525706221823668172">Chromebook 단축키</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">스틸 블루</translation>
 <translation id="4253168017788158739">메모</translation>
 <translation id="4254798249533888099">트리</translation>
+<translation id="4259220820964911921">얼굴 제어를 사용 설정하시겠습니까?</translation>
 <translation id="4271220233568730077">다음 수식</translation>
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4278486392851938658">이전 방문한 링크가 없습니다</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">부록</translation>
 <translation id="5761219715606611783">잘하셨습니다. ChromeVox 터치를 사용하기 위한 기본 사항을 배웠습니다. 다시 가이드를 살펴보거나 아래 버튼을 사용하여 가이드를 종료합니다.</translation>
 <translation id="5776001898637896684">Google 강화 네트워크 텍스트 음성 변환 확장 프로그램</translation>
+<translation id="5783252477644995371">얼굴 제어를 사용하면 얼굴을 가리켜 커서를 제어하고 미소와 같은 얼굴 동작으로 왼쪽을 클릭하는 등의 작업을 수행할 수 있습니다.</translation>
 <translation id="5805940204952508776">손가락 두 개로 탭</translation>
 <translation id="5819072574982403430">트리 항목</translation>
 <translation id="5822819874379903994">다크 터코이즈</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">다음 체크박스가 없습니다</translation>
 <translation id="8473540203671727883">마우스 커서를 올린 텍스트를 음성으로 알려줍니다.</translation>
 <translation id="8476408756881832830">ChromeVox 음성이 나올 때는 재생을 일시중지합니다.</translation>
-<translation id="8476508772960940536">창 전체보기</translation>
 <translation id="8480873377842220259">이제 몇 가지 기본적인 탐색 방법을 알아보겠습니다. 검색 키를 누른 상태에서 화살표 키를 눌러 화면 곳곳을 이동할 수 있습니다. 계속하려면 검색 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="8503360654911991865">탐색 세밀도 낮추기</translation>
 <translation id="8520472399088452386">스핀 버튼</translation>

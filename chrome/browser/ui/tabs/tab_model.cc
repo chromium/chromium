@@ -43,10 +43,10 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(TabLookupFromWebContents);
 }  // namespace
 
 TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
-                   bool is_in_normal_window)
+                   TabStripModel* soon_to_be_owning_model)
     : contents_owned_(std::move(contents)),
       contents_(contents_owned_.get()),
-      is_in_normal_window_(is_in_normal_window) {
+      soon_to_be_owning_model_(soon_to_be_owning_model) {
   TabLookupFromWebContents::CreateForWebContents(contents_, this);
 
   tab_features_ = TabFeatures::CreateTabFeatures();
@@ -62,6 +62,7 @@ TabModel::~TabModel() {
 }
 
 void TabModel::OnAddedToModel(TabStripModel* owning_model) {
+  soon_to_be_owning_model_ = nullptr;
   CHECK(!owning_model_);
   CHECK(owning_model);
   owning_model_ = owning_model;
@@ -125,7 +126,7 @@ base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
 }
 
 bool TabModel::IsInForeground() const {
-  return owning_model() && owning_model()->GetActiveTab() == this;
+  return GetModelForTabInterface()->GetActiveTab() == this;
 }
 
 base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
@@ -152,11 +153,11 @@ std::unique_ptr<ScopedTabModalUI> TabModel::ShowModalUI() {
 }
 
 bool TabModel::IsInNormalWindow() const {
-  return is_in_normal_window_;
+  return GetModelForTabInterface()->delegate()->IsNormalWindow();
 }
 
 BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
-  return owning_model_->delegate()->GetBrowserWindowInterface();
+  return GetModelForTabInterface()->delegate()->GetBrowserWindowInterface();
 }
 
 tabs::TabFeatures* TabModel::GetTabFeatures() {
@@ -175,6 +176,11 @@ void TabModel::OnTabStripModelChanged(
     did_enter_foreground_callback_list_.Notify(this);
     return;
   }
+}
+
+TabStripModel* TabModel::GetModelForTabInterface() const {
+  CHECK(soon_to_be_owning_model_ || owning_model_);
+  return soon_to_be_owning_model_ ? soon_to_be_owning_model_ : owning_model_;
 }
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
@@ -214,10 +220,25 @@ std::unique_ptr<content::WebContents> TabModel::DestroyAndTakeWebContents(
   return contents;
 }
 
+void TabModel::DestroyTabFeatures() {
+  tab_features_.reset();
+}
+
 // static
 TabInterface* TabInterface::GetFromContents(
     content::WebContents* web_contents) {
   return TabLookupFromWebContents::FromWebContents(web_contents)->model();
+}
+
+// static
+TabInterface* TabInterface::MaybeGetFromContents(
+    content::WebContents* web_contents) {
+  TabLookupFromWebContents* lookup =
+      TabLookupFromWebContents::FromWebContents(web_contents);
+  if (!lookup) {
+    return nullptr;
+  }
+  return lookup->model();
 }
 
 }  // namespace tabs

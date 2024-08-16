@@ -4,6 +4,7 @@
 
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
+import("//services/device/public/cpp/geolocation/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("permissions") {
@@ -165,6 +166,13 @@ source_set("permissions") {
     }
     deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
   }
+
+  if (os_level_geolocation_permission_supported) {
+    sources += [
+      "system/geolocation_observation.cc",
+      "system/geolocation_observation.h",
+    ]
+  }
 }
 
 proto_library("permissions_proto") {
@@ -173,6 +181,7 @@ proto_library("permissions_proto") {
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [
     "adaptive_quiet_notification_permission_ui_enabler_unittest.cc",
     "chrome_permission_manager_unittest.cc",
@@ -218,8 +227,8 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_mode/web_app",
+      "//chrome/browser/ash/login/users:test_support",
     ]
   }
 }

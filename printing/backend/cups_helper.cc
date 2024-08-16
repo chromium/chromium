@@ -776,27 +776,10 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
   if (port == url::PORT_UNSPECIFIED)
     port = kDefaultIPPServerPort;
 
-  if (httpConnect2) {
-    http_.reset(httpConnect2(print_server_url.host().c_str(), port,
-                             /*addrlist=*/nullptr, AF_UNSPEC, encryption,
-                             blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
-                             /*cancel=*/nullptr));
-  } else {
-    // Continue to use deprecated CUPS calls because because older Linux
-    // distribution such as RHEL/CentOS 7 are shipped with CUPS 1.6.
-    http_.reset(
-        httpConnectEncrypt(print_server_url.host().c_str(), port, encryption));
-  }
-
-  if (!http_) {
-    LOG(ERROR) << "CP_CUPS: Failed connecting to print server: "
-               << print_server_url;
-    return;
-  }
-
-  if (!httpConnect2) {
-    httpBlocking(http(), blocking ? 1 : 0);
-  }
+  http_ = HttpConnect2(print_server_url.host().c_str(), port,
+                       /*addrlist=*/nullptr, AF_UNSPEC, encryption,
+                       blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
+                       /*cancel=*/nullptr);
 }
 
 HttpConnectionCUPS::~HttpConnectionCUPS() = default;
@@ -971,6 +954,38 @@ bool ParsePpdCapabilities(cups_dest_t* dest,
 
   *printer_info = caps;
   return true;
+}
+
+ScopedHttpPtr HttpConnect2(const char* host,
+                           int port,
+                           http_addrlist_t* addrlist,
+                           int family,
+                           http_encryption_t encryption,
+                           int blocking,
+                           int msec,
+                           int* cancel) {
+  ScopedHttpPtr http;
+  if (httpConnect2) {
+    http.reset(httpConnect2(host, port,
+                            /*addrlist=*/nullptr, AF_UNSPEC, encryption,
+                            blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
+                            /*cancel=*/nullptr));
+  } else {
+    // Continue to use deprecated CUPS calls because because older Linux
+    // distribution such as RHEL/CentOS 7 are shipped with CUPS 1.6.
+    http.reset(httpConnectEncrypt(host, port, encryption));
+  }
+
+  if (!http) {
+    LOG(ERROR) << "CP_CUPS: Failed connecting to print server: " << host;
+    return nullptr;
+  }
+
+  if (!httpConnect2) {
+    httpBlocking(http.get(), blocking ? 1 : 0);
+  }
+
+  return http;
 }
 
 }  // namespace printing

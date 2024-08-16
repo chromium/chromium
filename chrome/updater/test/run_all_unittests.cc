@@ -14,6 +14,7 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -159,6 +160,16 @@ void MaybeIncreaseTestTimeouts(int argc, char** argv) {
   }
 }
 
+// Disable the fallback fetcher for the current process. This is achieved by
+// adding `kNetWorkerSwitch` to the process command line to make it look like
+// a net worker process.
+void SkipFallbackNetworkFetcher() {
+#if BUILDFLAG(IS_MAC)
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      updater::kNetWorkerSwitch);
+#endif  // BUILDFLAG(IS_MAC)
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -168,6 +179,10 @@ int main(int argc, char** argv) {
   // Change the test timeout defaults if the command line arguments to override
   // them are not present.
   MaybeIncreaseTestTimeouts(argc, argv);
+
+  // To make setting up network response expectations easier in test, just
+  // disable fallback fetcher altogether within this process.
+  SkipFallbackNetworkFetcher();
 
 #if BUILDFLAG(IS_WIN)
   updater::test::MaybeExcludePathsFromWindowsDefender();

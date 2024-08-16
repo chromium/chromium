@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -234,11 +235,9 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
     initiator_frame_is_ad = window->GetFrame()->IsAdFrame();
     is_ad_script_in_stack = window->GetFrame()->IsAdScriptInStack();
 
-    if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
-      probe::FrameRequestedNavigation(window->GetFrame(), this, url,
-                                      frame_request.ClientRedirectReason(),
-                                      kNavigationPolicyCurrentTab);
-    }
+    probe::FrameRequestedNavigation(window->GetFrame(), this, url,
+                                    frame_request.GetClientNavigationReason(),
+                                    kNavigationPolicyCurrentTab);
 
     if (!initiator_frame_token) {
       initiator_frame_token = window->GetFrame()->GetLocalFrameToken();
@@ -957,6 +956,8 @@ bool RemoteFrame::SynchronizeVisualProperties(
           pending_visual_properties_.screen_infos ||
       sent_visual_properties_->zoom_level !=
           pending_visual_properties_.zoom_level ||
+      sent_visual_properties_->css_zoom_factor !=
+          pending_visual_properties_.css_zoom_factor ||
       sent_visual_properties_->page_scale_factor !=
           pending_visual_properties_.page_scale_factor ||
       sent_visual_properties_->compositing_scale_factor !=
@@ -1059,9 +1060,21 @@ void RemoteFrame::DidChangeScreenInfos(
 }
 
 void RemoteFrame::ZoomFactorChanged(double zoom_factor) {
-  pending_visual_properties_.zoom_level =
-      GetPage()->GetChromeClient().GetWebView()->ZoomFactorToZoomLevel(
-          zoom_factor);
+  // zoom_factor includes device scale factor, browser zoom, and css zoom.
+  WebViewImpl* view = GetPage()->GetChromeClient().GetWebView();
+  double device_scale_factor = view->ZoomFactorForViewportLayout();
+  if (Owner() && Owner()->IsLocal()) {
+    DCHECK(ancestor_widget_);
+    double zoom_level = ancestor_widget_->GetZoomLevel();
+    pending_visual_properties_.zoom_level = zoom_level;
+    double browser_zoom_factor = view->ZoomLevelToZoomFactor(zoom_level);
+    pending_visual_properties_.css_zoom_factor =
+        zoom_factor / (device_scale_factor * browser_zoom_factor);
+  } else {
+    pending_visual_properties_.zoom_level =
+        ZoomFactorToZoomLevel(zoom_factor / device_scale_factor);
+    pending_visual_properties_.css_zoom_factor = 1.0;
+  }
   SynchronizeVisualProperties();
 }
 

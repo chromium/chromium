@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
@@ -22,11 +23,13 @@ class Browser;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
 @protocol TabCollectionConsumer;
+@protocol TabGridCommands;
 @protocol TabGridIdleStatusHandler;
+@class TabGridModeHolder;
 @class TabGridToolbarsConfiguration;
-@protocol TabGridToolbarsMainTabGridDelegate;
 @protocol TabGridToolbarCommands;
 @protocol TabGroupsCommands;
+@class TabGroupInfo;
 @protocol TabPresentationDelegate;
 class WebStateList;
 
@@ -38,6 +41,7 @@ class WebState;
 @interface BaseGridMediator : NSObject <BaseGridMediatorItemProvider,
                                         GridCommands,
                                         GridViewControllerMutator,
+                                        SuggestedActionsDelegate,
                                         TabCollectionDragDropHandler,
                                         TabGridPageMutator,
                                         TabGridToolbarsGridDelegate>
@@ -55,27 +59,30 @@ class WebState;
 // Contained grid which provides tab grid toolbar configuration.
 @property(nonatomic, weak) id<GridToolbarsConfigurationProvider>
     containedGridToolbarsProvider;
-// Action handler for the actions related to the tab grid .
-@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
-    toolbarTabGridDelegate;
 // Grid consumer.
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
 // Tab Groups handler.
 @property(nonatomic, weak) id<TabGroupsCommands> tabGroupsHandler;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 // Handler for tab grid toolbar commands.
 @property(nonatomic, weak) id<TabGridToolbarCommands> tabGridToolbarHandler;
 // Tab grid idle status handler.
 @property(nonatomic, weak) id<TabGridIdleStatusHandler>
     tabGridIdleStatusHandler;
 
+- (instancetype)initWithModeHolder:(TabGridModeHolder*)modeHolder
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 @interface BaseGridMediator (Subclassing) <WebStateListObserving>
 
-// Current mode.
-@property(nonatomic, assign) TabGridMode currentMode;
+// The mode holder.
+@property(nonatomic, readonly) TabGridModeHolder* modeHolder;
 
 // Disconnects the mediator.
 - (void)disconnect NS_REQUIRES_SUPER;
@@ -134,6 +141,16 @@ class WebState;
 
 // Ungroups all tabs in `group`. The tabs in the group remain open.
 - (void)ungroupTabGroup:(const TabGroup*)group;
+
+// Returns whether this mediator can handle the drop of `tabGroupInfo`.
+- (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo;
+
+// Records in UMA that a URL has been dropped from outside of the app.
+- (void)recordExternalURLDropped;
+
+// Shows the tab group snackbar or IPH.
+// `closedGroups` represents the number of closed groups.
+- (void)showTabGroupSnackbarOrIPH:(int)closedGroups;
 
 @end
 

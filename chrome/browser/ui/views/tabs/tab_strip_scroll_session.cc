@@ -109,7 +109,7 @@ int TabStripScrollSessionWithTimer::CalculateSpeed() {
                         CalculateBaseScrollOffset() * -3, 0.0));
       }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

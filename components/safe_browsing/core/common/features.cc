@@ -105,10 +105,6 @@ const base::FeatureParam<int> kDownloadWarningSurveyType{
 const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds{
     &kDownloadWarningSurvey, "ignore_delay_seconds", 300};
 
-BASE_FEATURE(kEncryptedArchivesMetadata,
-             "SafeBrowsingEncryptedArchivesMetadata",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtendedReportingRemovePrefDependency,
              "ExtendedReportingRemovePrefDependency",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -119,7 +115,7 @@ BASE_FEATURE(kExtensionTelemetryConfiguration,
 
 BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestActionSignal,
              "SafeBrowsingExtensionTelemetryDeclarativeNetRequestActionSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
              "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
@@ -167,17 +163,9 @@ BASE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions,
              "SafeBrowsingExtensionTelemetryDisableOffstoreExtensions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection,
-             "FriendlierSafeBrowsingSettingsEnhancedProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection,
-             "FriendlierSafeBrowsingSettingsStandardProtection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGooglePlayProtectPrompt,
              "SafeBrowsingGooglePlayProtectPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGooglePlayProtectInApkTelemetry,
              "SafeBrowsingGooglePlayProtectInApkTelemetry",
@@ -201,6 +189,14 @@ BASE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
              "SafeBrowsingHashPrefixRealTimeLookupsFasterOhttpKeyRotation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHashPrefixRealTimeLookupsSamplePing,
+             "SafeBrowsingHashPrefixRealTimeLookupsSamplePing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate{
+    &kHashPrefixRealTimeLookupsSamplePing,
+    "HashPrefixRealTimeLookupsSampleRate", /*default_value=*/100};
+
 BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -211,27 +207,13 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
 
 BASE_FEATURE(kMmapSafeBrowsingDatabase,
              "MmapSafeBrowsingDatabase",
-// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 constexpr base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync{
     &kMmapSafeBrowsingDatabase, "MmapSafeBrowsingDatabaseAsync",
-// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
-#if BUILDFLAG(IS_IOS)
-    /*default_value=*/false
-#else
     /*default_value=*/true
-#endif
 };
-
-BASE_FEATURE(kNestedArchives,
-             "SafeBrowsingArchiveImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRealTimeUrlFilteringCustomMessage,
              "RealTimeUrlFilteringCustomMessage",
@@ -251,16 +233,9 @@ constexpr base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter{
     &kRedWarningSurvey, "RedWarningSurveyDidProceedFilter",
     /*default_value=*/"TRUE,FALSE"};
 
-BASE_FEATURE(kReferrerChainParameters,
-             "SafeBrowsingReferrerChainParameters",
+BASE_FEATURE(kRippleForEnhancedProtection,
+             "RippleForEnhancedProtection",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds{
-    &kReferrerChainParameters, "MaximumEventAgeSeconds", /*default_value=*/120};
-
-constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
-    &kReferrerChainParameters, "MaximumEventCount",
-    /*default_value=*/100};
 
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
@@ -280,20 +255,11 @@ BASE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup,
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
              "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck,
-             "SafeBrowsingNewGmsApiForSubresourceFilterCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
-// TODO(crbug.com/40061554): Fix iOS tests with this enabled.
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 BASE_FEATURE(kSafeBrowsingReferrerChainWithCopyPasteNavigation,
@@ -308,21 +274,9 @@ BASE_FEATURE(kSafetyHubAbusiveNotificationRevocation,
              "SafetyHubAbusiveNotificationRevocation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSevenZipEvaluationEnabled,
-             "SafeBrowsingSevenZipEvaluationEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStrictDownloadTimeout,
-             "SafeBrowsingStrictDownloadtimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds{
-    &kStrictDownloadTimeout, "TimeoutMilliseconds",
-    /*default_value=*/7000};
 
 BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
@@ -403,14 +357,11 @@ base::Value::List GetFeatureStatusList() {
       &kHashPrefixRealTimeLookupsFasterOhttpKeyRotation,
       &kLogAccountEnhancedProtectionStateInProtegoPings,
       &kMmapSafeBrowsingDatabase,
-      &kNestedArchives,
       &kRealTimeUrlFilteringCustomMessage,
       &kSafeBrowsingAsyncRealTimeCheck,
       &kSafeBrowsingRemoveCookiesInAuthRequests,
       &kSafetyHubAbusiveNotificationRevocation,
-      &kSevenZipEvaluationEnabled,
       &kSimplifiedUrlDisplay,
-      &kStrictDownloadTimeout,
       &kSuspiciousSiteTriggerQuotaFeature,
       &kTailoredSecurityIntegration,
       &kVisualFeaturesSizes,

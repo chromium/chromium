@@ -35,7 +35,7 @@ void RecordTriggerRegistrationError(mojom::TriggerRegistrationError);
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
   // Doesn't log metric on parsing failures.
   static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>
-      Parse(base::Value::Dict);
+      Parse(base::Value);
 
   // Logs metric on parsing failures.
   static base::expected<TriggerRegistration, mojom::TriggerRegistrationError>

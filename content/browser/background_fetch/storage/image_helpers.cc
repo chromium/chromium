@@ -27,9 +27,7 @@ std::string ConvertAndSerializeIcon(const SkBitmap& icon) {
 
 SkBitmap DeserializeAndConvertIcon(
     std::unique_ptr<std::string> serialized_icon) {
-  return gfx::Image::CreateFrom1xPNGBytes(
-             reinterpret_cast<const unsigned char*>(serialized_icon->c_str()),
-             serialized_icon->size())
+  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(*serialized_icon))
       .AsBitmap();
 }
 

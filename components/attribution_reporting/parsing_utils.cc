@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <sstream>
@@ -18,7 +19,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
-#include "base/functional/overloaded.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
@@ -120,33 +120,64 @@ bool ParseDebugReporting(const base::Value::Dict& dict) {
   return dict.FindBool(kDebugReporting).value_or(false);
 }
 
-base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+bool HasFractionalPart(double v) {
+  double int_part;
+  return std::modf(v, &int_part) != 0;
+}
+
+template <typename T>
+base::expected<T, ParseError> ParseIntFromIntOrDouble(
     const base::Value& value) {
+  // JSON serialization does not distinguish between integer and non-integer
+  // numbers, but `base::Value` does. To be maximally compatible, we permit
+  // `double` in addition to `int` as long as the `double`'s fractional part is
+  // 0.
+
+  if (std::optional<int> int_value = value.GetIfInt()) {
+    if (!base::IsValueInRangeForNumericType<T>(*int_value)) {
+      return base::unexpected(ParseError());
+    }
+    return static_cast<T>(*int_value);
+  } else if (std::optional<double> double_value = value.GetIfDouble()) {
+    if (HasFractionalPart(*double_value) ||
+        !base::IsValueInRangeForNumericType<T>(*double_value)) {
+      return base::unexpected(ParseError());
+    }
+    return static_cast<T>(*double_value);
+  } else {
+    return base::unexpected(ParseError());
+  }
+}
+
+base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+    const base::Value& value,
+    const base::TimeDelta clamp_min,
+    const base::TimeDelta clamp_max) {
   // Note: The full range of uint64 seconds cannot be represented in the
   // resulting `base::TimeDelta`, but this is fine because `base::Seconds()`
   // properly clamps out-of-bound values and because the Attribution
   // Reporting API itself clamps values to 30 days:
   // https://wicg.github.io/attribution-reporting-api/#valid-source-expiry-range
 
-  return value.Visit(base::Overloaded{
-      [](int int_value) -> base::expected<base::TimeDelta, ParseError> {
-        if (int_value < 0) {
-          return base::unexpected(ParseError());
-        }
-        return base::Seconds(int_value);
-      },
-      [](const std::string& str)
-          -> base::expected<base::TimeDelta, ParseError> {
-        uint64_t seconds;
-        if (!base::StringToUint64(str, &seconds)) {
-          return base::unexpected(ParseError());
-        }
-        return base::Seconds(seconds);
-      },
-      [](const auto&) -> base::expected<base::TimeDelta, ParseError> {
-        return base::unexpected(ParseError());
-      },
-  });
+  if (const std::string* str = value.GetIfString()) {
+    uint64_t seconds;
+    if (!base::StringToUint64(*str, &seconds)) {
+      return base::unexpected(ParseError());
+    }
+    return std::clamp(base::Seconds(seconds), clamp_min, clamp_max);
+  } else if (std::optional<int> int_value = value.GetIfInt()) {
+    if (*int_value < 0) {
+      return base::unexpected(ParseError());
+    }
+    return std::clamp(base::Seconds(*int_value), clamp_min, clamp_max);
+  } else if (std::optional<double> double_value = value.GetIfDouble()) {
+    if (*double_value < 0 || HasFractionalPart(*double_value)) {
+      return base::unexpected(ParseError());
+    }
+    return std::clamp(base::Seconds(*double_value), clamp_min, clamp_max);
+  } else {
+    return base::unexpected(ParseError());
+  }
 }
 
 base::expected<std::optional<SuitableOrigin>, ParseError>
@@ -221,25 +252,18 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
   }
 }
 
+base::expected<int, ParseError> ParseInt(const base::Value& value) {
+  return ParseIntFromIntOrDouble<int>(value);
+}
+
 base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
-  // We use `base::Value::GetIfDouble()`, which coerces if the value is an
-  // integer, because not all `uint32_t` can be represented by 32-bit `int`.
-  // We use `std::modf` to check that the fractional part of the `double` is 0.
-  //
   // Assumes that all `uint32_t` can be represented either by `int` or `double`,
   // and that when represented internally by `base::Value` as an `int`, can be
   // precisely represented by `double`.
   //
   // TODO(apaseltiner): Consider test coverage for all `uint32_t` values, or
   // some kind of fuzzer.
-  std::optional<double> double_value = value.GetIfDouble();
-  if (double int_part;
-      !double_value.has_value() || std::modf(*double_value, &int_part) != 0 ||
-      !base::IsValueInRangeForNumericType<uint32_t>(*double_value)) {
-    return base::unexpected(ParseError());
-  }
-
-  return static_cast<uint32_t>(*double_value);
+  return ParseIntFromIntOrDouble<uint32_t>(value);
 }
 
 base::expected<uint32_t, ParseError> ParsePositiveUint32(

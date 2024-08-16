@@ -285,18 +285,6 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     audio_focus_observer_->WaitForGainedEvent();
   }
 
-  void WaitForMeetsVisibilityThreshold(
-      content::WebContents* web_contents,
-      bool expected_meets_visibility_threshold = true) {
-    ForceLifecycleUpdate(web_contents);
-    media_session::test::MockMediaSessionMojoObserver observer(
-        *content::MediaSession::Get(web_contents));
-    observer.WaitForMeetsVisibilityThreshold(
-        expected_meets_visibility_threshold);
-    // Flush so that the tab helper has also found out about this.
-    content::MediaSession::FlushObserversForTesting(web_contents);
-  }
-
   void ResetAudioFocusObserver() {
     mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
     content::GetMediaSessionService().BindAudioFocusManager(
@@ -539,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
@@ -554,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
@@ -570,8 +558,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  WaitForMeetsVisibilityThreshold(
-      web_contents, /*expected_meets_visibility_threshold*/ false);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 }
 
@@ -585,8 +572,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  WaitForMeetsVisibilityThreshold(
-      web_contents, /*expected_meets_visibility_threshold*/ false);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 }
 
@@ -600,8 +586,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  WaitForMeetsVisibilityThreshold(web_contents,
-                                  /*expected_meets_visibility_threshold*/ true);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
 }
@@ -621,8 +606,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
       u"makeOccludingOverlayInvisible()", base::NullCallback());
 
-  WaitForMeetsVisibilityThreshold(web_contents,
-                                  /*expected_meets_visibility_threshold*/ true);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
 }
@@ -646,8 +630,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForMediaSessionPlaying(web_contents);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ false);
-  WaitForMeetsVisibilityThreshold(web_contents,
-                                  /*expected_meets_visibility_threshold*/ true);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/false,
                                         /*should_document_pip=*/true);
 }
@@ -802,7 +785,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
 
   {
     // Open and switch to a new tab.
@@ -825,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1262,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
 
   // Set content setting to CONTENT_SETTING_ASK.
   auto* original_web_contents =
@@ -1299,7 +1282,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   PlayVideo(web_contents);
   WaitForAudioFocusGained();
   WaitForMediaSessionPlaying(web_contents);
-  WaitForMeetsVisibilityThreshold(web_contents);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndWaitForAutoPip();
   EXPECT_NE(nullptr, GetOverlayViewFromVideoPipWindow());
 }
@@ -1358,8 +1341,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   WaitForMediaSessionPlaying(web_contents);
 
   AddOverlayToVideo(web_contents, /*should_occlude*/ true);
-  WaitForMeetsVisibilityThreshold(
-      web_contents, /*expected_meets_visibility_threshold*/ false);
+  ForceLifecycleUpdate(web_contents);
   SwitchToNewTabAndDontExpectAutopip();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();

@@ -30,10 +30,8 @@ java_binary("errorprone_plugin") {
   annotation_processor_deps =
       [ "//third_party/android_deps:auto_service_processor" ]
   deps = [
+    "//third_party/android_build_tools/error_prone:error_prone_java",
+    "//third_party/android_build_tools/error_prone_javac:error_prone_javac_java",
     "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
-    "//third_party/android_deps:com_google_errorprone_error_prone_annotation_java",
-    "//third_party/android_deps:com_google_errorprone_error_prone_check_api_java",
-    "//third_party/android_deps:com_google_errorprone_error_prone_core_java",
-    "//third_party/android_deps:com_google_errorprone_javac_java",
   ]
 }

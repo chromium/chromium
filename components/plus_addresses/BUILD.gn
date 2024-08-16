@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 source_set("types") {
   sources = [
@@ -33,6 +34,33 @@ source_set("parsing") {
   ]
 }
 
+source_set("prefs") {
+  sources = [
+    "plus_address_prefs.cc",
+    "plus_address_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+proto_library("plus_address_blocklist_proto") {
+  sources = [ "blocked_facets.proto" ]
+}
+
+source_set("blocklist_data") {
+  sources = [
+    "plus_address_blocklist_data.cc",
+    "plus_address_blocklist_data.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/re2",
+  ]
+  public_deps = [ ":plus_address_blocklist_proto" ]
+}
+
 source_set("plus_addresses") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper.cc",
@@ -47,11 +75,15 @@ source_set("plus_addresses") {
     "plus_address_http_client_impl.h",
     "plus_address_jit_allocator.cc",
     "plus_address_jit_allocator.h",
+    "plus_address_preallocator.cc",
+    "plus_address_preallocator.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
   deps = [
+    ":blocklist_data",
     ":parsing",
+    ":prefs",
     "//components/affiliations/core/browser:affiliations",
     "//components/feature_engagement/public",
     "//components/plus_addresses/metrics",
@@ -99,16 +131,20 @@ source_set("unit_tests") {
   sources = [
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
+    "plus_address_blocklist_data_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
+    "plus_address_preallocator_unittest.cc",
     "plus_address_service_unittest.cc",
   ]
 
   deps = [
+    ":blocklist_data",
     ":features",
     ":parsing",
     ":plus_addresses",
+    ":prefs",
     ":test_support",
     "//base/test:test_support",
     "//components/affiliations/core/browser:affiliations",
@@ -134,6 +170,8 @@ static_library("test_support") {
     "mock_plus_address_http_client.cc",
     "mock_plus_address_http_client.h",
     "plus_address_http_client_impl_test_api.h",
+    "plus_address_test_environment.cc",
+    "plus_address_test_environment.h",
     "plus_address_test_utils.cc",
     "plus_address_test_utils.h",
   ]
@@ -148,5 +186,9 @@ static_library("test_support") {
   public_deps = [
     ":plus_addresses",
     ":types",
+    "//components/affiliations/core/browser:test_support",
+    "//components/plus_addresses/settings:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
   ]
 }

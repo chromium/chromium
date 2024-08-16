@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_EVENT_LISTENER_H_
 
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -31,13 +31,13 @@ class SyncEngineEventListener {
   virtual void OnRetryTimeChanged(base::Time retry_time) = 0;
 
   // This event is sent when types are throttled or unthrottled.
-  virtual void OnThrottledTypesChanged(ModelTypeSet throttled_types) = 0;
+  virtual void OnThrottledTypesChanged(DataTypeSet throttled_types) = 0;
 
   // This event is sent when types are backed off or unbacked off.
-  virtual void OnBackedOffTypesChanged(ModelTypeSet backed_off_types) = 0;
+  virtual void OnBackedOffTypesChanged(DataTypeSet backed_off_types) = 0;
 
   // This event is sent when the server requests a migration.
-  virtual void OnMigrationRequested(ModelTypeSet migration_types) = 0;
+  virtual void OnMigrationRequested(DataTypeSet migration_types) = 0;
 
   // Emits events when sync communicates with the server.
   virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;

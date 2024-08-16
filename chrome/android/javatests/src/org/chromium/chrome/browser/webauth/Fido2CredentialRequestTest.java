@@ -454,7 +454,7 @@ public class Fido2CredentialRequestTest {
                 String relyingPartyId,
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
-                Callback<Integer> callback) {
+                Callback<WebAuthSecurityChecksResults> callback) {
             mIsPaymentCredentialCreation = isPaymentCredentialCreation;
             super.performMakeCredentialWebAuthSecurityChecks(
                     relyingPartyId, effectiveOrigin, isPaymentCredentialCreation, callback);
@@ -462,7 +462,7 @@ public class Fido2CredentialRequestTest {
     }
 
     private static final String FIDO_OVERRIDE_COMMAND =
-            "am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
+            "su root am broadcast -a com.google.android.gms.phenotype.FLAG_OVERRIDE --es package"
                     + " com.google.android.gms.fido --es user * --esa flags"
                     + " Fido2ApiKnownBrowsers__fingerprints --esa values"
                     + " %s --esa types"
@@ -559,6 +559,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -577,6 +578,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -604,6 +606,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -622,6 +625,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -642,6 +646,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -659,6 +664,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -679,6 +685,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -701,6 +708,7 @@ public class Fido2CredentialRequestTest {
                 customOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -730,6 +738,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -750,6 +759,7 @@ public class Fido2CredentialRequestTest {
                 customOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -942,6 +952,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -972,6 +983,7 @@ public class Fido2CredentialRequestTest {
                 creationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1004,6 +1016,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1032,6 +1045,7 @@ public class Fido2CredentialRequestTest {
                 creationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1410,6 +1424,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1432,6 +1447,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1452,6 +1468,7 @@ public class Fido2CredentialRequestTest {
                 customOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1475,6 +1492,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1495,6 +1513,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1518,6 +1537,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -1604,6 +1624,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1647,6 +1668,7 @@ public class Fido2CredentialRequestTest {
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
                 mOrigin,
+                mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
         mCallback.blockUntilCalled();
@@ -1685,6 +1707,7 @@ public class Fido2CredentialRequestTest {
                 mCreationOptions,
                 /* maybeClientDataHash= */ null,
                 mBrowserOptions,
+                mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
                 mCallback::onError);
@@ -2453,5 +2476,64 @@ public class Fido2CredentialRequestTest {
         byte[] actualPrefix =
                 Arrays.copyOfRange(response.attestationObject, 0, expectedPrefix.length);
         Assert.assertArrayEquals(expectedPrefix, actualPrefix);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_generatesClientDataJson() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
+
+        String clientDataJson = "520";
+        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+
+        mFrameHost.setLastCommittedURL(new GURL("https://www.example.com"));
+
+        mRequestOptions.challenge = new byte[3];
+        mRequest.handleGetAssertionRequest(
+                mRequestOptions,
+                /* maybeClientDataHash= */ null,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Assert.assertEquals(
+                new String(
+                        mCallback.getGetAssertionResponse().info.clientDataJson,
+                        StandardCharsets.UTF_8),
+                clientDataJson);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testMakeCredential_generatesClientDataJson() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
+
+        String clientDataJson = "520";
+        Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
+
+        mFrameHost.setLastCommittedURL(new GURL("https://www.example.com"));
+
+        mRequest.handleMakeCredentialRequest(
+                mCreationOptions,
+                /* maybeClientDataHash= */ null,
+                mBrowserOptions,
+                mOrigin,
+                mOrigin,
+                mCallback::onRegisterResponse,
+                mCallback::onError);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Assert.assertEquals(
+                new String(
+                        mCallback.getMakeCredentialResponse().info.clientDataJson,
+                        StandardCharsets.UTF_8),
+                clientDataJson);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 }

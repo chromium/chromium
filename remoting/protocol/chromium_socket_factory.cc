@@ -99,7 +99,7 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
 
     scoped_refptr<net::IOBufferWithSize> data;
     net::IPEndPoint address;
-    bool retried;
+    bool retried = false;
     rtc::PacketOptions options;
   };
 
@@ -114,8 +114,8 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
 
   std::unique_ptr<net::UDPServerSocket> socket_;
 
-  State state_;
-  int error_;
+  State state_ = STATE_CLOSED;
+  int error_ = 0;
 
   rtc::SocketAddress local_address_;
 
@@ -123,9 +123,9 @@ class UdpPacketSocket : public rtc::AsyncPacketSocket {
   scoped_refptr<net::IOBuffer> receive_buffer_;
   net::IPEndPoint receive_address_;
 
-  bool send_pending_;
+  bool send_pending_ = false;
   std::list<PendingPacket> send_queue_;
-  int send_queue_size_;
+  int send_queue_size_ = 0;
 };
 
 UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,
@@ -134,16 +134,11 @@ UdpPacketSocket::PendingPacket::PendingPacket(const void* buffer,
                                               const rtc::PacketOptions& options)
     : data(base::MakeRefCounted<net::IOBufferWithSize>(buffer_size)),
       address(address),
-      retried(false),
       options(options) {
   memcpy(data->data(), buffer, buffer_size);
 }
 
-UdpPacketSocket::UdpPacketSocket()
-    : state_(STATE_CLOSED),
-      error_(0),
-      send_pending_(false),
-      send_queue_size_(0) {}
+UdpPacketSocket::UdpPacketSocket() = default;
 
 UdpPacketSocket::~UdpPacketSocket() {
   Close();
@@ -316,27 +311,35 @@ void UdpPacketSocket::SetError(int error) {
 }
 
 void UdpPacketSocket::DoSend() {
-  if (send_pending_ || send_queue_.empty()) {
-    return;
-  }
-
-  PendingPacket& packet = send_queue_.front();
-  cricket::ApplyPacketOptions(
-      packet.data->bytes(), packet.data->size(),
-      packet.options.packet_time_params,
-      (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
-  int result =
-      socket_->SendTo(packet.data.get(), packet.data->size(), packet.address,
-                      base::BindOnce(&UdpPacketSocket::OnSendCompleted,
-                                     base::Unretained(this)));
-  if (result == net::ERR_IO_PENDING) {
-    send_pending_ = true;
-  } else {
-    OnSendCompleted(result);
+  // SendTo() usually completes synchronously however if the socket is not able
+  // to send, it will return ERR_IO_PENDING. In that case, we break out of the
+  // send loop to allow it time to finish sending packets. Once the socket is
+  // ready, it will call the OnSendCompleted callback at which point we can
+  // start working through the pending packet queue again.
+  while (!send_pending_ && !send_queue_.empty() && error_ == 0) {
+    PendingPacket& packet = send_queue_.front();
+    cricket::ApplyPacketOptions(
+        packet.data->bytes(), packet.data->size(),
+        packet.options.packet_time_params,
+        (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
+    int result =
+        socket_->SendTo(packet.data.get(), packet.data->size(), packet.address,
+                        base::BindOnce(&UdpPacketSocket::OnSendCompleted,
+                                       base::Unretained(this)));
+    if (result != net::ERR_IO_PENDING) {
+      OnSendCompleted(result);
+    } else {
+      send_pending_ = true;
+    }
   }
 }
 
 void UdpPacketSocket::OnSendCompleted(int result) {
+  // If |send_pending_| is true, that means OnSendCompleted was run via the
+  // callback we provide to the socket because it is able to process send
+  // packets again. In that case, we want to call DoSend() so that any packets
+  // which were queued while the socket was busy will be sent immediately.
+  bool run_from_callback = send_pending_;
   send_pending_ = false;
 
   if (result < 0) {
@@ -351,7 +354,9 @@ void UdpPacketSocket::OnSendCompleted(int result) {
         // Retry resending only once.
         if (!send_queue_.front().retried) {
           send_queue_.front().retried = true;
-          DoSend();
+          if (run_from_callback) {
+            DoSend();
+          }
           return;
         }
         break;
@@ -361,13 +366,14 @@ void UdpPacketSocket::OnSendCompleted(int result) {
     }
   }
 
-  // Don't need to worry about partial sends because this is a datagram
-  // socket.
+  // Don't need to worry about partial sends because this is a datagram socket.
   send_queue_size_ -= send_queue_.front().data->size();
   SignalSentPacket(this, rtc::SentPacket(send_queue_.front().options.packet_id,
                                          rtc::TimeMillis()));
   send_queue_.pop_front();
-  DoSend();
+  if (run_from_callback) {
+    DoSend();
+  }
 }
 
 void UdpPacketSocket::DoRead() {
@@ -430,7 +436,7 @@ rtc::AsyncPacketSocket* ChromiumPacketSocketFactory::CreateUdpSocket(
         << "Disable-UDP experiment is enabled. UDP socket won't be created.";
     return nullptr;
   }
-  std::unique_ptr<UdpPacketSocket> result(new UdpPacketSocket());
+  std::unique_ptr<UdpPacketSocket> result = std::make_unique<UdpPacketSocket>();
   if (!result->Init(local_address, min_port, max_port)) {
     return nullptr;
   }

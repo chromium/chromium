@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="1333745675627230582">Joacă Chrome Dino</translation>
 <translation id="1352919863522755794">Managerul de parole Google nu ți-a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
+<translation id="1380565463006545725">Profită de puterea cumpărăturilor Chrome</translation>
 <translation id="139623527619433858">Folosește Chrome pentru iPad în mod prestabilit</translation>
 <translation id="1407843355326180937">Conectează-te la acest site și la Chrome pentru a accesa marcajele și multe altele de pe toate dispozitivele tale.</translation>
 <translation id="1436059927646026729">Deschide cea mai recentă filă în Chrome</translation>
@@ -35,6 +36,7 @@ De reținut:
 <translation id="1554731936187952550">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
 <translation id="1615715390546812898">Căutarea vocală în Chrome.</translation>
 <translation id="1657395063736185342">Caută imagini în Chrome</translation>
+<translation id="1670609221633730681">Sfat pentru Chrome: alege poziția barei de adrese</translation>
 <translation id="1675955119303651351">Unele date Chrome nu au fost salvate încă în Contul Google.
         Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
@@ -113,12 +115,14 @@ De reținut:
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="4064699917955374540">Pentru a folosi și a salva datele Chrome în Contul Google, confirmă-ți identitatea.</translation>
+<translation id="4066411101507716142">Accesează Chrome mai rapid din bara de andocare de pe ecranul de pornire al dispozitivului iPad.</translation>
 <translation id="4067858366537947361">Deschide o filă incognito în Chrome</translation>
 <translation id="4093042601582616698">Setezi Chrome ca browser prestabilit?</translation>
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251174643044751591">Deschide pagina cu setări pentru metodele de plată în Chrome.</translation>
 <translation id="4286914711740227883">Șterge datele de navigare din Chrome</translation>
+<translation id="430839890088895017">Sfat pentru Chrome: mută Chrome în bara de andocare</translation>
 <translation id="4453284704333523777">Gestionează setările Chrome</translation>
 <translation id="4523886039239821078">Unele suplimente determină blocarea browserului Chrome. Dezinstalează:</translation>
 <translation id="4633328489441962921">Chrome nu poate căuta actualizări</translation>
@@ -182,6 +186,7 @@ De reținut:
 <translation id="6272822675004864999">Pentru a primi notificări de la Chrome, activează notificările din Setările iOS.</translation>
 <translation id="630693926528731525">Parola nu a fost trimisă. Verifică-ți conexiunea la internet și asigură-te că te-ai conectat la Chrome. Apoi încearcă din nou.</translation>
 <translation id="6348855835728304880">Accesează parolele Chrome și alte funcții în alte aplicații de pe acest dispozitiv.</translation>
+<translation id="6373751563207403289">Verificarea de siguranță te protejează împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Primește alerte cu privire la orice probleme de confidențialitate sau de securitate pe care Chrome le detectează pentru tine.</translation>
 <translation id="6374691158439235563">Finalizează configurarea Chrome</translation>
 <translation id="6389317667633680932">Explorează noile funcții care te ajută să profiți din plin de Chrome.</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
@@ -234,8 +239,10 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="746684838091935575">3. selectează Chrome.</translation>
 <translation id="7492574581995589075">Organizația ta a dezactivat opțiunea de a folosi și salva datele Chrome în Contul Google. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
 <translation id="7581063337314642333">Accesează Grila de file din Chrome</translation>
+<translation id="7642373780953416937">Primește alerte cu privire la orice probleme de confidențialitate sau de securitate pe care Chrome le detectează automat pentru tine.</translation>
 <translation id="7662994914830945754">Pentru a vedea toate filele tale deschise în Chrome, conectează-te și activează sincronizarea</translation>
 <translation id="7669869107155339016">Accesează setările Chrome.</translation>
+<translation id="7683540977001394271">Accesează Chrome mai rapid din bara de andocare de pe ecranul de pornire al iPhone-ului.</translation>
 <translation id="769104993356536261">Folosește Acțiuni în Chrome pe iOS</translation>
 <translation id="7693590760643069321">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
@@ -249,6 +256,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="8006014511203279255">Folosește Chrome oricând atingi linkuri în mesaje sau alte aplicații.</translation>
 <translation id="8022947259858476807">Folosește Chrome în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="804638182476029347">Permite notificările Chrome ca să primești alerte privind scăderea prețurilor</translation>
+<translation id="804756029368067824">Setează Chrome ca browser prestabilit pentru a urmări ușor prețurile și a primi statistici despre prețuri pentru articolele pe care vrei să le cumperi.</translation>
 <translation id="8065292699993359127">Deschide adrese URL în Chrome în modul incognito</translation>
 <translation id="8069507567842347179">Coletul este deja urmărit în Chrome.</translation>
 <translation id="8136856065410661948">Acesta se va folosi pentru a crea evenimente în Apple Calendar din Chrome și Google Lens.</translation>
@@ -276,6 +284,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
   2. atinge Aplicația browser prestabilită;
   3. selectează Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Alerte cu privire la orice probleme de confidențialitate sau de securitate pe care Chrome le detectează pentru tine.</translation>
 <translation id="8558480467877843976">Acum poți folosi Chrome oricând navighezi sau atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="8603022514504485810">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Profită la maximum de Chrome</translation>

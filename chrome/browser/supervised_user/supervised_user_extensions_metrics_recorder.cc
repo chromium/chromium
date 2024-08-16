@@ -135,7 +135,7 @@ void SupervisedUserExtensionsMetricsRecorder::
           base::UserMetricsAction(kExtensionInstallDialogOpenedActionName));
       break;
     case ExtensionInstallDialogState::kAskedParentDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case ExtensionInstallDialogState::kChildCanceled:
       base::RecordAction(base::UserMetricsAction(
           kExtensionInstallDialogChildCanceledActionName));

@@ -44,7 +44,7 @@ ViewAndroid::ScopedAnchorView::ScopedAnchorView(
     JNIEnv* env,
     const JavaRef<jobject>& jview,
     const JavaRef<jobject>& jdelegate)
-    : view_(env, jview), delegate_(env, jdelegate) {
+    : view_(env, jview.obj()), delegate_(env, jdelegate.obj()) {
   // If there's a view, then we need a delegate to remove it.
   DCHECK(!jdelegate.is_null() || jview.is_null());
 }

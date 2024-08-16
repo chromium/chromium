@@ -112,6 +112,7 @@ source_set("hardware_info_delegate") {
 
 source_set("test_support") {
   testonly = true
+
   sources = [
     "base_telemetry_extension_browser_test.cc",
     "base_telemetry_extension_browser_test.h",
@@ -135,7 +136,9 @@ source_set("test_support") {
 
 source_set("browser_tests") {
   testonly = true
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
   sources = [
     "base_telemetry_extension_api_guard_function_browsertest.cc",
     "telemetry_extension_capabilities_browser_test.cc",
@@ -167,7 +170,7 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//components/user_manager",
     ]
   }
@@ -183,7 +186,9 @@ source_set("browser_tests") {
 
 source_set("unit_tests") {
   testonly = true
+
   sources = [ "api_guard_delegate_unittest.cc" ]
+
   deps = [
     ":common",
     ":hardware_info_delegate",
@@ -206,7 +211,7 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     deps += [
       "//ash/webui/shimless_rma/backend",
-      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/login/users:test_support",
       "//chrome/common/chromeos/extensions",
       "//components/user_manager",
     ]

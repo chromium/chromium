@@ -68,68 +68,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   friend class WindowPerformanceTest;
   friend class ResponsivenessMetrics;
 
-  class EventData : public GarbageCollected<EventData> {
-   public:
-    EventData(PerformanceEventTiming* event_timing,
-              uint64_t presentation_index,
-              base::TimeTicks event_timestamp,
-              base::TimeTicks processing_start,
-              base::TimeTicks processing_end,
-              std::optional<int> key_code,
-              std::optional<PointerId> pointer_id)
-        : event_timing_(event_timing),
-          presentation_index_(presentation_index),
-          event_timestamp_(event_timestamp),
-          processing_start_(processing_start),
-          processing_end_(processing_end),
-          key_code_(key_code),
-          pointer_id_(pointer_id) {}
-
-    static EventData* Create(PerformanceEventTiming* event_timing,
-                             uint64_t presentation_index,
-                             base::TimeTicks event_timestamp,
-                             base::TimeTicks processing_start,
-                             base::TimeTicks processing_end,
-                             std::optional<int> key_code,
-                             std::optional<PointerId> pointer_id) {
-      return MakeGarbageCollected<EventData>(
-          event_timing, presentation_index, event_timestamp, processing_start,
-          processing_end, key_code, pointer_id);
-    }
-    ~EventData() = default;
-    void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEventTiming() const {
-      return event_timing_.Get();
-    }
-    uint64_t GetPresentationIndex() const { return presentation_index_; }
-    base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
-    base::TimeTicks GetProcessingStart() const { return processing_start_; }
-    base::TimeTicks GetProcessingEnd() const { return processing_end_; }
-    std::optional<int> GetKeyCode() const { return key_code_; }
-    std::optional<PointerId> GetPointerId() const { return pointer_id_; }
-
-   private:
-    // Event PerformanceEventTiming entry that has not been sent to observers
-    // yet: the event dispatch has been completed but the presentation promise
-    // used to determine |duration| has not yet been resolved.
-    Member<PerformanceEventTiming> event_timing_;
-    // Presentation promise index in which the entry in |event_timing_| was
-    // added.
-    uint64_t presentation_index_;
-    // The event creation timestamp.
-    base::TimeTicks event_timestamp_;
-
-    base::TimeTicks processing_start_;
-
-    base::TimeTicks processing_end_;
-    // Keycode for the event. If the event is not a keyboard event, the keycode
-    // wouldn't be set.
-    std::optional<int> key_code_;
-    // PointerId for the event. If the event is not a pointer event, the
-    // PointerId wouldn't be set.
-    std::optional<PointerId> pointer_id_;
-  };
-
  public:
   explicit WindowPerformance(LocalDOMWindow*);
   ~WindowPerformance() override;
@@ -239,7 +177,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // order; stop as soon as seeing an event with pending presentation promise.
   void ReportEventTimings();
   void ReportEvent(InteractiveDetector* interactive_detector,
-                   Member<EventData> event_data,
+                   Member<PerformanceEventTiming> event_timing_entry,
                    base::TimeTicks presentation_timestamp);
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
@@ -249,21 +187,15 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // in PerformanceObservers and the Performance Timeline
   bool SetInteractionIdAndRecordLatency(
       PerformanceEventTiming* entry,
-      std::optional<int> key_code,
-      std::optional<PointerId> pointer_id,
       ResponsivenessMetrics::EventTimestamps event_timestamps);
 
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
-  // Return a valid fallback time in event timing if there's one; otherwise
-  // return nullopt.
-  std::optional<base::TimeTicks> GetFallbackTime(
-      PerformanceEventTiming* entry,
-      base::TimeTicks event_timestamp,
-      base::TimeTicks processing_end,
-      base::TimeTicks presentation_timestamp);
+  // If a fallback time should be used in calculating an event duration, set
+  // the fallback value in the PerformanceEventTiming::EventTimingReportingInfo.
+  void SetFallbackTime(PerformanceEventTiming* entry);
 
   // The last time the page visibility was changed.
   base::TimeTicks last_hidden_timestamp_;
@@ -284,7 +216,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // Store all event timing and latency related data, including
   // PerformanceEventTiming, presentation_index, keycode and pointerId.
   // We use the data to calculate events latencies.
-  HeapVector<Member<EventData>> events_data_;
+  HeapVector<Member<PerformanceEventTiming>> event_timing_entries_;
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;

@@ -17,8 +17,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.resources.dynamics.CaptureUtils;
-import org.chromium.ui.resources.dynamics.SoftwareDraw;
+import org.chromium.url.GURL;
 
 /** Capture native page as a bitmap. */
 public class NativePageBitmapCapturer implements UnownedUserData {
@@ -26,7 +27,6 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     // as the tab size won't change inside one single window.
     private static final UnownedUserDataKey<NativePageBitmapCapturer> CAPTURER_KEY =
             new UnownedUserDataKey<>(NativePageBitmapCapturer.class);
-    private final SoftwareDraw mSoftwareDraw = new SoftwareDraw();
 
     private NativePageBitmapCapturer() {}
 
@@ -42,6 +42,12 @@ public class NativePageBitmapCapturer implements UnownedUserData {
     public static boolean maybeCaptureNativeView(
             @NonNull Tab tab, @NonNull Callback<Bitmap> callback, int topControlsHeight) {
         if (!tab.isNativePage()) {
+            return false;
+        }
+        // The native page, like NTP, is displayed before the url is loaded. Return early to
+        // prevent capturing the current NTP as the screenshot of the previous page
+        GURL lastCommittedUrl = tab.getWebContents().getLastCommittedUrl();
+        if (!NativePage.isNativePageUrl(lastCommittedUrl, tab.isIncognitoBranded(), false)) {
             return false;
         }
         if (tab.getWindowAndroid() == null) return false;

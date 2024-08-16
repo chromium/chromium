@@ -34,20 +34,20 @@ bool ShouldWaitForSync(syncer::SyncService* sync_service) {
     return false;
   }
 
-  auto should_wait = [&sync_service](syncer::ModelType model_type) {
-    switch (sync_service->GetDownloadStatusFor(model_type)) {
-      case syncer::SyncService::ModelTypeDownloadStatus::kWaitingForUpdates:
+  auto should_wait = [&sync_service](syncer::DataType data_type) {
+    switch (sync_service->GetDownloadStatusFor(data_type)) {
+      case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
         return true;
-      case syncer::SyncService::ModelTypeDownloadStatus::kUpToDate:
+      case syncer::SyncService::DataTypeDownloadStatus::kUpToDate:
       // If the download status is kError, it will likely not become available
       // anytime soon. In this case, don't defer the cleanups.
-      case syncer::SyncService::ModelTypeDownloadStatus::kError:
+      case syncer::SyncService::DataTypeDownloadStatus::kError:
         return false;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
-  return should_wait(syncer::ModelType::AUTOFILL_PROFILE) ||
-         should_wait(syncer::ModelType::CONTACT_INFO);
+  return should_wait(syncer::DataType::AUTOFILL_PROFILE) ||
+         should_wait(syncer::DataType::CONTACT_INFO);
 }
 
 // Quasi duplicates of rank one, those conflicting token has low quality qualify

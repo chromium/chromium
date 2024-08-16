@@ -6,11 +6,11 @@ package org.chromium.chrome.test.transit.settings;
 
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 
 /**
@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
  */
 public class SettingsStation extends Station {
 
-    public static final ViewElement SEARCH_ENGINE = scopedViewElement(withText("Search engine"));
+    public static final ViewSpec SEARCH_ENGINE = viewSpec(withText("Search engine"));
 
     @Override
     public void declareElements(Elements.Builder elements) {

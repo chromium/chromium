@@ -303,7 +303,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
   std::unique_ptr<component_updater::ComponentInstallerPolicy> policy =
       std::make_unique<TpcdMetadataComponentInstallerPolicy>(
           base::BindLambdaForTesting(
-              [&](const std::string& raw_metadata) { NOTREACHED_NORETURN(); }));
+              [&](const std::string& raw_metadata) { NOTREACHED(); }));
 
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(policy->VerifyInstallation(base::Value::Dict(), install_dir()));

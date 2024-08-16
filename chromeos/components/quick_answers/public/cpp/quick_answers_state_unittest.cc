@@ -272,4 +272,154 @@ TEST(QuickAnswersStateTest, GetConsentStatusUnderMagicBoost) {
             observer.consent_status());
 }
 
+TEST(QuickAnswersStateTest, PendingUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  magic_boost_state.AsyncWriteHMREnabled(true);
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+
+  EXPECT_TRUE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Quick Answers capability can be enabled with kPendingDisclaimer "
+         "state.";
+  EXPECT_FALSE(quick_answers_state.IsEnabledAs(
+      QuickAnswersState::FeatureType::kQuickAnswers))
+      << "Expect that Quick Answers capability is enabled only as HMR if it's "
+         "via MagicBoost.";
+}
+
+TEST(QuickAnswersStateTest, PendingNotEnabledUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+
+  ASSERT_FALSE(magic_boost_state.hmr_enabled().has_value())
+      << "Test that enabled state pref value is not initialized yet.";
+  EXPECT_FALSE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Magic Boost must be enabled as Quick Answers capability can be "
+         "enabled.";
+
+  magic_boost_state.AsyncWriteHMREnabled(false);
+  ASSERT_TRUE(magic_boost_state.hmr_enabled().has_value());
+  ASSERT_FALSE(magic_boost_state.hmr_enabled().value())
+      << "This test is testing kPendingDisclaimer state with not-enabled";
+
+  EXPECT_FALSE(
+      quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
+      << "Magic Boost must be enabled as Quick Answers capability can be "
+         "enabled.";
+}
+
+TEST(QuickAnswersStateTest, IsIntentEligible) {
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kDefinition))
+      << "Expect false if a respective intent eligible value is not "
+         "initialized";
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kTranslation))
+      << "Expect false if a respective intent eligible value is not "
+         "initialized";
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kUnitConversion))
+      << "Expect false if a respective intent eligible value is not "
+         "initialized";
+
+  // Enables intent one by one and confirm that it's reflected.
+  quick_answers_state.SetDefinitionEligible(true);
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kDefinition));
+  quick_answers_state.SetTranslationEligible(true);
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kTranslation));
+  quick_answers_state.SetUnitConversionEligible(true);
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kUnitConversion));
+
+  // Disables intent one by one and confirm that it's reflected.
+  quick_answers_state.SetDefinitionEligible(false);
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kDefinition));
+  quick_answers_state.SetTranslationEligible(false);
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kTranslation));
+  quick_answers_state.SetUnitConversionEligible(false);
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kUnitConversion));
+}
+
+TEST(QuickAnswersStateTest, IsIntentEligibleGatedByGlobalEligible) {
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+  quick_answers_state.SetDefinitionEligible(true);
+  quick_answers_state.SetTranslationEligible(true);
+  quick_answers_state.SetUnitConversionEligible(true);
+  ASSERT_TRUE(QuickAnswersState::IsEligible());
+  ASSERT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kDefinition))
+      << "Precondition: intent is eligible";
+  ASSERT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kTranslation))
+      << "Precondition: intent is eligible";
+  ASSERT_TRUE(QuickAnswersState::IsIntentEligible(Intent::kUnitConversion))
+      << "Precondition: intent is eligible";
+
+  quick_answers_state.SetSettingsEnabled(false);
+  quick_answers_state.SetApplicationLocale("ja");
+  ASSERT_FALSE(QuickAnswersState::IsEligible())
+      << "Precondition: feature itself is ineligible";
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kDefinition))
+      << "Intent is ineligible if a feature itself is ineligible";
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kTranslation))
+      << "Intent is ineligible if a feature itself is ineligible";
+  EXPECT_FALSE(QuickAnswersState::IsIntentEligible(Intent::kUnitConversion))
+      << "Intent is ineligible if a feature itself is ineligible";
+}
+
+TEST(QuickAnswersStateTest, IsIntentEligibleUnderMagicBoost) {
+  std::unique_ptr<base::test::ScopedFeatureList> magic_boost_enabled =
+      MaybeEnableMagicBoost();
+  ASSERT_TRUE(magic_boost_enabled)
+      << "This *test* code does not support Lacros. See MaybeEnableMagicBoost.";
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  quick_answers_state.SetDefinitionEligible(false);
+  quick_answers_state.SetTranslationEligible(false);
+  quick_answers_state.SetUnitConversionEligible(false);
+  ASSERT_FALSE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kDefinition, QuickAnswersState::FeatureType::kQuickAnswers))
+      << "Precondition: intent is ineligible for Quick Answers";
+  ASSERT_FALSE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kTranslation, QuickAnswersState::FeatureType::kQuickAnswers))
+      << "Precondition: intent is ineligible for Quick Answers";
+  ASSERT_FALSE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kUnitConversion, QuickAnswersState::FeatureType::kQuickAnswers))
+      << "Precondition: intent is ineligible for Quick Answers";
+
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kDefinition, QuickAnswersState::FeatureType::kHmr))
+      << "An intent is always eligible for kHmr regardless the respective "
+         "value in kQuickAnswers";
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kTranslation, QuickAnswersState::FeatureType::kHmr))
+      << "An intent is always eligible for kHmr regardless the respective "
+         "value in kQuickAnswers";
+  EXPECT_TRUE(QuickAnswersState::IsIntentEligibleAs(
+      Intent::kUnitConversion, QuickAnswersState::FeatureType::kHmr))
+      << "An intent is always eligible for kHmr regardless the respective "
+         "value in kQuickAnswers";
+}
+
 }  // namespace quick_answers

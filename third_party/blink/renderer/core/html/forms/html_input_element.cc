@@ -1857,19 +1857,30 @@ void HTMLInputElement::EndColorChooserForTesting() {
   input_type_view_->ClosePopupView();
 }
 
-HTMLElement* HTMLInputElement::list() const {
-  return DataList();
-}
-
 HTMLDataListElement* HTMLInputElement::DataList() const {
-  if (!has_non_empty_list_)
+  if (!has_non_empty_list_) {
     return nullptr;
+  }
 
-  if (!input_type_->ShouldRespectListAttribute())
+  if (!input_type_->ShouldRespectListAttribute()) {
     return nullptr;
+  }
 
   return DynamicTo<HTMLDataListElement>(
-      GetTreeScope().getElementById(FastGetAttribute(html_names::kListAttr)));
+      GetElementAttributeResolvingReferenceTarget(html_names::kListAttr));
+}
+
+HTMLElement* HTMLInputElement::listForBinding() const {
+  if (!has_non_empty_list_) {
+    return nullptr;
+  }
+
+  if (!input_type_->ShouldRespectListAttribute()) {
+    return nullptr;
+  }
+
+  return DynamicTo<HTMLDataListElement>(
+      GetElementAttribute(html_names::kListAttr));
 }
 
 bool HTMLInputElement::HasValidDataListOptions() const {

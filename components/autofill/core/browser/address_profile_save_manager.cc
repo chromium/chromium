@@ -103,13 +103,6 @@ void AddressProfileSaveManager::OfferSavePrompt(
   // The prompt should not have been shown yet.
   DCHECK(!import_process->prompt_shown());
 
-  // TODO(crbug.com/40168046): Pass the correct SaveAddressProfilePromptOptions
-  // below.
-
-  // TODO(crbug.com/40168046): Check import_process->set_prompt_was_shown() is
-  // always correct even in cases where it conflicts with
-  // SaveAddressProfilePromptOptions
-
   // Initiate the prompt and mark it as shown.
   // The import process that carries to state of the current import process is
   // attached to the callback.
@@ -118,7 +111,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
       base::OptionalToPtr(process_ptr->merge_candidate()),
-      /*options=*/{.is_migration_to_account = process_ptr->is_migration()},
+      process_ptr->is_migration(),
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(import_process)));

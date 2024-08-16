@@ -110,7 +110,7 @@ class ImageDocumentParser : public RawDataDocumentParser {
   }
 
  private:
-  void AppendBytes(const char*, size_t) override;
+  void AppendBytes(base::span<const uint8_t>) override;
   void Finish() override;
 
   Member<ImageResource> image_resource_;
@@ -132,9 +132,10 @@ static String ImageTitle(const String& filename, const gfx::Size& size) {
   return result.ToString();
 }
 
-void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
-  if (!length)
+void ImageDocumentParser::AppendBytes(base::span<const uint8_t> data) {
+  if (data.empty()) {
     return;
+  }
 
   if (IsDetached())
     return;
@@ -164,14 +165,11 @@ void ImageDocumentParser::AppendBytes(const char* data, size_t length) {
       image_resource_->ResponseReceived(loader->GetResponse());
   }
 
-  CHECK_LE(length, std::numeric_limits<unsigned>::max());
+  CHECK_LE(data.size(), std::numeric_limits<unsigned>::max());
   // If decoding has already failed, there's no point in sending additional
   // data to the ImageResource.
   if (image_resource_->GetStatus() != ResourceStatus::kDecodeError) {
-    image_resource_->AppendData(
-        // SAFETY: The caller must ensure `data` points to `length` bytes.
-        // TODO(crbug.com/40284755): Spanify this method.
-        UNSAFE_BUFFERS(base::span(data, length)));
+    image_resource_->AppendData(base::as_chars(data));
   }
 
   if (!IsDetached())

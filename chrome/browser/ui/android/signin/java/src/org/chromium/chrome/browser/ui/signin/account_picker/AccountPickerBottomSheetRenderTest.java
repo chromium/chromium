@@ -43,7 +43,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -487,7 +486,6 @@ public class AccountPickerBottomSheetRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testConfirmManagementView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -511,10 +509,7 @@ public class AccountPickerBottomSheetRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
-    })
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testConfirmManagementView_replaceSyncWithSigninPromosEnabled(
             boolean nightModeEnabled) throws IOException {

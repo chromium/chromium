@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_iframe[cross_origin]
+  AssertionError
+[FAIL] test_image[same_origin]
+  AssertionError
+Harness: the test ran to completion.

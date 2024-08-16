@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -235,6 +236,9 @@ GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group)
           kInsideContainerBorderInset, kBetweenCycleItemsSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  GetViewAccessibility().SetDescription(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
 }
 
 GroupContainerCycleView::~GroupContainerCycleView() = default;
@@ -305,8 +309,6 @@ void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     }
   }
 
-  node_data->SetDescription(
-      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
   node_data->role = ax::mojom::Role::kGroup;
 }
 

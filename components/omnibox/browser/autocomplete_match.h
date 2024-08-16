@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -92,9 +93,25 @@ struct RichAutocompletionParams {
 
 enum class IphType {
   kNone,
+  // '@gemini' promo; shown in zero state.
   kGemini,
+  // Featured search promo; shown in zero state.
   kFeaturedEnterpriseSearch,
+  // Embeddings' setting promo when embeddings are disabled; shown in '@history'
+  // scope.
   kHistoryEmbeddingsSettingsPromo,
+  // Disclaimer when embeddings are enabled; shown in '@history' scope.
+  kHistoryEmbeddingsDisclaimer,
+  // '@history' promo when embeddings are disabled; shown in zero state.
+  kHistoryScopePromo,
+  // '@history' promo when embeddings are enabled; shown in zero state.
+  kHistoryEmbeddingsScopePromo,
+};
+
+enum class FeedbackType {
+  kNone,
+  kThumbsUp,
+  kThumbsDown,
 };
 
 // AutocompleteMatch ----------------------------------------------------------
@@ -207,7 +224,15 @@ struct AutocompleteMatch {
     kMaxValue = kShortcutTextPrefix,
   };
 
-  static const char* const kDocumentTypeStrings[];
+  static constexpr auto kDocumentTypeStrings = std::to_array<const char*>(
+      {"none", "drive_docs", "drive_forms", "drive_sheets", "drive_slides",
+       "drive_image", "drive_pdf", "drive_video", "drive_folder",
+       "drive_other"});
+
+  static_assert(kDocumentTypeStrings.size() ==
+                    static_cast<int>(DocumentType::DOCUMENT_TYPE_SIZE),
+                "Sizes of AutocompleteMatch::kDocumentTypeStrings and "
+                "AutocompleteMatch::DocumentType don't match.");
 
   // Return a string version of the core type values. Only used for
   // `RecordAdditionalInfo()`.
@@ -549,6 +574,9 @@ struct AutocompleteMatch {
   // shown.
   bool IsVerbatimType() const;
 
+  // Returns whether this match is a "verbatim URL" suggestion.
+  bool IsVerbatimUrlSuggestion() const;
+
   // Returns whether this match is a search suggestion provided by search
   // provider.
   bool IsSearchProviderSearchSuggestion() const;
@@ -562,8 +590,11 @@ struct AutocompleteMatch {
   // next.
   int GetSortingOrder() const;
 
-  // Returns true if the match is eligible to be re-scored by ML Url scoring.
-  bool IsUrlScoringEligible() const;
+  // Returns true if the match is eligible for ML scoring signal logging.
+  bool IsMlSignalLoggingEligible() const;
+
+  // Returns true if the match is eligible to be re-scored by ML scoring.
+  bool IsMlScoringEligible() const;
 
   // Filter OmniboxActions based on the supplied qualifiers.
   // The order of the supplied qualifiers determines the preference.
@@ -928,12 +959,6 @@ struct AutocompleteMatch {
   // Signals for ML scoring.
   std::optional<ScoringSignals> scoring_signals;
 
-  // A flag that's set during the de-duplication process in order to forcibly
-  // exclude this match from ML scoring (e.g. this match is ML-eligible, but one
-  // of the matches in `duplicate_matches` is not). Furthermore, when this flag
-  // is set, ML scoring signals will NOT be logged for this particular match.
-  bool force_skip_ml_scoring = false;
-
   // A flag to mark whether this would've been excluded from the "original" list
   // of matches. Traditionally, providers limit the number of suggestions they
   // provide to the top N most relevant matches. When ML scoring is enabled,
@@ -958,6 +983,9 @@ struct AutocompleteMatch {
   // their contents/description text.
   std::u16string iph_link_text;
   GURL iph_link_url;
+
+  // The user feedback on the match.
+  FeedbackType feedback_type = FeedbackType::kNone;
 
   // So users of AutocompleteMatch can use the same ellipsis that it uses.
   static const char16_t kEllipsis[];

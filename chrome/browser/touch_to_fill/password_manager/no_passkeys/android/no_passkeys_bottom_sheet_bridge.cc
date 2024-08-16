@@ -65,7 +65,9 @@ NoPasskeysBottomSheetBridge::NoPasskeysBottomSheetBridge(
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 
-NoPasskeysBottomSheetBridge::~NoPasskeysBottomSheetBridge() = default;
+NoPasskeysBottomSheetBridge::~NoPasskeysBottomSheetBridge() {
+  Dismiss();
+}
 
 void NoPasskeysBottomSheetBridge::Show(
     ui::WindowAndroid* window_android,

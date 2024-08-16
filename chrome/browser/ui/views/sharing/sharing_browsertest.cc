@@ -28,7 +28,7 @@
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_utils.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
@@ -54,7 +54,7 @@ void FakeSharingMessageBridge::SendSharingMessage(
   std::move(on_commit_callback).Run(commit_error);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 FakeSharingMessageBridge::GetControllerDelegate() {
   return nullptr;
 }

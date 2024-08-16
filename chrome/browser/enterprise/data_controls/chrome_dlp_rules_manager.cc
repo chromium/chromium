@@ -302,7 +302,7 @@ void ChromeDlpRulesManager::OnDataLeakPreventionRulesUpdate() {
   // Not supported on non-CrOS platforms, see
   // `DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate()` for the CrOS
   // implementation.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace data_controls

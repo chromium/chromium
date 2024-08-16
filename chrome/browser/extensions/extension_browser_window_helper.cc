@@ -66,8 +66,7 @@ void UnmuteIfMutedByExtension(content::WebContents* contents,
       LastMuteMetadata::FromWebContents(contents);
   if (metadata->reason == TabMutedReason::EXTENSION &&
       metadata->extension_id == extension_id) {
-    chrome::SetTabAudioMuted(contents, false, TabMutedReason::EXTENSION,
-                             extension_id);
+    SetTabAudioMuted(contents, false, TabMutedReason::EXTENSION, extension_id);
   }
 }
 

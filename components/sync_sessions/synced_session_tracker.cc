@@ -13,6 +13,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info_proto_enum_util.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 

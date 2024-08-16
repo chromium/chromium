@@ -39,7 +39,7 @@ const char* GetDeviceTypeString(DeviceType device_type) {
     case DeviceType::kDeviceVirtualCoreKeyboard:
       return "Virtual Core Keyboard";
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -118,14 +118,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
-  // Omnibox position choice promo dismissal.
-  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
-    [[self elementInteractionWithGreyMatcher:
-               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
-                        scrollViewIdentifier:
-                            kPromoStyleScrollViewAccessibilityIdentifier]
-        performAction:grey_tap()];
-  }
   [ChromeEarlGreyUI waitForAppToIdle];
   // Tests that the sentinel file has been created.
   GREYAssertTrue([ChromeEarlGrey hasFirstRunSentinel],
@@ -357,7 +349,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -385,7 +377,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -417,7 +409,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is off.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -471,7 +463,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
   // Close settings.
@@ -509,7 +501,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
   // Close settings.
@@ -542,7 +534,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -635,7 +627,7 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
   // Check sync is on.
-  [[self class] dismissDefaultBrowserAndOmniboxPositionSelectionScreens];
+  [[self class] dismissDefaultBrowser];
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }

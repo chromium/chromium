@@ -140,6 +140,18 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
     return tracker_->tracker_attached_to_document_;
   }
 
+  void SetRequestVisibilityCbForTesting(
+      RequestVisibilityCallback& request_visibility_callback) {
+    DCHECK(tracker_);
+    tracker_->request_visibility_callback_ =
+        request_visibility_callback.VisibilityCallback();
+  }
+
+  void DetachVideoVisibilityTracker() {
+    DCHECK(tracker_);
+    tracker_->Detach();
+  }
+
  private:
   Persistent<MediaVideoVisibilityTracker> tracker_;
   base::MockRepeatingCallback<void(bool)> report_visibility_cb_;
@@ -1131,25 +1143,29 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Initially set the lifecycle state to a value <
   // DocumentUpdateReason::kPaintClean. The `RequestVisibilityCallback` should
-  // not run until we reach the `DocumentUpdateReason::kPaintClean` lifecycle
-  // state.
+  // run with the `false` cached value.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
 
-  // Create the `RequestVisibilityCallback`, and verify that no visibility
-  // computations are performed when the tracker takes the callback.
+  // Create the `RequestVisibilityCallback`, and verify that: no visibility
+  // computations are performed when the tracker takes the callback, and we
+  // report that visibility is not met, since the document lifecycle state is
+  // not `DocumentUpdateReason::kPaintClean`.
   RequestVisibilityCallback request_visibility_callback;
   tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
+  request_visibility_callback.WaitUntilDone();
   EXPECT_TRUE(IntersectionRect().IsEmpty());
   EXPECT_TRUE(OccludingRects().empty());
+  EXPECT_FALSE(request_visibility_callback.MeetsVisibility());
 
-  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean` and wait
-  // for the `RequestVisibilityCallback` to run.
+  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, request
+  // visibility, and wait for the `RequestVisibilityCallback` to run.
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
+  tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
   request_visibility_callback.WaitUntilDone();
 
   // Verify that: the `RequestVisibilityCallback` callback ran, visibility
@@ -1160,7 +1176,7 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 }
 
 TEST_F(MediaVideoVisibilityTrackerTest,
-       ComputeVisibilityOnDemandReportsFalseWhenVideoMeetsVisibility) {
+       ComputeVisibilityOnDemandReportsFalseWhenVideoDoesNotMeetVisibility) {
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
   LoadMainResource(R"HTML(
     <style>
@@ -1191,25 +1207,29 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Initially set the lifecycle state to a value <
   // DocumentUpdateReason::kPaintClean. The `RequestVisibilityCallback` should
-  // not run until we reach the `DocumentUpdateReason::kPaintClean` lifecycle
-  // state.
+  // run with the `false` cached value.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
 
-  // Create the `RequestVisibilityCallback`, and verify that no visibility
-  // computations are performed when the tracker takes the callback.
+  // Create the `RequestVisibilityCallback`, and verify that: no visibility
+  // computations are performed when the tracker takes the callback, and we
+  // report that visibility is not met, since the document lifecycle state is
+  // not `DocumentUpdateReason::kPaintClean`.
   RequestVisibilityCallback request_visibility_callback;
   tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
+  request_visibility_callback.WaitUntilDone();
   EXPECT_TRUE(IntersectionRect().IsEmpty());
   EXPECT_TRUE(OccludingRects().empty());
+  EXPECT_FALSE(request_visibility_callback.MeetsVisibility());
 
-  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean` and wait
-  // for the `RequestVisibilityCallback` to run.
+  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, request
+  // visibility, and wait for the `RequestVisibilityCallback` to run.
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
+  tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
   request_visibility_callback.WaitUntilDone();
 
   // Verify that: the `RequestVisibilityCallback` callback ran, visibility
@@ -1293,40 +1313,143 @@ TEST_F(MediaVideoVisibilityTrackerTest,
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
   auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
 
-  // Initially set the lifecycle state to a value <
-  // DocumentUpdateReason::kPaintClean. The `RequestVisibilityCallback` should
-  // run with false if a new request comes in, before the document reaches the
-  // `DocumentUpdateReason::kPaintClean` lifecycle state.
+  // Directly set the `RequestVisibilityCallback`, and verify that no visibility
+  // computations are performed.
+  RequestVisibilityCallback request_visibility_callback;
+  SetRequestVisibilityCbForTesting(request_visibility_callback);
+  EXPECT_TRUE(IntersectionRect().IsEmpty());
+  EXPECT_TRUE(OccludingRects().empty());
+
+  // Create a new `RequestVisibilityCallback` and have the tracker take the
+  // callback.
+  RequestVisibilityCallback new_request_visibility_callback;
+  tracker->RequestVisibility(
+      new_request_visibility_callback.VisibilityCallback());
+
+  // Verify that both callbacks are run with `false`.
+  request_visibility_callback.WaitUntilDone();
+  EXPECT_FALSE(request_visibility_callback.MeetsVisibility());
+  new_request_visibility_callback.WaitUntilDone();
+  EXPECT_FALSE(new_request_visibility_callback.MeetsVisibility());
+
+  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, and
+  // re-request visibility.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  // Verify that the visibility threshold is met.
+  tracker->RequestVisibility(
+      new_request_visibility_callback.VisibilityCallback());
+  new_request_visibility_callback.WaitUntilDone();
+  EXPECT_TRUE(new_request_visibility_callback.MeetsVisibility());
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ComputeVisibilityOnDemandUsesCachedVisibilityValue) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      video {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        top:0;
+        left:0
+      }
+      div {
+        background-color: blue;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+    <video></video>
+    <div></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+
+  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, this
+  // should cache the visibility value.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  // Set the lifecycle state to a value < `DocumentUpdateReason::kPaintClean`.
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
 
-  // Create the `RequestVisibilityCallback`, and verify that no visibility
-  // computations are performed when the tracker takes the callback.
+  // Request visibility.
   RequestVisibilityCallback request_visibility_callback;
   tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
-  EXPECT_TRUE(IntersectionRect().IsEmpty());
-  EXPECT_TRUE(OccludingRects().empty());
 
-  // Send a new request to the tracker, and verify that the old callback is run
-  // with `false`.
-  tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
+  // Verify that `MeetsVisibility` returns true, even though the document is not
+  // in a `DocumentUpdateReason::kPaintClean`, since the cached visibility value
+  // should be used.
   request_visibility_callback.WaitUntilDone();
-  EXPECT_FALSE(request_visibility_callback.MeetsVisibility());
+  EXPECT_TRUE(request_visibility_callback.MeetsVisibility());
+}
 
-  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean` and wait
-  // for the new `RequestVisibilityCallback` to run.
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ComputeVisibilityOnDemandReportsFalseIfTrackerDetached) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      video {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        top:0;
+        left:0
+      }
+      div {
+        background-color: blue;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    </style>
+    <video></video>
+    <div></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  auto* tracker = CreateAndAttachVideoVisibilityTracker(0.5);
+
+  // Update the lifecycle state to `DocumentUpdateReason::kPaintClean`, this
+  // should cache the visibility value.
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
   task_environment().FastForwardUntilNoTasksRemain();
-  request_visibility_callback.WaitUntilDone();
 
-  // Verify that: the new `RequestVisibilityCallback` callback ran, visibility
-  // computations took place, and the video meets the visibility threshold.
-  EXPECT_FALSE(IntersectionRect().IsEmpty());
-  EXPECT_FALSE(OccludingRects().empty());
+  // Request visibility and verify that `MeetsVisibility` returns true.
+  RequestVisibilityCallback request_visibility_callback;
+  tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
+  request_visibility_callback.WaitUntilDone();
   EXPECT_TRUE(request_visibility_callback.MeetsVisibility());
+
+  // Detach the tracker.
+  DetachVideoVisibilityTracker();
+  ASSERT_FALSE(TrackerAttached());
+
+  // Request visibility and verify that `MeetsVisibility` returns false, even
+  // though the video does meet the visibility threshold, since the tracker was
+  // detached.
+  tracker->RequestVisibility(request_visibility_callback.VisibilityCallback());
+  request_visibility_callback.WaitUntilDone();
+  EXPECT_FALSE(request_visibility_callback.MeetsVisibility());
 }
 
 }  // namespace blink

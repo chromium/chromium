@@ -430,7 +430,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   RenderWidgetHostImpl* GetRenderWidgetHost() override;
   RenderWidgetHostViewBase* GetView() override;
   RenderFrameHostImpl* GetParent() const override;
-  RenderFrameHostImpl* GetParentOrOuterDocument() const override;
+  RenderFrameHostImpl* GetParentOrOuterDocument() const final;
   RenderFrameHostImpl* GetParentOrOuterDocumentOrEmbedder() const override;
   RenderFrameHostImpl* GetMainFrame() override;
   PageImpl& GetPage() override;
@@ -2060,8 +2060,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // For threaded worklets we expose an interface via BrowserInterfaceBrokers to
   // bind `receiver` to a `BlobURLStore` instance, which implements the Blob URL
-  // API in the browser process. Note that this is only exposed when the
-  // kSupportPartitionedBlobUrl flag is enabled.
+  // API in the browser process.
   void BindBlobUrlStoreReceiver(
       mojo::PendingReceiver<blink::mojom::BlobURLStore> receiver);
 
@@ -2866,7 +2865,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& relying_party_id,
       const url::Origin& effective_origin,
       bool is_payment_credential_creation,
-      base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+          callback);
 #endif
 
   using JavaScriptResultAndTypeCallback =
@@ -4069,8 +4069,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which
-  // implements the Blob URL API in the browser process. Note that this is only
-  // exposed when the kSupportPartitionedBlobUrl flag is enabled.
+  // implements the Blob URL API in the browser process.
   void BindBlobUrlStoreAssociatedReceiver(
       mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
 
@@ -4167,7 +4166,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_cross_origin,
       blink::mojom::AuthenticatorStatus status);
   void OnMakeCredentialWebAuthSecurityChecksCompleted(
-      base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback,
+      base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
+          callback,
+      bool is_cross_origin,
       blink::mojom::AuthenticatorStatus status);
 #endif
 

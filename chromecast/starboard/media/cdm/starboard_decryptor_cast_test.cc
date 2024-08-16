@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/cdm_callback_promise.h"
@@ -282,6 +283,8 @@ TEST_F(StarboardDecryptorCastTest, SendsSessionUpdateToStarboard) {
 }
 
 TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
+  StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+
   const std::string session_id = "some_session";
   const std::vector<uint8_t> key_id = {1, 2, 3, 4, 5, 6};
   const auto key_status = CdmKeyInformation::KeyStatus::USABLE;
@@ -338,6 +341,105 @@ TEST_F(StarboardDecryptorCastTest, CallsKeyChangeCallbackOnKeyUpdate) {
   // The functions in decryptor_provided_callbacks post tasks to
   // task_environment_.
   task_environment_.RunUntilIdle();
+
+  // Verify that StarboardDrmKeyTracker was updated.
+  const std::string key_str(reinterpret_cast<const char*>(key_id.data()),
+                            key_id.size());
+  EXPECT_TRUE(StarboardDrmKeyTracker::GetInstance().HasKey(key_str));
+
+  // Verify that the key is removed when the decryptor is destroyed.
+  decryptor = nullptr;
+  EXPECT_FALSE(StarboardDrmKeyTracker::GetInstance().HasKey(key_str));
+}
+
+TEST_F(StarboardDecryptorCastTest,
+       RemovesKeyFromStarboardDrmKeyTrackerWhenKeyIsReleased) {
+  StarboardDrmKeyTracker::GetInstance().ClearStateForTesting();
+
+  const std::string session_id = "some_session";
+  const std::vector<uint8_t> key_id = {1, 2, 3, 4, 5, 6};
+  const auto key_status = CdmKeyInformation::KeyStatus::USABLE;
+  const auto key_released_status = CdmKeyInformation::KeyStatus::RELEASED;
+  const uint32_t system_code = 0;
+  // The starboard representation of key_id.
+  StarboardDrmKeyId starboard_key_id;
+  CHECK_LE(key_id.size(), NumElements(starboard_key_id.identifier));
+  memcpy(starboard_key_id.identifier, key_id.data(), key_id.size());
+  starboard_key_id.identifier_size = key_id.size();
+  // The starboard representation of key_status.
+  const StarboardDrmKeyStatus starboard_key_status =
+      kStarboardDrmKeyStatusUsable;
+  const StarboardDrmKeyStatus starboard_key_released_status =
+      kStarboardDrmKeyStatusReleased;
+
+  scoped_refptr<StarboardDecryptorCast> decryptor = new StarboardDecryptorCast(
+      /*create_provision_fetcher_cb=*/base::BindRepeating(
+          &StarboardDecryptorCastTest::CreateProvisionFetcher,
+          base::Unretained(this)),
+      /*media_resource_tracker=*/nullptr);
+
+  // This will get populated by decryptor.
+  const StarboardDrmSystemCallbackHandler* decryptor_provided_callbacks =
+      nullptr;
+
+  EXPECT_CALL(*starboard_, CreateDrmSystem("com.widevine.alpha", _))
+      .WillOnce(DoAll(SaveArg<1>(&decryptor_provided_callbacks),
+                      Return(&fake_drm_system_)));
+
+  EXPECT_CALL(
+      session_keys_change_cb_,
+      Call(StrEq(session_id), true,
+           ElementsAre(Pointee(AllOf(
+               Field(&CdmKeyInformation::key_id, ElementsAreArray(key_id)),
+               Field(&CdmKeyInformation::status, Eq(key_status)),
+               Field(&CdmKeyInformation::system_code, Eq(system_code)))))))
+      .Times(1);
+  EXPECT_CALL(
+      session_keys_change_cb_,
+      Call(StrEq(session_id), false,
+           ElementsAre(Pointee(AllOf(
+               Field(&CdmKeyInformation::key_id, ElementsAreArray(key_id)),
+               Field(&CdmKeyInformation::status, Eq(key_released_status)),
+               Field(&CdmKeyInformation::system_code, Eq(system_code)))))))
+      .Times(1);
+
+  decryptor->SetStarboardApiWrapperForTest(std::move(starboard_));
+  decryptor->Initialize(
+      base::BindLambdaForTesting(session_message_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(session_closed_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(session_keys_change_cb_.AsStdFunction()),
+      base::BindLambdaForTesting(
+          session_expiration_update_cb_.AsStdFunction()));
+
+  ASSERT_THAT(decryptor_provided_callbacks, NotNull());
+  ASSERT_THAT(decryptor_provided_callbacks->key_statuses_changed_fn, NotNull());
+  // Notify the decryptor that the key status changed. This should trigger the
+  // expected call to session_keys_change_cb_ above.
+  decryptor_provided_callbacks->key_statuses_changed_fn(
+      &fake_drm_system_, decryptor_provided_callbacks->context,
+      session_id.c_str(), session_id.size(), /*number_of_keys=*/1,
+      &starboard_key_id, &starboard_key_status);
+
+  // The functions in decryptor_provided_callbacks post tasks to
+  // task_environment_.
+  task_environment_.RunUntilIdle();
+
+  // Verify that StarboardDrmKeyTracker was updated.
+  const std::string key_str(reinterpret_cast<const char*>(key_id.data()),
+                            key_id.size());
+  EXPECT_TRUE(StarboardDrmKeyTracker::GetInstance().HasKey(key_str));
+
+  // Verify that the key is removed when the status changes to removed.
+  decryptor_provided_callbacks->key_statuses_changed_fn(
+      &fake_drm_system_, decryptor_provided_callbacks->context,
+      session_id.c_str(), session_id.size(), /*number_of_keys=*/1,
+      &starboard_key_id, &starboard_key_released_status);
+
+  // The functions in decryptor_provided_callbacks post tasks to
+  // task_environment_.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(StarboardDrmKeyTracker::GetInstance().HasKey(key_str));
 }
 
 TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {

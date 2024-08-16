@@ -10,7 +10,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/constants.h"
+#include "extensions/common/constants.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void ReportPDFLoadStatus(PDFLoadStatus status) {

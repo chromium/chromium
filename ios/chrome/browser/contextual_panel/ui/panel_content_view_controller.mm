@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_metrics_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
+#import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -24,14 +25,14 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// Height of the top header.
-const CGFloat kHeaderHeight = 58;
+// Top margin between the header logo and the top of the panel.
+const CGFloat kLogoTopMargin = 24;
+
+// Bottom margin between the header logo and the top of the collection view
+const CGFloat kLogoBottomMargin = 18;
 
 // Size of the close button.
 const CGFloat kCloseButtonIconSize = 30;
-
-// Top margin for the close button.
-const CGFloat kCloseButtonTopMargin = 10;
 
 // Margin between the close button and the trailing edge of the screen.
 const CGFloat kCloseButtonTrailingMargin = 16;
@@ -139,21 +140,11 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [self.view.trailingAnchor
         constraintEqualToAnchor:_headerView.trailingAnchor],
     [self.view.topAnchor constraintEqualToAnchor:_headerView.topAnchor],
-    [_headerView.heightAnchor constraintEqualToConstant:kHeaderHeight],
   ]];
 
-  [self createCloseButton];
   [self createDragHandleView];
-
-  [_headerView.contentView addSubview:_closeButton];
   [_headerView.contentView addSubview:_dragHandleView];
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.topAnchor
-        constraintEqualToAnchor:_headerView.contentView.topAnchor
-                       constant:kCloseButtonTopMargin],
-    [_headerView.contentView.trailingAnchor
-        constraintEqualToAnchor:_closeButton.trailingAnchor
-                       constant:kCloseButtonTrailingMargin],
     [_headerView.centerXAnchor
         constraintEqualToAnchor:_dragHandleView.centerXAnchor],
     [_dragHandleView.topAnchor
@@ -197,18 +188,20 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   [NSLayoutConstraint activateConstraints:@[
     [logo.centerXAnchor
         constraintEqualToAnchor:_headerView.contentView.centerXAnchor],
-    [logo.centerYAnchor
-        constraintEqualToAnchor:_headerView.contentView.centerYAnchor],
+    [logo.topAnchor constraintEqualToAnchor:_headerView.contentView.topAnchor
+                                   constant:kLogoTopMargin],
+    [_headerView.bottomAnchor constraintEqualToAnchor:logo.bottomAnchor
+                                             constant:kLogoBottomMargin],
   ]];
 
-  // One of UIVisualEffectView's subviews has a white-ish background color,
-  // which is not desired for this feature.
-  for (UIView* subview in _headerView.subviews) {
-    // Replace any non-nil backgrounds with clear.
-    if (subview.backgroundColor) {
-      subview.backgroundColor = UIColor.clearColor;
-    }
-  }
+  [self createCloseButton];
+  [_headerView.contentView addSubview:_closeButton];
+  [NSLayoutConstraint activateConstraints:@[
+    [_headerView.contentView.trailingAnchor
+        constraintEqualToAnchor:_closeButton.trailingAnchor
+                       constant:kCloseButtonTrailingMargin],
+    [_closeButton.centerYAnchor constraintEqualToAnchor:logo.centerYAnchor],
+  ]];
 
   [self.view layoutIfNeeded];
   [self.sheetDisplayController
@@ -230,6 +223,28 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _appearanceTime = base::Time::Now();
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   _headerView);
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // One of UIVisualEffectView's subviews has a white-ish background color,
+  // which is not desired for this feature.
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
+  }
+
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  [self setCollectionViewScrollIndicatorInsets];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -290,6 +305,12 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     base::UmaHistogramEnumeration(impressionTypeHistogramName,
                                   blockImpressionType);
   }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
 }
 
 #pragma mark - Public methods
@@ -364,6 +385,19 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   metricsData.timeVisible += cell.timeSinceAppearance;
 }
 
+- (void)setCollectionViewScrollIndicatorInsets {
+  // The bottom inset should not include the safe area height.
+  _collectionView.verticalScrollIndicatorInsets = UIEdgeInsetsMake(
+      _headerView.bounds.size.height, 0,
+      _bottomToolbarHeight - self.view.safeAreaInsets.bottom, 0);
+}
+
+- (void)setCollectionViewContentInset {
+  _collectionView.contentInset =
+      UIEdgeInsetsMake(_headerView.bounds.size.height, 0,
+                       _bottomToolbarHeight + kContentBottomMargin, 0);
+}
+
 #pragma mark - View Initialization
 
 // Creates the layout for the collection view.
@@ -397,8 +431,8 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
-  _collectionView.contentInset = UIEdgeInsetsMake(
-      kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
   _collectionView.delegate = self;
@@ -484,8 +518,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _bottomToolbarHeight = height;
   if (_collectionView) {
     UIEdgeInsets insets = _collectionView.contentInset;
-    insets.bottom = height;
+    insets.bottom = height + kContentBottomMargin;
     _collectionView.contentInset = insets;
+    [self setCollectionViewScrollIndicatorInsets];
     [self.sheetDisplayController
         setContentHeight:[self preferredHeightForContent]];
   }

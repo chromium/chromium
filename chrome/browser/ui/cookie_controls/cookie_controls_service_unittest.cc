@@ -3,20 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
-#include "components/content_settings/core/common/cookie_controls_enforcement.h"
-
-#include "base/values.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/test_web_ui.h"
-
-#include "chrome/browser/policy/profile_policy_connector.h"
-#include "components/policy/core/common/policy_service.h"
 
 // Handles requests for prefs::kCookieControlsMode retrival/update.
 class CookieControlsServiceObserver : public CookieControlsService::Observer {

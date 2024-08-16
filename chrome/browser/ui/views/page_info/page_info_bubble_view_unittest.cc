@@ -16,7 +16,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
@@ -172,9 +172,9 @@ class PageInfoBubbleViewTestApi {
             VIEW_ID_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_SUBTITLE);
   }
 
-  views::View* fps_button() {
+  views::View* rws_button() {
     return bubble_delegate_->GetViewByID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_FPS_SETTINGS);
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_RWS_SETTINGS);
   }
 
   RichHoverButton* certificate_button() const {
@@ -301,7 +301,7 @@ class PageInfoBubbleViewTestApi {
     return actual_count;
   }
 
-  // Simulates updating the number of blocked and allowed sites and fps info.
+  // Simulates updating the number of blocked and allowed sites and rws info.
   void SetCookieInfo(const PageInfoUI::CookiesNewInfo& cookie_info) {
     presenter_->ui_for_testing()->SetCookieInfo(cookie_info);
   }
@@ -458,8 +458,7 @@ class PageInfoBubbleViewTest : public testing::Test {
     content::WebContents* web_contents = web_contents_helper_->web_contents();
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents,
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
     api_ = std::make_unique<test::PageInfoBubbleViewTestApi>(
         parent_window_->GetNativeWindow(), web_contents);
 
@@ -982,7 +981,7 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
 // Tests opening the bubble between navigation start and finish. The bubble
 // should be updated to reflect the secure state after the navigation commits.
 TEST_F(PageInfoBubbleViewTest, OpenPageInfoBubbleAfterNavigationStart) {
-  SecurityStateTabHelper::CreateForWebContents(
+  ChromeSecurityStateTabHelper::CreateForWebContents(
       web_contents_helper_->web_contents());
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
@@ -1046,7 +1045,7 @@ TEST_F(PageInfoBubbleViewTest, CheckHeaderInteractions) {
 }
 
 TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
-  SecurityStateTabHelper::CreateForWebContents(
+  ChromeSecurityStateTabHelper::CreateForWebContents(
       web_contents_helper_->web_contents());
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(
@@ -1096,7 +1095,7 @@ TEST_F(PageInfoBubbleViewTest, CertificateButtonShowsEvCertDetails) {
 // Regression test for crbug.com/1069113. Test cert includes country and state
 // but not locality.
 TEST_F(PageInfoBubbleViewTest, EvDetailsShowForCertWithStateButNoLocality) {
-  SecurityStateTabHelper::CreateForWebContents(
+  ChromeSecurityStateTabHelper::CreateForWebContents(
       web_contents_helper_->web_contents());
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(

@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "chrome/browser/platform_util.h"
+#import "components/policy/core/common/policy_logger.h"
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
@@ -34,13 +35,17 @@
 // supported by any SSO extension on the device.
 @implementation SSOServiceAuthControllerDelegate {
   enterprise_auth::PlatformAuthProviderManager::GetDataCallback _callback;
+  ASAuthorizationController* _controller;
 }
 
 - (void)dealloc {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Destroying "
-             "SSOServiceAuthControllerDelegate";
+  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] Destroying "
+                                    "SSOServiceAuthControllerDelegate";
+  // This is here for debugging purposes and will be removed once this code is
+  // no longer experimental.
   if (_callback) {
-    VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers aborted.";
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Fetching headers aborted.";
     std::move(_callback).Run(net::HttpRequestHeaders());
   }
 }
@@ -55,26 +60,29 @@
               (enterprise_auth::PlatformAuthProviderManager::GetDataCallback)
                   callback {
   _callback = std::move(callback);
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Attempting to get headers for " << url;
   ASAuthorizationSingleSignOnProvider* auth_provider =
       [ASAuthorizationSingleSignOnProvider
           authorizationProviderWithIdentityProviderURL:net::NSURLWithGURL(url)];
 
   if (!auth_provider.canPerformAuthorization) {
-    VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers for not supported.";
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Fetching headers for " << url
+        << " NOT SUPPORTED.";
     std::move(_callback).Run(net::HttpRequestHeaders());
     return;
   }
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Attempting to get headers for " << url;
 
   // Create a login request for `url`.
   ASAuthorizationSingleSignOnRequest* request = [auth_provider createRequest];
   request.requestedOperation = ASAuthorizationOperationLogin;
-  ASAuthorizationController* controller = [[ASAuthorizationController alloc]
+  _controller = [[ASAuthorizationController alloc]
       initWithAuthorizationRequests:[NSArray arrayWithObject:request]];
-  controller.delegate = self;
-  controller.presentationContextProvider = self;
+  _controller.delegate = self;
+  _controller.presentationContextProvider = self;
 
-  [controller performRequests];
+  [_controller performRequests];
 }
 
 // ASAuthorizationControllerDelegate implementation
@@ -83,35 +91,37 @@
 // HttpRequestHeaders from `authorization`.
 - (void)authorizationController:(ASAuthorizationController*)controller
     didCompleteWithAuthorization:(ASAuthorization*)authorization {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
   ASAuthorizationSingleSignOnRequest* request =
       (ASAuthorizationSingleSignOnRequest*)
           controller.authorizationRequests.firstObject;
   if (!request || request.requestedOperation != ASAuthorizationOperationLogin) {
-    VLOG(1)
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
         << "[ExtensibleEnterpriseSSO] Fetching headers completed for non-login "
            "operation.";
     std::move(_callback).Run(net::HttpRequestHeaders());
     return;
   }
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers completed for login "
-             "operation.";
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Fetching headers completed for login "
+         "operation.";
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
   NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
   net::HttpRequestHeaders request_headers;
   for (NSString* key in headers) {
     const std::string header_name = base::SysNSStringToUTF8(key);
     if (!net::HttpUtil::IsValidHeaderName(header_name)) {
-      VLOG(1) << "[ExtensibleEnterpriseSSO] Invalid header name "
-              << header_name;
+      VLOG_POLICY(2, EXTENSIBLE_SSO)
+          << "[ExtensibleEnterpriseSSO] Invalid header name " << header_name;
       continue;
     }
 
     const std::string header_value = base::SysNSStringToUTF8(
         net::FixNSStringIncorrectlyDecodedAsLatin1(headers[key]));
     if (!net::HttpUtil::IsValidHeaderValue(header_value)) {
-      VLOG(1) << "[ExtensibleEnterpriseSSO] Invalid header value "
-              << header_value;
+      VLOG_POLICY(2, EXTENSIBLE_SSO)
+          << "[ExtensibleEnterpriseSSO] Invalid header value " << header_value;
       continue;
     }
 
@@ -124,7 +134,8 @@
 // empty HttpRequestHeaders.
 - (void)authorizationController:(ASAuthorizationController*)controller
            didCompleteWithError:(NSError*)error {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers failed";
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Fetching headers failed";
   std::move(_callback).Run(net::HttpRequestHeaders());
 }
 
@@ -139,6 +150,21 @@
 
 namespace enterprise_auth {
 
+namespace {
+
+// Empty function used to ensure SSOServiceAuthControllerDelegate does not get
+// destroyed until the data is fetched.
+void OnDataFetched(SSOServiceAuthControllerDelegate*) {
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Deleting SSOServiceAuthControllerDelegate";
+}
+
+}  // namespace
+
+ExtensibleEnterpriseSSOProvider::ExtensibleEnterpriseSSOProvider() = default;
+
+ExtensibleEnterpriseSSOProvider::~ExtensibleEnterpriseSSOProvider() = default;
+
 bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
   return false;
 }
@@ -146,7 +172,7 @@ bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
 void ExtensibleEnterpriseSSOProvider::FetchOrigins(
     FetchOriginsCallback on_fetch_complete) {
   // Origin filtering is nor supported.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ExtensibleEnterpriseSSOProvider::GetData(
@@ -154,9 +180,9 @@ void ExtensibleEnterpriseSSOProvider::GetData(
     PlatformAuthProviderManager::GetDataCallback callback) {
   SSOServiceAuthControllerDelegate* delegate =
       [[SSOServiceAuthControllerDelegate alloc] init];
-  [delegate
-      getAuthHeaders:url
-        withCallback:base::BindPostTaskToCurrentDefault(std::move(callback))];
+  auto final_callback = base::BindPostTaskToCurrentDefault(
+      std::move(callback).Then(base::BindOnce(&OnDataFetched, delegate)));
+  [delegate getAuthHeaders:url withCallback:std::move(final_callback)];
 }
 
 }  // namespace enterprise_auth

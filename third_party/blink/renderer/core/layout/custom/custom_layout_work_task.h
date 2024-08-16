@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_layout_constraints_options.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -16,7 +17,6 @@ class ConstraintSpace;
 class CustomLayoutChild;
 class CustomLayoutToken;
 class LayoutInputNode;
-class LayoutUnit;
 class SerializedScriptValue;
 class ScriptPromiseResolverBase;
 

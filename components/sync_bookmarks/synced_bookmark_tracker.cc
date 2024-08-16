@@ -22,8 +22,8 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/bookmark_model_view.h"
@@ -73,10 +73,10 @@ syncer::ClientTagHash SyncedBookmarkTracker::GetClientTagHashFromUuid(
 
 // static
 std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
-    sync_pb::ModelTypeState model_type_state) {
+    sync_pb::DataTypeState data_type_state) {
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new SyncedBookmarkTracker(
-      std::move(model_type_state), /*bookmarks_reuploaded=*/false,
+      std::move(data_type_state), /*bookmarks_reuploaded=*/false,
       /*num_ignored_updates_due_to_missing_parent=*/std::optional<int64_t>(0),
       /*max_version_among_ignored_updates_due_to_missing_parent=*/
       std::nullopt));
@@ -90,7 +90,7 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
   DCHECK(model);
 
   if (!syncer::IsInitialSyncDone(
-          model_metadata.model_type_state().initial_sync_state())) {
+          model_metadata.data_type_state().initial_sync_state())) {
     return nullptr;
   }
 
@@ -117,7 +117,7 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
 
   // base::WrapUnique() used because the constructor is private.
   auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
-      model_metadata.model_type_state(), bookmarks_reuploaded,
+      model_metadata.data_type_state(), bookmarks_reuploaded,
       num_ignored_updates_due_to_missing_parent,
       max_version_among_ignored_updates_due_to_missing_parent));
 
@@ -349,7 +349,7 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
         model_metadata.add_bookmarks_metadata();
     *bookmark_metadata->mutable_metadata() = tombstone_entity->metadata();
   }
-  *model_metadata.mutable_model_type_state() = model_type_state_;
+  *model_metadata.mutable_data_type_state() = data_type_state_;
   return model_metadata;
 }
 
@@ -397,12 +397,12 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges() const {
 }
 
 SyncedBookmarkTracker::SyncedBookmarkTracker(
-    sync_pb::ModelTypeState model_type_state,
+    sync_pb::DataTypeState data_type_state,
     bool bookmarks_reuploaded,
     std::optional<int64_t> num_ignored_updates_due_to_missing_parent,
     std::optional<int64_t>
         max_version_among_ignored_updates_due_to_missing_parent)
-    : model_type_state_(std::move(model_type_state)),
+    : data_type_state_(std::move(data_type_state)),
       bookmarks_reuploaded_(bookmarks_reuploaded),
       num_ignored_updates_due_to_missing_parent_(
           num_ignored_updates_due_to_missing_parent),
@@ -413,7 +413,7 @@ SyncedBookmarkTracker::CorruptionReason
 SyncedBookmarkTracker::InitEntitiesFromModelAndMetadata(
     const BookmarkModelView* model,
     sync_pb::BookmarkModelMetadata model_metadata) {
-  DCHECK(syncer::IsInitialSyncDone(model_type_state_.initial_sync_state()));
+  DCHECK(syncer::IsInitialSyncDone(data_type_state_.initial_sync_state()));
 
   // Build a temporary map to look up bookmark nodes efficiently by node ID.
   std::unordered_map<int64_t, const bookmarks::BookmarkNode*>
@@ -758,7 +758,7 @@ size_t SyncedBookmarkTracker::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(sync_id_to_entities_map_);
   memory_usage += EstimateMemoryUsage(bookmark_node_to_entities_map_);
   memory_usage += EstimateMemoryUsage(ordered_local_tombstones_);
-  memory_usage += EstimateMemoryUsage(model_type_state_);
+  memory_usage += EstimateMemoryUsage(data_type_state_);
   return memory_usage;
 }
 

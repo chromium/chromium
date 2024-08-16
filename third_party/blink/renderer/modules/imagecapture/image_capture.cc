@@ -198,6 +198,10 @@ void CopyCommonMembers(const T* source,
   if (source->hasBackgroundBlur()) {
     destination->setBackgroundBlur(source->backgroundBlur());
   }
+  if (source->hasBackgroundSegmentationMask()) {
+    destination->setBackgroundSegmentationMask(
+        source->backgroundSegmentationMask());
+  }
   if (source->hasEyeGazeCorrection()) {
     destination->setEyeGazeCorrection(source->eyeGazeCorrection());
   }
@@ -535,7 +539,7 @@ MeteringMode ParseMeteringMode(const String& blink_mode) {
     return MeteringMode::CONTINUOUS;
   if (blink_mode == "none")
     return MeteringMode::NONE;
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 FillLightMode ParseFillLightMode(const String& blink_mode) {
@@ -545,7 +549,7 @@ FillLightMode ParseFillLightMode(const String& blink_mode) {
     return FillLightMode::AUTO;
   if (blink_mode == "flash")
     return FillLightMode::FLASH;
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ToBooleanMode(BackgroundBlurMode mode) {
@@ -555,7 +559,7 @@ bool ToBooleanMode(BackgroundBlurMode mode) {
     case BackgroundBlurMode::BLUR:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ToBooleanMode(EyeGazeCorrectionMode mode) {
@@ -566,7 +570,7 @@ bool ToBooleanMode(EyeGazeCorrectionMode mode) {
     case EyeGazeCorrectionMode::STARE:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WebString ToString(MeteringMode value) {
@@ -580,7 +584,7 @@ WebString ToString(MeteringMode value) {
     case MeteringMode::CONTINUOUS:
       return WebString::FromUTF8("continuous");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 V8FillLightMode ToV8FillLightMode(FillLightMode value) {
@@ -592,7 +596,7 @@ V8FillLightMode ToV8FillLightMode(FillLightMode value) {
     case FillLightMode::FLASH:
       return V8FillLightMode(V8FillLightMode::Enum::kFlash);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 WebString ToString(RedEyeReduction value) {
@@ -604,7 +608,7 @@ WebString ToString(RedEyeReduction value) {
     case RedEyeReduction::CONTROLLABLE:
       return WebString::FromUTF8("controllable");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 MediaSettingsRange* ToMediaSettingsRange(
@@ -1456,6 +1460,16 @@ void MaybeSetBackgroundBlurSetting(bool value,
 
 void MaybeSetBoolSetting(bool value,
                          const Vector<bool>& capability,
+                         std::optional<bool>& setting) {
+  if (!base::Contains(capability, value)) {
+    return;
+  }
+
+  setting = value;
+}
+
+void MaybeSetBoolSetting(bool value,
+                         const Vector<bool>& capability,
                          bool& has_setting,
                          bool& setting) {
   if (!base::Contains(capability, value)) {
@@ -1905,6 +1919,33 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
 
   if (device_settings) {
     ExecutionContext* context = GetExecutionContext();
+    if (device_settings->exposure_compensation.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureCompensation);
+    }
+    if (device_settings->exposure_time.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureTime);
+    }
+    if (device_settings->color_temperature.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureColorTemperature);
+    }
+    if (device_settings->iso.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureIso);
+    }
+    if (device_settings->brightness.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureBrightness);
+    }
+    if (device_settings->contrast.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureContrast);
+    }
+    if (device_settings->saturation.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSaturation);
+    }
+    if (device_settings->sharpness.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSharpness);
+    }
+    if (device_settings->focus_distance.has_value()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureFocusDistance);
+    }
     if (device_settings->pan.has_value()) {
       UseCounter::Count(context, WebFeature::kImageCapturePan);
     }
@@ -1923,6 +1964,59 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
 
     auto settings = media::mojom::blink::PhotoSettings::New();
 
+    if (device_settings->exposure_compensation.has_value() &&
+        capabilities_->hasExposureCompensation()) {
+      MaybeSetDoubleSetting(*device_settings->exposure_compensation,
+                            *capabilities_->exposureCompensation(),
+                            settings->has_exposure_compensation,
+                            settings->exposure_compensation);
+    }
+    if (device_settings->exposure_time.has_value() &&
+        capabilities_->hasExposureTime()) {
+      MaybeSetDoubleSetting(
+          *device_settings->exposure_time, *capabilities_->exposureTime(),
+          settings->has_exposure_time, settings->exposure_time);
+    }
+    if (device_settings->color_temperature.has_value() &&
+        capabilities_->hasColorTemperature()) {
+      MaybeSetDoubleSetting(*device_settings->color_temperature,
+                            *capabilities_->colorTemperature(),
+                            settings->has_color_temperature,
+                            settings->color_temperature);
+    }
+    if (device_settings->iso.has_value() && capabilities_->hasIso()) {
+      MaybeSetDoubleSetting(*device_settings->iso, *capabilities_->iso(),
+                            settings->has_iso, settings->iso);
+    }
+    if (device_settings->brightness.has_value() &&
+        capabilities_->hasBrightness()) {
+      MaybeSetDoubleSetting(*device_settings->brightness,
+                            *capabilities_->brightness(),
+                            settings->has_brightness, settings->brightness);
+    }
+    if (device_settings->contrast.has_value() && capabilities_->hasContrast()) {
+      MaybeSetDoubleSetting(*device_settings->contrast,
+                            *capabilities_->contrast(), settings->has_contrast,
+                            settings->contrast);
+    }
+    if (device_settings->saturation.has_value() &&
+        capabilities_->hasSaturation()) {
+      MaybeSetDoubleSetting(*device_settings->saturation,
+                            *capabilities_->saturation(),
+                            settings->has_saturation, settings->saturation);
+    }
+    if (device_settings->sharpness.has_value() &&
+        capabilities_->hasSharpness()) {
+      MaybeSetDoubleSetting(*device_settings->sharpness,
+                            *capabilities_->sharpness(),
+                            settings->has_sharpness, settings->sharpness);
+    }
+    if (device_settings->focus_distance.has_value() &&
+        capabilities_->hasFocusDistance()) {
+      MaybeSetDoubleSetting(
+          *device_settings->focus_distance, *capabilities_->focusDistance(),
+          settings->has_focus_distance, settings->focus_distance);
+    }
     if (HasPanTiltZoomPermissionGranted()) {
       if (device_settings->pan.has_value() && capabilities_->hasPan()) {
         MaybeSetDoubleSetting(*device_settings->pan, *capabilities_->pan(),
@@ -1949,6 +2043,12 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
           *device_settings->background_blur, capabilities_->backgroundBlur(),
           settings->has_background_blur_mode, settings->background_blur_mode);
     }
+    if (device_settings->background_segmentation_mask.has_value() &&
+        capabilities_->hasBackgroundSegmentationMask()) {
+      MaybeSetBoolSetting(*device_settings->background_segmentation_mask,
+                          capabilities_->backgroundSegmentationMask(),
+                          settings->background_segmentation_mask_state);
+    }
     if (device_settings->eye_gaze_correction.has_value() &&
         capabilities_->hasEyeGazeCorrection()) {
       MaybeSetEyeGazeCorrectionSetting(*device_settings->eye_gaze_correction,
@@ -1963,10 +2063,16 @@ void ImageCapture::SetVideoTrackDeviceSettingsFromTrack(
     }
 
     if (service_.is_bound() &&
-        (settings->has_pan || settings->has_tilt || settings->has_zoom ||
-         settings->has_torch || settings->has_background_blur_mode ||
+        (settings->has_exposure_compensation || settings->has_exposure_time ||
+         settings->has_color_temperature || settings->has_iso ||
+         settings->has_brightness || settings->has_contrast ||
+         settings->has_saturation || settings->has_sharpness ||
+         settings->has_focus_distance || settings->has_pan ||
+         settings->has_tilt || settings->has_zoom || settings->has_torch ||
+         settings->has_background_blur_mode ||
          settings->has_face_framing_mode ||
-         settings->eye_gaze_correction_mode.has_value())) {
+         settings->eye_gaze_correction_mode.has_value() ||
+         settings->background_segmentation_mask_state.has_value())) {
       service_->SetPhotoOptions(
           SourceId(), std::move(settings),
           WTF::BindOnce(&ImageCapture::OnSetVideoTrackDeviceSettingsFromTrack,
@@ -2212,6 +2318,18 @@ void ImageCapture::ApplyMediaTrackConstraintSetToSettings(
       settings->background_blur_mode = ParseBackgroundBlur(setting);
     }
   }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      effective_capabilities->hasBackgroundSegmentationMask()) {
+    bool has_setting = false;
+    bool setting;
+    effective_capabilities->setBackgroundSegmentationMask(ApplyValueConstraint(
+        &has_setting, &setting,
+        effective_capabilities->backgroundSegmentationMask(),
+        constraint_set->backgroundSegmentationMask(), constraint_set_type));
+    if (has_setting) {
+      settings->background_segmentation_mask_state.emplace(setting);
+    }
+  }
   if (constraint_set->hasEyeGazeCorrection() &&
       effective_capabilities->hasEyeGazeCorrection()) {
     bool has_setting = false;
@@ -2406,6 +2524,16 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     MaybeRejectWithOverconstrainedError(
         resolver, "backgroundBlur",
         "backgroundBlur setting value not supported");
+    return false;
+  }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      effective_capabilities->hasBackgroundSegmentationMask() &&
+      !CheckValueConstraint(
+          effective_capabilities->backgroundSegmentationMask(),
+          constraint_set->backgroundSegmentationMask(), constraint_set_type)) {
+    MaybeRejectWithOverconstrainedError(
+        resolver, "backgroundSegmentationMask",
+        "backgroundSegmentationMask setting value not supported");
     return false;
   }
   if (constraint_set->hasEyeGazeCorrection() &&
@@ -2702,6 +2830,14 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
         ToBooleanMode(photo_state->background_blur_mode));
   }
 
+  if (photo_state->supported_background_segmentation_mask_states &&
+      !photo_state->supported_background_segmentation_mask_states->empty()) {
+    capabilities_->setBackgroundSegmentationMask(
+        *photo_state->supported_background_segmentation_mask_states);
+    settings_->setBackgroundSegmentationMask(
+        photo_state->current_background_segmentation_mask_state);
+  }
+
   if (photo_state->supported_eye_gaze_correction_modes &&
       !photo_state->supported_eye_gaze_correction_modes->empty()) {
     Vector<bool> supported_eye_gaze_correction_modes;
@@ -2908,6 +3044,13 @@ ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
           CapabilityExists(capabilities_->hasBackgroundBlur()),
           constraint_set_type)) {
     return "backgroundBlur";
+  }
+  if (constraint_set->hasBackgroundSegmentationMask() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->backgroundSegmentationMask(),
+          CapabilityExists(capabilities_->hasBackgroundSegmentationMask()),
+          constraint_set_type)) {
+    return "backgroundSegmentationMask";
   }
   if (constraint_set->hasEyeGazeCorrection() &&
       !CheckIfCapabilityExistenceSatisfiesConstraint(

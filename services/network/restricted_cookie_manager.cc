@@ -58,51 +58,6 @@ BASE_FEATURE(kIncreaseCoookieAccesCacheSize,
              "IncreaseCoookieAccesCacheSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// We use this rather than GURL::EstimateMemoryUsage since we're interested in
-// serialized vs in-memory size. It's also why we use std::string::size below
-// rather than base::trace_event::EstimateMemoryUsage.
-size_t EstimateSerializedSize(const GURL& gurl) {
-  if (!gurl.is_valid()) {
-    return 0u;
-  }
-  return gurl.spec().size();
-}
-
-size_t EstimateSerializedSize(const net::SiteForCookies& s) {
-  return sizeof(net::SiteForCookies) +
-         EstimateSerializedSize(s.site().GetURL());
-}
-
-size_t EstimateSerializedSize(const net::CanonicalCookie& c) {
-  size_t s = sizeof(net::CanonicalCookie);
-  s += c.Name().size();
-  s += c.Value().size();
-  s += c.Domain().size();
-  s += c.Path().size();
-  if (c.PartitionKey()) {
-    s += EstimateSerializedSize(c.PartitionKey()->site().GetURL());
-  }
-  return s;
-}
-
-size_t EstimateSerializedSize(const mojom::CookieAccessDetailsPtr& details) {
-  size_t s = sizeof(mojom::CookieAccessDetails);
-  s += EstimateSerializedSize(details->url);
-  s += EstimateSerializedSize(details->site_for_cookies);
-  for (const auto& detail : details->cookie_list) {
-    s += sizeof(mojom::CookieOrLineWithAccessResult);
-    switch (detail->cookie_or_line->which()) {
-      case mojom::CookieOrLine::Tag::kCookie:
-        s += EstimateSerializedSize(detail->cookie_or_line->get_cookie());
-        break;
-      case mojom::CookieOrLine::Tag::kCookieString:
-        s += detail->cookie_or_line->get_cookie_string().size();
-        break;
-    }
-  }
-  return s;
-}
-
 // How often to call CookieObserveer.OnCookiesAccessed. This value was picked
 // because it reduces calls by up to 90% on slow Android devices while not
 // adding a user-perceptible delay.
@@ -230,7 +185,6 @@ bool CookieWithAccessResultComparer::operator()(
   // entry.
   return cookie_with_access_result1.cookie < cookie_with_access_result2.cookie;
 }
-
 
 CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
     const GURL& url,
@@ -431,8 +385,6 @@ RestrictedCookieManager::RestrictedCookieManager(
           base::FeatureList::IsEnabled(kIncreaseCoookieAccesCacheSize)
               ? kIncreasedMaxCookieCacheCount
               : kMaxCookieCacheCount),
-      should_dedup_cookie_access_details_(base::FeatureList::IsEnabled(
-          features::kCookieAccessDetailsNotificationDeDuping)),
       cookies_access_timer_(
           FROM_HERE,
           kCookiesAccessedTimeout,
@@ -448,6 +400,12 @@ RestrictedCookieManager::RestrictedCookieManager(
 
 RestrictedCookieManager::~RestrictedCookieManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (cookies_access_timer_.IsRunning()) {
+    // There are cookie accesses which haven't been reported. Tell the observer
+    // before we're destroyed.
+    CallCookiesAccessed();
+  }
 
   base::LinkNode<Listener>* node = listeners_.head();
   while (node != listeners_.end()) {
@@ -467,15 +425,6 @@ void RestrictedCookieManager::OnCookieSettingsChanged() {
 
 void RestrictedCookieManager::IncrementSharedVersion() {
   shared_memory_version_controller_.Increment();
-}
-
-void RestrictedCookieManager::SetShouldDeDupCookieAccessDetailsForTesting(
-    bool should_dedup) {
-  should_dedup_cookie_access_details_ = should_dedup;
-}
-
-void RestrictedCookieManager::SetMaxCookieCacheCountForTesting(size_t count) {
-  max_cookie_cache_count_ = count;
 }
 
 void RestrictedCookieManager::OverrideIsolationInfoForTesting(
@@ -609,8 +558,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url,
           isolated_top_frame_origin, site_for_cookies,
-          std::move(on_cookies_accessed_result), std::nullopt, /*count=*/1,
-          is_ad_tagged, cookie_setting_overrides));
+          std::move(on_cookies_accessed_result), std::nullopt, is_ad_tagged,
+          cookie_setting_overrides));
     }
   };
 
@@ -731,7 +680,6 @@ void RestrictedCookieManager::SetCanonicalCookie(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies,
           std::move(result_with_access_result), std::nullopt,
-          /*count=*/1,
           /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
     std::move(callback).Run(false);
@@ -848,7 +796,7 @@ void RestrictedCookieManager::SetCanonicalCookieResult(
       OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolated_top_frame_origin, site_for_cookies, std::move(notify),
-          std::nullopt, /*count=*/1,
+          std::nullopt,
           /*is_ad_tagged=*/false, cookie_setting_overrides));
     }
   }
@@ -922,7 +870,6 @@ void RestrictedCookieManager::SetCookieFromString(
           mojom::CookieAccessDetails::Type::kChange, url,
           isolation_info_.top_frame_origin().value_or(url::Origin()),
           site_for_cookies, std::move(result_with_access_result), std::nullopt,
-          /*count=*/1,
           /*is_ad_tagged=*/false,
           GetCookieSettingOverrides(
               storage_access_api_status,
@@ -1093,95 +1040,15 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
 
 void RestrictedCookieManager::OnCookiesAccessed(
     mojom::CookieAccessDetailsPtr details) {
-  if (should_dedup_cookie_access_details_) {
-    size_t estimated_serialized_size = EstimateSerializedSize(details);
-    estimated_cookie_access_details_size_ += estimated_serialized_size;
-#if DCHECK_IS_ON()
-    cookie_access_details_list_.push_back(mojo::Clone(details));
-#endif  // DCHECK_IS_ON()
-    CountedCookieAccessDetailsPtr counted =
-        std::make_pair(std::move(details), std::make_unique<size_t>(0));
-    auto result = cookie_access_details_.insert(std::move(counted));
-    const CountedCookieAccessDetailsPtr& elem = *result.first;
-    if (result.second) {
-      CHECK_EQ(1u, elem.first->count);
-      CHECK_EQ(0u, *elem.second);
-      estimated_deduped_cookie_access_details_size_ +=
-          estimated_serialized_size;
-    } else {
-      elem.first->count += 1;
-    }
-    *elem.second = cookie_access_details_count_++;
-  } else {
-    CHECK_EQ(1u, details->count);
-    cookie_access_details_list_.push_back(std::move(details));
-  }
+  cookie_access_details_.push_back(std::move(details));
   if (!cookies_access_timer_.IsRunning()) {
     cookies_access_timer_.Reset();
   }
 }
 
 void RestrictedCookieManager::CallCookiesAccessed() {
-  if (should_dedup_cookie_access_details_) {
-    DCHECK(!cookie_access_details_.empty());
-    const size_t details_count = cookie_access_details_.size();
-    std::vector<CountedCookieAccessDetailsPtr> container;
-    container.reserve(details_count);
-    while (!cookie_access_details_.empty()) {
-      auto it = cookie_access_details_.begin();
-#if DCHECK_IS_ON()
-      size_t last_index = 0u;
-      for (size_t i = 0; i < cookie_access_details_list_.size(); ++i) {
-        const auto& lhs = cookie_access_details_list_[i];
-        const auto& rhs = (*it).first;
-        if (!CookieAccessDetailsPrecede(lhs, rhs) &&
-            !CookieAccessDetailsPrecede(rhs, lhs)) {
-          last_index = i;
-        }
-      }
-      // Our ordering will be correct if the index in the pair is the same as
-      // the index of the last duplicated instance in the last.
-      DCHECK_EQ(last_index, *(*it).second);
-#endif  // DCHECK_IS_ON()
-      container.emplace_back(
-          std::move(cookie_access_details_.extract(it).value()));
-    }
-    std::sort(container.begin(), container.end(),
-              [](const CountedCookieAccessDetailsPtr& a,
-                 const CountedCookieAccessDetailsPtr& b) {
-                return *a.second < *b.second;
-              });
-    CookieAccessDetailsList details;
-    details.reserve(details_count);
-    for (auto& c : container) {
-      details.emplace_back(std::move(c.first));
-    }
-    // TODO(crbug.com/40283234): remove deduplication size estimation and
-    // histograms when no longer needed.
-    base::UmaHistogramCounts10M(
-        "Net.RestrictedCookieManager."
-        "EstimatedCookieAccessDetailsSize",
-        estimated_cookie_access_details_size_);
-    base::UmaHistogramCounts10M(
-        "Net.RestrictedCookieManager."
-        "EstimatedDeDupedCookieAccessDetailsSize",
-        estimated_deduped_cookie_access_details_size_);
-    base::UmaHistogramCounts10M(
-        "Net.RestrictedCookieManager."
-        "EstimatedDeDupedCookieAccessDetailsSizeReduction",
-        estimated_cookie_access_details_size_ -
-            estimated_deduped_cookie_access_details_size_);
-    cookie_observer_->OnCookiesAccessed(std::move(details));
-    cookie_access_details_.clear();
-    cookie_access_details_list_.clear();
-    estimated_cookie_access_details_size_ = 0u;
-    estimated_deduped_cookie_access_details_size_ = 0u;
-    cookie_access_details_count_ = 0u;
-  } else {
-    DCHECK(!cookie_access_details_list_.empty());
-    cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_list_));
-    cookie_access_details_list_.clear();
-  }
+  DCHECK(!cookie_access_details_.empty());
+  cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
 }
 
 }  // namespace network

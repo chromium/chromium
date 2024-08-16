@@ -9,6 +9,7 @@ assert(!is_android)
 build_webui_tests("build") {
   is_chrome_untrusted = true
   files = [
+    "app_style_updater_test.ts",
     "checkmark_visible_on_selected_test.ts",
     "voice_selection_menu_test.ts",
     "read_aloud_flag_test.ts",

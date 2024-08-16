@@ -45,6 +45,13 @@ BASE_FEATURE(kPlusAddressAndSingleFieldFormFill,
              "PlusAddressAndSingleFieldFormFill",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Chrome will fetch the blocklist data using the Component
+// Updater and employ that for blocking Plus Addresses. Otherwise, the blocklist
+// information is sourced from a Finch parameter.
+BASE_FEATURE(kPlusAddressBlocklistEnabled,
+             "PlusAddressBlocklistEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kPlusAddressesEnabled,
              "PlusAddressesEnabled",
@@ -110,6 +117,19 @@ BASE_FEATURE(kPlusAddressOfferCreationOnAllNonUsernameFields,
 BASE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms,
              "PlusAddressOfferCreationOnSingleUsernameForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, plus addresses are preallocated to avoid having to query the
+// server for every reserve call.
+BASE_FEATURE(kPlusAddressPreallocation,
+             "PlusAddressPreallocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The minimum number of locally stored pre-allocated plus addresses. If the
+// number slips below this threshold, more are requested.
+extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
+    &kPlusAddressPreallocation,
+    "minimum-size",
+    10);
 
 // When enabled, `GoogleGroupsManager::IsFeatureEnabledForProfile` is used to
 // check whether `kPlusAddressesEnabled` is enabled. Used as a killswitch.

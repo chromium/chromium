@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/overflow_menu_customization_commands.h"
@@ -2037,7 +2038,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
   [self dismissMenu];
   if (IsIosQuickDeleteEnabled()) {
-    [self.quickDeleteHandler showQuickDelete];
+    [self.quickDeleteHandler
+        showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
   } else {
     [self.settingsHandler showClearBrowsingDataSettings];
   }
@@ -2104,7 +2106,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuRequestDesktopSite"));
   [self dismissMenu];
   self.navigationAgent->RequestDesktopSite();
-  [self.browserCoordinatorHandler showDefaultSiteViewIPH];
+  [self.helpHandler
+      presentInProductHelpWithType:InProductHelpType::kDefaultSiteView];
 }
 
 // Dismisses the menu and requests the mobile version of the current page

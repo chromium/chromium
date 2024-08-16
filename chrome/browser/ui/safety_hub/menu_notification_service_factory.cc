@@ -19,9 +19,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
-#include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_prefs.h"          // nogncheck
+#include "extensions/browser/extension_prefs_factory.h"  // nogncheck
+#include "extensions/browser/extension_registry.h"       // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // static

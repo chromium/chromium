@@ -304,7 +304,7 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
       device_account.SetOrganization(organization).SetIsManaged(true);
     } else if (profile_->GetProfilePolicyConnector()->IsManaged()) {
       device_account
-          .SetOrganization(chrome::enterprise_util::GetDomainFromEmail(
+          .SetOrganization(enterprise_util::GetDomainFromEmail(
               identity_manager_
                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
                   .email))

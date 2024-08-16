@@ -1718,7 +1718,7 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
       return stream.get();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FFmpegDemuxer::OnSeekFrameDone(int result) {

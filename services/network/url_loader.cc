@@ -379,12 +379,12 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
 std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
     const net::HttpRequestHeaders& cors_exempt_headers) {
-  std::string cookies;
-  if (!cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie,
-                                     &cookies)) {
-    headers.GetHeader(net::HttpRequestHeaders::kCookie, &cookies);
+  std::optional<std::string> cookies =
+      cors_exempt_headers.GetHeader(net::HttpRequestHeaders::kCookie);
+  if (!cookies) {
+    cookies = headers.GetHeader(net::HttpRequestHeaders::kCookie);
   }
-  return cookies;
+  return std::move(cookies).value_or(std::string());
 }
 
 net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
@@ -392,8 +392,8 @@ net::HttpRequestHeaders AttachCookies(const net::HttpRequestHeaders& headers,
   DCHECK(!cookies_from_browser.empty());
 
   // Parse the existing cookie line.
-  std::string old_cookies;
-  headers.GetHeader(net::HttpRequestHeaders::kCookie, &old_cookies);
+  std::string old_cookies = headers.GetHeader(net::HttpRequestHeaders::kCookie)
+                                .value_or(std::string());
   net::cookie_util::ParsedRequestCookies parsed_cookies;
 
   net::cookie_util::ParseRequestCookieLine(old_cookies, &parsed_cookies);
@@ -1027,6 +1027,8 @@ void URLLoader::ProcessOutboundTrustTokenInterceptor(
 void URLLoader::OnDoneConstructingTrustTokenHelper(
     mojom::TrustTokenOperationType operation,
     TrustTokenStatusOrRequestHelper status_or_helper) {
+  trust_token_operation_ = operation;
+
   if (trust_token_observer_) {
     const net::IsolationInfo& isolation_info = url_request_->isolation_info();
     url::Origin top_frame_origin;
@@ -1093,6 +1095,14 @@ void URLLoader::OnDoneBeginningTrustTokenOperation(
     std::optional<net::HttpRequestHeaders> headers,
     mojom::TrustTokenOperationStatus status) {
   trust_token_status_ = status;
+
+  if (trust_token_operation_) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Net.TrustTokens.OperationOutcome.",
+                      internal::TrustTokenOperationTypeToString(
+                          *trust_token_operation_)}),
+        status);
+  }
 
   // In case the operation failed or it succeeded in a manner where the request
   // does not need to be sent onwards, the DevTools event is emitted from here.
@@ -2143,8 +2153,9 @@ int URLLoader::OnBeforeStartTransaction(
 
   if (include_request_cookies_with_response_) {
     request_cookies_.clear();
-    std::string cookie_header;
-    used_headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    std::string cookie_header =
+        used_headers->GetHeader(net::HttpRequestHeaders::kCookie)
+            .value_or(std::string());
     net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
   }
 
@@ -2506,7 +2517,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
           url_request_->isolation_info().top_frame_origin().value_or(
               url::Origin()),
           url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+          devtools_request_id(), url_request_->ad_tagged(),
           url_request_->cookie_setting_overrides()));
     }
   }
@@ -2659,8 +2670,9 @@ void URLLoader::OnBeforeSendHeadersComplete(
     const std::optional<net::HttpRequestHeaders>& headers) {
   if (include_request_cookies_with_response_ && headers) {
     request_cookies_.clear();
-    std::string cookie_header;
-    headers->GetHeader(net::HttpRequestHeaders::kCookie, &cookie_header);
+    std::string cookie_header =
+        headers->GetHeader(net::HttpRequestHeaders::kCookie)
+            .value_or(std::string());
     net::cookie_util::ParseRequestCookieLine(cookie_header, &request_cookies_);
   }
   std::move(callback).Run(result, headers);
@@ -2834,7 +2846,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
         url_request_->isolation_info().top_frame_origin().value_or(
             url::Origin()),
         url_request_->site_for_cookies(), std::move(reported_cookies),
-        devtools_request_id(), /*count=*/1, url_request_->ad_tagged(),
+        devtools_request_id(), url_request_->ad_tagged(),
         url_request_->cookie_setting_overrides()));
     if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));

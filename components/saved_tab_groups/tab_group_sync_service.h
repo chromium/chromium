@@ -17,7 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/types.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/gfx/range/range.h"
@@ -45,7 +45,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // either the local or remote clients.
   class Observer : public base::CheckedObserver {
    public:
-    // The data from sync ModelTypeStore has been loaded to memory.
+    // The data from sync DataTypeStore has been loaded to memory.
     virtual void OnInitialized() = 0;
 
     // A new tab group was added at the given |source|.
@@ -149,6 +149,11 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
                                 const base::Uuid& sync_tab_id,
                                 const LocalTabID& local_tab_id) = 0;
 
+  // Called from the UI layer such as tab group restore from recent tabs or undo
+  // tab group closure to reconnect a local tab group to a saved tab group.
+  virtual void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                                    const LocalTabGroupID& local_id) = 0;
+
   // Attribution related methods.
   // Helper method to determine whether a given cache guid corresponds to a
   // remote device. Empty value or string is considered local device.
@@ -165,9 +170,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual void RecordTabGroupEvent(const EventDetails& event_details) = 0;
 
   // For connecting to sync engine.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() = 0;
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() = 0;
 
   // Helper method to pause / resume local observer.

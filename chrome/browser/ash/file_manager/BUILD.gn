@@ -200,10 +200,6 @@ static_library("file_manager") {
     "//ui/chromeos/strings",
     "//ui/gfx",
     "//ui/gfx/codec",
-
-    # TODO(b/354679788): Use targets having headers included from
-    # chrome/browser/ash/file_manager/copy_or_move_io_task_impl.cc.
-    "//chrome/browser/ui/webui/ash/cloud_upload:mojo_bindings",
   ]
 
   allow_circular_includes_from = [
@@ -237,7 +233,6 @@ static_library("test_support") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/drive:test_support",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
@@ -248,6 +243,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/ui",
@@ -307,7 +303,6 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/drive",
@@ -320,6 +315,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/fusebox",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
@@ -436,7 +432,6 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/base",

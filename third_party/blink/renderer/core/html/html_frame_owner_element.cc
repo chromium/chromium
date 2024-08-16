@@ -677,7 +677,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
     frame_load_request.SetIsContainerInitiated(true);
-    frame_load_request.SetClientRedirectReason(
+    frame_load_request.SetClientNavigationReason(
         ClientNavigationReason::kFrameNavigation);
     WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
     if (replace_current_item)
@@ -738,6 +738,8 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
   frame_load_request.SetIsContainerInitiated(true);
+  frame_load_request.SetClientNavigationReason(
+      ClientNavigationReason::kInitialFrameNavigation);
   child_frame->Loader().StartNavigation(frame_load_request, child_load_type);
 
   return true;

@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
+#include "components/sync/protocol/nigori_local_data.pb.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {
 

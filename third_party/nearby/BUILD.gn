@@ -339,6 +339,7 @@ source_set("connections_implementation_mediums") {
     ":connections_implementation_mediums_webrtc",
     ":connections_types",
     ":multiplex_frames_proto",
+    ":platform_api_types",
     ":platform_base",
     ":platform_base_cancellation_flag",
     ":platform_base_util",
@@ -513,7 +514,7 @@ source_set("flags") {
     "src/internal/flags/nearby_flags.h",
   ]
   public_deps = [
-    ":platform_public_types",
+    ":platform_mutex",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -816,6 +817,28 @@ source_set("platform_impl_shared_file") {
 }
 
 # src/internal/platform
+# TODO(b/360211019): This was moved out of `platform_public_types` due to a
+# circular dependency with `flags`. Move this back into `platform_public_types`
+# once we can resolve the circular dependency.
+source_set("platform_mutex") {
+  public_configs = [
+    ":nearby_include_config",
+    ":nearby_defines",
+  ]
+  public = [
+    "src/internal/platform/mutex.h",
+    "src/internal/platform/mutex_lock.h",
+  ]
+  public_deps = [
+    ":platform_api_platform",
+    ":platform_api_types",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
 source_set("platform_public_types") {
   public_configs = [
     ":nearby_include_config",
@@ -845,8 +868,6 @@ source_set("platform_public_types") {
     "src/internal/platform/logging.h",
     "src/internal/platform/monitored_runnable.h",
     "src/internal/platform/multi_thread_executor.h",
-    "src/internal/platform/mutex.h",
-    "src/internal/platform/mutex_lock.h",
     "src/internal/platform/pending_job_registry.h",
     "src/internal/platform/pipe.h",
     "src/internal/platform/scheduled_executor.h",
@@ -858,12 +879,14 @@ source_set("platform_public_types") {
     "src/internal/platform/thread_check_runnable.h",
   ]
   public_deps = [
+    ":flags",
     ":platform_api_platform",
     ":platform_api_types",
     ":platform_base",
     ":platform_base_cancellation_flag",
     ":platform_base_logging",
     ":platform_base_util",
+    ":platform_mutex",
     ":platform_public_logging",
     "//crypto:crypto",
     "//third_party/abseil-cpp:absl",

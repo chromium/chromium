@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_CREDIT_CARD_SAVE_METRICS_H_
 
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 
@@ -205,7 +205,7 @@ void LogSaveCardPromptOfferMetric(
     SaveCardPromptOffer metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state);
 
 // `has_saved_cards` indicates that local or server cards existed before the
@@ -214,7 +214,7 @@ void LogSaveCardPromptResultMetric(
     SaveCardPromptResult metric,
     bool is_uploading,
     bool is_reshow,
-    AutofillClient::SaveCreditCardOptions options,
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state,
     bool has_saved_cards);
 
@@ -249,7 +249,7 @@ void LogCreditCardUploadConfirmationViewResultMetric(
 void LogSaveCreditCardPromptResult(
     SaveCreditCardPromptResult event,
     bool is_upload,
-    AutofillClient::SaveCreditCardOptions options);
+    payments::PaymentsAutofillClient::SaveCreditCardOptions options);
 
 }  // namespace autofill::autofill_metrics
 

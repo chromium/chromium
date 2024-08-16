@@ -283,16 +283,6 @@ FilesystemProxy::LockFile(const base::FilePath& path,
   return std::make_unique<RemoteFileLockImpl>(std::move(remote_lock));
 }
 
-bool FilesystemProxy::SetOpenedFileLength(base::File* file, uint64_t length) {
-  if (!remote_directory_)
-    return file->SetLength(length);
-
-  bool success = false;
-  remote_directory_->SetOpenedFileLength(std::move(*file), length, &success,
-                                         file);
-  return success;
-}
-
 base::FilePath FilesystemProxy::MakeRelative(const base::FilePath& path) const {
   DCHECK(remote_directory_);
   DCHECK(!path.ReferencesParent());

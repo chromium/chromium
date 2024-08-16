@@ -83,12 +83,19 @@ class CC_EXPORT FrameSequenceMetrics {
 
   void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
+  struct Jank {
+    // The start time of a jank.
+    base::TimeTicks start_time;
+    // The duration of a jank.
+    base::TimeDelta duration;
+  };
+
   struct CC_EXPORT CustomReportData {
     CustomReportData();
     CustomReportData(uint32_t frames_expected,
                      uint32_t frames_dropped,
                      uint32_t jank_count,
-                     std::vector<base::TimeDelta> jank_durations);
+                     std::vector<Jank> janks);
 
     CustomReportData(const CustomReportData&);
     CustomReportData& operator=(const CustomReportData&);
@@ -98,8 +105,7 @@ class CC_EXPORT FrameSequenceMetrics {
     uint32_t frames_expected_v3 = 0;
     uint32_t frames_dropped_v3 = 0;
     uint32_t jank_count_v3 = 0;
-    // A vector of TimeDelta that captures the duration of each jank recorded.
-    std::vector<base::TimeDelta> jank_durations;
+    std::vector<Jank> janks;
   };
   using CustomReporter = base::OnceCallback<void(const CustomReportData& data)>;
   // Sets reporter callback for kCustom typed sequence.
@@ -160,9 +166,8 @@ class CC_EXPORT FrameSequenceMetrics {
     FrameInfo last_presented_frame;
     base::TimeDelta last_frame_delta;
     base::TimeDelta no_update_duration;
-    // The durations of the janks recorded. Only used for kCustom typed
-    // sequence.
-    std::vector<base::TimeDelta> jank_durations;
+    // Note: janks are only recorded for kCustom types sequences
+    std::vector<Jank> janks;
   } v3_;
 
   struct V4 {

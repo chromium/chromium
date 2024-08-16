@@ -174,8 +174,7 @@ void AssistantControllerImpl::OpenUrl(const GURL& url,
 
   auto* android_helper = AndroidIntentHelper::GetInstance();
   if (IsAndroidIntent(url) && !android_helper) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Give observers an opportunity to perform any necessary handling before we

@@ -43,7 +43,7 @@ std::u16string GetMessageLabel(DeviceConnectionTracker* connection_tracker,
       static_cast<int>(extension_names.size()), extension_names[0],
       extension_names[1], static_cast<int>(extension_names.size() - 2));
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

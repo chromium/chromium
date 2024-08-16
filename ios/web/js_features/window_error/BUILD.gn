@@ -9,6 +9,7 @@ source_set("window_error") {
   deps = [
     ":error_js",
     "//base",
+    "//ios/web/common:features",
     "//ios/web/public/js_messaging",
     "//net",
     "//url",

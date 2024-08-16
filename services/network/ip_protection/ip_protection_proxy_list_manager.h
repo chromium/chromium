@@ -5,6 +5,9 @@
 #ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_H_
 #define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_PROXY_LIST_MANAGER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
 
 namespace net {
@@ -30,15 +33,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyListManager {
   // if `IsProxyListAvailable()` returned true.
   virtual const std::vector<net::ProxyChain>& ProxyList() = 0;
 
-  // Return the `GeoId` string which is the geo for which the current list is
-  // valid.
+  // Returns the geo id of the current proxy list.
+  //
+  // If there is not an available proxy list, an empty string will be returned.
+  // If token caching by geo is disabled, this will always return "EARTH".
+  virtual const std::string& CurrentGeo() = 0;
 
-  // This is a formatted version of the `GeoHint`. It consists
-  // of a concatenation of the country region, iso region, and city name
-  // (separated by commas). If there are fields missing, they are omitted, and
-  // there is no trailing comma. String can be empty if a successful request
-  // fetching proxy lists has not occurred.
-  virtual const std::string& GeoId() = 0;
+  // Requests a proxy list refresh when a geo change has occurred. This will
+  // either kick off an immediate refresh or schedule a refresh for the soonest
+  // possible time.
+  virtual void RefreshProxyListForGeoChange() = 0;
 
   // Request a refresh of the proxy list. Call this when it's likely that the
   // proxy list is out of date.

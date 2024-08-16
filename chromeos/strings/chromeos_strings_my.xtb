@@ -62,6 +62,7 @@
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1300115153046603471">APN သည် အမျိုးအစားမူရင်းဖြစ်ပြီး <ph name="ATTACH" /> ဖြစ်သည်။</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1304014921944666344">ပြုလုပ်သည့်ရက်</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
@@ -179,7 +180,6 @@
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
 <translation id="1836553715834333258">စနစ် အရောင်</translation>
 <translation id="183675228220305365">သရုပ်မှန်ပုံဖော်သူ</translation>
-<translation id="1837537071599385610">ညွှန်ကြားချက် လမ်းညွှန်</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1840474674287087346">ဒက်စ်တော့ အရောင်</translation>
 <translation id="184095011128924488">ဖန်တီးမှု</translation>
@@ -340,7 +340,6 @@
 <translation id="2645380101799517405">သတ်မှတ်ချက်များ</translation>
 <translation id="2652403576514495859">နှုတ်တိုက်ချပေးခြင်း ဖွင့်ရန် (သို့) ပြောင်းရန်</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
-<translation id="2653807227758181366">ပြုလုပ်လိုသော နောက်ခံကို ဖော်ပြပါ (သို့) နမူနာညွှန်ကြားချက်ကို သုံးပါ</translation>
 <translation id="2654647726140493436">အပ်ဒိတ်လုပ်နေစဉ် သင့် <ph name="DEVICE_TYPE" /> ကို မပိတ်ပါနှင့် (သို့) <ph name="DEVICE_TYPE" /> ပါဝါကြိုးကို ပလတ်မဖြုတ်ပါနှင့်</translation>
 <translation id="2656001153562991489">Chromebook Plus အတွက်အထူးသီးသန့်</translation>
 <translation id="2665671725390405060">အသံထွက်ကို နားထောင်ရန်</translation>
@@ -359,6 +358,7 @@
 <translation id="2780756493585863768">Google AI က ပံ့ပိုးထားသည့် လတ်တလော နောက်ခံများ</translation>
 <translation id="2783010256799387990">အောင်မြင်သည်</translation>
 <translation id="2786429550992142861">ပိတ်ချောထည်</translation>
+<translation id="2787237339470862294">ဤဘာသာစကားကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="2787435249130282949">ကီးဘုတ် ပိုလင်း</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="28232023175184696">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ရန် နှိပ်ပါ။</translation>
@@ -418,9 +418,6 @@
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
 <translation id="3201315366910775591">မျှဝေထားသော အယ်လ်ဘမ်များကို အခြားလူများက အပ်ဒိတ်လုပ်နိုင်သည်</translation>
 <translation id="3211671540163313381">ကီးနေရာချသည့် D-pad</translation>
-<translation id="3224812403568276799">၎င်းကို ခွင့်ပြုသောအခါ Recorder သည် ထင်ရှားသော အသံများကို အလိုအလျောက် သိရှိရန် အဆင့်မြင့် အသံစိတ်ဖြာလေ့လာချက်ကို သုံးမည်ဖြစ်ပြီး ‘ပြောသူ ၁’ နှင့် ‘ပြောသူ ၂’ ကဲ့သို့သော ယေဘုယျအညွှန်းတစ်ခုစီ တပ်ပေးမည်။
-
-၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
@@ -465,6 +462,7 @@
 <translation id="346423161771747987">လက်ရှိ</translation>
 <translation id="346539236881580388">ပြန်ရိုက်ရန်</translation>
 <translation id="3484914941826596830">ဖားမ်ဝဲအပ်ဒိတ်လုပ်နေစဉ် ဤပြင်ပကိရိယာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင်၏ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ ယခုအပ်ဒိတ်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပကိရိယာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
+<translation id="3485555238092220889">အများသုံးနိုင်မှု လုပ်ဆောင်ချက်</translation>
 <translation id="3486220673238053218">အဓိပ္ပါယ် ဖွင့်ဆိုချက်</translation>
 <translation id="3487866404496702283">Mahi တူးလ်အတွက် အကြံပြုချက်</translation>
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
@@ -509,6 +507,7 @@
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
 <translation id="3715651196924935218">လွင့်မျောမှုမှ ထွက်ရန်</translation>
 <translation id="3716250181321371108">သတ်မှတ်ချက် ပြုလုပ်ရန်</translation>
+<translation id="3716830479327464973">၎င်းကို ခွင့်ပြုသည့်အခါ Recorder သည် သင့်အသံဖမ်းယူမှုများကို ဖော်ပြပါတို့အတွက် စီမံဆောင်ရွက်ပါမည်-</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
@@ -535,6 +534,7 @@
 <translation id="3869314628814282185">ပိုးဇာလွှာ</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
 <translation id="3877066159641251281">ဘာသာပြန်ဆိုချက်ကို နားထောင်ရန်</translation>
+<translation id="3880601782712134623">ထင်ရှားသော အသံများကို အလိုအလျောက် သိရှိပြီး ပြောသူတစ်ဦးစီကို ‘ပြောသူ ၁’ နှင့် ‘ပြောသူ ၂’ ကဲ့သို့သော ယေဘုယျအညွှန်း တပ်ပေးသည်</translation>
 <translation id="3885327323343477505">စကရင်နားချိန်ပုံ ပြောင်းရန်</translation>
 <translation id="3889914174935857450">ရက်စွဲ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
@@ -638,6 +638,7 @@
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> ပိတ်ထားသည်</translation>
+<translation id="4428840632568803690">ပြောသူ <ph name="SPEAKER_LABEL" /></translation>
 <translation id="4429881212383817840">Kerberos လက်မှတ်သည် မကြာမီ သက်တမ်းကုန်ပါတော့မည်</translation>
 <translation id="4431821876790500265">အစီရင်ခံစာကို ကြည့်ရန်</translation>
 <translation id="4443192710976771874">အနီရောင်</translation>
@@ -673,6 +674,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4594021849294327751">စာသားမှတ်တမ်း ပြုလုပ်ရန်</translation>
+<translation id="4607282946861182308">၎င်း၏ပုံများ ပြုလုပ်၍မရပါ။ အခြားတိုက်တွန်းချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
 <translation id="463791356324567266">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်…</translation>
@@ -759,6 +761,7 @@
 <translation id="5049856988445523908">ဆင်းမ်ကတ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">အုပ်စု အမည်</translation>
 <translation id="5051044138948155788">ဤသည်မှာ တစ်ခုတည်းသော စာမျက်နှာဖြစ်ပါသည်။ ဤသည်အားဖြင့် စကင်စဖတ်မည့် ဖန်သားပြင်သို့ ရောက်ပါမည်။</translation>
+<translation id="5078711626843651677">ပြောသူအညွှန်း တပ်ပြီးသည်အထိ အသံ နမူနာများကို စက်ထဲတွင် ယာယီသိမ်းထားသည်။ ၎င်းကို ဆက်တင်များတွင် အချိန်မရွေး ပိတ်နိုင်သည်။</translation>
 <translation id="5078983345702708852">ခေတ်လွန်</translation>
 <translation id="5087864757604726239">နောက်သို့</translation>
 <translation id="5088172560898466307">ဆာဗာပင်ရင်းအမည်−</translation>
@@ -813,9 +816,11 @@
 <translation id="5318334351163689047">TCP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
 <translation id="53196409393069519">စာသားမှတ်တမ်း ဖွင့်မလား။</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ <ph name="COMPLETION_STATUS" /></translation>
+<translation id="5327248766486351172">အမည်</translation>
 <translation id="5332948983412042822">ယခု အသစ်တစ်ခု ရွေးရန်</translation>
 <translation id="5333530671332546086">အမျိုးအမည်မသိ စာမျက်နှာအခြေအနေ</translation>
 <translation id="5335373365677455232">ပန်းရောင်</translation>
+<translation id="5344619683981067131">ရွေးထားသောစာသားကို အကြံပြုချက်ဖြင့် အစားထိုးနေသည်</translation>
 <translation id="5346687412805619883">အိမ်တွင်းသုံးကွန်ရက်</translation>
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
@@ -867,6 +872,7 @@
 <translation id="5662240986744577912">အချက်အလက်ကာကွယ်ရေးဖန်သားပြင် ခလုတ်</translation>
 <translation id="5669267381087807207">အစပြုနေသည်</translation>
 <translation id="5670702108860320605">BSSID</translation>
+<translation id="5674943355143004615">ပြုလုပ်လိုသော နောက်ခံကို ဖော်ပြပါ</translation>
 <translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" /> ဖြင့် အိပ်မက်ဆန်သည့် <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">ချယ်ရီသီး</translation>
 <translation id="5691511426247308406">မိသားစု</translation>
@@ -974,7 +980,6 @@
 <translation id="6231648282154119906">သင်သတ်မှတ်ထားသော အဆင့်မြင့်ကာကွယ်မှု၏ အစိတ်အပိုင်းအဖြစ် သံသယဖြစ်ဖွယ်ဖိုင်များကို ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ က အလိုအလျောက် စကင်ဖတ်ပါမည်</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6234024205316847054">အကြမ်းဖော်ပြချက် ပြပါ</translation>
-<translation id="6235460611964961764">ဒေတာသုံးစွဲမှု ကိုယ်တိုင်ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="6243280677745499710">လောလောဆယ် သတ်မှတ်ထားသည်</translation>
 <translation id="6250316632541035980">ဝက်ပေါင်ခြောက်နှင့် ကြက်ဥ</translation>
 <translation id="6265268291107409527">ရွေးထားသောကီးမှာ <ph name="KEYS" /> ဖြစ်သည်။ <ph name="ASSIGN_INSTRUCTION" /></translation>
@@ -1100,6 +1105,7 @@
 <translation id="680983167891198932">ကီး</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
 <translation id="6853312040151791195">အားလျော့နှုန်း</translation>
+<translation id="6862416241246624313">အကြံပြုချက် ပို့ပြီးပြီ</translation>
 <translation id="6866732840889595464">ဒေစီပန်း</translation>
 <translation id="6871256179359663621">ခရမ်းဖျော့</translation>
 <translation id="6889786074662672253">ပြန်စနေစဉ် ဤပြင်ပစက်ပစ္စည်းကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင့်ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပစက်ပစ္စည်း အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
@@ -1108,7 +1114,9 @@
 <translation id="6905163627763043954">စမ်းကြည့်ရန်</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> သို့ ပြန်သွားရန်</translation>
 <translation id="6910312834584889076">စကင်ဖတ်စက်၏ အဖုံး ပွင့်နေသည်။ အဖုံးကိုပိတ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="6910845598686542904">အသံဖိုင်တွင်တွေ့ရှိသော အသံနမူနာများကို တွက်ထုတ်ပေးသည်</translation>
 <translation id="6911383237894364323">မီဒီယာဆာဗာများသို့ ချိတ်ဆက်၍ မရပါ</translation>
+<translation id="6930242544192836755">ကြာချိန်</translation>
 <translation id="6930597342185648547">နောက်ခံအကြောင်း</translation>
 <translation id="6939667434404433010">အသံသွင်းချက်အမည်ကို ရှာပါ</translation>
 <translation id="6939766318048400022">ကော်ဖီဆိုင်</translation>
@@ -1291,6 +1299,7 @@
 <translation id="7802764839223122985">ကီးမရှိပါ။ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">မလိုပါ</translation>
 <translation id="7805768142964895445">အခြေအနေ</translation>
+<translation id="7811024689617730980">၁ ရက်မှ ၃၁ ရက်အထိ ပါဝင်သော အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည့်ရက် ရွေးရန်</translation>
 <translation id="7813073042185856802">တောင်</translation>
 <translation id="7819857487979277519">PSK (WPA သို့မဟုတ် RSN)</translation>
 <translation id="7824219488248240180">ပို့စ်-အင်ပရက်ရှင်နစ်</translation>
@@ -1329,6 +1338,7 @@
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
 <translation id="8017679124341497925">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="802154636333426148">ဒေါင်းလုဒ်လုပ်မှု မအောင်မြင်ပါ</translation>
+<translation id="8028993641010258682">ဆိုက်</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">အလိုအလျောက်အရောင်ချိန်မုဒ် ဖွင့်ရန်</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
@@ -1365,6 +1375,7 @@
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8226628635270268143">သင့်အကြိုက်ဆုံး ဓာတ်ပုံနှင့် အယ်လ်ဘမ်များ ရွေးချယ်ရန်</translation>
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
+<translation id="8227488649450500937">ဤညွှန်ကြားချက်များထဲမှ တစ်ခုကို စမ်းကြည့်ပါ (သို့) <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ညွှန်ကြားချက် လမ်းညွှန်<ph name="END_LINK_PROMPTING_GUIDE" /> ကိုကြည့်ပါ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8238771987802558562">APN ရွေးခြင်း</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
@@ -1570,6 +1581,7 @@
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> အတွက် ကီးမရှိပါ။ <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="951780398843003443">ပြောသူ ပြောသည့်အရာနှင့် ပြောချိန်ကို စာသားမှတ်တမ်းတွင် ဖော်ပြနိုင်ရန် အသံဖိုင်တစ်လျှောက် အသံများကို နှိုင်းယှဉ်သည်</translation>
 <translation id="952992212772159698">ဖွင့်မသုံးရသေး</translation>
 <translation id="95718197892796296">ရွှံ့စေး</translation>
 <translation id="960719561871045870">မိုဘိုင်းဝန်ဆောင်မှုဌာန ကုဒ်</translation>

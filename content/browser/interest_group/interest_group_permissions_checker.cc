@@ -47,11 +47,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default currently. When enabled, they can be disabled by the "
-            "Privacy Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 }  // namespace

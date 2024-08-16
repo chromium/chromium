@@ -59,4 +59,12 @@ public interface TabSwitcher {
      * @param invitationId The id of the invitation.
      */
     void openInvitationModal(String invitationId);
+
+    /**
+     * Requests to show a dialog for a tab group.
+     *
+     * @param tabId The id of any tab in the group.
+     * @return Whether the request to show was able to be handled.
+     */
+    boolean requestOpenTabGroupDialog(int tabId);
 }

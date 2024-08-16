@@ -7,6 +7,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/fallback_coordinator.h"
 
+@class ManualFillPlusAddressMediator;
+
 namespace autofill {
 class AutofillProfile;
 }  // namespace autofill
@@ -33,6 +35,8 @@ class AutofillProfile;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
+             manualFillPlusAddressMediator:
+                 (ManualFillPlusAddressMediator*)manualFillPlusAddressMediator
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler
                     showAutofillFormButton:(BOOL)showAutofillFormButton

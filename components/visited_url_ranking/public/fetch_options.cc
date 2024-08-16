@@ -88,6 +88,7 @@ FetchOptions FetchOptions::CreateFetchOptionsForTabResumption(
       URLVisitAggregatesTransformType::kBookmarkData,
 #if BUILDFLAG(IS_ANDROID)
       URLVisitAggregatesTransformType::kDefaultAppUrlFilter,
+      URLVisitAggregatesTransformType::kHistoryBrowserTypeFilter,
 #endif
   };
   if (base::FeatureList::IsEnabled(

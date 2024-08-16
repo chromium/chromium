@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/search_engines/template_url_service.h"
 
 #include <stddef.h>
@@ -304,37 +309,21 @@ class TemplateURLServiceWithoutFallbackTest : public TemplateURLServiceTest {
 };
 
 #if BUILDFLAG(IS_ANDROID)
-class TemplateURLServicePlayApiTest
-    : public TemplateURLServiceTestBase,
-      public testing::WithParamInterface<std::pair<bool, bool>> {
+class TemplateURLServicePlayApiTest : public TemplateURLServiceTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
   static std::string ParamToTestSuffix(
-      const ::testing::TestParamInfo<std::pair<bool, bool>>& info) {
-    std::string suffix = info.param.first ? "SearchEngineChoiceEnabled"
-                                          : "SearchEngineChoiceDisabled";
+      const ::testing::TestParamInfo<bool>& info) {
+    std::string suffix =
+        info.param ? "SearchEngineChoiceEnabled" : "SearchEngineChoiceDisabled";
 
-    suffix += info.param.second ? "PersistentSearchEngineChoiceImportEnabled"
-                                : "PersistentSearchEngineChoiceImportDisabled";
     return suffix;
   }
 
-  TemplateURLServicePlayApiTest()
-      : TemplateURLServiceTestBase(GetParam().first) {
-    if (IsPersistentSearchEngineChoiceImportEnabled()) {
-      feature_list_.InitAndEnableFeature(
-          switches::kPersistentSearchEngineChoiceImport);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          switches::kPersistentSearchEngineChoiceImport);
-    }
-
+  TemplateURLServicePlayApiTest() : TemplateURLServiceTestBase(GetParam()) {
     EXPECT_EQ(
         IsSearchEngineChoiceEnabled(),
         base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger));
-  }
-
-  bool IsPersistentSearchEngineChoiceImportEnabled() const {
-    return GetParam().second;
   }
 
  private:
@@ -1018,10 +1007,7 @@ TEST_P(TemplateURLServicePlayApiTest, UpdateFromPlayAPI) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          TemplateURLServicePlayApiTest,
-                         testing::Values(std::make_pair(true, true),
-                                         std::make_pair(true, false),
-                                         std::make_pair(false, false),
-                                         std::make_pair(false, true)),
+                         testing::Values(true, false),
                          &TemplateURLServicePlayApiTest::ParamToTestSuffix);
 
 #endif  // BUILDFLAG(IS_ANDROID)

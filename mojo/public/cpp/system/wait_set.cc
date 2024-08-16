@@ -209,7 +209,7 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       events[dest_index] = e;
     }
 
-    size_t index = base::WaitableEvent::WaitMany(events.data(), events.size());
+    size_t index = base::WaitableEvent::WaitMany(events);
     base::AutoLock lock(lock_);
 
     // Pop as many handles as we can out of the ready set and return them. Note

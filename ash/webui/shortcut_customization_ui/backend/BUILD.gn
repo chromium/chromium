@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
@@ -31,6 +32,7 @@ static_library("backend") {
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//ash/webui/shortcut_customization_ui/mojom",
     "//base",
+    "//build:branding_buildflags",
     "//chromeos/ash/components/local_search_service:local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp:cpp",
     "//chromeos/ash/components/local_search_service/public/mojom",
@@ -41,4 +43,8 @@ static_library("backend") {
     "//ui/events/ash",
     "//ui/events/devices",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 }

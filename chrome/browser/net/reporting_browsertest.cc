@@ -5,17 +5,23 @@
 #include <memory>
 #include <string>
 
+#include "base/base_switches.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
+#include "components/tpcd/enterprise_reporting/enterprise_reporting_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -24,6 +30,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
@@ -248,6 +255,110 @@ class JSCallStackReportingBrowserTest : public BaseReportingBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<net::test_server::ControllableHttpResponse> iframe_response_;
+};
+
+class EnterpriseReportingBrowserTest : public policy::PolicyTest {
+ public:
+  EnterpriseReportingBrowserTest()
+      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitWithFeatures(
+        // enabled_features
+        {net::features::kForceThirdPartyCookieBlocking,
+         net::features::kReportingApiEnableEnterpriseCookieIssues,
+         network::features::kReporting},
+        // disabled_features
+        {});
+  }
+
+  ~EnterpriseReportingBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    PolicyTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    PolicyTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  void SetUp() override {
+    PolicyTest::SetUp();
+
+    // Making the report delivery happen instantly for testing.
+    net::ReportingPolicy policy;
+    policy.delivery_interval = base::Seconds(0);
+    net::ReportingPolicy::UsePolicyForTesting(policy);
+  }
+
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    preflight_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(server(),
+                                                                     "/upload");
+    payload_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(server(),
+                                                                     "/upload");
+
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    server()->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(server()->Start());
+  }
+
+  void UpdateReportingEndpointsPolicy(base::Value::Dict dict) {
+    SetPolicy(&policies_, policy::key::kReportingEndpoints,
+              base::Value(std::move(dict)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  net::EmbeddedTestServer* server() { return &https_server_; }
+
+  net::test_server::ControllableHttpResponse* preflight_response() {
+    return preflight_response_.get();
+  }
+
+  net::test_server::ControllableHttpResponse* payload_response() {
+    return payload_response_.get();
+  }
+
+  GURL GetCollectorURL() const {
+    return https_server_.GetURL(kReportingHost, "/upload");
+  }
+
+ private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  policy::PolicyMap policies_;
+  net::test_server::EmbeddedTestServer https_server_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      preflight_response_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse> payload_response_;
+};
+
+class HistogramReportingBrowserTest : public BaseReportingBrowserTest {
+ public:
+  HistogramReportingBrowserTest() = default;
+
+  HistogramReportingBrowserTest(const HistogramReportingBrowserTest&) = delete;
+  HistogramReportingBrowserTest& operator=(
+      const HistogramReportingBrowserTest&) = delete;
+
+  ~HistogramReportingBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam()) {
+      command_line->AppendSwitch(switches::kNoErrorDialogs);
+    }
+    BaseReportingBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 base::Value::List ParseReportUpload(const std::string& payload) {
@@ -859,6 +970,165 @@ IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
   }
 }
 
+// Tests that enterprise reports generated by a RenderFrameHost cookie error are
+// properly delivered to an endpoint configured by the enterprise policy.
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
+                       RenderFrameHostCookieError) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kForceThirdPartyCookieBlocking));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(network::features::kReporting));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kReportingApiEnableEnterpriseCookieIssues));
+
+  // Configure an enterprise policy endpoint for report delivery.
+  UpdateReportingEndpointsPolicy(base::Value::Dict().Set(
+      "enterprise-third-party-cookie-access-error", GetCollectorURL().spec()));
+
+  // Generate and queue a report for delivery from a RenderFrameHost cookie
+  // error
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url_a = server()->GetURL("a.test", "/iframe_blank.html");
+  GURL url_b = server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url_a));
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, "test", url_b));
+  ASSERT_TRUE(
+      content::ExecJs(content::ChildFrameAt(web_contents, 0),
+                      "document.cookie = 'foo=bar;SameSite=None;Secure'"));
+
+  preflight_response()->WaitForRequest();
+  preflight_response()->Send("HTTP/1.1 204 OK\r\n");
+  preflight_response()->Send("Access-Control-Allow-Origin: *\r\n");
+  preflight_response()->Send("Access-Control-Allow-Headers: *\r\n");
+  preflight_response()->Send("\r\n");
+  preflight_response()->Done();
+
+  payload_response()->WaitForRequest();
+  base::Value::List actualReport =
+      ParseReportUpload(payload_response()->http_request()->content);
+  payload_response()->Send("HTTP/1.1 204 OK\r\n");
+  payload_response()->Send("\r\n");
+  payload_response()->Done();
+
+  base::Value::List expectedReport =
+      base::test::ParseJsonList(base::StringPrintf(
+          R"json(
+          [
+            {
+              "body": {
+                "frameUrl": "%s",
+                "accessUrl": "%s",
+                "name": "foo",
+                "domain": "b.test",
+                "path": "/",
+                "accessOperation": "write"
+              },
+              "type": "enterprise-third-party-cookie-access-error",
+              "url": "%s",
+              "user_agent": "Mozilla/1.0"
+            },
+          ]
+        )json",
+          url_b.spec().c_str(), url_b.spec().c_str(), url_a.spec().c_str()));
+  EXPECT_EQ(expectedReport, actualReport);
+}
+
+// Tests that enterprise reports generated by a NavigationHandle cookie error
+// are properly delivered to an endpoint configured by the enterprise policy.
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingBrowserTest,
+                       NavigationHandleCookieError) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kForceThirdPartyCookieBlocking));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(network::features::kReporting));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      net::features::kReportingApiEnableEnterpriseCookieIssues));
+
+  // Configure an enterprise policy endpoint for report delivery.
+  UpdateReportingEndpointsPolicy(base::Value::Dict().Set(
+      "enterprise-third-party-cookie-access-error", GetCollectorURL().spec()));
+
+  // Generate and queue a report for delivery from a NavigationHandle cookie
+  // error
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  GURL url_a = server()->GetURL("a.test", "/iframe_blank.html");
+  GURL url_b = server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::SetCookie(web_contents->GetBrowserContext(), url_b,
+                                 "foo=bar;SameSite=None;Secure"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url_a));
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents, "test", url_b));
+
+  preflight_response()->WaitForRequest();
+  preflight_response()->Send("HTTP/1.1 204 OK\r\n");
+  preflight_response()->Send("Access-Control-Allow-Origin: *\r\n");
+  preflight_response()->Send("Access-Control-Allow-Headers: *\r\n");
+  preflight_response()->Send("\r\n");
+  preflight_response()->Done();
+
+  payload_response()->WaitForRequest();
+  base::Value::List actualReport =
+      ParseReportUpload(payload_response()->http_request()->content);
+  payload_response()->Send("HTTP/1.1 204 OK\r\n");
+  payload_response()->Send("\r\n");
+  payload_response()->Done();
+
+  base::Value::List expectedReport =
+      base::test::ParseJsonList(base::StringPrintf(
+          R"json(
+          [
+            {
+              "body": {
+                "frameUrl": "%s",
+                "accessUrl": "%s",
+                "name": "foo",
+                "domain": "b.test",
+                "path": "/",
+                "accessOperation": "read"
+              },
+              "type": "enterprise-third-party-cookie-access-error",
+              "url": "%s",
+              "user_agent": "Mozilla/1.0"
+            },
+          ]
+        )json",
+          url_b.spec().c_str(), url_b.spec().c_str(), url_a.spec().c_str()));
+  EXPECT_EQ(expectedReport, actualReport);
+}
+
+IN_PROC_BROWSER_TEST_P(HistogramReportingBrowserTest,
+                       CrashReportUnresponsiveHistogram) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::HistogramTester histogram_tester;
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+  std::string_view histogram_name =
+      "ReportingAndNEL.UnresponsiveRenderer.CrashReportOutcome";
+
+  if (GetParam()) {
+    histogram_tester.ExpectBucketCount(histogram_name, /*kDropped*/ 1,
+                                       /*expected_count*/ 1);
+  } else {
+    histogram_tester.ExpectBucketCount(histogram_name,
+                                       /*kPotentiallyQueued */ 0,
+                                       /*expected_count*/ 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          NonIsolatedReportingBrowserTest,
@@ -866,3 +1136,4 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          JSCallStackReportingBrowserTest,
                          ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, HistogramReportingBrowserTest, ::testing::Bool());

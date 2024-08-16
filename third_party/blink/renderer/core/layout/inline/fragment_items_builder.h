@@ -44,9 +44,10 @@ class CORE_EXPORT FragmentItemsBuilder {
   wtf_size_t Size() const { return items_.size(); }
 
   const String& TextContent(bool first_line) const {
-    return UNLIKELY(first_line && first_line_text_content_)
-               ? first_line_text_content_
-               : text_content_;
+    if (first_line && first_line_text_content_) [[unlikely]] {
+      return first_line_text_content_;
+    }
+    return text_content_;
   }
 
   // Adding a line is a three-pass operation, because |InlineLayoutAlgorithm|
@@ -146,7 +147,7 @@ class CORE_EXPORT FragmentItemsBuilder {
  private:
   void MoveCurrentLogicalLineItemsToMap();
 
-  void AddItems(LogicalLineItem* child_begin, LogicalLineItem* child_end);
+  void AddItems(base::span<LogicalLineItem> child_span);
 
   void ConvertToPhysical(const PhysicalSize& outer_size);
 

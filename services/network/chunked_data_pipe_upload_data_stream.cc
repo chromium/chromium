@@ -123,9 +123,8 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
   size_t num_bytes = base::checked_cast<size_t>(buf_len);
   if (size_ && num_bytes > *size_ - bytes_read_)
     num_bytes = *size_ - bytes_read_;
-  MojoResult rv = data_pipe_->ReadData(
-      MOJO_READ_DATA_FLAG_NONE,
-      base::as_writable_bytes(buf->span()).first(num_bytes), num_bytes);
+  MojoResult rv = data_pipe_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       buf->span().first(num_bytes), num_bytes);
   if (rv == MOJO_RESULT_OK) {
     bytes_read_ += num_bytes;
     // Not needed for correctness, but this allows the consumer to send the

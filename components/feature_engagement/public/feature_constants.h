@@ -75,8 +75,6 @@ BASE_DECLARE_FEATURE(kIPHTabGroupsSaveV2IntroFeature);
 BASE_DECLARE_FEATURE(kIPHTabGroupsSaveV2CloseGroupFeature);
 BASE_DECLARE_FEATURE(kIPHTabOrganizationSuccessFeature);
 BASE_DECLARE_FEATURE(kIPHTabSearchFeature);
-BASE_DECLARE_FEATURE(kIPHTrackingProtectionOnboardingFeature);
-BASE_DECLARE_FEATURE(kIPHTrackingProtectionReminderFeature);
 BASE_DECLARE_FEATURE(kIPHWebUITabStripFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSnoozeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopPwaInstallFeature);
@@ -91,6 +89,7 @@ BASE_DECLARE_FEATURE(kIPHBackNavigationMenuFeature);
 // should also be declared in:
 // org.chromium.components.feature_engagement.FeatureConstants.
 #if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kIPHAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature);
 BASE_DECLARE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationShareFeature);
 BASE_DECLARE_FEATURE(
@@ -193,7 +192,6 @@ BASE_DECLARE_FEATURE(kIPHRtlGestureNavigationFeature);
 #if BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kIPHBottomToolbarTipFeature);
 BASE_DECLARE_FEATURE(kIPHLongPressToolbarTipFeature);
-BASE_DECLARE_FEATURE(kIPHNewIncognitoTabTipFeature);
 BASE_DECLARE_FEATURE(kIPHBadgedReadingListFeature);
 BASE_DECLARE_FEATURE(kIPHWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHWhatsNewUpdatedFeature);
@@ -211,7 +209,6 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoWhatsNewFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoCredentialProviderExtensionFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoDefaultBrowserReminderFeature);
-BASE_DECLARE_FEATURE(kIPHiOSPromoOmniboxPositionFeature);
 BASE_DECLARE_FEATURE(kIPHiOSNewTabToolbarItemFeature);
 BASE_DECLARE_FEATURE(kIPHiOSTabGridToolbarItemFeature);
 BASE_DECLARE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature);
@@ -249,14 +246,6 @@ BASE_DECLARE_FEATURE(kDefaultBrowserEligibilitySlidingWindow);
 extern const base::FeatureParam<int>
     kDefaultBrowserEligibilitySlidingWindowParam;
 
-// The param name for the lifetime maximum occurrence for gesture in-product
-// help features.
-extern const char kGestureInProductHelpMaxOccurrence[];
-
-// The param name for the minimum number of days between two impressions for
-// each type of in-product help feature.
-extern const char kGestureInProductHelpDaysBetweenOccurrences[];
-
 // Non-FET feature flag that enables the generic default browser promo to be
 // displayed without matching all the criteria and in depth metrics collection
 // for the displayed promo.
@@ -267,6 +256,7 @@ BASE_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 BASE_DECLARE_FEATURE(kIPHAutofillCreditCardBenefitFeature);
+BASE_DECLARE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature);
 BASE_DECLARE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature);
 BASE_DECLARE_FEATURE(kIPHAutofillManualFallbackFeature);
 BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature);
@@ -317,6 +307,7 @@ BASE_DECLARE_FEATURE(kIPHScalableIphGamingFeature);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch);
+BASE_DECLARE_FEATURE(kIPHToolbarManagementButtonFeature);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

@@ -62,7 +62,9 @@ void AddPostRequestConstants(cbor::Value::MapValue& request_map_value) {
   return;
 }
 
-std::string CreateRequestBody(cbor::Value::MapValue request_map_value) {
+quiche::ObliviousHttpRequest CreateOHttpRequest(
+    mojom::TrustedSignalsPublicKeyPtr public_key,
+    cbor::Value::MapValue request_map_value) {
   cbor::Value cbor_value(request_map_value);
   std::optional<std::vector<uint8_t>> maybe_cbor_bytes =
       cbor::Writer::Write(cbor_value);
@@ -90,7 +92,19 @@ std::string CreateRequestBody(cbor::Value::MapValue request_map_value) {
   // Add CBOR string.
   writer.Write(base::as_bytes(base::make_span(*maybe_cbor_bytes)));
 
-  return request_body;
+  // Add encryption for request body.
+  auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+      public_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
+      EVP_HPKE_AES_256_GCM);
+  CHECK(maybe_key_config.ok()) << maybe_key_config.status();
+
+  auto maybe_request =
+      quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
+          std::move(request_body), public_key->key, maybe_key_config.value(),
+          kTrustedSignalsKVv2EncryptionRequestMediaType);
+  CHECK(maybe_request.ok()) << maybe_request.status();
+
+  return std::move(maybe_request).value();
 }
 
 // Creates a single entry for the "arguments" array of a partition, with a
@@ -170,13 +184,11 @@ ParseCompressionGroup(
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
         "Compression group content is not type of Byte String."));
   }
-  const cbor::Value::BinaryValue& content = content_value.GetBytestring();
-  std::string content_string = std::string(content.begin(), content.end());
 
   compression_group_id_out =
       static_cast<int>(compression_group_id_value.GetInteger());
-  return CompressionGroupResult(compression_scheme, std::move(content_string),
-                                ttl);
+  return CompressionGroupResult(compression_scheme,
+                                content_value.GetBytestring(), ttl);
 }
 
 // Extract compression schema and cbor string from response body base on
@@ -187,15 +199,12 @@ base::expected<
               std::vector<uint8_t>>,
     TrustedSignalsKVv2ResponseParser::ErrorInfo>
 ExtractCompressionSchemaAndCborStringFromResponseBody(
-    const std::vector<uint8_t> response_body) {
-  base::span<const uint8_t> body_span =
-      base::as_bytes(base::make_span(response_body));
-
-  if (body_span.size() <= kCompressionFormatSize + kCborStringLengthSize) {
+    base::span<const uint8_t> response_body) {
+  if (response_body.size() <= kCompressionFormatSize + kCborStringLengthSize) {
     return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
         "Response shorter than framing header."));
   }
-  base::SpanReader reader(body_span);
+  base::SpanReader reader(response_body);
 
   // TODO(crbug.com/337917489): Add decryption here for compression scheme, CBOR
   // string length and CBOR string later.
@@ -403,8 +412,10 @@ SerializeKeyGroupOutputsMap(AuctionV8Helper* v8_helper,
 }  // namespace
 
 TrustedSignalsKVv2RequestHelper::TrustedSignalsKVv2RequestHelper(
-    std::string post_request_body)
-    : post_request_body_(std::move(post_request_body)) {}
+    std::string post_request_body,
+    quiche::ObliviousHttpRequest::Context context)
+    : post_request_body_(std::move(post_request_body)),
+      context_(std::move(context)) {}
 
 TrustedSignalsKVv2RequestHelper::TrustedSignalsKVv2RequestHelper(
     TrustedSignalsKVv2RequestHelper&&) = default;
@@ -416,6 +427,11 @@ TrustedSignalsKVv2RequestHelper::~TrustedSignalsKVv2RequestHelper() = default;
 
 std::string TrustedSignalsKVv2RequestHelper::TakePostRequestBody() {
   return std::move(post_request_body_);
+}
+
+quiche::ObliviousHttpRequest::Context
+TrustedSignalsKVv2RequestHelper::TakeOHttpRequestContext() {
+  return std::move(context_);
 }
 
 TrustedSignalsKVv2RequestHelperBuilder ::
@@ -558,8 +574,9 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   return IsolationIndex(compression_group_id, partition_id);
 }
 
-TrustedSignalsKVv2RequestHelper
-TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
+std::unique_ptr<TrustedSignalsKVv2RequestHelper>
+TrustedBiddingSignalsKVv2RequestHelperBuilder::Build(
+    mojom::TrustedSignalsPublicKeyPtr public_key) {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
@@ -579,9 +596,12 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::Build() {
 
   request_map_value.try_emplace(cbor::Value("partitions"),
                                 cbor::Value(std::move(partition_array)));
-  std::string request_body = CreateRequestBody(std::move(request_map_value));
+  quiche::ObliviousHttpRequest request =
+      CreateOHttpRequest(std::move(public_key), std::move(request_map_value));
 
-  return TrustedSignalsKVv2RequestHelper(std::move(request_body));
+  std::string encrypted_request = request.EncapsulateAndSerialize();
+  return std::make_unique<TrustedSignalsKVv2RequestHelper>(
+      std::move(encrypted_request), std::move(request).ReleaseContext());
 }
 
 cbor::Value::MapValue
@@ -622,7 +642,7 @@ CompressionGroupResult::CompressionGroupResult() = default;
 
 CompressionGroupResult::CompressionGroupResult(
     auction_worklet::mojom::TrustedSignalsCompressionScheme scheme,
-    std::string content,
+    std::vector<uint8_t> content,
     base::TimeDelta ttl)
     : compression_scheme(scheme), content(std::move(content)), ttl(ttl) {}
 
@@ -636,9 +656,22 @@ CompressionGroupResult::~CompressionGroupResult() = default;
 
 TrustedSignalsKVv2ResponseParser::SignalsFetchResult
 TrustedSignalsKVv2ResponseParser::ParseResponseToSignalsFetchResult(
-    std::vector<uint8_t> body_bytes) {
+    const std::string& body_string,
+    quiche::ObliviousHttpRequest::Context& context) {
+  // Decrypt response body with saved context from request encryption process.
+  auto maybe_body =
+      quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
+          body_string, context, kTrustedSignalsKVv2EncryptionResponseMediaType);
+
+  if (!maybe_body.ok()) {
+    return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+        "Failed to decrypt response body."));
+  }
+
+  base::span<const uint8_t> body_span =
+      base::as_byte_span(maybe_body->GetPlaintextData());
   auto extract_result =
-      ExtractCompressionSchemaAndCborStringFromResponseBody(body_bytes);
+      ExtractCompressionSchemaAndCborStringFromResponseBody(body_span);
 
   if (!extract_result.has_value()) {
     return base::unexpected(std::move(extract_result).error());
@@ -707,8 +740,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
     const std::optional<std::set<std::string>>& interest_group_names,
     const std::optional<std::set<std::string>>& keys,
     const TrustedSignalsKVv2ResponseParser::CompressionGroupResultMap&
-        compression_group_result_map,
-    std::optional<uint32_t> data_version) {
+        compression_group_result_map) {
   TrustedSignalsResultMap result_map;
 
   for (const auto& group : compression_group_result_map) {
@@ -719,16 +751,16 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
 
     if (group.second.compression_scheme ==
         auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone) {
-      content_bytes = base::as_bytes(base::make_span(group.second.content));
+      content_bytes = base::as_byte_span(group.second.content);
     } else if (group.second.compression_scheme ==
                auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip) {
       bool is_decompressed = compression::GzipUncompress(group.second.content,
                                                          &decompressed_string);
       if (!is_decompressed) {
-        return base::unexpected(
-            ErrorInfo("Failed to decompress content string with Gzip."));
+        return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+            "Failed to decompress content string with Gzip."));
       }
-      content_bytes = base::as_bytes(base::make_span(decompressed_string));
+      content_bytes = base::as_byte_span(decompressed_string);
     }
 
     std::optional<cbor::Value> maybe_content =
@@ -780,6 +812,26 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
       }
       int id = static_cast<int>(id_value.GetInteger());
 
+      // Try to find "dataVersion".
+      std::optional<uint32_t> data_version;
+      auto data_version_it = partition.find(cbor::Value("dataVersion"));
+      if (data_version_it != partition.end()) {
+        const cbor::Value& data_version_value = data_version_it->second;
+        if (!data_version_value.is_integer()) {
+          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+              "DataVersion is not type of Integer."));
+        }
+
+        // "dataVersion" field must be a valid 32-bit unsigned integer.
+        if (!base::IsValueInRangeForNumericType<uint32_t>(
+                data_version_value.GetInteger())) {
+          return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
+              "DataVersion field is out of range for uint32."));
+        }
+        data_version = static_cast<uint32_t>(data_version_value.GetInteger());
+      }
+
+      // Parse keyGroupOutputs to a map.
       const cbor::Value& key_group_outputs_value = key_group_outputs_it->second;
       if (!key_group_outputs_value.is_array()) {
         return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
@@ -796,7 +848,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
         return base::unexpected(std::move(key_group_outputs_map).error());
       }
 
-      // Try to find interest group name tag and parse the map.
+      // Try to find `kTagInterestGroupName` tag and parse the map.
       auto tag_interest_group_name_it =
           key_group_outputs_map->find(kTagInterestGroupName);
       if (tag_interest_group_name_it != key_group_outputs_map->end()) {
@@ -855,7 +907,7 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
         }
       }
 
-      // Try to find interest group name tag and parse the map.
+      // Try to find `kTagKey` tag and parse the map.
       auto tag_key_it = key_group_outputs_map->find(kTagKey);
       if (tag_key_it != key_group_outputs_map->end()) {
         DCHECK(keys.has_value());
@@ -875,8 +927,8 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
           std::move(per_interest_group_data_map), std::move(bidding_data_map),
           data_version);
       result_map->try_emplace(
-          TrustedBiddingSignalsKVv2RequestHelperBuilder::IsolationIndex(
-              group.first, id),
+          TrustedSignalsKVv2RequestHelperBuilder::IsolationIndex(group.first,
+                                                                 id),
           result);
     }
   }

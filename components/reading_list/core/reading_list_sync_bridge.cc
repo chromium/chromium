@@ -15,22 +15,22 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/data_type_state.pb.h"
+#include "components/sync/protocol/data_type_state_helper.h"
 
 ReadingListSyncBridge::ReadingListSyncBridge(
     syncer::StorageType storage_type,
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     base::Clock* clock,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)),
       storage_type_for_uma_(storage_type),
       clock_(clock),
       wipe_model_upon_sync_disabled_behavior_(
@@ -53,7 +53,7 @@ void ReadingListSyncBridge::ModelReadyToSync(
   if (wipe_model_upon_sync_disabled_behavior_ ==
           syncer::WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata &&
       !syncer::IsInitialSyncDone(
-          sync_metadata_batch->GetModelTypeState().initial_sync_state())) {
+          sync_metadata_batch->GetDataTypeState().initial_sync_state())) {
     // Since the model isn't initially tracking metadata, move away from
     // kOnceIfTrackingMetadata so the behavior doesn't kick in, in case sync is
     // turned on later and back to off.
@@ -136,7 +136,7 @@ ReadingListSyncBridge::CreateMetadataChangeList() {
 // key. Any local pieces of data that are not present in sync should immediately
 // be Put(...) to the processor before returning. The same MetadataChangeList
 // that was passed into this function can be passed to Put(...) calls.
-// Delete(...) can also be called but should not be needed for most model types.
+// Delete(...) can also be called but should not be needed for most data types.
 // Durable storage writes, if not able to combine all change atomically, should
 // save the metadata after the data changes, so that this merge will be re-
 // driven by sync if is not completely saved during the current run.
@@ -333,7 +333,7 @@ void ReadingListSyncBridge::ApplyDisableSyncChanges(
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);
       // Fall back to the default behavior (delete metadata only).
-      ModelTypeSyncBridge::ApplyDisableSyncChanges(
+      DataTypeSyncBridge::ApplyDisableSyncChanges(
           std::move(delete_metadata_change_list));
       break;
     case syncer::WipeModelUponSyncDisabledBehavior::kAlways:

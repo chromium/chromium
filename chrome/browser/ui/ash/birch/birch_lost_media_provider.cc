@@ -10,26 +10,36 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
-#include "components/favicon/core/favicon_service.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/grit/preinstalled_web_apps_resources.h"
-#endif
 
 namespace ash {
+namespace {
+
+// Returns true if focus mode is playing media (e.g. an audio playlist).
+bool IsFocusModePlayingMedia() {
+  if (!features::IsFocusModeEnabled()) {
+    return false;
+  }
+  const focus_mode_util::SelectedPlaylist& playlist =
+      FocusModeController::Get()
+          ->focus_mode_sounds_controller()
+          ->selected_playlist();
+  return !playlist.empty() &&
+         playlist.state == focus_mode_util::SoundState::kPlaying;
+}
+
+}  // namespace
 
 BirchLostMediaProvider::BirchLostMediaProvider(Profile* profile)
     : profile_(profile) {
@@ -74,7 +84,7 @@ void BirchLostMediaProvider::MediaSessionInfoChanged(
       std::move(session_info);
 
   if (!media_session_info) {
-    secondary_icon_type_ = SecondaryIconType::kUnknown;
+    secondary_icon_type_ = SecondaryIconType::kNoIcon;
     return;
   }
 
@@ -93,7 +103,7 @@ void BirchLostMediaProvider::MediaSessionInfoChanged(
         secondary_icon_type_ = SecondaryIconType::kLostMediaVideo;
         return;
       default:
-        secondary_icon_type_ = SecondaryIconType::kUnknown;
+        secondary_icon_type_ = SecondaryIconType::kNoIcon;
     }
   }
 }
@@ -115,18 +125,12 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
     VideoConferenceManagerAsh::MediaApps apps) {
   std::vector<BirchLostMediaItem> items;
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  const ui::ImageModel backup_icon = ui::ImageModel::FromImageSkia(
-      *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192));
-
   // If video conference apps exist, return the most recently active app data to
   // the birch model.
   if (!apps.empty()) {
     items.emplace_back(
         /*source_url=*/apps[0]->url.value_or(GURL()),
         /*media_title=*/apps[0]->title,
-        /*is_video_conference_tab=*/true,
-        /*backup_icon=*/backup_icon,
         /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
         base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
@@ -148,17 +152,12 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
     return;
   }
 
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  // The YouTube icon is only available in branded builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  int backup_icon_id = source_url_.starts_with(u"youtube.com")
-                           ? IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG
-                           : IDR_CHROME_APP_ICON_192;
-#else
-  int backup_icon_id = IDR_CHROME_APP_ICON_192;
-#endif
-  ui::ImageModel backup_icon =
-      ui::ImageModel::FromImageSkia(*rb.GetImageSkiaNamed(backup_icon_id));
+  // If focus mode is playing audio, don't show the lost media suggestion, since
+  // there's no tab associated with the focus mode audio.
+  if (IsFocusModePlayingMedia()) {
+    Shell::Get()->birch_model()->SetLostMediaItems({});
+    return;
+  }
 
   std::vector<BirchLostMediaItem> items;
   // `source_url_` doesn't contain necessary prefix to make it a valid GURL so
@@ -166,8 +165,6 @@ void BirchLostMediaProvider::SetMediaAppsFromMediaController() {
   items.emplace_back(
       /*source_url=*/GURL(u"https://www." + source_url_),
       /*media_title=*/media_title_,
-      /*is_video_conference_tab=*/false,
-      /*backup_icon=*/backup_icon,
       /*secondary_icon_type=*/secondary_icon_type_,
       /*activation_callback=*/
       base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,

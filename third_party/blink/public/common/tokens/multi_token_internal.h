@@ -21,7 +21,7 @@ template <typename T>
 struct IsBaseTokenType<base::TokenType<T>> : std::true_type {};
 
 template <typename T>
-inline constexpr bool IsBaseTokenTypeV = IsBaseTokenType<T>::value;
+concept IsBaseToken = IsBaseTokenType<T>::value;
 
 template <typename... Types>
 bool AreAllUnique;
@@ -31,9 +31,8 @@ template <typename T, typename... Ts>
 inline constexpr bool AreAllUnique<T, Ts...> =
     (!std::is_same_v<T, Ts> && ...) && AreAllUnique<Ts...>;
 
-template <typename T, typename... Types>
-using EnableIfIsSupportedToken =
-    std::enable_if_t<(std::is_same_v<T, Types> || ...), int>;
+template <typename T, typename... Ts>
+concept IsCompatible = (std::is_same_v<T, Ts> || ...);
 
 }  // namespace blink::internal
 

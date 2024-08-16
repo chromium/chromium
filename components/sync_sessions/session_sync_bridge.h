@@ -12,9 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_sessions/local_session_event_handler_impl.h"
 #include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
 #include "components/sync_sessions/session_store.h"
@@ -25,23 +25,23 @@ namespace sync_sessions {
 class LocalSessionEventRouter;
 class SyncSessionsClient;
 
-// Sync bridge implementation for SESSIONS model type. Takes care of propagating
+// Sync bridge implementation for SESSIONS data type. Takes care of propagating
 // local sessions to other clients as well as providing a representation of
 // foreign sessions.
 //
-// This is achieved by implementing the interface ModelTypeSyncBridge, which
-// ClientTagBasedModelTypeProcessor will use to interact, ultimately, with the
+// This is achieved by implementing the interface DataTypeSyncBridge, which
+// ClientTagBasedDataTypeProcessor will use to interact, ultimately, with the
 // sync server. See
-// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
+// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-datatypesyncbridge
 // for details.
-class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
+class SessionSyncBridge : public syncer::DataTypeSyncBridge,
                           public LocalSessionEventHandlerImpl::Delegate {
  public:
   // Raw pointers must not be null and their pointees must outlive this object.
   SessionSyncBridge(
       const base::RepeatingClosure& notify_foreign_session_updated_cb,
       SyncSessionsClient* sessions_client,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   SessionSyncBridge(const SessionSyncBridge&) = delete;
   SessionSyncBridge& operator=(const SessionSyncBridge&) = delete;
@@ -53,7 +53,7 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
 
   bool IsLocalDataOutOfSyncForTest() const;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   void OnSyncStarting(
       const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

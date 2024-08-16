@@ -122,8 +122,7 @@ TEST_F(ResizeUtilTest, TestResizeLockToPhone) {
             if (!window->GetProperty(aura::client::kIsRestoringKey)) {
               return;
             }
-            NOTREACHED_IN_MIGRATION()
-                << "The restroing key should not be enabled.";
+            NOTREACHED() << "The restroing key should not be enabled.";
           }));
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());
@@ -156,8 +155,7 @@ TEST_F(ResizeUtilTest, TestResizeLockToTablet) {
             if (!window->GetProperty(aura::client::kIsRestoringKey)) {
               return;
             }
-            NOTREACHED_IN_MIGRATION()
-                << "The restroing key should not be enabled.";
+            NOTREACHED() << "The restroing key should not be enabled.";
           }));
   pref_delegate()->SetResizeLockNeedsConfirmation(kTestAppId, false);
   EXPECT_TRUE(widget()->IsMaximized());

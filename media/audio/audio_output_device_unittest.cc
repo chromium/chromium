@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -232,7 +233,7 @@ void AudioOutputDeviceTest::FlushAudioDevice() {
 }
 
 void AudioOutputDeviceTest::Render() {
-  browser_socket_.Send(&counter_, sizeof(counter_));
+  browser_socket_.Send(base::byte_span_from_ref(counter_));
   ++counter_;
 }
 

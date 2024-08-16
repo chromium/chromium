@@ -140,6 +140,26 @@ class DataSharingSDKDelegateAndroidTest : public testing::Test {
     return outcome;
   }
 
+  data_sharing_pb::AddAccessTokenResult TestAddAccessToken() {
+    data_sharing_pb::AddAccessTokenResult outcome;
+    base::RunLoop run_loop;
+    data_sharing_pb::AddAccessTokenParams params;
+    params.set_group_id(kTestGroupId);
+    delegate_->AddAccessToken(
+        params,
+        base::BindLambdaForTesting(
+            [&run_loop, &outcome](
+                const base::expected<data_sharing_pb::AddAccessTokenResult,
+                                     absl::Status>& result) {
+              if (result.has_value()) {
+                outcome = result.value();
+              }
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return outcome;
+  }
+
   base::test::TaskEnvironment task_environment_;
   raw_ptr<DataSharingSDKDelegateAndroid> delegate_;
 };
@@ -181,6 +201,11 @@ TEST_F(DataSharingSDKDelegateAndroidTest, TestLookupGaiaIdByEmail) {
   data_sharing_pb::LookupGaiaIdByEmailResult outcome =
       TestLookupGaiaIdByEmail();
   EXPECT_EQ(outcome.gaia_id(), kTestGroupName);
+}
+
+TEST_F(DataSharingSDKDelegateAndroidTest, TestAddAccessToken) {
+  data_sharing_pb::AddAccessTokenResult outcome = TestAddAccessToken();
+  EXPECT_EQ(outcome.group_data().group_id(), kTestGroupId);
 }
 
 }  // namespace

@@ -425,8 +425,8 @@ class DlpContentManagerReportingBrowserTest
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
-            [=](::reporting::Record record,
-                base::OnceCallback<void(::reporting::Status)> callback) {
+            [=, this](::reporting::Record record,
+                      base::OnceCallback<void(::reporting::Status)> callback) {
               content::GetUIThreadTaskRunner({})->PostTask(
                   FROM_HERE,
                   base::BindOnce(

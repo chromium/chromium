@@ -663,6 +663,7 @@ void HatsServiceDesktop::CheckSurveyStatusAndMaybeShow(
   }
   browser->window()->ShowHatsDialog(
       survey_configs_by_triggers_[trigger].trigger_id,
+      survey_configs_by_triggers_[trigger].histogram_name,
       std::move(success_callback), std::move(failure_callback),
       product_specific_bits_data, product_specific_string_data);
   hats_next_dialog_exists_ = true;

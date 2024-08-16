@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -508,16 +509,23 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   CGSize fittingSize =
       CGSizeMake(fittingWidth, UILayoutFittingCompressedSize.height);
   CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
-  height -= containerView.safeAreaInsets.bottom;
 
-  // Replace bottom margin calculated based on view's own safe area with bottom
-  // margin calculated based on the safe area of the container view it will
-  // eventually live in. This is needed in case the detent value is requested
-  // before the view has been added to its superview.
-  height -= MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
-  height +=
-      MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
+  // These adjustments are necessary for devices in a non regular x regular size
+  // class with home indicators in their displays, as they have a non zero safe
+  // area inset at their bottom edge and a bottom sheet that attaches to it.
+  if (!IsRegularXRegularSizeClass(containerView.traitCollection) &&
+      containerView.safeAreaInsets.bottom != 0) {
+    height -= containerView.safeAreaInsets.bottom;
 
+    // Replace bottom margin calculated based on view's own safe area with
+    // bottom margin calculated based on the safe area of the container view
+    // it will eventually live in. This is needed in case the detent value
+    // is requested before the view has been added to its superview.
+    height -=
+        MAX(self.actionStackBottomMargin, self.view.safeAreaInsets.bottom);
+    height +=
+        MAX(self.actionStackBottomMargin, containerView.safeAreaInsets.bottom);
+  }
   return height;
 }
 

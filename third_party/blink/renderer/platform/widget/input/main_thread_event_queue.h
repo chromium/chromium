@@ -99,7 +99,7 @@ class PLATFORM_EXPORT MainThreadEventQueueClient {
 //   <-------(ACK)------
 //
 class PLATFORM_EXPORT MainThreadEventQueue
-    : public base::RefCountedThreadSafe<MainThreadEventQueue> {
+    : public ThreadSafeRefCounted<MainThreadEventQueue> {
  public:
   MainThreadEventQueue(
       MainThreadEventQueueClient* client,
@@ -150,8 +150,9 @@ class PLATFORM_EXPORT MainThreadEventQueue
   bool IsEmptyForTesting();
 
  protected:
-  friend class base::RefCountedThreadSafe<MainThreadEventQueue>;
+  friend class ThreadSafeRefCounted<MainThreadEventQueue>;
   virtual ~MainThreadEventQueue();
+
   void QueueEvent(std::unique_ptr<MainThreadEventQueueTask> event);
   void PostTaskToMainThread();
   void DispatchEvents();

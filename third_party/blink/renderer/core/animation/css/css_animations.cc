@@ -996,9 +996,8 @@ const StylePropertyShorthand& PropertiesForTransitionAllDiscrete(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
                       (PropertiesForTransitionAll(true, execution_context)));
-  DEFINE_STATIC_LOCAL(
-      StylePropertyShorthand, property_shorthand,
-      (CSSPropertyID::kInvalid, properties.data(), properties.size()));
+  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
+                      (CSSPropertyID::kInvalid, properties));
   return property_shorthand;
 }
 
@@ -1006,9 +1005,8 @@ const StylePropertyShorthand& PropertiesForTransitionAllNormal(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties,
                       (PropertiesForTransitionAll(false, execution_context)));
-  DEFINE_STATIC_LOCAL(
-      StylePropertyShorthand, property_shorthand,
-      (CSSPropertyID::kInvalid, properties.data(), properties.size()));
+  DEFINE_STATIC_LOCAL(StylePropertyShorthand, property_shorthand,
+                      (CSSPropertyID::kInvalid, properties));
   return property_shorthand;
 }
 
@@ -3103,7 +3101,7 @@ void CSSAnimations::TransitionEventDelegate::Trace(Visitor* visitor) const {
 const StylePropertyShorthand& CSSAnimations::PropertiesForTransitionAll(
     bool with_discrete,
     const ExecutionContext* execution_context) {
-  if (UNLIKELY(with_discrete)) {
+  if (with_discrete) [[unlikely]] {
     return PropertiesForTransitionAllDiscrete(execution_context);
   }
   return PropertiesForTransitionAllNormal(execution_context);

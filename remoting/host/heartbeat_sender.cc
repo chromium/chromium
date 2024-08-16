@@ -186,7 +186,7 @@ HeartbeatSender::HeartbeatSender(
     OAuthTokenGetter* oauth_token_getter,
     Observer* observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    bool is_googler)
+    bool set_fqdn)
     : delegate_(delegate),
       host_id_(host_id),
       signal_strategy_(signal_strategy),
@@ -201,7 +201,7 @@ HeartbeatSender::HeartbeatSender(
 
   signal_strategy_->AddListener(this);
   OnSignalStrategyStateChange(signal_strategy_->GetState());
-  is_googler_ = is_googler;
+  set_fqdn_ = set_fqdn;
 }
 
 HeartbeatSender::~HeartbeatSender() {
@@ -412,6 +412,16 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
       if (response->use_lite_heartbeat()) {
         useLiteHeartbeat = true;
       }
+      if (!response->primary_user_email().empty()) {
+        delegate_->OnUpdateHostOwner(response->primary_user_email());
+      }
+      if (response->has_is_corp_user()) {
+        delegate_->OnUpdateIsCorpUser(response->is_corp_user());
+      }
+      if (response->has_require_session_authorization()) {
+        bool require = response->require_session_authorization();
+        delegate_->OnUpdateRequireSessionAuthorization(require);
+      }
     }
     heartbeat_timer_.Start(
         FROM_HERE, CalculateDelay(status, std::move(optMinDelay)),
@@ -451,8 +461,7 @@ HeartbeatSender::CreateLegacyHeartbeatRequest() {
   heartbeat->set_host_cpu_type(base::SysInfo::OperatingSystemArchitecture());
   heartbeat->set_is_initial_heartbeat(!initial_heartbeat_sent_);
 
-  // Only set the hostname if the user's email is @google.com.
-  if (is_googler_) {
+  if (set_fqdn_) {
     std::string fqdn = GetFqdn();
     if (!fqdn.empty()) {
       heartbeat->set_hostname(fqdn);

@@ -54,8 +54,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
   // Creates a URL mapping from blob to the given URL. Returns false if
   // there already is a map for the URL. The URL mapping will be associated with
   // the `storage_key`, and most subsequent URL lookup attempts will require a
-  // matching StorageKey to succeed (unless the kSupportPartitionedBlobUrl flag
-  // is disabled, in which case `storage_key` is not used).
+  // matching StorageKey to succeed.
   bool AddUrlMapping(
       const GURL& url,
       mojo::PendingRemote<blink::mojom::Blob> blob,
@@ -64,14 +63,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
       const base::UnguessableToken& unsafe_agent_cluster_id,
       const std::optional<net::SchemefulSite>& unsafe_top_level_site);
 
-  // Removes the given URL mapping associated with `storage_key` (unless the
-  // kSupportPartitionedBlobUrl flag is disabled, in which case `storage_key` is
-  // not used). Returns false if the URL wasn't mapped.
+  // Removes the given URL mapping associated with `storage_key`. Returns false
+  // if the URL wasn't mapped.
   bool RemoveUrlMapping(const GURL& url, const blink::StorageKey& storage_key);
 
   // Returns whether the URL is mapped to a blob and whether the URL is
-  // associated with `storage_key` (unless the kSupportPartitionedBlobUrl flag
-  // is disabled, in which case `storage_key` is not used).
+  // associated with `storage_key`.
   bool IsUrlMapped(const GURL& blob_url,
                    const blink::StorageKey& storage_key) const;
 

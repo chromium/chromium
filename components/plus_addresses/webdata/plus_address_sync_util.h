@@ -11,7 +11,7 @@
 namespace plus_addresses {
 // Utils to convert a `EntityData` containing `PlusAddressSpecifics` to a
 // `PlusProfile` and back.
-// Since the PLUS_ADDRESS model type is read-only on the client, it is not
+// Since the PLUS_ADDRESS data type is read-only on the client, it is not
 // necessary to convert a `PlusProfile` to `EntityData` to upload to sync. But
 // it is needed to show the stored data in sync-internals.
 PlusProfile PlusProfileFromEntityData(const syncer::EntityData& entity_data);

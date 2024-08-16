@@ -109,7 +109,7 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!cardTitleHeader);
     const heading = cardTitleHeader!.textContent;
     assertTrue(!!heading);
-    assertEquals('Product Specifications lists', heading.trim());
+    assertEquals('Comparison tables', heading.trim());
   });
 
 
@@ -150,7 +150,7 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!button);
     const buttonText = button!.textContent;
     assertTrue(!!buttonText);
-    assertEquals('Remove from lists', buttonText.trim());
+    assertEquals('Remove from tables', buttonText.trim());
   });
 
   test('clicking remove on menu removes the correct uuid', async function() {

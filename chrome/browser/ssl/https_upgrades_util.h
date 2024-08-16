@@ -30,8 +30,15 @@ void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
 // Clears HttpAllowlist enterprise policy for testing.
 void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs);
 
-// Returns true if HTTPS-First Balanced Mode is enabled globally.
-bool IsBalanceModeEnabled();
+// Returns true if the HTTPS-First Balanced Mode feature flag is enabled.
+bool IsBalancedModeAvailable();
+
+// Returns true if HTTPS-First Balanced Mode is enabled by the user's selection
+// in security settings.
+bool IsBalancedModeEnabled(PrefService* prefs);
+
+// Returns true if the updated HTTPS-First Mode interstitial should be used.
+bool IsNewHttpsFirstModeInterstitialEnabled();
 
 // Returns true if the HTTPS-First Mode interstitial is enabled globally by the
 // UI pref or for this site through Site Engagement heuristic.
@@ -51,6 +58,12 @@ bool IsStrictInterstitialEnabled(
 bool ShouldExemptNonUniqueHostnames(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state);
+
+// Returns true if the given URL should be excluded from interstitials in the
+// current HFM mode. Does NOT mean that an upgrade shouldn't be attempted.
+bool ShouldExcludeUrlFromInterstitial(
+    const security_interstitials::https_only_mode::HttpInterstitialState& state,
+    const GURL& url);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.

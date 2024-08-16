@@ -58,6 +58,9 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   ScopedJavaLocalRef<jobject> ParseDataSharingURL(
       JNIEnv* env,
       const JavaParamRef<jobject>& j_url);
+  void EnsureGroupVisibility(JNIEnv* env,
+                             const JavaParamRef<jstring>& group_id,
+                             const JavaParamRef<jobject>& j_callback);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();

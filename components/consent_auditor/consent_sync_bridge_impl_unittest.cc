@@ -15,8 +15,8 @@
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,15 +25,15 @@ namespace {
 
 using sync_pb::UserConsentSpecifics;
 using syncer::DataBatch;
+using syncer::DataTypeStore;
+using syncer::DataTypeStoreTestUtil;
+using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataChangeList;
-using syncer::MockModelTypeChangeProcessor;
-using syncer::ModelTypeStore;
-using syncer::ModelTypeStoreTestUtil;
-using syncer::ModelTypeSyncBridge;
-using syncer::OnceModelTypeStoreFactory;
+using syncer::MockDataTypeLocalChangeProcessor;
+using syncer::OnceDataTypeStoreFactory;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
@@ -49,7 +49,7 @@ using testing::SaveArg;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using testing::WithArg;
-using WriteBatch = ModelTypeStore::WriteBatch;
+using WriteBatch = DataTypeStore::WriteBatch;
 
 MATCHER_P(MatchesUserConsent, expected, "") {
   if (!arg.has_user_consent()) {
@@ -82,15 +82,15 @@ class ConsentSyncBridgeImplTest : public testing::Test {
   ConsentSyncBridgeImplTest() { ResetBridge(); }
 
   void ResetBridge() {
-    OnceModelTypeStoreFactory store_factory;
+    OnceDataTypeStoreFactory store_factory;
     if (bridge_) {
       // Carry over the underlying store from previous bridge instances.
-      std::unique_ptr<ModelTypeStore> store = bridge_->StealStoreForTest();
+      std::unique_ptr<DataTypeStore> store = bridge_->StealStoreForTest();
       bridge_.reset();
       store_factory =
-          ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
+          DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store));
     } else {
-      store_factory = ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
+      store_factory = DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest();
     }
 
     bridge_ = std::make_unique<ConsentSyncBridgeImpl>(
@@ -113,7 +113,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
   }
 
   ConsentSyncBridgeImpl* bridge() { return bridge_.get(); }
-  MockModelTypeChangeProcessor* processor() { return &mock_processor_; }
+  MockDataTypeLocalChangeProcessor* processor() { return &mock_processor_; }
 
   std::map<std::string, sync_pb::EntitySpecifics> GetAllDataForDebugging() {
     std::unique_ptr<DataBatch> batch = bridge_->GetAllDataForDebugging();
@@ -146,7 +146,7 @@ class ConsentSyncBridgeImplTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ConsentSyncBridgeImpl> bridge_;
 };
 

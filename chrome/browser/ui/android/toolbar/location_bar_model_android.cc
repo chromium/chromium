@@ -8,6 +8,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
+#include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -62,23 +63,7 @@ jint LocationBarModelAndroid::GetPageClassification(
     const base::android::JavaParamRef<jobject>& obj,
     bool is_focused_from_fakebox,
     bool is_prefetch) {
-  // On phones, the omnibox is not initially shown on the NTP.  In this case,
-  // treat the fakebox like the omnibox.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE)
-    is_focused_from_fakebox = false;
-
-  // On tablets, the user can choose to focus either the fakebox or the
-  // omnibox.  Chrome distinguishes between the two in order to apply URL
-  // demotion when the user focuses the fakebox (which looks more like a
-  // search box) but not when they focus the omnibox (which looks more
-  // like a URL bar).
-  OmniboxFocusSource source = is_focused_from_fakebox
-                                  ? OmniboxFocusSource::FAKEBOX
-                                  : OmniboxFocusSource::OMNIBOX;
-
-  // TODO: Android does not save the homepage to the native pref, so we will
-  // never get the HOME_PAGE classification. Fix this by overriding IsHomePage.
-  return location_bar_model_->GetPageClassification(source, is_prefetch);
+  return location_bar_model_->GetPageClassification(is_prefetch);
 }
 
 content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {

@@ -130,6 +130,21 @@ size_t DawnCachingBackend::Entry::ReadData(void* value_out,
   return value_size;
 }
 
+bool operator<(const std::unique_ptr<DawnCachingBackend::Entry>& lhs,
+               const std::unique_ptr<DawnCachingBackend::Entry>& rhs) {
+  return lhs->Key() < rhs->Key();
+}
+
+bool operator<(const std::unique_ptr<DawnCachingBackend::Entry>& lhs,
+               const std::string& rhs) {
+  return lhs->Key() < rhs;
+}
+
+bool operator<(const std::string& lhs,
+               const std::unique_ptr<DawnCachingBackend::Entry>& rhs) {
+  return lhs < rhs->Key();
+}
+
 DawnCachingBackend::DawnCachingBackend(size_t max_size) : max_size_(max_size) {}
 
 DawnCachingBackend::~DawnCachingBackend() = default;
@@ -148,9 +163,10 @@ size_t DawnCachingBackend::LoadData(const std::string& key,
 
   // Even if this was just a "peek" operation to get size, the entry was
   // accessed so move it to the back of the eviction queue.
-  it->second->RemoveFromList();
-  lru_.Append(it->second.get());
-  return it->second->ReadData(value_out, value_size);
+  std::unique_ptr<Entry>& entry = *it;
+  entry->RemoveFromList();
+  lru_.Append(entry.get());
+  return entry->ReadData(value_out, value_size);
 }
 
 void DawnCachingBackend::StoreData(const std::string& key,
@@ -165,7 +181,8 @@ void DawnCachingBackend::StoreData(const std::string& key,
 
   // If an entry for this key already exists, first evict the existing entry.
   if (auto it = entries_.find(key); it != entries_.end()) {
-    EvictEntry(it->second.get());
+    const std::unique_ptr<Entry>& entry = *it;
+    EvictEntry(entry.get());
   }
 
   // If the entry is too large for the cache, we cannot store it so skip. We
@@ -183,11 +200,12 @@ void DawnCachingBackend::StoreData(const std::string& key,
     EvictEntry(lru_.head()->value());
   }
 
-  auto [it, inserted] = entries_.insert({key, std::move(entry)});
-  DCHECK(inserted);
   // Add the entry size to the overall size and update the eviction queue.
-  current_size_ += it->second->TotalSize();
-  lru_.Append(it->second.get());
+  current_size_ += entry->TotalSize();
+  lru_.Append(entry.get());
+
+  auto [it, inserted] = entries_.insert(std::move(entry));
+  DCHECK(inserted);
 }
 
 void DawnCachingBackend::EvictEntry(DawnCachingBackend::Entry* entry) {

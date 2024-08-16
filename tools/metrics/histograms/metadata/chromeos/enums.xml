@@ -216,6 +216,7 @@ chromium-metrics-reviews@google.com.
   <int value="9025" label="DevToggleAppList"/>
   <int value="9026" label="DevToggleUnifiedDesktop"/>
   <int value="9027" label="DebugToggleFocusModeState"/>
+  <int value="9028" label="DebugStartSunfishSession"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
@@ -782,6 +783,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="KnownMouseImposter"/>
   <int value="2" label="KnownComboDevice"/>
   <int value="3" label="UnknownClassification"/>
+</enum>
+
+<enum name="CompanionAppState">
+  <int value="0" label="Available"/>
+  <int value="1" label="Installed"/>
 </enum>
 
 <enum name="CrashSeverityProductType">
@@ -1911,6 +1917,12 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="7" label="Google Play error">
     Installing the WebAPK through Google Play failed with an error.
   </int>
+</enum>
+
+<enum name="WelcomeExperienceNotificationEventType">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Clicked"/>
+  <int value="2" label="SettingChanged"/>
 </enum>
 
 <enum name="WrongConfigurationMetric">

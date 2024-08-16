@@ -144,6 +144,11 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Accessors.
   Browser* browser() const { return browser_; }
+  views::Button* GetChromeLabsButton() const;
+
+  // NOTE: Use of the above method `GetChromeLabsButton` is preferred while the
+  // Chrome Labs button is migrated to PinnedActionToolbarButton.
+  // TODO(b/353385180): Remove once Chrome Labs button migration is complete.
   ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
   ChromeLabsModel* chrome_labs_model() const {
     return chrome_labs_model_.get();
@@ -226,7 +231,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // AccessiblePaneView:
   views::View* GetDefaultFocusableChild() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
@@ -262,8 +266,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // BrowserRootView::DropTarget
   std::optional<BrowserRootView::DropIndex> GetDropIndex(
-      const ui::DropTargetEvent& event,
-      bool allow_replacement) override;
+      const ui::DropTargetEvent& event) override;
   BrowserRootView::DropTarget* GetDropTarget(
       gfx::Point loc_in_local_coords) override;
   views::View* GetViewForDrop() override;

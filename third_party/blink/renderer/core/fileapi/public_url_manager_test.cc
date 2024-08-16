@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -113,8 +112,6 @@ class PublicURLManagerTest : public testing::Test {
 
  protected:
   test::TaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<DummyPageHolder> page_holder_;
 

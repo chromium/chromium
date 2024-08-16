@@ -10,7 +10,6 @@
 #include "base/check_version_internal.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -537,9 +536,7 @@ TEST(CheckDeathTest, NotReached) {
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
 }
 
-TEST(CheckDeathTest, NotReachedFatalExperiment) {
-  base::test::ScopedFeatureList feature_list(
-      base::features::kNotReachedIsFatal);
+TEST(CheckDeathTest, NotReachedInMigration) {
   EXPECT_CHECK_DEATH(NOTREACHED_IN_MIGRATION());
 }
 

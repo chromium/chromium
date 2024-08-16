@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/shell_integration_linux.h"
 
 #include <fcntl.h>
@@ -754,7 +759,7 @@ std::string GetDesktopFileContentsForUrlShortcut(
   g_key_file_free(key_file);
   return output_buffer;
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return std::string();
 #endif
 }

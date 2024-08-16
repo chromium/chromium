@@ -30,17 +30,6 @@ namespace blink {
 
 namespace {
 
-FontHeight FontHeightWithLeading(const ComputedStyle& style,
-                                 const Font& font,
-                                 const FontMetrics& font_metrics,
-                                 FontBaseline baseline_type) {
-  FontHeight metrics = font_metrics.GetFontHeight(baseline_type);
-  const LayoutUnit line_height = style.ComputedLineHeightAsFixed(font);
-  const FontHeight leading = CalculateLeadingSpace(line_height, metrics);
-  metrics.AddLeading(leading);
-  return metrics;
-}
-
 FontHeight ComputeEmphasisMarkOutsets(const ComputedStyle& style,
                                       const Font& font) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
@@ -183,19 +172,17 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
                                  FontHeight& metrics) {
   DCHECK(should_apply_over || should_apply_under);
   const SimpleFontData* font_data = font.PrimaryFont();
-  if (UNLIKELY(!font_data)) {
+  if (!font_data) [[unlikely]] {
     return;
   }
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
-  std::optional<FontHeight> font_height_with_leading;
   const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
   if (should_apply_over) {
     switch (text_box_edge.Over()) {
-      case TextBoxEdge::Type::kLeading:
-        font_height_with_leading =
-            FontHeightWithLeading(style, font, font_metrics, baseline_type);
-        metrics.ascent = font_height_with_leading->ascent;
-        break;
+      case TextBoxEdge::Type::kAuto:
+        // `text-box-edge: auto` copies the value from `line-fit-edge`, which
+        // isn't implemented yet. Behaves the same as `text` when
+        // `line-fit-edge` has the initial value.
       case TextBoxEdge::Type::kText:
         metrics.ascent = font_metrics.FixedAscent(baseline_type);
         break;
@@ -206,19 +193,16 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
         metrics.ascent = font_metrics.FixedXHeight(baseline_type);
         break;
       case TextBoxEdge::Type::kAlphabetic:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
   if (should_apply_under) {
     switch (text_box_edge.Under()) {
-      case TextBoxEdge::Type::kLeading:
-        if (!font_height_with_leading) {
-          font_height_with_leading =
-              FontHeightWithLeading(style, font, font_metrics, baseline_type);
-        }
-        metrics.descent = font_height_with_leading->descent;
-        break;
+      case TextBoxEdge::Type::kAuto:
+        // `text-box-edge: auto` copies the value from `line-fit-edge`, which
+        // isn't implemented yet. Behaves the same as `text` when
+        // `line-fit-edge` has the initial value.
       case TextBoxEdge::Type::kText:
         metrics.descent = font_metrics.FixedDescent(baseline_type);
         break;
@@ -229,7 +213,7 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
         break;
       case TextBoxEdge::Type::kCap:
       case TextBoxEdge::Type::kEx:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }
@@ -651,8 +635,9 @@ void InlineLayoutStateStack::UpdateAfterReorder(LogicalLineItems* line_box) {
 
   // If any inline fragmentation occurred due to BiDi reorder, append them and
   // adjust box edges.
-  if (UNLIKELY(!fragmented_boxes.empty()))
+  if (!fragmented_boxes.empty()) [[unlikely]] {
     UpdateFragmentedBoxDataEdges(&fragmented_boxes);
+  }
 
 #if DCHECK_IS_ON()
   // Check all BoxData have ranges.
@@ -990,7 +975,7 @@ const LayoutResult* InlineLayoutStateStack::BoxData::CreateBoxFragment(
   box.SetBoxType(PhysicalFragment::kInlineBox);
   box.SetStyleVariant(item->GetStyleVariant());
 
-  if (UNLIKELY(is_opaque)) {
+  if (is_opaque) [[unlikely]] {
     box.SetIsOpaque();
     box.SetSidesToInclude({false, false, false, false});
   } else {
@@ -1080,7 +1065,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
                                            FontBaseline baseline_type) {
   // The `vertical-align` property should not apply to the line wrapper for
   // block-in-inline.
-  if (UNLIKELY(has_block_in_inline_)) {
+  if (has_block_in_inline_) [[unlikely]] {
     DCHECK(box->pending_descendants.empty());
     return kPositionNotPending;
   }
@@ -1155,8 +1140,8 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
   if (!is_svg_text_ && vertical_align == EVerticalAlign::kBaseline)
     return kPositionNotPending;
 
-  if (UNLIKELY(box->item &&
-               IsA<LayoutTextCombine>(box->item->GetLayoutObject()))) {
+  if (box->item && IsA<LayoutTextCombine>(box->item->GetLayoutObject()))
+      [[unlikely]] {
     // Text content in text-combine-upright:all is layout in horizontally, so
     // we don't need to move text combine box.
     // See "text-combine-shrink-to-fit.html".

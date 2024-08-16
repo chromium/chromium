@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Наранџаста</translation>
 <translation id="125153950246128346">Додирните да бисте видели неку другу картицу</translation>
 <translation id="1273910660700874265">Опције групе картица <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Напусти групу</translation>
 <translation id="1419023007528516122">Овим ћете трајно избрисати групу са уређаја</translation>
 <translation id="1486715732399361704">Овде можете да пронађете све групе картица</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Направљено је пре <ph name="NUM_MINS_ONE" /> минут}one{Направљено је пре <ph name="NUM_MINS_MANY" /> минут}few{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}other{Направљено је пре <ph name="NUM_MINS_MANY" /> минута}}</translation>
@@ -37,20 +38,26 @@
 <translation id="2662028055331606429">Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Посети сајт</translation>
 <translation id="2677748264148917807">Затвори</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />, затворених: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Направљено је пре <ph name="NUM_HOURS_ONE" /> сат}one{Направљено је пре <ph name="NUM_HOURS_MANY" /> сат}few{Направљено је пре <ph name="NUM_HOURS_MANY" /> сата}other{Направљено је пре <ph name="NUM_HOURS_MANY" /> сати}}</translation>
 <translation id="2801787514987684416">Желите да прегледате информације о продавници?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> картица је затворена}one{<ph name="MANY_CLOSED" /> картица је затворена}few{<ph name="MANY_CLOSED" /> картице су затворене}other{<ph name="MANY_CLOSED" /> картица је затворено}}</translation>
+<translation id="2894757982205307093">Нова картица у групи</translation>
 <translation id="2928243913527329289">Google | О овој продавници</translation>
 <translation id="2977480621796371840">Уклони из групе</translation>
+<translation id="29919168204617356">Неактивне картице се аутоматски затварају. Увек можете да их пронађете у Историји.</translation>
 <translation id="3008554597174452548">Заустави праћење производа</translation>
 <translation id="3026391124054406831">Направите групе да бисте организовали картице.</translation>
 <translation id="3051031624272448591">Увек можете да их вратите из историје</translation>
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Боја иконе групе картица је <ph name="COLOR_NAME" /></translation>
 <translation id="3194464645767632461">оцена</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}one{<ph name="MANY_ADDED" /> картица је додата, промењених: <ph name="ANY_CHANGED" />}few{<ph name="MANY_ADDED" /> картице су додате, промењених: <ph name="ANY_CHANGED" />}other{<ph name="MANY_ADDED" /> картица је додато, промењених: <ph name="ANY_CHANGED" />}}</translation>
 <translation id="3291470810748040983">Добићете обавештење када постоји нижа цена на отвореној картици</translation>
 <translation id="3322827343001922122">Отворите мени са радњама групе картица за групу картица <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>
 <translation id="3547352561153509682">Овим ћете избрисати групу са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Сакријте дијалог са неактивним картицама</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Сличица, преглед табеле за дељење.</translation>
 <translation id="381219490185664296">Желите да раздвојите групу картица?</translation>
@@ -67,6 +74,7 @@
 <translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом.}one{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом.}few{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице.}other{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="427987768447457592">Нова група картица</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> картица је промењена, затворених: <ph name="ANY_CLOSED" />}one{<ph name="MANY_CHANGED" /> картица је промењена, затворених: <ph name="ANY_CLOSED" />}few{<ph name="MANY_CHANGED" /> картице су промењене, затворених: <ph name="ANY_CLOSED" />}other{<ph name="MANY_CHANGED" /> картица је промењено, затворених: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Раздвоји</translation>
 <translation id="4590027107044272416">Овде сада можете да отворите нову картицу</translation>
@@ -88,6 +96,7 @@
 <translation id="5076161749301278626">Желите да видите рецензије продавница?</translation>
 <translation id="5082793167783849073">Направите групу да бисте брзо упоређивали странице. За почетак додирните и задржите линк.</translation>
 <translation id="5094423602314093681">Желите да уклоните картице и избришете групу?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата}one{<ph name="MANY_ADDED" /> картица је додата}few{<ph name="MANY_ADDED" /> картице су додате}other{<ph name="MANY_ADDED" /> картица је додато}}</translation>
 <translation id="5161254044473106830">Наслов је обавезан</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Затворите групу картица са <ph name="TABS_COUNT_ONE" /> картицом.}one{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картицом.}few{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картице.}other{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="5339733443032484186">Последња картица</translation>
@@ -96,6 +105,7 @@
 <translation id="5494920125229734069">Избор свих ставки</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Затворите групу картица са <ph name="TABS_COUNT_ONE" /> картицом, боје <ph name="COLOR_NAME" />.}one{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картицом, боје <ph name="COLOR_NAME" />.}few{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картице, боје <ph name="COLOR_NAME" />.}other{Затворите групу картица са <ph name="TABS_COUNT_MANY" /> картица, боје <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Прегледајте информације о продавници, опцију која је доступна у врху екрана</translation>
+<translation id="5627941783489838464">Нема ажурирања картица</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Врати картицу}one{Врати картице}few{Врати картице}other{Врати картице}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> линк из Chrome-а}one{<ph name="TABS_COUNT_MANY" /> линк из Chrome-а}few{<ph name="TABS_COUNT_MANY" /> линкa из Chrome-а}other{<ph name="TABS_COUNT_MANY" /> линковa из Chrome-а}}</translation>
 <translation id="575494663145460764">Желите да добијате обавештења за снижења?</translation>
@@ -120,6 +130,8 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Преместите картицу улево</translation>
 <translation id="6615455863669487791">Покажи ми</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> картица је промењена}one{<ph name="MANY_CHANGED" /> картица је промењена}few{<ph name="MANY_CHANGED" /> картице су промењене}other{<ph name="MANY_CHANGED" /> картица је промењено}}</translation>
+<translation id="6694634756612002311">Управљај дељењем</translation>
 <translation id="6744956528665271406">Измени боју групе</translation>
 <translation id="6856809498882026482">Сакријте режим вишеструког избора</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Дели картицу}one{Дели картице}few{Дели картице}other{Дели картице}}</translation>
@@ -137,11 +149,13 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> рецензија из Google-а}one{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}few{<ph name="REVIEWS_COUNT_MANY" /> рецензије из Google-а}other{<ph name="REVIEWS_COUNT_MANY" /> рецензија из Google-а}}</translation>
 <translation id="7559245342362162951">Приказује картице групе у мрежи на целом екрану</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7688386659311034820">Дијалог са неактивним картицама</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Делите <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Делите <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Делите <ph name="TABS_COUNT_MANY" /> изабране картице}other{Делите <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
 <translation id="7773714564112603605">Уклони картицу и избриши групу</translation>
 <translation id="7792771145871471484">Прегледајте предлоге.</translation>
 <translation id="7825973332242257878">Групе картица</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> изабрану картицу у групу}one{Додајте <ph name="TABS_COUNT_MANY" /> изабрану картицу у групу}few{Додајте <ph name="TABS_COUNT_MANY" /> изабране картице у групу}other{Додајте <ph name="TABS_COUNT_MANY" /> изабраних картица у групу}}</translation>
+<translation id="7853202427316060426">Активност</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> рецензија}one{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензија}few{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензије}other{Оцена <ph name="CURRENT_RATING" /> од <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> рецензија}}</translation>
 <translation id="7885132941432959125">Преместите картицу удесно</translation>
 <translation id="7939917283308035850">Нисте изабрали боју <ph name="COLOR_NAME" /></translation>
@@ -158,7 +172,9 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затворите <ph name="TABS_COUNT_ONE" /> изабрану картицу}one{Затворите <ph name="TABS_COUNT_MANY" /> изабрану картицу}few{Затворите <ph name="TABS_COUNT_MANY" /> изабране картице}other{Затворите <ph name="TABS_COUNT_MANY" /> изабраних картица}}</translation>
 <translation id="8398929769197326728">Нови фолдер – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Подешавања</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> картица је додата, затворених: <ph name="ANY_CLOSED" />}one{<ph name="MANY_ADDED" /> картица је додата, затворених: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> картице су додате, затворених: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> картица је додато, затворених: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="8631711675211020168">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја</translation>
+<translation id="8633025649649592204">Недавна активност</translation>
 <translation id="870736955561925754">Желите да затворите картицу и избришете групу?</translation>
 <translation id="8714939927607906138">Нижа цена</translation>
 <translation id="8730621377337864115">Готово</translation>
@@ -170,6 +186,7 @@
 <translation id="8926389886865778422">Не питај ме поново</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Проширите групу картица са <ph name="TABS_COUNT_ONE" /> картицом.}one{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картицом.}few{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картице.}other{Проширите групу картица са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="9090098097337832354">Информације о овој продавници су затворене</translation>
+<translation id="9111228330448174435">Приказивање дијалога о прављењу нове групе картица</translation>
 <translation id="9150694013019234766">Прелазите са једне картице на другу у групи картица у дну екрана</translation>
 <translation id="9169594135889675189">Додајте нову картицу у групу</translation>
 <translation id="9216898458513705996">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" /></translation>

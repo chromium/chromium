@@ -107,7 +107,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
       case SHRINKING:
         return min + (max - min) * ((1.0 - fraction) / kOpenFraction);
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool IsShrinking() const override { return state() == SHRINKING; }

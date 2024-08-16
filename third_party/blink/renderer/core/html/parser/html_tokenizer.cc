@@ -1916,14 +1916,8 @@ inline bool HTMLTokenizer::IsAppropriateEndTag() {
   if (buffered_end_tag_name_.size() != appropriate_end_tag_name_.size())
     return false;
 
-  wtf_size_t num_characters = buffered_end_tag_name_.size();
-
-  for (wtf_size_t i = 0; i < num_characters; i++) {
-    if (buffered_end_tag_name_[i] != appropriate_end_tag_name_[i])
-      return false;
-  }
-
-  return true;
+  return Equal(buffered_end_tag_name_.data(), appropriate_end_tag_name_.data(),
+               buffered_end_tag_name_.size());
 }
 
 inline void HTMLTokenizer::ParseError() {

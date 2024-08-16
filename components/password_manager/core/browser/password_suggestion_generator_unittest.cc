@@ -306,7 +306,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
 
   void EnablePasswordSync() {
     ON_CALL(sync_service(), GetActiveDataTypes)
-        .WillByDefault(Return(syncer::ModelTypeSet({syncer::PASSWORDS})));
+        .WillByDefault(Return(syncer::DataTypeSet({syncer::PASSWORDS})));
     ON_CALL(sync_service(), HasSyncConsent).WillByDefault(Return(true));
     ON_CALL(*sync_service().GetMockUserSettings(), GetSelectedTypes)
         .WillByDefault(Return(syncer::UserSelectableTypeSet(
@@ -827,7 +827,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               Suggestion::FaviconDetails(
                                   /*domain_url=*/GURL("https://google.com")),
                               Suggestion::PasswordSuggestionDetails(
-                                  u"password", u"google.com",
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
                                   /*is_cross_domain=*/false)),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
@@ -846,7 +847,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               Suggestion::FaviconDetails(
                                   /*domain_url=*/GURL("https://google.com")),
                               Suggestion::PasswordSuggestionDetails(
-                                  u"password", u"google.com",
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
                                   /*is_cross_domain=*/true)),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
@@ -854,20 +856,22 @@ TEST_F(PasswordSuggestionGeneratorTest,
 
 TEST_F(PasswordSuggestionGeneratorTest,
        ManualFallback_AllPasswords_AndroidCredential_SuggestionContent) {
+  CredentialUIEntry credential = android_credential_ui_entry();
+  std::string sign_on = credential.GetFirstSignonRealm();
   std::vector<Suggestion> suggestions = GenerateAllPasswordsSection(
-      {android_credential_ui_entry()}, IsTriggeredOnPasswordForm(true));
+      {credential}, IsTriggeredOnPasswordForm(true));
 
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(EqualsManualFallbackSuggestion(
-                      SuggestionType::kPasswordEntry, u"Netflix",
-                      u"username@example.com", Suggestion::Icon::kGlobe,
-                      /*is_acceptable=*/true,
-                      /*custom_icon=*/gfx::Image(),
-                      Suggestion::PasswordSuggestionDetails(
-                          u"password", u"Netflix", /*is_cross_domain=*/true)),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsManagePasswordsSuggestion()));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"Netflix",
+                              u"username@example.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              /*custom_icon=*/gfx::Image(),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"username@example.com", u"password", sign_on,
+                                  u"Netflix", /*is_cross_domain=*/true)),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -885,8 +889,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://google.com")),
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"", u"password", "https://google.com/", u"google.com",
+                  /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
@@ -906,8 +911,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://google.com")),
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/true)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"", u"password", "https://google.com/", u"google.com",
+                  /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
@@ -925,7 +931,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               Suggestion::FaviconDetails(
                                   /*domain_url=*/GURL("https://google.com")),
                               Suggestion::PasswordSuggestionDetails(
-                                  u"password", u"google.com",
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
                                   /*is_cross_domain=*/false)),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
@@ -944,7 +951,8 @@ TEST_F(PasswordSuggestionGeneratorTest,
                               Suggestion::FaviconDetails(
                                   /*domain_url=*/GURL("https://google.com")),
                               Suggestion::PasswordSuggestionDetails(
-                                  u"password", u"google.com",
+                                  u"username@example.com", u"password",
+                                  "https://google.com/", u"google.com",
                                   /*is_cross_domain=*/true)),
                           EqualsSuggestion(SuggestionType::kSeparator),
                           EqualsManagePasswordsSuggestion()));
@@ -963,27 +971,29 @@ TEST_F(PasswordSuggestionGeneratorTest,
       GenerateAllPasswordsSection({entry}, IsTriggeredOnPasswordForm(true));
 
   // Only the first domain is used to create the suggestion.
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"amazon.com",
-              u"example@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://amazon.com")),
-              Suggestion::PasswordSuggestionDetails(u"password", u"amazon.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"google.com",
-              u"example@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://google.com")),
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion()));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"amazon.com",
+                              u"example@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://amazon.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"example@google.com", u"password",
+                                  "https://amazon.com/", u"amazon.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"google.com",
+                              u"example@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://google.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"example@google.com", u"password",
+                                  "https://google.com/", u"google.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -1009,43 +1019,49 @@ TEST_F(PasswordSuggestionGeneratorTest,
                                   IsTriggeredOnPasswordForm(true));
 
   // Manual fallback suggestions are sorted by domain name.
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"amazon.com",
-              u"fourth@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://amazon.com")),
-              Suggestion::PasswordSuggestionDetails(u"second", u"amazon.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"google.com",
-              u"first@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://google.com")),
-              Suggestion::PasswordSuggestionDetails(u"first", u"google.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"microsoft.com",
-              u"second@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://microsoft.com")),
-              Suggestion::PasswordSuggestionDetails(u"first", u"microsoft.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsManualFallbackSuggestion(
-              SuggestionType::kPasswordEntry, u"netflix.com",
-              u"third@google.com", Suggestion::Icon::kGlobe,
-              /*is_acceptable=*/true,
-              Suggestion::FaviconDetails(
-                  /*domain_url=*/GURL("https://netflix.com")),
-              Suggestion::PasswordSuggestionDetails(u"second", u"netflix.com",
-                                                    /*is_cross_domain=*/true)),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePasswordsSuggestion()));
+  EXPECT_THAT(suggestions,
+              ElementsAre(EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"amazon.com",
+                              u"fourth@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://amazon.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"fourth@google.com", u"second",
+                                  "https://amazon.com/", u"amazon.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"google.com",
+                              u"first@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://google.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"first@google.com", u"first",
+                                  "https://google.com/", u"google.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"microsoft.com",
+                              u"second@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://microsoft.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"second@google.com", u"first",
+                                  "https://microsoft.com/", u"microsoft.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsManualFallbackSuggestion(
+                              SuggestionType::kPasswordEntry, u"netflix.com",
+                              u"third@google.com", Suggestion::Icon::kGlobe,
+                              /*is_acceptable=*/true,
+                              Suggestion::FaviconDetails(
+                                  /*domain_url=*/GURL("https://netflix.com")),
+                              Suggestion::PasswordSuggestionDetails(
+                                  u"third@google.com", u"second",
+                                  "https://netflix.com/", u"netflix.com",
+                                  /*is_cross_domain=*/true)),
+                          EqualsSuggestion(SuggestionType::kSeparator),
+                          EqualsManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -1065,8 +1081,10 @@ TEST_F(PasswordSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
               Suggestion::Icon::kNoIcon,
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"username@example.com", u"password", "https://google.com/",
+                  u"google.com",
+                  /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kViewPasswordDetails,
@@ -1092,8 +1110,10 @@ TEST_F(PasswordSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
               Suggestion::Icon::kNoIcon,
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/true)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"username@example.com", u"password", "https://google.com/",
+                  u"google.com",
+                  /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kViewPasswordDetails,
@@ -1117,8 +1137,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
               Suggestion::Icon::kNoIcon,
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"", u"password", "https://google.com/", u"google.com",
+                  /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kViewPasswordDetails,
@@ -1142,8 +1163,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
               l10n_util::GetStringUTF16(
                   IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
               Suggestion::Icon::kNoIcon,
-              Suggestion::PasswordSuggestionDetails(u"password", u"google.com",
-                                                    /*is_cross_domain=*/true)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"", u"password", "https://google.com/", u"google.com",
+                  /*is_cross_domain=*/true)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsSuggestion(
               SuggestionType::kViewPasswordDetails,
@@ -1193,16 +1215,20 @@ TEST_F(PasswordSuggestionGeneratorTest,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://microsoft.com/")),
-              Suggestion::PasswordSuggestionDetails(u"first", u"microsoft.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"first@google.com", u"first", "https://microsoft.com/",
+                  u"microsoft.com",
+                  /*is_cross_domain=*/false)),
           EqualsManualFallbackSuggestion(
               SuggestionType::kPasswordEntry, u"google.com",
               u"second@google.com", Suggestion::Icon::kGlobe,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://google.com/")),
-              Suggestion::PasswordSuggestionDetails(u"second", u"google.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"second@google.com", u"second", "https://google.com/",
+                  u"google.com",
+                  /*is_cross_domain=*/false)),
           EqualsSuggestion(
               SuggestionType::kTitle,
               l10n_util::GetStringUTF16(
@@ -1213,16 +1239,20 @@ TEST_F(PasswordSuggestionGeneratorTest,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://amazon.com/")),
-              Suggestion::PasswordSuggestionDetails(u"third", u"amazon.com",
-                                                    /*is_cross_domain=*/true)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"third@google.com", u"third", "https://amazon.com/",
+                  u"amazon.com",
+                  /*is_cross_domain=*/true)),
           EqualsManualFallbackSuggestion(
               SuggestionType::kPasswordEntry, u"microsoft.com",
               u"first@google.com", Suggestion::Icon::kGlobe,
               /*is_acceptable=*/true,
               Suggestion::FaviconDetails(
                   /*domain_url=*/GURL("https://microsoft.com/")),
-              Suggestion::PasswordSuggestionDetails(u"first", u"microsoft.com",
-                                                    /*is_cross_domain=*/false)),
+              Suggestion::PasswordSuggestionDetails(
+                  u"first@google.com", u"first", "https://microsoft.com/",
+                  u"microsoft.com",
+                  /*is_cross_domain=*/false)),
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }

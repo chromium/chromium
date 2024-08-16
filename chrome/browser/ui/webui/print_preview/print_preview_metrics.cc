@@ -199,7 +199,7 @@ void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
       break;
     case mojom::PrinterType::kPrivetDeprecated:
     case mojom::PrinterType::kCloudDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   base::UmaHistogramCustomTimes(
       base::StrCat({"PrintPreview.GetPrintersTime.", printer_type_metric}),

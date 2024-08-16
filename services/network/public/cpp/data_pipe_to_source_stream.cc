@@ -53,8 +53,7 @@ int DataPipeToSourceStream::Read(net::IOBuffer* buf,
     case MOJO_RESULT_OK: {
       size_t consume =
           std::min(base::checked_cast<size_t>(buf_size), buffer.size());
-      buf->span().first(consume).copy_from(
-          base::as_chars(buffer.first(consume)));
+      buf->span().copy_prefix_from(buffer.first(consume));
       body_->EndReadData(consume);
       return base::checked_cast<int>(consume);
     }
@@ -85,8 +84,7 @@ void DataPipeToSourceStream::OnReadable(MojoResult unused) {
     case MOJO_RESULT_OK: {
       size_t consume =
           std::min(base::checked_cast<size_t>(output_buf_size_), buffer.size());
-      output_buf_->span().first(consume).copy_from(
-          base::as_chars(buffer).first(consume));
+      output_buf_->span().copy_prefix_from(buffer.first(consume));
       body_->EndReadData(consume);
       std::move(pending_callback_).Run(consume);
       return;

@@ -115,6 +115,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2559253115192232574">Pozneje lahko stran, ki jo obiščete, od Chroma zahteva ogled vaših zanimanj zaradi osebnega prilagajanj oglasov, ki so vam prikazani. Chrome lahko deli do 3 zanimanja.</translation>
 <translation id="2563121210305478421">Želite znova zagnati Chrome?</translation>
 <translation id="2569974318947988067">Chrome bo poskusil nadgraditi pomikanje na HTTPS</translation>
+<translation id="2571392474191184472">Chrome upravlja vaša organizacija</translation>
 <translation id="2574930892358684005">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromu. Če želite ločiti brskanje, lahko Chrome za vas ustvari nov profil.</translation>
 <translation id="2580411288591421699">Ni mogoče namestiti različice Google Chroma, enake tisti, ki se trenutno izvaja. Zaprite Google Chrome in poskusite znova.</translation>
 <translation id="2586406160782125153">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
@@ -215,6 +216,8 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3795971588916395511">Google Chrome OS</translation>
 <translation id="3809772425479558446">Za Google Chrome potrebujete Windows 10 ali novejšega.</translation>
 <translation id="3835168907083856002">S tem bo ustvarjen novi profil v Chromu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
+<translation id="383928141529488001">Google Chrome potrebuje dostop do Bluetootha za raziskovanje 
+ naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
 <translation id="3865754807470779944">Nameščen je Chrome različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
@@ -425,6 +428,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6943584222992551122">Podatki brskanja te osebe bodo izbrisani iz te naprave. Če želite podatke obnoviti, se prijavite v Chrome kot <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Pravilo za dohodni promet za Google Chrome Beta, ki dovoli promet mDNS.</translation>
+<translation id="6979589607440534284">Preberite, zakaj Chrome blokira nekatere datoteke, odpre se na novem zavihku</translation>
 <translation id="7011190694940573312">Namestitev ni uspela, ker ta različica operacijskega sistema ni podprta.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Namestitev je prekinjena.</translation>
@@ -447,6 +451,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7177959540995930968">Več o teh funkcijah lahko izveste v nastavitvah za Chrome.</translation>
 <translation id="7193885263065350793">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Google Chromu. Vaši podatki v Chromu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali z nadzorno ploščo za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromu ostali ločeni. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> upravlja Chrome</translation>
 <translation id="7295052994004373688">Ta jezik se uporablja za prikaz uporabniškega vmesnika za Google Chrome</translation>
 <translation id="7296210096911315575">Pomembne informacije glede uporabe in varnosti</translation>
 <translation id="7302361266603927550">Nekateri podatki v Chromu še niso shranjeni v računu Google. Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
@@ -580,6 +585,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8999117580775242387">Če HTTPS ni na voljo, Chrome uporabi povezavo, ki ni varna, ne da bi vas opozoril</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
+<translation id="9014771989710951291">Chrome upravlja več organizacij</translation>
 <translation id="9024318700713112071">Nastavite Chrome kot privzeto možnost</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
 <translation id="9090566250983691233">Preberite, zakaj Chrome blokira nekatere datoteke</translation>

@@ -1289,7 +1289,7 @@ class AutofillAgentTestCaret
         LoadHTML(R"(<textarea id=f>012345</textarea>)");
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -1308,7 +1308,7 @@ class AutofillAgentTestCaret
                 GetElement().DynamicTo<blink::WebFormControlElement>(), {});
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     task_environment_.RunUntilIdle();
   }
@@ -1328,7 +1328,7 @@ class AutofillAgentTestCaret
             end));
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
     task_environment_.FastForwardBy(pause_for);
   }

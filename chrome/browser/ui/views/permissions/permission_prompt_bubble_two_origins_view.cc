@@ -193,7 +193,7 @@ std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() {
       return title_string;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -236,8 +236,7 @@ void PermissionPromptBubbleTwoOriginsView::OnEmbeddingOriginFaviconLoaded(
 
   if (favicon_result.is_valid()) {
     favicon_right_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->data(),
-                                         favicon_result.bitmap_data->size())));
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   }
   MaybeShow();
 }
@@ -250,8 +249,7 @@ void PermissionPromptBubbleTwoOriginsView::OnRequestingOriginFaviconLoaded(
 
   if (favicon_result.is_valid()) {
     favicon_left_->SetImage(ui::ImageModel::FromImage(
-        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->data(),
-                                         favicon_result.bitmap_data->size())));
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   }
   MaybeShow();
 }

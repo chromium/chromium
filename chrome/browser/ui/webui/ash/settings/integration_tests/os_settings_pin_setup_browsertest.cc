@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   auto go_to_lock_screen_settings_and_authenticate = [&]() {
     if (ash::features::IsUseAuthPanelInSessionEnabled()) {
       OpenLockScreenSettings();
-      AuthenticateViaCryptohomePasswordEngine(/*keep_alive_connector=*/false);
+      AuthenticateUsingPassword();
       return mojom::LockScreenSettingsAsyncWaiter{
           lock_screen_settings_remote_.get()};
     } else {
@@ -526,29 +526,22 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   pin_settings.TryEnablePinAutosubmit(kFirstPin);
 
   if (ash::features::IsUseAuthPanelInSessionEnabled()) {
-    base::test::TestFuture<AuthHubConnector*, AuthSurfaceRegistry::AuthSurface>
-        future;
+    base::test::TestFuture<AuthSurfaceRegistry::AuthSurface> future;
     auto subscription =
         ash::AuthParts::Get()->GetAuthSurfaceRegistry()->RegisterShownCallback(
             future.GetCallback());
 
-    auto [connector, surface] = future.Get();
+    auto surface = future.Get();
+    ASSERT_EQ(surface, AuthSurfaceRegistry::AuthSurface::kInSession);
 
     base::RunLoop().RunUntilIdle();
 
-    AuthEngineApi::AuthenticateWithPassword(
-        connector, AshAuthFactor::kGaiaPassword, kPassword);
-
-    // Reset the connector so that it's not caught dangling during test fixture
-    // destruction, since the pointee will be destroyed upon successful
-    // authentication.
-    connector = nullptr;
+    AuthenticateUsingPassword();
 
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(false, GetPinAutoSubmitState());
     pin_settings.AssertPinAutosubmitEnabled(false);
-
   } else {
     lock_screen_settings.AssertAuthenticated(false);
 

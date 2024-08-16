@@ -39,6 +39,8 @@ export interface FaceGazeActionsCardElement {
 export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   static readonly FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME =
       'commandPairs_' as const;
+  disabled: boolean;
+
   private showAddActionDialog_: boolean;
   private leftClickGestures_: FacialGesture[] = [];
   private dialogPageToShow_: AddDialogPage;
@@ -58,6 +60,16 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
   static get properties() {
     return {
+      disabled: {
+        type: Boolean,
+      },
+
+      disableConfigureControls_: {
+        type: Boolean,
+        computed:
+            'shouldDisableConfigureControls_(disabled, prefs.settings.a11y.face_gaze.actions_enabled.value)',
+      },
+
       commandPairs_: {
         type: Array,
         value: () => [],
@@ -104,6 +116,11 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   private getCurrentAssignedGestures_(): Record<FacialGesture, MacroName> {
     return {...this.get(FACE_GAZE_GESTURE_TO_MACROS_PREF)} as
         Record<FacialGesture, MacroName>;
+  }
+
+  private shouldDisableConfigureControls_(): boolean {
+    return this.disabled ||
+        !this.getPref('settings.a11y.face_gaze.actions_enabled').value;
   }
 
   private onAddActionButtonClick_(): void {

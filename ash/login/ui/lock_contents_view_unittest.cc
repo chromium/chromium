@@ -75,6 +75,7 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -3585,6 +3586,32 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFailedLoginAttempt) {
       kNbPasswordAttemptsUntilFailureHistogramName, 1);
   histogram_tester.ExpectBucketCount(
       kNbPasswordAttemptsUntilFailureHistogramName, num_failed_attempts, 1);
+}
+
+TEST_F(LockContentsViewUnitTest, AccessibleProperties) {
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents.get()));
+  ui::AXNodeData data;
+
+  contents.get()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+}
+
+TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {
+  auto contents = std::make_unique<LockContentsView>(
+      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
+      DataDispatcher(),
+      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
+  SetWidget(CreateWidgetWithContent(contents.get()));
+  LockContentsViewTestApi test_api(contents.get());
+  ui::AXNodeData data;
+
+  test_api.management_bubble()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kTooltip);
 }
 
 }  // namespace ash

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/desks/desks_util.h"
 
 #include <array>
@@ -10,6 +15,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/float/float_controller.h"
@@ -75,8 +81,7 @@ std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
 
 const char* GetDeskContainerName(int container_id) {
   if (!IsDeskContainerId(container_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   static const char* kDeskContainerNames[] = {
@@ -207,6 +212,12 @@ bool ShouldDesksBarBeCreated() {
   // If in clamshell mode, and overview was started by faster splitscreen setup,
   // don't show the desk bar.
   return !window_util::IsInFasterSplitScreenSetupSession();
+}
+
+bool ShouldRenderDeskBarWithMiniViews() {
+  return ShouldDesksBarBeCreated() &&
+         DeskBarViewBase::GetPreferredState(DeskBarViewBase::Type::kOverview) ==
+             DeskBarViewBase::State::kExpanded;
 }
 
 ui::Compositor* GetSelectedCompositorForPerformanceMetrics() {

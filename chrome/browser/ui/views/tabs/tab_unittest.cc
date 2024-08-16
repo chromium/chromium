@@ -37,6 +37,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -454,6 +455,30 @@ TEST_F(TabTest, CloseButtonFocus) {
             tab_close_button->GetFocusManager()->GetFocusedView());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(TabTest, CloseButtonHiddenWhenLockedForOnTask) {
+  const auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
+  tab_slot_controller->SetLockedForOnTask(true);
+  const std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* const tab =
+      widget->SetContentsView(std::make_unique<Tab>(tab_slot_controller.get()));
+  TabCloseButton* const tab_close_button = GetCloseButton(tab);
+  EXPECT_FALSE(tab_close_button->GetVisible());
+}
+
+TEST_F(TabTest, CloseButtonShownWhenNotLockedForOnTask) {
+  const auto tab_slot_controller = std::make_unique<FakeTabSlotController>();
+  tab_slot_controller->SetLockedForOnTask(false);
+  const std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* const tab =
+      widget->SetContentsView(std::make_unique<Tab>(tab_slot_controller.get()));
+  TabCloseButton* const tab_close_button = GetCloseButton(tab);
+  EXPECT_TRUE(tab_close_button->GetVisible());
+}
+#endif
+
 // Tests expected changes to the ThrobberView state when the WebContents loading
 // state changes or the animation timer (usually in BrowserView) triggers.
 TEST_F(TabTest, LayeredThrobber) {
@@ -834,4 +859,15 @@ TEST_F(TabTest, DiscardIndicatorResponsiveness) {
     EXPECT_EQ(test_case.expected_increased_radius,
               tab_icon->increased_discard_indicator_radius_);
   }
+}
+
+TEST_F(TabTest, AccessibleProperties) {
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
+  ui::AXNodeData data;
+
+  tab->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kTab, data.role);
 }

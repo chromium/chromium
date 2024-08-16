@@ -28,7 +28,7 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(RemoveObserver, void(Observer*));
   MOCK_METHOD0(GetDataSharingNetworkLoader, DataSharingNetworkLoader*());
   MOCK_METHOD0(GetCollaborationGroupControllerDelegate,
-               base::WeakPtr<syncer::ModelTypeControllerDelegate>());
+               base::WeakPtr<syncer::DataTypeControllerDelegate>());
   MOCK_METHOD1(
       ReadAllGroups,
       void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));
@@ -59,6 +59,10 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD1(HandleShareURLNavigationIntercepted, void(const GURL&));
   MOCK_METHOD1(GetDataSharingURL, std::unique_ptr<GURL>(const GroupData&));
   MOCK_METHOD1(ParseDataSharingURL, ParseURLResult(const GURL&));
+  MOCK_METHOD2(
+      EnsureGroupVisibility,
+      void(const GroupId&,
+           base::OnceCallback<void(const GroupDataOrFailureOutcome&)>));
 };
 
 }  // namespace data_sharing

@@ -14,7 +14,7 @@
 
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
@@ -147,7 +147,7 @@ class DeviceInfo {
       const std::optional<SharingInfo>& sharing_info,
       const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
       const std::string& fcm_registration_token,
-      const ModelTypeSet& interested_data_types,
+      const DataTypeSet& interested_data_types,
       std::optional<base::Time> floating_workspace_last_signin_timestamp);
 
   DeviceInfo(const DeviceInfo&) = delete;
@@ -225,7 +225,7 @@ class DeviceInfo {
   const std::string& fcm_registration_token() const;
 
   // Returns the data types for which this device receives invalidations.
-  const ModelTypeSet& interested_data_types() const;
+  const DataTypeSet& interested_data_types() const;
 
   // Returns the time at which this device was last signed into the device.
   std::optional<base::Time> floating_workspace_last_signin_timestamp() const;
@@ -251,7 +251,7 @@ class DeviceInfo {
 
   void set_fcm_registration_token(const std::string& fcm_token);
 
-  void set_interested_data_types(const ModelTypeSet& data_types);
+  void set_interested_data_types(const DataTypeSet& data_types);
 
   void set_floating_workspace_last_signin_timestamp(
       std::optional<base::Time> time);
@@ -301,7 +301,7 @@ class DeviceInfo {
   std::string fcm_registration_token_;
 
   // Data types for which this device receives invalidations.
-  ModelTypeSet interested_data_types_;
+  DataTypeSet interested_data_types_;
 
   std::optional<base::Time> floating_workspace_last_signin_timestamp_;
 

@@ -286,6 +286,9 @@ maskPosition
 maskRepeat
 maskSize
 maskType
+masonryTemplateTracks
+masonryTrackEnd
+masonryTrackStart
 mathDepth
 mathShift
 mathStyle
@@ -361,6 +364,7 @@ popoverHideDelay
 popoverShowDelay
 position
 positionAnchor
+positionArea
 positionTry
 positionTryFallbacks
 positionTryOrder
@@ -453,6 +457,7 @@ textAlign
 textAlignLast
 textAnchor
 textAutospace
+textBox
 textBoxEdge
 textBoxTrim
 textCombineUpright
@@ -502,6 +507,7 @@ viewTimelineAxis
 viewTimelineInset
 viewTimelineName
 viewTransitionClass
+viewTransitionGroup
 viewTransitionName
 visibility
 webkitAlignContent

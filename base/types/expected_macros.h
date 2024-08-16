@@ -254,7 +254,7 @@ UnexpectedDeducer(Lambda) -> UnexpectedDeducer<Lambda>;
     static_assert(base::internal::IsExpected<decltype(expected)>,          \
                   #name " should only be used with base::expected<>");     \
   }                                                                        \
-  if (UNLIKELY(!expected.has_value())) {                                   \
+  if (!expected.has_value()) [[unlikely]] {                                \
     return_keyword base::internal::UnexpectedDeducer([&] {                 \
       return error_expr;                                                   \
     }).Ret();                                                              \

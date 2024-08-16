@@ -77,9 +77,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   PasswordStoreAndroidLocalBackendTest() {
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
-    prefs_.registry()->RegisterBooleanPref(prefs::kUserReceivedGMSCoreError,
-                                           false);
-
     ResetBackend();
   }
 
@@ -346,8 +343,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   int kInternalErrorCode =
       static_cast<int>(AndroidBackendAPIErrorCode::kInternalError);
   PasswordStoreBackendError expected_error = {
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = kInternalErrorCode;
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -515,8 +511,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   }
 
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = static_cast<int>(GetParam());
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));
@@ -554,8 +549,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   }
 
   PasswordStoreBackendError expected_error{
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable};
+      PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = static_cast<int>(GetParam());
   EXPECT_CALL(mock_reply,
               Run(VariantWith<PasswordStoreBackendError>(expected_error)));

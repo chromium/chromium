@@ -33,7 +33,6 @@
   if (self) {
     _gridViewController = [[InactiveGridViewController alloc] init];
     _gridViewController.theme = GridThemeLight;
-    _gridViewController.mode = TabGridModeInactive;
   }
   return self;
 }

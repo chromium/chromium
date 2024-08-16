@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/updater/util/win_util.h"
 
 #include <windows.h>
@@ -569,8 +574,80 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
   return ShellExecuteAndWait(file_path, parameters, L"runas");
 }
 
-HRESULT RunDeElevated(const std::wstring& path,
-                      const std::wstring& parameters) {
+// Based on https://learn.microsoft.com/en-us/archive/blogs/aaron_margosis/
+// faq-how-do-i-start-a-program-as-the-desktop-user-from-an-elevated-app.
+HResultOr<DWORD> RunDeElevated(const base::CommandLine& command_line) {
+  const HWND hwnd = ::GetShellWindow();
+  if (!hwnd) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  DWORD pid = 0;
+  if (!::GetWindowThreadProcessId(hwnd, &pid)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  base::win::ScopedHandle shell_process(
+      ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
+  if (!shell_process.IsValid()) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  CAccessToken token;
+  if (!token.GetProcessToken(MAXIMUM_ALLOWED)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  CTokenPrivileges previous_privileges;
+  if (!token.EnablePrivilege(SE_IMPERSONATE_NAME, &previous_privileges)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  absl::Cleanup restore_previous_privileges = [&] {
+    token.EnableDisablePrivileges(previous_privileges);
+  };
+
+  CAccessToken shell_token;
+  if (!shell_token.GetProcessToken(TOKEN_DUPLICATE, shell_process.Get())) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  CAccessToken duplicated_shell_token;
+  if (!shell_token.CreatePrimaryToken(
+          &duplicated_shell_token, TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY |
+                                       TOKEN_DUPLICATE | TOKEN_ADJUST_DEFAULT |
+                                       TOKEN_ADJUST_SESSIONID)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  STARTUPINFO startupinfo = {};
+  PROCESS_INFORMATION pi = {};
+  if (!::CreateProcessWithTokenW(
+          duplicated_shell_token.GetHandle(), 0,
+          command_line.GetProgram().value().c_str(),
+          std::wstring(command_line.GetCommandLineString()).data(), 0, nullptr,
+          nullptr, &startupinfo, &pi)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  ::CloseHandle(pi.hThread);
+  const base::Process process(pi.hProcess);
+  pid = process.Pid();
+  VLOG(1) << __func__ << ": Started process, PID: " << pid;
+
+  // Allow the spawned process to show windows in the foreground.
+  if (!::AllowSetForegroundWindow(pid)) {
+    VPLOG(1) << __func__ << ": ::AllowSetForegroundWindow failed";
+  }
+
+  int ret_val = 0;
+  if (!process.WaitForExit(&ret_val)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  return base::ok(static_cast<DWORD>(ret_val));
+}
+
+HRESULT RunDeElevatedNoWait(const std::wstring& path,
+                            const std::wstring& parameters) {
   Microsoft::WRL::ComPtr<IShellWindows> shell;
   HRESULT hr = ::CoCreateInstance(CLSID_ShellWindows, nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&shell));
@@ -650,7 +727,7 @@ HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
     return E_INVALIDARG;
   }
 
-  return RunDeElevated(
+  return RunDeElevatedNoWait(
       argv.get()[0],
       base::JoinString(
           [&]() -> std::vector<std::wstring> {

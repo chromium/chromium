@@ -127,7 +127,7 @@ ContactInfoEditorViewController::CreateValidationDelegate(
 std::unique_ptr<ui::ComboboxModel>
 ContactInfoEditorViewController::GetComboboxModelForType(
     const autofill::FieldType& type) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string ContactInfoEditorViewController::GetSheetTitle() {
@@ -265,7 +265,7 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
         break;
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -276,13 +276,13 @@ bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     IsValidCombobox(ValidatingCombobox* combobox,
                     std::u16string* error_message) {
   // This UI doesn't contain any comboboxes.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool ContactInfoEditorViewController::ContactInfoValidationDelegate::
     ComboboxValueChanged(ValidatingCombobox* combobox) {
   // This UI doesn't contain any comboboxes.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace payments

@@ -19,6 +19,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/widget_test.h"
@@ -43,8 +44,8 @@ class TestWebDialogViewWebDialogDelegate
   // ui::WebDialogDelegate
   bool OnDialogCloseRequested() override { return true; }
   bool ShouldCloseDialogOnEscape() const override { return close_on_escape_; }
-  ui::ModalType GetDialogModalType() const override {
-    return ui::MODAL_TYPE_WINDOW;
+  ui::mojom::ModalType GetDialogModalType() const override {
+    return ui::mojom::ModalType::kWindow;
   }
 
  private:

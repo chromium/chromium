@@ -471,12 +471,6 @@ AppInstallerResult RunApplicationInstaller(
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback) {
-  if (!base::PathExists(app_installer)) {
-    LOG(ERROR) << "application installer does not exist: " << app_installer;
-    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
-                              kErrorMissingRunableFile);
-  }
-
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
     return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,

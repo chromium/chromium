@@ -30,6 +30,7 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          display_mode == other.display_mode &&
          capture_sequence_number == other.capture_sequence_number &&
          zoom_level == other.zoom_level &&
+         css_zoom_factor == other.css_zoom_factor &&
          page_scale_factor == other.page_scale_factor &&
          compositing_scale_factor == other.compositing_scale_factor &&
          cursor_accessibility_scale_factor ==

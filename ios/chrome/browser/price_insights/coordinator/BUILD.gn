@@ -51,7 +51,10 @@ source_set("test_support") {
     "test_price_insights_consumer.mm",
   ]
 
-  deps = [ ":delegates" ]
+  deps = [
+    ":delegates",
+    "//ios/chrome/browser/price_insights/ui:price_insights_ui",
+  ]
 }
 
 source_set("unit_tests") {

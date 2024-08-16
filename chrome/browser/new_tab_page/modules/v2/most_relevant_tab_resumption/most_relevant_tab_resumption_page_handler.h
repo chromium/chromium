@@ -86,6 +86,11 @@ class MostRelevantTabResumptionPageHandler
   // The result types to request for when fetching URL visit aggregate data.
   visited_url_ranking::FetchOptions::URLTypeSet result_url_types_;
 
+  // The number of days after which URL visit suggestions based on dismissed
+  // URLs are again eligigle for display and thus should be removed from the
+  // dismiss list preference.
+  int dismissal_duration_days_;
+
   mojo::Receiver<ntp::most_relevant_tab_resumption::mojom::PageHandler>
       page_handler_;
 

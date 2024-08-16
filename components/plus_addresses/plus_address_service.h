@@ -30,6 +30,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
 
+class PrefService;
+
 namespace affiliations {
 class AffiliationService;
 }
@@ -83,6 +85,7 @@ class PlusAddressService : public KeyedService,
   static constexpr int kMaxHttpForbiddenResponses = 1;
 
   PlusAddressService(
+      PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       PlusAddressSettingService* setting_service,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
@@ -125,17 +128,30 @@ class PlusAddressService : public KeyedService,
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
 
+  // Returns whether plus address filling is supported for the given `origin`.
+  // This is true iff:
+  // - the `PlusAddressService` is enabled and
+  // - `origin` is not a blocked origin.
+  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const;
+
+  // Returns whether plus address creation is supported for the given `origin`.
+  // This is true iff:
+  // - the plus address filling is enabled,
+  // - `is_off_the_record` is `false`, and
+  // - plus address global toggle is on.
+  virtual bool IsPlusAddressCreationEnabled(const url::Origin& origin,
+                                            bool is_off_the_record) const;
+
   // Returns whether a manual fallback suggestion should be shown on `origin`.
   // This is true iff
-  // - the `PlusAddressService` is enabled,
-  // - `origin` is not a blocked origin, and
-  // - the user either has at least one plus address for that `origin` or
-  //   `is_off_the_record` is false.
+  // - plus address creation is supported or
+  // - `is_off_the_record` is `true`  and the user has at least 1 plus address
+  // for the given `origin`.
   bool ShouldShowManualFallback(const url::Origin& origin,
                                 bool is_off_the_record) const;
 
   // Gets a plus address, if one exists, for the passed-in facet.
-  std::optional<std::string> GetPlusAddress(
+  std::optional<PlusAddress> GetPlusAddress(
       const PlusProfile::facet_t& facet) const;
 
   // Same as `GetPlusAddress()`, but returns the entire profile.
@@ -144,12 +160,12 @@ class PlusAddressService : public KeyedService,
 
   // Returns a list of plus profiles for the `origin` and all affiliated
   // domains.
-  void GetAffiliatedPlusProfiles(const url::Origin& origin,
-                                 GetPlusProfilesCallback callback);
+  virtual void GetAffiliatedPlusProfiles(const url::Origin& origin,
+                                         GetPlusProfilesCallback callback);
 
   // Returns all the cached plus profiles. There are no server requests
   // triggered by this method, only the cached responses are returned.
-  base::span<const PlusProfile> GetPlusProfiles() const;
+  virtual base::span<const PlusProfile> GetPlusProfiles() const;
 
   // Saves a confirmed plus profile for its facet.
   void SavePlusProfile(const PlusProfile& profile);
@@ -174,7 +190,7 @@ class PlusAddressService : public KeyedService,
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
-                                  const std::string& plus_address,
+                                  const PlusAddress& plus_address,
                                   PlusAddressRequestCallback on_completed);
 
   // Used for displaying the user's email address in the UI modal.
@@ -239,8 +255,7 @@ class PlusAddressService : public KeyedService,
       GetSuggestionsCallback callback,
       std::vector<PlusProfile> affiliated_profiles);
 
-  // Plus profiles in-memory cache.
-  PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<PrefService> pref_service_;
 
   const raw_ref<signin::IdentityManager> identity_manager_;
 
@@ -261,7 +276,10 @@ class PlusAddressService : public KeyedService,
   scoped_refptr<PlusAddressWebDataService> webdata_service_;
 
   // Responsible for allocating new plus addresses.
-  const std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
+  std::unique_ptr<PlusAddressAllocator> plus_address_allocator_;
+
+  // Plus profiles in-memory cache.
+  PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Responsible for supplying a list of plus profiles with domains affiliated
   // to the the originally requested facet.
@@ -273,6 +291,8 @@ class PlusAddressService : public KeyedService,
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.
+  // TODO(crbug.com/324556906): Remove once `kPlusAddressBlocklistEnabled` is
+  // launched.
   base::flat_set<std::string> excluded_sites_;
 
   // Counts the number of HTTP_FORBIDDEN that the client has received.

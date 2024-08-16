@@ -27,6 +27,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
+import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {
@@ -100,7 +101,7 @@ export class RecordingFileList extends ReactiveLitElement {
       flex-flow: column;
       gap: 16px;
       overflow-y: auto;
-      padding: 8px 0 24px;
+      padding: 8px 0 calc(24px + var(--scroll-bottom-extra-padding, 0px));
     }
 
     #sort-recording-menu {
@@ -141,6 +142,8 @@ export class RecordingFileList extends ReactiveLitElement {
   private readonly sortMenuRef = createRef<CraMenu>();
 
   private readonly sortMenuOpened = signal(false);
+
+  private readonly platformHandler = usePlatformHandler();
 
   private onSortingTypeClick(newSortType: RecordingSortType) {
     settings.mutate((d) => {
@@ -228,7 +231,10 @@ export class RecordingFileList extends ReactiveLitElement {
 
     for (const entry of entries) {
       const recordedAt = entry.recording.recordedAt;
-      let dateGroup = getMonthLabel(recordedAt);
+      let dateGroup = getMonthLabel(
+        this.platformHandler.getLocale(),
+        recordedAt,
+      );
       if (recordedAt >= today) {
         dateGroup = todayLabel;
       } else if (recordedAt >= yesterday) {

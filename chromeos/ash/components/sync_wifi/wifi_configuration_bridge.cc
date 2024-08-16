@@ -31,12 +31,12 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -66,9 +66,9 @@ WifiConfigurationBridge::WifiConfigurationBridge(
     SyncedNetworkMetricsLogger* metrics_recorder,
     ash::timer_factory::TimerFactory* timer_factory,
     PrefService* pref_service,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory create_store_callback)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory create_store_callback)
+    : DataTypeSyncBridge(std::move(change_processor)),
       synced_network_updater_(synced_network_updater),
       local_network_collector_(local_network_collector),
       network_configuration_handler_(network_configuration_handler),
@@ -108,7 +108,7 @@ void WifiConfigurationBridge::OnShuttingDown() {
 
 std::unique_ptr<syncer::MetadataChangeList>
 WifiConfigurationBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> WifiConfigurationBridge::MergeFullSyncData(
@@ -182,7 +182,7 @@ void WifiConfigurationBridge::OnGetAllSyncableNetworksResult(
     entries_[storage_key] = proto;
   }
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   // Iterate through synced networks and update local stack where appropriate.
   for (const auto& [id, proto] : sync_networks) {
@@ -216,7 +216,7 @@ std::optional<syncer::ModelError>
 WifiConfigurationBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   NET_LOG(EVENT) << "Applying  " << entity_changes.size()
@@ -299,7 +299,7 @@ std::string WifiConfigurationBridge::GetStorageKey(
 
 void WifiConfigurationBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // Since bridge and ModelTypeStore state represents the synced networks state,
+  // Since bridge and DataTypeStore state represents the synced networks state,
   // while actual data is stored by Shill, it's appropriate to treat all data
   // stored by bridge as metadata and clear it out when processor requests to
   // clear metadata. MergeFullSyncData() will be called once sync is starting
@@ -317,7 +317,7 @@ void WifiConfigurationBridge::ApplyDisableSyncChanges(
 
 void WifiConfigurationBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore> store) {
+    std::unique_ptr<syncer::DataTypeStore> store) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -330,13 +330,13 @@ void WifiConfigurationBridge::OnStoreCreated(
 
 void WifiConfigurationBridge::OnReadAllData(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> records) {
+    std::unique_ptr<syncer::DataTypeStore::RecordList> records) {
   if (error) {
     change_processor()->ReportError(*error);
     return;
   }
 
-  for (syncer::ModelTypeStore::Record& record : *records) {
+  for (syncer::DataTypeStore::Record& record : *records) {
     sync_pb::WifiConfigurationSpecifics data;
     if (record.id.empty() || !data.ParseFromString(record.value)) {
       NET_LOG(EVENT) << "Unable to parse proto for entry with key: "
@@ -424,7 +424,7 @@ void WifiConfigurationBridge::OnCommit(
 }
 
 void WifiConfigurationBridge::Commit(
-    std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch) {
+    std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch) {
   store_->CommitWriteBatch(std::move(batch),
                            base::BindOnce(&WifiConfigurationBridge::OnCommit,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -510,7 +510,7 @@ void WifiConfigurationBridge::SaveNetworkToSync(
   auto id = NetworkIdentifier::FromProto(*proto);
   std::string storage_key = GetStorageKey(*entity_data);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(storage_key, proto->SerializeAsString());
   change_processor()->Put(storage_key, std::move(entity_data),
@@ -604,7 +604,7 @@ void WifiConfigurationBridge::RemoveNetworkFromSync(
     return;  // Network is not synced.
   }
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->DeleteData(storage_key);
   change_processor()->Delete(storage_key, syncer::DeletionOrigin::Unspecified(),

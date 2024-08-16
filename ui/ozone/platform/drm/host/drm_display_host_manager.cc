@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/host/drm_display_host_manager.h"
 
 #include <fcntl.h>
@@ -20,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -409,7 +415,7 @@ void DrmDisplayHostManager::ConfigureDisplays(
     display::ModesetFlags modeset_flags) {
   for (auto& config : config_requests) {
     if (GetDisplay(config.id)->is_dummy()) {
-      std::move(callback).Run(true);
+      std::move(callback).Run(config_requests, true);
       return;
     }
   }

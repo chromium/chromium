@@ -47,8 +47,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
             profile, /*original_profile=*/nullptr,
             /*user_email=*/std::nullopt,
             /*locale=*/"en-US",
-            autofill::AutofillClient::SaveAddressProfilePromptOptions{},
-            base::DoNothing());
+            /*is_migration_to_account=*/false, base::DoNothing());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,

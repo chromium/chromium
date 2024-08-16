@@ -181,7 +181,7 @@ TEST(X509UtilNSSTest, CreateCERTCertificateListFromBytes) {
 
   ScopedCERTCertificateList certs =
       x509_util::CreateCERTCertificateListFromBytes(
-          cert_data.data(), cert_data.size(), X509Certificate::FORMAT_AUTO);
+          base::as_byte_span(cert_data), X509Certificate::FORMAT_AUTO);
   ASSERT_EQ(4U, certs.size());
   EXPECT_STREQ("CN=127.0.0.1,O=Test CA,L=Mountain View,ST=California,C=US",
                certs[0]->subjectName);

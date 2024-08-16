@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
@@ -207,6 +208,12 @@ void LongGestureTap(const gfx::Point& screen_location,
 
   if (release_touch)
     event_generator->ReleaseTouch();
+}
+
+void SimulateWaitForCloseAll() {
+  DesksController::Get()->MaybeCommitPendingDeskRemoval();
+  WaitForMilliseconds(
+      DesksTestApi::GetCloseAllWindowCloseTimeout().InMilliseconds());
 }
 
 }  // namespace ash

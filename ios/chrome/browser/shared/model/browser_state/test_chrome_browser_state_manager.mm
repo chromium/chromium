@@ -34,12 +34,19 @@ TestChromeBrowserStateManager::~TestChromeBrowserStateManager() {
 void TestChromeBrowserStateManager::AddObserver(
     ChromeBrowserStateManagerObserver* observer) {
   observers_.AddObserver(observer);
+
+  for (auto& [key, browser_state] : browser_states_) {
+    observer->OnChromeBrowserStateCreated(this, browser_state.get());
+    observer->OnChromeBrowserStateLoaded(this, browser_state.get());
+  }
 }
 
 void TestChromeBrowserStateManager::RemoveObserver(
     ChromeBrowserStateManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
+
+void TestChromeBrowserStateManager::LoadBrowserStates() {}
 
 ChromeBrowserState*
 TestChromeBrowserStateManager::GetLastUsedBrowserStateDeprecatedDoNotUse() {
@@ -50,6 +57,64 @@ ChromeBrowserState* TestChromeBrowserStateManager::GetBrowserStateByName(
     std::string_view name) {
   auto iterator = browser_states_.find(name);
   return iterator != browser_states_.end() ? iterator->second.get() : nullptr;
+}
+
+std::vector<ChromeBrowserState*>
+TestChromeBrowserStateManager::GetLoadedBrowserStates() {
+  std::vector<ChromeBrowserState*> result;
+  for (auto& browser_state : browser_states_) {
+    result.push_back(browser_states_[browser_state.first].get());
+  }
+  return result;
+}
+
+bool TestChromeBrowserStateManager::LoadBrowserStateAsync(
+    std::string_view name,
+    ChromeBrowserStateLoadedCallback initialized_callback,
+    ChromeBrowserStateLoadedCallback created_callback) {
+  return CreateBrowserStateAsync(name, std::move(initialized_callback),
+                                 std::move(created_callback));
+}
+
+bool TestChromeBrowserStateManager::CreateBrowserStateAsync(
+    std::string_view name,
+    ChromeBrowserStateLoadedCallback initialized_callback,
+    ChromeBrowserStateLoadedCallback created_callback) {
+  auto iterator = browser_states_.find(name);
+  if (iterator == browser_states_.end()) {
+    // Creation is not supported by TestChromeBrowserStateManager.
+    return false;
+  }
+
+  ChromeBrowserState* browser_state = iterator->second.get();
+  if (!created_callback.is_null()) {
+    std::move(created_callback).Run(browser_state);
+  }
+
+  if (!initialized_callback.is_null()) {
+    std::move(initialized_callback).Run(browser_state);
+  }
+
+  return true;
+}
+
+ChromeBrowserState* TestChromeBrowserStateManager::LoadBrowserState(
+    std::string_view name) {
+  // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
+  // so the implementation is equivalent to GetBrowserStateByName(...).
+  return GetBrowserStateByName(name);
+}
+
+ChromeBrowserState* TestChromeBrowserStateManager::CreateBrowserState(
+    std::string_view name) {
+  // TestChromeBrowserState cannot create nor load a ChromeBrowserState,
+  // so the implementation is equivalent to GetBrowserStateByName(...).
+  return GetBrowserStateByName(name);
+}
+
+BrowserStateInfoCache*
+TestChromeBrowserStateManager::GetBrowserStateInfoCache() {
+  return &browser_state_info_cache_;
 }
 
 TestChromeBrowserState*
@@ -86,19 +151,3 @@ TestChromeBrowserStateManager::AddBrowserStateWithBuilder(
 
   return iterator->second.get();
 }
-
-BrowserStateInfoCache*
-TestChromeBrowserStateManager::GetBrowserStateInfoCache() {
-  return &browser_state_info_cache_;
-}
-
-std::vector<ChromeBrowserState*>
-TestChromeBrowserStateManager::GetLoadedBrowserStates() {
-  std::vector<ChromeBrowserState*> result;
-  for (auto& browser_state : browser_states_) {
-    result.push_back(browser_states_[browser_state.first].get());
-  }
-  return result;
-}
-
-void TestChromeBrowserStateManager::LoadBrowserStates() {}

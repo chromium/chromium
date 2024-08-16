@@ -15,7 +15,7 @@ std::string_view InvalidatorStateToString(InvalidatorState state) {
     case InvalidatorState::kDisabled:
       return "Disabled";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace invalidation

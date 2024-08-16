@@ -281,7 +281,7 @@ float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
   tab_data->is_app = IsApp(contents);
   tab_data->is_internal = IsInternalPage(contents);
   tab_data->site_engagement = delegate_->GetSiteEngagementScore(contents);
-  tab_data->last_active = now_ - contents->GetLastActiveTime();
+  tab_data->last_active = now_ - contents->GetLastActiveTimeTicks();
 
   // The local database doesn't exist on Android at all.
 #if !BUILDFLAG(IS_ANDROID)
@@ -342,7 +342,7 @@ bool SessionRestorePolicy::ShouldLoad(content::WebContents* contents) const {
   // Enforce a max time since use if one is specified.
   if (!max_time_since_last_use_to_restore_.is_zero()) {
     base::TimeDelta time_since_active =
-        delegate_->NowTicks() - contents->GetLastActiveTime();
+        delegate_->NowTicks() - contents->GetLastActiveTimeTicks();
     if (time_since_active > max_time_since_last_use_to_restore_)
       return false;
   }

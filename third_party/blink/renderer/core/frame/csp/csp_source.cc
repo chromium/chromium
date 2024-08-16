@@ -76,9 +76,7 @@ bool HostMatches(const network::mojom::blink::CSPSource& source,
   if (!url.IsStandard()) {
     return HostMatches(source, "");
   }
-  return base::FeatureList::IsEnabled(kAvoidWastefulHostCopies)
-             ? HostMatches(source, url.HostView())
-             : HostMatches(source, url.Host());
+  return HostMatches(source, url.HostView());
 }
 
 bool PathMatches(const network::mojom::blink::CSPSource& source,

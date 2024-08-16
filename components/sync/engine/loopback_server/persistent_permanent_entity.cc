@@ -13,7 +13,7 @@
 
 using std::string;
 
-using syncer::ModelType;
+using syncer::DataType;
 
 namespace {
 
@@ -29,12 +29,12 @@ PersistentPermanentEntity::~PersistentPermanentEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
-    const ModelType& model_type,
+    const DataType& data_type,
     const string& server_tag,
     const string& name,
     const string& parent_server_tag) {
-  if (model_type == syncer::UNSPECIFIED) {
-    DLOG(WARNING) << "The entity's ModelType is invalid.";
+  if (data_type == syncer::UNSPECIFIED) {
+    DLOG(WARNING) << "The entity's DataType is invalid.";
     return nullptr;
   }
   if (server_tag.empty()) {
@@ -56,30 +56,30 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
     return nullptr;
   }
 
-  string id = LoopbackServerEntity::CreateId(model_type, server_tag);
+  string id = LoopbackServerEntity::CreateId(data_type, server_tag);
   string parent_id =
-      LoopbackServerEntity::CreateId(model_type, parent_server_tag);
+      LoopbackServerEntity::CreateId(data_type, parent_server_tag);
   sync_pb::EntitySpecifics entity_specifics;
-  AddDefaultFieldValue(model_type, &entity_specifics);
+  AddDefaultFieldValue(data_type, &entity_specifics);
   return std::make_unique<PersistentPermanentEntity>(
-      id, 0, model_type, name, parent_id, server_tag, entity_specifics);
+      id, 0, data_type, name, parent_id, server_tag, entity_specifics);
 }
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateTopLevel(
-    const ModelType& model_type) {
-  if (model_type == syncer::UNSPECIFIED) {
-    DLOG(WARNING) << "The entity's ModelType is invalid.";
+    const DataType& data_type) {
+  if (data_type == syncer::UNSPECIFIED) {
+    DLOG(WARNING) << "The entity's DataType is invalid.";
     return nullptr;
   }
 
-  string server_tag = syncer::ModelTypeToProtocolRootTag(model_type);
-  string name = syncer::ModelTypeToDebugString(model_type);
-  string id = LoopbackServerEntity::GetTopLevelId(model_type);
+  string server_tag = syncer::DataTypeToProtocolRootTag(data_type);
+  string name = syncer::DataTypeToDebugString(data_type);
+  string id = LoopbackServerEntity::GetTopLevelId(data_type);
   sync_pb::EntitySpecifics entity_specifics;
-  AddDefaultFieldValue(model_type, &entity_specifics);
+  AddDefaultFieldValue(data_type, &entity_specifics);
   return std::make_unique<PersistentPermanentEntity>(
-      id, 0, model_type, name, kRootParentTag, server_tag, entity_specifics);
+      id, 0, data_type, name, kRootParentTag, server_tag, entity_specifics);
 }
 
 // static
@@ -87,29 +87,28 @@ std::unique_ptr<LoopbackServerEntity>
 PersistentPermanentEntity::CreateUpdatedNigoriEntity(
     const sync_pb::SyncEntity& client_entity,
     const LoopbackServerEntity& current_server_entity) {
-  ModelType model_type = current_server_entity.GetModelType();
-  if (model_type != syncer::NIGORI) {
+  DataType data_type = current_server_entity.GetDataType();
+  if (data_type != syncer::NIGORI) {
     DLOG(WARNING) << "This factory only supports NIGORI entities.";
     return nullptr;
   }
 
   return std::make_unique<PersistentPermanentEntity>(
       current_server_entity.GetId(), current_server_entity.GetVersion(),
-      model_type, current_server_entity.GetName(),
+      data_type, current_server_entity.GetName(),
       current_server_entity.GetParentId(),
-      syncer::ModelTypeToProtocolRootTag(model_type),
-      client_entity.specifics());
+      syncer::DataTypeToProtocolRootTag(data_type), client_entity.specifics());
 }
 
 PersistentPermanentEntity::PersistentPermanentEntity(
     const string& id,
     int64_t version,
-    const ModelType& model_type,
+    const DataType& data_type,
     const string& name,
     const string& parent_id,
     const string& server_defined_unique_tag,
     const sync_pb::EntitySpecifics& specifics)
-    : LoopbackServerEntity(id, model_type, version, name),
+    : LoopbackServerEntity(id, data_type, version, name),
       server_defined_unique_tag_(server_defined_unique_tag),
       parent_id_(parent_id) {
   SetSpecifics(specifics);

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../components/cra/cra-button.js';
-import '../components/cra/cra-image.js';
+import './cra/cra-button.js';
+import './cra/cra-image.js';
+import './speaker-label-consent-dialog-content.js';
 
 import {
   css,
@@ -18,7 +19,7 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {
   settings,
-  SpeakerIdEnableState,
+  SpeakerLabelEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
 import {assertExhaustive, assertInstanceof} from '../core/utils/assert.js';
@@ -38,6 +39,9 @@ export class OnboardingDialog extends ReactiveLitElement {
       border-radius: 20px;
       box-shadow: var(--cros-sys-app_elevation3);
       color: var(--cros-sys-on_surface);
+      display: flex;
+      flex-flow: column;
+      height: 512px;
       padding: 0;
 
       /* Want at least 80px left/right margin. */
@@ -65,6 +69,10 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
 
     #content {
+      display: flex;
+      flex: 1;
+      flex-flow: column;
+      min-height: 0;
       padding: 32px 32px 28px;
     }
 
@@ -74,9 +82,11 @@ export class OnboardingDialog extends ReactiveLitElement {
     }
 
     #description {
+      color: var(--cros-sys-on_surface_variant);
+      flex: 1;
       font: var(--cros-body-1-font);
       margin-bottom: 32px;
-      white-space: pre-wrap;
+      overflow-y: auto;
     }
 
     #buttons {
@@ -209,43 +219,40 @@ export class OnboardingDialog extends ReactiveLitElement {
         );
       }
       case 2: {
-        const disableSpeakerId = () => {
+        const disableSpeakerLabel = () => {
           settings.mutate((s) => {
-            s.speakerIdEnabled = SpeakerIdEnableState.DISABLED_FIRST;
+            s.speakerLabelEnabled = SpeakerLabelEnableState.DISABLED_FIRST;
           });
           this.close();
         };
 
-        const enableSpeakerId = () => {
+        const enableSpeakerLabel = () => {
           settings.mutate((s) => {
-            s.speakerIdEnabled = SpeakerIdEnableState.ENABLED;
+            s.speakerLabelEnabled = SpeakerLabelEnableState.ENABLED;
           });
           this.close();
         };
 
         return this.renderDialog(
-          'onboarding_speaker_id',
-          i18n.onboardingDialogSpeakerIdHeader,
-          // TODO: b/336963138 - Add correct link
-          // prettier-ignore
-          html`${i18n.onboardingDialogSpeakerIdDescription} <a
-              href="javascript:;"
-              >${i18n.onboardingDialogSpeakerIdLearnMoreLink}</a>`,
+          'onboarding_speaker_label',
+          i18n.onboardingDialogSpeakerLabelHeader,
+          html`<speaker-label-consent-dialog-content>
+          </speaker-label-consent-dialog-content>`,
           html`
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdDeferButton}
+              .label=${i18n.onboardingDialogSpeakerLabelDeferButton}
               class="left"
               button-style="secondary"
               @click=${this.close}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdDisallowButton}
+              .label=${i18n.onboardingDialogSpeakerLabelDisallowButton}
               button-style="secondary"
-              @click=${disableSpeakerId}
+              @click=${disableSpeakerLabel}
             ></cra-button>
             <cra-button
-              .label=${i18n.onboardingDialogSpeakerIdAllowButton}
-              @click=${enableSpeakerId}
+              .label=${i18n.onboardingDialogSpeakerLabelAllowButton}
+              @click=${enableSpeakerLabel}
             ></cra-button>
           `,
         );

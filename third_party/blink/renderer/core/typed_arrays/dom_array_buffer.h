@@ -31,7 +31,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     ArrayBufferContents contents(num_elements, element_byte_size,
                                  ArrayBufferContents::kNotShared,
                                  ArrayBufferContents::kZeroInitialize);
-    if (UNLIKELY(!contents.Data())) {
+    if (!contents.Data()) [[unlikely]] {
       OOM_CRASH(num_elements * element_byte_size);
     }
     return Create(std::move(contents));
@@ -40,12 +40,13 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     ArrayBufferContents contents(source.size(), 1,
                                  ArrayBufferContents::kNotShared,
                                  ArrayBufferContents::kDontInitialize);
-    if (UNLIKELY(!contents.Data())) {
+    if (!contents.Data()) [[unlikely]] {
       OOM_CRASH(source.size());
     }
     contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
   }
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   static DOMArrayBuffer* Create(const void* source, size_t byte_length) {
     // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
     return Create(UNSAFE_BUFFERS(
@@ -58,6 +59,8 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);
   static DOMArrayBuffer* CreateOrNull(base::span<const uint8_t> source);
+
+  // TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
   static DOMArrayBuffer* CreateOrNull(const void* source, size_t byte_length) {
     // SAFETY: Caller guarantees that `source` contains `byte_length` bytes.
     return CreateOrNull(UNSAFE_BUFFERS(

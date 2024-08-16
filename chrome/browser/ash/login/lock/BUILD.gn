@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash)
@@ -106,12 +107,10 @@ static_library("test_support") {
 }
 
 if (is_chromeos_device) {
-  source_set("integration_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
+  crosier_tests("integration_tests") {
     sources = [ "lock_screen_integration_test.cc" ]
+
+    sources_metadata = [ "lock_screen_integration_test.yaml" ]
 
     deps = [
       "//ash",
@@ -148,7 +147,6 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/test:test_support",
@@ -181,8 +179,8 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/lock_screen_apps",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash:test_support",

@@ -220,7 +220,7 @@ void XrBrowserTestBase::OpenNewTab(const std::string& url) {
 
 void XrBrowserTestBase::OpenNewTab(const std::string& url, bool incognito) {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   if (incognito) {
     OpenURLOffTheRecord(browser()->profile(), GURL(url));

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
 
 namespace extensions {
@@ -53,7 +54,9 @@ void PreloadCheckGroup::MaybeInvokeCallback() {
   running_checks_ = 0;
 
   DCHECK(callback_);
-  std::move(callback_).Run(errors_);
+  // Ensure callback is called asynchronously
+  content::GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), errors_));
 }
 
 }  // namespace extensions

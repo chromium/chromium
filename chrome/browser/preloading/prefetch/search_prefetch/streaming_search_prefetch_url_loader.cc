@@ -45,20 +45,15 @@
 
 namespace {
 
-bool CanServePrefetchRequest(
-    const scoped_refptr<net::HttpResponseHeaders> headers,
-    const mojo::ScopedDataPipeConsumerHandle& body) {
+bool CanServePrefetchRequest(const net::HttpResponseHeaders* const headers,
+                             const mojo::ScopedDataPipeConsumerHandle& body) {
   if (!headers || !body) {
     return false;
   }
 
   // Any 200 response can be served.
-  if (headers->response_code() >= net::HTTP_OK &&
-      headers->response_code() < net::HTTP_MULTIPLE_CHOICES) {
-    return true;
-  }
-
-  return false;
+  return headers->response_code() >= net::HTTP_OK &&
+         headers->response_code() < net::HTTP_MULTIPLE_CHOICES;
 }
 
 MojoResult CreateDataPipeForServingData(
@@ -501,7 +496,7 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  bool can_be_served = CanServePrefetchRequest(head->headers, body);
+  bool can_be_served = CanServePrefetchRequest(head->headers.get(), body);
 
   if (is_activated_) {
     std::string histogram_name =

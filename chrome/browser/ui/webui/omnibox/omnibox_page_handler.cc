@@ -39,12 +39,14 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search_engines/template_url.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/answer_data.pb.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
@@ -57,7 +59,7 @@ using bookmarks::BookmarkModel;
 
 namespace {
 
-std::string SuggestionAnswerTypeToString(int answer_type) {
+std::string AnswerTypeToString(int answer_type) {
   switch (answer_type) {
     case omnibox::ANSWER_TYPE_UNSPECIFIED:
       return "invalid";
@@ -291,12 +293,18 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
         mojo::ConvertTo<std::vector<mojom::ACMatchClassificationPtr>>(
             input.description_class);
     result->swap_contents_and_description = input.swap_contents_and_description;
-    if (input.answer) {
+    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
+        input.answer_template) {
+      omnibox::AnswerData answer_data = input.answer_template->answers(0);
+      result->answer = answer_data.headline().text() + " / " +
+                       answer_data.subhead().text() + " / " +
+                       AnswerTypeToString(input.answer_type);
+    } else if (input.answer) {
       result->answer =
           SuggestionAnswerImageLineToString(input.answer->first_line()) +
           " / " +
           SuggestionAnswerImageLineToString(input.answer->second_line()) +
-          " / " + SuggestionAnswerTypeToString(input.answer->type());
+          " / " + AnswerTypeToString(input.answer_type);
     }
     result->transition =
         ui::PageTransitionGetCoreTransitionString(input.transition);

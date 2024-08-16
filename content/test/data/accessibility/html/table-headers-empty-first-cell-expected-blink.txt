@@ -1,7 +1,7 @@
 rootWebArea name='Table example - headers with empty first cell'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++table name='Delivery slots:'
+++++++table name='Delivery slots:' nameFrom=caption
 ++++++++caption
 ++++++++++staticText name='Delivery slots:'
 ++++++++++++inlineTextBox name='Delivery slots:'

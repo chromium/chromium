@@ -18,35 +18,35 @@ class DataTypeManagerMock : public DataTypeManager {
 
   MOCK_METHOD(void,
               ClearMetadataWhileStoppedExceptFor,
-              (ModelTypeSet),
+              (DataTypeSet),
               (override));
-  MOCK_METHOD(void, SetConfigurer, (ModelTypeConfigurer*), (override));
+  MOCK_METHOD(void, SetConfigurer, (DataTypeConfigurer*), (override));
   MOCK_METHOD(void,
               Configure,
-              (ModelTypeSet, const ConfigureContext&),
+              (DataTypeSet, const ConfigureContext&),
               (override));
-  MOCK_METHOD(void, DataTypePreconditionChanged, (ModelType), (override));
+  MOCK_METHOD(void, DataTypePreconditionChanged, (DataType), (override));
   MOCK_METHOD(void, ResetDataTypeErrors, (), (override));
-  MOCK_METHOD(void, PurgeForMigration, (ModelTypeSet), (override));
+  MOCK_METHOD(void, PurgeForMigration, (DataTypeSet), (override));
   MOCK_METHOD(void, Stop, (SyncStopMetadataFate), (override));
-  MOCK_METHOD(ModelTypeSet, GetRegisteredDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet,
+  MOCK_METHOD(DataTypeSet, GetRegisteredDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet,
               GetDataTypesForTransportOnlyMode,
               (),
               (const override));
-  MOCK_METHOD(ModelTypeSet, GetActiveDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetPurgedDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet, GetActiveProxyDataTypes, (), (const override));
-  MOCK_METHOD(ModelTypeSet,
+  MOCK_METHOD(DataTypeSet, GetActiveDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet, GetPurgedDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet, GetActiveProxyDataTypes, (), (const override));
+  MOCK_METHOD(DataTypeSet,
               GetTypesWithPendingDownloadForInitialSync,
               (),
               (const override));
-  MOCK_METHOD(ModelTypeSet,
+  MOCK_METHOD(DataTypeSet,
               GetDataTypesWithPermanentErrors,
               (),
               (const override));
   MOCK_METHOD(State, state, (), (const override));
-  MOCK_METHOD(const ModelTypeController::TypeMap&,
+  MOCK_METHOD(const DataTypeController::TypeMap&,
               GetControllerMap,
               (),
               (const override));

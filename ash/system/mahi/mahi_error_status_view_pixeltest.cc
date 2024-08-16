@@ -54,7 +54,7 @@ std::string GetScreenShotNameForErrorStatus(MahiResponseStatus status) {
       return "UnsupportedLanguage";
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -236,7 +237,7 @@ void SupervisedUserExtensionsManager::OnExtensionInstalled(
     // client and for extensions received through sync).
     const Profile* profile = Profile::FromBrowserContext(browser_context);
     if (!supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-            *profile->GetPrefs())) {
+            profile)) {
       return;
     }
     CHECK(extension);
@@ -351,8 +352,7 @@ void SupervisedUserExtensionsManager::RefreshApprovedExtensionsFromPrefs() {
 void SupervisedUserExtensionsManager::SetActiveForSupervisedUsers() {
   auto* profile = Profile::FromBrowserContext(context_);
   is_active_policy_for_supervised_users_ =
-      profile &&
-      supervised_user::AreExtensionsPermissionsEnabled(*profile->GetPrefs());
+      profile && supervised_user::AreExtensionsPermissionsEnabled(profile);
 }
 
 void SupervisedUserExtensionsManager::
@@ -376,6 +376,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
                               prefs::kSupervisedUserApprovedExtensions);
   base::Value::Dict& approved_extensions = update.Get();
   bool success = false;
+  const Profile* profile = Profile::FromBrowserContext(context_);
   switch (type) {
     case ApprovedExtensionChange::kAdd:
       CHECK(!approved_extensions.FindString(extension_id));
@@ -383,7 +384,7 @@ void SupervisedUserExtensionsManager::UpdateApprovedExtension(
 
       SupervisedUserExtensionsMetricsRecorder::RecordExtensionsUmaMetrics(
           supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-              *user_prefs_.get())
+              profile)
               ? SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
                     kApprovalGrantedByDefault
               : SupervisedUserExtensionsMetricsRecorder::UmaExtensionState::
@@ -563,9 +564,10 @@ void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
 
 void SupervisedUserExtensionsManager::
     OnSkipParentApprovalToInstallExtensionsChanged() {
+  const Profile* profile = Profile::FromBrowserContext(context_);
   if (!is_active_policy_for_supervised_users_ ||
       !supervised_user::SupervisedUserCanSkipExtensionParentApprovals(
-          *user_prefs_.get())) {
+          profile)) {
     return;
   }
 

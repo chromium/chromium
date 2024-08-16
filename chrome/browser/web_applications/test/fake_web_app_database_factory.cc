@@ -10,9 +10,9 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "components/sync/model/data_type_store.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
 
 namespace web_app {
 
@@ -20,17 +20,17 @@ FakeWebAppDatabaseFactory::FakeWebAppDatabaseFactory() = default;
 
 FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() = default;
 
-syncer::ModelTypeStore* FakeWebAppDatabaseFactory::GetStore() {
+syncer::DataTypeStore* FakeWebAppDatabaseFactory::GetStore() {
   // Lazily instantiate to avoid performing blocking operations in tests that
   // never use web apps at all.
   // Note InMemoryStore must be created after message_loop_. See class comment.
   if (!store_)
-    store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
+    store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
   return store_.get();
 }
 
-syncer::OnceModelTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
-  return syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
+syncer::OnceDataTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
+  return syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
 }
 
 Registry FakeWebAppDatabaseFactory::ReadRegistry() {
@@ -39,10 +39,10 @@ Registry FakeWebAppDatabaseFactory::ReadRegistry() {
 
   GetStore()->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data_records) {
         DCHECK(!error);
 
-        for (const syncer::ModelTypeStore::Record& record : *data_records) {
+        for (const syncer::DataTypeStore::Record& record : *data_records) {
           auto app = WebAppDatabase::ParseWebApp(record.id, record.value);
           DCHECK(app);
 
@@ -70,7 +70,7 @@ void FakeWebAppDatabaseFactory::WriteProtos(
     const std::vector<std::unique_ptr<WebAppProto>>& protos) {
   base::RunLoop run_loop;
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
       GetStore()->CreateWriteBatch();
 
   for (const std::unique_ptr<WebAppProto>& proto : protos) {

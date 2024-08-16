@@ -43,6 +43,7 @@ struct SinglePerkDiscoveryPayload {
   std::string id;
   std::string title;
   std::string subtitle;
+  std::optional<std::string> additional_text;
   std::string icon_url;
   Content content;
 
@@ -57,6 +58,21 @@ class PerksDiscoveryScreen : public BaseScreen {
 
   enum class Result { kNext, kError, kTimeout, kNotApplicable };
 
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other).  Entries should be never modified
+  // or deleted. Only additions are possible.
+  enum class PerksDiscoveryErrorReason {
+    kNoCampaignManager = 0,
+    kNoCampaign = 1,
+    kNoCampaignID = 2,
+    kNoPayload = 3,
+    kMalformedPayload = 4,
+    kNoUserProfile = 5,
+    kNoActionFound = 6,
+    kMaxValue = kNoActionFound
+  };
+
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   PerksDiscoveryScreen(base::WeakPtr<PerksDiscoveryScreenView> view,
@@ -66,6 +82,18 @@ class PerksDiscoveryScreen : public BaseScreen {
   PerksDiscoveryScreen& operator=(const PerksDiscoveryScreen&) = delete;
 
   ~PerksDiscoveryScreen() override;
+
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
+  void set_delay_for_overview_step_for_testing(base::TimeDelta delay) {
+    delay_overview_step_ = delay;
+  }
 
   static std::string GetResultString(Result result);
 

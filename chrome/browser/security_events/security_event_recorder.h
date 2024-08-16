@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace sync_pb {
 class GaiaPasswordReuse;
@@ -30,7 +30,7 @@ class SecurityEventRecorder : public KeyedService {
       const sync_pb::GaiaPasswordReuse& event) = 0;
 
   // Returns the underlying Sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

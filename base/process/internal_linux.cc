@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/process/internal_linux.h"
 
 #include <limits.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <string_view>
@@ -33,8 +29,7 @@
 #define NAME_MAX 255
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
 
@@ -55,22 +50,17 @@ FilePath GetProcPidDir(pid_t pid) {
   return FilePath(kProcDir).Append(NumberToString(pid));
 }
 
-pid_t ProcDirSlotToPid(const char* d_name) {
-  int i;
-  for (i = 0; i < NAME_MAX && d_name[i]; ++i) {
-    if (!IsAsciiDigit(d_name[i])) {
-      return 0;
-    }
-  }
-  if (i == NAME_MAX)
+pid_t ProcDirSlotToPid(std::string_view d_name) {
+  if (d_name.size() >= NAME_MAX ||
+      !std::ranges::all_of(d_name, &IsAsciiDigit<char>)) {
     return 0;
+  }
 
   // Read the process's command line.
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   return pid;
 }
@@ -116,13 +106,11 @@ size_t ReadProcStatusAndGetKbFieldAsSizeT(pid_t pid, std::string_view field) {
     std::vector<std::string_view> split_value_str =
         SplitStringPiece(value_str, " ", TRIM_WHITESPACE, SPLIT_WANT_ALL);
     if (split_value_str.size() != 2 || split_value_str[1] != "kB") {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     size_t value;
     if (!StringToSizeT(split_value_str[0], &value)) {
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     }
     return value;
   }
@@ -178,8 +166,7 @@ bool ParseProcStats(const std::string& stats_data,
       close_parens_idx == std::string::npos ||
       open_parens_idx > close_parens_idx) {
     DLOG(WARNING) << "Failed to find matched parens in '" << stats_data << "'";
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   open_parens_idx++;
 
@@ -321,5 +308,4 @@ TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

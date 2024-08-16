@@ -211,6 +211,7 @@ void CheckerImageTracker::ClearTracker(bool can_clear_decode_policy_tracking) {
   if (can_clear_decode_policy_tracking) {
     decoding_mode_map_.clear();
     image_async_decode_state_.clear();
+    image_decode_queue_.clear();
   } else {
     // If we can't clear the decode policy, we need to make sure we still
     // re-decode and checker images that were pending invalidation.

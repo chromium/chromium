@@ -26,9 +26,6 @@ class ChromiumDepGraph {
     static final Map<String, PropertyOverride> PROPERTY_OVERRIDES = [
         androidx_multidex_multidex: new PropertyOverride(
             url: 'https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar'),
-        com_github_kevinstern_software_and_algorithms: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE',
-            licenseName: 'MIT License'),
         com_google_android_datatransport_transport_api: new PropertyOverride(
             description: 'Interfaces for data logging in GmsCore SDKs.'),
         // Chrome uses the window APIs directly instead of going through the androidx middleware.
@@ -62,22 +59,16 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
             licenseName: 'Apache 2.0'),
         com_google_errorprone_error_prone_annotation: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/annotation',
-            licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            description: 'ErrorProne Annotations.',),
+            // Robolectric has a (seemingly unnecessary) dep on this. It's meant to be needed
+            // only for writing custom Error Prone checks. Chrome's copy is within the
+            // Error Prone fat jar: //third_party/android_build_tools/error_prone
+            // Depending on this fat jar pulls in a conflicting copy of protobuf library.
+            exclude: true),
         com_google_errorprone_error_prone_annotations: new PropertyOverride(
             url: 'https://github.com/google/error-prone/tree/master/annotations',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0',
             description: 'ErrorProne Annotations.',),
-        com_google_errorprone_error_prone_type_annotations: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/type_annotations',
-            description: 'ErrorProne Annotations.',),
-        com_google_errorprone_error_prone_check_api: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/check_api'),
-        com_google_errorprone_error_prone_core: new PropertyOverride(
-            url: 'https://github.com/google/error-prone/tree/master/core'),
         com_google_firebase_firebase_annotations: new PropertyOverride(
             description: 'Common annotations for Firebase SKDs.'),
         com_google_firebase_firebase_common: new PropertyOverride(
@@ -138,15 +129,6 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/mojohaus/animal-sniffer/master/animal-sniffer-annotations/pom.xml',
             licensePath: 'licenses/Codehaus_License-2009.txt',
             licenseName: 'MIT'),
-        org_eclipse_jgit_org_eclipse_jgit: new PropertyOverride(
-            url: 'https://www.eclipse.org/jgit/',
-            licenseUrl: 'https://www.eclipse.org/org/documents/edl-v10.html',
-            licensePath: 'licenses/Eclipse_EDL.txt',
-            licenseName: 'BSD 3-Clause'),
-        com_google_protobuf_protobuf_java: new PropertyOverride(
-            url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
-            licenseUrl: 'https://raw.githubusercontent.com/protocolbuffers/protobuf/master/LICENSE',
-            licenseName: 'BSD'),
         com_google_protobuf_protobuf_lite: new PropertyOverride(
             exclude: true, // There is a phantom dep on this target, but this is deprecated and not used in chrome.
             url: 'https://github.com/protocolbuffers/protobuf/blob/master/java/README.md',
@@ -185,9 +167,6 @@ class ChromiumDepGraph {
         org_checkerframework_checker_util: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/checker-util/LICENSE.txt',
             licenseName: 'MIT'),
-        org_checkerframework_dataflow_errorprone: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/typetools/checker-framework/master/LICENSE.txt',
-            licenseName: 'GPL v2 with the classpath exception'),
         org_conscrypt_conscrypt_openjdk_uber: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/google/conscrypt/master/LICENSE',
             licenseName: 'Apache 2.0'),
@@ -226,9 +205,6 @@ class ChromiumDepGraph {
         org_ow2_asm_asm_util: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
             licenseName: 'BSD'),
-        org_pcollections_pcollections: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/hrldcpr/pcollections/master/LICENSE',
-            licenseName: 'The MIT License'),
         org_robolectric_annotations: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE',
             licenseName: 'MIT'),
@@ -278,14 +254,6 @@ class ChromiumDepGraph {
             resolveVersion: '1.6.4'),
         org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
             resolveVersion: '1.6.4'),
-        org_jetbrains_kotlin_kotlin_stdlib_jdk8: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib_jdk7: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib: new PropertyOverride(
-            resolveVersion: '1.8.20'),
-        org_jetbrains_kotlin_kotlin_stdlib_common: new PropertyOverride(
-            resolveVersion: '1.8.20'),
         io_grpc_grpc_binder: new PropertyOverride(
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
             licenseName: 'Apache 2.0'),
@@ -674,7 +642,7 @@ class ChromiumDepGraph {
         }
 
         if (skipLicenses) {
-            dep.licenses.clear()
+            dep.licenses = []
             if (dep.id?.endsWith('license')) {
                 dep.exclude = true
             }

@@ -1027,22 +1027,37 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
 
   // Filter and collect stale storage areas for deletion.
   std::vector<blink::StorageKey> stale_storage_keys;
+  uint64_t orphans_found = 0;
   for (const auto& [storage_key, accessed_or_modified_time] :
        storage_key_to_latest_use_time) {
     if (accessed_or_modified_time.is_null()) {
       // If the time is invalid we have nothing to do.
       continue;
     }
-    if ((base::Time::Now() - accessed_or_modified_time) < base::Days(400)) {
-      // If the storage area has been accessed or modified within 400 days it
-      // must not be cleared.
-      continue;
-    }
     if (areas_.find(storage_key) != areas_.end()) {
       // If the storage area is currently loaded it must not be cleared.
       continue;
     }
-    stale_storage_keys.push_back(storage_key);
+    if ((base::Time::Now() - accessed_or_modified_time) >= base::Days(400)) {
+      // If the storage area has not been accessed or modified within 400 days
+      // it can be cleared.
+      stale_storage_keys.push_back(storage_key);
+    } else if (base::FeatureList::IsEnabled(
+                   kDeleteOrphanLocalStorageOnStartup) &&
+               (storage_key.nonce().has_value() ||
+                storage_key.top_level_site().opaque()) &&
+               (base::Time::Now() - accessed_or_modified_time) >=
+                   base::Days(1)) {
+      // If the storage area has not been accessed or modified in this browsing
+      // session and is transient (has a nonce) then it can be cleared.
+      stale_storage_keys.push_back(storage_key);
+      orphans_found++;
+    }
+  }
+  if (base::FeatureList::IsEnabled(kDeleteOrphanLocalStorageOnStartup)) {
+    // These are counted independently to better track errors in rollout.
+    base::UmaHistogramCounts100000(
+        "LocalStorage.OrphanStorageAreasOnStartupCount", orphans_found);
   }
 
   // Delete stale storage areas and count results.
@@ -1060,35 +1075,6 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
             }
           },
           stale_storage_keys.size()));
-
-  // TODO(crbug.com/353555346): Merge this with the query above and start
-  // clearing storage. For now, we are just gathering metrics on orphaned
-  // storage (inactive areas with a nonce which cannot be reused).
-  uint64_t orphans_found = 0;
-  for (const auto& [storage_key, accessed_or_modified_time] :
-       storage_key_to_latest_use_time) {
-    if (accessed_or_modified_time.is_null()) {
-      // If the time is invalid we have nothing to do.
-      continue;
-    }
-    if ((base::Time::Now() - accessed_or_modified_time) < base::Days(1)) {
-      // If the storage area has been accessed or modified within 1 day it
-      // must not be cleared.
-      continue;
-    }
-    if (!storage_key.nonce().has_value() &&
-        !storage_key.top_level_site().opaque()) {
-      // If the storage key not opaque it cannot be orphaned.
-      continue;
-    }
-    if (areas_.find(storage_key) != areas_.end()) {
-      // If the storage area is currently loaded it must not be cleared.
-      continue;
-    }
-    orphans_found++;
-  }
-  base::UmaHistogramCounts100000(
-      "LocalStorage.OrphanStorageAreasOnStartupCount", orphans_found);
 }
 
 }  // namespace storage

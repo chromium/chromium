@@ -44,8 +44,10 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -93,7 +96,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @DoNotBatch(
         reason =
                 "https://crbug.com/1347598: Side effects are causing flakes in CI and failures"
-                    + " locally. Unbatched to isolate flakes before batching again.")
+                        + " locally. Unbatched to isolate flakes before batching again.")
 public class TabsTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -571,7 +574,8 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -656,7 +660,7 @@ public class TabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.closeTab(newTab, false, true);
+                    model.closeTabs(TabClosureParams.closeTab(newTab).build());
                 });
 
         Assert.assertEquals("oldTab should have been focused.", 1, focusListener.getTimesFocused());
@@ -807,7 +811,8 @@ public class TabsTest {
 
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> model.closeTab(tab, false, true));
+        ThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
 
         Assert.assertTrue("notifyChanged() was not called", mNotifyChangedCalled);
     }
@@ -853,6 +858,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         sActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 

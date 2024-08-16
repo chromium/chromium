@@ -33,3 +33,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "cloud_external_data_policy_observer_unittest.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
+  ],
+}

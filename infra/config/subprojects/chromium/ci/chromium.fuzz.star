@@ -634,9 +634,9 @@ ci.builder(
         additional_compile_targets = ["chromium_builder_asan"],
         mixins = ["chromium-tester-service-account"],
     ),
-    builderless = False,
-    cores = 12,
+    builderless = True,
     os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac asan",
         short_name = "rel",
@@ -1056,7 +1056,6 @@ ci.builder(
             "libfuzzer",
             "no_dsyms",
             "no_remoting",
-            "lld",
         ],
     ),
     builderless = True,
@@ -1623,6 +1622,9 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
+    experiments = {
+        "chromium.use_per_builder_build_dir_name": 100,
+    },
     properties = {
         "upload_bucket": "chromium-browser-libfuzzer",
         "upload_directory": "asan",

@@ -2,6 +2,7 @@ include_rules = [
   "+content/public/common",
   "+content/public/browser",
   "+content/public/test",
+  "+content/test",
   "+components/blocklist",
   "+components/heavy_ad_intervention",
   "+components/keyed_service/content",

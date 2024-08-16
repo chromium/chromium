@@ -27,7 +27,7 @@ class CSSNumericLiteralValue;
 class CSSStyleValue;
 class CSSValue;
 class FontFamily;
-class InsetArea;
+class PositionArea;
 class StyleColor;
 class StyleIntrinsicLength;
 class StylePropertyShorthand;
@@ -159,6 +159,8 @@ class CORE_EXPORT ComputedStyleUtils {
                                          const ComputedStyle&,
                                          bool force_computed_value = false);
   static CSSValue* ValueForGridPosition(const GridPosition&);
+  static CSSValue* ValueForMasonryTrackList(const LayoutObject*,
+                                            const ComputedStyle&);
   static gfx::SizeF UsedBoxSize(const LayoutObject&);
   static CSSValue* RenderTextDecorationFlagsToCSSValue(TextDecorationLine);
   static CSSValue* ValueForTextDecorationStyle(ETextDecorationStyle);
@@ -352,7 +354,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                            const StyleIntrinsicLength&);
   static CSSValue* ValueForScrollStart(const ComputedStyle&,
                                        const ScrollStartData&);
-  static CSSValue* ValueForInsetArea(const blink::InsetArea&);
+  static CSSValue* ValueForPositionArea(const blink::PositionArea&);
   static CSSValue* ValueForPositionTryFallbacks(const PositionTryFallbacks&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);

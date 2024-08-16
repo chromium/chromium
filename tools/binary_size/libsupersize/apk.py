@@ -85,6 +85,7 @@ class _ResourceSourceMapper:
   def FindSourceForPath(self, path):
     # Sometimes android adds $ in front and __# before extension.
     path = self._pattern_dollar_underscore.sub(r'\1', path)
+    path = archive_util.RemoveAssetSuffix(path)
     ret = self._res_info.get(path)
     if ret:
       return ret

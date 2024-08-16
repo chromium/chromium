@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -110,9 +111,9 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
   add_if_flipped(CSSPropertyID::kMarginInlineStart, margin.inline_start);
   add_if_flipped(CSSPropertyID::kMarginInlineEnd, margin.inline_end);
 
-  // Unlike the other properties, align-self, justify-self, and inset-area
-  // are always added, because we might need to transform the value without
-  // changing the property.
+  // Unlike the other properties, align-self, justify-self, position-area,
+  // and inset-area are always added, because we might need to transform the
+  // value without changing the property.
   // (E.g. justify-self:start + flip-inline => justify-self:end).
   add(CSSPropertyID::kAlignSelf, transform.FlippedStart()
                                      ? CSSPropertyID::kJustifySelf
@@ -120,7 +121,12 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
   add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
-  add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
+  if (RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled()) {
+    add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
+  }
+  if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
+    add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
+  }
 
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
@@ -362,7 +368,7 @@ TryTacticTransform::LogicalSides<CSSValueID> TransformLogical(
 
 // Transforms a CSSValueID, specified for the indicated logical axis,
 // according to the transform.
-CSSValueID TransformInsetAreaKeyword(
+CSSValueID TransformPositionAreaKeyword(
     CSSValueID from,
     LogicalAxis logical_axis,
     const TryTacticTransform& transform,
@@ -558,7 +564,7 @@ CSSValueID TransformInsetAreaKeyword(
   }
 }
 
-const CSSValue* TransformInsetArea(
+const CSSValue* TransformPositionArea(
     const CSSValue* value,
     const TryTacticTransform& transform,
     const WritingDirectionMode& writing_direction) {
@@ -573,7 +579,7 @@ const CSSValue* TransformInsetArea(
 
   if (ident) {
     first_value = ident->GetValueID();
-    second_value = css_parsing_utils::IsRepeatedInsetAreaValue(first_value)
+    second_value = css_parsing_utils::IsRepeatedPositionAreaValue(first_value)
                        ? first_value
                        : CSSValueID::kSpanAll;
   } else {
@@ -604,9 +610,9 @@ const CSSValue* TransformInsetArea(
     second_axis = LogicalAxis::kInline;
   }
 
-  CSSValueID first_value_transformed = TransformInsetAreaKeyword(
+  CSSValueID first_value_transformed = TransformPositionAreaKeyword(
       first_value, first_axis.value(), transform, writing_direction);
-  CSSValueID second_value_transformed = TransformInsetAreaKeyword(
+  CSSValueID second_value_transformed = TransformPositionAreaKeyword(
       second_value, second_axis.value(), transform, writing_direction);
 
   // Maintain grammar order after flip-start.
@@ -630,11 +636,13 @@ const CSSValue* TransformInsetArea(
   // [1] https://drafts.csswg.org/css-anchor-position-1/#resolving-spans
 
   if (first_value_transformed == CSSValueID::kSpanAll &&
-      !css_parsing_utils::IsRepeatedInsetAreaValue(second_value_transformed)) {
+      !css_parsing_utils::IsRepeatedPositionAreaValue(
+          second_value_transformed)) {
     return CSSIdentifierValue::Create(second_value_transformed);
   }
   if (second_value_transformed == CSSValueID::kSpanAll &&
-      !css_parsing_utils::IsRepeatedInsetAreaValue(first_value_transformed)) {
+      !css_parsing_utils::IsRepeatedPositionAreaValue(
+          first_value_transformed)) {
     return CSSIdentifierValue::Create(first_value_transformed);
   }
 
@@ -665,8 +673,9 @@ const CSSValue* TryValueFlips::FlipValue(
     return TransformSelfAlignment(value, logical_axis, transform,
                                   writing_direction);
   }
-  if (from_property == CSSPropertyID::kInsetArea) {
-    return TransformInsetArea(value, transform, writing_direction);
+  if (from_property == CSSPropertyID::kPositionArea ||
+      from_property == CSSPropertyID::kInsetArea) {
+    return TransformPositionArea(value, transform, writing_direction);
   }
   return value;
 }

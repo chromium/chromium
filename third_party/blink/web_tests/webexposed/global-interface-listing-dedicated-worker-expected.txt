@@ -4,6 +4,61 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 Starting worker: resources/global-interface-listing-worker.js
 [Worker] [INTERFACES]
+[Worker] interface AI
+[Worker]     attribute @@toStringTag
+[Worker]     getter rewriter
+[Worker]     getter summarizer
+[Worker]     getter writer
+[Worker]     method canCreateTextSession
+[Worker]     method constructor
+[Worker]     method createTextSession
+[Worker]     method textModelInfo
+[Worker] interface AIRewriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     getter sharedContext
+[Worker]     getter tone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method rewrite
+[Worker]     method rewriteStreaming
+[Worker] interface AIRewriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
+[Worker] interface AISummarizer
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method summarize
+[Worker]     method summarizeStreaming
+[Worker] interface AISummarizerCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     getter available
+[Worker]     method constructor
+[Worker] interface AISummarizerFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method capabilities
+[Worker]     method constructor
+[Worker]     method create
+[Worker] interface AITextSession
+[Worker]     attribute @@toStringTag
+[Worker]     method clone
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method prompt
+[Worker]     method promptStreaming
+[Worker] interface AIWriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter sharedContext
+[Worker]     method constructor
+[Worker]     method destroy
+[Worker]     method write
+[Worker]     method writeStreaming
+[Worker] interface AIWriterFactory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method create
 [Worker] interface AbortController
 [Worker]     attribute @@toStringTag
 [Worker]     getter signal
@@ -472,8 +527,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method addEventListener
 [Worker]     method constructor
 [Worker]     method dispatchEvent
-[Worker]     method on
 [Worker]     method removeEventListener
+[Worker]     method when
 [Worker] interface FaceDetector
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1154,6 +1209,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
+[Worker] interface LanguageDetector
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method detect
 [Worker] interface LanguageTranslator
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
@@ -1648,6 +1707,38 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter applicationServerKey
 [Worker]     getter userVisibleOnly
 [Worker]     method constructor
+[Worker] interface RTCDataChannel : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter binaryType
+[Worker]     getter bufferedAmount
+[Worker]     getter bufferedAmountLowThreshold
+[Worker]     getter id
+[Worker]     getter label
+[Worker]     getter maxPacketLifeTime
+[Worker]     getter maxRetransmits
+[Worker]     getter negotiated
+[Worker]     getter onbufferedamountlow
+[Worker]     getter onclose
+[Worker]     getter onclosing
+[Worker]     getter onerror
+[Worker]     getter onmessage
+[Worker]     getter onopen
+[Worker]     getter ordered
+[Worker]     getter priority
+[Worker]     getter protocol
+[Worker]     getter readyState
+[Worker]     getter reliable
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method send
+[Worker]     setter binaryType
+[Worker]     setter bufferedAmountLowThreshold
+[Worker]     setter onbufferedamountlow
+[Worker]     setter onclose
+[Worker]     setter onclosing
+[Worker]     setter onerror
+[Worker]     setter onmessage
+[Worker]     setter onopen
 [Worker] interface RTCEncodedAudioFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
@@ -1674,6 +1765,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter remoteSendTimestamp
 [Worker]     method acks
 [Worker]     method constructor
+[Worker] interface RTCRtpScriptTransformer : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter options
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
 [Worker] interface RTCRtpSendResult
 [Worker]     attribute @@toStringTag
 [Worker]     getter sent
@@ -1688,6 +1785,19 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ackId
 [Worker]     getter size
 [Worker]     getter time
+[Worker]     method constructor
+[Worker] interface RTCRtpTransportProcessor
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method readReceivedAcks
+[Worker]     method readSentRtp
+[Worker] interface RTCRtpTransportProcessorEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter processor
+[Worker]     method constructor
+[Worker] interface RTCTransformEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter transformer
 [Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
@@ -2033,8 +2143,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method terminate
 [Worker] interface Translation
 [Worker]     attribute @@toStringTag
+[Worker]     method canDetect
 [Worker]     method canTranslate
 [Worker]     method constructor
+[Worker]     method createDetector
 [Worker]     method createTranslator
 [Worker] interface TrustedHTML
 [Worker]     static method fromLiteral
@@ -3827,7 +3939,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter responseText
 [Worker]     getter responseType
 [Worker]     getter responseURL
-[Worker]     getter responseXML
 [Worker]     getter status
 [Worker]     getter statusText
 [Worker]     getter timeout
@@ -3935,6 +4046,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
+[Worker]     getter onrtcrtptransportprocessor
+[Worker]     getter onrtctransform
 [Worker]     method cancelAnimationFrame
 [Worker]     method close
 [Worker]     method gc
@@ -3947,6 +4060,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
+[Worker]     setter onrtcrtptransportprocessor
+[Worker]     setter onrtctransform
 PASS successfullyParsed is true
 
 TEST COMPLETE

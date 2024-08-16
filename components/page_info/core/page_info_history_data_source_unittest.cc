@@ -173,8 +173,8 @@ TEST_F(PageInfoHistoryDataSourceTest, NoHistory) {
   // GetLastVisitToHost is called only once.
   EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _))
       .WillOnce(Invoke(&ReturnVisitedNever));
-  data_source()->GetLastVisitedTimestamp(
-      base::BindOnce([](base::Time time) { EXPECT_TRUE(time.is_null()); }));
+  data_source()->GetLastVisitedTimestamp(base::BindOnce(
+      [](std::optional<base::Time> time) { EXPECT_FALSE(time.has_value()); }));
 }
 
 TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
@@ -184,7 +184,10 @@ TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
       .WillOnce(Invoke(&ReturnVisitedBase))
       .WillOnce(Invoke(&ReturnLastVisited));
   data_source()->GetLastVisitedTimestamp(
-      base::BindOnce([](base::Time time) { EXPECT_EQ(time, kLastVisit); }));
+      base::BindOnce([](std::optional<base::Time> time) {
+        EXPECT_TRUE(time.has_value());
+        EXPECT_EQ(time.value(), kLastVisit);
+      }));
 }
 
 TEST_F(PageInfoHistoryDataSourceTest, FormatTimestampString) {

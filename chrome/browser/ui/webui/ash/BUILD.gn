@@ -141,6 +141,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/cellular_setup",
+    "//chrome/browser/ui/webui/ash/set_time_dialog",
     "//chrome/browser/ui/webui/ash/sys_internals",
     "//chrome/common:constants",
     "//chrome/services/file_util/public/cpp",
@@ -201,6 +202,7 @@ static_library("ash") {
     "//chrome/browser/ui/webui/ash/account_manager",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/ash/set_time_dialog",
   ]
 }
 
@@ -242,13 +244,36 @@ source_set("unit_tests") {
     "//chrome/browser/ui/webui/ash/cloud_upload:unit_tests",
     "//chrome/browser/ui/webui/ash/emoji:unit_tests",
     "//chrome/browser/ui/webui/ash/enterprise_reporting:unit_tests",
+    "//chrome/browser/ui/webui/ash/lobster:unit_tests",
     "//chrome/browser/ui/webui/ash/login:unit_tests",
     "//chrome/browser/ui/webui/ash/mako:unit_tests",
     "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
     "//chrome/browser/ui/webui/ash/print_preview_cros:unit_tests",
     "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
     "//chrome/browser/ui/webui/ash/settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/about:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/bluetooth:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/internet:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/main:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/multidevice:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/personalization:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/printing:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/search:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/storage:unit_tests",
     "//chrome/browser/ui/webui/ash/settings/search:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/services/metrics:unit_tests",
+    "//chrome/browser/ui/webui/ash/settings/services/settings_manager:unit_tests",
+    "//chrome/browser/ui/webui/ash/smb_shares:unit_tests",
   ]
 }
 
@@ -270,6 +295,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/zoom",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
@@ -284,13 +310,41 @@ source_set("browser_tests") {
     # Gather browser tests from subdirectories:
     "//chrome/browser/ui/webui/ash/app_install:browser_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
+    "//chrome/browser/ui/webui/ash/crostini_upgrader:browser_tests",
+    "//chrome/browser/ui/webui/ash/edu_coexistence:browser_tests",
     "//chrome/browser/ui/webui/ash/kerberos:browser_tests",
     "//chrome/browser/ui/webui/ash/login:browser_tests",
     "//chrome/browser/ui/webui/ash/login/testapi:browser_tests",
     "//chrome/browser/ui/webui/ash/manage_mirrorsync:browser_tests",
     "//chrome/browser/ui/webui/ash/office_fallback:browser_tests",
     "//chrome/browser/ui/webui/ash/parent_access:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/integration_tests:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/a11y:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/apps:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/files:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/people:browser_tests",
+    "//chrome/browser/ui/webui/ash/settings/pages/power:browser_tests",
     "//chrome/browser/ui/webui/ash/skyvault:browser_tests",
     "//chrome/browser/ui/webui/ash/smb_shares:browser_tests",
   ]
+}
+
+if (is_chromeos_device) {
+  group("integration_tests") {
+    testonly = true
+    deps = [
+      "//chrome/browser/ui/webui/ash/settings/pages/printing/integration_tests",
+    ]
+  }
+} else {
+  group("interactive_ui_tests") {
+    testonly = true
+    deps = [
+      "//chrome/browser/ui/webui/ash/firmware_update_ui/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/integration_tests/device_page:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/settings/pages/device/integration_tests:interactive_ui_tests",
+      "//chrome/browser/ui/webui/ash/shortcut_customization/integration_tests:interactive_ui_tests",
+    ]
+  }
 }

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] el-input-checkbox-switch
+  assert_equals: <input type="checkbox" switch="" data-testname="el-input-checkbox-switch" data-expectedrole="switch" class="ex"> expected "switch" but got "checkbox"
+[FAIL] el-tbody
+  assert_equals: <tbody data-testname="el-tbody" data-expectedrole="rowgroup" class="ex">\n    <tr>\n      <th>1</th>\n      <td>2</td>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>5</td>\n      <td>6</td>\n    </tr>\n  </tbody> expected "rowgroup" but got "none"
+Harness: the test ran to completion.
+

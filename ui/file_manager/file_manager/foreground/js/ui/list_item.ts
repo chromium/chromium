@@ -58,6 +58,7 @@ export class ListItem extends HTMLLIElement {
 
   set selected(value: boolean) {
     boolAttrSetter(this, 'selected', value);
+    this.setAttribute('aria-selected', String(value));
   }
 
   /** Called when an element is decorated as a list item. */

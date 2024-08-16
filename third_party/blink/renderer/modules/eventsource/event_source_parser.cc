@@ -100,7 +100,8 @@ void EventSourceParser::ParseLine() {
     return;
   }
   if (field_name == "data") {
-    data_.Append(line_.data() + field_value_start, field_value_size);
+    data_.AppendSpan(
+        base::span(line_).subspan(field_value_start, field_value_size));
     data_.push_back('\n');
     return;
   }

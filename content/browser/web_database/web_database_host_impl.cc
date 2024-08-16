@@ -229,30 +229,6 @@ void WebDatabaseHostImpl::GetFileAttributesValidated(
   std::move(callback).Run(attributes);
 }
 
-void WebDatabaseHostImpl::SetFileSize(const std::u16string& vfs_file_name,
-                                      int64_t expected_size,
-                                      SetFileSizeCallback callback) {
-  DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
-  ValidateOrigin(vfs_file_name,
-                 base::BindOnce(&WebDatabaseHostImpl::SetFileSizeValidated,
-                                weak_ptr_factory_.GetWeakPtr(), vfs_file_name,
-                                expected_size, std::move(callback)));
-}
-
-void WebDatabaseHostImpl::SetFileSizeValidated(
-    const std::u16string& vfs_file_name,
-    int64_t expected_size,
-    SetFileSizeCallback callback) {
-  DCHECK(db_tracker_->task_runner()->RunsTasksInCurrentSequence());
-  bool success = false;
-  base::FilePath db_file =
-      DatabaseUtil::GetFullFilePathForVfsFile(db_tracker_.get(), vfs_file_name);
-  if (!db_file.empty()) {
-    success = VfsBackend::SetFileSize(db_file, expected_size);
-  }
-  std::move(callback).Run(success);
-}
-
 void WebDatabaseHostImpl::GetSpaceAvailable(
     const url::Origin& origin,
     GetSpaceAvailableCallback callback) {

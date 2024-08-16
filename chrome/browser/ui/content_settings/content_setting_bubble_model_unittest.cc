@@ -40,6 +40,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -83,8 +84,7 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
@@ -343,6 +343,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -406,6 +412,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -470,6 +482,12 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
+  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
+  // setting bubble.
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndDisableFeature(
+      content_settings::features::kLeftHandSideActivityIndicators);
+
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -592,15 +610,9 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
         FakeOwner::Create(*content_setting_bubble_model, 0);
     const auto& bubble_content = content_setting_bubble_model->bubble_content();
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#elif BUILDFLAG(IS_WIN)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS));
-#elif BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
+              u"Location is turned off in system settings");
 #endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
@@ -623,16 +635,10 @@ TEST_P(ContentSettingGeolocationBubbleModelTest, Geolocation) {
                 IsAllowed(ContentSettingsType::GEOLOCATION))
         .WillRepeatedly(Return(true));
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_MACOS));
-#elif BUILDFLAG(IS_WIN)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_WINDOWS));
-#elif BUILDFLAG(IS_CHROMEOS)
-    EXPECT_EQ(bubble_content.title,
-              l10n_util::GetStringUTF16(IDS_GEOLOCATION_TURNED_OFF_IN_OS));
-#endif  // BUILDFLAG(IS_MAC)
+              u"Location is turned off in system settings");
+#endif
     EXPECT_TRUE(bubble_content.message.empty());
     EXPECT_EQ(bubble_content.radio_group.radio_items.size(), 0U);
 
@@ -922,7 +928,7 @@ TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
           "mailto", GURL("https://www.toplevel.example/")));
 
@@ -949,8 +955,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
@@ -1017,8 +1022,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);

@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -141,12 +142,13 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   params.context = context;
   params.parent = parent;
 #if !BUILDFLAG(IS_APPLE)
-  // Web-modal (ui::MODAL_TYPE_CHILD) dialogs with parents are marked as child
-  // widgets to prevent top-level window behavior (independent movement, etc).
-  // On Mac, however, the parent may be a native window (not a views::Widget),
-  // and so the dialog must be considered top-level to gain focus and input
-  // method behaviors.
-  params.child = parent && (delegate->GetModalType() == ui::MODAL_TYPE_CHILD);
+  // Web-modal (ui::mojom::ModalType::kChild) dialogs with parents are marked as
+  // child widgets to prevent top-level window behavior (independent movement,
+  // etc). On Mac, however, the parent may be a native window (not a
+  // views::Widget), and so the dialog must be considered top-level to gain
+  // focus and input method behaviors.
+  params.child =
+      parent && (delegate->GetModalType() == ui::mojom::ModalType::kChild);
 #endif
 
   if (BubbleDialogDelegate* bubble = delegate->AsBubbleDialogDelegate()) {
@@ -531,8 +533,9 @@ int DialogDelegate::GetCornerRadius() const {
   // TODO(crbug.com/40144839): On Mac MODAL_TYPE_WINDOW is implemented using
   // sheets which causes visual artifacts when corner radius is increased for
   // modal types. Remove this after this issue has been addressed.
-  if (GetModalType() == ui::MODAL_TYPE_WINDOW)
+  if (GetModalType() == ui::mojom::ModalType::kWindow) {
     return 2;
+  }
 #endif
   if (params_.corner_radius)
     return *params_.corner_radius;

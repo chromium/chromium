@@ -195,7 +195,7 @@ UIColor* DimColorIncognito() {
 
     return result;
   } else {
-    if (!_match.answer->IsExceptedFromLineReversal()) {
+    if (!_match.answer->IsExceptedFromLineReversal(_match.answer_type)) {
       NSAttributedString* detailBaseText = [self
           attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
                      classifications:&_match.contents_class
@@ -358,7 +358,7 @@ UIColor* DimColorIncognito() {
 
     return result;
   } else {
-    if (!_match.answer->IsExceptedFromLineReversal()) {
+    if (!_match.answer->IsExceptedFromLineReversal(_match.answer_type)) {
       return [self attributedStringWithAnswerLine:_match.answer->second_line()
                            useDeemphasizedStyling:NO];
     } else {
@@ -552,16 +552,6 @@ UIColor* DimColorIncognito() {
                 preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
   UIColor* defaultColor = useDeemphasizedStyling ? SuggestionDetailTextColor()
                                                  : SuggestionTextColor();
-
-  if (fragment.is_bolded()) {
-    UIFontDescriptor* boldFontDescriptor = [defaultFontDescriptor
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    return @{
-      NSFontAttributeName : [UIFont fontWithDescriptor:boldFontDescriptor
-                                                  size:0],
-      NSForegroundColorAttributeName : defaultColor,
-    };
-  }
 
   omnibox::FormattedString::ColorType color = fragment.color();
   switch (color) {

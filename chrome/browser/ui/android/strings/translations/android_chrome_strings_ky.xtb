@@ -19,7 +19,6 @@
 <translation id="1082920045291562218">Бириктирилген пикир билдирүү баракчасы аркылуу бөлүшүү жабылды</translation>
 <translation id="1089606299949659462">Карап чыгуу аяктады!</translation>
 <translation id="1094555143448724771">Башка түзмөктөрүңүздөгү өтмөктөрдү көрүү үчүн өтмөктөрүңүздү жана таржымалды шайкештириңиз</translation>
-<translation id="1095142578254888918"><ph name="SITE_NAME" /> үчүн билдирмелерге тыюу салынды</translation>
 <translation id="1095761715416917775">Шайкештирилген маалыматыңызга каалаган убакта кире аларыңызды текшериңиз</translation>
 <translation id="1100066534610197918">Топтогу жаңы өтмөктө ачуу</translation>
 <translation id="1103142993930332957">Chrome'ду жакшыртууга жардам бере аласызбы?</translation>
@@ -31,6 +30,7 @@
 <translation id="1126696498560056882">Ушул түзмөктөгү аккаунттарды тескөө</translation>
 <translation id="1129510026454351943">Кененирээк: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="1135018701024399762">Жашыруун режим ушул түзмөктү колдонгон башка кишилерге сиз баш баккан сайттарды көрсөтпөйт</translation>
+<translation id="1138458427267715730">Кандайдыр бир сайтта баасы арзандаганда, билдирүүлөрдү алыңыз</translation>
 <translation id="1142732900304639782">Төмөнкү сайттарды которуу сунушталбасын</translation>
 <translation id="1145536944570833626">Учурдагы дайындарды жок кылуу.</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
@@ -81,6 +81,7 @@
 <translation id="1347468774581902829">Аракеттерди тескөө</translation>
 <translation id="1355088659320425659">Таржымал жана өтмөктөр</translation>
 <translation id="1360432990279830238">Аккаунттан чыгып, шайкештирүүнү өчүрөсүзбү?</translation>
+<translation id="1363028406613469049">Трек</translation>
 <translation id="1366525380420346469">Күйүп турганда</translation>
 <translation id="1373696734384179344">Тандалган мазмунду жүктөп алуу үчүн эстутум жетишсиз.</translation>
 <translation id="1376578503827013741">Эсептелүүдө…</translation>
@@ -292,6 +293,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2435457462613246316">Сырсөздү көрсөтүү</translation>
 <translation id="2439153523196674349"><ph name="SITE_NAME" /> алдын ала көрүү</translation>
 <translation id="2450083983707403292"><ph name="FILE_NAME" /> файлын кайрадан жүктөп аласызбы?</translation>
+<translation id="2451607499823206582">Көз салуу</translation>
 <translation id="2453860139492968684">Бүтүрүү</translation>
 <translation id="2461822463642141190">Учурда</translation>
 <translation id="2468444275314013497">Серепчиңиз жайында</translation>
@@ -303,6 +305,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2497852260688568942">Шайкештирүү функциясын администраторуңуз өчүрүп койгон</translation>
 <translation id="250020030759455918">Chrome'до <ph name="SITE_NAME" /> сайтына кирүү статусуңузду, серептөө дайындарын жана сайттын маалыматын көрөсүз</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> орнотулууда…</translation>
+<translation id="2512234228327349533">Товарды сатып алуу параметрлерин көрүү</translation>
 <translation id="2513403576141822879">Купуялыкка, коопсуздукка жана дайындарды чогултууга байланыштуу дагы башка параметрлерди көрүү үчүн <ph name="BEGIN_LINK" />Шайкештирүү жана Google кызматтары<ph name="END_LINK" /> бөлүмүнө өтүңүз</translation>
 <translation id="2515921719039583189">Chrome'догу нерселер ушул түзмөктөн өчүрүлсүнбү?</translation>
 <translation id="2517113738956581680">Толук экран</translation>
@@ -314,6 +317,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> нерсе өчүрүлдү</translation>
 <translation id="2536728043171574184">Бул барактын оффлайндагы көчүрмөсү көрсөтүлүүдө</translation>
 <translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
+<translation id="2547843573592965873">Профилди кулпулоо функциясы унааңызда маалыматыңыздын, ошондой эле Google аккаунтуңузга сакталган сырсөздөр, төлөмдөр жана башка нерселердин коопсуздугун камсыздайт.</translation>
 <translation id="254973855621628293">Бул түзмөктө сакталган сырсөздөр</translation>
 <translation id="2560519950693256002">Акыркы текшерилген сырсөздөр <ph name="USERNAME" /> дарегине сакталды</translation>
 <translation id="2567385386134582609">СҮРӨТ</translation>
@@ -387,11 +391,13 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2871733351037274014">Барактарды алдын ала жүктөө</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> төмөндөгү вебсайтты ырастоону суранып жатат:</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome маалыматыңызды кантип купуя сактаары тууралуу<ph name="END_LINK" /> көбүрөөк билип алыңыз</translation>
+<translation id="2883644600102358131">Жакында сырсөздөр бул түзмөктө иштебей калат. Сырсөздөрдү колдоно берүү үчүн Google Play кызматтарын жаңыртыңыз.</translation>
 <translation id="2888126860611144412">Chrome тууралуу</translation>
 <translation id="2891154217021530873">Беттин жүктөлүшүн токтотуу</translation>
 <translation id="2893180576842394309">Издөө жана башка Google кызматтарын жекечелештирүү үчүн, Google таржымалыңызды колдонушу мүмкүн</translation>
 <translation id="2894821468041866720">Серепчиңиздин же түзмөгүңүздүн ишин байкалаарлык деңгээлде жайлатпайт.</translation>
 <translation id="2895521649038438824">Бул бетти уга аласыз</translation>
+<translation id="2899252057552912621">Google Play кызматтары жеткиликсиз болгондуктан, сырсөздөр жакында иштебей калат. Сакталган сырсөздөрүңүздү алар иштебей калганга чейин көчүрүп алсаңыз болот.</translation>
 <translation id="2900528713135656174">Иш-чара түзүү</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> сунуштары көрсөтүлүүдө</translation>
 <translation id="2904300462646366554">Жүктөлүп алынган PDF файлдары түзмөгүңүздөгү PDF көрүүчү каражаттарынын бири менен автоматтык түрдө ачылат</translation>
@@ -444,12 +450,11 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз. <ph name="BEGIN_LINK3" />Купуялык эрежелери<ph name="END_LINK3" /> да колдонулат.</translation>
 <translation id="3080525922482950719">Барактарды сактап коюп, кийинчерээк оффлайн режиминде окуй аласыз</translation>
+<translation id="3087218211037573995">Бул түзмөктө гана сакталган айрым сырсөздөр жакында иштебей калат. Аларды Сырсөздөрдү башкаргычка өткөрө аласыз.</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
-<translation id="3093004810561729002">Кимдир бирөө</translation>
 <translation id="3098745985164956033">Сүрөттөмөлөрдү жакшыртуу үчүн айрым сүрөттөр Google'га жөнөтүлөт</translation>
 <translation id="3114507951000454849">Бүгүнкү жаңылыктарды окуңуз <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Жарыялар</translation>
-<translation id="3130190865225163362">Купуялыгыңызды коргоо үчүн айрым сайттардан уруксаттар өчүрүлдү</translation>
 <translation id="314939179385989105">Chrome’дун башкы бети</translation>
 <translation id="3158667104057012316">Кол менен иреттелүүдө</translation>
 <translation id="3166827708714933426">Өтмөктүн жана терезенин кыска жолдору</translation>
@@ -466,7 +471,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3226612997184048185">Эгер кыстармаларды Google аккаунтуңузга сактап койсоңуз, товарлардын бааларына Chrome'до көз салып, баалар төмөндөгөндө кабар аласыз</translation>
 <translation id="3227557059438308877">Google Chrome'ду Коопсуздук ачкычы катары колдонуу</translation>
 <translation id="3232293466644486101">Серептөө дайындарын өчүрүү…</translation>
-<translation id="3232459301230493791"><ph name="TAB_COUNT" /> өтмөк өчүрүлдү</translation>
 <translation id="3232754137068452469">Веб колдонмо</translation>
 <translation id="3236059992281584593">1 мүн. калды</translation>
 <translation id="3237087289225714896">Стандарттуу алдын ала жүктөө:</translation>
@@ -499,6 +503,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3407392651057365886">Дагы башка барактар алдын ала жүктөлдү. Башка сайттар сурам жөнөтсө, барактар Google серверлери аркылуу алдын ала жүктөлүшү мүмкүн.</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
 <translation id="3421726884497337397">Үчүнчү тараптын cookie файлдары качан бөгөттөлсүн?</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# с. мурун}other{# с. мурун}}</translation>
 <translation id="3430670036890315772">Профилиңиздин кулпусун өчүрүп салсаңыз, сакталган маалыматыңыз өчүрүлөт</translation>
 <translation id="3435465986463792564">Көп терезе ачылып турабы? Аларды бул жерден башкарыңыз</translation>
 <translation id="3435738964857648380">Коопсуздук</translation>
@@ -572,6 +577,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3771694256347217732">Google'дун Тейлөө шарттары</translation>
 <translation id="3775705724665058594">Түзмөктөрүңүзгө жөнөтүңүз</translation>
 <translation id="3777796259512476958">Көпчүлүк сайттардагы аккаунттарыңыздан чыгарыласыз</translation>
+<translation id="379035798868314833">Сырсөздөрдү башкаргыч бул түзмөктө иштебей калат</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
 <translation id="3795154175078851242">Сүрөттү шилтемеси менен көчүрүү</translation>
 <translation id="3810838688059735925">Видео</translation>
@@ -754,6 +760,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4687718960473379118">Сайт сунуштаган жарнамалар</translation>
 <translation id="469286762610133730">Контентти жакшыртыңыз</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
+<translation id="4698061626562952596">Жигерсиз өтмөктөрүңүздү бул жерден карап чыгыңыз</translation>
 <translation id="4699172675775169585">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="4710167854527459075">Эң жаңылары боюнча иргөө</translation>
 <translation id="4719927025381752090">Которуу сунушталсын</translation>
@@ -899,6 +906,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5355191726083956201">Өркүндөтүлгөн коргоо күйүк</translation>
 <translation id="5364112109233799727">Пикириңизди билдирип жаткан сайттын URL дареги Google'га жөнөтүлүп, функцияны жакшыртуу үчүн адистер тарабынан каралышы мүмкүн</translation>
 <translation id="5375577065097716013">Google Lens аркылуу издөө <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
+<translation id="5394331612381306435">Жашыруун режимден чыгуу</translation>
 <translation id="5395376160638294582">Google аккаунтуңуздагы Chrome маалыматын каалаган убакта колдоно аларыңызды текшериңиз</translation>
 <translation id="539881862970320163">Татаал сырсөз сунушталды. Баскычтоп жашырылган.</translation>
 <translation id="5401851137404501592">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңыздын дарегин жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт.</translation>
@@ -928,6 +936,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5517095782334947753">Сизде <ph name="FROM_ACCOUNT" /> аккаунтунун кыстармалары, таржымалдары, сырсөздөрү жана башка параметрлери бар.</translation>
 <translation id="5524843473235508879">Багыттоо бөгөттөлгөн.</translation>
 <translation id="5526281268548144413">Бир нече терезеде ачылып турган өтмөктөрдү жабуу мүмкүн эмес</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# мүн. мурун}other{# мүн. мурун}}</translation>
 <translation id="5548606607480005320">Коопсуздукту текшерүү</translation>
 <translation id="5554520618550346933">Колдонулган сырсөз Интернетте жарыяланса, Chrome ал тууралуу эскертет. Мындай учурда сырсөздөрүңүз менен колдонуучу аттарыңыз шифрленет. Аларды эч ким, анын ичинде Google да окуй албайт.</translation>
 <translation id="5555525474779371165">Коопсуз серептөөнүн иштөө режимин тандаңыз</translation>
@@ -1041,7 +1050,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6040939430773295212">Кайталанма</translation>
 <translation id="604124094241169006">Автоматтык</translation>
 <translation id="6042308850641462728">Дагы</translation>
-<translation id="6043971473594955894">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{{NUM_SITES} сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="604996488070107836">Белгисиз катадан улам <ph name="FILE_NAME" /> жүктөлүп алынбай калды.</translation>
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
@@ -1060,6 +1068,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6138832295072039549">Сайттын параметрлерин бул жерден өзгөртүңүз</translation>
 <translation id="6140912465461743537">Өлкө/Дубан</translation>
 <translation id="6142183503755612900">Демейки издөө каражатын параметрлерден каалаган убакта өзгөртө аласыз</translation>
+<translation id="6143892791267458416"><ph name="DAYS_ARCHIVED" /> күндөн кийин жабылат</translation>
 <translation id="614890671148262506">Бул сайттын бардык билдирмелерине уруксат берилсин</translation>
 <translation id="6150320133806434356">Кыстарма сакталды</translation>
 <translation id="6150706324143004339">Google аккаунтуңузга Chrome маалыматын сактоо жана колдонуу үчүн Chrome'ду жаңыртыңыз</translation>
@@ -1091,6 +1100,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6284472661216707937">Бардык түзмөктөрдөгү сырсөздөр барагы жабылды</translation>
 <translation id="6295158916970320988">Бардык сайттар</translation>
+<translation id="6296366034485697675">Өткөрүп берип, өчүрүү</translation>
 <translation id="6303969859164067831">Аккаунттан чыгып, шайкештирүүнү өчүрүү</translation>
 <translation id="6312687380483398334">Веб колдонмолор (добушсуз)</translation>
 <translation id="6315386555979018699">Өчүрүү жана улантуу</translation>
@@ -1262,10 +1272,12 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6964300328304469089">Учурда <ph name="NAME" />, <ph name="EMAIL" /> тандалды. Аккаунт тандаңыз.</translation>
 <translation id="696447261358045621">Жашыруун режимден чыгуу</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6966660124354134532">Товарга көз салуу же салбоо үчүн таптап коюңуз.</translation>
 <translation id="6971862865055170158">Ырасталбасын</translation>
 <translation id="6978717888677691380">Сиз бөгөттөгөн сайттар</translation>
 <translation id="6979737339423435258">Бардыгы</translation>
 <translation id="6987047470128880212">Бул түзмөктө жашыруун өтмөк жок</translation>
+<translation id="6991701761229081516">Сырсөздөрүңүз CSV файлы катары жүктөлүп алынат. Алар файлга, анын ичинде колдонмолорго кире алган кишилерге көрүнөт. Өткөрүлүп берилген сырсөздөр Chrome'дон өчүрүлөт.</translation>
 <translation id="6996145122199359148">Бул баракты жүктөп алуу</translation>
 <translation id="7013762323294215682">Бул киргизүүчү ачкыч сырсөздөрдү башкаргычка сакталат. Ага кире алгандардын баары бул киргизүүчү ачкычты колдоно алышат.</translation>
 <translation id="7020741890149022655">Окуу тизмесине кошуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
@@ -1290,6 +1302,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7105047059074518658">Түзмөктөрдү оңой колдонуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="7106762743910369165">Серепчиңиз уюмуңуз тарабынан башкарылат</translation>
 <translation id="7111394291981742152">Chrome жарнамаларды көбүрөөк көзөмөлдөө мүмкүнчүлүгүн берет жана жекелештирилген жарнамаларды көрсөтүүдө сайттар чогулта турган сиз жөнүндө маалыматтарды чектейт.</translation>
+<translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{# сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7140829094791862589">Кол менен иреттөө</translation>
 <translation id="7146622961999026732">Бул сайттар менен колдонмолор сиз үчүн маанилүү окшойт:</translation>
@@ -1318,6 +1331,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
 <translation id="7224097611345298931">Бардык сырсөздөр Chrome үчүн ушул түзмөктө гана сакталып, <ph name="CHROME_CHANNEL" />бириктирилди. Сакталган сырсөздөрүңүздүн баарын эки колдонмодо тең автотолтуруу функциясы менен колдоно аласыз.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 жүктөп алуу күтүлүүдө}other{# жүктөп алуу күтүлүүдө}}</translation>
+<translation id="7230064152164845085">Жашыруун режимге которулуу</translation>
 <translation id="72415438529550637">Сырсөздү сунуштоо жабылды.</translation>
 <translation id="7252076891734325316">Телефонуңузду компьютерге жакын коюңуз</translation>
 <translation id="7260367682327802201">Android түзмөгүңүздө ушуга окшош параметр болушу мүмкүн. Эгер Chrome'до жана Android түзмөгүндө Жарнамаларды талдоо күйгүзүлсө, компания вебсайттарда жана колдонмолордо көрсөтүлгөн жарнамалардын майнаптуулугун талдай алышы мүмкүн.</translation>
@@ -1400,6 +1414,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7583262514280211622">Окуу тизмеңизди ушул жерден табасыз</translation>
 <translation id="758603037873046260">Бул бетти сактоо үчүн аккаунтка кириңиз</translation>
 <translation id="7588219262685291874">Түзмөгүңүз кубатты үнөмдөө режиминде иштегенде, Батареяны үнөмдөгүчтү күйгүзүңүз</translation>
+<translation id="7592322927044331376">Алгач сырсөздөрдү Chrome'дон өткөрүп берип, аларды өчүрүңүз</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> кызматына <ph name="TOP_ORIGIN" /> үчүн өзүңүздү ырастоого уруксат бериңиз</translation>
 <translation id="7596558890252710462">Иштөө тутуму</translation>
 <translation id="7603168929588204083">Күн туура эмес көрсөтүлдү</translation>
@@ -1433,7 +1448,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7759809451544302770">Кошумча</translation>
 <translation id="7762668264895820836"><ph name="SD_CARD_NUMBER" />-SD-карта</translation>
 <translation id="7764225426217299476">Дарек кошуу</translation>
-<translation id="776533689993750361"><ph name="TAB_COUNT" /> өтмөк өчүрүлдү</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772375229873196092"><ph name="APP_NAME" /> өтмөгүн жабуу</translation>
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -1572,7 +1586,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="835847953965672673">Жүктөлүп алынган <ph name="NUMBER_OF_DOWNLOADS" /> нерсе калыбына келтирилди</translation>
 <translation id="8368001212524806591">Баага көз салуу</translation>
 <translation id="8378850197701296741">Сизде <ph name="FROM_ACCOUNT" /> аккаунтунун кыстармалары, таржымалдары жана башка параметрлери бар.</translation>
-<translation id="8382640928718131148"><ph name="DAYS_INACTIVE" /> күндөн бери колдонулбаган өтмөктөр бул жерге жылдырылып, <ph name="DAYS_ARCHIVED" /> күндөн кийин жабылат. Муну каалаган убакта <ph name="SETTINGS_TITLE" /> параметринен өзгөртө аласыз.</translation>
 <translation id="8387617938027387193">Өзүңүздү ырастаңыз</translation>
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
 <translation id="8402673309244746971">Жазылгандарга өтүү</translation>
@@ -1659,6 +1672,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8773160212632396039">Сурам иштелүүдө</translation>
 <translation id="8788265440806329501">Чабыттоо таржымалы жабылды</translation>
 <translation id="8788968922598763114">Акыркы жабылган өтмөктү кайра ачуу</translation>
+<translation id="8790193082819560975">Товарды сатып алуу параметрлерин жаңы өтмөктө көрүү үчүн таптап коюңуз.</translation>
 <translation id="879027982257117598">Мисалы, узак аралыкка чуркоо үчүн бут кийим карасаңыз, сайт "марафондо чуркоону" кызыккан нерсеңиз катары аныктайт. Кийинчерээк, башка сайтка киргениңизде ал буга чейин кирген сайтта сатылган чуркоо үчүн бут кийимдин жарнамасын көрсөтөт.</translation>
 <translation id="8798449543960971550">Окуу</translation>
 <translation id="8803526663383843427">Күйүп турганда</translation>
@@ -1680,9 +1694,9 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8856931513242997049">Билдирмелерге уруксат берүү агымы жабылды</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> сайтына уруксаттар кайра берилди</translation>
 <translation id="8865415417596392024">Аккаунтуңуздагы Chrome дайын-даректери</translation>
+<translation id="8888527824584402177"><ph name="DAYS_INACTIVE" /> күндөн бери колдонулбаган өтмөктөр бул жерге (<ph name="AUTODELETE_SECTION" />) жылдырылды Муну каалаган убакта <ph name="SETTINGS_TITLE" /> параметринен өзгөртө аласыз.</translation>
 <translation id="8898822736010347272">Сиз баш баккан айрым барактардын URL даректерин, чектелген тутум маалыматын жана айрым барактардын мазмунун бардык колдонуучулар үчүн мүмкүн болгон коркунучтарды аныктап, бөгөттөө үчүн Google'га жөнөтөт.</translation>
 <translation id="8909135823018751308">Бөлүшүү…</translation>
-<translation id="8913846853471054995">{NUM_SITES,plural, =1{1 сайттын билдирмелерине тыюу салынды}other{{NUM_SITES} сайттын билдирмелерине тыюу салынды}}</translation>
 <translation id="8921980840204105660">Башка түзмөктөрдөгү кыстармаларды колдонуу үчүн шайкештирүүнү иштетиңиз</translation>
 <translation id="8922289737868596582">"Дагы параметрлер" баскычын басып, оффлайн режиминде иштөө үчүн барактарды жүктөп алуу</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
@@ -1701,9 +1715,9 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8993760627012879038">Жаңы өтмөктү жашыруун режимде ачуу</translation>
 <translation id="8996847606757455498">Башка провайдерди тандоо</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
-<translation id="8998729206196772491">Сиз <ph name="MANAGED_DOMAIN" /> доменинин администратору тарабынан башкарылган аккаунтка кирип жатасыз. Ал мындан тарта сиздин аккаунтуңузга байланган Chrome дайын-даректериңизды башкарып калат. Chrome аккаунткан чыксаңыз, бул түзмөктөн дайын-даректериңиз жок кылынып, бирок Google Каттоо эсебинде сакталып кала берет.</translation>
 <translation id="8998837250940831980">Өтмөк кичирейген жок. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="9001604755921395912">Жашыруун Chrome өтмөгүндө ачуу</translation>
+<translation id="9007002441981613214">Сакталган сырсөздөргө байланыштуу маселени оңдоңуз</translation>
 <translation id="9012585441087414258">Кооптуу деп таанылган сайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргойт. Эгер барак шектүү аракетти жасаса, анын URL даректери жана контентинин үлгүлөрү Google Коопсуз серептөөгө жөнөтүлөт.</translation>
 <translation id="9019199799064251516">Унаа профилинин кулпусу жок улантасызбы?</translation>
 <translation id="9022774213089566801">Көп каралгандар</translation>

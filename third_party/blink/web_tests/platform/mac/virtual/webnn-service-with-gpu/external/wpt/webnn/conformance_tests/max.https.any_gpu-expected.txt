@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] max float32 1D constant tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 1 ULP distance, but they have 5422 ULP distance expected true got false
+Harness: the test ran to completion.
+

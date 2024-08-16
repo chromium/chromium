@@ -170,7 +170,7 @@ void InvalidationListenerImpl::SetRegistrationUploadStatus(
 
 // GCMAppHandler overrides.
 void InvalidationListenerImpl::ShutdownHandler() {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "Shutdown() should come before and it removes us from the list of app "
          "handlers of gcm::GCMDriver so this shouldn't ever been called.";
 }
@@ -215,15 +215,15 @@ void InvalidationListenerImpl::OnMessagesDeleted(const std::string& app_id) {
 void InvalidationListenerImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& details) {
-  NOTREACHED_NORETURN() << "Should never be called because the invalidation "
-                           "service doesn't send GCM messages to the server.";
+  NOTREACHED() << "Should never be called because the invalidation "
+                  "service doesn't send GCM messages to the server.";
 }
 
 void InvalidationListenerImpl::OnSendAcknowledged(
     const std::string& app_id,
     const std::string& message_id) {
-  NOTREACHED_NORETURN() << "Should never be called because the invalidation "
-                           "service doesn't send GCM messages to the server.";
+  NOTREACHED() << "Should never be called because the invalidation "
+                  "service doesn't send GCM messages to the server.";
 }
 
 void InvalidationListenerImpl::FetchRegistrationToken() {

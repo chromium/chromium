@@ -13,8 +13,8 @@
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "content/public/test/browser_test.h"
 
@@ -56,7 +56,7 @@ ServerCvcChecker::~ServerCvcChecker() = default;
 
 bool ServerCvcChecker::IsExitConditionSatisfied(std::ostream* os) {
   return fake_server()
-             ->GetSyncEntitiesByModelType(syncer::AUTOFILL_WALLET_CREDENTIAL)
+             ->GetSyncEntitiesByDataType(syncer::AUTOFILL_WALLET_CREDENTIAL)
              .size() == expected_count_;
 }
 
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   // Set a different set of cards on the server, then sign in again (this is a
   // good enough approximation of signing in with a different Google account).
-  GetFakeServer()->DeleteAllEntitiesForModelType(
+  GetFakeServer()->DeleteAllEntitiesForDataType(
       syncer::AUTOFILL_WALLET_CREDENTIAL);
   sync_pb::EntitySpecifics entity_specifics_2;
   *entity_specifics_2.mutable_autofill_wallet_credential() =

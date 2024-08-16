@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
-#include "chrome/browser/ash/note_taking_helper.h"
+#include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"

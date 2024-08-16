@@ -824,10 +824,6 @@ TEST_P(ScrollableShelfViewRTLTest,
 
   // Switch to tablet mode. The ripple ring should be hidden.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  {
-    InkDropAnimationWaiter waiter(icon);
-    waiter.Wait();
-  }
   EXPECT_EQ(views::InkDropState::HIDDEN,
             views::InkDrop::Get(icon)->GetInkDrop()->GetTargetInkDropState());
 

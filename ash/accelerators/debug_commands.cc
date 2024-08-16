@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -323,6 +324,13 @@ void HandleShowSystemNudge() {
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
 }
 
+void HandleStartSunfishSession() {
+  if (features::IsSunfishFeatureEnabled() &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    CaptureModeController::Get()->StartSunfishSession();
+  }
+}
+
 // TODO(b/318897434): Remove this shortcut after testing is complete.
 void HandleToggleFocusModeState() {
   auto* controller = FocusModeController::Get();
@@ -379,6 +387,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugPrintWindowHierarchy:
       HandlePrintWindowHierarchy();
+      break;
+    case AcceleratorAction::kDebugStartSunfishSession:
+      HandleStartSunfishSession();
       break;
     case AcceleratorAction::kDebugShowInformedRestore:
       HandleShowInformedRestore();

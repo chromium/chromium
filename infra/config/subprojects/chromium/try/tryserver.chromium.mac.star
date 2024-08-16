@@ -209,6 +209,8 @@ try_.builder(
         ],
     ),
     builderless = True,
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 try_.builder(
@@ -654,13 +656,6 @@ ios_builder(
 )
 
 ios_builder(
-    name = "ios-simulator-multi-window",
-    mirrors = ["ci/ios-simulator-multi-window"],
-    gn_args = "ci/ios-simulator-multi-window",
-    cpu = cpu.ARM64,
-)
-
-ios_builder(
     name = "ios-simulator-noncq",
     mirrors = [
         "ci/ios-simulator-noncq",
@@ -774,6 +769,7 @@ try_.gpu.optional_tests_builder(
             # Inclusion filters.
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
+            cq.location_filter(path_regexp = "content/test/data/gpu/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "gpu/.+"),
             cq.location_filter(path_regexp = "media/audio/.+"),

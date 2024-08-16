@@ -137,11 +137,10 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
 
 #if BUILDFLAG(IS_MAC)
   if (display_link_mac_ && !vsync_callback_mac_) {
-    vsync_callback_mac_ = display_link_mac_->RegisterCallback(
-        base::BindRepeating(
+    vsync_callback_mac_ =
+        display_link_mac_->RegisterCallback(base::BindRepeating(
             &ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation,
-            weak_ptr_factory_.GetWeakPtr()),
-        /*do_callback_on_register_thread=*/true);
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   bool delay_presenetation_until_next_vsync =

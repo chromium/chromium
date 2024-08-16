@@ -239,6 +239,7 @@ class FakeZeroconfScannerDetector final : public ZeroconfScannerDetector {
                        const std::string& service_name) override {}
 
   void OnDeviceCacheFlushed(const std::string& service_type) override {}
+  void OnPermissionRejected() override {}
 
   // Used to trigger on_scanners_detected_callback_ after adding the given
   // |scanners| to the detected scanners.

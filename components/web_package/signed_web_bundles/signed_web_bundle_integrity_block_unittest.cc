@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/test/gmock_expected_support.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
+#include "components/web_package/signed_web_bundles/integrity_block_attributes.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,6 +100,8 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
+  raw_integrity_block->attributes = web_package::IntegrityBlockAttributes{
+      {kEd25519SignedWebBundleId1}, base::ToVector(kAttributesCbor1)};
 
   ASSERT_OK_AND_ASSIGN(
       auto integrity_block,
@@ -132,6 +136,8 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
   raw_integrity_block->size = 42;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
+  raw_integrity_block->attributes = web_package::IntegrityBlockAttributes{
+      {kEd25519SignedWebBundleId1}, base::ToVector(kAttributesCbor1)};
 
   ASSERT_OK_AND_ASSIGN(
       auto integrity_block,
@@ -172,6 +178,8 @@ TEST(SignedWebBundleIntegrityBlockTest, Comparators) {
   auto raw_integrity_block1 = mojom::BundleIntegrityBlock::New();
   raw_integrity_block1->size = 42;
   raw_integrity_block1->signature_stack = std::move(raw_signature_stack1);
+  raw_integrity_block1->attributes = IntegrityBlockAttributes(
+      kEd25519SignedWebBundleId1, base::ToVector(kAttributesCbor1));
 
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack2;
@@ -179,6 +187,8 @@ TEST(SignedWebBundleIntegrityBlockTest, Comparators) {
   auto raw_integrity_block2 = mojom::BundleIntegrityBlock::New();
   raw_integrity_block2->size = 42;
   raw_integrity_block2->signature_stack = std::move(raw_signature_stack2);
+  raw_integrity_block2->attributes = IntegrityBlockAttributes(
+      kEd25519SignedWebBundleId1, base::ToVector(kAttributesCbor1));
 
   std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>
       raw_signature_stack3;
@@ -186,6 +196,8 @@ TEST(SignedWebBundleIntegrityBlockTest, Comparators) {
   auto raw_integrity_block3 = mojom::BundleIntegrityBlock::New();
   raw_integrity_block3->size = 9999999;
   raw_integrity_block3->signature_stack = std::move(raw_signature_stack3);
+  raw_integrity_block3->attributes = IntegrityBlockAttributes(
+      kEd25519SignedWebBundleId1, base::ToVector(kAttributesCbor1));
 
   SignedWebBundleIntegrityBlock block1a =
       *SignedWebBundleIntegrityBlock::Create(raw_integrity_block1->Clone());

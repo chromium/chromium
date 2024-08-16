@@ -184,7 +184,7 @@ const base::TimeDelta kConfirmationDismissDelay = base::Seconds(1.5);
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to
       // either kEnrolled or kFailed and cannot transition back to kOffered.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

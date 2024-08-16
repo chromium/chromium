@@ -78,6 +78,7 @@ void FrameCaret::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(display_item_client_);
   visitor->Trace(caret_blink_timer_);
+  visitor->Trace(effect_);
 }
 
 EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(

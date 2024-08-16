@@ -44,8 +44,8 @@ class HeapProfilerScopedTaskExecutionTracker {
       const char* task_context)
       : context_(task_context) {
     using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(AllocationContextTracker::capture_mode() !=
-                 AllocationContextTracker::CaptureMode::kDisabled)) {
+    if (AllocationContextTracker::capture_mode() !=
+        AllocationContextTracker::CaptureMode::kDisabled) [[unlikely]] {
       AllocationContextTracker::GetInstanceForCurrentThread()
           ->PushCurrentTaskContext(context_);
     }
@@ -53,8 +53,8 @@ class HeapProfilerScopedTaskExecutionTracker {
 
   inline ~HeapProfilerScopedTaskExecutionTracker() {
     using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(AllocationContextTracker::capture_mode() !=
-                 AllocationContextTracker::CaptureMode::kDisabled)) {
+    if (AllocationContextTracker::capture_mode() !=
+        AllocationContextTracker::CaptureMode::kDisabled) [[unlikely]] {
       AllocationContextTracker::GetInstanceForCurrentThread()
           ->PopCurrentTaskContext(context_);
     }

@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
@@ -114,7 +115,9 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
+#include "components/user_manager/user_manager.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -219,6 +222,19 @@ std::unique_ptr<content::WebUIConfig> MakeSanitizeUIConfig() {
   return std::make_unique<SanitizeDialogUIConfig>(create_controller_func);
 }
 
+bool IsSanitizeAllowed() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
+  auto* manager = user_manager::UserManager::Get();
+  bool is_child_user = manager->IsLoggedInAsChildUser();
+  bool is_guest_mode_active = manager->IsLoggedInAsGuest() ||
+                              manager->IsLoggedInAsManagedGuestSession();
+  return !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
+         !is_guest_mode_active && !is_child_user &&
+         base::FeatureList::IsEnabled(ash::features::kSanitize);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   //
@@ -238,11 +254,13 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
   map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
   map.AddWebUIConfig(MakeConnectivityDiagnosticsUIConfig());
+  map.AddWebUIConfig(std::make_unique<CrostiniCreditsUI>());
   map.AddWebUIConfig(std::make_unique<CrostiniInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<CrostiniUpgraderUIConfig>());
   map.AddWebUIConfig(std::make_unique<CryptohomeUIConfig>());
@@ -295,6 +313,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<office_fallback::OfficeFallbackUIConfig>());
   map.AddWebUIConfig(std::make_unique<OobeUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OSCreditsUI>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<OSFeedbackUIConfig, OSFeedbackUI,
                                       ChromeOsFeedbackDelegate>());
@@ -320,7 +339,7 @@ void RegisterAshChromeWebUIConfigs() {
       MakeComponentConfigWithDelegate<RecorderAppUIConfig, RecorderAppUI,
                                       ChromeRecorderAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
-  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+  if (IsSanitizeAllowed()) {
     map.AddWebUIConfig(MakeSanitizeUIConfig());
   }
   map.AddWebUIConfig(

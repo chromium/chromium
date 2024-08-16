@@ -1,4 +1,9 @@
 features:
+- name: dir-pseudo
+  files:
+  - dir-pseudo-*
+  - dir-selector-*
+  - dir-style-*
 - name: focus-visible
   files:
   - focus-visible-*
@@ -11,6 +16,9 @@ features:
 - name: modal
   files:
   - modal-pseudo-class.html
+- name: nth-child-of
+  files:
+  - nth-child-of-*
 - name: user-pseudos
   files:
   - user-invalid.html

@@ -8,10 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/webui/eche_app_ui/fake_apps_access_manager.h"
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -1133,9 +1136,11 @@ TEST_F(MultideviceHandlerTest, LacrosTabSyncStatusTest) {
   // handler under that setting.
   ScopedLacrosOnlyHandle lacros_only_handle;
   InitWithFeatures(
-      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                            ash::standalone_browser::features::kLacrosOnly},
+      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing},
       /*disabled_features=*/{});
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
   CreateHandler();
 
   // Invokes a status change and verifies the expected enabled/disabled value.

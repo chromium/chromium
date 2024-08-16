@@ -74,21 +74,21 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
 
         recordClickMvTiles(windowDisposition);
 
-        String url = item.getUrl().getSpec();
+        GURL url = item.getUrl();
 
         // TODO(treib): Should we call recordOpenedMostVisitedItem here?
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             recordOpenedTile(item);
         }
 
-        if (ChromeFeatureList.sMostVisitedTilesSelectExistingTab.isEnabled()) {
+        if (ChromeFeatureList.sMostVisitedTilesReselect.isEnabled()) {
             if (mNavigationDelegate.maybeSelectTabWithUrl(url)) {
                 return;
             }
             // Failed to select existing tab with the same URL, so just navigate.
         }
 
-        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url, false);
+        mNavigationDelegate.navigateToSuggestionUrl(windowDisposition, url.getSpec(), false);
     }
 
     @Override

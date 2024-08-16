@@ -263,6 +263,7 @@ void SystemUIComponentsStyleViewerView::ShowComponentInstances(
   }
 
   // Toggle corresponding components grid view.
+  components_grid_view_ = nullptr;
   components_grid_view_ = component_instances_scroll_view_->SetContents(
       components_grid_view_factories_[name].Run());
 }

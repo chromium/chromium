@@ -13,6 +13,13 @@
 
 namespace ash::input_method {
 
+const std::vector<std::string>& AfrikaansInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      // Afrikaans does not have a separate IME.
+  });
+  return *input_methods;
+}
+
 const std::vector<std::string>& DanishInputMethods() {
   static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:dk::dan",  // Danish
@@ -103,6 +110,13 @@ const std::vector<std::string>& NorwegianInputMethods() {
   return *input_methods;
 }
 
+const std::vector<std::string>& PolishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      "xkb:pl::pol",  // Polish
+  });
+  return *input_methods;
+}
+
 const std::vector<std::string>& PortugeseInputMethods() {
   static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:br::por",         // Portugese (Brazil)
@@ -129,6 +143,9 @@ const std::vector<std::string>& SwedishInputMethods() {
 }
 
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
+  if (base::Contains(AfrikaansInputMethods(), input_method)) {
+    return LanguageCategory::kAfrikaans;
+  }
   if (base::Contains(DanishInputMethods(), input_method)) {
     return LanguageCategory::kDanish;
   }
@@ -155,6 +172,9 @@ LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {
   }
   if (base::Contains(NorwegianInputMethods(), input_method)) {
     return LanguageCategory::kNorwegian;
+  }
+  if (base::Contains(PolishInputMethods(), input_method)) {
+    return LanguageCategory::kPolish;
   }
   if (base::Contains(PortugeseInputMethods(), input_method)) {
     return LanguageCategory::kPortugese;

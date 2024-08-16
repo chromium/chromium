@@ -10,6 +10,7 @@
 @class AccountErrorUIInfo;
 struct CoreAccountInfo;
 enum class IdentityAvatarSize;
+@class IdentityViewItem;
 @class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
@@ -17,8 +18,8 @@ enum class IdentityAvatarSize;
 // model.
 @protocol AccountsModelIdentityDataSource <NSObject>
 
-// Provides identity info for an account.
-- (id<SystemIdentity>)identityForAccount:(CoreAccountInfo)account;
+// Provides identity info with gaiaID.
+- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID;
 
 // Provides identity avatar.
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
@@ -30,8 +31,11 @@ enum class IdentityAvatarSize;
 // Provides error UI info to the controller.
 - (AccountErrorUIInfo*)accountErrorUIInfo;
 
-// Provides the information of all accounts that have refresh tokens.
-- (std::vector<CoreAccountInfo>)accountsWithRefreshTokens;
+// Returns the primary identity view item.
+- (IdentityViewItem*)primaryIdentityViewItem;
+
+// Provides identity view items for all available identities.
+- (std::vector<IdentityViewItem*>)identityViewItems;
 
 @end
 

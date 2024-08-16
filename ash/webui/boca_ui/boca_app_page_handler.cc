@@ -8,6 +8,12 @@
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
 #include "content/public/browser/web_ui.h"
 
+namespace {
+// Special filter value for `ListCoursesRequest` to request courses with access
+// limited to the requesting user.
+constexpr char kOwnCoursesFilterValue[] = "me";
+}  // namespace
+
 namespace ash {
 
 BocaAppHandler::BocaAppHandler(
@@ -26,9 +32,9 @@ void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
   tab_info_collector_.GetWindowTabInfo(std::move(callback));
 }
 
-void BocaAppHandler::ListCourses(const std::string& teacher_id,
-                                 ListCoursesCallback callback) {
-  class_room_page_handler_.ListCourses(teacher_id, std::move(callback));
+void BocaAppHandler::ListCourses(ListCoursesCallback callback) {
+  class_room_page_handler_.ListCourses(kOwnCoursesFilterValue,
+                                       std::move(callback));
 }
 
 void BocaAppHandler::ListStudents(const std::string& course_id,

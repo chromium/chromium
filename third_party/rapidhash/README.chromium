@@ -18,3 +18,4 @@ Local Modifications:
 Removed some files we don't use that are under other licenses.
 Changed to Google C++ formatting, see patches/0001-clang-format.patch.
 Some modifications to #includes and other compiler-specific things, see patches/0002-tweaks.patch.
+Templatized on HashReader, for StringHasher use, see patches/0003-templatize.patch.

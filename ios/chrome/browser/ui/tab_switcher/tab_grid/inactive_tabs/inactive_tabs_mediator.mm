@@ -281,7 +281,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     case WebStateListChange::Type::kGroupVisualDataUpdate:
     case WebStateListChange::Type::kGroupMove:
     case WebStateListChange::Type::kGroupDelete:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WebStateListChange::Type::kInsert: {
       // Insertions are only supported for iPad multiwindow support when
       // changing the user settings for Inactive Tabs (i.e. when picking a
@@ -328,15 +328,17 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 #pragma mark - GridCommands
 
 - (BOOL)addNewItem {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (BOOL)isItemWithIDSelected:(web::WebStateID)itemID {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
-- (void)closeItemsWithIDs:(const std::set<web::WebStateID>&)itemIDs {
-  NOTREACHED_NORETURN();
+- (void)closeItemsWithTabIDs:(const std::set<web::WebStateID>&)tabIDs
+                    groupIDs:(const std::set<tab_groups::TabGroupId>&)groupIDs
+                    tabCount:(int)tabCount {
+  NOTREACHED();
 }
 
 - (void)closeAllItems {
@@ -376,35 +378,30 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
             (const std::set<web::WebStateID>&)itemIDs
                                                 anchor:(UIBarButtonItem*)
                                                            buttonAnchor {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)shareItems:(const std::set<web::WebStateID>&)itemIDs
             anchor:(UIBarButtonItem*)buttonAnchor {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)searchItemsWithText:(NSString*)searchText {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)resetToAllItems {
-  NOTREACHED_NORETURN();
-}
-
-- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
-                                   completion:(void (^)(size_t))completion {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID
                     pinned:(BOOL)pinned
     isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)selectTabGroup:(const TabGroup*)tabGroup {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)closeItemWithID:(web::WebStateID)itemID {
@@ -418,19 +415,19 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)setPinState:(BOOL)pinState forItemWithID:(web::WebStateID)itemID {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)deleteTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)closeTabGroup:(const TabGroup*)group {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)ungroupTabGroup:(const TabGroup*)group sourceView:(UIView*)sourceView {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - GridToolbarsConfigurationProvider
@@ -439,7 +436,6 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc]
           initWithPage:TabGridPageRegularTabs];
-  toolbarsConfiguration.mode = TabGridModeInactive;
   toolbarsConfiguration.closeAllButton = [self canCloseTabs];
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.undoButton = [self canUndoCloseAllTabs];
@@ -467,7 +463,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)addToSelectionItemID:(GridItemIdentifier*)itemID {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)removeFromSelectionItemID:(GridItemIdentifier*)itemID {

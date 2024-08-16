@@ -6,31 +6,23 @@
 
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+
 namespace ash {
 
 AuthSurfaceRegistry::AuthSurfaceRegistry() = default;
 
 AuthSurfaceRegistry::~AuthSurfaceRegistry() = default;
 
-void AuthSurfaceRegistry::NotifyLoginScreenAuthDialogShown(
-    AuthHubConnector* connector) {
+void AuthSurfaceRegistry::NotifyLoginScreenAuthDialogShown() {
   NOTIMPLEMENTED();
 }
 
-void AuthSurfaceRegistry::NotifyLockScreenAuthDialogShown(
-    AuthHubConnector* connector) {
+void AuthSurfaceRegistry::NotifyLockScreenAuthDialogShown() {
   NOTIMPLEMENTED();
 }
 
-void AuthSurfaceRegistry::NotifyInSessionAuthDialogShown(
-    AuthHubConnector* connector) {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](AuthSurfaceRegistry* self, AuthHubConnector* connector) {
-            self->callback_list_.Notify(connector, AuthSurface::kInSession);
-          },
-          this, connector));
+void AuthSurfaceRegistry::NotifyInSessionAuthDialogShown() {
+  callback_list_.Notify(AuthSurface::kInSession);
 }
 
 base::CallbackListSubscription AuthSurfaceRegistry::RegisterShownCallback(

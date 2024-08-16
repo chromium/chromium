@@ -29,6 +29,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -87,7 +89,7 @@ struct GpuMemoryBufferResources {
 };
 
 struct VideoCaptureImpl::BufferContext
-    : public base::RefCountedThreadSafe<BufferContext> {
+    : public ThreadSafeRefCounted<BufferContext> {
  public:
   BufferContext(media::mojom::blink::VideoBufferHandlePtr buffer_handle,
                 scoped_refptr<base::SequencedTaskRunner> media_task_runner)
@@ -229,7 +231,7 @@ struct VideoCaptureImpl::BufferContext
         std::move(gpu_memory_buffer_handle));
   }
 
-  friend class base::RefCountedThreadSafe<BufferContext>;
+  friend class ThreadSafeRefCounted<BufferContext>;
   virtual ~BufferContext() {
     if (!gmb_resources_)
       return;
@@ -921,8 +923,8 @@ void VideoCaptureImpl::OnNewBuffer(
 
   const bool inserted =
       client_buffers_
-          .emplace(buffer_id, new BufferContext(std::move(buffer_handle),
-                                                media_task_runner_))
+          .emplace(buffer_id, base::MakeRefCounted<BufferContext>(
+                                  std::move(buffer_handle), media_task_runner_))
           .second;
   DCHECK(inserted);
 }

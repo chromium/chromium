@@ -5,11 +5,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -112,6 +114,26 @@ class PerformanceInterventionInteractiveTest
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
+  Profile* CreateTestProfile() {
+    ProfileManager* const profile_manager =
+        g_browser_process->profile_manager();
+    const base::FilePath new_path =
+        profile_manager->GenerateNextProfileDirectoryPath();
+    Profile* const profile =
+        &profiles::testing::CreateProfileSync(profile_manager, new_path);
+    auto* const tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile);
+    base::RunLoop run_loop;
+    tracker->AddOnInitializedCallback(base::BindOnce(
+        [](base::OnceClosure callback, bool success) {
+          ASSERT_TRUE(success);
+          std::move(callback).Run();
+        },
+        run_loop.QuitClosure()));
+    run_loop.Run();
+    return profile;
+  }
+
   GURL GetURL(std::string_view hostname = "example.com",
               std::string_view path = "/title1.html") {
     return embedded_test_server()->GetURL(hostname, path);
@@ -147,14 +169,14 @@ class PerformanceInterventionInteractiveTest
   }
 
   auto CloseTab(int index) {
-    return Do(base::BindLambdaForTesting([=]() {
+    return Do(base::BindLambdaForTesting([=, this]() {
       browser()->tab_strip_model()->CloseWebContentsAt(
           index, TabCloseTypes::CLOSE_NONE);
     }));
   }
 
   auto CheckTabDiscardStatus(int index, bool discarded) {
-    return Check([=]() {
+    return Check([=, this]() {
       TabStripModel* const tab_strip_model = browser()->tab_strip_model();
       return tab_strip_model->GetWebContentsAt(index)->WasDiscarded() ==
              discarded;
@@ -613,12 +635,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
 
-  ProfileManager* const profile_manager = g_browser_process->profile_manager();
-  const base::FilePath new_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  Profile& profile =
-      profiles::testing::CreateProfileSync(profile_manager, new_path);
-  Browser* const second_browser = CreateBrowser(&profile);
+  Browser* const second_browser = CreateBrowser(CreateTestProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window = first_browser->window();
@@ -728,8 +745,7 @@ class PerformanceInterventionMixedProfileTest
 
 // We can only have one non-off record profile open at a time on ChromeOS so
 // users will not encounter this case.
-// TODO(crbug.com/352446083): Investigate test failure on linux64-rel-ready bot
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
                        SuggestTabsForMultipleProfiles) {
   // Create two browser windows with tabs and ensure the second browser window
@@ -740,12 +756,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionMixedProfileTest,
   ASSERT_TRUE(AddTabAtIndexToBrowser(first_browser, 1, GetURL("b.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
 
-  ProfileManager* const profile_manager = g_browser_process->profile_manager();
-  const base::FilePath new_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  Profile& profile =
-      profiles::testing::CreateProfileSync(profile_manager, new_path);
-  Browser* const second_browser = CreateBrowser(&profile);
+  Browser* const second_browser = CreateBrowser(CreateTestProfile());
   ASSERT_TRUE(AddTabAtIndexToBrowser(second_browser, 0, GetURL("c.com"),
                                      ui::PageTransition::PAGE_TRANSITION_LINK));
   BrowserWindow* const first_browser_window = first_browser->window();

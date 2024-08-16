@@ -229,6 +229,20 @@ void ScriptController::UpdateDocument() {
   window_proxy_manager_->UpdateDocument();
 }
 
+void ScriptController::DiscardFrame() {
+  DCHECK(window_->GetFrame());
+  auto* previous_document_loader =
+      window_->GetFrame()->Loader().GetDocumentLoader();
+  DCHECK(previous_document_loader);
+  auto params =
+      previous_document_loader->CreateWebNavigationParamsToCloneDocument();
+  WebNavigationParams::FillStaticResponse(params.get(), "text/html", "UTF-8",
+                                          base::span<const char>());
+  params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
+  window_->GetFrame()->Loader().CommitNavigation(std::move(params), nullptr,
+                                                 CommitReason::kDiscard);
+}
+
 void ScriptController::ExecuteJavaScriptURL(
     const KURL& url,
     network::mojom::CSPDisposition csp_disposition,

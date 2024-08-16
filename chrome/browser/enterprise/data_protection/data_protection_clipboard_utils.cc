@@ -17,8 +17,9 @@
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
+#include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -34,66 +35,6 @@
 namespace enterprise_data_protection {
 
 namespace {
-
-// Struct that holds information on the last data to have been replaced in the
-// OS clipboard by a Data Controls rule.
-struct LastReplacedClipboardData {
-  ui::ClipboardSequenceNumberToken seqno;
-  content::ClipboardPasteData clipboard_paste_data;
-};
-
-LastReplacedClipboardData& GetLastReplacedClipboardData() {
-  static base::NoDestructor<LastReplacedClipboardData> data;
-  return *data.get();
-}
-
-// Clipboard change observer used to observe seqno changes and update the data
-// in `GetLastReplacedClipboardData`.
-class ClipboardObserver : public ui::ClipboardObserver {
- public:
-  static ClipboardObserver* GetInstance() {
-    static base::NoDestructor<ClipboardObserver> observer;
-    return observer.get();
-  }
-
-  // This can be called multiple times with different data types (text, html,
-  // png, etc.) before `OnClipboardDataChanged()` is called, so `data` is merged
-  // into `pending_seqno_data_` instead of replacing it entirely.
-  void AddDataToNextSeqno(content::ClipboardPasteData data) {
-    // Bitmap isn't used directly by pasting code, so it must first be converted
-    // to PNG before being stored in `GetLastReplacedClipboardData()`.
-    if (!data.bitmap.empty()) {
-      data.png = ui::clipboard_util::EncodeBitmapToPngAcceptJank(
-          std::move(data.bitmap));
-      data.bitmap = SkBitmap();
-    }
-
-    if (pending_seqno_data_.empty()) {
-      ui::ClipboardMonitor::GetInstance()->AddObserver(this);
-    }
-    pending_seqno_data_.Merge(std::move(data));
-  }
-
-  // ui::ClipboardObserver:
-  void OnClipboardDataChanged() override {
-    GetLastReplacedClipboardData() = {
-        .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-            ui::ClipboardBuffer::kCopyPaste),
-        // `LastReplacedClipboardData::clipboard_paste_data` is reassigned to
-        // clear previous data corresponding to an older seqno.
-        .clipboard_paste_data = std::move(pending_seqno_data_),
-    };
-
-    // Explicitly clear `pending_seqno_data_` in case it eventually holds a data
-    // member that doesn't clear itself cleanly after moving.
-    pending_seqno_data_ = content::ClipboardPasteData();
-
-    ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-  }
-
- private:
-  content::ClipboardPasteData pending_seqno_data_;
-};
 
 void HandleFileData(
     content::WebContents* web_contents,
@@ -363,8 +304,9 @@ void PasteIfAllowedByDataControls(
   // context to ensure we're not letting through data that was replaced by
   // policies that are no longer applicable due to the profile being closed.
   if (source.browser_context() &&
-      metadata.seqno == GetLastReplacedClipboardData().seqno) {
-    clipboard_paste_data = GetLastReplacedClipboardData().clipboard_paste_data;
+      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    clipboard_paste_data =
+        data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
   }
 
   PasteIfAllowedByContentAnalysis(
@@ -411,7 +353,8 @@ void IsCopyToOSClipboardRestricted(
     // Before calling `callback`, we remember `data` will correspond to the next
     // clipboard sequence number so that it can be potentially replaced again at
     // paste time.
-    ClipboardObserver::GetInstance()->AddDataToNextSeqno(data);
+    data_controls::LastReplacedClipboardDataObserver::GetInstance()
+        ->AddDataToNextSeqno(data);
     std::move(callback).Run(
         metadata.format_type, data, /*replacement_data=*/
         l10n_util::GetStringUTF16(
@@ -562,8 +505,8 @@ void IsClipboardCopyAllowedByPolicy(
 void ReplaceSameTabClipboardDataIfRequiredByPolicy(
     ui::ClipboardSequenceNumberToken seqno,
     content::ClipboardPasteData& data) {
-  if (seqno == GetLastReplacedClipboardData().seqno) {
-    data = GetLastReplacedClipboardData().clipboard_paste_data;
+  if (seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    data = data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
   }
 }
 

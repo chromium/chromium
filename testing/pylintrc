@@ -18,32 +18,25 @@ docstring-quote = double
 # Disable the message, report, category or checker with the given id(s).
 # TODO(crbug.com/353942917): Burn down this list to the minimal reasonable
 # amount by fixing issues or doing inline-disables where appropriate.
-disable=abstract-method,
-        anomalous-backslash-in-string,
-        bad-indentation,
-        broad-except,
-        cell-var-from-loop,
-        consider-using-enumerate,
-        deprecated-method,
-        deprecated-module,
+# Intentionally kept:
+#   bad-indentation: Formatting is auto-handled by yapf and there is expected to
+#     be a mixture of 2 and 4-space files due to a change in style guidelines.
+#   duplicate-code: Finds many non-actionable "duplicate" entries such as
+#     similar imports in multiple files.
+#   fixme: TODOs are perfectly valid as long as they're associated with a bug.
+#   missing-docstring: Docstrings should be encouraged, but also should not be
+#     required for every single function and method.
+#   wrong-import-position: We often need to add directories to PATH before
+#     importing, which causes this check to fail.
+disable=bad-indentation,
         duplicate-code,
-        global-statement,
         fixme,
-        function-redefined,
         import-error,
         invalid-name,
-        invalid-string-quote,
-        invalid-triple-quote,
-        locally-disabled,
-        locally-enabled,
-        logging-not-lazy,
         missing-docstring,
         no-member,
         no-self-use,
         protected-access,
-        reimported,
-        singleton-comparison,
-        superfluous-parens,
         too-few-public-methods,
         too-many-arguments,
         too-many-branches,
@@ -54,11 +47,6 @@ disable=abstract-method,
         too-many-public-methods,
         too-many-return-statements,
         too-many-statements,
-        ungrouped-imports,
-        undefined-variable,
-        unneeded-not,
-        unused-import,
-        wrong-import-order,
         wrong-import-position,
 
 [REPORTS]
@@ -251,7 +239,6 @@ valid-classmethod-first-arg=cls
 
 # Deprecated modules which should not be used, separated by a comma
 deprecated-modules=regsub,
-                   string,
                    TERMIOS,
                    Bastion,
                    rexec

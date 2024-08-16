@@ -3,24 +3,58 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import android.view.View;
+import android.view.ViewGroup;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class EdgeToEdgeBottomChinViewBinder {
-    static void bind(
-            PropertyModel model,
-            EdgeToEdgeBottomChinSceneLayer sceneLayer,
-            PropertyKey propertyKey) {
+    static class ViewHolder {
+        /**
+         * The Android view acting as a placeholder for the composited bottom chin. This Android
+         * view adapts to match the same height as the bottom chin, to extend over the default
+         * bottom chin area / OS navbar area. Note that this view is always transparent, and is thus
+         * never actually shown. It exists purely as a placeholder to fix some odd bugs where other
+         * Android views don't properly draw into the bottom chin space / get cut-off when trying to
+         * cover or follow the bottom chin as it scrolls. See crbug.com/356919563.
+         */
+        public final View mAndroidView;
+
+        /** A handle to the composited edge-to-edge bottom chin scene layer. */
+        public EdgeToEdgeBottomChinSceneLayer mSceneLayer;
+
+        /**
+         * @param androidView The Android view acting as a placeholder for the composited bottom
+         *     chin.
+         * @param layer The composited edge-to-edge bottom chin scene layer.
+         */
+        public ViewHolder(View androidView, EdgeToEdgeBottomChinSceneLayer layer) {
+            mAndroidView = androidView;
+            mSceneLayer = layer;
+        }
+    }
+
+    static void bind(PropertyModel model, ViewHolder viewHolder, PropertyKey propertyKey) {
         if (EdgeToEdgeBottomChinProperties.Y_OFFSET == propertyKey) {
-            sceneLayer.setYOffset(model.get(EdgeToEdgeBottomChinProperties.Y_OFFSET));
+            viewHolder.mSceneLayer.setYOffset(model.get(EdgeToEdgeBottomChinProperties.Y_OFFSET));
         } else if (EdgeToEdgeBottomChinProperties.HEIGHT == propertyKey) {
-            sceneLayer.setHeight(model.get(EdgeToEdgeBottomChinProperties.HEIGHT));
+            ViewGroup.LayoutParams lp = viewHolder.mAndroidView.getLayoutParams();
+            lp.height = model.get(EdgeToEdgeBottomChinProperties.HEIGHT);
+            viewHolder.mAndroidView.setLayoutParams(lp);
+            viewHolder.mSceneLayer.setHeight(model.get(EdgeToEdgeBottomChinProperties.HEIGHT));
         } else if (EdgeToEdgeBottomChinProperties.IS_VISIBLE == propertyKey) {
-            sceneLayer.setIsVisible(model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE));
+            viewHolder.mAndroidView.setVisibility(
+                    model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+            viewHolder.mSceneLayer.setIsVisible(
+                    model.get(EdgeToEdgeBottomChinProperties.IS_VISIBLE));
         } else if (EdgeToEdgeBottomChinProperties.COLOR == propertyKey) {
-            sceneLayer.setColor(model.get(EdgeToEdgeBottomChinProperties.COLOR));
+            viewHolder.mSceneLayer.setColor(model.get(EdgeToEdgeBottomChinProperties.COLOR));
         } else if (EdgeToEdgeBottomChinProperties.DIVIDER_COLOR == propertyKey) {
-            sceneLayer.setDividerColor(model.get(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR));
+            viewHolder.mSceneLayer.setDividerColor(
+                    model.get(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }

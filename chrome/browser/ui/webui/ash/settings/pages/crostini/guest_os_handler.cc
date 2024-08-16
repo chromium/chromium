@@ -34,6 +34,7 @@ base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
     }
     device_info.Set("vendorId", base::StringPrintf("%04x", device.vendor_id));
     device_info.Set("productId", base::StringPrintf("%04x", device.product_id));
+    device_info.Set("serialNumber", device.serial_number);
     device_info.Set("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }

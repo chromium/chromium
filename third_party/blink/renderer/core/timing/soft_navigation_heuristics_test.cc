@@ -71,7 +71,7 @@ class SoftNavigationHeuristicsTest : public testing::Test {
       case SoftNavigationHeuristics::EventScope::Type::kKeyup:
         return event_type_names::kKeyup;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

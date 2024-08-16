@@ -8,11 +8,11 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
 // static
@@ -41,9 +41,9 @@ SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(HistoryServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(HistoryServiceFactory::GetInstance());
 }
 
 SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() = default;
@@ -52,8 +52,8 @@ KeyedService* SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  syncer::OnceModelTypeStoreFactory store_factory =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,

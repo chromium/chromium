@@ -13,16 +13,11 @@ namespace {
 
 using allocator_shim::AllocatorDispatch;
 
-void* DefaultWinHeapMallocImpl(const AllocatorDispatch*,
-                               size_t size,
-                               void* context) {
+void* DefaultWinHeapMallocImpl(size_t size, void* context) {
   return allocator_shim::WinHeapMalloc(size);
 }
 
-void* DefaultWinHeapCallocImpl(const AllocatorDispatch* self,
-                               size_t n,
-                               size_t elem_size,
-                               void* context) {
+void* DefaultWinHeapCallocImpl(size_t n, size_t elem_size, void* context) {
   // Overflow check.
   const size_t size = n * elem_size;
   if (elem_size != 0 && size / elem_size != n) {
@@ -36,51 +31,37 @@ void* DefaultWinHeapCallocImpl(const AllocatorDispatch* self,
   return result;
 }
 
-void* DefaultWinHeapMemalignImpl(const AllocatorDispatch* self,
-                                 size_t alignment,
-                                 size_t size,
-                                 void* context) {
+void* DefaultWinHeapMemalignImpl(size_t alignment, size_t size, void* context) {
   PA_CHECK(false) << "The windows heap does not support memalign.";
   return nullptr;
 }
 
-void* DefaultWinHeapReallocImpl(const AllocatorDispatch* self,
-                                void* address,
-                                size_t size,
-                                void* context) {
+void* DefaultWinHeapReallocImpl(void* address, size_t size, void* context) {
   return allocator_shim::WinHeapRealloc(address, size);
 }
 
-void DefaultWinHeapFreeImpl(const AllocatorDispatch*,
-                            void* address,
-                            void* context) {
+void DefaultWinHeapFreeImpl(void* address, void* context) {
   allocator_shim::WinHeapFree(address);
 }
 
-size_t DefaultWinHeapGetSizeEstimateImpl(const AllocatorDispatch*,
-                                         void* address,
-                                         void* context) {
+size_t DefaultWinHeapGetSizeEstimateImpl(void* address, void* context) {
   return allocator_shim::WinHeapGetSizeEstimate(address);
 }
 
-void* DefaultWinHeapAlignedMallocImpl(const AllocatorDispatch*,
-                                      size_t size,
+void* DefaultWinHeapAlignedMallocImpl(size_t size,
                                       size_t alignment,
                                       void* context) {
   return allocator_shim::WinHeapAlignedMalloc(size, alignment);
 }
 
-void* DefaultWinHeapAlignedReallocImpl(const AllocatorDispatch*,
-                                       void* ptr,
+void* DefaultWinHeapAlignedReallocImpl(void* ptr,
                                        size_t size,
                                        size_t alignment,
                                        void* context) {
   return allocator_shim::WinHeapAlignedRealloc(ptr, size, alignment);
 }
 
-void DefaultWinHeapAlignedFreeImpl(const AllocatorDispatch*,
-                                   void* ptr,
-                                   void* context) {
+void DefaultWinHeapAlignedFreeImpl(void* ptr, void* context) {
   allocator_shim::WinHeapAlignedFree(ptr);
 }
 

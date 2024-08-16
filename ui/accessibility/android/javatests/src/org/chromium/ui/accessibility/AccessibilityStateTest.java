@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -310,7 +309,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_Autofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -333,7 +331,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_notPasswordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -351,7 +348,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testCalculateHeuristicState_notAutofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests(mContext)
@@ -369,7 +365,6 @@ public class AccessibilityStateTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK)
     public void testTogglingMisconfiguredAccessibilityServices() {
         // This service has the same config as Microsoft Authenticator during recent P0.
         AccessibilityServiceInfo errorProneService =

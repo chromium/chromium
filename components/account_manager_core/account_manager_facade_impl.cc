@@ -243,8 +243,9 @@ class AccountManagerFacadeImpl::AccessTokenFetcher
       if (!maybe_error.has_value()) {
         LOG(ERROR) << "Unable to parse error result of access token fetch: "
                    << result->get_error()->state;
-        FireOnGetTokenFailure(GoogleServiceAuthError(
-            GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE));
+        FireOnGetTokenFailure(
+            GoogleServiceAuthError::FromUnexpectedServiceResponse(
+                "Error parsing Mojo error result of access token fetch"));
       } else {
         FireOnGetTokenFailure(maybe_error.value());
       }

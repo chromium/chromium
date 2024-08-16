@@ -10,7 +10,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/spellcheck/common/spellcheck_common.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "content/public/test/browser_test.h"
 
 namespace {

@@ -27,7 +27,7 @@
 
 @implementation FirstRunTestCaseBase
 
-+ (void)dismissDefaultBrowserAndOmniboxPositionSelectionScreens {
++ (void)dismissDefaultBrowser {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
@@ -38,18 +38,6 @@
 
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-
-  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
-    id<GREYMatcher> omniboxPositionScreenPrimaryButton = grey_allOf(
-        grey_ancestor(grey_accessibilityID(
-            first_run::
-                kFirstRunOmniboxPositionChoiceScreenAccessibilityIdentifier)),
-        grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier),
-        nil);
-
-    [[[EarlGrey selectElementWithMatcher:omniboxPositionScreenPrimaryButton]
-        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  }
 }
 
 #pragma mark - XCTestCase

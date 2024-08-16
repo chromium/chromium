@@ -173,7 +173,7 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   }
 
   // The access token can always be included in affiliated use cases.
-  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+  if (enterprise_util::IsProfileAffiliated(profile)) {
     return true;
   }
 
@@ -526,31 +526,28 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
   std::unique_ptr<ConnectorUploadRequest> upload_request;
   if (request->IsAuthRequest() || !data.contents.empty()) {
     upload_request = MultipartUploadRequest::CreateStringRequest(
-        url_loader_factory_, std::move(url), metadata, data.contents,
+        url_loader_factory_, url, metadata, data.contents,
         std::move(traffic_annotation), std::move(callback));
   } else if (!data.path.empty()) {
     upload_request =
         enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreateFileRequest(
-                  url_loader_factory_, std::move(url), metadata, result,
-                  data.path, data.size, std::move(traffic_annotation),
-                  std::move(callback))
+                  url_loader_factory_, url, metadata, result, data.path,
+                  data.size, std::move(traffic_annotation), std::move(callback))
             : MultipartUploadRequest::CreateFileRequest(
-                  url_loader_factory_, std::move(url), metadata, data.path,
-                  data.size, std::move(traffic_annotation),
-                  std::move(callback));
+                  url_loader_factory_, url, metadata, data.path, data.size,
+                  std::move(traffic_annotation), std::move(callback));
 
   } else if (data.page.IsValid()) {
     upload_request =
         enterprise_connectors::IsResumableUpload(*request)
             ? ResumableUploadRequest::CreatePageRequest(
-                  url_loader_factory_, std::move(url), metadata, result,
+                  url_loader_factory_, url, metadata, result,
                   std::move(data.page), std::move(traffic_annotation),
                   std::move(callback))
             : MultipartUploadRequest::CreatePageRequest(
-                  url_loader_factory_, std::move(url), metadata,
-                  std::move(data.page), std::move(traffic_annotation),
-                  std::move(callback));
+                  url_loader_factory_, url, metadata, std::move(data.page),
+                  std::move(traffic_annotation), std::move(callback));
   } else {
     NOTREACHED_IN_MIGRATION();
     FinishRequest(request, Result::UNKNOWN,
@@ -561,7 +558,8 @@ void CloudBinaryUploadService::OnGetRequestData(Request::Id request_id,
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(),
-      upload_request->GetUploadInfo(), request->content_analysis_request());
+      upload_request->GetUploadInfo(), url.spec(),
+      request->content_analysis_request());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -672,7 +670,7 @@ void CloudBinaryUploadService::FinishRequest(
   // it wasn't added in OnGetRequestData
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(), upload_info,
-      request->content_analysis_request());
+      request->GetUrlWithParams().spec(), request->content_analysis_request());
   WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request->id()], ResultToString(result), response);
 

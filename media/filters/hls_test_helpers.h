@@ -114,9 +114,12 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
               AppendAndParseData,
               (std::string_view,
                base::TimeDelta,
-               base::TimeDelta,
                base::TimeDelta*,
                base::span<const uint8_t> data),
+              (override));
+  MOCK_METHOD(void,
+              ResetParserState,
+              (std::string_view, base::TimeDelta, base::TimeDelta*),
               (override));
   MOCK_METHOD(void, OnError, (PipelineStatus), (override));
   MOCK_METHOD(void, RequestSeek, (base::TimeDelta), (override));

@@ -32,6 +32,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
@@ -137,7 +138,7 @@ void ShowDiyAppInstallDialog(
               &WebAppInstallDialogDelegate::OnClose, delegate_weak_ptr))
           .SetDialogDestroyingCallback(base::BindOnce(
               &WebAppInstallDialogDelegate::OnDestroyed, delegate_weak_ptr))
-          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
           .Build();
 
   dialog_model->AddCustomField(std::make_unique<
@@ -152,7 +153,7 @@ void ShowDiyAppInstallDialog(
       views::BubbleDialogModelHost::FieldType::kControl));
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_CHILD);
+      std::move(dialog_model), ui::mojom::ModalType::kChild);
 
   views::BubbleDialogDelegate* dialog_delegate =
       dialog->AsBubbleDialogDelegate();

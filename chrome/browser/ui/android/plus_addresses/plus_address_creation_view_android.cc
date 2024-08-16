@@ -145,7 +145,7 @@ void PlusAddressCreationViewAndroid::ShowReserveResult(
   if (maybe_plus_profile.has_value()) {
     ScopedJavaLocalRef<jstring> j_proposed_plus_address =
         base::android::ConvertUTF8ToJavaString(
-            env, maybe_plus_profile->plus_address);
+            env, *maybe_plus_profile->plus_address);
     Java_PlusAddressCreationViewBridge_updateProposedPlusAddress(
         env, java_object_, j_proposed_plus_address);
   } else {

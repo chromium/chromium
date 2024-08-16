@@ -11,6 +11,8 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkColorType.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace viz {
 
@@ -82,7 +84,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
   } else if (format == SinglePlaneFormat::kRGBA_F16) {
     return kRGBA_F16_SkColorType;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 SkColorType ToClosestSkColorType(bool gpu_compositing,
@@ -160,7 +162,7 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
     default:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
@@ -293,76 +295,7 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::P010:
       return MultiPlaneFormat::kP010;
   }
-  NOTREACHED_NORETURN();
-}
-
-// static
-unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataFormat(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  if (format == SinglePlaneFormat::kRGBA_8888 ||
-      format == SinglePlaneFormat::kRGBA_4444 ||
-      format == SinglePlaneFormat::kRGBA_F16 ||
-      format == SinglePlaneFormat::kRGBA_1010102 ||
-      format == SinglePlaneFormat::kBGRA_1010102) {
-    return GL_RGBA;
-  } else if (format == SinglePlaneFormat::kBGRA_8888) {
-    return GL_BGRA_EXT;
-  } else if (format == SinglePlaneFormat::kALPHA_8) {
-    return GL_ALPHA;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8 ||
-             format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return GL_LUMINANCE;
-  } else if (format == SinglePlaneFormat::kRGB_565 ||
-             format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kETC1 ||
-             format == SinglePlaneFormat::kRGBX_8888 ||
-             format == SinglePlaneFormat::kBGRX_8888) {
-    return GL_RGB;
-  } else if (format == SinglePlaneFormat::kR_8 ||
-             format == SinglePlaneFormat::kR_16 ||
-             format == SinglePlaneFormat::kR_F16) {
-    return GL_RED_EXT;
-  } else if (format == SinglePlaneFormat::kRG_88 ||
-             format == SinglePlaneFormat::kRG_1616) {
-    return GL_RG_EXT;
-  }
-
-  return GL_ZERO;
-}
-
-// static
-unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
-    SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-
-  if (format == SinglePlaneFormat::kRGBA_8888 ||
-      format == SinglePlaneFormat::kBGRA_8888 ||
-      format == SinglePlaneFormat::kALPHA_8 ||
-      format == SinglePlaneFormat::kLUMINANCE_8 ||
-      format == SinglePlaneFormat::kETC1 || format == SinglePlaneFormat::kR_8 ||
-      format == SinglePlaneFormat::kRG_88 ||
-      format == SinglePlaneFormat::kRGBX_8888 ||
-      format == SinglePlaneFormat::kBGRX_8888) {
-    return GL_UNSIGNED_BYTE;
-  } else if (format == SinglePlaneFormat::kRGBA_4444) {
-    return GL_UNSIGNED_SHORT_4_4_4_4;
-  } else if (format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRGB_565) {
-    return GL_UNSIGNED_SHORT_5_6_5;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
-             format == SinglePlaneFormat::kR_F16 ||
-             format == SinglePlaneFormat::kRGBA_F16) {
-    return GL_HALF_FLOAT_OES;
-  } else if (format == SinglePlaneFormat::kR_16 ||
-             format == SinglePlaneFormat::kRG_1616) {
-    return GL_UNSIGNED_SHORT;
-  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
-             format == SinglePlaneFormat::kBGRA_1010102) {
-    return GL_UNSIGNED_INT_2_10_10_10_REV_EXT;
-  }
-
-  return GL_ZERO;
+  NOTREACHED();
 }
 
 // static

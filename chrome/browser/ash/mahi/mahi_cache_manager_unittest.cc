@@ -191,4 +191,18 @@ TEST_F(MahiCacheManagerTest, DeleteURLNotInCache) {
   EXPECT_EQ(GetPageCache().size(), 2u);
 }
 
+TEST_F(MahiCacheManagerTest, OnlyStoreHTTPOrHTTPS) {
+  EXPECT_EQ(GetPageCache().size(), 2u);
+
+  GetMahiCacheManager()->AddCacheForUrl("file:///file/path",
+                                        {"file:///file/path",
+                                         u"local file",
+                                         u"local content",
+                                         /* favicon_image = */ std::nullopt,
+                                         u"summary",
+                                         {{u"new question", u"new answer"}}});
+
+  EXPECT_EQ(GetPageCache().size(), 2u);
+}
+
 }  // namespace ash

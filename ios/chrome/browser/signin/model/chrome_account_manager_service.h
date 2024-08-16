@@ -10,15 +10,14 @@
 #include <string_view>
 
 #import "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
-#include "base/scoped_observation.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "ios/chrome/browser/signin/model/constants.h"
+#import "base/observer_list.h"
+#import "base/scoped_observation.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
 class PrefService;
 @protocol RefreshAccessTokenError;
@@ -26,7 +25,7 @@ class PrefService;
 
 // Service that provides Chrome identities.
 class ChromeAccountManagerService : public KeyedService,
-                                    public SystemIdentityManagerObserver
+                                    public AccountProfileMapper::Observer
 
 {
  public:
@@ -39,11 +38,9 @@ class ChromeAccountManagerService : public KeyedService,
     ~Observer() override {}
 
     // Handles identity list changed events.
-    // If `notify_user` is true, then the user is not at the origin of this
-    // change and should be notified.
     // Notifications with no account list update are possible, this has to be
     // handled by the observer.
-    virtual void OnIdentityListChanged(bool notify_user) {}
+    virtual void OnIdentityListChanged() {}
 
     // Called when the identity is updated.
     virtual void OnIdentityUpdated(id<SystemIdentity> identity) {}
@@ -61,23 +58,10 @@ class ChromeAccountManagerService : public KeyedService,
         ChromeAccountManagerService* chrome_account_manager_service) {}
   };
 
-  // Enum to list which type of identities ChromeAccountManagerService can list.
-  // TODO(crbug.com/331783685): This enum is a temporary solution until a better
-  // solution is implemented.
-  enum class VisibleIdentities {
-    // This is the default value. The service can list all available identities.
-    kAll,
-    // The service can only list identities that are managed.
-    kManagedOnly,
-    // The service can only list identities that are non-managed.
-    kNonManagedOnly,
-  };
-
   // Initializes the service.
-  // Filter identities according to the profile. The value should always be
-  // kAll when the multiple profile feature is not enabled.
+  // Filter identities according to the profile.
   explicit ChromeAccountManagerService(PrefService* pref_service,
-                                       VisibleIdentities visible_identities);
+                                       size_t profile_index);
   ChromeAccountManagerService(const ChromeAccountManagerService&) = delete;
   ChromeAccountManagerService& operator=(const ChromeAccountManagerService&) =
       delete;
@@ -127,7 +111,7 @@ class ChromeAccountManagerService : public KeyedService,
   void RemoveObserver(Observer* observer);
 
   // SystemIdentityManagerObserver implementation.
-  void OnIdentityListChanged(bool notify_user) override;
+  void OnIdentityListChanged() override;
   void OnIdentityUpdated(id<SystemIdentity> identity) override;
   void OnIdentityAccessTokenRefreshFailed(
       id<SystemIdentity> identity,
@@ -150,8 +134,6 @@ class ChromeAccountManagerService : public KeyedService,
   PrefChangeRegistrar registrar_;
 
   base::ObserverList<Observer, true> observer_list_;
-  base::ScopedObservation<SystemIdentityManager, SystemIdentityManagerObserver>
-      system_identity_manager_observation_{this};
 
   // ResizedAvatarCache for IdentityAvatarSize::TableViewIcon.
   ResizedAvatarCache* default_table_view_avatar_cache_;
@@ -162,11 +144,7 @@ class ChromeAccountManagerService : public KeyedService,
   // ResizedAvatarCache for IdentityAvatarSize::Large.
   ResizedAvatarCache* large_avatar_cache_;
 
-  // Filter identities according to the profile. The value should always be
-  // kAll when the multiple profile feature is not enabled.
-  // TODO(crbug.com/331783685): This enum is a temporary solution until a better
-  // solution is implemented.
-  VisibleIdentities visible_identities_ = VisibleIdentities::kAll;
+  const size_t profile_index_ = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_CHROME_ACCOUNT_MANAGER_SERVICE_H_

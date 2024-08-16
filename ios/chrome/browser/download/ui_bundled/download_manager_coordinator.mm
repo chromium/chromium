@@ -381,9 +381,14 @@
 - (void)downloadManagerViewControllerDidOpenInDriveApp:
     (UIViewController*)controller {
   CHECK(base::FeatureList::IsEnabled(kIOSSaveToDrive));
-  base::RecordAction(base::UserMetricsAction("IOSDownloadOpenInDriveApp"));
   UploadTask* uploadTask = _mediator.GetUploadTask();
-  CHECK(uploadTask);
+  if (!uploadTask) {
+    // While it should not be possible that uploadTask is nil at this point,
+    // there has been reports that show it is possible.
+    // TODO(crbug.com/324897399): investigate and remove early return.
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("IOSDownloadOpenInDriveApp"));
   std::optional<GURL> openFileInDriveURL =
       uploadTask->GetResponseLink(/* add_user_identifier= */ true);
   CHECK(openFileInDriveURL);

@@ -129,11 +129,16 @@ public class HistoryUmaRecorder {
     }
 
     /**
-     * Recrd the time taken to query app list to the local database.
+     * Record the time taken to query app list to the local database.
      *
      * @param timeMs Query time.
      */
     public void recordQueryAppDuration(long timeMs) {
         RecordHistogram.recordTimesHistogram("History.QueryAppDuration", timeMs);
+    }
+
+    /** Record the user action of opending the app filter sheet. */
+    public void recordAppFilterSheetOpened() {
+        recordUserAction("OpenAppFilterSheet");
     }
 }

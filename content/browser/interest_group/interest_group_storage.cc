@@ -180,6 +180,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 26 - 2024/05 - crrev.com/c/5555460
 // Version 27 - 2024/05 - crrev.com/c/5521957
 // Version 28 - 2024/06 - crrev.com/c/5647523
+// Version 29 - 2024/06 - crrev.com/c/5753049
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -217,11 +218,13 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 26 runs a VACUUM command.
 // Version 27 stores k-anon values and update times in interest group table.
 // Version 28 adds trusted bidding signals coordinator.
-const int kCurrentVersionNumber = 28;
+// Version 29 adds selectableBuyerAndSellerReportingIds field to ad object.
+
+const int kCurrentVersionNumber = 29;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 28;
+const int kCompatibleVersionNumber = 29;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -310,6 +313,17 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(const PassKey& passkey,
       result.buyer_and_seller_reporting_id =
           *maybe_buyer_and_seller_reporting_id;
     }
+    const auto* maybe_selectable_buyer_and_seller_reporting_ids =
+        dict.FindList("selectable_buyer_and_seller_reporting_ids");
+
+    if (maybe_selectable_buyer_and_seller_reporting_ids) {
+      std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
+      for (const auto& id : *maybe_selectable_buyer_and_seller_reporting_ids) {
+        selectable_buyer_and_seller_reporting_ids.emplace_back(id.GetString());
+      }
+      result.selectable_buyer_and_seller_reporting_ids =
+          std::move(selectable_buyer_and_seller_reporting_ids);
+    }
     const auto* maybe_allowed_reporting_origins =
         dict.FindList("allowed_reporting_origins");
     if (maybe_allowed_reporting_origins) {
@@ -384,6 +398,11 @@ AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
     if (ad.buyer_and_seller_reporting_id.has_value()) {
       ad_proto->set_buyer_and_seller_reporting_id(
           *ad.buyer_and_seller_reporting_id);
+    }
+    if (ad.selectable_buyer_and_seller_reporting_ids.has_value()) {
+      for (const auto& id : *ad.selectable_buyer_and_seller_reporting_ids) {
+        ad_proto->add_selectable_buyer_and_seller_reporting_ids(id);
+      }
     }
     if (ad.ad_render_id.has_value()) {
       ad_proto->set_ad_render_id(*ad.ad_render_id);
@@ -475,6 +494,15 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
     if (ad_proto.has_buyer_and_seller_reporting_id()) {
       ad.buyer_and_seller_reporting_id =
           std::move(*ad_proto.mutable_buyer_and_seller_reporting_id());
+    }
+    if (!ad_proto.selectable_buyer_and_seller_reporting_ids().empty()) {
+      std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
+      for (const auto& id :
+           ad_proto.selectable_buyer_and_seller_reporting_ids()) {
+        selectable_buyer_and_seller_reporting_ids.emplace_back(id);
+      }
+      ad.selectable_buyer_and_seller_reporting_ids =
+          std::move(selectable_buyer_and_seller_reporting_ids);
     }
     if (ad_proto.has_ad_render_id()) {
       ad.ad_render_id = std::move(*ad_proto.mutable_ad_render_id());
@@ -745,8 +773,16 @@ std::set<std::string> GetAllKanonKeys(
   if (interest_group.ads.has_value() &&
       interest_group.bidding_url.has_value()) {
     for (auto& ad : *interest_group.ads) {
-      hashed_keys.emplace(
-          blink::HashedKAnonKeyForAdNameReporting(interest_group, ad));
+      hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
+          interest_group, ad,
+          /*selected_buyer_and_seller_reporting_id=*/std::nullopt));
+      if (ad.selectable_buyer_and_seller_reporting_ids) {
+        for (const std::string& selectable_id :
+             *ad.selectable_buyer_and_seller_reporting_ids) {
+          hashed_keys.emplace(blink::HashedKAnonKeyForAdNameReporting(
+              interest_group, ad, selectable_id));
+        }
+      }
       hashed_keys.emplace(
           blink::HashedKAnonKeyForAdBid(interest_group, ad.render_url()));
     }
@@ -907,7 +943,7 @@ bool MaybeCreateKAnonEntryForV17DatabaseUpgrade(
 
 // Initializes the tables, returning true on success.
 // The tables cannot exist when calling this function.
-bool CreateV28Schema(sql::Database& db) {
+bool CreateV29Schema(sql::Database& db) {
   DCHECK(!db.DoesTableExist("interest_groups"));
   static const char kInterestGroupTableSql[] =
       // clang-format off
@@ -1938,7 +1974,10 @@ bool UpgradeV16SchemaToV17(sql::Database& db,
       for (auto& ad : *ig.ads) {
         if (!MaybeCreateKAnonEntryForV17DatabaseUpgrade(
                 db, interest_group_key,
-                blink::DEPRECATED_KAnonKeyForAdNameReporting(ig, ad), now)) {
+                blink::DEPRECATED_KAnonKeyForAdNameReporting(
+                    ig, ad,
+                    /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+                now)) {
           return false;
         }
         if (!MaybeCreateKAnonEntryForV17DatabaseUpgrade(
@@ -2833,6 +2872,13 @@ bool UpgradeDB(sql::Database& db,
         if (!UpgradeV27SchemaToV28(db, meta_table)) {
           return false;
         }
+        ABSL_FALLTHROUGH_INTENDED;
+      case 28:
+        // v29 adds a new field in the IG.ads structure, and so doesn't require
+        // any changes to the InterestGroup table. Existing data is
+        // forwards-compatible because `FromInterestGroupAdValue` correctly
+        // handles the lack of a value for
+        // `selectable_buyer_and_seller_reporting_ids`.
         if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
           return false;
         }
@@ -5387,7 +5433,7 @@ bool InterestGroupStorage::InitializeSchema() {
   }
 
   if (new_db) {
-    bool create_schema_result = CreateV28Schema(*db_);
+    bool create_schema_result = CreateV29Schema(*db_);
     ReportCreateSchemaResult(
         /*create_schema_result=*/create_schema_result,
         /*raze_if_incompatible_result=*/raze_if_incompatible_result,
@@ -5898,6 +5944,10 @@ InterestGroupStorage::GetBiddingAndAuctionServerKeys(
 base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_maintenance_time_;
+}
+
+/* static */ int InterestGroupStorage::GetCurrentVersionNumberForTesting() {
+  return kCurrentVersionNumber;
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

@@ -23,7 +23,7 @@ void SpellCheckMarkerListImpl::Add(DocumentMarker* marker) {
 
   // Find first marker that ends after the one being inserted starts. If any
   // markers overlap the one being inserted, this is the first one.
-  auto* const first_overlapping = std::lower_bound(
+  auto const first_overlapping = std::lower_bound(
       markers_.begin(), markers_.end(), marker,
       [](const Member<DocumentMarker>& marker_in_list,
          const DocumentMarker* marker_to_insert) {
@@ -44,7 +44,7 @@ void SpellCheckMarkerListImpl::Add(DocumentMarker* marker) {
   // end offsets to include all the overlapped markers, and erase the rest of
   // the old markers.
 
-  auto* const last_overlapping = std::upper_bound(
+  auto const last_overlapping = std::upper_bound(
       first_overlapping, markers_.end(), marker,
       [](const DocumentMarker* marker_to_insert,
          const Member<DocumentMarker>& marker_in_list) {

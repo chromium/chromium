@@ -219,7 +219,7 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
         Shell::Get()->session_controller()->LockScreen();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

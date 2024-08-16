@@ -35,7 +35,7 @@ class PolicyUpdater {
  private:
   raw_ptr<FrameSchedulerImpl> frame_;
   raw_ptr<PageSchedulerImpl> page_;
-  raw_ptr<AgentGroupSchedulerImpl> agent_group_;
+  AgentGroupSchedulerImpl* agent_group_{nullptr};
 };
 
 }  // namespace blink::scheduler

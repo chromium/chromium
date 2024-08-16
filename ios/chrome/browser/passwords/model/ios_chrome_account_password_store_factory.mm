@@ -70,7 +70,7 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(
-          browser_state->GetStatePath()));
+          browser_state->GetStatePath(), browser_state->GetPrefs()));
 
   os_crypt_async::OSCryptAsync* os_crypt_async =
       base::FeatureList::IsEnabled(

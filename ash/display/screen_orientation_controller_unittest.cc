@@ -27,6 +27,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
@@ -183,7 +184,7 @@ TEST_F(ScreenOrientationControllerTest, LockOrientation) {
   EXPECT_TRUE(RotationLocked());
 
   auto modal = CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  modal->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  modal->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_EQ(display::Display::ROTATE_0, GetCurrentInternalDisplayRotation());
   EXPECT_TRUE(RotationLocked());
 }

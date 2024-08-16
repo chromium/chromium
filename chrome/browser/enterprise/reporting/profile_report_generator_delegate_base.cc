@@ -27,6 +27,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 
+namespace em = enterprise_management;
+
 namespace enterprise_reporting {
 
 ProfileReportGeneratorDelegateBase::ProfileReportGeneratorDelegateBase() =
@@ -42,7 +44,7 @@ bool ProfileReportGeneratorDelegateBase::Init(const base::FilePath& path) {
 }
 
 void ProfileReportGeneratorDelegateBase::GetSigninUserInfo(
-    enterprise_management::ChromeUserProfileInfo* report) {
+    em::ChromeUserProfileInfo* report) {
   signin::ConsentLevel consent_level =
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? signin::ConsentLevel::kSignin
@@ -66,10 +68,41 @@ ProfileReportGeneratorDelegateBase::MakePolicyConversionsClient(
   // For profile reporting, if user is not affiliated, we need to hide machine
   // policy value.
   client->EnableShowMachineValues(
-      is_machine_scope ||
-      chrome::enterprise_util::IsProfileAffiliated(profile_));
+      is_machine_scope || enterprise_util::IsProfileAffiliated(profile_));
 
   return client;
+}
+
+void ProfileReportGeneratorDelegateBase::GetAffiliationInfo(
+    em::ChromeUserProfileInfo* report) {
+  auto* affiliation_state = report->mutable_affiliation();
+  if (enterprise_util::IsProfileAffiliated(profile_)) {
+    affiliation_state->set_is_affiliated(true);
+    return;
+  }
+  affiliation_state->set_is_affiliated(false);
+  switch (enterprise_util::GetUnaffiliatedReason(profile_)) {
+    case enterprise_util::ProfileUnaffiliatedReason::kUserUnmanaged:
+      affiliation_state->set_unaffiliation_reason(
+          em::AffiliationState_UnaffiliationReason_USER_UNMANAGED);
+      break;
+    case enterprise_util::ProfileUnaffiliatedReason::
+        kUserByCloudAndDeviceUnmanaged:
+      affiliation_state->set_unaffiliation_reason(
+          em::AffiliationState_UnaffiliationReason_DEVICE_UNMANAGED);
+      break;
+    case enterprise_util::ProfileUnaffiliatedReason::
+        kUserByCloudAndDeviceByPlatform:
+      affiliation_state->set_unaffiliation_reason(
+          em::AffiliationState_UnaffiliationReason_DEVICE_MANAGED_BY_PLATFORM);
+      break;
+    case enterprise_util::ProfileUnaffiliatedReason::
+        kUserAndDeviceByCloudUnaffiliated:
+      affiliation_state->set_unaffiliation_reason(
+          em::AffiliationState_UnaffiliationReason_DEVICE_MANANGED_DIFFERENT_DOMAIN);
+      break;
+  }
+  return;
 }
 
 policy::CloudPolicyManager*

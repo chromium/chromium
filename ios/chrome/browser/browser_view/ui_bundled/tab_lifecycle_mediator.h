@@ -11,7 +11,6 @@
 @class CommandDispatcher;
 @protocol DownloadManagerTabHelperDelegate;
 @class NewTabPageCoordinator;
-@protocol FollowIPHPresenter;
 @protocol PasswordControllerDelegate;
 class PrerenderService;
 @class PrintCoordinator;
@@ -23,7 +22,6 @@ class WebStateList;
 @protocol NetExportTabHelperDelegate;
 @protocol NewTabPageTabHelperDelegate;
 @protocol OverscrollActionsControllerDelegate;
-@protocol PriceNotificationsIPHPresenter;
 
 // Mediator that handles the setup of tab helpers that require UI-layer
 // dependencies not available when AttachTabHelpers() is called.
@@ -40,11 +38,8 @@ class WebStateList;
 @property(nonatomic, weak) NewTabPageCoordinator* NTPCoordinator;
 @property(nonatomic, weak) id<NetExportTabHelperDelegate> tabHelperDelegate;
 @property(nonatomic, weak) id<NewTabPageTabHelperDelegate> NTPTabHelperDelegate;
-@property(nonatomic, weak) id<PriceNotificationsIPHPresenter>
-    priceNotificationsIPHPresenter;
 @property(nonatomic, weak) PrintCoordinator* printCoordinator;
 @property(nonatomic, weak) id<RepostFormTabHelperDelegate> repostFormDelegate;
-@property(nonatomic, weak) id<FollowIPHPresenter> followIPHPresenter;
 @property(nonatomic, assign) TabInsertionBrowserAgent* tabInsertionBrowserAgent;
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
     overscrollActionsDelegate;

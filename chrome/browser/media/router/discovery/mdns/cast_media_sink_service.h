@@ -40,13 +40,16 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   ~CastMediaSinkService() override;
 
   // Starts Cast sink discovery. No-ops if already started.
-  // |sink_discovery_cb|: Callback to invoke when the list of discovered sinks
+  // `sink_discovery_cb`: Callback to invoke when the list of discovered sinks
   // has been updated.
-  // |dial_media_sink_service|: Optional pointer to DIAL MediaSinkService for
-  // dual discovery.
-  // Marked virtual for tests.
-  virtual void Initialize(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-                          MediaSinkServiceBase* dial_media_sink_service);
+  // `discovery_permission_rejected_cb`: Callback to invoke when the DnsSd
+  // discovery fails due to permission rejected.
+  // `dial_media_sink_service`: Optional pointer to DIAL MediaSinkService for
+  // dual discovery. Marked virtual for tests.
+  virtual void Initialize(
+      const OnSinksDiscoveredCallback& sinks_discovered_cb,
+      base::RepeatingClosure discovery_permission_rejected_cb,
+      MediaSinkServiceBase* dial_media_sink_service);
 
   virtual void DiscoverSinksNow();
 
@@ -88,6 +91,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // DnsSdRegistry::DnsSdObserver implementation
   void OnDnsSdEvent(const std::string& service_type,
                     const DnsSdRegistry::DnsSdServiceList& services) override;
+  void OnDnsSdPermissionRejected() override;
 
   // Sets the current value of |CastAllowAllIPs()| on |impl_|.
   void SetCastAllowAllIPs();
@@ -104,6 +108,9 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
 
   // List of cast sinks found in current round of mDNS discovery.
   std::vector<MediaSinkInternal> cast_sinks_;
+
+  // Invoked when `OnDnsSdPermissionRejected()` is called.
+  base::RepeatingClosure discovery_permission_rejected_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};

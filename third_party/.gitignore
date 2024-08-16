@@ -8,10 +8,6 @@
 /aemu-mac-arm64
 /aemu-mac-x64
 /amd/
-/android_build_tools/aapt2/aapt2
-/android_build_tools/aapt2/lib64/*.so
-/android_build_tools/apkanalyzer/apkanalyzer.jar
-/android_build_tools/bundletool/*.jar
 /android_sdk/androidx_browser/src
 /android_sdk/public/
 /android_sdk/sources/
@@ -51,6 +47,7 @@
 /elfutils/src
 /espresso/lib/
 /eyesfree/src
+/fast_float/src
 /fuchsia-sdk/images
 /fuchsia-sdk/images-internal
 /fuchsia-sdk/sdk
@@ -159,8 +156,6 @@
 /swiftshader/
 /syzygy
 /syzygy/binaries
-/tfhub_models/*
-/tfhub_models/testdata/
 /tint/src
 /turbine/*.jar
 /usb_ids

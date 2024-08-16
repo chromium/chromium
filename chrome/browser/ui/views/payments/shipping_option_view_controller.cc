@@ -77,12 +77,12 @@ class ShippingOptionItem final : public PaymentRequestItemList::Item {
 
   void PerformSelectionFallback() override {
     // Since CanBeSelected() is always true, this should never be called.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void EditButtonPressed() override {
     // This subclass doesn't display the edit button.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   mojom::PaymentShippingOptionPtr shipping_option_;

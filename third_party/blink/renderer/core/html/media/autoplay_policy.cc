@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_player.h"
@@ -286,6 +287,12 @@ bool AutoplayPolicy::HasTransientUserActivation() const {
 }
 
 std::optional<DOMExceptionCode> AutoplayPolicy::RequestPlay() {
+  if (RuntimeEnabledFeatures::
+          MediaPlaybackWhileNotVisiblePermissionPolicyEnabled() &&
+      !CanPlayWhileHidden() && IsFrameHidden()) {
+    return DOMExceptionCode::kNotAllowedError;
+  }
+
   if (!HasTransientUserActivation()) {
     autoplay_uma_helper_->OnAutoplayInitiated(AutoplaySource::kMethod);
     if (IsGestureNeededForPlayback())
@@ -337,6 +344,20 @@ bool AutoplayPolicy::IsGestureNeededForPlayback() const {
   // We want to allow muted video to autoplay if the element is allowed to
   // autoplay muted.
   return !IsEligibleForAutoplayMuted();
+}
+
+bool AutoplayPolicy::CanPlayWhileHidden() const {
+  return element_->GetExecutionContext() &&
+         element_->GetExecutionContext()->IsFeatureEnabled(
+             mojom::blink::PermissionsPolicyFeature::
+                 kMediaPlaybackWhileNotVisible);
+}
+
+bool AutoplayPolicy::IsFrameHidden() const {
+  Frame* frame = element_->GetDocument().GetFrame();
+  return frame && (frame->View()->GetFrameVisibility().value_or(
+                       mojom::blink::FrameVisibility::kRenderedInViewport) ==
+                   mojom::blink::FrameVisibility::kNotRendered);
 }
 
 String AutoplayPolicy::GetPlayErrorMessage() const {

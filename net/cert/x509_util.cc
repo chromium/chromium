@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/x509_util.h"
 
 #include <string.h>
@@ -188,7 +183,7 @@ bssl::ParsedCertificateList ParseAllValidCerts(
     std::shared_ptr<const bssl::ParsedCertificate> cert =
         bssl::ParsedCertificate::Create(
             bssl::UpRef(x509_cert->cert_buffer()),
-            net::x509_util::DefaultParseCertificateOptions(), NULL);
+            net::x509_util::DefaultParseCertificateOptions(), nullptr);
     if (cert) {
       parsed_certs.push_back(std::move(cert));
     }
@@ -272,15 +267,16 @@ bool GetTLSServerEndPointChannelBinding(const X509Certificate& certificate,
   if (!digest_evp_md)
     return false;
 
-  uint8_t digest[EVP_MAX_MD_SIZE];
+  std::array<uint8_t, EVP_MAX_MD_SIZE> digest;
   unsigned int out_size;
   if (!EVP_Digest(der_encoded_certificate.data(),
-                  der_encoded_certificate.size(), digest, &out_size,
-                  digest_evp_md, nullptr))
+                  der_encoded_certificate.size(), digest.data(), &out_size,
+                  digest_evp_md, nullptr)) {
     return false;
+  }
 
   token->assign(kChannelBindingPrefix);
-  token->append(digest, digest + out_size);
+  token->append(base::as_string_view(digest).substr(0, out_size));
   return true;
 }
 
@@ -440,9 +436,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(std::string_view data) {
-  return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(reinterpret_cast<const uint8_t*>(data.data()),
-                        data.size(), GetBufferPool()));
+  return CreateCryptoBuffer(base::as_byte_span(data));
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBufferFromStaticDataUnsafe(
@@ -456,19 +450,18 @@ bool CryptoBufferEqual(const CRYPTO_BUFFER* a, const CRYPTO_BUFFER* b) {
   DCHECK(a && b);
   if (a == b)
     return true;
-  return CRYPTO_BUFFER_len(a) == CRYPTO_BUFFER_len(b) &&
-         memcmp(CRYPTO_BUFFER_data(a), CRYPTO_BUFFER_data(b),
-                CRYPTO_BUFFER_len(a)) == 0;
+  return CryptoBufferAsSpan(a) == CryptoBufferAsSpan(b);
 }
 
 std::string_view CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
-  return std::string_view(
-      reinterpret_cast<const char*>(CRYPTO_BUFFER_data(buffer)),
-      CRYPTO_BUFFER_len(buffer));
+  return base::as_string_view(CryptoBufferAsSpan(buffer));
 }
 
 base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
-  return base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+  // SAFETY: CRYPTO_BUFFER_data(buffer) returns a pointer to data that is
+  // CRYPTO_BUFFER_len(buffer) bytes in length.
+  return UNSAFE_BUFFERS(
+      base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)));
 }
 
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
@@ -570,8 +563,7 @@ bool HasRsaPkcs1Sha1Signature(const CRYPTO_BUFFER* cert_buffer) {
   bssl::der::Input tbs_certificate_tlv;
   bssl::der::Input signature_algorithm_tlv;
   bssl::der::BitString signature_value;
-  if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(cert_buffer),
-                                               CRYPTO_BUFFER_len(cert_buffer)),
+  if (!bssl::ParseCertificate(bssl::der::Input(CryptoBufferAsSpan(cert_buffer)),
                               &tbs_certificate_tlv, &signature_algorithm_tlv,
                               &signature_value, /*out_errors=*/nullptr)) {
     return false;

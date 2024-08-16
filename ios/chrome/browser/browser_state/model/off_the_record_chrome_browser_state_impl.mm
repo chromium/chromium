@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/browser_state/model/off_the_record_chrome_browser_state_impl.h"
-
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
@@ -16,6 +14,7 @@
 #import "components/user_prefs/user_prefs.h"
 #import "ios/chrome/browser/net/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
+#import "ios/chrome/browser/profile/model/off_the_record_profile_ios_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(

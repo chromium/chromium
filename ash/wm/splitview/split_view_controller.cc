@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/wm/splitview/split_view_controller.h"
 
 #include <algorithm>
@@ -2493,8 +2498,11 @@ void SplitViewController::OnResizeTimer() {
 void SplitViewController::UpdateTabletResizeMode(
     base::TimeTicks event_time_ticks,
     const gfx::Point& event_location) {
-  CHECK(presentation_time_recorder_);
-  presentation_time_recorder_->RequestNext();
+  if (!presentation_time_recorder_) {
+    base::debug::DumpWithoutCrashing();
+  } else {
+    presentation_time_recorder_->RequestNext();
+  }
 
   if (IsLayoutHorizontal(root_window_)) {
     accumulated_drag_distance_ += std::abs(

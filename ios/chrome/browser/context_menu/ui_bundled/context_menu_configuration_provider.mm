@@ -75,6 +75,8 @@ NSString* const kContextMenuEllipsis = @"…";
 // Maximum length for a context menu title formed from an address, date or phone
 // number experience.
 const NSUInteger kContextMenuMaxTitleLength = 30;
+// Full URL alert accessibility identifier.
+NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
 }  // namespace
 
@@ -220,12 +222,30 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   if (isLink || isImage) {
     menuTitle = GetContextMenuTitle(params);
 
-    // Truncate context meny titles that originate from URLs, leaving text
-    // titles untruncated.
     if (!IsImageTitle(params) &&
         menuTitle.length > kContextMenuMaxURLTitleLength + 1) {
-      menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
-          stringByAppendingString:kContextMenuEllipsis];
+      if (base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+        menuTitle = nil;
+        // "Show URL action" at the top of the context menu.
+        __weak __typeof(self) weakSelf = self;
+        NSString* URLString = base::SysUTF8ToNSString(params.link_url.spec());
+        BrowserActionFactory* actionFactory =
+            [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                                 scenario:menuScenario];
+        UIAction* showFullURL = [actionFactory
+            actionToShowFullURL:URLString
+                          block:^{
+                            [weakSelf showFullURLPopUp:params
+                                             URLString:URLString];
+                          }];
+
+        [menuElements insertObject:showFullURL atIndex:0];
+      } else {
+        // Truncate context menu titles that originate from URLs, leaving text
+        // titles untruncated.
+        menuTitle = [[menuTitle substringToIndex:kContextMenuMaxURLTitleLength]
+            stringByAppendingString:kContextMenuEllipsis];
+      }
     }
   }
 
@@ -696,6 +716,28 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   }
 
   return imageSearchingMenuElements;
+}
+
+// Creates the UIAlertController with URLString that appears when clicking
+// on Show Full URL button from the context menu.
+- (void)showFullURLPopUp:(web::ContextMenuParams)params
+               URLString:(NSString*)URLString {
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:(params.text.length != 0) ? params.text : @""
+                       message:URLString
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CLOSE_ALERT_BUTTON_LABEL)
+                style:UIAlertActionStyleDefault
+              handler:nil];
+
+  [alert addAction:defaultAction];
+  alert.view.accessibilityIdentifier = kAlertAccessibilityIdentifier;
+  // The alert pop up will be presenting on top of the menu.
+  [self.baseViewController.presentedViewController presentViewController:alert
+                                                                animated:YES
+                                                              completion:nil];
 }
 
 // Calls the shareURLFromContextMenu with the given command.

@@ -76,6 +76,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test,
       "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsCertManagerV2Test, NavigationV2) {
+  RunTest("cr_components/certificate_manager/navigation_v2_test.js",
+          "mocha.run()");
+}
+
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ColorChangeListener) {
@@ -148,17 +153,17 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, LocalizedLink) {
 typedef WebUIMochaBrowserTest CrComponentsSearchboxTest;
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/realbox_match_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/searchbox_match_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/realbox_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/searchbox_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxLensTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/realbox_lens_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/searchbox_lens_test.js", "mocha.run()");
 }
 
 class CrComponentsHistoryClustersTest : public WebUIMochaBrowserTest {

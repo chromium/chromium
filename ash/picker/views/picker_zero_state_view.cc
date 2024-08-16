@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_caps_lock_position.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/picker_clipboard_history_provider.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -34,6 +36,8 @@
 #include "base/time/time.h"
 #include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -55,6 +59,7 @@ namespace ash {
 namespace {
 
 enum class EditorSubmenu { kNone, kLength, kTone };
+constexpr base::TimeDelta kCapsLockDisplayDelay = base::Milliseconds(50);
 
 EditorSubmenu GetEditorSubmenu(
     std::optional<chromeos::editor_menu::PresetQueryCategory> category) {
@@ -98,10 +103,6 @@ PickerZeroStateView::PickerZeroStateView(
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
       picker_view_width, asset_fetcher, submenu_controller_));
 
-  delegate_->GetZeroStateSuggestedResults(
-      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
-                          weak_ptr_factory_.GetWeakPtr()));
-
   for (PickerCategory category : available_categories) {
     // kEditorRewrite is not visible in the zero-state, since it's replaced with
     // the rewrite suggestions.
@@ -115,6 +116,10 @@ PickerZeroStateView::PickerZeroStateView(
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
+
+  delegate_->GetZeroStateSuggestedResults(
+      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   delegate_->OnZeroStateViewHeightChanged();
 }
@@ -202,6 +207,18 @@ void PickerZeroStateView::OnResultSelected(const PickerSearchResult& result) {
   delegate_->SelectZeroStateResult(result);
 }
 
+void PickerZeroStateView::AddResultToSection(const PickerSearchResult& result,
+                                             PickerSectionView* section) {
+  PickerItemView* view = section->AddResult(
+      result, preview_controller_,
+      base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                          weak_ptr_factory_.GetWeakPtr(), result));
+
+  if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+    list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  }
+}
+
 void PickerZeroStateView::OnFetchSuggestedResults(
     std::vector<PickerSearchResult> results) {
   if (results.empty()) {
@@ -251,8 +268,29 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           .Build();
 
   for (const PickerSearchResult& result : results) {
-    if (std::holds_alternative<PickerSearchResult::NewWindowData>(
+    if (std::holds_alternative<PickerSearchResult::CapsLockData>(
             result.data())) {
+      delegate_->SetCapsLockDisplayed(true);
+      switch (delegate_->GetCapsLockPosition()) {
+        case PickerCapsLockPosition::kTop:
+          AddResultToSection(result, primary_section_view_);
+          break;
+        case PickerCapsLockPosition::kMiddle:
+          // TODO(b/357987564): Find a better way to put CapsLock at the end of
+          // the suggested section and remove the delay timer.
+          add_caps_lock_delay_timer_.Start(
+              FROM_HERE, kCapsLockDisplayDelay,
+              base::BindOnce(&PickerZeroStateView::AddResultToSection,
+                             weak_ptr_factory_.GetWeakPtr(), result,
+                             primary_section_view_));
+          break;
+        case PickerCapsLockPosition::kBottom:
+          AddResultToSection(result,
+                             GetOrCreateSectionView(PickerCategoryType::kMore));
+          break;
+      }
+    } else if (std::holds_alternative<PickerSearchResult::NewWindowData>(
+                   result.data())) {
       new_window_submenu->AddEntry(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
@@ -280,14 +318,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                                       weak_ptr_factory_.GetWeakPtr(), result));
     } else {
-      PickerItemView* view = primary_section_view_->AddResult(
-          result, preview_controller_,
-          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                              weak_ptr_factory_.GetWeakPtr(), result));
-
-      if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
-        list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
-      }
+      AddResultToSection(result, primary_section_view_);
     }
   }
 

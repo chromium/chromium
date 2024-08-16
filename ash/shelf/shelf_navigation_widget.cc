@@ -186,8 +186,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case HotseatState::kExtended:
@@ -205,8 +204,7 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case HotseatState::kHidden:
@@ -224,13 +222,11 @@ class ASH_EXPORT NavigationButtonAnimationMetricsReporter {
                 smoothness);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -321,6 +317,8 @@ ShelfNavigationWidget::Delegate::Delegate(Shelf* shelf, ShelfView* shelf_view)
   }
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kToolbar);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
   RefreshAccessibilityWidgetNextPreviousFocus(shelf->shelf_widget());
 }
 
@@ -339,9 +337,6 @@ ShelfNavigationWidget::Delegate::GetPaneFocusTraversable() {
 
 void ShelfNavigationWidget::Delegate::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
-
   RefreshAccessibilityWidgetNextPreviousFocus(
       Shelf::ForWindow(GetWidget()->GetNativeWindow())->shelf_widget());
 }
@@ -380,6 +375,10 @@ bool ShelfNavigationWidget::TestApi::IsBackButtonVisible() const {
 
 views::BoundsAnimator* ShelfNavigationWidget::TestApi::GetBoundsAnimator() {
   return navigation_widget_->bounds_animator_.get();
+}
+
+views::View* ShelfNavigationWidget::TestApi::GetWidgetDelegateView() {
+  return static_cast<Delegate*>(navigation_widget_->widget_delegate());
 }
 
 ShelfNavigationWidget::ShelfNavigationWidget(Shelf* shelf,

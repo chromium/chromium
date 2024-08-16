@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
@@ -123,6 +124,10 @@ StorageArea* DOMWindowStorage::GetOrCreateSessionStorage(
     return nullptr;
   }
 
+  if (window->GetFrame()->Client()->IsDomStorageDisabled()) {
+    return nullptr;
+  }
+
   if (session_storage_)
     return session_storage_.Get();
 
@@ -163,8 +168,13 @@ StorageArea* DOMWindowStorage::GetOrCreateLocalStorage(
     return nullptr;
   }
 
-  if (!window->GetFrame()->GetSettings()->GetLocalStorageEnabled())
+  if (!window->GetFrame()->GetSettings()->GetLocalStorageEnabled()) {
     return nullptr;
+  }
+
+  if (window->GetFrame()->Client()->IsDomStorageDisabled()) {
+    return nullptr;
+  }
 
   if (local_storage_)
     return local_storage_.Get();

@@ -4,10 +4,17 @@
 
 #include "components/saved_tab_groups/utils.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/saved_tab_groups/types.h"
 
 namespace tab_groups {
+namespace {
+const char kChromeUINewTabURL[] = "chrome://newtab/";
+
+// Tab title to be shown or synced when tab URL is in an unsupported scheme.
+const char* kDefaultTitleOverride = "Unsavable tab";
+}  // namespace
 
 bool AreLocalIdsPersisted() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -33,6 +40,15 @@ std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
 
   return tab_groups::TabGroupId::FromRawToken(token.value());
 #endif
+}
+
+bool IsURLValidForSavedTabGroups(const GURL& gurl) {
+  return gurl.SchemeIsHTTPOrHTTPS() || gurl == GURL(kChromeUINewTabURL);
+}
+
+std::pair<GURL, std::u16string> GetDefaultUrlAndTitle() {
+  return std::make_pair(GURL(kChromeUINewTabURL),
+                        base::ASCIIToUTF16(kDefaultTitleOverride));
 }
 
 }  // namespace tab_groups

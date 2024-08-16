@@ -39,7 +39,8 @@
   <iron-pages id="ironPages"
       attr-for-selected="is"
       selected="[[visiblePageName]]"
-      selected-item="{{visiblePage_}}">
+      selected-item="{{visiblePage_}}"
+      aria-live="assertive">
     <template is="dom-if" if="[[shouldPasswordPageBeIncluded_(delegate)]]"
         restamp>
       <password-page class="ui-page"

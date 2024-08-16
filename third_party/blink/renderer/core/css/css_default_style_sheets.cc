@@ -129,6 +129,10 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
 }
 
 void CSSDefaultStyleSheets::PrepareForLeakDetection() {
+  Reset();
+}
+
+void CSSDefaultStyleSheets::Reset() {
   // Clear the optional style sheets.
   svg_style_sheet_.Clear();
   mathml_style_sheet_.Clear();
@@ -396,7 +400,9 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
-  DCHECK(!default_html_style_->Features().HasIdsInSelectors());
+  DCHECK(!default_html_style_->Features()
+              .GetRuleInvalidationData()
+              .HasIdsInSelectors());
   return changed_default_style;
 }
 
@@ -553,6 +559,11 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(default_json_document_style_);
   visitor->Trace(default_forced_colors_media_controls_style_);
+}
+
+CSSDefaultStyleSheets::TestingScope::TestingScope() = default;
+CSSDefaultStyleSheets::TestingScope::~TestingScope() {
+  Instance().Reset();
 }
 
 }  // namespace blink

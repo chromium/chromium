@@ -392,8 +392,8 @@ void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
   content::WebContents* const contents = model_->GetWebContentsAt(model_index);
   bool mute_tab = !contents->IsAudioMuted();
   UMA_HISTOGRAM_BOOLEAN("Media.Audio.TabAudioMuted", mute_tab);
-  chrome::SetTabAudioMuted(contents, mute_tab,
-                           TabMutedReason::AUDIO_INDICATOR, std::string());
+  SetTabAudioMuted(contents, mute_tab, TabMutedReason::AUDIO_INDICATOR,
+                   std::string());
 }
 
 void BrowserTabStripController::AddTabToGroup(
@@ -639,6 +639,12 @@ Profile* BrowserTabStripController::GetProfile() const {
 const Browser* BrowserTabStripController::GetBrowser() const {
   return browser();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool BrowserTabStripController::IsLockedForOnTask() {
+  return browser_view_->browser()->IsLockedForOnTask();
+}
+#endif
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripController, TabStripModelObserver implementation:
 

@@ -117,6 +117,25 @@ tast_disabled_tests_from_chrome_all = [
   # b/355351792, tests failing on jacuzzi.
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
 
+  # b/358087592, re-enable once the test is updated to handle the new
+  # PWA change.
+  "apps.Sharesheet",
+
+  # b/358376069, b/359411206: These lacros tests are failing at this
+  # moment but they will be removed soon.
+  "lacros.Activate.keep_alive",
+  "lacros.Activate.no_keep_alive",
+  "login.Chrome.lacros",
+  "security.ChromeSandboxed.lacros",
+  "security.GPUSandboxed.lacros",
+  "ui.StackSampledMetricsV2.lacros",
+
+  # b/359336803: These tests are failing on brya (specifically kano) and
+  # blocking LKGM.
+  "shimlessrma.SelectComponentsNoneNextCancel.critical@brya",
+  "shimlessrma.WelcomeNextCancel.critical@brya",
+  "shimlessrma.WelcomeCancel.critical@brya",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 

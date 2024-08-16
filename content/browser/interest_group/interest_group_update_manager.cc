@@ -91,15 +91,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         semantics {
           sender: "Interest group periodic update fetcher"
           description:
-            "Fetches periodic updates of FLEDGE interest groups previously "
-            "joined by navigator.joinAdInterestGroup(). FLEDGE allow sites to "
-            "store persistent interest groups that are only accessible to "
-            "special on-device ad auction worklets run via "
-            "navigator.runAdAuction(). JavaScript running in the context of a "
-            "frame cannot read interest groups, but it can request that all "
-            "interest groups owned by the current frame's origin be updated by "
-            "fetching JSON from the registered update URL for each interest "
-            "group."
+            "Fetches periodic updates of Protected Audiences interest groups "
+            "previously joined by navigator.joinAdInterestGroup(). Protected "
+            "Audiences allow sites to store persistent interest groups that "
+            "are only accessible to special on-device ad auction worklets run "
+            "via navigator.runAdAuction(). JavaScript running in the context "
+            "of a frame cannot read interest groups, but it can request that "
+            "all interest groups owned by the current frame's origin be "
+            "updated by fetching JSON from the registered update URL for each "
+            "interest group."
             "See https://github.com/WICG/turtledove/blob/main/FLEDGE.md and "
             "https://developer.chrome.com/docs/privacy-sandbox/fledge/"
           trigger:
@@ -112,11 +112,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         policy {
           cookies_allowed: NO
           setting:
-            "These requests are controlled by a feature flag that is off by "
-            "default now. When enabled, they can be disabled by the Privacy"
-            " Sandbox setting."
-          policy_exception_justification:
-            "These requests are triggered by a website."
+            "Users can disable this via Settings > Privacy and Security > Ads "
+            "privacy > Site-suggested ads."
+          chrome_policy {
+            PrivacySandboxSiteEnabledAdsEnabled {
+              PrivacySandboxSiteEnabledAdsEnabled: false
+            }
+          }
         })");
 
 // TODO(crbug.com/40172488): Report errors to devtools for the TryToCopy*().
@@ -466,6 +468,19 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           ads_dict->FindString("buyerAndSellerReportingId");
       if (maybe_buyer_and_seller_reporting_id) {
         ad.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+      }
+      const base::Value::List* maybe_selectable_buyer_and_seller_reporting_ids =
+          ads_dict->FindList("selectableBuyerAndSellerReportingIds");
+      if (maybe_selectable_buyer_and_seller_reporting_ids &&
+          base::FeatureList::IsEnabled(
+              blink::features::kFledgeAuctionDealSupport)) {
+        std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
+        for (const auto& id :
+             *maybe_selectable_buyer_and_seller_reporting_ids) {
+          selectable_buyer_and_seller_reporting_ids.push_back(id.GetString());
+        }
+        ad.selectable_buyer_and_seller_reporting_ids =
+            std::move(selectable_buyer_and_seller_reporting_ids);
       }
       const base::Value::List* maybe_allowed_reporting_origins =
           ads_dict->FindList("allowedReportingOrigins");

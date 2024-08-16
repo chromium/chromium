@@ -22,17 +22,17 @@
 namespace consent_auditor {
 
 using sync_pb::UserConsentSpecifics;
+using syncer::DataTypeLocalChangeProcessor;
+using syncer::DataTypeStore;
+using syncer::DataTypeSyncBridge;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
 using syncer::MetadataBatch;
 using syncer::MetadataChangeList;
 using syncer::ModelError;
-using syncer::ModelTypeChangeProcessor;
-using syncer::ModelTypeStore;
-using syncer::ModelTypeSyncBridge;
 using syncer::MutableDataBatch;
-using syncer::OnceModelTypeStoreFactory;
+using syncer::OnceDataTypeStoreFactory;
 
 namespace {
 
@@ -59,9 +59,9 @@ std::unique_ptr<EntityData> MoveToEntityData(
 }  // namespace
 
 ConsentSyncBridgeImpl::ConsentSyncBridgeImpl(
-    OnceModelTypeStoreFactory store_factory,
-    std::unique_ptr<ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)) {
+    OnceDataTypeStoreFactory store_factory,
+    std::unique_ptr<DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
       std::move(store_factory), syncer::USER_CONSENTS,
       base::BindOnce(&ConsentSyncBridgeImpl::OnStoreLoaded,
@@ -76,7 +76,7 @@ ConsentSyncBridgeImpl::~ConsentSyncBridgeImpl() {
 
 std::unique_ptr<MetadataChangeList>
 ConsentSyncBridgeImpl::CreateMetadataChangeList() {
-  return ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
@@ -208,7 +208,7 @@ std::string ConsentSyncBridgeImpl::GetStorageKeyFromSpecificsForTest(
   return GetStorageKeyFromSpecifics(specifics);
 }
 
-std::unique_ptr<ModelTypeStore> ConsentSyncBridgeImpl::StealStoreForTest() {
+std::unique_ptr<DataTypeStore> ConsentSyncBridgeImpl::StealStoreForTest() {
   return StoreWithCache::ExtractUnderlyingStoreForTest(std::move(store_));
 }
 
@@ -231,7 +231,7 @@ void ConsentSyncBridgeImpl::RecordConsentImpl(
                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 ConsentSyncBridgeImpl::GetControllerDelegate() {
   return change_processor()->GetControllerDelegate();
 }

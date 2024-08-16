@@ -249,6 +249,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     private static WindowAndroid sWindowAndroidForTesting;
 
     private long mNativeSelectFileDialog;
+    private String mIntentAction;
     private List<String> mFileTypes;
     private boolean mCapture;
     private boolean mAllowMultiple;
@@ -308,6 +309,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
     /**
      * Creates and starts an intent based on the passed fileTypes and capture value.
+     *
+     * @param intentAction Intent action such as ACTION_GET_CONTENT.
      * @param fileTypes MIME types requested (i.e. "image/*")
      * @param capture The capture value as described in http://www.w3.org/TR/html-media-capture/
      * @param multiple Whether it should be possible to select multiple files.
@@ -315,7 +318,15 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      */
     @CalledByNative
     protected void selectFile(
-            String[] fileTypes, boolean capture, boolean multiple, WindowAndroid window) {
+            String intentAction,
+            String[] fileTypes,
+            boolean capture,
+            boolean multiple,
+            WindowAndroid window) {
+        mIntentAction =
+                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
+                        ? intentAction
+                        : Intent.ACTION_GET_CONTENT;
         mFileTypes = new ArrayList<String>(Arrays.asList(fileTypes));
         mCapture = capture;
         mAllowMultiple = multiple;
@@ -537,17 +548,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             return;
         }
 
-        Intent getContentIntent =
-                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
-                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        : new Intent(Intent.ACTION_GET_CONTENT);
+        Intent getContentIntent = new Intent(mIntentAction);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
-        // Set to all types, and restrict further by MIME-type below.
-        getContentIntent.setType(ALL_TYPES);
+        // Set to all types if not a dir, and restrict further by MIME-type below.
+        if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(getContentIntent.getAction())) {
+            getContentIntent.setType(ALL_TYPES);
+        }
 
         List<String> types = new ArrayList<>(mFileTypes);
         if (types.size() > 0) {
@@ -594,17 +604,16 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      */
     private void showExternalPickerDeprecated(
             Intent camera, Intent camcorder, Intent soundRecorder) {
-        Intent getContentIntent =
-                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
-                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        : new Intent(Intent.ACTION_GET_CONTENT);
+        Intent getContentIntent = new Intent(mIntentAction);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2 && mAllowMultiple) {
             getContentIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         }
 
-        // Set to all types, but potentially restricted further by MIME-type below.
-        getContentIntent.setType(ALL_TYPES);
+        // Set to all types if not a dir, but potentially restricted further by MIME-type below.
+        if (!Intent.ACTION_OPEN_DOCUMENT_TREE.equals(getContentIntent.getAction())) {
+            getContentIntent.setType(ALL_TYPES);
+        }
 
         ArrayList<Intent> extraIntents = new ArrayList<Intent>();
         if (acceptsSingleType()) {
@@ -1635,10 +1644,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             WindowAndroid.IntentCallback intentCallback,
             boolean allowMultiple,
             List<String> mimeTypes) {
-        Intent intent =
-                UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
-                        ? new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        : new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         if (allowMultiple) {
             // Note that the ACTION_GET_CONTENT intent does not support a parameter to set a max
             // limit of photos (ACTION_PICK_IMAGES support is via MediaStore.EXTRA_PICK_IMAGES_MAX).

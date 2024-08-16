@@ -66,6 +66,7 @@ PNGImageDecoder::PNGImageDecoder(
     : ImageDecoder(alpha_option,
                    high_bit_depth_decoding_option,
                    color_behavior,
+                   cc::AuxImage::kDefault,
                    max_decoded_bytes),
       offset_(offset),
       current_frame_(0),

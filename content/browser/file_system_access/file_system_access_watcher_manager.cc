@@ -38,6 +38,8 @@
 
 namespace content {
 
+using WatchType = FileSystemAccessWatchScope::WatchType;
+
 namespace {
 
 storage::FileSystemURL ToFileSystemURL(storage::FileSystemContext& context,
@@ -160,7 +162,8 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
 void FileSystemAccessWatcherManager::OnRawChange(
     const storage::FileSystemURL& changed_url,
     bool error,
-    const FileSystemAccessChangeSource::ChangeInfo& change_info) {
+    const FileSystemAccessChangeSource::ChangeInfo& change_info,
+    const FileSystemAccessWatchScope& scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/40268906): Batch changes.
@@ -190,6 +193,13 @@ void FileSystemAccessWatcherManager::OnRawChange(
             : std::make_optional(
                   std::list<Observation::Change>({{changed_url, change_info}}));
   for (auto& observation : observations_) {
+    // TODO(crbug.com/321980367): Currently, sharing partially overlapping
+    // observations are not supported, hence checking for the exact scope
+    // matching on Local FS.
+    if (scope.GetWatchType() != WatchType::kAllBucketFileSystems &&
+        observation.scope() != scope) {
+      continue;
+    }
     bool modified_url_in_scope = observation.scope().Contains(changed_url);
     bool moved_from_url_in_scope =
         is_move_event && observation.scope().Contains(moved_from_url.value());
@@ -300,7 +310,10 @@ void FileSystemAccessWatcherManager::EnsureSourceIsInitializedForScope(
   auto it = base::ranges::find_if(
       all_sources_,
       [&scope](const raw_ref<FileSystemAccessChangeSource> source) {
-        return source->scope().Contains(scope);
+        return source->scope().GetWatchType() ==
+                       WatchType::kAllBucketFileSystems
+                   ? source->scope().Contains(scope)
+                   : source->scope() == scope;
       });
   if (it != all_sources_.end()) {
     raw_change_source = &it->get();

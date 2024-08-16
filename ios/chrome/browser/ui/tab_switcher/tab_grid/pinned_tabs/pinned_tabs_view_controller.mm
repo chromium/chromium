@@ -449,16 +449,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 #pragma mark - UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
-    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
-  if (@available(iOS 16, *)) {
-    // This is handled by
-    // `collectionView:performPrimaryActionForItemAtIndexPath:` on iOS 16.
-  } else {
-    [self tappedItemAtIndexPath:indexPath];
-  }
-}
-
-- (void)collectionView:(UICollectionView*)collectionView
     performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
   [self tappedItemAtIndexPath:indexPath];
 }

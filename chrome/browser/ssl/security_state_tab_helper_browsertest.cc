@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ssl/security_state_tab_helper.h"
-
 #include <optional>
 
 #include "base/base64.h"
@@ -32,6 +30,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/cert_verifier_browser_test.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1201,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperTest, AddedTab) {
       content::WebContents::Create(
           content::WebContents::CreateParams(tab->GetBrowserContext()));
   content::NavigationController& controller = new_contents->GetController();
-  SecurityStateTabHelper::CreateForWebContents(new_contents.get());
+  ChromeSecurityStateTabHelper::CreateForWebContents(new_contents.get());
   CheckSecurityInfoForNonCommitted(new_contents.get());
   controller.LoadURL(https_server_.GetURL("/title1.html"), content::Referrer(),
                      ui::PAGE_TRANSITION_TYPED, std::string());

@@ -38,6 +38,7 @@
 #include "ui/ozone/platform/wayland/host/proxy/wayland_proxy_impl.h"
 #include "ui/ozone/platform/wayland/host/single_pixel_buffer.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
+#include "ui/ozone/platform/wayland/host/toplevel_icon_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
@@ -152,6 +153,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(SurfaceAugmenter::kInterfaceName,
                               &SurfaceAugmenter::Instantiate);
+  RegisterGlobalObjectFactory(ToplevelIconManager::kInterfaceName,
+                              &ToplevelIconManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraOutputManagerV2::kInterfaceName,
                               &WaylandZAuraOutputManagerV2::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,

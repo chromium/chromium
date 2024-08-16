@@ -25,16 +25,19 @@ public class PasswordAccessLossDialogSettingsCoordinator
     private ModalDialogManager mModalDialogManager;
     private @PasswordAccessLossWarningType int mWarningType;
     private Callback<Context> mLaunchGmsUpdate;
+    private Callback<Context> mLaunchExportFlow;
 
     public void showPasswordAccessLossDialog(
             Context context,
             @NonNull ModalDialogManager modalDialogManager,
             @PasswordAccessLossWarningType int warningType,
-            Callback<Context> launchGmsUpdate) {
+            Callback<Context> launchGmsUpdate,
+            Callback<Context> launchExportFlow) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mWarningType = warningType;
         mLaunchGmsUpdate = launchGmsUpdate;
+        mLaunchExportFlow = launchExportFlow;
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType), ModalDialogManager.ModalDialogType.APP);
     }
@@ -141,7 +144,7 @@ public class PasswordAccessLossDialogSettingsCoordinator
         switch (mWarningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
-                // TODO(crbug.com/353285841): Launch export flow here.
+                mLaunchExportFlow.onResult(mContext);
                 break;
             case PasswordAccessLossWarningType.NO_UPM:
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:

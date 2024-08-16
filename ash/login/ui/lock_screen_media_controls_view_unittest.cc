@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 
 #include "ash/constants/ash_features.h"
@@ -850,13 +855,14 @@ TEST_F(LockScreenMediaControlsViewTest, ArtworkVisibility) {
   EXPECT_TRUE(artwork_view()->GetVisible());
 }
 
-TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
+TEST_F(LockScreenMediaControlsViewTest, AccessibleProperties) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   ui::AXNodeData data;
-  media_controls_view_->GetAccessibleNodeData(&data);
+  media_controls_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
 
+  EXPECT_EQ(ax::mojom::Role::kListItem, data.role);
   // Verify that the accessible name is initially empty.
   EXPECT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 
@@ -865,13 +871,24 @@ TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
   metadata.title = u"title";
   metadata.artist = u"artist";
   media_controls_view_->MediaSessionMetadataChanged(metadata);
-  media_controls_view_->GetAccessibleNodeData(&data);
+  media_controls_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
 
   // Verify that the accessible name updates with the metadata.
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
   EXPECT_EQ(u"title - artist",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(LockScreenMediaControlsViewTest,
+       MediaControlsHeaderViewAccessibleProperties) {
+  SimulateMediaSessionChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying);
+  MediaControlsHeaderView* header_view = header_row();
+  ui::AXNodeData data;
+
+  header_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(ax::mojom::Role::kPane, data.role);
 }
 
 TEST_F(LockScreenMediaControlsViewTest, DismissControlsVelocity) {

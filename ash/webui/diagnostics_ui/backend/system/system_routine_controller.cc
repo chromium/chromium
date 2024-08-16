@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/diagnostics_ui/backend/system/system_routine_controller.h"
 
 #include <optional>
@@ -76,8 +81,7 @@ mojom::StandardRoutineResult TestStatusToResult(
     case healthd::DiagnosticRoutineStatusEnum::kRemoved:
     case healthd::DiagnosticRoutineStatusEnum::kCancelling:
     case healthd::DiagnosticRoutineStatusEnum::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::StandardRoutineResult::kExecutionError;
+      NOTREACHED();
   }
 }
 

@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。Chrome 最多可共享 3 项兴趣信息。</translation>
 <translation id="2563121210305478421">重新启动 Chrome？</translation>
 <translation id="2569974318947988067">Chrome 会尝试将导航路径升级到 HTTPS</translation>
+<translation id="2571392474191184472">贵组织负责管理 Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
@@ -441,6 +442,7 @@
 <translation id="7177959540995930968">您可在 Chrome 设置中详细了解这些功能。</translation>
 <translation id="7193885263065350793">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后将其关闭。</translation>
 <translation id="7242029209006116544">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" />负责管理 Chrome</translation>
 <translation id="7295052994004373688">使用此语言显示 Google Chrome 界面</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7302361266603927550">部分 Chrome 数据尚未保存到您的 Google 账号。建议等待几分钟，然后再尝试退出账号。如果现在就退出账号，这些数据将被删除。</translation>
@@ -574,6 +576,7 @@
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8999117580775242387">如果 HTTPS 不可用，Chrome 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
+<translation id="9014771989710951291">多个组织负责管理 Chrome</translation>
 <translation id="9024318700713112071">将 Chrome 设为默认浏览器</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系统</translation>
 <translation id="9090566250983691233">了解 Chrome 为何屏蔽某些文件</translation>

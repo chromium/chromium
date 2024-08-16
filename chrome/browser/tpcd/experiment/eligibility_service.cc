@@ -63,8 +63,6 @@ EligibilityService::EligibilityService(
   CHECK(privacy_sandbox_settings_);
 
   if (onboarding_service_) {
-    onboarding_observation_.Observe(onboarding_service_);
-
     if (experiment_manager_->DidVersionChange()) {
       onboarding_service_->MaybeResetModeBOnboardingPrefs();
     }
@@ -83,7 +81,6 @@ EligibilityService* EligibilityService::Get(Profile* profile) {
 
 void EligibilityService::Shutdown() {
   if (onboarding_service_) {
-    onboarding_observation_.Reset();
     onboarding_service_ = nullptr;
   }
   privacy_sandbox_settings_ = nullptr;
@@ -165,26 +162,6 @@ void EligibilityService::UpdateCookieDeprecationLabel() {
               cookie_deprecation_label_manager->GetValue().value_or(""));
         }
       });
-}
-
-void EligibilityService::OnTrackingProtectionOnboardingUpdated(
-    privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
-        onboarding_status) {
-  if (!kDisable3PCookies.Get()) {
-    return;
-  }
-  MaybeNotifyManagerTrackingProtectionOnboarded(onboarding_status);
-  UpdateCookieDeprecationLabel();
-}
-
-void EligibilityService::OnTrackingProtectionSilentOnboardingUpdated(
-    privacy_sandbox::TrackingProtectionOnboarding::SilentOnboardingStatus
-        onboarding_status) {
-  if (kDisable3PCookies.Get()) {
-    return;
-  }
-  MaybeNotifyManagerTrackingProtectionSilentOnboarded(onboarding_status);
-  UpdateCookieDeprecationLabel();
 }
 
 void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(

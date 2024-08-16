@@ -8,6 +8,7 @@ found in the LICENSE file.
        xmlns:app="http://schemas.android.com/apk/res-auto"
        xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Background outline shown when the tab is a drop target for drag & drop. -->
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/background_view"
         android:layout_width="match_parent"
@@ -16,6 +17,8 @@ found in the LICENSE file.
         android:layout_margin="@dimen/tab_grid_card_margin"
         android:visibility="gone"
         android:importantForAccessibility="no" />
+
+    <!-- Main card content. -->
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
@@ -33,8 +36,7 @@ found in the LICENSE file.
                 android:layout_width="wrap_content"
                 android:minWidth="@dimen/tab_grid_card_favicon_padding"
                 android:adjustViewBounds="true"
-                android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_globe_24dp" />
+                android:importantForAccessibility="no" />
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
@@ -60,11 +62,12 @@ found in the LICENSE file.
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="false"
                 android:importantForAccessibility="no"
-                android:src="@color/thumbnail_placeholder_on_primary_bg"
                 app:cornerRadiusTopStart="@dimen/tab_grid_card_thumbnail_corner_radius_top"
                 app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
                 app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
                 app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
+
+            <!-- Legacy layout for price cards. To be removed in favor of tab_card_label. -->
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
@@ -73,7 +76,23 @@ found in the LICENSE file.
                 android:layout_height="56dp"
                 android:layout_marginStart="4dp"
                 android:visibility="gone"/>
+
+            <!-- New layout for labels including activity updates and price cards. -->
+            <ViewStub
+                android:id="@+id/tab_card_label_stub"
+                android:inflatedId="@+id/tab_card_label"
+                android:layout="@layout/tab_card_label_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/tab_card_label_height"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="11dp"/>
         </RelativeLayout>
+
+        <!--
+          Close/Select button. This is outside the RelativeLayout so it can look like it is inside
+          the card while still fulfilling the minimum 48dp touch target size. ContentDescription is
+          set depending on what the content of this button is.
+        -->
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"
             android:layout_width="@dimen/tab_list_card_action_button_size"

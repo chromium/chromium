@@ -137,8 +137,8 @@ void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,
   menu_config.set_lacros_profile_id = base::BindRepeating(
       &DeskProfilesButton::OnSetLacrosProfileId, base::Unretained(this));
 
-  context_menu_ =
-      std::make_unique<DeskActionContextMenu>(std::move(menu_config));
+  context_menu_ = std::make_unique<DeskActionContextMenu>(
+      std::move(menu_config), mini_view_);
   context_menu_->ShowContextMenuForView(this, location_in_screen, menu_source);
 }
 

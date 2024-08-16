@@ -38,6 +38,8 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
   bool continuous;
   bool interim_results;
   uint32_t max_hypotheses;
+  bool on_device;
+  bool allow_cloud_fallback;
   std::string auth_token;
   std::string auth_scope;
   scoped_refptr<SpeechRecognitionSessionPreamble> preamble;

@@ -34,6 +34,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
             TabCreatorManager tabCreatorManager,
             TabModelFilterFactory tabModelFilterFactory,
             TabPersistencePolicy persistencePolicy,
+            @ActivityType int activityType,
             AsyncTabParamsManager asyncTabParamsManager) {
         // Instantiate TabModelSelectorImpl
         NextTabPolicySupplier nextTabPolicySupplier = () -> NextTabPolicy.LOCATIONAL;
@@ -45,13 +46,14 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         nextTabPolicySupplier,
                         asyncTabParamsManager,
                         false,
-                        ActivityType.CUSTOM_TAB,
+                        activityType,
                         false);
 
         // Instantiate TabPersistentStore
         mTabPersistencePolicy = persistencePolicy;
         mTabPersistentStore =
                 new TabPersistentStore(
+                        TabPersistentStore.CLIENT_TAG_CUSTOM,
                         mTabPersistencePolicy,
                         mTabModelSelector,
                         tabCreatorManager,

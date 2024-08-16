@@ -49,17 +49,20 @@ const AcceleratorData kDeprecatedAccelerators[] = {
 const size_t kNumDeprecatedAcceleratorsDuplicate = 2u;
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
+// When remove entries from kDeprecatedAcceleratorsData, also clean up their
+// prefs in kDeprecatedAcceleratorNotificationsShownCounts and
+// kDeprecatedAcceleratorNotificationsLastShown.
 const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     {AcceleratorAction::kShowShortcutViewer,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_SHOW_SHORTCUT_VIEWER_MSG,
      IDS_SHORTCUT_SHOW_SHORTCUT_VIEWER_NEW,
      ui::Accelerator(ui::VKEY_S, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN),
-     false},
+     false, "show_shortcut_viewer"},
     {AcceleratorAction::kOpenGetHelp,
      "Ash.Accelerators.Deprecated.ShowShortcutViewer",
      IDS_DEPRECATED_OPEN_GET_HELP_MSG, IDS_SHORTCUT_OPEN_GET_HELP_NEW,
-     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false}};
+     ui::Accelerator(ui::VKEY_H, ui::EF_COMMAND_DOWN), false, "open_get_help"}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);
@@ -118,6 +121,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugClearUseKMeansPref},
     {true, ui::VKEY_H, kDebugModifier,
      AcceleratorAction::kDebugToggleFocusModeState},
+    {true, ui::VKEY_8, kDebugModifier,
+     AcceleratorAction::kDebugStartSunfishSession},
 };
 
 const size_t kDebugAcceleratorDataLength = std::size(kDebugAcceleratorData);
@@ -230,6 +235,7 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
+    AcceleratorAction::kTogglePicker,
     AcceleratorAction::kToggleSpokenFeedback,
     AcceleratorAction::kToggleSystemTrayBubble,
     AcceleratorAction::kToggleWifi,
@@ -318,6 +324,7 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
     AcceleratorAction::kToggleSpokenFeedback,
+    AcceleratorAction::kTogglePicker,
     AcceleratorAction::kToggleWifi,
     AcceleratorAction::kTouchFingerprintSensor1,
     AcceleratorAction::kTouchFingerprintSensor2,

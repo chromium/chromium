@@ -13,8 +13,8 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/plus_address_setting_specifics.pb.h"
@@ -25,7 +25,7 @@
 
 namespace {
 
-constexpr char kIsEnabledSettingName[] = "plus_address.is_enabled";
+constexpr char kIsEnabledSettingName[] = "has_feature_enabled";
 
 using plus_addresses::CreateSettingSpecifics;
 using plus_addresses::HasBoolSetting;
@@ -74,7 +74,7 @@ class FakeServerSpecificsChecker
             Property(&sync_pb::SyncEntity::specifics,
                      Property(&sync_pb::EntitySpecifics::plus_address_setting,
                               matcher_))),
-        fake_server()->GetSyncEntitiesByModelType(syncer::PLUS_ADDRESS_SETTING),
+        fake_server()->GetSyncEntitiesByDataType(syncer::PLUS_ADDRESS_SETTING),
         &listener);
     *os << listener.str();
     return matches;
@@ -205,9 +205,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
   ASSERT_FALSE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
   GetPlusAddressSettingService()->SetHasAcceptedNotice();
   EXPECT_TRUE(GetPlusAddressSettingService()->GetHasAcceptedNotice());
-  EXPECT_TRUE(FakeServerSpecificsChecker(
-                  HasBoolSetting("plus_address.has_accepted_notice", true))
-                  .Wait());
+  EXPECT_TRUE(
+      FakeServerSpecificsChecker(HasBoolSetting("has_accepted_notice", true))
+          .Wait());
 }
 
 // ChromeOS does not support signing out of the primary account.

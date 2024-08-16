@@ -39,13 +39,13 @@
 #include "chrome/browser/notifications/profile_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/ash_test_util.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/browser/ui/ash/download_status/display_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -135,7 +135,7 @@ int GetCommandTextId(CommandType command_type) {
     case CommandType::kEditWithMediaApp:
       return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN_AND_EDIT;
     case CommandType::kOpenFile:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CommandType::kOpenWithMediaApp:
       return IDS_DOWNLOAD_NOTIFICATION_LABEL_OPEN;
     case CommandType::kPause:
@@ -143,7 +143,7 @@ int GetCommandTextId(CommandType command_type) {
     case CommandType::kResume:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_RESUME;
     case CommandType::kShowInBrowser:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CommandType::kShowInFolder:
       return IDS_ASH_DOWNLOAD_COMMAND_TEXT_SHOW_IN_FOLDER;
     case CommandType::kViewDetailsInBrowser:
@@ -197,11 +197,6 @@ AshNotificationView* GetPopupView(Profile* profile,
 class NotificationDisplayClientBrowserTest
     : public SystemWebAppBrowserTestBase {
  public:
-  NotificationDisplayClientBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSysUiDownloadsIntegrationV2);
-  }
-
   // Updates download through the download status updater.
   void Update(crosapi::mojom::DownloadStatusPtr status) {
     download_status_updater_remote_->Update(std::move(status));

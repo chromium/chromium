@@ -47,24 +47,34 @@
   <message desc="Label of the option to include system audio in the recording." name="IDS_RECORDER_MIC_SELECTION_MENU_CHROMEBOOK_AUDIO_OPTION">
     Chromebook audio
   </message>
-  <message desc="Button to enable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_ALLOW_BUTTON">
+  <message desc="Button to enable speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_ALLOW_BUTTON">
     Allow
   </message>
-  <message desc="Button to defer enabling speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DEFER_BUTTON">
+  <message desc="Button to defer enabling speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DEFER_BUTTON">
     Skip
   </message>
-  <message desc="Description of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DESCRIPTION">
-    When you allow this, Recorder will use advanced audio analysis to automatically detect distinct voices and give each a generic label such as Speaker 1 and Speaker 2.
-
-You can turn this off at anytime in Settings.
+  <message desc="The first item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_1">
+    Compute models of the voices detected in the recording
   </message>
-  <message desc="Button to disable speaker ID and go next step in the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_DISALLOW_BUTTON">
+  <message desc="The second item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_2">
+    Automatically detect distinct voices and give each speaker a generic label such as Speaker 1 and Speaker 2
+  </message>
+  <message desc="The third item in the list of the explanation of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_LIST_ITEM_3">
+    Compare voices throughout the recording so the transcript reflects what each speaker said and when
+  </message>
+  <message desc="Prefix of the description of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_PREFIX">
+    When you allow this, Recorder will analyze your audio recordings to:
+  </message>
+  <message desc="Suffix of the description of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DESCRIPTION_SUFFIX">
+    Voice models are stored temporarily on-device until the speaker labeling is complete. You can turn this off at any time in Settings.
+  </message>
+  <message desc="Button to disable speaker label and go next step in the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_DISALLOW_BUTTON">
     Don’t allow
   </message>
-  <message desc="Header of the speaker ID enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_HEADER">
+  <message desc="Header of the speaker label enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_HEADER">
     Allow Recorder to detect and label speakers?
   </message>
-  <message desc="Link to more information about speaker ID." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_ID_LEARN_MORE_LINK">
+  <message desc="Link to more information about speaker label." name="IDS_RECORDER_ONBOARDING_DIALOG_SPEAKER_LABEL_LEARN_MORE_LINK">
     Learn more about speaker labels.
   </message>
   <message desc="Button to disable transcription and go next step in the transcription enable step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_CANCEL_BUTTON">
@@ -158,6 +168,21 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Button to save and exit in the exit recording dialog." name="IDS_RECORDER_RECORD_EXIT_DIALOG_SAVE_AND_EXIT_BUTTON">
     Save and exit
   </message>
+  <message desc="Label of the recording creation date on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DATE_LABEL">
+    Date created
+  </message>
+  <message desc="Label of the recording duration on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_DURATION_LABEL">
+    Duration
+  </message>
+  <message desc="Header of the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_HEADER">
+    More details
+  </message>
+  <message desc="Label of the recording file size on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_SIZE_LABEL">
+    Size
+  </message>
+  <message desc="Label of the recording title on the recording info dialog." name="IDS_RECORDER_RECORD_INFO_DIALOG_TITLE_LABEL">
+    Name
+  </message>
   <message desc="Label of the menu item to delete the ongoing recording." name="IDS_RECORDER_RECORD_MENU_DELETE_OPTION">
     Delete
   </message>
@@ -197,10 +222,10 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Label of the keep screen on toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_KEEP_SCREEN_ON_LABEL">
     Keep screen on when recording
   </message>
-  <message desc="Description of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_DESCRIPTION">
+  <message desc="Description of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_DESCRIPTION">
     Currently only available in English (US)
   </message>
-  <message desc="Label of the speaker ID toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_ID_LABEL">
+  <message desc="Label of the speaker label toggle in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SPEAKER_LABEL_LABEL">
     Allow speaker identification
   </message>
   <message desc="Description of the summary setting in settings." name="IDS_RECORDER_SETTINGS_OPTIONS_SUMMARY_DESCRIPTION">
@@ -271,6 +296,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   </message>
   <message desc="Message when there’s no speech in the recording on playback." name="IDS_RECORDER_TRANSCRIPTION_NO_SPEECH_TEXT">
     No speech detected
+  </message>
+  <message desc="Label of each different speaker in the transcription. SPEAKER_LABEL is numbered starting from 1." name="IDS_RECORDER_TRANSCRIPTION_SPEAKER_LABEL_LABEL">
+    Speaker <ph name="SPEAKER_LABEL">$1<ex>2</ex></ph>
   </message>
   <message desc="Message when there’s not yet any speech detected when recording." name="IDS_RECORDER_TRANSCRIPTION_WAITING_SPEECH_TEXT">
     Listening for speech…

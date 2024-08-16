@@ -18,6 +18,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -29,6 +30,8 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "extensions/test/test_extension_dir.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace extensions {
 namespace {
@@ -83,6 +86,10 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
        MV2ExperimentStage::kWarning},
       {"ExternalExtensionsCanBeInstalledButAreAlsoDisabled",
        MV2ExperimentStage::kDisableWithReEnable},
+      {"UkmIsEmittedForExtensionWhenUninstalled",
+       MV2ExperimentStage::kDisableWithReEnable},
+      {"UkmIsNotEmittedForOtherUninstallations",
+       MV2ExperimentStage::kDisableWithReEnable},
   };
 
   for (const auto& test_stage : test_stages) {
@@ -91,7 +98,7 @@ MV2ExperimentStage GetExperimentStageForTest(std::string_view test_name) {
     }
   }
 
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "Unknown test name '" << test_name << "'. "
       << "You need to add a new test stage entry into this collection.";
 }
@@ -160,7 +167,7 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
             extensions_features::kExtensionManifestV2DeprecationWarning);
         break;
       case MV2ExperimentStage::kNone:
-        NOTREACHED_NORETURN() << "Unhandled stage.";
+        NOTREACHED() << "Unhandled stage.";
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -183,6 +190,16 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
     SetMV2PolicyLevel(GetPolicyLevelForTest(
         testing::UnitTest::GetInstance()->current_test_info()->name()));
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionBrowserTest::SetUpOnMainThread();
+
+    ukm_recorder_.emplace();
+    // UKM only emits for webstore extensions. Pretend any extension is a store
+    // extension for this test.
+    ukm_recorder_->SetIsWebstoreExtensionCallback(
+        base::BindRepeating([](std::string_view) { return true; }));
   }
 
   // Since this is testing the MV2 deprecation experiments, we don't want to
@@ -226,6 +243,17 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
     run_loop.Run();
   }
 
+  // Uninstalls the extension with the given `extension_id` and for the given
+  // `uninstall_reason`, waiting until uninstallation has finished.
+  void UninstallExtension(const ExtensionId& extension_id,
+                          UninstallReason uninstall_reason) {
+    base::RunLoop run_loop;
+    extension_service()->UninstallExtension(extension_id, uninstall_reason,
+                                            /*error=*/nullptr,
+                                            run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
+  }
+
   // Adds a new MV2 extension with the given `name` to the profile, returning
   // it afterwards.
   const Extension* AddMV2Extension(std::string_view name) {
@@ -254,6 +282,14 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
         extension_id);
   }
 
+  // Returns the UKM entries for the Extensions.MV2ExtensionHandledInSoftDisable
+  // event.
+  std::vector<raw_ptr<const ukm::mojom::UkmEntry, VectorExperimental>>
+  GetUkmEntries() {
+    return ukm_recorder().GetEntriesByName(
+        ukm::builders::Extensions_MV2ExtensionHandledInSoftDisable::kEntryName);
+  }
+
   MV2ExperimentStage GetActiveExperimentStage() {
     return experiment_manager()->GetCurrentExperimentStage();
   }
@@ -265,11 +301,13 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::HistogramTester histogram_tester_;
+  std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // A test series to verify MV2 extensions are disabled on startup.
@@ -360,6 +398,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
 
+  // Before re-enabling the extension, there should be no UKM entries.
+  EXPECT_TRUE(GetUkmEntries().empty());
+
   // Re-enable the disabled extension.
   extension_service()->EnableExtension(extension_id);
 
@@ -369,6 +410,17 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
       extension_registry()->enabled_extensions().Contains(extension_id));
   EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
   EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
+
+  // We should emit a UKM record for the re-enabling.
+  auto entries = GetUkmEntries();
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries.front().get();
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, extension->url());
+  ukm_recorder().ExpectEntryMetric(
+      entry,
+      ukm::builders::Extensions_MV2ExtensionHandledInSoftDisable::kActionName,
+      static_cast<int64_t>(ManifestV2ExperimentManager::
+                               ExtensionMV2DeprecationAction::kReEnabled));
 }
 // Step 3 (Disable Stage): The extension should still be enabled on a subsequent
 // start since the user explicitly chose to re-enable it.
@@ -686,6 +738,70 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
       extension_prefs()->GetDisableReasons(kExtensionId));
+}
+
+// Tests that a UKM event is emitted when the user uninstalls a disabled
+// extension.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       UkmIsEmittedForExtensionWhenUninstalled) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  const Extension* extension = AddMV2Extension("Test MV2 Extension");
+  ASSERT_TRUE(extension);
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+
+  EXPECT_TRUE(GetUkmEntries().empty());
+
+  // Since the extension will be uninstalled (and the pointer will become unsafe
+  // to use), cache its URL.
+  const GURL extension_url = extension->url();
+  UninstallExtension(extension->id(),
+                     UninstallReason::UNINSTALL_REASON_USER_INITIATED);
+
+  auto entries = GetUkmEntries();
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries.front().get();
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, extension_url);
+  ukm_recorder().ExpectEntryMetric(
+      entry,
+      ukm::builders::Extensions_MV2ExtensionHandledInSoftDisable::kActionName,
+      static_cast<int64_t>(ManifestV2ExperimentManager::
+                               ExtensionMV2DeprecationAction::kRemoved));
+}
+
+// Tests that UKM events are not emitted for unrelated uninstallations.
+IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
+                       UkmIsNotEmittedForOtherUninstallations) {
+  EXPECT_EQ(MV2ExperimentStage::kDisableWithReEnable,
+            GetActiveExperimentStage());
+
+  WaitForExtensionSystemReady();
+
+  const Extension* mv2_extension = AddMV2Extension("Test MV2 Extension");
+  ASSERT_TRUE(mv2_extension);
+  const Extension* mv3_extension =
+      AddExtensionWithManifestVersion("Test MV3 Extension", 3);
+  ASSERT_TRUE(mv3_extension);
+
+  experiment_manager()->DisableAffectedExtensionsForTesting();
+
+  EXPECT_TRUE(GetUkmEntries().empty());
+
+  // Uninstalling an MV2 extension for a reason other than user uninstallation
+  // should not trigger a UKM event.
+  UninstallExtension(mv2_extension->id(),
+                     UninstallReason::UNINSTALL_REASON_MANAGEMENT_API);
+  EXPECT_TRUE(GetUkmEntries().empty());
+
+  // Uninstalling extensions that aren't affected by the MV2 experiments should
+  // not trigger a UKM event.
+  UninstallExtension(mv3_extension->id(),
+                     UninstallReason::UNINSTALL_REASON_USER_INITIATED);
+  EXPECT_TRUE(GetUkmEntries().empty());
 }
 
 }  // namespace extensions

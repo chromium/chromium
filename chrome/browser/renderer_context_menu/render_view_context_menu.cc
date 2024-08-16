@@ -141,6 +141,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/language/core/browser/language_model_manager.h"
+#include "components/lens/lens_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_metrics.h"
@@ -308,7 +309,7 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/url_handler.h"
+#include "chrome/browser/ash/url_handler/url_handler.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
@@ -521,13 +522,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD, 149},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
         150},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS, 151},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 151}});
+       {0, 152}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -3672,7 +3674,8 @@ const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
 }
 #endif
 
-bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
+bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
+    const GURL& item_url) const {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   // Check if file-selection dialogs are forbidden by policy.
@@ -3688,7 +3691,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
 
   PolicyBlocklistService* service =
       PolicyBlocklistFactory::GetForBrowserContext(browser_context_);
-  if (service->GetURLBlocklistState(params_.link_url) ==
+  if (service->GetURLBlocklistState(item_url) ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return false;
   }
@@ -3772,7 +3775,7 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  if (!IsSaveAsItemAllowedByPolicy(params_.link_url)) {
     return false;
   }
 
@@ -3803,7 +3806,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  if (!IsSaveAsItemAllowedByPolicy(params_.src_url)) {
     return false;
   }
 
@@ -3815,7 +3818,8 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveAsEnabled() const {
-  if (!IsSaveAsItemAllowedByPolicy()) {
+  const GURL& url = params_.src_url;
+  if (!IsSaveAsItemAllowedByPolicy(url)) {
     return false;
   }
 
@@ -3823,7 +3827,6 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
     return false;
   }
 
-  const GURL& url = params_.src_url;
   bool can_save = (params_.media_flags & ContextMenuData::kMediaCanSave) &&
                   url.is_valid() &&
                   ProfileIOData::IsHandledProtocol(url.scheme());
@@ -3848,15 +3851,20 @@ bool RenderViewContextMenu::IsSavePageEnabled() const {
     return false;
   }
 
-  if (!IsSaveAsItemAllowedByPolicy()) {
-    return false;
-  }
-
   // We save the last committed entry (which the user is looking at), as
   // opposed to any pending URL that hasn't committed yet.
   NavigationEntry* entry =
       embedder_web_contents_->GetController().GetLastCommittedEntry();
-  return content::IsSavableURL(entry ? entry->GetURL() : GURL());
+  if (!entry) {
+    return false;
+  }
+
+  GURL url = entry->GetURL();
+  if (!IsSaveAsItemAllowedByPolicy(url)) {
+    return false;
+  }
+
+  return content::IsSavableURL(url);
 }
 
 bool RenderViewContextMenu::IsPasteEnabled() const {
@@ -4298,7 +4306,7 @@ void RenderViewContextMenu::ExecSaveAs() {
     // Handle the save here.
     target_frame_host = pdf_frame_util::GetEmbedderHost(frame_host);
     CHECK(target_frame_host);
-    url = frame_host->GetLastCommittedURL();
+    url = target_frame_host->GetLastCommittedURL();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -4578,9 +4586,8 @@ void RenderViewContextMenu::ExecSearchForVideoFrame(int event_flags) {
 
   frame_host->RequestVideoFrameAtWithBoundsHint(
       gfx::Point(params_.x, params_.y),
-      gfx::Size(lens::features::GetMaxPixelsForImageSearch(),
-                lens::features::GetMaxPixelsForImageSearch()),
-      lens::features::GetMaxAreaForImageSearch(),
+      gfx::Size(lens::kMaxPixelsForImageSearch, lens::kMaxPixelsForImageSearch),
+      lens::kMaxAreaForImageSearch,
       base::BindOnce(&RenderViewContextMenu::SearchForVideoFrame,
                      weak_pointer_factory_.GetWeakPtr(), event_flags));
 }

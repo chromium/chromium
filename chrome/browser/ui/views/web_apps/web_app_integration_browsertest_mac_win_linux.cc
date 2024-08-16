@@ -144,15 +144,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, AppLaunchedInTab) {
   helper_.CheckAppLoadedInTab(Site::kStandalone);
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_PreinstalledWebAppCreateShortcutFlow \
-  DISABLED_PreinstalledWebAppCreateShortcutFlow
-#else
-#define MAYBE_PreinstalledWebAppCreateShortcutFlow \
-  PreinstalledWebAppCreateShortcutFlow
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppIntegration,
-                       MAYBE_PreinstalledWebAppCreateShortcutFlow) {
+                       PreinstalledWebAppCreateShortcutFlow) {
   helper_.InstallPreinstalledApp(Site::kStandalone);
   helper_.CheckAppInListWindowed(Site::kStandalone);
   helper_.CheckPlatformShortcutNotExists(Site::kStandalone);

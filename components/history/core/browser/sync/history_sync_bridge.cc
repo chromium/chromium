@@ -22,10 +22,10 @@
 #include "components/history/core/browser/visit_annotations_database.h"
 #include "components/sync/base/page_transition_conversion.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/history_specifics.pb.h"
@@ -109,6 +109,8 @@ sync_pb::SyncEnums::BrowserType BrowserTypeToProto(
       return sync_pb::SyncEnums_BrowserType_TYPE_POPUP;
     case VisitContextAnnotations::BrowserType::kCustomTab:
       return sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB;
+    case VisitContextAnnotations::BrowserType::kAuthTab:
+      return sync_pb::SyncEnums_BrowserType_TYPE_AUTH_TAB;
   }
   return sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN;
 }
@@ -124,6 +126,8 @@ VisitContextAnnotations::BrowserType BrowserTypeFromProto(
       return VisitContextAnnotations::BrowserType::kPopup;
     case sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB:
       return VisitContextAnnotations::BrowserType::kCustomTab;
+    case sync_pb::SyncEnums_BrowserType_TYPE_AUTH_TAB:
+      return VisitContextAnnotations::BrowserType::kAuthTab;
   }
   return VisitContextAnnotations::BrowserType::kUnknown;
 }
@@ -538,8 +542,8 @@ void RecordSpecificsError(SpecificsError error) {
 HistorySyncBridge::HistorySyncBridge(
     HistoryBackendForSync* history_backend,
     HistorySyncMetadataDatabase* sync_metadata_database,
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
+    : DataTypeSyncBridge(std::move(change_processor)),
       history_backend_(history_backend),
       sync_metadata_database_(sync_metadata_database) {
   DCHECK(history_backend_);
@@ -555,7 +559,7 @@ HistorySyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       sync_metadata_database_, syncer::HISTORY,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -669,7 +673,7 @@ void HistorySyncBridge::ApplyDisableSyncChanges(
   // Delete all foreign visits from the DB.
   history_backend_->DeleteAllForeignVisitsAndResetIsKnownToSync();
 
-  ModelTypeSyncBridge::ApplyDisableSyncChanges(
+  DataTypeSyncBridge::ApplyDisableSyncChanges(
       std::move(delete_metadata_change_list));
 }
 
@@ -782,7 +786,7 @@ syncer::ConflictResolution HistorySyncBridge::ResolveConflict(
       GetLocalCacheGuid()) {
     return syncer::ConflictResolution::kUseLocal;
   }
-  return ModelTypeSyncBridge::ResolveConflict(storage_key, remote_data);
+  return DataTypeSyncBridge::ResolveConflict(storage_key, remote_data);
 }
 
 void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,

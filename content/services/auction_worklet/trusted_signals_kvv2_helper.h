@@ -21,10 +21,10 @@
 #include "base/types/optional_ref.h"
 #include "components/cbor/values.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-shared.h"
 #include "content/services/auction_worklet/trusted_signals.h"
-#include "content/services/auction_worklet/trusted_signals_request_manager.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
+#include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -35,9 +35,19 @@
 
 namespace auction_worklet {
 
+inline constexpr std::string_view
+    kTrustedSignalsKVv2EncryptionRequestMediaType =
+        "message/ad-auction-trusted-signals-request";
+
+inline constexpr std::string_view
+    kTrustedSignalsKVv2EncryptionResponseMediaType =
+        "message/ad-auction-trusted-signals-response";
+
 class CONTENT_EXPORT TrustedSignalsKVv2RequestHelper {
  public:
-  explicit TrustedSignalsKVv2RequestHelper(std::string post_request_body);
+  explicit TrustedSignalsKVv2RequestHelper(
+      std::string post_request_body,
+      quiche::ObliviousHttpRequest::Context context);
 
   TrustedSignalsKVv2RequestHelper(TrustedSignalsKVv2RequestHelper&&);
   TrustedSignalsKVv2RequestHelper& operator=(TrustedSignalsKVv2RequestHelper&&);
@@ -51,8 +61,12 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelper {
 
   std::string TakePostRequestBody();
 
+  quiche::ObliviousHttpRequest::Context TakeOHttpRequestContext();
+
  private:
   std::string post_request_body_;
+  // Save request's encryption context for later decryption usage.
+  quiche::ObliviousHttpRequest::Context context_;
 };
 
 // A single-use class within `TrustedSignalsRequestManager` is designed to
@@ -84,7 +98,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2RequestHelperBuilder {
 
   // Build the request helper using the helper builder to construct the POST
   // body string, noting that the partition IDs will not be sequential.
-  virtual TrustedSignalsKVv2RequestHelper Build() = 0;
+  virtual std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build(
+      mojom::TrustedSignalsPublicKeyPtr public_key) = 0;
 
  protected:
   TrustedSignalsKVv2RequestHelperBuilder(
@@ -202,7 +217,8 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
       base::optional_ref<const url::Origin> interest_group_join_origin,
       std::optional<blink::mojom::InterestGroup::ExecutionMode> execution_mode);
 
-  TrustedSignalsKVv2RequestHelper Build() override;
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> Build(
+      mojom::TrustedSignalsPublicKeyPtr public_key) override;
 
  private:
   cbor::Value::MapValue BuildMapForPartition(const Partition& partition,
@@ -220,7 +236,7 @@ class CONTENT_EXPORT TrustedBiddingSignalsKVv2RequestHelperBuilder
 struct CONTENT_EXPORT CompressionGroupResult {
   CompressionGroupResult();
   CompressionGroupResult(mojom::TrustedSignalsCompressionScheme scheme,
-                         std::string content,
+                         std::vector<uint8_t> content,
                          base::TimeDelta ttl);
   CompressionGroupResult(CompressionGroupResult&&);
   CompressionGroupResult& operator=(CompressionGroupResult&&);
@@ -231,7 +247,7 @@ struct CONTENT_EXPORT CompressionGroupResult {
   mojom::TrustedSignalsCompressionScheme compression_scheme;
 
   // The compressed content string.
-  std::string content;
+  std::vector<uint8_t> content;
 
   // Time until the response expires.
   base::TimeDelta ttl;
@@ -262,7 +278,8 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
   // Parse response body to `SignalsFetchResult` for integration with cache call
   // flow in browser process.
   static SignalsFetchResult ParseResponseToSignalsFetchResult(
-      std::vector<uint8_t> body_bytes);
+      const std::string& body,
+      quiche::ObliviousHttpRequest::Context& context);
 
   // Parse trusted bidding signals fetch result to result map for integration
   // with bidder worklet trusted bidding signals fetch call flow.
@@ -270,8 +287,7 @@ class CONTENT_EXPORT TrustedSignalsKVv2ResponseParser {
       AuctionV8Helper* v8_helper,
       const std::optional<std::set<std::string>>& interest_group_names,
       const std::optional<std::set<std::string>>& keys,
-      const CompressionGroupResultMap& compression_group_result_map,
-      std::optional<uint32_t> data_version);
+      const CompressionGroupResultMap& compression_group_result_map);
 };
 
 }  // namespace auction_worklet

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HISTORY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_HISTORY_CONTROLLER_H_
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view_tracker.h"
 #include "url/gurl.h"
@@ -42,7 +44,7 @@ class PageInfoHistoryController {
   // Creates a history button with `last_visit` information and adds to the
   // container accessed through `container_tracker_`. It clears the container
   // before adding a button to ensure that only one button exists at a time.
-  void UpdateRow(base::Time last_visit);
+  void UpdateRow(std::optional<base::Time> last_visit);
   std::unique_ptr<views::View> CreateHistoryButton(std::u16string last_visit);
   void OpenHistoryPage();
 

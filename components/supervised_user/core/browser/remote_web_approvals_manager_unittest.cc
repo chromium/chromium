@@ -20,6 +20,7 @@
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -94,7 +95,10 @@ class MockPermissionRequestCreator
 
 class RemoteWebApprovalsManagerTest : public ::testing::Test {
  protected:
-  RemoteWebApprovalsManagerTest() = default;
+  RemoteWebApprovalsManagerTest() {
+    filter_.SetURLCheckerClient(
+        std::make_unique<safe_search_api::FakeURLCheckerClient>());
+  }
 
   RemoteWebApprovalsManagerTest(const RemoteWebApprovalsManagerTest&) = delete;
   RemoteWebApprovalsManagerTest& operator=(
@@ -126,8 +130,7 @@ class RemoteWebApprovalsManagerTest : public ::testing::Test {
   supervised_user::SupervisedUserURLFilter filter_ =
       supervised_user::SupervisedUserURLFilter(
           pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-          base::BindRepeating([](const GURL& url) { return false; }));
+          std::make_unique<supervised_user::FakeURLFilterDelegate>());
   supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;
 };
 

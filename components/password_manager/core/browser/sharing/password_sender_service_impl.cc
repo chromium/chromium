@@ -7,7 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_sync_bridge.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace password_manager {
 
@@ -28,7 +28,7 @@ void PasswordSenderServiceImpl::SendPasswords(
   sync_bridge_->SendPasswordGroup(passwords, recipient);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 PasswordSenderServiceImpl::GetControllerDelegate() {
   return sync_bridge_->change_processor()->GetControllerDelegate();
 }

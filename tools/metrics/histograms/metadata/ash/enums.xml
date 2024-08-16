@@ -37,6 +37,11 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Desk 8"/>
 </enum>
 
+<enum name="ActiveSessionAuthControllerReason">
+  <int value="0" label="PasswordManager"/>
+  <int value="1" label="Settings"/>
+</enum>
+
 <enum name="AltTabMode">
   <int value="0" label="All Desks"/>
   <int value="1" label="Current Desk"/>
@@ -210,6 +215,11 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3" label="Not run"/>
 </enum>
 
+<enum name="AuthInputType">
+  <int value="0" label="Password"/>
+  <int value="1" label="PIN"/>
+</enum>
+
 <enum name="AuthMethod">
   <int value="0" label="Password"/>
   <int value="1" label="PIN"/>
@@ -308,6 +318,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="8" label="Most Visited"/>
   <int value="9" label="Last Active"/>
   <int value="10" label="Lost Media"/>
+  <int value="11" label="Coral"/>
 </enum>
 
 <enum name="BooleanMuted">
@@ -461,6 +472,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="7" label="Projector app"/>
   <int value="8" label="Capture given window"/>
   <int value="9" label="Game dashboard"/>
+  <int value="10" label="Sunfish"/>
 </enum>
 
 <enum name="CaptureModeSaveToLocation">
@@ -510,6 +522,7 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="0" label="Congratulations"/>
   <int value="1" label="Offer"/>
   <int value="2" label="Terms &amp; Conditions"/>
+  <int value="3" label="Debug"/>
 </enum>
 
 <enum name="ContextualGoogleIntegrationStatus">
@@ -540,6 +553,16 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="0" label="Deprecated key accelerator is used"/>
   <int value="1" label="New key accelerator is used"/>
 </enum>
+
+<!-- LINT.IfChange(DeskBarVisibility) -->
+
+<enum name="DeskBarVisibility">
+  <int value="0" label="Shown in first overview frame"/>
+  <int value="1" label="Shown after first overview frame"/>
+  <int value="2" label="Not shown during overview session"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/wm/overview/overview_controller.cc:DeskBarVisibility) -->
 
 <enum name="DeskCloseType">
   <int value="0" label="Combine desks."/>
@@ -1732,8 +1755,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Unknown"/>
   <int value="1" label="User inserts or copies a result."/>
   <int value="2" label="User abandons the session."/>
-  <int value="3" label="User selects an action to open another window."/>
+  <int value="3"
+      label="User selects an action to open another window, e.g. the Emoji
+             picker."/>
   <int value="4" label="User selects an action related to text format."/>
+  <int value="5" label="User opens a file."/>
+  <int value="6" label="User opens a link."/>
+  <int value="7" label="User creates a google workspace file or webpage."/>
 </enum>
 
 <enum name="PinAutosubmitBackfillEvent">
@@ -1898,7 +1926,8 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 
 <enum name="ReportState">
   <summary>
-    Preconditions (see //chrome/browser/ash/report_controller_initializer.h).
+    Preconditions (see
+    //chrome/browser/ash/report_controller/report_controller_initializer.h).
   </summary>
   <int value="0" label="Waiting For Ownership"/>
   <int value="1" label="Waiting For Startup Delay"/>
@@ -1946,12 +1975,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="8"
       label="Failed as the screenshot and display have different orientations"/>
   <int value="9" label="Failed on DLP checking"/>
+  <int value="10" label="Failed in guest or public user session"/>
 </enum>
 
 <enum name="SeaPenActionMenuItem">
   <int value="0" label="Create More Like This"/>
   <int value="1" label="Delete"/>
   <int value="2" label="About"/>
+</enum>
+
+<enum name="SeaPenFreeformTab">
+  <int value="0" label="kResults"/>
+  <int value="1" label="kSamplePrompts"/>
 </enum>
 
 <enum name="SeaPenTemplateId">
@@ -2721,6 +2756,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
   <int value="2" label="Not supported due to missing location"/>
+  <int value="3" label="Not supported due to missing collection"/>
 </enum>
 
 <enum name="WallpaperType">

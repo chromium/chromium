@@ -83,7 +83,7 @@ message HeartbeatRequest {
 // Sent in response to a HeartbeatRequest.
 message HeartbeatResponse {
   // Obsolete fields reserved to prevent reuse.
-  reserved 2, 4;
+  reserved 2;
 
   // The amount of time to wait before the host should send its next update.
   optional int32 set_interval_seconds = 1;
@@ -91,8 +91,16 @@ message HeartbeatResponse {
   // Use the new lightweight heartbeat api for the next heartbeat.
   optional bool use_lite_heartbeat = 3;
 
-  // Send the next heartbeat via the corp api service.
-  optional bool use_corp_api = 5;
+  // The primary email address of the user which is allowed to connect to the
+  // remote machine.
+  optional string primary_user_email = 4;
+
+  // Identify the host as belonging to a corp user.
+  optional bool is_corp_user = 5;
+
+  // Indicates whether the session authorization service must be used. If unset,
+  // other authn types may be used (such as PIN).
+  optional bool require_session_authorization = 6;
 }
 
 // Requests that a new host entry to added to the Directory.

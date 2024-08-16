@@ -21,6 +21,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
 #include "printing/backend/cups_deleters.h"
+#include "printing/backend/cups_helper.h"
 #include "printing/backend/cups_ipp_helper.h"
 #include "printing/printer_status.h"
 
@@ -536,10 +537,10 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
     return PrinterQueryResult::kHostnameResolution;
   }
 
-  ScopedHttpPtr http = ScopedHttpPtr(httpConnect2(
+  ScopedHttpPtr http = HttpConnect2(
       address.c_str(), port, addr_list, AF_UNSPEC,
       encrypted ? HTTP_ENCRYPTION_ALWAYS : HTTP_ENCRYPTION_IF_REQUESTED, 0,
-      kHttpConnectTimeoutMs, nullptr));
+      kHttpConnectTimeoutMs, nullptr);
   if (!http) {
     LOG(WARNING) << "Could not connect to host";
     return PrinterQueryResult::kUnreachable;

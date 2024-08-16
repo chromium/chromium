@@ -453,7 +453,7 @@ TEST_F(OAuth2MintTokenFlowTest, CreateAuthorizationHeaderValueBoundOAuthToken) {
   CreateClientFlow("test_bound_oauth_token");
   std::string header =
       flow_->CreateAuthorizationHeaderValue("test_access_token");
-  EXPECT_EQ(header, "BoundOAuthToken test_bound_oauth_token");
+  EXPECT_EQ(header, "BoundOAuth test_bound_oauth_token");
 }
 
 TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseAccessTokenMissing) {

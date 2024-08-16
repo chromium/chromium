@@ -18,7 +18,6 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ExtensionsHatsBrowserProxyImpl} from './extension_hats_browser_proxy.js';
 import type {ItemDelegate} from './item.js';
 import {convertSafetyCheckReason, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_SHOWN_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE} from './item_util.js';
 import {getTemplate} from './review_panel.html.js';
@@ -217,12 +216,9 @@ export class ExtensionsReviewPanelElement extends
       if (this.shouldShowCompletionInfo_) {
         this.numberOfExtensionsChangedByLastReviewPanelAction_ = 0;
       }
-      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(true);
       return true;
-    } else {
-      ExtensionsHatsBrowserProxyImpl.getInstance().panelShown(false);
-      return false;
     }
+    return false;
   }
 
   private computeShouldShowSafetyHubHeader_(): boolean {
@@ -255,7 +251,6 @@ export class ExtensionsReviewPanelElement extends
         SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME,
         convertSafetyCheckReason(this.lastClickedExtensionTriggerReason_),
         SAFETY_HUB_WARNING_REASON_MAX_SIZE);
-    ExtensionsHatsBrowserProxyImpl.getInstance().extensionKeptAction();
     if (this.extensions?.length === 1) {
       this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
     }
@@ -285,7 +280,6 @@ export class ExtensionsReviewPanelElement extends
         SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME,
         convertSafetyCheckReason(e.model.item.safetyCheckWarningReason),
         SAFETY_HUB_WARNING_REASON_MAX_SIZE);
-    ExtensionsHatsBrowserProxyImpl.getInstance().extensionRemovedAction();
     if (this.extensions?.length === 1) {
       this.numberOfExtensionsChangedByLastReviewPanelAction_ = 1;
     }
@@ -301,8 +295,6 @@ export class ExtensionsReviewPanelElement extends
   private async onRemoveAllClick_(event: Event): Promise<void> {
     chrome.metricsPrivate.recordUserAction(
         'SafetyCheck.ReviewPanelRemoveAllClicked');
-    ExtensionsHatsBrowserProxyImpl.getInstance().removeAllAction(
-        this.extensions.length);
     event.stopPropagation();
     this.numberOfExtensionsChangedByLastReviewPanelAction_ =
         this.extensions.length;

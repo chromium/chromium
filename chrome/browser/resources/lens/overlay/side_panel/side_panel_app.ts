@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
-import '//resources/cr_components/searchbox/realbox.js';
+import '//resources/cr_components/searchbox/searchbox.js';
 import './side_panel_ghost_loader.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';

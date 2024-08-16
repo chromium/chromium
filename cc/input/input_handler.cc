@@ -294,49 +294,47 @@ InputHandler::ScrollStatus InputHandler::RootScrollBegin(
 }
 
 InputHandlerScrollResult InputHandler::ScrollUpdate(
-    ScrollState* scroll_state,
+    ScrollState scroll_state,
     base::TimeDelta delayed_by) {
-  DCHECK(scroll_state);
-
   // The current_native_scrolling_element should only be set for ScrollBegin.
-  DCHECK(!scroll_state->data()->current_native_scrolling_element());
-  TRACE_EVENT2("cc", "InputHandler::ScrollUpdate", "dx",
-               scroll_state->delta_x(), "dy", scroll_state->delta_y());
+  DCHECK(!scroll_state.data()->current_native_scrolling_element());
+  TRACE_EVENT2("cc", "InputHandler::ScrollUpdate", "dx", scroll_state.delta_x(),
+               "dy", scroll_state.delta_y());
 
   if (!CurrentlyScrollingNode())
     return InputHandlerScrollResult();
 
   const ScrollNode& scroll_node = *CurrentlyScrollingNode();
-  last_scroll_update_state_ = *scroll_state;
+  last_scroll_update_state_ = scroll_state;
 
   // Snap on update if interacting with the scrollbar track or arrow buttons.
   // Interactions with the scrollbar thumb have kScrollByPrecisePixel
   // granularity.
-  if (scroll_state->is_scrollbar_interaction() &&
-      scroll_state->delta_granularity() !=
+  if (scroll_state.is_scrollbar_interaction() &&
+      scroll_state.delta_granularity() !=
           ui::ScrollGranularity::kScrollByPrecisePixel) {
     AdjustScrollDeltaForScrollbarSnap(scroll_state);
   }
 
   gfx::Vector2dF resolvedScrollDelta = ResolveScrollGranularityToPixels(
       scroll_node,
-      gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
-      scroll_state->delta_granularity());
+      gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()),
+      scroll_state.delta_granularity());
 
-  scroll_state->data()->delta_x = resolvedScrollDelta.x();
-  scroll_state->data()->delta_y = resolvedScrollDelta.y();
+  scroll_state.data()->delta_x = resolvedScrollDelta.x();
+  scroll_state.data()->delta_y = resolvedScrollDelta.y();
   // The decision of whether or not we'll animate a scroll comes down to
   // whether the granularity is specified in precise pixels or not. Thus we
   // need to preserve a precise granularity if that's what was specified; all
   // others are animated and so can be resolved to regular pixels.
-  if (scroll_state->delta_granularity() !=
+  if (scroll_state.delta_granularity() !=
       ui::ScrollGranularity::kScrollByPrecisePixel) {
-    scroll_state->data()->delta_granularity =
+    scroll_state.data()->delta_granularity =
         ui::ScrollGranularity::kScrollByPixel;
   }
 
   compositor_delegate_->AccumulateScrollDeltaForTracing(
-      gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()));
+      gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()));
 
   compositor_delegate_->WillScrollContent(scroll_node.element_id);
 
@@ -346,14 +344,14 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 
   ScrollLatchedScroller(scroll_state, delayed_by);
 
-  bool did_scroll_x = scroll_state->caused_scroll_x();
-  bool did_scroll_y = scroll_state->caused_scroll_y();
+  bool did_scroll_x = scroll_state.caused_scroll_x();
+  bool did_scroll_y = scroll_state.caused_scroll_y();
 
   delta_consumed_for_scroll_gesture_ |=
-      scroll_state->delta_consumed_for_scroll_sequence();
+      scroll_state.delta_consumed_for_scroll_sequence();
   bool did_scroll_content = did_scroll_x || did_scroll_y;
   if (did_scroll_content) {
-    bool is_animated_scroll = ShouldAnimateScroll(*scroll_state);
+    bool is_animated_scroll = ShouldAnimateScroll(scroll_state);
     compositor_delegate_->DidScrollContent(scroll_node.element_id,
                                            is_animated_scroll);
   }
@@ -369,7 +367,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   gfx::Vector2dF unused_root_delta;
   if (GetViewport().ShouldScroll(scroll_node)) {
     unused_root_delta =
-        gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y());
+        gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y());
   }
 
   // When inner viewport is unscrollable, disable overscrolls.
@@ -391,7 +389,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
   scroll_result.accumulated_root_overscroll = accumulated_root_overscroll_;
   scroll_result.unused_scroll_delta = unused_root_delta;
   scroll_result.overscroll_behavior =
-      scroll_state->is_scroll_chain_cut()
+      scroll_state.is_scroll_chain_cut()
           ? OverscrollBehavior(OverscrollBehavior::Type::kNone)
           : ActiveTree().overscroll_behavior();
 
@@ -421,7 +419,7 @@ InputHandlerScrollResult InputHandler::ScrollUpdate(
 }
 
 void InputHandler::AdjustScrollDeltaForScrollbarSnap(
-    ScrollState* scroll_state) {
+    ScrollState& scroll_state) {
   ScrollNode* scroll_node = CurrentlyScrollingNode();
   if (!scroll_node || !scroll_node->snap_container_data)
     return;
@@ -438,16 +436,15 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForDirection(
           current_position,
-          gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
-          true);
+          gfx::Vector2dF(scroll_state.delta_x(), scroll_state.delta_y()), true);
 
   SnapPositionData snap = data.FindSnapPosition(*strategy);
   if (snap.type == SnapPositionData::Type::kNone) {
     return;
   }
 
-  scroll_state->data()->delta_x = snap.position.x() - current_position.x();
-  scroll_state->data()->delta_y = snap.position.y() - current_position.y();
+  scroll_state.data()->delta_x = snap.position.x() - current_position.x();
+  scroll_state.data()->delta_y = snap.position.y() - current_position.y();
 }
 
 void InputHandler::ScrollEnd(bool should_snap) {
@@ -1346,15 +1343,22 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
       return result;
     }
 
-    // If we hit a non-fast scrollable region, that means there's some reason we
-    // can't scroll in this region. Primarily, because there's another scroller
-    // there that isn't composited and we don't know about so we'll return
-    // failure.
-    if (ActiveTree().PointHitsNonFastScrollableRegion(device_viewport_point,
-                                                      *layer_impl)) {
+    // If we hit a main thread hit test region, that means there's some reason
+    // we can't scroll in this region. Primarily, because there's another
+    // scroller there that isn't composited and we don't know about so we'll
+    // return failure.
+    if (ActiveTree().PointHitsMainThreadScrollHitTestRegion(
+            device_viewport_point, *layer_impl)) {
       result.main_thread_hit_test_reasons =
-          MainThreadScrollingReason::kNonFastScrollableRegion;
+          MainThreadScrollingReason::kMainThreadScrollHitTestRegion;
       return result;
+    }
+
+    if (ElementId scroll_element_id = ActiveTree().PointHitsNonCompositedScroll(
+            device_viewport_point, *layer_impl)) {
+      node_to_scroll = GetScrollTree().FindNodeFromElementId(scroll_element_id);
+      CHECK(node_to_scroll);
+      break;
     }
   }
 
@@ -1627,14 +1631,13 @@ gfx::Vector2dF InputHandler::ScrollSingleNode(const ScrollNode& scroll_node,
   return ScrollNodeWithLocalDelta(scroll_node, adjusted_delta);
 }
 
-void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
+void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
                                          base::TimeDelta delayed_by) {
   DCHECK(CurrentlyScrollingNode());
-  DCHECK(scroll_state);
   DCHECK(latched_scroll_type_.has_value());
 
   ScrollNode& scroll_node = *CurrentlyScrollingNode();
-  const gfx::Vector2dF delta(scroll_state->delta_x(), scroll_state->delta_y());
+  const gfx::Vector2dF delta(scroll_state.delta_x(), scroll_state.delta_y());
   TRACE_EVENT2("cc", "InputHandler::ScrollLatchedScroller", "delta_x",
                delta.x(), "delta_y", delta.y());
   gfx::Vector2dF applied_delta;
@@ -1644,8 +1647,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
   // details.
   const float kEpsilon = 0.1f;
 
-  if (ShouldAnimateScroll(*scroll_state)) {
-    DCHECK(!scroll_state->is_in_inertial_phase());
+  if (ShouldAnimateScroll(scroll_state)) {
+    DCHECK(!scroll_state.is_in_inertial_phase());
 
     if (ElementId id = compositor_delegate_->GetImplDeprecated()
                            .mutator_host()
@@ -1709,8 +1712,8 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
     // browser controls).
     delta_applied_to_content = delta;
   } else {
-    gfx::Point viewport_point(scroll_state->position_x(),
-                              scroll_state->position_y());
+    gfx::Point viewport_point(scroll_state.position_x(),
+                              scroll_state.position_y());
     if (GetViewport().ShouldScroll(scroll_node)) {
       // |scrolls_outer_viewport| will only ever be false if the scroll chains
       // up to the viewport without going through the outer viewport scroll
@@ -1721,7 +1724,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       // zoomed -- but still use Viewport::ScrollBy to also move browser
       // controls if needed.
       Viewport::ScrollResult result = GetViewport().ScrollBy(
-          delta, viewport_point, scroll_state->is_direct_manipulation(),
+          delta, viewport_point, scroll_state.is_direct_manipulation(),
           latched_scroll_type_ != ui::ScrollInputType::kWheel,
           scroll_node.scrolls_outer_viewport);
 
@@ -1737,7 +1740,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
       }
     } else {
       applied_delta = ScrollSingleNode(scroll_node, delta, viewport_point,
-                                       scroll_state->is_direct_manipulation());
+                                       scroll_state.is_direct_manipulation());
     }
     snap_strategy_offset = GetVisualScrollOffset(scroll_node);
   }
@@ -1751,7 +1754,7 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
     // scrolls to produce overscroll but is inconsistent in how delta gets
     // chained up. We need to clean this up.
     if (scroll_node.scrolls_outer_viewport)
-      scroll_state->ConsumeDelta(applied_delta.x(), applied_delta.y());
+      scroll_state.ConsumeDelta(applied_delta.x(), applied_delta.y());
     return;
   }
 
@@ -1771,20 +1774,28 @@ void InputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
     delta_applied_to_content = applied_delta;
   }
 
-  scroll_state->set_caused_scroll(
+  scroll_state.set_caused_scroll(
       std::abs(delta_applied_to_content.x()) > kEpsilon,
       std::abs(delta_applied_to_content.y()) > kEpsilon);
-  scroll_state->ConsumeDelta(applied_delta.x(), applied_delta.y());
+  scroll_state.ConsumeDelta(applied_delta.x(), applied_delta.y());
 
-  did_scroll_x_for_scroll_gesture_ |= scroll_state->caused_scroll_x();
-  did_scroll_y_for_scroll_gesture_ |= scroll_state->caused_scroll_y();
+  did_scroll_x_for_scroll_gesture_ |= scroll_state.caused_scroll_x();
+  did_scroll_y_for_scroll_gesture_ |= scroll_state.caused_scroll_y();
 
-  if (snap_strategy_offset && !scroll_state->is_in_inertial_phase()) {
+  if (snap_strategy_offset && !scroll_state.is_in_inertial_phase()) {
     // We use |last_scroll_update_state_| instead of |scroll_state| as that more
     // closely matches what InputHandler::SnapAtScrollend would use.
-    snap_strategy_ = CreateSnapStrategy(
-        last_scroll_update_state_.value(), snap_strategy_offset.value(),
-        SnapReason::kScrollOffsetAnimationFinished);
+    //
+    // We validate that `last_scroll_update_state_` exists before using it. As
+    // we have seen rare crashes with it null. We do not use
+    // `std::optional::value_or` here as that performs a copy of the
+    // alternative. Which will rarely ever be needed.
+    snap_strategy_ =
+        CreateSnapStrategy(last_scroll_update_state_.has_value()
+                               ? last_scroll_update_state_.value()
+                               : scroll_state,
+                           snap_strategy_offset.value(),
+                           SnapReason::kScrollOffsetAnimationFinished);
   }
 }
 

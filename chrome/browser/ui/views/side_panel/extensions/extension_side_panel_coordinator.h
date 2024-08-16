@@ -55,6 +55,10 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
 
+  // Deregisters this extension's SidePanelEntry from `registry_`.
+  // To avoid re-entrancy this does not happen automatically in the destructor.
+  void DeregisterEntry();
+
  private:
   SidePanelEntry::Key GetEntryKey() const;
 
@@ -65,9 +69,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Returns if this extension's side panel is explicitly disabled for the given
   // `tab_id`.
   bool IsDisabledForTab(int tab_id) const;
-
-  // Deregisters this extension's SidePanelEntry from `registry_`.
-  void DeregisterEntry();
 
   // Deregisters this extension's SidePanelEntry from the global
   // SidePanelRegistry and caches the entry's view into `global_entry_view_`.

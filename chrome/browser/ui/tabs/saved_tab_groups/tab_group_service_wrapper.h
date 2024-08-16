@@ -17,6 +17,7 @@
 class Profile;
 
 namespace tab_groups {
+class SavedTabGroupModelObserver;
 class SavedTabGroupKeyedService;
 
 // This class serves to hold pointers to and utilize the TabGroupSyncService and
@@ -84,18 +85,27 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   void UpdateLocalTabId(const LocalTabGroupID& local_group_id,
                         const base::Uuid& sync_tab_id,
                         const LocalTabID& local_tab_id) override;
+  void ConnectLocalTabGroup(const base::Uuid& sync_id,
+                            const LocalTabGroupID& local_id) override;
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSharedTabGroupControllerDelegate() override;
   std::unique_ptr<ScopedLocalObservationPauser>
   CreateScopedLocalObserverPauser() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+
+  void AddWrapperObserver(
+      Observer* tab_group_sync_observer,
+      SavedTabGroupModelObserver* saved_tab_group_model_observer);
+  void RemoveWrapperObserver(
+      Observer* tab_group_sync_observer,
+      SavedTabGroupModelObserver* saved_tab_group_model_observer);
 
   // These functions are only called for the SavedTabGroupKeyedService to log
   // metrics that the TabGroupSyncService is already recording.
@@ -114,6 +124,9 @@ class TabGroupServiceWrapper : public TabGroupSyncService {
   void SetFaviconForTab(const LocalTabGroupID& group_id,
                         const LocalTabID& tab_id,
                         std::optional<gfx::Image> favicon);
+
+  // True if the sync setting for saved tab groups is enabled.
+  bool AreSavedTabGroupsSyncedForProfile(Profile* profile);
 
  private:
   bool ShouldUseSyncService();

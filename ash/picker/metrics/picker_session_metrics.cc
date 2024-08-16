@@ -4,6 +4,7 @@
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/overloaded.h"
@@ -12,12 +13,16 @@
 #include "base/notreached.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/ime/text_input_client.h"
 
 namespace ash {
 namespace {
 
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
+
+constexpr int kCapsLockCountThreshold = 20;
 
 cros_events::PickerInputFieldType GetInputFieldType(
     ui::TextInputClient* client) {
@@ -85,6 +90,12 @@ cros_events::PickerSessionOutcome ConvertToCrosEventSessionOutcome(
       return cros_events::PickerSessionOutcome::REDIRECTED;
     case PickerSessionMetrics::SessionOutcome::kFormat:
       return cros_events::PickerSessionOutcome::FORMAT;
+    case PickerSessionMetrics::SessionOutcome::kOpenFile:
+      return cros_events::PickerSessionOutcome::OPEN_FILE;
+    case PickerSessionMetrics::SessionOutcome::kOpenLink:
+      return cros_events::PickerSessionOutcome::OPEN_LINK;
+    case PickerSessionMetrics::SessionOutcome::kCreate:
+      return cros_events::PickerSessionOutcome::CREATE;
   }
 }
 
@@ -100,7 +111,8 @@ cros_events::PickerAction ConvertToCrosEventAction(
       return cros_events::PickerAction::OPEN_EDITOR_REWRITE;
     case PickerCategory::kLinks:
       return cros_events::PickerAction::OPEN_LINKS;
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       return cros_events::PickerAction::OPEN_EXPRESSIONS;
     case PickerCategory::kClipboard:
       return cros_events::PickerAction::OPEN_CLIPBOARD;
@@ -153,13 +165,13 @@ cros_events::PickerResultSource GetResultSource(
             return cros_events::PickerResultSource::DRIVE_FILES;
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             return cros_events::PickerResultSource::UNKNOWN;
@@ -200,6 +212,7 @@ cros_events::PickerResultType GetResultType(
               case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
                 return cros_events::PickerResultType::CLIPBOARD_FILE;
               case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+              case PickerSearchResult::ClipboardData::DisplayFormat::kUrl:
                 return cros_events::PickerResultType::CLIPBOARD_TEXT;
               case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
                 return cros_events::PickerResultType::CLIPBOARD_IMAGE;
@@ -217,13 +230,13 @@ cros_events::PickerResultType GetResultType(
             return cros_events::PickerResultType::DRIVE_FILE;
           },
           [](const PickerSearchResult::CategoryData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
-            NOTREACHED_NORETURN();
+            NOTREACHED();
           },
           [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             return cros_events::PickerResultType::UNKNOWN;
@@ -242,8 +255,16 @@ cros_events::PickerResultType GetResultType(
 
 PickerSessionMetrics::PickerSessionMetrics() = default;
 
+PickerSessionMetrics::PickerSessionMetrics(PrefService* prefs)
+    : prefs_(prefs) {}
+
 PickerSessionMetrics::~PickerSessionMetrics() {
   OnFinishSession();
+}
+
+void PickerSessionMetrics::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  registry->RegisterIntegerPref(prefs::kPickerCapsLockDislayedCountPrefName, 0);
 }
 
 void PickerSessionMetrics::SetOutcome(SessionOutcome outcome) {
@@ -281,6 +302,11 @@ void PickerSessionMetrics::OnStartSession(ui::TextInputClient* client) {
 }
 
 void PickerSessionMetrics::OnFinishSession() {
+  if (caps_lock_displayed_) {
+    UpdateCapLockPrefs(selected_result_.has_value() &&
+                       std::holds_alternative<PickerSearchResult::CapsLockData>(
+                           selected_result_->data()));
+  }
   base::UmaHistogramEnumeration("Ash.Picker.Session.Outcome", outcome_);
   metrics::structured::StructuredMetricsClient::Record(
       cros_events::Picker_FinishSession()
@@ -291,6 +317,35 @@ void PickerSessionMetrics::OnFinishSession() {
           .SetTotalEdits(search_query_total_edits_)
           .SetFinalQuerySize(search_query_length_)
           .SetResultIndex(result_index_));
+}
+
+void PickerSessionMetrics::SetCapsLockDisplayed(bool displayed) {
+  caps_lock_displayed_ = displayed;
+}
+
+void PickerSessionMetrics::UpdateCapLockPrefs(bool caps_lock_selected) {
+  if (prefs_ == nullptr) {
+    return;
+  }
+  int caps_lock_displayed_count =
+      prefs_->GetInteger(prefs::kPickerCapsLockDislayedCountPrefName) + 1;
+  int caps_lock_selected_count =
+      prefs_->GetInteger(prefs::kPickerCapsLockSelectedCountPrefName);
+  if (caps_lock_selected) {
+    ++caps_lock_selected_count;
+  }
+  // We will only use caps_lock_selected_count / caps_lock_displayed_count to
+  // decide the position of caps lock toggle. We halves both numbers so that
+  // they don't grow infinitely and later usages have more weights in decision
+  // making. The remainders in division is not significant in our use cases.
+  if (caps_lock_displayed_count >= kCapsLockCountThreshold) {
+    caps_lock_displayed_count /= 2;
+    caps_lock_selected_count /= 2;
+  }
+  prefs_->SetInteger(prefs::kPickerCapsLockDislayedCountPrefName,
+                     caps_lock_displayed_count);
+  prefs_->SetInteger(prefs::kPickerCapsLockSelectedCountPrefName,
+                     caps_lock_selected_count);
 }
 
 }  // namespace ash

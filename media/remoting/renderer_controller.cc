@@ -11,8 +11,8 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/remoting_constants.h"
 #include "media/remoting/metrics.h"
-#include "media/remoting/remoting_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"

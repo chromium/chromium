@@ -7,11 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
@@ -28,15 +25,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/native_theme.h"
 
 using testing::_;
 using testing::WithArg;
@@ -130,11 +123,18 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
+    button_ = nullptr;
+    media_router_ = nullptr;
     widget_.reset();
-    browser_.reset();
-    window_.reset();
-    profile_.reset();
     ChromeViewsTestBase::TearDown();
+  }
+
+  bool IsWarningIcon() {
+    return gfx::test::AreImagesEqual(warning_chrome_refresh_icon_, GetIcon());
+  }
+
+  bool IsIdleIcon() {
+    return gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon());
   }
 
  protected:
@@ -142,17 +142,16 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     return gfx::Image(button_->GetImage(views::Button::STATE_NORMAL));
   }
 
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<CastToolbarButton, DanglingUntriaged> button_ =
-      nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;
-  raw_ptr<MockMediaRouter, DanglingUntriaged> media_router_ = nullptr;
   std::unique_ptr<MirroringMediaControllerHostImpl> mirroring_controller_host_;
 
+  raw_ptr<CastToolbarButton> button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<MockMediaRouter> media_router_ = nullptr;
   gfx::Image idle_chrome_refresh_icon_;
   gfx::Image warning_chrome_refresh_icon_;
   gfx::Image active_chrome_refresh_icon_;
@@ -174,24 +173,26 @@ TEST_F(CastToolbarButtonTest, ShowAndHideButton) {
 
 TEST_F(CastToolbarButtonTest, UpdateIssues) {
   button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 
-  button_->OnIssue(Issue(IssueInfo(
+  button_->OnIssue(Issue::CreateIssueWithIssueInfo(IssueInfo(
       "title notification", IssueInfo::Severity::NOTIFICATION, "sinkId1")));
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 
-  button_->OnIssue(Issue(
+  button_->OnIssue(Issue::CreateIssueWithIssueInfo(
       IssueInfo("title warning", IssueInfo::Severity::WARNING, "sinkId1")));
-  EXPECT_TRUE(
-      gfx::test::AreImagesEqual(warning_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsWarningIcon());
+
+  button_->OnIssue(Issue::CreatePermissionRejectedIssue());
+  EXPECT_TRUE(IsWarningIcon());
 
   button_->OnIssuesCleared();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 }
 
 TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 
   button_->OnRoutesUpdated(local_display_route_list_);
   EXPECT_TRUE(
@@ -200,10 +201,10 @@ TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   // The idle icon should be shown when we only have non-local and/or
   // non-display routes.
   button_->OnRoutesUpdated(non_local_display_route_list_);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 
   button_->OnRoutesUpdated({});
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 }
 
 TEST_F(CastToolbarButtonTest, PausedIcon) {
@@ -213,7 +214,7 @@ TEST_F(CastToolbarButtonTest, PausedIcon) {
   profile_->GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   button_->UpdateIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon()));
+  EXPECT_TRUE(IsIdleIcon());
 
   media_router::mojom::MediaStatusPtr status = mojom::MediaStatus::New();
   status->can_play_pause = true;

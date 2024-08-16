@@ -14,19 +14,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_with_in_memory_cache.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync_user_events/global_id_mapper.h"
 
 namespace syncer {
 
-class UserEventSyncBridge : public ModelTypeSyncBridge {
+class UserEventSyncBridge : public DataTypeSyncBridge {
  public:
   UserEventSyncBridge(
-      OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       GlobalIdMapper* global_id_mapper);
 
   UserEventSyncBridge(const UserEventSyncBridge&) = delete;
@@ -34,7 +34,7 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
 
   ~UserEventSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -54,11 +54,11 @@ class UserEventSyncBridge : public ModelTypeSyncBridge {
 
   static std::string GetStorageKeyFromSpecificsForTest(
       const sync_pb::UserEventSpecifics& specifics);
-  std::unique_ptr<ModelTypeStore> StealStoreForTest();
+  std::unique_ptr<DataTypeStore> StealStoreForTest();
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::UserEventSpecifics>;
 
   void RecordUserEventImpl(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics);

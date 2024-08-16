@@ -95,7 +95,7 @@ void FragmentItems::FinalizeAfterLayout(
     const auto& fragment =
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const FragmentItems* fragment_items = fragment.Items();
-    if (UNLIKELY(!fragment_items)) {
+    if (!fragment_items) [[unlikely]] {
       may_be_non_contiguous_ifc = true;
       continue;
     }
@@ -125,7 +125,7 @@ void FragmentItems::FinalizeAfterLayout(
       item.SetDeltaToNextForSameLayoutObject(0);
       const bool use_break_token =
           layout_object->IsFloating() || !layout_object->IsInline();
-      if (UNLIKELY(use_break_token)) {
+      if (use_break_token) [[unlikely]] {
         // Fragments that aren't really on a line, such as floats, will have
         // block break tokens if they continue in a subsequent fragmentainer, so
         // just check that. Floats in particular will continue as regular box
@@ -196,9 +196,10 @@ void FragmentItems::ClearAssociatedFragments(LayoutObject* container) {
   // number of |LayoutObject| is less than the number of |FragmentItem|.
   for (LayoutObject* child = container->SlowFirstChild(); child;
        child = child->NextSibling()) {
-    if (UNLIKELY(!child->IsInLayoutNGInlineFormattingContext() ||
-                 child->IsOutOfFlowPositioned()))
+    if (!child->IsInLayoutNGInlineFormattingContext() ||
+        child->IsOutOfFlowPositioned()) [[unlikely]] {
       continue;
+    }
     child->ClearFirstInlineFragmentItemIndex();
 
     // Children of |LayoutInline| are part of this inline formatting context,
@@ -265,8 +266,9 @@ const FragmentItem* FragmentItems::EndOfReusableItems(
 
     // Abort reusing block-in-inline because it may need to set
     // |PreviousInflowData|.
-    if (UNLIKELY(line_box_fragment.IsBlockInInline()))
+    if (line_box_fragment.IsBlockInInline()) [[unlikely]] {
       return &item;
+    }
 
     // TODO(kojii): Running the normal layout code at least once for this
     // child helps reducing the code to setup internal states after the
@@ -422,8 +424,9 @@ void FragmentItems::DirtyLinesFromChangedChild(
           break;
       }
       current = previous;
-      if (UNLIKELY(current->IsFloatingOrOutOfFlowPositioned()))
+      if (current->IsFloatingOrOutOfFlowPositioned()) [[unlikely]] {
         continue;
+      }
       if (current->IsInLayoutNGInlineFormattingContext()) {
         if (TryDirtyLastLineFor(*current, container))
           return;

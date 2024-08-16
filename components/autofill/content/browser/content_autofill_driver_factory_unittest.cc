@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -19,25 +20,41 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/test_matchers.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 
-using testing::_;
-using testing::AtLeast;
-using testing::Between;
-using testing::Ref;
-
 namespace autofill {
 
 namespace {
+
+using ::autofill::test::LazyRef;
+using ::autofill::test::SaveArgPtr;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::AtLeast;
+using ::testing::Between;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Property;
+using ::testing::Ref;
+using ::testing::Truly;
+
+auto HasState(AutofillDriver::LifecycleState expected_state) {
+  return Property("AutofillDriver::GetLifecycleState",
+                  &AutofillDriver::GetLifecycleState, expected_state);
+}
 
 class MockContentAutofillDriverFactoryObserver
     : public ContentAutofillDriverFactory::Observer {
@@ -60,8 +77,6 @@ class MockContentAutofillDriverFactoryObserver
               (override));
 };
 
-}  // namespace
-
 // Test case with one frame.
 class ContentAutofillDriverFactoryTest
     : public content::RenderViewHostTestHarness {
@@ -78,6 +93,15 @@ class ContentAutofillDriverFactoryTest
     content::NavigationSimulator::CreateBrowserInitiated(GURL(url),
                                                          web_contents())
         ->Commit();
+  }
+
+  ContentAutofillDriver& driver(content::RenderFrameHost* rfh = nullptr) {
+    return CHECK_DEREF(
+        test_api(factory()).GetOrCreateDriver(rfh ? rfh : main_frame()));
+  }
+
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
   }
 
  protected:
@@ -316,4 +340,296 @@ TEST_F(ContentAutofillDriverFactoryTest_FencedFrames,
                          fenced_frame_subframe));
 }
 
+// Test fixture for the LifecycleState changes of ContentAutofillDriver.
+class ContentAutofillDriverFactoryTestLifecycleState
+    : public ContentAutofillDriverFactoryTest {
+ public:
+  enum class NavigationType {
+    // Same-document navigations do not affect the CAD's lifecycle.
+    kSameDocument,
+    // Same-origin navigations. If the the previous RFH is reused, will cause
+    // a CAD::Reset().
+    kSameOrigin,
+    // Cross-origin navigations. The navigations will swap the RFH, leading to
+    // a new CAD.
+    kCrossOrigin,
+    // Backward navigations are served by BFCache and re-activate a cached CAD.
+    kBackward,
+    // Prerendering navigations create but do not activate a new CAD.
+    kPrerender,
+    // Prerendering activations activate a CAD that was created after a
+    // kPrerender navigation.
+    kPrerenderedActivation,
+  };
+
+  using LifecycleState = AutofillDriver::LifecycleState;
+  using enum LifecycleState;
+
+  class FactoryObserver : public ContentAutofillDriverFactory::Observer {
+   public:
+    MOCK_METHOD(void,
+                OnContentAutofillDriverFactoryDestroyed,
+                (ContentAutofillDriverFactory & factory),
+                (override));
+    MOCK_METHOD(void,
+                OnContentAutofillDriverCreated,
+                (ContentAutofillDriverFactory & factory,
+                 ContentAutofillDriver& driver),
+                (override));
+    MOCK_METHOD(void,
+                OnContentAutofillDriverStateChanged,
+                (ContentAutofillDriverFactory & factory,
+                 ContentAutofillDriver& driver,
+                 LifecycleState old_state,
+                 LifecycleState new_state),
+                (override));
+  };
+
+  void SetUp() override {
+    ContentAutofillDriverFactoryTest::SetUp();
+    // This needed to keep the WebContentsObserverConsistencyChecker checks
+    // happy for when AppendChild is called.
+    NavigateAndCommit(GURL("https://a.test/"));
+    web_contents_delegate_.emplace(*web_contents());
+    factory().AddObserver(&factory_observer_);
+  }
+
+  void TearDown() override {
+    if (client()) {
+      factory().RemoveObserver(&factory_observer_);
+    }
+    web_contents_delegate_.reset();
+    ContentAutofillDriverFactoryTest::TearDown();
+  }
+
+  FactoryObserver& observer() { return factory_observer_; }
+
+  content::RenderFrameHost* Navigate(NavigationType type) {
+    // This must "a.test" (or "http").
+    // Otherwise AddPrerenderAndCommitNavigation() hits a DCHECK.
+    const GURL kPrerenderUrl = GURL("https://a.test/prerender");
+    const GURL kNonPrerenderUrl = GURL("https://a.test/navigated");
+
+    std::unique_ptr<content::NavigationSimulator> simulator =
+        content::NavigationSimulator::CreateRendererInitiated(kNonPrerenderUrl,
+                                                              main_frame());
+    content::WebContentsTester* web_contents_tester =
+        content::WebContentsTester::For(web_contents());
+    switch (type) {
+      case NavigationType::kSameDocument: {
+        content::RenderFrameHost* rfh1 = main_frame();
+        simulator->CommitSameDocument();
+        content::RenderFrameHost* rfh2 = simulator->GetFinalRenderFrameHost();
+        CHECK_EQ(rfh1, rfh2);
+        return rfh2;
+      }
+
+      case NavigationType::kSameOrigin: {
+        content::RenderFrameHost* rfh1 = main_frame();
+        content::RenderFrameHost* rfh2 = simulator->Reload(web_contents());
+        CHECK_EQ(rfh1 != rfh2,
+                 content::WillSameSiteNavigationChangeRenderFrameHosts(
+                     /*is_main_frame=*/true));
+        return rfh2;
+      }
+
+      case NavigationType::kCrossOrigin: {
+        content::RenderFrameHost* rfh1 = main_frame();
+        simulator->Commit();
+        content::RenderFrameHost* rfh2 = simulator->GetFinalRenderFrameHost();
+        CHECK_NE(rfh1, rfh2);
+        return rfh2;
+      }
+
+      case NavigationType::kBackward:
+        return simulator->GoBack(web_contents());
+
+      case NavigationType::kPrerender: {
+        content::RenderFrameHost* rfh2 =
+            web_contents_tester->AddPrerenderAndCommitNavigation(kPrerenderUrl);
+        CHECK_EQ(rfh2->GetLifecycleState(),
+                 content::RenderFrameHost::LifecycleState::kPrerendering);
+        return rfh2;
+      }
+
+      case NavigationType::kPrerenderedActivation:
+        web_contents_tester->ActivatePrerenderedPage(kPrerenderUrl);
+        CHECK_EQ(main_frame()->GetLastCommittedURL(), kPrerenderUrl);
+        return main_frame();
+    }
+    NOTREACHED();
+  }
+
+ private:
+  base::test::ScopedFeatureList bfcache_feature_list_{
+      ::features::kBackForwardCache};
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+  std::optional<content::test::ScopedPrerenderWebContentsDelegate>
+      web_contents_delegate_;
+  FactoryObserver factory_observer_;
+};
+
+// Two helper macros to make tests below more readable.
+#define EXPECT_DRIVER_CREATED(driver_ptr_ptr)                                  \
+  EXPECT_CALL(observer(), OnContentAutofillDriverCreated(Ref(factory()),       \
+                                                         HasState(kInactive))) \
+      .WillOnce(DoAll(SaveArgPtr<1>((driver_ptr_ptr))))
+#define EXPECT_LIFECYCLE_CHANGE(driver_matcher, from, to)                  \
+  EXPECT_CALL(observer(),                                                  \
+              OnContentAutofillDriverStateChanged(                         \
+                  Ref(factory()), AllOf((driver_matcher), HasState((to))), \
+                  (from), (to)))
+
+// Tests the lifecycle state changes on a same-document navigation.
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateSameDocument) {
+  ContentAutofillDriver& driver1 = driver();
+  EXPECT_CALL(observer(), OnContentAutofillDriverCreated).Times(0);
+  EXPECT_CALL(observer(), OnContentAutofillDriverStateChanged).Times(0);
+  Navigate(NavigationType::kSameDocument);
+  ContentAutofillDriver& driver2 = driver();
+
+  EXPECT_EQ(&driver1, &driver2);
+  EXPECT_THAT(driver1, HasState(kActive));
+}
+
+// Tests the lifecycle state changes on a same-origin navigation.
+// TODO(https://crbug.com/40615943): Remove this case when RenderDocument has
+// fully launched, as it's almost identical to the cross-origin case.
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateSameOrigin) {
+  ContentAutofillDriver* driver1 = &driver();
+  ContentAutofillDriver* driver2 = nullptr;
+  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+          /*is_main_frame=*/true)) {
+    InSequence seq;
+    EXPECT_DRIVER_CREATED(&driver2);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kActive, kPendingDeletion);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kActive);
+  } else {
+    InSequence seq;
+    EXPECT_CALL(observer(), OnContentAutofillDriverCreated).Times(0);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver1), kPendingReset, kActive);
+  }
+
+  Navigate(NavigationType::kSameOrigin);
+
+  if (content::WillSameSiteNavigationChangeRenderFrameHosts(
+          /*is_main_frame=*/true)) {
+    EXPECT_NE(driver1, driver2);
+    EXPECT_THAT(*driver2, HasState(kActive));
+  } else {
+    driver2 = &driver();
+    EXPECT_EQ(driver1, driver2);
+    EXPECT_THAT(*driver1, HasState(kActive));
+  }
+}
+
+// Tests the lifecycle state changes on a cross-origin navigation.
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateCrossOrigin) {
+  ContentAutofillDriver& driver1 = driver();
+  ContentAutofillDriver* driver2 = nullptr;
+  {
+    InSequence seq;
+    EXPECT_DRIVER_CREATED(&driver2);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kActive, kInactive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kActive);
+  }
+  Navigate(NavigationType::kCrossOrigin);
+
+  EXPECT_NE(&driver1, driver2);
+  EXPECT_THAT(driver1, HasState(kInactive));
+  EXPECT_THAT(*driver2, HasState(kActive));
+}
+
+// Tests the lifecycle state changes on a cross-origin navigation (or, more
+// precisely, cross-RFH navigations).
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, CloseTab) {
+  EXPECT_THAT(driver(), HasState(kActive));
+  {
+    InSequence seq;
+    EXPECT_LIFECYCLE_CHANGE(Ref(driver()), kActive, kPendingDeletion);
+    EXPECT_CALL(observer(), OnContentAutofillDriverFactoryDestroyed)
+        .WillOnce([&](ContentAutofillDriverFactory& factory) {
+          factory.RemoveObserver(&observer());
+        });
+  }
+  DeleteContents();
+}
+
+// Tests the lifecycle state changes when
+// 1. a navigation happens
+// 2. the reverse navigation is served from the BFCache.
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigateBFCached) {
+  ContentAutofillDriver& driver1 = driver();
+  ContentAutofillDriver* driver2 = nullptr;
+  testing::MockFunction<void(std::string_view)> checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(checkpoint, Call("Navigation"));
+    EXPECT_DRIVER_CREATED(&driver2);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kActive, kInactive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kActive);
+
+    EXPECT_CALL(checkpoint, Call("Backward"));
+    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kActive, kInactive);
+    EXPECT_CALL(checkpoint, Call("Finish"));
+  }
+
+  checkpoint.Call("Navigation");
+  Navigate(NavigationType::kCrossOrigin);
+  EXPECT_THAT(driver1, HasState(kInactive));
+  EXPECT_THAT(*driver2, HasState(kActive));
+
+  checkpoint.Call("Backward");
+  Navigate(NavigationType::kBackward);
+  checkpoint.Call("Finish");
+  EXPECT_THAT(driver1, HasState(kActive));
+  EXPECT_THAT(*driver2, HasState(kInactive));
+}
+
+// Tests the lifecycle state changes when
+// 1. a frame is prerendered and
+// 2. that frame is activated afterwards.
+TEST_F(ContentAutofillDriverFactoryTestLifecycleState, NavigatePrerendering) {
+  ContentAutofillDriver& driver1 = driver();
+  ContentAutofillDriver* driver2 = nullptr;
+  testing::MockFunction<void(std::string_view)> checkpoint;
+  {
+    InSequence seq;
+
+    EXPECT_CALL(checkpoint, Call("Prerender"));
+    EXPECT_DRIVER_CREATED(&driver2);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kPendingReset);
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kPendingReset, kInactive);
+
+    EXPECT_CALL(checkpoint, Call("Activation"));
+    EXPECT_LIFECYCLE_CHANGE(LazyRef(driver2), kInactive, kActive);
+    EXPECT_LIFECYCLE_CHANGE(Ref(driver1), kActive, kInactive);
+    EXPECT_CALL(checkpoint, Call("Finish"));
+  }
+
+  checkpoint.Call("Prerender");
+  Navigate(NavigationType::kPrerender);
+  EXPECT_THAT(driver1, HasState(kActive));
+  EXPECT_THAT(*driver2, HasState(kInactive));
+
+  checkpoint.Call("Activation");
+  Navigate(NavigationType::kPrerenderedActivation);
+  EXPECT_THAT(driver1, HasState(kInactive));
+  EXPECT_THAT(*driver2, HasState(kActive));
+  checkpoint.Call("Finish");
+}
+
+#undef EXPECT_LIFECYCLE_CHANGE
+#undef EXPECT_DRIVER_CREATED
+
+}  // namespace
 }  // namespace autofill

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/gws_abandoned_page_load_metrics_observer.h"
+#include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 
 #include <vector>
 
@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include "chrome/browser/page_load_metrics/observers/chrome_gws_abandoned_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -272,7 +273,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_names_expanded.push_back(std::pair(histogram_name, 1));
       histogram_names_expanded.push_back(std::pair(
           histogram_name +
-              GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
+              ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
                   g_browser_process->network_quality_tracker()->GetHttpRTT()),
           1));
     }
@@ -386,7 +387,9 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                       GetLastMilestoneBeforeAbandonHistogramName()),
                   testing::UnorderedElementsAreArray(ExpandHistograms(
                       {GetLastMilestoneBeforeAbandonHistogramName(
-                          abandon_reason, histogram_suffix)})));
+                           abandon_reason, histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt, histogram_suffix)})));
     } else {
       EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                       GetLastMilestoneBeforeAbandonHistogramName()),
@@ -395,6 +398,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                            abandon_reason, histogram_suffix),
                        GetLastMilestoneBeforeAbandonHistogramName(
                            abandon_after_hiding_reason,
+                           internal::kSuffixWasHidden + histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt, histogram_suffix),
+                       GetLastMilestoneBeforeAbandonHistogramName(
+                           std::nullopt,
                            internal::kSuffixWasHidden + histogram_suffix)})));
     }
 
@@ -403,9 +411,11 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
         // Check that the milestone to abandonment time is recorded.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetMilestoneToAbandonHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(
-                        ExpandHistograms({GetMilestoneToAbandonHistogramName(
-                            milestone, abandon_reason, histogram_suffix)})));
+                    testing::UnorderedElementsAreArray(ExpandHistograms(
+                        {GetMilestoneToAbandonHistogramName(
+                             milestone, abandon_reason, histogram_suffix),
+                         GetMilestoneToAbandonHistogramName(
+                             milestone, std::nullopt, histogram_suffix)})));
         // Check that the abandonment reason at the milestone is recorded.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetAbandonReasonAtMilestoneHistogramName(milestone)),
@@ -426,10 +436,13 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
         // a suffix indicating that it was previously hidden.
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetMilestoneToAbandonHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(
-                        ExpandHistograms({GetMilestoneToAbandonHistogramName(
-                            milestone, abandon_after_hiding_reason,
-                            internal::kSuffixWasHidden + histogram_suffix)})));
+                    testing::UnorderedElementsAreArray(ExpandHistograms(
+                        {GetMilestoneToAbandonHistogramName(
+                             milestone, abandon_after_hiding_reason,
+                             internal::kSuffixWasHidden + histogram_suffix),
+                         GetMilestoneToAbandonHistogramName(
+                             milestone, std::nullopt,
+                             internal::kSuffixWasHidden + histogram_suffix)})));
         EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
                         GetAbandonReasonAtMilestoneHistogramName(milestone)),
                     testing::UnorderedElementsAreArray(ExpandHistograms(
@@ -769,18 +782,13 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
 }
 
 // Test SRP navigations that are cancelled by a new navigation, at various
-// points during the navigation.
-// TODO(https://crbug.com/347706997): Record the type of the new navigation.
-// TODO(crbug.com/353708981): Test flaky on Linux MSAN
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_SearchCancelledByNewNavigation \
-  DISABLED_SearchCancelledByNewNavigation
-#else
-#define MAYBE_SearchCancelledByNewNavigation SearchCancelledByNewNavigation
-#endif
+// points during the navigation.  Note we are only testing with throttleable
+// milestones for this test since the new navigation might take a while to
+// arrive on the browser side, and the oldnavigation might have advanced if
+// it's not actually paused.
 IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
-                       MAYBE_SearchCancelledByNewNavigation) {
-  for (NavigationMilestone milestone : all_testable_milestones()) {
+                       SearchCancelledByNewNavigation) {
+  for (NavigationMilestone milestone : all_throttleable_milestones()) {
     for (AbandonReason reason :
          {AbandonReason::kNewReloadNavigation,
           AbandonReason::kNewHistoryNavigation,
@@ -1160,15 +1168,16 @@ IN_PROC_BROWSER_TEST_F(GWSAbandonedPageLoadMetricsObserverBrowserTest,
       GetMilestoneToAbandonHistogramName(NavigationMilestone::kAFTEnd);
   auto abandoned_milesone_name = GetMilestoneToAbandonHistogramName(
       NavigationMilestone::kAFTEnd, AbandonReason::kHidden);
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(milesone_name),
-              testing::ElementsAre(
-                  testing::Pair(abandoned_milesone_name, 1),
-                  testing::Pair(
-                      abandoned_milesone_name +
-                          GWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-                              g_browser_process->network_quality_tracker()
-                                  ->GetHttpRTT()),
-                      1)));
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix(milesone_name),
+      testing::ElementsAre(
+          testing::Pair(abandoned_milesone_name, 1),
+          testing::Pair(
+              abandoned_milesone_name +
+                  ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
+                      g_browser_process->network_quality_tracker()
+                          ->GetHttpRTT()),
+              1)));
 
   // There should be a new entry for all the navigation and loading milestones
   // metrics achieved before abandonment.

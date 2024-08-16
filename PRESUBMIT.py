@@ -49,6 +49,8 @@ _EXCLUDED_PATHS = (
     r"tools/perf/page_sets/webrtc_cases.*",
     # Test file compared with generated output.
     r"tools/polymer/tests/html_to_wrapper/.*.html.ts$",
+    # Third-party dependency frozen at a fixed version.
+    r"chrome/test/data/webui/chromeos/chai_v4.js$",
 )
 
 _EXCLUDED_SET_NO_PARENT_PATHS = (
@@ -913,6 +915,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             _THIRD_PARTY_EXCEPT_BLINK,
             # Various tools which build outside of Chrome.
             r'testing/libfuzzer',
+            r'testing/perf/confidence',
             r'tools/android/io_benchmark/',
             # Fuzzers are allowed to use standard library random number generators
             # since fuzzing speed + reproducibility is important.
@@ -2054,6 +2057,29 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
          'dependency onto class Browser, and lifetime semantics are explicit '
          'rather than implicit. See BrowserUserData header file for more '
          'details.', ),
+        treat_as_error=False,
+        excluded_paths=(
+          # Exclude iOS as the iOS implementation of BrowserUserData is separate
+          # and still in use.
+          '^ios/',
+        ),
+    ),
+    BanRule(
+        pattern=r'UNSAFE_TODO(',
+        explanation=
+        ('Do not use UNSAFE_TODO() to write new unsafe code. Use only when '
+         'removing a pre-existing file-wide allow_unsafe_buffers pragma, or '
+         'when incrementally converting code off of unsafe interfaces',
+        ),
+        treat_as_error=False,
+    ),
+    BanRule(
+        pattern=r'UNSAFE_BUFFERS(',
+        explanation=
+        ('Try to avoid using UNSAFE_BUFFERS() if at all possible. Otherwise, '
+         'be sure to justify in a // SAFETY comment why other options are not '
+         'available, and why the code is safe.',
+        ),
         treat_as_error=False,
     ),
 )
@@ -3711,6 +3737,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^services/webnn/tflite/graph_impl_tflite\.cc$",
             r"^services/webnn/coreml/graph_impl_coreml\.mm$",
             r"^storage/browser/file_system/dump_file_system\.cc$",
+            r"^testing/perf/",
             r"^tools/",
             r"^ui/base/resource/data_pack\.cc$",
             r"^ui/aura/bench/bench_main\.cc$",

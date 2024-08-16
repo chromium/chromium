@@ -4,7 +4,7 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='The '
 ++++++++++inlineTextBox name='The '
-++++++++abbr name='World Health Organization'
+++++++++abbr name='World Health Organization' nameFrom=title
 ++++++++++staticText name='WHO'
 ++++++++++++inlineTextBox name='WHO'
 ++++++++staticText name=' was founded in 1948.'

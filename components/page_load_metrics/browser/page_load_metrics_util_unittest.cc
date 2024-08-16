@@ -127,6 +127,67 @@ TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchHostname) {
   }
 }
 
+TEST_F(PageLoadMetricsUtilTest, IsProbablyGoogleSearchUrl) {
+  struct {
+    bool expected_result;
+    const char* url;
+  } test_cases[] = {
+      {false, "http://www.example.com/"},
+      {false, "https://google.com/#q=test"},
+      {false, "https://google.com/url?"},
+      {false, "https://other.google.com/"},
+      {false, "https://other.google.com/webhp?q=test"},
+      {false, "https://www.example.com/url?source=web"},
+      {false, "https://www.example.com/url?source=web"},
+      {false, "https://www.example.com/webhp?q=test"},
+      {true, "https://www.google.com/?"},
+      {true, "https://www.google.com/?source=web"},
+      {true, "https://www.google.com/?url"},
+      {true, "https://www.google.com/"},
+      {true, "https://www.google.com/#q=test"},
+      {true, "https://www.google.com/about/"},
+      {true, "https://www.google.com/search?q=test"},
+      {true, "https://www.google.com/search#q=test"},
+      {true, "https://www.google.com/searchurl/r.html#foo"},
+      {true, "https://www.google.com/source=web"},
+      {true, "https://www.google.com/url?"},
+      {true, "https://www.google.com/url?a=b"},
+      {true, "https://www.google.com/url?a=b&source=web&c=d"},
+      {true, "https://www.google.com/url?source=web"},
+      {true, "https://www.google.com/url?source=web#foo"},
+      {true, "https://www.google.com/webhp?#a=b&q=test&c=d"},
+      {true, "https://www.google.com/webhp?a=b&q=test"},
+      {true, "https://www.google.com/webhp?a=b&q=test&c=d"},
+      {true, "https://www.google.com/webhp?q=test"},
+      {true, "https://www.google.com/webhp#a=b&q=test&c=d"},
+      {true, "https://www.google.com/webhp#q=test"},
+      {true, "https://www.google.com/webmasters/#?modal_active=none"},
+      {false, "https://www.google.com/maps"},
+      {false,
+       "https://www.google.com/maps/place/Shibuya+Stream/"
+       "@35.6572693,139.7031288,15z/"
+       "data=!4m2!3m1!1s0x0:0x387c407b91e2ad68?sa=X&ved=1t:2428&ictx=111"},
+      {false,
+       "https://www.google.com/maps/reviews/"
+       "data=!4m5!14m4!1m3!1m2!1s102657011957627300761!2s0x60188b31a00165ed:"
+       "0x387c407b91e2ad68?ved=1t:31295&ictx=111"},
+      {false, "https://www.google.co.jp/maps"},
+      {false,
+       "https://www.google.co.jp/maps/place/Shibuya+Stream/"
+       "@35.6572693,139.7031288,15z/"
+       "data=!4m2!3m1!1s0x0:0x387c407b91e2ad68?sa=X&ved=1t:2428&ictx=111"},
+      {false,
+       "https://www.google.co.jp/maps/reviews/"
+       "data=!4m5!14m4!1m3!1m2!1s102657011957627300761!2s0x60188b31a00165ed:"
+       "0x387c407b91e2ad68?ved=1t:31295&ictx=111"},
+  };
+  for (const auto& test : test_cases) {
+    EXPECT_EQ(test.expected_result,
+              page_load_metrics::IsProbablyGoogleSearchUrl(GURL(test.url)))
+        << "for URL: " << test.url;
+  }
+}
+
 TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchResultUrl) {
   struct {
     bool expected_result;

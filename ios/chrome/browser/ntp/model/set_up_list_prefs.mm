@@ -8,6 +8,8 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace set_up_list_prefs {
 
@@ -47,7 +49,7 @@ const char* PrefNameForItem(SetUpListItemType type) {
     case SetUpListItemType::kNotifications:
       return kNotificationsItemState;
     case SetUpListItemType::kAllSet:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -96,7 +98,12 @@ bool IsSetUpListDisabled(PrefService* prefs) {
 }
 
 void DisableSetUpList(PrefService* prefs) {
-  prefs->SetBoolean(kDisabled, true);
+  if (IsHomeCustomizationEnabled()) {
+    prefs->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
+                      false);
+  } else {
+    prefs->SetBoolean(kDisabled, true);
+  }
 }
 
 void RecordInteraction(PrefService* prefs) {

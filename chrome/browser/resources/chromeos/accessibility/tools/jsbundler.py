@@ -46,7 +46,6 @@ sys.path.insert(
     0,
     os.path.join(_CHROME_SOURCE, ('third_party/google-closure-library/' +
                                   'closure/bin/build')))
-import depstree
 import rjsmin
 import source
 import treescan
@@ -147,14 +146,11 @@ class PathRewriter(object):
     return in_path
 
 
-def ReadSources(roots=[],
-                source_files=[],
+def ReadSources(source_files=[],
                 need_source_text=False,
                 path_rewriter=PathRewriter(),
                 exclude=[]):
-  '''Reads all source specified on the command line, including sources
-  included by --root options.
-  '''
+  '''Reads all sources specified on the command line.'''
 
   def EnsureSourceLoaded(in_path, sources):
     if in_path not in sources:
@@ -164,13 +160,8 @@ def ReadSources(roots=[],
 
   # Only read the actual source file if we will do a dependency analysis or
   # the caller asks for it.
-  need_source_text = need_source_text or len(roots) > 0
+  need_source_text = need_source_text
   sources = {}
-  for root in roots:
-    for name in treescan.ScanTreeForJsFiles(root):
-      if any((r.search(name) for r in exclude)):
-        continue
-      EnsureSourceLoaded(name, sources)
   for path in source_files:
     if need_source_text:
       EnsureSourceLoaded(path, sources)
@@ -194,30 +185,6 @@ def _GetBase(sources):
         'goog' in source.provides):
       return source
   Die('goog.base not provided by any file.')
-
-
-def CalcDeps(bundle, sources, top_level):
-  '''Calculates dependencies for a set of top-level files.
-
-  Args:
-    bundle: Bundle to add the sources to.
-    sources, dict: Mapping from input path to SourceWithPaths objects.
-    top_level, list: List of top-level input paths to calculate dependencies
-      for.
-  '''
-  providers = [s for s in list(sources.values()) if len(s.provides) > 0]
-  providers.sort(key=lambda x:str(x))
-  for p in providers:
-    p.requires = sorted(list(p.requires))
-  deps = depstree.DepsTree(providers)
-  namespaces = []
-  for path in top_level:
-    namespaces.extend(sorted(sources[path].requires))
-  namespaces.sort()
-  # base.js is an implicit dependency that always goes first.
-  bundle.Add(_GetBase(sources))
-  bundle.Add(deps.GetDependencies(namespaces))
-
 
 def _MarkAsCompiled(sources):
   '''Sets COMPILED to true in the Closure base.js source.
@@ -349,22 +316,6 @@ def CreateOptionParser():
       help=('File to output result to for modes that output '
             'a single file.'))
   parser.add_option(
-      '-r',
-      '--root',
-      dest='roots',
-      action='append',
-      default=[],
-      metavar='ROOT',
-      help='Roots of directory trees to scan for sources.')
-  parser.add_option(
-      '-M',
-      '--module',
-      dest='modules',
-      action='append',
-      default=[],
-      metavar='FILENAME',
-      help='Source modules to load')
-  parser.add_option(
       '-w',
       '--rewrite_prefix',
       action='append',
@@ -413,14 +364,11 @@ def main():
   will_output_source_text = options.mode in ('bundle', 'compressed_bundle')
   path_rewriter = PathRewriter(options.prefix_map)
   exclude = [re.compile(r) for r in options.exclude]
-  sources = ReadSources(options.roots, options.modules + args,
-                        will_output_source_text or len(options.modules) > 0,
+  sources = ReadSources(args, will_output_source_text,
                         path_rewriter, exclude)
   if will_output_source_text:
     _MarkAsCompiled(sources)
   bundle = Bundle()
-  if len(options.roots) > 0 or len(options.modules) > 0:
-    CalcDeps(bundle, sources, args)
   bundle.Add((sources[name] for name in args))
   if len(options.clear_dest_dirs) > 0:
     ClearDirectories(options.clear_dest_dirs)

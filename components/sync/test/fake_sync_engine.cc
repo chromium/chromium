@@ -10,7 +10,7 @@
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_host.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace syncer {
 
@@ -58,7 +58,7 @@ bool FakeSyncEngine::IsInitialized() const {
   return initialized_;
 }
 
-void FakeSyncEngine::TriggerRefresh(const ModelTypeSet& types) {}
+void FakeSyncEngine::TriggerRefresh(const DataTypeSet& types) {}
 
 void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {}
 
@@ -111,14 +111,14 @@ void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
   last_configure_reason_ = params.reason;
   std::move(params.ready_task)
       .Run(/*succeeded_configuration_types=*/params.to_download,
-           /*failed_configuration_types=*/ModelTypeSet());
+           /*failed_configuration_types=*/DataTypeSet());
 }
 
 void FakeSyncEngine::ConnectDataType(
-    ModelType type,
+    DataType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {}
 
-void FakeSyncEngine::DisconnectDataType(ModelType type) {}
+void FakeSyncEngine::DisconnectDataType(DataType type) {}
 
 const SyncStatus& FakeSyncEngine::GetDetailedStatus() const {
   return sync_status_;
@@ -128,7 +128,7 @@ void FakeSyncEngine::HasUnsyncedItemsForTest(
     base::OnceCallback<void(bool)> cb) const {}
 
 void FakeSyncEngine::GetThrottledDataTypesForTest(
-    base::OnceCallback<void(ModelTypeSet)> cb) const {}
+    base::OnceCallback<void(DataTypeSet)> cb) const {}
 
 void FakeSyncEngine::RequestBufferedProtocolEventsAndEnableForwarding() {}
 
@@ -150,8 +150,8 @@ void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
 void FakeSyncEngine::RecordNigoriMemoryUsageAndCountsHistograms() {}
 
 void FakeSyncEngine::GetTypesWithUnsyncedData(
-    base::OnceCallback<void(ModelTypeSet)> cb) const {
-  std::move(cb).Run(ModelTypeSet());
+    base::OnceCallback<void(DataTypeSet)> cb) const {
+  std::move(cb).Run(DataTypeSet());
 }
 
 }  // namespace syncer

@@ -345,6 +345,15 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
                            body_length);
 }
 
+// TODO(https://crbug.com/353490734): Inline it. We made it a method due to
+// this rule:
+// https://chromium.googlesource.com/chromium/src/+/master/tools/metrics/histograms/README.md#don_t-use-same-inline-string-in-multiple-places
+// If callsite is only one, we can inline it again.
+void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
+  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
+                           redirect_chain_size);
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -1314,10 +1323,10 @@ void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
   }
 }
 
-void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
+void PrefetchContainer::OnReturnPrefetchToServe(bool served,
+                                                const GURL& navigated_url) {
   if (served) {
-    UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
-                             redirect_chain_.size());
+    RecordAfterClickRedirectChainSize(redirect_chain_.size());
     navigated_to_ = true;
   }
 
@@ -1326,6 +1335,29 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
         prefetch_type_,
         base::TimeTicks::Now() - blocked_until_head_start_time_.value(),
         served);
+  }
+
+  // Note that `PreloadingAttemptImpl::SetIsAccurateTriggering()` is called for
+  // prefetch in
+  //
+  // - A. `PreloadingDataImpl::DidStartNavigation()`
+  // - B. Here
+  //
+  // A covers prefetches that satisfy `bool(GetNonRedirectHead())` at that
+  // timing. B covers almost all ones that were once potentially matching to the
+  // navigation, including that was `kBlockUntilHead` state.
+  //
+  // Note that multiple calls are safe and set a correct value.
+  //
+  // Historical note: Before No-Vary-Search hint, the decision to use a
+  // prefetched response was made at A. With No-Vary-Search hint the decision to
+  // use an in-flight prefetched response is delayed until the headers are
+  // received from the server. This happens after `DidStartNavigation()`. At
+  // this point in the code we have already decided we are going to use the
+  // prefetch, so we can safely call `SetIsAccurateTriggering()`.
+  if (auto attempt = preloading_attempt()) {
+    static_cast<PreloadingAttemptImpl*>(attempt.get())
+        ->SetIsAccurateTriggering(navigated_url);
   }
 }
 
@@ -1627,7 +1659,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
           //
           // See
           // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         } else {
           return "prefetch;prerender";
         }
@@ -1635,7 +1667,7 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
       case PreloadingType::kPreconnect:
       case PreloadingType::kNoStatePrefetch:
       case PreloadingType::kLinkPreview:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   } else {
     // Note that the `PreloadingAttempt` is null means that the initiating
@@ -1648,6 +1680,17 @@ const char* PrefetchContainer::GetSecPurposeHeaderValue(
       return "prefetch";
     }
   }
+}
+
+bool PrefetchContainer::IsExactMatch(const GURL& url) const {
+  return url == GetURL();
+}
+
+bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
+  const std::optional<net::HttpNoVarySearchData>& no_vary_search_data =
+      GetNoVarySearchData();
+  return no_vary_search_data &&
+         no_vary_search_data->AreEquivalent(url, GetURL());
 }
 
 }  // namespace content

@@ -70,6 +70,7 @@
 #include "components/viz/test/viz_test_suite.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -230,7 +231,7 @@ class DisplayTest : public testing::Test {
     // DisplayCompositorMemoryAndTaskController.
     auto display = std::make_unique<Display>(
         &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-        settings, &debug_settings_, frame_sink_id,
+        &gpu_scheduler_, settings, &debug_settings_, frame_sink_id,
         nullptr /* DisplayCompositorMemoryAndTaskController */,
         std::move(output_surface), std::move(overlay_processor),
         std::move(scheduler), task_runner_);
@@ -280,6 +281,7 @@ class DisplayTest : public testing::Test {
   ServerSharedBitmapManager shared_bitmap_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
+  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
   FrameSinkManagerImpl manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   ParentLocalSurfaceIdAllocator id_allocator_;

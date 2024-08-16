@@ -563,7 +563,8 @@ class BidirectionalStreamQuicImplTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        NetLogWithSource::Make(NetLogSourceType::NONE));
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.

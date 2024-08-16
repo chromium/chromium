@@ -1511,6 +1511,10 @@ AuthenticatorType FidoDeviceAuthenticator::GetType() const {
   return AuthenticatorType::kOther;
 }
 
+cablev2::FidoTunnelDevice* FidoDeviceAuthenticator::GetTunnelDevice() {
+  return device_->GetTunnelDevice();
+}
+
 std::string FidoDeviceAuthenticator::GetId() const {
   return device_->GetId();
 }

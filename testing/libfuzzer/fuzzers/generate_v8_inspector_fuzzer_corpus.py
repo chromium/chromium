@@ -9,28 +9,27 @@ import shutil
 import sys
 
 load_regexp = re.compile(r'^\s*utils\.load\([\'"]([^\'"]+)[\'"]\);\s*$')
-load_root = None
 
 
-def resolve_loads(output_file, input_lines, loaded_files):
+def resolve_loads(output_file, input_lines, loaded_files, load_root):
   for line in input_lines:
     load_match = load_regexp.match(line)
     if not load_match:
       output_file.write(line)
       continue
-    load_file(output_file, load_match.group(1), loaded_files)
+    load_file(output_file, load_match.group(1), loaded_files, load_root)
 
 
-def load_file(output_file, input_file, loaded_files):
+def load_file(output_file, input_file, loaded_files, load_root):
   if input_file in loaded_files:
-    sys.exit('Recursive load of \'{}\''.format(input_file))
+    sys.exit("Recursive load of '{}'".format(input_file))
   loaded_files.add(input_file)
-  output_file.write('\n// Loaded from \'{}\':\n'.format(input_file))
+  output_file.write("\n// Loaded from '{}':\n".format(input_file))
   with open(os.path.join(load_root, input_file)) as file:
-    resolve_loads(output_file, file.readlines(), loaded_files)
+    resolve_loads(output_file, file.readlines(), loaded_files, load_root)
 
 
-def generate_content(output_file, input_file):
+def generate_content(output_file, input_file, load_root):
   # The fuzzer does not provide the same methods on 'utils' as the
   # inspector-test executable. Thus mock out non-existing ones via a proxy.
   output_file.write("""
@@ -45,10 +44,10 @@ utils = new Proxy(utils, {
   # Always prepend the 'protocol-test.js' file, which is always loaded first
   # by the test runner for inspector tests.
   protocol_test_file = os.path.join('test', 'inspector', 'protocol-test.js')
-  load_file(output_file, protocol_test_file, set())
+  load_file(output_file, protocol_test_file, set(), load_root)
 
   # Then load the actual input file, inlining all recursively loaded files.
-  load_file(output_file, input_file, set())
+  load_file(output_file, input_file, set(), load_root)
 
 
 def main():
@@ -67,7 +66,6 @@ def main():
 
   # Loaded files are relative to the v8 root, which is two levels above the
   # inspector test directory.
-  global load_root
   load_root = os.path.dirname(os.path.dirname(os.path.normpath(input_root)))
 
   for parent, _, files in os.walk(input_root):
@@ -80,7 +78,7 @@ def main():
         with open(output_file, 'w') as output_file:
           abs_input_file = os.path.join(parent, filename)
           rel_input_file = os.path.relpath(abs_input_file, load_root)
-          generate_content(output_file, rel_input_file)
+          generate_content(output_file, rel_input_file, load_root)
 
   # Done.
   sys.exit(0)

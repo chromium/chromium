@@ -11,8 +11,8 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
-#include "components/enterprise/connectors/common.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "content/public/browser/download_manager_delegate.h"
 
 class Profile;

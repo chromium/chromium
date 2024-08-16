@@ -1289,6 +1289,10 @@ policies:
   1288: PrintingLPACSandboxEnabled
   1289: ShowGeminiIntroScreenEnabled
   1290: DeviceRestrictionSchedule
+  1291: TabCompareSettings
+  1292: AdHocCodeSigningForPWAsEnabled
+  1293: KioskWebAppOfflineEnabled
+  1294: GraduationEnablementStatus
 
 atomic_groups:
   1: Homepage

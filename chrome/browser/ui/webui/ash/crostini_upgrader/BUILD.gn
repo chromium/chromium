@@ -7,6 +7,70 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos_ash)
 
+static_library("crostini_upgrader") {
+  sources = [
+    "crostini_upgrader_dialog.cc",
+    "crostini_upgrader_dialog.h",
+    "crostini_upgrader_page_handler.cc",
+    "crostini_upgrader_page_handler.h",
+    "crostini_upgrader_ui.cc",
+    "crostini_upgrader_ui.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/common",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/mojom:url_loader_base",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/chromeos",
+    "//ui/resources:webui_resources_grd",
+    "//ui/strings:ui_strings",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/crostini" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "crostini_upgrader_dialog_browsertest.cc" ]
+
+  deps = [
+    ":crostini_upgrader",
+    ":mojo_bindings",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/crostini",
+    "//chrome/browser/ash/crostini:test_support",
+    "//chrome/browser/ash/guest_os",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/crostini:browser_test_support",
+    "//chrome/common",
+    "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [ "crostini_upgrader.mojom" ]
 }

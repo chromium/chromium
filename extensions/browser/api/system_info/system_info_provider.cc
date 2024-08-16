@@ -60,8 +60,9 @@ void SystemInfoProvider::StartQueryInfo(QueryInfoCompletionCallback callback) {
 
   callbacks_.push(std::move(callback));
 
-  if (is_waiting_for_completion_)
+  if (is_waiting_for_completion_) {
     return;
+  }
 
   is_waiting_for_completion_ = true;
 

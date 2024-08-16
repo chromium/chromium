@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import optparse
+import textwrap
 import unittest
+from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.system.filesystem_mock import MockFileSystem
@@ -153,8 +155,6 @@ class WebTestFinderTests(unittest.TestCase):
         port = host.port_factory.get('test-win-win7', None)
 
         all_tests = [
-            'path/test.html',
-            'new/test.html',
             'fast/css/1.html',
             'fast/css/2.html',
             'fast/css/3.html',
@@ -163,6 +163,8 @@ class WebTestFinderTests(unittest.TestCase):
             'fast/css/skip3.html',
             'fast/css/skip4.html',
             'fast/css/skip5.html',
+            'new/test.html',
+            'path/test.html',
         ]
 
         port.tests = lambda paths: paths or all_tests
@@ -286,6 +288,85 @@ class WebTestFinderTests(unittest.TestCase):
         self.assertEqual(
             set(tests[1]),
             set(['path/test.html','virtual/path/test.html',]))
+
+    def test_empty_test_list_find_tests(self):
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7')
+        host.filesystem.write_text_file(
+            'test-list.txt',
+            textwrap.dedent("""\
+                # this file is deliberately empty to signal no tests to run
+                """))
+        all_tests = [
+            'path/test.html',
+        ]
+
+        finder = web_test_finder.WebTestFinder(port, {})
+        with mock.patch.object(port, 'tests',
+                               lambda paths: paths or all_tests):
+            paths, all_test_names, running_all_tests = finder.find_tests(
+                args=[], test_lists=['test-list.txt'])
+
+        self.assertEqual(paths, [])
+        self.assertEqual(all_test_names, [])
+        self.assertFalse(running_all_tests)
+
+    def test_exclude_test_list_find_tests(self):
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7', None)
+        host.filesystem.write_text_file(
+            'test-list.txt',
+            textwrap.dedent("""\
+                path/test.html
+                """))
+        all_tests = [
+            'path/test.html',
+            'virtual/fake-vts/path/test.html',
+        ]
+
+        finder = web_test_finder.WebTestFinder(port, {})
+        with mock.patch.object(port, 'tests',
+                               lambda paths: paths or all_tests):
+            paths, all_test_names, running_all_tests = finder.find_tests(
+                args=[], exclude_test_lists=['test-list.txt'])
+
+        self.assertEqual(paths, [])
+        self.assertEqual(set(all_test_names),
+                         {'virtual/fake-vts/path/test.html'})
+        self.assertFalse(running_all_tests)
+
+    def test_include_and_exclude_test_list_find_tests(self):
+        host = MockHost()
+        port = host.port_factory.get('test-win-win7', None)
+        fs = host.filesystem
+        fs.write_text_file(
+            'include.txt',
+            textwrap.dedent("""\
+                http/tests
+                failures/flaky
+                """))
+        fs.write_text_file(
+            'exclude.txt',
+            textwrap.dedent("""\
+                http/tests/passes  # excludes two tests
+
+                # these lines should have no effect
+                passes/skipped
+                failures
+                """))
+
+        finder = web_test_finder.WebTestFinder(port, {})
+        paths, all_test_names, running_all_tests = finder.find_tests(
+            args=[],
+            test_lists=['include.txt'],
+            exclude_test_lists=['exclude.txt'])
+
+        self.assertEqual(set(paths), {'http/tests', 'failures/flaky'})
+        self.assertEqual(set(all_test_names), {
+            'http/tests/ssl/text.html',
+            'failures/flaky/text.html',
+        })
+        self.assertFalse(running_all_tests)
 
 
 class FilterTestsTests(unittest.TestCase):

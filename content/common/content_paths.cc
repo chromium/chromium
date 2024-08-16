@@ -6,7 +6,10 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -18,6 +21,15 @@ bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case CHILD_PROCESS_EXE:
       return base::PathService::Get(base::FILE_EXE, result);
+#if BUILDFLAG(IS_ANDROID)
+    case DIR_FILE_SYSTEM_API_SWAP: {
+      if (!base::android::GetCacheDirectory(result)) {
+        return false;
+      }
+      *result = result->Append("FileSystemAPISwap");
+      return true;
+    }
+#endif
     case DIR_TEST_DATA: {
       base::FilePath cur;
       if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &cur)) {

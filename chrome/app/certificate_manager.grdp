@@ -31,6 +31,9 @@
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs.">
         View imported certificates from Windows
       </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION" desc="Text read by screen readers for the row that opens the Windows certificate management application. When clicked, it will open the Windows certificate manager application in a separate window. This text will only be announced by a screen reader and will not be visible in the UI.">
+        Opens in a separate application
+      </message>
     </if>
 
     <if expr="is_linux">
@@ -57,6 +60,9 @@
       </message>
       <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_VIEW_LINK" desc="Label for a link to view the imported platform certs.">
         View imported certificates from MacOS
+      </message>
+      <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_MANAGE_LINK_ARIA_DESCRIPTION" desc="Text read by screen readers for the row that opens the Mac certificate management application. When clicked, it will open the Mac certificate management application in a separate window. This text will only be announced by a screen reader and will not be visible in the UI.">
+        Opens in a separate application
       </message>
     </if>
 
@@ -90,6 +96,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL" desc="Label for button that exports a list of certificates.">
       Export
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the export certificates button. If the button is activated, it will export the list of certificates as a downloadable file. This text will only be announced by screen readers and will not be visible in the UI.">
+      Export all <ph name="CERT_GROUP">$1<ex>Trusted Certificates</ex></ph>
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_NUM_CERTS" desc="Label describing a number of certificates.">
       {COUNT, plural,
       =0 {No certificates}
@@ -109,6 +118,9 @@
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK" desc="Link to learning more about the Chrome Root Store.">
       Learn more
     </message>
+    <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_LEARN_MORE_LINK_ARIA_LABEL" desc="Text read by screen readers when focusing on the Learn More link. If the link is activated, it will open a new tab with more information about the Chroem Root Store. This text will only be announced by screen readers and will not be visible in the UI.">
+      Learn more about the Chrome Root Store in a new tab.
+    </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TOGGLE_LABEL" desc="Label for a toggle controlling if platform certs are imported or not.">
       Use imported local certificates from your operating system
     </message>
@@ -123,6 +135,22 @@
     </message>
     <message name="IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CLIENT_CERTIFICATES_FROM_EXTENSION" desc="Title of section for client certificates imported from an extension.">
       From extensions
+    </message>
+
+    <!-- Subpage -->
+    <message name="IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI.">
+      <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex></ph> subpage back button
+    </message>
+    <message name="IDS_CERTIFICATE_MANAGER_V2_SUBPAGE_BACK_BUTTON_ARIA_ROLE_DESCRIPTION" desc="Description read by screen readers when focusing on the back button. Indicates to the user that activating the back button will cause the settings page to navigate away from the currently displaying subpage to the parent page. This text will only be announced by screen readers and will not be visible in the UI.">
+      Click to navigate away from <ph name="SUBPAGE_TITLE">$1<ex>Installed by your Administrator</ex> subpage</ph>.
+    </message>
+
+    <!-- Cert Entry -->
+    <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL" desc="Text read by screen readers when focusing on the view certficate details button. If the button is activated, it will open up a view certificate dialog. This text will only be announced by screen readers and will not be visible in the UI.">
+      View certificate details for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph> in a new dialog
+    </message>
+    <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL" desc="Text read by screen readers when focusing on the copy certificate hash button. If the button is activated, it will copy the certificate hash to the clipboard. This text will only be announced by screen readers and will not be visible in the UI.">
+      Copy certificate hash for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph>
     </message>
   </if>
 </grit-part>

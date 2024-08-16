@@ -31,15 +31,14 @@ TabGroupSyncBridgeMediator::TabGroupSyncBridgeMediator(
   // It is safe to use base::Unretained() because current object outlives the
   // bridges.
   saved_bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
-      model_,
-      std::move(saved_tab_group_configuration->model_type_store_factory),
+      model_, std::move(saved_tab_group_configuration->data_type_store_factory),
       std::move(saved_tab_group_configuration->change_processor), pref_service,
       base::BindOnce(&TabGroupSyncBridgeMediator::OnSavedGroupsWithTabsLoaded,
                      base::Unretained(this)));
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         model_,
-        std::move(shared_tab_group_configuration->model_type_store_factory),
+        std::move(shared_tab_group_configuration->data_type_store_factory),
         std::move(shared_tab_group_configuration->change_processor),
         pref_service,
         base::BindOnce(
@@ -66,12 +65,12 @@ void TabGroupSyncBridgeMediator::InitializeModelIfReady() {
   observation_.Observe(model_);
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncBridgeMediator::GetSavedTabGroupControllerDelegate() {
   return saved_bridge_->change_processor()->GetControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncBridgeMediator::GetSharedTabGroupControllerDelegate() {
   CHECK(shared_bridge_);
   return shared_bridge_->change_processor()->GetControllerDelegate();

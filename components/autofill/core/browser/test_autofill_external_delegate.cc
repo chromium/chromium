@@ -6,6 +6,7 @@
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -50,15 +51,20 @@ void TestAutofillExternalDelegate::OnQuery(
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
-    const std::vector<Suggestion>& suggestions) {
+    const std::vector<Suggestion>& suggestions,
+    std::optional<autofill_metrics::SuggestionRankingContext>
+        suggestion_ranking_context) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
+  suggestion_ranking_context_ = suggestion_ranking_context;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
-  if (call_parent_methods_)
-    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions);
+  if (call_parent_methods_) {
+    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
+                                                    suggestion_ranking_context);
+  }
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {

@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">Слайдэр</translation>
 <translation id="1211441953136645838">нэмэлт тэмдэглэл</translation>
 <translation id="1281252709823657822">харилцан яриа</translation>
+<translation id="1306460908038601864">Унтраалттай</translation>
 <translation id="1335095011850992622">оролцогчид</translation>
 <translation id="1342835525016946179">Гарчиг</translation>
 <translation id="1359897965706325498">баннер</translation>
+<translation id="1480676835519562650">олныг сонгох боломжтой, <ph name="COUNT" />-c <ph name="SELECTED" />-г сонгосон</translation>
 <translation id="1589122976691792535">хамрах бүс</translation>
 <translation id="1650423536718072820">ишлэл</translation>
+<translation id="1681022320378710418">одоогийн цаг</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
 <translation id="1821985195704844674">шаталсан хүснэгт</translation>
 <translation id="1823704031293214298">хуудасны хөл хэсэг</translation>
 <translation id="1838681052457320736">сэрэмжлүүлгийн харилцах цонх</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">устгалт</translation>
 <translation id="1907737156431278478">жишээ</translation>
 <translation id="1930711995431081526">статус</translation>
+<translation id="2031987842108996681">Улаан суваг</translation>
 <translation id="2158401438286456825">хуудасны жагсаалт</translation>
 <translation id="2291999235780842123">чагтлах</translation>
 <translation id="2311842470354187719">хуудас тусгаарлагч</translation>
 <translation id="2335594187091864976">огноо болон хугацаа сонгогч</translation>
 <translation id="2508569020611168319">табын жагсаалт</translation>
+<translation id="2530182415807757784">олныг сонгох боломжтой, алийг нь ч сонгоогүй.</translation>
+<translation id="2634240155926812724">Ногоон суваг</translation>
 <translation id="2657045182931379222">график объект</translation>
 <translation id="2674318244760992338">Доод хэсэг</translation>
 <translation id="2723001399770238859">Дуу</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">Тайлбар</translation>
 <translation id="3175736971608411871">хугацаа хэмжигч</translation>
 <translation id="3199563858620722075">багцийн хайрцаг</translation>
+<translation id="3220661731597678625">одоогийн алхам</translation>
+<translation id="3329013043687509092">Өнгөний нэвчилт</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3557673793733683882">гарчиг <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">долоо хоногийг сонгогч</translation>
 <translation id="3706100364254443312">солих</translation>
 <translation id="3808586225841795776">хугацаа</translation>
+<translation id="3914173277599553213">Шаардлагатай</translation>
 <translation id="3920932319529768807">дүгнэлт</translation>
 <translation id="3924558731517983934">апп</translation>
 <translation id="3944740393230681990">эхлэл</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">ковер</translation>
 <translation id="4757246831282535685">цонхны самбар</translation>
 <translation id="479989351350248267">хайлт</translation>
+<translation id="4912200001568447310">одоогийн зүйл</translation>
 <translation id="4912536737030637138">ном зүйн хэсэг</translation>
 <translation id="492244087561876220">тайлбар</translation>
+<translation id="4924138096460353083">тодорхойгүй</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" />-г сонголоо</translation>
 <translation id="5022314756875057021">мөрийн бүлэг</translation>
 <translation id="5034860022980953847">явцын үзүүлэлт</translation>
 <translation id="5093189678851173835">эпиграф</translation>
+<translation id="509897012892853729">Цэнхэр суваг</translation>
 <translation id="512758898067543763">мөрний толгой</translation>
 <translation id="5143125788380636750">төгсгөлийн үг</translation>
 <translation id="5406322316791861025">дүрслэл</translation>
+<translation id="5425179576310518467">одоогийн огноо</translation>
 <translation id="5453733299334684579">салаалсан зүйл</translation>
 <translation id="546643433018805598">доод индекс</translation>
 <translation id="5476505524087279545">Сонголтыг буцаах</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">товчлуур</translation>
 <translation id="5693537480074347398">дээд индекс</translation>
 <translation id="576709008726043716">оршил</translation>
+<translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="591047860372322273">хайх хэсэг</translation>
+<translation id="5916664084637901428">Асаах</translation>
 <translation id="5987525920412732405">эргүүлэх товчлуур</translation>
 <translation id="6023896073578205740">жагсаалтын хайрцаг</translation>
 <translation id="6119846243427417423">идэвхжүүлэх</translation>
 <translation id="6150588977291308318">ном зүй</translation>
 <translation id="6164829606128959761">метр</translation>
 <translation id="6166809985690652833">төгсгөлийн үг</translation>
+<translation id="6212595056017402527">одоогийн хуудас</translation>
 <translation id="6213469881011901533">тайлбар толь</translation>
+<translation id="6281588256137006900">Цайвар байдал</translation>
 <translation id="6281763101136022427">url</translation>
 <translation id="6453774872122745852">талархал</translation>
 <translation id="648732519525291180">хугацаа сонгогч</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">бүлэг тэмдэглэгээ</translation>
 <translation id="693476918119313863">толгой хэсэг</translation>
 <translation id="6981594929165378967">оруулалт</translation>
+<translation id="698788488269350478">дэлгэсэн.</translation>
 <translation id="7034405885550056553">зөвлөмж</translation>
+<translation id="7102274145889307184">одоогийн байршил</translation>
 <translation id="7139483182332611405">удиртгал</translation>
 <translation id="7198226213493847604">цэсийн попап товчлуур</translation>
 <translation id="7214187073215825913">контентын мэдээлэл</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">индекс</translation>
 <translation id="7740050170769002709">HTML контент</translation>
 <translation id="7802800022689234070">тодруулгын гурвалжин</translation>
+<translation id="7852167693871241274">Өнгө тохируулагч</translation>
 <translation id="7891486169920085145">задлагч</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" />-г сонгоогүй</translation>
 <translation id="8034303206267677282">маш сайн</translation>
 <translation id="8053789581856978548">текстийн талбар хайх</translation>
 <translation id="8057695513531652401">мэдэгдэл</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">бүлэг</translation>
 <translation id="8851136666856101339">Гол</translation>
 <translation id="8861621546968757188">харилцах цонхны попап товчлуур</translation>
+<translation id="8889402386540077796">Hue</translation>
+<translation id="894736920926684893">Формат сэлгэгч</translation>
 <translation id="9002566407876343676">нээх</translation>
 <translation id="901834265349196618">и-мэйл</translation>
 <translation id="9048119486235211610">удирдлага</translation>

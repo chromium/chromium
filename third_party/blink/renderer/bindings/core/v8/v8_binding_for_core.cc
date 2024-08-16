@@ -206,10 +206,9 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
     number_object = value.As<v8::Number>();
   } else {
     // Can the value be converted to a number?
-    v8::TryCatch block(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     if (!value->ToNumber(isolate->GetCurrentContext())
              .ToLocal(&number_object)) {
-      exception_state.RethrowV8Exception(block.Exception());
       return 0;
     }
   }
@@ -272,10 +271,9 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
     number_object = value.As<v8::Number>();
   } else {
     // Can the value be converted to a number?
-    v8::TryCatch block(isolate);
+    TryRethrowScope rethrow_scope(isolate, exception_state);
     if (!value->ToNumber(isolate->GetCurrentContext())
              .ToLocal(&number_object)) {
-      exception_state.RethrowV8Exception(block.Exception());
       return 0;
     }
   }
@@ -345,10 +343,9 @@ int32_t ToInt32Slow(v8::Isolate* isolate,
                     ExceptionState& exception_state) {
   DCHECK(!value->IsInt32());
   // Can the value be converted to a number?
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Number> number_object;
   if (!value->ToNumber(isolate->GetCurrentContext()).ToLocal(&number_object)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
 
@@ -371,7 +368,6 @@ int32_t ToInt32Slow(v8::Isolate* isolate,
 
   int32_t result;
   if (!number_object->Int32Value(isolate->GetCurrentContext()).To(&result)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   return result;
@@ -397,10 +393,9 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
   }
 
   // Can the value be converted to a number?
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Number> number_object;
   if (!value->ToNumber(isolate->GetCurrentContext()).ToLocal(&number_object)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   DCHECK(!number_object.IsEmpty());
@@ -423,7 +418,6 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
 
   uint32_t result;
   if (!number_object->Uint32Value(isolate->GetCurrentContext()).To(&result)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   return result;
@@ -437,9 +431,8 @@ int64_t ToInt64Slow(v8::Isolate* isolate,
 
   v8::Local<v8::Number> number_object;
   // Can the value be converted to a number?
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   if (!value->ToNumber(isolate->GetCurrentContext()).ToLocal(&number_object)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   DCHECK(!number_object.IsEmpty());
@@ -475,9 +468,8 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
 
   v8::Local<v8::Number> number_object;
   // Can the value be converted to a number?
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   if (!value->ToNumber(isolate->GetCurrentContext()).ToLocal(&number_object)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   DCHECK(!number_object.IsEmpty());
@@ -515,10 +507,9 @@ double ToDoubleSlow(v8::Isolate* isolate,
                     v8::Local<v8::Value> value,
                     ExceptionState& exception_state) {
   DCHECK(!value->IsNumber());
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Number> number_value;
   if (!value->ToNumber(isolate->GetCurrentContext()).ToLocal(&number_value)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return 0;
   }
   return number_value->Value();
@@ -841,11 +832,10 @@ v8::Local<v8::Function> GetEsIteratorMethod(v8::Isolate* isolate,
                                             ExceptionState& exception_state) {
   const v8::Local<v8::Value> key = v8::Symbol::GetIterator(isolate);
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> iterator_method;
   if (!object->Get(isolate->GetCurrentContext(), key)
            .ToLocal(&iterator_method)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return v8::Local<v8::Function>();
   }
 
@@ -865,13 +855,12 @@ v8::Local<v8::Object> GetEsIteratorWithMethod(
     v8::Local<v8::Function> getter_function,
     v8::Local<v8::Object> object,
     ExceptionState& exception_state) {
-  v8::TryCatch block(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> iterator;
   if (!V8ScriptRunner::CallFunction(
            getter_function, ToExecutionContext(isolate->GetCurrentContext()),
            object, 0, nullptr, isolate)
            .ToLocal(&iterator)) {
-    exception_state.RethrowV8Exception(block.Exception());
     return v8::Local<v8::Object>();
   }
   if (!iterator->IsObject()) {
@@ -900,14 +889,17 @@ v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
                                     v8::Local<v8::Context> context,
                                     const String& stringified_json,
                                     ExceptionState& exception_state) {
-  v8::Local<v8::Value> parsed;
-  v8::TryCatch try_catch(isolate);
-  if (!v8::JSON::Parse(context, V8String(isolate, stringified_json))
-           .ToLocal(&parsed)) {
-    if (try_catch.HasCaught())
-      exception_state.RethrowV8Exception(try_catch.Exception());
-  }
+  TryRethrowScope rethrow_scope(isolate, exception_state);
+  return FromJSONString(isolate, context, stringified_json, rethrow_scope);
+}
 
+v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
+                                    v8::Local<v8::Context> context,
+                                    const String& stringified_json,
+                                    TryRethrowScope&) {
+  v8::Local<v8::Value> parsed;
+  std::ignore = v8::JSON::Parse(context, V8String(isolate, stringified_json))
+                    .ToLocal(&parsed);
   return parsed;
 }
 
@@ -917,11 +909,10 @@ Vector<String> GetOwnPropertyNames(v8::Isolate* isolate,
   if (object.IsEmpty())
     return Vector<String>();
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Array> property_names;
   if (!object->GetOwnPropertyNames(isolate->GetCurrentContext())
            .ToLocal(&property_names)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return Vector<String>();
   }
 

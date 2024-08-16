@@ -46,7 +46,7 @@ crypto::ScopedSECItem SignPolicy(
       algorithm = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
       break;
     case em::PolicyFetchRequest::NONE:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));

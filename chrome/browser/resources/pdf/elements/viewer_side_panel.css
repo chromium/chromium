@@ -4,12 +4,16 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./pdf_shared_lit.css.js
+ * #include=pdf-shared-lit
  * #css_wrapper_metadata_end */
 
 :host {
   --side-panel-border-color: rgb(94, 94, 94);
   --cr-icon-button-margin-end: 0;
   --cr-icon-button-margin-start: 0;
+  background-color: var(--viewer-pdf-toolbar-background-color);
   border-inline-start: 1px solid var(--side-panel-border-color);
   padding-top: 8px;
   width: 288px;
@@ -20,25 +24,26 @@
 }
 
 h2 {
-  font: normal 400 13px sans-serif;
+  font: normal 400 13px Roboto, sans-serif;
+  color: var(--google-grey-100);
   margin: 0;
   margin-inline-start: 14px;
 }
 
 #brush-options {
-  padding-top: 28px;
+  padding-top: 27px;
 }
 
 #brush-selector {
   border-bottom: 1px solid var(--side-panel-border-color);
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  padding-bottom: 8px;
 }
 
 #brush-selector cr-icon-button {
   --cr-icon-button-size: 48px;
-  margin: 8px;
+  margin: 4px 8px;
 }
 
 #colors,

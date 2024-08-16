@@ -43,9 +43,13 @@ TEST(PickerMathSearchTest, ReturnsExamples) {
       results,
       Each(Property(
           "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::SearchRequestData>(
-              AllOf(Field("text", &PickerSearchResult::SearchRequestData::text,
-                          Not(IsEmpty())))))));
+          VariantWith<PickerSearchResult::SearchRequestData>(AllOf(
+              Field("primary_text",
+                    &PickerSearchResult::SearchRequestData::primary_text,
+                    Not(IsEmpty())),
+              Field("secondary_text",
+                    &PickerSearchResult::SearchRequestData::secondary_text,
+                    Not(IsEmpty())))))));
 }
 
 }  // namespace

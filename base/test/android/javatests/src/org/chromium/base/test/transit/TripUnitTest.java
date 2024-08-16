@@ -162,7 +162,7 @@ public class TripUnitTest {
         }
 
         // All elements from nested factories added to the destination elements.
-        assertEquals(3, destinationStation.getElements().getElementsInState().size());
+        assertEquals(3, destinationStation.getElements().getElements().size());
         assertEquals(2, destinationStation.getElements().getElementFactories().size());
         assertEquals(5, destinationStation.getElements().getOtherEnterConditions().size());
         assertEquals(3, destinationStation.getElements().getOtherExitConditions().size());

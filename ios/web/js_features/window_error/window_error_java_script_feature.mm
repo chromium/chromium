@@ -4,7 +4,12 @@
 
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 
+#import "base/debug/crash_logging.h"
+#import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "net/base/apple/url_conversions.h"
@@ -79,6 +84,17 @@ void WindowErrorJavaScriptFeature::ScriptMessageReceived(
 
   if (script_message.request_url()) {
     details.url = script_message.request_url().value();
+  }
+
+  bool has_scriptname = details.filename && details.filename.length > 0;
+  UMA_HISTOGRAM_BOOLEAN("IOS.Javascript.ErrorHasFilename", has_scriptname);
+
+  if (base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
+      !has_scriptname) {
+    if (log_message) {
+      SCOPED_CRASH_KEY_STRING256("Javascript", "error", *log_message);
+    }
+    base::debug::DumpWithoutCrashing();
   }
 
   callback_.Run(details);

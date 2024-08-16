@@ -130,13 +130,14 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
       row_text = l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB);
     }
     SetContent(ui::ImageModel::FromVectorIcon(
-                   kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+                   kPerformanceSpeedometerIcon,
+                   kColorHoverCardTabAlertAudioPlayingIcon,
                    GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
                row_text);
   } else if (alert_state.has_value()) {
     SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
                    alert_state.value()),
-               chrome::GetTabAlertStateText(alert_state.value()));
+               GetTabAlertStateText(alert_state.value()));
   } else {
     SetContent(ui::ImageModel(), std::u16string());
   }
@@ -159,7 +160,7 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
         formatted_memory_usage);
 
     const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
-        kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+        kPerformanceSpeedometerIcon, kColorHoverCardTabAlertAudioPlayingIcon,
         GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
     SetContent(icon_image_model, row_text);
   } else {

@@ -53,14 +53,6 @@ BASE_FEATURE(kPrefetchVirtualMemoryPolicy,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kMemorySaverModeAggressiveness,
-             "MemorySaverModeAggressiveness",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDiscardRingImprovements,
-             "DiscardRingImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPerformanceIntervention,
              "PerformanceIntervention",
              base::FEATURE_DISABLED_BY_DEFAULT);

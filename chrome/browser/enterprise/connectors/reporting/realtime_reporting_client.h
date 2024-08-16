@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "components/enterprise/connectors/common.h"
+#include "components/enterprise/connectors/core/common.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 

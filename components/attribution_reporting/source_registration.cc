@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -75,10 +74,11 @@ SourceRegistration::SourceRegistration(SourceRegistration&&) = default;
 SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
     default;
 
-// static
-base::expected<SourceRegistration, SourceRegistrationError>
-SourceRegistration::Parse(base::Value::Dict registration,
-                          SourceType source_type) {
+namespace {
+
+base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
+    base::Value::Dict registration,
+    SourceType source_type) {
   ASSIGN_OR_RETURN(DestinationSet destination_set,
                    DestinationSet::FromJSON(registration.Find(kDestination)));
   SourceRegistration result(std::move(destination_set));
@@ -96,26 +96,26 @@ SourceRegistration::Parse(base::Value::Dict registration,
                    });
 
   if (const base::Value* value = registration.Find(kExpiry)) {
-    ASSIGN_OR_RETURN(result.expiry, ParseLegacyDuration(*value),
+    ASSIGN_OR_RETURN(result.expiry,
+                     ParseLegacyDuration(*value,
+                                         /*clamp_min=*/kMinSourceExpiry,
+                                         /*clamp_max=*/kMaxSourceExpiry),
                      [](ParseError) {
                        return SourceRegistrationError::kExpiryValueInvalid;
                      });
-
-    result.expiry =
-        std::clamp(result.expiry, kMinSourceExpiry, kMaxSourceExpiry);
 
     result.expiry = AdjustExpiry(result.expiry, source_type);
   }
 
   if (const base::Value* value = registration.Find(kAggregatableReportWindow)) {
     ASSIGN_OR_RETURN(
-        result.aggregatable_report_window, ParseLegacyDuration(*value),
+        result.aggregatable_report_window,
+        ParseLegacyDuration(*value,
+                            /*clamp_min=*/kMinReportWindow,
+                            /*clamp_max=*/result.expiry),
         [](ParseError) {
           return SourceRegistrationError::kAggregatableReportWindowValueInvalid;
         });
-
-    result.aggregatable_report_window = std::clamp(
-        result.aggregatable_report_window, kMinReportWindow, result.expiry);
   } else {
     result.aggregatable_report_window = result.expiry;
   }
@@ -175,21 +175,27 @@ SourceRegistration::Parse(base::Value::Dict registration,
   return result;
 }
 
+}  // namespace
+
+// static
+base::expected<SourceRegistration, SourceRegistrationError>
+SourceRegistration::Parse(base::Value value, SourceType source_type) {
+  if (base::Value::Dict* dict = value.GetIfDict()) {
+    return ParseDict(std::move(*dict), source_type);
+  } else {
+    return base::unexpected(SourceRegistrationError::kRootWrongType);
+  }
+}
+
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
 SourceRegistration::Parse(std::string_view json, SourceType source_type) {
   base::expected<SourceRegistration, SourceRegistrationError> source =
       base::unexpected(SourceRegistrationError::kInvalidJson);
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-
-  if (value) {
-    if (base::Value::Dict* dict = value->GetIfDict()) {
-      source = Parse(std::move(*dict), source_type);
-    } else {
-      source = base::unexpected(SourceRegistrationError::kRootWrongType);
-    }
+  if (std::optional<base::Value> value =
+          base::JSONReader::Read(json, base::JSON_PARSE_RFC)) {
+    source = Parse(*std::move(value), source_type);
   }
 
   if (!source.has_value()) {

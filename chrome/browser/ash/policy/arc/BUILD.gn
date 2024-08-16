@@ -57,3 +57,29 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "unaffiliated_arc_allowed_browsertest.cc" ]
+
+  deps = [
+    "//ash/components/arc:arc_test_support",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

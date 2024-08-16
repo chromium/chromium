@@ -687,9 +687,8 @@ int HttpStreamParser::DoReadBody() {
     if (available) {
       CHECK_GT(available, 0);
       int64_t bytes_from_buffer = std::min(available, remaining_read_len);
-      base::as_writable_bytes(user_read_buf_->span())
-          .copy_prefix_from(read_buf_->everything().subspan(
-              read_buf_unused_offset_, bytes_from_buffer));
+      user_read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
+          read_buf_unused_offset_, bytes_from_buffer));
       read_buf_unused_offset_ += bytes_from_buffer;
       // Clear out the remaining data if we've reached the end of the body.
       if (truncate_to_content_length_enabled_ &&
@@ -819,13 +818,12 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
     if (save_amount) {
       received_bytes_ -= save_amount;
       read_buf_->everything().copy_prefix_from(
-          base::as_bytes(user_read_buf_->span().subspan(result, save_amount)));
+          user_read_buf_->span().subspan(result, save_amount));
     }
     read_buf_->set_offset(save_amount);
     if (additional_save_amount) {
-      base::as_writable_bytes(read_buf_->span())
-          .copy_prefix_from(read_buf_->everything().subspan(
-              read_buf_unused_offset_, additional_save_amount));
+      read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
+          read_buf_unused_offset_, additional_save_amount));
       read_buf_->set_offset(save_amount + additional_save_amount);
     }
     read_buf_unused_offset_ = 0;

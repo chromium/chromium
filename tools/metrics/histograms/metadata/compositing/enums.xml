@@ -121,6 +121,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="APPLE_GENERIC_RGB"/>
   <int value="14" label="WIDE_GAMUT_COLOR_SPIN"/>
   <int value="15" label="CUSTOM"/>
+  <int value="16" label="EBU_3213_E"/>
 </enum>
 
 <enum name="ColorSpaceTransferID">
@@ -205,6 +206,19 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="2" label="Force full output rect">
     Full output rect damage was forced for this render pass.
+  </int>
+</enum>
+
+<enum name="RenderPassDrawRectAssign">
+  <int value="0" label="New Output rect">
+    Initializing a drawn rect with an output rect for the first time.
+  </int>
+  <int value="1" label="Reassignment">
+    Reassigning a different output rect to an existing non empty drawn rect.
+  </int>
+  <int value="2" label="No Assignment">No changes to drawn rect.</int>
+  <int value="3" label="Full Damage">
+    Assignment to drawn rect is equal to the damage.
   </int>
 </enum>
 

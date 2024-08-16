@@ -53,20 +53,18 @@ void TabContentsSyncedTabDelegate::ResetCachedLastActiveTime() {
 }
 
 base::Time TabContentsSyncedTabDelegate::GetLastActiveTime() {
-  // Use the TimeDelta common ground between the two units to make the
-  // conversion.
-  const base::TimeDelta delta_since_epoch =
-      web_contents_->GetLastActiveTime() - base::TimeTicks::UnixEpoch();
-  const base::Time converted_time = base::Time::UnixEpoch() + delta_since_epoch;
+  const base::Time last_active_time = web_contents_->GetLastActiveTime();
   if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
+    const base::TimeTicks last_active_time_ticks =
+        web_contents_->GetLastActiveTimeTicks();
     if (cached_last_active_time_.has_value() &&
-        converted_time - cached_last_active_time_.value() <
+        last_active_time_ticks - cached_last_active_time_.value().first <
             syncer::kSyncSessionOnVisibilityChangedTimeThreshold.Get()) {
-      return cached_last_active_time_.value();
+      return cached_last_active_time_.value().second;
     }
-    cached_last_active_time_ = converted_time;
+    cached_last_active_time_ = {last_active_time_ticks, last_active_time};
   }
-  return converted_time;
+  return last_active_time;
 }
 
 bool TabContentsSyncedTabDelegate::IsBeingDestroyed() const {

@@ -80,6 +80,7 @@ found in the LICENSE file.
             style="@style/ToolbarHoverableButton"
             android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
+            android:tooltipText="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:visibility="visible"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
             app:menuVerticalOverlapAnchor="false" />

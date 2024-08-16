@@ -1775,6 +1775,8 @@ bool LayerTreeImpl::UpdateTiles() {
   bool tile_priorities_updated = false;
   const bool release_tile_resources_for_hidden_layers =
       settings().release_tile_resources_for_hidden_layers;
+  const TileMemoryLimitPolicy memory_limit_policy =
+      host_impl_->global_tile_state().memory_limit_policy;
   for (PictureLayerImpl* layer : picture_layers_) {
     if (!layer->HasValidTilePriorities()) {
       if (release_tile_resources_for_hidden_layers) {
@@ -1783,7 +1785,7 @@ bool LayerTreeImpl::UpdateTiles() {
       continue;
     }
     ++layers_updated_count;
-    tile_priorities_updated |= layer->UpdateTiles();
+    tile_priorities_updated |= layer->UpdateTiles(memory_limit_policy);
   }
 
   TRACE_EVENT_END1("cc,benchmark",
@@ -2055,8 +2057,8 @@ bool LayerTreeImpl::create_low_res_tiling() const {
   return host_impl_->create_low_res_tiling();
 }
 
-void LayerTreeImpl::SetNeedsRedraw() {
-  host_impl_->SetNeedsRedraw(RedrawReason::kUntracked);
+void LayerTreeImpl::SetNeedsRedraw(RedrawReason reason) {
+  host_impl_->SetNeedsRedraw(reason);
 }
 
 void LayerTreeImpl::GetAllPrioritizedTilesForTracing(
@@ -2531,7 +2533,8 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return nullptr;
   }
@@ -2566,7 +2569,8 @@ LayerImpl* LayerTreeImpl::FindLayerThatIsHitByPointInEventHandlerRegion(
     const Functor& func) {
   if (layer_list_.empty())
     return nullptr;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return nullptr;
   }
@@ -2596,7 +2600,8 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
   std::vector<const LayerImpl*> layers;
   if (layer_list_.empty())
     return layers;
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return layers;
   }
@@ -2696,17 +2701,35 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
   return layers;
 }
 
-bool LayerTreeImpl::PointHitsNonFastScrollableRegion(
+bool LayerTreeImpl::PointHitsMainThreadScrollHitTestRegion(
     const gfx::PointF& screen_space_point,
     const LayerImpl& layer) const {
   // We assume the layer has already been hit tested.
   DCHECK(PointHitsLayer(&layer, screen_space_point, nullptr));
 
-  if (layer.non_fast_scrollable_region().IsEmpty())
+  if (layer.main_thread_scroll_hit_test_region().IsEmpty()) {
     return false;
+  }
 
   return PointHitsRegion(screen_space_point, layer.ScreenSpaceTransform(),
-                         layer.non_fast_scrollable_region(), &layer);
+                         layer.main_thread_scroll_hit_test_region(), &layer);
+}
+
+ElementId LayerTreeImpl::PointHitsNonCompositedScroll(
+    const gfx::PointF& screen_space_point,
+    const LayerImpl& layer) const {
+  const std::vector<ScrollHitTestRect>* hit_test_rects =
+      layer.non_composited_scroll_hit_test_rects();
+  if (!hit_test_rects) {
+    return ElementId();
+  }
+  for (const ScrollHitTestRect& rect : base::Reversed(*hit_test_rects)) {
+    if (PointHitsRect(screen_space_point, layer.ScreenSpaceTransform(),
+                      rect.hit_test_rect, /*distance_to_camera=*/nullptr)) {
+      return rect.scroll_element_id;
+    }
+  }
+  return ElementId();
 }
 
 static ElementId GetFrameElementIdForLayer(const LayerImpl* layer) {
@@ -2786,7 +2809,8 @@ ElementId LayerTreeImpl::FindFrameElementIdAtPoint(
     const gfx::PointF& screen_space_point) {
   if (layer_list_.empty())
     return {};
-  if (!UpdateDrawProperties(/*update_tiles=*/false,
+  bool update_tiles = !features::IsCCSlimmingEnabled();
+  if (!UpdateDrawProperties(update_tiles,
                             /*update_image_animation_controller=*/true)) {
     return {};
   }
@@ -3009,7 +3033,7 @@ void LayerTreeImpl::AddViewTransitionRequest(
   }
   view_transition_requests_.push_back(std::move(request));
   // We need to send the request to viz.
-  SetNeedsRedraw();
+  SetNeedsRedraw(RedrawReason::kUntracked);
 }
 
 std::vector<std::unique_ptr<ViewTransitionRequest>>

@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome kann bis zu drei Interessen teilen.</translation>
 <translation id="2563121210305478421">Chrome neu starten?</translation>
 <translation id="2569974318947988067">Chrome versucht, Websites über HTTPS aufzurufen</translation>
+<translation id="2571392474191184472">Chrome wird von deiner Organisation verwaltet</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kannst du in Chrome ein eigenes Profil für dich einrichten.</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließe Google Chrome und versuche es noch einmal.</translation>
 <translation id="2586406160782125153">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
@@ -211,6 +212,7 @@
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Für Google Chrome ist Windows 10 oder höher erforderlich.</translation>
 <translation id="3835168907083856002">Dadurch wird ein neues Chrome-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt</translation>
+<translation id="383928141529488001">Google Chrome benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Schließe alle Google Chrome-Fenster und versuche es erneut.</translation>
 <translation id="3865754807470779944">Chrome-Version <ph name="PRODUCT_VERSION" /> ist installiert</translation>
 <translation id="3873044882194371212">Link in Chrome-Inkognitofenster öffnen</translation>
@@ -417,6 +419,7 @@
 <translation id="6938166777909186039">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 8.1.</translation>
 <translation id="6943584222992551122">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Um die Daten wiederherzustellen, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
+<translation id="6979589607440534284">Gründe, warum Chrome einige Dateien blockiert, wird in neuem Tab geöffnet</translation>
 <translation id="7011190694940573312">Die Installation ist fehlgeschlagen, da diese Version des Betriebssystems nicht unterstützt wird.</translation>
 <translation id="7024536598735240744">Fehler beim Entpacken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation angehalten.</translation>
@@ -439,6 +442,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7177959540995930968">Weitere Informationen zu diesen Funktionen findest du in den Chrome-Einstellungen.</translation>
 <translation id="7193885263065350793">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen.</translation>
 <translation id="7242029209006116544">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. Wenn du deine bestehenden Chrome-Daten getrennt halten möchtest, kannst du stattdessen ein neues Profil erstellen. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Chrome wird von <ph name="MANAGER" /> verwaltet</translation>
 <translation id="7295052994004373688">Diese Sprache wird für die Google Chrome-UI verwendet</translation>
 <translation id="7296210096911315575">Wichtige Informationen zu Verwendung und Sicherheit</translation>
 <translation id="7302361266603927550">Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
@@ -572,6 +576,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8989968390305463310">Dein Browserverlauf hat Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome automatisch jeden Monat deine Interessen. Solange du deine Interessen nicht entfernst, können sie aktualisiert werden.</translation>
 <translation id="8999117580775242387">Wenn HTTPS nicht verfügbar ist, verwendet Chrome eine unsichere Verbindung ohne Warnung</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>
+<translation id="9014771989710951291">Chrome wird von mehreren Organisationen verwaltet</translation>
 <translation id="9024318700713112071">Chrome als Standardbrowser festlegen</translation>
 <translation id="9053892488859122171">Chrome OS Flex-System</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>

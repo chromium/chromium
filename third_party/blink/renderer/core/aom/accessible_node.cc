@@ -388,7 +388,12 @@ Element* AccessibleNode::GetPropertyOrARIAAttribute(
   if (value == g_null_atom) {
     return nullptr;
   }
-  return element->GetTreeScope().getElementById(value);
+  Element* value_element = element->GetTreeScope().getElementById(value);
+  if (!value_element) {
+    return nullptr;
+  }
+  return value_element->GetShadowReferenceTargetOrSelf(
+      GetCorrespondingARIAAttribute(property));
 }
 
 // static
@@ -416,8 +421,9 @@ bool AccessibleNode::GetPropertyOrARIAAttribute(
 
   TreeScope& scope = element->GetTreeScope();
   for (const auto& id : ids) {
-    if (Element* id_element = scope.getElementById(AtomicString(id)))
-      targets.push_back(id_element);
+    if (Element* id_element = scope.getElementById(AtomicString(id))) {
+      targets.push_back(id_element->GetShadowReferenceTargetOrSelf(attribute));
+    }
   }
   return true;
 }

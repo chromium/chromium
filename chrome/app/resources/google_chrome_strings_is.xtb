@@ -115,6 +115,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2559253115192232574">Seinna getur vefsvæði sem þú opnar beðið Chrome um að sýna áhugasvið þitt til að hægt sé að sérsníða auglýsingarnar sem þú sérð. Chrome getur deilt allt að 3 áhugasviðum.</translation>
 <translation id="2563121210305478421">Endurræsa Chrome?</translation>
 <translation id="2569974318947988067">Chrome mun reyna að uppfæra flettingar þínar í HTTPS</translation>
+<translation id="2571392474191184472">Fyrirtækið þitt hefur umsjón með Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Chrome getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
@@ -215,6 +216,8 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3795971588916395511">Google ChromeOS</translation>
 <translation id="3809772425479558446">Google Chrome krefst Windows 10 eða nýrri útgáfu.</translation>
 <translation id="3835168907083856002">Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="383928141529488001">Google Chrome þarf aðgang að Bluetooth til að kanna 
+ Bluetooth-tæki. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Lokaðu öllum Google Chrome gluggum og reyndu aftur.</translation>
 <translation id="3865754807470779944">Chrome útgáfa <ph name="PRODUCT_VERSION" /> er uppsett</translation>
 <translation id="3873044882194371212">Opna tengil í h&amp;uliðsglugga í Chrome</translation>
@@ -425,6 +428,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
 <translation id="6943584222992551122">Vefskoðunargögnum þessa aðila verður eytt úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögn.</translation>
 <translation id="6967962315388095737">Innleiðarregla til að láta Google Chrome Beta leyfa mDNS-umferð.</translation>
+<translation id="6979589607440534284">Kynntu þér hvers vegna Chrome lokar fyrir vissar skrár (opnast í nýjum flipa)</translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Uppsetning var stöðvuð.</translation>
@@ -447,6 +451,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7177959540995930968">Þú getur kynnt þér þessa eiginleika betur í stillingum Chrome.</translation>
 <translation id="7193885263065350793">Fyrirtækið þitt lokar Chrome eftir aðgerðaleysi í <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. Einnig getur þú búið til nýjan prófíl til að halda eldri gögnum þínum á Chrome aðskildum. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> hefur umsjón með Chrome</translation>
 <translation id="7295052994004373688">Þetta tungumál er notað til að birta notendaviðmót Google Chrome</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7302361266603927550">Einhver Chrome-gögn hafa ekki enn verið vistuð á Google-reikningnum þínum. Prófaðu að bíða í nokkrar mínútur áður en þú skráir þig út. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
@@ -580,6 +585,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8999117580775242387">Ef HTTPS er ekki í boði mun Chrome notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
+<translation id="9014771989710951291">Mörg fyrirtæki hafa umsjón með Chrome</translation>
 <translation id="9024318700713112071">Stilltu Chrome sem sjálfgefinn vafra</translation>
 <translation id="9053892488859122171">ChromeOS Flex kerfi</translation>
 <translation id="9090566250983691233">Kynntu þér hvers vegna Chrome lokar á sumar skrár</translation>

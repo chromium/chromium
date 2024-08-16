@@ -46,17 +46,22 @@ class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-class RealtimeAudioDestinationNode final : public AudioDestinationNode {
+class MODULES_EXPORT RealtimeAudioDestinationNode final
+    : public AudioDestinationNode {
  public:
-  static RealtimeAudioDestinationNode* Create(AudioContext*,
-                                              const WebAudioSinkDescriptor&,
-                                              const WebAudioLatencyHint&,
-                                              std::optional<float> sample_rate);
+  static RealtimeAudioDestinationNode* Create(
+      AudioContext*,
+      const WebAudioSinkDescriptor&,
+      const WebAudioLatencyHint&,
+      std::optional<float> sample_rate,
+      bool update_echo_cancellation_on_first_start);
 
-  explicit RealtimeAudioDestinationNode(AudioContext&,
-                                        const WebAudioSinkDescriptor&,
-                                        const WebAudioLatencyHint&,
-                                        std::optional<float> sample_rate);
+  explicit RealtimeAudioDestinationNode(
+      AudioContext&,
+      const WebAudioSinkDescriptor&,
+      const WebAudioLatencyHint&,
+      std::optional<float> sample_rate,
+      bool update_echo_cancellation_on_first_start);
 
   // Returns its own handler object instead of a generic one from
   // AudioNode::Handler().

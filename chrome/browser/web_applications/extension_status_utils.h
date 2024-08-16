@@ -50,11 +50,6 @@ bool IsExtensionDefaultInstalled(content::BrowserContext* context,
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
                                     const std::string& extension_id);
 
-// Clears any recording of |extension_id| as being an externally installed
-// extension uninstalled by the user. Returns whether any change was made.
-bool ClearExternalExtensionUninstalled(content::BrowserContext* context,
-                                       const std::string& extension_id);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // If this method returns true, then |extension_id| will not be launchable.
 //

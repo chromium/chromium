@@ -1,14 +1,14 @@
 # UseCounter Wiki
 
-UseCounter measures the usage of HTML and JavaScript features across all
-channels and platforms in the wild. Feature usage is recorded per page load and
-is anonymously aggregated. Note measurements only take place on HTTP/HTTPS
-pages. Usages on new tab page, data URL, or file URL are not. Usages on
-extensions is measured on a separate histogram.
+UseCounter can measure the usage of HTML, CSS, and JavaScript (etc) features
+across all channels and platforms in the wild. Feature usage is recorded per
+page load and is anonymously aggregated. Note, measurements are only recorded
+for HTTP/HTTPS pages. Usage on the new tab page, on data URLs or file URLs are
+not. Usages in extensions is measured on a separate histogram.
 
 UseCounter data can be biased against scenarios where user metrics analysis is
 not enabled (e.g., enterprises). However, UseCounter data is essential for
-[web compat decision making](https://www.chromium.org/blink/platform-predictability/compat-tools)
+understanding adoption of [new and existing features](https://webstatus.dev/), [web compat decision making](https://www.chromium.org/blink/platform-predictability/compat-tools)
 and [the blink process for breaking changes](https://sites.google.com/a/chromium.org/dev/blink/removing-features), as it reflects the real Chrome usage with a wide fraction of coverage.
 The results are publicly available on https://chromestatus.com/ and internally
 (for Google employees) on [UMA dashboard](https://goto.google.com/uma-usecounter)
@@ -21,13 +21,32 @@ break-downs.
 UseCounter measures feature usage via UMA histogram and UKM. To add your
 feature to UseCounter, simply:
 + Add your feature to the
-  [blink::mojom::WebFeature enum](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom);
-+ Usage can be measured via:
-    * MeasureAs=\<enum value\> in the feature's IDL definition; Or
-    * blink::UseCounter::Count() for blink side features; Or
-    * content::ContentBrowserClient::LogWebFeatureForCurrentPage() for browser side features.
+  [blink::mojom::WebDXFeature enum](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom)
+  or to the [blink::mojom::WebFeature enum](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom);
++ Usage can be recorded via:
+    * \[[MeasureAs="WebDXFeature::\<enum value\>"]\] in the feature's IDL definition; Or
+    * \[[MeasureAs=\<WebFeature enum value\>]\] in the feature's IDL definition for WebFeature use counters; Or
+    * \[[Measure]\] in the feature's IDL definition for WebFeature use counters with an appropriately named use counter; Or
+    * blink::UseCounter::CountWebDXFeature() or blink::UseCounter::Count() for blink side features; Or
+    * content::ContentBrowserClient::LogWeb[DX]FeatureForCurrentPage() for browser side features.
++ Run [`update_use_counter_feature_enum.py`] to update the UMA mappings.
 
 Example:
+```c++
+enum WebDXFeature {
+  ...
+  kMyFeature = N,
+  ...
+}
+```
+```
+interface MyInterface {
+  ...
+  [MeasureAs="WebDXFeature::kMyFeature"] myIdlAttribute;
+  ...
+}
+```
+OR
 ```c++
 enum WebFeature {
   ...
@@ -46,6 +65,14 @@ OR
 ```c++
   MyInterface::MyBlinkSideFunction() {
     ...
+    UseCounter::CountWebDXFeature(context, WebDXFeature::kMyFeature);
+    ...
+  }
+```
+OR
+```c++
+  MyInterface::MyBlinkSideFunction() {
+    ...
     UseCounter::Count(context, WebFeature::kMyFeature);
     ...
   }
@@ -54,28 +81,31 @@ OR
 ```c++
   MyBrowserSideFunction() {
     ...
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      render_frame_host, blink::mojom::WebFeature::kMyFeature);
+    GetContentClient()->browser()->LogWeb[DX]FeatureForCurrentPage(
+      render_frame_host, blink::mojom::Web[DX]Feature::kMyFeature);
     ...
   }
 ```
 
-Not all features collect URL-keyed metrics. To opt in your feature to UKM,
-simply add your feature to
+All WebDXFeature use counters automatically get URL-keyed metrics collected for
+them. But WebFeature and other types of counters do not collect URL-keyed
+metrics by default. To opt your non-WebDXFeature feature use counter in to UKM
+metrics collection, add your feature to
 [UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures()](https://cs.chromium.org/chromium/src/components/page_load_metrics/browser/observers/use_counter/ukm_features.cc)
-and get approval from one of the privacy owners.
+and get approval from the privacy/metrics owners.
 
 You can quickly verify that your feature is added to UMA histograms and UKM by
-checking chrome://histograms/Blink.UseCounter.Features and chrome://ukm in your
-local build.
+checking chrome://histograms/Blink.UseCounter.WebDXFeatures,
+chrome://histograms/Blink.UseCounter.Features and chrome://ukm in your local
+build.
 
 ## Analyze UseCounter Histogram Data
 
 ### Public Data on https://chromestatus.com
 
-Usage of JavaScript and HTML features is available
+Usage of JavaScript and HTML features is publicly available
 [here](https://chromestatus.com/metrics/feature/popularity).
-Usage of CSS properties is available
+Usage of CSS properties is publicly available
 [here](https://chromestatus.com/metrics/css/popularity).
 
 The data reflects features' daily usage (count of feature hits / count of total
@@ -90,7 +120,9 @@ page visits):
 See (https://goto.google.com/uma-usecounter) for internal tooling.
 
 Some metrics of interest:
-+ "Blink.UseCounter.Features" for HTML and JavaScript features.
++ "Blink.UseCounter.WebDXFeatures" for web platform features as defined in the
+  [web platform dx repository](https://github.com/web-platform-dx/web-features/).
++ "Blink.UseCounter.Features" for generic Web Platform use counters (some of which are mapped to WebDXFeature use counters).
 + "Blink.UseCounter.CSSProperties" for CSS properties.
 + "Blink.UseCounter.AnimatedCSSProperties" for animated CSS properties.
 + "Blink.UseCounter.Extensions.Features" for HTML and JacaScript features on

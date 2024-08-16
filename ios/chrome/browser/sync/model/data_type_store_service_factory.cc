@@ -1,0 +1,47 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
+
+#include <utility>
+
+#include "base/no_destructor.h"
+#include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/sync/model/data_type_store_service_impl.h"
+#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
+#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+
+// static
+DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
+  static base::NoDestructor<DataTypeStoreServiceFactory> instance;
+  return instance.get();
+}
+
+// static
+syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForBrowserState(
+    ChromeBrowserState* browser_state) {
+  return static_cast<syncer::DataTypeStoreService*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, true));
+}
+
+DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
+    : BrowserStateKeyedServiceFactory(
+          "DataTypeStoreService",
+          BrowserStateDependencyManager::GetInstance()) {}
+
+DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() {}
+
+std::unique_ptr<KeyedService>
+DataTypeStoreServiceFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<syncer::DataTypeStoreServiceImpl>(
+      browser_state->GetStatePath(), browser_state->GetPrefs());
+}
+
+web::BrowserState* DataTypeStoreServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  return GetBrowserStateRedirectedInIncognito(context);
+}

@@ -27,6 +27,8 @@ source_set("parcel_tracking") {
     "//ios/chrome/browser/parcel_tracking:tracking_source",
     "//ios/chrome/browser/parcel_tracking:util",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",

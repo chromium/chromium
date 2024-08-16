@@ -87,8 +87,9 @@ class CONTENT_EXPORT PrivateAggregationHost
   static constexpr char kApiReportVersionWithoutFilteringId[] = "0.1";
   static constexpr char kApiReportVersionWithFilteringId[] = "1.0";
 
-  // The maximum number of contributions that can go in an `AggregatableReport`.
-  // Aligns with `attribution_reporting::kMaxAggregationKeysPerSource`.
+  // The maximum number of contributions that can go in an `AggregatableReport`,
+  // after merging. Aligns with
+  // `attribution_reporting::kMaxAggregationKeysPerSource`.
   static constexpr size_t kMaxNumberOfContributions = 20;
 
   static constexpr size_t kDefaultFilteringIdMaxBytes = 1;

@@ -2,19 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/code_cache/generated_code_cache.h"
+
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "content/browser/code_cache/generated_code_cache.h"
+#include "base/time/time.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
@@ -143,9 +150,7 @@ class CodeCacheBrowserTest
 
       http_response->set_content(content);
       http_response->set_content_type("application/javascript");
-      // NOTE: It seems that if we set a Cache-Control header (even
-      // 'Cache-Control: max-age=100000'), this script no longer gets cached in
-      // the GeneratedCodeCache, so be sure not to set one here.
+      http_response->AddCustomHeader("Cache-Control", "max-age=100000");
       return http_response;
     }
 
@@ -200,6 +205,45 @@ class CodeCacheBrowserTest
       return http_response;
     }
 
+    // Returns a JavaScript module file that should be cacheable by the
+    // GeneratedCodeCache (>1024 characters).
+    if (absolute_url.path() == "/cacheable_module.js") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+
+      std::string content =
+          "const title = () => { return 'Module Loaded'; }\n"
+          "export default title\n";
+
+      // Make sure the script is long enough to be eligible for caching.
+      for (int i = 0; i < 16; i++) {
+        content += std::string(64, '/') + '\n';
+      }
+
+      http_response->set_content(content);
+      http_response->set_content_type("application/javascript");
+      http_response->AddCustomHeader("Cache-Control", "max-age=100000");
+      return http_response;
+    }
+
+    // Returns an HTML file that will load /cacheable_module.js.
+    if (absolute_url.path() == "/cacheable_module.html") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+
+      std::string content =
+          "<html><head><title>Title</title></head>"
+          "<script type='module'>\n"
+          "import title from \"./cacheable_module.js\";\n"
+          "document.title = title();"
+          "</script></html>";
+
+      http_response->set_content(content);
+      return http_response;
+    }
+
     return nullptr;
   }
 
@@ -217,6 +261,38 @@ class CodeCacheBrowserTest
   }
 
  protected:
+  void PurgeResourceCacheFromTheMainFrame() {
+    base::RunLoop loop;
+    static_cast<WebContentsImpl*>(shell()->web_contents())
+        ->GetPrimaryFrameTree()
+        .root()
+        ->current_frame_host()
+        ->GetProcess()
+        ->GetRendererInterface()
+        ->PurgeResourceCache(loop.QuitClosure());
+    loop.Run();
+  }
+  void PurgeResourceCacheFromTheFirstSubFrame() {
+    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                              ->GetPrimaryFrameTree()
+                              .root();
+    CHECK(root->child_count() != 0);
+    base::RunLoop loop;
+    root->child_at(root->child_count() - 1)
+        ->current_frame_host()
+        ->GetProcess()
+        ->GetRendererInterface()
+        ->PurgeResourceCache(loop.QuitClosure());
+    loop.Run();
+  }
+  GeneratedCodeCacheContext* GetGeneratedCodeCacheContext() {
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetGeneratedCodeCacheContext();
+  }
+
   base::OnceClosure done_callback_;
 
  private:
@@ -276,8 +352,9 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kHit, 0);
-  }
 
+    PurgeResourceCacheFromTheFirstSubFrame();
+  }
   {
     // Navigate to the same test page again and check for a GeneratedCodeCache
     // hit.
@@ -294,6 +371,8 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+
+    PurgeResourceCacheFromTheFirstSubFrame();
   }
 
   {
@@ -432,6 +511,133 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   }
 }
 
+class CodeCacheSizeChecker {
+ public:
+  CodeCacheSizeChecker(GeneratedCodeCacheContext* cache_context,
+                       const GURL& url,
+                       const GURL& origin,
+                       size_t expected_size)
+      : cache_context_(cache_context),
+        url_(url),
+        origin_(origin),
+        expected_size_(expected_size) {}
+
+  size_t Wait() {
+    base::test::TestFuture<void> done;
+    done_callback_ = done.GetCallback();
+
+    GeneratedCodeCacheContext::GetTaskRunner(cache_context_)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&CodeCacheSizeChecker::GetCodeCache,
+                                  base::Unretained(this)));
+    CHECK(done.Wait());
+    return expected_size_;
+  }
+
+ private:
+  void GetCodeCache() {
+    net::NetworkIsolationKey nik = net::NetworkIsolationKey(
+        net::SchemefulSite(origin_), net::SchemefulSite(origin_));
+    cache_context_->generated_js_code_cache()->FetchEntry(
+        url_, GURL(), nik,
+        base::BindOnce(&CodeCacheSizeChecker::FetchCallback,
+                       base::Unretained(this)));
+  }
+
+  void FetchCallback(const base::Time&, mojo_base::BigBuffer data) {
+    if (data.size() >= expected_size_) {
+      GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_callback_));
+    } else {
+      // Retries because the CodeCacheHost's IPC may delay.
+      GeneratedCodeCacheContext::GetTaskRunner(cache_context_)
+          ->PostDelayedTask(FROM_HERE,
+                            base::BindOnce(&CodeCacheSizeChecker::GetCodeCache,
+                                           base::Unretained(this)),
+                            base::Microseconds(100));
+    }
+  }
+
+  scoped_refptr<GeneratedCodeCacheContext> cache_context_;
+  const GURL url_;
+  const GURL origin_;
+  const size_t expected_size_;
+  size_t actual_size_ = 0;
+  base::OnceClosure done_callback_;
+};
+
+IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
+                       GeneratedCodeCacheSizeClassicScript) {
+  // With this, we can query the code cache in a unified way in platforms which
+  // use origin locks differently.
+  CodeCacheHostImpl::SetUseEmptySecondaryKeyForTesting();
+  GURL url = embedded_test_server()->GetURL("c.com", "/cacheable.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GeneratedCodeCacheContext* cache_context = GetGeneratedCodeCacheContext();
+  // Wait until compile hints were written into the cache.
+  const GURL& cacheable_script =
+      embedded_test_server()->GetURL("c.com", "/cacheable.js");
+  constexpr size_t kTimeStampSize = 24;  // Tag + actual data.
+  CodeCacheSizeChecker code_cache_size_checker(
+      cache_context, cacheable_script,
+      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize);
+  EXPECT_EQ(kTimeStampSize, code_cache_size_checker.Wait());
+
+  // Clear Blink side cache.
+  PurgeResourceCacheFromTheMainFrame();
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Navigate to the same page.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  // We expect that the generated code cache is larger than the timestamp data.
+  CodeCacheSizeChecker code_cache_size_checker2(
+      cache_context, cacheable_script,
+      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize + 1);
+  code_cache_size_checker2.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
+                       GeneratedCodeCacheSizeModuleScript) {
+  // With this, we can query the code cache in a unified way in platforms which
+  // use origin locks differently.
+  CodeCacheHostImpl::SetUseEmptySecondaryKeyForTesting();
+  GURL url = embedded_test_server()->GetURL("c.com", "/cacheable_module.html");
+  const std::u16string expected_title = u"Module Loaded";
+  {
+    TitleWatcher watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    EXPECT_EQ(expected_title, watcher.WaitAndGetTitle());
+  }
+
+  GeneratedCodeCacheContext* cache_context = GetGeneratedCodeCacheContext();
+  // Wait until compile hints were written into the cache.
+  const GURL& cacheable_module_script =
+      embedded_test_server()->GetURL("c.com", "/cacheable_module.js");
+  constexpr size_t kTimeStampSize = 24;  // Tag + actual data.
+  CodeCacheSizeChecker code_cache_size_checker(
+      cache_context, cacheable_module_script,
+      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize);
+  EXPECT_EQ(kTimeStampSize, code_cache_size_checker.Wait());
+
+  // Clear Blink side cache.
+  PurgeResourceCacheFromTheMainFrame();
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Navigate to the same page.
+  {
+    TitleWatcher watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    EXPECT_EQ(expected_title, watcher.WaitAndGetTitle());
+  }
+  // We expect that the generated code cache is larger than the timestamp data.
+  CodeCacheSizeChecker code_cache_size_checker2(
+      cache_context, cacheable_module_script,
+      embedded_test_server()->GetURL("c.com", "/"), kTimeStampSize + 1);
+  code_cache_size_checker2.Wait();
+}
+
 class CompileHintsBrowserTest : public ContentBrowserTest {
  public:
   CompileHintsBrowserTest() = default;
@@ -513,51 +719,6 @@ class NoLocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
 
  private:
   base::test::ScopedFeatureList local_compile_hints_;
-};
-
-class CodeCacheSizeChecker {
- public:
-  CodeCacheSizeChecker(GeneratedCodeCacheContext* cache_context,
-                       const GURL& url,
-                       const GURL& origin,
-                       size_t expected_size)
-      : cache_context_(cache_context),
-        url_(url),
-        origin_(origin),
-        expected_size_(expected_size) {}
-
-  void Wait() {
-    base::test::TestFuture<void> done;
-    done_callback_ = done.GetCallback();
-
-    GeneratedCodeCacheContext::GetTaskRunner(cache_context_)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&CodeCacheSizeChecker::GetCodeCache,
-                                  base::Unretained(this)));
-    ASSERT_TRUE(done.Wait());
-  }
-
- private:
-  void GetCodeCache() {
-    net::NetworkIsolationKey nik = net::NetworkIsolationKey(
-        net::SchemefulSite(origin_), net::SchemefulSite(origin_));
-    cache_context_->generated_js_code_cache()->FetchEntry(
-        url_, GURL(), nik,
-        base::BindOnce(&CodeCacheSizeChecker::FetchCallback,
-                       base::Unretained(this)));
-  }
-
-  void FetchCallback(const base::Time&, mojo_base::BigBuffer data) {
-    if (data.size() >= expected_size_) {
-      GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_callback_));
-    }
-  }
-
-  scoped_refptr<GeneratedCodeCacheContext> cache_context_;
-  GURL url_;
-  GURL origin_;
-  size_t expected_size_;
-  base::OnceClosure done_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(NoLocalCompileHintsBrowserTest, NoCompileHints) {

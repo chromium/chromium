@@ -190,10 +190,9 @@ void SerializeV8Value(v8::Local<v8::Value> value,
   scoped_refptr<SerializedScriptValue> serialized_value =
       SerializedScriptValue::Serialize(isolate, value, options,
                                        non_throwable_exception_state);
-  base::span<const uint8_t> ssv_wire_data = serialized_value->GetWireData();
+
   DCHECK(wire_bytes->empty());
-  wire_bytes->Append(ssv_wire_data.data(),
-                     static_cast<wtf_size_t>(ssv_wire_data.size()));
+  wire_bytes->AppendSpan(serialized_value->GetWireData());
 
   // Sanity check that the serialization header has not changed, as the tests
   // that use this method rely on the header format.

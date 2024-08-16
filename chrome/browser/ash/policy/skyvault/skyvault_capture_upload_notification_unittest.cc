@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 
 #include "base/files/file_util.h"
@@ -33,7 +38,7 @@ class SkyvaultCaptureUploadNotificationTest : public BrowserWithTestWindowTest {
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_path_ = temp_dir_.GetPath().AppendASCII("test_capture.png");
-    base::WriteFile(file_path_, "test content", 12);
+    base::WriteFile(file_path_, "test content");
   }
 
   void TearDown() override { BrowserWithTestWindowTest::TearDown(); }

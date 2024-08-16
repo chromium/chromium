@@ -21,4 +21,16 @@ public abstract class SearchEngineCountryDelegate {
      */
     @MainThread
     public abstract Promise<String> getDeviceCountry();
+
+    /** Proxy for {@link SearchEngineChoiceService#isDeviceChoiceDialogEligible()}. */
+    @MainThread
+    public boolean isDeviceChoiceDialogEligible() {
+        return false;
+    }
+
+    /** Proxy for {@link SearchEngineChoiceService#shouldShowDeviceChoiceDialog()}. */
+    @MainThread
+    public Promise<Boolean> shouldShowDeviceChoiceDialog() {
+        return Promise.fulfilled(false);
+    }
 }

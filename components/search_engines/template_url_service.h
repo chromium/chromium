@@ -135,8 +135,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   };
 
   TemplateURLService(
-      PrefService* prefs,
-      search_engines::SearchEngineChoiceService* search_engine_choice_service,
+      PrefService& prefs,
+      search_engines::SearchEngineChoiceService& search_engine_choice_service,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const scoped_refptr<KeywordWebDataService>& web_data_service,
       std::unique_ptr<TemplateURLServiceClient> client,
@@ -508,7 +508,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Returns all syncable TemplateURLs from this model as SyncData. This should
   // include every search engine and no Extension keywords.
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const;
+  syncer::SyncDataList GetAllSyncData(syncer::DataType type) const;
   // Process new search engine changes from Sync, merging them into our local
   // data. This may send notifications if local search engines are added,
   // updated or removed.
@@ -519,10 +519,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // to Sync. This may send notifications if local search engines are added,
   // updated or removed.
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
   base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
@@ -886,10 +886,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
       const OwnedTemplateURLVector& policy_site_search_engines);
 
   // ---------- Browser state related members ---------------------------------
-  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ref<PrefService> prefs_;
 
-  raw_ptr<search_engines::SearchEngineChoiceService>
-      search_engine_choice_service_ = nullptr;
+  raw_ref<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();

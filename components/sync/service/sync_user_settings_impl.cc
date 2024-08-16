@@ -27,23 +27,23 @@ namespace syncer {
 
 namespace {
 
-// Converts |selected_types| to the corresponding ModelTypeSet (e.g.
+// Converts |selected_types| to the corresponding DataTypeSet (e.g.
 // {kExtensions} becomes {EXTENSIONS, EXTENSION_SETTINGS}).
-ModelTypeSet UserSelectableTypesToModelTypes(
+DataTypeSet UserSelectableTypesToDataTypes(
     UserSelectableTypeSet selected_types) {
-  ModelTypeSet preferred_types;
+  DataTypeSet preferred_types;
   for (UserSelectableType type : selected_types) {
-    preferred_types.PutAll(UserSelectableTypeToAllModelTypes(type));
+    preferred_types.PutAll(UserSelectableTypeToAllDataTypes(type));
   }
   return preferred_types;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-ModelTypeSet UserSelectableOsTypesToModelTypes(
+DataTypeSet UserSelectableOsTypesToDataTypes(
     UserSelectableOsTypeSet selected_types) {
-  ModelTypeSet preferred_types;
+  DataTypeSet preferred_types;
   for (UserSelectableOsType type : selected_types) {
-    preferred_types.PutAll(UserSelectableOsTypeToAllModelTypes(type));
+    preferred_types.PutAll(UserSelectableOsTypeToAllDataTypes(type));
   }
   return preferred_types;
 }
@@ -80,11 +80,11 @@ bool ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(
 SyncUserSettingsImpl::SyncUserSettingsImpl(Delegate* delegate,
                                            SyncServiceCrypto* crypto,
                                            SyncPrefs* prefs,
-                                           ModelTypeSet registered_model_types)
+                                           DataTypeSet registered_data_types)
     : delegate_(delegate),
       crypto_(crypto),
       prefs_(prefs),
-      registered_model_types_(registered_model_types) {
+      registered_data_types_(registered_data_types) {
   CHECK(delegate_);
   CHECK(crypto_);
   CHECK(prefs_);
@@ -186,7 +186,7 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
-      // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
+      // TODO(crbug.com/40945692): Convert to NOTREACHED.
       DUMP_WILL_BE_NOTREACHED()
           << "Must not set selected types while signed out";
       break;
@@ -209,7 +209,7 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
 
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn: {
-      // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
+      // TODO(crbug.com/40945692): Convert to NOTREACHED.
       DUMP_WILL_BE_NOTREACHED()
           << "Must not set selected types while signed out";
       break;
@@ -240,8 +240,8 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetRegisteredSelectableTypes()
     const {
   UserSelectableTypeSet registered_types;
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    if (!base::Intersection(registered_model_types_,
-                            UserSelectableTypeToAllModelTypes(type))
+    if (!base::Intersection(registered_data_types_,
+                            UserSelectableTypeToAllDataTypes(type))
              .empty()) {
       registered_types.Put(type);
     }
@@ -288,8 +288,8 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
     const {
   UserSelectableOsTypeSet registered_types;
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-    if (!base::Intersection(registered_model_types_,
-                            UserSelectableOsTypeToAllModelTypes(type))
+    if (!base::Intersection(registered_data_types_,
+                            UserSelectableOsTypeToAllDataTypes(type))
              .empty()) {
       registered_types.Put(type);
     }
@@ -394,19 +394,19 @@ SyncUserSettingsImpl::GetExplicitPassphraseDecryptionNigoriKey() const {
   return crypto_->GetExplicitPassphraseDecryptionNigoriKey();
 }
 
-ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
-  ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
+DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
+  DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
   types.PutAll(AlwaysPreferredUserTypes());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  types.PutAll(UserSelectableOsTypesToModelTypes(GetSelectedOsTypes()));
+  types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
 #endif
-  types.RetainAll(registered_model_types_);
+  types.RetainAll(registered_data_types_);
 
   // Control types (in practice, NIGORI) are always considered "preferred", even
   // though they're technically not registered.
   types.PutAll(ControlTypes());
 
-  static_assert(53 == GetNumModelTypes(),
+  static_assert(53 == GetNumDataTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
   if (prefs_->IsLocalSyncEnabled()) {
@@ -432,13 +432,13 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   return types;
 }
 
-ModelTypeSet SyncUserSettingsImpl::GetAllEncryptedDataTypes() const {
+DataTypeSet SyncUserSettingsImpl::GetAllEncryptedDataTypes() const {
   return crypto_->GetAllEncryptedDataTypes();
 }
 
 bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
-  ModelTypeSet preferred_types = GetPreferredDataTypes();
-  const ModelTypeSet encrypted_types = GetAllEncryptedDataTypes();
+  DataTypeSet preferred_types = GetPreferredDataTypes();
+  const DataTypeSet encrypted_types = GetAllEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType(*prefs_)) {
     // Remove AUTOFILL_WALLET_CREDENTIAL from the set to avoid that the
@@ -466,7 +466,7 @@ void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
   const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
-    // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
+    // TODO(crbug.com/40945692): Convert to NOTREACHED.
     DUMP_WILL_BE_NOTREACHED() << "Must not set passphrase while signed out";
     return;
   }

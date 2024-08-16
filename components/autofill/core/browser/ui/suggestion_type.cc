@@ -115,7 +115,7 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressEntry:
       return "kDevtoolsTestAddressEntry";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string SuggestionTypeToString(SuggestionType type) {

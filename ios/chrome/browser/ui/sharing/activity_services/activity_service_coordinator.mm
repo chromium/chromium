@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -96,6 +97,8 @@ constexpr CGFloat kAppIconPointSize = 80;
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   WebNavigationBrowserAgent* agent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   ReadingListBrowserAgent* readingListBrowserAgent =
@@ -103,6 +106,7 @@ constexpr CGFloat kAppIconPointSize = 80;
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
                                       bookmarksHandler:bookmarksHandler
+                                           helpHandler:helpHandler
                                    qrGenerationHandler:self.scopedHandler
                                            prefService:browserState->GetPrefs()
                                          bookmarkModel:bookmarkModel

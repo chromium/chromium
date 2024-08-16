@@ -119,6 +119,8 @@ class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
   // Used for validation.
   GURL url_;
 
+  raw_ptr<actions::ActionItem> qrcode_action_item_ = nullptr;
+
   // Pointers to subviews that we need to update the contents or visibility of
   // after creation.
   raw_ptr<views::ImageView> qr_code_image_ = nullptr;

@@ -155,7 +155,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // additional layout-specific work required. Returns whether the host view
   // must be invalidated as a result of the update. All of these call
   // OnLayoutChanged() by default (see below).
-  virtual bool OnChildViewIgnoredByLayout(View* child_view, bool ignored);
+  virtual bool OnChildViewIncludedInLayoutSet(View* child_view, bool included);
   virtual bool OnViewAdded(View* host, View* view);
   virtual bool OnViewRemoved(View* host, View* view);
   virtual bool OnViewVisibilitySet(View* host, View* view, bool visible);
@@ -195,6 +195,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
   // layout.
   struct ChildInfo {
     bool can_be_visible = true;
+    bool included_in_layout = true;
   };
 
   // LayoutManager:
@@ -214,7 +215,7 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager,
 
   // Do the work of propagating events to owned layouts. Returns true if the
   // host view must be invalidated.
-  bool PropagateChildViewIgnoredByLayout(View* child_view, bool ignored);
+  bool PropagateChildViewIncludedInLayout(View* child_view, bool included);
   bool PropagateViewAdded(View* host, View* view);
   bool PropagateViewRemoved(View* host, View* view);
   bool PropagateViewVisibilitySet(View* host, View* view, bool visible);
@@ -303,7 +304,26 @@ class VIEWS_EXPORT ManualLayoutUtil {
   // the hierarchy would be invalidated, which could result in a layout loop.
   void SetViewHidden(View* child_view, bool hidden);
 
+  // This is implementation for the method below; the exclusion is ended when
+  // the TemporaryExclusion goes out of scope.
+  using TemporaryExclusionData =
+      std::pair<const raw_ptr<ManualLayoutUtil>, const raw_ptr<View>>;
+  struct VIEWS_EXPORT TemporaryExclusionDeleter {
+    void operator()(TemporaryExclusionData*) const;
+  };
+  using TemporaryExclusion =
+      std::unique_ptr<TemporaryExclusionData,
+                      ManualLayoutUtil::TemporaryExclusionDeleter>;
+
+  // Temporarily removes `child_view` from the layout. Use during manual layout
+  // to see how the layout would look without the child view. When the return
+  // value goes out of scope, the exclusion is undone.
+  [[nodiscard]] TemporaryExclusion TemporarilyExcludeFromLayout(
+      View* child_view);
+
  private:
+  void EndTemporaryExclusion(View* child_view);
+
   const raw_ptr<LayoutManagerBase> layout_manager_;
 };
 

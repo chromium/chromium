@@ -401,7 +401,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
-      &creator, &creator,
+      creator, &creator,
       host->instance().DoesRequireCrossSiteRequestForCookies()
           ? net::SiteForCookies()
           : host->instance().storage_key().ToNetSiteForCookies(),

@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/speech_recognition_audio_forwarder.mojom";
 import "media/mojo/mojom/speech_recognition_error.mojom";
 import "media/mojo/mojom/speech_recognition_grammar.mojom";
 import "media/mojo/mojom/speech_recognition_result.mojom";
@@ -33,13 +34,35 @@ struct StartSpeechRecognitionRequestParams {
 
   // Whether the user requested interim results.
   bool interim_results;
+
+  // Whether the speech recognition may happen on-device.
+  bool on_device;
+
+  // Whether the speech recognition is allowed to fallback to a Cloud-based
+  // speech recognition service.
+  bool allow_cloud_fallback;
+
+  // Used to pass audio from the renderer to the browser.
+  pending_receiver<media.mojom.SpeechRecognitionAudioForwarder>?
+      audio_forwarder;
+
+  // The channel count of the forwarded audio.
+  int32 channel_count;
+
+  // The sample rate of the forwarded audio.
+  int32 sample_rate;
 };
 
-// API for the renderer process to start a speech recognition session in the
-// browser process.
+// API for the renderer process to manage speech recognition in the browser
+// process. The remote lives in the renderer process and the receiver lives in
+// the browser process.
 interface SpeechRecognizer {
   // Requests the speech recognition service to start speech recognition.
   Start(StartSpeechRecognitionRequestParams params);
+
+  // Returns whether on-device speech recognition is available for a given
+  // language.
+  OnDeviceWebSpeechAvailable(string language) => (bool available);
 };
 
 // API for the renderer process to stop or abort an existing speech recognition

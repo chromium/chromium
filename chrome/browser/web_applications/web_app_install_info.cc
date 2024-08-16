@@ -350,6 +350,32 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   return info;
 }
 
+// static
+base::expected<WebAppInstallInfo, std::string> WebAppInstallInfo::Create(
+    const GURL& manifest_url,
+    const webapps::ManifestId& manifest_id,
+    const GURL& start_url) {
+  if (!manifest_id.is_valid()) {
+    return base::unexpected(
+        "Manifest `id` is not present or invalid. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  if (!start_url.is_valid()) {
+    return base::unexpected(
+        "Manifest `start_url` is not present or invalid. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  if (!url::Origin::Create(start_url).IsSameOriginWith(
+          url::Origin::Create(manifest_id))) {
+    return base::unexpected(
+        "Manifest `id` and `start_url` must have the same origin. "
+        "manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+
+  return WebAppInstallInfo(manifest_id, start_url);
+}
+
 namespace {
 void CheckValidManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url) {

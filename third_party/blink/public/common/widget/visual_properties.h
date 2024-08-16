@@ -119,9 +119,14 @@ struct BLINK_COMMON_EXPORT VisualProperties {
   // should cause a new LocalSurfaceId to be generated.
   uint32_t capture_sequence_number = 0u;
 
-  // This represents the page zoom level for a WebContents.
+  // This represents the browser zoom level for a WebContents.
   // (0 is the default value which results in 1.0 zoom factor).
   double zoom_level = 0;
+
+  // For an embedded widget this is the cumulative effect of the CSS "zoom"
+  // property on the embedding element (e.g. <iframe>) and its ancestors. For a
+  // top-level widget this is 1.0.
+  double css_zoom_factor = 1.f;
 
   // This represents the page's scale factor, which changes during pinch zoom.
   // It needs to be shared with subframes.

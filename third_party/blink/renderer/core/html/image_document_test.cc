@@ -362,9 +362,8 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
-  Vector<unsigned char> jpeg = JpegImage();
-  Vector<char> data = Vector<char>();
-  data.Append(jpeg.data(), jpeg.size());
+  Vector<char> data;
+  data.AppendVector(JpegImage());
   request.Complete(data);
 
   Compositor().BeginFrame();
@@ -400,9 +399,8 @@ TEST_F(ImageDocumentViewportTest, ScaleImage) {
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
-  Vector<unsigned char> jpeg = JpegImage();
-  Vector<char> data = Vector<char>();
-  data.Append(jpeg.data(), jpeg.size());
+  Vector<char> data;
+  data.AppendVector(JpegImage());
   request.Complete(data);
 
   HTMLImageElement* img = GetDocument().ImageElement();
@@ -441,9 +439,8 @@ TEST_F(ImageDocumentViewportTest, DivWidth) {
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
-  Vector<unsigned char> jpeg = JpegImage();
-  Vector<char> data = Vector<char>();
-  data.Append(jpeg.data(), jpeg.size());
+  Vector<char> data;
+  data.AppendVector(JpegImage());
   request.Complete(data);
 
   HTMLImageElement* img = GetDocument().ImageElement();

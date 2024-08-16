@@ -178,7 +178,7 @@ media::SampleFormat RemovePlanar(media::SampleFormat format) {
       return media::kSampleFormatF32;
 
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -625,7 +625,7 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
       }
 
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -670,7 +670,7 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
       return;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -711,7 +711,7 @@ void AudioData::CopyToInterleaved(base::span<uint8_t> dest,
                                         frames_to_copy);
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -761,7 +761,7 @@ void AudioData::CopyToPlanar(base::span<uint8_t> dest,
                                    exception_state);
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

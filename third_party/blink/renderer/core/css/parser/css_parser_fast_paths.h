@@ -44,8 +44,6 @@ class CORE_EXPORT CSSParserFastPaths {
     return handled_by_keyword_fast_paths_properties_.Has(property_id);
   }
 
-  static bool IsNonStandardAppearanceValuesHighUsage(CSSValueID);
-
   static bool IsValidKeywordPropertyAndValue(CSSPropertyID,
                                              CSSValueID,
                                              CSSParserMode);

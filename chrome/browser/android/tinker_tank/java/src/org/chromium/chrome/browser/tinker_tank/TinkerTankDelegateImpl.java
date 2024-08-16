@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tinker_tank;
 import android.app.Activity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -25,6 +26,7 @@ public class TinkerTankDelegateImpl implements TinkerTankDelegate {
     @Override
     public void maybeShowBottomSheet(
             Activity activity,
+            Profile profile,
             BottomSheetController bottomSheetController,
             Supplier<TabModelSelector> tabModelSelectorSupplier) {}
 

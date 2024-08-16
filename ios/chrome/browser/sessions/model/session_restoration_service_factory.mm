@@ -31,6 +31,9 @@ namespace {
 // Alias for readability.
 using RequestedStorageFormat = SessionRestorationServiceFactory::StorageFormat;
 
+// Threshold before retrying to migration the session storage.
+constexpr base::TimeDelta kRetryMigrationThreshold = base::Days(3);
+
 // Value taken from Desktop Chrome.
 constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
 
@@ -128,7 +131,7 @@ void RecordSessionStorageFormatAndMigrationStatusMetrics(
       break;
 
     case SessionStorageMigrationStatus::kUnkown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(kSessionHistogramStorageMigrationStatus,
@@ -302,30 +305,30 @@ void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
   DCHECK_NE(format, SessionStorageFormat::kUnknown);
   DCHECK_NE(status, SessionStorageMigrationStatus::kUnkown);
 
-  switch (status) {
+  if (status == SessionStorageMigrationStatus::kFailure ||
+      status == SessionStorageMigrationStatus::kInProgress) {
     // The previous attempt either failed, or was interrupted (either by the
-    // user or due to a crash). In either case, do not attempt the migration
-    // again.
-    case SessionStorageMigrationStatus::kInProgress:
-    case SessionStorageMigrationStatus::kFailure:
+    // user or due to a crash). Retry the migration if enough time has passed
+    // since the last attempt (hopefully the reason that caused it to fail or
+    // to be interrupted has changed), otherwise skip the migration and log
+    // the failure.
+    const base::Time last_attempt_time =
+        prefs->GetTime(kSessionStorageMigrationStartedTimePref);
+
+    if (base::Time::Now() - last_attempt_time < kRetryMigrationThreshold) {
       RecordSessionStorageFormatAndMigrationStatusMetrics(format, status);
-
       return std::move(closure).Run();
-
-    // The status must be "success" by this point, and the format different
-    // from the requested format. Schedule a migration.
-    case SessionStorageMigrationStatus::kSuccess:
-      break;
-
-    case SessionStorageMigrationStatus::kUnkown:
-      NOTREACHED_NORETURN();
+    }
   }
 
   // The migration is required. Update the migration status to "in progress"
-  // and start the asynchronous migration on a background sequence.
+  // and start the asynchronous migration on a background sequence. Record
+  // the time of the migration start in order to periodically retry it in
+  // case of failure.
   prefs->SetInteger(
       kSessionStorageMigrationStatusPref,
       base::to_underlying(SessionStorageMigrationStatus::kInProgress));
+  prefs->SetTime(kSessionStorageMigrationStartedTimePref, base::Time::Now());
 
   // Migrate all session in `browser_state`'s and OTR state paths.
   std::vector<base::FilePath> paths = {
@@ -405,4 +408,6 @@ void SessionRestorationServiceFactory::RegisterBrowserStatePrefs(
   registry->RegisterIntegerPref(
       kSessionStorageMigrationStatusPref,
       base::to_underlying(SessionStorageMigrationStatus::kUnkown));
+  registry->RegisterTimePref(kSessionStorageMigrationStartedTimePref,
+                             base::Time());
 }

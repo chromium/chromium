@@ -120,7 +120,7 @@ void BucketFileSystemBuilder::DidReadDirectory(
     } else {
       // We should never get here, except if in the future another type of
       // Handle is added.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 }

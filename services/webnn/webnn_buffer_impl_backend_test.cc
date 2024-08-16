@@ -21,6 +21,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,12 +70,12 @@ class BadMessageTestHelper {
 
 struct CreateContextSuccess {
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  base::UnguessableToken webnn_context_handle;
+  blink::WebNNContextToken webnn_context_handle;
 };
 
 struct CreateBufferSuccess {
   mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  base::UnguessableToken webnn_buffer_handle;
+  blink::WebNNBufferToken webnn_buffer_handle;
 };
 
 #if BUILDFLAG(IS_WIN)

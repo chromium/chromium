@@ -730,7 +730,8 @@ class StreamCopyOrMoveImpl
       return;
     }
 
-    if (options_.empty()) {
+    if (!options_.Has(
+            FileSystemOperation::CopyOrMoveOption::kPreserveLastModified)) {
       RunAfterTouchFile(std::move(callback), base::File::FILE_OK);
       return;
     }

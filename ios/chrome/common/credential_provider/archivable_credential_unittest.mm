@@ -20,6 +20,7 @@ NSData* StringToData(std::string str) {
 
 ArchivableCredential* TestCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                                  gaia:nil
                                               password:@"qwery123"
                                                   rank:5
                                       recordIdentifier:@"recordIdentifier"
@@ -32,6 +33,7 @@ ArchivableCredential* TestCredential() {
 ArchivableCredential* TestPasskeyCredential() {
   return
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"
@@ -49,6 +51,7 @@ ArchivableCredential* TestPasskeyCredential() {
 TEST_F(ArchivableCredentialTest, create) {
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                            password:@"test"
                                                rank:5
                                    recordIdentifier:@"recordIdentifier"
@@ -69,6 +72,7 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
 
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"
@@ -85,6 +89,7 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
 
   credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"
@@ -196,6 +201,7 @@ TEST_F(ArchivableCredentialTest, equality) {
 
   ArchivableCredential* credentialSameIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"other_favicon"
+                                               gaia:nil
                                            password:@"Qwerty123!"
                                                rank:credential.rank + 10
                                    recordIdentifier:@"recordIdentifier"
@@ -207,6 +213,7 @@ TEST_F(ArchivableCredentialTest, equality) {
 
   ArchivableCredential* credentialDiferentIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                            password:@"123456789"
                                                rank:credential.rank
                                    recordIdentifier:@"other_recordIdentifier"
@@ -228,6 +235,7 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
 
   ArchivableCredential* credentialSameIdentifier = [[ArchivableCredential alloc]
        initWithFavicon:@"other_favicon"
+                  gaia:nil
       recordIdentifier:@"recordIdentifier"
                 syncId:StringToData("other_syncId")
               username:@"other_username"
@@ -243,6 +251,7 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
 
   ArchivableCredential* credentialDiferentIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                    recordIdentifier:@"other_recordIdentifier"
                                              syncId:StringToData("syncId")
                                            username:@"username"

@@ -137,6 +137,10 @@ void IncrementWithRef(int& value) {
   value++;
 }
 
+int IncrementAndReturn(int* value) {
+  return ++(*value);
+}
+
 TEST(CallbackHelpersTest, ScopedClosureRunnerHasClosure) {
   base::ScopedClosureRunner runner1;
   EXPECT_FALSE(runner1);
@@ -360,6 +364,41 @@ TEST(CallbackHelpersTest, IgnoreArgs_EmptyCallback) {
   base::OnceCallback<void(int)> once_int_cb =
       base::IgnoreArgs<int>(base::OnceClosure());
   EXPECT_FALSE(once_int_cb);
+}
+
+TEST(CallbackHelpersTest, IgnoreArgs_NonVoidReturn) {
+  int count = 0;
+  base::RepeatingCallback<int(void)> repeating_no_param_cb =
+      base::BindRepeating(&IncrementAndReturn, &count);
+  base::OnceCallback<int(void)> once_no_param_cb =
+      base::BindOnce(&IncrementAndReturn, &count);
+
+  base::RepeatingCallback<int(int)> repeating_int_cb =
+      base::IgnoreArgs<int>(repeating_no_param_cb);
+  EXPECT_EQ(0, count);
+  EXPECT_EQ(1, repeating_int_cb.Run(42));
+  EXPECT_EQ(1, count);
+  EXPECT_EQ(2, repeating_int_cb.Run(42));
+  EXPECT_EQ(2, count);
+
+  base::OnceCallback<int(int)> once_int_cb =
+      base::IgnoreArgs<int>(std::move(once_no_param_cb));
+  EXPECT_EQ(2, count);
+  EXPECT_EQ(3, std::move(once_int_cb).Run(42));
+  EXPECT_EQ(3, count);
+
+  // Ignore only some (one) argument and forward the rest.
+  auto repeating_cb = base::BindRepeating(&IncrementAndReturn);
+  auto repeating_cb_with_extra_arg = base::IgnoreArgs<bool>(repeating_cb);
+  EXPECT_EQ(4, repeating_cb_with_extra_arg.Run(false, &count));
+  EXPECT_EQ(4, count);
+
+  // Ignore two arguments and forward the rest.
+  auto once_cb = base::BindOnce(&IncrementAndReturn);
+  auto once_cb_with_extra_arg =
+      base::IgnoreArgs<char, bool>(std::move(once_cb));
+  EXPECT_EQ(5, std::move(once_cb_with_extra_arg).Run('d', false, &count));
+  EXPECT_EQ(5, count);
 }
 
 TEST(CallbackHelpersTest, ForwardRepeatingCallbacks) {

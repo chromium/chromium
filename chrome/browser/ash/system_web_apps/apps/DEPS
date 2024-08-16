@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/accessibility/media_app",
   "+chrome/browser/apps/almanac_api_client",
   "+chrome/browser/apps/app_service",
+  "+chrome/browser/apps/user_type_filter.h",
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",

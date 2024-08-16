@@ -39,6 +39,7 @@ class OptimizationGuideLogger {
         int source_line,
         const std::string& message) = 0;
   };
+  static OptimizationGuideLogger* GetInstance();
   OptimizationGuideLogger();
   ~OptimizationGuideLogger();
 
@@ -94,6 +95,7 @@ class OptimizationGuideLogger {
 
  private:
   friend class optimization_guide::ModelExecutionInternalsPageBrowserTest;
+  friend class NewTabPageUtilBrowserTest;
 
   struct LogMessage {
     LogMessage(base::Time event_time,

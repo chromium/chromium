@@ -8,6 +8,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {

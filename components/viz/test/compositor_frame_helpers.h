@@ -87,6 +87,7 @@ class RenderPassBuilder {
   RenderPassBuilder& SetHasDamageFromContributingContent(bool val);
   RenderPassBuilder& AddFilter(const cc::FilterOperation& filter);
   RenderPassBuilder& AddBackdropFilter(const cc::FilterOperation& filter);
+  RenderPassBuilder& SetTransformToRootTarget(const gfx::Transform& transform);
 
   // Creates a new stub CopyOutputRequest and adds it to the render pass. If
   // |request_out| is not null the pointer will set to the newly created

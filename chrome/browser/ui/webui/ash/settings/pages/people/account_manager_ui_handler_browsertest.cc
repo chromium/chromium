@@ -9,8 +9,10 @@
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
@@ -404,6 +406,8 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     }
     feature_list_.InitWithFeatures(
         lacros, {ash::features::kSecondaryAccountAllowedInArcPolicy});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   void SetUpOnMainThread() override {
@@ -467,6 +471,7 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<AccountAppsAvailability, DanglingUntriaged>
       account_apps_availability_;
   std::unique_ptr<TestingAccountManagerUIHandler> handler_;

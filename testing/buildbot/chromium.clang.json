@@ -326,6 +326,32 @@
         },
         "test": "blink_wpt_tests",
         "test_id_prefix": "ninja://:blink_wpt_tests/"
+      },
+      {
+        "args": [
+          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       }
     ]
   },
@@ -806,6 +832,32 @@
       },
       {
         "args": [
+          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
+      },
+      {
+        "args": [
           "--test-type=integration"
         ],
         "merge": {
@@ -1219,6 +1271,33 @@
         },
         "test": "chrome_sizes",
         "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      },
+      {
+        "args": [
+          "--test-list=../../third_party/blink/web_tests/TestLists/chrome.filter"
+        ],
+        "merge": {
+          "args": [
+            "--verbose"
+          ],
+          "script": "//third_party/blink/tools/merge_web_test_results.py"
+        },
+        "name": "chrome_wpt_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "results_handler": "layout tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_wpt_tests",
+        "test_id_prefix": "ninja://:chrome_wpt_tests/"
       },
       {
         "args": [
@@ -2115,7 +2194,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15f31d",
+          "16a5211f",
           "--xctest"
         ],
         "merge": {
@@ -2131,7 +2210,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
             }
           ],
           "dimensions": {
@@ -2144,7 +2223,7 @@
               "path": "Runtime-ios-16.4"
             },
             {
-              "name": "xcode_ios_15f31d",
+              "name": "xcode_ios_16a5211f",
               "path": "Xcode.app"
             }
           ],
@@ -2183,7 +2262,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "15f31d",
+          "16a5211f",
           "--xctest"
         ],
         "merge": {
@@ -2199,7 +2278,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:b28cf90d462a7bbd45c28f2d931960c2b9404cb0"
+              "revision": "git_revision:81653990788282be32e97d2e15ff585dd9f068f6"
             }
           ],
           "dimensions": {
@@ -2210,7 +2289,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_15f31d",
+              "name": "xcode_ios_16a5211f",
               "path": "Xcode.app"
             }
           ],

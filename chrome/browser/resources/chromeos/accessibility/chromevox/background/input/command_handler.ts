@@ -74,11 +74,17 @@ interface NewRangeData {
  * When adding new commands, please put the logic in a more relevant spot.
  */
 export class CommandHandler implements CommandHandlerInterface {
+  private commandList_ = Object.values(Command);
+
   onCommand(command: Command): boolean {
     // Check for a command denied in incognito contexts and kiosk.
     if (!PermissionChecker.isAllowed(command)) {
       return true;
     }
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Accessibility.ChromeVox.PerformCommand',
+        this.commandList_.indexOf(command), this.commandList_.length);
 
     ChromeVoxRange.maybeResetFromFocus();
 

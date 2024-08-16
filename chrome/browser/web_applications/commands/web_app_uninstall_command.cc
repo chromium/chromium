@@ -149,7 +149,7 @@ void WebAppUninstallCommand::OnCompletion(webapps::UninstallResultCode code) {
           case webapps::UninstallResultCode::kError:
             return CommandResult::kFailure;
           case webapps::UninstallResultCode::kShutdown:
-            NOTREACHED_NORETURN();
+            NOTREACHED();
         }
       }(),
       code);

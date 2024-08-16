@@ -216,7 +216,7 @@ class FindInPageTest : public InteractiveBrowserTest {
 
   auto ShowFindBar() {
     return Steps(Do([this]() { browser()->GetFindBarController()->Show(); }),
-                 WaitForShow(FindBarView::kTextField));
+                 WaitForShow(FindBarView::kElementId));
   }
 
   auto HideFindBar() {
@@ -225,7 +225,7 @@ class FindInPageTest : public InteractiveBrowserTest {
                        find_in_page::SelectionAction::kKeep,
                        find_in_page::ResultAction::kKeep);
                  }),
-                 WaitForHide(FindBarView::kTextField));
+                 WaitForHide(FindBarView::kElementId));
   }
 
   // NB: Prefer using SendAccelerator() when possible.
@@ -234,6 +234,16 @@ class FindInPageTest : public InteractiveBrowserTest {
       return ui_test_utils::SendKeyPressSync(browser(), key, control, shift,
                                              false, false);
     });
+  }
+
+  static auto CheckHasFocus(ElementSpecifier view) {
+    return CheckViewProperty(view, &views::View::HasFocus, true);
+  }
+
+  static auto Focus(ElementSpecifier view) {
+    return Steps(
+        WithView(view, [](views::View* view) { view->RequestFocus(); }),
+        CheckHasFocus(view));
   }
 
  private:
@@ -262,9 +272,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
             1, TabCloseTypes::CLOSE_NONE);
       }),
       // Set focus to the omnibox.
-      WithView(kOmniboxElementId,
-               [](views::View* view) { view->RequestFocus(); }),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      Focus(kOmniboxElementId),
       // This used to crash until bug 1303709 was fixed.
       SendKeyPress(ui::VKEY_ESCAPE, false, false));
 }
@@ -292,14 +300,12 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
       // focused.
       SendKeyPress(ui::VKEY_TAB, false, false),
       SendKeyPress(ui::VKEY_RETURN, false, false),
-      CheckViewProperty(FindBarView::kPreviousButtonElementId,
-                        &views::View::HasFocus, true),
+      CheckHasFocus(FindBarView::kPreviousButtonElementId),
       // Press the [Tab] key and [Enter], the next button should still be
       // focused.
       SendKeyPress(ui::VKEY_TAB, false, false),
       SendKeyPress(ui::VKEY_RETURN, false, false),
-      CheckViewProperty(FindBarView::kNextButtonElementId,
-                        &views::View::HasFocus, true),
+      CheckHasFocus(FindBarView::kNextButtonElementId),
       StopObservingState(kFindResultState));
 }
 
@@ -374,61 +380,54 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
                   CheckViewProperty(FindBarView::kNextButtonElementId,
                                     &views::View::GetEnabled, false),
                   SendKeyPress(ui::VKEY_TAB, false, false),
-                  CheckViewProperty(FindBarView::kCloseButtonElementId,
-                                    &views::View::HasFocus, true));
+                  CheckHasFocus(FindBarView::kCloseButtonElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
+// TODO(crbug.com/359628866): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FocusRestore DISABLED_FocusRestore
+#else
+#define MAYBE_FocusRestore FocusRestore
+#endif
+IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_FocusRestore) {
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
   constexpr char16_t kSearchA[] = u"a";
 
   RunTestSequence(
       InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a),
+
       // Set focus to the omnibox.
-      WithView(kOmniboxElementId,
-               [](views::View* view) { view->RequestFocus(); }),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      Focus(kOmniboxElementId),
       // Show the Find bar.
-      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      ShowFindBar(), CheckHasFocus(FindBarView::kTextField),
       // Dismiss the Find bar, the omnibox view should get focus.
-      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      HideFindBar(), CheckHasFocus(kOmniboxElementId),
 
       // Show the Find bar and search for "a".
-      WithView(kOmniboxElementId,
-               [](views::View* view) { view->RequestFocus(); }),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
-      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
+      ShowFindBar(),
       ObserveState(kFindResultState,
                    [this]() {
                      return find_in_page::FindTabHelper::FromWebContents(
                          browser()->tab_strip_model()->GetActiveWebContents());
                    }),
+      CheckHasFocus(FindBarView::kTextField),
       EnterText(FindBarView::kTextField, kSearchA),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
       WaitForState(
           kFindResultState,
           testing::Field(
               &FindResultState::active_match_ordinal,
               testing::Ne(FindResultState::kInitialActiveMatchOrdinalCount))),
       // Dismiss the Find bar, the content view should get focus.
-      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
-      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
-                        &views::View::HasFocus, true),
+      HideFindBar(), CheckHasFocus(ContentsWebView::kContentsWebViewElementId),
 
       // Focus the location bar, open and close the find box, focus should
       // return to the location bar (same as before, just checking that
       // http://crbug.com/23599 is fixed).
-      WithView(kOmniboxElementId,
-               [](views::View* view) { view->RequestFocus(); }),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      Focus(kOmniboxElementId),
       // Show the Find bar.
-      ShowFindBar(), EnsurePresent(FindBarView::kElementId),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      ShowFindBar(), CheckHasFocus(FindBarView::kTextField),
       // Dismiss the Find bar, the omnibox view should get focus.
-      HideFindBar(), EnsureNotPresent(FindBarView::kElementId),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+      HideFindBar(), CheckHasFocus(kOmniboxElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionRestoreOnTabSwitch) {
@@ -506,18 +505,21 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
       CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
                         kSearchB),
       // Set focus away from the Find bar (to the omnibox).
-      WithView(kOmniboxElementId,
-               [](views::View* view) { view->RequestFocus(); }),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
+      Focus(kOmniboxElementId),
       // Select tab A, Find bar should get focus.
-      SelectTab(kTabStripElementId, 0),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      SelectTab(kTabStripElementId, 0), CheckHasFocus(FindBarView::kTextField),
       // Select tab B, Omnibox should get focus.
-      SelectTab(kTabStripElementId, 1),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+      SelectTab(kTabStripElementId, 1), CheckHasFocus(kOmniboxElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
+// TODO(crbug.com/359628866): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FocusRestoreOnTabSwitchDismiss \
+  DISABLED_FocusRestoreOnTabSwitchDismiss
+#else
+#define MAYBE_FocusRestoreOnTabSwitchDismiss FocusRestoreOnTabSwitchDismiss
+#endif
+IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_FocusRestoreOnTabSwitchDismiss) {
   const GURL page_a = embedded_test_server()->GetURL("/a.html");
   const GURL page_b = embedded_test_server()->GetURL("/b.html");
 
@@ -525,18 +527,17 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
       // Open tab A and show the Find bar.
       InstrumentTab(kTabId), NavigateWebContents(kTabId, page_a), ShowFindBar(),
       EnsurePresent(FindBarView::kElementId),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      CheckHasFocus(FindBarView::kTextField),
       // Open tab B.
       AddInstrumentedTab(kTabBId, page_b),
       EnsureNotPresent(FindBarView::kElementId),
       // Switch to tab A, the Find bar should get focus.
       SelectTab(kTabStripElementId, 0), EnsurePresent(FindBarView::kElementId),
-      CheckViewProperty(FindBarView::kTextField, &views::View::HasFocus, true),
+      CheckHasFocus(FindBarView::kTextField),
       // Dismiss the Find bar, the content view should get focus.
       SendKeyPress(ui::VKEY_ESCAPE, false, false),
       EnsureNotPresent(FindBarView::kElementId),
-      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
-                        &views::View::HasFocus, true));
+      CheckHasFocus(ContentsWebView::kContentsWebViewElementId));
 }
 
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.

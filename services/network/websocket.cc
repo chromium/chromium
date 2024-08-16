@@ -742,9 +742,8 @@ void WebSocket::SendDataFrame(base::span<const char>* payload) {
     const size_t size_to_write = std::min(buffer.size(), payload->size());
     DCHECK_GT(size_to_write, 0u);
 
-    base::as_writable_chars(buffer)
-        .first(size_to_write)
-        .copy_from(payload->first(size_to_write));
+    base::as_writable_chars(buffer).copy_prefix_from(
+        payload->first(size_to_write));
     *payload = payload->subspan(size_to_write);
 
     const MojoResult end_result = writable_->EndWriteData(size_to_write);
@@ -858,8 +857,8 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
           buffer.size(), base::checked_cast<size_t>(data_frame->data_length -
                                                     bytes_reassembled_));
       message_under_reassembly_->span()
-          .subspan(bytes_reassembled_, bytes_to_copy)
-          .copy_from(base::as_chars(buffer).first(bytes_to_copy));
+          .subspan(bytes_reassembled_)
+          .copy_prefix_from(buffer.first(bytes_to_copy));
       bytes_reassembled_ += bytes_to_copy;
 
       const MojoResult end_result = readable_->EndReadData(bytes_to_copy);
@@ -887,9 +886,7 @@ bool WebSocket::ReadAndSendFrameFromDataPipe(DataFrame* data_frame) {
         buffer.size(), base::saturated_cast<size_t>(data_frame->data_length));
     auto data_to_pass =
         base::MakeRefCounted<net::IOBufferWithSize>(size_to_send);
-    data_to_pass->span()
-        .first(size_to_send)
-        .copy_from(base::as_chars(buffer).first(size_to_send));
+    data_to_pass->span().copy_prefix_from(buffer.first(size_to_send));
 
     const bool is_final = (size_to_send == data_frame->data_length);
     blocked_on_websocket_channel_ = true;

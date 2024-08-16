@@ -16,6 +16,13 @@ const char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+// Title and description for the flag that enables autofill across iframes.
+extern const char kAutofillAcrossIframesName[] =
+    "Enables Autofill across iframes";
+extern const char kAutofillAcrossIframesDescription[] =
+    "When enabled, Autofill will fill and save information on forms that "
+    "spread across multiple iframes.";
+
 const char kAutofillCreditCardUploadName[] =
     "Offers uploading Autofilled credit cards";
 const char kAutofillCreditCardUploadDescription[] =
@@ -208,25 +215,6 @@ const char kBottomOmniboxDefaultSettingDescription[] =
     "Changes the default setting of the omnibox position. If the user "
     "hasn't already changed the setting, changes the omnibox position to top "
     "or bottom of the screen on iPhone. The default is top omnibox.";
-
-const char kBottomOmniboxPromoAppLaunchName[] =
-    "Bottom omnibox promo app-launch";
-const char kBottomOmniboxPromoAppLaunchDescription[] =
-    "Enables the app-launch promo for the bottom omnibox.";
-
-const char kBottomOmniboxPromoDefaultPositionName[] =
-    "Bottom omnibox promo default position";
-const char kBottomOmniboxPromoDefaultPositionDescription[] =
-    "Changes the default omnibox position in the FRE and app-launch promos.";
-
-const char kBottomOmniboxPromoFREName[] = "Bottom omnibox promo FRE";
-const char kBottomOmniboxPromoFREDescription[] =
-    "Enables the FRE promo for the bottom omnibox.";
-
-const char kBottomOmniboxPromoRegionFilterName[] =
-    "Bottom omnibox promo region filter";
-const char kBottomOmniboxPromoRegionFilterDescription[] =
-    "When enabled the bottom omnibox promo is limited to some regions.";
 
 const char kBreakpadNoDelayInitialUploadName[] =
     "Remove delay on initial crash upload";
@@ -449,6 +437,12 @@ const char kEnableFollowUIUpdateName[] = "Enable the Follow UI Update";
 const char kEnableFollowUIUpdateDescription[] =
     "Enable Follow UI Update for the Feed.";
 
+const char kEnableTraitCollectionRegistrationName[] =
+    "Enable Customizable Trait Registration";
+const char kEnableTraitCollectionRegistrationDescription[] =
+    "When enabled, UI elements will only observe and respond to the UITraits "
+    "to which they have been registered.";
+
 const char kEnableiPadFeedGhostCardsName[] = "Enable ghost cards on iPad feeds";
 const char kEnableiPadFeedGhostCardsDescription[] =
     "Enables ghost cards placeholder when feed is loading on iPads.";
@@ -661,18 +655,6 @@ const char kIOSTipsNotificationsDescription[] =
 const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";
-
-const char kIPHiOSSwipeBackForwardFeatureName[] = "IPH for Swipe Back/Forward";
-const char kIPHiOSSwipeBackForwardFeatureDescription[] =
-    "Enables displaying the gesture IPH instructing users to swipe back or "
-    "forward on the currently opened website to navigate to the previous or "
-    "next one visited.";
-
-const char kIPHiOSSwipeToolbarToChangeTabFeatureName[] =
-    "IPH for Swipe Toolbar To Change Tab";
-const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
-    "Enables displaying the gesture IPH instructing users to swipe the toolbar "
-    "to navigate to the previous or next tab in the tab list.";
 
 const char kLensFiltersAblationModeEnabledName[] =
     "Lens filters ablation mode enabled";
@@ -901,6 +883,10 @@ const char kPageImageServiceSalientImageName[] =
 extern const char kPageImageServiceSalientImageDescription[] =
     "Enables the PageImageService fetching images from the Optimization Guide "
     "Salient Images source.";
+
+const char kPageInfoLastVisitedIOSName[] = "Last Visited in Page Info for iOS";
+const char kPageInfoLastVisitedIOSDescription[] =
+    "Shows the Last Visited row in Page Info for iOS.";
 
 const char kPageContentAnnotationsPersistSalientImageMetadataName[] =
     "Page content annotations - Persist salient image metadata";

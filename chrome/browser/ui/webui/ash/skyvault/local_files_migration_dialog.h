@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -50,7 +51,7 @@ class LocalFilesMigrationDialog : public ash::SystemWebDialogDelegate {
 
   // ash::SystemWebDialogDelegate:
   bool ShouldShowCloseButton() const override;
-  ui::ModalType GetDialogModalType() const override;
+  ui::mojom::ModalType GetDialogModalType() const override;
 
   // Called when the dialog is closed. If `ret-value` is set to kStartMigration,
   // the user clicked "Upload now" and uploads should start.

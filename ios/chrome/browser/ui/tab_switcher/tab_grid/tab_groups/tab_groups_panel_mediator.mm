@@ -16,8 +16,10 @@
 #import "components/saved_tab_groups/string_utils.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_consumer.h"
@@ -26,12 +28,14 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/favicon_size.h"
 #import "ui/gfx/image/image.h"
+
+using tab_groups::utils::GetLocalTabGroupInfo;
+using tab_groups::utils::LocalTabGroupInfo;
 
 namespace {
 
@@ -91,13 +95,16 @@ NSString* CreationText(base::Time creation_date) {
   BOOL _isDisabled;
   // Whether this screen is selected in the TabGrid.
   BOOL _selectedGrid;
+  // A list of Browsers.
+  BrowserList* _browserList;
 }
 
 - (instancetype)initWithTabGroupSyncService:
                     (tab_groups::TabGroupSyncService*)tabGroupSyncService
                         regularWebStateList:(WebStateList*)regularWebStateList
                               faviconLoader:(FaviconLoader*)faviconLoader
-                           disabledByPolicy:(BOOL)disabled {
+                           disabledByPolicy:(BOOL)disabled
+                                browserList:(BrowserList*)browserList {
   self = [super init];
   if (self) {
     _tabGroupSyncService = tabGroupSyncService;
@@ -110,6 +117,7 @@ NSString* CreationText(base::Time creation_date) {
     _regularWebStateList = regularWebStateList->AsWeakPtr();
     _faviconLoader = faviconLoader;
     _isDisabled = disabled;
+    _browserList = browserList;
   }
   return self;
 }
@@ -118,6 +126,26 @@ NSString* CreationText(base::Time creation_date) {
   _consumer = consumer;
   if (_consumer) {
     [self populateItemsFromService];
+  }
+}
+
+- (void)deleteSyncedTabGroup:(const base::Uuid&)syncID {
+  const auto group = _tabGroupSyncService->GetGroup(syncID);
+  if (!group) {
+    return;
+  }
+
+  LocalTabGroupInfo tabGroupInfo = GetLocalTabGroupInfo(_browserList, *group);
+  if (tabGroupInfo.tab_group) {
+    // Delete the group and tabs in the group locally. It automatically updates
+    // the tab group sync service.
+    CloseAllWebStatesInGroup(*tabGroupInfo.web_state_list,
+                             tabGroupInfo.tab_group,
+                             WebStateList::CLOSE_USER_ACTION);
+  } else {
+    // The group doesn't exist locally. Delete the group from the tab group
+    // sync service.
+    _tabGroupSyncService->RemoveGroup(syncID);
   }
 }
 
@@ -141,51 +169,47 @@ NSString* CreationText(base::Time creation_date) {
   }
 }
 
-- (void)switchToMode:(TabGridMode)mode {
-  CHECK(mode == TabGridModeNormal)
-      << "Tab Groups panel should only support Normal mode.";
-}
-
 - (void)setPageAsActive {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 #pragma mark TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)doneButtonTapped:(id)sender {
-  [self.toolbarTabGridDelegate doneButtonTapped:sender];
+  base::RecordAction(base::UserMetricsAction("MobileTabGridDone"));
+  [self.tabGridHandler exitTabGrid];
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)searchButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)cancelSearchButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
-  NOTREACHED_NORETURN() << "Should not be called in Tab Groups.";
+  NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
 #pragma mark TabGroupsPanelItemDataSource
@@ -243,6 +267,13 @@ NSString* CreationText(base::Time creation_date) {
                     openGroupWithSyncID:item.savedTabGroupID];
 }
 
+- (void)deleteTabGroupsPanelItem:(TabGroupsPanelItem*)item
+                      sourceView:(UIView*)sourceView {
+  [self.delegate tabGroupsPanelMediator:self
+       showDeleteConfirmationWithSyncID:item.savedTabGroupID
+                             sourceView:sourceView];
+}
+
 #pragma mark TabGroupSyncServiceObserverDelegate
 
 - (void)tabGroupSyncServiceInitialized {
@@ -296,7 +327,6 @@ NSString* CreationText(base::Time creation_date) {
 
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] initWithPage:TabGridPageTabGroups];
-  toolbarsConfiguration.mode = TabGridModeNormal;
   // Done button is enabled if there is at least one Regular tab.
   toolbarsConfiguration.doneButton =
       _regularWebStateList && !_regularWebStateList->empty();

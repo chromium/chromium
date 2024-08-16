@@ -30,13 +30,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
-#include "services/screen_ai/screen_ai_service_impl.h"  // nogncheck
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
@@ -68,6 +62,8 @@
 #include "services/passage_embeddings/passage_embeddings_service.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+#include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
+#include "services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
@@ -267,7 +263,7 @@ auto RunSpeechRecognitionService(
 }
 #endif  // !BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if !BUILDFLAG(IS_ANDROID)
 auto RunScreenAIServiceFactory(
     mojo::PendingReceiver<screen_ai::mojom::ScreenAIServiceFactory> receiver) {
   return std::make_unique<screen_ai::ScreenAIService>(std::move(receiver));
@@ -464,15 +460,12 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
   services.Add(RunPassageEmbeddingsService);
+  services.Add(RunScreenAIServiceFactory);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
   services.Add(RunSpeechRecognitionService);
 #endif  // !BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  services.Add(RunScreenAIServiceFactory);
-#endif
 
 #if BUILDFLAG(IS_WIN)
   services.Add(RunProcessorMetrics);

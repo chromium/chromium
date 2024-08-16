@@ -98,11 +98,9 @@ void CheckClientDownloadRequestBase::Start() {
   DVLOG(2) << "Starting SafeBrowsing download check for: " << source_url_;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (base::FeatureList::IsEnabled(kStrictDownloadTimeout)) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
-                                  GetWeakPtr()));
-  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
+                                GetWeakPtr()));
 
   if (IsAllowlistedByPolicy()) {
     FinishRequest(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
@@ -346,15 +344,6 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
     FinishRequest(DownloadCheckResult::UNKNOWN,
                   REASON_ARCHIVE_WITHOUT_BINARIES);
     return;
-  }
-
-  if (!base::FeatureList::IsEnabled(kStrictDownloadTimeout)) {
-    // We wait until after the file checks finish to start the timeout, as
-    // windows can cause permissions errors if the timeout fired while we were
-    // checking the file signature and we tried to complete the download.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&CheckClientDownloadRequestBase::StartTimeout,
-                                  GetWeakPtr()));
   }
 
   if (!pingback_enabled_) {
@@ -628,10 +617,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
       metrics_suffix = ".Dmg";
       break;
     case DownloadFileType::SEVEN_ZIP:
-      if (base::FeatureList::IsEnabled(kSevenZipEvaluationEnabled))
-        metrics_suffix = ".SevenZip";
-      else
-        metrics_suffix = ".None";
+      metrics_suffix = ".SevenZip";
       break;
   }
   base::UmaHistogramTimes("SBClientDownload.DownloadRequestDuration", duration);

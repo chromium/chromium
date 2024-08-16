@@ -14,9 +14,11 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_manager/user_type.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 
 class AccountId;
+class PrefService;
 
 namespace gfx {
 struct VectorIcon;
@@ -50,7 +52,7 @@ CreateExtendedProperties(HelpBubbleId help_bubble_id);
 
 // Returns extended properties for a help bubble having set `modal_type`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
-CreateExtendedProperties(ui::ModalType modal_type);
+CreateExtendedProperties(ui::mojom::ModalType modal_type);
 
 // Returns extended properties for a help bubble having set `accessible_name`.
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
@@ -67,7 +69,7 @@ Example usage:
 const user_education::HelpBubbleParams::ExtendedProperties
       extended_properties = CreateExtendedProperties(
           CreateExtendedProperties(HelpBubbleId::kTest),
-          CreateExtendedProperties(ui::MODAL_TYPE_SYSTEM));
+          CreateExtendedProperties(ui::mojom::ModalType::kSystem));
 */
 template <typename... Properties>
 ASH_EXPORT user_education::HelpBubbleParams::ExtendedProperties
@@ -110,9 +112,12 @@ ASH_EXPORT HelpBubbleId GetHelpBubbleId(
         extended_properties);
 
 // Returns modal type from the specified `extended_properties`.
-ASH_EXPORT ui::ModalType GetHelpBubbleModalType(
+ASH_EXPORT ui::mojom::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties);
+
+// Returns the last active user pref service. Could be nullptr in tests.
+ASH_EXPORT PrefService* GetLastActiveUserPrefService();
 
 // Returns a matching view for the specified `element_id` in the root window
 // associated with the specified `display_id`, or `nullptr` if no match is
@@ -132,6 +137,9 @@ ASH_EXPORT std::optional<user_manager::UserType> GetUserType(
 
 // Returns whether the primary user account is active.
 ASH_EXPORT bool IsPrimaryAccountActive();
+
+// Returns whether the primary user account's pref service is active.
+ASH_EXPORT bool IsPrimaryAccountPrefServiceActive();
 
 // Returns whether `account_id` is associated with the primary user account.
 ASH_EXPORT bool IsPrimaryAccountId(const AccountId& account_id);

@@ -54,7 +54,7 @@ std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
       return nodes;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool IsLastUsedBookmarkFolderSet(PrefService* prefs) {

@@ -5,6 +5,8 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
+#include "base/i18n/rtl.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -15,6 +17,8 @@
 
 namespace ash {
 namespace {
+
+using ::testing::Return;
 
 ui::KeyEvent CreateKeyEvent(ui::KeyboardCode key_code,
                             int flags = ui::EF_NONE) {
@@ -33,8 +37,8 @@ class MockPseudoFocusHandler : public PickerPseudoFocusHandler {
   bool DoPseudoFocusedAction() override { return true; }
   bool MovePseudoFocusUp() override { return true; }
   bool MovePseudoFocusDown() override { return true; }
-  bool MovePseudoFocusLeft() override { return true; }
-  bool MovePseudoFocusRight() override { return true; }
+  MOCK_METHOD(bool, MovePseudoFocusLeft, (), (override));
+  MOCK_METHOD(bool, MovePseudoFocusRight, (), (override));
   bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override {
     return true;
   }
@@ -89,6 +93,54 @@ TEST(PickerKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
 
   EXPECT_TRUE(key_event_handler.HandleKeyEvent(
       CreateKeyEvent(ui::VKEY_TAB, ui::EF_SHIFT_DOWN)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesLeftArrowLTR) {
+  base::i18n::SetRTLForTesting(false);
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_CALL(pseudo_focus_handler, MovePseudoFocusLeft())
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_LEFT)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesRightArrowLTR) {
+  base::i18n::SetRTLForTesting(false);
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_CALL(pseudo_focus_handler, MovePseudoFocusRight())
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RIGHT)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesLeftArrowRTL) {
+  base::i18n::SetRTLForTesting(true);
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_CALL(pseudo_focus_handler, MovePseudoFocusRight())
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_LEFT)));
+}
+
+TEST(PickerKeyEventHandlerTest, HandlesRightArrowRTL) {
+  base::i18n::SetRTLForTesting(true);
+  PickerKeyEventHandler key_event_handler;
+  MockPseudoFocusHandler pseudo_focus_handler;
+  key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
+
+  EXPECT_CALL(pseudo_focus_handler, MovePseudoFocusLeft())
+      .WillOnce(Return(true));
+
+  EXPECT_TRUE(key_event_handler.HandleKeyEvent(CreateKeyEvent(ui::VKEY_RIGHT)));
 }
 
 }  // namespace

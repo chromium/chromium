@@ -365,6 +365,8 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoScrollbarTrackPiece)
     DEFINE_STRING_MAPPING(PseudoScrollMarker)
     DEFINE_STRING_MAPPING(PseudoScrollMarkerGroup)
+    DEFINE_STRING_MAPPING(PseudoScrollNextButton)
+    DEFINE_STRING_MAPPING(PseudoScrollPrevButton)
     DEFINE_STRING_MAPPING(PseudoWindowInactive)
     DEFINE_STRING_MAPPING(PseudoCornerPresent)
     DEFINE_STRING_MAPPING(PseudoDecrement)
@@ -413,7 +415,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)
     DEFINE_STRING_MAPPING(PseudoPopoverInTopLayer)
     DEFINE_STRING_MAPPING(PseudoPopoverOpen)
-    DEFINE_STRING_MAPPING(PseudoHostHasAppearance)
+    DEFINE_STRING_MAPPING(PseudoHostHasNonAutoAppearance)
     DEFINE_STRING_MAPPING(PseudoVideoPersistent)
     DEFINE_STRING_MAPPING(PseudoVideoPersistentAncestor)
     DEFINE_STRING_MAPPING(PseudoXrOverlay)
@@ -504,7 +506,7 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
     case ScriptStreamer::NotStreamingReason::kDidntTryToStartStreaming:
     case ScriptStreamer::NotStreamingReason::kAlreadyLoaded:
     case ScriptStreamer::NotStreamingReason::kInvalid:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -605,6 +605,7 @@
 ../../web_tests/third_party/LiberationSansWidthVariants/liberation_sans_width_variants.ttf
 ../../web_tests/third_party/MongolianWhite/mnglwhiteotf-subset.ttf
 ../../web_tests/third_party/NotoColorEmoji/NotoColorEmoji.ttf
+../../web_tests/third_party/NotoEmoji/NotoEmoji-Regular.subset.ttf
 ../../web_tests/third_party/NotoMono-hintedLocalizedFamilyName/NotoMono-Regular.subset.ttf
 ../../web_tests/third_party/NotoSans/NotoSansDevanagari-Regular-uni091D.ttf
 ../../web_tests/third_party/NotoSansCJK/NotoSansCJKjp-Regular-subset.otf

@@ -125,6 +125,7 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   views::View* GetOptionForTesting(int option_id);
   views::View* GetSelectFolderMenuItemForTesting();
   std::u16string GetOptionLabelForTesting(int option_id) const;
+  views::View* SetOptionCheckedForTesting(int option_id, bool checked) const;
 
  private:
   friend class CaptureModeSettingsTestApi;
@@ -142,6 +143,8 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // This is the callback function on option click. It will select the
   // clicked/pressed button, and unselect any previously selected button.
   void HandleOptionClick(int option_id);
+
+  views::View* menu_header() const;
 
   // CaptureModeSettingsView is the |delegate_| here. It's owned by
   // its views hierarchy.

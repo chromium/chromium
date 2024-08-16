@@ -153,10 +153,13 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                                     WarningSurface surface,
                                     WarningAction action);
 
-  // Returns whether the download was an encrypted archive.
-  static bool IsEncryptedArchive(const download::DownloadItem* download);
-  static void SetIsEncryptedArchive(download::DownloadItem* download,
-                                    bool is_encrypted_archive);
+  // Returns whether the download was an encrypted archive at the
+  // top-level (i.e. the encryption was not within a nested archive).
+  static bool IsTopLevelEncryptedArchive(
+      const download::DownloadItem* download);
+  static void SetIsTopLevelEncryptedArchive(
+      download::DownloadItem* download,
+      bool is_top_level_encrypted_archive);
 
   // Returns whether the user has entered an incorrect password for the
   // archive.
@@ -210,7 +213,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   base::Time warning_first_shown_time_;
   std::optional<WarningSurface> warning_first_shown_surface_ = std::nullopt;
   std::vector<WarningActionEvent> action_events_;
-  bool is_encrypted_archive_ = false;
+  bool is_top_level_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;
   bool has_shown_local_decryption_prompt_ = false;
   bool fully_extracted_archive_ = false;

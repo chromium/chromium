@@ -59,7 +59,6 @@ class ASH_EXPORT PinKeyboardView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

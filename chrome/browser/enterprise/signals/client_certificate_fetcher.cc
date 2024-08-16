@@ -96,7 +96,7 @@ void ClientCertificateFetcher::OnGetClientCertsComplete(
     const GURL& url,
     net::ClientCertIdentityList client_certs) {
   net::ClientCertIdentityList matching_certificates, nonmatching_certificates;
-  chrome::enterprise_util::AutoSelectCertificates(
+  enterprise_util::AutoSelectCertificates(
       profile_, url, std::move(client_certs), &matching_certificates,
       &nonmatching_certificates);
 

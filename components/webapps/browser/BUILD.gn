@@ -17,6 +17,19 @@ source_set("constants") {
   ]
 }
 
+source_set("webapps_client") {
+  sources = [
+    "webapps_client.cc",
+    "webapps_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/security_state/core",
+    "//components/webapps/common",
+  ]
+  deps = [ "//components/segmentation_platform/public:public" ]
+}
+
 source_set("browser") {
   sources = [
     "banners/app_banner_manager.cc",
@@ -70,8 +83,6 @@ source_set("browser") {
     "pwa_install_path_tracker.h",
     "web_contents/web_app_url_loader.cc",
     "web_contents/web_app_url_loader.h",
-    "webapps_client.cc",
-    "webapps_client.h",
   ]
   deps = [
     "//base",
@@ -99,7 +110,10 @@ source_set("browser") {
     "//url",
   ]
 
-  public_deps = [ ":constants" ]
+  public_deps = [
+    ":constants",
+    ":webapps_client",
+  ]
 
   if (is_android) {
     sources += [

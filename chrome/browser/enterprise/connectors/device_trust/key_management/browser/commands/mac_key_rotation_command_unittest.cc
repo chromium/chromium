@@ -10,11 +10,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mock_key_network_delegate.h"
@@ -22,11 +25,18 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/client_certificates/core/cloud_management_delegate.h"
+#include "components/enterprise/client_certificates/core/mock_cloud_management_delegate.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
+#include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::RunOnceCallback;
 using testing::_;
 using testing::InSequence;
 using testing::Invoke;
@@ -61,12 +71,17 @@ constexpr HttpResponseCode kKeyConflictCode = 409;
 
 }  // namespace
 
-class MacKeyRotationCommandTest : public testing::Test {
+class MacKeyRotationCommandTest : public testing::Test,
+                                  public testing::WithParamInterface<bool> {
  protected:
   MacKeyRotationCommandTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)) {}
+                &test_url_loader_factory_)) {
+    feature_list_.InitWithFeatureState(
+        enterprise_connectors::kDTCKeyRotationUploadedBySharedAPIEnabled,
+        is_key_uploaded_by_shared_api());
+  }
 
   void SetUp() override {
     auto mock_secure_enclave_client =
@@ -75,28 +90,69 @@ class MacKeyRotationCommandTest : public testing::Test {
     SecureEnclaveClient::SetInstanceForTesting(
         std::move(mock_secure_enclave_client));
 
-    params_.dm_token = kFakeDMToken;
-    params_.dm_server_url = kFakeDmServerUrl;
     params_.nonce = kNonce;
 
-    auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
     auto mock_persistence_delegate = scoped_factory_.CreateMockedECDelegate();
-
-    mock_network_delegate_ = mock_network_delegate.get();
     mock_persistence_delegate_ = mock_persistence_delegate.get();
 
-    KeyRotationManager::SetForTesting(KeyRotationManager::CreateForTesting(
-        std::move(mock_network_delegate),
-        std::move(mock_persistence_delegate)));
+    if (is_key_uploaded_by_shared_api()) {
+      auto mock_cloud_delegate = std::make_unique<
+          enterprise_attestation::MockCloudManagementDelegate>();
+      mock_cloud_delegate_ = mock_cloud_delegate.get();
 
-    rotation_command_ = base::WrapUnique(
-        new MacKeyRotationCommand(test_shared_loader_factory_));
+      KeyRotationManager::SetForTesting(KeyRotationManager::CreateForTesting(
+          std::move(mock_cloud_delegate),
+          std::move(mock_persistence_delegate)));
+
+      rotation_command_ = base::WrapUnique(new MacKeyRotationCommand(
+          test_shared_loader_factory_, &fake_dm_token_storage_,
+          &device_management_service_));
+    } else {
+      params_.dm_token = kFakeDMToken;
+      params_.dm_server_url = kFakeDmServerUrl;
+
+      auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
+      mock_network_delegate_ = mock_network_delegate.get();
+
+      KeyRotationManager::SetForTesting(KeyRotationManager::CreateForTesting(
+          std::move(mock_network_delegate),
+          std::move(mock_persistence_delegate)));
+
+      rotation_command_ = base::WrapUnique(
+          new MacKeyRotationCommand(test_shared_loader_factory_));
+    }
   }
 
   void FastForwardBeyondTimeout() {
     task_environment_.FastForwardBy(kTimeoutTime + base::Seconds(2));
     task_environment_.RunUntilIdle();
   }
+
+  void SetUpDmToken(std::string dm_token = kFakeDMToken) {
+    if (is_key_uploaded_by_shared_api()) {
+      EXPECT_CALL(*mock_cloud_delegate_, GetDMToken())
+          .WillRepeatedly(Return(dm_token));
+    }
+  }
+
+  void UploadPublicKey(HttpResponseCode response_code) {
+    if (is_key_uploaded_by_shared_api()) {
+      policy::DMServerJobResult result;
+      result.response_code = response_code;
+
+      EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
+          .WillOnce(RunOnceCallback<1>(result));
+    } else {
+      EXPECT_CALL(
+          *mock_network_delegate_,
+          SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
+          .WillOnce(RunOnceCallback<3>(response_code));
+    }
+  }
+
+  bool is_key_uploaded_by_shared_api() { return GetParam(); }
+
+  base::test::ScopedFeatureList feature_list_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -107,6 +163,14 @@ class MacKeyRotationCommandTest : public testing::Test {
       mock_secure_enclave_client_ = nullptr;
   raw_ptr<MockKeyNetworkDelegate, DanglingUntriaged> mock_network_delegate_ =
       nullptr;
+  raw_ptr<enterprise_attestation::MockCloudManagementDelegate,
+          DanglingUntriaged>
+      mock_cloud_delegate_ = nullptr;
+  policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
+  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
+  policy::FakeDeviceManagementService device_management_service_{
+      &job_creation_handler_};
+
   raw_ptr<MockKeyPersistenceDelegate, DanglingUntriaged>
       mock_persistence_delegate_ = nullptr;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
@@ -114,7 +178,7 @@ class MacKeyRotationCommandTest : public testing::Test {
 };
 
 // Tests a failed key rotation due to the secure enclave not being supported.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(false));
 
@@ -124,7 +188,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_SecureEnclaveUnsupported) {
 }
 
 // Tests a failed key rotation due to failure creating a new signing key pair.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -133,6 +197,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
       .WillOnce(Invoke([]() { return nullptr; }));
+  SetUpDmToken();
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
@@ -140,7 +205,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
 }
 
 // Tests a failed key rotation due to a store key failure.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -150,6 +215,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(false));
+  SetUpDmToken();
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
   rotation_command_->Trigger(params_, future.GetCallback());
@@ -158,25 +224,19 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_StoreKeyFailure) {
 
 // Tests a failed key rotation when uploading a the key to the dm server
 // fails due to a key conflict failure.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
+  SetUpDmToken();
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_network_delegate_,
-      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
-        std::move(callback).Run(kKeyConflictCode);
-      }));
+  UploadPublicKey(kKeyConflictCode);
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
 
@@ -187,25 +247,19 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_KeyConflict) {
 
 // Tests a failed key rotation due to a failure sending the key to the dm
 // server.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
   InSequence s;
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
+  SetUpDmToken();
   EXPECT_CALL(*mock_persistence_delegate_, CheckRotationPermissions())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_network_delegate_,
-      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
-        std::move(callback).Run(kFailureCode);
-      }));
+  UploadPublicKey(kFailureCode);
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
 
@@ -215,7 +269,8 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_UploadKeyFailure) {
 }
 
 // Tests when the browser has invalid permissions.
-TEST_F(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
+TEST_P(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
+  SetUpDmToken();
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -230,7 +285,7 @@ TEST_F(MacKeyRotationCommandTest, Rotate_InvalidPermissions) {
 }
 
 // Tests when the key rotation is successful.
-TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
+TEST_P(MacKeyRotationCommandTest, Rotate_Success) {
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -240,14 +295,9 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
-  EXPECT_CALL(
-      *mock_network_delegate_,
-      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke([](const GURL& url, const std::string& dm_token,
-                          const std::string& body,
-                          base::OnceCallback<void(int)> callback) {
-        std::move(callback).Run(kSuccessCode);
-      }));
+  SetUpDmToken();
+  UploadPublicKey(kSuccessCode);
+
   EXPECT_CALL(*mock_persistence_delegate_, CleanupTemporaryKeyData());
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
@@ -260,7 +310,7 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Success) {
 
 // Tests what happens when the key rotation succeeds beyond the timeout limit
 // before the command object is destroyed.
-TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
+TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -270,27 +320,50 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
+  SetUpDmToken();
 
-  base::OnceCallback<void(int)> captured_callback;
-  EXPECT_CALL(
-      *mock_network_delegate_,
-      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke(
-          [&captured_callback](const GURL& url, const std::string& dm_token,
-                               const std::string& body,
-                               base::OnceCallback<void(int)> callback) {
-            captured_callback = std::move(callback);
-          }));
+  if (is_key_uploaded_by_shared_api()) {
+    base::OnceCallback<void(policy::DMServerJobResult)> captured_callback;
+    EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
+        .WillOnce(Invoke(
+            [&captured_callback](
+                const enterprise_management::DeviceManagementRequest& request,
+                base::OnceCallback<void(policy::DMServerJobResult)> callback) {
+              captured_callback = std::move(callback);
+            }));
 
-  base::test::TestFuture<KeyRotationCommand::Status> future;
-  rotation_command_->Trigger(params_, future.GetCallback());
+    base::test::TestFuture<KeyRotationCommand::Status> future;
+    rotation_command_->Trigger(params_, future.GetCallback());
 
-  FastForwardBeyondTimeout();
+    FastForwardBeyondTimeout();
 
-  EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
+    EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
 
-  // Invoking the callback shouldn't crash.
-  std::move(captured_callback).Run(kSuccessCode);
+    policy::DMServerJobResult result;
+    result.response_code = kSuccessCode;
+    std::move(captured_callback).Run(result);
+  } else {
+    base::OnceCallback<void(int)> captured_callback;
+    EXPECT_CALL(
+        *mock_network_delegate_,
+        SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
+        .WillOnce(Invoke(
+            [&captured_callback](const GURL& url, const std::string& dm_token,
+                                 const std::string& body,
+                                 base::OnceCallback<void(int)> callback) {
+              captured_callback = std::move(callback);
+            }));
+
+    base::test::TestFuture<KeyRotationCommand::Status> future;
+    rotation_command_->Trigger(params_, future.GetCallback());
+
+    FastForwardBeyondTimeout();
+
+    EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
+
+    // Invoking the callback shouldn't crash.
+    std::move(captured_callback).Run(kSuccessCode);
+  }
 
   // Make sure the callback runs before exiting the test.
   task_environment_.RunUntilIdle();
@@ -298,7 +371,7 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
 
 // Tests what happens when the key rotation succeeds beyond the timeout limit
 // after the command object is destroyed.
-TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
+TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
   EXPECT_CALL(*mock_persistence_delegate_,
               LoadKeyPair(KeyStorageType::kPermanent, _));
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
@@ -308,30 +381,55 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
   EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair());
   EXPECT_CALL(*mock_persistence_delegate_, StoreKeyPair(_, _))
       .WillOnce(Return(true));
+  SetUpDmToken();
 
-  base::OnceCallback<void(int)> captured_callback;
-  EXPECT_CALL(
-      *mock_network_delegate_,
-      SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-      .WillOnce(Invoke(
-          [&captured_callback](const GURL& url, const std::string& dm_token,
-                               const std::string& body,
-                               base::OnceCallback<void(int)> callback) {
-            captured_callback = std::move(callback);
-          }));
+  if (is_key_uploaded_by_shared_api()) {
+    base::OnceCallback<void(policy::DMServerJobResult)> captured_callback;
+    EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
+        .WillOnce(Invoke(
+            [&captured_callback](
+                const enterprise_management::DeviceManagementRequest& request,
+                base::OnceCallback<void(policy::DMServerJobResult)> callback) {
+              captured_callback = std::move(callback);
+            }));
 
-  base::test::TestFuture<KeyRotationCommand::Status> future;
-  rotation_command_->Trigger(params_, future.GetCallback());
+    base::test::TestFuture<KeyRotationCommand::Status> future;
+    rotation_command_->Trigger(params_, future.GetCallback());
 
-  FastForwardBeyondTimeout();
+    FastForwardBeyondTimeout();
 
-  EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
+    EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
 
-  rotation_command_.reset();
+    rotation_command_.reset();
 
-  // Invoking the callback shouldn't crash because it is bound to a weak
-  // pointer.
-  std::move(captured_callback).Run(kSuccessCode);
+    policy::DMServerJobResult result;
+    result.response_code = kSuccessCode;
+    std::move(captured_callback).Run(result);
+  } else {
+    base::OnceCallback<void(int)> captured_callback;
+    EXPECT_CALL(
+        *mock_network_delegate_,
+        SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
+        .WillOnce(Invoke(
+            [&captured_callback](const GURL& url, const std::string& dm_token,
+                                 const std::string& body,
+                                 base::OnceCallback<void(int)> callback) {
+              captured_callback = std::move(callback);
+            }));
+
+    base::test::TestFuture<KeyRotationCommand::Status> future;
+    rotation_command_->Trigger(params_, future.GetCallback());
+
+    FastForwardBeyondTimeout();
+
+    EXPECT_EQ(KeyRotationCommand::Status::TIMED_OUT, future.Get());
+
+    rotation_command_.reset();
+
+    // Invoking the callback shouldn't crash because it is bound to a weak
+    // pointer.
+    std::move(captured_callback).Run(kSuccessCode);
+  }
 
   // Make sure the callback runs before exiting the test.
   task_environment_.RunUntilIdle();
@@ -341,7 +439,7 @@ TEST_F(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
 // Tests a failed key rotation due to an invalid command to rotate. Wrapping the
 // test in a branding buildflag as it depends on the current channel being
 // mocked as Stable, which only happens when branded.
-TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
+TEST_P(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
   static constexpr char kInvalidDmServerUrl[] =
       "https://example.com/"
       "management_service?retry=false&agent=Chrome+1.2.3(456)&apptype=Chrome&"
@@ -357,5 +455,7 @@ TEST_F(MacKeyRotationCommandTest, RotateFailure_InvalidCommand) {
   EXPECT_EQ(KeyRotationCommand::Status::FAILED, future.Get());
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+INSTANTIATE_TEST_SUITE_P(, MacKeyRotationCommandTest, testing::Bool());
 
 }  // namespace enterprise_connectors

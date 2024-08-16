@@ -98,7 +98,7 @@ class WebApkDatabaseTest : public ::testing::Test {
   }
 
   void WriteBatch(
-      std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch) {
+      std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch) {
     base::RunLoop run_loop;
 
     database_factory().GetStore()->CommitWriteBatch(
@@ -207,7 +207,7 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndWriteRegistry) {
   }
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   {
     base::RunLoop run_loop;
     web_apk_database->Write(*update_data, std::move(metadata_change_list),
@@ -256,7 +256,7 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndDeleteFromRegistry) {
       ManifestIdStrToAppId("https://example.com/id/99"));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   {
     base::RunLoop run_loop;
     web_apk_database->Write(update_data, std::move(metadata_change_list),
@@ -302,7 +302,7 @@ TEST_F(WebApkDatabaseTest, OpenDatabaseAndOverwriteRegistry) {
   update_data.apps_to_create.emplace_back(std::move(replacement));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
-      syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+      syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   {
     base::RunLoop run_loop;
     web_apk_database->Write(update_data, std::move(metadata_change_list),

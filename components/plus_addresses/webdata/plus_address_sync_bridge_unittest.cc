@@ -16,15 +16,15 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_table.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
@@ -44,13 +44,15 @@ using DataChangedBySyncCallbackMock =
 
 class PlusAddressSyncBridgeTest : public testing::Test {
  public:
-  PlusAddressSyncBridgeTest()
-      : db_backend_(base::MakeRefCounted<WebDatabaseBackend>(
-            base::FilePath(WebDatabase::kInMemoryPath),
-            /*delegate=*/nullptr,
-            base::SingleThreadTaskRunner::GetCurrentDefault())) {
-    db_backend_->AddTable(std::make_unique<PlusAddressTable>());
-    db_backend_->InitDatabase();
+  PlusAddressSyncBridgeTest() {
+    // Table and bridge operate on the DB sequence - UI sequence doesn't matter.
+    webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
+        base::FilePath(WebDatabase::kInMemoryPath),
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+    webdatabase_service_->AddTable(std::make_unique<PlusAddressTable>());
+    webdatabase_service_->LoadDatabase();
+    task_environment_.RunUntilIdle();
     RecreateBridge();
   }
 
@@ -70,17 +72,18 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
   void RecreateBridge() {
     bridge_ = std::make_unique<PlusAddressSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(), db_backend_,
-        on_data_changed_callback_.Get());
+        mock_processor_.CreateForwardingProcessor(),
+        webdatabase_service_->GetBackend(), on_data_changed_callback_.Get());
   }
 
   PlusAddressSyncBridge& bridge() { return *bridge_; }
 
   PlusAddressTable& table() {
-    return *PlusAddressTable::FromWebDatabase(db_backend_->database());
+    return *PlusAddressTable::FromWebDatabase(
+        webdatabase_service_->GetBackend()->database());
   }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -91,8 +94,8 @@ class PlusAddressSyncBridgeTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<WebDatabaseBackend> db_backend_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  scoped_refptr<WebDatabaseService> webdatabase_service_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   testing::NiceMock<DataChangedBySyncCallbackMock> on_data_changed_callback_;
   std::unique_ptr<PlusAddressSyncBridge> bridge_;
 };
@@ -106,11 +109,11 @@ TEST_F(PlusAddressSyncBridgeTest, ModelReadyToSync_InitialSync) {
 
 TEST_F(PlusAddressSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   // Simulate that some metadata is stored.
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
   ASSERT_TRUE(
-      table().UpdateModelTypeState(syncer::PLUS_ADDRESS, model_type_state));
+      table().UpdateDataTypeState(syncer::PLUS_ADDRESS, data_type_state));
 
   // Expect that `ModelReadyToSync()` is called with the stored metadata when
   // the bridge is created.
@@ -165,7 +168,7 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
   // Update `profile1`.
   syncer::EntityChangeList change_list;
   PlusProfile old_profile1 = profile1;
-  profile1.plus_address = "new-" + profile1.plus_address;
+  profile1.plus_address = PlusAddress("new-" + *profile1.plus_address);
   syncer::EntityData entity_data = EntityDataFromPlusProfile(profile1);
   std::string storage_key = bridge().GetStorageKey(entity_data);
   change_list.push_back(

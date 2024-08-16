@@ -693,7 +693,7 @@ PrintBackendServiceManager::GetRemoteIdForPrintDocumentClientId(
       return item.first;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::optional<PrintBackendServiceManager::ClientId>

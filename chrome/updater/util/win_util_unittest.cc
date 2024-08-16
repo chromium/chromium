@@ -151,6 +151,31 @@ TEST(WinUtil, RunElevated) {
 
 TEST(WinUtil, RunDeElevated_Exe) {
   if (!::IsUserAnAdmin() || !IsUACOn()) {
+    GTEST_SKIP();
+  }
+
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process to confirm that the test process is running at medium
+  // integrity.
+  // The event is created with a security descriptor that allows the medium
+  // integrity process to signal it.
+  test::EventHolder event_holder(CreateEveryoneWaitableEventForTest());
+  ASSERT_NE(event_holder.event.handle(), nullptr);
+
+  base::CommandLine test_process_cmd_line = GetTestProcessCommandLine(
+      GetUpdaterScopeForTesting(), test::GetTestName());
+  test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
+                                           event_holder.name);
+  EXPECT_THAT(RunDeElevated(test_process_cmd_line),
+              base::test::ValueIs(DWORD{0}));
+  EXPECT_TRUE(event_holder.event.IsSignaled());
+
+  EXPECT_TRUE(test::WaitFor(
+      [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
+}
+
+TEST(WinUtil, RunDeElevatedNoWait_Exe) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
   }
 
@@ -167,8 +192,8 @@ TEST(WinUtil, RunDeElevated_Exe) {
   test_process_cmd_line.AppendSwitchNative(kTestEventToSignalIfMediumIntegrity,
                                            event_holder.name);
   EXPECT_HRESULT_SUCCEEDED(
-      RunDeElevated(test_process_cmd_line.GetProgram().value(),
-                    test_process_cmd_line.GetArgumentsString()));
+      RunDeElevatedNoWait(test_process_cmd_line.GetProgram().value(),
+                          test_process_cmd_line.GetArgumentsString()));
   EXPECT_TRUE(event_holder.event.TimedWait(TestTimeouts::action_max_timeout()));
 
   EXPECT_TRUE(test::WaitFor(

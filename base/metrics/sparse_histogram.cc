@@ -120,16 +120,16 @@ void SparseHistogram::Add(Sample value) {
 
 void SparseHistogram::AddCount(Sample value, int count) {
   if (count <= 0) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   {
     base::AutoLock auto_lock(lock_);
     unlogged_samples_->Accumulate(value, count);
   }
 
-  if (UNLIKELY(StatisticsRecorder::have_active_callbacks()))
+  if (StatisticsRecorder::have_active_callbacks()) [[unlikely]] {
     FindAndRunCallbacks(value);
+  }
 }
 
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotSamples() const {

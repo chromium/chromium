@@ -33,8 +33,8 @@ using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::ActivityViewHeader;
 using chrome_test_util::CopyLinkButton;
-using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInIncognitoButton;
+using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
 using chrome_test_util::ShareButton;
 
@@ -902,7 +902,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface flushFakeSyncServerToDisk];
 }
 
-- (int)numberOfSyncEntitiesWithType:(syncer::ModelType)type {
+- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type {
   return [ChromeEarlGreyAppInterface numberOfSyncEntitiesWithType:type];
 }
 
@@ -969,7 +969,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface waitForSyncInvalidationFields]);
 }
 
-- (void)triggerSyncCycleForType:(syncer::ModelType)type {
+- (void)triggerSyncCycleForType:(syncer::DataType)type {
   [ChromeEarlGreyAppInterface triggerSyncCycleForType:type];
 }
 
@@ -1009,7 +1009,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface verifySessionsOnSyncServerWithSpecs:URLs]);
 }
 
-- (void)waitForSyncServerEntitiesWithType:(syncer::ModelType)type
+- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
                                      name:(const std::string&)UTF8Name
                                     count:(size_t)count
                                   timeout:(base::TimeDelta)timeout {
@@ -1330,8 +1330,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   std::string errorMessage;
   auto jsonValue = deserializer.Deserialize(&errorCode, &errorMessage);
   NSString* message = [NSString
-      stringWithFormat:@"JSON parsing failed: code=%d, message=%@", errorCode,
-                       base::SysUTF8ToNSString(errorMessage)];
+      stringWithFormat:
+          @"JSON parsing failed: code=%d, message=%@, jsonRepresentation=%@",
+          errorCode, base::SysUTF8ToNSString(errorMessage),
+          base::SysUTF8ToNSString(jsonRepresentation)];
   EG_TEST_HELPER_ASSERT_TRUE(jsonValue, message);
 
   return jsonValue ? std::move(*jsonValue) : base::Value();

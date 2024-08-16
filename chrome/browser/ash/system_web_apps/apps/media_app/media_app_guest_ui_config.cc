@@ -20,6 +20,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -107,10 +108,14 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
   source->AddBoolean("colorThemes", true);
   source->AddBoolean("photosAvailableForImage", photos_integration_supported);
   source->AddBoolean("photosAvailableForVideo", photos_integration_supported);
-  source->AddBoolean("pdfA11yOcr", base::FeatureList::IsEnabled(
-                                       ash::features::kMediaAppPdfA11yOcr));
+
+  // TODO(b:356518781): rename the boolean to e.g. pdfContextMenu.
+  // If true, show a context menu on right click on PDF surface. And if Mahi
+  // message pipe is connected (see `CreateAndBindMahiHandler` below), also show
+  // the Mahi card for the user to use HelpMeRead feature for the PDF.
   source->AddBoolean(
       "pdfMahi", base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi));
+
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
@@ -133,9 +138,12 @@ void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiHandler(
     mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name,
     aura::Window* window) {
-  ash::MahiMediaAppHandlerFactory::GetInstance()
-      ->CreateMahiMediaAppUntrustedHandler(std::move(receiver), std::move(page),
-                                           file_name, window);
+  if (chromeos::MahiManager::Get() &&
+      chromeos::MahiManager::Get()->IsEnabled()) {
+    ash::MahiMediaAppHandlerFactory::GetInstance()
+        ->CreateMahiMediaAppUntrustedHandler(
+            std::move(receiver), std::move(page), file_name, window);
+  }
 }
 
 MediaAppGuestUIConfig::MediaAppGuestUIConfig()

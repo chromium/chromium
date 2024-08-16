@@ -205,7 +205,7 @@ class ConnectionHolderImpl<InstanceType, void> {
     static_assert(!sizeof(*this),
                   "ConnectionHolder::SetHost for single direction connection "
                   "is called unexpectedly.");
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Sets the instance.

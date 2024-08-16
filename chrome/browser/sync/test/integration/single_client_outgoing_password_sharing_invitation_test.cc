@@ -74,7 +74,7 @@ class InvitationCommittedChecker
     *os << "Waiting for outgoing password sharing invitation to be committed.";
 
     std::vector<sync_pb::SyncEntity> entities =
-        fake_server()->GetSyncEntitiesByModelType(
+        fake_server()->GetSyncEntitiesByDataType(
             syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
     *os << " Actual entities: " << entities.size()
         << ", expected: " << expected_entities_count_;
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 
   ASSERT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
   std::vector<sync_pb::SyncEntity> entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(
+      GetFakeServer()->GetSyncEntitiesByDataType(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
   ASSERT_EQ(1u, entities.size());
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 
   ASSERT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
   std::vector<sync_pb::SyncEntity> entities =
-      GetFakeServer()->GetSyncEntitiesByModelType(
+      GetFakeServer()->GetSyncEntitiesByDataType(
           syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
   ASSERT_EQ(1u, entities.size());
 
@@ -204,8 +204,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
 }
 
 // The unconsented primary account isn't supported on ChromeOS.
-// TODO(crbug.com/40233581): enable on Android once transport mode for Passwords
-// is supported.
+// TODO(crbug.com/358053884): enable on Android once transport mode for
+// Passwords is supported.
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
                        ShouldCommitSentPasswordInTransportMode) {

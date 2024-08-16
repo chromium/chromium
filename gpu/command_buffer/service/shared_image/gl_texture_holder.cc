@@ -78,7 +78,7 @@ viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
       CHECK_EQ(num_channels, 1);
       return viz::SinglePlaneFormat::kR_F16;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 GLTextureHolder::GLTextureHolder(viz::SharedImageFormat format,

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
@@ -87,7 +88,8 @@
       invokedOnObfuscatedField:NO
           profilePasswordStore:nil
           accountPasswordStore:nil
-        showAutofillFormButton:[self.injectionHandler
+        showAutofillFormButton:IsKeyboardAccessoryUpgradeEnabled() &&
+                               [self.injectionHandler
                                        isActiveFormAPasswordForm]];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];

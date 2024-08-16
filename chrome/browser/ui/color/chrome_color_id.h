@@ -172,6 +172,8 @@
   /* Intent Picker colors. */ \
   E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
   E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
+  /* Hover Button colors */ \
+  E_CPONLY(kColorHoverButtonBackgroundHovered) \
   /* Lens overlay colors. */ \
   E_CPONLY(kColorLensOverlayToastBackground) \
   E_CPONLY(kColorLensOverlayToastButtonText) \
@@ -250,6 +252,8 @@
   E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
   E_CPONLY(kColorNewTabPageModuleCalendarEventTimeStatusBackground) \
+  E_CPONLY(kColorNewTabPageModuleCalendarAttachmentScrollbarThumb) \
+  E_CPONLY(kColorNewTabPageModuleCalendarDividerColor) \
   E_CPONLY(kColorNewTabPageModuleIconBackground) \
   E_CPONLY(kColorNewTabPageModuleElementDivider) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
@@ -393,12 +397,14 @@
   /* Product Specifications colors */ \
   E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsCitationBackground) \
+  E_CPONLY(kColorProductSpecificationsDetailChipBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureBackground) \
   E_CPONLY(kColorProductSpecificationsDisclosureForeground) \
   E_CPONLY(kColorProductSpecificationsDisclosureGradientEnd) \
   E_CPONLY(kColorProductSpecificationsDisclosureGradientStart) \
   E_CPONLY(kColorProductSpecificationsDisclosureSummaryBackground) \
   E_CPONLY(kColorProductSpecificationsDivider) \
+  E_CPONLY(kColorProductSpecificationsHorizontalCarouselScrollbarThumb) \
   E_CPONLY(kColorProductSpecificationsIcon) \
   E_CPONLY(kColorProductSpecificationsPageBackground) \
   E_CPONLY(kColorProductSpecificationsPrimaryTitle) \

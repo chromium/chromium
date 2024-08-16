@@ -56,7 +56,18 @@ struct QueuedEvent {
 base::LazyInstance<std::vector<QueuedEvent>>::Leaky g_event_queue =
     LAZY_INSTANCE_INITIALIZER;
 
+// g_is_queueing_events is set to true when we are in the "queueing events"
+// state. It is set to true in PostFlushEventQueueTaskIfNecessary(), and
+// is set to false once we start the async task FlushQueue().
+// This allows us to delay an event while preserving ordering by
+// queueing events rather than firing them immediately, allowing us to
+// queue any event that is fired after PostFlushEventQueueTaskIfNecessary()
+// is called, until we begin to flush events.
 bool g_is_queueing_events = false;
+// g_is_flushing is true only when we are iterating over g_event_queue in
+// FlushQueue(). While flushing, no new events should be added to the queue, see
+// https://crbug.com/358404368
+bool g_is_flushing = false;
 
 bool IsAccessibilityFocusableWhenEnabled(View* view) {
   return view->GetFocusBehavior() != View::FocusBehavior::NEVER &&
@@ -109,9 +120,11 @@ void FireEvent(QueuedEvent event) {
 
 void FlushQueue() {
   DCHECK(g_is_queueing_events);
+  g_is_queueing_events = false;
+  g_is_flushing = true;
   for (QueuedEvent event : g_event_queue.Get())
     FireEvent(event);
-  g_is_queueing_events = false;
+  g_is_flushing = false;
   g_event_queue.Get().clear();
 }
 
@@ -230,6 +243,13 @@ void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
   DCHECK(ax_platform_node_);
   Widget* const widget = view()->GetWidget();
   if (!widget || widget->IsClosed()) {
+    return;
+  }
+
+  if (g_is_flushing) {
+    // TODO(https://crbug.com/358404368): Add dump_will_be_check
+    // once all known instances where this would be hit are cleaned up.
+    // Do not fire new events while the queue is being flushed.
     return;
   }
 
@@ -435,8 +455,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::ChildAtIndex(
       }
     }
 
-    NOTREACHED_NORETURN()
-        << "|index| should be less than the unignored child count.";
+    NOTREACHED() << "|index| should be less than the unignored child count.";
   }
 
   // Our widget might have child widgets. If this is a root view, include those

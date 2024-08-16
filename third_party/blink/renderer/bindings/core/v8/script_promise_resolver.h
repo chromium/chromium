@@ -234,7 +234,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
  public:
   explicit ScriptPromiseResolver(ScriptState* script_state)
       : ScriptPromiseResolver(script_state,
-                              ExceptionContext(ExceptionContextType::kUnknown,
+                              ExceptionContext(v8::ExceptionContext::kUnknown,
                                                nullptr,
                                                nullptr)) {}
 

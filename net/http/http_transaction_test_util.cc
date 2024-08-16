@@ -658,7 +658,7 @@ int MockNetworkTransaction::DoSendRequest() {
     response_.unused_since_prefetch = true;
   }
 
-  if (current_request_.load_flags & LOAD_RESTRICTED_PREFETCH) {
+  if (current_request_.load_flags & LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME) {
     DCHECK(response_.unused_since_prefetch);
     response_.restricted_prefetch = true;
   }

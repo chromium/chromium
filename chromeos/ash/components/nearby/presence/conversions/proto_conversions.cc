@@ -23,7 +23,7 @@ RemoteCredentialTypeToThirdPartyCredentialType(
     default:
       NOTREACHED_IN_MIGRATION();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 ::nearby::internal::IdentityType RemoteIdentityTypeToThirdPartyIdentityType(
@@ -39,7 +39,7 @@ RemoteCredentialTypeToThirdPartyCredentialType(
       NOTREACHED_IN_MIGRATION();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -90,7 +90,7 @@ mojom::PublicCredentialType PublicCredentialTypeToMojom(
       return mojom::PublicCredentialType::kRemotePublicCredential;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 mojom::PrivateKeyPtr PrivateKeyToMojom(

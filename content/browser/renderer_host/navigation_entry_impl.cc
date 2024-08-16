@@ -972,7 +972,7 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
 #if BUILDFLAG(IS_ANDROID)
           std::string(),
 #endif
-          false /* is_browser_initiated */,
+          false /* is_browser_initiated */, false /*has_ua_visual_transition*/,
           ukm::kInvalidSourceId /* document_ukm_source_id */, frame_policy,
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_agent_cluster */,

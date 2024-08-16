@@ -694,7 +694,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     getter place-self
     getter placeSelf
     getter position-anchor
+    getter position-area
     getter positionAnchor
+    getter positionArea
     getter right
     getter top
     getter width
@@ -765,7 +767,9 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     setter place-self
     setter placeSelf
     setter position-anchor
+    setter position-area
     setter positionAnchor
+    setter positionArea
     setter right
     setter top
     setter width
@@ -2480,8 +2484,6 @@ interface Fence
     method setReportEventDataForAutomaticBeacons
 interface FencedFrameConfig
     attribute @@toStringTag
-    getter height
-    getter width
     method constructor
     method setSharedStorageContext
 interface File : Blob
@@ -6816,12 +6818,15 @@ interface ProtectedAudience
 interface PublicKeyCredential : Credential
     static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable
+    static method parseCreationOptionsFromJSON
+    static method parseRequestOptionsFromJSON
     attribute @@toStringTag
     getter authenticatorAttachment
     getter rawId
     getter response
     method constructor
     method getClientExtensionResults
+    method toJSON
 interface PushManager
     static getter supportedContentEncodings
     attribute @@toStringTag

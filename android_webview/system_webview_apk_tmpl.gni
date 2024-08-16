@@ -141,6 +141,11 @@ template("system_webview_apk_or_module_tmpl") {
       "//android_webview:pak_file_assets",
     ]
 
+    # Only the .build_config.json is used from this target, and it's fine if
+    # it contains more assets than we need (always use the 64_32 variant).
+    # https://crbug.com/357131361
+    suffix_apk_assets_used_by = system_webview_apk_target
+
     deps += [ "//android_webview:android_webview_no_weblayer_java" ]
 
     if (!_omit_dex) {

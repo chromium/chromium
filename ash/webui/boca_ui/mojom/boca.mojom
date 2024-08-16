@@ -62,7 +62,7 @@ interface PageHandler {
   // access timestamp
   GetWindowsTabsList() => (array<Window> window_list);
     // Fetch a list of courses for the current teacher.
-  ListCourses(string teacher_id) => (array<Course> courses);
+  ListCourses() => (array<Course> courses);
   // Requested by the Boca SWA to fetch a list of students for a given
   // course. Must be called on a course_id received from the most recent
   // ListCourses call.

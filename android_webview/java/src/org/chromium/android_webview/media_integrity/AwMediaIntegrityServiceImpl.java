@@ -70,9 +70,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     private static int sCacheMissCounter;
     private static int sProviderCreatedCounter;
     @NonNull private final RenderFrameHost mRenderFrameHost;
-    private final WebContents mWebContents;
+    @Nullable private final WebContents mWebContents;
 
-    public AwMediaIntegrityServiceImpl(RenderFrameHost renderFrameHost) {
+    public AwMediaIntegrityServiceImpl(@NonNull RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
         mWebContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
     }
@@ -102,8 +102,19 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             return;
         }
 
+        if (mWebContents == null) {
+            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
+            return;
+        }
+
+        final RenderFrameHost mainFrame = mRenderFrameHost.getMainFrame();
+        if (mainFrame == null) {
+            callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
+            return;
+        }
+
         final Origin sourceOrigin = mRenderFrameHost.getLastCommittedOrigin();
-        final Origin topLevelOrigin = mRenderFrameHost.getMainFrame().getLastCommittedOrigin();
+        final Origin topLevelOrigin = mainFrame.getLastCommittedOrigin();
         if (sourceOrigin == null || topLevelOrigin == null) {
             callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
             return;

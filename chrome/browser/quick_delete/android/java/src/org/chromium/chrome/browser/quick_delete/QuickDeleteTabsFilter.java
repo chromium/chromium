@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
@@ -89,8 +90,11 @@ class QuickDeleteTabsFilter {
     /** Closes list of tabs currently filtered for deletion. */
     void closeTabsFilteredForQuickDelete() {
         assert mTabs != null;
-        mTabGroupModelFilter.closeMultipleTabs(
-                mTabs, /* canUndo= */ false, /* hideTabGroups= */ false, /* canRestore= */ false);
+        mTabGroupModelFilter.closeTabs(
+                TabClosureParams.closeTabs(mTabs)
+                        .allowUndo(false)
+                        .saveToTabRestoreService(false)
+                        .build());
     }
 
     /** Return list of tabs currently filtered for deletion. */

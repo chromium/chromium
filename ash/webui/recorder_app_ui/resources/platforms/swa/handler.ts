@@ -17,70 +17,56 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {nothing} from 'chrome://resources/mwc/lit/index.js';
 
 import {InternalMicInfo} from '../../core/microphone_manager.js';
-import {
-  Model,
-  ModelId,
-  ModelState,
-} from '../../core/on_device_model/types.js';
+import {ModelState} from '../../core/on_device_model/types.js';
 import {
   PlatformHandler as PlatformHandlerBase,
 } from '../../core/platform_handler.js';
-import {Signal, signal} from '../../core/reactive/signal.js';
+import {computed, Signal, signal} from '../../core/reactive/signal.js';
 import {SodaSession} from '../../core/soda/types.js';
-import {
-  assertExhaustive,
-  assertExists,
-  assertNotReached,
-} from '../../core/utils/assert.js';
 
-import {OnDeviceModel} from './on_device_model.js';
+import {
+  mojoModelStateToModelState,
+  SummaryModelLoader,
+  TitleSuggestionModelLoader,
+} from './on_device_model.js';
 import {MojoSodaSession} from './soda_session.js';
 import {
-  LoadModelResult,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
-  ModelStateType,
-  OnDeviceModelRemote,
   PageHandler as MojoPageHandler,
+  QuietModeMonitorReceiver,
   SodaClientReceiver,
   SodaRecognizerRemote,
 } from './types.js';
 
-function mojoModelStateToModelState(state: MojoModelState): ModelState {
-  switch (state.type) {
-    case ModelStateType.kNotInstalled:
-      return {kind: 'notInstalled'};
-    case ModelStateType.kInstalling:
-      return {kind: 'installing', progress: assertExists(state.progress)};
-    case ModelStateType.kInstalled:
-      return {kind: 'installed'};
-    case ModelStateType.kError:
-      return {kind: 'error'};
-    case ModelStateType.kUnavailable:
-      return {kind: 'unavailable'};
-    case ModelStateType.MIN_VALUE:
-    case ModelStateType.MAX_VALUE:
-      return assertNotReached(
-        `Got MIN_VALUE or MAX_VALUE from mojo ModelStateType: ${state.type}`,
-      );
-    default:
-      assertExhaustive(state.type);
-  }
-}
-
 export class PlatformHandler extends PlatformHandlerBase {
   private readonly remote = MojoPageHandler.getRemote();
 
-  readonly sodaState = signal<ModelState>({kind: 'unavailable'});
+  override readonly sodaState = signal<ModelState>({kind: 'unavailable'});
 
-  readonly modelStates = new Map<ModelId, Signal<ModelState>>();
+  override summaryModelLoader: SummaryModelLoader;
+
+  override titleSuggestionModelLoader: TitleSuggestionModelLoader;
+
+  readonly quietModeInternal = signal(false);
+
+  override readonly quietMode: Signal<boolean>;
 
   constructor() {
     super();
-
-    for (const modelId of Object.values(ModelId)) {
-      this.modelStates.set(modelId, signal({kind: 'unavailable'}));
-    }
+    this.summaryModelLoader = new SummaryModelLoader(this.remote);
+    this.titleSuggestionModelLoader = new TitleSuggestionModelLoader(
+      this.remote,
+    );
+    this.quietMode = computed({
+      get: () => {
+        return this.quietModeInternal.value;
+      },
+      set: (quietMode: boolean) => {
+        this.remote.setQuietMode(quietMode);
+        this.quietModeInternal.value = quietMode;
+      },
+    });
   }
 
   override async init(): Promise<void> {
@@ -98,35 +84,18 @@ export class PlatformHandler extends PlatformHandlerBase {
     );
     update(state);
 
-    for (const modelId of this.modelStates.keys()) {
-      const update = (state: MojoModelState) => {
-        assertExists(this.modelStates.get(modelId)).value =
-          mojoModelStateToModelState(state);
-      };
-      const monitor = new ModelStateMonitorReceiver({update});
-
-      // This should be relatively quick since in recorder_app_ui.cc we just
-      // return the cached state here, but we await here to avoid UI showing
-      // temporary unavailabe state.
-      const {state} = await this.remote.addModelMonitor(
-        {value: modelId},
-        monitor.$.bindNewPipeAndPassRemote(),
-      );
-      update(state);
-    }
-  }
-
-  override async loadModel(modelId: ModelId): Promise<Model> {
-    const newModel = new OnDeviceModelRemote();
-    const {result} = await this.remote.loadModel(
-      {value: modelId},
-      newModel.$.bindNewPipeAndPassReceiver(),
+    const quietModeMonitor = new QuietModeMonitorReceiver({
+      update: (inQuietMode: boolean) => {
+        this.quietModeInternal.value = inQuietMode;
+      },
+    });
+    const {inQuietMode} = await this.remote.addQuietModeMonitor(
+      quietModeMonitor.$.bindNewPipeAndPassRemote(),
     );
-    if (result !== LoadModelResult.kSuccess) {
-      // TODO(pihsun): Dedicated error type?
-      throw new Error(`Load model failed: ${result}`);
-    }
-    return new OnDeviceModel(newModel);
+    this.quietModeInternal.value = inQuietMode;
+
+    await this.summaryModelLoader.init();
+    await this.titleSuggestionModelLoader.init();
   }
 
   override installSoda(): void {

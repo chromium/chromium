@@ -44,18 +44,20 @@ DataProtectionPageUserData* GetUserData(content::WebContents* web_contents) {
       GetPageFromWebContents(web_contents));
 }
 
-bool ShouldReportWatermark(DataProtectionPageUserData* user_data) {
+// Returns whether a URL filtering event should be reported for safe verdicts.
+// For warn/block+watermark verdicts, a security event is reported as part
+// of the interstitial page appearing, so we only need to report in this class
+// for SAFE verdicts where no interstitial was shown, only if a rule was
+// triggered.
+bool ShouldReportSafeUrlFilteringEvents(DataProtectionPageUserData* user_data) {
   DCHECK(user_data);
-
-  // For warn/block+watermark verdicts, a security event is reported as part
-  // of the interstitial page appearing, so we only need to report in this class
-  // for SAFE verdicts where no interstitial was shown.
-  // Nothing should be reported if there is no watermark at all.
-  return !user_data->settings().watermark_text.empty() &&
-         user_data->rt_lookup_response() &&
+  return user_data->rt_lookup_response() &&
          !user_data->rt_lookup_response()->threat_info().empty() &&
          user_data->rt_lookup_response()->threat_info(0).verdict_type() ==
-             safe_browsing::RTLookupResponse::ThreatInfo::SAFE;
+             safe_browsing::RTLookupResponse::ThreatInfo::SAFE &&
+         user_data->rt_lookup_response()
+             ->threat_info(0)
+             .has_matched_url_navigation_rule();
 }
 
 void RunPendingNavigationCallback(
@@ -66,7 +68,7 @@ void RunPendingNavigationCallback(
   auto* user_data = GetUserData(web_contents);
   DCHECK(user_data);
 
-  if (ShouldReportWatermark(user_data)) {
+  if (ShouldReportSafeUrlFilteringEvents(user_data)) {
     MaybeTriggerUrlFilteringInterstitialEvent(
         web_contents, web_contents->GetLastCommittedURL(),
         /*threat_type=*/"", *user_data->rt_lookup_response());

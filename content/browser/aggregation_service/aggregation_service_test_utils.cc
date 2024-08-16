@@ -10,6 +10,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -302,7 +303,7 @@ AggregatableReportRequest CloneReportRequest(
   return AggregatableReportRequest::CreateForTesting(
              request.processing_urls(), request.payload_contents(),
              request.shared_info().Clone(), request.delay_type(),
-             request.reporting_path(), request.debug_key(),
+             std::string(request.reporting_path()), request.debug_key(),
              request.additional_fields(), request.failed_send_attempts())
       .value();
 }
@@ -314,7 +315,8 @@ AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
                           payload.debug_cleartext_payload);
   }
 
-  return AggregatableReport(std::move(payloads), report.shared_info(),
+  return AggregatableReport(std::move(payloads),
+                            std::string(report.shared_info()),
                             report.debug_key(), report.additional_fields(),
                             report.aggregation_coordinator_origin());
 }
@@ -375,7 +377,7 @@ base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
 std::vector<uint8_t> DecryptPayloadWithHpke(
     base::span<const uint8_t> payload,
     const EVP_HPKE_KEY& key,
-    const std::string& expected_serialized_shared_info) {
+    std::string_view expected_serialized_shared_info) {
   base::span<const uint8_t> enc = payload.first<X25519_PUBLIC_VALUE_LEN>();
 
   std::string authenticated_info_str =

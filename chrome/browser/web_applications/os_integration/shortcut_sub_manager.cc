@@ -296,15 +296,14 @@ void ShortcutSubManager::UpdateShortcut(
 
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTaskAndReplyWithResult(
-      base::BindOnce(&internals::UpdatePlatformShortcuts,
-                     std::move(shortcut_data_dir), std::move(old_app_title),
-                     locations),
-      std::move(shortcut_info),
+
+  internals::ScheduleUpdatePlatformShortcuts(
+      shortcut_data_dir, old_app_title, locations,
       base::BindOnce([](Result result) {
         base::UmaHistogramBoolean("WebApp.Shortcuts.Update.Result",
                                   (result == Result::kOk));
-      }).Then(std::move(on_complete)));
+      }).Then(std::move(on_complete)),
+      std::move(shortcut_info));
 }
 
 void ShortcutSubManager::OnShortcutsDeleted(const webapps::AppId& app_id,

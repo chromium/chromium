@@ -773,23 +773,23 @@ TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
       test_api(*address2.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
 
   // No countries set.
-  EXPECT_EQ(country1->GetCommonCountry(*country2), u"");
-  EXPECT_EQ(country2->GetCommonCountry(*country1), u"");
+  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode(""));
+  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode(""));
 
   // If exactly one country is set, use it as their common one.
   country1->SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), u"AT");
-  EXPECT_EQ(country2->GetCommonCountry(*country1), u"AT");
+  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode("AT"));
+  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode("AT"));
 
   // If both are set to the same value, use it as their common one.
   country2->SetValue(u"AT", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), u"AT");
-  EXPECT_EQ(country2->GetCommonCountry(*country1), u"AT");
+  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode("AT"));
+  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode("AT"));
 
   // If both have a different value, there is no common one.
   country2->SetValue(u"DE", VerificationStatus::kObserved);
-  EXPECT_EQ(country1->GetCommonCountry(*country2), u"");
-  EXPECT_EQ(country2->GetCommonCountry(*country1), u"");
+  EXPECT_EQ(country1->GetCommonCountry(*country2), AddressCountryCode(""));
+  EXPECT_EQ(country2->GetCommonCountry(*country1), AddressCountryCode(""));
 }
 
 // Tests retrieving a value for comparison for a field type.

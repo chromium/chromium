@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -209,7 +210,7 @@ public class CustomTabActivityTabController implements InflationObserver {
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         Tab currentTab = mTabProvider.getTab();
-        model.closeTab(currentTab, false, false);
+        model.closeTabs(TabClosureParams.closeTab(currentTab).allowUndo(false).build());
     }
 
     public boolean onlyOneTabRemaining() {
@@ -506,7 +507,7 @@ public class CustomTabActivityTabController implements InflationObserver {
         // be generated in the middle of tab initialization.
         mTabObserverRegistrar.addObserversForTab(tab);
         prepareTabBackground(tab);
-        mCustomTabObserver.get().setLongPressLinkSelectText(tab, mIntentDataProvider.isAuthView());
+        mCustomTabObserver.get().setLongPressLinkSelectText(tab, mIntentDataProvider.isAuthTab());
     }
 
     public void registerTabObserver(TabObserver observer) {

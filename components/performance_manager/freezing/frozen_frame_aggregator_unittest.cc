@@ -32,7 +32,10 @@ class LenientMockProcessNodeObserver : public ProcessNode::ObserverDefaultImpl {
 
   ~LenientMockProcessNodeObserver() override = default;
 
-  MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
+  MOCK_METHOD(void,
+              OnAllFramesInProcessFrozen,
+              (const ProcessNode*),
+              (override));
 };
 
 using MockProcessNodeObserver =

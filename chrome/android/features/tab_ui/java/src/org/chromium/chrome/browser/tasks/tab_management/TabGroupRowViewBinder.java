@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.COLOR_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CREATION_MILLIS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.IS_SHARED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.PLUS_COUNT;
@@ -46,6 +47,8 @@ public class TabGroupRowViewBinder
                 proxyFavicon(
                         model, view, ASYNC_FAVICON_BOTTOM_RIGHT, intCount, Corner.BOTTOM_RIGHT);
             }
+        } else if (propertyKey == IS_SHARED) {
+            view.resetSharedState(model.get(IS_SHARED));
         } else if (propertyKey == COLOR_INDEX) {
             view.setColorIndex(model.get(COLOR_INDEX));
         } else if (propertyKey == TITLE_DATA) {

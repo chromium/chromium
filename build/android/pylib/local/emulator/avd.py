@@ -16,6 +16,7 @@ import time
 
 from google.protobuf import text_format  # pylint: disable=import-error
 
+from devil import base_error
 from devil.android import apk_helper
 from devil.android import device_utils
 from devil.android.sdk import adb_wrapper
@@ -89,6 +90,10 @@ class AvdException(Exception):
     # avd.py is executed with python2.
     # pylint: disable=R1725
     super(AvdException, self).__init__('\n'.join(message_parts))
+
+
+class AvdStartException(AvdException):
+  """Exception for AVD start failures."""
 
 
 def _Load(avd_proto_path):
@@ -311,6 +316,11 @@ class AvdConfig:
   def emulator_path(self):
     """The path to the emulator binary."""
     return os.path.join(self.emulator_sdk_root, 'emulator', 'emulator')
+
+  @property
+  def crashreport_path(self):
+    """The path to the crashreport binary."""
+    return os.path.join(self.emulator_sdk_root, 'emulator', 'crashreport')
 
   @property
   def qemu_img_path(self):
@@ -953,6 +963,7 @@ class _AvdInstance:
     self._avd_name = avd_config.avd_name
     self._emulator_home = avd_config.emulator_home
     self._emulator_path = avd_config.emulator_path
+    self._crashreport_path = avd_config.crashreport_path
     self._emulator_proc = None
     self._emulator_serial = None
     self._emulator_device = None
@@ -1062,6 +1073,8 @@ class _AvdInstance:
           'ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL': '1',
           # Sets the emulator configuration directory
           'ANDROID_EMULATOR_HOME': self._emulator_home,
+          # emulator tools like crashreport need $USER info to locate data.
+          'USER': os.environ.get('USER'),
       }
       if 'DISPLAY' in os.environ:
         emulator_env['DISPLAY'] = os.environ.get('DISPLAY')
@@ -1114,23 +1127,27 @@ class _AvdInstance:
             retries=retries,
             args=[sock])
         logging.info('%s started', self._emulator_serial)
-      except Exception:
+      except base_error.BaseError as e:
         self.Stop(force=True)
-        raise
+        raise AvdStartException(str(e)) from e
 
-    # Set the system settings in "Start" here instead of setting in "Create"
-    # because "Create" is used during AVD creation, and we want to avoid extra
-    # turn-around on rolling AVD.
-    if ensure_system_settings:
-      assert self.device is not None, '`instance.device` not initialized.'
-      logging.info('Waiting for device to be fully booted.')
-      self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
-                                       retries=retries)
-      logging.info('Device fully booted, verifying system settings.')
-      _EnsureSystemSettings(self.device)
+    try:
+      # Set the system settings in "Start" here instead of setting in "Create"
+      # because "Create" is used during AVD creation, and we want to avoid extra
+      # turn-around on rolling AVD.
+      if ensure_system_settings:
+        assert self.device is not None, '`instance.device` not initialized.'
+        logging.info('Waiting for device to be fully booted.')
+        self.device.WaitUntilFullyBooted(timeout=360 if is_slow_start else 90,
+                                         retries=retries)
+        logging.info('Device fully booted, verifying system settings.')
+        _EnsureSystemSettings(self.device)
 
-    if enable_network:
-      _EnableNetwork(self.device)
+      if enable_network:
+        _EnableNetwork(self.device)
+    except base_error.BaseError as e:
+      self.UploadCrashreport()
+      raise AvdStartException(str(e)) from e
 
   def Stop(self, force=False):
     """Stops the emulator process.
@@ -1161,6 +1178,16 @@ class _AvdInstance:
       self._emulator_proc = None
       self._emulator_serial = None
       self._emulator_device = None
+
+  def UploadCrashreport(self):
+    # The crashreport binary only exists in newer emulator releases.
+    if not os.path.exists(self._crashreport_path):
+      return
+
+    logging.info('Uploading local crashing reports.')
+    output = cmd_helper.GetCmdOutput([self._crashreport_path, '-u'])
+    for line in output.splitlines():
+      logging.info('  %s', line)
 
   def GetSnapshotName(self):
     """Return the snapshot name to load/save.

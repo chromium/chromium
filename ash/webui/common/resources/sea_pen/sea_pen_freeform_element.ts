@@ -13,18 +13,13 @@ import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {SeaPenSamplePrompt} from './constants.js';
+import {FreeformTab, SeaPenSamplePrompt} from './constants.js';
 import {MantaStatusCode, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_freeform_element.html.js';
+import {logSamplePromptShuffleClicked, logSeaPenFreeformTabClicked} from './sea_pen_metrics_logger.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isArrayEqual, shuffle} from './sea_pen_utils.js';
-
-/** Enumeration of supported tabs. */
-export enum FreeformTab {
-  SAMPLE_PROMPTS = 'sample_prompts',
-  RESULTS = 'results',
-}
 
 export class SeaPenFreeformElement extends WithSeaPenStore {
   static get is() {
@@ -49,7 +44,6 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
 
       samples: {
         type: Array,
-        value: SEA_PEN_SAMPLES,
       },
 
       thumbnailResponseStatusCode_: {
@@ -72,7 +66,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
         'thumbnailResponseStatusCode_',
         state => state.thumbnailResponseStatusCode);
     this.updateFromStore();
-    this.onShuffleClicked_();
+    this.shuffleSamplePrompts_();
   }
 
   /** Invoked on tab selected. */
@@ -88,6 +82,7 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
       default:
         assertNotReached();
     }
+    logSeaPenFreeformTabClicked(this.freeformTab_);
   }
 
   private onSeaPenQueryChanged_(query: SeaPenQuery|null) {
@@ -123,11 +118,16 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
   }
 
   private onShuffleClicked_(): void {
+    logSamplePromptShuffleClicked();
+    this.shuffleSamplePrompts_();
+  }
+
+  private shuffleSamplePrompts_(): void {
     // Run shuffle (5 times at most) until the shuffled samples are
     // different from current, which is highly likely to happen the first time.
     for (let i = 0; i < 5; i++) {
-      const newSamples = shuffle(this.samples);
-      if (!isArrayEqual(newSamples, this.samples)) {
+      const newSamples = shuffle(SEA_PEN_SAMPLES).slice(0, 6);
+      if (!this.samples || !isArrayEqual(newSamples, this.samples)) {
         this.samples = newSamples;
         break;
       }

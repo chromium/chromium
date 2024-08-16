@@ -34,8 +34,9 @@ enum class BirchItemType {
   kSelfShare = 7,     // Tabs shared to self from ChromeSync API.
   kMostVisited = 8,   // Most frequently visited URLs.
   kLastActive = 9,    // Last active URL.
-  kLostMedia = 10,
-  kMaxValue = kLostMedia,
+  kLostMedia = 10,    // Tab that is currently playing media.
+  kCoral = 11,        // Coral provider.
+  kMaxValue = kCoral,
 };
 
 // These values are used to determine which secondary icon to load for the items
@@ -44,11 +45,21 @@ enum class SecondaryIconType {
   kTabFromDesktop,            // Type that links to desktop icon.
   kTabFromPhone,              // Type that links to phone/portrait icon.
   kTabFromTablet,             // Type that links to tablet/landscape icon.
+  kTabFromUnknown,            // Type that links to question-mark icon.
   kLostMediaAudio,            // Type that links to audio icon.
   kLostMediaVideo,            // Type that links to media icon.
   kLostMediaVideoConference,  // Type that links to video conference icon.
-  kUnknown,  // An unknown type where we will not load a secondary icon.
-  kMaxValue = kUnknown,
+  kNoIcon,                    // Type where we will not load a secondary icon.
+  kMaxValue = kNoIcon,
+};
+
+// These values are used to determine the types of chip add-ons which is an
+// additional UI component like the join button of calendar item.
+enum class BirchAddonType {
+  kNone,    // No add-ons.
+  kButton,  // A button with an action, e,g. the calendar join button.
+  kWeatherTempLabelF,  // A label for weather temperature in Fahrenheit.
+  kWeatherTempLabelC,  // A label for weather temperature in Celsius.
 };
 
 // The base item which is stored by the birch model.
@@ -72,23 +83,26 @@ class ASH_EXPORT BirchItem {
   // Perform the action associated with this item (e.g. open a document).
   virtual void PerformAction() = 0;
 
-  // Performs the secondary action associated with this item, if the action has
-  // a secondary action. When the secondary action is available,
-  // `secondary_action()` will be set to the user-friendly secondary action
-  // name.
-  virtual void PerformSecondaryAction() = 0;
-
   // Loads the icon for this image. This may invoke the callback immediately
   // (e.g. with a local icon) or there may be a delay for a network fetch.
-  // The bool is true if the icon load was successful.
-  // TODO(jamescook): Eliminate the bool for success; it is not used.
+  // The `SecondaryIconType` passed to `BirchChipButton` allows the view to set
+  // a corresponding secondary icon image.
   using LoadIconCallback =
-      base::OnceCallback<void(const ui::ImageModel&, bool)>;
+      base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
 
   // Records metrics when the user takes an action on the item (e.g. clicks or
   // taps on it).
   void RecordActionMetrics();
+
+  virtual std::u16string GetAccessibleName() const;
+
+  // Performs the action associated with the add-on of this item (e.g. joining a
+  // meeting for Calendar). When the add-on action is available, `addon_label()`
+  // will be set to the user-friendly action name.
+  virtual void PerformAddonAction();
+  virtual BirchAddonType GetAddonType() const;
+  virtual std::u16string GetAddonAccessibleName() const;
 
   const std::u16string& title() const { return title_; }
   const std::u16string& subtitle() const { return subtitle_; }
@@ -96,15 +110,13 @@ class ASH_EXPORT BirchItem {
   void set_ranking(float ranking) { ranking_ = ranking; }
   float ranking() const { return ranking_; }
 
-  const std::optional<std::u16string> secondary_action() const {
-    return secondary_action_;
-  }
+  std::optional<std::u16string> addon_label() const { return addon_label_; }
 
   static void set_action_count_for_test(int value) { action_count_ = value; }
 
  protected:
-  void set_secondary_action(const std::u16string& action_name) {
-    secondary_action_ = action_name;
+  void set_addon_label(const std::u16string& addon_label) {
+    addon_label_ = addon_label;
   }
 
  private:
@@ -114,9 +126,9 @@ class ASH_EXPORT BirchItem {
   // The subtitle to be displayed in birch chip UI.
   std::u16string subtitle_;
 
-  // If the item has a secondary action (e.g. Joining a meeting for Calendar),
-  // the name of the action to display in the UI.
-  std::optional<std::u16string> secondary_action_;
+  // The label for add-on component of the chip, e.g. "Join" on calendar join
+  // button.
+  std::optional<std::u16string> addon_label_;
 
   float ranking_;  // Lower is better.
 
@@ -152,8 +164,10 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
+  void PerformAddonAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
+  BirchAddonType GetAddonType() const override;
+  std::u16string GetAddonAccessibleName() const override;
 
   const base::Time& start_time() const { return start_time_; }
   const base::Time& end_time() const { return end_time_; }
@@ -209,7 +223,6 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& file_url() const { return file_url_; }
@@ -247,7 +260,6 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& timestamp() const { return timestamp_; }
@@ -279,8 +291,7 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
                const base::Time& timestamp,
                const GURL& favicon_url,
                const std::string& session_name,
-               const DeviceFormFactor& form_factor,
-               const ui::ImageModel& backup_icon);
+               const DeviceFormFactor& form_factor);
   BirchTabItem(BirchTabItem&&);
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
@@ -291,13 +302,15 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& url() const { return url_; }
   const base::Time& timestamp() const { return timestamp_; }
   const std::string& session_name() const { return session_name_; }
   DeviceFormFactor form_factor() const { return form_factor_; }
+  const SecondaryIconType& secondary_icon_type() const {
+    return secondary_icon_type_;
+  }
 
  private:
   static std::u16string GetSubtitle(const std::string& session_name,
@@ -308,16 +321,15 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   GURL favicon_url_;
   std::string session_name_;
   DeviceFormFactor form_factor_;
-  ui::ImageModel backup_icon_;
+  SecondaryIconType secondary_icon_type_;
 };
 
 // A birch item for the last active URL.
 class ASH_EXPORT BirchLastActiveItem : public BirchItem {
  public:
   BirchLastActiveItem(const std::u16string& title,
-                      const GURL& url,
-                      base::Time last_visit,
-                      ui::ImageModel icon);
+                      const GURL& page_url,
+                      base::Time last_visit);
   BirchLastActiveItem(BirchLastActiveItem&&);
   BirchLastActiveItem(const BirchLastActiveItem&);
   BirchLastActiveItem& operator=(const BirchLastActiveItem&);
@@ -328,24 +340,20 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle(base::Time last_visit);
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item for a most-frequently-visited URL.
 class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
  public:
-  BirchMostVisitedItem(const std::u16string& title,
-                       const GURL& url,
-                       ui::ImageModel icon);
+  BirchMostVisitedItem(const std::u16string& title, const GURL& page_url);
   BirchMostVisitedItem(BirchMostVisitedItem&&);
   BirchMostVisitedItem(const BirchMostVisitedItem&);
   BirchMostVisitedItem& operator=(const BirchMostVisitedItem&);
@@ -356,16 +364,14 @@ class ASH_EXPORT BirchMostVisitedItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const GURL& url() const { return url_; }
+  const GURL& page_url() const { return page_url_; }
 
  private:
   static std::u16string GetSubtitle();
 
-  GURL url_;
-  ui::ImageModel icon_;
+  GURL page_url_;
 };
 
 // A birch item which contains tabs shared to self information.
@@ -376,7 +382,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
                      const GURL& url,
                      const base::Time& shared_time,
                      const std::u16string& device_name,
-                     const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchSelfShareItem(BirchSelfShareItem&&);
@@ -389,7 +394,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const std::u16string& guid() const { return guid_; }
@@ -406,7 +410,6 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   std::u16string guid_;
   GURL url_;
   base::Time shared_time_;
-  ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
@@ -420,8 +423,6 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
  public:
   BirchLostMediaItem(const GURL& source_url,
                      const std::u16string& media_title,
-                     bool is_video_conference_tab,
-                     const ui::ImageModel& backup_icon,
                      const SecondaryIconType& secondary_icon_type,
                      base::RepeatingClosure activation_callback);
   BirchLostMediaItem(BirchLostMediaItem&&);
@@ -434,23 +435,19 @@ class ASH_EXPORT BirchLostMediaItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const GURL& source_url() const { return source_url_; }
   const std::u16string& media_title() const { return media_title_; }
-  bool is_video_conference_tab() const { return is_video_conference_tab_; }
   const SecondaryIconType& secondary_icon_type() const {
     return secondary_icon_type_;
   }
 
  private:
-  static std::u16string GetSubtitle(bool is_video_conference_tab);
+  static std::u16string GetSubtitle(SecondaryIconType type);
 
   GURL source_url_;
   std::u16string media_title_;
-  bool is_video_conference_tab_;
-  ui::ImageModel backup_icon_;
   SecondaryIconType secondary_icon_type_;
   base::RepeatingClosure activation_callback_;
 };
@@ -459,7 +456,7 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
  public:
   BirchWeatherItem(const std::u16string& weather_description,
                    float temp_f,
-                   ui::ImageModel icon);
+                   const GURL& icon_url);
   BirchWeatherItem(BirchWeatherItem&&);
   BirchWeatherItem(const BirchWeatherItem&);
   BirchWeatherItem& operator=(const BirchWeatherItem&);
@@ -470,19 +467,43 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
+  std::u16string GetAccessibleName() const override;
+  void PerformAddonAction() override;
+  BirchAddonType GetAddonType() const override;
 
   float temp_f() const { return temp_f_; }
 
  private:
-  static std::u16string GetSubtitle(float temp_f);
+  static int GetTemperature(float temp_f);
+  static bool UseCelsius();
 
   float temp_f_;
-  ui::ImageModel icon_;
+  GURL icon_url_;
 };
 
-struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
+class ASH_EXPORT BirchCoralItem : public BirchItem {
+ public:
+  BirchCoralItem(const std::u16string& coral_title,
+                 const std::u16string& coral_text);
+  BirchCoralItem(BirchCoralItem&&);
+  BirchCoralItem(const BirchCoralItem&);
+  BirchCoralItem& operator=(const BirchCoralItem&);
+  bool operator==(const BirchCoralItem& rhs) const;
+  ~BirchCoralItem() override;
+
+  // BirchItem:
+  BirchItemType GetType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
+
+ private:
+  // TODO(yulunwu):Add coral data to `BirchCoralItem`
+};
+
+class ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
+ public:
   BirchReleaseNotesItem(const std::u16string& release_notes_title,
                         const std::u16string& release_notes_text,
                         const GURL& url,
@@ -497,7 +518,6 @@ struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
   BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
-  void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& first_seen() const { return first_seen_; }

@@ -285,12 +285,13 @@ const base::Feature* FetchIPHFeatureFromEnum(
 
   ManualFillPasswordCoordinator* passwordCoordinator =
       [[ManualFillPasswordCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                                 URL:URL
-                    injectionHandler:self.injectionHandler
-            invokedOnObfuscatedField:invokedOnObfuscatedField
-              showAutofillFormButton:NO];
+             initWithBaseViewController:self.baseViewController
+                                browser:self.browser
+          manualFillPlusAddressMediator:nil
+                                    URL:URL
+                       injectionHandler:self.injectionHandler
+               invokedOnObfuscatedField:invokedOnObfuscatedField
+                 showAutofillFormButton:NO];
 
   passwordCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -325,10 +326,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // Starts the address coordinator and displays its view controller.
 - (void)startAddressFromButton:(UIButton*)button {
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler
-          showAutofillFormButton:NO];
+         initWithBaseViewController:self.baseViewController
+                            browser:self.browser
+      manualFillPlusAddressMediator:nil
+                   injectionHandler:self.injectionHandler
+             showAutofillFormButton:NO];
   addressCoordinator.delegate = self;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [addressCoordinator presentFromButton:button];

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/network_change_ash.h"
 
-#include "chrome/browser/ash/network_change_manager_client.h"
+#include "chrome/browser/ash/network_change_manager/network_change_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 

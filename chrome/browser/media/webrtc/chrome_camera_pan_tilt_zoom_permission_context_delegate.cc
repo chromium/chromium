@@ -15,9 +15,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/kiosk/kiosk_delegate.h"
+#include "extensions/browser/extension_registry.h"         // nogncheck
+#include "extensions/browser/extensions_browser_client.h"  // nogncheck
+#include "extensions/browser/kiosk/kiosk_delegate.h"       // nogncheck
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"

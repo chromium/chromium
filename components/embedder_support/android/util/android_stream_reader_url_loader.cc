@@ -557,12 +557,13 @@ bool AndroidStreamReaderURLLoader::ParseRange(
     const net::HttpRequestHeaders& headers) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::string range_header;
-  if (headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header)) {
+  std::optional<std::string> range_header =
+      headers.GetHeader(net::HttpRequestHeaders::kRange);
+  if (range_header) {
     // This loader only cares about the Range header so that we know how many
     // bytes in the stream to skip and how many to read after that.
     std::vector<net::HttpByteRange> ranges;
-    if (net::HttpUtil::ParseRangeHeader(range_header, &ranges)) {
+    if (net::HttpUtil::ParseRangeHeader(*range_header, &ranges)) {
       // In case of multi-range request only use the first range.
       // We don't support multirange requests.
       if (ranges.size() == 1)

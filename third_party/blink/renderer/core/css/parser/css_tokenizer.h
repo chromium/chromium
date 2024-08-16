@@ -152,32 +152,9 @@ class CORE_EXPORT CSSTokenizer {
                             StringView);
   CSSParserToken BlockEnd(CSSParserTokenType, CSSParserTokenType start_type);
 
-  CSSParserToken WhiteSpace(UChar);
-  CSSParserToken LeftParenthesis(UChar);
-  CSSParserToken RightParenthesis(UChar);
-  CSSParserToken LeftBracket(UChar);
-  CSSParserToken RightBracket(UChar);
-  CSSParserToken LeftBrace(UChar);
-  CSSParserToken RightBrace(UChar);
-  CSSParserToken PlusOrFullStop(UChar);
-  CSSParserToken Comma(UChar);
   CSSParserToken HyphenMinus(UChar);
-  CSSParserToken Asterisk(UChar);
-  CSSParserToken LessThan(UChar);
-  CSSParserToken Colon(UChar);
-  CSSParserToken SemiColon(UChar);
   CSSParserToken Hash(UChar);
-  CSSParserToken CircumflexAccent(UChar);
-  CSSParserToken DollarSign(UChar);
-  CSSParserToken VerticalLine(UChar);
-  CSSParserToken Tilde(UChar);
-  CSSParserToken CommercialAt(UChar);
-  CSSParserToken ReverseSolidus(UChar);
-  CSSParserToken AsciiDigit(UChar);
   CSSParserToken LetterU(UChar);
-  CSSParserToken NameStart(UChar);
-  CSSParserToken StringStart(UChar);
-  CSSParserToken EndOfFile(UChar);
 
   StringView RegisterString(const String&);
 

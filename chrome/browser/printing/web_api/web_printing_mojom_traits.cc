@@ -93,7 +93,7 @@ EnumTraits<WebPrintingSides, DuplexMode>::ToMojom(
     case DuplexMode::kShortEdge:
       return WebPrintingSides::kTwoSidedShortEdge;
     case DuplexMode::kUnknownDuplexMode:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

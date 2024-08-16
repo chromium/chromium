@@ -1066,8 +1066,9 @@ void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
     const std::optional<gfx::Size>& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
-  VideoBitrateAllocation allocation;
+  VideoBitrateAllocation allocation(bitrate.mode());
   allocation.SetBitrate(0, 0, bitrate.target_bps());
+  allocation.SetPeakBps(bitrate.peak_bps());
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

@@ -197,6 +197,11 @@ class AuthenticationServiceTest : public PlatformTest {
     return authentication_service()->delegate_->clear_browsing_data_counter_;
   }
 
+  int ClearBrowsingDataFromSigninCount() {
+    return authentication_service()
+        ->delegate_->clear_browsing_data_from_signin_counter_;
+  }
+
   AuthenticationService* authentication_service() {
     return AuthenticationServiceFactory::GetForBrowserState(
         browser_state_.get());
@@ -540,7 +545,7 @@ TEST_F(
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
-  EXPECT_EQ(ClearBrowsingDataCount(), 1);
+  EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
 }
 
 // Tests that local data is not cleared on managed user's signout when
@@ -574,7 +579,51 @@ TEST_F(
   ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
   ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
+  EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+}
+
+// TODO(crbug.com/40066949): Remove this test after kSync users are migrated in
+// phase 3. See ConsentLevel::kSync documentation for details.
+// Tests that all local data is cleared (not just the data from sign-in time)
+// when the user has the sync consent.
+TEST_F(AuthenticationServiceTest,
+       SignedInManagedAccountSignOutWithClearDataFeatureEnabled_SyncMigration) {
+  scoped_feature_list_.InitWithFeatures(
+      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+  FakeSystemIdentity* fake_system_identity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  fake_system_identity_manager()->AddIdentity(fake_system_identity);
+
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+  VerifyLastSigninTimestamp();
+
+  // Grant Sync consent.
+  EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
+  authentication_service()->GrantSyncConsent(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+
+  EXPECT_NSEQ(identity(2), authentication_service()->GetPrimaryIdentity(
+                               signin::ConsentLevel::kSync));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // Data should be fully clear if the browser is managed and still has sync
+  // consent.
+  ON_CALL(*mock_sync_service()->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
+      .WillByDefault(Return(true));
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
+  ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(ClearBrowsingDataCount(), 1);
+  EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 0);
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.
@@ -624,7 +673,6 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOut) {
       .WillByDefault(Return(true));
   VerifyLastSigninTimestamp();
 
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/false, nil);
@@ -649,7 +697,6 @@ TEST_F(AuthenticationServiceTest, ManagedAccountSignOutAndClearBrowsingData) {
       signin::ConsentLevel::kSignin));
   VerifyLastSigninTimestamp();
 
-  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
   authentication_service()->SignOut(
       signin_metrics::ProfileSignout::kAbortSignin,
       /*force_clear_browsing_data=*/true, nil);

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/functional/callback.h"
@@ -58,8 +59,9 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
     int navigation_entry_id,
     bool supports_etc_non_power_of_two)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
-      navigation_entry_id_(navigation_entry_id) {
-  CHECK(AreBackForwardTransitionsEnabled());
+      navigation_entry_id_(navigation_entry_id),
+      dimensions_without_compression_(bitmap_->GetSize()) {
+  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StartCompression(bitmap, supports_etc_non_power_of_two);
@@ -88,10 +90,6 @@ size_t NavigationEntryScreenshot::SetCache(
   }
 
   return GetBitmap().SizeInBytes();
-}
-
-gfx::Size NavigationEntryScreenshot::GetDimensions() const {
-  return GetBitmap().GetSize();
 }
 
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
 
 #include <limits.h>
@@ -77,13 +82,13 @@
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/enterprise_connectors_policy_handler.h"
-#include "components/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/content/copy_prevention_settings_policy_handler.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/enterprise/data_controls/core/browser/data_controls_policy_handler.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
+#include "components/enterprise/device_trust/prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -151,6 +156,7 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/media_router/common/pref_names.h"
@@ -189,7 +195,6 @@
 #include "chrome/browser/ash/policy/handlers/app_launch_automation_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/contextual_google_integrations_policies_handler.h"
-#include "chrome/browser/ash/policy/handlers/device_restriction_schedule_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/multi_screen_capture_policy_handler.h"
@@ -1985,6 +1990,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kKioskBrowserPermissionsAllowedForOrigins,
     prefs::kKioskBrowserPermissionsAllowedForOrigins,
     base::Value::Type::LIST },
+  { key::kKioskWebAppOfflineEnabled,
+    prefs::kKioskWebAppOfflineEnabled,
+    base::Value::Type::BOOLEAN},
   { key::kDevicePolicyRefreshRate,
     prefs::kDevicePolicyRefreshRate,
     base::Value::Type::INTEGER },
@@ -2215,13 +2223,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     optimization_guide::model_execution::prefs::kHistorySearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
+  { key::kTabCompareSettings,
+    optimization_guide::model_execution::prefs::kTabCompareSettingsEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   { key::kChromeForTestingAllowed,
     prefs::kChromeForTestingAllowed,
     base::Value::Type::BOOLEAN },
 #endif
 
-#if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
   { key::kCACertificates,
     prefs::kCACertificates,
     base::Value::Type::LIST },
@@ -2239,7 +2249,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kCAPlatformIntegrationEnabled,
     base::Value::Type::BOOLEAN },
 #endif
-#endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   { key::kProvisionManagedClientCertificateForUser,
@@ -2257,6 +2266,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kAuthenticationFlowAutoReloadInterval,
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+  { key::kAdHocCodeSigningForPWAsEnabled,
+    prefs::kWebAppsUseAdHocCodeSigningForAppShims,
+    base::Value::Type::BOOLEAN },
+#endif // BUILDFLAG(IS_MAC)
 };
 // clang-format on
 
@@ -2624,7 +2639,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<ExplicitlyAllowedNetworkPortsPolicyHandler>());
   handlers->AddHandler(std::make_unique<HttpsOnlyModePolicyHandler>(
-      prefs::kHttpsOnlyModeEnabled, prefs::kHttpsFirstModeIncognito));
+      prefs::kHttpsOnlyModeEnabled, prefs::kHttpsFirstModeIncognito,
+      prefs::kHttpsFirstBalancedMode));
 
   handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
       key::kBrowsingDataLifetime, browsing_data::prefs::kBrowsingDataLifetime,
@@ -2997,7 +3013,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ContextualGoogleIntegrationsPoliciesHandler>(
           chrome_schema));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
-      key::kDeviceRestrictionSchedule, prefs::kDeviceRestrictionSchedule,
+      key::kDeviceRestrictionSchedule,
+      chromeos::prefs::kDeviceRestrictionSchedule, chrome_schema,
+      SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kGraduationEnablementStatus, ash::prefs::kGraduationEnablementStatus,
       chrome_schema, SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));

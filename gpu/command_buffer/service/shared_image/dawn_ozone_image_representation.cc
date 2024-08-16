@@ -58,10 +58,6 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
          pixmap_->GetNumberOfPlanes() == 1)
       << "Disjoint Multi-plane importing is not supported.";
 
-  if (!ozone_backing()->VaSync()) {
-    return nullptr;
-  }
-
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
   if (base::FeatureList::IsEnabled(

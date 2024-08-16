@@ -64,8 +64,14 @@ AccessorySheetField ConvertJavaUserInfoField(
       env, Java_UserInfoField_getId(env, j_field_to_convert));
   bool is_obfuscated = Java_UserInfoField_isObfuscated(env, j_field_to_convert);
   bool selectable = Java_UserInfoField_isSelectable(env, j_field_to_convert);
-  return AccessorySheetField(display_text, text_to_fill, a11y_description, id,
-                             is_obfuscated, selectable);
+  return AccessorySheetField::Builder()
+      .SetDisplayText(std::move(display_text))
+      .SetTextToFill(std::move(text_to_fill))
+      .SetA11yDescription(std::move(a11y_description))
+      .SetId(std::move(id))
+      .SetIsObfuscated(is_obfuscated)
+      .SetSelectable(selectable)
+      .Build();
 }
 
 // The Conversion does not require any actual methods from either side of the
@@ -122,7 +128,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
           env, java_object, j_user_info,
           static_cast<int>(tab_data.get_sheet_type()), field.display_text(),
           field.text_to_fill(), field.a11y_description(), field.id(),
-          field.is_obfuscated(), field.selectable());
+          field.icon_id(), field.is_obfuscated(), field.selectable());
     }
   }
 

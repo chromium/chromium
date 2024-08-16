@@ -149,7 +149,7 @@ TEST_F(MakoRewriteViewTest, OnScreenForLargeSelection) {
           mako_rewrite_view_ptr->GetBoundsInScreen()));
 }
 
-TEST_F(MakoRewriteViewTest, FallbackToScreenCenter) {
+TEST_F(MakoRewriteViewTest, FallbackToScreenCenterIfCaretBoundsAreEmpty) {
   TestingProfile profile;
   TestWebUIContentsWrapper contents_wrapper(&profile);
 
@@ -167,6 +167,27 @@ TEST_F(MakoRewriteViewTest, FallbackToScreenCenter) {
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
+  EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(),
+            work_area.x() + work_area.width() / 2 - kWebViewSize.width() / 2);
+}
+
+TEST_F(MakoRewriteViewTest, FallbackToScreenCenterIfCaretBoundsAreInvalid) {
+  TestingProfile profile;
+  TestWebUIContentsWrapper contents_wrapper(&profile);
+
+  // Simulate a situation when the client reports invalid bounds
+  constexpr gfx::Size kWebViewSize(440, 343);
+  constexpr gfx::Rect kSelectionBounds(0, -10000, 100, 100);
+  auto mako_rewrite_view = std::make_unique<MakoRewriteView>(
+      &contents_wrapper, kSelectionBounds,
+      /*can_fallback_to_center_position=*/true);
+  auto* mako_rewrite_view_ptr = mako_rewrite_view.get();
+  views::BubbleDialogDelegateView::CreateBubble(std::move(mako_rewrite_view));
+
+  mako_rewrite_view_ptr->ShowUI();
+
+  gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   EXPECT_EQ(mako_rewrite_view_ptr->GetBoundsInScreen().x(),
             work_area.x() + work_area.width() / 2 - kWebViewSize.width() / 2);
 }

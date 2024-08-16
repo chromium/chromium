@@ -339,6 +339,10 @@ void PermissionDashboardController::OnCollapseAnimationEnded() {
   }
 }
 
+void PermissionDashboardController::OnMousePressed() {
+  should_suppress_reopening_page_info_ = !!page_info_bubble_tracker_.view();
+}
+
 bool PermissionDashboardController::SuppressVerboseIndicator() {
   if (collapse_timer_.IsRunning()) {
     collapse_timer_.FireNow();
@@ -447,6 +451,25 @@ void PermissionDashboardController::ShowPageInfoDialog() {
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   if (entry->IsInitialEntry()) {
+    return;
+  }
+
+  // If PageInfo already opened, close it and return.
+  // Under a normal mouse click flow the PageInfo dialog will be closed on a
+  // focus lost event. But tests and maybe some UI automation tools have
+  // different mouse click event propagation flow. In other words the mouse
+  // click listener will be called before the PageInfo dialog receives a focus
+  // change event. Hence the dialog will not be closed on time.
+  if (page_info_bubble_tracker_) {
+    page_info_bubble_tracker_.view()->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
+
+  if (should_suppress_reopening_page_info_) {
+    // Reset the flag because `OnMousePressed()` is not called if the LHS
+    // indicator gets keyboard interaction.
+    should_suppress_reopening_page_info_ = false;
     return;
   }
 

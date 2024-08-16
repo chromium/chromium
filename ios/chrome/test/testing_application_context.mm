@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -54,7 +55,7 @@ TestingApplicationContext* TestingApplicationContext::GetGlobal() {
 }
 
 void TestingApplicationContext::SetLocalState(PrefService* local_state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!local_state) {
     // The local state is owned outside of TestingApplicationContext, but
     // some of the members of TestingApplicationContext hold references to it.
@@ -71,132 +72,145 @@ void TestingApplicationContext::SetLocalState(PrefService* local_state) {
 }
 
 void TestingApplicationContext::SetLastShutdownClean(bool clean) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   was_last_shutdown_clean_ = clean;
 }
 
 void TestingApplicationContext::SetChromeBrowserStateManager(
     ChromeBrowserStateManager* manager) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   chrome_browser_state_manager_ = manager;
 }
 
 void TestingApplicationContext::SetVariationsService(
     variations::VariationsService* variations_service) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations_service_ = variations_service;
 }
 
 void TestingApplicationContext::SetSystemIdentityManager(
     std::unique_ptr<SystemIdentityManager> system_identity_manager) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!system_identity_manager_);
   system_identity_manager_ = std::move(system_identity_manager);
 }
 
 void TestingApplicationContext::SetUpgradeCenter(
     UpgradeCenter* upgrade_center) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   upgrade_center_ = upgrade_center;
 }
 
 void TestingApplicationContext::SetIOSChromeIOThread(
     IOSChromeIOThread* ios_chrome_io_thread) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ios_chrome_io_thread_ = ios_chrome_io_thread;
 }
 
 void TestingApplicationContext::OnAppEnterForeground() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void TestingApplicationContext::OnAppEnterBackground() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 bool TestingApplicationContext::WasLastShutdownClean() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return was_last_shutdown_clean_;
 }
 
 PrefService* TestingApplicationContext::GetLocalState() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return local_state_;
 }
 
 net::URLRequestContextGetter*
 TestingApplicationContext::GetSystemURLRequestContext() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 TestingApplicationContext::GetSharedURLLoaderFactory() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return test_url_loader_factory_->GetSafeWeakWrapper();
 }
 
 network::mojom::NetworkContext*
 TestingApplicationContext::GetSystemNetworkContext() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED_IN_MIGRATION();
   return nullptr;
 }
 
 const std::string& TestingApplicationContext::GetApplicationLocale() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_locale_.empty());
   return application_locale_;
 }
 
 const std::string& TestingApplicationContext::GetApplicationCountry() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!application_country_.empty());
   return application_country_;
 }
 
+// TODO(crbug.com/358299872): After all usage has changed to
+// GetProfileManager(), remove this method.
 ChromeBrowserStateManager*
 TestingApplicationContext::GetChromeBrowserStateManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetProfileManager();
+}
+
+ChromeBrowserStateManager* TestingApplicationContext::GetProfileManager() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return chrome_browser_state_manager_;
 }
 
 metrics_services_manager::MetricsServicesManager*
 TestingApplicationContext::GetMetricsServicesManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 metrics::MetricsService* TestingApplicationContext::GetMetricsService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return nullptr;
+}
+
+signin::ActivePrimaryAccountsMetricsRecorder*
+TestingApplicationContext::GetActivePrimaryAccountsMetricsRecorder() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 ukm::UkmRecorder* TestingApplicationContext::GetUkmRecorder() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 variations::VariationsService*
 TestingApplicationContext::GetVariationsService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return variations_service_;
 }
 
 net::NetLog* TestingApplicationContext::GetNetLog() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 net_log::NetExportFileWriter*
 TestingApplicationContext::GetNetExportFileWriter() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 network_time::NetworkTimeTracker*
 TestingApplicationContext::GetNetworkTimeTracker() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_time_tracker_) {
     DCHECK(local_state_);
     network_time_tracker_.reset(new network_time::NetworkTimeTracker(
@@ -208,23 +222,23 @@ TestingApplicationContext::GetNetworkTimeTracker() {
 }
 
 IOSChromeIOThread* TestingApplicationContext::GetIOSChromeIOThread() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ios_chrome_io_thread_.get();
 }
 
 gcm::GCMDriver* TestingApplicationContext::GetGCMDriver() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 component_updater::ComponentUpdateService*
 TestingApplicationContext::GetComponentUpdateService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 SafeBrowsingService* TestingApplicationContext::GetSafeBrowsingService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!fake_safe_browsing_service_) {
     fake_safe_browsing_service_ =
         base::MakeRefCounted<FakeSafeBrowsingService>();
@@ -234,13 +248,13 @@ SafeBrowsingService* TestingApplicationContext::GetSafeBrowsingService() {
 
 network::NetworkConnectionTracker*
 TestingApplicationContext::GetNetworkConnectionTracker() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return test_network_connection_tracker_.get();
 }
 
 BrowserPolicyConnectorIOS*
 TestingApplicationContext::GetBrowserPolicyConnector() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!browser_policy_connector_.get()) {
     browser_policy_connector_ = std::make_unique<BrowserPolicyConnectorIOS>(
@@ -251,7 +265,7 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
 }
 
 id<SingleSignOnService> TestingApplicationContext::GetSingleSignOnService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!single_sign_on_service_) {
     single_sign_on_service_ = ios::provider::CreateSSOService();
     DCHECK(single_sign_on_service_);
@@ -260,7 +274,7 @@ id<SingleSignOnService> TestingApplicationContext::GetSingleSignOnService() {
 }
 
 SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!system_identity_manager_) {
     system_identity_manager_ =
         ios::provider::CreateSystemIdentityManager(GetSingleSignOnService());
@@ -268,15 +282,24 @@ SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {
   return system_identity_manager_.get();
 }
 
-segmentation_platform::OTRWebStateObserver*
-TestingApplicationContext::GetSegmentationOTRWebStateObserver() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+AccountProfileMapper* TestingApplicationContext::GetAccountProfileMapper() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!account_profile_mapper_) {
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetSystemIdentityManager(), /*profile_count=*/1);
+  }
+  return account_profile_mapper_.get();
+}
+
+IncognitoSessionTracker*
+TestingApplicationContext::GetIncognitoSessionTracker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return nullptr;
 }
 
 PushNotificationService*
 TestingApplicationContext::GetPushNotificationService() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!push_notification_service_) {
     push_notification_service_ = ios::provider::CreatePushNotificationService();
     DCHECK(push_notification_service_);
@@ -286,7 +309,7 @@ TestingApplicationContext::GetPushNotificationService() {
 }
 
 UpgradeCenter* TestingApplicationContext::GetUpgradeCenter() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return upgrade_center_;
 }
 

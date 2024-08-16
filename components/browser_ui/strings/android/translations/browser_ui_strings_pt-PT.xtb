@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Ignorar e mostrar a ação disponível seguinte</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no vídeo à esquerda ou à direita para avançar 10 s.</translation>
+<translation id="3779154269823594982">Alterar palavras-passe</translation>
 <translation id="3797520601150691162">Não aplique o tema escuro a um site específico</translation>
 <translation id="3803367742635802571">Os sites que visita podem deixar de funcionar como previsto</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
 <translation id="789180354981963912">Bloqueie cookies de terceiros na Navegação anónima:</translation>
 <translation id="7940722705963108451">Lembrar-me</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site no grupo de sites de <ph name="FPS_OWNER" /> que pode ver a sua atividade no grupo}other{<ph name="FPS_MEMBERS_COUNT" /> sites no grupo de sites de <ph name="FPS_OWNER" /> que podem ver a sua atividade no grupo}}</translation>
 <translation id="7986741934819883144">Selecionar um contacto</translation>
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Impedir a ligação de sites a dispositivos</translation>
 <translation id="8525306231823319788">Ecrã inteiro</translation>
 <translation id="8541410041357371550">Este site obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> site de <ph name="FPS_OWNER" />}other{Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites de <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando esta opção está ativada, é apresentada a vista de computador dos Websites. Quando esta opção está desativada, é apresentada a vista de dispositivo móvel dos Websites.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Gerido pelos teus pais</translation>
 <translation id="9039697262778250930">A sua sessão nestes sites pode ser terminada</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Este site está num grupo que pode ver a sua atividade. O grupo é definido por <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Eliminar cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>

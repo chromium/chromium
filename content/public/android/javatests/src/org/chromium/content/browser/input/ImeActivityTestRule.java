@@ -125,7 +125,7 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelStart);
         Assert.assertEquals(0, mConnectionFactory.getOutAttrs().initialSelEnd);
 
-        waitForEventLogs("selectionchange");
+        waitForEventLogState("selectionchange");
         clearEventLogs();
 
         waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);

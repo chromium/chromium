@@ -149,8 +149,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon);
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
   void CancelContextMenu();
 
   void SetAsAttemptedFolderTarget(bool is_target_folder);
@@ -411,6 +409,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void ItemBeingDestroyed() override;
   void ItemProgressUpdated() override;
   void ItemAppStatusUpdated() override;
+  void ItemAppCollectionIdChanged() override;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
@@ -467,6 +466,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // `GetPreferredIconSizeForProgressRing()` is used to adjust padding for the
   // promise ring.
   gfx::Size GetPreferredIconSizeForProgressRing() const;
+
+  void UpdateAccessibleDescription();
 
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling

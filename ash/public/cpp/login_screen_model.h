@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 
 class AccountId;
 
@@ -38,6 +39,12 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   // Set the users who are displayed on the login UI. |users| is filtered
   // and does not correspond to every user on the device.
   virtual void SetUserList(const std::vector<LoginUserInfo>& users) = 0;
+
+  // Update the auth factors (password, pin and challenge-response
+  // authentication) availability for the given user.
+  virtual void SetAuthFactorsForUser(
+      const AccountId& user,
+      cryptohome::AuthFactorsSet auth_factors) = 0;
 
   // Notification if pin is enabled or disabled for the given user.
   // |account_id|:   The account id of the user in the user pod.

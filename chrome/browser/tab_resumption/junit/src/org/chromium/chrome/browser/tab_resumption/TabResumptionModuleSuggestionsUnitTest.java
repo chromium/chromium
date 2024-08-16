@@ -103,7 +103,7 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
     private static SuggestionEntry createSuggestionEntry(
             String source, GURL url, String title, long time, int id) {
         return new SuggestionEntry(
-                SuggestionEntryType.LOCAL_TAB, source, url, title, time, id, null);
+                SuggestionEntryType.LOCAL_TAB, source, url, title, time, id, null, null);
     }
 
     @Test

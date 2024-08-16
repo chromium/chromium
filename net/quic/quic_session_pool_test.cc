@@ -69,6 +69,7 @@
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_server_info.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
 #include "net/quic/quic_session_pool_peer.h"
 #include "net/quic/quic_session_pool_test_base.h"
@@ -150,6 +151,64 @@ std::vector<TestParams> GetTestParams() {
   }
   return params;
 }
+
+class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
+ public:
+  SessionAttemptHelper(QuicSessionPool* pool,
+                       quic::ParsedQuicVersion quic_version)
+      : pool_(pool),
+        quic_endpoint(quic_version,
+                      IPEndPoint(IPAddress::IPv4Localhost(),
+                                 QuicSessionPoolTestBase::kDefaultServerPort),
+                      ConnectionEndpointMetadata()) {
+    const url::SchemeHostPort destination(
+        url::kHttpsScheme, QuicSessionPoolTestBase::kDefaultServerHostName,
+        QuicSessionPoolTestBase::kDefaultServerPort);
+    QuicSessionKey session_key(
+        destination.host(), destination.port(),
+        PrivacyMode::PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+        SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+        SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
+    quic_session_alias_key_ = QuicSessionAliasKey(destination, session_key);
+  }
+
+  SessionAttemptHelper(const SessionAttemptHelper&) = delete;
+  SessionAttemptHelper& operator=(const SessionAttemptHelper&) = delete;
+
+  ~SessionAttemptHelper() override = default;
+
+  // QuicSessionAttempt::Delegate implementation.
+  QuicSessionPool* GetQuicSessionPool() override { return pool_; }
+  const QuicSessionAliasKey& GetKey() override {
+    return quic_session_alias_key_;
+  }
+  const NetLogWithSource& GetNetLog() override { return net_log_; }
+
+  int Start() {
+    attempt_ = pool_->CreateSessionAttempt(
+        this, quic_session_alias_key_.session_key(), quic_endpoint,
+        /*cert_verify_flags=*/0,
+        /*dns_resolution_start_time=*/base::TimeTicks(),
+        /*dns_resolution_end_time=*/base::TimeTicks(), /*use_dns_aliases=*/true,
+        /*dns_aliases=*/{});
+    return attempt_->Start(base::BindOnce(&SessionAttemptHelper::OnComplete,
+                                          base::Unretained(this)));
+  }
+
+  std::optional<int> result() const { return result_; }
+
+ private:
+  void OnComplete(int rv) { result_ = rv; }
+
+  raw_ptr<QuicSessionPool> pool_;
+  QuicSessionAliasKey quic_session_alias_key_;
+  NetLogWithSource net_log_;
+
+  QuicEndpoint quic_endpoint;
+
+  std::unique_ptr<QuicSessionAttempt> attempt_;
+  std::optional<int> result_;
+};
 
 }  // namespace
 
@@ -1292,6 +1351,187 @@ TEST_P(QuicSessionPoolTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
       }
     }
   }
+}
+
+TEST_P(QuicSessionPoolTest, PooledWithDifferentIpSession) {
+  quic_params_->supported_versions = {version_};
+  quic_params_->enable_origin_frame = true;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  const IPEndPoint kRightIP(*IPAddress::FromIPLiteral("192.168.0.1"),
+                            kDefaultServerPort);
+  const IPEndPoint kWrongIP(*IPAddress::FromIPLiteral("192.168.0.2"),
+                            kDefaultServerPort);
+  const std::string kRightALPN = quic::AlpnForVersion(version_);
+  const std::string kWrongALPN = "h2";
+
+  url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server3(url::kHttpsScheme, kServer3HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server4(url::kHttpsScheme, kServer4HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server5(url::kHttpsScheme, kServer5HostName,
+                              kDefaultServerPort);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1", "");
+
+  // `server2` resolves to the same IP address via A/AAAA records, i.e. without
+  // ALPN information.
+  host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
+
+  // `server3` resolves to the same IP address, but only via an alternative
+  // endpoint with matching ALPN.
+  std::vector<HostResolverEndpointResult> endpoints(1);
+  endpoints[0].ip_endpoints = {kRightIP};
+  endpoints[0].metadata.supported_protocol_alpns = {kRightALPN};
+  host_resolver_->rules()->AddRule(
+      server3.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({std::move(endpoints)}));
+
+  // `server4` resolves to the same IP address, but only via an alternative
+  // endpoint with a mismatching ALPN.
+  endpoints = std::vector<HostResolverEndpointResult>(2);
+  endpoints[0].ip_endpoints = {kRightIP};
+  endpoints[0].metadata.supported_protocol_alpns = {kWrongALPN};
+  endpoints[1].ip_endpoints = {kWrongIP};
+  endpoints[1].metadata.supported_protocol_alpns = {kRightALPN};
+  host_resolver_->rules()->AddRule(
+      server4.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({std::move(endpoints)}));
+
+  // `server5` resolves to the different IP address, and via an alternative
+  // endpoint with a mismatching ALPN.
+  endpoints = std::vector<HostResolverEndpointResult>(3);
+  endpoints[0].ip_endpoints = {kWrongIP};
+  endpoints[0].metadata.supported_protocol_alpns = {kWrongALPN};
+  host_resolver_->rules()->AddRule(
+      server5.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({std::move(endpoints)}));
+
+  // Establish a QUIC session to pool against.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Receive origin frame on the session.
+  quic::OriginFrame frame;
+  frame.origins.push_back(base::StrCat({"https://", kServer2HostName}));
+  frame.origins.push_back(base::StrCat({"https://", kServer3HostName}));
+  frame.origins.push_back(base::StrCat({"https://", kServer4HostName}));
+  frame.origins.push_back(base::StrCat({"https://", kServer5HostName}));
+  GetActiveSession(kDefaultDestination)->OnOriginFrame(frame);
+  ASSERT_EQ(4u,
+            GetActiveSession(kDefaultDestination)->received_origins().size());
+
+  // `server2` can pool with the existing session. Although the endpoint does
+  // not specify ALPN, we connect here with preexisting knowledge of the version
+  // (from Alt-Svc), so an A/AAAA match is sufficient.
+  TestCompletionCallback callback;
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  EXPECT_TRUE(stream2.get());
+  EXPECT_EQ(GetActiveSession(kDefaultDestination), GetActiveSession(server2));
+
+  // `server3` can pool with the existing session. The endpoint's ALPN protocol
+  // matches.
+  RequestBuilder builder3(this);
+  builder3.destination = server3;
+  builder3.url = GURL(kServer3Url);
+  EXPECT_EQ(OK, builder3.CallRequest());
+  std::unique_ptr<HttpStream> stream3 = CreateStream(&builder3.request);
+  EXPECT_TRUE(stream3.get());
+  EXPECT_EQ(GetActiveSession(kDefaultDestination), GetActiveSession(server3));
+
+  // `server4` can pool with the existing session. Although the IP is different,
+  // it is included in the received origins.
+  RequestBuilder builder4(this);
+  builder4.destination = server4;
+  builder4.url = GURL(kServer4Url);
+  EXPECT_EQ(OK, builder4.CallRequest());
+  std::unique_ptr<HttpStream> stream4 = CreateStream(&builder4.request);
+  EXPECT_TRUE(stream4.get());
+  EXPECT_EQ(GetActiveSession(kDefaultDestination), GetActiveSession(server4));
+
+  // `server5` cannot pool with the existing session. Although it is in the
+  // received origins, if we connect without prior knowledge of QUIC support,
+  // endpoints are only eligible for cross-name pooling when associated with a
+  // QUIC ALPN.
+  //
+  // Without pooling, the DNS response is insufficient to start a QUIC
+  // connection, so the connection will fail.
+  RequestBuilder builder5(this);
+  builder5.destination = server5;
+  builder5.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder5.require_dns_https_alpn = true;
+  builder5.url = GURL(kServer5Url);
+  EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, builder5.CallRequest());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest, PoolingSkipDns) {
+  quic_params_->supported_versions = {version_};
+  quic_params_->enable_origin_frame = true;
+  quic_params_->skip_dns_with_origin_frame = true;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  const std::string kRightALPN = quic::AlpnForVersion(version_);
+  const std::string kWrongALPN = "h2";
+
+  url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                              kDefaultServerPort);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1", "");
+
+  // Establish a QUIC session to pool against.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Receive origin frame on the session.
+  quic::OriginFrame frame;
+  frame.origins.push_back(base::StrCat({"https://", kServer2HostName}));
+  GetActiveSession(kDefaultDestination)->OnOriginFrame(frame);
+  ASSERT_EQ(1u,
+            GetActiveSession(kDefaultDestination)->received_origins().size());
+
+  // `server2` can pool with the existing session and DNS gets skipped.
+  TestCompletionCallback callback;
+  RequestBuilder builder2(this);
+  builder2.destination = server2;
+  builder2.url = GURL(kServer2Url);
+  EXPECT_EQ(OK, builder2.CallRequest());
+  std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+  EXPECT_TRUE(stream2.get());
+  EXPECT_EQ(GetActiveSession(kDefaultDestination), GetActiveSession(server2));
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 TEST_P(QuicSessionPoolTest, Pooling) {
@@ -5872,7 +6112,7 @@ TEST_P(QuicSessionPoolTest,
             std::move(socket),
             ToIPEndPoint(session->connection()->peer_address()), true,
             base::BindLambdaForTesting(
-                [](MigrationResult result) { NOTREACHED_NORETURN(); }),
+                [](MigrationResult result) { NOTREACHED(); }),
             /* RV = OK */ 0);
       }),
       socket_ptr, ToIPEndPoint(session->connection()->peer_address()),
@@ -12924,7 +13164,7 @@ class QuicSessionPoolWithDestinationTest
 
   void AddHangingSocketData() {
     auto sequenced_socket_data = std::make_unique<SequencedSocketData>(
-        base::make_span(&hanging_read_, 1u), base::span<MockWrite>());
+        base::span_from_ref(hanging_read_), base::span<MockWrite>());
     socket_factory_->AddSocketDataProvider(sequenced_socket_data.get());
     sequenced_socket_data_vector_.push_back(std::move(sequenced_socket_data));
   }
@@ -14749,6 +14989,28 @@ TEST_P(QuicSessionPoolTest, EchDisabledSvcbOptional) {
   RequestBuilder builder(this);
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
+}
+
+TEST_P(QuicSessionPoolTest, CreateSessionAttempt) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionAttemptHelper session_attempt(factory_.get(), version_);
+
+  int rv = session_attempt.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  RunUntilIdle();
+  EXPECT_THAT(session_attempt.result(), testing::Optional(OK));
+  ASSERT_TRUE(GetActiveSession(kDefaultDestination));
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

@@ -1,0 +1,64 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("about") {
+  sources = [
+    "about_section.cc",
+    "about_section.h",
+    "device_name_handler.cc",
+    "device_name_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ash/device_name",
+    "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base:i18n",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//chromeos/dbus/constants",
+    "//components/policy/core/common",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_branded_strings",
+    "//components/strings:components_strings",
+    "//components/version_ui",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "device_name_handler_unittest.cc" ]
+
+  deps = [
+    ":about",
+    "//ash/constants",
+    "//base/test:test_support",
+    "//chrome/browser/ash/device_name:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

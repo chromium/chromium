@@ -13,7 +13,7 @@
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 // Class to provide an interface to send sharing messages using Sync.
@@ -32,7 +32,7 @@ class SharingMessageBridge : public KeyedService {
       CommitFinishedCallback on_commit_callback) = 0;
 
   // Returns the delegate for the controller, i.e. sync integration point.
-  virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
 };
 

@@ -135,7 +135,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 
   // If any other tracking rect is being removed, we don't know how it was
   // created and it's possible there's a leak involved (see Radar 3500217).
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Override of (apparently) a private NSView method(!)

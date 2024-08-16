@@ -239,7 +239,7 @@ std::unique_ptr<NonClientFrameView> WebDialogView::CreateNonClientFrameView(
     case WebDialogDelegate::FrameKind::kDialog:
       return DialogDelegate::CreateDialogFrameView(widget);
     default:
-      NOTREACHED_NORETURN() << "Unknown frame kind type enum specified.";
+      NOTREACHED() << "Unknown frame kind type enum specified.";
   }
 }
 
@@ -262,10 +262,10 @@ const views::Widget* WebDialogView::GetWidget() const {
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogDelegate implementation:
 
-ui::ModalType WebDialogView::GetDialogModalType() const {
+ui::mojom::ModalType WebDialogView::GetDialogModalType() const {
   if (delegate_)
     return delegate_->GetDialogModalType();
-  return ui::MODAL_TYPE_NONE;
+  return ui::mojom::ModalType::kNone;
 }
 
 std::u16string WebDialogView::GetDialogTitle() const {

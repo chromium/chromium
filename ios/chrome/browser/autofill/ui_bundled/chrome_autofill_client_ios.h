@@ -96,7 +96,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      SaveAddressProfilePromptOptions options,
+      bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
@@ -104,7 +104,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowDeleteAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
@@ -141,6 +140,9 @@ class ChromeAutofillClientIOS : public AutofillClient {
   // nullptr.
   virtual AutofillSaveCardInfoBarDelegateIOS*
   GetAutofillSaveCardInfoBarDelegateIOS();
+
+  // Removes the save card infobar if it exists.
+  virtual void RemoveAutofillSaveCardInfoBar();
 
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no

@@ -273,3 +273,19 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
   controller.OnAccountSelected(GURL(kIdpEtldPlusOne), accounts[0]);
   controller.OnDismiss(IdentityDialogController::DismissReason::kOther);
 }
+
+// Crash test for crbug.com/358302105.
+TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
+  IdentityDialogController controller(web_contents());
+  std::vector<content::IdentityRequestAccount> accounts = CreateAccount();
+  content::IdentityProviderData idp_data = CreateIdentityProviderData(accounts);
+
+  // Show button mode accounts dialog.
+  EXPECT_FALSE(controller.ShowAccountsDialog(
+      kTopFrameEtldPlusOne, {idp_data},
+      content::IdentityRequestAccount::SignInMode::kExplicit,
+      blink::mojom::RpMode::kButton, /*new_account_idp=*/std::nullopt,
+      /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
+      /*dismiss_callback=*/base::DoNothing(),
+      /*accounts_displayed_callback=*/base::DoNothing()));
+}

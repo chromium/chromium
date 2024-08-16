@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_queue_type.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base::sequence_manager {
@@ -47,7 +48,7 @@ class WakeUpBudgetPool;
 // TODO(crbug.com/1143007): Remove ref-counting of MainThreadTaskQueues as it's
 // no longer needed.
 class PLATFORM_EXPORT MainThreadTaskQueue
-    : public base::RefCountedThreadSafe<MainThreadTaskQueue> {
+    : public ThreadSafeRefCounted<MainThreadTaskQueue> {
  public:
   enum class QueueType {
     // Keep MainThreadTaskQueue::NameForQueueType in sync.
@@ -555,7 +556,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   ~MainThreadTaskQueue();
 
  private:
-  friend class base::RefCountedThreadSafe<MainThreadTaskQueue>;
+  friend class ThreadSafeRefCounted<MainThreadTaskQueue>;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
 

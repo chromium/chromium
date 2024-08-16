@@ -80,19 +80,36 @@ class SparkyUtilTest : public testing::Test {
   bool ContainsAction(const proto::Action& action_proto,
                       std::vector<Action>* actions) {
     for (const Action& action : *actions) {
-      if (action.updated_setting && action_proto.has_update_setting()) {
+      if (action.updated_setting.has_value() &&
+          action_proto.has_update_setting()) {
         if (IsSameSetting(action_proto.update_setting(),
                           action.updated_setting.has_value()
                               ? &action.updated_setting.value()
                               : nullptr)) {
           return true;
         }
-      } else if (action.launched_app.size() > 0 &&
+      } else if (action.type == ActionType::kLaunchApp &&
                  action_proto.has_launch_app_id()) {
-        if (action.launched_app == action_proto.launch_app_id() &&
-            action.all_done == action_proto.all_done()) {
+        if (action.launched_app == action_proto.launch_app_id()) {
           return true;
         }
+      } else if (action_proto.has_all_done() &&
+                 action.type == ActionType::kAllDone) {
+        return action_proto.all_done() == action.all_done;
+      } else if (action_proto.has_click() && action_proto.click().has_x_pos() &&
+                 action_proto.click().has_y_pos() &&
+                 action.type == ActionType::kClick) {
+        return action_proto.click().x_pos() == action.click->x_pos &&
+               action_proto.click().y_pos() == action.click->y_pos;
+      } else if (action_proto.has_text_entry() &&
+                 action_proto.text_entry().has_text() &&
+                 action.type == ActionType::kTextEntry) {
+        return action_proto.text_entry().text() == action.text_entry;
+      } else if (action_proto.has_file_action() &&
+                 action_proto.file_action().has_launch_file_path() &&
+                 action.type == ActionType::kLaunchFile) {
+        return action_proto.file_action().launch_file_path() ==
+               action.file_action->launch_file_path;
       }
     }
     return false;
@@ -263,40 +280,70 @@ TEST_F(SparkyUtilTest, ConvertDialogToStruct) {
   ASSERT_EQ(simple_dialog_reply.message, simple_turn.message());
   ASSERT_EQ(GetRole(simple_dialog_reply.role), simple_turn.role());
 
-  proto::Turn turn_with_open_app;
-  turn_with_open_app.set_message("text answer");
-  turn_with_open_app.set_role(proto::ROLE_ASSISTANT);
-  auto* open_app_action_proto = turn_with_open_app.add_action();
-  open_app_action_proto->set_all_done(false);
+  proto::Turn multi_step_turn;
+  multi_step_turn.set_message("text answer");
+  multi_step_turn.set_role(proto::ROLE_ASSISTANT);
+  auto* open_app_action_proto = multi_step_turn.add_action();
   open_app_action_proto->set_launch_app_id("my app");
-  DialogTurn open_app_dialog_turn = ConvertDialogToStruct(&turn_with_open_app);
-  std::vector<Action> open_app_actions;
-  open_app_actions.emplace_back("my app", false);
-  ASSERT_EQ(open_app_dialog_turn.message, turn_with_open_app.message());
-  ASSERT_EQ(GetRole(open_app_dialog_turn.role), turn_with_open_app.role());
-  ASSERT_TRUE(ContainsAction(*open_app_action_proto, &open_app_actions));
+  auto* click_action_proto = multi_step_turn.add_action();
+  auto* click_proto = click_action_proto->mutable_click();
+  click_proto->set_x_pos(10);
+  click_proto->set_y_pos(20);
+  auto* text_entry_action_proto = multi_step_turn.add_action();
+  auto* text_entry_proto = text_entry_action_proto->mutable_text_entry();
+  text_entry_proto->set_text("text for my app");
+  auto* file_action_proto = multi_step_turn.add_action();
+  auto* open_file_proto = file_action_proto->mutable_file_action();
+  open_file_proto->set_launch_file_path("/my/file/location");
+  auto* all_done_proto = multi_step_turn.add_action();
+  all_done_proto->set_all_done(false);
+  DialogTurn open_app_dialog_turn = ConvertDialogToStruct(&multi_step_turn);
+  ASSERT_EQ(open_app_dialog_turn.message, multi_step_turn.message());
+  ASSERT_EQ(GetRole(open_app_dialog_turn.role), multi_step_turn.role());
+  ASSERT_EQ((int)open_app_dialog_turn.actions.size(), 5);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(0).type, ActionType::kLaunchApp);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(0).launched_app, "my app");
+  ASSERT_EQ(open_app_dialog_turn.actions.at(1).type, ActionType::kClick);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(1).click->x_pos, 10);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(1).click->y_pos, 20);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(2).type, ActionType::kTextEntry);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(2).text_entry, "text for my app");
+  ASSERT_EQ(open_app_dialog_turn.actions.at(3).type, ActionType::kLaunchFile);
+  ASSERT_TRUE(open_app_dialog_turn.actions.at(3).file_action.has_value());
+  ASSERT_EQ(
+      open_app_dialog_turn.actions.at(3).file_action.value().launch_file_path,
+      "/my/file/location");
+  ASSERT_EQ(open_app_dialog_turn.actions.at(4).type, ActionType::kAllDone);
+  ASSERT_EQ(open_app_dialog_turn.actions.at(4).all_done, false);
 
   proto::Turn turn_with_settings;
   turn_with_settings.set_message("Adaptive charging has been enabled");
   turn_with_settings.set_role(proto::ROLE_ASSISTANT);
   auto* settings_action_proto = turn_with_settings.add_action();
-  settings_action_proto->set_all_done(false);
   auto* setting_data = settings_action_proto->mutable_update_setting();
   setting_data->set_type(proto::SETTING_TYPE_BOOL);
   setting_data->set_settings_id("power.adaptive_charging_enabled");
   auto* settings_value = setting_data->mutable_value();
   settings_value->set_bool_val(true);
+  auto* all_done_proto2 = turn_with_settings.add_action();
+  all_done_proto2->set_all_done(true);
   DialogTurn dialog_reply_with_actions =
       ConvertDialogToStruct(&turn_with_settings);
   std::vector<Action> settings_actions;
   SettingsData setting_val =
       SettingsData("power.adaptive_charging_enabled", PrefType::kBoolean,
                    std::make_optional<base::Value>(true));
-  settings_actions.emplace_back(setting_val, false);
+  settings_actions.emplace_back(setting_val);
 
   ASSERT_EQ(dialog_reply_with_actions.message, turn_with_settings.message());
   ASSERT_EQ(GetRole(dialog_reply_with_actions.role), turn_with_settings.role());
-  ASSERT_TRUE(ContainsAction(*settings_action_proto, &settings_actions));
+  ASSERT_EQ(dialog_reply_with_actions.actions.at(0).type, ActionType::kSetting);
+  ASSERT_TRUE(
+      dialog_reply_with_actions.actions.at(0).updated_setting.has_value());
+  ASSERT_EQ(dialog_reply_with_actions.actions.at(0).updated_setting->bool_val,
+            true);
+  ASSERT_EQ(dialog_reply_with_actions.actions.at(1).type, ActionType::kAllDone);
+  ASSERT_EQ(dialog_reply_with_actions.actions.at(1).all_done, true);
 }
 
 TEST_F(SparkyUtilTest, AddDialog) {
@@ -308,21 +355,30 @@ TEST_F(SparkyUtilTest, AddDialog) {
   SettingsData setting_val =
       SettingsData("ash.dark_mode.enabled", PrefType::kBoolean,
                    std::make_optional<base::Value>(true));
-  settings_actions.emplace_back(setting_val, true);
+  settings_actions.emplace_back(setting_val);
   dialog.emplace_back("Okay I have turned on dark mode", Role::kAssistant,
                       settings_actions);
   dialog.emplace_back("Create a new file with a poem about Platypuses",
                       Role::kUser);
-  std::vector<Action> launch_actions;
-  launch_actions.emplace_back("text app", false);
+  std::vector<Action> multi_step_actions;
+  Action open_app_action = Action(ActionType::kLaunchApp);
+  open_app_action.launched_app = "text app";
+  multi_step_actions.emplace_back(open_app_action);
+  Action click_action = Action(ClickAction(10, 20));
+  multi_step_actions.emplace_back(click_action);
+  Action type_action = Action(ActionType::kTextEntry);
+  type_action.text_entry = "text for my app";
+  multi_step_actions.emplace_back(type_action);
+  multi_step_actions.emplace_back(false);
   dialog.emplace_back("Okay I have opened the text app", Role::kAssistant,
-                      launch_actions);
+                      multi_step_actions);
 
   proto::SparkyContextData sparky_context_data;
   AddDialogToSparkyContext(dialog, &sparky_context_data);
   const ::google::protobuf::RepeatedPtrField<::manta::proto::Turn>&
       dialog_proto = sparky_context_data.conversation();
 
+  ASSERT_EQ(dialog_proto.size(), 6);
   ASSERT_TRUE(ContainsDialog(dialog_proto, "Where is it?", Role::kUser, {}));
   ASSERT_TRUE(ContainsDialog(dialog_proto, "In Tokyo", Role::kAssistant, {}));
   ASSERT_TRUE(
@@ -333,7 +389,8 @@ TEST_F(SparkyUtilTest, AddDialog) {
                              "Create a new file with a poem about Platypuses",
                              Role::kUser, {}));
   ASSERT_TRUE(ContainsDialog(dialog_proto, "Okay I have opened the text app",
-                             Role::kAssistant, &launch_actions));
+                             Role::kAssistant, &multi_step_actions));
+  ASSERT_EQ(dialog_proto.at(5).action_size(), 4);
 }
 
 TEST_F(SparkyUtilTest, AddFilesData) {
@@ -342,7 +399,7 @@ TEST_F(SparkyUtilTest, AddFilesData) {
   file_1.summary = "file 1 summary";
   file_1.bytes =
       std::make_optional(std::vector<uint8_t>({2, 4, 6, 7, 4, 7, 2, 8}));
-  file_1.size_in_bytes = 8;
+  file_1.size_in_bytes = 8L;
 
   files_data.emplace_back(file_1);
   files_data.emplace_back("path2", "name2", "2023");
@@ -377,6 +434,35 @@ TEST_F(SparkyUtilTest, GetSelectedFilePaths) {
   ASSERT_EQ((int)file_set.size(), 2);
   ASSERT_TRUE(file_set.contains("my/file/path"));
   ASSERT_TRUE(file_set.contains("my/second/file/path/"));
+}
+
+TEST_F(SparkyUtilTest, GetFileDataFromProto) {
+  manta::proto::FilesData files_proto;
+  std::vector<FileData> empty_files_data = GetFileDataFromProto(files_proto);
+  EXPECT_TRUE(empty_files_data.empty());
+
+  manta::proto::File* file1 = files_proto.add_files();
+  file1->set_name("name1");
+  file1->set_path("my/file/path");
+  file1->set_summary("this file is a picture of a cat");
+  file1->set_date_modified("2024");
+  file1->set_size_in_bytes(823);
+
+  manta::proto::File* file2 = files_proto.add_files();
+  file2->set_name("name2");
+  file2->set_path("my/second/file/path/");
+  file2->set_summary("this file is a poem about a cat");
+  file2->set_date_modified("2023");
+  file2->set_size_in_bytes(94);
+
+  std::vector<FileData> files_data = GetFileDataFromProto(files_proto);
+  ASSERT_TRUE(files_data.size() == 2);
+  auto file1_data = files_data.at(0);
+  ASSERT_EQ(file1_data.name, "name1");
+  ASSERT_EQ(file1_data.path, "my/file/path");
+  ASSERT_EQ(file1_data.summary, "this file is a picture of a cat");
+  ASSERT_EQ(file1_data.date_modified, "2024");
+  ASSERT_EQ(file1_data.size_in_bytes, 823);
 }
 
 }  // namespace manta

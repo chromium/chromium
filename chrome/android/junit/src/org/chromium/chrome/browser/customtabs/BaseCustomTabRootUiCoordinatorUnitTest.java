@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -121,7 +120,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private Supplier<CustomTabActivityNavigationController> mCustomTabNavigationController;
     @Mock private Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     @Mock private BrowserServicesIntentDataProvider mBrowserServicesIntentDataProvider;
-    @Mock private Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Mock private BackPressManager mBackPressManager;
     @Mock private Supplier<CustomTabActivityTabController> mTabController;
     @Mock private Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
@@ -184,7 +182,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mCustomTabToolbarCoordinator,
                         mCustomTabNavigationController,
                         mIntentDataProvider,
-                        mEphemeralTabCoordinatorSupplier,
                         mBackPressManager,
                         mTabController,
                         mMinimizeDelegateSupplier,

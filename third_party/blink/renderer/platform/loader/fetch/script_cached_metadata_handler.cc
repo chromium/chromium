@@ -225,9 +225,7 @@ ScriptCachedMetadataHandlerWithHashing::GetSerializedCachedMetadata() const {
              offsetof(CachedMetadataHeaderWithHash, hash));
     serialized_data.Append(hash_, kSha256Bytes);
     CHECK_EQ(serialized_data.size(), sizeof(CachedMetadataHeaderWithHash));
-    base::span<const uint8_t> data = cached_metadata_->SerializedData();
-    serialized_data.Append(data.data(),
-                           base::checked_cast<wtf_size_t>(data.size()));
+    serialized_data.AppendSpan(cached_metadata_->SerializedData());
   }
   return serialized_data;
 }

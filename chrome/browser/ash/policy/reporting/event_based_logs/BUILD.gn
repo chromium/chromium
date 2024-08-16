@@ -55,3 +55,24 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "event_based_log_manager_browsertest.cc" ]
+
+  deps = [
+    ":event_based_logs",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chromeos/ash/components/settings",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -22,6 +22,7 @@
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
@@ -948,8 +949,10 @@ TEST_F(InputDeviceSettingsControllerTest,
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
+  base::HistogramTester histogram_tester;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardUsb});
-
+  auto* kb = controller_->GetKeyboard(kSampleKeyboardUsb.id);
+  controller_->AddWelcomeNotificationDeviceKeyForTesting(kb->device_key);
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
 
@@ -959,6 +962,11 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdated) {
 
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 1u);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kSettingChanged,
+      /*expected_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, PrefsInitializedBasedOnLoginState) {
@@ -2139,10 +2147,14 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
+  base::HistogramTester histogram_tester;
   fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
   auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
   ASSERT_FALSE(mouse->app_info.is_null());
-
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kAvailable,
+      /*expected_count=*/1u);
   fake_device_manager_->RemoveAllDevices();
   delegate_->set_should_fail(/*should_fail=*/true);
   fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
@@ -2151,6 +2163,7 @@ TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
+  base::HistogramTester histogram_tester;
   fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
   auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
   auto expected_package_id = GetPackageIdForTesting(mouse->device_key);
@@ -2159,6 +2172,10 @@ TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
   // Simulate installing the companion app.
   SendAppUpdate(expected_package_id, apps::Readiness::kReady);
   ASSERT_EQ(mojom::CompanionAppState::kInstalled, mouse->app_info->state);
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.WelcomeExperienceCompanionAppState",
+      InputDeviceSettingsMetricsManager::CompanionAppState::kInstalled,
+      /*expected_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, MarketingNameOverridesGeneric) {

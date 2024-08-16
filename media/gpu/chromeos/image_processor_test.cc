@@ -891,8 +891,7 @@ int main(int argc, char** argv) {
 
 #if BUILDFLAG(USE_V4L2_CODEC)
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
-      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      /*fallback_to_software_gl=*/false);
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
 #endif
 
   return RUN_ALL_TESTS();

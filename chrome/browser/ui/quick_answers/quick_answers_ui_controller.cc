@@ -89,11 +89,11 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
       profile, query,
       {
           .title = title,
-          .design = quick_answers::QuickAnswersView::Design::kCurrent,
+          .design = quick_answers::Design::kCurrent,
           // Use `kDefinition` as a placeholder for now. `Design::kCurrent`
           // doesn't care intent.
           // TODO(b/340628664): wire the correct intent.
-          .intent = quick_answers::QuickAnswersView::Intent::kDefinition,
+          .intent = quick_answers::Intent::kDefinition,
           .is_internal = is_internal,
       });
 }

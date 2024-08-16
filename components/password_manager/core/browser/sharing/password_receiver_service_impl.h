@@ -82,7 +82,7 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService,
   // PasswordReceiverService implementation:
   void ProcessIncomingSharingInvitation(
       sync_pb::IncomingPasswordSharingInvitationSpecifics invitation) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
   void OnSyncServiceInitialized(syncer::SyncService* service) override;
 

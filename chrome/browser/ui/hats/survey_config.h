@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_
 #define CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,6 @@ extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kHatsSurveyTriggerGetMostChrome[];
 #endif
-extern const char kHatsSurveyTriggerExtensions[];
 extern const char kHatsSurveyTriggerM1AdPrivacyPage[];
 extern const char kHatsSurveyTriggerM1TopicsSubpage[];
 extern const char kHatsSurveyTriggerM1FledgeSubpage[];
@@ -76,6 +76,7 @@ extern const char
 extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
 extern const char kHatsSurveyTriggerWallpaperSearch[];
 extern const char kHatsSurveyTriggerWhatsNew[];
+extern const char kHatsSurveyTriggerWhatsNewV2[];
 #else
 extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
 extern const char kHatsSurveyTriggerQuickDelete[];
@@ -95,12 +96,16 @@ struct SurveyConfig {
   // for the survey probability, and if |presupplied_trigger_id| is not
   // provided, the trigger ID. To pass any product specific data for the
   // survey, configure fields here, matches are CHECK enforced.
+  // SurveyConfig that enable |log_responses_to_uma| will need to have surveys
+  // reviewed by privacy to ensure they are appropriate to log to UMA.
+  // This is enforced through the OWNERS mechanism.
   SurveyConfig(
       const base::Feature* feature,
       const std::string& trigger,
       const std::optional<std::string>& presupplied_trigger_id = std::nullopt,
       const std::vector<std::string>& product_specific_bits_data_fields = {},
-      const std::vector<std::string>& product_specific_string_data_fields = {});
+      const std::vector<std::string>& product_specific_string_data_fields = {},
+      bool log_responses_to_uma = false);
 
   SurveyConfig();
   SurveyConfig(const SurveyConfig&);
@@ -117,6 +122,9 @@ struct SurveyConfig {
 
   // Trigger ID for the survey.
   std::string trigger_id;
+
+  // Histogram name for the survey.
+  std::optional<std::string> histogram_name;
 
   // The survey will prompt every time because the user has explicitly decided
   // to take the survey e.g. clicking a link.

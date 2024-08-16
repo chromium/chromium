@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/viz/test/test_context_provider.h"
 #include "media/capture/video/mock_gpu_memory_buffer_manager.h"
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,43 +30,25 @@ class V4l2GpuMemoryBufferTrackerTest : public ::testing::Test {
   V4l2GpuMemoryBufferTrackerTest& operator=(
       const V4l2GpuMemoryBufferTrackerTest&) = delete;
 
-  void SetUp() override {}
+  void SetUp() override {
+    test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  }
 
   void TearDown() override {
-    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
-        nullptr);
+    VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(nullptr);
   }
 
-  void SetUpExpectationGpuMemoryBufferManager() {
-    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
-        &mock_gpu_memory_buffer_manager_);
-    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-                CreateGpuMemoryBuffer(_, gfx::BufferFormat::YUV_420_BIPLANAR,
-                                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                      gpu::kNullSurfaceHandle, nullptr))
-        .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
-                             CreateFakeGpuMemoryBuffer));
-  }
-
-  void SetupInvalidGpuMemoryBufferManager() {
-    VideoCaptureGpuChannelHost::GetInstance().SetGpuMemoryBufferManager(
-        &mock_gpu_memory_buffer_manager_);
-    EXPECT_CALL(mock_gpu_memory_buffer_manager_,
-                CreateGpuMemoryBuffer(_, gfx::BufferFormat::YUV_420_BIPLANAR,
-                                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-                                      gpu::kNullSurfaceHandle, nullptr))
-        .WillOnce(Invoke(
-            [](const gfx::Size& size, gfx::BufferFormat format,
-               gfx::BufferUsage usage, gpu::SurfaceHandle surface_handle,
-               base::WaitableEvent* shutdown_event) { return nullptr; }));
+  void SetSharedImageInterface() {
+    VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+        test_sii_);
   }
 
  protected:
-  unittest_internal::MockGpuMemoryBufferManager mock_gpu_memory_buffer_manager_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest, CreateSuccess) {
-  SetUpExpectationGpuMemoryBufferManager();
+  SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
 
   auto tracker = std::make_unique<V4L2GpuMemoryBufferTracker>();
@@ -74,7 +57,7 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest, CreateSuccess) {
 }
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest, GetMemorySizeInBytes) {
-  SetUpExpectationGpuMemoryBufferManager();
+  SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   constexpr size_t byte_size = dimensions.width() * dimensions.height() * 3 / 2;
@@ -94,17 +77,7 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest, InitFailedAsInvalidFormat) {
 }
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest,
-       InitFailedAsEmptyGpuMemoryBufferManager) {
-  constexpr gfx::Size dimensions = {1280, 720};
-  constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
-
-  auto tracker = std::make_unique<V4L2GpuMemoryBufferTracker>();
-  EXPECT_FALSE(tracker->Init(dimensions, format, nullptr));
-}
-
-TEST_F(V4l2GpuMemoryBufferTrackerTest,
-       InitFailedAsInvalidGpuMemoryBufferManager) {
-  SetupInvalidGpuMemoryBufferManager();
+       InitFailedAsEmptyTestSharedImageInterface) {
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
 
@@ -113,7 +86,7 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest,
 }
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest, ReusableFormat) {
-  SetUpExpectationGpuMemoryBufferManager();
+  SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
 
@@ -123,7 +96,7 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest, ReusableFormat) {
 }
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest, NotReusableAsGpuContextLost) {
-  SetUpExpectationGpuMemoryBufferManager();
+  SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
 
@@ -135,7 +108,7 @@ TEST_F(V4l2GpuMemoryBufferTrackerTest, NotReusableAsGpuContextLost) {
 }
 
 TEST_F(V4l2GpuMemoryBufferTrackerTest, NotReusableAsDiffFormat) {
-  SetUpExpectationGpuMemoryBufferManager();
+  SetSharedImageInterface();
   constexpr gfx::Size dimensions = {1280, 720};
   constexpr VideoPixelFormat format = VideoPixelFormat::PIXEL_FORMAT_NV12;
   constexpr VideoPixelFormat diff_format = VideoPixelFormat::PIXEL_FORMAT_I420;

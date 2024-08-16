@@ -61,7 +61,8 @@ WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
-          context->GetStatePath()));
+          context->GetStatePath(),
+          WebViewBrowserState::FromBrowserState(context)->GetPrefs()));
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner(
       base::SequencedTaskRunner::GetCurrentDefault());

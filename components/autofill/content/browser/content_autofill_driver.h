@@ -236,7 +236,8 @@ class ContentAutofillDriver : public AutofillDriver,
   void GetFourDigitCombinationsFromDOM(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
-  void TriggerFormExtractionInDriverFrame() override;
+  void TriggerFormExtractionInDriverFrame(
+      AutofillDriverRouterAndFormForestPassKey pass_key) override;
 
   // Group (2a): renderer -> browser events, broadcast (see comment above).
   // mojom::AutofillDriver:

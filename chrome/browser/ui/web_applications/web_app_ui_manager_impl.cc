@@ -83,9 +83,9 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/nonclosable_app_ui_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chromeos/ash/components/nonclosable_app_ui/nonclosable_app_ui_utils.h"
 #include "components/sync/model/string_ordinal.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -117,14 +117,10 @@ class AppLock;
 namespace {
 
 #if BUILDFLAG(IS_WIN)
-// ScopedKeepAlive not only keeps the process from terminating early
-// during uninstall, it also ensures the process will terminate in the next
-// message loop if there are no active browser windows.
-void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
-                                                WebAppProvider* provider) {
-  std::unique_ptr<ScopedKeepAlive> scoped_keep_alive =
-      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_UNINSTALL,
-                                        KeepAliveRestartOption::DISABLED);
+void UninstallWebAppWithDialogFromStartupSwitch(
+    std::unique_ptr<ScopedKeepAlive> scoped_keep_alive,
+    const webapps::AppId& app_id,
+    WebAppProvider* provider) {
   if (provider->registrar_unsafe().CanUserUninstallWebApp(app_id)) {
     provider->ui_manager().PresentUserUninstallDialog(
         app_id, webapps::WebappUninstallSource::kOsSettings,
@@ -682,8 +678,14 @@ void WebAppUiManagerImpl::TabCloseCancelled(
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
     const webapps::AppId& app_id) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
+  // ScopedKeepAlive not only keeps the process from terminating early
+  // during uninstall, it also ensures the process will terminate in the next
+  // message loop if there are no active browser windows.
   provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&UninstallWebAppWithDialogFromStartupSwitch,
+                                std::make_unique<ScopedKeepAlive>(
+                                    KeepAliveOrigin::WEB_APP_UNINSTALL,
+                                    KeepAliveRestartOption::DISABLED),
                                 app_id, provider));
 }
 #endif  //  BUILDFLAG(IS_WIN)

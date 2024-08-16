@@ -86,6 +86,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/tab_resumption_module_icon_background.xml",
     "java/res/drawable/tab_resumption_module_ripple.xml",
+    "java/res/drawable/tab_resumption_module_tile_reason_background.xml",
     "java/res/layout/tab_resumption_module_divider.xml",
     "java/res/layout/tab_resumption_module_layout.xml",
     "java/res/layout/tab_resumption_module_local_tile_layout.xml",
@@ -115,6 +116,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMediatorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleMetricsUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleSuggestionsUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TabResumptionModuleViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TestSupport.java",
     "junit/src/org/chromium/chrome/browser/tab_resumption/TestSupportExtended.java",

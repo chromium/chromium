@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +20,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -41,9 +44,13 @@ public class HistoricalTabSaverImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
+    private final ObservableSupplierImpl<TabModel> mSecondaryTabModelSupplier =
+            new ObservableSupplierImpl<>();
+
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
     @Mock private TabModel mTabModel;
+    @Mock private TabModel mSecondaryTabModel;
     @Mock private HistoricalTabSaverImpl.Natives mHistoricalTabSaverJni;
 
     private HistoricalTabSaverImpl mHistoricalTabSaver;
@@ -56,6 +63,13 @@ public class HistoricalTabSaverImplUnitTest {
 
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+
+        mSecondaryTabModelSupplier.set(mSecondaryTabModel);
+    }
+
+    @After
+    public void tearDown() {
+        mHistoricalTabSaver.destroy();
     }
 
     /** Tests nothing is saved for an empty group. */
@@ -86,6 +100,17 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalBulk_Incognito() {
         Tab tab = new MockTab(0, mIncognitoProfile);
+        mHistoricalTabSaver.createHistoricalTab(tab);
+
+        verifyNoMoreInteractions(mHistoricalTabSaverJni);
+    }
+
+    /** Tests nothing is saved if the secondary model has it. */
+    @Test
+    public void testCreateHistoricalBulk_SkipsTabsInSecondaryModel() {
+        Tab tab = new MockTab(0, mProfile);
+        doReturn(tab).when(mSecondaryTabModel).getTabById(tab.getId());
+        mHistoricalTabSaver.addSecodaryTabModelSupplier(mSecondaryTabModelSupplier);
         mHistoricalTabSaver.createHistoricalTab(tab);
 
         verifyNoMoreInteractions(mHistoricalTabSaverJni);

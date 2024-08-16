@@ -1,0 +1,45 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_bundled") {
+  sources = [
+    "discover_feed_manage_delegate.h",
+    "discover_feed_preview_delegate.h",
+    "feed_control_delegate.h",
+    "feed_sign_in_promo_delegate.h",
+    "home_start_data_source.h",
+    "new_tab_page_configuring.h",
+    "new_tab_page_content_delegate.h",
+    "new_tab_page_controller_delegate.h",
+    "new_tab_page_delegate.h",
+    "new_tab_page_follow_delegate.h",
+    "new_tab_page_metrics_delegate.h",
+    "new_tab_page_url_loader_delegate.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/ui/ntp" ]
+}
+
+source_set("logo") {
+  sources = [
+    "logo_animation_controller.h",
+    "logo_vendor.h",
+  ]
+  frameworks = [ "UIKit.framework" ]
+  public_deps = [ "//ios/chrome/browser/ui/ntp:logo" ]
+}
+
+source_set("constants") {
+  sources = [
+    "discover_feed_constants.h",
+    "new_tab_page_constants.h",
+    "new_tab_page_header_constants.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/ui/ntp:constants" ]
+}
+
+source_set("feature_flags") {
+  sources = [ "new_tab_page_feature.h" ]
+  deps = [ "//ios/chrome/browser/ui/ntp:feature_flags" ]
+  public_deps = [ "//base" ]
+}

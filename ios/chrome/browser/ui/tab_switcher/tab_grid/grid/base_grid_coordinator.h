@@ -16,6 +16,7 @@ class Browser;
 @protocol GridToolbarsMutator;
 @class LegacyGridTransitionLayout;
 @protocol TabContextMenuDelegate;
+@class TabGridModeHolder;
 @protocol TabGroupPositioner;
 
 @interface BaseGridCoordinator
@@ -39,6 +40,9 @@ class Browser;
 // Positioner providing layer information for Tab Group.
 @property(nonatomic, weak) id<TabGroupPositioner> tabGroupPositioner;
 
+// Holder for the current Tab Grid mode.
+@property(nonatomic, strong) TabGridModeHolder* modeHolder;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
                            toolbarsMutator:
@@ -50,6 +54,11 @@ class Browser;
 
 // Shows the TabGroup view while the TabGrid is being opened at the same time.
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup;
+
+// Brings the `tabGroup` into view by making it part of the visible element of
+// its grid, if present. Returns whether the group was present.
+- (BOOL)bringTabGroupIntoViewIfPresent:(const TabGroup*)tabGroup
+                              animated:(BOOL)animated;
 
 // Returns the transition layout for this grid.
 - (LegacyGridTransitionLayout*)transitionLayout;

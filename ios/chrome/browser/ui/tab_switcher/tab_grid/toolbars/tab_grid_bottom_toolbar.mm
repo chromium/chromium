@@ -172,19 +172,15 @@
 }
 
 - (void)hide {
-  if (@available(iOS 16.0, *)) {
-    // The `_editButton` is hidden to dismiss its context menu if it's still
-    // presented.
-    _editButton.hidden = YES;
-  }
+  // The `_editButton` is hidden to dismiss its context menu if it's still
+  // presented.
+  _editButton.hidden = YES;
   _smallNewTabButton.alpha = 0.0;
   _largeNewTabButton.alpha = 0.0;
 }
 
 - (void)show {
-  if (@available(iOS 16.0, *)) {
-    _editButton.hidden = NO;
-  }
+  _editButton.hidden = NO;
   _smallNewTabButton.alpha = 1.0;
   _largeNewTabButton.alpha = 1.0;
 }
@@ -346,7 +342,7 @@
 - (void)updateLayout {
   // Search mode doesn't have bottom toolbar or floating buttons, Handle it and
   // return early in that case.
-  if (self.mode == TabGridModeSearch) {
+  if (self.mode == TabGridMode::kSearch) {
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
     [_toolbar removeFromSuperview];
@@ -358,7 +354,7 @@
   _largeNewTabButtonBottomAnchor.constant =
       -kTabGridFloatingButtonVerticalInset;
 
-  if (self.mode == TabGridModeSelection) {
+  if (self.mode == TabGridMode::kSelection) {
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
     [_largeNewTabButton removeFromSuperview];
     [_toolbar setItems:@[

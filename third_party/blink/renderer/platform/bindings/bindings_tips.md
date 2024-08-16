@@ -46,20 +46,21 @@ ExceptionState.  Some APIs use `v8::Maybe` / `v8::MaybeLocal` to indicate an
 exception.  The important convention is that, if and only if the maybe object is
 Nothing, an exception must be thrown.  It's not allowed to return Nothing
 without throwing an exception or to throw an exception without returning
-Nothing.  You can catch a V8 exception with `v8::TryCatch` and rethrow it into
-`ExceptionState`.
+Nothing.  Use `TryRethrowScope` to implicitly create a v8::TryCatch and tie it
+to an ExceptionState, so that the ExceptionState will pick up the exception.
 
 ```c++
 void foo(v8::Isolate* isolate, ExceptionState& exception_state) {
-  // v8::TryCatch works like |try { … } catch (e) { … }| in ECMAScript.
-  v8::TryCatch try_catch(isolate);
+  // Puts a v8::TryCatch on the stack, which works like
+  // |try { … } catch (e) { … }| in ECMAScript. Will rethrow an exception to
+  // ExceptionState in its destructor.
+  TryRethrowScope rethrow_scope(isolate, exception_state);
 
   Type value;
   // ReturnMaybe() returns a v8::Maybe<Type>.
   // v8::Maybe::To is preferred to v8::Maybe::IsJust / IsNothing.
   if (!ReturnMaybe().To(&value)) {
-    // An exception is thrown.
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    // An exception occurred, rethrow to ExceptionState on return.
     return;
   }
 
@@ -67,8 +68,7 @@ void foo(v8::Isolate* isolate, ExceptionState& exception_state) {
   // ReturnMaybeLocal() returns a v8::MaybeLocal<V8Type>.
   // v8::MaybeLocal::ToLocal is preferred to v8::MaybeLocal::IsJust / IsNothing.
   if (!ReturnMaybeLocal().ToLocal(&local_value)) {
-    // An exception is thrown.
-    exception_state.RethrowV8Exception(try_catch.Exception());
+    // An exception occurred, rethrow to ExceptionState on return.
     return;
   }
 }

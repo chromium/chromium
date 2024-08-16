@@ -113,6 +113,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         float searchBarMarginSide = panel.getBarMarginSide();
         float searchBarMarginTop = panel.getBarMarginTop();
+        float searchBarMarginBottom = panel.getBarMarginBottomPx();
         float searchBarHeight = panel.getBarHeight();
 
         float searchContextOpacity = searchBarControl.getSearchBarContextOpacity();
@@ -193,6 +194,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                         searchPanelHeight * mDpToPx,
                         searchBarMarginSide * mDpToPx,
                         searchBarMarginTop * mDpToPx,
+                        searchBarMarginBottom,
                         searchBarHeight * mDpToPx,
                         searchContextOpacity,
                         searchBarControl.getTextLayerMinHeight(),
@@ -312,6 +314,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float searchPanelHeight,
                 float searchBarMarginSide,
                 float searchBarMarginTop,
+                float searchBarMarginBottom,
                 float searchBarHeight,
                 float searchContextOpacity,
                 float searchTextLayerMinHeight,

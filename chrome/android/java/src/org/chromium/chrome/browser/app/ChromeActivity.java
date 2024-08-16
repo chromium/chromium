@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.CloseListenerManager;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
+import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -142,6 +143,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.SelectionPopupBackPressHandler;
@@ -606,7 +608,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 mCompositorViewHolderSupplier,
                                 /* tabCreatorManager= */ this,
                                 this::getCurrentTabCreator,
-                                this::isCustomTab,
                                 mRootUiCoordinator.getStatusBarColorController(),
                                 ScreenOrientationProvider.getInstance(),
                                 this::getNotificationManagerProxy,
@@ -640,7 +641,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 mCompositorViewHolderSupplier,
                                 this,
                                 this::getCurrentTabCreator,
-                                this::isCustomTab,
                                 mRootUiCoordinator.getStatusBarColorController(),
                                 ScreenOrientationProvider.getInstance(),
                                 this::getNotificationManagerProxy,
@@ -1187,7 +1187,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         RecordUserAction.record("MobileComeToForeground");
         getLaunchCauseMetrics().setActivityId(mActivityId);
-        getLaunchCauseMetrics().recordLaunchCause();
+        int launchCause = getLaunchCauseMetrics().recordLaunchCause();
+
+        boolean isMainIntentLaunch =
+                (launchCause == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON
+                        || launchCause
+                                == LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT);
+        if (isMainIntentLaunch) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Startup.Android.MainIntentIsColdStart",
+                    ColdStartTracker.wasColdOnFirstActivityCreationOrNow());
+        }
 
         Tab tab = getActivityTab();
         if (tab != null) {
@@ -1221,6 +1231,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public void onTopResumedActivityChangedWithNative(boolean isTopResumedActivity) {
         View view = isTopResumedActivity ? getWindow().getDecorView() : null;
         InputHintChecker.setView(view);
+
+        if (isTopResumedActivity) {
+            ProfileManager.onProfileActivated(
+                    getProfileProviderSupplier().get().getOriginalProfile());
+        }
     }
 
     private void checkForDeviceLockOnAutomotive() {
@@ -1387,6 +1402,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      */
     public boolean isCustomTab() {
         return getActivityType() == ActivityType.CUSTOM_TAB
+                || getActivityType() == ActivityType.AUTH_TAB
                 || getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY;
     }
 
@@ -1742,11 +1758,16 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mStylusWritingCoordinator = null;
         }
 
-        if (!WarmupManager.getInstance().isCCTPrewarmTabFeatureEnabled(false)) {
+        WarmupManager warmupManager = WarmupManager.getInstance();
+        if (!warmupManager.isCCTPrewarmTabFeatureEnabled(false)) {
             // Destroy spare tab on activity destruction.
-            WarmupManager warmupManager = WarmupManager.getInstance();
             warmupManager.destroySpareTab();
         }
+        // Ensure WarmupManager does not hold on to views created with old context, tied to old
+        // Theme.
+        // TODO(b/357901623): remove the line below once we have a reliable solution to the theming
+        // problem, or after we stop supporting API levels < 29.
+        warmupManager.clearViewHierarchy();
 
         mActivityTabProvider.destroy();
 
@@ -1795,9 +1816,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
      * @return True if tab modal dialog is supported.
      */
     protected boolean supportsTabModalDialogs() {
-        return getActivityType() == ActivityType.TABBED
-                || (getActivityType() == ActivityType.CUSTOM_TAB
-                        && ChromeFeatureList.sCctTabModalDialog.isEnabled());
+        return switch (getActivityType()) {
+            case ActivityType.TABBED -> true;
+            case ActivityType.CUSTOM_TAB, ActivityType.AUTH_TAB -> ChromeFeatureList
+                    .sCctTabModalDialog
+                    .isEnabled();
+            default -> false;
+        };
     }
 
     @Nullable
@@ -2574,6 +2599,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             TinkerTankDelegate delegate = new TinkerTankDelegateImpl();
             delegate.maybeShowBottomSheet(
                     this,
+                    getProfileProviderSupplier().get().getOriginalProfile(),
                     mRootUiCoordinator.getBottomSheetController(),
                     getTabModelSelectorSupplier());
         }

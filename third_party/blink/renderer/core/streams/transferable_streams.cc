@@ -149,7 +149,7 @@ void CrossRealmTransformSendError(ScriptState* script_state,
                                   MessagePort* port,
                                   v8::Local<v8::Value> error) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-crossrealmtransformsenderror
   // 1. Perform PackAndPostMessage(port, "error", error), discarding the result.
@@ -177,7 +177,7 @@ bool PackAndPostMessageHandlingError(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     v8::Local<v8::Value>* error) {
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
 
   // https://streams.spec.whatwg.org/#abstract-opdef-packandpostmessagehandlingerror
   // 1. Let result be PackAndPostMessage(port, type, value).
@@ -825,7 +825,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       auto* isolate = script_state->GetIsolate();
       if (controller) {
         ExceptionState exception_state(script_state->GetIsolate(),
-                                       ExceptionContextType::kUnknown, "", "");
+                                       v8::ExceptionContext::kUnknown, "", "");
         resolver_->Resolve(
             script_state,
             source_->source2_
@@ -853,7 +853,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
               /*high_water_mark=*/0);
 
       ExceptionState exception_state(script_state->GetIsolate(),
-                                     ExceptionContextType::kUnknown, "", "");
+                                     v8::ExceptionContext::kUnknown, "", "");
       dummy_stream->cancel(
           script_state,
           ScriptValue(script_state->GetIsolate(),

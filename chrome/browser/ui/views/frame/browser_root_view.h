@@ -54,13 +54,10 @@ class BrowserRootView : public views::internal::RootView {
     DropTarget(const DropTarget&) = delete;
     DropTarget& operator=(const DropTarget&) = delete;
 
-    // Returns a `DropIndex` for the drop. If multiple items are being dropped,
-    // then `allow_replacement` will be false and the `relative_to_index` value
-    // of the returned `DropIndex` must not be set to `kReplaceIndex`. Return
-    // `nullopt` if it is not possible to drop at this location.
+    // Returns a `DropIndex` for the drop. Returns `nullopt` if it is not
+    // possible to drop at this location.
     virtual std::optional<DropIndex> GetDropIndex(
-        const ui::DropTargetEvent& event,
-        bool allow_replacement) = 0;
+        const ui::DropTargetEvent& event) = 0;
     virtual DropTarget* GetDropTarget(gfx::Point loc_in_local_coords) = 0;
     virtual views::View* GetViewForDrop() = 0;
 
@@ -99,6 +96,7 @@ class BrowserRootView : public views::internal::RootView {
  private:
   friend class BrowserRootViewBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, ClearDropInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserRootViewBrowserTest, DropOrderingCorrect);
 
   // Used during a drop session of a url. Tracks the position of the drop.
   struct DropInfo {
@@ -122,13 +120,10 @@ class BrowserRootView : public views::internal::RootView {
 
   // Converts `event` from the hosts coordinate system to the view's
   // coordinate system, and gets the `DropIndex` for the drop.
-  // `allow_replacement` specifies whether `RelativeToIndex::kReplaceIndex` is a
-  // valid value for the returned `DropIndex::relative_to_index`.
   std::optional<DropIndex> GetDropIndexForEvent(
       const ui::DropTargetEvent& event,
       const ui::OSExchangeData& data,
-      DropTarget* target,
-      bool allow_replacement);
+      DropTarget* target);
 
   DropTarget* GetDropTarget(const ui::DropTargetEvent& event);
 

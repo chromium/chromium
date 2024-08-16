@@ -18,6 +18,7 @@ enum class WatchWithChangeInfoResult {
 };
 
 void RecordWatchWithChangeInfoResultUma(WatchWithChangeInfoResult result);
+void RecordInotifyWatchCountUma(int count);
 
 void RecordCallbackErrorUma(WatchWithChangeInfoResult result);
 

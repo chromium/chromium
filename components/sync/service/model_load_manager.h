@@ -14,7 +14,7 @@
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/configure_context.h"
-#include "components/sync/service/model_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 
 namespace base {
 class ElapsedTimer;
@@ -31,7 +31,7 @@ extern const base::TimeDelta kSyncLoadModelsTimeoutDuration;
 class ModelLoadManagerDelegate {
  public:
   // Called when all desired types are loaded, i.e. are ready to be configured
-  // with ModelTypeConfigurer. A data type is ready when its progress marker is
+  // with DataTypeConfigurer. A data type is ready when its progress marker is
   // available, which is the case once the local model has been loaded.
   // This function is called at most once after each call to
   // ModelLoadManager::Configure().
@@ -42,20 +42,20 @@ class ModelLoadManagerDelegate {
   // error occurred during loading. Can be called for types that are not
   // connected or have already failed but should not be called for the same
   // error multiple times.
-  virtual void OnSingleDataTypeWillStop(ModelType type,
+  virtual void OnSingleDataTypeWillStop(DataType type,
                                         const SyncError& error) = 0;
 
   virtual ~ModelLoadManagerDelegate() = default;
 };
 
-// `ModelLoadManager` instructs ModelTypeControllers to load models and to stop
+// `ModelLoadManager` instructs DataTypeControllers to load models and to stop
 // (DataTypeManager is responsible for activating/deactivating data types).
 // Since the operations are async it uses an interface to inform DataTypeManager
 // of the results of the operations.
 // This class is owned by DataTypeManager, and lives on the UI thread.
 class ModelLoadManager {
  public:
-  ModelLoadManager(const ModelTypeController::TypeMap* controllers,
+  ModelLoadManager(const DataTypeController::TypeMap* controllers,
                    ModelLoadManagerDelegate* delegate);
 
   ModelLoadManager(const ModelLoadManager&) = delete;
@@ -68,8 +68,8 @@ class ModelLoadManager {
   // then kicks off loading of all `preferred_types_without_errors`.
   // `preferred_types_without_errors` must be a subset of `preferred_types`.
   // `preferred_types` contains all types selected by the user.
-  void Configure(ModelTypeSet preferred_types_without_errors,
-                 ModelTypeSet preferred_types,
+  void Configure(DataTypeSet preferred_types_without_errors,
+                 DataTypeSet preferred_types,
                  const ConfigureContext& context);
 
   // Can be called at any time. Synchronously stops all datatypes.
@@ -77,7 +77,7 @@ class ModelLoadManager {
 
   // Stops an individual datatype `type`. `error` must be an actual error (i.e.
   // not UNSET).
-  void StopDatatype(ModelType type,
+  void StopDatatype(DataType type,
                     SyncStopMetadataFate metadata_fate,
                     SyncError error);
 
@@ -88,13 +88,13 @@ class ModelLoadManager {
 
   // Callback that will be invoked when the model for `type` finishes loading.
   // This callback is passed to the controller's `LoadModels` method.
-  void ModelLoadCallback(ModelType type, const SyncError& error);
+  void ModelLoadCallback(DataType type, const SyncError& error);
 
   // A helper to stop an individual datatype.
   void StopDatatypeImpl(const SyncError& error,
                         SyncStopMetadataFate metadata_fate,
-                        ModelTypeController* dtc,
-                        ModelTypeController::StopCallback callback);
+                        DataTypeController* dtc,
+                        DataTypeController::StopCallback callback);
 
   // Calls delegate's OnAllDataTypesReadyForConfigure() if all datatypes from
   // `preferred_types_without_errors_` are loaded. Ensures that
@@ -108,10 +108,10 @@ class ModelLoadManager {
 
   // Loads model for a type using `dtc`. Ensures that LoadModels is only
   // called for types which are not in a FAILED state.
-  void LoadModelsForType(ModelTypeController* dtc);
+  void LoadModelsForType(DataTypeController* dtc);
 
   // Set of all registered controllers.
-  const raw_ptr<const ModelTypeController::TypeMap> controllers_;
+  const raw_ptr<const DataTypeController::TypeMap> controllers_;
 
   // The delegate in charge of handling model load results.
   const raw_ptr<ModelLoadManagerDelegate> delegate_;
@@ -119,7 +119,7 @@ class ModelLoadManager {
   std::optional<ConfigureContext> configure_context_;
 
   // Data types that are enabled.
-  ModelTypeSet preferred_types_without_errors_;
+  DataTypeSet preferred_types_without_errors_;
 
   // Timer to track LoadDesiredTypes() timeout. All types not loaded by now are
   // treated as having errors.

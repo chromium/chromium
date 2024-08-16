@@ -15,8 +15,8 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/model/conflict_resolution.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace sync_pb {
 class PrinterSpecifics;
@@ -26,9 +26,9 @@ namespace ash {
 
 // Moderates interaction with the backing database and integrates with the User
 // Sync Service for printers.
-class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
+class PrintersSyncBridge : public syncer::DataTypeSyncBridge {
  public:
-  PrintersSyncBridge(syncer::OnceModelTypeStoreFactory callback,
+  PrintersSyncBridge(syncer::OnceDataTypeStoreFactory callback,
                      base::RepeatingClosure error_callback);
 
   PrintersSyncBridge(const PrintersSyncBridge&) = delete;
@@ -36,7 +36,7 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~PrintersSyncBridge() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -87,11 +87,11 @@ class PrintersSyncBridge : public syncer::ModelTypeSyncBridge {
   // Stores |specifics| locally in |all_data_| and record change in |batch|.
   // |data_lock_| must be acquired before calling this funciton.
   void StoreSpecifics(std::unique_ptr<sync_pb::PrinterSpecifics> specifics,
-                      syncer::ModelTypeStore::WriteBatch* batch);
+                      syncer::DataTypeStore::WriteBatch* batch);
   // Removes the specific with |id| from |all_data_| and update |batch| with the
   // change. |data_lock_| must be acquired before calling this function.
   bool DeleteSpecifics(const std::string& id,
-                       syncer::ModelTypeStore::WriteBatch* batch);
+                       syncer::DataTypeStore::WriteBatch* batch);
   // Merges the |printer| with an existing |printer| if their ids match.
   // Otherwise, adds the printer.  Returns true if the printer is new.
   // |data_lock_| must be acquired before calling this funciton.

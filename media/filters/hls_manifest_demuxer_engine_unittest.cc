@@ -448,7 +448,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
 
   // Assume that anything appended is valid, because we actually have no valid
   // media for this test.
-  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _, _))
+  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _, _))
       .WillRepeatedly(Return(true));
   BindUrlToDataSource<StringHlsDataSourceStreamFactory>(
       "http://media.example.com/a.ts", "Cheese in a cstring is string cheese.");
@@ -882,7 +882,7 @@ TEST_F(HlsManifestDemuxerEngineTest, TestEndOfStreamAfterAllFetched) {
 
   // The first call to `OnTimeUpdate` should trigger the append function,
   // and our data was 30 characters long.
-  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", base::Seconds(0), _, _,
+  EXPECT_CALL(*mock_mdeh_, AppendAndParseData("primary", _, _,
                                               base::as_byte_span(bitstream)))
       .WillOnce(Return(true));
 

@@ -191,7 +191,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
             tab_strip_->controller(),
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            vector_icons::kAddChromeRefreshIcon);
+            vector_icons::kAddIcon);
     tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
                                           kNewTabButtonElementId);
 

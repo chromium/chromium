@@ -11,7 +11,7 @@
 #include <string_view>
 
 #include "base/hash/hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 
 namespace syncer {
 
@@ -30,8 +30,7 @@ class ClientTagHash {
   };
 
   // Creates ClientTagHash based on |client_tag|.
-  static ClientTagHash FromUnhashed(ModelType type,
-                                    std::string_view client_tag);
+  static ClientTagHash FromUnhashed(DataType type, std::string_view client_tag);
 
   // Creates ClientTagHash from already hashed client tag.
   static ClientTagHash FromHashed(std::string hash_value);

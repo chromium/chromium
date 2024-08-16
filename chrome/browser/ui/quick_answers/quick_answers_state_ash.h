@@ -19,6 +19,8 @@ class SessionController;
 class Shell;
 }  // namespace ash
 
+// TODO(b/340628526): Put this under quick_answers namespace.
+
 // A class that holds Quick Answers related prefs and states.
 class QuickAnswersStateAsh : public ash::SessionObserver,
                              public ash::ShellObserver,

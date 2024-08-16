@@ -109,26 +109,22 @@ TEST_F(OmniboxPositionMetricsTest,
   base::HistogramTester histogram_tester;
 
   // Top default.
-  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/NO, nullptr);
+  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES, nullptr);
   histogram_tester.ExpectBucketCount(
       "IOS.Omnibox.Promo.SelectedPosition.Startup", /* Top default */ 0, 1);
 
   // Bottom default.
-  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/YES,
-                         /*is_first_run=*/NO, nullptr);
+  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/YES, nullptr);
   histogram_tester.ExpectBucketCount(
       "IOS.Omnibox.Promo.SelectedPosition.Startup", /* Bottom default */ 1, 1);
 
   // Top not default.
-  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/NO,
-                         /*is_first_run=*/NO, nullptr);
+  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/NO, nullptr);
   histogram_tester.ExpectBucketCount(
       "IOS.Omnibox.Promo.SelectedPosition.Startup", /* Top not default */ 2, 1);
 
   // Bottom not default.
-  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/NO,
-                         /*is_first_run=*/NO, nullptr);
+  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/NO, nullptr);
   histogram_tester.ExpectBucketCount(
       "IOS.Omnibox.Promo.SelectedPosition.Startup", /* Bottom not default */ 3,
       1);
@@ -150,36 +146,36 @@ TEST_F(OmniboxPositionMetricsTest, SelectedPositionFRENoDeviceSwitcherResult) {
   base::HistogramTester histogram_tester;
 
   // Top default.
-  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/YES, nullptr);
-  histogram_tester.ExpectBucketCount("IOS.Omnibox.Promo.SelectedPosition.FRE",
-                                     /* Top default */ 0, 1);
+  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Omnibox.Promo.SelectedPosition.Startup",
+      /* Top default */ 0, 1);
   // Bottom default.
-  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/YES,
-                         /*is_first_run=*/YES, nullptr);
-  histogram_tester.ExpectBucketCount("IOS.Omnibox.Promo.SelectedPosition.FRE",
-                                     /* Bottom default */ 1, 1);
+  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/YES, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Omnibox.Promo.SelectedPosition.Startup",
+      /* Bottom default */ 1, 1);
   // Top not default.
-  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/NO,
-                         /*is_first_run=*/YES, nullptr);
-  histogram_tester.ExpectBucketCount("IOS.Omnibox.Promo.SelectedPosition.FRE",
-                                     /* Top not default */ 2, 1);
+  RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/NO, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Omnibox.Promo.SelectedPosition.Startup",
+      /* Top not default */ 2, 1);
   // Bottom not default.
-  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/NO,
-                         /*is_first_run=*/YES, nullptr);
-  histogram_tester.ExpectBucketCount("IOS.Omnibox.Promo.SelectedPosition.FRE",
-                                     /* Bottom not default */ 3, 1);
+  RecordSelectedPosition(ToolbarType::kSecondary, /*is_default=*/NO, nullptr);
+  histogram_tester.ExpectBucketCount(
+      "IOS.Omnibox.Promo.SelectedPosition.Startup",
+      /* Bottom not default */ 3, 1);
 
   // These histograms should not be logged when there is no device switcher
   // result.
   histogram_tester.ExpectTotalCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.NotNew", 0);
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.NotNew", 0);
   histogram_tester.ExpectTotalCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.Unavailable", 0);
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.Unavailable", 0);
   histogram_tester.ExpectTotalCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.IsSwitcher", 0);
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.IsSwitcher", 0);
   histogram_tester.ExpectTotalCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.NotSwitcher", 0);
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.NotSwitcher", 0);
 }
 
 // Tests selected position logging with device switcher results.
@@ -194,10 +190,9 @@ TEST_F(OmniboxPositionMetricsTest, SelectedPositionDeviceSwitcherResult) {
 
   // New user without classification result.
   RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/YES,
                          device_switcher_result_dispatcher_.get());
   histogram_tester.ExpectBucketCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.Unavailable",
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.Unavailable",
       /* Top default */ 0, 1);
 
   // Set status to Succeeded for the following tests.
@@ -210,10 +205,9 @@ TEST_F(OmniboxPositionMetricsTest, SelectedPositionDeviceSwitcherResult) {
        segmentation_platform::DeviceSwitcherModel::kSyncedAndFirstDeviceLabel,
        segmentation_platform::DeviceSwitcherModel::kNotSyncedLabel});
   RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/YES,
                          device_switcher_result_dispatcher_.get());
   histogram_tester.ExpectBucketCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.IsSwitcher",
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.IsSwitcher",
       /* Top default */ 0, 1);
 
   // Not Safari switcher.
@@ -221,20 +215,18 @@ TEST_F(OmniboxPositionMetricsTest, SelectedPositionDeviceSwitcherResult) {
       {segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
        segmentation_platform::DeviceSwitcherModel::kIosTabletLabel});
   RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/YES,
                          device_switcher_result_dispatcher_.get());
   histogram_tester.ExpectBucketCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.NotSwitcher",
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.NotSwitcher",
       /* Top default */ 0, 1);
 
   // Not a new user.
   // Force first run recency to a large value.
   ForceFirstRunRecency(100);
   RecordSelectedPosition(ToolbarType::kPrimary, /*is_default=*/YES,
-                         /*is_first_run=*/YES,
                          device_switcher_result_dispatcher_.get());
   histogram_tester.ExpectBucketCount(
-      "IOS.Omnibox.Promo.SelectedPosition.FRE.NotNew",
+      "IOS.Omnibox.Promo.SelectedPosition.Startup.NotNew",
       /* Top default */ 0, 1);
 
   ResetFirstRunSentinel();

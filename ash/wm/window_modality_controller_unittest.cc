@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/wm/core/window_modality_controller.h"
+
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/test/test_child_modal_parent.h"
@@ -13,6 +19,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/capture_tracking_view.h"
@@ -56,7 +63,7 @@ TEST_F(WindowModalityControllerTest, BasicActivation) {
   wm::ActivateWindow(w11.get());
   EXPECT_TRUE(wm::IsActiveWindow(w11.get()));
 
-  w12->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w12->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::AddTransientChild(w1.get(), w12.get());
   wm::ActivateWindow(w12.get());
   EXPECT_TRUE(wm::IsActiveWindow(w12.get()));
@@ -106,8 +113,8 @@ TEST_F(WindowModalityControllerTest, NestedModals) {
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
 
   // Set up modality.
-  w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
-  w111->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
+  w111->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111.get()));
@@ -160,8 +167,8 @@ TEST_F(WindowModalityControllerTest, NestedModalsOuterClosed) {
   EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
 
   // Set up modality.
-  w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
-  w111->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
+  w111->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
   wm::ActivateWindow(w1.get());
   EXPECT_TRUE(wm::IsActiveWindow(w111));
@@ -201,7 +208,7 @@ TEST_F(WindowModalityControllerTest, Events) {
     EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
   }
 
-  w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
   {
     // Clicking a point within w1 should activate w11.
@@ -223,7 +230,7 @@ TEST_F(WindowModalityControllerTest, EventsForEclipsedWindows) {
   std::unique_ptr<aura::Window> w2(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect(0, 0, 50, 50)));
 
-  w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
   // Partially eclipse w1 with w2.
   wm::ActivateWindow(w2.get());
@@ -247,7 +254,7 @@ TEST_F(WindowModalityControllerTest, GetModalTransient) {
       aura::test::CreateTestWindowWithDelegate(&d, -11, gfx::Rect(), w1.get()));
   std::unique_ptr<aura::Window> w2(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
-  w2->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w2->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
 
   aura::Window* wt;
   wt = ::wm::GetModalTransient(w1.get());
@@ -288,7 +295,8 @@ TEST_F(WindowModalityControllerTest, ChangeCapture) {
   views::Widget* modal_widget = views::Widget::CreateWindowWithParent(
       nullptr, widget->GetNativeView(), gfx::Rect(50, 50, 200, 200));
   std::unique_ptr<aura::Window> modal_window(modal_widget->GetNativeView());
-  modal_window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  modal_window->SetProperty(aura::client::kModalKey,
+                            ui::mojom::ModalType::kWindow);
   views::test::CaptureTrackingView* modal_view =
       new views::test::CaptureTrackingView;
   modal_widget->client_view()->AddChildView(modal_view);
@@ -333,7 +341,7 @@ TEST_F(WindowModalityControllerTest, ReleaseCapture) {
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
   std::unique_ptr<aura::Window> w3(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
-  w3->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_CHILD);
+  w3->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kChild);
   ::wm::SetModalParent(w3.get(), w1.get());
 
   // w1's capture should be released when w3 becomes visible.
@@ -451,13 +459,13 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
     d12.reset();
     d2.reset();
 
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
     EXPECT_TRUE(d1.received_touch());
     EXPECT_EQ(ui::EventType::kTouchCancelled, d1.last_event_type());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_FALSE(d12.received_touch());
     EXPECT_FALSE(d2.received_touch());
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 
   {
@@ -473,13 +481,13 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
     d12.reset();
     d2.reset();
 
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
     EXPECT_FALSE(d1.received_touch());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_TRUE(d12.received_touch());
     EXPECT_EQ(ui::EventType::kTouchCancelled, d12.last_event_type());
     EXPECT_FALSE(d2.received_touch());
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 
   {
@@ -496,12 +504,12 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
     d12.reset();
     d2.reset();
 
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
     EXPECT_FALSE(d1.received_touch());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_FALSE(d12.received_touch());
     EXPECT_FALSE(d2.received_touch());
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 
   {
@@ -519,12 +527,12 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
     d12.reset();
     d2.reset();
 
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_CHILD);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kChild);
     EXPECT_FALSE(d1.received_touch());
     EXPECT_FALSE(d11.received_touch());
     EXPECT_FALSE(d12.received_touch());
     EXPECT_FALSE(d2.received_touch());
-    w11->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+    w11->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 }
 
@@ -676,7 +684,7 @@ TEST_F(WindowModalityControllerTest, WindowModalAncestor) {
       aura::test::CreateTestWindowWithDelegate(&d, -11, gfx::Rect(), w2.get()));
   std::unique_ptr<aura::Window> w4(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
-  w4->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
+  w4->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
   ::wm::AddTransientChild(w1.get(), w4.get());
 
   wm::ActivateWindow(w1.get());
@@ -704,7 +712,7 @@ TEST_F(WindowModalityControllerTest, ChildModalAncestor) {
       aura::test::CreateTestWindowWithDelegate(&d, -11, gfx::Rect(), w2.get()));
   std::unique_ptr<aura::Window> w4(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
-  w4->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_CHILD);
+  w4->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kChild);
   ::wm::SetModalParent(w4.get(), w2.get());
   ::wm::AddTransientChild(w1.get(), w4.get());
 

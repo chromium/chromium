@@ -14,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  * in //components/feature_engagement/public/feature_constants.h.
  */
 @StringDef({
+    FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_SHARE_FEATURE,
     FeatureConstants.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE,
@@ -122,6 +123,7 @@ public @interface FeatureConstants {
     String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_READ_ALOUD_FEATURE =
             "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud";
     String ADD_TO_HOMESCREEN_MESSAGE_FEATURE = "IPH_AddToHomescreenMessage";
+    String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
     String APP_SPECIFIC_HISTORY_FEATURE = "IPH_AppSpecificHistory";
     String AUTO_DARK_OPT_OUT_FEATURE = "IPH_AutoDarkOptOut";
     String AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE = "IPH_AutoDarkUserEducationMessage";
@@ -147,6 +149,8 @@ public @interface FeatureConstants {
     String KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE = "IPH_KeyboardAccessoryPaymentFilling";
     String KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE = "IPH_KeyboardAccessoryPaymentOffer";
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
+    String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_DISABLED_FEATURE =
+            "IPH_AutofillDisabledVirtualCardSuggestion";
     String KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION = "IPH_PlusAddressCreateSuggestion";
     String KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE =
             "IPH_AutofillExternalAccountProfileSuggestion";

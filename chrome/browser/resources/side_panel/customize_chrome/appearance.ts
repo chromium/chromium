@@ -318,7 +318,7 @@ export class AppearanceElement extends AppearanceElementBase {
   }
 
   protected onNewTabPageManageByButtonClicked_() {
-    this.pageHandler_.openSettingsSearchEnginePage();
+    this.pageHandler_.openNtpManagedByPage();
   }
 
   private handleClickForManagedThemes_(): boolean {

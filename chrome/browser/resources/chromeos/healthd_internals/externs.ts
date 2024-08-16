@@ -66,6 +66,17 @@ export interface HealthdApiMemoryResult {
   availableMemoryKib: string;
   freeMemoryKib: string;
   totalMemoryKib: string;
+  buffersKib?: string;
+  pageCacheKib?: string;
+  sharedMemoryKib?: string;
+  activeMemoryKib?: string;
+  inactiveMemoryKib?: string;
+  totalSwapMemoryKib?: string;
+  freeSwapMemoryKib?: string;
+  cachedSwapMemoryKib?: string;
+  totalSlabMemoryKib?: string;
+  reclaimableSlabMemoryKib?: string;
+  unreclaimableSlabMemoryKib?: string;
 }
 
 /**

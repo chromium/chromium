@@ -1061,7 +1061,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
   *os << "Waiting for server-side bookmarks to match expected.";
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+      fake_server()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
   if (expected_bookmarks_.size() != entities.size()) {
     return false;
   }
@@ -1310,7 +1310,7 @@ std::map<std::string, sync_pb::SyncEntity>
 BookmarkModelMatchesFakeServerChecker::
     GetServerPermanentBookmarksGroupedBySyncId() const {
   const std::vector<sync_pb::SyncEntity> server_permanent_bookmarks =
-      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::BOOKMARKS);
+      fake_server_->GetPermanentSyncEntitiesByDataType(syncer::BOOKMARKS);
   std::map<std::string, sync_pb::SyncEntity> permanent_nodes_by_server_id;
   for (const sync_pb::SyncEntity& entity : server_permanent_bookmarks) {
     DCHECK(!entity.server_defined_unique_tag().empty());
@@ -1322,7 +1322,7 @@ BookmarkModelMatchesFakeServerChecker::
 bool BookmarkModelMatchesFakeServerChecker::GetServerBookmarksByUniqueUuid(
     std::map<base::Uuid, sync_pb::SyncEntity>* server_bookmarks_by_uuid) const {
   const std::vector<sync_pb::SyncEntity> server_bookmarks =
-      fake_server_->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+      fake_server_->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
   for (const sync_pb::SyncEntity& entity : server_bookmarks) {
     // Skip permanent nodes.
     if (!entity.server_defined_unique_tag().empty()) {

@@ -311,11 +311,13 @@ def make_factory_methods(cg_context):
     if not dictionary.has_required_member:
         body.append(
             CxxLikelyIfNode(cond="${v8_value}->IsNullOrUndefined()",
+                            attribute=None,
                             body=T("return dictionary;")))
     # [PermissiveDictionaryConversion]
     if "PermissiveDictionaryConversion" in dictionary.extended_attributes:
         body.append(
             CxxUnlikelyIfNode(cond="!${v8_value}->IsObject()",
+                              attribute=None,
                               body=[
                                   T("// [PermissiveDictionaryConversion]"),
                                   T("return dictionary;"),
@@ -323,6 +325,7 @@ def make_factory_methods(cg_context):
     else:
         body.append(
             CxxUnlikelyIfNode(cond="!${v8_value}->IsObject()",
+                              attribute=None,
                               body=[
                                   T("${exception_state}.ThrowTypeError("
                                     "ExceptionMessages::ValueNotOfType("
@@ -332,7 +335,8 @@ def make_factory_methods(cg_context):
     body.extend([
         T("dictionary->FillMembersFromV8Object("
           "${isolate}, ${v8_value}.As<v8::Object>(), ${exception_state});"),
-        CxxUnlikelyIfNode(cond="UNLIKELY(${exception_state}.HadException())",
+        CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                          attribute="[[unlikely]]",
                           body=T("return nullptr;")),
         T("return dictionary;"),
     ])
@@ -427,6 +431,7 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -445,6 +450,7 @@ def make_accessor_functions(cg_context):
         copy_func_def.set_base_template_vars(cg_context.template_bindings())
         copy_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -459,6 +465,7 @@ def make_accessor_functions(cg_context):
         move_func_def.set_base_template_vars(cg_context.template_bindings())
         move_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return std::move(fallback_value);")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -483,6 +490,7 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
+                              attribute=None,
                               body=T("return fallback_value;")),
             F("return {};",
               member.type_info.member_var_to_ref_expr(member.value_var)),
@@ -843,6 +851,7 @@ def make_fill_values_impl_function(cg_context):
             index=index)
 
         node = CxxLikelyIfNode(cond="{}()".format(member.api_has),
+                               attribute=None,
                                body=[
                                    convert_property,
                                    F("DCHECK(!values[{index}].IsEmpty());",
@@ -851,7 +860,9 @@ def make_fill_values_impl_function(cg_context):
 
         exposure_conditional = expr_from_exposure(member.exposure)
         if not exposure_conditional.is_always_true:
-            node = CxxLikelyIfNode(cond=exposure_conditional, body=node)
+            node = CxxLikelyIfNode(cond=exposure_conditional,
+                                   attribute=None,
+                                   body=node)
             node.accumulate(
                 CodeGenAccumulator.require_include_headers([
                     "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -906,24 +917,25 @@ def make_v8_to_blink_function(cg_context):
         S("exception_context_scope",
           ("ExceptionState::ContextScope ${exception_context_scope}("
            "ExceptionContext("
-           "ExceptionContextType::kDictionaryMemberGet, "
+           "v8::ExceptionContext::kAttributeGet, "
            "${class_like_name}, \"\"), "
            "${exception_state});")),
         S("fallback_presence_var", "bool ${fallback_presence_var};"),
         S("has_deprecated", "bool ${has_deprecated};"),
         S("is_optional", "constexpr bool ${is_optional} = false;"),
         S("is_required", "constexpr bool ${is_required} = true;"),
-        S("try_block", "v8::TryCatch ${try_block}(${isolate});"),
     ])
     bind_local_vars(body, cg_context)
 
+    body.append(
+        T("TryRethrowScope rethrow_scope(${isolate}, ${exception_state});"))
     if cg_context.dictionary.inherited:
         body.extend([
             T("${base_class_name}::FillMembersFromV8Object"
               "(${isolate}, ${v8_dictionary}, ${exception_state});"),
-            CxxUnlikelyIfNode(
-                cond="UNLIKELY(${exception_state}.HadException())",
-                body=T("return;")),
+            CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
+                              attribute="[[unlikely]]",
+                              body=T("return;")),
             EmptyNode(),
         ])
 
@@ -935,7 +947,7 @@ def make_v8_to_blink_function(cg_context):
             "${v8_dictionary}, "
             "${v8_own_member_names}[{index}].Get(${isolate}), "
             "{presence_var}, {value_var}, "
-            "${try_block}, ${exception_state})",
+            "${exception_state})",
             native_value_tag=native_value_tag(member.idl_type),
             is_required=("${is_required}"
                          if member.is_required else "${is_optional}"),
@@ -947,7 +959,7 @@ def make_v8_to_blink_function(cg_context):
             F(("${exception_context_scope}"
                ".ChangePropertyNameAsOptimizationHack(\"{member_name}\");"),
               member_name=member.identifier),
-            CxxUnlikelyIfNode(cond=cond, body=T("return;")),
+            CxxUnlikelyIfNode(cond=cond, attribute=None, body=T("return;")),
         ])
 
         # [DeprecateAs]
@@ -961,8 +973,10 @@ def make_v8_to_blink_function(cg_context):
                     "${v8_own_member_names}[{index}].Get(${isolate}))"
                     ".To(&${has_deprecated})",
                     index=index),
+                                  attribute=None,
                                   body=T("return;")),
                 CxxUnlikelyIfNode(cond="${has_deprecated}",
+                                  attribute=None,
                                   body=F(("Deprecation::CountDeprecation("
                                           "${execution_context}, "
                                           "WebFeature::k{deprecate_as});"),
@@ -975,7 +989,7 @@ def make_v8_to_blink_function(cg_context):
 
         conditional = expr_from_exposure(member.exposure)
         if not conditional.is_always_true:
-            node = CxxLikelyIfNode(cond=conditional, body=node)
+            node = CxxLikelyIfNode(cond=conditional, attribute=None, body=node)
             node.accumulate(
                 CodeGenAccumulator.require_include_headers([
                     "third_party/blink/renderer/platform/runtime_enabled_features.h"

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<style>
+  body a {
+    position: absolute;
+    height: 50px;
+    width: 100px;
+  }
+
+  #e1 {
+    left: 10px;
+    top: 200px;
+  }
+
+  #e2 {
+    left: 10px;
+    top: 300px;
+    z-index: 2;
+    background-color: gold;
+  }
+
+  #e3 {
+    left: 10px;
+    top: 300px;
+    height: 100px;
+    width: 100px;
+    z-index: 1;
+    background-color: skyblue;
+  }
+
+  #e4 {
+    left: 10px;
+    top: 450px;
+  }
+
+  #e5 {
+    left: 200px;
+    top: 450px;
+    z-index: 2;
+    background-color: gold;
+  }
+
+  #e6 {
+    left: 200px;
+    top: 450px;
+    width: 200px;
+    z-index: 1;
+    background-color: skyblue;
+  }
+
+  #e7 {
+    left: 500px;
+    top: 450px;
+  }
+</style>
+
+<p>
+This test ensures that Spatial Navigation works with contained elements which have same distance.
+</p>
+
+<div id="elements">
+  <!-- Vertical: -->
+  <a id="e1" href="#e1">Element 1</a>
+  <a id="e2" href="#e2">Element 2</a>
+  <a id="e3" href="#e3">Element 3</a>
+
+  <!-- Horizontal: -->
+  <a id="e4" href="#e4">Element 4</a>
+  <a id="e5" href="#e5">Element 5</a>
+  <a id="e6" href="#e6">Element 6</a>
+  <a id="e7" href="#e7">Element 7</a>
+</div>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script type="application/javascript">
+  var resultMap = [
+    // Vertical Down:
+    ["Down", "e3"],
+    ["Down", "e2"],
+    ["Down", "e4"],
+    // Horizontal Right:
+    ["Right", "e6"],
+    ["Right", "e5"],
+    ["Right", "e7"],
+    // Horizontal Left:
+    ["Left", "e6"],
+    ["Left", "e5"],
+    ["Left", "e4"],
+    // Vertical Up:
+    ["Up", "e3"],
+    ["Up", "e2"],
+    ["Up", "e1"]
+  ];
+
+  // starting the test itself: get to a known place.
+  document.getElementById("e1").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

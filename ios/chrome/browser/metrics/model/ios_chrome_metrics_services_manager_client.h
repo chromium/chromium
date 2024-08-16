@@ -8,7 +8,7 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 
 class PrefService;
@@ -65,8 +65,8 @@ class IOSChromeMetricsServicesManagerClient
   // reporting, and if it's enabled.
   std::unique_ptr<metrics::EnabledStateProvider> enabled_state_provider_;
 
-  // Ensures that all functions are called from the same thread.
-  base::ThreadChecker thread_checker_;
+  // Ensures that all functions are called from the same sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointer to the local state prefs store.
   raw_ptr<PrefService> local_state_;

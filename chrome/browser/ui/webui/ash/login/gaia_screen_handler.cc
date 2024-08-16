@@ -862,6 +862,22 @@ void GaiaScreenHandler::RecordCompleteAuthenticationMetrics(
                                   elapsed_timer_->Elapsed());
     elapsed_timer_.reset();
   }
+
+  // Record whether password or passwordless login is used, when the user is on
+  // an unmanaged device and passwordless login is allowed. Note that managed
+  // users on unmanaged device are included in the metric although they do not
+  // have the option for passwordless login at the moment; and the consumer
+  // users on managed device are excluded in the metric although they could have
+  // the option for passwordless login.
+  const bool is_enterprise_managed = g_browser_process->platform_part()
+                                         ->browser_policy_connector_ash()
+                                         ->IsDeviceEnterpriseManaged();
+  if (features::IsPasswordlessGaiaEnabledForConsumers() &&
+      !is_gaia_password_required_ && !is_enterprise_managed) {
+    base::UmaHistogramBoolean(
+        "OOBE.GaiaScreen.PasswordlessLoginRequests",
+        signin_artifacts.password.value_or(std::string()).empty());
+  }
 }
 
 void GaiaScreenHandler::CompleteAuthentication(
@@ -924,14 +940,7 @@ void GaiaScreenHandler::CompleteAuthentication(
       signin_artifacts.using_saml && !signin_artifacts.password.has_value() &&
       !signin_artifacts.challenge_response_key.has_value();
 
-  bool need_password_gaia =
-      !signin_artifacts.using_saml &&
-      signin_artifacts.password.value_or(std::string()).empty() &&
-      !ash::features::AreLocalPasswordsEnabledForConsumers();
-  const bool needs_saml_confirm_password =
-      confirm_saml_password || need_password_gaia;
-
-  if (needs_saml_confirm_password) {
+  if (confirm_saml_password) {
     auto scraped_saml_passwords =
         signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});
     CHECK_NE(scraped_saml_passwords.size(), 1u);

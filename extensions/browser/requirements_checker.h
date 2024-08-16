@@ -38,9 +38,6 @@ class RequirementsChecker : public PreloadCheck {
   // Callback for the GpuFeatureChecker.
   void VerifyWebGLAvailability(bool available);
 
-  // Helper function to post a task on the UI thread to call RunCallback().
-  void PostRunCallback();
-
   // Helper function to run the callback.
   void RunCallback();
 

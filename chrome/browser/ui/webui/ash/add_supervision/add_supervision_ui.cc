@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 
 #include <memory>
@@ -31,6 +36,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -117,8 +123,8 @@ void AddSupervisionDialog::CloseNowForTesting() {
   }
 }
 
-ui::ModalType AddSupervisionDialog::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_WINDOW;
+ui::mojom::ModalType AddSupervisionDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kWindow;
 }
 
 void AddSupervisionDialog::GetDialogSize(gfx::Size* size) const {

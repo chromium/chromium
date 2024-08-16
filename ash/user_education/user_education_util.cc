@@ -19,10 +19,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_education/common/events.h"
 #include "components/user_education/common/help_bubble.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -57,6 +59,12 @@ const AccountId& GetPrimaryAccountId() {
   return session_controller
              ? GetAccountId(session_controller->GetPrimaryUserSession())
              : EmptyAccountId();
+}
+
+PrefService* GetPrimaryUserPrefService() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return session_controller ? session_controller->GetPrimaryUserPrefService()
+                            : nullptr;
 }
 
 aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
@@ -103,7 +111,7 @@ user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
 }
 
 user_education::HelpBubbleParams::ExtendedProperties CreateExtendedProperties(
-    ui::ModalType modal_type) {
+    ui::mojom::ModalType modal_type) {
   user_education::HelpBubbleParams::ExtendedProperties extended_properties;
   extended_properties.values().Set(kHelpBubbleModalTypeKey,
                                    static_cast<int>(modal_type));
@@ -171,14 +179,21 @@ HelpBubbleId GetHelpBubbleId(
       extended_properties.values().FindInt(kHelpBubbleIdKey).value());
 }
 
-ui::ModalType GetHelpBubbleModalType(
+ui::mojom::ModalType GetHelpBubbleModalType(
     const user_education::HelpBubbleParams::ExtendedProperties&
         extended_properties) {
   if (const std::optional<int> model_type =
           extended_properties.values().FindInt(kHelpBubbleModalTypeKey)) {
-    return static_cast<ui::ModalType>(model_type.value());
+    return static_cast<ui::mojom::ModalType>(model_type.value());
   }
-  return ui::MODAL_TYPE_NONE;
+  return ui::mojom::ModalType::kNone;
+}
+
+PrefService* GetLastActiveUserPrefService() {
+  return Shell::HasInstance() ? Shell::Get()
+                                    ->session_controller()
+                                    ->GetLastActiveUserPrefService()
+                              : nullptr;
 }
 
 views::View* GetMatchingViewInRootWindow(int64_t display_id,
@@ -232,6 +247,11 @@ bool IsPrimaryAccountActive() {
   return IsPrimaryAccountId(GetActiveAccountId(session_controller)) &&
          GetSessionState(session_controller) ==
              session_manager::SessionState::ACTIVE;
+}
+
+bool IsPrimaryAccountPrefServiceActive() {
+  const auto* pref_service = GetPrimaryUserPrefService();
+  return pref_service && pref_service == GetLastActiveUserPrefService();
 }
 
 bool IsPrimaryAccountId(const AccountId& account_id) {

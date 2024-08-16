@@ -48,6 +48,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -115,6 +116,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private Tracker mTracker;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -192,6 +194,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mScrimCoordinator,
                         mModalDialogManager,
                         mBottomSheetController,
+                        mDataSharingTabManager,
                         mMessageManager,
                         mContainerView,
                         mResetHandler,

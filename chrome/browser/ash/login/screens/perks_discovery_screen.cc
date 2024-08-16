@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/perks_discovery_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +19,54 @@ namespace {
 
 constexpr const char kUserActionFinish[] = "finished";
 constexpr const char kUserActionLoaded[] = "loaded";
+
+// Current max amount of perks we should get from the server.
+constexpr const int kMaxPerksFetched = 10;
+
+void RecordUmaSelectedPerksCount(int selected_perks_count) {
+  base::UmaHistogramCustomCounts("OOBE.PerksDiscoveryScreen.SelectedPerksCount",
+                                 selected_perks_count,
+                                 /*min=*/0,
+                                 /*exclusive_max=*/kMaxPerksFetched + 1,
+                                 /*buckets=*/kMaxPerksFetched + 1);
+}
+
+void RecordUmaSelectedPerksPercentage(int selected_perks_percentage) {
+  base::UmaHistogramPercentage(
+      "OOBE.PerksDiscoveryScreen.SelectedPerksPercentage",
+      selected_perks_percentage);
+}
+
+void RecordUmaSelectedPerk(const std::string& perk_id, bool selected) {
+  base::UmaHistogramBoolean("OOBE.PerksDiscoveryScreen.Selected." + perk_id,
+                            selected);
+}
+
+void RecordPerksUmaHistograms(
+    const std::vector<SinglePerkDiscoveryPayload>& perks,
+    const base::Value::List& selected_perks) {
+  size_t selected_perks_count = selected_perks.size();
+  size_t total_perks_count = perks.size();
+
+  RecordUmaSelectedPerksCount(selected_perks_count);
+  RecordUmaSelectedPerksPercentage(
+      (total_perks_count > 0) ? (100 * selected_perks_count / total_perks_count)
+                              : 0);
+
+  for (const auto& perk : perks) {
+    auto it = std::find_if(selected_perks.cbegin(), selected_perks.cend(),
+                           [&](const base::Value& selected_perk) {
+                             return selected_perk.GetString() == perk.id;
+                           });
+    RecordUmaSelectedPerk(perk.id, it != selected_perks.cend());
+  }
+}
+
+void RecordPerksErrorReasonUmaHistogram(
+    PerksDiscoveryScreen::PerksDiscoveryErrorReason error_reason) {
+  base::UmaHistogramEnumeration("OOBE.PerksDiscoveryScreen.ErrorReason",
+                                error_reason);
+}
 
 bool CheckPayloadFormat(const growth::Payload* payload) {
   const base::Value::List* perks = payload->FindList("perks");
@@ -83,6 +132,9 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
         *oobe_content->FindStringByDottedPath("illustration.height");
     content.illustration = perk_illustration;
   }
+  if (perk_data.FindString("additionalText")) {
+    additional_text = *perk_data.FindString("additionalText");
+  }
 }
 
 SinglePerkDiscoveryPayload::~SinglePerkDiscoveryPayload() = default;
@@ -92,6 +144,7 @@ SinglePerkDiscoveryPayload::SinglePerkDiscoveryPayload(
     : id(perk_data.id),
       title(perk_data.title),
       subtitle(perk_data.subtitle),
+      additional_text(perk_data.additional_text),
       icon_url(perk_data.icon_url),
       content(perk_data.content),
       primary_button(perk_data.primary_button.Clone()),
@@ -162,6 +215,7 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
   if (!campaign) {
     LOG(ERROR) << "Campaign object is null. Failed to retrieve campaign for "
                   "slot kOobePerkDiscovery.";
+    RecordPerksErrorReasonUmaHistogram(PerksDiscoveryErrorReason::kNoCampaign);
     exit_callback_.Run(Result::kError);
     return;
   }
@@ -170,6 +224,8 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
     LOG(ERROR) << "Invalid: Missing campaign id.";
     // campaign_id is mandatory to forward the user action to the
     // campaign_manager.
+    RecordPerksErrorReasonUmaHistogram(
+        PerksDiscoveryErrorReason::kNoCampaignID);
     exit_callback_.Run(Result::kError);
     return;
   }
@@ -180,6 +236,7 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
   if (!payload) {
     LOG(ERROR) << "Payload object is null. Failed to retrieve payload for "
                   "campaign and slot kOobePerkDiscovery.";
+    RecordPerksErrorReasonUmaHistogram(PerksDiscoveryErrorReason::kNoPayload);
     exit_callback_.Run(Result::kError);
     return;
   }
@@ -192,6 +249,8 @@ void PerksDiscoveryScreen::GetOobePerksPayloadAndShow() {
   }
 
   LOG(WARNING) << "Payload parsing error. Unable to extract required information.";
+  RecordPerksErrorReasonUmaHistogram(
+      PerksDiscoveryErrorReason::kMalformedPayload);
   exit_callback_.Run(Result::kError);
 }
 
@@ -209,9 +268,23 @@ void PerksDiscoveryScreen::ShowImpl() {
   if (!campaigns_manager) {
     LOG(ERROR) << "CampaignsManager object is null. Failed to retrieve "
                   "CampaignsManager instance.";
+    RecordPerksErrorReasonUmaHistogram(
+        PerksDiscoveryErrorReason::kNoCampaignManager);
     exit_callback_.Run(Result::kError);
     return;
   }
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    LOG(ERROR)
+        << "Profile object is null. Failed to retrieve profile instance.";
+    RecordPerksErrorReasonUmaHistogram(
+        PerksDiscoveryErrorReason::kNoUserProfile);
+    exit_callback_.Run(Result::kError);
+    return;
+  }
+  campaigns_manager->SetPrefs(profile->GetPrefs());
+
   campaigns_manager->LoadCampaigns(
       base::BindOnce(&PerksDiscoveryScreen::GetOobePerksPayloadAndShow,
                      weak_factory_.GetWeakPtr()) , true);
@@ -267,18 +340,22 @@ void PerksDiscoveryScreen::OnPerksSelectionFinished(
         << "Failed to find perk " << perk_selected.GetString();
     PerformButtonAction(perk->primary_button);
   }
+
+  RecordPerksUmaHistograms(perks_data_, selected_perks);
 }
 
 void PerksDiscoveryScreen::PerformButtonAction(
     const base::Value::Dict& button_data) {
   if (!button_data.FindDict("action")) {
-    // TODO(b/347181006) Record error metrics.
+    RecordPerksErrorReasonUmaHistogram(
+        PerksDiscoveryErrorReason::kNoActionFound);
     return;
   }
   const growth::Action action = growth::Action(button_data.FindDict("action"));
   auto* campaigns_manager = growth::CampaignsManager::Get();
   if (!campaigns_manager) {
-    // TODO(b/347181006) Record error metrics.
+    RecordPerksErrorReasonUmaHistogram(
+        PerksDiscoveryErrorReason::kNoCampaignManager);
     return;
   }
   campaigns_manager->PerformAction(campaign_id_, group_id_, &action);

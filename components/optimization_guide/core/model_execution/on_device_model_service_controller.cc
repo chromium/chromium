@@ -67,6 +67,25 @@ proto::OnDeviceModelVersions GetModelVersions(
   return versions;
 }
 
+const auto& GetTokenLimits() {
+  // TODO(b/302402959): Choose max_tokens based on device.
+  static const TokenLimits token_limits = []() {
+    auto context =
+        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForContext());
+    auto execute =
+        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForExecute());
+    auto output =
+        static_cast<uint32_t>(features::GetOnDeviceModelMaxTokensForOutput());
+    return TokenLimits{
+        .max_tokens = (context + execute + output),
+        .max_context_tokens = context,
+        .max_execute_tokens = execute,
+        .max_output_tokens = output,
+    };
+  }();
+  return token_limits;
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -202,6 +221,7 @@ OnDeviceModelServiceController::CreateSession(
       *model_metadata_, safety_model_info_.get(), adaptation_version);
   opts.adapter = std::move(adapter);
   opts.safety_cfg = SafetyConfig(safety_config);
+  opts.token_limits = GetTokenLimits();
 
   has_started_session_ = true;
   return std::make_unique<SessionImpl>(
@@ -281,13 +301,9 @@ void OnDeviceModelServiceController::OnModelAssetsLoaded(
                                base::DoNothingWithBoundArgs(std::move(assets)));
     return;
   }
-  // TODO(b/302402959): Choose max_tokens based on device.
-  int max_tokens = features::GetOnDeviceModelMaxTokensForContext() +
-                   features::GetOnDeviceModelMaxTokensForExecute() +
-                   features::GetOnDeviceModelMaxTokensForOutput();
   auto params = on_device_model::mojom::LoadModelParams::New();
   params->assets = std::move(assets);
-  params->max_tokens = max_tokens;
+  params->max_tokens = GetTokenLimits().max_tokens;
   if (safety_model_info_) {
     params->ts_dimension = safety_model_info_->num_output_categories();
   }

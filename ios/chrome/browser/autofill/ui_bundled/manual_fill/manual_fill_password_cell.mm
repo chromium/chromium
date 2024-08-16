@@ -178,9 +178,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
 @end
 
 @implementation ManualFillPasswordCell {
-  // If `YES`, autofill button is shown for the cell.
-  BOOL _showAutofillFormButton;
-
   // If `YES`, the user should be asked to re-authenticate before autofilling
   // the entire form.
   BOOL _shouldReauthToAutofill;
@@ -221,7 +218,6 @@ static const CGFloat kOffsetForConnectedCell = 16;
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton
          shouldReauthToAutofill:(BOOL)shouldReauthToAutofill {
-  _showAutofillFormButton = showAutofillFormButton;
   _shouldReauthToAutofill = shouldReauthToAutofill;
 
   if (self.contentView.subviews.count == 0) {
@@ -244,9 +240,12 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.siteNameLabel.attributedText = attributedText;
     if (IsKeyboardAccessoryUpgradeEnabled()) {
       self.siteNameLabel.numberOfLines = 0;
-      self.accessibilityLabel =
+      NSString* accessibilityLabel =
           [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
                                      attributedText.string];
+      GiveAccessibilityContextToCellAndButton(
+          self.contentView, self.overflowMenuButton, self.autofillFormButton,
+          accessibilityLabel);
     }
     self.siteNameLabel.hidden = NO;
     self.faviconView.hidden = NO;
@@ -310,10 +309,14 @@ static const CGFloat kOffsetForConnectedCell = 16;
     self.grayLine.hidden = YES;
   }
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
+  if (showAutofillFormButton) {
+    CHECK(IsKeyboardAccessoryUpgradeEnabled());
     AddViewToVerticalLeadViews(self.autofillFormButton,
                                ManualFillCellView::ElementType::kOther,
                                verticalLeadViews);
+    self.autofillFormButton.hidden = NO;
+  } else {
+    self.autofillFormButton.hidden = YES;
   }
 
   // Set and activate constraints.
@@ -343,6 +346,14 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
 // Creates and sets up the view hierarchy.
 - (void)createViewHierarchy {
+  // Holds the views that should be accessible. The ordering in which views are
+  // added to this array will reflect the order followed by VoiceOver. When the
+  // Keyboard Accessory Upgrade feature is enabled, subviews that need to be
+  // read by VoiceOver must be added to this array. Otherwise, they will be
+  // ignored.
+  NSMutableArray<UIView*>* accessibilityElements =
+      [[NSMutableArray alloc] initWithObjects:self.contentView, nil];
+
   self.layoutGuide =
       AddLayoutGuideToContentView(self.contentView, /*cell_has_header=*/YES);
 
@@ -368,6 +379,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
   self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
                                      self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
+  [accessibilityElements addObject:self.overflowMenuButton];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
                                       self.layoutGuide);
 
@@ -376,6 +388,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
   self.usernameButton = CreateChipWithSelectorAndTarget(
       @selector(userDidTapUsernameButton:), self);
   [self.contentView addSubview:self.usernameButton];
+  [accessibilityElements addObject:self.usernameButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.usernameButton ], self.layoutGuide,
       kChipsHorizontalMargin,
@@ -384,22 +397,24 @@ static const CGFloat kOffsetForConnectedCell = 16;
   self.passwordButton = CreateChipWithSelectorAndTarget(
       @selector(userDidTapPasswordButton:), self);
   [self.contentView addSubview:self.passwordButton];
+  [accessibilityElements addObject:self.passwordButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.passwordButton ], self.layoutGuide,
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  if (ShouldCreateAutofillFormButton(_showAutofillFormButton)) {
     self.autofillFormButton = CreateAutofillFormButton();
     [self.contentView addSubview:self.autofillFormButton];
     [self.autofillFormButton addTarget:self
                                 action:@selector(onAutofillFormButtonTapped)
                       forControlEvents:UIControlEventTouchUpInside];
+    [accessibilityElements addObject:self.autofillFormButton];
     AppendHorizontalConstraintsForViews(
         staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
-  }
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
+
+  SetUpCellAccessibilityElements(self, accessibilityElements);
 }
 
 - (void)userDidTapUsernameButton:(UIButton*)button {

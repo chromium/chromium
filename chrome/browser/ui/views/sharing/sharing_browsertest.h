@@ -60,7 +60,7 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
       CommitFinishedCallback on_commit_callback) override;
 
   // SharingMessageBridge:
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   const sync_pb::SharingMessageSpecifics& specifics() const {

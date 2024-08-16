@@ -93,9 +93,7 @@ export class PhotoModeAutoScanner {
   start(): void {
     // TODO(b/311592341): Show the object closer to the center of preview when
     // both scanners detect objects at the same time.
-    if (getChromeFlag(Flag.AUTO_QR)) {
-      this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
-    }
+    this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
     if (getChromeFlag(Flag.PREVIEW_OCR)) {
       this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL);
     }

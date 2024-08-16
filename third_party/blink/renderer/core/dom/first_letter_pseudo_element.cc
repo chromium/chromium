@@ -426,7 +426,7 @@ void FirstLetterPseudoElement::DetachLayoutTree(bool performing_reattach) {
 
 LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
     const ComputedStyle& style) {
-  if (UNLIKELY(!style.InitialLetter().IsNormal())) {
+  if (!style.InitialLetter().IsNormal()) [[unlikely]] {
     return LayoutObject::CreateBlockFlowOrListItem(this, style);
   }
 
@@ -508,7 +508,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
   LayoutTextFragment* letter = LayoutTextFragment::CreateAnonymous(
       GetDocument(), old_text.Impl(), 0, length);
   letter->SetFirstLetterPseudoElement(this);
-  if (UNLIKELY(GetLayoutObject()->IsInitialLetterBox())) {
+  if (GetLayoutObject()->IsInitialLetterBox()) [[unlikely]] {
     const LayoutBlock& paragraph = *GetLayoutObject()->ContainingBlock();
     // TODO(crbug.com/1393280): Once we can store used font somewhere, we should
     // compute initial-letter font during layout to take proper effective style.

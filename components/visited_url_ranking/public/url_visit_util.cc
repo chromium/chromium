@@ -93,6 +93,14 @@ CreateDefaultURLDeduplicationHelper() {
     strategy.update_scheme = true;
   }
 
+  if (features::kVisitedURLRankingDeduplicationClearPath.Get()) {
+    strategy.clear_path = true;
+  }
+
+  if (features::kVisitedURLRankingDeduplicationIncludeTitle.Get()) {
+    strategy.include_title = true;
+  }
+
   auto prefix_list = base::SplitString(
       features::kVisitedURLRankingDeduplicationExcludedPrefixes.Get(), ",:;",
       base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -110,11 +118,17 @@ CreateDefaultURLDeduplicationHelper() {
 
 URLMergeKey ComputeURLMergeKey(
     const GURL& url,
+    const std::u16string& title,
     url_deduplication::URLDeduplicationHelper* deduplication_helper) {
-  if (!deduplication_helper) {
-    return url.spec();
+  if (deduplication_helper) {
+    auto key = deduplication_helper->ComputeURLDeduplicationKey(
+        url, base::UTF16ToUTF8(title));
+    DCHECK(!key.empty());
+    return key;
   }
-  return deduplication_helper->ComputeURLDeduplicationKey(url);
+
+  // Default to using the original URL as the URL deduplication / merge key.
+  return url.spec();
 }
 
 scoped_refptr<InputContext> AsInputContext(
@@ -245,6 +259,18 @@ scoped_refptr<InputContext> AsInputContext(
             url_visit_aggregate.metrics_signals.end()) {
           value = ProcessedValue::FromFloat(
               url_visit_aggregate.metrics_signals.at(field_schema.name));
+        }
+        break;
+      case kSameTimeGroupVisitCount:
+        if (history_data) {
+          value = ProcessedValue::FromFloat(
+              history_data->same_time_group_visit_count);
+        }
+        break;
+      case kSameDayGroupVisitCount:
+        if (history_data) {
+          value = ProcessedValue::FromFloat(
+              history_data->same_day_group_visit_count);
         }
         break;
     }

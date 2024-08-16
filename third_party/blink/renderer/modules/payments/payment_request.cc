@@ -1175,9 +1175,8 @@ void PaymentRequest::OnUpdatePaymentDetails(
   update_payment_details_timer_.Stop();
 
   v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke,
-      "PaymentDetailsUpdate");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                 "PaymentDetailsUpdate");
   PaymentDetailsUpdate* details =
       NativeValueTraits<PaymentDetailsUpdate>::NativeValue(
           isolate, details_script_value.V8Value(), exception_state);
@@ -1413,10 +1412,9 @@ void PaymentRequest::OnPaymentMethodChange(const String& method_name,
   init->setMethodName(method_name);
 
   if (!stringified_details.empty()) {
-    ExceptionState exception_state(
-        script_state->GetIsolate(),
-        ExceptionContextType::kConstructorOperationInvoke,
-        "PaymentMethodChangeEvent");
+    ExceptionState exception_state(script_state->GetIsolate(),
+                                   v8::ExceptionContext::kConstructor,
+                                   "PaymentMethodChangeEvent");
     v8::Local<v8::Value> parsed_value =
         FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
                        stringified_details, exception_state);

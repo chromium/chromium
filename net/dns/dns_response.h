@@ -78,12 +78,6 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
                   size_t offset,
                   size_t num_records);
 
-  // TODO(crbug.com/40284755): Deprecated, use the span-based constructor.
-  UNSAFE_BUFFER_USAGE DnsRecordParser(const void* packet,
-                                      size_t length,
-                                      size_t offset,
-                                      size_t num_records);
-
   DnsRecordParser(const DnsRecordParser&);
   DnsRecordParser(DnsRecordParser&&);
   DnsRecordParser& operator=(const DnsRecordParser&);
@@ -157,7 +151,7 @@ class NET_EXPORT_PRIVATE DnsResponse {
   DnsResponse(scoped_refptr<IOBuffer> buffer, size_t size);
 
   // Constructs a response from |data|. Used for testing purposes only!
-  DnsResponse(const void* data, size_t length, size_t answer_offset);
+  DnsResponse(base::span<const uint8_t> data, size_t answer_offset);
 
   static DnsResponse CreateEmptyNoDataResponse(uint16_t id,
                                                bool is_authoritative,

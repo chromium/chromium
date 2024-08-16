@@ -13,14 +13,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-namespace {
-
-bool IsEnUSInUS(std::string application_locale, std::string country_code) {
-  return application_locale == "en-US" && country_code == "us";
-}
-
-}  // namespace
-
 namespace ntp_features {
 
 // If enabled, shows a confirm dialog before removing search suggestions from
@@ -188,6 +180,11 @@ BASE_FEATURE(kNtpMiddleSlotPromoDismissal,
 BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
              "NtpModulesLoadTimeoutMilliseconds",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If true, extends width of modules if space allows.
+BASE_FEATURE(kNtpWideModules,
+             "NtpWideModules",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesOrderParam".
 // This is used for an emergency Finch param. Keep indefinitely.
@@ -485,6 +482,8 @@ const char kNtpTabResumptionModuleCategoriesBlocklistParam[] =
     "NtpTabResumptionModuleCategoriesBlocklistParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
+const char kNtpTabResumptionModuleDismissalDurationParam[] =
+    "NtpMostRelevantTabResumptionModuleDismissalDurationParam";
 const char kNtpTabResumptionModuleDataParam[] =
     "NtpTabResumptionModuleDataParam";
 const char kNtpTabResumptionModuleResultTypesParam[] =
@@ -522,16 +521,6 @@ const base::FeatureParam<bool> kNtpRealboxCr23SteadyStateShadow(
     &ntp_features::kRealboxCr23Theming,
     "kNtpRealboxCr23SteadyStateShadow",
     false);
-
-bool IsNtpModulesRedesignedEnabled(std::string application_locale,
-                                   std::string country_code) {
-  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
-          kNtpModulesRedesigned.name)) {
-    return base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
-  }
-
-  return IsEnUSInUS(application_locale, country_code);
-}
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

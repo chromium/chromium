@@ -48,7 +48,19 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
       return {IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_OMNIBOX_POSITION_BODY};
     case TipsNotificationType::kError:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
+  }
+}
+
+// Returns the default trigger TimeDelta for the given `user_type`.
+base::TimeDelta DefaultTriggerDelta(TipsNotificationUserType user_type) {
+  switch (user_type) {
+    case TipsNotificationUserType::kUnknown:
+      return base::Days(3);
+    case TipsNotificationUserType::kLessEngaged:
+      return base::Days(21);
+    case TipsNotificationUserType::kActiveSeeker:
+      return base::Days(7);
   }
 }
 
@@ -69,6 +81,9 @@ const char kTipsNotificationsSentPref[] = "tips_notifications.sent_bitfield";
 const char kTipsNotificationsLastSent[] = "tips_notifiations.last_sent";
 const char kTipsNotificationsLastTriggered[] =
     "tips_notifiations.last_triggered";
+const char kTipsNotificationsLastRequestedTime[] =
+    "tips_notifications.last_requested.time";
+const char kTipsNotificationsUserType[] = "tips_notifications.user_type";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];
@@ -91,11 +106,13 @@ std::optional<TipsNotificationType> ParseTipsNotificationType(
   return static_cast<TipsNotificationType>(type.integerValue);
 }
 
-UNNotificationRequest* TipsNotificationRequest(TipsNotificationType type) {
+UNNotificationRequest* TipsNotificationRequest(
+    TipsNotificationType type,
+    TipsNotificationUserType user_type) {
   return [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
                     content:ContentForTipsNotificationType(type)
-                    trigger:TipsNotificationTrigger()];
+                    trigger:TipsNotificationTrigger(user_type)];
 }
 
 UNNotificationContent* ContentForTipsNotificationType(
@@ -110,15 +127,30 @@ UNNotificationContent* ContentForTipsNotificationType(
   return content;
 }
 
-base::TimeDelta TipsNotificationTriggerDelta() {
-  return GetFieldTrialParamByFeatureAsTimeDelta(
-      kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
-      kTipsNotificationDefaultTriggerDelta);
+base::TimeDelta TipsNotificationTriggerDelta(
+    TipsNotificationUserType user_type) {
+  base::TimeDelta default_trigger = DefaultTriggerDelta(user_type);
+  switch (user_type) {
+    case TipsNotificationUserType::kUnknown:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications, kIOSTipsNotificationsUnknownTriggerTimeParam,
+          default_trigger);
+    case TipsNotificationUserType::kLessEngaged:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications,
+          kIOSTipsNotificationsLessEngagedTriggerTimeParam, default_trigger);
+    case TipsNotificationUserType::kActiveSeeker:
+      return GetFieldTrialParamByFeatureAsTimeDelta(
+          kIOSTipsNotifications,
+          kIOSTipsNotificationsActiveSeekerTriggerTimeParam, default_trigger);
+  }
 }
 
-UNNotificationTrigger* TipsNotificationTrigger() {
+UNNotificationTrigger* TipsNotificationTrigger(
+    TipsNotificationUserType user_type) {
   return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:TipsNotificationTriggerDelta().InSecondsF()
+      triggerWithTimeInterval:TipsNotificationTriggerDelta(user_type)
+                                  .InSecondsF()
                       repeats:NO];
 }
 

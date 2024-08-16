@@ -86,7 +86,7 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
     case RequestType::kCapturedSurfaceControl:
       return vector_icons::kTouchpadMouseIcon;
     case RequestType::kClipboard:
-      return vector_icons::kContentPasteChromeRefreshIcon;
+      return vector_icons::kContentPasteIcon;
     case RequestType::kDiskQuota:
       return vector_icons::kFolderChromeRefreshIcon;
     case RequestType::kGeolocation:
@@ -153,9 +153,9 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
     case RequestType::kCapturedSurfaceControl:
       return vector_icons::kTouchpadMouseOffIcon;
     case RequestType::kClipboard:
-      return vector_icons::kContentPasteOffChromeRefreshIcon;
+      return vector_icons::kContentPasteOffIcon;
     case RequestType::kIdleDetection:
-      return vector_icons::kDevicesOffChromeRefreshIcon;
+      return vector_icons::kDevicesOffIcon;
     case RequestType::kMicStream:
       return vector_icons::kMicOffChromeRefreshIcon;
     case RequestType::kMidiSysex:

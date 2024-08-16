@@ -338,7 +338,7 @@ void BookmarkModelObserverImpl::BookmarkNodeFaviconChanged(
       /*force_favicon_load=*/false);
 
   // TODO(crbug.com/40699726): implement |base_specifics_hash| similar to
-  // ClientTagBasedModelTypeProcessor.
+  // ClientTagBasedDataTypeProcessor.
   if (!entity->MatchesFaviconHash(specifics.bookmark().favicon())) {
     ProcessUpdate(entity, specifics);
     return;

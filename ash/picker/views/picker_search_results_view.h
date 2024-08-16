@@ -19,6 +19,7 @@
 namespace views {
 class ImageView;
 class Label;
+class Throbber;
 class View;
 }
 
@@ -99,6 +100,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   }
   views::Label& no_results_label_for_testing() { return *no_results_label_; }
 
+  views::View& throbber_container_for_testing() { return *throbber_container_; }
+
   PickerSkeletonLoaderView& skeleton_loader_view_for_testing() {
     return *skeleton_loader_view_;
   }
@@ -116,8 +119,11 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void OnTrailingLinkClicked(PickerSectionType section_type,
                              const ui::Event& event);
 
+  void StartThrobber();
+  void StopThrobber();
+
   void StopLoadingAnimation();
-  void AnnounceNoResultsFound();
+  void UpdateAccessibleName();
 
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
@@ -135,7 +141,12 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   raw_ptr<views::ImageView> no_results_illustration_ = nullptr;
   raw_ptr<views::Label> no_results_label_ = nullptr;
 
-  // The skeleton loader view, shown when the results are pending.
+  // The throbber is shown when results are pending and the skeleton loader is
+  // not already being shown.
+  raw_ptr<views::View> throbber_container_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
+
+  // The skeleton loader can be shown when results are pending.
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
   raw_ptr<PickerPreviewBubbleController> preview_controller_;

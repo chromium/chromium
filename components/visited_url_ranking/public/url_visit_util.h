@@ -44,6 +44,7 @@ CreateDefaultURLDeduplicationHelper();
 // deduplication of similar URLs.
 URLMergeKey ComputeURLMergeKey(
     const GURL& url,
+    const std::u16string& title,
     url_deduplication::URLDeduplicationHelper* deduplication_helper);
 
 // Generates an input context from a given `URLVisitAggregate` object given a

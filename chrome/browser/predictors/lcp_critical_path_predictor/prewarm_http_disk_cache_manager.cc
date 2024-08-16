@@ -219,7 +219,7 @@ void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
 }
 
 void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void PrewarmHttpDiskCacheManager::OnHeadersOnly(

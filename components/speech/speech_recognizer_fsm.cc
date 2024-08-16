@@ -168,7 +168,7 @@ SpeechRecognizerFsm::ExecuteTransitionAndGetNextState(
       return DoNothing(event_args);
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace speech

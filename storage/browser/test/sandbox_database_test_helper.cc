@@ -10,6 +10,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -62,16 +63,18 @@ void CorruptDatabase(const base::FilePath& db_path,
   size = std::min(size, static_cast<size_t>(file_info.size - offset));
 
   std::vector<char> buf(size);
-  int read_size = file.Read(offset, buf.data(), buf.size());
-  EXPECT_LT(0, read_size);
-  EXPECT_GE(buf.size(), static_cast<size_t>(read_size));
-  buf.resize(read_size);
+  std::optional<size_t> read_size =
+      file.Read(offset, base::as_writable_byte_span(buf));
+  ASSERT_TRUE(read_size.has_value());
+  EXPECT_GE(buf.size(), read_size.value());
+  buf.resize(read_size.value());
 
   base::ranges::transform(buf, buf.begin(), std::logical_not<char>());
 
-  int written_size = file.Write(offset, buf.data(), buf.size());
-  EXPECT_GT(written_size, 0);
-  EXPECT_EQ(buf.size(), static_cast<size_t>(written_size));
+  std::optional<size_t> written_size =
+      file.Write(offset, base::as_byte_span(buf));
+  ASSERT_TRUE(written_size.has_value());
+  EXPECT_EQ(buf.size(), written_size.value());
 }
 
 void DeleteDatabaseFile(const base::FilePath& db_path,

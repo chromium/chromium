@@ -43,14 +43,9 @@ ShelfButton::~ShelfButton() = default;
 
 void ShelfButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  if (chromeos::features::IsJellyEnabled()) {
-    auto* ink_drop = views::InkDrop::Get(this);
-    ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
-    ink_drop->SetVisibleOpacity(1.0f);
-  } else {
-    StyleUtil::ConfigureInkDropAttributes(
-        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
-  }
+  auto* ink_drop = views::InkDrop::Get(this);
+  ink_drop->SetBaseColorId(cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetVisibleOpacity(1.0f);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
 }

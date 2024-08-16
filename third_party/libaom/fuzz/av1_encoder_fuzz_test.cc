@@ -14,8 +14,8 @@
 #include <variant>
 #include <vector>
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "third_party/libaom/source/libaom/aom/aom_codec.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
 #include "third_party/libaom/source/libaom/aom/aom_image.h"

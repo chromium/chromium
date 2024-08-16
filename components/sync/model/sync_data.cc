@@ -48,7 +48,7 @@ SyncData::~SyncData() = default;
 
 // Static.
 SyncData SyncData::CreateLocalDelete(std::string_view client_tag_unhashed,
-                                     ModelType datatype) {
+                                     DataType datatype) {
   sync_pb::EntitySpecifics specifics;
   AddDefaultFieldValue(datatype, &specifics);
   return CreateLocalData(client_tag_unhashed, {}, specifics);
@@ -58,14 +58,14 @@ SyncData SyncData::CreateLocalDelete(std::string_view client_tag_unhashed,
 SyncData SyncData::CreateLocalData(std::string_view client_tag_unhashed,
                                    std::string_view non_unique_title,
                                    const sync_pb::EntitySpecifics& specifics) {
-  const ModelType model_type = GetModelTypeFromSpecifics(specifics);
-  DCHECK(IsRealDataType(model_type));
+  const DataType data_type = GetDataTypeFromSpecifics(specifics);
+  DCHECK(IsRealDataType(data_type));
 
   DCHECK(!client_tag_unhashed.empty());
 
   SyncData data(base::MakeRefCounted<InternalData>());
   data.ptr_->client_tag_hash =
-      ClientTagHash::FromUnhashed(model_type, client_tag_unhashed);
+      ClientTagHash::FromUnhashed(data_type, client_tag_unhashed);
   data.ptr_->non_unique_name = non_unique_title;
   data.ptr_->specifics = specifics;
   return data;
@@ -89,8 +89,8 @@ const sync_pb::EntitySpecifics& SyncData::GetSpecifics() const {
   return ptr_->specifics;
 }
 
-ModelType SyncData::GetDataType() const {
-  return GetModelTypeFromSpecifics(GetSpecifics());
+DataType SyncData::GetDataType() const {
+  return GetDataTypeFromSpecifics(GetSpecifics());
 }
 
 ClientTagHash SyncData::GetClientTagHash() const {
@@ -105,7 +105,7 @@ std::string SyncData::ToString() const {
   if (!IsValid())
     return "<Invalid SyncData>";
 
-  std::string type = ModelTypeToDebugString(GetDataType());
+  std::string type = DataTypeToDebugString(GetDataType());
   std::string specifics;
   base::JSONWriter::WriteWithOptions(EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,

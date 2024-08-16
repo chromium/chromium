@@ -10,7 +10,7 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/preloading/preview/preview_manager.h"
 #include "chrome/browser/preloading/preview/preview_zoom_controller.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -119,7 +119,7 @@ void PreviewTab::AttachTabHelpersForInit() {
   // TODO(b:291867757): Audit TabHelpers and determine when
   // (initiation/promotion) we should attach each of them.
   zoom::ZoomController::CreateForWebContents(web_contents);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
+  ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   chrome::InitializePageLoadMetricsForWebContents(web_contents);
 }
 
@@ -255,7 +255,7 @@ bool PreviewTab::AcceleratorPressed(const ui::Accelerator& accelerator) {
       preview_zoom_controller_->Zoom(content::PAGE_ZOOM_IN);
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return true;

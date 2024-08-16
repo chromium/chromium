@@ -26,7 +26,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/mac/sandbox_compiler.h"
 #include "sandbox/policy/mac/params.h"
@@ -176,33 +175,6 @@ void SetupNetworkSandboxParameters(sandbox::SandboxCompiler* compiler,
   }
 }
 
-#if BUILDFLAG(ENABLE_PPAPI)
-void SetupPPAPISandboxParameters(
-    const std::vector<content::WebPluginInfo>& plugins,
-    sandbox::SandboxCompiler* compiler,
-    const base::CommandLine& command_line) {
-  SetupCommonSandboxParameters(compiler, command_line);
-
-  base::FilePath bundle_path =
-      sandbox::policy::GetCanonicalPath(base::apple::MainBundlePath());
-
-  const std::string param_base_name = "PPAPI_PATH_";
-  int index = 0;
-  for (const auto& plugin : plugins) {
-    // Only add plugins which are external to Chrome's bundle to the profile.
-    if (!bundle_path.IsParent(plugin.path) && plugin.path.IsAbsolute()) {
-      std::string param_name =
-          param_base_name + base::StringPrintf("%d", index++);
-      CHECK(compiler->SetParameter(param_name, plugin.path.value()));
-    }
-  }
-
-  // The profile does not support more than 4 PPAPI plugins, but it will be set
-  // to n+1 more than the plugins added.
-  CHECK(index <= 5);
-}
-#endif
-
 bool SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
                                const base::CommandLine& command_line) {
   SetupCommonSandboxParameters(compiler, command_line);
@@ -238,15 +210,11 @@ bool SetupGpuSandboxParameters(sandbox::SandboxCompiler* compiler,
 
 bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
                             const base::CommandLine& command_line,
-#if BUILDFLAG(ENABLE_PPAPI)
-                            const std::vector<content::WebPluginInfo>& plugins,
-#endif
                             sandbox::SandboxCompiler* compiler) {
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
     case sandbox::mojom::Sandbox::kMirroring:
-    case sandbox::mojom::Sandbox::kNaClLoader:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
@@ -263,11 +231,6 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kNetwork:
       SetupNetworkSandboxParameters(compiler, command_line);
       break;
-#if BUILDFLAG(ENABLE_PPAPI)
-    case sandbox::mojom::Sandbox::kPpapi:
-      SetupPPAPISandboxParameters(plugins, compiler, command_line);
-      break;
-#endif
     case sandbox::mojom::Sandbox::kNoSandbox:
       CHECK(false) << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);

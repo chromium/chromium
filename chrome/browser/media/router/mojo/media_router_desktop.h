@@ -181,6 +181,8 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
                              const std::optional<std::string>& error_text,
                              mojom::RouteRequestResultCode result_code);
 
+  void OnLocalDiscoveryPermissionRejected();
+
   // Callback called by MRP's BindMediaController().
   void OnMediaControllerBound(const MediaRoute::Id& route_id, bool success);
 
@@ -294,6 +296,7 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteTimedOutFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandleIssue);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandlePermissionIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            PresentationConnectionStateChangedCallback);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,

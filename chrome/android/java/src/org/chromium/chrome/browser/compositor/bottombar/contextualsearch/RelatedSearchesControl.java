@@ -398,7 +398,7 @@ public class RelatedSearchesControl {
         }
 
         view.setTranslationX(offsetX);
-        view.setTranslationY(y);
+        view.setTranslationY(y - mOverlayPanel.getBarMarginBottomPx());
         view.setVisibility(View.VISIBLE);
 
         // NOTE: We need to call requestLayout, otherwise the View will not become visible.

@@ -57,6 +57,16 @@ constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationUpdateScheme{
     /*name=*/"url_deduplication_update_scheme",
     /*default_value=*/true};
 
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationClearPath{
+    &kVisitedURLRankingDeduplication,
+    /*name=*/"url_deduplication_clear_path",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationIncludeTitle{
+    &kVisitedURLRankingDeduplication,
+    /*name=*/"url_deduplication_include_title",
+    /*default_value=*/true};
+
 constexpr base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes{
         &kVisitedURLRankingDeduplication,

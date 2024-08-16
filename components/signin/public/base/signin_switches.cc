@@ -18,11 +18,6 @@ BASE_FEATURE(kSeedAccountsRevamp,
              "SeedAccountsRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature to apply enterprise policies on signin regardless of sync status.
-BASE_FEATURE(kEnterprisePolicyOnSignin,
-             "EnterprisePolicyOnSignin",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.
@@ -39,6 +34,10 @@ BASE_FEATURE(kHideSettingsSignInPromo,
 BASE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref,
              "UseConsentLevelSigninForLegacyAccountEmailPref",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDontFallbackToDefaultImplementationInAccountManagerFacade,
+             "DontFallbackToDefaultImplementationInAccountManagerFacade",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -83,15 +82,20 @@ const base::FeatureParam<std::string>
         &kEnableBoundSessionCredentials, "exclusive-registration-path",
         "/RegisterSession"};
 
-// Enables Chrome refresh tokens binding to a device. Requires
-// "EnableBoundSessionCredentials" being enabled as a prerequisite.
+// Enables Chrome refresh tokens binding to a device.
 BASE_FEATURE(kEnableChromeRefreshTokenBinding,
              "EnableChromeRefreshTokenBinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
-  return IsBoundSessionCredentialsEnabled(profile_prefs) &&
-         base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
+  // Enterprise policy takes precedence over the feature value.
+  // Do not allow force-enabling because the feature isn't complete yet.
+  if (profile_prefs->HasPrefPath(prefs::kBoundSessionCredentialsEnabled) &&
+      !profile_prefs->GetBoolean(prefs::kBoundSessionCredentialsEnabled)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kEnableChromeRefreshTokenBinding);
 }
 #endif
 
@@ -123,10 +127,6 @@ const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
     &kExplicitBrowserSigninUIOnDesktop,
     /*name=*/"bubble_dismissible_by_avatar_button",
     /*default_value=*/true};
-const base::FeatureParam<bool> kClearAccountPrefsWhenClearingCookies{
-    &kExplicitBrowserSigninUIOnDesktop,
-    /*name=*/"clear_account_prefs_when_clearing_cookies",
-    /*default_value=*/false};
 
 bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);

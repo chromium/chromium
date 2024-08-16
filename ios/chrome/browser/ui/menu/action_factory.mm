@@ -65,6 +65,19 @@
                 }];
 }
 
+- (UIAction*)actionToShowFullURL:(NSString*)URLString
+                           block:(ProceduralBlock)block {
+  UIAction* action = [self actionWithTitle:nil
+                                     image:nil
+                                      type:MenuActionType::ShowFullURL
+                                     block:block];
+  action.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_SHARE_FULL_URL_BUTTON_ACCESSIBILITY_LABEL);
+  action.attributes = UIMenuElementAttributesKeepsMenuPresented;
+  action.subtitle = URLString;
+  return action;
+}
+
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kShareSymbol, kSymbolActionPointSize);
@@ -439,7 +452,7 @@
          "outside the Tab Groups experiment.";
 
   if (groups.size() == 0) {
-    NOTREACHED_NORETURN() << "Groups cannot be empty.";
+    NOTREACHED() << "Groups cannot be empty.";
   }
 
   NSArray<UIMenuElement*>* groupsMenu = [self groupsMenuForGroups:groups

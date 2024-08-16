@@ -93,7 +93,7 @@ void ThemeSyncableService::WaitUntilReadyToSync(base::OnceClosure done) {
 
 std::optional<syncer::ModelError>
 ThemeSyncableService::MergeDataAndStartSyncing(
-    syncer::ModelType type,
+    syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -139,7 +139,7 @@ ThemeSyncableService::MergeDataAndStartSyncing(
   return error;
 }
 
-void ThemeSyncableService::StopSyncing(syncer::ModelType type) {
+void ThemeSyncableService::StopSyncing(syncer::DataType type) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(type, syncer::THEMES);
 
@@ -147,7 +147,7 @@ void ThemeSyncableService::StopSyncing(syncer::ModelType type) {
 }
 
 syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
-    syncer::ModelType type) const {
+    syncer::DataType type) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(type, syncer::THEMES);
 

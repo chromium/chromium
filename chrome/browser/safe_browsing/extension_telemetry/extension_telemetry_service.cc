@@ -359,18 +359,22 @@ ExtensionTelemetryService::ExtensionTelemetryService(
       base::BindRepeating(&ExtensionTelemetryService::OnESBPrefChanged,
                           base::Unretained(this)));
 
-  // Register for enterprise policy changes.
-  auto* connector_service =
-      enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-          profile);
-  connector_service->ObserveTelemetryReporting(
-      base::BindRepeating(&ExtensionTelemetryService::OnEnterprisePolicyChanged,
-                          base::Unretained(this)));
-
-  // Set initial enable/disable states.
+  // Set initial enable/disable state for ESB.
   SetEnabledForESB(IsEnhancedProtectionEnabled(*pref_service_));
-  SetEnabledForEnterprise(
-      GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
+
+  if (base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise)) {
+    // Register for enterprise policy changes.
+    auto* connector_service =
+        enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+            profile);
+    connector_service->ObserveTelemetryReporting(base::BindRepeating(
+        &ExtensionTelemetryService::OnEnterprisePolicyChanged,
+        base::Unretained(this)));
+
+    // Set initial enable/disable state for enterprise.
+    SetEnabledForEnterprise(
+        GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
+  }
 }
 
 void ExtensionTelemetryService::RecordSignalType(
@@ -484,8 +488,7 @@ void ExtensionTelemetryService::SetEnabledForESB(bool enable) {
 // - Off-store data collection
 void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
   // Make call idempotent.
-  if (!base::FeatureList::IsEnabled(kExtensionTelemetryForEnterprise) ||
-      enterprise_enabled_ == enable) {
+  if (enterprise_enabled_ == enable) {
     return;
   }
 

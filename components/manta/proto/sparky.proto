@@ -104,8 +104,20 @@ message AppsData {
   repeated App app = 1;
 }
 
-message KeyboardEntry {
+message TextEntry {
   optional string text = 1;
+}
+
+// Press one key on the keyboard, possibly with modifiers.
+message KeyPress {
+  // A KeyboardEvent string from https://www.w3.org/TR/uievents-key/
+  optional string key = 1;
+
+  // Which modifier keys should be held down while pressing `key`. Meta is
+  // skipped because it's missing on ChromeOS keyboards.
+  optional bool control = 2;
+  optional bool alt = 3;
+  optional bool shift = 4;
 }
 
 message Click {
@@ -118,12 +130,15 @@ message FileAction {
 }
 
 message Action {
-  optional Setting update_setting = 1;
-  optional string launch_app_id = 2;
-  optional Click click = 3;
-  optional KeyboardEntry keyboard_entry = 4;
-  optional bool all_done = 5;
-  optional FileAction file_action = 6;
+  oneof action {
+    Setting update_setting = 1;
+    string launch_app_id = 2;
+    Click click = 3;
+    TextEntry text_entry = 4;
+    bool all_done = 5;
+    FileAction file_action = 6;
+    KeyPress key_press = 7;
+  }
 }
 
 message DiagnosticsRequest {
@@ -151,6 +166,10 @@ message FilesData {
   repeated File files = 1;
 }
 
+message Update {
+  optional FilesData files_with_summary = 1;
+}
+
 message ContextRequest {
   optional DiagnosticsRequest diagnostics = 1;
   optional FileRequest files = 2;
@@ -166,6 +185,7 @@ message Turn {
 message SparkyResponse {
   optional ContextRequest context_request = 1;
   optional Turn latest_reply = 2;
+  optional Update update = 3;
 }
 
 message WebContent {

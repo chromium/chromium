@@ -1015,7 +1015,7 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 #endif
     default:
-      NOTREACHED_NORETURN() << "Unexpected command_id: " << command_id;
+      NOTREACHED() << "Unexpected command_id: " << command_id;
   }
 
   return true;

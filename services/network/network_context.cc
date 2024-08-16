@@ -1091,6 +1091,25 @@ void NetworkContext::GetStoredTrustTokenCounts(
   }
 }
 
+void NetworkContext::GetPrivateStateTokenRedemptionRecords(
+    GetPrivateStateTokenRedemptionRecordsCallback callback) {
+  // The Trust Tokens feature is disabled, return immediately with an empty
+  // map.
+  if (!trust_token_store_) {
+    base::flat_map<url::Origin, std::vector<mojom::ToplevelRedemptionRecordPtr>>
+        empty_result;
+    std::move(callback).Run(std::move(empty_result));
+    return;
+  }
+  auto get_redemption_records_from_store =
+      [](NetworkContext::GetPrivateStateTokenRedemptionRecordsCallback callback,
+         TrustTokenStore* trust_token_store) {
+        std::move(callback).Run(trust_token_store->GetRedemptionRecords());
+      };
+  trust_token_store_->ExecuteOrEnqueue(
+      base::BindOnce(get_redemption_records_from_store, std::move(callback)));
+}
+
 void NetworkContext::DeleteStoredTrustTokens(
     const url::Origin& issuer,
     DeleteStoredTrustTokensCallback callback) {
@@ -1879,6 +1898,21 @@ void NetworkContext::ResolveHost(
     const net::NetworkAnonymizationKey& network_anonymization_key,
     mojom::ResolveHostParametersPtr optional_parameters,
     mojo::PendingRemote<mojom::ResolveHostClient> response_client) {
+  // Dns request is disallowed if network access is disabled for the nonce.
+  if (network_anonymization_key.GetNonce().has_value() &&
+      !IsNetworkForNonceAndUrlAllowed(
+          network_anonymization_key.GetNonce().value(),
+          host->get_scheme_host_port().GetURL())) {
+    mojo::Remote<mojom::ResolveHostClient> remote_response_client(
+        std::move(response_client));
+    remote_response_client->OnComplete(
+        net::ERR_NETWORK_ACCESS_REVOKED,
+        net::ResolveErrorInfo(net::ERR_NETWORK_ACCESS_REVOKED),
+        /*resolved_addresses=*/std::nullopt,
+        /*endpoint_results_with_metadata=*/std::nullopt);
+    return;
+  }
+
   if (!internal_host_resolver_) {
     internal_host_resolver_ = std::make_unique<HostResolver>(
         url_request_context_->host_resolver(), url_request_context_->net_log());
@@ -2167,7 +2201,7 @@ void NetworkContext::PreconnectSockets(
     case mojom::CredentialsMode::kSameOrigin:
       // Not yet implemented. If you need this credentials mode please update
       // this branch to set the correct request_info fields.
-      NOTREACHED_NORETURN() << "kSameOrigin not yet implemented";
+      NOTREACHED() << "kSameOrigin not yet implemented";
 
     case mojom::CredentialsMode::kInclude:
       request_info.load_flags = net::LOAD_NORMAL;

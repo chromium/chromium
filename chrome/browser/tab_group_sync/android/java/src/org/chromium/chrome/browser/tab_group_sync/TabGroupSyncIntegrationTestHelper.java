@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroup;
 import org.chromium.components.sync.protocol.SavedTabGroup.SavedTabGroupColor;
@@ -298,7 +298,7 @@ public class TabGroupSyncIntegrationTestHelper {
             List<SyncEntity> entities =
                     mSyncTestRule
                             .getFakeServerHelper()
-                            .getSyncEntitiesByModelType(ModelType.SAVED_TAB_GROUP);
+                            .getSyncEntitiesByDataType(DataType.SAVED_TAB_GROUP);
             return entities;
         } catch (InvalidProtocolBufferException ex) {
             fail(ex.toString());

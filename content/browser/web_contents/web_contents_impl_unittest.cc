@@ -2033,7 +2033,8 @@ TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
   // Reset the last active time to a known value.
   // This is done because the clock in these tests is frozen,
   // so recording the value and comparing against it later is meaningless.
-  contents()->last_active_time_ = base::TimeTicks();
+  contents()->last_active_time_ticks_ = base::TimeTicks();
+  contents()->last_active_time_ = base::Time();
 
   auto handle = contents()->IncrementCapturerCount(
       gfx::Size(), /*stay_hidden=*/true,
@@ -2041,14 +2042,15 @@ TEST_F(WebContentsImplTest, NonActivityCaptureDoesNotCountAsActivity) {
   ASSERT_TRUE(rwhv->is_showing());
 
   // The value returned by GetLastActiveTime() should not have been updated.
+  EXPECT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
   EXPECT_TRUE(contents()->GetLastActiveTime().is_null());
 }
 
-// Tests that GetLastActiveTime starts with a real, non-zero time and updates
-// on activity.
-TEST_F(WebContentsImplTest, GetLastActiveTime) {
+// Tests that GetLastActiveTimeTicks starts with a real, non-zero time and
+// updates on activity.
+TEST_F(WebContentsImplTest, GetLastActiveTimeTicks) {
   // The WebContents starts with a valid creation time.
-  EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
+  EXPECT_FALSE(contents()->GetLastActiveTimeTicks().is_null());
 
   contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
@@ -2057,11 +2059,14 @@ TEST_F(WebContentsImplTest, GetLastActiveTime) {
   // Reset the last active time to a known-bad value.
   // This is done because the clock in these tests is frozen,
   // so recording the value and comparing against it later is meaningless.
-  contents()->last_active_time_ = base::TimeTicks();
+  contents()->last_active_time_ticks_ = base::TimeTicks();
+  ASSERT_TRUE(contents()->GetLastActiveTimeTicks().is_null());
+  contents()->last_active_time_ = base::Time();
   ASSERT_TRUE(contents()->GetLastActiveTime().is_null());
 
   // Simulate activating the WebContents. The active time should update.
   contents()->WasShown();
+  EXPECT_FALSE(contents()->GetLastActiveTimeTicks().is_null());
   EXPECT_FALSE(contents()->GetLastActiveTime().is_null());
 }
 

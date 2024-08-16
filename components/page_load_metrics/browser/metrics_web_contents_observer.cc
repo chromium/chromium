@@ -1408,6 +1408,17 @@ void MetricsWebContentsObserver::OnSharedStorageSelectURLCalled(
   }
 }
 
+void MetricsWebContentsObserver::OnAdAuctionComplete(
+    content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return;
+  }
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
+    tracker->OnAdAuctionComplete();
+  }
+}
+
 base::TimeTicks MetricsWebContentsObserver::GetCreated() {
   return created_;
 }

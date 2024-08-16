@@ -110,22 +110,22 @@ ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
 // Source of the launch or activation request, for tracking.
 enum ShelfLaunchSource {
   // The item was launched from an unknown source.
-  LAUNCH_FROM_UNKNOWN,
+  LAUNCH_FROM_UNKNOWN = 0,
 
   // The item was launched from a generic app list view.
-  LAUNCH_FROM_APP_LIST,
+  LAUNCH_FROM_APP_LIST = 1,
 
   // The item was launched from an app list search view.
-  LAUNCH_FROM_APP_LIST_SEARCH,
+  LAUNCH_FROM_APP_LIST_SEARCH = 2,
 
   // The item was launched from an app list search Recommendation.
-  LAUNCH_FROM_APP_LIST_RECOMMENDATION,
+  LAUNCH_FROM_APP_LIST_RECOMMENDATION = 3,
 
   // The item was launched from the shelf itself.
-  LAUNCH_FROM_SHELF,
+  LAUNCH_FROM_SHELF = 4,
 
   // The item was launched internally, for example from test.
-  LAUNCH_FROM_INTERNAL,
+  LAUNCH_FROM_INTERNAL = 5,
 };
 
 // The actions that may be performed when a shelf item is selected.

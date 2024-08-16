@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataUse.BytesReceived3.Delegate" units="bytes"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>

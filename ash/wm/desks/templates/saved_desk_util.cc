@@ -88,9 +88,17 @@ bool ShouldShowSavedDesksOptions() {
 }
 
 bool ShouldShowSavedDesksOptionsForDesk(Desk* desk, DeskBarViewBase* bar_view) {
+  if (!features::IsSavedDeskUiRevampEnabled()) {
+    return false;
+  }
+
+  if (display::Screen::GetScreen()->InTabletMode()) {
+    return false;
+  }
+
   // TODO(hewer): Consult with UX if we should hide the save desk options when
   // we are in the saved desk library.
-  return features::IsForestFeatureEnabled() && desk->is_active() &&
+  return desk->is_active() &&
          (desk->ContainsAppWindows() ||
           !DesksController::Get()->visible_on_all_desks_windows().empty()) &&
          bar_view->type() == DeskBarViewBase::Type::kOverview &&

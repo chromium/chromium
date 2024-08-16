@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -169,12 +170,11 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       default_accessible_title_(request.accessible_title.empty()
                                     ? request.title
                                     : request.accessible_title) {
-  // MODAL_TYPE_SYSTEM is used to get a semi-transparent background behind the
+  // ModalType::kSystem is used to get a semi-transparent background behind the
   // pin request view, when it is used directly on a widget. The overlay
   // consumes all the inputs from the user, so that they can only interact with
   // the pin request view while it is visible.
-  SetModalType(ui::MODAL_TYPE_SYSTEM);
-  const bool is_jelly = chromeos::features::IsJellyEnabled();
+  SetModalType(ui::mojom::ModalType::kSystem);
 
   // Main view contains all other views aligned vertically and centered.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -188,20 +188,16 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   SetLayoutManager(std::move(layout));
   SetPaintToLayer();
   layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  ui::ColorId background_color_id =
-      is_jelly ? cros_tokens::kCrosSysSystemBaseElevated
-               : static_cast<ui::ColorId>(kColorAshShieldAndBase80);
+  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 
-  if (is_jelly) {
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kPinRequestViewRoundedCornerRadiusDp,
-        views::HighlightBorder::Type::kHighlightBorderOnShadow));
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-        this, SystemShadow::Type::kElevation12);
-    shadow_->SetRoundedCornerRadius(kPinRequestViewRoundedCornerRadiusDp);
-  }
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kPinRequestViewRoundedCornerRadiusDp,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kPinRequestViewRoundedCornerRadiusDp);
 
   const int child_view_width =
       kPinRequestViewWidthDp - 2 * kPinRequestViewMainHorizontalInsetDp;
@@ -230,9 +226,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   views::ImageView* icon = new views::ImageView();
 
-  const ui::ColorId icon_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-               : kColorAshIconColorPrimary;
+  const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
 
   icon->SetImage(ui::ImageModel::FromVectorIcon(
       kPinRequestLockIcon, icon_color_id, kLockIconSizeDp));
@@ -281,10 +275,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    const ui::ColorId text_color_id =
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshTextColorPrimary;
+    const ui::ColorId text_color_id = cros_tokens::kCrosSysOnSurface;
     label->SetEnabledColorId(text_color_id);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
@@ -299,9 +290,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   title_label_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(title_label_);
-  if (is_jelly) {
-    title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   AddChildView(title_label_.get());
 
   add_spacer(kTitleToDescriptionDistanceDp);
@@ -317,9 +306,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   description_label_->SetFontList(
       gfx::FontList().Derive(kDescriptionFontSizeDeltaDp, gfx::Font::NORMAL,
                              gfx::Font::Weight::NORMAL));
-  if (is_jelly) {
-    description_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-  }
+  description_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   decorate_label(description_label_);
   AddChildView(description_label_.get());
 
@@ -382,9 +369,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  const ui::ColorId help_button_color_id =
-      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
-               : kColorAshTextColorPrimary;
+  const ui::ColorId help_button_color_id = cros_tokens::kCrosSysSecondary;
   help_button_->SetEnabledTextColorIds(help_button_color_id);
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_.get());
@@ -393,24 +378,13 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   footer->AddChildView(horizontal_spacer);
   bottom_layout->SetFlexForView(horizontal_spacer, 1);
 
-  if (is_jelly) {
-    submit_button_ =
-        new IconButton(base::BindRepeating(&PinRequestView::SubmitCode,
-                                           base::Unretained(this)),
-                       IconButton::Type::kMediumFloating, &kLockScreenArrowIcon,
-                       IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME,
-                       /*togglable=*/true, /*has_border=*/false);
-    static_cast<IconButton*>(submit_button_)->SetToggled(true);
-  } else {
-    submit_button_ =
-        new ArrowButtonView(base::BindRepeating(&PinRequestView::SubmitCode,
-                                                base::Unretained(this)),
-                            kArrowButtonSizeDp);
-    submit_button_->SetPreferredSize(
-        gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
-    submit_button_->GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
-  }
+  submit_button_ = new IconButton(
+      base::BindRepeating(&PinRequestView::SubmitCode, base::Unretained(this)),
+      IconButton::Type::kMediumFloating, &kLockScreenArrowIcon,
+      IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME,
+      /*togglable=*/true, /*has_border=*/false);
+  static_cast<IconButton*>(submit_button_)->SetToggled(true);
+
   submit_button_->SetEnabled(false);
   submit_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   footer->AddChildView(submit_button_.get());
@@ -419,6 +393,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
 
   SetPreferredSize(GetPinRequestViewSize());
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 PinRequestView::~PinRequestView() = default;
@@ -492,20 +468,15 @@ void PinRequestView::UpdateState(PinRequestViewState state,
   description_label_->SetText(description);
   UpdatePreferredSize();
 
-  const bool is_jelly = chromeos::features::IsJellyEnabled();
   switch (state_) {
     case PinRequestViewState::kNormal: {
-      const ui::ColorId normal_color_id =
-          is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                   : kColorAshTextColorPrimary;
+      const ui::ColorId normal_color_id = cros_tokens::kCrosSysOnSurface;
       access_code_view_->SetInputColorId(normal_color_id);
       title_label_->SetEnabledColorId(normal_color_id);
       return;
     }
     case PinRequestViewState::kError: {
-      const ui::ColorId error_color_id =
-          is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
-                   : kColorAshTextColorAlert;
+      const ui::ColorId error_color_id = cros_tokens::kCrosSysError;
       access_code_view_->SetInputColorId(error_color_id);
       title_label_->SetEnabledColorId(error_color_id);
       // Read out the error.
@@ -559,7 +530,6 @@ void PinRequestView::OnInputChange(bool last_field_active, bool complete) {
 
 void PinRequestView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(default_accessible_title_);
 }
 

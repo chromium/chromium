@@ -61,7 +61,7 @@ DOMException* CscResultToDOMException(CapturedSurfaceControlResult result) {
       return MakeDOMException(DOMExceptionCode::kInvalidStateError,
                               "Capturing application not focused.");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void OnCapturedSurfaceControlResult(

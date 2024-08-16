@@ -245,214 +245,233 @@ void BrowserActions::InitializeBrowserActions() {
           .Build());
 
   //------- Chrome Menu Actions --------//
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::NewIncognitoWindow(browser->profile());
-                           },
-                           base::Unretained(browser)),
-                       kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
-                       IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
-          .Build());
-
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::Print(browser);
-                           },
-                           base::Unretained(browser)),
-                       kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
-          .SetEnabled(chrome::CanPrint(browser))
-          .Build());
-
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             if (browser->profile()->IsIncognitoProfile()) {
-                               chrome::ShowIncognitoClearBrowsingDataDialog(
-                                   browser->GetBrowserForOpeningWebUi());
-                             } else {
-                               chrome::ShowClearBrowsingDataDialog(
-                                   browser->GetBrowserForOpeningWebUi());
-                             }
-                           },
-                           base::Unretained(browser)),
-                       kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
-                       IDS_CLEAR_BROWSING_DATA, kTrashCanRefreshIcon)
-          .SetEnabled(
-              profile->IsIncognitoProfile() ||
-              (!profile->IsGuestSession() && !profile->IsSystemProfile()))
-          .Build());
-
-  if (chrome::CanOpenTaskManager()) {
+  if (features::IsToolbarPinningEnabled()) {
     root_action_item_->AddChild(
         ChromeMenuAction(base::BindRepeating(
                              [](Browser* browser, actions::ActionItem* item,
                                 actions::ActionInvocationContext context) {
-                               chrome::OpenTaskManager(browser);
+                               chrome::NewIncognitoWindow(browser->profile());
                              },
                              base::Unretained(browser)),
-                         kActionTaskManager, IDS_TASK_MANAGER, IDS_TASK_MANAGER,
-                         kTaskManagerIcon)
+                         kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
+                         IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
             .Build());
-  }
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::ToggleDevToolsWindow(
-                                 browser, DevToolsToggleAction::Show(),
-                                 DevToolsOpenedByAction::kPinnedToolbarButton);
-                           },
-                           base::Unretained(browser)),
-                       kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
-                       kDeveloperToolsIcon)
-          .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               chrome::Print(browser);
+                             },
+                             base::Unretained(browser)),
+                         kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
+            .SetEnabled(chrome::CanPrint(browser))
+            .Build());
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                send_tab_to_self::ShowBubble(
-                    browser->tab_strip_model()->GetActiveWebContents());
-              },
-              base::Unretained(browser)),
-          kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
-          kDevicesChromeRefreshIcon)
-          .SetEnabled(chrome::CanSendTabToSelf(browser))
-          .SetVisible(
-              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
-          .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               if (browser->profile()->IsIncognitoProfile()) {
+                                 chrome::ShowIncognitoClearBrowsingDataDialog(
+                                     browser->GetBrowserForOpeningWebUi());
+                               } else {
+                                 chrome::ShowClearBrowsingDataDialog(
+                                     browser->GetBrowserForOpeningWebUi());
+                               }
+                             },
+                             base::Unretained(browser)),
+                         kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
+                         IDS_CLEAR_BROWSING_DATA, kTrashCanRefreshIcon)
+            .SetEnabled(
+                profile->IsIncognitoProfile() ||
+                (!profile->IsGuestSession() && !profile->IsSystemProfile()))
+            .Build());
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::ShowTranslateBubble(browser);
-                           },
-                           base::Unretained(browser)),
-                       kActionShowTranslate, IDS_SHOW_TRANSLATE,
-                       IDS_TOOLTIP_TRANSLATE, kTranslateIcon)
-          .Build());
+    if (chrome::CanOpenTaskManager()) {
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 chrome::OpenTaskManager(browser);
+                               },
+                               base::Unretained(browser)),
+                           kActionTaskManager, IDS_TASK_MANAGER,
+                           IDS_TASK_MANAGER, kTaskManagerIcon)
+              .Build());
+    }
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](Browser* browser, actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             chrome::GenerateQRCode(browser);
-                           },
-                           base::Unretained(browser)),
-                       kActionQrCodeGenerator, IDS_APP_MENU_CREATE_QR_CODE,
-                       IDS_APP_MENU_CREATE_QR_CODE, kQrCodeChromeRefreshIcon)
-          .SetEnabled(false)
-          .SetVisible(
-              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
-          .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::ToggleDevToolsWindow(
+                      browser, DevToolsToggleAction::Show(),
+                      DevToolsOpenedByAction::kPinnedToolbarButton);
+                },
+                base::Unretained(browser)),
+            kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS, kDeveloperToolsIcon)
+            .Build());
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto* controller = autofill::AddressBubblesIconController::Get(
-                    browser->tab_strip_model()->GetActiveWebContents());
-                if (controller && controller->GetBubbleView()) {
-                  controller->GetBubbleView()->Hide();
-                } else {
-                  chrome::ShowAddresses(browser);
-                }
-              },
-              base::Unretained(browser)),
-          kActionShowAddressesBubbleOrPage,
-          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
-          vector_icons::kLocationOnChromeRefreshIcon)
-          .SetEnabled(!is_guest_session)
-          .Build());
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  send_tab_to_self::ShowBubble(
+                      browser->tab_strip_model()->GetActiveWebContents());
+                },
+                base::Unretained(browser)),
+            kActionSendTabToSelf, IDS_SEND_TAB_TO_SELF, IDS_SEND_TAB_TO_SELF,
+            kDevicesChromeRefreshIcon)
+            .SetEnabled(chrome::CanSendTabToSelf(browser))
+            .SetVisible(
+                !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
+            .Build());
 
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                auto hide_bubble = [&browser](int command_id) -> bool {
-                  auto* controller = autofill::SavePaymentIconController::Get(
-                      browser->tab_strip_model()->GetActiveWebContents(),
-                      command_id);
-                  if (controller && controller->GetPaymentBubbleView()) {
-                    controller->GetPaymentBubbleView()->Hide();
-                    return true;
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               chrome::ShowTranslateBubble(browser);
+                             },
+                             base::Unretained(browser)),
+                         kActionShowTranslate, IDS_SHOW_TRANSLATE,
+                         IDS_TOOLTIP_TRANSLATE, kTranslateIcon)
+            .Build());
+
+    root_action_item_->AddChild(
+        ChromeMenuAction(base::BindRepeating(
+                             [](Browser* browser, actions::ActionItem* item,
+                                actions::ActionInvocationContext context) {
+                               chrome::GenerateQRCode(browser);
+                             },
+                             base::Unretained(browser)),
+                         kActionQrCodeGenerator, IDS_APP_MENU_CREATE_QR_CODE,
+                         IDS_APP_MENU_CREATE_QR_CODE, kQrCodeChromeRefreshIcon)
+            .SetEnabled(false)
+            .SetVisible(
+                !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
+            .Build());
+
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto* controller =
+                      autofill::AddressBubblesIconController::Get(
+                          browser->tab_strip_model()->GetActiveWebContents());
+                  if (controller && controller->GetBubbleView()) {
+                    controller->GetBubbleView()->Hide();
+                  } else {
+                    chrome::ShowAddresses(browser);
                   }
-                  return false;
-                };
-                const bool bubble_hidden =
-                    hide_bubble(IDC_SAVE_CREDIT_CARD_FOR_PAGE) ||
-                    hide_bubble(IDC_SAVE_IBAN_FOR_PAGE);
-                if (!bubble_hidden) {
-                  chrome::ShowPaymentMethods(browser);
-                }
-              },
-              base::Unretained(browser)),
-          kActionShowPaymentsBubbleOrPage, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
-          IDS_PAYMENT_METHOD_SUBMENU_OPTION, kCreditCardChromeRefreshIcon)
-          .SetEnabled(!is_guest_session)
-          .Build());
+                },
+                base::Unretained(browser)),
+            kActionShowAddressesBubbleOrPage,
+            IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+            IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+            vector_icons::kLocationOnChromeRefreshIcon)
+            .SetEnabled(!is_guest_session)
+            .Build());
 
-  if (IsChromeLabsEnabled()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  auto hide_bubble = [&browser](int command_id) -> bool {
+                    auto* controller = autofill::SavePaymentIconController::Get(
+                        browser->tab_strip_model()->GetActiveWebContents(),
+                        command_id);
+                    if (controller && controller->GetPaymentBubbleView()) {
+                      controller->GetPaymentBubbleView()->Hide();
+                      return true;
+                    }
+                    return false;
+                  };
+                  const bool bubble_hidden =
+                      hide_bubble(IDC_SAVE_CREDIT_CARD_FOR_PAGE) ||
+                      hide_bubble(IDC_SAVE_IBAN_FOR_PAGE);
+                  if (!bubble_hidden) {
+                    chrome::ShowPaymentMethods(browser);
+                  }
+                },
+                base::Unretained(browser)),
+            kActionShowPaymentsBubbleOrPage, IDS_PAYMENT_METHOD_SUBMENU_OPTION,
+            IDS_PAYMENT_METHOD_SUBMENU_OPTION, kCreditCardChromeRefreshIcon)
+            .SetEnabled(!is_guest_session)
+            .Build());
+
+    if (IsChromeLabsEnabled()) {
+      // TODO(b/354758327): Update `ShouldShowChromeLabsUI()` to not require
+      // `model` as a parameter, then use to set visibility of action item.
+      root_action_item_->AddChild(
+          ChromeMenuAction(base::BindRepeating(
+                               [](Browser* browser, actions::ActionItem* item,
+                                  actions::ActionInvocationContext context) {
+                                 browser->window()->ShowChromeLabs();
+                               },
+                               base::Unretained(browser)),
+                           kActionShowChromeLabs, IDS_CHROMELABS,
+                           IDS_CHROMELABS, kScienceIcon)
+              .SetVisible(false)
+              .Build());
+    }
+
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (PasswordsModelDelegateFromWebContents(
+                          browser->tab_strip_model()->GetActiveWebContents())
+                          ->GetState() ==
+                      password_manager::ui::INACTIVE_STATE) {
+                    chrome::ShowPasswordManager(browser);
+                  } else {
+                    chrome::ManagePasswordsForPage(browser);
+                  }
+                },
+                base::Unretained(browser)),
+            kActionShowPasswordsBubbleOrPage, IDS_VIEW_PASSWORDS,
+            IDS_VIEW_PASSWORDS, vector_icons::kPasswordManagerIcon)
+            .SetEnabled(!is_guest_session)
+            .Build());
+
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](Browser* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  chrome::CopyURL(
+                      browser->tab_strip_model()->GetActiveWebContents());
+                },
+                base::Unretained(browser)),
+            kActionCopyUrl, IDS_APP_MENU_COPY_LINK, IDS_APP_MENU_COPY_LINK,
+            kLinkChromeRefreshIcon)
+            .SetEnabled(chrome::CanCopyUrl(browser))
+            .SetVisible(
+                !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
+            .Build());
+
     root_action_item_->AddChild(
         ChromeMenuAction(base::BindRepeating(
                              [](Browser* browser, actions::ActionItem* item,
                                 actions::ActionInvocationContext context) {
-                               browser->window()->ShowChromeLabs();
+                               // TODO(b/323962377): Add functionality.
                              },
                              base::Unretained(browser)),
-                         kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
-                         kScienceIcon)
-            .SetEnabled(IsChromeLabsEnabled())
+                         kActionRouteMedia, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+                         IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT,
+                         kCastChromeRefreshIcon)
+            .SetEnabled(chrome::CanRouteMedia(browser))
             .Build());
+
+    AddListeners();
   }
-
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                if (PasswordsModelDelegateFromWebContents(
-                        browser->tab_strip_model()->GetActiveWebContents())
-                        ->GetState() == password_manager::ui::INACTIVE_STATE) {
-                  chrome::ShowPasswordManager(browser);
-                } else {
-                  chrome::ManagePasswordsForPage(browser);
-                }
-              },
-              base::Unretained(browser)),
-          kActionShowPasswordsBubbleOrPage, IDS_VIEW_PASSWORDS,
-          IDS_VIEW_PASSWORDS, vector_icons::kPasswordManagerIcon)
-          .SetEnabled(!is_guest_session)
-          .Build());
-
-  root_action_item_->AddChild(
-      ChromeMenuAction(
-          base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::CopyURL(
-                    browser->tab_strip_model()->GetActiveWebContents());
-              },
-              base::Unretained(browser)),
-          kActionCopyUrl, IDS_APP_MENU_COPY_LINK, IDS_APP_MENU_COPY_LINK,
-          kLinkChromeRefreshIcon)
-          .SetEnabled(chrome::CanCopyUrl(browser))
-          .SetVisible(
-              !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
-          .Build());
-
-  AddListeners();
 }
 
 void BrowserActions::RemoveListeners() {

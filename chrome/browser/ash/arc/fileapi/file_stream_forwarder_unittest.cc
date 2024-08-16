@@ -129,9 +129,7 @@ TEST_F(FileStreamForwarderTest, ForwardPartially) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(dest_file_path_, &contents));
-  EXPECT_EQ(std::string(test_data_.begin() + kOffset,
-                        test_data_.begin() + kOffset + kSize),
-            contents);
+  EXPECT_EQ(test_data_.substr(kOffset, kSize), contents);
 }
 
 TEST_F(FileStreamForwarderTest, ForwardPartially2) {
@@ -150,9 +148,7 @@ TEST_F(FileStreamForwarderTest, ForwardPartially2) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(dest_file_path_, &contents));
-  EXPECT_EQ(std::string(test_data_.begin() + kOffset,
-                        test_data_.begin() + kOffset + kSize),
-            contents);
+  EXPECT_EQ(test_data_.substr(kOffset, kSize), contents);
 }
 
 TEST_F(FileStreamForwarderTest, ForwardTooMuch) {
@@ -190,8 +186,7 @@ TEST_F(FileStreamForwarderTest, ForwardTooMuch2) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(dest_file_path_, &contents));
-  EXPECT_EQ(std::string(test_data_.begin() + kOffset, test_data_.end()),
-            contents);
+  EXPECT_EQ(test_data_.substr(kOffset), contents);
 }
 
 TEST_F(FileStreamForwarderTest, InvalidURL) {

@@ -41,8 +41,7 @@ bool AreImagesEqual(const gfx::ImageSkia& image,
 
 }  // namespace
 
-class HotspotTrayViewTest : public AshTestBase,
-                            public testing::WithParamInterface<bool> {
+class HotspotTrayViewTest : public AshTestBase {
  public:
   HotspotTrayViewTest()
       : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
@@ -51,10 +50,6 @@ class HotspotTrayViewTest : public AshTestBase,
   ~HotspotTrayViewTest() override = default;
 
   void SetUp() override {
-    if (IsJellyEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(chromeos::features::kJelly);
-    }
-
     AshTestBase::SetUp();
     std::unique_ptr<HotspotTrayView> hotspot_tray_view =
         std::make_unique<HotspotTrayView>(GetPrimaryShelf());
@@ -90,17 +85,13 @@ class HotspotTrayViewTest : public AshTestBase,
 
   bool IsIconVisible() { return hotspot_tray_view_->GetVisible(); }
 
-  bool IsJellyEnabled() const { return GetParam(); }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<HotspotTrayView, DanglingUntriaged> hotspot_tray_view_;
 };
 
-INSTANTIATE_TEST_SUITE_P(Jelly, HotspotTrayViewTest, testing::Bool());
-
-TEST_P(HotspotTrayViewTest, HotspotIconImage) {
+TEST_F(HotspotTrayViewTest, HotspotIconImage) {
   SetHotspotStateAndClientCount(HotspotState::kDisabled, 0);
   EXPECT_TRUE(AreImagesEqual(
       hotspot_tray_view_->image_view()->GetImage(),
@@ -136,7 +127,7 @@ TEST_P(HotspotTrayViewTest, HotspotIconImage) {
                                 cros_tokens::kCrosSysOnSurface))));
 }
 
-TEST_P(HotspotTrayViewTest, HotspotIconVisibility) {
+TEST_F(HotspotTrayViewTest, HotspotIconVisibility) {
   EXPECT_FALSE(IsIconVisible());
 
   SetHotspotStateAndClientCount(HotspotState::kEnabled, 0);
@@ -149,7 +140,7 @@ TEST_P(HotspotTrayViewTest, HotspotIconVisibility) {
   EXPECT_TRUE(IsIconVisible());
 }
 
-TEST_P(HotspotTrayViewTest, HotspotIconTooltip) {
+TEST_F(HotspotTrayViewTest, HotspotIconTooltip) {
   SetHotspotStateAndClientCount(HotspotState::kEnabled, 0);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_HOTSPOT_ON_NO_CONNECTED_DEVICES,

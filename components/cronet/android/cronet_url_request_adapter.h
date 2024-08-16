@@ -44,19 +44,21 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   // causes connection migration to be disabled for this request if true. If
   // global connection migration flag is not enabled,
   // |jdisable_connection_migration| has no effect.
-  CronetURLRequestAdapter(CronetContextAdapter* context,
-                          JNIEnv* env,
-                          jobject jurl_request,
-                          const GURL& url,
-                          net::RequestPriority priority,
-                          jboolean jdisable_cache,
-                          jboolean jdisable_connection_migration,
-                          jboolean jtraffic_stats_tag_set,
-                          jint jtraffic_stats_tag,
-                          jboolean jtraffic_stats_uid_set,
-                          jint jtraffic_stats_uid,
-                          net::Idempotency idempotency,
-                          jlong network);
+  CronetURLRequestAdapter(
+      CronetContextAdapter* context,
+      JNIEnv* env,
+      jobject jurl_request,
+      const GURL& url,
+      net::RequestPriority priority,
+      jboolean jdisable_cache,
+      jboolean jdisable_connection_migration,
+      jboolean jtraffic_stats_tag_set,
+      jint jtraffic_stats_tag,
+      jboolean jtraffic_stats_uid_set,
+      jint jtraffic_stats_uid,
+      net::Idempotency idempotency,
+      scoped_refptr<net::SharedDictionary> shared_dictionary,
+      jlong network);
 
   CronetURLRequestAdapter(const CronetURLRequestAdapter&) = delete;
   CronetURLRequestAdapter& operator=(const CronetURLRequestAdapter&) = delete;

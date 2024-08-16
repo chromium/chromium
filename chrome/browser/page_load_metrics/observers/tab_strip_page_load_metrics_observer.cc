@@ -81,7 +81,7 @@ TabStripPageLoadMetricsObserver::OnStart(
        all_web_contents) {
     for (content::WebContents* web_contents : tab_strip_web_contents) {
       if (web_contents) {
-        base::TimeTicks last_active = web_contents->GetLastActiveTime();
+        base::TimeTicks last_active = web_contents->GetLastActiveTimeTicks();
         page_load_metrics::MetricsWebContentsObserver*
             metrics_web_contents_observer =
                 page_load_metrics::MetricsWebContentsObserver::FromWebContents(

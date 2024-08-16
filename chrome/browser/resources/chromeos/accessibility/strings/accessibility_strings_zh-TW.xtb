@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">玫瑰褐</translation>
 <translation id="249330843868392562">開啟文字轉語音設定</translation>
 <translation id="2497706219848005458">綠黃色</translation>
+<translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2523609930580546572">ChromeVox 教學課程</translation>
 <translation id="2525706221823668172">Chromebook 鍵盤快速鍵</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">鋼青</translation>
 <translation id="4253168017788158739">附註</translation>
 <translation id="4254798249533888099">樹狀結構</translation>
+<translation id="4259220820964911921">要啟用「臉部控制」嗎？</translation>
 <translation id="4271220233568730077">下一個數學元素</translation>
 <translation id="4275397969489577657">啟用活動訊息串記錄功能</translation>
 <translation id="4278486392851938658">沒有上一個造訪過的連結</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">附錄</translation>
 <translation id="5761219715606611783">非常好！你已成功掌握 ChromeVox 觸控操作的基本概念。現在可以再瀏覽一次教學課程，也可以使用下方按鈕來結束教學課程。</translation>
 <translation id="5776001898637896684">Google 加強型網路文字轉語音擴充功能</translation>
+<translation id="5783252477644995371">「臉部控制」可讓你透過臉部表情控制游標及執行操作，例如做出微笑等表情可按下左鍵</translation>
 <translation id="5805940204952508776">以兩指輕觸</translation>
 <translation id="5819072574982403430">樹狀目錄項目</translation>
 <translation id="5822819874379903994">深綠松石色</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">沒有下一個核取方塊</translation>
 <translation id="8473540203671727883">請讀出滑鼠游標下方的文字</translation>
 <translation id="8476408756881832830">ChromeVox 朗讀時暫停播放音訊</translation>
-<translation id="8476508772960940536">視窗總覽</translation>
 <translation id="8480873377842220259">現在，我們來學習一些基本操作吧。按住搜尋鍵並按下方向鍵即可在畫面上到處移動。如要繼續，請按下搜尋鍵 + 向右鍵。</translation>
 <translation id="8503360654911991865">降低導覽精細度</translation>
 <translation id="8520472399088452386">微調按鈕</translation>

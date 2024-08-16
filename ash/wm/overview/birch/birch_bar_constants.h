@@ -16,6 +16,7 @@ enum class BirchSuggestionType {
   kMedia,
   kExplore,
   kUndefined,
+  kCoral,
 };
 
 }  // namespace ash

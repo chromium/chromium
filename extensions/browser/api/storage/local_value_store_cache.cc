@@ -80,8 +80,9 @@ void LocalValueStoreCache::DeleteStorageSoon(const ExtensionId& extension_id) {
 value_store::ValueStore* LocalValueStoreCache::GetStorage(
     const Extension* extension) {
   auto iter = storage_map_.find(extension->id());
-  if (iter != storage_map_.end())
+  if (iter != storage_map_.end()) {
     return iter->second.get();
+  }
 
   value_store_util::ModelType model_type =
       extension->is_app() ? value_store_util::ModelType::APP

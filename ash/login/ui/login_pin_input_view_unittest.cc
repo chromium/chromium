@@ -70,7 +70,10 @@ class LoginPinInputViewTest
   }
 
   void ExpectDescription(const std::string& value) {
-    ExpectAttribute(value, ax::mojom::StringAttribute::kDescription);
+    LoginPinInputView::TestApi test_api(view_);
+    EXPECT_EQ(
+        base::UTF8ToUTF16(value),
+        test_api.code_input()->GetViewAccessibility().GetCachedDescription());
   }
 
   void ExpectTextValue(const std::string& value) {

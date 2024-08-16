@@ -40,6 +40,12 @@ constexpr base::TimeDelta kMoveDownDuration = base::Milliseconds(120);
 
 }  // namespace
 
+MessagePopupCollection::PopupItem::PopupItem() = default;
+MessagePopupCollection::PopupItem::PopupItem(PopupItem&& other) = default;
+MessagePopupCollection::PopupItem& MessagePopupCollection::PopupItem::operator=(
+    PopupItem&& other) = default;
+MessagePopupCollection::PopupItem::~PopupItem() = default;
+
 MessagePopupCollection::MessagePopupCollection()
     : animation_(std::make_unique<gfx::LinearAnimation>(this)),
       weak_ptr_factory_(this) {
@@ -49,8 +55,9 @@ MessagePopupCollection::MessagePopupCollection()
 MessagePopupCollection::~MessagePopupCollection() {
   // Ignore calls to update which can cause crashes.
   is_updating_ = true;
-  for (const auto& item : popup_items_)
+  for (auto& item : popup_items_) {
     ClosePopupItem(item);
+  }
 }
 
 void MessagePopupCollection::Update() {
@@ -136,7 +143,7 @@ void MessagePopupCollection::AnimateResize() {
   CalculateAndUpdateBounds();
 
   views::AnimationBuilder animation_builder;
-  for (auto popup : popup_items_) {
+  for (auto& popup : popup_items_) {
     auto target_bounds = gfx::Rect(
         popup.popup->GetWidget()->GetLayer()->bounds().x(), popup.bounds.y(),
         popup.bounds.width(), popup.bounds.height());
@@ -327,7 +334,7 @@ bool MessagePopupCollection::IsNextEdgeOutsideWorkArea(
                      : next_edge < work_area.y();
 }
 
-void MessagePopupCollection::ClosePopupItem(const PopupItem& item) {
+void MessagePopupCollection::ClosePopupItem(PopupItem& item) {
   if (MessagePopupView* popup = item.popup) {
     popup->Close();
     // Re-check item.popup since the Close() call may have deleted it.
@@ -340,6 +347,9 @@ void MessagePopupCollection::ClosePopupItem(const PopupItem& item) {
         owned_popup->DeleteDelegate();
         CloseAndRemovePopupFromPopupItem(owned_popup.get(), true);
       }
+    }
+    if (item.widget) {
+      item.widget.reset();
     }
   }
 }
@@ -609,10 +619,9 @@ bool MessagePopupCollection::AddPopup() {
       return false;
     }
 
-    popup_items_.push_back(item);
-
-    item.popup->Show();
-    NotifyPopupAdded(item.popup);
+    item.widget = item.popup->Show();
+    popup_items_.push_back(std::move(item));
+    NotifyPopupAdded(popup_items_.back().popup);
   }
 
   MessageCenter::Get()->DisplayedNotification(new_notification->id(),

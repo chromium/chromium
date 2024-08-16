@@ -30,6 +30,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
@@ -314,6 +316,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    InitializeActionIdStringMapping();
     content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
     browser_content_client_ = std::make_unique<ChromeContentBrowserClient>();
@@ -341,6 +344,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_ = CreateBrowserWithTestWindowForParams(native_params);
 
     model_->DisableWritesToDiskForTest();
+    PinnedToolbarActionsModel::Get(browser_->profile())
+        ->UpdatePinnedState(kActionShowChromeLabs, false);
 
     AddTestData(CreateBigMenu());
 
@@ -368,6 +373,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
       // before |model_| is deleted (which happens when |profile_| is reset).
       window()->CloseNow();
     }
+    actions::ActionIdMap::ResetMapsForTesting();
 
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();

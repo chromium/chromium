@@ -455,7 +455,7 @@ XrHandTrackerEXT OpenXrTestHelper::CreateHandTracker(XrHandEXT hand) {
       right_hand_ = TreatIntegerAsHandle<XrHandTrackerEXT>(++next_handle_);
       return right_hand_;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

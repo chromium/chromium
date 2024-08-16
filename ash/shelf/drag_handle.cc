@@ -244,15 +244,6 @@ void DragHandle::SetWindowDragFromShelfInProgress(bool gesture_in_progress) {
   }
 }
 
-void DragHandle::UpdateColor() {
-  if (chromeos::features::IsJellyEnabled()) {
-    layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
-  } else {
-    layer()->SetColor(GetColorProvider()->GetColor(kColorAshShelfHandleColor));
-  }
-}
-
 void DragHandle::OnGestureEvent(ui::GestureEvent* event) {
   if (!features::IsHideShelfControlsInTabletModeEnabled() ||
       !gesture_nudge_target_visibility_) {
@@ -329,7 +320,8 @@ void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void DragHandle::OnThemeChanged() {
   views::Button::OnThemeChanged();
-  UpdateColor();
+  layer()->SetColor(
+      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
 }
 
 void DragHandle::OnOverviewModeStarting() {

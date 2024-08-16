@@ -5,6 +5,7 @@ android_library("java") {
   deps = [
     "$google_play_services_package:google_play_services_auth_base_java",
     "$google_play_services_package:google_play_services_base_java",
+    "//base:base_cached_flags_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",

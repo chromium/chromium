@@ -4,8 +4,15 @@
 
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
+#include <optional>
+
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -17,6 +24,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -31,6 +39,45 @@ std::u16string GetUsernameFromLabel(const std::u16string& label) {
              ? std::u16string()
              : label;
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Returns the password form corresponding to the `payload` data. In most
+// cases there is only one such form stored, but having more than one or no
+// forms is also possible. If there is more than one form, showing any of them
+// is acceptable and the first one found is returned. The absence of forms is
+// expected to be even rarer, `std::nullopt` is returned in this case (no bubble
+// is triggered).
+std::optional<password_manager::PasswordForm> GetCorrespondingPasswordForm(
+    const Suggestion::PasswordSuggestionDetails& payload,
+    const SavedPasswordsPresenter& presenter) {
+  const std::vector<CredentialUIEntry>& credential_ui_entries =
+      presenter.GetSavedCredentials();
+  const auto& found_credential_it = base::ranges::find_if(
+      credential_ui_entries, [&payload](const CredentialUIEntry& ui_entry) {
+        return ui_entry.username == payload.username &&
+               ui_entry.password == payload.password &&
+               base::Contains(ui_entry.GetAffiliatedDomains(),
+                              payload.signon_realm,
+                              &CredentialUIEntry::DomainInfo::signon_realm);
+      });
+
+  if (found_credential_it == credential_ui_entries.end()) {
+    return std::nullopt;
+  }
+
+  const std::vector<PasswordForm> forms =
+      presenter.GetCorrespondingPasswordForms(*found_credential_it);
+  const std::vector<PasswordForm>::const_iterator& found_form_it =
+      base::ranges::find_if(forms, [&payload](const PasswordForm& form) {
+        return form.signon_realm == payload.signon_realm;
+      });
+  CHECK(found_form_it != forms.end());
+  return *found_form_it;
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 PasswordManualFallbackFlow::PasswordManualFallbackFlow(
@@ -166,7 +213,7 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
       break;
     default:
       // Other suggestion types are not supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -219,9 +266,20 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       std::move(filling_callback).Run();
       break;
     }
-    case autofill::SuggestionType::kViewPasswordDetails:
-      // TODO(b/324242001): Trigger password details dialog.
+    case autofill::SuggestionType::kViewPasswordDetails: {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS)
+      std::optional<password_manager::PasswordForm> form =
+          GetCorrespondingPasswordForm(
+              suggestion.GetPayload<Suggestion::PasswordSuggestionDetails>(),
+              *passwords_presenter_);
+      if (form) {
+        password_client_->OpenPasswordDetailsBubble(*form);
+      }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_CHROMEOS)
       break;
+    }
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
       password_client_->NavigateToManagePasswordsPage(
           ManagePasswordsReferrer::kPasswordDropdown);
@@ -231,7 +289,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       break;
     default:
       // Other suggestion types are not supported.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   autofill_client_->HideAutofillSuggestions(
       autofill::SuggestionHidingReason::kAcceptSuggestion);
@@ -240,7 +298,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
 void PasswordManualFallbackFlow::DidPerformButtonActionForSuggestion(
     const Suggestion& suggestion) {
   // Button actions do currently not exist for password entries.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool PasswordManualFallbackFlow::RemoveSuggestion(

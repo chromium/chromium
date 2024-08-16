@@ -3,11 +3,10 @@
 # found in the LICENSE file.
 """Various custom data types for use throughout the unexpected pass finder."""
 
-from __future__ import print_function
-
 import collections
 import copy
 import fnmatch
+import functools
 import logging
 from typing import (Any, Dict, FrozenSet, Generator, Iterable, List, Optional,
                     Set, Tuple, Type, Union)
@@ -33,27 +32,29 @@ ResultListType = List['BaseResult']
 ResultSetType = Set['BaseResult']
 
 
+# TODO(crbug.com/358591565): Refactor this to remove the need for global
+# statements.
 def SetExpectationImplementation(impl: Type['BaseExpectation']) -> None:
-  global Expectation
+  global Expectation  # pylint: disable=global-statement
   assert issubclass(impl, BaseExpectation)
   Expectation = impl
 
 
 def SetResultImplementation(impl: Type['BaseResult']) -> None:
-  global Result
+  global Result  # pylint: disable=global-statement
   assert issubclass(impl, BaseResult)
   Result = impl
 
 
 def SetBuildStatsImplementation(impl: Type['BaseBuildStats']) -> None:
-  global BuildStats
+  global BuildStats  # pylint: disable=global-statement
   assert issubclass(impl, BaseBuildStats)
   BuildStats = impl
 
 
 def SetTestExpectationMapImplementation(impl: Type['BaseTestExpectationMap']
                                         ) -> None:
-  global TestExpectationMap
+  global TestExpectationMap  # pylint: disable=global-statement
   assert issubclass(impl, BaseTestExpectationMap)
   TestExpectationMap = impl
 
@@ -125,7 +126,7 @@ class BaseExpectation():
       True if |self| applies to |result|, otherwise False.
     """
     assert isinstance(result, BaseResult)
-    return (self._comp(result.test) and self.tags <= result.tags)
+    return self._comp(result.test) and self.tags <= result.tags
 
   def MaybeAppliesToTest(self, test_name: str) -> bool:
     """Similar to AppliesToResult, but used to do initial filtering.
@@ -537,6 +538,11 @@ class BaseTestExpectationMap(BaseTypedMap):
     semi_stale_dict = TestExpectationMap()
     active_dict = TestExpectationMap()
 
+    def _CopyPassesIntoBuilderMapUncurried(tmp_map, builder_map, pass_types):
+      for pt in pass_types:
+        for builder, steps in tmp_map[pt].items():
+          builder_map.setdefault(builder, StepBuildStatsMap()).update(steps)
+
     # This initially looks like a good target for using
     # TestExpectationMap's iterators since there are many nested loops.
     # However, we need to reset state in different loops, and the alternative of
@@ -562,10 +568,8 @@ class BaseTestExpectationMap(BaseTypedMap):
           if partially_passed:
             tmp_map[PARTIAL_PASS][builder_name] = partially_passed
 
-        def _CopyPassesIntoBuilderMap(builder_map, pass_types):
-          for pt in pass_types:
-            for builder, steps in tmp_map[pt].items():
-              builder_map.setdefault(builder, StepBuildStatsMap()).update(steps)
+        _CopyPassesIntoBuilderMap = functools.partial(
+            _CopyPassesIntoBuilderMapUncurried, tmp_map)
 
         # Handle the case of a stale expectation.
         if not (tmp_map[NEVER_PASS] or tmp_map[PARTIAL_PASS]):

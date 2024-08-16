@@ -92,6 +92,13 @@ std::string NotSupportedOutputTypeError(std::string_view output_name,
                        SupportedDataTypesString(supported_types)});
 }
 
+std::string NotSupportedMLBufferTypeError(OperandDataType type,
+                                          SupportedDataTypes supported_types) {
+  return base::StrCat({"Unsupported data type ", DataTypeToString(type),
+                       " for MLBuffer",
+                       SupportedDataTypesString(supported_types)});
+}
+
 std::string GetErrorLabelPrefix(std::string_view label) {
   if (label.empty()) {
     return "";

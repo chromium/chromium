@@ -379,7 +379,7 @@ const char* NativeThemeFluent::GetArrowCodePointForScrollbarPart(
     case Part::kScrollbarRightArrow:
       return kFluentScrollbarRightArrow;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

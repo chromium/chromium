@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
@@ -71,7 +72,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const std::vector<std::string>& interest_groups_to_keep,
       ClearOriginJoinedInterestGroupsCallback callback) override;
   void UpdateAdInterestGroups() override;
-  void CreateAuctionNonce(CreateAuctionNonceCallback callback) override;
   void RunAdAuction(
       const blink::AuctionConfig& config,
       mojo::PendingReceiver<blink::mojom::AbortableAdAuction> abort_receiver,
@@ -123,12 +123,13 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
         BiddingAndAuctionDataConstructionState&& other);
     ~BiddingAndAuctionDataConstructionState();
 
-    base::TimeTicks start_time;
+    base::TimeTicks start_time;  // time used for metrics
     std::unique_ptr<BiddingAndAuctionServerKey> key;
     std::unique_ptr<BiddingAndAuctionData> data;
     base::Uuid request_id;
     url::Origin seller;
     std::optional<url::Origin> coordinator;
+    base::Time timestamp;  // timestamp to include in the request.
     blink::mojom::AuctionDataConfigPtr config;
     GetInterestGroupAdAuctionDataCallback callback;
   };
@@ -230,7 +231,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
   // Manages auction nonces issued by prior calls to CreateAuctionNonce,
   // which are used by subsequent calls to RunAdAuction.
-  std::unique_ptr<AuctionNonceManager> auction_nonce_manager_;
+  AuctionNonceManager auction_nonce_manager_;
 
   // Use a map instead of a list so can remove entries without destroying them.
   // TODO(mmenke): Switch to std::set() and use extract() once that's allowed.

@@ -1,0 +1,4 @@
+CONSOLE WARNING: The 'inset-area' property has been deprecated, and will be removed from this browser very soon. Please use the 'position-area' property instead.
+CONSOLE WARNING: The 'inset-area' property has been deprecated, and will be removed from this browser very soon. Please use the 'position-area' property instead.
+CONSOLE WARNING: The 'inset-area' property has been deprecated, and will be removed from this browser very soon. Please use the 'position-area' property instead.
+CONSOLE WARNING: The 'inset-area' property has been deprecated, and will be removed from this browser very soon. Please use the 'position-area' property instead.

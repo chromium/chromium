@@ -19,6 +19,8 @@ per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
 per-file bisect*.py=wnwen@chromium.org
+per-file bisect*.py=kuanhuang@chromium.org
+per-file bisect*.py=svenzheng@chromium.org
 
 per-file check_git_config.py=iannucci@chromium.org
 

@@ -107,7 +107,10 @@ static inline LinkHash LinkHashForElement(
     const AtomicString& attribute = AtomicString()) {
   DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
   return base::FeatureList::IsEnabled(
-             blink::features::kPartitionVisitedLinkDatabase)
+             blink::features::kPartitionVisitedLinkDatabase) ||
+                 base::FeatureList::IsEnabled(
+                     blink::features::
+                         kPartitionVisitedLinkDatabaseWithSelfLinks)
              ? PartitionedLinkHashForElement(element, attribute)
              : UnpartitionedLinkHashForElement(element, attribute);
 }

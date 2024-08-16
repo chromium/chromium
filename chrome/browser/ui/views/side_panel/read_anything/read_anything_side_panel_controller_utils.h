@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_SIDE_PANEL_CONTROLLER_UTILS_H_
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 
 class Browser;

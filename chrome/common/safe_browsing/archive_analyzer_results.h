@@ -46,6 +46,10 @@ struct EncryptionInfo {
   // in the archive.
   bool is_encrypted = false;
 
+  // True if the metadata of the top-level archive is encrypted or at
+  // least one the files contained in the top-level archive are encrypted.
+  bool is_top_level_encrypted = false;
+
   enum PasswordStatus {
     kUnknown = 0,
     kKnownIncorrect = 1,
@@ -94,6 +98,7 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           bool is_encrypted,
                                           bool is_directory,
                                           bool contents_valid,
+                                          bool is_top_level,
                                           ArchiveAnalyzerResults* results);
 
 // Returns the `DownloadFileType_InspectionType` of the file path.

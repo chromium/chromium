@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
@@ -31,9 +30,7 @@ std::unique_ptr<AccountStorageNotice> AccountStorageNotice::MaybeShow(
       AttachCurrentThread(),
       sync_service ? sync_service->HasSyncConsent() : false,
       password_manager::sync_util::HasChosenToSyncPasswords(sync_service),
-      password_manager::IsGmsCoreUpdateRequired(
-          pref_service, sync_service,
-          base::android::BuildInfo::GetInstance()->gms_version_code()),
+      password_manager::IsGmsCoreUpdateRequired(pref_service, sync_service),
       pref_service->GetJavaObject(),
       window_android ? window_android->GetJavaObject() : nullptr);
   if (can_show) {

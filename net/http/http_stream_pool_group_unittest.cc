@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -37,15 +38,26 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
   HttpStreamPoolGroupTest()
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    http_network_session_ =
-        SpdySessionDependencies::SpdyCreateSession(&session_deps_);
+    feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    session_deps_.ignore_ip_address_changes = false;
+    session_deps_.disable_idle_sockets_close_on_memory_pressure = false;
     InitializePool();
   }
 
  protected:
-  void InitializePool(bool cleanup_on_ip_address_change = true) {
-    pool_ = std::make_unique<HttpStreamPool>(http_network_session_.get(),
-                                             cleanup_on_ip_address_change);
+  void set_ignore_ip_address_changes(bool ignore_ip_address_changes) {
+    session_deps_.ignore_ip_address_changes = ignore_ip_address_changes;
+  }
+
+  void set_disable_idle_sockets_close_on_memory_pressure(
+      bool disable_idle_sockets_close_on_memory_pressure) {
+    session_deps_.disable_idle_sockets_close_on_memory_pressure =
+        disable_idle_sockets_close_on_memory_pressure;
+  }
+
+  void InitializePool() {
+    http_network_session_ =
+        SpdySessionDependencies::SpdyCreateSession(&session_deps_);
   }
 
   Group& GetTestGroup() {
@@ -56,13 +68,13 @@ class HttpStreamPoolGroupTest : public TestWithTaskEnvironment {
     return pool().GetOrCreateGroupForTesting(key);
   }
 
-  HttpStreamPool& pool() { return *pool_; }
+  HttpStreamPool& pool() { return *http_network_session_->http_stream_pool(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   // For creating HttpNetworkSession.
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_network_session_;
-  std::unique_ptr<HttpStreamPool> pool_;
 };
 
 TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStream) {
@@ -70,7 +82,8 @@ TEST_F(HttpStreamPoolGroupTest, CreateTextBasedStream) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
@@ -82,7 +95,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUnused) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -103,7 +117,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketUsed) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -133,7 +148,8 @@ TEST_F(HttpStreamPoolGroupTest, ReleaseStreamSocketNotIdle) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -148,7 +164,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketDisconnected) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -168,7 +185,8 @@ TEST_F(HttpStreamPoolGroupTest, IdleSocketReceivedDataUnexpectedly) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -260,7 +278,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeCleanupIdleSocket) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   stream.reset();
@@ -281,7 +300,8 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
 
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
@@ -300,12 +320,14 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeReleaseStreamSocket) {
 }
 
 TEST_F(HttpStreamPoolGroupTest, IPAddressChangeIgnored) {
-  InitializePool(/*cleanup_on_ip_address_change=*/false);
+  set_ignore_ip_address_changes(true);
+  InitializePool();
 
   auto stream_socket = std::make_unique<FakeStreamSocket>();
   Group& group = GetTestGroup();
   std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
-      std::move(stream_socket), LoadTimingInfo::ConnectTiming());
+      std::move(stream_socket), StreamSocketHandle::SocketReuseType::kUnused,
+      LoadTimingInfo::ConnectTiming());
   CHECK(stream);
 
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
@@ -321,6 +343,55 @@ TEST_F(HttpStreamPoolGroupTest, IPAddressChangeIgnored) {
   ASSERT_EQ(group.ActiveStreamSocketCount(), 1u);
   ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
   ASSERT_EQ(pool().TotalActiveStreamCount(), 1u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, FlushIdleStreamsOnMemoryPressure) {
+  set_disable_idle_sockets_close_on_memory_pressure(false);
+  InitializePool();
+
+  Group& group = GetTestGroup();
+  ASSERT_FALSE(group.GetIdleStreamSocket());
+
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  // Idle sockets should be flushed on moderate memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  // Idle sockets should be flushed on critical memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+}
+
+TEST_F(HttpStreamPoolGroupTest, MemoryPressureDisabled) {
+  set_disable_idle_sockets_close_on_memory_pressure(true);
+  InitializePool();
+
+  Group& group = GetTestGroup();
+  ASSERT_FALSE(group.GetIdleStreamSocket());
+
+  group.AddIdleStreamSocket(std::make_unique<FakeStreamSocket>());
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  // Idle sockets should be not flushed on moderate memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
+
+  // Idle sockets should be not flushed on critical memory pressure.
+  base::MemoryPressureListener::NotifyMemoryPressure(
+      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 1u);
 }
 
 }  // namespace net

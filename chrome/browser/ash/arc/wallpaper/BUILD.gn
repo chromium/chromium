@@ -12,6 +12,8 @@ static_library("wallpaper") {
     "arc_wallpaper_service.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/components/arc",
     "//ash/components/arc/mojom",
@@ -39,7 +41,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/wallpaper_handlers",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/ui/ash",

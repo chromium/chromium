@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "feed_metrics_recorder+testing.h",
+    "feed_metrics_recorder.h",
+    "feed_refresh_state_tracker.h",
+    "new_tab_page_metrics_recorder.h",
+  ]
+  deps = [ "//ios/chrome/browser/ui/ntp/metrics" ]
+}
+
+source_set("constants") {
+  sources = [
+    "feed_metrics_constants.h",
+    "new_tab_page_metrics_constants.h",
+  ]
+  deps = [ "//ios/chrome/browser/ui/ntp/metrics:constants" ]
+}

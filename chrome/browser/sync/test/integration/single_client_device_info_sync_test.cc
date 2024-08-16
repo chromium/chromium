@@ -15,8 +15,8 @@
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -37,8 +37,8 @@ namespace {
 
 using device_info_helper::HasCacheGuid;
 using device_info_helper::HasSharingFields;
-using syncer::ModelType;
-using syncer::ModelTypeSet;
+using syncer::DataType;
+using syncer::DataTypeSet;
 using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
@@ -65,7 +65,7 @@ MATCHER_P(HasInterestedDataType, expected_data_type, "") {
                                              .invalidation_fields()
                                              .interested_data_type_ids()) {
     if (interested_data_type_id ==
-        syncer::GetSpecificsFieldNumberFromModelType(expected_data_type)) {
+        syncer::GetSpecificsFieldNumberFromDataType(expected_data_type)) {
       return true;
     }
   }
@@ -92,14 +92,14 @@ std::string SigninScopedDeviceIdForSuffix(int suffix) {
   return base::StringPrintf("signin scoped device id %d", suffix);
 }
 
-ModelTypeSet DefaultInterestedDataTypes() {
+DataTypeSet DefaultInterestedDataTypes() {
   return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
 }
 
 sync_pb::DeviceInfoSpecifics CreateSpecifics(
     int suffix,
     const std::string& fcm_registration_token,
-    const ModelTypeSet& interested_data_types) {
+    const DataTypeSet& interested_data_types) {
   sync_pb::DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
   specifics.set_client_name(ClientNameForSuffix(suffix));
@@ -112,9 +112,9 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(
   auto& mutable_interested_data_type_ids =
       *specifics.mutable_invalidation_fields()
            ->mutable_interested_data_type_ids();
-  for (ModelType type : interested_data_types) {
+  for (DataType type : interested_data_types) {
     mutable_interested_data_type_ids.Add(
-        syncer::GetSpecificsFieldNumberFromModelType(type));
+        syncer::GetSpecificsFieldNumberFromDataType(type));
   }
   if (!fcm_registration_token.empty()) {
     specifics.mutable_invalidation_fields()->set_instance_id_token(
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
       &uma_enabled);
   ASSERT_TRUE(SetupSync());
 
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               Contains(HasFullHardwareClass()));
 
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
       &uma_enabled);
   ASSERT_TRUE(SetupSync());
 
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               Contains(IsFullHardwareClassEmpty()));
 
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -241,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
       &uma_enabled);
   ASSERT_TRUE(SetupSync());
 
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               Contains(IsFullHardwareClassEmpty()));
 
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
   ASSERT_TRUE(SetupSync());
 
   // The local device may or may not already be committed at this point.
-  ASSERT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  ASSERT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DEVICE_INFO));
 
-  EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  EXPECT_THAT(fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(SetupSync());
 
   const std::vector<sync_pb::SyncEntity> entities_before =
-      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
 
   // Single client flag could be dropped due to a DeviceInfo update in the last
   // GetUpdates request. The next sync cycle may download the latest committed
@@ -394,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // Double check that DeviceInfo hasn't been committed during the test. It may
   // happen if there are any DeviceInfo fields are initialized asynchronously.
   const std::vector<sync_pb::SyncEntity> entities_after =
-      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_EQ(1U, entities_before.size());
   ASSERT_EQ(1U, entities_after.size());
   ASSERT_EQ(entities_before.front().mtime(), entities_after.front().mtime());
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlagForDataType) {
   // There is a remote client which is not interested in BOOKMARKS.
-  const ModelTypeSet remote_interested_data_types =
+  const DataTypeSet remote_interested_data_types =
       Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS});
   InjectDeviceInfoSpecificsToServer(CreateSpecifics(
       /*suffix=*/1, "fcm_token_1", remote_interested_data_types));
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(SetupSync());
 
   // Verify that both DeviceInfos are present on the server.
-  ASSERT_THAT(GetFakeServer()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
+  ASSERT_THAT(GetFakeServer()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO),
               UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
                                    HasCacheGuid(CacheGuidForSuffix(1))));
 
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(SetupSync());
 
   const std::vector<sync_pb::SyncEntity> server_device_infos =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_THAT(server_device_infos,
               ElementsAre(HasCacheGuid(GetLocalCacheGuid())));
 
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(SetupSync());
 
   const std::vector<sync_pb::SyncEntity> server_device_infos =
-      GetFakeServer()->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_THAT(server_device_infos, Contains(HasCacheGuid(GetLocalCacheGuid())));
 
   GetFakeServer()->InjectEntity(
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldNotSendDeviceInfoAfterBrowserRestart) {
   const std::vector<sync_pb::SyncEntity> entities_before =
-      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
@@ -625,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   run_loop.Run();
 
   const std::vector<sync_pb::SyncEntity> entities_after =
-      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   ASSERT_EQ(1U, entities_before.size());
   ASSERT_EQ(1U, entities_after.size());
 

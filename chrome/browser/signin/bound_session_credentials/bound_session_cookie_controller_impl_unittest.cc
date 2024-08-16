@@ -262,7 +262,7 @@ class BoundSessionCookieControllerImplTest
         return observer.get();
       }
     }
-    NOTREACHED_NORETURN() << "No observer found for " << cookie_name;
+    NOTREACHED() << "No observer found for " << cookie_name;
   }
 
   base::Time cookie_expiration_time(const std::string& cookie_name) {

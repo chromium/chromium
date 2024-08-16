@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/installer.h"
@@ -44,12 +45,25 @@ std::unique_ptr<App> CreateAppShutdown(
     const mojo::NamedPlatformChannel::ServerName& server_name =
         GetServerName());
 
+// Creates an App which instructs the running server to fetch policies, if
+// present.
+std::unique_ptr<App> CreateAppFetchPolicies(
+    const mojo::NamedPlatformChannel::ServerName& server_name =
+        GetServerName());
+
 std::unique_ptr<App> CreateAppInstall(
     base::OnceCallback<EnterpriseCompanionStatus()> shutdown_remote_task =
         base::BindOnce([] { return CreateAppShutdown()->Run(); }),
     base::OnceCallback<std::unique_ptr<ScopedLock>(base::TimeDelta timeout)>
         lock_provider = base::BindOnce(&CreateScopedLock),
     base::OnceCallback<bool()> install_task = base::BindOnce(&Install));
+
+#if BUILDFLAG(IS_MAC)
+// Creates an App which handles network requests for another process. If
+// the current process is running as root, the app will set the process' uid and
+// gid to nobody.
+std::unique_ptr<App> CreateAppNetWorker();
+#endif
 
 }  // namespace enterprise_companion
 

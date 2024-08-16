@@ -3046,6 +3046,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--gtest_filter=-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers",
           "--gs-results-bucket=chromium-result-details",
@@ -3056,11 +3057,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3086,7 +3087,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 5
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -6574,6 +6575,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
@@ -6586,11 +6588,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6616,7 +6618,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 11
+          "shards": 10
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -9976,6 +9978,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -9985,11 +9988,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -13292,6 +13295,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -13302,11 +13306,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -13878,6 +13882,47 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_14.chrome_public_test_apk.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "chrome_public_test_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "chrome_public_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP2A.240705.004",
+            "device_os_type": "userdebug",
+            "device_type": "panther",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 19
+        },
+        "test": "chrome_public_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
+      },
+      {
+        "args": [
+          "--git-revision=${got_revision}",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -14015,6 +14060,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -14026,11 +14072,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -14043,7 +14089,7 @@
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 9
+          "shards": 6
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -17008,6 +17054,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -17019,11 +17066,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -19419,6 +19466,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -19427,11 +19475,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -19445,7 +19493,41 @@
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 5
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=single",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_single_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_single_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -20797,6 +20879,7 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -22025,6 +22108,7 @@
     ],
     "isolated_scripts": [
       {
+        "ci_only": true,
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
@@ -27856,6 +27940,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
           "--use-persistent-shell",
@@ -27868,11 +27953,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -27899,6 +27984,57 @@
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=single",
+          "--use-persistent-shell",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_single_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_single_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android26"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 9
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -29287,6 +29423,8 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
+          "--use-persistent-shell",
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -29298,11 +29436,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -29316,7 +29454,45 @@
             "os": "Android"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 9
+          "shards": 6
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=single",
+          "--use-persistent-shell",
+          "--use-persistent-shell",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_single_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_single_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
@@ -32297,6 +32473,7 @@
       },
       {
         "args": [
+          "--webview-process-mode=multiple",
           "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -32307,11 +32484,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webview_instrumentation_test_apk"
+            "webview_instrumentation_test_apk_multiple_process_mode"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webview_instrumentation_test_apk",
+        "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32337,7 +32514,55 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 13
+          "shards": 8
+        },
+        "test": "webview_instrumentation_test_apk",
+        "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
+      },
+      {
+        "args": [
+          "--webview-process-mode=single",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "webview_instrumentation_test_apk_single_process_mode"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "webview_instrumentation_test_apk_single_process_mode",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_28_google_apis_x86"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"

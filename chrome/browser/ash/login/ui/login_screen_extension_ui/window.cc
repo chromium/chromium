@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/login_web_view.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "ui/views/widget/widget.h"
 

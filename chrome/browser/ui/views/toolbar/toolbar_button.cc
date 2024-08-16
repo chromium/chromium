@@ -238,7 +238,7 @@ SkColor ToolbarButton::GetForegroundColor(ButtonState state) const {
     case ButtonState::STATE_NORMAL:
       return color_provider->GetColor(kColorToolbarButtonIcon);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

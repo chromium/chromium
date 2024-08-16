@@ -23,6 +23,8 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> менен Gmail же YouTube сыяктуу Google кызматтарына киргенде, Chromium'га ошол эле аккаунт менен автоматтык түрдө кире аласыз</translation>
 <translation id="1290883685122687410">Тууралоо катасы: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Жаңы Chromium профилин жөндөп алыңыз</translation>
+<translation id="1324107359134968521">Chromium 
+Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайдаланууга уруксат алышы керек. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Chromium'дан да (<ph name="URL" />) дайындарды өчүрүү</translation>
 <translation id="1414495520565016063">Chromium'га кирдиңиз!</translation>
 <translation id="1478370723027452770">Chrome for Testing боюнча жардам алуу</translation>
@@ -61,6 +63,7 @@
 <translation id="1951406923938785464">Файл түрү аз жүктөлүп алынып, кооптуу болушу мүмкүн болгондуктан, Chromium бул жүктөп алууну бөгөттөдү</translation>
 <translation id="1953553007165777902">Жүктөлүп алынууда... <ph name="MINUTE" /> мүнөт калды</translation>
 <translation id="1966382378801805537">Chromium демейки серепчини аныктап же коё албай жатат</translation>
+<translation id="1990262977744080398">Chromium эмне үчүн айрым файлдарды бөгөттөгөнүн билип алыңыз, жаңы өтмөктө ачылат</translation>
 <translation id="2008474315282236005">Ушуну менен түзмөктөгү 1 нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chromium'га <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2018879682492276940">Орнотулбай калды. Кайталап көрүңүз.</translation>
 <translation id="2020032459870799438">Башка сырсөздөрүңүздүн бекем корголгонун, ошондой эле коопсуздукка байланыштуу көйгөйлөрдү текшерүү үчүн <ph name="BEGIN_LINK" />Chromium'га кириңиз<ph name="END_LINK" />.</translation>
@@ -121,6 +124,7 @@
 <translation id="2915996080311180594">Кийинчерээк өчүрүп күйгүзүү</translation>
 <translation id="2928420929544864228">Орнотулду.</translation>
 <translation id="2945997411976714835">Орнотуу катасы: Орнотуу процесси башталган жок.</translation>
+<translation id="2970426615109535079">Chromium'ду уюмуңуз тескейт</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="2977506796191543575">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
 <translation id="2987208172821108655">Chromium серептөөнү жакшыртып, ресурстарды бошотуу үчүн бул өтмөктөрдү жигерсиз кыла алат.</translation>
@@ -221,6 +225,7 @@
 <translation id="4423735387467980091">Chromium'ду өзгөчөлөштүрүү жана көзөмөлдөө</translation>
 <translation id="4427306783828095590">Өркүндөтүлгөн коргоо параметри фишинг жана кесепеттүү программалардан жакшыраак коргойт</translation>
 <translation id="4434353761996769206">Орнотуу катасы: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614">Chromium'ду <ph name="MANAGER" /> тескейт</translation>
 <translation id="4447409407328223819">Chrome for Testing жөнүндө</translation>
 <translation id="4501471624619070934">Бул өлкөдөн кирүү мүмкүнчүлүгү чектелгендиктен, орнотулбай калды.</translation>
 <translation id="4510853178268397146">Бул кеңейтүү маалыматты кантип чогултуу жана колдонуу сыяктуу купуялыкты камсыз кылуу ыкмаларын жарыялаган эмес. Chromium аны өчүрүүнү сунуштайт.</translation>
@@ -489,6 +494,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8550334526674375523">Бул жумуш профили жеке профилиңизден толугу менен ажыратылган.</translation>
 <translation id="8555465886620020932">Тейлөө катасы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Google аккаунтуңуз менен киргенде Chromium сырсөздөрүңүздү текшерет</translation>
+<translation id="8576826849825683917">Chromium'ду бир нече уюм тескейт</translation>
 <translation id="8586442755830160949">Автордук укук <ph name="YEAR" /> Chromium авторлору. Бардык укуктар корголгон.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Бул маалыматты кантип колдонобуз:<ph name="END_BOLD" /> Сайттар кызыккан нерселериңиз тууралуу маалыматты Chromium'да сакташы мүмкүн. Мисалы, марафон үчүн бут кийим сатып алуу үчүн сайтка баш баксаңыз, ал сайт "марафондо чуркоону" кызыккан нерсеңиз катары аныктайт. Кийинчерээк, жарышууга катталуу үчүн башка бир сайтка баш баксаңыз, ал сайт кызыккан нерселериңиздин негизинде чуркоо үчүн бут кийимдин жарнамасын көрсөтүшү мүмкүн.</translation>
 <translation id="8619360774459241877">Chromium иштетилүүдө…</translation>

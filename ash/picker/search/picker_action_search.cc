@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/picker/picker_shortcuts.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -26,9 +27,9 @@ using CaseTransformType = PickerSearchResult::CaseTransformData::Type;
 
 constexpr auto kTransformMessageIds =
     std::to_array<std::pair<int, CaseTransformType>>({
-        {IDS_PICKER_UPPER_CASE_CATEGORY_LABEL, CaseTransformType::kUpperCase},
-        {IDS_PICKER_LOWER_CASE_CATEGORY_LABEL, CaseTransformType::kLowerCase},
-        {IDS_PICKER_TITLE_CASE_CATEGORY_LABEL, CaseTransformType::kTitleCase},
+        {IDS_PICKER_UPPER_CASE_MENU_LABEL, CaseTransformType::kUpperCase},
+        {IDS_PICKER_LOWER_CASE_MENU_LABEL, CaseTransformType::kLowerCase},
+        {IDS_PICKER_TITLE_CASE_MENU_LABEL, CaseTransformType::kTitleCase},
     });
 
 bool IsMatch(const string_matching::TokenizedString& query,
@@ -57,12 +58,13 @@ std::vector<PickerSearchResult> PickerActionSearch(
     }
   }
 
-  if (IsMatch(tokenized_query, l10n_util::GetStringUTF16(
-                                   options.caps_lock_state_to_search
-                                       ? IDS_PICKER_CAPS_ON_CATEGORY_LABEL
-                                       : IDS_PICKER_CAPS_OFF_CATEGORY_LABEL))) {
-    matches.push_back(
-        PickerSearchResult::CapsLock(options.caps_lock_state_to_search));
+  if (IsMatch(tokenized_query,
+              l10n_util::GetStringUTF16(
+                  options.caps_lock_state_to_search
+                      ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
+                      : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL))) {
+    matches.push_back(PickerSearchResult::CapsLock(
+        options.caps_lock_state_to_search, GetPickerShortcutForCapsLock()));
   }
 
   if (options.search_case_transforms) {

@@ -26,6 +26,7 @@ static_library("auth") {
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
@@ -36,5 +37,6 @@ static_library("auth") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ui/webui/ash/settings/pages/privacy",
   ]
 }

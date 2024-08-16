@@ -96,7 +96,7 @@ bool DesktopMediaPaneView::PermissionRequired() const {
     case DesktopMediaList::Type::kCurrentTab:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DesktopMediaPaneView::MakePermissionPaneView() {

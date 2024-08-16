@@ -12,7 +12,6 @@
 #include <set>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -38,8 +37,7 @@ namespace content {
 //
 // This class must be used and destructed on the same sequence as the
 // PartitionedLockManager.
-struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder
-    : public base::SupportsUserData {
+struct PartitionedLockHolder : public base::SupportsUserData {
   PartitionedLockHolder();
   PartitionedLockHolder(const PartitionedLockHolder&) = delete;
   PartitionedLockHolder& operator=(const PartitionedLockHolder&) = delete;
@@ -65,7 +63,7 @@ struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockHolder
 //   needed (where old locks will continue to be held), then all locks must be
 //   released first, and then all necessary locks acquired in one acquisition
 //   call.
-class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
+class PartitionedLockManager {
  public:
   using LocksAcquiredCallback = base::OnceClosure;
 
@@ -87,12 +85,12 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
 
   // Acquires locks for the given requests. Lock partitions are treated as
   // completely independent domains.
-  struct COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockRequest {
+  struct PartitionedLockRequest {
     PartitionedLockRequest(PartitionedLockId lock_id, LockType type);
     PartitionedLockId lock_id;
     LockType type;
   };
-  struct COMPONENT_EXPORT(LOCK_MANAGER) AcquireOptions {
+  struct AcquireOptions {
     AcquireOptions();
     bool ensure_async = false;
   };
@@ -188,13 +186,10 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   base::WeakPtrFactory<PartitionedLockManager> weak_factory_{this};
 };
 
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator<(const PartitionedLockManager::PartitionedLockRequest& x,
                const PartitionedLockManager::PartitionedLockRequest& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator==(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
-COMPONENT_EXPORT(LOCK_MANAGER)
 bool operator!=(const PartitionedLockManager::PartitionedLockRequest& x,
                 const PartitionedLockManager::PartitionedLockRequest& y);
 

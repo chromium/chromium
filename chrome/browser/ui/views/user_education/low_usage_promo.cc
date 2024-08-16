@@ -18,10 +18,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -81,7 +82,7 @@ Browser* ContextToBrowser(ui::ElementContext ctx) {
 // already exist.
 void ShowSidePanel(Browser* browser, SidePanelEntryId entry) {
   SidePanelCoordinator* const coordinator =
-      SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+      browser->GetFeatures().side_panel_coordinator();
   coordinator->Show(entry);
 }
 

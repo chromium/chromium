@@ -48,8 +48,6 @@ group("all") {
   }
 }
 
-# Conditional build is needed, otherwise the analyze script on Linux
-# requires all targets and it is going to include the targets below.
 if (is_win || is_mac || is_linux) {
   source_set("base") {
     sources = [
@@ -192,6 +190,8 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       sources += [
         "activity_impl_util_mac.cc",
+        "app/app_net_worker.cc",
+        "app/app_net_worker.h",
         "app/app_server_posix_mac.cc",
         "installer_mac.cc",
         "ipc/ipc_security_mac.cc",
@@ -200,7 +200,10 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/setup.mm",
         "mac/setup/wake_task.h",
         "mac/setup/wake_task.mm",
+        "net/fetcher_callback_adapter.cc",
+        "net/fetcher_callback_adapter.h",
         "net/network_fetcher_mac.mm",
+        "net/network_file_fetcher.h",
         "policy/mac/managed_preference_policy_manager.h",
         "policy/mac/managed_preference_policy_manager.mm",
         "policy/mac/managed_preference_policy_manager_impl.h",
@@ -212,6 +215,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         ":ks_ticket",
+        "//chrome/updater/net/mac/mojom",
         "//mojo/public/cpp/platform",
         "//net",
       ]
@@ -774,7 +778,6 @@ if (is_win || is_mac || is_linux) {
       "test/integration_test_commands.h",
       "test/integration_test_commands_system.cc",
       "test/integration_test_commands_user.cc",
-      "test/integration_tests.cc",
       "test/integration_tests_impl.cc",
       "test/integration_tests_impl.h",
       "test/request_matcher.cc",
@@ -790,6 +793,9 @@ if (is_win || is_mac || is_linux) {
       "updater_unittest.cc",
       "util/util_unittest.cc",
     ]
+    if (!is_component_build) {
+      sources += [ "test/integration_tests.cc" ]
+    }
 
     deps = [
       ":base",
@@ -941,6 +947,7 @@ if (is_win || is_mac || is_linux) {
 
     if (is_mac) {
       sources += [
+        "app/app_net_worker_unittest.cc",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
         "mac/setup/keystone_unittest.mm",
@@ -949,6 +956,7 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/wake_task_unittest.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
+        "test/integration_tests_mac.h",
         "test/integration_tests_mac.mm",
         "util/util_mac_unittest.mm",
       ]
@@ -957,7 +965,9 @@ if (is_win || is_mac || is_linux) {
         ":ks_ticket",
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
+        "//chrome/updater/mac/client_lib:public_sources",
         "//chrome/updater/mac/client_lib:test_sources",
+        "//chrome/updater/net/mac/mojom",
         "//third_party/ocmock",
       ]
 

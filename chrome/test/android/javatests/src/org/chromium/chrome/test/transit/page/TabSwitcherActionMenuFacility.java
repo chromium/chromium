@@ -4,22 +4,20 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
-import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
@@ -29,23 +27,21 @@ import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 
 /** The action menu opened when long pressing the tab switcher button in a {@link PageStation}. */
 public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
-    public static final ViewElement APP_MENU_LIST = scopedViewElement(withId(R.id.app_menu_list));
+    public static final ViewSpec APP_MENU_LIST = viewSpec(withId(R.id.app_menu_list));
+
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
-    public static final ViewElement CLOSE_TAB_MENU_ITEM =
-            scopedViewElement(
-                    allOf(
-                            withText(R.string.close_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
-    public static final ViewElement NEW_TAB_MENU_ITEM =
-            scopedViewElement(
-                    allOf(
-                            withText(R.string.menu_new_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
-    public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
-            scopedViewElement(
-                    allOf(
-                            withText(R.string.menu_new_incognito_tab),
-                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+    public static final ViewSpec CLOSE_TAB_MENU_ITEM =
+            viewSpec(withText(R.string.close_tab), isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+
+    public static final ViewSpec NEW_TAB_MENU_ITEM =
+            viewSpec(
+                    withText(R.string.menu_new_tab),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+
+    public static final ViewSpec NEW_INCOGNITO_TAB_MENU_ITEM =
+            viewSpec(
+                    withText(R.string.menu_new_incognito_tab),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
 
     @Override
     public void declareElements(Elements.Builder elements) {
@@ -122,7 +118,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(mHostStation.isIncognito(), -1)),
-                () -> CLOSE_TAB_MENU_ITEM.perform(click()));
+                CLOSE_TAB_MENU_ITEM::click);
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -136,7 +132,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ false, +1)),
-                () -> NEW_TAB_MENU_ITEM.perform(click()));
+                NEW_TAB_MENU_ITEM::click);
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -150,7 +146,7 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 destination,
                 Transition.conditionOption(
                         createTabCountChangedCondition(/* incognito= */ true, +1)),
-                () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
+                NEW_INCOGNITO_TAB_MENU_ITEM::click);
     }
 
     private Condition createTabCountChangedCondition(boolean incognito, int change) {

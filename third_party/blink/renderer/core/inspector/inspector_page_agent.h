@@ -33,6 +33,7 @@
 
 #include <optional>
 
+#include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -218,7 +219,8 @@ class CORE_EXPORT InspectorPageAgent final
 
   // InspectorInstrumentation API
   void DidCreateMainWorldContext(LocalFrame*);
-  void DidNavigateWithinDocument(LocalFrame*);
+  void DidNavigateWithinDocument(LocalFrame*,
+                                 mojom::blink::SameDocumentNavigationType);
   void DomContentLoadedEventFired(LocalFrame*);
   void LoadEventFired(LocalFrame*);
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
@@ -272,7 +274,19 @@ class CORE_EXPORT InspectorPageAgent final
   void Trace(Visitor*) const override;
 
  private:
-  struct IsolatedWorldRequest;
+  struct IsolatedWorldRequest {
+    IsolatedWorldRequest() = delete;
+    IsolatedWorldRequest(String world_name,
+                         bool grant_universal_access,
+                         std::unique_ptr<CreateIsolatedWorldCallback> callback)
+        : world_name(world_name),
+          grant_universal_access(grant_universal_access),
+          callback(std::move(callback)) {}
+
+    const String world_name;
+    const bool grant_universal_access;
+    std::unique_ptr<CreateIsolatedWorldCallback> callback;
+  };
 
   void GetResourceContentAfterResourcesContentLoaded(
       const String& frame_id,

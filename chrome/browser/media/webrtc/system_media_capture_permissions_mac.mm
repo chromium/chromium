@@ -93,7 +93,7 @@ SystemPermission CheckSystemMediaCapturePermission(AVMediaType media_type) {
     case AVAuthorizationStatusAuthorized:
       return SystemPermission::kAllowed;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

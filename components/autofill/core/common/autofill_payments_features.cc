@@ -124,13 +124,21 @@ BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
 // result when completed.
 BASE_FEATURE(kAutofillEnableSaveCardLoadingAndConfirmation,
              "AutofillEnableSaveCardLoadingAndConfirmation",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // When enabled, save card will fallback to a local save if the server upload of
 // a card encounters a failure.
 BASE_FEATURE(kAutofillEnableSaveCardLocalSaveFallback,
              "AutofillEnableSaveCardLocalSaveFallback",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // When enabled, Autofill will attempt to offer upload save for IBANs
 // (International Bank Account Numbers) and autofill server-based IBANs.
@@ -158,7 +166,11 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
 // result when completed.
 BASE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation,
              "AutofillEnableVcnEnrollLoadingAndConfirmation",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // When enabled, Chrome will display grayed out virtual card suggestions on
 // merchant websites where the merchant has opted-out of virtual cards.
@@ -191,6 +203,12 @@ BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
 // card on file when parsing forms.
 BASE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields,
              "AutofillParseVcnCardOnFileStandaloneCvcFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the "Show cards from your Google Account" Autofill suggestion
+// will not be displayed, and Autofill will work as if it had been selected.
+BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
+             "AutofillRemovePaymentsButterDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the add/edit local card dialog in chrome://settings on Desktop

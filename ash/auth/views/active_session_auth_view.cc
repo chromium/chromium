@@ -239,6 +239,17 @@ bool ActiveSessionAuthView::HasPin() const {
   return auth_container_->HasPin();
 }
 
+void ActiveSessionAuthView::SetPinStatus(const std::u16string& status_str) {
+  auth_container_->SetPinStatus(status_str);
+}
+
+void ActiveSessionAuthView::SetInputEnabled(bool enabled) {
+  auth_container_->SetInputEnabled(enabled);
+  if (enabled) {
+    RequestFocus();
+  }
+}
+
 void ActiveSessionAuthView::OnPinSubmit(const std::u16string& pin) {
   for (auto& observer : observers_) {
     observer.OnPinSubmit(pin);

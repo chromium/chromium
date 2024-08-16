@@ -232,7 +232,7 @@ gfx::Transform MakeTransformForImage(const gfx::RectF image_screen_size,
       transform.Translate(0, image_screen_size.width());
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   transform.Scale(image_screen_size.width() / image_pixel_size.width(),
                   image_screen_size.height() / image_pixel_size.height());

@@ -83,6 +83,20 @@ found in the LICENSE file.
     android:layout_width="14dp"
     android:layout_height="match_parent" />
 
+  <LinearLayout
+    android:id="@+id/tab_group_row_shared_image_tiles"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_weight="0"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:visibility="gone">
+  </LinearLayout>
+
+  <Space
+    android:layout_width="14dp"
+    android:layout_height="match_parent" />
+
   <org.chromium.ui.listmenu.ListMenuButton
     android:id="@+id/more"
     android:layout_width="@dimen/min_touch_target_size"

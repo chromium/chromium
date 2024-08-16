@@ -12,8 +12,8 @@
 #include <variant>
 #include <vector>
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"

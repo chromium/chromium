@@ -47,6 +47,7 @@ class DesktopMediaListBase : public DesktopMediaList {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
   static uint32_t GetImageHash(const gfx::Image& image);
 

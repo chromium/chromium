@@ -18,7 +18,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {
@@ -283,7 +283,7 @@ void PasswordReceiverServiceImpl::RemoveTaskFromTasksList(
                   cached_task) { return cached_task.get() == task; });
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 PasswordReceiverServiceImpl::GetControllerDelegate() {
   CHECK(sync_bridge_);
   return sync_bridge_->change_processor()->GetControllerDelegate();

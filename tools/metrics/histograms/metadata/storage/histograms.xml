@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.DocumentLoadedWithStorageAccess"
-    enum="Boolean" expires_after="2024-09-15">
+    enum="Boolean" expires_after="2025-09-15">
   <owner>cfredric@chromium.org</owner>
   <owner>johannhof@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitMeasuredDelay" units="ms"
-    expires_after="2024-11-28">
+    expires_after="2025-02-02">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -239,12 +239,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DOMStorage.CommitSizeBytes" units="bytes"
-    expires_after="2024-11-28">
+    expires_after="2025-02-02">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     The total in-memory size of a single batched commit to a DOMStorage
-    database. Recorded when the batch is pushed to LevelDB.
+    database. Recorded when the batch is pushed to LevelDB. In this case, a
+    &quot;batched commit&quot; is all the recent writes to a single storage area
+    (i.e. a single site's DOM storage).
+  </summary>
+</histogram>
+
+<histogram name="DOMStorage.CommitSizeBytesAggregated" units="bytes"
+    expires_after="2024-11-28">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The total in-memory size of a LevelDB writebatch for the DOMStorage
+    database. Recorded when the batch is pushed to LevelDB. Unlike
+    CommitSizeBytes, this may contain data from multiple storage areas (sites)
+    if commit coalescing is enabled.
   </summary>
 </histogram>
 
@@ -415,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Statement.{DatabaseTag}.VMSteps" units="count"
-    expires_after="2024-12-05">
+    expires_after="2025-02-10">
   <owner>etienneb@chromium.org</owner>
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -427,7 +441,7 @@ chromium-metrics-reviews@google.com.
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
 
-<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2024-12-08">
+<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2025-02-10">
   <owner>etienneb@chromium.org</owner>
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
@@ -435,18 +449,6 @@ chromium-metrics-reviews@google.com.
     The time it takes to sync SQLite data to disk. The metric is recorded once
     per flush. A SQLite operation may require multiple sync operation to ensure
     database consistency.
-  </summary>
-</histogram>
-
-<histogram name="Storage.BlacklistedImportantSites.Reason"
-    enum="ClearDataSiteBlacklistCrossedReason" expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    This is recorded for every site that the user blocklists when they when they
-    clear browsing data. It indicates which signals were used to show the given
-    site to the user that the user then chose to exclude from clearing. This
-    histogram has expired between M95-M106.
   </summary>
 </histogram>
 
@@ -534,7 +536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.ClearSiteDataHeader.Parameters"
-    enum="ClearSiteDataParameters" expires_after="2024-12-08">
+    enum="ClearSiteDataParameters" expires_after="2025-02-10">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -550,6 +552,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records if content::FilePathWatcher sends an error to its callback and how
     it failed. Recorded on every error sent to the callback.
+  </summary>
+</histogram>
+
+<histogram name="Storage.FileSystemAccess.InotifyWatchCount" units="count"
+    expires_after="2025-07-02">
+  <owner>memmott@chromium.org</owner>
+  <owner>dslee@chromium.org</owner>
+  <owner>christinesm@chromium.org</owner>
+  <summary>
+    Records the high water mark of inotify watches used in a FilePathWatcher on
+    Linux. Recorded when the FilePathWatcher is destroyed.
   </summary>
 </histogram>
 
@@ -700,28 +713,6 @@ chromium-metrics-reviews@google.com.
     generated when the user enters the 'Clear Browsing Dialog' or the 'Manage
     Space' screens for Chrome, both of which are on Android. This histogram has
     expired between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.IndexedDB.PutBlobSizeKB" units="KB"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records the size of a blob used in an IndexedDB add/put operation. Recorded
-    for every put operation that contains a blob. This histogram has expired
-    between M95-M106.
-  </summary>
-</histogram>
-
-<histogram name="Storage.IndexedDB.PutValidBlob" enum="Boolean"
-    expires_after="2024-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records if a blob intended to be used in an IndexedDB add/put operation is a
-    valid blob. Recorded for every put operation that contains a blob. This
-    histogram has expired between M95-M106.
   </summary>
 </histogram>
 
@@ -893,7 +884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.SessionStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-08-01">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2025-08-05">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

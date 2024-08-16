@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran. Chrome puede compartir hasta 3 intereses.</translation>
 <translation id="2563121210305478421">¿Quieres reiniciar Chrome?</translation>
 <translation id="2569974318947988067">Chrome intentará actualizar las navegaciones a HTTPS</translation>
+<translation id="2571392474191184472">Tu organización administra Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ya accedió a este perfil de Chrome. Para mantener separados los datos de navegación, Chrome puede crear un perfil individual para ti.</translation>
 <translation id="2580411288591421699">No se puede instalar la misma versión de Google Chrome que se está ejecutando actualmente. Cierra Google Chrome e intenta nuevamente.</translation>
 <translation id="2586406160782125153">Esta acción borrará tus datos de navegación de este dispositivo. Si más adelante deseas recuperarlos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
@@ -442,6 +443,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7177959540995930968">Puedes obtener más información sobre estas funciones en la configuración de Chrome.</translation>
 <translation id="7193885263065350793">Tu organización cierra Chrome cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> administra Chrome</translation>
 <translation id="7295052994004373688">Este idioma se usa para mostrar la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7302361266603927550">Aún no se guardaron algunos de tus datos de Chrome en tu Cuenta de Google. Espera unos minutos antes de salir. Si sales ahora, se borrarán estos datos.</translation>
@@ -575,6 +577,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8999117580775242387">Cuando HTTPS no esté disponible, Chrome usará una conexión no segura sin advertirte</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
+<translation id="9014771989710951291">Varias organizaciones administran Chrome</translation>
 <translation id="9024318700713112071">Establece Chrome como navegador predeterminado</translation>
 <translation id="9053892488859122171">Sistema de ChromeOS Flex</translation>
 <translation id="9090566250983691233">Descubre por qué Chrome bloquea algunos archivos</translation>

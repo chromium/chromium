@@ -37,7 +37,6 @@
 
 using base::ASCIIToUTF16;
 using signin::GaiaIdHash;
-using std::string_view;
 using testing::_;
 using testing::IsEmpty;
 using testing::Optional;
@@ -1396,16 +1395,14 @@ TEST_P(FormFetcherImplTest, ProfileBackendErrorResetsOnNewFetch) {
   Fetch();
 
   PasswordStoreBackendError error_results = PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+      PasswordStoreBackendErrorType::kAuthErrorResolvable);
   DeliverPasswordStoreResults(
       /*profile_store_results=*/std::move(error_results),
       /*account_store_results=*/{});
 
   EXPECT_EQ(form_fetcher_->GetProfileStoreBackendError().value(),
             PasswordStoreBackendError(
-                PasswordStoreBackendErrorType::kAuthErrorResolvable,
-                PasswordStoreBackendErrorRecoveryType::kRecoverable));
+                PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   Fetch();
 
@@ -1425,16 +1422,14 @@ TEST_F(MultiStoreFormFetcherTest, AccountBackendErrorResetsOnNewFetch) {
   Fetch();
 
   PasswordStoreBackendError error_results = PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable);
+      PasswordStoreBackendErrorType::kAuthErrorResolvable);
   DeliverPasswordStoreResults(
       /*profile_store_results=*/{},
       /*account_store_results=*/std::move(error_results));
 
   EXPECT_EQ(form_fetcher_->GetAccountStoreBackendError().value(),
             PasswordStoreBackendError(
-                PasswordStoreBackendErrorType::kAuthErrorResolvable,
-                PasswordStoreBackendErrorRecoveryType::kRecoverable));
+                PasswordStoreBackendErrorType::kAuthErrorResolvable));
 
   Fetch();
 

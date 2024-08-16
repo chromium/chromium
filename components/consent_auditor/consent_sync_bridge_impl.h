@@ -12,26 +12,26 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/consent_auditor/consent_sync_bridge.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_with_in_memory_cache.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_with_in_memory_cache.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace consent_auditor {
 
 class ConsentSyncBridgeImpl : public ConsentSyncBridge,
-                              public syncer::ModelTypeSyncBridge {
+                              public syncer::DataTypeSyncBridge {
  public:
   ConsentSyncBridgeImpl(
-      syncer::OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      syncer::OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   ConsentSyncBridgeImpl(const ConsentSyncBridgeImpl&) = delete;
   ConsentSyncBridgeImpl& operator=(const ConsentSyncBridgeImpl&) = delete;
 
   ~ConsentSyncBridgeImpl() override;
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -51,16 +51,16 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
   // ConsentSyncBridge implementation.
   void RecordConsent(
       std::unique_ptr<sync_pb::UserConsentSpecifics> specifics) override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
   static std::string GetStorageKeyFromSpecificsForTest(
       const sync_pb::UserConsentSpecifics& specifics);
-  std::unique_ptr<syncer::ModelTypeStore> StealStoreForTest();
+  std::unique_ptr<syncer::DataTypeStore> StealStoreForTest();
 
  private:
   using StoreWithCache =
-      syncer::ModelTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
+      syncer::DataTypeStoreWithInMemoryCache<sync_pb::UserConsentSpecifics>;
 
   void RecordConsentImpl(
       std::unique_ptr<sync_pb::UserConsentSpecifics> specifics);

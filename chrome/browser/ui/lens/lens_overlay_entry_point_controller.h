@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_ENTRY_POINT_CONTROLLER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/actions/actions.h"
+
+class BrowserWindowInterface;
+class CommandUpdater;
 
 namespace lens {
 
@@ -22,11 +24,12 @@ namespace lens {
 class LensOverlayEntryPointController : public FullscreenObserver,
                                         public TemplateURLServiceObserver {
  public:
-  explicit LensOverlayEntryPointController(Browser* browser);
+  LensOverlayEntryPointController();
   ~LensOverlayEntryPointController() override;
 
   // This class does nothing if not initialized. IsEnabled returns false.
-  void Initialize();
+  void Initialize(BrowserWindowInterface* browser_window_interface,
+                  CommandUpdater* command_updater);
 
   // Whether the entry points should be enabled.
   bool IsEnabled();
@@ -55,8 +58,13 @@ class LensOverlayEntryPointController : public FullscreenObserver,
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
 
-  // Reference to the browser housing our entry points.
-  raw_ptr<Browser> browser_;
+  // Used to change whether the lens entrypoint is enabled in the 3 dot menu.
+  // The CommandUpdater is owned by the BrowserWindowInterface, which also owns
+  // this, and thus is guaranteed to outlive this.
+  raw_ptr<CommandUpdater> command_updater_;
+
+  // Owns this.
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 
 }  // namespace lens

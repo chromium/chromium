@@ -786,9 +786,9 @@ void LayerTreeHost::SetNeedsCommitWithForcedRedraw() {
 }
 
 void LayerTreeHost::SetDebugState(const LayerTreeDebugState& new_debug_state) {
-  if (LayerTreeDebugState::Equal(pending_commit_state()->debug_state,
-                                 new_debug_state))
+  if (pending_commit_state()->debug_state == new_debug_state) {
     return;
+  }
 
   pending_commit_state()->debug_state = new_debug_state;
 

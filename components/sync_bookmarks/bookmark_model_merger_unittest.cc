@@ -219,7 +219,7 @@ std::unique_ptr<SyncedBookmarkTracker> Merge(
     syncer::UpdateResponseDataList updates,
     BookmarkModelView* bookmark_model) {
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   BookmarkModelMerger(std::move(updates), bookmark_model, &favicon_service,
                       tracker.get())
@@ -641,7 +641,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeFaviconsForRemoteNodesOnly) {
   //  |- title 1
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
 
   // Favicon should be set for the remote node.
@@ -733,7 +733,7 @@ TEST(BookmarkModelMergerTest,
       /*is_folder=*/true, /*unique_position=*/pos));
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   BookmarkModelMerger(std::move(updates), &bookmark_model, &favicon_service,
                       tracker.get())
@@ -777,7 +777,7 @@ TEST(BookmarkModelMergerTest,
       kRemoteTruncatedFullTitle);
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   BookmarkModelMerger(std::move(updates), &bookmark_model, &favicon_service,
                       tracker.get())
@@ -826,7 +826,7 @@ TEST(BookmarkModelMergerTest,
       kRemoteFullTitle);
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   BookmarkModelMerger(std::move(updates), &bookmark_model, &favicon_service,
                       tracker.get())
@@ -1587,7 +1587,7 @@ TEST(BookmarkModelMergerTest, ShouldIgnoreRemoteUpdateWithInvalidUuid) {
       /*is_folder=*/false, /*unique_position=*/position2));
 
   // |originator_client_item_id| cannot itself be duplicated because
-  // ModelTypeWorker guarantees otherwise.
+  // DataTypeWorker guarantees otherwise.
   updates.back().entity.originator_client_item_id =
       kUnexpectedOriginatorItemId.AsLowercaseString();
   updates.back().entity.id =
@@ -1859,7 +1859,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.back().entity.id = kRootNodeId;
   updates.back().entity.server_defined_unique_tag =
-      syncer::ModelTypeToProtocolRootTag(syncer::BOOKMARKS);
+      syncer::DataTypeToProtocolRootTag(syncer::BOOKMARKS);
 
   updates.push_back(CreateUpdateResponseData(
       /*uuid=*/base::Uuid::GenerateRandomV4(),
@@ -2126,7 +2126,7 @@ TEST(BookmarkModelMergerTest, ShouldEnsureLimitDepthOfTree) {
   ASSERT_THAT(updates.size(), Eq(kRemoteUpdatesDepth));
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::ModelTypeState());
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   BookmarkModelMerger(std::move(updates), &bookmark_model, &favicon_service,
                       tracker.get())

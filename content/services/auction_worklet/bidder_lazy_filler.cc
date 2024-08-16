@@ -235,6 +235,17 @@ bool InterestGroupLazyFiller::CreateAdVector(
                                        *ad.metadata, ad_object))) {
       return false;
     }
+    if (ad.selectable_buyer_and_seller_reporting_ids) {
+      if ((ad.buyer_reporting_id &&
+           !ad_dict.Set("buyerReportingId", *ad.buyer_reporting_id)) ||
+          (ad.buyer_and_seller_reporting_id &&
+           !ad_dict.Set("buyerAndSellerReportingId",
+                        *ad.buyer_and_seller_reporting_id)) ||
+          !ad_dict.Set("selectableBuyerAndSellerReportingIds",
+                       *ad.selectable_buyer_and_seller_reporting_ids)) {
+        return false;
+      }
+    }
     ads_vector.emplace_back(std::move(ad_object));
   }
   return v8_helper()->InsertValue(

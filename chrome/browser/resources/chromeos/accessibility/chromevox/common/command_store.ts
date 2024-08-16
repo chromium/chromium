@@ -12,8 +12,8 @@
  * If you are looking to add a user command, follow the below steps for best
  * integration with existing components:
  * 1. Add the command to the |Command| enum in command.js.
- * 2. Add a command below in CommandStore.COMMAND_DATA. Fill in each of the
- * relevant JSON keys.
+ * 2. Add a command below in COMMAND_DATA. Fill in each of the relevant JSON
+ * keys.
  * Be sure to add a msg id and define it in chromevox/messages/messages.js which
  * describes the command. Please also add a category msg id so that the command
  * will show up in the options page.
@@ -34,7 +34,7 @@ export class CommandStore {
    * @return The message id, if any.
    */
   static messageForCommand(command: Command): string | undefined {
-    return CommandStore.COMMAND_DATA[command]?.msgId;
+    return COMMAND_DATA[command]?.msgId;
   }
 
   /**
@@ -43,7 +43,7 @@ export class CommandStore {
    * @return The category, if any.
    */
   static categoryForCommand(command: Command): CommandCategory | undefined {
-    return CommandStore.COMMAND_DATA[command]?.category;
+    return COMMAND_DATA[command]?.category;
   }
 
   /**
@@ -51,8 +51,8 @@ export class CommandStore {
    * @return The command, if any.
    */
   static commandForMessage(msgId: string): Command | void {
-    for (const commandName in CommandStore.COMMAND_DATA) {
-      const command = CommandStore.COMMAND_DATA[commandName as Command];
+    for (const commandName in COMMAND_DATA) {
+      const command = COMMAND_DATA[commandName as Command];
       if (command.msgId === msgId) {
         return commandName as Command;
       }
@@ -66,8 +66,8 @@ export class CommandStore {
    */
   static commandsForCategory(category: CommandCategory): Command[] {
     const ret: Command[] = [];
-    for (const cmd in CommandStore.COMMAND_DATA) {
-      const struct = CommandStore.COMMAND_DATA[cmd as Command];
+    for (const cmd in COMMAND_DATA) {
+      const struct = COMMAND_DATA[cmd as Command];
       if (category === struct.category) {
         ret.push(cmd as Command);
       }
@@ -80,15 +80,15 @@ export class CommandStore {
    * @return Whether or not this command is denied in the OOBE.
    */
   static denySignedOut(command: Command): boolean {
-    if (!CommandStore.COMMAND_DATA[command]) {
+    if (!COMMAND_DATA[command]) {
       return false;
     }
-    return Boolean(CommandStore.COMMAND_DATA[command].denySignedOut);
+    return Boolean(COMMAND_DATA[command].denySignedOut);
   }
 
   static getKeyBindings(): KeyBinding[] {
     const primaryKeyBindings: KeyBinding[] =
-        Object.entries(CommandStore.COMMAND_DATA)
+        Object.entries(COMMAND_DATA)
             .filter(([_command, data]) => data.sequence)
             .map(([command, data]) => {
               // Always true, but closure compiler doesn't know that.
@@ -102,7 +102,7 @@ export class CommandStore {
             }) as KeyBinding[];
 
     const secondaryKeyBindings: KeyBinding[] =
-        Object.entries(CommandStore.COMMAND_DATA)
+        Object.entries(COMMAND_DATA)
             .filter(([_command, data]) => data.altSequence)
             .map(([command, data]) => {
               // Always true, but closure compiler doesn't know that.
@@ -133,7 +133,6 @@ interface DataEntry {
   altSequence?: SerializedKeySequence;
 }
 
-export namespace CommandStore {
 /** Collection of command properties. */
 export const COMMAND_DATA: Record<Command, DataEntry> = {
   [Command.ANNOUNCE_BATTERY_DESCRIPTION]: {
@@ -1040,4 +1039,3 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
         {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}},
   },
 };
-}

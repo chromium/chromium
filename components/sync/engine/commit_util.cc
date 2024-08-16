@@ -33,7 +33,7 @@ void AddExtensionsActivityToMessage(
 }
 
 void AddClientConfigParamsToMessage(
-    ModelTypeSet enabled_types,
+    DataTypeSet enabled_types,
     bool cookie_jar_mismatch,
     bool single_client,
     bool single_client_with_standalone_invalidations,
@@ -44,8 +44,8 @@ void AddClientConfigParamsToMessage(
     sync_pb::CommitMessage* message) {
   sync_pb::ClientConfigParams* config_params = message->mutable_config_params();
   DCHECK(Difference(enabled_types, ProtocolTypes()).empty());
-  for (ModelType type : enabled_types) {
-    int field_number = GetSpecificsFieldNumberFromModelType(type);
+  for (DataType type : enabled_types) {
+    int field_number = GetSpecificsFieldNumberFromDataType(type);
     config_params->mutable_enabled_type_ids()->Add(field_number);
   }
   config_params->set_cookie_jar_mismatch(cookie_jar_mismatch);

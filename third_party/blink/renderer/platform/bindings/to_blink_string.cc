@@ -106,7 +106,7 @@ ALWAYS_INLINE StringResourceBase* GetExternalizedString(
   v8::String::Encoding encoding;
   v8::String::ExternalStringResourceBase* resource =
       v8_string->GetExternalStringResourceBase(isolate, &encoding);
-  if (LIKELY(!!resource)) {
+  if (!!resource) [[likely]] {
     // Inheritance:
     // - V8 side: v8::String::ExternalStringResourceBase
     //   -> v8::External{One,}ByteStringResource
@@ -157,17 +157,17 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
                         V8StringTwoBytesTrait>(isolate, v8_string, length);
 
   *was_externalized = false;
-  if (LIKELY(can_externalize)) {
+  if (can_externalize) [[likely]] {
     if (result.Is8Bit()) {
       StringResource8* string_resource = new StringResource8(result);
-      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+      if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
         delete string_resource;
       } else {
         *was_externalized = true;
       }
     } else {
       StringResource16* string_resource = new StringResource16(result);
-      if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
+      if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
         delete string_resource;
       } else {
         *was_externalized = true;
@@ -199,7 +199,7 @@ StringType ToBlinkString(v8::Isolate* isolate,
     return StringTraits<StringType>::FromStringResource(string_resource);
 
   int length = v8_string->Length();
-  if (UNLIKELY(!length)) {
+  if (!length) [[unlikely]] {
     return StringType(g_empty_atom);
   }
 
@@ -239,8 +239,9 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   }
 
   int length = v8_string->Length();
-  if (UNLIKELY(!length))
+  if (!length) [[unlikely]] {
     return StringView(g_empty_atom);
+  }
 
   // Note that this code path looks very similar to ToBlinkString(). The
   // critical difference in ToBlinkStringView(), if `can_externalize` is false,
@@ -249,7 +250,7 @@ StringView ToBlinkStringView(v8::Isolate* isolate,
   // churn which can be significantly faster in some hot paths.
   const bool is_one_byte = v8_string->IsOneByte();
   bool can_externalize = CanExternalize(v8_string, mode, is_one_byte);
-  if (LIKELY(can_externalize)) {
+  if (can_externalize) [[likely]] {
     bool was_externalized;
     // An AtomicString is always used here for externalization. Using a String
     // would avoid the AtomicStringTable insert however it also means APIs

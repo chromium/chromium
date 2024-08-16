@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -23,7 +24,8 @@ class MockHistoryEmbeddingsService : public HistoryEmbeddingsService {
                size_t count,
                SearchResultCallback callback),
               (override));
-  MockHistoryEmbeddingsService();
+  explicit MockHistoryEmbeddingsService(
+      history::HistoryService* history_service);
   ~MockHistoryEmbeddingsService() override;
 };
 

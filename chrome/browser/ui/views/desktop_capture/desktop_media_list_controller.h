@@ -72,7 +72,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   std::unique_ptr<views::View> CreateView(
       DesktopMediaSourceViewStyle generic_style,
       DesktopMediaSourceViewStyle single_style,
-      const std::u16string& accessible_name);
+      const std::u16string& accessible_name,
+      DesktopMediaList::Type type);
 
   std::unique_ptr<views::View> CreateTabListView(
       const std::u16string& accessible_name);
@@ -83,6 +84,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Focuses this controller's view.
   void FocusView();
+
+  void ShowDelegatedList();
 
   void HideView();
 

@@ -41,7 +41,7 @@ viz_test("viz_unittests") {
 
   data_deps = [
     "//testing/buildbot/filters:viz_unittests_filters",
-    "//third_party/mesa_headers",
+    "//third_party/angle:includes",
   ]
 
   if (is_android) {

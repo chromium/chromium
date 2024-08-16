@@ -630,6 +630,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       const ConnectionEndpointMetadata& metadata,
       bool report_ecn,
+      bool enable_origin_frame,
       const NetLogWithSource& net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
@@ -714,6 +715,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnHttp3GoAway(uint64_t id) override;
   void OnAcceptChFrameReceivedViaAlps(
       const quic::AcceptChFrame& frame) override;
+  void OnOriginFrame(const quic::OriginFrame& frame) override;
 
   // quic::QuicSession methods:
   QuicChromiumClientStream* CreateOutgoingBidirectionalStream() override;
@@ -924,6 +926,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
+  const std::set<url::SchemeHostPort>& received_origins() const {
+    return received_origins_;
+  }
+
   void SetGoingAwayForTesting(bool going_away) { going_away_ = going_away; }
 
  protected:
@@ -1107,6 +1113,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool pkp_bypassed_ = false;
   bool is_fatal_cert_error_ = false;
   bool report_ecn_;
+  const bool enable_origin_frame_;
   HandleSet handles_;
   StreamRequestQueue stream_requests_;
   std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;
@@ -1161,6 +1168,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Map of origin to Accept-CH header field values received via ALPS.
   base::flat_map<url::SchemeHostPort, std::string>
       accept_ch_entries_received_via_alps_;
+
+  // Stores origins received in ORIGIN frame.
+  std::set<url::SchemeHostPort> received_origins_;
 
   std::vector<uint8_t> ech_config_list_;
 

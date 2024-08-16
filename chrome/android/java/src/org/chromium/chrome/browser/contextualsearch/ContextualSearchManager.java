@@ -21,7 +21,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -45,7 +44,6 @@ import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
-import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -230,9 +228,6 @@ public class ContextualSearchManager
     // Counter for how many times we've called SelectAroundCaret without an ACK returned.
     // TODO(donnd): replace with a more systematic approach using the InternalStateController.
     private int mSelectAroundCaretCounter;
-
-    /** An observer that reports selected context to GSA for search quality. */
-    private ContextualSearchObserver mContextReportingObserver;
 
     /** A means of accessing the currently active tab. */
     private Supplier<Tab> mTabSupplier;
@@ -1073,37 +1068,10 @@ public class ContextualSearchManager
         mObservers.removeObserver(observer);
     }
 
-    /**
-     * Notifies that a new selection has been established and available for Contextual Search.
-     * Should be called when the selection changes to notify listeners that care about the selection
-     * and surrounding text.
-     * Specifically this means we're showing the Contextual Search UX for the given selection.
-     * Notifies Icing of the current selection.
-     * Also notifies the panel whether the selection was part of a URL.
-     */
-    private void notifyObserversOfContextSelectionChanged() {
-        assert mContext != null;
-        String surroundingText = mContext.getSurroundingText();
-        assert surroundingText != null;
-        int startOffset = mContext.getSelectionStartOffset();
-        int endOffset = mContext.getSelectionEndOffset();
-
-        GSAContextDisplaySelection selection =
-                new GSAContextDisplaySelection(
-                        mContext.getEncoding(), surroundingText, startOffset, endOffset);
-        notifyShowContextualSearch(selection);
-    }
-
-    /**
-     * Notifies all Contextual Search observers that a search has occurred.
-     *
-     * @param selectionContext The selection and context that triggered the search.
-     */
-    private void notifyShowContextualSearch(GSAContextDisplaySelection selectionContext) {
-        if (!mPolicy.canSendSurroundings()) selectionContext = null;
-
+    /** Notifies all Contextual Search observers that a search has occurred. */
+    private void notifyShowContextualSearch() {
         for (ContextualSearchObserver observer : mObservers) {
-            observer.onShowContextualSearch(selectionContext);
+            observer.onShowContextualSearch();
         }
     }
 
@@ -1715,7 +1683,7 @@ public class ContextualSearchManager
                         new ContextualSearchContext() {
                             @Override
                             void onSelectionChanged() {
-                                notifyObserversOfContextSelectionChanged();
+                                notifyShowContextualSearch();
                             }
                         };
 
@@ -1900,33 +1868,6 @@ public class ContextualSearchManager
                 }
             }
         };
-    }
-
-    /**
-     * @param reporter A context reporter for the feature to report the current selection when
-     *                 triggered.
-     */
-    public void enableContextReporting(Callback<GSAContextDisplaySelection> reporter) {
-        mContextReportingObserver =
-                new ContextualSearchObserver() {
-                    @Override
-                    public void onShowContextualSearch(
-                            GSAContextDisplaySelection contextSelection) {
-                        if (contextSelection != null) reporter.onResult(contextSelection);
-                    }
-
-                    @Override
-                    public void onHideContextualSearch() {
-                        reporter.onResult(null);
-                    }
-                };
-        addObserver(mContextReportingObserver);
-    }
-
-    /** Disable context reporting for Contextual Search. */
-    public void disableContextReporting() {
-        removeObserver(mContextReportingObserver);
-        mContextReportingObserver = null;
     }
 
     /**

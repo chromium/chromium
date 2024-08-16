@@ -30,24 +30,29 @@ class PinnedToolbarActionsModel : public KeyedService {
   ~PinnedToolbarActionsModel() override;
 
   // Used to notify objects that extend this class that a change has occurred in
-  // the model.
+  // the model. Note that added/removed/moved are NOT called when the pref is
+  // updated directly, e.g. for changes synced from another device.
   class Observer {
    public:
     // Signals that `id` has been added to the model. This will
-    // *only* be called after the model has been initialized.
-    virtual void OnActionAdded(const actions::ActionId& id) = 0;
+    // *only* be called after the model has been initialized. N.B. Direct pref
+    // updates which happen to add an action WILL NOT call this method.
+    virtual void OnActionAddedLocally(const actions::ActionId& id) = 0;
 
     // Signals that the given action with `id` has been removed from the
-    // model.
-    virtual void OnActionRemoved(const actions::ActionId& id) = 0;
+    // model. N.B. Direct pref updates which happen to remove an action WILL NOT
+    // call this method.
+    virtual void OnActionRemovedLocally(const actions::ActionId& id) = 0;
 
     // Signals that the given action with `id` has been moved in the model.
-    virtual void OnActionMoved(const actions::ActionId& id,
-                               int from_index,
-                               int to_index) = 0;
+    // N.B. Direct pref updates which happen to move an action WILL NOT call
+    // this method.
+    virtual void OnActionMovedLocally(const actions::ActionId& id,
+                                      int from_index,
+                                      int to_index) = 0;
 
-    // Called when the pinned actions change. Specifically, when an action is
-    // added, removed, or moved.
+    // Called when the pinned actions change, in any way for any reason. Unlike
+    // the above methods, this does include pref updates.
     virtual void OnActionsChanged() = 0;
 
    protected:
@@ -87,12 +92,15 @@ class PinnedToolbarActionsModel : public KeyedService {
 
   // Resets the pinned actions to default. NOTE: This also affects the home and
   // forward buttons, even though those are not otherwise managed by this model.
-  void ResetToDefault();
+  virtual void ResetToDefault();
 
   // Returns true if the set of pinned actions is the default set. NOTE: This
   // also includes the home and forward buttons, even though those are not
   // otherwise managed by this model.
   bool IsDefault() const;
+
+  // TODO(b/353323253): Remove after Pinned Chrome Labs migration is complete.
+  void MaybeMigrateChromeLabsPinnedState();
 
   // Returns the ordered list of pinned ActionIds.
   virtual const std::vector<actions::ActionId>& PinnedActionIds() const;

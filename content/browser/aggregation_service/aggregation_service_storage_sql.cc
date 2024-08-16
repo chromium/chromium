@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -76,7 +77,7 @@ constexpr base::FilePath::CharType kDatabasePath[] =
 // `reporting_origin` should match the corresponding proto field, but is
 // maintained separately for data deletion.
 // `request_proto` is a serialized AggregatableReportRequest proto.
-static constexpr char kReportRequestsCreateTableSql[] =
+static constexpr base::cstring_view kReportRequestsCreateTableSql =
     // clang-format off
     "CREATE TABLE IF NOT EXISTS report_requests("
         "request_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -87,18 +88,18 @@ static constexpr char kReportRequestsCreateTableSql[] =
 // clang-format on
 
 // Used to optimize report request lookup by report_time.
-static constexpr char kReportTimeIndexSql[] =
+static constexpr base::cstring_view kReportTimeIndexSql =
     "CREATE INDEX IF NOT EXISTS report_time_idx ON "
     "report_requests(report_time)";
 
 // Will be used to optimize report request lookup by creation_time for data
 // clearing, see crbug.com/1340053.
-static constexpr char kCreationTimeIndexSql[] =
+static constexpr base::cstring_view kCreationTimeIndexSql =
     "CREATE INDEX IF NOT EXISTS creation_time_idx ON "
     "report_requests(creation_time)";
 
 // Used to optimize checking whether there is capacity for the reporting origin.
-static constexpr char kReportingOriginIndexSql[] =
+static constexpr base::cstring_view kReportingOriginIndexSql =
     "CREATE INDEX IF NOT EXISTS reporting_origin_idx ON "
     "report_requests(reporting_origin)";
 

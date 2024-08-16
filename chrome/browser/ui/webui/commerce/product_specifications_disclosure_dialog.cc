@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/json_writer.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/view_class_properties.h"
@@ -92,6 +94,26 @@ views::Widget::InitParams CreateParams() {
 
 namespace commerce {
 
+DialogArgs::DialogArgs(std::vector<GURL> urls,
+                       std::string name,
+                       bool in_new_tab)
+    : urls(std::move(urls)), name(std::move(name)), in_new_tab(in_new_tab) {}
+DialogArgs::~DialogArgs() = default;
+DialogArgs::DialogArgs(const DialogArgs&) = default;
+DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
+
+base::Value::Dict DialogArgs::ToValue() {
+  base::Value::Dict dialog_args_value;
+  base::Value::List product_spec_urls;
+  for (auto url : urls) {
+    product_spec_urls.Append(url.spec());
+  }
+  dialog_args_value.Set(kDialogArgsName, std::move(name));
+  dialog_args_value.Set(kDialogArgsUrls, std::move(product_spec_urls));
+  dialog_args_value.Set(kDialogArgsInNewTab, in_new_tab);
+  return dialog_args_value;
+}
+
 // static
 ProductSpecificationsDisclosureDialog*
     ProductSpecificationsDisclosureDialog::current_instance_ = nullptr;
@@ -99,13 +121,15 @@ ProductSpecificationsDisclosureDialog*
 // static
 void ProductSpecificationsDisclosureDialog::ShowDialog(
     content::BrowserContext* browser_context,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    DialogArgs dialog_args) {
   if (current_instance_) {
     current_instance_->dialog_widget_->Close();
     current_instance_ = nullptr;
   }
   // ShowWebDialogWithParams() will take care of ownership.
-  current_instance_ = new ProductSpecificationsDisclosureDialog(web_contents);
+  current_instance_ =
+      new ProductSpecificationsDisclosureDialog(web_contents, dialog_args);
   gfx::NativeWindow dialog_window = chrome::ShowWebDialogWithParams(
       GetParentView(web_contents), browser_context, current_instance_,
       std::make_optional<views::Widget::InitParams>(CreateParams()));
@@ -118,7 +142,8 @@ void ProductSpecificationsDisclosureDialog::ShowDialog(
 }
 
 ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
-    content::WebContents* contents) {
+    content::WebContents* contents,
+    DialogArgs dialog_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   set_dialog_content_url(GURL(kChromeUICompareDisclosureUrl));
@@ -128,7 +153,8 @@ ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
   set_dialog_size(kDialogSize);
   set_can_close(true);
   set_allow_default_context_menu(false);
-  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_CHILD);
+  set_dialog_modal_type(ui::mojom::ModalType::kChild);
+  set_dialog_args(base::WriteJson(dialog_args.ToValue()).value());
 }
 
 ProductSpecificationsDisclosureDialog::

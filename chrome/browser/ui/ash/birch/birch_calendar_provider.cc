@@ -10,6 +10,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +22,7 @@
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -117,9 +119,16 @@ void BirchCalendarProvider::OnEventsFetched(
       continue;
     }
 
+    // Calendar events with no summary should say "(No title)" like they do in
+    // the web UI.
+    std::string summary = item->summary();
+    if (summary.empty()) {
+      summary = l10n_util::GetStringUTF8(IDS_ASH_BIRCH_CALENDAR_NO_TITLE);
+    }
+
     // Convert the data from google_apis format to birch format.
     BirchCalendarItem birch_item(
-        base::UTF8ToUTF16(item->summary()), item->start_time().date_time(),
+        base::UTF8ToUTF16(summary), item->start_time().date_time(),
         item->end_time().date_time(), GURL(item->html_link()),
         item->conference_data_uri(), item->id(), item->all_day_event(),
         response_status);

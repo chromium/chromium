@@ -23,7 +23,13 @@ from blinkpy.web_tests.port.base import Port, VirtualTestSuite
 
 _log = logging.getLogger(__name__)
 
-BLINK_INFRA_COMPONENT_ID = '1456928'
+# component ID for Default DIR_METADTA of wpt_internal/* and blink/*
+BLINK_COMPONENT_ID = '1456407'
+# component ID for Default DIR_METADTA of external/wpt/*
+BLINK_INFRA_ECOSYSTEM_COMPONENT_ID = '1456176'
+DEFAULT_COMPONENT_IDS = [
+    BLINK_INFRA_ECOSYSTEM_COMPONENT_ID, BLINK_COMPONENT_ID
+]
 
 BUGAINZER_DESCRIPTION_TEMPLATE = '''\
 This virtual test suite '{prefix}' expired on {expires}.
@@ -112,46 +118,48 @@ class VTSNotifier:
         return bug
 
     def resolve_component_id(self, vts: VirtualTestSuite) -> str:
-        """Resolve component id for a VirtualTestSuite
+        """Find a component ID to file a bug to for an expired virtual suite.
 
-        based on the test base with the longest path component that resolves to
-        a DIR_METADATA containing buganizer_public_component to avoid generic
-        DIR_METADATA from the Blink or WPT roots.
-
-        If test bases is empty, defaults to BLINK_INFRA_COMPONENT_ID.
-
-        Args:
-            vts: The VirtualTestSuite to resolve the component ID for.
-
-        Returns:
-            The Buganizer component ID for the VirtualTestSuite.
+        `VTSNotifier` will try the following in order to find a relevant Buganizer
+        component:
+        1. The component in `virtual/x/DIR_METADATA`.
+        2. The component in the `DIR_METADATA` that the suite's bases roll up to
+           that is not `Blink>Infra>Ecosystem` or `Blink`
+        3. The component for `Blink>Infra>Ecosystem`.
         """
-        longest_path = ''
-        component_id = BLINK_INFRA_COMPONENT_ID
-        for base in vts.bases:
-            test_url = self.path_finder.path_from_web_tests(base)
-            if self.host.filesystem.isdir(test_url):
-                test_directory = test_url
-            else:
-                test_directory = self.host.filesystem.dirname(test_url)
-            dir_metadata_file = self.owners_extractor.find_dir_metadata_file(
-                test_directory)
-            if not dir_metadata_file:
-                continue
-            dir_metadata = self.owners_extractor.read_dir_metadata(
-                self.host.filesystem.dirname(dir_metadata_file))
-            if not dir_metadata or not dir_metadata.buganizer_public_component:
-                continue
-            # Check if the current base has a longer path than the current
-            # longest path.
-            if len(dir_metadata_file.split(self.host.filesystem.sep)) > len(
-                    longest_path.split(self.host.filesystem.sep)):
-                longest_path = dir_metadata_file
-                component_id = dir_metadata.buganizer_public_component
-        if component_id == BLINK_INFRA_COMPONENT_ID:
-            _log.info(f'No DIR_METADATA found for {vts.prefix}, '
-                      f'default to {BLINK_INFRA_COMPONENT_ID}.')
-        return component_id
+        vts_dir = self.host.filesystem.join(self.port.web_tests_dir(),
+                                            vts.full_prefix)
+        _log.info(f'Resolving component ID for {vts.full_prefix}.')
+        component_id = self.read_component_from_metadata(vts_dir)
+        if component_id and component_id not in DEFAULT_COMPONENT_IDS:
+            return component_id
+        return self.find_first_base_component_id(vts.bases)
+
+    def read_component_from_metadata(self, dir_path) -> str:
+        dir_metadata = self.owners_extractor.read_dir_metadata(dir_path)
+        if dir_metadata and dir_metadata.buganizer_public_component:
+            return dir_metadata.buganizer_public_component
+        return ''
+
+    def find_first_base_component_id(self, bases) -> str:
+        """Find a component ID from the bases of a virtual test suite
+
+        This method iterates through the bases of a virtual test suite and
+        returns the component ID from the `DIR_METADATA` file that is not one
+        of the default component IDs.
+        """
+        for base in bases:
+            test_path = self.path_finder.path_from_web_tests(base)
+            test_directory = (test_path
+                              if self.host.filesystem.isdir(test_path) else
+                              self.host.filesystem.dirname(test_path))
+            component_id = self.read_component_from_metadata(test_directory)
+            if component_id and component_id not in DEFAULT_COMPONENT_IDS:
+                _log.info(f'Using base, {base}, to resolve component ID to '
+                          f'{component_id}.')
+                return component_id
+        _log.info('No DIR_METADATA found. Using Blink component.')
+        return BLINK_COMPONENT_ID
 
     def check_expired_vts(self, vts: VirtualTestSuite):
         """Check if the virtual test suite is expired

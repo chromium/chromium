@@ -177,6 +177,7 @@ void UnifiedSystemTray::OnButtonPressed(const ui::Event& event) {
 
   if (features::IsWelcomeTourEnabled()) {
     welcome_tour_metrics::RecordInteraction(
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService(),
         welcome_tour_metrics::Interaction::kQuickSettings);
   }
 }
@@ -383,7 +384,7 @@ void UnifiedSystemTray::ShowBubble() {
   }
 }
 
-void UnifiedSystemTray::CloseBubble() {
+void UnifiedSystemTray::CloseBubbleInternal() {
   base::UmaHistogramMediumTimes("Ash.QuickSettings.UserJourneyTime",
                                 base::TimeTicks::Now() - time_opened_);
   HideBubbleInternal();

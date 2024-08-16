@@ -475,6 +475,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // notifications of theme changes.
     // A value of null results in the default theme being used.
     raw_ptr<ui::NativeTheme> native_theme = nullptr;
+
+#if BUILDFLAG(IS_MAC)
+    // If set to true, tags the widget as an invisible overlay widget that
+    // allows the Views tree to be broken up into distinct NSViews for use by
+    // immersive fullscreen. Not for general use.
+    bool is_overlay = false;
+#endif
   };
 
   // Represents a lock held on the widget's ShouldPaintAsActive() state. As

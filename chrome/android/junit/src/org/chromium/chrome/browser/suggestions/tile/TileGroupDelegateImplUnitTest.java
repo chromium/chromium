@@ -10,9 +10,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
@@ -66,7 +66,8 @@ public class TileGroupDelegateImplUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
+        lenient()
+                .when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
                 .thenReturn(mMostVisitedSites);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
 
@@ -82,12 +83,12 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_DisableSelectExisting() {
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_DisableReselect() {
         GURL url = JUnitTestGURLs.URL_1;
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(anyString());
+        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(any(GURL.class));
         verify(mNavigationDelegate)
                 .navigateToSuggestionUrl(
                         eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
@@ -95,14 +96,14 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingTriggered() {
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectTriggered() {
         GURL url = JUnitTestGURLs.URL_1;
         // Attempt to select tab with `url` but fail.
-        doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+        doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url));
         verify(mNavigationDelegate)
                 .navigateToSuggestionUrl(
                         eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
@@ -110,14 +111,14 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingFallback() {
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectFallback() {
         GURL url = JUnitTestGURLs.URL_1;
         // Attempt to select tab with `url` and succeed.
-        doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+        doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url));
         verify(mNavigationDelegate, never())
                 .navigateToSuggestionUrl(anyInt(), anyString(), anyBoolean());
     }

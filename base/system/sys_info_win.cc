@@ -119,8 +119,7 @@ uint64_t AmountOfMemory(DWORDLONG MEMORYSTATUSEX::*memory_field) {
   MEMORYSTATUSEX memory_info;
   memory_info.dwLength = sizeof(memory_info);
   if (!GlobalMemoryStatusEx(&memory_info)) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   return memory_info.*memory_field;

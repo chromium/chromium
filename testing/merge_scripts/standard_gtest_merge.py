@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import json
 import os
 import sys
@@ -42,7 +40,7 @@ def merge_shard_results(summary_json, jsons_to_merge):
   # summary.json is produced by swarming client itself. We are mostly interested
   # in the number of shards.
   try:
-    with open(summary_json, encoding="utf-8") as f:
+    with open(summary_json, encoding='utf-8') as f:
       summary = json.load(f)
   except (IOError, ValueError):
     emit_warning(
@@ -72,11 +70,11 @@ def merge_shard_results(summary_json, jsons_to_merge):
     if state == u'BOT_DIED':
       emit_warning('Shard #%d had a Swarming internal failure' % index)
     elif state == u'EXPIRED':
-      emit_warning('There wasn\'t enough capacity to run your test')
+      emit_warning("There wasn't enough capacity to run your test")
     elif state == u'TIMED_OUT':
       emit_warning(
           'Test runtime exceeded allocated time',
-          'Either it ran for too long (hard timeout) or it didn\'t produce '
+          "Either it ran for too long (hard timeout) or it didn't produce "
           'I/O for an extended period of time (I/O timeout)')
     elif state != u'COMPLETED':
       emit_warning('Invalid Swarming task state: %s' % state)
@@ -156,7 +154,7 @@ def load_shard_json(index, task_id, jsons_to_merge):
             file=sys.stderr)
       return (None, 'shard %s test output exceeded the size limit' % index)
 
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding='utf-8') as f:
       return (json.load(f), None)
   except (IOError, ValueError, OSError) as e:
     print('Missing or invalid gtest JSON file: %s' % path, file=sys.stderr)
@@ -180,7 +178,7 @@ def merge_list_of_dicts(left, right):
 def standard_gtest_merge(output_json, summary_json, jsons_to_merge):
 
   output = merge_shard_results(summary_json, jsons_to_merge)
-  with open(output_json, 'w', encoding="utf-8") as f:
+  with open(output_json, 'w', encoding='utf-8') as f:
     json.dump(output, f)
 
   return 0

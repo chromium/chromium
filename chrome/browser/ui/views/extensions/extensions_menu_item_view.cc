@@ -405,7 +405,6 @@ void ExtensionMenuItemView::OnThemeChanged() {
                            kColorExtensionMenuIcon,
                            kColorExtensionMenuIconDisabled);
     if (pin_button_) {
-      views::InkDrop::Get(pin_button_)->SetBaseColorId(kColorExtensionMenuIcon);
       bool is_pinned = model_ && model_->IsActionPinned(controller_->GetId());
       bool is_force_pinned =
           model_ && model_->IsActionForcePinned(controller_->GetId());

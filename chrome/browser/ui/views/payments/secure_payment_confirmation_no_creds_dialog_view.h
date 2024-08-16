@@ -31,8 +31,7 @@ class SecurePaymentConfirmationNoCredsDialogView
   // dialog. Used to validate views in browsertests.
   enum class DialogViewID : int {
     VIEW_ID_NONE = 0,
-    HEADER_IMAGE,
-    PROGRESS_BAR,
+    HEADER_ICON,
     NO_MATCHING_CREDS_TEXT
   };
 

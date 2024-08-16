@@ -35,6 +35,7 @@ static_library("recorder_app_ui") {
     "//google_apis",
     "//mojo/public/cpp/bindings",
     "//services/on_device_model/public/cpp:buildflags",
+    "//ui/message_center",
     "//ui/webui",
   ]
 }

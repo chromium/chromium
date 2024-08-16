@@ -998,7 +998,7 @@ class ClipboardHistoryRefreshDisplayFormatTest
         }
         break;
       case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
 
     return {};

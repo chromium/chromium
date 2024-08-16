@@ -20,7 +20,8 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kEditorRewrite:
       // TODO: b/322926823 - Use correct icons.
       return kPencilIcon;
-    case PickerCategory::kExpressions:
+    case PickerCategory::kEmojisGifs:
+    case PickerCategory::kEmojis:
       return kPickerEmojiIcon;
     case PickerCategory::kLinks:
       return kPickerBrowsingHistoryIcon;
@@ -29,7 +30,7 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kDriveFiles:
       return kPickerDriveFilesIcon;
     case PickerCategory::kLocalFiles:
-      return kPickerLocalFilesIcon;
+      return kFilesAppIcon;
     case PickerCategory::kDatesTimes:
       return kPickerCalendarIcon;
     case PickerCategory::kUnitsMaths:

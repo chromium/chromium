@@ -26,7 +26,8 @@ FakeTextInputClient::FakeTextInputClient(InputMethod* input_method,
       mode_(options.mode),
       flags_(options.flags),
       can_insert_image_(options.can_insert_image),
-      caret_bounds_(options.caret_bounds) {}
+      caret_bounds_(options.caret_bounds),
+      should_do_learning_(options.should_do_learning) {}
 
 FakeTextInputClient::~FakeTextInputClient() {
   Blur();
@@ -57,6 +58,10 @@ void FakeTextInputClient::Blur() {
   if (input_method_ != nullptr) {
     input_method_->SetFocusedTextInputClient(nullptr);
   }
+}
+
+base::WeakPtr<ui::TextInputClient> FakeTextInputClient::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void FakeTextInputClient::SetCompositionText(
@@ -207,7 +212,7 @@ ukm::SourceId FakeTextInputClient::GetClientSourceForMetrics() const {
 }
 
 bool FakeTextInputClient::ShouldDoLearning() {
-  return false;
+  return should_do_learning_;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

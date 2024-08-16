@@ -24,6 +24,12 @@ namespace {
 using ThemeType = ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
 
 TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitWithFeatures(
+      /* enabled_features */
+      {ntp_features::kNtpModulesRedesigned},
+      /* disabled_features */ {});
+
   constexpr SkColor kToolbarColors[2] = {SK_ColorWHITE, gfx::kGoogleGrey900};
   for (const SkColor& toolbar_color : kToolbarColors) {
     ui::ColorProvider provider;
@@ -38,8 +44,14 @@ TEST(NewTabPageColorMixer, LightAndDarkThemeColors) {
     EXPECT_EQ(provider.GetColor(kColorNewTabPageBackground), toolbar_color);
     EXPECT_EQ(provider.GetColor(kColorNewTabPageButtonBackground),
               toolbar_color);
-    EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
-              toolbar_color);
+
+    if (toolbar_color == SK_ColorWHITE) {
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
+                gfx::kGoogleGrey100);
+    } else {
+      EXPECT_EQ(provider.GetColor(kColorNewTabPageModuleBackground),
+                gfx::kGoogleGrey800);
+    }
   }
 }
 

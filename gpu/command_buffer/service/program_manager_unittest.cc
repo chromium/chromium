@@ -101,6 +101,7 @@ class ProgramManagerTestBase : public GpuServiceTest, public DecoderClient {
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
+  bool ShouldYield() override { return false; }
 
   std::unique_ptr<ProgramManager> manager_;
   GpuPreferences gpu_preferences_;

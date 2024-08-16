@@ -52,7 +52,7 @@ const std::string& GetExpectedOriginName(Profile* profile,
     return extension->name();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

@@ -154,7 +154,7 @@ AwBrowserContextStore::DeletionResult AwBrowserContextStore::Delete(
       return DeletionResult::kDeleted;
     }
   }
-  NOTREACHED_NORETURN() << "Profile exists in memory but not in prefs";
+  NOTREACHED() << "Profile exists in memory but not in prefs";
 }
 
 base::FilePath AwBrowserContextStore::GetRelativePathForTesting(

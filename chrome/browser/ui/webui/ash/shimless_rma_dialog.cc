@@ -8,6 +8,7 @@
 
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -27,7 +28,7 @@ ShimlessRmaDialog::ShimlessRmaDialog()
   // ui::SHOW_STATE_FULLSCREEN correctly.
   // This dialog uses DisplayObserver::OnDisplayMetricsChanged to update the
   // window size as screen size changes.
-  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_SYSTEM);
+  set_dialog_modal_type(ui::mojom::ModalType::kSystem);
   set_can_minimize(false);
 }
 

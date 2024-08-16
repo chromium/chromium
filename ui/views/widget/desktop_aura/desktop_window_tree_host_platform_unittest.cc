@@ -77,7 +77,7 @@ class TestWidgetObserver : public WidgetObserver {
           Wait();
         break;
       default:
-        NOTREACHED_NORETURN() << "unknown value";
+        NOTREACHED() << "unknown value";
     }
   }
 

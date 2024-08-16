@@ -54,7 +54,7 @@ class SamplingState : ThreadLocalState<SamplingState<PA>> {
     // Instead, use zero to mean 'get a new counter value' and one to mean
     // that this allocation should be sampled.
     size_t samples_left = TLS::GetState();
-    if (UNLIKELY(samples_left == 0)) {
+    if (samples_left == 0) [[unlikely]] {
       samples_left = NextSample();
     }
 

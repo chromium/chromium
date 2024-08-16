@@ -89,7 +89,7 @@ void UpgradeCenterBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
   // they are destroyed, by observing when they are removed from the
   // WebStateList. It is an error in UpgradeCenterBrowserAgent if this
   // method is called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void UpgradeCenterBrowserAgent::WebStateAttached(web::WebState* web_state) {

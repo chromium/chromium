@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "components/web_package/web_bundle_parser.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,7 +29,8 @@ class FileDataSource final : public mojom::BundleDataSource {
   // Implements mojom::BundleDataSource.
   void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {
     std::vector<uint8_t> buf(length);
-    int bytes = file_.Read(offset, reinterpret_cast<char*>(buf.data()), length);
+    int bytes = UNSAFE_TODO(
+        file_.Read(offset, reinterpret_cast<char*>(buf.data()), length));
     if (bytes > 0) {
       buf.resize(bytes);
       std::move(callback).Run(std::move(buf));

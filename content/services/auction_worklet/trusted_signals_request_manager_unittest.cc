@@ -116,6 +116,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             trusted_signals_url_,
             /*experiment_group_id=*/std::nullopt,
             "trusted_bidding_signals_slot_size_param=foo",
+            /*public_key=*/nullptr,
             v8_helper_.get()),
         scoring_request_manager_(
             TrustedSignalsRequestManager::Type::kScoringSignals,
@@ -127,6 +128,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             trusted_signals_url_,
             /*experiment_group_id=*/std::nullopt,
             /*trusted_bidding_signals_slot_size_param=*/"",
+            /*public_key=*/nullptr,
             v8_helper_.get()) {}
 
   ~TrustedSignalsRequestManagerTest() override {
@@ -219,7 +221,8 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetBiddingSignals(
               v8_helper_.get(), context, trusted_bidding_signals_keys);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
               AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
@@ -251,7 +254,8 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
           v8::Local<v8::Value> value = signals->GetScoringSignals(
               v8_helper_.get(), context, render_url, ad_component_render_urls);
 
-          if (v8_helper_->ExtractJson(context, value, &result) !=
+          if (v8_helper_->ExtractJson(context, value,
+                                      /*script_timeout=*/nullptr, &result) !=
               AuctionV8Helper::Result::kSuccess) {
             result = "JSON extraction failed.";
           }
@@ -1114,7 +1118,8 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      v8_helper_.get());
 
   // Create one Request.
   base::RunLoop run_loop1;
@@ -1197,7 +1202,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -1258,7 +1264,8 @@ TEST_F(TrustedSignalsRequestManagerTest,
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/std::nullopt,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      v8_helper_.get());
 
   // Create one Request.
   auto request1 = bidding_request_manager.RequestBiddingSignals(
@@ -1312,7 +1319,8 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/934u,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      v8_helper_.get());
   AddBidderJsonResponse(
       &url_loader_factory_,
       GURL("https://url.test/"
@@ -1354,7 +1362,8 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
       /*automatically_send_requests=*/false,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
       /*experiment_group_id=*/344u,
-      /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
+      /*trusted_bidding_signals_slot_size_param=*/"", /*public_key=*/nullptr,
+      v8_helper_.get());
 
   AddJsonResponse(&url_loader_factory_,
                   GURL("https://url.test/?hostname=publisher"

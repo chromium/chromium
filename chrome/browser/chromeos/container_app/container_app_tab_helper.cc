@@ -18,7 +18,12 @@ std::map<uint64_t, ContainerAppTabHelper::Page>* GetMD5PageHashes() {
   using Page = ContainerAppTabHelper::Page;
   static base::NoDestructor<std::map<uint64_t, Page>> md5_page_hashes(
       {{15434391541687473744u, Page::kCongratulations},
+       {2639084485652816410u, Page::kDebug},
+       {8933819972841556021u, Page::kDebug},
+       {11887379483153592206u, Page::kDebug},
        {6579551706563083045u, Page::kOffer},
+       {9605163350832310418u, Page::kTermsAndConditions},
+       {14050260147306734198u, Page::kTermsAndConditions},
        {18084016612939108325u, Page::kTermsAndConditions}});
   return md5_page_hashes.get();
 }
@@ -50,9 +55,9 @@ void ContainerAppTabHelper::MaybeCreateForWebContents(
 
 // static
 base::AutoReset<std::map<uint64_t, ContainerAppTabHelper::Page>>
-ContainerAppTabHelper::SetPageUrlsForTesting(std::map<Page, GURL> page_urls) {
+ContainerAppTabHelper::SetPageUrlsForTesting(std::map<GURL, Page> page_urls) {
   std::map<uint64_t, Page> md5_page_hashes;
-  for (const auto& [page, url] : page_urls) {
+  for (const auto& [url, page] : page_urls) {
     md5_page_hashes.emplace(base::MD5Hash64Constexpr(url.spec()), page);
   }
   return {GetMD5PageHashes(), std::move(md5_page_hashes)};

@@ -19,6 +19,7 @@ class ImageButton;
 namespace ash {
 
 class FocusModeChipCarousel;
+class SystemTextfield;
 
 // The class will be used in the `FocusModeDetailedView` under the task view
 // container to let the user create, edit, select, or deselect a task for a
@@ -44,9 +45,10 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   // Clears the selected task if we have one. Forwards this to the model.
   void OnClearTask();
 
-  views::ImageButton* radio_button_for_testing() { return radio_button_; }
+  views::ImageButton* complete_button_for_testing() { return complete_button_; }
   views::ImageButton* deselect_button_for_testing() { return deselect_button_; }
   FocusModeChipCarousel* chip_carousel_for_testing() { return chip_carousel_; }
+  SystemTextfield* GetTaskTextfieldForTesting();
 
   void CommitTextfieldContents(const std::u16string& contents);
 
@@ -63,7 +65,7 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   // ring and update the style.
   void PaintFocusRingAndUpdateStyle();
 
-  // Called when `radio_button_` is pressed to mark a task as completed.
+  // Called when `complete_button_` is pressed to mark a task as completed.
   // `update` is used to determine if we need to update the tasks provider (i.e.
   // we don't if the task is already marked as completed).
   void OnCompleteTask();
@@ -75,7 +77,7 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   void OnAddTaskButtonPressed();
 
   // If `show_selected_state` is true, it means that there is a task selected
-  // by the user for a focus session, then we will show `radio_button_` and
+  // by the user for a focus session, then we will show `complete_button_` and
   // `deselect_button_`, update the style of `textfield_`, and hide the
   // selection carousel; otherwise, we will hide the two buttons, update the
   // style of `textfield_`, show the carousel, and let the user to create a new
@@ -84,15 +86,15 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView,
   // button and disable it as well.
   void UpdateStyle(bool show_selected_state, bool is_network_connected);
 
-  // TODO(b/306272008): Update the image of `radio_button_` to a check icon if
-  // it was clicked by the user.
-  raw_ptr<views::ImageButton> radio_button_ = nullptr;
+  // TODO(b/306272008): Update the image of `complete_button_` to a check icon
+  // if it was clicked by the user.
+  raw_ptr<views::ImageButton> complete_button_ = nullptr;
   raw_ptr<views::ImageButton> deselect_button_ = nullptr;
   // Shows up on the left side of `textfield_` when there is no selected task.
   raw_ptr<views::ImageButton> add_task_button_ = nullptr;
 
-  // Contains a `radio_button_`, a `deselect_button_`, an `add_task_button_` and
-  // a `textfield_`.
+  // Contains a `complete_button_`, a `deselect_button_`, an `add_task_button_`
+  // and a `textfield_`.
   raw_ptr<views::BoxLayoutView> textfield_container_ = nullptr;
 
   const bool is_network_connected_;

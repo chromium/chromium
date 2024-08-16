@@ -9,6 +9,9 @@
 
 extern const char kPushMessagingGcmEndpoint[];
 
+// The GCM endpoint to use on non-Stable channels.
+extern const char kPushMessagingStagingGcmEndpoint[];
+
 // The tag of the notification that will be automatically shown if a webapp
 // receives a push message then fails to show a notification.
 extern const char kPushMessagingForcedNotificationTag[];

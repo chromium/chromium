@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/manager/configure_displays_task.h"
 
 #include <cstddef>
@@ -227,14 +232,19 @@ void UpdateFinalStatusUma(
   }
 }
 
-// After a successful configuration, the DisplaySnapshot associated with a
-// request needs to have its state updated to reflect the new configuration.
-void UpdateSnapshotAfterConfiguration(const DisplayConfigureRequest& request) {
-  request.display->set_current_mode(request.mode.get());
-  request.display->set_origin(request.origin);
-  if (request.display->IsVrrCapable()) {
-    request.display->set_variable_refresh_rate_state(
-        request.enable_vrr ? display::kVrrEnabled : display::kVrrDisabled);
+// Updates properties of the |display| according to the given |request| after a
+// successful configuration. The display ids of |display| and |request| must
+// match.
+void UpdateSnapshotAfterConfiguration(
+    DisplaySnapshot* display,
+    const DisplayConfigurationParams& request) {
+  CHECK_EQ(display->display_id(), request.id);
+  display->set_current_mode(request.mode.get());
+  display->set_origin(request.origin);
+  if (display->IsVrrCapable()) {
+    display->set_variable_refresh_rate_state(
+        request.enable_vrr ? VariableRefreshRateState::kVrrEnabled
+                           : VariableRefreshRateState::kVrrDisabled);
   }
 }
 
@@ -336,7 +346,9 @@ void ConfigureDisplaysTask::OnDisplaySnapshotsInvalidated() {
   std::move(callback_).Run(task_status_);
 }
 
-void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
+void ConfigureDisplaysTask::OnFirstAttemptConfigured(
+    const std::vector<DisplayConfigurationParams>& request_results,
+    bool config_success) {
   UpdateAttemptSucceededUma(requests_, config_success);
 
   if (!config_success) {
@@ -357,7 +369,10 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
   }
 
   // This code execute only when the first modeset attempt fully succeeds.
-  // Submit the current |requests_| for modeset.
+  // Submit the current |requests_| for modeset. Note that |requests_| is used
+  // directly instead of |request_results|, since that is what was tested (ozone
+  // sometimes alters the resulting requests to achieve better results during
+  // mode matching).
   std::vector<display::DisplayConfigurationParams> config_requests;
   for (const auto& request : requests_) {
     final_requests_status_.emplace_back(&request, true);
@@ -375,7 +390,9 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(bool config_success) {
                        modeset_flags);
 }
 
-void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
+void ConfigureDisplaysTask::OnRetryConfigured(
+    const std::vector<DisplayConfigurationParams>& request_results,
+    bool config_success) {
   UpdateAttemptSucceededUma(requests_, config_success);
 
   if (!config_success) {
@@ -396,9 +413,12 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
       task_status_ = ERROR;
     }
   } else {
-    // This configuration attempt passed test-modeset. Cache it so we can use it
-    // to modeset the displays once we are done testing, or if no other future
-    // attempts succeed.
+    // This configuration attempt passed test-modeset. Cache |requests_| so we
+    // can use it to modeset the displays once we are done testing, or if no
+    // other future attempts succeed. Note that |requests_| is used directly
+    // instead of |request_results|, since that is what was tested (ozone
+    // sometimes alters the resulting requests to achieve better results during
+    // mode matching).
     last_successful_config_parameters_.clear();
     for (const auto& request : requests_) {
       last_successful_config_parameters_.emplace_back(
@@ -449,10 +469,19 @@ void ConfigureDisplaysTask::OnRetryConfigured(bool config_success) {
                        modeset_flags);
 }
 
-void ConfigureDisplaysTask::OnConfigured(bool config_success) {
+void ConfigureDisplaysTask::OnConfigured(
+    const std::vector<DisplayConfigurationParams>& request_results,
+    bool config_success) {
   if (config_success) {
+    base::flat_map<int64_t, DisplaySnapshot*> snapshot_map;
     for (const DisplayConfigureRequest& request : requests_) {
-      UpdateSnapshotAfterConfiguration(request);
+      snapshot_map.emplace(request.display->display_id(), request.display);
+    }
+    // Use |request_results| to update the snapshots.
+    for (const DisplayConfigurationParams& request : request_results) {
+      const auto it = snapshot_map.find(request.id);
+      CHECK(it != snapshot_map.end());
+      UpdateSnapshotAfterConfiguration(it->second, request);
     }
   }
 

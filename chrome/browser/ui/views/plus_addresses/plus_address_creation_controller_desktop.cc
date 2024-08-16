@@ -83,7 +83,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   callback_ = std::move(callback);
 
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown);
-  modal_shown_time_ = clock_->Now();
+  modal_shown_time_ = base::TimeTicks::Now();
   if (!suppress_ui_for_testing_) {
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
         GetWeakPtr(), &GetWebContents(), maybe_email.value(),
@@ -147,9 +147,9 @@ void PlusAddressCreationControllerDesktop::RecordModalShownOutcome(
   if (modal_shown_time_.has_value()) {
     // The number of refreshes is equal to the number of `reserve` responses
     // minus 1, since the first displayed plus address also calls `reserve`.
-    metrics::RecordModalShownOutcome(status,
-                                     clock_->Now() - modal_shown_time_.value(),
-                                     std::max(0, reserve_response_count_ - 1));
+    metrics::RecordModalShownOutcome(
+        status, base::TimeTicks::Now() - modal_shown_time_.value(),
+        std::max(0, reserve_response_count_ - 1));
     modal_shown_time_.reset();
     reserve_response_count_ = 0;
   }
@@ -194,7 +194,7 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
     // Autofill the plus address.
-    std::move(callback_).Run(maybe_plus_profile->plus_address);
+    std::move(callback_).Run(*maybe_plus_profile->plus_address);
 
     // If this was a first run dialog, record that the user has accepted the
     // notice.

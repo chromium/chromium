@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
+#import "ios/chrome/browser/browser_state_metrics/model/browser_state_activity_scene_agent.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -64,8 +65,7 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/promo/omnibox_position_choice_scene_agent.h"
-#import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
+#import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
@@ -103,10 +103,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
@@ -836,7 +836,6 @@ void OnListFamilyMembersResponse(
     self.settingsNavigationController =
         [SettingsNavigationController safetyCheckControllerForBrowser:browser
                                                              delegate:self
-                                                   displayAsHalfSheet:NO
                                                              referrer:referrer];
   }
 
@@ -936,7 +935,8 @@ void OnListFamilyMembersResponse(
     }
 
     [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                        HelpCommands) presentTabGridToolbarItemBubble];
+                        HelpCommands)
+        presentInProductHelpWithType:InProductHelpType::kTabGridToolbarItem];
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
@@ -1042,6 +1042,7 @@ void OnListFamilyMembersResponse(
   [sceneState addAgent:defaultBrowserAgent];
   [sceneState
       addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
+  [sceneState addAgent:[[BrowserStateActivitySceneAgent alloc] init]];
 
   // Add scene agents that require CommandDispatcher.
   CommandDispatcher* mainCommandDispatcher =
@@ -1112,9 +1113,8 @@ void OnListFamilyMembersResponse(
   [self.browserViewWrangler loadSession];
   [self createInitialUI:[self initialUIMode]];
 
-  // Make sure the geolocation controller is created to observe permission
-  // events.
-  [GeolocationLogger sharedInstance];
+  // Make sure the GeolocationManager is created to observe permission events.
+  [GeolocationManager sharedInstance];
 
   if (ShouldPromoManagerDisplayPromos()) {
     [sceneState addAgent:[[PromosManagerSceneAgent alloc]
@@ -1134,12 +1134,6 @@ void OnListFamilyMembersResponse(
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
                            initWithPromosManager:promosManager
                                      prefService:prefService]];
-
-  if (IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kAppLaunch)) {
-    [sceneState addAgent:[[OmniboxPositionChoiceSceneAgent alloc]
-                             initWithPromosManager:promosManager
-                                   forBrowserState:browserState]];
-  }
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
@@ -1218,7 +1212,6 @@ void OnListFamilyMembersResponse(
     // called.
     [self.sceneState.window makeKeyAndVisible];
   }
-  [self.mainCoordinator setActivePage:[self activePage]];
 
   if (!self.sceneState.appState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
@@ -1830,7 +1823,7 @@ using UserFeedbackDataCallback =
     return;
   }
   if (self.signinCoordinator) {
-    // As of M121, the CHECK above is known to fire in various cases. The goal
+    // As of M121, the CHECK bellow is known to fire in various cases. The goal
     // of the histograms below is to detect the number of incorrect cases and
     // for which of the access points they are triggered.
     base::UmaHistogramEnumeration(
@@ -1840,6 +1833,14 @@ using UserFeedbackDataCallback =
         "Signin.ShowSigninCoordinatorWhenAlreadyPresent.OldAccessPoint",
         self.signinCoordinator.accessPoint,
         signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    // The goal of this histogram is to understand if the issue is related to
+    // a double tap (duration less than 1s), or if `self.signinCoordinator`
+    // is not visible anymore on the screen (duration more than 1s).
+    const base::TimeDelta duration =
+        base::TimeTicks::Now() - self.signinCoordinator.creationTimeTicks;
+    UmaHistogramTimes("Signin.ShowSigninCoordinatorWhenAlreadyPresent."
+                      "DurationBetweenTwoSigninCoordinatorCreation",
+                      duration);
   }
   // TODO(crbug.com/40071586): Change this to a CHECK once this invariant is
   // correct.
@@ -2446,19 +2447,14 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-// Displays the Safety Check (via Settings) for `referrer`. `showHalfSheet`
-// determines whether the Safety Check will be displayed as a half-sheet, or
-// full-page modal.
-- (void)showAndStartSafetyCheckInHalfSheet:(BOOL)showHalfSheet
-                                  referrer:
-                                      (password_manager::PasswordCheckReferrer)
-                                          referrer {
+// Displays the Safety Check (via Settings) for `referrer`.
+- (void)showAndStartSafetyCheckForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
   UIViewController* baseViewController = self.currentInterface.viewController;
 
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showAndStartSafetyCheckInHalfSheet:showHalfSheet
-                                  referrer:referrer];
+        showAndStartSafetyCheckForReferrer:referrer];
     return;
   }
 
@@ -2467,7 +2463,6 @@ using UserFeedbackDataCallback =
   self.settingsNavigationController = [SettingsNavigationController
       safetyCheckControllerForBrowser:browser
                              delegate:self
-                   displayAsHalfSheet:showHalfSheet
                              referrer:referrer];
 
   [baseViewController presentViewController:self.settingsNavigationController
@@ -2578,10 +2573,6 @@ using UserFeedbackDataCallback =
     return;
   }
   [self finishActivatingBrowserDismissingTabSwitcher];
-}
-
-- (TabGridPage)activePageForTabGrid:(TabGridCoordinator*)tabGrid {
-  return self.activePage;
 }
 
 // Begins the process of activating the given current model, switching which BVC
@@ -2701,7 +2692,7 @@ using UserFeedbackDataCallback =
       };
     case OPEN_TAB_GRID:
       return ^{
-        [weakSelf.mainCoordinator showTabGrid];
+        [weakSelf showTabSwitcher];
       };
     case SET_CHROME_DEFAULT_BROWSER:
       return ^{
@@ -2718,11 +2709,9 @@ using UserFeedbackDataCallback =
       };
     case RUN_SAFETY_CHECK:
       return ^{
-        [weakSelf
-            showAndStartSafetyCheckInHalfSheet:NO
-                                      referrer:password_manager::
-                                                   PasswordCheckReferrer::
-                                                       kSafetyCheckMagicStack];
+        [weakSelf showAndStartSafetyCheckForReferrer:
+                      password_manager::PasswordCheckReferrer::
+                          kSafetyCheckMagicStack];
       };
     case MANAGE_PASSWORDS:
       return ^{
@@ -3951,9 +3940,13 @@ using UserFeedbackDataCallback =
 // Shows the tab switcher UI.
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
-  [self.mainCoordinator setActivePage:self.activePage];
-  [self.mainCoordinator setActiveMode:TabGridModeNormal];
-  [self.mainCoordinator showTabGrid];
+  [self.mainCoordinator setActiveMode:TabGridMode::kNormal];
+  TabGridPage page =
+      (self.currentInterface.browser == self.incognitoInterface.browser)
+          ? TabGridPageIncognitoTabs
+          : TabGridPageRegularTabs;
+
+  [self.mainCoordinator showTabGridPage:page];
 }
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
@@ -4017,14 +4010,6 @@ using UserFeedbackDataCallback =
 }
 
 #pragma mark - TabGrid helpers
-
-// Returns the page that should be active in the TabGrid.
-- (TabGridPage)activePage {
-  if (self.currentInterface.browser == self.incognitoInterface.browser) {
-    return TabGridPageIncognitoTabs;
-  }
-  return TabGridPageRegularTabs;
-}
 
 // Adds a new tab to the `browser` based on `urlLoadParams` and then presents
 // it.

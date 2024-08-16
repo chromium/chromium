@@ -73,6 +73,14 @@ class PasswordsModelDelegate {
   virtual const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
   GetCurrentForms() const = 0;
 
+  // Returns credential for the manage passwords bubble in the single credential
+  // mode. Providing a form by this method allows to use the bubble to display
+  // arbitrary password form details, not only those from the list of website
+  // related credentials. When this method returns `nullopt`, a list of stored
+  // credentials for the current origin are displayed in the bubble.
+  virtual const std::optional<password_manager::PasswordForm>&
+  GetManagePasswordsSingleCredentialDetailsModeCredential() const = 0;
+
   // For PENDING_PASSWORD_STATE state returns the current statistics for
   // the pending username.
   virtual const password_manager::InteractionsStats*

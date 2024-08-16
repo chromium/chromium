@@ -182,15 +182,6 @@ void PopulateNumericCapabilities(Capabilities* caps,
                                  const FeatureInfo* feature_info) {
   DCHECK(caps != nullptr);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
-
-  if (feature_info->IsWebGL2OrES3OrHigherContext()) {
-    caps->major_version = 3;
-    if (feature_info->IsES31ForTestingContext()) {
-      caps->minor_version = 1;
-    } else {
-      caps->minor_version = 0;
-    }
-  }
 }
 
 void PopulateGLCapabilities(GLCapabilities* caps,
@@ -206,6 +197,8 @@ void PopulateGLCapabilities(GLCapabilities* caps,
     shader_precision->max_range = range[1];
     shader_precision->precision = precision;
   });
+
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &caps->max_texture_size);
 
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS,
                 &caps->max_combined_texture_image_units);
@@ -288,6 +281,15 @@ void PopulateGLCapabilities(GLCapabilities* caps,
       feature_info->feature_flags().chromium_framebuffer_multisample ||
       feature_info->IsWebGL2OrES3OrHigherContext()) {
     glGetIntegerv(GL_MAX_SAMPLES, &caps->max_samples);
+  }
+
+  if (feature_info->IsWebGL2OrES3OrHigherContext()) {
+    caps->major_version = 3;
+    if (feature_info->IsES31ForTestingContext()) {
+      caps->minor_version = 1;
+    } else {
+      caps->minor_version = 0;
+    }
   }
 }
 
@@ -1274,25 +1276,6 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
     default:
       NOTREACHED_IN_MIGRATION();
       return 0;
-  }
-}
-
-bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format) {
-  switch (internal_format) {
-    case GL_RGBA8_OES:
-      *out_format = gfx::BufferFormat::RGBA_8888;
-      return true;
-    case GL_BGRA8_EXT:
-      *out_format = gfx::BufferFormat::BGRA_8888;
-      return true;
-    case GL_RGBA16F_EXT:
-      *out_format = gfx::BufferFormat::RGBA_F16;
-      return true;
-    case GL_R8_EXT:
-      *out_format = gfx::BufferFormat::R_8;
-      return true;
-    default:
-      return false;
   }
 }
 

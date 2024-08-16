@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -346,7 +347,9 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
 
   app_info->icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
 
-  bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
+  bool is_locally_installed = registrar.IsInstallState(
+      app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::INSTALLED_WITH_OS_INTEGRATION});
 
   const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
   // Only show the Run on OS Login menu item for locally installed web apps

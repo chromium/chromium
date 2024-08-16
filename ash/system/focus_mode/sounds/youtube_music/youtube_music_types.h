@@ -89,6 +89,7 @@ struct ASH_EXPORT Playlist {
 struct ASH_EXPORT PlaybackContext {
   PlaybackContext(const std::string& track_name,
                   const std::string& track_title,
+                  const std::string& track_artists,
                   const std::string& track_explicit_type,
                   const Image& track_image,
                   const GURL& stream_url,
@@ -102,6 +103,8 @@ struct ASH_EXPORT PlaybackContext {
   std::string track_name;
 
   std::string track_title;
+
+  std::string track_artists;
 
   std::string track_explicit_type_;
 

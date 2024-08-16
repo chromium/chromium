@@ -16,6 +16,7 @@
 #include "third_party/blink/public/web/web_image.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
@@ -70,7 +71,8 @@ void DecodeAndResizeImage(
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /*data_complete=*/true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, Platform::GetMaxDecodedImageBytes());
+      ColorBehavior::kTransformToSRGB, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes());
 
   if (!decoder) {
     notify_complete(SkBitmap(), -1.0);
@@ -187,7 +189,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
             SegmentReader::CreateFromSharedBuffer(std::move(data_)),
             resize_dimensions_ ? *resize_dimensions_ : gfx::Size(),
             CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
-                                WrapCrossThreadWeakPersistent(this))));
+                                MakeUnwrappingCrossThreadWeakHandle(this))));
     return;
   }
 
@@ -198,7 +200,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
           SegmentReader::CreateFromSharedBuffer(std::move(data_)),
           resize_dimensions_ ? *resize_dimensions_ : gfx::Size(),
           CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
-                              WrapCrossThreadWeakPersistent(this))));
+                              MakeUnwrappingCrossThreadWeakHandle(this))));
 }
 
 void ThreadedIconLoader::OnBackgroundTaskComplete(SkBitmap icon,

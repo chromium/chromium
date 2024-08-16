@@ -33,6 +33,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/side_swipe/ui_bundled/resources",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/ui_bundled/requirements",

@@ -25,7 +25,7 @@ class Clock;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 // Concrete implementation of a reading list model using in memory lists.
@@ -49,9 +49,9 @@ class ReadingListModelImpl : public ReadingListModel {
 
   // ReadingListModel implementation.
   bool loaded() const override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetSyncControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
       override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegateForTransportMode() override;
   bool IsPerformingBatchUpdates() const override;
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;
@@ -142,7 +142,7 @@ class ReadingListModelImpl : public ReadingListModel {
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   // Exposes the sync bridge publicly for testing purposes.
   ReadingListSyncBridge* GetSyncBridgeForTest();
@@ -169,7 +169,7 @@ class ReadingListModelImpl : public ReadingListModel {
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       base::Clock* clock,
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
 
   void StoreLoaded(ReadingListModelStorage::LoadResultOrError result_or_error);
 

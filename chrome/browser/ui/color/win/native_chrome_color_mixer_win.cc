@@ -212,6 +212,7 @@ void FrameColorHelper::OnAccentColorUpdated() {
   FetchAccentColors();
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
   ui::NativeTheme::GetInstanceForDarkUI()->NotifyOnNativeThemeUpdated();
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
 }
 
 void FrameColorHelper::FetchAccentColors() {
@@ -222,6 +223,7 @@ void FrameColorHelper::FetchAccentColors() {
   const auto accent_color = accent_color_observer->accent_color();
   ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
   ui::NativeTheme::GetInstanceForDarkUI()->set_user_color(accent_color);
+  ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
 
   if (!accent_color_observer->use_dwm_frame_color()) {
     dwm_accent_border_color_ = SK_ColorWHITE;

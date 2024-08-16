@@ -3001,7 +3001,7 @@ enum WebFeature {
   kThirdPartyAccess = 3698,
   kThirdPartyActivation = 3699,
   kThirdPartyAccessAndActivation = 3700,
-  kFullscreenAllowedByScreensChange = 3701,
+  kOBSOLETE_FullscreenAllowedByScreensChange = 3701,
   kNewLayoutOverflowDifferentBlock = 3702,
   kNewLayoutOverflowDifferentFlex = 3703,
   kNewLayoutOverflowDifferentAndAlreadyScrollsBlock = 3704,
@@ -3388,8 +3388,8 @@ enum WebFeature {
   kScriptWebBundle = 4074,
   // The items above roughly this point are available in the M97 branch.
 
-  kRunAdAuction = 4075,
-  kJoinAdInterestGroup = 4076,
+  kOBSOLETE_kRunAdAuction = 4075,
+  kOBSOLETE_kJoinAdInterestGroup = 4076,
   kFileSystemUrlNavigation = 4077,
   kV8Navigator_AdAuctionComponents_Method = 4078,
   kClientHintsUAFullVersionList = 4079,
@@ -4063,7 +4063,7 @@ enum WebFeature {
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks = 4706,
   kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use = 4707,
   kOBSOLETE_RubyElementWithDisplayBlockAndRt = 4708,
-  kCSSDeclarationAfterNestedRule = 4709,
+  kOBSOLETE_CSSDeclarationAfterNestedRule = 4709,
   kThirdPartyCookieAdAccessBlockByExperiment = 4710,
   // The items above roughly this point are available in the M120 branch.
 
@@ -4411,8 +4411,33 @@ enum WebFeature {
   kEyeDropperOpen = 5042,
   kFlexNewColumnWrapIntrinsicSize = 5043,
   kV8AI_TextModelInfo_Method = 5044,
-
   kEventTimingSimulatedClickWithNoKeyboardInteraction = 5045,
+  kViewTransitionGroupNesting = 5046,
+  kV8LanguageDetector_Detect_Method = 5047,
+  kV8Translation_CanDetect_Method = 5048,
+  kV8Translation_CreateDetector_Method = 5049,
+  kV8AI_Summarizer_AttributeGetter = 5050,
+  kV8AISummarizer_Summarize_Method = 5051,
+  kV8AISummarizer_SummarizeStreaming_Method = 5052,
+  kV8AISummarizer_Destroy_Method = 5053,
+  kV8AISummarizerFactory_Capabilities_Method = 5054,
+  kV8AISummarizerFactory_Create_Method = 5055,
+  kSharedStorageWriteFromBidderGenerateBid = 5056,
+  kSharedStorageWriteFromBidderReportWin = 5057,
+  kSharedStorageWriteFromSellerScoreAd = 5058,
+  kSharedStorageWriteFromSellerReportResult = 5059,
+  kCSSInsetAreaProperty = 5060,
+  kStructuredCloneMethod = 5061,
+  kV8AI_Writer_AttributeGetter = 5062,
+  kV8AIWriterFactory_Create_Method = 5063,
+  kV8AIWriter_Write_Method = 5064,
+  kV8AIWriter_WriteStreaming_Method = 5065,
+  kV8AIWriter_Destroy_Method = 5066,
+  kV8AI_Rewriter_AttributeGetter = 5067,
+  kV8AIRewriterFactory_Create_Method = 5068,
+  kV8AIRewriter_Rewrite_Method = 5069,
+  kV8AIRewriter_RewriteStreaming_Method = 5070,
+  kV8AIRewriter_Destroy_Method = 5071,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

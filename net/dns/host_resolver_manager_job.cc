@@ -698,7 +698,7 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   DCHECK(!resolver_->ShouldForceSystemResolverDueToTestOverride());
 
   CHECK(!dns_task_results_manager_);
-  if (base::FeatureList::IsEnabled(features::kEnableHappyEyeballsV3)) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV3)) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
   }

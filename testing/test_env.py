@@ -128,13 +128,13 @@ def get_coverage_continuous_mode_env(env):
   # Do not insert %c into LLVM_PROFILE_FILE if it's already there as that'll
   # cause the coverage instrumentation to write coverage data to default.profraw
   # instead of LLVM_PROFILE_FILE.
-  if "%c" in llvm_profile_file:
+  if '%c' in llvm_profile_file:
     return {'LLVM_PROFILE_FILE': llvm_profile_file}
 
   dirname, basename = os.path.split(llvm_profile_file)
   root, ext = os.path.splitext(basename)
 
-  return {'LLVM_PROFILE_FILE': os.path.join(dirname, root + "%c" + ext)}
+  return {'LLVM_PROFILE_FILE': os.path.join(dirname, root + '%c' + ext)}
 
 
 def get_sanitizer_symbolize_command(json_path=None, executable_path=None):
@@ -174,7 +174,7 @@ def symbolize_snippets_in_json(cmd, env):
     raise
 
   if p.returncode != 0:
-    print("Error: failed to symbolize snippets in JSON:\n", file=sys.stderr)
+    print('Error: failed to symbolize snippets in JSON:\n', file=sys.stderr)
     print(stderr, file=sys.stderr)
     raise subprocess.CalledProcessError(p.returncode, symbolize_command)
 
@@ -193,8 +193,8 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
   json_path = get_json_path(cmd)
   if json_path is None:
     print(
-        "Warning: Cannot escalate sanitizer warnings without a json summary "
-        "file:\n",
+        'Warning: Cannot escalate sanitizer warnings without a json summary '
+        'file:\n',
         file=sys.stderr)
     return 0
 
@@ -208,7 +208,7 @@ def escalate_sanitizer_warnings_in_json(cmd, env):
     raise
 
   if p.returncode != 0:
-    print("Error: failed to escalate sanitizer warnings status in JSON:\n",
+    print('Error: failed to escalate sanitizer warnings status in JSON:\n',
           file=sys.stderr)
     print(stderr, file=sys.stderr)
   return p.returncode
@@ -327,7 +327,7 @@ def forward_signals(procs):
       if sys.platform == 'win32' and sig == signal.SIGBREAK:
         p.send_signal(signal.CTRL_BREAK_EVENT)
       else:
-        print("Forwarding signal(%d) to process %d" % (sig, p.pid))
+        print('Forwarding signal(%d) to process %d' % (sig, p.pid))
         p.send_signal(sig)
       # pylint: enable=no-member
 

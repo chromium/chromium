@@ -53,7 +53,7 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
       output_data.erase(0, kTestHeader.length());
     }
   } else {
-    NOTREACHED_NORETURN() << "A valid mode must be specified";
+    NOTREACHED() << "A valid mode must be specified";
   }
 
   if (SUCCEEDED(hr)) {

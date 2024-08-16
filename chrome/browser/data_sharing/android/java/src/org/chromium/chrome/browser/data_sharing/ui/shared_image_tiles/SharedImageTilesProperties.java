@@ -12,12 +12,16 @@ class SharedImageTilesProperties {
     // This will indicate the loading state of the shared_image_tiles view.
     public static final PropertyModel.WritableBooleanPropertyKey IS_LOADING =
             new PropertyModel.WritableBooleanPropertyKey();
-
-    public static final PropertyModel.WritableIntPropertyKey BACKGROUND_COLOR =
+    public static final PropertyModel.ReadableIntPropertyKey COLOR_THEME =
+            new PropertyModel.ReadableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey ICON_TILES =
             new PropertyModel.WritableIntPropertyKey();
-
     public static final PropertyModel.WritableIntPropertyKey REMAINING_TILES =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey SHOW_ADD_BUTTON =
+            new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {IS_LOADING, BACKGROUND_COLOR, REMAINING_TILES};
+    public static final PropertyKey[] ALL_KEYS = {
+        IS_LOADING, COLOR_THEME, ICON_TILES, REMAINING_TILES, SHOW_ADD_BUTTON
+    };
 }

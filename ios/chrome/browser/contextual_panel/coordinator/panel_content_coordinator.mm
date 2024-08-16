@@ -20,9 +20,11 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface PanelContentCoordinator () <
-    PanelContentViewControllerMetricsDelegate>
+    PanelContentViewControllerMetricsDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 @end
 
@@ -35,11 +37,21 @@
 
   // The child modulators owned by this coordinator.
   NSMutableArray<PanelBlockModulator*>* _modulators;
+
+  // The contextual panel tab helper to use for this panel.
+  ContextualPanelTabHelper* _contextualPanelTabHelper;
+
+  // Read-write version of `self.baseViewController` as the base view
+  // controller for this coordinator changes during its lifetime.
+  UIViewController* _modifiableBaseViewController;
 }
 
 - (void)start {
+  _modifiableBaseViewController = self.baseViewController;
+
   _viewController = [[PanelContentViewController alloc] init];
   _viewController.metricsDelegate = self;
+  _viewController.traitCollectionDelegate = self.traitCollectionDelegate;
 
   ChromeBroadcaster* broadcaster =
       FullscreenController::FromBrowser(self.browser)->broadcaster();
@@ -52,11 +64,11 @@
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
 
-  ContextualPanelTabHelper* contextualPanelTabHelper =
+  _contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(activeWebState);
 
   std::vector<base::WeakPtr<ContextualPanelItemConfiguration>> configurations =
-      contextualPanelTabHelper->GetCurrentCachedConfigurations();
+      _contextualPanelTabHelper->GetCurrentCachedConfigurations();
 
   NSMutableArray<PanelBlockData*>* panelBlocks = [[NSMutableArray alloc] init];
   for (base::WeakPtr<ContextualPanelItemConfiguration> configuration :
@@ -79,18 +91,15 @@
   _viewController.contextualSheetCommandHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ContextualSheetCommands);
   [_viewController setPanelBlocks:panelBlocks];
-  if ([self.baseViewController
-          conformsToProtocol:@protocol(ContextualSheetDisplayController)]) {
-    _viewController.sheetDisplayController =
-        static_cast<id<ContextualSheetDisplayController>>(
-            self.baseViewController);
+
+  // On iPad, present using iOS's built-in UISheetController.
+  if (IsRegularXRegularSizeClass(_modifiableBaseViewController)) {
+    [self presentViewControllerFromBaseViewControllerAnimated:YES];
+  } else {
+    // On iPhone/iPad multiwindow, add the view controller instead of presenting
+    // it to use the custom Contextual Panel sheet.
+    [self addViewControllerToBaseViewController];
   }
-
-  [self.baseViewController addChildViewController:_viewController];
-  [self.baseViewController.view addSubview:_viewController.view];
-  AddSameConstraints(self.baseViewController.view, _viewController.view);
-
-  [_viewController didMoveToParentViewController:self.baseViewController];
 }
 
 - (PanelBlockModulator*)modulatorForConfiguration:
@@ -114,26 +123,75 @@
 }
 
 - (void)stop {
-  [_viewController willMoveToParentViewController:nil];
-  [_viewController.view removeFromSuperview];
-  [_viewController removeFromParentViewController];
+  if ([_viewController presentingViewController]) {
+    [_modifiableBaseViewController dismissViewControllerAnimated:YES
+                                                      completion:nil];
+  } else {
+    [self removeViewControllerFromBaseViewController];
+  }
   _viewController = nil;
 }
 
-// Convenience method for getting the tab helper for the current active web
-// state.
-- (ContextualPanelTabHelper*)contextualPanelTabHelper {
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
+#pragma mark - Public
 
-  return ContextualPanelTabHelper::FromWebState(activeWebState);
+- (void)presentFromNewBaseViewController:(UIViewController*)viewController {
+  [self removeViewControllerFromBaseViewController];
+
+  _modifiableBaseViewController = viewController;
+
+  [self presentViewControllerFromBaseViewControllerAnimated:NO];
+}
+
+- (void)embedInParentViewController:(UIViewController*)viewController {
+  __weak __typeof(self) weakSelf = self;
+  [_modifiableBaseViewController
+      dismissViewControllerAnimated:NO
+                         completion:^{
+                           [weakSelf addViewControllerToBaseViewController];
+                         }];
+
+  _modifiableBaseViewController = viewController;
+}
+
+#pragma mark - View hierarcy manipulation helper methods
+
+// Adds the view controller as a child of the current base view controller.
+- (void)addViewControllerToBaseViewController {
+  if ([_modifiableBaseViewController
+          conformsToProtocol:@protocol(ContextualSheetDisplayController)]) {
+    _viewController.sheetDisplayController =
+        static_cast<id<ContextualSheetDisplayController>>(
+            _modifiableBaseViewController);
+  }
+
+  [_modifiableBaseViewController addChildViewController:_viewController];
+  [_modifiableBaseViewController.view addSubview:_viewController.view];
+  _viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(_modifiableBaseViewController.view, _viewController.view);
+
+  [_viewController didMoveToParentViewController:_modifiableBaseViewController];
+}
+
+// Removes the view controller from the view hierarcy of the current base view
+// controller.
+- (void)removeViewControllerFromBaseViewController {
+  [_viewController willMoveToParentViewController:nil];
+  [_viewController.view removeFromSuperview];
+  [_viewController removeFromParentViewController];
+}
+
+// Presents the view controller modally from the current base view controller.
+- (void)presentViewControllerFromBaseViewControllerAnimated:(BOOL)animated {
+  _viewController.presentationController.delegate = self;
+  [_modifiableBaseViewController presentViewController:_viewController
+                                              animated:animated
+                                            completion:nil];
 }
 
 #pragma mark - PanelContentViewControllerMetricsDelegate
 
 - (NSString*)entrypointInfoBlockName {
-  auto entrypointConfig =
-      [self contextualPanelTabHelper]->GetFirstCachedConfig();
+  auto entrypointConfig = _contextualPanelTabHelper->GetFirstCachedConfig();
 
   if (!entrypointConfig) {
     return nil;
@@ -144,7 +202,17 @@
 }
 
 - (BOOL)wasLoudEntrypoint {
-  return [self contextualPanelTabHelper]->WasLoudMomentEntrypointShown();
+  return _contextualPanelTabHelper->WasLoudMomentEntrypointShown();
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  id<ContextualSheetCommands> contextualSheetCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         ContextualSheetCommands);
+  [contextualSheetCommandHandler closeContextualSheet];
 }
 
 @end

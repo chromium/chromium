@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -43,7 +44,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 
@@ -85,7 +86,7 @@ public class RecentlyClosedBridgeTest {
 
     @Before
     public void setUp() {
-        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(ModelType.SAVED_TAB_GROUP));
+        when(mSyncService.getActiveDataTypes()).thenReturn(Set.of(DataType.SAVED_TAB_GROUP));
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         sActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -140,8 +141,8 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     titles[0] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
-                    mTabModel.closeTab(tabB);
-                    mTabModel.closeTab(tabA, false, true);
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabB).allowUndo(false).build());
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabA).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
 
@@ -191,8 +192,8 @@ public class RecentlyClosedBridgeTest {
                     mTabModel.setIndex(mTabModel.indexOf(tabC), TabSelectionType.FROM_USER);
                     titles[0] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
-                    mTabModel.closeTab(tabB);
-                    mTabModel.closeTab(tabA);
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabB).allowUndo(false).build());
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabA).allowUndo(false).build());
                 });
 
         final List<RecentlyClosedTab> recentTabs = new ArrayList<>();
@@ -256,7 +257,8 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     titles[0] = frozenTabA.getTitle();
-                    mTabModel.closeTab(frozenTabA);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTab(frozenTabA).allowUndo(false).build());
                 });
 
         final List<RecentlyClosedTab> recentTabs = new ArrayList<>();
@@ -305,7 +307,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeAllTabs();
+                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -356,7 +358,10 @@ public class RecentlyClosedBridgeTest {
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -415,7 +420,11 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titles[0] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabB, tabA}), false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabB, tabA))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -481,8 +490,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titleA[0] = tabA.getTitle();
                     titleB[0] = tabB.getTitle();
-                    mTabModel.closeTab(tabB, false, true);
-                    mTabModel.closeTab(tabA, false, true);
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabB).build());
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabA).build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -551,7 +560,10 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitTabClosure(tabA.getId());
                     mTabModel.commitTabClosure(tabB.getId());
                 });
@@ -604,7 +616,10 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitTabClosure(tabA.getId());
                     mTabModel.commitTabClosure(tabB.getId());
                 });
@@ -657,7 +672,11 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -719,7 +738,11 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabC}), false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabC))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -775,7 +798,10 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[1] = tabA.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabC}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitTabClosure(tabA.getId());
                     mTabModel.commitTabClosure(tabC.getId());
                 });
@@ -830,7 +856,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(true).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
 
@@ -875,7 +902,11 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -924,7 +955,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(true).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
 
@@ -975,10 +1007,8 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            Arrays.asList(new Tab[] {tabA}),
-                            /* canUndo= */ true,
-                            /* hideTabGroups= */ true);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA)).hideTabGroups(true).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
 
@@ -1004,10 +1034,11 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.createSingleTabGroup(tabA, /* notify= */ false);
                     mTabGroupModelFilter.setTabGroupTitle(tabA.getId(), "Bar");
                     titles[0] = tabA.getTitle();
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            Arrays.asList(new Tab[] {tabA}),
-                            /* canUndo= */ false,
-                            /* hideTabGroups= */ true);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -1039,7 +1070,11 @@ public class RecentlyClosedBridgeTest {
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB, tabC))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -1135,7 +1170,10 @@ public class RecentlyClosedBridgeTest {
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -1190,7 +1228,10 @@ public class RecentlyClosedBridgeTest {
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -1256,8 +1297,11 @@ public class RecentlyClosedBridgeTest {
                     title[0] = tabA.getTitle();
                     groupTitles[1] = tabB.getTitle();
                     groupTitles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabB, tabC}), true);
-                    mTabModel.closeTab(tabA, false, true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabB, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabA).build());
                     mTabModel.commitTabClosure(tabB.getId());
                     mTabModel.commitTabClosure(tabA.getId());
                     mTabModel.commitTabClosure(tabC.getId());
@@ -1343,7 +1387,10 @@ public class RecentlyClosedBridgeTest {
                     titles[2] = tabA.getTitle();
                     titles[1] = tabB.getTitle();
                     titles[0] = tabC.getTitle();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB, tabC}), true);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB, tabC))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -1398,10 +1445,12 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeMultipleTabs(
-                            Arrays.asList(tabB, tabA),
-                            /* canUndo= */ false,
-                            /* canRestore= */ false);
+                    mTabModel.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabB, tabA))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .saveToTabRestoreService(false)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
 
@@ -1427,11 +1476,12 @@ public class RecentlyClosedBridgeTest {
                     mTabGroupModelFilter.mergeTabsToGroup(tabB.getId(), tabA.getId());
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabGroupModelFilter.closeMultipleTabs(
-                            Arrays.asList(tabB, tabA),
-                            /* canUndo= */ false,
-                            /* hideTabGroups= */ true,
-                            /* canRestore= */ false);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabB, tabA))
+                                    .allowUndo(false)
+                                    .hideTabGroups(true)
+                                    .saveToTabRestoreService(false)
+                                    .build());
                 });
 
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -1451,7 +1501,7 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     titles[0] = tabA.getTitle();
-                    mTabModel.closeTab(tabA, false, true);
+                    mTabModel.closeTabs(TabClosureParams.closeTab(tabA).build());
                     mTabModel.commitTabClosure(tabA.getId());
                 });
         final List<RecentlyClosedEntry> recentEntries = new ArrayList();
@@ -1487,7 +1537,7 @@ public class RecentlyClosedBridgeTest {
                 () -> {
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
-                    mTabModel.closeAllTabs(/* uponExit= */ false);
+                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
                     mTabModel.commitAllTabClosures();
                 });
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -1527,7 +1577,10 @@ public class RecentlyClosedBridgeTest {
                     titles[1] = tabA.getTitle();
                     titles[0] = tabB.getTitle();
                     tabCountBeforeClosingTabs[0] = mTabModel.getCount();
-                    mTabModel.closeMultipleTabs(Arrays.asList(new Tab[] {tabA, tabB}), true);
+                    mTabGroupModelFilter.closeTabs(
+                            TabClosureParams.closeTabs(List.of(tabA, tabB))
+                                    .hideTabGroups(true)
+                                    .build());
                     mTabModel.commitAllTabClosures();
                 });
         final List<RecentlyClosedEntry> recentEntries = new ArrayList<>();
@@ -1570,7 +1623,9 @@ public class RecentlyClosedBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState state = TabStateExtractor.from(tab);
-                    mActivity.getCurrentTabModel().closeTab(tab);
+                    mActivity
+                            .getCurrentTabModel()
+                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
                     frozen[0] =
                             mActivity.getCurrentTabCreator().createFrozenTab(state, tab.getId(), 1);
                 });

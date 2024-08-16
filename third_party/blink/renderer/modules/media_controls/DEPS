@@ -9,4 +9,5 @@ include_rules = [
   "+third_party/blink/renderer/modules/picture_in_picture",
   "+third_party/blink/renderer/modules/remoteplayback",
   "+third_party/blink/renderer/modules/screen_orientation",
+  "+ui/strings/grit/ax_strings.h",
 ]

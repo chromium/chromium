@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/download/internal/background_service/proto_conversions.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/uuid.h"
 #include "components/download/internal/background_service/entry.h"
-#include "components/download/internal/background_service/proto_conversions.h"
 #include "components/download/internal/background_service/test/entry_utils.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -115,11 +116,8 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   EXPECT_EQ(expected.require_safety_checks, actual.require_safety_checks);
   EXPECT_EQ(expected.credentials_mode, actual.credentials_mode);
 
-  std::string out;
-  actual.request_headers.GetHeader("key1", &out);
-  EXPECT_EQ("value1", out);
-  actual.request_headers.GetHeader("key2", &out);
-  EXPECT_EQ("value2", out);
+  EXPECT_EQ("value1", actual.request_headers.GetHeader("key1"));
+  EXPECT_EQ("value2", actual.request_headers.GetHeader("key2"));
   EXPECT_EQ(expected.request_headers.ToString(),
             actual.request_headers.ToString());
 }

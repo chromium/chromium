@@ -18,10 +18,10 @@ static_library("boca") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/webui/boca_ui",
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/boca",
     "//components/signin/public/identity_manager",
     "//services/network/public/cpp",
   ]

@@ -237,7 +237,12 @@ bool IsGenericFileHandler(const apps::IntentPtr& intent,
 }
 
 bool MatchGlob(std::string_view value, std::string_view pattern) {
-#define GET_CHAR(s, i) ((UNLIKELY(i >= s.length())) ? '\0' : s[i])
+  static constexpr auto get_char = [](std::string_view s, size_t i) {
+    if (i >= s.length()) [[unlikely]] {
+      return '\0';
+    }
+    return s[i];
+  };
 
   const size_t NP = pattern.length();
   const size_t NS = value.length();
@@ -245,16 +250,16 @@ bool MatchGlob(std::string_view value, std::string_view pattern) {
     return NS == 0;
   }
   size_t ip = 0, is = 0;
-  char nextChar = GET_CHAR(pattern, 0);
+  char nextChar = get_char(pattern, 0);
   while (ip < NP && is < NS) {
     char c = nextChar;
     ++ip;
-    nextChar = GET_CHAR(pattern, ip);
+    nextChar = get_char(pattern, ip);
     const bool escaped = (c == '\\');
     if (escaped) {
       c = nextChar;
       ++ip;
-      nextChar = GET_CHAR(pattern, ip);
+      nextChar = get_char(pattern, ip);
     }
     if (nextChar == '*') {
       if (!escaped && c == '.') {
@@ -263,14 +268,14 @@ bool MatchGlob(std::string_view value, std::string_view pattern) {
           return true;
         }
         ++ip;
-        nextChar = GET_CHAR(pattern, ip);
+        nextChar = get_char(pattern, ip);
         // Consume everything until the next char in the pattern is found.
         if (nextChar == '\\') {
           ++ip;
-          nextChar = GET_CHAR(pattern, ip);
+          nextChar = get_char(pattern, ip);
         }
         do {
-          if (GET_CHAR(value, is) == nextChar) {
+          if (get_char(value, is) == nextChar) {
             break;
           }
           ++is;
@@ -280,22 +285,23 @@ bool MatchGlob(std::string_view value, std::string_view pattern) {
           return false;
         }
         ++ip;
-        nextChar = GET_CHAR(pattern, ip);
+        nextChar = get_char(pattern, ip);
         ++is;
       } else {
         // Consume only characters matching the one before '*'.
         do {
-          if (GET_CHAR(value, is) != c) {
+          if (get_char(value, is) != c) {
             break;
           }
           ++is;
         } while (is < NS);
         ++ip;
-        nextChar = GET_CHAR(pattern, ip);
+        nextChar = get_char(pattern, ip);
       }
     } else {
-      if (c != '.' && GET_CHAR(value, is) != c)
+      if (c != '.' && get_char(value, is) != c) {
         return false;
+      }
       ++is;
     }
   }
@@ -307,14 +313,12 @@ bool MatchGlob(std::string_view value, std::string_view pattern) {
 
   // One last check: we may have finished the match string, but still have a
   // '.*' at the end of the pattern, which is still a match.
-  if (ip == NP - 2 && GET_CHAR(pattern, ip) == '.' &&
-      GET_CHAR(pattern, ip + 1) == '*') {
+  if (ip == NP - 2 && get_char(pattern, ip) == '.' &&
+      get_char(pattern, ip + 1) == '*') {
     return true;
   }
 
   return false;
-
-#undef GET_CHAR
 }
 
 bool MimeTypeMatched(std::string_view intent_mime_type,

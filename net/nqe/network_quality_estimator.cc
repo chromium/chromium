@@ -99,7 +99,7 @@ const char* CategoryToString(nqe::internal::ObservationCategory category) {
     case nqe::internal::OBSERVATION_CATEGORY_END_TO_END:
       return "EndToEnd";
     case nqe::internal::OBSERVATION_CATEGORY_COUNT:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

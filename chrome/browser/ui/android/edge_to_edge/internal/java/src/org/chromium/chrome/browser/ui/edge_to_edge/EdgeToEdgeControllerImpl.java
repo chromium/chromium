@@ -173,9 +173,7 @@ public class EdgeToEdgeControllerImpl
     public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.addObserver(adjuster);
         boolean shouldPad = shouldPadAdjusters();
-        adjuster.overrideBottomInset(
-                shouldPad ? mSystemInsets.bottom : 0,
-                shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
+        adjuster.overrideBottomInset(shouldPad ? mSystemInsets.bottom : 0);
     }
 
     @Override
@@ -248,12 +246,7 @@ public class EdgeToEdgeControllerImpl
             return;
         }
         mBottomControlsAreVisible = visible;
-        for (var adjuster : mPadAdjusters) {
-            boolean shouldPad = shouldPadAdjusters();
-            adjuster.overrideBottomInset(
-                    shouldPad ? mSystemInsets.bottom : 0,
-                    shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
-        }
+        updatePadAdjusters();
     }
 
     /**
@@ -314,13 +307,8 @@ public class EdgeToEdgeControllerImpl
             View contentView = mActivity.findViewById(ROOT_UI_VIEW_ID);
             assert contentView != null : "Root view for Edge To Edge not found!";
             adjustEdgePaddings(mIsDrawingToEdge, contentView);
+            updatePadAdjusters();
 
-            boolean shouldPad = shouldPadAdjusters();
-            for (var adjuster : mPadAdjusters) {
-                adjuster.overrideBottomInset(
-                        shouldPad ? mSystemInsets.bottom : 0,
-                        shouldPad && !mBottomControlsAreVisible ? mSystemInsets.bottom : 0);
-            }
             for (var observer : mEdgeChangeObservers) {
                 observer.onToEdgeChange(
                         mSystemInsets.bottom, isDrawingToEdge(), isPageOptedIntoEdgeToEdge());
@@ -329,8 +317,8 @@ public class EdgeToEdgeControllerImpl
     }
 
     @NonNull
-    private WindowInsetsCompat handleWindowInsets(
-            View rootView, @NonNull WindowInsetsCompat windowInsets) {
+    @VisibleForTesting
+    WindowInsetsCompat handleWindowInsets(View rootView, @NonNull WindowInsetsCompat windowInsets) {
         Insets newInsets = getSystemInsets(windowInsets);
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
@@ -355,11 +343,22 @@ public class EdgeToEdgeControllerImpl
      * activity is currently in edge-to-edge, and if the adjusters aren't already positioned above
      * the system insets due to the keyboard or the bottom controls being visible.
      */
-    // TODO(crbug.com/350544729) Update to account for the bottom chin (particularly when scrolled
-    //  off).
     private boolean shouldPadAdjusters() {
-        boolean keyboardIsVisible = mKeyboardInsets != null && mKeyboardInsets.bottom > 0;
-        return mIsPageOptedIntoEdgeToEdge && !keyboardIsVisible;
+        // Never pad the adjusters if the keyboard is visible.
+        if (mKeyboardInsets != null && mKeyboardInsets.bottom > 0) return false;
+
+        // Never pad the adjusters if the bottom controls are visible.
+        if (mBottomControlsAreVisible) return false;
+
+        // Pad the adjusters if drawing to edge.
+        return isDrawingToEdge();
+    }
+
+    private void updatePadAdjusters() {
+        boolean shouldPad = shouldPadAdjusters();
+        for (var adjuster : mPadAdjusters) {
+            adjuster.overrideBottomInset(shouldPad ? mSystemInsets.bottom : 0);
+        }
     }
 
     /**

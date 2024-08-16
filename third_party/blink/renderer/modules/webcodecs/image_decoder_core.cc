@@ -374,8 +374,8 @@ void ImageDecoderCore::Reinitialize(
       mime_type_, segment_reader_, data_complete_,
       ImageDecoder::kAlphaNotPremultiplied,
       ImageDecoder::HighBitDepthDecodingOption::kDefaultBitDepth,
-      color_behavior_, Platform::GetMaxDecodedImageBytes(), desired_size_,
-      animation_option_);
+      color_behavior_, cc::AuxImage::kDefault,
+      Platform::GetMaxDecodedImageBytes(), desired_size_, animation_option_);
   DCHECK(decoder_);
 }
 

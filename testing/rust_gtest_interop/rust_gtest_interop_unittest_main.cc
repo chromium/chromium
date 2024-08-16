@@ -32,7 +32,7 @@ bool IsSubprocess() {
 #else
   // This function should only be called if the standard test launcher is
   // being used.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -65,11 +64,9 @@ void FamilyLinkNoticeScreen::ShowImpl() {
   }
   view_->Show();
 
-  if (ash::features::AreLocalPasswordsEnabledForConsumers()) {
-    if (context()->extra_factors_token) {
-      session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
-          context()->extra_factors_token.value());
-    }
+  if (context()->extra_factors_token) {
+    session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+        context()->extra_factors_token.value());
   }
 }
 

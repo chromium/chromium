@@ -52,7 +52,7 @@ void CallbackFunctionBase::Trace(Visitor* visitor) const {
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
     const char* interface_name,
     const char* operation_name) const {
-  if (LIKELY(callback_relevant_script_state_)) {
+  if (callback_relevant_script_state_) [[likely]] {
     return callback_relevant_script_state_;
   }
 
@@ -60,8 +60,7 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
   v8::TryCatch try_catch(GetIsolate());
   try_catch.SetVerbose(true);
-  ExceptionState exception_state(GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+  ExceptionState exception_state(GetIsolate(), v8::ExceptionContext::kOperation,
                                  interface_name, operation_name);
   exception_state.ThrowSecurityError(
       "An invocation of the provided callback failed due to cross origin "
@@ -72,14 +71,13 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrReportError(
 ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
     const char* interface_name,
     const char* operation_name) const {
-  if (LIKELY(callback_relevant_script_state_)) {
+  if (callback_relevant_script_state_) [[likely]] {
     return callback_relevant_script_state_;
   }
 
   // Throw a SecurityError due to a cross origin callback object.
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
-  ExceptionState exception_state(GetIsolate(),
-                                 ExceptionContextType::kOperationInvoke,
+  ExceptionState exception_state(GetIsolate(), v8::ExceptionContext::kOperation,
                                  interface_name, operation_name);
   exception_state.ThrowSecurityError(
       "An invocation of the provided callback failed due to cross origin "
@@ -89,7 +87,7 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
 
 void CallbackFunctionBase::EvaluateAsPartOfCallback(
     base::OnceCallback<void(ScriptState*)> closure) {
-  if (UNLIKELY(!callback_relevant_script_state_)) {
+  if (!callback_relevant_script_state_) [[unlikely]] {
     return;
   }
 

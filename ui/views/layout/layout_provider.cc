@@ -74,7 +74,7 @@ gfx::Insets LayoutProvider::GetInsetsMetric(int metric) const {
     case InsetsMetric::INSETS_ICON_BUTTON:
       return gfx::Insets(2);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int LayoutProvider::GetDistanceMetric(int metric) const {
@@ -107,6 +107,10 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT:
       // See the comment in DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT above.
       return GetDistanceMetric(DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL) - 8;
+    case DISTANCE_DROPDOWN_BUTTON_LABEL_ARROW_SPACING:
+      return 8;
+    case DISTANCE_DROPDOWN_BUTTON_RIGHT_MARGIN:
+      return 12;
     case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
       return kMediumDialogWidth;
     case DISTANCE_RELATED_BUTTON_HORIZONTAL:
@@ -133,9 +137,9 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 4;
     case VIEWS_DISTANCE_END:
     case VIEWS_DISTANCE_MAX:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const TypographyProvider& LayoutProvider::GetTypographyProvider() const {

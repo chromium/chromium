@@ -1451,7 +1451,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kPortalDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -4952,7 +4952,6 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("Navigate");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_NAVIGATE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_NAVIGATE);
-  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_NAVIGATE);
   UIA_VALIDATE_CALL_1_ARG(element_provider);
 
   *element_provider = nullptr;
@@ -5011,7 +5010,7 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
       // Otherwise, consult the platform-neutral tree.
       AXFragmentRootWin* fragment_root =
           AXFragmentRootWin::GetFragmentRootParentOf(GetNativeViewAccessible());
-      if (UNLIKELY(fragment_root)) {
+      if (fragment_root) [[unlikely]] {
         neighbor = fragment_root->GetNativeViewAccessible();
       } else {
         neighbor = GetParent();
@@ -5059,8 +5058,9 @@ IFACEMETHODIMP AXPlatformNodeWin::Navigate(
       // source node isn't Rx, return Rx.
       AXFragmentRootWin* fragment_root =
           AXFragmentRootWin::GetFragmentRootParentOf(neighbor);
-      if (UNLIKELY(fragment_root && fragment_root != GetDelegate()))
+      if (fragment_root && fragment_root != GetDelegate()) [[unlikely]] {
         neighbor = fragment_root->GetNativeViewAccessible();
+      }
     }
     neighbor->QueryInterface(IID_PPV_ARGS(element_provider));
   }
@@ -5117,7 +5117,6 @@ IFACEMETHODIMP AXPlatformNodeWin::get_BoundingRectangle(
   WIN_ACCESSIBILITY_API_TRACE_EVENT("get_BoundingRectangle");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
-  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_GET_BOUNDINGRECTANGLE);
 
   UIA_VALIDATE_CALL_1_ARG(screen_physical_pixel_bounds);
 
@@ -5184,7 +5183,6 @@ IFACEMETHODIMP AXPlatformNodeWin::GetPatternProvider(PATTERNID pattern_id,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("GetPatternProvider");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
-  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_GET_PATTERN_PROVIDER);
   NotifyAPIObserverForPatternRequest(pattern_id);
   return GetPatternProviderImpl(pattern_id, result);
 }
@@ -5208,7 +5206,6 @@ IFACEMETHODIMP AXPlatformNodeWin::GetPropertyValue(PROPERTYID property_id,
   WIN_ACCESSIBILITY_API_TRACE_EVENT("GetPropertyValue");
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_PROPERTY_VALUE);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_GET_PROPERTY_VALUE);
-  WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(UMA_API_GET_PROPERTY_VALUE);
 
   constexpr LONG kFirstKnownUiaPropertyId = UIA_RuntimeIdPropertyId;
   constexpr LONG kLastKnownUiaPropertyId = UIA_IsDialogPropertyId;
@@ -6881,7 +6878,7 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kDirectoryDeprecated:
     case ax::mojom::Role::kPreDeprecated:
     case ax::mojom::Role::kPortalDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -7179,7 +7176,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       break;
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kPreDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     default:
       break;
   }

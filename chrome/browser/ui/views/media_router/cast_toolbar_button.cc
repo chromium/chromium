@@ -38,6 +38,8 @@ namespace {
 constexpr char kLoggerComponent[] = "CastToolbarButton";
 }
 
+using Severity = media_router::IssueInfo::Severity;
+
 // static
 std::unique_ptr<CastToolbarButton> CastToolbarButton::Create(Browser* browser) {
   // These objects may be null in tests.
@@ -109,13 +111,12 @@ void CastToolbarButton::DeactivateIcon() {
 }
 
 void CastToolbarButton::OnIssue(const media_router::Issue& issue) {
-  current_issue_ = std::make_unique<media_router::IssueInfo>(issue.info());
+  issue_severity_ = issue.info().severity;
   UpdateIcon();
 }
 
 void CastToolbarButton::OnIssuesCleared() {
-  if (current_issue_)
-    current_issue_.reset();
+  issue_severity_.reset();
   UpdateIcon();
 }
 
@@ -176,9 +177,6 @@ void CastToolbarButton::OnThemeChanged() {
 void CastToolbarButton::UpdateIcon() {
   if (!GetWidget())
     return;
-  using Severity = media_router::IssueInfo::Severity;
-  const auto severity =
-      current_issue_ ? current_issue_->severity : Severity::NOTIFICATION;
   bool is_frozen = false;
   for (const auto& route_id : tracked_mirroring_routes_) {
     MirroringMediaControllerHost* mirroring_controller_host =
@@ -192,10 +190,11 @@ void CastToolbarButton::UpdateIcon() {
   SkColor icon_color;
 
   const auto* const color_provider = GetColorProvider();
-  if (severity == Severity::NOTIFICATION && !has_local_route_) {
+  if ((!issue_severity_ || issue_severity_ == Severity::NOTIFICATION) &&
+      !has_local_route_) {
     new_icon = &vector_icons::kMediaRouterIdleChromeRefreshIcon;
     icon_color = gfx::kPlaceholderColor;
-  } else if (severity == Severity::WARNING) {
+  } else if (issue_severity_ == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningChromeRefreshIcon;
     icon_color = gfx::kPlaceholderColor;
   } else if (is_frozen) {

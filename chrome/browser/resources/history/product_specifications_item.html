@@ -39,7 +39,10 @@
   }
 
   #history-icon {
-    margin-inline-end: 14px;
+    margin-inline-end: 6px;
+    height: 16px;
+    width: 16px;
+    --iron-icon-fill-color: var(--cr-fallback-color-on-surface-subtle);
   }
 
   #menu {
@@ -71,8 +74,7 @@
     <div id="link-container">
       <div id="link" on-click="onLinkClick_"
           on-keydown="onLinkKeydown_"
-          role="link" tabindex="0"
-          aria-label="[[getMenuAriaLabel_(item)]]">
+          role="link" tabindex="0">
         <cr-icon id="history-icon" class="website-icon"
             icon="history:table-chart-organize"></cr-icon>
         <history-searched-label class="website-title"
@@ -85,6 +87,7 @@
       </div>
     </div>
     <cr-icon-button id="menu" iron-icon="cr:more-vert"
-      on-click="onMenuButtonClick_"></cr-icon-button>
+        on-click="onMenuButtonClick_"
+        aria-label="[[getMenuAriaLabel_(item)]]"></cr-icon-button>
   </div>
 </div>

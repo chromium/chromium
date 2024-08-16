@@ -319,9 +319,9 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kPlusAddress:
     case Suggestion::Icon::kIban:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -384,28 +384,41 @@ PaymentsMetadata CreditCard::GetMetadata() const {
   return metadata;
 }
 
-double CreditCard::GetRankingScore(base::Time current_time) const {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableRankingFormulaCreditCards)) {
-    int virtual_card_boost =
-        virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
-            ? 0
-            : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
-                  exp(-GetDaysSinceLastUse(current_time) /
-                      features::kAutofillRankingFormulaVirtualCardBoostHalfLife
-                          .Get());
-
-    // Exponentially decay the use count by the days since the data model was
-    // last used. Add a virtual card boost if the model is a virtual card.
-    return (log10(use_count() + 1) *
-            exp(-GetDaysSinceLastUse(current_time) /
-                features::kAutofillRankingFormulaCreditCardsUsageHalfLife
-                    .Get())) +
-           virtual_card_boost;
+double CreditCard::GetRankingScore(base::Time current_time,
+                                   bool use_frecency) const {
+  if (use_frecency || !base::FeatureList::IsEnabled(
+                          features::kAutofillEnableRankingFormulaCreditCards)) {
+    // Default to legacy frecency scoring.
+    return AutofillDataModel::GetRankingScore(current_time);
   }
 
-  // Default to legacy frecency scoring.
-  return AutofillDataModel::GetRankingScore(current_time);
+  // Calculate score with new ranking algorithm. The new algorithm is only used
+  // when `use_frecency` is false and the new ranking experiment is enabled.
+  const int virtual_card_boost =
+      virtual_card_enrollment_state_ != VirtualCardEnrollmentState::kEnrolled
+          ? 0
+          : features::kAutofillRankingFormulaVirtualCardBoost.Get() *
+                exp(-GetDaysSinceLastUse(current_time) /
+                    features::kAutofillRankingFormulaVirtualCardBoostHalfLife
+                        .Get());
+
+  // Exponentially decay the use count by the days since the data model was
+  // last used. Add a virtual card boost if the model is a virtual card.
+  return (log10(use_count() + 1) *
+          exp(-GetDaysSinceLastUse(current_time) /
+              features::kAutofillRankingFormulaCreditCardsUsageHalfLife
+                  .Get())) +
+         virtual_card_boost;
+}
+
+bool CreditCard::HasGreaterRankingThan(const CreditCard& other,
+                                       base::Time comparison_time,
+                                       bool use_frecency) const {
+  const double score = GetRankingScore(comparison_time, use_frecency);
+  const double other_score =
+      other.GetRankingScore(comparison_time, use_frecency);
+  return AutofillDataModel::CompareRankingScores(score, other_score,
+                                                 other.use_date());
 }
 
 bool CreditCard::SetMetadata(const PaymentsMetadata& metadata) {

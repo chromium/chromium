@@ -168,7 +168,6 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
   // Following steps at spec draft
   // https://wicg.github.io/construct-stylesheets/#dom-cssstylesheet-cssstylesheet
   SetConstructorDocument(document);
-  SetTitle(options->title());
   ClearOwnerNode();
   ClearOwnerRule();
   Contents()->RegisterClient(this);

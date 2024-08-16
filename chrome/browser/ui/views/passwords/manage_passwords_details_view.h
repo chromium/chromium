@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_DETAILS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_MANAGE_PASSWORDS_DETAILS_VIEW_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -31,8 +33,11 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBackButton);
 
   // `password_form` is the password form to be displayed.
+  // `allow_empty_username_edit` indicates whether the edit button for empty
+  // usernames is available.
   // The view uses `username_exists_callback` to check if the currently entered
   // username in the edit mode already exists and hence should be considered an
   // invalid input. `switched_to_edit_mode_callback` is invoked when the user
@@ -46,6 +51,7 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
   // clicks on the "Manage password" button.
   ManagePasswordsDetailsView(
       password_manager::PasswordForm password_form,
+      bool allow_empty_username_edit,
       base::RepeatingCallback<bool(const std::u16string&)>
           username_exists_callback,
       base::RepeatingClosure switched_to_edit_mode_callback,
@@ -59,12 +65,12 @@ class ManagePasswordsDetailsView : public views::BoxLayoutView {
 
   ~ManagePasswordsDetailsView() override;
 
-  // Creates the title for the details view. The title consists of an image
-  // button with a back icon the invokes `on_back_clicked_callback` when
-  // clicked, and in addition, the shown origin for `password_form`.
+  // Creates the title for the details view. It consists of the back arrow icon
+  // button if the `on_back_clicked_callback` is provided (which is invoked
+  // when the button is clicked) and the `password_form` origin.
   static std::unique_ptr<views::View> CreateTitleView(
       const password_manager::PasswordForm& password_form,
-      base::RepeatingClosure on_back_clicked_callback);
+      std::optional<base::RepeatingClosure> on_back_clicked_callback);
 
   // Switches to the reading mode by hiding all the editing UI controls, and
   // showing the display UI controls instead.

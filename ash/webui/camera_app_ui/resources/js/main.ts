@@ -218,8 +218,6 @@ function parseSearchParams(): {
   intent: Intent|null,
   facing: Facing|null,
   mode: Mode|null,
-  openFrom: string|null,
-  autoTake: boolean,
 } {
   const url = new URL(window.location.href);
   const params = url.searchParams;
@@ -236,10 +234,7 @@ function parseSearchParams(): {
     return Intent.create(url, mode);
   })();
 
-  const autoTake = params.get('autoTake') === '1';
-  const openFrom = params.get('openFrom');
-
-  return {intent, facing, mode, autoTake, openFrom};
+  return {intent, facing, mode};
 }
 
 /**
@@ -391,7 +386,7 @@ function maybeIntroduceSuperRes() {
  * Setup Camera App and starts camera stream.
  */
 async function main() {
-  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
+  const {intent, facing, mode} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
 
@@ -481,9 +476,6 @@ async function main() {
   preloadSounds();
   setupSvgs();
 
-  const launchType = openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
-                                                metrics.LaunchType.DEFAULT;
-
   await DeviceOperator.initializeInstance();
 
   // Create a promise to finish the intent, that runs in parallel with starting
@@ -504,7 +496,7 @@ async function main() {
   // initialized by setupMultiWindowHandling.
   document.body.addEventListener('keydown', (event) => onKeyPressed(event));
 
-  metrics.sendLaunchEvent({launchType});
+  metrics.sendLaunchEvent({launchType: metrics.LaunchType.DEFAULT});
 
   await cameraResourceInitialized.wait();
   const cameraStartSuccessful = await cameraManager.reconfigure();
@@ -555,12 +547,6 @@ async function main() {
 
   await window.appWindow?.onAppLaunched();
   metrics.sendOpenCameraEvent(cameraManager.getVidPid());
-
-  if (autoTake) {
-    cameraView.beginTake(
-        openFrom === 'assistant' ? metrics.ShutterType.ASSISTANT :
-                                   metrics.ShutterType.UNKNOWN);
-  }
 }
 
 // This is the entry point of CCA so the returned promise is not awaited.

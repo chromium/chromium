@@ -540,10 +540,10 @@ void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     blink::ServiceWorkerStatusCode status) {
   bool success = status == blink::ServiceWorkerStatusCode::kOk;
   base::UmaHistogramBoolean(
-      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState", success);
+      "Extensions.ServiceWorkerBackground.WorkerUnregistrationState2", success);
   base::UmaHistogramBoolean(
       "Extensions.ServiceWorkerBackground.WorkerUnregistrationState_"
-      "AddExtension",
+      "AddExtension2",
       success);
 
   if (!success) {
@@ -551,11 +551,11 @@ void ExtensionRegistrar::NotifyServiceWorkerUnregistered(
     LOG(ERROR) << "Failed to unregister service worker for extension "
                << extension_id;
     base::UmaHistogramEnumeration(
-        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus",
+        "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus3",
         status);
     base::UmaHistogramEnumeration(
         "Extensions.ServiceWorkerBackground.WorkerUnregistrationFailureStatus_"
-        "AddExtension",
+        "AddExtension3",
         status);
   }
 }

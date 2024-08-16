@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace autofill::payments {
 
@@ -76,13 +77,13 @@ void PaymentsAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
 void PaymentsAutofillClient::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
-    AutofillClient::SaveCreditCardOptions options,
+    SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {}
 
 void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
-    AutofillClient::SaveCreditCardOptions options,
+    SaveCreditCardOptions options,
     UploadSaveCardPromptCallback callback) {}
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(
@@ -112,6 +113,9 @@ void PaymentsAutofillClient::ConfirmUploadIbanToCloud(
     LegalMessageLines legal_message_lines,
     bool should_show_prompt,
     SaveIbanPromptCallback callback) {}
+
+void PaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
+                                                 bool hit_max_strikes) {}
 
 void PaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
@@ -211,8 +215,16 @@ const AutofillOfferManager* PaymentsAutofillClient::GetAutofillOfferManager()
 bool PaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,
-    const std::vector<bool>& card_acceptabilies) {
+    base::span<const Suggestion> suggestions) {
   return false;
 }
+
+bool PaymentsAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const autofill::Iban> ibans_to_suggest) {
+  return false;
+}
+
+void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 }  // namespace autofill::payments

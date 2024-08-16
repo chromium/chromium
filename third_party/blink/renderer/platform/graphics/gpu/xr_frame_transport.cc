@@ -99,7 +99,7 @@ void XRFrameTransport::FrameSubmitMissing(
   vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
 }
 
-void XRFrameTransport::FrameSubmit(
+bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     gpu::gles2::GLES2Interface* gl,
     gpu::SharedImageInterface* sii,
@@ -134,7 +134,7 @@ void XRFrameTransport::FrameSubmit(
       FrameSubmitMissing(vr_presentation_provider, gl, vr_frame_id);
       // We didn't actually submit anything, so don't set
       // the waiting_for_previous_frame_transfer_ and related state.
-      return;
+      return false;
     }
 
     // We decompose the cloned handle, and use it to create a
@@ -205,6 +205,7 @@ void XRFrameTransport::FrameSubmit(
   waiting_for_previous_frame_render_ =
       transport_options_->wait_for_render_notification;
   waiting_for_previous_frame_fence_ = transport_options_->wait_for_gpu_fence;
+  return true;
 }
 
 void XRFrameTransport::OnSubmitFrameTransferred(bool success) {

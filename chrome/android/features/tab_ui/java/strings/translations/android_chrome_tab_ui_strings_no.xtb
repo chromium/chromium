@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="125153950246128346">Trykk for å se en annen fane</translation>
 <translation id="1273910660700874265">Alternativer for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1340839264183302272">Forlat gruppen</translation>
 <translation id="1419023007528516122">Dette fører til at gruppen slettes fra enheten permanent</translation>
 <translation id="1486715732399361704">Du finner alle fanegruppene dine her</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Opprettet for <ph name="NUM_MINS_ONE" /> minutt siden}other{Opprettet for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>
@@ -37,20 +38,26 @@
 <translation id="2662028055331606429">Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøk nettstedet</translation>
 <translation id="2677748264148917807">Gå ut</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CHANGED" /> er endret og <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CHANGED" /> er endret, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{Opprettet for <ph name="NUM_HOURS_ONE" /> time siden}other{Opprettet for <ph name="NUM_HOURS_MANY" /> timer siden}}</translation>
 <translation id="2801787514987684416">Vil du se informasjon om butikken?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fane er lukket}other{<ph name="MANY_CLOSED" /> faner er lukket}}</translation>
+<translation id="2894757982205307093">Ny fane i gruppen</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
 <translation id="2977480621796371840">Fjern fra gruppen</translation>
+<translation id="29919168204617356">Inaktive faner lukkes automatisk. Du kan alltid finne dem i loggen.</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3026391124054406831">Opprett grupper for å organisere fanene dine.</translation>
 <translation id="3051031624272448591">Du kan alltid få dem tilbake via loggen</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Fanegruppeikon med <ph name="COLOR_NAME" /> farge</translation>
 <translation id="3194464645767632461">vurdering</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CHANGED" /> er endret}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CHANGED" /> er endret}}</translation>
 <translation id="3291470810748040983">Du blir varslet når det finnes en lavere pris på en åpen fane</translation>
 <translation id="3322827343001922122">Åpne handlingsmenyen for fanegruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
 <translation id="3547352561153509682">Dette medfører at gruppen slettes fra alle enheter som er logget på <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">Skjul dialogboksen for inaktive faner</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatyrbilde for forhåndsvisning av delingsark</translation>
 <translation id="381219490185664296">Vil du oppheve fanegruppen?</translation>
@@ -67,6 +74,7 @@
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane.}other{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fane er endret, <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_CHANGED" /> faner er endret, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Fjern gruppering</translation>
 <translation id="4590027107044272416">Nå kan du åpne nye faner her</translation>
@@ -88,6 +96,7 @@
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign sider raskt ved å lage en gruppe. For å begynne, trykk og hold på en link.</translation>
 <translation id="5094423602314093681">Vil du fjerne fanen(e) og slette gruppen?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til}other{<ph name="MANY_ADDED" /> faner er lagt til}}</translation>
 <translation id="5161254044473106830">Du må oppgi en tittel</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{Lukk fanegruppe med <ph name="TABS_COUNT_ONE" /> fane.}other{Lukk fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="5339733443032484186">Den siste fanen du brukte</translation>
@@ -96,6 +105,7 @@
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{Lukk fanegruppe med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Lukk fanegruppe med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">Vis butikkinformasjon – alternativet er tilgjengelig nær toppen av skjermen</translation>
+<translation id="5627941783489838464">Ingen faneoppdateringer</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{Gjenopprett fanen}other{Gjenopprett fanene}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> link fra Chrome}other{<ph name="TABS_COUNT_MANY" /> linker fra Chrome}}</translation>
 <translation id="575494663145460764">Vil du ha varsler om avslag?</translation>
@@ -120,6 +130,8 @@
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Flytt fanen mot venstre</translation>
 <translation id="6615455863669487791">Vis meg</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> fane er endret}other{<ph name="MANY_CHANGED" /> faner er endret}}</translation>
+<translation id="6694634756612002311">Administrer deling</translation>
 <translation id="6744956528665271406">Endre gruppefargen</translation>
 <translation id="6856809498882026482">Skjul flervalgsmodus</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{Del fanen}other{Del fanene}}</translation>
@@ -137,11 +149,13 @@
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> anmeldelse fra Google}other{<ph name="REVIEWS_COUNT_MANY" /> anmeldelser fra Google}}</translation>
 <translation id="7559245342362162951">Vis gruppens faner i fullskjermrutenett</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7688386659311034820">Dialogboks for inaktive faner</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{Del <ph name="TABS_COUNT_ONE" /> valgt fane}other{Del <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7773714564112603605">Fjern fanen og slett gruppen</translation>
 <translation id="7792771145871471484">Gjennomgå forslagene.</translation>
 <translation id="7825973332242257878">Fanegrupper</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Gruppér <ph name="TABS_COUNT_ONE" /> valgt fane}other{Gruppér <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
+<translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> anmeldelse}other{Vurdering: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> anmeldelser}}</translation>
 <translation id="7885132941432959125">Flytt fanen mot høyre</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> er ikke valgt</translation>
@@ -158,7 +172,9 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Lukk <ph name="TABS_COUNT_ONE" /> valgt fane}other{Lukk <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="8398929769197326728">Ny mappe – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">Innstillinger</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> fane er lagt til, <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> faner er lagt til, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="8631711675211020168">Alle mister tilgangen til fanegruppen <ph name="GROUP_NAME" /> umiddelbart, og den blir slettet fra alle enheter</translation>
+<translation id="8633025649649592204">Nylig aktivitet</translation>
 <translation id="870736955561925754">Vil du lukke fanen og slette gruppen?</translation>
 <translation id="8714939927607906138">Lavere pris</translation>
 <translation id="8730621377337864115">Ferdig</translation>
@@ -170,6 +186,7 @@
 <translation id="8926389886865778422">Ikke spør igjen</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Vis fanegruppe med <ph name="TABS_COUNT_ONE" /> fane.}other{Vis fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="9090098097337832354">Informasjon om denne butikken er lukket</translation>
+<translation id="9111228330448174435">Vis dialogboks ved oppretting av nye fanegrupper</translation>
 <translation id="9150694013019234766">Bytt mellom faner i fanegruppen på nedre del av skjermen</translation>
 <translation id="9169594135889675189">Legg til ny fane i gruppen</translation>
 <translation id="9216898458513705996">Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="USER_EMAIL" /></translation>

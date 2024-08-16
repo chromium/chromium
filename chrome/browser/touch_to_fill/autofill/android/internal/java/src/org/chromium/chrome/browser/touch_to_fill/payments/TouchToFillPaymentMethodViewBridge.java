@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
-import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -17,11 +16,12 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** JNI wrapper for C++ TouchToFillPaymentMethodViewImpl. Delegates calls from native to Java. */
@@ -61,21 +61,17 @@ class TouchToFillPaymentMethodViewBridge {
                 PersonalDataManagerFactory.getForProfile(profile),
                 bottomSheetController,
                 windowAndroid);
-   }
+    }
 
     @CalledByNative
     private void showSheet(
             @JniType("std::vector") Object[] cards,
-            boolean[] cardAcceptabilities,
+            @JniType("std::vector") Object[] suggestions,
             boolean shouldShowScanCreditCard) {
-        assert cards.length == cardAcceptabilities.length;
-        List<Pair<PersonalDataManager.CreditCard, Boolean>> cardsWithAcceptabilities =
-                new ArrayList<>();
-        for (int i = 0; i < cards.length; i++) {
-            cardsWithAcceptabilities.add(
-                    Pair.create((PersonalDataManager.CreditCard) cards[i], cardAcceptabilities[i]));
-        }
-        mComponent.showSheet(cardsWithAcceptabilities, shouldShowScanCreditCard);
+        mComponent.showSheet(
+                (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
+                (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
+                shouldShowScanCreditCard);
     }
 
     @CalledByNative
@@ -86,5 +82,17 @@ class TouchToFillPaymentMethodViewBridge {
     @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
+    }
+
+    @CalledByNative
+    private static AutofillSuggestion createAutofillSuggestion(
+            @JniType("std::u16string") String label,
+            @JniType("std::u16string") String subLabel,
+            boolean applyDeactivatedStyle) {
+        return new AutofillSuggestion.Builder()
+                .setLabel(label)
+                .setSubLabel(subLabel)
+                .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .build();
     }
 }

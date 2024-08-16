@@ -112,7 +112,7 @@ FakeUploaderFactory::CreateStringRequest(
     const std::string& data,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreateFileRequest(
@@ -140,7 +140,7 @@ std::unique_ptr<ConnectorUploadRequest> FakeUploaderFactory::CreatePageRequest(
     base::ReadOnlySharedMemoryRegion page_region,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     ConnectorUploadRequest::Callback callback) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

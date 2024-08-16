@@ -84,8 +84,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void SendPendingSignalsRequests() override;
   void ReportWin(
       bool is_for_additional_bid,
-      auction_worklet::mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -299,6 +301,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,

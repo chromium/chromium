@@ -8,11 +8,12 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
 
-
 import sys
 
+PRESUBMIT_VERSION = '2.0.0'
 
-def _CheckExterns(input_api, output_api):
+
+def CheckExternsUpload(input_api, output_api):
   original_sys_path = sys.path
   join = input_api.os_path.join
   src_root = input_api.change.RepositoryRoot()
@@ -23,7 +24,3 @@ def _CheckExterns(input_api, output_api):
     sys.path = original_sys_path
 
   return ExternsChecker(input_api, output_api).RunChecks()
-
-
-def CheckChangeOnUpload(input_api, output_api):
-  return _CheckExterns(input_api, output_api)

@@ -5,6 +5,7 @@
 #include "ash/shelf/home_button.h"
 
 #include <math.h>  // std::ceil
+
 #include <memory>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -45,6 +46,8 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -192,9 +195,6 @@ class HomeButton::ButtonImageView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    if (!chromeos::features::IsJellyEnabled()) {
-      UpdateBackground();
-    }
     if (image_model_) {
       image_ = image_model_->Rasterize(GetColorProvider());
     }
@@ -232,34 +232,19 @@ class HomeButton::ButtonImageView : public views::View {
       return;
     }
 
-    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-    if (!is_jelly_enabled) {
-      if (GetWidget()) {
-        SetBackground(views::CreateRoundedRectBackground(
-            shelf_config->GetShelfControlButtonColor(GetWidget()),
-            shelf_config->control_border_radius()));
-      }
-    } else {
-      SetBackground(views::CreateThemedRoundedRectBackground(
-          GetBackgroundColorId(), shelf_config->control_border_radius()));
-    }
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        GetBackgroundColorId(), shelf_config->control_border_radius()));
 
     if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
       SetBorder(std::make_unique<views::HighlightBorder>(
           shelf_config->control_border_radius(),
-          is_jelly_enabled
-              ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-              : views::HighlightBorder::Type::kHighlightBorder2));
+          views::HighlightBorder::Type::kHighlightBorderOnShadow));
     } else {
       SetBorder(nullptr);
     }
   }
 
   ui::ColorId GetIconColorId() {
-    if (!chromeos::features::IsJellyEnabled()) {
-      return kColorAshButtonIconColor;
-    }
-
     return toggled_ && !ShelfConfig::Get()->in_tablet_mode()
                ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                : cros_tokens::kCrosSysOnSurface;
@@ -278,24 +263,28 @@ class HomeButton::ButtonImageView : public views::View {
     const std::string campbell_config = base::GetFieldTrialParamValueByFeature(
         features::kCampbellGlyph, "icon");
 
-    if (campbell_config.empty() || !switches::IsCampbellSecretKeyMatched()) {
+    if (!campbell_config.empty() && switches::IsCampbellSecretKeyMatched()) {
+      if (campbell_config == "hero") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+      } else if (campbell_config == "action") {
+        image_model_ = ui::ImageModel::FromVectorIcon(kCampbellActionIcon,
+                                                      GetIconColorId());
+      } else if (campbell_config == "text") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
+      } else if (campbell_config == "9dot") {
+        image_model_ =
+            ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
+      }
+    } else if (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay() ==
+               ui::mojom::MetaKey::kLauncherRefresh) {
+      image_model_ =
+          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
+    } else {
       image_model_ = std::nullopt;
       image_ = gfx::ImageSkia();
       return;
-    }
-
-    if (campbell_config == "hero") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellHeroIcon, GetIconColorId());
-    } else if (campbell_config == "action") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellActionIcon, GetIconColorId());
-    } else if (campbell_config == "text") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbellTextIcon, GetIconColorId());
-    } else if (campbell_config == "9dot") {
-      image_model_ =
-          ui::ImageModel::FromVectorIcon(kCampbell9dotIcon, GetIconColorId());
     }
 
     if (image_model_ && GetColorProvider()) {
@@ -336,7 +325,6 @@ HomeButton::ScopedNoClipRect::~ScopedNoClipRect() {
 
 HomeButton::HomeButton(Shelf* shelf)
     : ShelfControlButton(shelf, this),
-      jelly_enabled_(chromeos::features::IsJellyEnabled()),
       shelf_(shelf),
       controller_(this) {
   GetViewAccessibility().SetName(
@@ -348,12 +336,7 @@ HomeButton::HomeButton(Shelf* shelf)
   // drop from the home button controller. Given that the controller manages ink
   // drop on gesture events itself, disable the default on-gesture ink drop
   // behavior.
-  views::InkDrop::Get(this)->SetMode(
-      jelly_enabled_ ? views::InkDropHost::InkDropMode::ON
-                     : views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  if (!jelly_enabled_) {
-    SetHasInkDropActionOnClick(false);
-  }
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");
@@ -384,10 +367,12 @@ HomeButton::HomeButton(Shelf* shelf)
   }
   SetProperty(views::kElementIdentifierKey, kHomeButtonElementId);
 
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
   ShelfConfig::Get()->AddObserver(this);
 }
 
 HomeButton::~HomeButton() {
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   ShelfConfig::Get()->RemoveObserver(this);
 }
 
@@ -663,15 +648,11 @@ void HomeButton::OnThemeChanged() {
 
   if (ripple_layer_delegate_) {
     ripple_layer_delegate_->set_color(GetColorProvider()->GetColor(
-        jelly_enabled_ ? static_cast<ui::ColorId>(
-                             cros_tokens::kCrosSysRippleNeutralOnSubtle)
-                       : kColorAshInkDropOpaqueColor));
+        cros_tokens::kCrosSysRippleNeutralOnSubtle));
   }
   if (expandable_container_) {
-    expandable_container_->layer()->SetColor(GetColorProvider()->GetColor(
-        jelly_enabled_
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-            : kColorAshControlBackgroundColorInactive));
+    expandable_container_->layer()->SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
   }
 }
 
@@ -687,10 +668,8 @@ void HomeButton::CreateExpandableContainer() {
   expandable_container_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   expandable_container_->layer()->SetMasksToBounds(true);
   if (GetColorProvider()) {
-    expandable_container_->layer()->SetColor(GetColorProvider()->GetColor(
-        jelly_enabled_
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
-            : kColorAshControlBackgroundColorInactive));
+    expandable_container_->layer()->SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
   }
   expandable_container_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(home_button_width / 2.f));
@@ -722,13 +701,9 @@ void HomeButton::CreateNudgeLabel() {
   nudge_label_->layer()->SetFillsBoundsOpaquely(false);
   nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
   nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
-  nudge_label_->SetEnabledColorId(
-      jelly_enabled_ ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                     : kColorAshTextColorPrimary);
-  if (jelly_enabled_) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *nudge_label_);
-  }
+  nudge_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *nudge_label_);
   expandable_container_->SetVisible(false);
   DeprecatedLayoutImmediately();
 }
@@ -796,7 +771,7 @@ void HomeButton::AnimateNudgeRipple(views::AnimationBuilder& builder) {
   auto* color_provider = GetColorProvider();
   DCHECK(color_provider);
   ripple_layer_delegate_ = std::make_unique<views::CircleLayerDelegate>(
-      color_provider->GetColor(kColorAshInkDropOpaqueColor),
+      color_provider->GetColor(cros_tokens::kCrosSysRippleNeutralOnSubtle),
       /*radius=*/ripple_diameter / 2);
 
   // The bounds are set with respect to |shelf_container_layer| stated below.
@@ -1021,6 +996,16 @@ bool HomeButton::DoesIntersectRect(const views::View* target,
                       -ShelfConfig::Get()->control_button_edge_spacing(
                           shelf()->IsHorizontalAlignment())));
   return button_bounds.Intersects(rect);
+}
+
+void HomeButton::OnInputDeviceConfigurationChanged(uint8_t input_device_types) {
+  if (input_device_types & InputDeviceEventObserver::kKeyboard) {
+    button_image_view_->UpdateForShelfConfigChange();
+  }
+}
+
+void HomeButton::OnDeviceListsComplete() {
+  button_image_view_->UpdateForShelfConfigChange();
 }
 
 void HomeButton::OnShellDestroying() {

@@ -8,14 +8,14 @@
 
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -44,7 +44,7 @@ FloatingSsoServiceFactory::FloatingSsoServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
 FloatingSsoServiceFactory::~FloatingSsoServiceFactory() = default;
@@ -54,14 +54,14 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
-  syncer::OnceModelTypeStoreFactory create_store_callback =
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+  syncer::OnceDataTypeStoreFactory create_store_callback =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   return std::make_unique<FloatingSsoService>(
       prefs,
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+      std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::COOKIES,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               chrome::GetChannel())),

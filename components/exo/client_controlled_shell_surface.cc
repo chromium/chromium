@@ -1497,7 +1497,7 @@ bool ClientControlledShellSurface::GetCanResizeFromSizeConstraints() const {
   // | maximized | min: (400, 400), max: (0, 0) |   min = max = (0, 0)    |
   // ----------------------------------------------------------------------
 
-  return minimum_size_ != maximum_size_;
+  return requested_minimum_size_ != requested_maximum_size_;
 }
 
 void ClientControlledShellSurface::

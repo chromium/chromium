@@ -478,7 +478,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
     return std::nullopt;
   }
@@ -497,11 +497,11 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   // gambling that the compiler would not issue multiple loads.
   uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
   // Batched deallocation, amortizing lock acquisitions.
-  if (PA_UNLIKELY(bucket.count > limit)) {
+  if (bucket.count > limit) [[unlikely]] {
     ClearBucket(bucket, limit / 2);
   }
 
-  if (PA_UNLIKELY(should_purge_.load(std::memory_order_relaxed))) {
+  if (should_purge_.load(std::memory_order_relaxed)) [[unlikely]] {
     PurgeInternal();
   }
 
@@ -517,14 +517,14 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (PA_UNLIKELY(bucket_index > largest_active_bucket_index_)) {
+  if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
     return 0;
   }
 
   auto& bucket = buckets_[bucket_index];
-  if (PA_LIKELY(bucket.freelist_head)) {
+  if (bucket.freelist_head) [[likely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_hits);
   } else {
     PA_DCHECK(bucket.count == 0);
@@ -535,7 +535,7 @@ PA_ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
     // Very unlikely, means that the central allocator is out of memory. Let it
     // deal with it (may return 0, may crash).
-    if (PA_UNLIKELY(!bucket.freelist_head)) {
+    if (!bucket.freelist_head) [[unlikely]] {
       return 0;
     }
   }

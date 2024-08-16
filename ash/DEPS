@@ -13,6 +13,7 @@ include_rules = [
   "+components/fullscreen_control",
   "+components/global_media_controls",
   "+components/language/core/browser/pref_names.h",
+  "+components/language/core/common/locale_util.h",
   "+components/live_caption",
   "+components/media_message_center",
   "+components/metrics/structured/structured_events.h",
@@ -72,6 +73,7 @@ include_rules = [
   "-chromeos",
   # //ash can use chromeos components that sit below it in the dependency tree.
   "+chromeos/ash/components/audio",
+  "+chromeos/ash/components/growth",
   "+chromeos/ash/components/auth_panel",
   "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/emoji",

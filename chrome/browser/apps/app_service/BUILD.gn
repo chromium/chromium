@@ -288,6 +288,14 @@ source_set("app_service") {
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/cloud_upload",
       "//chrome/browser/ui/webui/ash/settings/app_management",
+      "//chrome/browser/ui/webui/ash/settings/pages",
+      "//chrome/browser/ui/webui/ash/settings/pages/apps",
+      "//chrome/browser/ui/webui/ash/settings/pages/device",
+      "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings",
+      "//chrome/browser/ui/webui/ash/settings/pages/internet",
+      "//chrome/browser/ui/webui/ash/settings/pages/people",
+      "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+      "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
@@ -352,6 +360,14 @@ source_set("app_service") {
       "//chrome/browser/ui/ash/shelf/app_service",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui/ash/cloud_upload",
+      "//chrome/browser/ui/webui/ash/settings/pages",
+      "//chrome/browser/ui/webui/ash/settings/pages/apps",
+      "//chrome/browser/ui/webui/ash/settings/pages/device",
+      "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings",
+      "//chrome/browser/ui/webui/ash/settings/pages/internet",
+      "//chrome/browser/ui/webui/ash/settings/pages/people",
+      "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+      "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
     ]
   }
 
@@ -508,8 +524,8 @@ source_set("unit_tests") {
       "//chrome/browser/apps/app_service/app_install:unit_tests",
       "//chrome/browser/apps/app_service/promise_apps/proto",
       "//chrome/browser/ash",
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
@@ -585,7 +601,6 @@ source_set("test_support") {
     ]
 
     deps += [
-      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/login/users:test_support",
       "//components/webapk:proto",
     ]

@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(is_chromeos_ash)
 
@@ -160,7 +162,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/arc/policy",
@@ -217,4 +218,73 @@ source_set("unit_tests") {
     "//ui/gfx/codec",
     "//ui/message_center/public/cpp",
   ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "curtain_mode_chromeos_browsertest.cc",
+    "device_command_fetch_support_packet_job_browsertest.cc",
+    "device_command_reboot_job_browsertest.cc",
+    "device_command_set_volume_job_browsertest.cc",
+  ]
+
+  deps = [
+    ":remote_commands",
+    ":test_support",
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/app_mode/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/test_support",
+    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system",
+    "//chromeos/components/kiosk",
+    "//chromeos/dbus/power",
+    "//components/policy/core/common:test_support",
+    "//components/policy/proto",
+    "//components/reporting/storage:test_support",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//remoting/host:common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:view_pixel_diff_test_support",
+  ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("policy_remote_commands_fuzzer") {
+    sources = [ "remote_commands_fuzzer.cc" ]
+
+    deps = [
+      ":remote_commands",
+      "//base",
+      "//base:i18n",
+      "//chrome/browser",
+      "//chrome/browser/ash/policy/remote_commands/crd",
+      "//chrome/browser/ash/policy/remote_commands/crd:test_support",
+      "//components/exo/wayland:test_controller_stub",
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/policy/proto",
+    ]
+  }
 }

@@ -260,6 +260,7 @@ test("compositor_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
+    "//ui/display",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
@@ -276,7 +277,7 @@ test("compositor_unittests") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//third_party/mesa_headers" ]
+    deps += [ "//third_party/angle:includes" ]
   }
 
   if (is_chromeos) {

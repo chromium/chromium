@@ -231,6 +231,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
       "//ios/chrome/browser/shared/model/application_context",
       "//ios/chrome/browser/shared/model/browser_state",
+      "//ios/chrome/browser/shared/model/profile",
       "//ios/chrome/browser/sync/model",
       "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
@@ -254,6 +255,7 @@ source_set("app_metrics_app_state_agent") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }
@@ -406,6 +408,7 @@ source_set("docking_promo_app_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/start_surface/ui_bundled",
   ]
@@ -631,6 +634,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

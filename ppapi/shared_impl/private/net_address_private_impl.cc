@@ -143,6 +143,7 @@ uint16_t GetPort(const PP_NetAddress_Private* addr) {
   return net_addr->port;
 }
 
+// TODO(tsepez): should be declared UNSAFE_BUFFER_USAGE.
 PP_Bool GetAddress(const PP_NetAddress_Private* addr,
                    void* address,
                    uint16_t address_size) {
@@ -158,7 +159,7 @@ PP_Bool GetAddress(const PP_NetAddress_Private* addr,
   if (src.size() > dest.size()) {
     return PP_FALSE;
   }
-  dest.first(src.size()).copy_from(src);
+  dest.copy_prefix_from(src);
   return PP_TRUE;
 }
 

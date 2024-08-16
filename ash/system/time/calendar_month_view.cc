@@ -514,9 +514,7 @@ CalendarMonthView::CalendarMonthView(
 
     ++safe_index;
     if (safe_index == 32) {
-      NOTREACHED_IN_MIGRATION()
-          << "Should not render more than 31 days in a month.";
-      break;
+      NOTREACHED() << "Should not render more than 31 days in a month.";
     }
   }
 
@@ -609,9 +607,8 @@ CalendarMonthView::CalendarMonthView(
       SCOPED_CRASH_KEY_NUMBER("CMV", "first_day_of_month_time",
                               100 * first_day_of_month_exploded.hour +
                                   first_day_of_month_exploded.minute);
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Should not render more than 7 days as the gray out cells.";
-      break;
     }
   }
 }

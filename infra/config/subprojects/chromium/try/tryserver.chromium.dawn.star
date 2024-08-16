@@ -354,6 +354,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-dawn-nvidia-1660-exp-rel",
+    description_html = "Runs ToT Dawn tests on experimental Linux/GTX 1660 configs",
+    mirrors = [
+        "ci/Dawn Linux x64 Builder",
+        "ci/Dawn Linux x64 Experimental Release (NVIDIA GTX 1660)",
+    ],
+    gn_args = "ci/Dawn Linux x64 Builder",
+    pool = "luci.chromium.gpu.linux.nvidia.try",
+    builderless = True,
+    os = os.LINUX_DEFAULT,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "linux-dawn-rel",
     mirrors = [
         "ci/Dawn Linux x64 Builder",

@@ -397,7 +397,7 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
   }
   std::optional<double> ComputeValueInCanonicalUnit(
       const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
@@ -504,7 +504,7 @@ class CORE_EXPORT CSSMathExpressionKeywordLiteral final
   }
   std::optional<double> ComputeValueInCanonicalUnit(
       const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
@@ -789,7 +789,7 @@ class CORE_EXPORT CSSMathExpressionContainerFeature final
   }
   std::optional<double> ComputeValueInCanonicalUnit(
       const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED_IN_MIGRATION();
@@ -876,7 +876,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
   }
   std::optional<double> ComputeValueInCanonicalUnit(
       const CSSLengthResolver& length_resolver) const final {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   std::optional<PixelsAndPercent> ToPixelsAndPercent(
       const CSSLengthResolver&) const final {

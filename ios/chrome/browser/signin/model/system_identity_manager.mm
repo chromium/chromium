@@ -118,10 +118,10 @@ SystemIdentityManager::PresentLinkedServicesSettingsDetailsController(
       std::move(configuration));
 }
 
-void SystemIdentityManager::FireIdentityListChanged(bool notify_user) {
+void SystemIdentityManager::FireIdentityListChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
-    observer.OnIdentityListChanged(notify_user);
+    observer.OnIdentityListChanged();
   }
 }
 

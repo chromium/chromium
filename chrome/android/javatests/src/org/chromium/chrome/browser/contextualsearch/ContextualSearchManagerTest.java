@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -937,7 +938,11 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                     .getSelectedText();
                     Criteria.checkThat(selection, Matchers.is("Search"));
                 });
-        ThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        activity2
+                                .getCurrentTabModel()
+                                .closeTabs(TabClosureParams.closeAllTabs().build()));
         ApplicationTestUtils.finishActivity(activity2);
     }
 

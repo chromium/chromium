@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ash/sparky/storage/simple_size_calculator.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chromeos/ash/components/sparky/snapshot_util.h"
+#include "components/manta/proto/sparky.pb.h"
 #include "components/manta/sparky/sparky_delegate.h"
 #include "components/manta/sparky/system_info_delegate.h"
 
@@ -43,10 +46,17 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
   void ObtainStorageInfo(manta::StorageDataCallback storage_callback) override;
   void Click(int x, int y) override;
   void KeyboardEntry(std::string text) override;
+  void KeyPress(const std::string& key,
+                bool control,
+                bool alt,
+                bool shift) override;
   void GetMyFiles(manta::FilesDataCallback callback,
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override;
   void LaunchFile(const std::string& file_path) override;
+  void UpdateFileSummaries(
+      const std::vector<manta::FileData>& files_with_summary) override;
+  std::vector<manta::FileData> GetFileSummaries() override;
 
   // SizeCalculator::Observer:
   void OnSizeCalculated(
@@ -55,6 +65,10 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
 
  private:
   friend class SparkyDelegateImplTest;
+
+  void SetRootPathForTesting(const base::FilePath& root_path) {
+    root_path_ = root_path;
+  }
 
   void AddPrefToMap(
       const std::string& pref_name,
@@ -82,6 +96,14 @@ class SparkyDelegateImpl : public manta::SparkyDelegate,
 
   // Controls if the size of each storage item has been calculated.
   std::bitset<SimpleSizeCalculator::kCalculationTypeCount> calculation_state_;
+
+  // Root path which files will be obtained from.
+  base::FilePath root_path_;
+  std::vector<base::FilePath> trash_paths_;
+
+  // First value is the file path. The second value contains information on the
+  // file include the file summary.
+  std::map<std::string, manta::FileData> file_summaries_;
 
   base::WeakPtrFactory<SparkyDelegateImpl> weak_factory_{this};
 };

@@ -1521,7 +1521,7 @@ uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
                      ~MainThreadScrollingReason::kPopupNoThreadedInput;
   if (!MainThreadScrollingReason::AreRepaintReasons(reasons)) {
     SCOPED_CRASH_KEY_NUMBER("Bug349709014", "reasons", reasons);
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return reasons;
 }

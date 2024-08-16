@@ -5,7 +5,10 @@
 #ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 
+#include "ash/ash_export.h"
+#include "ash/birch/birch_item.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
+#include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -24,8 +27,8 @@ class PillButton;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
-class BirchChipButton : public BirchChipButtonBase,
-                        public ui::SimpleMenuModel::Delegate {
+class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
+                                   public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(BirchChipButton, BirchChipButtonBase)
 
  public:
@@ -37,13 +40,6 @@ class BirchChipButton : public BirchChipButtonBase,
   // Chip configuration methods.
   void Init(BirchItem* item);
 
-  template <typename T>
-  T* SetAddon(std::unique_ptr<T> addon_view) {
-    T* ptr = addon_view.get();
-    SetAddonInternal(std::move(addon_view));
-    return ptr;
-  }
-
   // BirchChipButtonBase:
   const BirchItem* GetItem() const override;
   BirchItem* GetItem() override;
@@ -53,16 +49,22 @@ class BirchChipButton : public BirchChipButtonBase,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BirchBarTest, NoCrashOnSettingIconAfterShutdown);
   class ChipMenuController;
 
-  void SetAddonInternal(std::unique_ptr<views::View> addon_view);
+  void SetAddon(std::unique_ptr<views::View> addon_view);
 
-  // The callback when the removal button or removal panel is pressed.
-  void OnRemoveComponentPressed();
+  // Stylizes the icon based on the type of the item, the type of the item's
+  // secondary icon, and whether the icon image needs to be minified.
+  // `use_smaller_dimension` will only be true for icons loaded via
+  // `DownloadImageFromUrl` in `BirchItem`.
+  void StylizeIconForItemType(BirchItemType type,
+                              SecondaryIconType secondary_icon_type,
+                              bool use_smaller_dimension);
 
   // Sets the item icon.
-  // TODO(jamescook): Eliminate `success`; it is not used.
-  void SetIconImage(const ui::ImageModel& icon_image, bool success);
+  void SetIconImage(const ui::ImageModel& icon_image,
+                    SecondaryIconType secondary_icon_image);
 
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
@@ -72,7 +74,9 @@ class BirchChipButton : public BirchChipButtonBase,
 
   // The components owned by the chip view.
   raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
-  raw_ptr<views::ImageView> icon_ = nullptr;
+  raw_ptr<views::View> icon_parent_view_ = nullptr;
+  raw_ptr<views::ImageView> primary_icon_view_ = nullptr;
+  raw_ptr<views::ImageView> secondary_icon_view_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;
@@ -82,7 +86,6 @@ class BirchChipButton : public BirchChipButtonBase,
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, BirchChipButtonBase)
 VIEW_BUILDER_METHOD(Init, BirchItem*)
-VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
 END_VIEW_BUILDER
 
 }  // namespace ash

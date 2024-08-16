@@ -184,16 +184,6 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   supervised_user::SupervisedUserURLFilter::RecordFilterResultEvent(
       behavior, reason, /*is_filtering_behavior_known=*/!uncertain, transition);
 
-  if (navigation_handle()->IsInPrimaryMainFrame()) {
-    // Update navigation observer about the navigation state of the main frame.
-    auto* navigation_observer =
-        SupervisedUserNavigationObserver::FromWebContents(
-            navigation_handle()->GetWebContents());
-    if (navigation_observer) {
-      navigation_observer->UpdateMainFrameFilteringStatus(behavior, reason);
-    }
-  }
-
   if (behavior == supervised_user::FilteringBehavior::kBlock) {
     ShowInterstitial(url, reason);
   } else if (deferred_) {

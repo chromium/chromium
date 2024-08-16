@@ -50,12 +50,10 @@ TEST(DownloadUtilsTest, HandleServerResponse206_RangeRequest) {
 void VerifyRangeHeader(DownloadUrlParameters* params,
                        const std::string& expected_range_header) {
   auto resource_request = CreateResourceRequest(params);
-  std::string header_value;
-  ASSERT_TRUE(resource_request->headers.GetHeader(
-      net::HttpRequestHeaders::kRange, &header_value));
+  EXPECT_EQ(expected_range_header, resource_request->headers.GetHeader(
+                                       net::HttpRequestHeaders::kRange));
   ASSERT_FALSE(
       resource_request->headers.HasHeader(net::HttpRequestHeaders::kIfRange));
-  EXPECT_EQ(expected_range_header, header_value);
 }
 
 TEST(DownloadUtilsTest, CreateResourceRequest) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/356368033): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 
 #include <libkern/OSByteOrder.h>
@@ -48,9 +43,9 @@ static void ConvertBigEndian(HFSPlusForkData* fork) {
   fork->logicalSize = FromBigEndian(fork->logicalSize);
   fork->clumpSize = FromBigEndian(fork->clumpSize);
   fork->totalBlocks = FromBigEndian(fork->totalBlocks);
-  for (size_t i = 0; i < std::size(fork->extents); ++i) {
-    fork->extents[i].startBlock = FromBigEndian(fork->extents[i].startBlock);
-    fork->extents[i].blockCount = FromBigEndian(fork->extents[i].blockCount);
+  for (HFSPlusExtentDescriptor& extent : base::span(fork->extents)) {
+    extent.startBlock = FromBigEndian(extent.startBlock);
+    extent.blockCount = FromBigEndian(extent.blockCount);
   }
 }
 
@@ -160,7 +155,10 @@ class HFSForkReadStream : public ReadStream {
  private:
   const raw_ptr<HFSIterator> hfs_;  // The HFS+ iterator.
   const HFSPlusForkData fork_;  // The fork to be read.
-  uint8_t current_extent_;  // The current extent index in the fork.
+  base::span<const HFSPlusExtentDescriptor>
+      extents_;  // All extents in the fork.
+  base::span<const HFSPlusExtentDescriptor>::iterator
+      current_extent_;        // The current extent in the fork.
   bool read_current_extent_;  // Whether the current_extent_ has been read.
   std::vector<uint8_t> current_extent_data_;  // Data for |current_extent_|.
   size_t fork_logical_offset_;  // The logical offset into the fork.
@@ -362,11 +360,11 @@ HFSForkReadStream::HFSForkReadStream(HFSIterator* hfs,
                                      const HFSPlusForkData& fork)
     : hfs_(hfs),
       fork_(fork),
-      current_extent_(0),
+      extents_(fork.extents),
+      current_extent_(extents_.begin()),
       read_current_extent_(false),
       current_extent_data_(),
-      fork_logical_offset_(0) {
-}
+      fork_logical_offset_(0) {}
 
 HFSForkReadStream::~HFSForkReadStream() {}
 
@@ -377,21 +375,22 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   if (fork_logical_offset_ == fork_.logicalSize)
     return true;
 
-  for (; current_extent_ < std::size(fork_.extents); ++current_extent_) {
+  for (; current_extent_ != extents_.end(); ++current_extent_) {
     // If the buffer is out of space, do not attempt any reads. Check this
     // here, so that current_extent_ is advanced by the loop if the last
     // extent was fully read.
     if (buffer_space_remaining == 0)
       break;
 
-    const HFSPlusExtentDescriptor* extent = &fork_.extents[current_extent_];
+    const HFSPlusExtentDescriptor& extent = *current_extent_;
 
     // A zero-length extent means end-of-fork.
-    if (extent->startBlock == 0 && extent->blockCount == 0)
+    if (extent.startBlock == 0 && extent.blockCount == 0) {
       break;
+    }
 
     auto extent_size =
-        base::CheckedNumeric<size_t>(extent->blockCount) * hfs_->block_size();
+        base::CheckedNumeric<size_t>(extent.blockCount) * hfs_->block_size();
     if (extent_size.ValueOrDefault(0) == 0) {
       DLOG(ERROR) << "Extent blockCount overflows or is 0";
       return false;
@@ -399,13 +398,13 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
 
     // Read the entire extent now, to avoid excessive seeking and re-reading.
     if (!read_current_extent_) {
-      if (!hfs_->SeekToBlock(extent->startBlock)) {
-        DLOG(ERROR) << "Failed to seek to block " << extent->startBlock;
+      if (!hfs_->SeekToBlock(extent.startBlock)) {
+        DLOG(ERROR) << "Failed to seek to block " << extent.startBlock;
         return false;
       }
       current_extent_data_.resize(extent_size.ValueOrDie());
       if (!hfs_->stream()->ReadExact(current_extent_data_)) {
-        DLOG(ERROR) << "Failed to read extent " << current_extent_;
+        DLOG(ERROR) << "Failed to read extent";
         return false;
       }
 
@@ -421,9 +420,7 @@ bool HFSForkReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
 
     base::span<uint8_t> current_data =
         base::span(current_extent_data_).subspan(extent_offset, bytes_to_copy);
-    buf.last(buffer_space_remaining)
-        .first(bytes_to_copy)
-        .copy_from(current_data);
+    buf.last(buffer_space_remaining).copy_prefix_from(current_data);
 
     buffer_space_remaining -= bytes_to_copy;
     *bytes_read += bytes_to_copy;
@@ -451,24 +448,25 @@ off_t HFSForkReadStream::Seek(off_t offset, int whence) {
   DCHECK(offset == 0 || static_cast<uint64_t>(offset) < fork_.logicalSize);
   size_t target_block = offset / hfs_->block_size();
   size_t block_count = 0;
-  for (size_t i = 0; i < std::size(fork_.extents); ++i) {
-    const HFSPlusExtentDescriptor* extent = &fork_.extents[i];
+  for (auto it = extents_.begin(); it != extents_.end(); ++it) {
+    const HFSPlusExtentDescriptor& extent = *it;
 
     // An empty extent indicates end-of-fork.
-    if (extent->startBlock == 0 && extent->blockCount == 0)
+    if (extent.startBlock == 0 && extent.blockCount == 0) {
       break;
+    }
 
     base::CheckedNumeric<size_t> new_block_count(block_count);
-    new_block_count += extent->blockCount;
+    new_block_count += extent.blockCount;
     if (!new_block_count.IsValid()) {
       DLOG(ERROR) << "Seek offset block count overflows";
       return false;
     }
 
     if (target_block < new_block_count.ValueOrDie()) {
-      if (current_extent_ != i) {
+      if (current_extent_ != it) {
         read_current_extent_ = false;
-        current_extent_ = i;
+        current_extent_ = it;
       }
       auto iterator_block_offset =
           base::CheckedNumeric<size_t>(block_count) * hfs_->block_size();

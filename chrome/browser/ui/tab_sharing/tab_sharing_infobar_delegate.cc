@@ -77,7 +77,7 @@ class TabSharingInfoBarDelegate::StopButton
       case TabSharingInfoBarDelegate::TabShareType::CAPTURE:
         return l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON);
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
  private:
@@ -286,7 +286,7 @@ bool IsCapturedTab(TabRole role) {
     case TabRole::kSelfCapturingTab:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -386,7 +386,7 @@ std::u16string TabSharingInfoBarDelegate::GetMessageText() const {
       return GetMessageTextCapturing(IsCapturedTab(role_), shared_tab_name_,
                                      capturer_name_);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
@@ -455,7 +455,7 @@ const TabSharingInfoBarDelegateButton& TabSharingInfoBarDelegate::GetButton(
     case TabSharingInfoBarButton::kCapturedSurfaceControlIndicator:
       return *csc_indicator_button_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 TabSharingInfoBarDelegateButton& TabSharingInfoBarDelegate::GetButton(

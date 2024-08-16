@@ -35,9 +35,10 @@ class TestLayoutManagerBase : public LayoutManagerBase {
  public:
   std::vector<const View*> GetIncludedChildViews() const {
     std::vector<const View*> included;
-    base::ranges::copy_if(
-        host_view()->children(), std::back_inserter(included),
-        [=](const View* child) { return IsChildIncludedInLayout(child); });
+    base::ranges::copy_if(host_view()->children(), std::back_inserter(included),
+                          [=, this](const View* child) {
+                            return IsChildIncludedInLayout(child);
+                          });
     return included;
   }
 
@@ -624,48 +625,48 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   EXPECT_EQ(kLargeSize, owned_child_view->size());
 }
 
-class TestDecorativeView : public View {
-  METADATA_HEADER(TestDecorativeView, View)
+class TestIgnoredView : public View {
+  METADATA_HEADER(TestIgnoredView, View)
  public:
-  TestDecorativeView() {
-    SetProperty(kIsDecorativeViewKey, true);
+  TestIgnoredView() {
+    SetProperty(kViewIgnoredByLayoutKey, true);
     SetBoundsRect(kExpectedBounds);
   }
 
   static constexpr gfx::Rect kExpectedBounds{1, 2, 10, 40};
 };
 
-BEGIN_METADATA(TestDecorativeView)
+BEGIN_METADATA(TestIgnoredView)
 END_METADATA
 
-// A decorative view manages its own visibility and layout, and it does
-// not participate in its container's layout.
-TEST_F(LayoutManagerBaseManagerTest, DecorativeView) {
+// An ignored view's visibility and layout are managed outside of the layout
+// manager, whether that's in the view itself or in a manual layout method in
+// its parent view.
+TEST_F(LayoutManagerBaseManagerTest, IgnoredView) {
   View* child_view = AddChildView(kSquarishSize);
   test::RunScheduledLayout(host_view());
   gfx::Rect host_view_bounds = host_view()->bounds();
   gfx::Rect child_view_bounds = child_view->bounds();
 
-  TestDecorativeView* decorative_view =
-      host_view()->AddChildView(std::make_unique<TestDecorativeView>());
-  decorative_view->SetVisible(true);
+  TestIgnoredView* ignored_view =
+      host_view()->AddChildView(std::make_unique<TestIgnoredView>());
+  ignored_view->SetVisible(true);
   test::RunScheduledLayout(host_view());
-  // The decorative view does not affect the layout of other views.
+  // The ignored view does not affect the layout of other views.
   EXPECT_EQ(host_view()->bounds(), host_view_bounds);
   EXPECT_EQ(child_view->bounds(), child_view_bounds);
-  // The decorative view manages its own layout.
-  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
+  // The ignored view manages its own layout.
+  EXPECT_EQ(ignored_view->bounds(), ignored_view->kExpectedBounds);
 
-  // The decorative view's visibility shouldn't be changed by the layout
-  // manager.
-  decorative_view->SetVisible(false);
+  // The ignored view's visibility shouldn't be changed by the layout manager.
+  ignored_view->SetVisible(false);
   test::RunScheduledLayout(host_view());
-  EXPECT_EQ(decorative_view->GetVisible(), false);
-  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
-  decorative_view->SetVisible(true);
+  EXPECT_EQ(ignored_view->GetVisible(), false);
+  EXPECT_EQ(ignored_view->bounds(), ignored_view->kExpectedBounds);
+  ignored_view->SetVisible(true);
   test::RunScheduledLayout(host_view());
-  EXPECT_EQ(decorative_view->GetVisible(), true);
-  EXPECT_EQ(decorative_view->bounds(), decorative_view->kExpectedBounds);
+  EXPECT_EQ(ignored_view->GetVisible(), true);
+  EXPECT_EQ(ignored_view->bounds(), ignored_view->kExpectedBounds);
 }
 
 TEST(LayoutManagerBase_ProposedLayoutTest, Equality) {
@@ -925,6 +926,233 @@ TEST_F(ManualLayoutUtilTest, SetCanBeVisibleForManualLayout) {
 
   EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
   EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
+}
+
+TEST_F(ManualLayoutUtilTest, TemporarilyExcludeOneViewFromLayout) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  EXPECT_TRUE(child(0)->GetVisible());
+  const gfx::Rect old_child1_bounds = child(0)->bounds();
+  const gfx::Rect old_child2_bounds = child(1)->bounds();
+
+  {
+    auto exclusion = manual_layout_util.TemporarilyExcludeFromLayout(child(0));
+    DoLayoutManagerLayout();
+    // Views should have been slid over in the place of the excluded view.
+    EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+    // Excluded view should still be visible and in its previous location.
+    EXPECT_TRUE(child(0)->GetVisible());
+    EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+
+    EXPECT_EQ(old_invalidations + 1, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 1, layout_manager()->num_layouts_generated());
+  }
+
+  // Exiting the block should cause the layout to be restored.
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+  EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+  EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
+  EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
+}
+
+TEST_F(ManualLayoutUtilTest, TemporarilyExcludeTwoViewsFromLayout) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  EXPECT_TRUE(child(0)->GetVisible());
+  const gfx::Rect old_child1_bounds = child(0)->bounds();
+  const gfx::Rect old_child2_bounds = child(1)->bounds();
+  const gfx::Rect old_child3_bounds = child(2)->bounds();
+
+  {
+    auto exclusion1 = manual_layout_util.TemporarilyExcludeFromLayout(child(0));
+    auto exclusion2 = manual_layout_util.TemporarilyExcludeFromLayout(child(1));
+    DoLayoutManagerLayout();
+    // Views should have been slid over in the place of the excluded view.
+    EXPECT_EQ(old_child1_bounds, child(2)->bounds());
+    // Excluded view should still be visible and in its previous location.
+    EXPECT_TRUE(child(0)->GetVisible());
+    EXPECT_TRUE(child(1)->GetVisible());
+    EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+    EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+
+    EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 1, layout_manager()->num_layouts_generated());
+  }
+
+  // Exiting the block should cause the layout to be restored.
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  EXPECT_TRUE(child(1)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+  EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+  EXPECT_EQ(old_child3_bounds, child(2)->bounds());
+  EXPECT_EQ(old_invalidations + 4, layout_manager()->num_invalidations());
+  EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
+}
+
+TEST_F(ManualLayoutUtilTest, ViewStaysExcludedIfAlreadyExcludedByProperty) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  EXPECT_TRUE(child(0)->GetVisible());
+  const gfx::Rect old_child1_bounds = child(0)->bounds();
+
+  child(0)->SetProperty(kViewIgnoredByLayoutKey, true);
+  test::RunScheduledLayout(host_view());
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  {
+    // This will have no effect as the view is already excluded.
+    auto exclusion = manual_layout_util.TemporarilyExcludeFromLayout(child(0));
+    DoLayoutManagerLayout();
+    // Views should have been slid over in the place of the excluded view.
+    EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+    // Excluded view should still be visible and in its previous location.
+    EXPECT_TRUE(child(0)->GetVisible());
+    EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+
+    EXPECT_EQ(old_invalidations, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts, layout_manager()->num_layouts_generated());
+  }
+
+  // Exiting the block should have no effect.
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+  EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+  EXPECT_EQ(old_invalidations, layout_manager()->num_invalidations());
+  EXPECT_EQ(old_layouts, layout_manager()->num_layouts_generated());
+}
+
+TEST_F(ManualLayoutUtilTest, ViewHiddenDuringTemporaryExclusion) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  EXPECT_TRUE(child(0)->GetVisible());
+  const gfx::Rect old_child1_bounds = child(0)->bounds();
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  {
+    // This will have no effect as the view is already excluded.
+    auto exclusion = manual_layout_util.TemporarilyExcludeFromLayout(child(0));
+    DoLayoutManagerLayout();
+    // Views should have been slid over in the place of the excluded view.
+    EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+    // Excluded view should still be visible and in its previous location.
+    EXPECT_TRUE(child(0)->GetVisible());
+    EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+
+    EXPECT_EQ(old_invalidations + 1, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 1, layout_manager()->num_layouts_generated());
+
+    // This changes the view to hidden, which "stacks" with exclusion. Since it
+    // is a different property, it will invalidate the layout.
+    manual_layout_util.SetViewHidden(child(0), true);
+
+    DoLayoutManagerLayout();
+    EXPECT_FALSE(child(0)->GetVisible());
+    EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+    EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
+  }
+
+  // Exiting the block will cause an invalidation, but since visibility
+  // overrides inclusion, it will not change the layout.
+  DoLayoutManagerLayout();
+  EXPECT_FALSE(child(0)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+  EXPECT_EQ(old_invalidations + 3, layout_manager()->num_invalidations());
+  EXPECT_EQ(old_layouts + 3, layout_manager()->num_layouts_generated());
+}
+
+TEST_F(ManualLayoutUtilTest, ViewUnhiddenDuringTemporaryExclusion) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  child(0)->SetVisible(false);
+
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  EXPECT_FALSE(child(0)->GetVisible());
+  const gfx::Rect old_child2_bounds = child(1)->bounds();
+  const gfx::Rect old_child3_bounds = child(2)->bounds();
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  {
+    // This will have no effect as the view is already excluded, but will cause
+    // another invalidation since exclusion and visibility are different
+    // properties.
+    auto exclusion = manual_layout_util.TemporarilyExcludeFromLayout(child(0));
+    DoLayoutManagerLayout();
+    // Views should have been slid over in the place of the hidden view.
+    EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+    // Excluded and hidden view should not be visible.
+    EXPECT_FALSE(child(0)->GetVisible());
+
+    EXPECT_EQ(old_invalidations + 1, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 1, layout_manager()->num_layouts_generated());
+
+    // This changes the view to not hidden. While this would not affect the
+    // layout due to the exclusion, but since it's a different property, it
+    // still triggers an invalidation.
+    manual_layout_util.SetViewHidden(child(0), false);
+
+    // Note that since the child view is still excluded from the layout, it
+    // retains its existing state, including visibility.
+    DoLayoutManagerLayout();
+    EXPECT_FALSE(child(0)->GetVisible());
+    EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+    EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
+    EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
+  }
+
+  // Exiting the block will re-add the view, which is now made visible by the
+  // layout.
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  EXPECT_EQ(old_child2_bounds, child(0)->bounds());
+  EXPECT_EQ(old_child3_bounds, child(1)->bounds());
+  EXPECT_EQ(old_invalidations + 3, layout_manager()->num_invalidations());
+  EXPECT_EQ(old_layouts + 3, layout_manager()->num_layouts_generated());
 }
 
 }  // namespace views

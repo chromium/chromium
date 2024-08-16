@@ -36,13 +36,17 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   FocusModeYouTubeMusicDelegate();
   ~FocusModeYouTubeMusicDelegate() override;
 
+  youtube_music::YouTubeMusicController* youtube_music_controller() const {
+    return youtube_music_controller_.get();
+  }
+
   // FocusModeSoundsDelegate:
   bool GetNextTrack(const std::string& playlist_id,
                     FocusModeSoundsDelegate::TrackCallback callback) override;
   bool GetPlaylists(
       FocusModeSoundsDelegate::PlaylistsCallback callback) override;
 
-  void SetFailureCallback(base::RepeatingClosure callback);
+  void SetNoPremiumCallback(base::RepeatingClosure callback);
 
   // Reports music playback.
   bool ReportPlayback(const youtube_music::PlaybackData& playback_data);
@@ -150,8 +154,12 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   // Report playback request state for `ReportPlayback`.
   ReportPlaybackRequestState report_playback_state_;
 
-  // Callback to run when the request fails.
-  base::RepeatingClosure failure_callback_;
+  // Callback to run when the request fails with HTTP 403.
+  base::RepeatingClosure no_premium_callback_;
+
+  // Controller for YouTube Music API integration.
+  std::unique_ptr<youtube_music::YouTubeMusicController>
+      youtube_music_controller_;
 
   base::WeakPtrFactory<FocusModeYouTubeMusicDelegate> weak_factory_{this};
 };

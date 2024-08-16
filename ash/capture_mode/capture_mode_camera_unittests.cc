@@ -77,6 +77,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -4842,6 +4843,32 @@ TEST_F(CaptureModeCameraTest, DuringRecordingPrivacyIndicators) {
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
   EXPECT_FALSE(message_center->FindNotificationById(
       capture_mode_privacy_notification_id));
+}
+
+TEST_F(CaptureModeCameraTest, CameraPreviewViewAccessibleProperties) {
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  AddDefaultCamera();
+  GetCameraController()->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  auto* camera_preview_view = GetCameraController()->camera_preview_view();
+
+  ui::AXNodeData data;
+  camera_preview_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kVideo);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_CAMERA_PREVIEW_FOCUSED));
+}
+
+TEST_F(CaptureModeCameraTest, CaptureModeMenuHeaderAccessibleProperties) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  OpenSettingsView();
+  CaptureModeSettingsTestApi test_api;
+  AddDefaultCamera();
+  auto* menu_header = test_api.GetCameraMenuHeader();
+  ui::AXNodeData data;
+
+  menu_header->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kHeader);
 }
 
 }  // namespace ash

@@ -45,7 +45,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/model/proxy_model_type_controller_delegate.h"
+#include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
 namespace password_manager {
@@ -741,7 +741,7 @@ PasswordStoreAndroidBackend::GetRetryCallbackForOperation(
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
     case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -821,8 +821,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (!reply.has_value()) {
     return;  // Task cleaned up after returning from background.
   }
-  // Set pref to track users who received GMSCore error.
-  prefs_->SetBoolean(prefs::kUserReceivedGMSCoreError, true);
 
   PasswordStoreOperation operation = reply->GetOperation();
 
@@ -831,8 +829,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   // the error.
   base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error(
-      PasswordStoreBackendErrorType::kUncategorized,
-      PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
+      PasswordStoreBackendErrorType::kUncategorized);
 
   if (error.api_error_code.has_value()) {
     // TODO(crbug.com/40839365): DCHECK_EQ(api_error_code,
@@ -850,16 +847,9 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       return;
     }
 
-    if (delay >= kTaskRetryTimeout) {
-      // Maximum delay is reached, meaning there are no more retries. Do nothing
-      // but ensure the error is marked as recoverable.
-      reported_error.recovery_type =
-          PasswordStoreBackendErrorRecoveryType::kRecoverable;
-    } else {
-      // Either operation or error is not retriable. Decide recoverability based
-      // on error.
-      reported_error.recovery_type =
-          RecoverOnErrorAndReturnResult(api_error_code);
+    if (delay < kTaskRetryTimeout) {
+      // Either the operation or error is not retriable.
+      RecoverOnError(api_error_code);
       reported_error.type = APIErrorCodeToErrorType(api_error_code);
     }
   }

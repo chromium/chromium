@@ -122,6 +122,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2915996080311180594">Uudelleenkäynnistä myöhemmin</translation>
 <translation id="2928420929544864228">Asennus valmis</translation>
 <translation id="2945997411976714835">Asennusvirhe: Asennusprosessin aloittaminen ei onnistunut.</translation>
+<translation id="2970426615109535079">Organisaatiosi ylläpitää Chromiumia</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="2977506796191543575">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä</translation>
 <translation id="2987208172821108655">Chromium voi tehdä näistä välilehdistä ei-aktiivisia ja näin parantaa selauskokemusta sekä vapauttaa resursseja.</translation>
@@ -222,6 +223,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="4423735387467980091">Chromiumin muokkaus ja hallinta</translation>
 <translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="4434353761996769206">Asennusohjelman virhe: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> ylläpitää Chromiumia</translation>
 <translation id="4447409407328223819">Tietoa Chrome for Testingistä</translation>
 <translation id="4501471624619070934">Asentaminen epäonnistui, koska pääsyä on rajoitettu tässä maassa.</translation>
 <translation id="4510853178268397146">Tästä laajennuksesta ei ole julkaistu tietosuojakäytäntöjä koskien esimerkiksi datan keräämistä ja käyttöä. Chromium suosittelee sen poistamista.</translation>
@@ -490,6 +492,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8555465886620020932">Palveluvirhe: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi</translation>
+<translation id="8576826849825683917">Useat organisaatiot ylläpitävät Chromiumia</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Miten käytämme tätä dataa:<ph name="END_BOLD" /> Sivustot voivat tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
 <translation id="8619360774459241877">Käynnistetään Chromiumia…</translation>

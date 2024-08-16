@@ -17,8 +17,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
@@ -632,7 +630,6 @@ page_sets/desktop_ui/js_utils.py
 page_sets/desktop_ui/multitab_story.py
 page_sets/desktop_ui/new_tab_page_story.py
 page_sets/desktop_ui/omnibox_story.py
-page_sets/desktop_ui/side_search_story.py
 page_sets/desktop_ui/story_tags.py
 page_sets/desktop_ui/tab_search_story.py
 page_sets/desktop_ui/ui_devtools_utils.py

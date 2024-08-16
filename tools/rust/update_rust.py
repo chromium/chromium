@@ -35,8 +35,8 @@ sys.path.append(
 # In the case that a Rust roll fails and you want to roll Clang alone, reset
 # this back to its previous value _AND_ set `OVERRIDE_CLANG_REVISION` below
 # to the `CLANG_REVISION` that was in place before the roll.
-RUST_REVISION = '3cf924b934322fd7b514600a7dc84fc517515346'
-RUST_SUB_REVISION = 4
+RUST_REVISION = '595316b4006932405a63862d8fe65f71a6356293'
+RUST_SUB_REVISION = 5
 
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that

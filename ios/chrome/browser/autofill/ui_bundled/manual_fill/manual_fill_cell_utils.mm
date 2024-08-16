@@ -6,12 +6,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_labeled_chip.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -506,8 +508,9 @@ UIButton* CreateOverflowMenuButton() {
   ExtendedTouchTargetButton* menu_button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   menu_button.translatesAutoresizingMaskIntoConstraints = NO;
-  menu_button.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
+  menu_button.contentMode = UIViewContentModeCenter;
+  menu_button.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillOverflowMenuID;
 
   UIImage* menu_image = SymbolWithPalette(
       DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
@@ -517,14 +520,11 @@ UIButton* CreateOverflowMenuButton() {
       ]);
   [menu_button setImage:menu_image forState:UIControlStateNormal];
 
-  [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+  [menu_button setContentHuggingPriority:UILayoutPriorityRequired
                                  forAxis:UILayoutConstraintAxisHorizontal];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [menu_button.heightAnchor
-        constraintEqualToConstant:kOverflowMenuButtonSize],
-    [menu_button.widthAnchor constraintEqualToConstant:kOverflowMenuButtonSize],
-  ]];
+  [menu_button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
 
   menu_button.showsMenuAsPrimaryAction = YES;
 
@@ -564,12 +564,10 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
   return gray_line;
 }
 
-BOOL ShouldCreateAutofillFormButton(BOOL show_button) {
-  return IsKeyboardAccessoryUpgradeEnabled() && show_button;
-}
-
 UIButton* CreateAutofillFormButton() {
   UIButton* button = PrimaryActionButton(/*pointer_interaction_enabled=*/YES);
+  button.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillAutofillFormButtonID;
   UIButtonConfiguration* buttonConfiguration = button.configuration;
   buttonConfiguration.contentInsets =
       NSDirectionalEdgeInsetsMake(kAutofillFormButtonVerticalInsets, 0,
@@ -648,4 +646,37 @@ NSMutableAttributedString* CreateSiteNameLabelAttributedText(
   }
 
   return attributedString;
+}
+
+void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
+                                             UIButton* overflow_menu_button,
+                                             UIButton* autofill_form_button,
+                                             NSString* accessibility_context) {
+  CHECK(cell_container);
+  CHECK(overflow_menu_button);
+  CHECK(autofill_form_button);
+
+  cell_container.accessibilityLabel = accessibility_context;
+  overflow_menu_button.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(accessibility_context));
+  autofill_form_button.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(accessibility_context));
+}
+
+void SetUpCellAccessibilityElements(TableViewCell* cell,
+                                    NSArray<UIView*>* accessibilityElements) {
+  // If the Keyboard Accessory Upgrade feature is disabled, keep the default
+  // accessibility behaviour.
+  if (!IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+
+  // The following two lines are needed to make the cell as a container, as well
+  // as its content, accessible.
+  cell.isAccessibilityElement = NO;
+  cell.contentView.isAccessibilityElement = YES;
+
+  cell.accessibilityElements = accessibilityElements;
 }

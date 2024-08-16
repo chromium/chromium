@@ -96,12 +96,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Called if SwapBuffers() will be skipped.
   virtual void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) = 0;
 
-  // TODO(weiliangc): This API should move to OverlayProcessor.
-  // Schedule |output_surface_plane| as an overlay plane to be displayed.
-  virtual void ScheduleOutputSurfaceAsOverlay(
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane
-          output_surface_plane) = 0;
-
   // Begin painting a render pass. This method will create a
   // GrDeferredDisplayListRecorder and return a SkCanvas of it. The SkiaRenderer
   // will use this SkCanvas to paint the render pass.
@@ -199,12 +193,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // waited on in a command buffer to ensure all pending tasks are executed on
   // the GPU main thread.
   virtual gpu::SyncToken Flush() = 0;
-
-  // Set the number of frame buffers to use when
-  // `supports_dynamic_frame_buffer_allocation` is true. `n` must satisfy
-  // 0 < n <= capabilities_.number_of_buffers.
-  // Return true if new buffers are allocated.
-  virtual bool EnsureMinNumberOfBuffers(int n) = 0;
 
   // Enqueue a GPU task to create a shared image with the specified params and
   // returns the mailbox.

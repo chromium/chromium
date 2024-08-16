@@ -619,7 +619,7 @@ bool MessagePumpGlib::HandleCheck() {
     char msg[2];
     const long num_bytes = HANDLE_EINTR(read(wakeup_pipe_read_, msg, 2));
     if (num_bytes < 1) {
-      NOTREACHED_IN_MIGRATION() << "Error reading from the wakeup pipe.";
+      NOTREACHED() << "Error reading from the wakeup pipe.";
     }
     DCHECK((num_bytes == 1 && msg[0] == '!') ||
            (num_bytes == 2 && msg[0] == '!' && msg[1] == '!'));
@@ -713,7 +713,7 @@ void MessagePumpGlib::Quit() {
   if (state_) {
     state_->should_quit = true;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Quit called outside Run!";
+    NOTREACHED() << "Quit called outside Run!";
   }
 }
 
@@ -723,8 +723,7 @@ void MessagePumpGlib::ScheduleWork() {
   // we are sleeping in a poll that we will wake up.
   char msg = '!';
   if (HANDLE_EINTR(write(wakeup_pipe_write_, &msg, 1)) != 1) {
-    NOTREACHED_IN_MIGRATION()
-        << "Could not write to the UI message loop wakeup pipe!";
+    NOTREACHED() << "Could not write to the UI message loop wakeup pipe!";
   }
 }
 

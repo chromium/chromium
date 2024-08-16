@@ -394,8 +394,7 @@ void ShortcutsProvider::DoAutocomplete(const AutocompleteInput& input,
           --max_relevance;
         auto match = ShortcutMatchToACMatch(shortcut_match, relevance, input,
                                             fixed_up_input, lower_input);
-        if (populate_scoring_signals &&
-            AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+        if (populate_scoring_signals && match.IsMlSignalLoggingEligible()) {
           PopulateScoringSignals(shortcut_match, &match);
         }
         return match;

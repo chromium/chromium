@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -41,6 +42,7 @@
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "record.pb.h"
 #include "record_constants.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -152,6 +154,8 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
 
   ash::system::FakeStatisticsProvider statistics_provider_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   base::HistogramTester histogram_tester_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   base::FilePath target_dir_;

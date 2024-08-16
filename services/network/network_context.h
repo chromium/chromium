@@ -268,6 +268,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       ClearTrustTokenSessionOnlyDataCallback callback) override;
   void GetStoredTrustTokenCounts(
       GetStoredTrustTokenCountsCallback callback) override;
+  void GetPrivateStateTokenRedemptionRecords(
+      GetPrivateStateTokenRedemptionRecordsCallback callback) override;
   void DeleteStoredTrustTokens(
       const url::Origin& issuer,
       DeleteStoredTrustTokensCallback callback) override;

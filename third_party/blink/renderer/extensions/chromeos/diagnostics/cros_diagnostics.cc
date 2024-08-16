@@ -83,7 +83,7 @@ void CrosDiagnostics::OnGetCpuInfoResponse(
             "telemetry info.");
         return;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   CHECK(result->is_cpu_info());
 
@@ -154,7 +154,7 @@ void CrosDiagnostics::OnGetNetworkInterfacesResponse(
         resolver->Reject("Network interface lookup failed or unsupported.");
         return;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   CHECK(result->is_network_interfaces());
 

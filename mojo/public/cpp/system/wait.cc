@@ -178,7 +178,7 @@ MojoResult WaitMany(const Handle* handles,
     DCHECK_EQ(MOJO_RESULT_OK, rv);
 
     // Wait for one of the contexts to signal. First one wins.
-    index = base::WaitableEvent::WaitMany(events.data(), events.size());
+    index = base::WaitableEvent::WaitMany(events);
     ready_result = contexts[index]->wait_result();
     ready_state = contexts[index]->wait_state();
   }

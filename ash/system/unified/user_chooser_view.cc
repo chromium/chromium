@@ -74,23 +74,13 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
 
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kSystemMenuNewUserIcon,
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshIconColorPrimary));
+      kSystemMenuNewUserIcon, cros_tokens::kCrosSysOnSurface));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SIGN_IN_ANOTHER_ACCOUNT)));
-  label->SetEnabledColorId(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary);
-  if (is_jelly_enabled) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *label);
-  }
+  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
 }
@@ -116,9 +106,7 @@ class Separator : public views::View {
             .SetBorder(views::CreateThemedSolidSidedBorder(
                 gfx::Insets::TLBR(0, 0, kUnifiedNotificationSeparatorThickness,
                                   0),
-                chromeos::features::IsJellyEnabled()
-                    ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSeparator)
-                    : kColorAshSeparatorColor))
+                cros_tokens::kCrosSysSeparator))
             .Build());
   }
 
@@ -131,10 +119,7 @@ END_METADATA
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
   auto* label = new views::Label(message);
-  label->SetEnabledColorId(
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary);
+  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetBorder(views::CreateEmptyBorder(kUnifiedTopShortcutSpacing));
@@ -233,28 +218,16 @@ UserItemButton::UserItemButton(PressedCallback callback,
       Shell::Get()->session_controller()->GetUserSession(user_index);
 
   name_->SetText(base::UTF8ToUTF16(user_session->user_info.display_name));
-  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
-  name_->SetEnabledColorId(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-          : kColorAshTextColorPrimary);
-  if (is_jelly_enabled) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *name_);
-  }
+  name_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *name_);
   name_->SetAutoColorReadabilityEnabled(false);
   name_->SetSubpixelRenderingEnabled(false);
   vertical_labels->AddChildView(name_.get());
 
   email_->SetText(base::UTF8ToUTF16(user_session->user_info.display_email));
-  email_->SetEnabledColorId(
-      is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurfaceVariant)
-          : kColorAshTextColorSecondary);
-  if (is_jelly_enabled) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                          *email_);
-  }
+  email_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *email_);
   email_->SetAutoColorReadabilityEnabled(false);
   email_->SetSubpixelRenderingEnabled(false);
   vertical_labels->AddChildView(email_.get());
@@ -263,9 +236,7 @@ UserItemButton::UserItemButton(PressedCallback callback,
   layout->SetFlexForView(vertical_labels, 1);
 
   capture_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kSystemTrayRecordingIcon,
-      is_jelly_enabled ? static_cast<ui::ColorId>(cros_tokens::kCrosSysError)
-                       : kColorAshIconColorAlert));
+      kSystemTrayRecordingIcon, cros_tokens::kCrosSysError));
   if (!has_close_button) {
     // Add a padding with the same size as the close button,
     // so as to align all media indicators in a column.

@@ -10,6 +10,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
+#import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -26,9 +29,6 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
-#import "ios/chrome/browser/ui/permissions/permission_info.h"
-#import "ios/chrome/browser/ui/permissions/permissions_constants.h"
-#import "ios/chrome/browser/ui/permissions/permissions_delegate.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -577,6 +577,12 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [_dataSource snapshot];
   [self updateSnapshot:snapshot forPermission:@(permissionInfo.permission)];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - PageInfoHistoryConsumer
+
+- (void)setLastVisitedTimestamp:(base::Time)lastVisited {
+  // TODO(crbug.com/358032417): Present the Last Visited Row on Page Info.
 }
 
 @end

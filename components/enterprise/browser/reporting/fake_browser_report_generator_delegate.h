@@ -38,6 +38,9 @@ class FakeProfileReportGeneratorDelegate
   void GetSigninUserInfo(
       enterprise_management::ChromeUserProfileInfo* report) override;
 
+  void GetAffiliationInfo(
+      enterprise_management::ChromeUserProfileInfo* report) override;
+
   void GetExtensionInfo(
       enterprise_management::ChromeUserProfileInfo* report) override;
 

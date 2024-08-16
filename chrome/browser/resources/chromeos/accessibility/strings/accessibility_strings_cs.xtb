@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Růžovohnědá</translation>
 <translation id="249330843868392562">Otevřít nastavení převodu textu na řeč</translation>
 <translation id="2497706219848005458">Zelenožlutá</translation>
+<translation id="2512979179176933762">zobrazit okna</translation>
 <translation id="2523609930580546572">Výukový program funkce ChromeVox</translation>
 <translation id="2525706221823668172">Klávesové zkratky pro Chromebooky</translation>
 <translation id="2553108862507765288">pravopisná chyba</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Ocelová modrá</translation>
 <translation id="4253168017788158739">Poznámka</translation>
 <translation id="4254798249533888099">Strom</translation>
+<translation id="4259220820964911921">Zapnout ovládání obličejem?</translation>
 <translation id="4271220233568730077">Další matematický objekt</translation>
 <translation id="4275397969489577657">Zapnout protokolování streamů událostí</translation>
 <translation id="4278486392851938658">Žádný předchozí navštívený odkaz není</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Příloha</translation>
 <translation id="5761219715606611783">Výborně! Naučili jste se základy dotykového ovládání nástroje ChromeVox. Můžete si tento výukový program projít znovu, nebo ho pomocí tlačítek níže ukončit.</translation>
 <translation id="5776001898637896684">Rozšíření pro vylepšený síťový převod textu na řeč Google</translation>
+<translation id="5783252477644995371">Ovládání obličejem umožňuje natáčením obličeje pohybovat kurzorem a obličejovými gesty (například úsměvem) provádět akce, jako je kliknutí levým tlačítkem</translation>
 <translation id="5805940204952508776">Klepněte dvěma prsty</translation>
 <translation id="5819072574982403430">Položka stromu</translation>
 <translation id="5822819874379903994">Tmavě tyrkysová</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">Žádné další zaškrtávací políčko není</translation>
 <translation id="8473540203671727883">Přečíst text pod myší</translation>
 <translation id="8476408756881832830">Při hlasové odezvě ChromeVox pozastavit přehrávání</translation>
-<translation id="8476508772960940536">přehled okna</translation>
 <translation id="8480873377842220259">Teď se naučíte základní úkony při procházení. Můžete podržet klávesu Hledat a šipkami se pohybovat po obrazovce. Pokračujte stisknutím kombinace kláves Hledat + Šipka vpravo.</translation>
 <translation id="8503360654911991865">Snížit rozlišovací schopnost navigace</translation>
 <translation id="8520472399088452386">Číselník</translation>

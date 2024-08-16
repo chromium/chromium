@@ -220,6 +220,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2490721194269245365">Roosakaspruun</translation>
 <translation id="249330843868392562">Ava kõnesünteesi seaded</translation>
 <translation id="2497706219848005458">Rohekaskollane</translation>
+<translation id="2512979179176933762">kuvab aknad</translation>
 <translation id="2523609930580546572">ChromeVoxi õpetused</translation>
 <translation id="2525706221823668172">Chromebooki klaviatuuri otseteed</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4246217262268234757">Terassinine</translation>
 <translation id="4253168017788158739">Märkus</translation>
 <translation id="4254798249533888099">Puu</translation>
+<translation id="4259220820964911921">Kas lubada näoga juhtimine?</translation>
 <translation id="4271220233568730077">Järgmine valem</translation>
 <translation id="4275397969489577657">Sündmuste voo logimise lubamine</translation>
 <translation id="4278486392851938658">Eelmist külastatud linki ei ole</translation>
@@ -710,6 +712,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5760594853119905566">Lisa</translation>
 <translation id="5761219715606611783">Hästi tehtud! Olete omandanud baasteadmised ChromeVoxi puudutustega kasutamiseks. Võite õpetused uuesti üle vaadata või õpetusest väljuda, kasutades allolevaid nuppe.</translation>
 <translation id="5776001898637896684">Google'i täiustatud võrgu kõnesünteesi laiendus</translation>
+<translation id="5783252477644995371">Näoga juhtimine pakub teile näoga suunamise abil kursori juhtimist ja võimalust selliste toimingute tegemiseks nagu näoliigutustega (nt naeratus) vasakpoolsel nupul klõpsamine</translation>
 <translation id="5805940204952508776">Puudutage kahe sõrmega</translation>
 <translation id="5819072574982403430">Puuüksus</translation>
 <translation id="5822819874379903994">Tume türkiissinine</translation>
@@ -1073,7 +1076,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="847040613207937740">Järgmist märkeruutu ei ole</translation>
 <translation id="8473540203671727883">Hiirekursori all oleva teksti ettelugemine</translation>
 <translation id="8476408756881832830">Peata taasesitus, kui ChromeVox räägib</translation>
-<translation id="8476508772960940536">akna ülevaade</translation>
 <translation id="8480873377842220259">Nüüd selgitame navigeerimise põhitõdesid. Ekraanil liikumiseks hoidke all otsinguklahvi ja vajutage nooleklahve. Jätkamiseks vajutage otsinguklahvi + paremnoolt.</translation>
 <translation id="8503360654911991865">Vähenda navigatsiooni detailsust</translation>
 <translation id="8520472399088452386">Pöördnupp</translation>

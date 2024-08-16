@@ -78,6 +78,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-auth:20.1.0'
     compile "com.google.android.gms:play-services-cast:${castGmsVersion}"
     compile "com.google.android.gms:play-services-cast-framework:${castGmsVersion}"
+    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha02"
     compile "com.google.android.gms:play-services-iid:${gcmGmsVersion}"
     compile "com.google.android.gms:play-services-instantapps:${baseGmsVersion}"
     compile "com.google.android.gms:play-services-gcm:${gcmGmsVersion}"
@@ -111,12 +112,12 @@ dependencies {
     compile 'io.grpc:grpc-stub:1.49.0'
     compile 'io.grpc:grpc-api:1.49.0'
 
+    // Needed by androidx.room, but by default it selects a lower version that
+    // does not exist in CIPD.
+    compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4"
-    compile "org.jetbrains.kotlinx:atomicfu-jvm:0.23.2"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.6.4"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
@@ -140,8 +141,6 @@ dependencies {
     // Matches version depended on by Dagger.
     buildCompile 'com.squareup:javapoet:1.13.0'
 
-    String errorproneVersion = '2.11.0'
-
     // Provides annotations used to opt into checks.
     compile "com.google.errorprone:error_prone_annotations:2.23.0"
     compile 'org.checkerframework:checker-compat-qual:2.5.5'
@@ -149,12 +148,7 @@ dependencies {
     compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
-    buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
-    buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
-    // Provides annotations needed when writing custom checks.
-    buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
-    buildCompile 'com.google.errorprone:javac:9+181-r4173-1'
-
+    buildCompile 'com.google.auto:auto-common:1.2.1'
     buildCompile 'com.google.auto.service:auto-service:1.0-rc6'
     buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
     buildCompile 'com.google.code.gson:gson:2.8.0'

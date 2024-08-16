@@ -20,6 +20,7 @@ source_set("annotations") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/text_selection/model",
     "//ios/public/provider/chrome/browser/context_menu:context_menu_api",
     "//ios/web/annotations",

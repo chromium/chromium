@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
+#include <string>
+#include <vector>
+
 #include "base/callback_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

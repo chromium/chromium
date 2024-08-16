@@ -295,14 +295,14 @@ public class ConditionWaiter {
             final Elements destinationElements = conditionalState.getElements();
             List<ConditionWait> newWaits = createEnterConditionWaits(destinationElements);
             allWaits.addAll(newWaits);
-            destinationElementIds.addAll(destinationElements.getElementsInStateIds());
+            destinationElementIds.addAll(destinationElements.getElementIds());
         }
 
         // Create EXIT Conditions for Views that should disappear and LogicalElements that should
         // be false.
         for (ConditionalState conditionalState : mTransition.getExitedStates()) {
             final Elements originElements = conditionalState.getElements();
-            for (ElementInState<?> element : originElements.getElementsInState()) {
+            for (Element<?> element : originElements.getElements()) {
                 Condition exitCondition = element.getExitCondition(destinationElementIds);
                 if (exitCondition != null) {
                     ConditionWait conditionWait =
@@ -350,7 +350,7 @@ public class ConditionWaiter {
      */
     private List<ConditionWait> createEnterConditionWaits(Elements elements) {
         final List<ConditionWait> newWaits = new ArrayList<>();
-        for (ElementInState<?> element : elements.getElementsInState()) {
+        for (Element<?> element : elements.getElements()) {
             @Nullable Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 newWaits.add(
@@ -409,7 +409,7 @@ public class ConditionWaiter {
             }
 
             mConditionsGuardingFactories.putAll(newElements.getElementFactories());
-            newElementIds.addAll(newElements.getElementsInStateIds());
+            newElementIds.addAll(newElements.getElementIds());
         }
 
         for (String elementId : newElementIds) {

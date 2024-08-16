@@ -6,12 +6,16 @@ package org.chromium.net.impl;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
+
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalUrlRequest;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
 
+import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +62,10 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
     private RequestFinishedInfo.Listener mRequestFinishedListener;
+    // See {@link org.chromium.net.UrlRequest.Builder#setRawCompressionDictionary}.
+    private byte[] mDictionarySha256Hash;
+    private ByteBuffer mDictionary;
+    private @NonNull String mDictionaryId = "";
     private long mNetworkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
     // Idempotency of the request.
     @CronetEngineBase.Idempotency private int mIdempotency = DEFAULT_IDEMPOTENCY;
@@ -184,6 +192,25 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     }
 
     @Override
+    @OptIn(markerClass = org.chromium.net.UrlRequest.Experimental.class)
+    public UrlRequestBuilderImpl setRawCompressionDictionary(
+            @NonNull byte[] dictionarySha256Hash,
+            @NonNull ByteBuffer dictionary,
+            @NonNull String dictionaryId) {
+        mDictionarySha256Hash = Objects.requireNonNull(dictionarySha256Hash, "Hash is required");
+        if (dictionarySha256Hash.length != 32) {
+            throw new IllegalArgumentException("SHA-256 hashes are supposed to be 32 bytes");
+        }
+        mDictionary = Objects.requireNonNull(dictionary, "Dictionary is required");
+        Preconditions.checkDirect(dictionary);
+        mDictionaryId =
+                Objects.requireNonNull(
+                        dictionaryId,
+                        "Dictionary ID cannot be null. If missing, pass an empty string");
+        return this;
+    }
+
+    @Override
     public UrlRequestBuilderImpl bindToNetwork(long networkHandle) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             throw new UnsupportedOperationException(
@@ -216,6 +243,9 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
                 mMethod == null ? "GET" : mMethod, // default to get if not set.
                 mRequestHeaders,
                 mUploadDataProvider,
-                mUploadDataProviderExecutor);
+                mUploadDataProviderExecutor,
+                mDictionarySha256Hash,
+                mDictionary,
+                mDictionaryId);
     }
 }

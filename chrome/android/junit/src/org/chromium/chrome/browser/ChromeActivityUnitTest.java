@@ -29,7 +29,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -46,12 +45,10 @@ import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for ChromeActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK})
 public class ChromeActivityUnitTest {
     Activity mActivity;
 

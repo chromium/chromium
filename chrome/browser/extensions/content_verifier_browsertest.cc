@@ -53,6 +53,10 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "third_party/zlib/google/compression_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "extensions/common/extension_features.h"
+#endif
+
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -1121,8 +1125,42 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   int reasons = prefs->GetDisableReasons(kExtensionId);
-  EXPECT_FALSE(reasons);
+  EXPECT_EQ(0, reasons);
 }
+
+#if BUILDFLAG(IS_MAC)
+class ContentVerifierTestWithSeparatorFlagDisabled
+    : public ContentVerifierTest {
+ protected:
+  ContentVerifierTestWithSeparatorFlagDisabled() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kMacRejectFilePathsEndingWithSeparator);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Same as ContentVerifierTest.RemainsEnabledOnNavigateToPathEndingWithSlash,
+// but with the MacRejectFilePathsEndingWithSeparator flag disabled. See
+// https://crbug.com/356878412.
+// TODO(crbug.com/357636604): Remove after the flag is removed in M132.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithSeparatorFlagDisabled,
+                       RemainsEnabledOnNavigateToPathEndingWithSlash) {
+  const Extension* extension = InstallExtensionFromWebstore(
+      test_data_dir_.AppendASCII("content_verifier/dot_slash_paths.crx"), 1);
+  ASSERT_TRUE(extension);
+  const ExtensionId kExtensionId = extension->id();
+
+  GURL page_url = extension->GetResourceURL("page.html/");
+  ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+      browser(), page_url, 1, WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  int reasons = prefs->GetDisableReasons(kExtensionId);
+  EXPECT_EQ(0, reasons);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 // Tests that navigating to an extension resource with '.' at end does not
 // disable the extension.

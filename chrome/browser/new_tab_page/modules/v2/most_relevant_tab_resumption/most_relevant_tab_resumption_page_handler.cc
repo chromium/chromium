@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -50,8 +51,6 @@ namespace {
 const char kDismissedTabsPrefName[] =
     "NewTabPage.MostRelevantTabResumption.DismissedTabs";
 
-constexpr int kOneMinuteInSeconds = 60;
-
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
   base::Time now = base::Time::Now();
@@ -75,12 +74,11 @@ history::mojom::TabPtr TabToMojom(const URLVisitAggregate::Tab& tab,
   tab_mojom->title = *dictionary.FindString("title");
   tab_mojom->decorator = history::mojom::Decorator(0);
 
-  // TODO(crbug.com/349542284): Rely uniquely on `last_active` time as the
-  // `last_visited` time once the aforementioned issue is resolved.
-  auto last_visited = std::max(last_active, tab.visit.last_modified);
+  auto last_visited =
+      last_active.is_null() ? tab.visit.last_modified : last_active;
   base::TimeDelta relative_time = base::Time::Now() - last_visited;
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
+  if (relative_time < base::Minutes(1)) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
@@ -108,7 +106,7 @@ history::mojom::TabPtr HistoryEntryVisitToMojom(
   base::TimeDelta relative_time =
       base::Time::Now() - visit.url_row.last_visit();
   tab_mojom->relative_time = relative_time;
-  if (relative_time.InSeconds() < kOneMinuteInSeconds) {
+  if (relative_time < base::Minutes(1)) {
     tab_mojom->relative_time_text = l10n_util::GetStringUTF8(
         IDS_NTP_MODULES_TAB_RESUMPTION_RECENTLY_OPENED);
   } else {
@@ -185,13 +183,18 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       result_url_types_(GetFetchResultURLTypes()),
+      dismissal_duration_days_(base::GetFieldTrialParamByFeatureAsInt(
+          ntp_features::kNtpMostRelevantTabResumptionModule,
+          ntp_features::kNtpTabResumptionModuleDismissalDurationParam,
+          90)),
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
 }
 
-MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
-    default;
+MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() {
+  RemoveOldDismissedTabs();
+}
 
 void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   const std::string data_type_param = base::GetFieldTrialParamValueByFeature(
@@ -223,12 +226,14 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
-  // TODO (crbug.com/329243396): Wire call to `RankURLVisitAggregates`.
   visited_url_ranking_service->FetchURLVisitAggregates(
       fetch_options,
       base::BindOnce(
           &MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  base::UmaHistogramSparse("NewTabPage.Modules.DataRequest",
+                           base::PersistentHash("tab_resumption"));
 }
 
 void MostRelevantTabResumptionPageHandler::DismissModule(
@@ -301,9 +306,11 @@ void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
     GetTabsCallback callback,
     visited_url_ranking::ResultStatus status,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
-  if (status != visited_url_ranking::ResultStatus::kSuccess) {
+  if (status == visited_url_ranking::ResultStatus::kError) {
     std::move(callback).Run({});
+    return;
   }
+
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
@@ -321,6 +328,11 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   base::UmaHistogramEnumeration("NewTabPage.TabResumption.ResultStatus",
                                 status);
+  if (status == visited_url_ranking::ResultStatus::kError) {
+    std::move(callback).Run({});
+    return;
+  }
+
   std::vector<history::mojom::TabPtr> tabs_mojom;
   for (const auto& url_visit_aggregate : url_visit_aggregates) {
     const URLVisitAggregate::TabData* tab_data =
@@ -395,7 +407,8 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
                           &timestamp_microseconds);
       base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
           base::Microseconds(timestamp_microseconds));
-      if (base::Time::Now() - timestamp > base::Days(90)) {
+      if (base::Time::Now() - timestamp >
+          base::Days(dismissal_duration_days_)) {
         tab_list->EraseValue(entry);
       }
     }

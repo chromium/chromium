@@ -151,10 +151,8 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
     EXPECT_EQ(request.request_initiator, report_url_declarer_origin_);
     EXPECT_EQ(request.method, net::HttpRequestHeaders::kPostMethod);
 
-    std::string content_type;
-    ASSERT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kContentType,
-                                          &content_type));
-    EXPECT_EQ(content_type, "text/plain;charset=UTF-8");
+    EXPECT_EQ(request.headers.GetHeader(net::HttpRequestHeaders::kContentType),
+              "text/plain;charset=UTF-8");
 
     ASSERT_TRUE(request.request_body);
     ASSERT_EQ(request.request_body->elements()->size(), 1u);

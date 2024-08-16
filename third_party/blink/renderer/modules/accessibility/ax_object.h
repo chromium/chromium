@@ -37,6 +37,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
@@ -191,8 +192,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Iterator for the ancestors of an |AXObject|.
   // Walks through all the unignored parents of the object up to the root.
   // Does not include the object itself in the list of ancestors.
-  class MODULES_EXPORT AncestorsIterator final
-      : public GarbageCollected<AncestorsIterator> {
+  class MODULES_EXPORT AncestorsIterator final {
+    STACK_ALLOCATED();
+
    public:
     using iterator_category = std::forward_iterator_tag;
     using value_type = AXObject;
@@ -233,8 +235,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
       return static_cast<AXObject*>(current_);
     }
 
-    void Trace(Visitor* visitor) const { visitor->Trace(current_); }
-
     MODULES_EXPORT friend void swap(AncestorsIterator& left,
                                     AncestorsIterator& right) {
       std::swap(left.current_, right.current_);
@@ -258,7 +258,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
     friend class AXObject;
     friend class AXObjectCacheImpl;
 
-    Member<AXObject> current_;
+    AXObject* current_;
   };
 
  protected:
@@ -1448,8 +1448,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Static helper functions.
   // TODO(accessibility) Move these to a static helper util class.
-  static bool IsARIAControl(ax::mojom::blink::Role);
-  static bool IsARIAInput(ax::mojom::blink::Role);
   static bool IsFrame(const Node*);
   static bool HasARIAOwns(Element* element);
   // Should this own a child tree (e.g. an iframe).

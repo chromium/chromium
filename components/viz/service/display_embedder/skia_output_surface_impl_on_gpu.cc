@@ -60,6 +60,7 @@
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -594,24 +595,11 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
   }
 }
 
-void SkiaOutputSurfaceImplOnGpu::ScheduleOutputSurfaceAsOverlay(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane&
-        output_surface_plane) {
-  DCHECK(!output_surface_plane_);
-  output_surface_plane_ = output_surface_plane;
-}
-
 void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::SwapBuffers");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   SwapBuffersInternal(std::move(frame));
-}
-
-void SkiaOutputSurfaceImplOnGpu::EnsureMinNumberOfBuffers(int n) {
-  if (!output_device_->EnsureMinNumberOfBuffers(n)) {
-    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
-  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::SetDependenciesResolvedTimings(
@@ -1993,9 +1981,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
       if (presenter_) {
 #if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-            std::make_unique<OutputPresenterGL>(
-                std::move(presenter), dependency_, shared_image_factory_.get(),
-                shared_image_representation_factory_.get()),
+            std::make_unique<OutputPresenterGL>(std::move(presenter),
+                                                dependency_),
             dependency_, shared_image_representation_factory_.get(),
             shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback(), GetReleaseOverlaysCallback());
@@ -2075,9 +2062,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
   presenter_ = presenter.get();
   if (presenter_) {
-    output_presenter = std::make_unique<OutputPresenterGL>(
-        std::move(presenter), dependency_, shared_image_factory_.get(),
-        shared_image_representation_factory_.get());
+    output_presenter =
+        std::make_unique<OutputPresenterGL>(std::move(presenter), dependency_);
   }
 #endif
   if (output_presenter) {
@@ -2152,7 +2138,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         GetDidSwapBuffersCompleteCallback());
     return !!output_device_;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 
 #elif BUILDFLAG(IS_WIN)
   scoped_refptr<gl::Presenter> presenter = dependency_->CreatePresenter();
@@ -2200,9 +2186,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-      std::make_unique<OutputPresenterGL>(
-          std::move(presenter), dependency_, shared_image_factory_.get(),
-          shared_image_representation_factory_.get()),
+      std::make_unique<OutputPresenterGL>(std::move(presenter), dependency_),
       dependency_, shared_image_representation_factory_.get(),
       shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
       GetReleaseOverlaysCallback());
@@ -2210,16 +2194,16 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 
 #else  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||
        // BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 #else   // BUILDFLAG(SKIA_USE_DAWN)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
 #if !BUILDFLAG(IS_APPLE)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #else
   if (dependency_->IsOffscreen()) {
     output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
@@ -2236,9 +2220,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
     presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
 #endif  // BUILDFLAG(IS_MAC)
     output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
-        std::make_unique<OutputPresenterGL>(
-            std::move(presenter), dependency_, shared_image_factory_.get(),
-            shared_image_representation_factory_.get()),
+        std::make_unique<OutputPresenterGL>(std::move(presenter), dependency_),
         dependency_, shared_image_representation_factory_.get(),
         shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
         GetReleaseOverlaysCallback());
@@ -2372,15 +2354,10 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
           frame->sub_buffer_rect->size() != size_) {
         output_device_->SwapBuffersSkipped(buffer_presented_callback_,
                                            std::move(*frame));
-        output_surface_plane_.reset();
         destroy_after_swap_.clear();
         return;
       }
       waiting_for_full_damage_ = false;
-    }
-
-    if (output_surface_plane_) {
-      DCHECK(output_device_->IsPrimaryPlaneOverlay());
     }
 
     if (frame->sub_buffer_rect) {
@@ -2391,10 +2368,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                                         frame->sub_buffer_rect->y() -
                                         frame->sub_buffer_rect->height());
         }
-      }
-
-      if (output_surface_plane_) {
-        output_surface_plane_->damage_rect = frame->sub_buffer_rect;
       }
     }
 
@@ -2419,7 +2392,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     }
 
     output_device_->SetViewportSize(frame->size);
-    output_device_->SchedulePrimaryPlane(output_surface_plane_);
 
     DCHECK(!frame->sub_buffer_rect || capabilities().supports_post_sub_buffer);
 
@@ -2440,7 +2412,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   }
 
   // Reset the overlay plane information even on skipped swap.
-  output_surface_plane_.reset();
   overlays_.clear();
 
   destroy_after_swap_.clear();
@@ -2448,10 +2419,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
   UMA_HISTOGRAM_EXACT_LINEAR("Gpu.FenceHandle.CloneCountsPerSubmit",
                              gfx::GpuFenceHandle::GetAndClearNumberOfClones(),
                              200);
-}
-
-bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {
-  return output_device_->IsPrimaryPlaneOverlay();
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -98,8 +98,6 @@ class TEST_TYPES(object):
 # The perf data will be handled on a separated 'processor' VM.
 # This list will be removed or replace by an opt-out list.
 LIGHTWEIGHT_TESTERS = [
-    'android-pixel2-perf',
-    'android-pixel2_webview-perf',
     'linux-perf',
     'win-10-perf',
     'win-10_laptop_low_end-perf',
@@ -109,10 +107,7 @@ LIGHTWEIGHT_TESTERS = [
 ]
 
 # This is an opt-in list for builders which uses dynamic sharding.
-DYNAMIC_SHARDING_TESTERS = [
-    'android-pixel2-perf', 'android-pixel2-perf-fyi',
-    'android-pixel2-perf-calibration', 'linux-perf-calibration'
-]
+DYNAMIC_SHARDING_TESTERS = ['linux-perf-calibration']
 
 CALIBRATION_BUILDERS = {
     'linux-perf-calibration': {
@@ -133,21 +128,6 @@ CALIBRATION_BUILDERS = {
             'synthetic_product_name': 'PowerEdge R230 (Dell Inc.)'
         },
     },
-    'android-pixel2-perf-calibration': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
-        }],
-        'platform':
-        'android-chrome-64-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
 }
 
 FYI_BUILDERS = {
@@ -160,21 +140,6 @@ FYI_BUILDERS = {
             'system_webview_apk',
             'system_webview_shell_apk',
         ],
-    },
-    'android-pixel2-perf-fyi': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
-        }],
-        'platform':
-        'android-chrome-64-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf-fyi',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
     },
     'android_arm64-cfi-builder-perf-fyi': {
         'additional_compile_targets': [
@@ -538,62 +503,6 @@ BUILDERS = {
         },
         'perf_trigger': False,
     },
-    'android-pixel2_webview-perf': {
-        'tests': [{
-            'isolate': 'performance_webview_test_suite',
-        }],
-        'platform': 'android-webview-google',
-        'dimension': {
-            'pool': 'chrome.tests.perf-webview',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel2_webview-perf-pgo': {
-        'tests': [{
-            'isolate': 'performance_webview_test_suite',
-        }],
-        'platform': 'android-webview-google',
-        'dimension': {
-            'pool': 'chrome.tests.perf-webview',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel2-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
-        }],
-        'platform':
-        'android-chrome-64-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel2-perf-pgo': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_clank_monochrome_64_32_bundle',
-        }],
-        'platform':
-        'android-chrome-64-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'walleye',
-            'device_os': 'OPM1.171019.021',
-            'device_os_flavor': 'google',
-        },
-    },
     'android-pixel4_webview-perf': {
         'tests': [{
             'isolate': 'performance_webview_test_suite',
@@ -809,9 +718,9 @@ BUILDERS = {
             # version ever changes or becomes inconsistent. It is important
             # that bots are homogeneous. See crbug.com/988045 for history.
             'os':
-            'Windows-10',
+            'Windows-10-19045',
             'gpu':
-            '8086:1616',
+            '8086:1616-20.19.15.5171',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
         },
@@ -1035,6 +944,24 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
         },
     },
+    'mac-m1_mini_2020-perf-local': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'mac_model': 'Macmini9,1',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
+        },
+    },
     'mac-m1_mini_2020-perf-pgo': {
         'tests': [
             {
@@ -1231,14 +1158,6 @@ BUILDERS = {
         'perf_processor': True,
     },
     'android-go-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'android-pixel2-processor-perf': {
-        'platform': 'linux',
-        'perf_processor': True,
-    },
-    'android-pixel2_webview-processor-perf': {
         'platform': 'linux',
         'perf_processor': True,
     },

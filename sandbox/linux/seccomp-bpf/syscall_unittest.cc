@@ -24,6 +24,7 @@
 #include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/types/fixed_array.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -246,13 +247,10 @@ TEST(Syscall, ComplexSyscallSixArgs) {
 
   // Just to be absolutely on the safe side, also verify that the file
   // contents matches what we are getting from a read() operation.
-  char buf[2 * kPageSize];
-  EXPECT_EQ(2 * kPageSize, static_cast<size_t>(Syscall::Call(__NR_read,
-                                                             fd,
-                                                             buf,
-                                                             2 * kPageSize
-                                                             )));
-  EXPECT_EQ(0, memcmp(addr2, buf, 2 * kPageSize));
+  base::FixedArray<char> buf(2 * kPageSize);
+  EXPECT_EQ(2 * kPageSize, static_cast<size_t>(Syscall::Call(
+                               __NR_read, fd, buf.data(), 2 * kPageSize)));
+  EXPECT_EQ(0, memcmp(addr2, buf.data(), 2 * kPageSize));
 #endif
 
   // Clean up

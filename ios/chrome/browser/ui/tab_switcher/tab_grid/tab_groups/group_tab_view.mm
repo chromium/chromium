@@ -234,6 +234,7 @@ const CGFloat kFaviconCornerRadius = 8;
   }
   _bottomTrailingLabel.hidden = YES;
   _bottomTrailingLabel.attributedText = nil;
+  self.hidden = NO;
 }
 
 #pragma mark - Private

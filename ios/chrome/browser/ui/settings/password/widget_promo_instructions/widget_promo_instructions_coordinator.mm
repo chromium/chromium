@@ -101,17 +101,17 @@
 }
 
 - (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return nil;
 }
 
 - (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return nil;
 }
 
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
   return nil;
 }
 

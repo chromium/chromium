@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -42,6 +43,7 @@
 #include "net/base/filename_util.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
@@ -88,6 +90,13 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    views::test::WaitForAnimatingLayoutManager(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->pinned_toolbar_actions_container());
+  }
+
   bool GetFindBarWindowInfoForBrowser(
       Browser* browser, gfx::Point* position, bool* fully_visible) {
     const FindBarTesting* find_bar =

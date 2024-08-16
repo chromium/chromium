@@ -81,7 +81,7 @@ void VulkanSwapChain::Destroy() {
 
   WaitUntilPostSubBufferAsyncFinished();
 
-  if (UNLIKELY(!pending_semaphores_queue_.empty())) {
+  if (!pending_semaphores_queue_.empty()) [[unlikely]] {
     auto* fence_helper = device_queue_->GetFenceHelper();
     fence_helper->EnqueueCleanupTaskForSubmittedWork(base::BindOnce(
         [](base::circular_deque<PendingSemaphores> pending_semaphores_queue,
@@ -110,11 +110,13 @@ gfx::SwapResult VulkanSwapChain::PostSubBuffer(const gfx::Rect& rect) {
   WaitUntilPostSubBufferAsyncFinished();
   DCHECK(!has_pending_post_sub_buffer_);
 
-  if (UNLIKELY(!PresentBuffer(rect)))
+  if (!PresentBuffer(rect)) [[unlikely]] {
     return gfx::SwapResult::SWAP_FAILED;
+  }
 
-  if (UNLIKELY(!AcquireNextImage()))
+  if (!AcquireNextImage()) [[unlikely]] {
     return gfx::SwapResult::SWAP_FAILED;
+  }
 
   return gfx::SwapResult::SWAP_ACK;
 }
@@ -128,7 +130,7 @@ void VulkanSwapChain::PostSubBufferAsync(
   WaitUntilPostSubBufferAsyncFinished();
   DCHECK(!has_pending_post_sub_buffer_);
 
-  if (UNLIKELY(!PresentBuffer(rect))) {
+  if (!PresentBuffer(rect)) [[unlikely]] {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), gfx::SwapResult::SWAP_FAILED));
@@ -192,7 +194,7 @@ bool VulkanSwapChain::InitializeSwapChain(
       .oldSwapchain = VK_NULL_HANDLE,
   };
 
-  if (LIKELY(old_swap_chain)) {
+  if (old_swap_chain) [[likely]] {
     base::AutoLock auto_lock(old_swap_chain->lock_);
     old_swap_chain->WaitUntilPostSubBufferAsyncFinished();
     swap_chain_create_info.oldSwapchain = old_swap_chain->swap_chain_;
@@ -208,13 +210,13 @@ bool VulkanSwapChain::InitializeSwapChain(
   result = vkCreateSwapchainKHR(device, &swap_chain_create_info,
                                 /*pAllocator=*/nullptr, &new_swap_chain);
 
-  if (LIKELY(old_swap_chain)) {
+  if (old_swap_chain) [[likely]] {
     auto* fence_helper = device_queue_->GetFenceHelper();
     fence_helper->EnqueueVulkanObjectCleanupForSubmittedWork(
         std::move(old_swap_chain));
   }
 
-  if (UNLIKELY(VK_SUCCESS != result)) {
+  if (VK_SUCCESS != result) [[unlikely]] {
     LOG(DFATAL) << "vkCreateSwapchainKHR() failed: " << result;
     return false;
   }
@@ -223,7 +225,7 @@ bool VulkanSwapChain::InitializeSwapChain(
   size_ = gfx::Size(swap_chain_create_info.imageExtent.width,
                     swap_chain_create_info.imageExtent.height);
 
-  if (UNLIKELY(!post_sub_buffer_task_runner_)) {
+  if (!post_sub_buffer_task_runner_) [[unlikely]] {
     post_sub_buffer_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN, base::MayBlock()});
@@ -259,14 +261,14 @@ bool VulkanSwapChain::InitializeSwapImages(
 
   uint32_t image_count = 0;
   result = vkGetSwapchainImagesKHR(device, swap_chain_, &image_count, nullptr);
-  if (UNLIKELY(VK_SUCCESS != result)) {
+  if (VK_SUCCESS != result) [[unlikely]] {
     LOG(FATAL) << "vkGetSwapchainImagesKHR(nullptr) failed: " << result;
   }
 
   std::vector<VkImage> images(image_count);
   result =
       vkGetSwapchainImagesKHR(device, swap_chain_, &image_count, images.data());
-  if (UNLIKELY(VK_SUCCESS != result)) {
+  if (VK_SUCCESS != result) [[unlikely]] {
     LOG(FATAL) << "vkGetSwapchainImagesKHR(images) failed: " << result;
   }
 
@@ -307,15 +309,17 @@ bool VulkanSwapChain::BeginWriteCurrentImage(VkImage* image,
   DCHECK(end_semaphore);
   DCHECK(!is_writing_);
 
-  if (UNLIKELY(state_ != VK_SUCCESS))
+  if (state_ != VK_SUCCESS) [[unlikely]] {
     return false;
+  }
 
-  if (UNLIKELY(!acquired_image_))
+  if (!acquired_image_) [[unlikely]] {
     return false;
+  }
 
   auto& current_image_data = images_[*acquired_image_];
 
-  if (UNLIKELY(!new_acquired_)) {
+  if (!new_acquired_) [[unlikely]] {
     // In this case, {Begin,End}WriteCurrentImage has been called, but
     // PostSubBuffer() is not call, so |acquire_semaphore| has been wait on for
     // the previous write request, release it with FenceHelper.
@@ -326,8 +330,9 @@ bool VulkanSwapChain::BeginWriteCurrentImage(VkImage* image,
     current_image_data.acquire_semaphore = current_image_data.present_semaphore;
     current_image_data.present_semaphore =
         CreateSemaphore(device_queue_->GetVulkanDevice());
-    if (UNLIKELY(current_image_data.present_semaphore == VK_NULL_HANDLE))
+    if (current_image_data.present_semaphore == VK_NULL_HANDLE) [[unlikely]] {
       return false;
+    }
   }
 
   *image = current_image_data.image;
@@ -391,7 +396,7 @@ bool VulkanSwapChain::PresentBuffer(const gfx::Rect& rect) {
 
   VkQueue queue = device_queue_->GetVulkanQueue();
   auto result = vkQueuePresentKHR(queue, &present_info);
-  if (UNLIKELY(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)) {
+  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) [[unlikely]] {
     LOG(DFATAL) << "vkQueuePresentKHR() failed: " << result;
     state_ = result;
     return false;
@@ -427,7 +432,7 @@ bool VulkanSwapChain::AcquireNextImage() {
                           &next_image);
   });
 
-  if (UNLIKELY(result == VK_TIMEOUT)) {
+  if (result == VK_TIMEOUT) [[unlikely]] {
     LOG(ERROR) << "vkAcquireNextImageKHR() hangs.";
     vkDestroySemaphore(device, acquire_semaphore, /*pAllocator=*/nullptr);
     vkDestroySemaphore(device, present_semaphore, /*pAllocator=*/nullptr);
@@ -436,7 +441,7 @@ bool VulkanSwapChain::AcquireNextImage() {
     return false;
   }
 
-  if (UNLIKELY(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)) {
+  if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) [[unlikely]] {
     LOG(DFATAL) << "vkAcquireNextImageKHR() failed: " << result;
     vkDestroySemaphore(device, acquire_semaphore, /*pAllocator=*/nullptr);
     vkDestroySemaphore(device, present_semaphore, /*pAllocator=*/nullptr);
@@ -480,7 +485,7 @@ bool VulkanSwapChain::GetOrCreateSemaphores(VkSemaphore* acquire_semaphore,
   // and can be reused (because it is impossible there are more than
   // |num_images() * 2| frames are in flight). Otherwise, new semaphores
   // will be created.
-  if (LIKELY(pending_semaphores_queue_.size() >= num_images() * 2)) {
+  if (pending_semaphores_queue_.size() >= num_images() * 2) [[likely]] {
     const auto& semaphores = pending_semaphores_queue_.front();
     DCHECK(semaphores.acquire_semaphore != VK_NULL_HANDLE);
     DCHECK(semaphores.present_semaphore != VK_NULL_HANDLE);
@@ -521,7 +526,7 @@ VulkanSwapChain::ScopedWrite::ScopedWrite(VulkanSwapChain* swap_chain)
   success_ = swap_chain_->BeginWriteCurrentImage(
       &image_, &image_index_, &image_layout_, &image_usage_, &begin_semaphore_,
       &end_semaphore_);
-  if (LIKELY(success_)) {
+  if (success_) [[likely]] {
     DCHECK(begin_semaphore_ != VK_NULL_HANDLE);
     DCHECK(end_semaphore_ != VK_NULL_HANDLE);
   } else {
@@ -553,7 +558,7 @@ const VulkanSwapChain::ScopedWrite& VulkanSwapChain::ScopedWrite::operator=(
 }
 
 void VulkanSwapChain::ScopedWrite::Reset() {
-  if (LIKELY(success_)) {
+  if (success_) [[likely]] {
     DCHECK(begin_semaphore_ != VK_NULL_HANDLE);
     DCHECK(end_semaphore_ != VK_NULL_HANDLE);
     swap_chain_->EndWriteCurrentImage();

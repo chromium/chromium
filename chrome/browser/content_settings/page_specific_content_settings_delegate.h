@@ -13,8 +13,6 @@
 #include "components/custom_handlers/protocol_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 
-namespace chrome {
-
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
@@ -128,7 +126,5 @@ class PageSpecificContentSettingsDelegate
   // the user opens the bubble and makes changes multiple times.
   ContentSetting pending_protocol_handler_setting_ = CONTENT_SETTING_DEFAULT;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_

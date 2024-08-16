@@ -102,12 +102,24 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   LenientMockObserver() {}
   ~LenientMockObserver() override {}
 
-  MOCK_METHOD1(OnProcessNodeAdded, void(const ProcessNode*));
-  MOCK_METHOD1(OnProcessLifetimeChange, void(const ProcessNode*));
-  MOCK_METHOD1(OnBeforeProcessNodeRemoved, void(const ProcessNode*));
-  MOCK_METHOD1(OnMainThreadTaskLoadIsLow, void(const ProcessNode*));
-  MOCK_METHOD2(OnPriorityChanged, void(const ProcessNode*, base::TaskPriority));
-  MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
+  MOCK_METHOD(void, OnProcessNodeAdded, (const ProcessNode*), (override));
+  MOCK_METHOD(void, OnProcessLifetimeChange, (const ProcessNode*), (override));
+  MOCK_METHOD(void,
+              OnBeforeProcessNodeRemoved,
+              (const ProcessNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnMainThreadTaskLoadIsLow,
+              (const ProcessNode*),
+              (override));
+  MOCK_METHOD(void,
+              OnPriorityChanged,
+              (const ProcessNode*, base::TaskPriority),
+              (override));
+  MOCK_METHOD(void,
+              OnAllFramesInProcessFrozen,
+              (const ProcessNode*),
+              (override));
 
   void SetNotifiedProcessNode(const ProcessNode* process_node) {
     notified_process_node_ = process_node;

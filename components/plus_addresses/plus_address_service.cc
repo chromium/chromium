@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/plus_address_service.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -26,13 +27,17 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_allocator.h"
+#include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
+#include "components/plus_addresses/plus_address_preallocator.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -80,7 +85,11 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
     facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
         origin.GetURL().spec());
   } else {
-    facet = GetEtldPlusOne(origin);
+    std::string etld_plus_one = GetEtldPlusOne(origin);
+    // TODO(crbug.com/327838014): Remove the fallback and use
+    // `affiliations::FacetURI` in the tests.
+    // For empty `etld_plus_one`, fallback to `origin`.
+    facet = etld_plus_one.empty() ? origin.GetURL().spec() : etld_plus_one;
   }
   return facet;
 }
@@ -91,7 +100,7 @@ PlusProfile::facet_t OriginToFacet(const url::Origin& origin) {
 // If password manager did not recognize a username field or the username field
 // is different from the focused field, this is always `true`. Otherwise,
 // whether we offer plus address creation depends on the form type.
-bool ShouldOfferPlusAddressCreation(
+bool ShouldOfferPlusAddressCreationOnForm(
     const PasswordFormClassification& form_classification,
     autofill::FieldGlobalId focused_field_id) {
   if ((!form_classification.username_field ||
@@ -112,31 +121,75 @@ bool ShouldOfferPlusAddressCreation(
       return base::FeatureList::IsEnabled(
           features::kPlusAddressOfferCreationOnSingleUsernameForms);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
+}
+
+std::unique_ptr<PlusAddressAllocator> CreateAllocator(
+    PrefService* pref_service,
+    PlusAddressSettingService* setting_service,
+    PlusAddressHttpClient* http_client,
+    PlusAddressPreallocator::IsEnabledCheck is_enabled_check) {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressPreallocation)) {
+    return std::make_unique<PlusAddressPreallocator>(
+        pref_service, setting_service, http_client,
+        std::move(is_enabled_check));
+  }
+  return std::make_unique<PlusAddressJitAllocator>(http_client);
+}
+
+// Returns `true` if the origin is part of the set of blocklisted domains and
+// `false` otherwise. If `kPlusAddressBlocklistEnabled` is enabled, this means
+// that the domain's origin matches the `exclusion_pattern` regex and does not
+// match the `exception_pattern` regex.
+bool IsSiteExcluded(const base::flat_set<std::string>& excluded_sites,
+                    const url::Origin& origin) {
+  if (base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
+    const PlusAddressBlocklistData& blocklist_data =
+        PlusAddressBlocklistData::GetInstance();
+
+    const re2::RE2* exception_pattern = blocklist_data.GetExceptionPattern();
+    if (exception_pattern &&
+        RE2::PartialMatch(origin.host(), *exception_pattern)) {
+      return false;
+    }
+
+    const re2::RE2* exclusion_pattern = blocklist_data.GetExclusionPattern();
+    return exclusion_pattern &&
+           RE2::PartialMatch(origin.host(), *exclusion_pattern);
+  }
+
+  return excluded_sites.contains(GetEtldPlusOne(origin));
 }
 
 }  // namespace
 
 PlusAddressService::PlusAddressService(
+    PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     PlusAddressSettingService* setting_service,
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service,
     FeatureEnabledForProfileCheck feature_enabled_for_profile_check)
-    : identity_manager_(CHECK_DEREF(identity_manager)),
+    : pref_service_(CHECK_DEREF(pref_service)),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       setting_service_(CHECK_DEREF(setting_service)),
       submission_logger_(identity_manager,
                          base::BindRepeating(&PlusAddressService::IsPlusAddress,
                                              base::Unretained(this))),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
-      plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
-          plus_address_http_client_.get())),
       plus_address_match_helper_(this, affiliation_service),
       feature_enabled_for_profile_check_(
-          std::move(feature_enabled_for_profile_check)),
-      excluded_sites_(GetAndParseExcludedSites()) {
+          std::move(feature_enabled_for_profile_check)) {
+  // The allocator is created in the body of the constructor to avoid that it
+  // calls into `this` before all members are assigned.
+  plus_address_allocator_ =
+      CreateAllocator(&pref_service_.get(), &setting_service_.get(),
+                      plus_address_http_client_.get(),
+                      base::BindRepeating(&PlusAddressService::IsEnabled,
+                                          base::Unretained(this)));
+
   if (IsSyncingPlusAddresses() && webdata_service_) {
     webdata_service_observation_.Observe(webdata_service_.get());
     if (IsEnabled()) {
@@ -145,6 +198,10 @@ PlusAddressService::PlusAddressService(
   }
   CreateAndStartTimer();
   identity_manager_observation_.Observe(identity_manager);
+
+  if (!base::FeatureList::IsEnabled(features::kPlusAddressBlocklistEnabled)) {
+    excluded_sites_ = GetAndParseExcludedSites();
+  }
 }
 
 PlusAddressService::~PlusAddressService() {
@@ -153,39 +210,64 @@ PlusAddressService::~PlusAddressService() {
   }
 }
 
+bool PlusAddressService::IsPlusAddressFillingEnabled(
+    const url::Origin& origin) const {
+  // Check that the feature is enabled and the origin is supported (not opaque,
+  // in the `excluded_sites_`, or is non http/https scheme)
+  return IsEnabled() && IsSupportedOrigin(origin);
+}
+
+bool PlusAddressService::IsPlusAddressCreationEnabled(
+    const url::Origin& origin,
+    bool is_off_the_record) const {
+  // Disabled plus address filling implies that plus address creation is
+  // disabled.
+  if (!IsPlusAddressFillingEnabled(origin)) {
+    return false;
+  }
+
+  // Don't offer plus address creation for off-the-record sessions.
+  if (is_off_the_record) {
+    return false;
+  }
+
+  // We've met the prerequisites. If this isn't an OTR session and the global
+  // settings toggle isn't off, plus address creation is supported.
+  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
+         setting_service_->GetIsPlusAddressesEnabled();
+}
+
 bool PlusAddressService::ShouldShowManualFallback(
     const url::Origin& origin,
     bool is_off_the_record) const {
-  // First, check prerequisites (the feature enabled, etc.).
-  if (!IsEnabled()) {
+  if (!IsPlusAddressFillingEnabled(origin)) {
     return false;
   }
 
-  // Check if origin is supported (Not opaque, in the `excluded_sites_`, or is
-  // non http/https scheme).
-  if (!IsSupportedOrigin(origin)) {
-    return false;
-  }
-  // We've met the prerequisites. If this isn't an OTR session and the global
-  // settings toggle isn't off, plus_addresses are supported.
-  if (!is_off_the_record &&
-      (!base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
-       setting_service_->GetIsPlusAddressesEnabled())) {
+  // If there's an existing plus_address with a facet equal to `origin` (i.e. no
+  // affiliations considered), it's supported.
+  if (GetPlusProfile(OriginToFacet(origin)).has_value()) {
     return true;
   }
 
-  // Prerequisites are met, but it's an off-the-record session or the global
-  // settings toggle is off. If there's an existing plus_address with a facet
-  // equal to `origin` (i.e. no affiliations considered), it's supported,
-  // otherwise it is not.
-  return GetPlusProfile(OriginToFacet(origin)).has_value();
+  // Unless there's an existing plus address for `origin`, off-the-record
+  // sessions are not supported.
+  if (is_off_the_record) {
+    return false;
+  }
+
+  // If the user doesn't have an existing plus address for `origin` and this
+  // session is not off-the-record, the global toggle must be enabled.
+  return !base::FeatureList::IsEnabled(features::kPlusAddressGlobalToggle) ||
+         setting_service_->GetIsPlusAddressesEnabled();
 }
 
-std::optional<std::string> PlusAddressService::GetPlusAddress(
+std::optional<PlusAddress> PlusAddressService::GetPlusAddress(
     const PlusProfile::facet_t& facet) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<PlusProfile> profile = GetPlusProfile(facet);
-  return profile ? std::make_optional(profile->plus_address) : std::nullopt;
+  return profile ? std::make_optional(std::move(profile->plus_address))
+                 : std::nullopt;
 }
 
 void PlusAddressService::GetAffiliatedPlusProfiles(
@@ -246,8 +328,7 @@ void PlusAddressService::GetSuggestions(
     const FormFieldData& focused_field,
     autofill::AutofillSuggestionTriggerSource trigger_source,
     GetSuggestionsCallback callback) {
-  if (!IsEnabled() ||
-      !IsSupportedOrigin(last_committed_primary_main_frame_origin)) {
+  if (!IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
     std::move(callback).Run({});
     return;
   }
@@ -302,8 +383,8 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     // login forms).
     if (trigger_source != kManualFallbackPlusAddresses &&
         (!normalized_field_value.empty() ||
-         !ShouldOfferPlusAddressCreation(focused_form_classification,
-                                         focused_field.global_id()))) {
+         !ShouldOfferPlusAddressCreationOnForm(focused_form_classification,
+                                               focused_field.global_id()))) {
       std::move(callback).Run({});
       return;
     }
@@ -335,7 +416,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
   suggestions.reserve(affiliated_profiles.size());
   for (const PlusProfile& profile : affiliated_profiles) {
     Suggestion suggestion =
-        Suggestion(base::UTF8ToUTF16(profile.plus_address),
+        Suggestion(base::UTF8ToUTF16(*profile.plus_address),
                    SuggestionType::kFillExistingPlusAddress);
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
       suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
@@ -389,7 +470,7 @@ bool PlusAddressService::IsRefreshingSupported(const url::Origin& origin) {
 
 void PlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
-    const std::string& plus_address,
+    const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
     return;
@@ -624,7 +705,7 @@ void PlusAddressService::HandleSignout() {
 
 
 bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
-  if (origin.opaque() || excluded_sites_.contains(GetEtldPlusOne(origin))) {
+  if (origin.opaque() || IsSiteExcluded(excluded_sites_, origin)) {
     return false;
   }
 

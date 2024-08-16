@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.browsing_data;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -45,6 +47,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.viewpager2.widget.ViewPager2;
@@ -87,14 +90,19 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.DataType;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -202,7 +210,8 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @LargeTest
-    public void testSigningOut() {
+    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSigningOut_Legacy() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
@@ -230,6 +239,70 @@ public class ClearBrowsingDataFragmentTest {
                                 .hasPrimaryAccount(ConsentLevel.SIGNIN),
                 "Account should be signed out!");
 
+        // Footer should be hidden after sign-out.
+        onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSigningOut() {
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        final ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(preferences.buildSignOutOfChromeText().toString()))
+                .perform(clickOnSignOutLink());
+
+        // Title of the confirm sign out dialog.
+        onView(withText(R.string.sign_out_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out)).inRoot(isDialog()).perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !IdentityServicesProvider.get()
+                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
+                "Account should be signed out!");
+        // Footer should be hidden after sign-out.
+        onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSigningOut_UnsavedDataDialog() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FakeSyncServiceImpl fakeSyncService = new FakeSyncServiceImpl();
+                    fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
+                    SyncServiceFactory.setInstanceForTesting(fakeSyncService);
+                });
+        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        final ClearBrowsingDataFragment preferences =
+                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText(preferences.buildSignOutOfChromeText().toString()))
+                .perform(clickOnSignOutLink());
+
+        // Title of the confirm sign out dialog.
+        onView(withText(R.string.sign_out_unsaved_data_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.sign_out_unsaved_data_primary_button))
+                .inRoot(isDialog())
+                .perform(click());
+
+        CriteriaHelper.pollUiThread(
+                () ->
+                        !IdentityServicesProvider.get()
+                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
+                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
+                "Account should be signed out!");
         // Footer should be hidden after sign-out.
         onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
     }

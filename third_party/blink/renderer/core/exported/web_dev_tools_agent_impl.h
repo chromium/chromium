@@ -96,6 +96,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   void WaitForDebuggerWhenShown();
   void ActivatePausedDebuggerWindow();
 
+  // Activate the paused debugger window if possible.
+  static void ActivatePausedDebuggerWindow(WebLocalFrameImpl* local_root);
+
  private:
   friend class ClientMessageLoopAdapter;
 

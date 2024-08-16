@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/autocomplete_match_type.h"
+
+#include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -25,7 +22,7 @@
 // static
 std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
   // clang-format off
-  const char* strings[] = {
+  static constexpr auto strings = std::to_array<const char*>({
     "url-what-you-typed",
     "history-url",
     "history-title",
@@ -64,9 +61,9 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "organic-repeatable-query-tile",
     "history-embeddings",
     "featured-enterprise-search",
-  };
+  });
   // clang-format on
-  static_assert(std::size(strings) == AutocompleteMatchType::NUM_TYPES,
+  static_assert(strings.size() == AutocompleteMatchType::NUM_TYPES,
                 "strings array must have NUM_TYPES elements");
   return strings[type];
 }
@@ -110,7 +107,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
                                          const std::u16string& match_text,
                                          int* label_prefix_length) {
   // Types with a message ID of zero get |text| returned as-is.
-  static constexpr int message_ids[] = {
+  static constexpr auto message_ids = std::to_array<int>({
       0,                             // URL_WHAT_YOU_TYPED
       IDS_ACC_AUTOCOMPLETE_HISTORY,  // HISTORY_URL
       IDS_ACC_AUTOCOMPLETE_HISTORY,  // HISTORY_TITLE
@@ -160,7 +157,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // TILE_REPEATABLE_QUERY
       IDS_ACC_AUTOCOMPLETE_HISTORY,          // HISTORY_EMBEDDINGS
       0,                                     // FEATURED_ENTERPRISE_SEARCH
-  };
+  });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
 

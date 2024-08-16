@@ -56,7 +56,7 @@ class ProductSpecificationsButton
   }
 
   // commerce::ProductSpecificationsEntryPointController::Observer
-  void ShowEntryPointWithTitle(const std::string title) override;
+  void ShowEntryPointWithTitle(const std::u16string& title) override;
   void HideEntryPoint() override;
 
  protected:

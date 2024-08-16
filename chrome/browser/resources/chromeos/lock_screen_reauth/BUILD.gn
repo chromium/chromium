@@ -3,125 +3,48 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-src_files_manifest = "$target_gen_dir/src_files_manifest.json"
-gen_files_manifest = "$target_gen_dir/gen_files_manifest.json"
-preprocess_folder = "$target_gen_dir/preprocessed"
-grd_filename = "$target_gen_dir/resources.grd"
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # This is necessary since the GRD is generated during build time.
-  enable_input_discovery_for_gn_analyze = false
-
-  source = grd_filename
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/lock_screen_reauth_resources.h",
-    "grit/lock_screen_reauth_resources_map.h",
-    "grit/lock_screen_reauth_resources_map.cc",
-    "lock_screen_reauth_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "lock_screen_reauth"
-  out_grd = grd_filename
-  deps = [
-    ":preprocess_gen",
-    ":preprocess_src",
-  ]
-  manifest_files = [
-    src_files_manifest,
-    gen_files_manifest,
-  ]
-}
 
-preprocess_if_expr("preprocess_src") {
-  out_folder = preprocess_folder
-  out_manifest = src_files_manifest
-  in_files = [
+  static_files = [
     "lock_screen_network.html",
-    "lock_screen_network.js",
     "lock_screen_reauth_app.html",
-    "lock_screen_reauth_app.js",
   ]
-}
 
-web_component_files = [ "lock_screen_reauth.js" ]
+  web_component_files = [ "lock_screen_reauth.ts" ]
 
-preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder
-  out_manifest = gen_files_manifest
-  in_files = web_component_files
-}
-
-html_to_js("web_components") {
-  js_files = web_component_files
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-      ]
-  deps = [
-    ":lock_screen_network",
-    ":lock_screen_reauth",
-    ":lock_screen_reauth_app",
+  non_web_component_files = [
+    "lock_screen_network.ts",
+    "lock_screen_reauth_app.ts",
   ]
-}
 
-js_library("lock_screen_network") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources/network:network_select",
-    "//ash/webui/common/resources/network:onc_mojo",
+  ts_definitions = [
+    "//chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
+    "//chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
   ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
 
-js_library("lock_screen_reauth_app") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/lock_screen_reauth/lock_screen_reauth.js" ]
-  deps = [
-    ":lock_screen_reauth",
-    "//ash/webui/common/resources:load_time_data.m",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-  extra_deps = [ ":web_components" ]
-}
 
-js_library("lock_screen_reauth") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/lock_screen_reauth/lock_screen_reauth.js" ]
-  deps = [
-    "//ash/webui/common/resources:cr.m",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/resources/gaia_auth_host:authenticator",
-  ]
-  externs_list = [
-    "$externs_path/chrome_send.js",
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ash/webui/common/resources/cr_elements/policy/cr_tooltip_icon_externs.js",
-  ]
-  extra_deps = [ ":web_components" ]
+  ts_path_mappings =
+      [ "//lock-reauth/gaia_auth_host/*|" +
+        rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+                    target_gen_dir) ]
+
+  webui_context_type = "trusted"
 }

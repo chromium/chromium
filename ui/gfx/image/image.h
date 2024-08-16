@@ -24,6 +24,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
@@ -107,10 +108,8 @@ class GFX_EXPORT Image {
   // Creates an image from the PNG encoded input.
   // For example (from an std::vector):
   // std::vector<unsigned char> png = ...;
-  // gfx::Image image =
-  //     Image::CreateFrom1xPNGBytes(&png.front(), png.size());
-  static Image CreateFrom1xPNGBytes(const unsigned char* input,
-                                    size_t input_size);
+  // gfx::Image image = Image::CreateFrom1xPNGBytes(png);
+  static Image CreateFrom1xPNGBytes(base::span<const uint8_t> input);
 
   // Creates an image from the PNG encoded input.
   static Image CreateFrom1xPNGBytes(

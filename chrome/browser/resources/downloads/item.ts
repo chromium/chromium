@@ -1062,6 +1062,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         this.isReviewable_;      // review-dangerous
   }
 
+  private computeShowCopyDownloadLink_(): boolean {
+    return !!(this.data && this.data.url);
+  }
+
   private computeShowQuickRemove_(): boolean {
     return this.isReviewable_ || this.computeShowRemove_() ||
         this.computeShowControlsForDangerous_();
@@ -1222,6 +1226,14 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
   // </if>
 
+  private onCopyDownloadLinkClick_(e: Event) {
+    if (!this.data.url) {
+      return;
+    }
+    navigator.clipboard.writeText(this.data.url.url);
+    this.displayCopyToast_(e);
+  }
+
   private onMoreActionsClick_() {
     const button = this.getMoreActionsButton();
     // The menu button is not always shown, but if this handler is invoked, then
@@ -1321,6 +1333,24 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.doResume_();
     }
     this.getMoreActionsMenu().close();
+  }
+
+  private displayCopyToast_(e: Event) {
+    if (!this.data.url) {
+      return;
+    }
+
+    const pieces = loadTimeData.getSubstitutedStringPieces(
+                       loadTimeData.getString('toastCopiedDownloadLink'),
+                       this.data.url.url) as unknown as
+        Array<{collapsible: boolean, value: string, arg: string}>;
+    pieces.forEach(p => {
+      p.collapsible = !!p.arg;
+    });
+    getToastManager().showForStringPieces(pieces, /*hideSlotted=*/ true);
+
+    e.stopPropagation();
+    e.preventDefault();
   }
 
   private displayRemovedToast_(canUndo: boolean, e: Event) {

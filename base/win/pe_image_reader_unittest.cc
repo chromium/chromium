@@ -23,8 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Gt;
-using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -178,11 +176,10 @@ class CertificateReceiver {
   void* AsContext() { return this; }
   static bool OnCertificateCallback(uint16_t revision,
                                     uint16_t certificate_type,
-                                    const uint8_t* certificate_data,
-                                    size_t certificate_data_size,
+                                    base::span<const uint8_t> certificate_data,
                                     void* context) {
     return reinterpret_cast<CertificateReceiver*>(context)->OnCertificate(
-        revision, certificate_type, certificate_data, certificate_data_size);
+        revision, certificate_type, certificate_data);
   }
 
  protected:
@@ -190,8 +187,7 @@ class CertificateReceiver {
   virtual ~CertificateReceiver() = default;
   virtual bool OnCertificate(uint16_t revision,
                              uint16_t certificate_type,
-                             const uint8_t* certificate_data,
-                             size_t certificate_data_size) = 0;
+                             base::span<const uint8_t> certificate_data) = 0;
 };
 
 class MockCertificateReceiver : public CertificateReceiver {
@@ -201,7 +197,8 @@ class MockCertificateReceiver : public CertificateReceiver {
   MockCertificateReceiver(const MockCertificateReceiver&) = delete;
   MockCertificateReceiver& operator=(const MockCertificateReceiver&) = delete;
 
-  MOCK_METHOD4(OnCertificate, bool(uint16_t, uint16_t, const uint8_t*, size_t));
+  MOCK_METHOD3(OnCertificate,
+               bool(uint16_t, uint16_t, base::span<const uint8_t>));
 };
 
 struct CertificateTestData {
@@ -236,7 +233,7 @@ TEST_P(PeImageReaderCertificateTest, EnumCertificates) {
   if (expected_data_->num_signers) {
     EXPECT_CALL(receiver, OnCertificate(WIN_CERT_REVISION_2_0,
                                         WIN_CERT_TYPE_PKCS_SIGNED_DATA,
-                                        NotNull(), Gt(0U)))
+                                        testing::Not(testing::IsEmpty())))
         .Times(expected_data_->num_signers)
         .WillRepeatedly(Return(true));
   }
@@ -248,7 +245,7 @@ TEST_P(PeImageReaderCertificateTest, AbortEnum) {
   StrictMock<MockCertificateReceiver> receiver;
   if (expected_data_->num_signers) {
     // Return false for the first cert, thereby stopping the enumeration.
-    EXPECT_CALL(receiver, OnCertificate(_, _, _, _)).WillOnce(Return(false));
+    EXPECT_CALL(receiver, OnCertificate(_, _, _)).WillOnce(Return(false));
     EXPECT_FALSE(image_reader_.EnumCertificates(
         &CertificateReceiver::OnCertificateCallback, receiver.AsContext()));
   } else {

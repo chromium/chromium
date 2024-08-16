@@ -188,7 +188,7 @@ wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
 wgpu::Texture DawnRepresentationDXGISwapChain::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void DawnRepresentationDXGISwapChain::EndAccess() {

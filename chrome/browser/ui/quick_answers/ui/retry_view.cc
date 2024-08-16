@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/quick_answers/ui/typography.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -29,12 +30,10 @@ constexpr int kItemSpacing = 4;
 
 RetryView::RetryView() {
   SetOrientation(views::LayoutOrientation::kVertical);
-  SetDefault(views::kMarginsKey, gfx::Insets::VH(kItemSpacing, 0));
   SetCollapseMargins(true);
 
-  views::Label* first_line_label;
   AddChildView(views::Builder<views::Label>()
-                   .CopyAddressTo(&first_line_label)
+                   .CopyAddressTo(&first_line_label_)
                    .SetVisible(false)
                    .SetEnabledColorId(ui::kColorLabelForeground)
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -42,17 +41,16 @@ RetryView::RetryView() {
                                 views::FlexSpecification(
                                     views::MinimumFlexSizeRule::kScaleToZero,
                                     views::MaximumFlexSizeRule::kPreferred))
+                   .SetProperty(views::kMarginsKey,
+                                gfx::Insets::TLBR(0, 0, kItemSpacing, 0))
                    .Build());
 
-  CHECK(first_line_label);
-  first_line_label_ = first_line_label;
-
-  views::LabelButton* retry_label_button;
   AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .AddChild(
               views::Builder<views::Label>()
+                  .CopyAddressTo(&second_line_label_)
                   .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_QUICK_ANSWERS_VIEW_NETWORK_ERROR))
@@ -63,7 +61,7 @@ RetryView::RetryView() {
                                    views::MaximumFlexSizeRule::kPreferred)))
           .AddChild(
               views::Builder<views::LabelButton>()
-                  .CopyAddressTo(&retry_label_button)
+                  .CopyAddressTo(&retry_label_button_)
                   .SetText(
                       l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_RETRY))
                   .SetEnabledTextColorIds(ui::kColorProgressBar)
@@ -78,10 +76,10 @@ RetryView::RetryView() {
                       IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC)))
           .Build());
 
-  CHECK(retry_label_button);
-  retry_label_button->button_controller()->set_notify_action(
+  retry_label_button_->button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
-  retry_label_button_ = retry_label_button;
+
+  SetDesign(Design::kCurrent);
 }
 
 RetryView::~RetryView() = default;
@@ -98,6 +96,14 @@ std::u16string RetryView::GetFirstLineText() const {
 void RetryView::SetRetryButtonCallback(
     RetryButtonCallback retry_button_callback) {
   retry_button_callback_ = retry_button_callback;
+}
+
+void RetryView::SetDesign(Design design) {
+  first_line_label_->SetFontList(GetFirstLineFontList(design));
+  first_line_label_->SetLineHeight(GetFirstLineHeight(design));
+
+  second_line_label_->SetFontList(GetSecondLineFontList(design));
+  second_line_label_->SetLineHeight(GetSecondLineHeight(design));
 }
 
 void RetryView::OnRetryButtonPressed() {

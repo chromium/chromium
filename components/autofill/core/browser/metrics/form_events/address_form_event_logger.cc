@@ -69,19 +69,13 @@ void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillProfile& profile,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
-  signin_state_for_metrics_ = signin_state_for_metrics;
-
   form_interactions_ukm_logger_->LogDidFillSuggestion(form, field);
-
   Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
-
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
     Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
-
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledProfileSuggestion"));
 

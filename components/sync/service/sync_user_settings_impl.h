@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -39,10 +39,10 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   SyncUserSettingsImpl(Delegate* delegate,
                        SyncServiceCrypto* crypto,
                        SyncPrefs* prefs,
-                       ModelTypeSet registered_types);
+                       DataTypeSet registered_types);
   ~SyncUserSettingsImpl() override;
 
-  ModelTypeSet GetPreferredDataTypes() const;
+  DataTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypePreferred() const;
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
@@ -93,7 +93,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 #endif
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
-  ModelTypeSet GetAllEncryptedDataTypes() const override;
+  DataTypeSet GetAllEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;
@@ -117,7 +117,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const raw_ptr<Delegate> delegate_;
   const raw_ptr<SyncServiceCrypto> crypto_;
   const raw_ptr<SyncPrefs> prefs_;
-  const ModelTypeSet registered_model_types_;
+  const DataTypeSet registered_data_types_;
 };
 
 }  // namespace syncer

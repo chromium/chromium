@@ -15,6 +15,7 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
+#include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/trusted_vault_histograms.h"
 
@@ -75,7 +76,7 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
             observer_));
   }
 
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+  void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                bool encrypt_everything) override {
     task_runner_->PostTask(
         FROM_HERE,
@@ -408,7 +409,7 @@ SyncServiceCrypto::GetEncryptionObserverProxy() {
       base::SequencedTaskRunner::GetCurrentDefault());
 }
 
-ModelTypeSet SyncServiceCrypto::GetAllEncryptedDataTypes() const {
+DataTypeSet SyncServiceCrypto::GetAllEncryptedDataTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
   // We may be called during the setup process before we're
@@ -528,13 +529,13 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
   delegate_->ReconfigureDataTypesDueToCrypto();
 }
 
-void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
+void SyncServiceCrypto::OnEncryptedTypesChanged(DataTypeSet encrypted_types,
                                                 bool encrypt_everything) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_.encrypted_types = encrypted_types;
   state_.encrypt_everything = encrypt_everything;
   DVLOG(1) << "Encrypted types changed to "
-           << ModelTypeSetToDebugString(state_.encrypted_types)
+           << DataTypeSetToDebugString(state_.encrypted_types)
            << " (encrypt everything is set to "
            << (state_.encrypt_everything ? "true" : "false") << ")";
   DCHECK(state_.encrypted_types.HasAll(AlwaysEncryptedUserTypes()));

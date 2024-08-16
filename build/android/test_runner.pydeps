@@ -10,8 +10,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py

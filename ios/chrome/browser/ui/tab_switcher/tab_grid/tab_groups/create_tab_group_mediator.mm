@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_mediator.h"
 
+#import <memory>
+
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/scoped_multi_source_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -15,8 +18,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_utils.h"
@@ -24,6 +30,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
+
+@interface CreateTabGroupMediator () <WebStateListObserving>
+@end
 
 @implementation CreateTabGroupMediator {
   // Consumer of the tab group creator;
@@ -41,6 +50,12 @@
   // Source browser. Only set when creating a new group, not when editing an
   // existing one.
   Browser* _browser;
+  // Observers for WebStateList. Only set when editing an existing group,
+  // when creating a new one.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+  std::unique_ptr<
+      base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>>
+      _scopedWebStateListObservation;
 }
 
 - (instancetype)
@@ -118,9 +133,17 @@
   if (self) {
     CHECK(consumer);
     CHECK(tabGroup);
+    CHECK(webStateList);
     _consumer = consumer;
     _tabGroup = tabGroup;
     _webStateList = webStateList;
+    // Observe the WebStateList in the case the group disappears.
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    _scopedWebStateListObservation = std::make_unique<
+        base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>>(
+        _webStateListObserverBridge.get());
+    _scopedWebStateListObservation->AddObservation(_webStateList);
     _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup
                                            webStateList:_webStateList];
     __weak CreateTabGroupMediator* weakSelf = self;
@@ -138,6 +161,15 @@
     [_consumer setGroupTitle:base::SysUTF16ToNSString(visualData.title())];
   }
   return self;
+}
+
+- (void)disconnect {
+  if (_tabGroup) {
+    _scopedWebStateListObservation->RemoveAllObservations();
+    _scopedWebStateListObservation.reset();
+    _webStateListObserverBridge.reset();
+    _webStateList = nullptr;
+  }
 }
 
 #pragma mark - TabGroupCreationMutator
@@ -181,6 +213,39 @@
     }
   }
   completion();
+}
+
+#pragma mark - WebStateListObserving
+
+- (void)didChangeWebStateList:(WebStateList*)webStateList
+                       change:(const WebStateListChange&)change
+                       status:(const WebStateListStatus&)status {
+  CHECK_EQ(_webStateList, webStateList);
+  switch (change.type()) {
+    case WebStateListChange::Type::kGroupVisualDataUpdate: {
+      const WebStateListChangeGroupVisualDataUpdate& visual_data_update =
+          change.As<WebStateListChangeGroupVisualDataUpdate>();
+      if (_tabGroup == visual_data_update.updated_group()) {
+        // Dismiss the editor.
+        [self.delegate
+            createTabGroupMediatorEditedGroupWasExternallyMutated:self];
+      }
+      break;
+    }
+    case WebStateListChange::Type::kGroupDelete: {
+      const WebStateListChangeGroupDelete& deletion =
+          change.As<WebStateListChangeGroupDelete>();
+      if (_tabGroup == deletion.deleted_group()) {
+        // Dismiss the editor.
+        [self.delegate
+            createTabGroupMediatorEditedGroupWasExternallyMutated:self];
+      }
+      break;
+    }
+    default:
+      // No-op.
+      break;
+  }
 }
 
 #pragma mark - Private helpers

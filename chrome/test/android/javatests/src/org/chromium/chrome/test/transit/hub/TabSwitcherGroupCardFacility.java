@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.view.View;
 
@@ -57,9 +57,8 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
     public void declareElements(Elements.Builder elements) {
         String titleElementId = "Tab Group card title: " + mTitle;
         elements.declareView(
-                scopedViewElement(
-                        allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD)),
-                        ViewElement.newOptions().elementId(titleElementId).build()));
+                viewSpec(allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))),
+                ViewElement.elementIdOption(titleElementId));
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(

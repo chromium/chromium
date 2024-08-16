@@ -17,9 +17,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/sync/base/sync_mode.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_util.h"
@@ -33,17 +33,17 @@ namespace syncer {
 
 class DeviceInfoPrefs;
 
-// Sync bridge implementation for DEVICE_INFO model type. Handles storage of
+// Sync bridge implementation for DEVICE_INFO data type. Handles storage of
 // device info and associated sync metadata, applying/merging foreign changes,
 // and allows public read access.
-class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
+class DeviceInfoSyncBridge : public DataTypeSyncBridge,
                              public DeviceInfoTracker {
  public:
   DeviceInfoSyncBridge(
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
-      OnceModelTypeStoreFactory store_factory,
-      std::unique_ptr<ModelTypeChangeProcessor> change_processor,
+      OnceDataTypeStoreFactory store_factory,
+      std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs);
 
   DeviceInfoSyncBridge(const DeviceInfoSyncBridge&) = delete;
@@ -66,9 +66,9 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // for the data types which have been just enabled and subscribed for new
   // invalidations.
   void SetCommittedAdditionalInterestedDataTypesCallback(
-      base::RepeatingCallback<void(const ModelTypeSet&)> callback);
+      base::RepeatingCallback<void(const DataTypeSet&)> callback);
 
-  // ModelTypeSyncBridge implementation.
+  // DataTypeSyncBridge implementation.
   void OnSyncStarting(const DataTypeActivationRequest& request) override;
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   std::optional<ModelError> MergeFullSyncData(
@@ -84,7 +84,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::string GetStorageKey(const EntityData& entity_data) override;
   void ApplyDisableSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
-  ModelTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
+  DataTypeSyncBridge::CommitAttemptFailedBehavior OnCommitAttemptFailed(
       syncer::SyncCommitError commit_error) override;
 
   // DeviceInfoTracker implementation.
@@ -124,15 +124,15 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // parameter is first for binding purposes.
   static std::optional<ModelError> ParseSpecificsOnBackendSequence(
       ClientIdToDeviceInfo* all_data,
-      std::unique_ptr<ModelTypeStore::RecordList> record_list);
+      std::unique_ptr<DataTypeStore::RecordList> record_list);
 
   // Store SyncData in the cache and durable storage.
   void StoreSpecifics(sync_pb::DeviceInfoSpecifics specifics,
-                      ModelTypeStore::WriteBatch* batch);
+                      DataTypeStore::WriteBatch* batch);
   // Delete SyncData from the cache and durable storage, returns true if there
   // was actually anything at the given tag.
   bool DeleteSpecifics(const std::string& tag,
-                       ModelTypeStore::WriteBatch* batch);
+                       DataTypeStore::WriteBatch* batch);
 
   // Returns the device name based on |sync_mode_|. For transport only mode,
   // the device model name is returned. For full sync mode,
@@ -144,7 +144,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<ModelTypeStore> store);
+                      std::unique_ptr<DataTypeStore> store);
   void OnLocalDeviceNameInfoRetrieved(
       LocalDeviceNameInfo local_device_name_info);
   void OnReadAllData(std::unique_ptr<ClientIdToDeviceInfo> all_data,
@@ -166,12 +166,11 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   void SendLocalData();
 
   // Same as above but allows callers to specify a WriteBatch
-  void SendLocalDataWithBatch(
-      std::unique_ptr<ModelTypeStore::WriteBatch> batch);
+  void SendLocalDataWithBatch(std::unique_ptr<DataTypeStore::WriteBatch> batch);
 
   // Persists the changes in the given aggregators and notifies observers if
   // indicated to do as such.
-  void CommitAndNotify(std::unique_ptr<ModelTypeStore::WriteBatch> batch,
+  void CommitAndNotify(std::unique_ptr<DataTypeStore::WriteBatch> batch,
                        bool should_notify);
 
   // Deletes locally old data and metadata entries without issuing tombstones.
@@ -196,7 +195,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   base::ObserverList<Observer, true>::Unchecked observers_;
 
   // In charge of actually persisting changes to disk, or loading previous data.
-  std::unique_ptr<ModelTypeStore> store_;
+  std::unique_ptr<DataTypeStore> store_;
 
   // Used to update our local device info once every pulse interval.
   base::OneShotTimer pulse_timer_;
@@ -209,7 +208,7 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // Called when a new interested data type list has been committed. Only newly
   // enabled data types will be passed. May be empty.
-  base::RepeatingCallback<void(const ModelTypeSet&)>
+  base::RepeatingCallback<void(const DataTypeSet&)>
       new_interested_data_types_callback_;
 
   const std::unique_ptr<DeviceInfoPrefs> device_info_prefs_;

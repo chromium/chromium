@@ -9,15 +9,18 @@
 
 namespace {
 
-// The dimensions of a cell in a vertical collection view section.
-const CGFloat kVerticalListCellHeight = 80;
-const CGFloat kVerticalListCellWidth = 343;
+// The height of a cell in a vertical collection view section.
+const CGFloat kVerticalListCellHeight = 74;
+
+// The horizontal spacing between the cell and each side of the vertical
+// collection view.
+const CGFloat kVerticalListHorizontalPadding = 20;
 
 // The vertical spacing between cells.
-const CGFloat kSpacingBetweenCells = 12;
+const CGFloat kSpacingBetweenCells = 10;
 
 // The vertical spacing below the header.
-const CGFloat kSpacingBelowHeader = 16;
+const CGFloat kSpacingBelowHeader = 10;
 
 }  // namespace
 
@@ -99,11 +102,7 @@ const CGFloat kSpacingBelowHeader = 16;
   section.interGroupSpacing = kSpacingBetweenCells;
   section.contentInsets = NSDirectionalEdgeInsetsMake(
       [self doesPageHaveHeader] ? kSpacingBelowHeader : 0,
-      (layoutEnvironment.container.contentSize.width - kVerticalListCellWidth) /
-          2,
-      0,
-      (layoutEnvironment.container.contentSize.width - kVerticalListCellWidth) /
-          2);
+      kVerticalListHorizontalPadding, 0, kVerticalListHorizontalPadding);
 
   if ([self doesPageHaveHeader]) {
     NSCollectionLayoutSize* headerSize = [NSCollectionLayoutSize

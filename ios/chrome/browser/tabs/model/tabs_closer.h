@@ -5,10 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_TABS_MODEL_TABS_CLOSER_H_
 #define IOS_CHROME_BROWSER_TABS_MODEL_TABS_CLOSER_H_
 
+#include <map>
 #include <memory>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
+#include "components/saved_tab_groups/types.h"
 
+namespace base {
+class Uuid;
+}
 class Browser;
 
 // TabsCloser implements the "close all tabs" operation with support for undo.
@@ -52,6 +57,7 @@ class TabsCloser {
 
   raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<UndoStorage> state_;
+  std::map<tab_groups::LocalTabGroupID, base::Uuid> local_to_saved_group_ids_;
   const ClosePolicy close_policy_;
 };
 

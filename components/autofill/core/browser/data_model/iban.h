@@ -216,8 +216,6 @@ class Iban : public AutofillDataModel {
   void set_prefix(std::u16string prefix);
   const std::u16string& suffix() const { return suffix_; }
   void set_suffix(std::u16string suffix);
-  int length() const { return length_; }
-  void set_length(int length);
 
   // For local IBANs, checks on `IsValid(value_)`. Always returns true for
   // server-based IBANs because server-based IBANs don't store the full `value`.
@@ -241,9 +239,9 @@ class Iban : public AutofillDataModel {
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
-  // Returns true if the `prefix_`, `suffix_` and `length_` of the given `iban`
-  // matches this IBAN.
-  bool MatchesPrefixSuffixAndLength(const Iban& iban) const;
+  // Returns true if the `prefix_` and `suffix_` of the given `iban` matches
+  // this IBAN.
+  bool MatchesPrefixAndSuffix(const Iban& iban) const;
 
  private:
   // To distinguish between local IBANs, utilize the Guid as the identifier. For
@@ -261,13 +259,11 @@ class Iban : public AutofillDataModel {
   RecordType record_type_;
 
   // `prefix_` and `suffix_` are the beginning and ending characters of the
-  // IBAN's value, respectively. `length_` is the length of the complete IBAN
-  // value, ignoring spaces. These three fields are used when showing the IBAN
+  // IBAN's value, respectively. These two fields are used when showing the IBAN
   // to the user in a masked format, where the prefix and suffix are shown
   // but all characters between them stay masked.
   std::u16string prefix_;
   std::u16string suffix_;
-  int length_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& os, const Iban& iban);

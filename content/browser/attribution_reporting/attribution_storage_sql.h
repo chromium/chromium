@@ -42,6 +42,10 @@ class TimeDelta;
 class Uuid;
 }  // namespace base
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace sql {
 class Statement;
 }  // namespace sql
@@ -97,6 +101,8 @@ class CONTENT_EXPORT AttributionStorageSql {
 
     sql::Transaction transaction_;
   };
+
+  struct Error {};
 
   // If `user_data_directory` is empty, the DB is created in memory and no data
   // is persisted to disk.
@@ -249,6 +255,9 @@ class CONTENT_EXPORT AttributionStorageSql {
       const StoredSource& source,
       RateLimitTable::Scope scope);
 
+  [[nodiscard]] bool DeleteAttributionRateLimit(RateLimitTable::Scope,
+                                                AttributionReport::Id);
+
   [[nodiscard]] base::expected<std::vector<StoredSource::Id>,
                                RateLimitTable::Error>
   GetSourcesToDeactivateForDestinationLimit(const StorableSource& source,
@@ -348,25 +357,9 @@ class CONTENT_EXPORT AttributionStorageSql {
   std::optional<StoredSourceData> ReadSourceToAttribute(
       StoredSource::Id source_id);
 
-  enum class ConversionCapacityStatus {
-    kHasCapacity,
-    kNoCapacity,
-    kError,
-  };
-
-  ConversionCapacityStatus CapacityForStoringReport(
-      const url::Origin& context_origin,
-      AttributionReport::Type);
-
-  attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
-      AttributionReport& report,
-      const StoredSource& source,
-      std::optional<uint64_t> dedup_key,
-      int num_attributions,
-      std::optional<AttributionReport>& replaced_report,
-      std::optional<AttributionReport>& dropped_report,
-      std::optional<int>& max_event_level_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions);
+  // Returns a negative value on failure.
+  int64_t CountReportsWithDestinationSite(const net::SchemefulSite& destination,
+                                          AttributionReport::Type);
 
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in
@@ -379,6 +372,22 @@ class CONTENT_EXPORT AttributionStorageSql {
       int num_aggregatable_attribution_reports,
       std::optional<uint64_t> dedup_key,
       std::optional<int>& max_aggregatable_reports_per_source);
+
+  struct ReportIdAndPriority {
+    AttributionReport::Id id;
+    int64_t priority;
+  };
+
+  base::expected<std::optional<ReportIdAndPriority>, Error>
+  GetReportWithMinPriority(StoredSource::Id, base::Time report_time);
+
+  [[nodiscard]] bool DeactivateSourceAtEventLevel(StoredSource::Id);
+
+  [[nodiscard]] bool IncrementNumAttributions(StoredSource::Id);
+
+  [[nodiscard]] bool StoreDedupKey(StoredSource::Id,
+                                   uint64_t dedup_key,
+                                   AttributionReport::Type);
 
  private:
   using ReportCorruptionStatusSet =
@@ -405,32 +414,10 @@ class CONTENT_EXPORT AttributionStorageSql {
 
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class ReplaceReportResult {
-    kError,
-    kAddNewReport,
-    kDropNewReport,
-    kDropNewReportSourceDeactivated,
-    kReplaceOldReport,
-  };
-  [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
-      const AttributionReport& report,
-      const StoredSource& source,
-      int num_attributions,
-      std::optional<AttributionReport>& replaced_report)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  std::optional<AttributionReport> GetReportInternal(AttributionReport::Id)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   [[nodiscard]] bool ReadDedupKeys(
       StoredSource::Id,
       std::vector<uint64_t>& event_level_dedup_keys,
       std::vector<uint64_t>& aggregatable_dedup_keys)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  bool StoreDedupKey(StoredSource::Id source_id,
-                     uint64_t dedup_key,
-                     AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   base::expected<AttributionReport, ReportCorruptionStatusSetAndIds>

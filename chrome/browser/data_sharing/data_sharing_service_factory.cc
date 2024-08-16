@@ -9,7 +9,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
@@ -17,7 +17,7 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/features.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -25,6 +25,7 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory_bridge.h"
 #include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
 #else  // BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop.h"
 #include "chrome/browser/data_sharing/desktop/data_sharing_ui_delegate_desktop.h"
 #endif
 
@@ -50,8 +51,8 @@ DataSharingServiceFactory::DataSharingServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
 DataSharingServiceFactory::~DataSharingServiceFactory() = default;
@@ -73,13 +74,14 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
       DataSharingServiceFactoryBridge::CreateJavaSDKDelegate(profile));
 #else
   ui_delegate = std::make_unique<DataSharingUIDelegateDesktop>(profile);
+  sdk_delegate = std::make_unique<DataSharingSDKDelegateDesktop>(context);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),
-      ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       chrome::GetChannel(), std::move(sdk_delegate), std::move(ui_delegate));
 }
 

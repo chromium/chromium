@@ -57,7 +57,6 @@
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
-#include "content/web_test/browser/web_test_pressure_manager.h"
 #include "content/web_test/browser/web_test_sensor_provider_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
@@ -77,6 +76,7 @@
 #include "net/net_buildflags.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
@@ -92,6 +92,10 @@
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "content/web_test/browser/web_test_pressure_manager.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -559,10 +563,13 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
       base::Unretained(this)));
+
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   map->Add<blink::test::mojom::WebPressureManagerAutomation>(
       base::BindRepeating(
           &WebTestContentBrowserClient::BindWebPressureManagerAutomation,
           base::Unretained(this)));
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -644,6 +651,7 @@ void WebTestContentBrowserClient::ResetWebSensorProviderAutomation() {
   sensor_provider_manager_.reset();
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void WebTestContentBrowserClient::BindWebPressureManagerAutomation(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::test::mojom::WebPressureManagerAutomation>
@@ -652,6 +660,7 @@ void WebTestContentBrowserClient::BindWebPressureManagerAutomation(
       WebContents::FromRenderFrameHost(render_frame_host))
       ->Bind(std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,

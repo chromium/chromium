@@ -53,7 +53,6 @@ template("webapk_java") {
                            ])
 
     sources = [
-      "src/org/chromium/webapk/shell_apk/ChooseHostBrowserDialog.java",
       "src/org/chromium/webapk/shell_apk/DexLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserClassLoader.java",
       "src/org/chromium/webapk/shell_apk/HostBrowserLauncher.java",
@@ -198,7 +197,6 @@ template("webapk_tmpl") {
       "res/drawable-xxxhdpi/splash_icon.xml",
       "res/layout-night-v31/splash_screen_view.xml",
       "res/layout-v31/splash_screen_view.xml",
-      "res/layout/choose_host_browser_dialog.xml",
       "res/layout/host_browser_list_item.xml",
       "res/mipmap-anydpi-v26/ic_launcher.xml",
       "res/mipmap-hdpi/ic_launcher.xml",

@@ -49,7 +49,17 @@ are followed.
 
 ## Test expectations and Baselines
 
-To be updated
+The
+[MobileTestExpectations](../../third_party/blink/web_tests/MobileTestExpectations) file contains the list of all known Chrome Android
+specific test failures, and it inherits or overrides test expectations from the default [TestExpectations](../../third_party/blink/web_tests/TestExpectations) file.
+
+Chrome Android specific baselines reside at `third_party/blink/web_tests/platform/android`, and
+falls back to `third_party/blink/web_tests/platform/linux`. To update baselines for Chrome Androids,
+you should trigger `android-chrome-13-x64-wpt-android-specific` and run [rebaseline tool](./web_test_expectations.md#How-to-rebaseline) after the results are ready.
+
+## Test List
+
+The builder `android-webview-13-x64-wpt-android-specific` runs tests specified by the [android.filter](../../third_party/blink/web_tests/TestLists/android.filter) file, which tests Android specific behaviors. Developers can add additional tests to the list when necessary.
 
 Please [file bugs and feature requests](https://crbug.com/new) against
 [`Blink>Infra` with the `wptrunner`

@@ -96,10 +96,6 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 // potentially show the survey for ignoring a download bubble warning.
 extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
 
-// Controls whether Standard Safe Browsing users are permitted to provide
-// passwords for local decryption on encrypted archives.
-BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
-
 // Controls whether Safe Browsing Extended Reporting (SBER) is deprecated.
 // When this feature flag is enabled:
 // - the Extended Reporting toggle will not be displayed on
@@ -159,15 +155,6 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 // Extension Telemetry service reports.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
 
-// Enables the new text, layout, links, and icons on both the privacy guide
-// and on the security settings page for the enhanced protection security
-// option.
-BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsEnhancedProtection);
-
-// Enables the new text and layout on both the privacy guide and on the
-// security settings page for the standard protection security option.
-BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection);
-
 // Prompt users to re-enable Android app verification on APK download.
 BASE_DECLARE_FEATURE(kGooglePlayProtectPrompt);
 
@@ -188,6 +175,16 @@ extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
 // Enable faster OHTTP key rotation for hash-prefix real-time lookups.
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
 
+// Send sample hash-prefix real-time lookups for real-time lookups to catch
+// "false positives" where real-time lookup says safe but hash-prefix lookup
+// says unsafe.
+// Check the design doc (go/sample-esb-ping-send-hprt) for further
+// details.
+BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsSamplePing);
+// Determines the percentage of ESB lookups that we sample to send a background
+// HPRT lookup. The value should be between 0 and 100.
+extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
+
 // Show referrer URL on download item on chrome://downloads page. This will
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
@@ -203,24 +200,13 @@ BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);
 // kMmapSafeBrowsingDatabase is enabled.
 extern const base::FeatureParam<bool> kMmapSafeBrowsingDatabaseAsync;
 
-// Enables unpacking of nested archives during downloads.
-BASE_DECLARE_FEATURE(kNestedArchives);
-
 // Controls whether custom messages from admin are shown for warn and block
 // enterprise interstitials.
 BASE_DECLARE_FEATURE(kRealTimeUrlFilteringCustomMessage);
 
-// Enables modifying key parameters on the navigation event collection used to
-// populate referrer chains.
-BASE_DECLARE_FEATURE(kReferrerChainParameters);
-
-// The maximum age entry we keep in memory. Older entries are cleaned up. This
-// is independent of the maximum age entry we send to Safe Browsing, which is
-// fixed for privacy reasons.
-extern const base::FeatureParam<int> kReferrerChainEventMaximumAgeSeconds;
-
-// The maximum number of navigation events we keep in memory.
-extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
+// Enables a ripple effect that is triggered when a user enables the enhanced
+// protection radio button on the chrome://settings/security page.
+BASE_DECLARE_FEATURE(kRippleForEnhancedProtection);
 
 // Controls whether asynchronous real-time check is enabled. When enabled, the
 // navigation can be committed before real-time Safe Browsing check is
@@ -233,9 +219,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCallNewGmsApiOnStartup);
 
 // Use new GMSCore API for hash database check on browser URLs.
 BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
-
-// Use new GMSCore API for subresource filter checks.
-BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForSubresourceFilterCheck);
 #endif
 
 // Run Safe Browsing code on UI thread.
@@ -250,21 +233,11 @@ BASE_DECLARE_FEATURE(kSafeBrowsingRemoveCookiesInAuthRequests);
 // Automatically revoke abusive notifications in Safety Hub.
 BASE_DECLARE_FEATURE(kSafetyHubAbusiveNotificationRevocation);
 
-// Controls whether the new 7z evaluation is performed on downloads.
-BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
-
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between
 // default and control groups of the experiment.
 BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
-
-// Controls whether the download inspection timeout is applied over the entire
-// request, or just the network communication.
-BASE_DECLARE_FEATURE(kStrictDownloadTimeout);
-
-// Specifies the duration of the timeout, in milliseconds.
-extern const base::FeatureParam<int> kStrictDownloadTimeoutMilliseconds;
 
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);

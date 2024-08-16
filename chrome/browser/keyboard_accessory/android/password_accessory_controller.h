@@ -12,6 +12,8 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "content/public/browser/web_contents.h"
 
+class AffiliatedPlusProfilesProvider;
+
 // Interface for password-specific keyboard accessory controller between the
 // ManualFillingController and PasswordManagerClient.
 //
@@ -36,6 +38,11 @@ class PasswordAccessoryController : public AccessoryController {
       content::WebContents* web_contents,
       password_manager::CredentialCache* credential_cache);
 
+  // Adds a plus profiles provider to this controller that is used to generate
+  // the plus profiles section for the frontend.
+  virtual void RegisterPlusProfilesProvider(
+      base::WeakPtr<AffiliatedPlusProfilesProvider> provider) = 0;
+
   // Returns a reference to the unique PasswordAccessoryController associated
   // with |web_contents|. Returns null if no such instance exists.
   static PasswordAccessoryController* GetIfExisting(
@@ -48,8 +55,7 @@ class PasswordAccessoryController : public AccessoryController {
   // Makes sure, that all shown suggestions are appropriate for the currently
   // focused field and for fields that lost the focus.
   virtual void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type,
-      bool is_manual_generation_available) = 0;
+      autofill::mojom::FocusedFieldType focused_field_type) = 0;
 
   // Signals that generation was requested from the accessory. |type|
   // indicates whether generation was requested via the manual fallback or from

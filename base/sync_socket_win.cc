@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/sync_socket.h"
 
 #include <limits.h>
@@ -76,8 +71,7 @@ bool CreatePairImpl(ScopedHandle* socket_a,
   } while (!handle_a.is_valid() && (GetLastError() == ERROR_PIPE_BUSY));
 
   if (!handle_a.is_valid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // The SECURITY_ANONYMOUS flag means that the server side (handle_a) cannot
@@ -248,18 +242,7 @@ size_t SyncSocket::Send(span<const uint8_t> data) {
   return count;
 }
 
-size_t SyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
-}
-
 size_t SyncSocket::ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
-size_t SyncSocket::ReceiveWithTimeout(void* buffer,
-                                      size_t length,
-                                      TimeDelta timeout) {
   NOTIMPLEMENTED();
   return 0;
 }
@@ -283,10 +266,6 @@ size_t SyncSocket::Receive(span<uint8_t> buffer) {
     count += len;
   }
   return count;
-}
-
-size_t SyncSocket::Receive(void* buffer, size_t length) {
-  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
 }
 
 size_t SyncSocket::Peek() {
@@ -325,18 +304,10 @@ size_t CancelableSyncSocket::Send(span<const uint8_t> data) {
                                  &shutdown_event_, this, kWaitTimeOutInMs);
 }
 
-size_t CancelableSyncSocket::Send(const void* buffer, size_t length) {
-  return Send(make_span(static_cast<const uint8_t*>(buffer), length));
-}
-
 size_t CancelableSyncSocket::Receive(span<uint8_t> buffer) {
   return CancelableFileOperation(&::ReadFile, handle(), buffer,
                                  &file_operation_, &shutdown_event_, this,
                                  INFINITE);
-}
-
-size_t CancelableSyncSocket::Receive(void* buffer, size_t length) {
-  return Receive(make_span(static_cast<uint8_t*>(buffer), length));
 }
 
 size_t CancelableSyncSocket::ReceiveWithTimeout(span<uint8_t> buffer,
@@ -344,13 +315,6 @@ size_t CancelableSyncSocket::ReceiveWithTimeout(span<uint8_t> buffer,
   return CancelableFileOperation(&::ReadFile, handle(), buffer,
                                  &file_operation_, &shutdown_event_, this,
                                  static_cast<DWORD>(timeout.InMilliseconds()));
-}
-
-size_t CancelableSyncSocket::ReceiveWithTimeout(void* buffer,
-                                                size_t length,
-                                                TimeDelta timeout) {
-  return ReceiveWithTimeout(make_span(static_cast<uint8_t*>(buffer), length),
-                            std::move(timeout));
 }
 
 // static

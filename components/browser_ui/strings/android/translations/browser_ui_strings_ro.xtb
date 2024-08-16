@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
+<translation id="3779154269823594982">Schimbă parolele</translation>
 <translation id="3797520601150691162">Nu aplica tema întunecată pentru un anumit site</translation>
 <translation id="3803367742635802571">Este posibil ca site-urile pe care le accesezi să nu mai funcționeze așa cum au fost proiectate</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Permite sunetul pentru un anumit site.</translation>
 <translation id="789180354981963912">Blochează cookie-urile terță parte în modul incognito:</translation>
 <translation id="7940722705963108451">Reamintește-mi</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="FPS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="FPS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="FPS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="7986741934819883144">Selectează o persoană de contact</translation>
 <translation id="7990211076305263060">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi microfonul. Când opțiunea este dezactivată, site-urile nu pot folosi microfonul.</translation>
 <translation id="8007176423574883786">Dezactivată pentru acest dispozitiv</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8541410041357371550">Site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site <ph name="FPS_OWNER" />}few{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site-uri <ph name="FPS_OWNER" />}other{Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> de site-uri <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Acordată (recomandat)</translation>
 <translation id="8609465669617005112">Mutați mai sus</translation>
 <translation id="8617611086246832542">Când opțiunea este activată, apare afișarea pe desktop a site-urilor. Când opțiunea este dezactivată, apare afișarea pe mobil a site-urilor.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="9039697262778250930">Poți fi deconectat(ă) de pe aceste site-uri</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Site-ul este într-un grup care îți poate vedea activitatea. Grupul este definit de <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Ștergi cookie-urile?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Activează permisiunile pentru <ph name="APP_NAME" /> din <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>

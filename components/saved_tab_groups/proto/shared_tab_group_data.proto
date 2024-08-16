@@ -10,7 +10,7 @@ package tab_groups.proto;
 
 import "components/sync/protocol/shared_tab_group_data_specifics.proto";
 
-// Message to store shared tab groups in ModelTypeStore.
+// Message to store shared tab groups in DataTypeStore.
 message SharedTabGroupData {
   // Data from sync, contains either a SavedTabGroup or SavedTabGroupTab
   // (determined by the "entity" oneof field within). Contains only shared tab

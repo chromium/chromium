@@ -114,3 +114,13 @@ def add_to_zip_hermetic(zip_file, zip_path, data=None):
   zipinfo.external_attr = 0o644 << 16
   zipinfo.date_time = (2001, 1, 1, 0, 0, 0)
   zip_file.writestr(zipinfo, data, zipfile.ZIP_STORED)
+
+
+def should_rename_package(package_name, filter_list_string):
+  # If the filter list is empty, all packages should be renamed.
+  if not filter_list_string:
+    return True
+
+  return any(
+      package_name.startswith(pkg_prefix)
+      for pkg_prefix in filter_list_string.split(':'))

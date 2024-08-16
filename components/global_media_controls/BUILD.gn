@@ -36,7 +36,6 @@ component("global_media_controls") {
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
     "//media",
-    "//media/remoting:remoting_constants",
     "//skia",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo",
@@ -119,6 +118,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display:test_support",
     "//ui/events:test_support",
+    "//ui/gfx:test_support",
     "//ui/views:test_support",
   ]
 }

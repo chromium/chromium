@@ -379,11 +379,11 @@ chromium-metrics-reviews@google.com.
 <enum name="LocalUpmActivationError">
   <int value="0"
       label="None (activated / migration scheduled / previously activated)"/>
-  <int value="1" label="Unenrolled from UPM"/>
-  <int value="2" label="Initial UPM migration missing"/>
+  <int value="1" label="(obsolete) Unenrolled from UPM"/>
+  <int value="2" label="(obsolete) Initial UPM migration missing"/>
   <int value="3" label="Login DB file move failed"/>
   <int value="4" label="Outdated GmsCore"/>
-  <int value="5" label="Flag disabled"/>
+  <int value="5" label="(obsolete) Flag disabled"/>
   <int value="6" label="Migration warning unacknowledged"/>
 </enum>
 
@@ -567,6 +567,31 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="Opened automatically / Notifying the user that their password
              store setting changed"/>
+  <int value="21"
+      label="Opened automatically / Notifying the user that their passkey was
+             saved"/>
+  <int value="22"
+      label="Opened automatically / Notifying the user that their passkey was
+             deleted because it was not present on an unknown credential
+             report and that they need to log in to create a new passkey"/>
+  <int value="23"
+      label="Opened manually / Notifying the user that their passkey was
+             deleted because it was not present on an unknown credential
+             report and that they need to log in to create a new passkey"/>
+  <int value="24"
+      label="Opened automatically / Notifying the user that their passkey
+             details have been updated."/>
+  <int value="25"
+      label="Opened manually / Notifying the user that their passkey details
+             have been updated."/>
+  <int value="26"
+      label="Opened automatically / Notifying the user that their passkey was
+             deleted because it was not present on an all accepted
+             credentials report"/>
+  <int value="27"
+      label="Opened manually / Notifying the user that their passkey was
+             deleted because it was not present on an all accepted
+             credentials report"/>
 </enum>
 
 <enum name="PasswordBubbleFollowupType">
@@ -904,13 +929,13 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="PasswordManagerEnableState">
-  <int value="0" label="Credentials Service enabled bu default"/>
+  <int value="0" label="Credentials Service enabled by default"/>
   <int value="1" label="Credentials Service enabled by the user"/>
   <int value="2" label="Credentials Service enabled by extension"/>
   <int value="3" label="Credentials Service enabled by policy"/>
   <int value="4" label="Credentials Service enabled by recommended policy"/>
   <int value="5" label="Credentials Service enabled by other"/>
-  <int value="6" label="Credentials Service disabled by the uer"/>
+  <int value="6" label="Credentials Service disabled by the user"/>
   <int value="7" label="Credentials Service disabled By extension"/>
   <int value="8" label="Credentials Service disabled by policy"/>
   <int value="9" label="Credentials Service disabled by recommended policy"/>
@@ -1614,7 +1639,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="More than two fields in the form"/>
   <int value="7" label="2-field form (username+password)"/>
   <int value="8" label="Password field not found"/>
-  <int value="9" label="Form has child frames (maybe CAPTCHA)"/>
+  <int value="9" label="Form likely has a CAPTCHA"/>
 </enum>
 
 <enum name="TouchToFillPasswordGenerationTriggerOutcome">

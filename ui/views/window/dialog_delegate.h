@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/view_factory.h"
@@ -450,7 +451,7 @@ VIEW_BUILDER_PROPERTY(bool, FocusTraversesOut)
 VIEW_BUILDER_PROPERTY(bool, EnableArrowKeyTraversal)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, AppIcon)
-VIEW_BUILDER_PROPERTY(ui::ModalType, ModalType)
+VIEW_BUILDER_PROPERTY(ui::mojom::ModalType, ModalType)
 VIEW_BUILDER_PROPERTY(bool, OwnedByWidget)
 VIEW_BUILDER_PROPERTY(bool, ShowCloseButton)
 VIEW_BUILDER_PROPERTY(bool, ShowIcon)

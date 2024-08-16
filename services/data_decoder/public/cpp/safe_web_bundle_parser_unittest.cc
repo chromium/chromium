@@ -14,10 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/cbor/values.h"
-#include "components/cbor/writer.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -360,7 +359,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 struct IntegrityBlockInfo {
   uint64_t size_bytes;
   uint32_t num_signatures;
-  std::optional<std::string> web_bundle_id;
+  std::string web_bundle_id;
 };
 
 class SafeSignedWebBundleParserTest
@@ -386,19 +385,11 @@ TEST_P(SafeSignedWebBundleParserTest, ParseSignedWebBundle) {
   ASSERT_EQ(integrity_block->size, ib_info.size_bytes);
   ASSERT_EQ(integrity_block->signature_stack.size(), ib_info.num_signatures);
 
-  if (ib_info.web_bundle_id) {
-    EXPECT_TRUE(integrity_block->attributes);
-    EXPECT_EQ(integrity_block->attributes->web_bundle_id(),
-              *ib_info.web_bundle_id);
+  EXPECT_EQ(integrity_block->attributes.web_bundle_id(), ib_info.web_bundle_id);
 
-    cbor::Value::MapValue attributes;
-    attributes.emplace(web_package::kWebBundleIdAttributeName,
-                       *ib_info.web_bundle_id);
-    EXPECT_EQ(integrity_block->attributes->cbor(),
-              cbor::Writer::Write(cbor::Value(attributes)));
-  } else {
-    EXPECT_FALSE(integrity_block->attributes);
-  }
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          ib_info.web_bundle_id);
 
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
@@ -435,25 +426,29 @@ INSTANTIATE_TEST_SUITE_P(
     /**/,
     SafeSignedWebBundleParserTest,
     testing::Values(
-        std::make_tuple(
-            base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")),
-            IntegrityBlockInfo({.size_bytes = 135u,
-                                .num_signatures = 1u,
-                                .web_bundle_id = std::nullopt}),
-            /*test_suffix=*/"Ed25519_v1"),
         std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
-                            "simple_b2_signed_ecdsa_p256_sha256.swbn")),
-                        IntegrityBlockInfo({.size_bytes = 151u,
-                                            .num_signatures = 1u,
-                                            .web_bundle_id = std::nullopt}),
-                        /*test_suffix=*/"EcdsaP256SHA256_v1"),
+                            "simple_b2_signed_v2_ed25519.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 206u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "4tkrnsmftl4ggvvdkfth3piainqragus"
+                                              "2qbhf7rlz2a3wo3rh4wqaaic"}),
+                        /*test_suffix=*/"Ed25519_v2"),
+        std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
+                            "simple_b2_signed_v2_ecdsa_p256.swbn")),
+                        IntegrityBlockInfo(
+                            {.size_bytes = 224u,
+                             .num_signatures = 1u,
+                             .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hf"
+                                              "dyr7tm3doxqvfmsk5ss6maacai"}),
+                        /*test_suffix=*/"EcdsaP256SHA256_v2"),
         std::make_tuple(
             base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn")),
             IntegrityBlockInfo(
-                {.size_bytes = 344u,
+                {.size_bytes = 343u,
                  .num_signatures = 2u,
-                 .web_bundle_id = "ajzm2oc7gk2s4utk477tmaqyarasnb4oobitgwh2zmqf"
-                                  "zdvdeifvgaacai"}),
+                 .web_bundle_id = "amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqv"
+                                  "fmsk5ss6maacai"}),
             /*test_suffix=*/"Ed25519_and_EcdsaP256SHA256_v2")),
     [](const auto& info) { return std::get<2>(info.param); });
 

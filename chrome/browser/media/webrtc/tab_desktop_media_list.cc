@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <utility>
@@ -12,12 +17,14 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -145,8 +152,16 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
 
   std::vector<Browser*> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile()->GetOriginalProfile() ==
-        profile->GetOriginalProfile()) {
+    // Omit all the IWAs for TabDesktopMediaList as they are already
+    // present in NativeDesktopMediaList.
+    bool is_isolated_web_app = browser->app_controller() &&
+                               browser->app_controller()->IsIsolatedWebApp();
+
+    if ((!base::FeatureList::IsEnabled(
+             features::kRemovalOfIWAsFromTabCapture) ||
+         !is_isolated_web_app) &&
+        browser->profile()->GetOriginalProfile() ==
+            profile->GetOriginalProfile()) {
       browsers.push_back(browser);
     }
   }
@@ -191,7 +206,7 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
                                            main_frame->GetRoutingID()));
 
     // Get tab's last active time stamp.
-    const base::TimeTicks t = contents->GetLastActiveTime();
+    const base::TimeTicks t = contents->GetLastActiveTimeTicks();
     tab_map.insert(
         std::make_pair(t, SourceDescription(media_id, contents->GetTitle())));
 

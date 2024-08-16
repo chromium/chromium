@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
-import android.util.Pair;
 
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -73,14 +73,17 @@ interface TouchToFillPaymentMethodComponent {
     /**
      * Displays a new credit card bottom sheet.
      *
-     * @param cardsWithAcceptabilities A list of pairs of {@link PersonalDataManager.CreditCard} to
-     *     be displayed on the sheet along with a boolean that denotes if the card is acceptable for
-     *     the given merchant. If not acceptable, the card suggestion is grayed out.
+     * @param cards A list of {@link PersonalDataManager.CreditCard} to be displayed on the sheet.
+     * @param suggestions A list of {@link AutofillSuggestion}, each generated from a corresponding
+     *     credit card. There's a one-to-one mapping between each credit card and its associated
+     *     suggestion. It includes a boolean that denotes if the card is acceptable for the given
+     *     merchant. If not acceptable, the card suggestion is grayed out.
      * @param shouldShowScanCreditCard A boolean that conveys whether 'ScanCreditCard' should be
      *     shown.
      */
     void showSheet(
-            List<Pair<PersonalDataManager.CreditCard, Boolean>> cardsWithAcceptabilities,
+            List<PersonalDataManager.CreditCard> cards,
+            List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard);
 
     /** Displays a new IBAN bottom sheet. */

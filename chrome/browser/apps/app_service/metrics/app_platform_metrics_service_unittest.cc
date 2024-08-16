@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/containers/extend.h"
@@ -21,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -248,6 +250,8 @@ class AppPlatformMetricsServiceTest
     if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       feature_list_.InitWithFeatures(
           {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
@@ -836,6 +840,7 @@ class AppPlatformMetricsServiceTest
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
  private:
   std::unique_ptr<TestBrowserWindowAura> browser_window1_;
@@ -2943,6 +2948,8 @@ class AppDiscoveryMetricsTest : public AppPlatformMetricsServiceTest {
     std::vector<base::test::FeatureRef> disabled;
     if (IsLacrosEnabled()) {
       base::Extend(enabled, ash::standalone_browser::GetFeatureRefs());
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       base::Extend(disabled, ash::standalone_browser::GetFeatureRefs());
     }
@@ -3391,6 +3398,8 @@ class AppPlatformMetricsServiceObserverTest
     if (IsLacrosEnabled()) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(), {});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       feature_list_.InitWithFeatures(
           {}, /*disabled_features=*/ash::standalone_browser::GetFeatureRefs());
@@ -3408,6 +3417,7 @@ class AppPlatformMetricsServiceObserverTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   // Mock observer for the `AppPlatformMetricsService` component. Needs to
   // outlive the lifetime of the component for testing purposes.

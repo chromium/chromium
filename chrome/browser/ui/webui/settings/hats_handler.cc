@@ -215,14 +215,6 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
     safe_browsing_setting_current = "no_protection";
   }
 
-  std::string friendlier_safe_browsing_settings_enabled =
-      (base::FeatureList::IsEnabled(
-           safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection) &&
-       base::FeatureList::IsEnabled(
-           safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection))
-          ? "true"
-          : "false";
-
   std::string client_channel =
       std::string(version_info::GetChannelString(chrome::GetChannel()));
 
@@ -232,8 +224,6 @@ SurveyStringData HatsHandler::GetSecurityPageProductSpecificStringData(
       {"Safe Browsing Setting After Trigger", safe_browsing_setting_current},
       {"Client Channel", client_channel},
       {"Time On Page", base::NumberToString(args[2].GetDouble())},
-      {"Friendlier Safe Browsing Settings",
-       friendlier_safe_browsing_settings_enabled},
   };
 }
 

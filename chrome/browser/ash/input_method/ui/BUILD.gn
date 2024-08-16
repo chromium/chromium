@@ -45,6 +45,7 @@ static_library("ui") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//ui/accessibility:ax_base",
     "//ui/base/ime:ime_types",

@@ -105,8 +105,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  bool IsDisplayedAsOverlayPlane() const override;
-  gpu::Mailbox GetOverlayMailbox() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #if BUILDFLAG(IS_ANDROID)
@@ -124,9 +122,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       SkYUVAInfo::PlaneConfig plane_config,
       SkYUVAInfo::Subsampling subsampling) override;
   void SwapBuffersSkipped(const gfx::Rect root_pass_damage_rect) override;
-  void ScheduleOutputSurfaceAsOverlay(
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
-      override;
 
   SkCanvas* BeginPaintRenderPass(const AggregatedRenderPassId& id,
                                  const gfx::Size& surface_size,
@@ -167,7 +162,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   void PreserveChildSurfaceControls() override;
   gpu::SyncToken Flush() override;
-  bool EnsureMinNumberOfBuffers(int n) override;
   gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
@@ -296,8 +290,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   uint64_t sync_fence_release_ = 0;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
-  bool is_displayed_as_overlay_ = false;
-  gpu::Mailbox last_swapped_mailbox_;
 
   gfx::Size size_;
   SharedImageFormat format_;
@@ -355,34 +347,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     raw_ptr<SkCanvas> canvas_ = nullptr;
     // Mailbox for the render pass for the current paint (if present).
     const gpu::Mailbox mailbox_;
-  };
-
-  // Tracks damage across at most `number_of_buffers`. Note this implementation
-  // only assumes buffers are used in a circular order, and does not require a
-  // fixed number of frame buffers to be allocated.
-  class FrameBufferDamageTracker {
-   public:
-    explicit FrameBufferDamageTracker(size_t number_of_buffers);
-    ~FrameBufferDamageTracker();
-
-    void FrameBuffersChanged(const gfx::Size& frame_buffer_size);
-    void SwappedWithDamage(const gfx::Rect& damage);
-    void SkippedSwapWithDamage(const gfx::Rect& damage);
-    gfx::Rect GetCurrentFrameBufferDamage() const;
-
-   private:
-    gfx::Rect ComputeCurrentFrameBufferDamage() const;
-
-    size_t number_of_buffers_;
-    gfx::Size frame_buffer_size_;
-    // This deque should contains the incremental damage of the last N swapped
-    // frames where N is at most `number_of_buffers_`. Each rect represents
-    // from the incremental damage from the previous frame; note if there is no
-    // previous frame (eg first swap after a `Reshape`), the damage should be
-    // the full frame buffer.
-    base::circular_deque<gfx::Rect> damage_between_frames_;
-    // Result of `GetCurrentFramebufferDamage` to optimize consecutive calls.
-    mutable std::optional<gfx::Rect> cached_current_damage_;
   };
 
   // This holds current paint info
@@ -463,19 +427,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // True if _any_ of |gpu_tasks_| need to access the framebuffer.
   bool need_framebuffer_ = false;
 
-  bool use_damage_area_from_skia_output_device_ = false;
   // Damage area of the current buffer. Differ to the last submit buffer.
   std::optional<gfx::Rect> damage_of_current_buffer_;
-
-  // Used when `use_damage_area_from_skia_output_device_` is false and keeps
-  // track of across multiple frame buffers. Can be nullptr.
-  std::optional<FrameBufferDamageTracker> frame_buffer_damage_tracker_;
-
-  // Track if the current buffer content is changed.
-  bool current_buffer_modified_ = false;
-
-  // Last number sent to `SetNumberOfFrameBuffers` on the GPU.
-  int cached_number_of_buffers_ = 0;
 
   // For accessing tile shared image backings from compositor thread.
   std::unique_ptr<gpu::SharedImageRepresentationFactory>

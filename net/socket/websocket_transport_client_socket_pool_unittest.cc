@@ -931,7 +931,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, Suspend) {
       MockTransportClientSocketFactory::Type::kFailing,
       std::vector{IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80)},
       ERR_NETWORK_IO_SUSPENDED);
-  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
+  client_socket_factory_.SetRules(base::span_from_ref(rule));
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -962,7 +962,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
       MockTransportClientSocketFactory::Type::kPendingFailing,
       std::vector{IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80)},
       ERR_NETWORK_IO_SUSPENDED);
-  client_socket_factory_.SetRules(base::make_span(&rule, 1u));
+  client_socket_factory_.SetRules(base::span_from_ref(rule));
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;

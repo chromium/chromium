@@ -79,8 +79,7 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   base::WeakPtrFactory<KioskVision> weak_ptr_factory_{this};
 };
 
-inline constexpr std::string_view kKioskVisionDlcId =
-    "cros-camera-kiosk-vision-dlc";
+inline constexpr char kKioskVisionDlcId[] = "cros-camera-kiosk-vision-dlc";
 
 // Registers prefs used in Kiosk Vision.
 COMPONENT_EXPORT(KIOSK_VISION)

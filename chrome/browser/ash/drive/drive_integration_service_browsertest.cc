@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 
+#include <memory>
+#include <optional>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -16,14 +18,17 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chromeos/ash/components/drivefs/drivefs_search_query.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
@@ -39,13 +44,21 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive {
 
 using ::base::test::RunClosure;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
-using testing::_;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Field;
+using ::testing::FieldsAre;
+using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::Property;
 
 using DriveIntegrationServiceBrowserTest =
     DriveIntegrationServiceBrowserTestBase;
@@ -133,13 +146,69 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
       drivefs::mojom::QueryParameters::QuerySource::kLocalOnly,
       base::BindLambdaForTesting(
           [=](FileError error,
-              std::vector<drivefs::mojom::QueryItemPtr> items) {
-            EXPECT_EQ(2u, items.size());
-            EXPECT_EQ("baz", items[0]->path.BaseName().value());
-            EXPECT_EQ("bar", items[1]->path.BaseName().value());
+              std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+            EXPECT_THAT(
+                items,
+                Optional(ElementsAre(
+                    Pointee(Field(
+                        "path", &drivefs::mojom::QueryItem::path,
+                        Property(
+                            "BaseName", &base::FilePath::BaseName,
+                            Property("value", &base::FilePath::value, "baz")))),
+                    Pointee(
+                        Field("path", &drivefs::mojom::QueryItem::path,
+                              Property("BaseName", &base::FilePath::BaseName,
+                                       Property("value", &base::FilePath::value,
+                                                "bar")))))));
             quit_closure.Run();
           }));
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
+                       CreateSearchQueryByFileNameTest) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  drive::DriveIntegrationService* drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          browser()->profile());
+
+  base::FilePath mount_path = drive_service->GetMountPointPath();
+  ASSERT_TRUE(base::WriteFile(mount_path.Append("bar"), ""));
+  ASSERT_TRUE(base::WriteFile(mount_path.Append("baz"), ""));
+  base::Time base_time = base::Time::Now() - base::Seconds(10);
+  base::Time earlier_time = base_time - base::Seconds(10);
+  ASSERT_TRUE(base::TouchFile(mount_path.Append("bar"), base_time, base_time));
+  ASSERT_TRUE(
+      base::TouchFile(mount_path.Append("baz"), earlier_time, earlier_time));
+
+  std::unique_ptr<drivefs::DriveFsSearchQuery> query =
+      drive_service->CreateSearchQueryByFileName(
+          "ba", 10, drivefs::mojom::QueryParameters::SortField::kLastViewedByMe,
+          drivefs::mojom::QueryParameters::SortDirection::kAscending,
+          drivefs::mojom::QueryParameters::QuerySource::kLocalOnly);
+  ASSERT_TRUE(query);
+
+  base::test::TestFuture<
+      FileError, std::optional<std::vector<drivefs::mojom::QueryItemPtr>>>
+      future;
+  query->GetNextPage(future.GetCallback());
+
+  EXPECT_THAT(
+      future.Take(),
+      FieldsAre(
+          FILE_ERROR_OK,
+          Optional(ElementsAre(
+              Pointee(Field(
+                  "path", &drivefs::mojom::QueryItem::path,
+                  Property("BaseName", &base::FilePath::BaseName,
+                           Property("value", &base::FilePath::value, "baz")))),
+              Pointee(Field("path", &drivefs::mojom::QueryItem::path,
+                            Property("BaseName", &base::FilePath::BaseName,
+                                     Property("value", &base::FilePath::value,
+                                              "bar"))))))));
+  // TODO: b/277018122 - Fix repeated `GetNextPage` calls in
+  // `drivefs::FakeDriveFs` and call `GetNextPage` again here with a smaller
+  // page size.
 }
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetThumbnailTest) {
@@ -748,6 +817,8 @@ class DriveIntegrationServiceBrowserTestLacros
   DriveIntegrationServiceBrowserTestLacros() {
     scoped_feature_list_.InitWithFeatures(
         ash::standalone_browser::GetFeatureRefs(), {});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   // browser() does not exist in Lacros, so get the profile from ProfileManager.
@@ -755,6 +826,7 @@ class DriveIntegrationServiceBrowserTestLacros
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 class MockDriveFsNativeMessageHostBridge

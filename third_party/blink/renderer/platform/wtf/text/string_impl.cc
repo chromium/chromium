@@ -253,8 +253,7 @@ StringImpl* StringImpl::CreateStatic(const char* string, wtf_size_t length) {
   DCHECK(string);
   DCHECK(length);
 
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
-      reinterpret_cast<const LChar*>(string), length);
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(string, length);
 
   StaticStringsTable::const_iterator it = StaticStrings().find(hash);
   if (it != StaticStrings().end()) {
@@ -940,8 +939,9 @@ ALWAYS_INLINE static wtf_size_t FindInternal(
 }
 
 wtf_size_t StringImpl::Find(const StringView& match_string, wtf_size_t index) {
-  if (UNLIKELY(match_string.IsNull()))
+  if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
+  }
 
   wtf_size_t match_length = match_string.length();
 
@@ -952,8 +952,9 @@ wtf_size_t StringImpl::Find(const StringView& match_string, wtf_size_t index) {
     return WTF::Find(Characters16(), length(), match_string[0], index);
   }
 
-  if (UNLIKELY(!match_length))
+  if (!match_length) [[unlikely]] {
     return std::min(index, length());
+  }
 
   // Check index & matchLength are in range.
   if (index > length())
@@ -1000,8 +1001,9 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
 
 wtf_size_t StringImpl::FindIgnoringCase(const StringView& match_string,
                                         wtf_size_t index) {
-  if (UNLIKELY(match_string.IsNull()))
+  if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
+  }
 
   wtf_size_t match_length = match_string.length();
   if (!match_length)
@@ -1056,8 +1058,9 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringASCIICaseInternal(
 
 wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
                                              wtf_size_t index) {
-  if (UNLIKELY(match_string.IsNull()))
+  if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
+  }
 
   wtf_size_t match_length = match_string.length();
   if (!match_length)
@@ -1129,8 +1132,9 @@ ALWAYS_INLINE static wtf_size_t ReverseFindInternal(
 
 wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
                                    wtf_size_t index) {
-  if (UNLIKELY(match_string.IsNull()))
+  if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
+  }
 
   wtf_size_t match_length = match_string.length();
   wtf_size_t our_length = length();

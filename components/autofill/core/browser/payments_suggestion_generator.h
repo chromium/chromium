@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+#include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -38,6 +39,9 @@ struct CreditCardSuggestionSummary {
   bool with_cvc = false;
   // Contains card metadata related information used for metrics logging.
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
+  // Contains information regarding the ranking of suggestions and is used for
+  // metrics logging.
+  autofill_metrics::SuggestionRankingContext ranking_context;
 };
 
 // Generates suggestions for all available credit cards based on the
@@ -67,6 +71,12 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
+
+// Generates touch-to-fill suggestions for all available credit cards to be
+// used in the bottom sheet.
+std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
+    base::span<const CreditCard> credit_cards,
+    const AutofillClient& client);
 
 // Generates a footer suggestion "Manage payment methods..." menu item which
 // will redirect to Chrome payment settings page. `with_gpay_logo` is used to
@@ -107,7 +117,9 @@ std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     FieldType trigger_field_type,
     bool suppress_disused_cards,
     bool prefix_match,
-    bool include_virtual_cards);
+    bool require_non_empty_value_on_trigger_field,
+    bool include_virtual_cards,
+    bool use_legacy_algorithm = false);
 
 // Exposes `CreateCreditCardSuggestion` in tests.
 Suggestion CreateCreditCardSuggestionForTest(

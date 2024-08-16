@@ -17,6 +17,8 @@ message CategoryLabel {
   // The short label name of this category in natural language. This could
   // be empty.
   optional string category_short_label = 2;
+  // When true, this category can be used for clustering.
+  optional bool should_trigger_clustering = 3;
 }
 
 message ProductCategory {

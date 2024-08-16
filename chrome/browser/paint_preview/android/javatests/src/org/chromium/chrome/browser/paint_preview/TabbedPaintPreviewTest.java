@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
@@ -192,7 +193,10 @@ public class TabbedPaintPreviewTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
-                                .closeTab(newTab));
+                                .closeTabs(
+                                        TabClosureParams.closeTab(newTab)
+                                                .allowUndo(false)
+                                                .build()));
         assertToolbarPersistence(true, visibilityDelegate);
     }
 
@@ -238,7 +242,10 @@ public class TabbedPaintPreviewTest {
                                 .getActivity()
                                 .getTabModelSelector()
                                 .getCurrentModel()
-                                .closeTab(newTab));
+                                .closeTabs(
+                                        TabClosureParams.closeTab(newTab)
+                                                .allowUndo(false)
+                                                .build()));
         assertProgressbarUpdatePreventionCallback(true, preventionCallback);
 
         // Remove paint preview.

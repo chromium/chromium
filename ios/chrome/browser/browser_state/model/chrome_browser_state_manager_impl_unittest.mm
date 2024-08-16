@@ -7,8 +7,11 @@
 #import "base/containers/contains.h"
 #import "base/scoped_observation.h"
 #import "base/test/test_file_util.h"
+#import "base/threading/thread_restrictions.h"
+#import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/browser_state/model/constants.h"
 #import "ios/chrome/browser/browser_state/model/ios_chrome_io_thread.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager_observer.h"
@@ -77,14 +80,19 @@ class ScopedTestChromeBrowserStateManagerObserver final
   bool on_chrome_browser_state_loaded_called_ = false;
 };
 
+// Returns a callback taking a single parameter and storing it in `output`.
+// The `output` must outlive the returned callback as it is captured by copy.
+template <typename T>
+base::OnceCallback<void(T)> CaptureParam(T* output) {
+  return base::BindOnce([](T* output, T value) { *output = value; }, output);
+}
+
 }  // namespace
 
 class ChromeBrowserStateManagerImplTest : public PlatformTest {
  public:
   ChromeBrowserStateManagerImplTest()
-      : web_task_environment_(
-            web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED),
-        browser_state_manager_(GetApplicationContext()->GetLocalState(),
+      : browser_state_manager_(GetApplicationContext()->GetLocalState(),
                                base::CreateUniqueTempDirectoryScopedToTest()) {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
@@ -98,6 +106,10 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
     // Register the objects with the TestingApplicationContext.
     application_context->SetIOSChromeIOThread(chrome_io_.get());
     application_context->SetChromeBrowserStateManager(&browser_state_manager_);
+
+    // Initialize the prediction model store (required by some KeyedServices).
+    optimization_guide::IOSChromePredictionModelStore::GetInstance()
+        ->Initialize(base::CreateUniqueTempDirectoryScopedToTest());
 
     // Start the IO thread.
     web_task_environment_.StartIOThread();
@@ -122,20 +134,14 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
+    // Cleanup the prediction model store (since it is a singleton).
+    optimization_guide::IOSChromePredictionModelStore::GetInstance()
+        ->ResetForTesting();
+
     application_context->GetBrowserPolicyConnector()->Shutdown();
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
     application_context->SetChromeBrowserStateManager(nullptr);
     application_context->SetIOSChromeIOThread(nullptr);
-
-    // Creating a ChromeBrowserState with ChromeBrowserStateManagerImpl will
-    // create and initialize some KeyedService. Some of those services start
-    // background task that hops between IO and UI threads. Post a task on
-    // the IO thread and wait for the reply on UI thread to give time for
-    // the services to complete their initialisation on IO thread.
-    base::RunLoop run_loop;
-    web::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   ChromeBrowserStateManagerImpl& browser_state_manager() {
@@ -163,8 +169,13 @@ class ChromeBrowserStateManagerImplTest : public PlatformTest {
  private:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<IOSChromeIOThread> chrome_io_;
-  web::WebTaskEnvironment web_task_environment_;
+  web::WebTaskEnvironment web_task_environment_{
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED};
   ChromeBrowserStateManagerImpl browser_state_manager_;
+
+  // Some KeyedService requires a VariationsIdsProvider to be installed.
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests that GetLoadedBrowserStates() returns an empty list before the
@@ -306,4 +317,332 @@ TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStates_IncoherentPrefs_3) {
   EXPECT_EQ(
       GetLoadedBrowserStateNames(),
       (std::set<std::string>{kProfileName2, kIOSChromeInitialBrowserState}));
+}
+
+// Tests that LoadBrowserStateAsync(...) correctly loads a known BrowserState,
+// and that the load is not blocking the main thread.
+TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync) {
+  // Pretends that a BrowserState named `kProfileName1` exists. Required as
+  // LoadBrowserStateAsync(...) won't create new BrowserStates.
+  browser_state_manager().GetBrowserStateInfoCache()->AddBrowserState(
+      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+
+  base::RunLoop run_loop;
+  ChromeBrowserState* created_browser_state = nullptr;
+  ChromeBrowserState* loaded_browser_state = nullptr;
+
+  // Load the BrowserState asynchronously while disallowing blocking on the
+  // current sequence (to ensure that the method is really asynchronous and
+  // does not block the sequence).
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    const bool success = browser_state_manager().LoadBrowserStateAsync(
+        kProfileName1,
+        CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+        CaptureParam(&created_browser_state));
+
+    ASSERT_TRUE(success);
+  }
+
+  // The ChromeBrowserState instance should have been created but not yet
+  // fully initialized (as the initialisation is asynchronous).
+  EXPECT_TRUE(created_browser_state);
+  EXPECT_FALSE(loaded_browser_state);
+
+  run_loop.Run();
+
+  // The BrowserState should have been successfully loaded and initialized.
+  EXPECT_TRUE(created_browser_state);
+  EXPECT_TRUE(loaded_browser_state);
+
+  // The two callbacks were invoked with the same object.
+  EXPECT_EQ(created_browser_state, loaded_browser_state);
+}
+
+// Tests that calls LoadBrowserStateAsync(...) on a loaded BrowserState return
+// the BrowserState immediately and still don't block the main thread.
+TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Reload) {
+  // Pretends that a BrowserState named `kProfileName1` exists. Required as
+  // LoadBrowserStateAsync(...) won't create new BrowserStates.
+  browser_state_manager().GetBrowserStateInfoCache()->AddBrowserState(
+      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+
+  // Load the BrowserState a first time.
+  {
+    base::RunLoop run_loop;
+    ChromeBrowserState* created_browser_state = nullptr;
+    ChromeBrowserState* loaded_browser_state = nullptr;
+
+    // Load the BrowserState asynchronously while disallowing blocking on the
+    // current sequence (to ensure that the method is really asynchronous and
+    // does not block the sequence).
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      const bool success = browser_state_manager().LoadBrowserStateAsync(
+          kProfileName1,
+          CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+          CaptureParam(&created_browser_state));
+
+      ASSERT_TRUE(success);
+    }
+
+    // The ChromeBrowserState instance should have been created but not yet
+    // fully initialized (as the initialisation is asynchronous).
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_FALSE(loaded_browser_state);
+
+    run_loop.Run();
+
+    // The BrowserState should have been successfully loaded and initialized.
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_TRUE(loaded_browser_state);
+
+    // The two callbacks were invoked with the same object.
+    EXPECT_EQ(created_browser_state, loaded_browser_state);
+  }
+
+  // Load the BrowserState a second time. Since it is already loaded, the
+  // callback should be called synchronously and successfully.
+  {
+    base::RunLoop run_loop;
+    ChromeBrowserState* created_browser_state = nullptr;
+    ChromeBrowserState* loaded_browser_state = nullptr;
+
+    // Load the BrowserState asynchronously while disallowing blocking on the
+    // current sequence (to ensure that the method is really asynchronous and
+    // does not block the sequence).
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      const bool success = browser_state_manager().LoadBrowserStateAsync(
+          kProfileName1,
+          CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+          CaptureParam(&created_browser_state));
+
+      ASSERT_TRUE(success);
+    }
+
+    // Since the BrowserState has already been loaded, both callback should
+    // be invoked synchronously.
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_TRUE(loaded_browser_state);
+
+    // The two callbacks were invoked with the same object.
+    EXPECT_EQ(created_browser_state, loaded_browser_state);
+
+    run_loop.Run();
+  }
+}
+
+// Tests that LoadBrowserStateAsync(...) fails to load an unknown BrowserState.
+TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserStateAsync_Missing) {
+  // Ensures that no BrowserState named `kProfileName1` exists. This will
+  // cause LoadBrowserStateAsync(...) to fail since it does not create new
+  // BrowserStates.
+  ASSERT_EQ(browser_state_manager()
+                .GetBrowserStateInfoCache()
+                ->GetIndexOfBrowserStateWithName(kProfileName1),
+            std::string::npos);
+
+  base::RunLoop run_loop;
+  ChromeBrowserState* created_browser_state = nullptr;
+  ChromeBrowserState* loaded_browser_state = nullptr;
+
+  // Load the BrowserState asynchronously while disallowing blocking on the
+  // current sequence (to ensure that the method is really asynchronous and
+  // does not block the sequence).
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    const bool success = browser_state_manager().LoadBrowserStateAsync(
+        kProfileName1,
+        CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+        CaptureParam(&created_browser_state));
+
+    ASSERT_FALSE(success);
+  }
+
+  run_loop.Run();
+
+  // The BrowserState was not loaded nor created.
+  EXPECT_FALSE(created_browser_state);
+  EXPECT_FALSE(loaded_browser_state);
+}
+
+// Tests that CreatesBrowserStateAsync(...) creates and load successfully a
+// new BrowserState.
+TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync) {
+  // Ensures that no BrowserState named `kProfileName1` exists. This will
+  // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
+  ASSERT_EQ(browser_state_manager()
+                .GetBrowserStateInfoCache()
+                ->GetIndexOfBrowserStateWithName(kProfileName1),
+            std::string::npos);
+
+  base::RunLoop run_loop;
+  ChromeBrowserState* created_browser_state = nullptr;
+  ChromeBrowserState* loaded_browser_state = nullptr;
+
+  // Load the BrowserState asynchronously while disallowing blocking on the
+  // current sequence (to ensure that the method is really asynchronous and
+  // does not block the sequence).
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    const bool success = browser_state_manager().CreateBrowserStateAsync(
+        kProfileName1,
+        CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+        CaptureParam(&created_browser_state));
+
+    ASSERT_TRUE(success);
+  }
+
+  // The ChromeBrowserState instance should have been created but not yet
+  // fully initialized (as the initialisation is asynchronous).
+  EXPECT_TRUE(created_browser_state);
+  EXPECT_FALSE(loaded_browser_state);
+
+  run_loop.Run();
+
+  // The BrowserState should have been successfully loaded and initialized.
+  EXPECT_TRUE(created_browser_state);
+  EXPECT_TRUE(loaded_browser_state);
+
+  // The two callbacks were invoked with the same object.
+  EXPECT_EQ(created_browser_state, loaded_browser_state);
+}
+
+// Tests that calling CreatesBrowserStateAsync(...) a second time returns
+// the BrowserState that has already been laoded.
+TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserStateAsync_Reload) {
+  // Ensures that no BrowserState named `kProfileName1` exists. This will
+  // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
+  ASSERT_EQ(browser_state_manager()
+                .GetBrowserStateInfoCache()
+                ->GetIndexOfBrowserStateWithName(kProfileName1),
+            std::string::npos);
+
+  // Load the BrowserState a first time.
+  {
+    base::RunLoop run_loop;
+    ChromeBrowserState* created_browser_state = nullptr;
+    ChromeBrowserState* loaded_browser_state = nullptr;
+
+    // Load the BrowserState asynchronously while disallowing blocking on the
+    // current sequence (to ensure that the method is really asynchronous and
+    // does not block the sequence).
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      const bool success = browser_state_manager().CreateBrowserStateAsync(
+          kProfileName1,
+          CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+          CaptureParam(&created_browser_state));
+
+      ASSERT_TRUE(success);
+    }
+
+    // The ChromeBrowserState instance should have been created but not yet
+    // fully initialized (as the initialisation is asynchronous).
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_FALSE(loaded_browser_state);
+
+    run_loop.Run();
+
+    // The BrowserState should have been successfully loaded and initialized.
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_TRUE(loaded_browser_state);
+
+    // The two callbacks were invoked with the same object.
+    EXPECT_EQ(created_browser_state, loaded_browser_state);
+  }
+
+  // Load the BrowserState a second time. Since it is already loaded, the
+  // callback should be called synchronously and successfully.
+  {
+    base::RunLoop run_loop;
+    ChromeBrowserState* created_browser_state = nullptr;
+    ChromeBrowserState* loaded_browser_state = nullptr;
+
+    // Load the BrowserState asynchronously while disallowing blocking on the
+    // current sequence (to ensure that the method is really asynchronous and
+    // does not block the sequence).
+    {
+      base::ScopedDisallowBlocking disallow_blocking;
+      const bool success = browser_state_manager().CreateBrowserStateAsync(
+          kProfileName1,
+          CaptureParam(&loaded_browser_state).Then(run_loop.QuitClosure()),
+          CaptureParam(&created_browser_state));
+
+      ASSERT_TRUE(success);
+    }
+
+    // Since the BrowserState has already been loaded, both callback should
+    // be invoked synchronously.
+    EXPECT_TRUE(created_browser_state);
+    EXPECT_TRUE(loaded_browser_state);
+
+    // The two callbacks were invoked with the same object.
+    EXPECT_EQ(created_browser_state, loaded_browser_state);
+
+    run_loop.Run();
+  }
+}
+
+// Tests that LoadBrowserState(...) correctly loads a known BrowserState in
+// a synchronous fashion (i.e. blocks the main thread).
+TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState) {
+  // Pretends that a BrowserState named `kProfileName1` exists. Required as
+  // LoadBrowserState(...) won't create new BrowserStates.
+  browser_state_manager().GetBrowserStateInfoCache()->AddBrowserState(
+      kProfileName1, /*gaia_id=*/std::string(), /*user_name=*/std::string());
+
+  // Load the BrowserState synchronously.
+  ChromeBrowserState* browser_state =
+      browser_state_manager().LoadBrowserState(kProfileName1);
+
+  // The BrowserState should have been successfully loaded and initialized.
+  EXPECT_TRUE(browser_state);
+
+  // Calling LoadBrowserState(...) a second time should return the same
+  // object.
+  EXPECT_EQ(browser_state,
+            browser_state_manager().LoadBrowserState(kProfileName1));
+}
+
+// Tests that LoadBrowserState(...) fails to load an unknown BrowserState.
+TEST_F(ChromeBrowserStateManagerImplTest, LoadBrowserState_Missing) {
+  // Ensures that no BrowserState named `kProfileName1` exists. This will
+  // cause LoadBrowserState(...) to fail since it does not create new
+  // BrowserStates.
+  ASSERT_EQ(browser_state_manager()
+                .GetBrowserStateInfoCache()
+                ->GetIndexOfBrowserStateWithName(kProfileName1),
+            std::string::npos);
+
+  // Load the BrowserState synchronously.
+  ChromeBrowserState* browser_state =
+      browser_state_manager().LoadBrowserState(kProfileName1);
+
+  // The BrowserState was not loaded nor created.
+  EXPECT_FALSE(browser_state);
+}
+
+// Tests that CreatesBrowserState(...) creates and load successfully a new
+// BrowserState in a synchronous fashion (i.e. blocks the main thread).
+TEST_F(ChromeBrowserStateManagerImplTest, CreateBrowserState) {
+  // Ensures that no BrowserState named `kProfileName1` exists. This will
+  // cause CreateBrowserStateAsync(...) to create a new ChromeBrowserSatet.
+  ASSERT_EQ(browser_state_manager()
+                .GetBrowserStateInfoCache()
+                ->GetIndexOfBrowserStateWithName(kProfileName1),
+            std::string::npos);
+
+  // Create the BrowserState synchronously.
+  ChromeBrowserState* browser_state =
+      browser_state_manager().CreateBrowserState(kProfileName1);
+
+  // The BrowserState should have been successfully loaded and initialized.
+  EXPECT_TRUE(browser_state);
+
+  // Calling CreateBrowserState(...) a second time should return the same
+  // object.
+  EXPECT_EQ(browser_state,
+            browser_state_manager().CreateBrowserState(kProfileName1));
 }

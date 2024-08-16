@@ -39,8 +39,7 @@ GpuServiceWebView* GpuServiceWebView::CreateGpuServiceWebView() {
   // main thread, so it should be thread safe.
   auto shared_image_manager = std::make_unique<gpu::SharedImageManager>(
       true /* is_thread_safe */, true /* display_context_on_another_thread */);
-  auto scheduler = std::make_unique<gpu::Scheduler>(sync_point_manager.get(),
-                                                    gpu_preferences);
+  auto scheduler = std::make_unique<gpu::Scheduler>(sync_point_manager.get());
   return new GpuServiceWebView(
       std::move(sync_point_manager), std::move(shared_image_manager),
       std::move(scheduler), gpu_info, gpu_preferences, gpu_feature_info);

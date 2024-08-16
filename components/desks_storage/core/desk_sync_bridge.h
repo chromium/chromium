@@ -20,12 +20,12 @@
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 
 namespace syncer {
-class ModelTypeChangeProcessor;
+class DataTypeLocalChangeProcessor;
 }  // namespace syncer
 
 namespace ash {
@@ -36,17 +36,17 @@ enum class DeskTemplateType;
 namespace desks_storage {
 
 // A Sync-backed persistence layer for Workspace Desk.
-class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
+class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
  public:
   DeskSyncBridge(
-      std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-      syncer::OnceModelTypeStoreFactory create_store_callback,
+      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+      syncer::OnceDataTypeStoreFactory create_store_callback,
       const AccountId& account_id);
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
   ~DeskSyncBridge() override;
 
-  // syncer::ModelTypeSyncBridge overrides.
+  // syncer::DataTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -80,7 +80,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   bool IsReady() const override;
   // Whether this sync bridge is syncing local data to sync. This sync bridge
   // still allows user to save desk templates locally when users disable syncing
-  // for Workspace Desk model type.
+  // for Workspace Desk data type.
   bool IsSyncing() const override;
 
   ash::DeskTemplate* FindOtherEntryWithName(
@@ -117,7 +117,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   // Methods used as callbacks given to DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
-                      std::unique_ptr<syncer::ModelTypeStore> store);
+                      std::unique_ptr<syncer::DataTypeStore> store);
   void OnReadAllData(std::unique_ptr<DeskEntries> initial_entries,
                      const std::optional<syncer::ModelError>& error);
   void OnReadAllMetadata(const std::optional<syncer::ModelError>& error,
@@ -125,7 +125,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void OnCommit(const std::optional<syncer::ModelError>& error);
 
   // Persists changes in sync store.
-  void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
+  void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
   // Uploads data that only exists locally to Sync during MergeFullSyncData().
   void UploadLocalOnlyData(syncer::MetadataChangeList* metadata_change_list,
@@ -143,7 +143,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
 
   // In charge of actually persisting changes to disk, or loading previous
   // data.
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
 
   // Account ID of the user this class will sync data for.
   const AccountId account_id_;

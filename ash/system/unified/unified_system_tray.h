@@ -165,7 +165,7 @@ class ASH_EXPORT UnifiedSystemTray
 
   // TrayBackgroundView:
   void ShowBubble() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   std::u16string GetAccessibleNameForBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;

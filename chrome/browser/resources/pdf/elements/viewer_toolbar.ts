@@ -25,7 +25,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FittingType} from '../constants.js';
+import {FittingType, FormFieldFocusType} from '../constants.js';
 // <if expr="enable_pdf_ink2">
 import {PluginController, PluginControllerEventType} from '../controller.js';
 // </if>
@@ -90,7 +90,17 @@ export class ViewerToolbarElement extends PolymerElement {
       // <if expr="enable_pdf_ink2">
       hasInk2Edits: Boolean,
       // </if>
-      isFormFieldFocused: Boolean,
+      formFieldFocus: {
+        type: FormFieldFocusType,
+        value: FormFieldFocusType.NONE,
+        // <if expr="enable_pdf_ink2">
+        observer: 'formFieldFocusChanged_',
+        // </if>
+      },
+      isFormFieldFocused_: {
+        type: Boolean,
+        computed: 'computeIsFormFieldFocused_(formFieldFocus)',
+      },
 
       loadProgress: {
         type: Number,
@@ -188,7 +198,7 @@ export class ViewerToolbarElement extends PolymerElement {
   // <if expr="enable_pdf_ink2">
   hasInk2Edits: boolean;
   // </if>
-  isFormFieldFocused: boolean;
+  formFieldFocus: FormFieldFocusType;
   loadProgress: number;
   pageNo: number;
   pdfAnnotationsEnabled: boolean;
@@ -201,6 +211,7 @@ export class ViewerToolbarElement extends PolymerElement {
   private displayAnnotations_: boolean = true;
   private fittingType_: FittingType = FittingType.FIT_TO_PAGE;
   private fitToButtonIcon_: string;
+  private isFormFieldFocused_: boolean;
   private moreMenuOpen_: boolean = false;
   private presentationModeAvailable_: boolean;
   private loading_: boolean = true;
@@ -494,36 +505,72 @@ export class ViewerToolbarElement extends PolymerElement {
     this.canRedoAnnotation_ = false;
   }
 
-  private onUndoClick_() {
-    assert(this.pdfInk2Enabled);
+  /**
+   * Undo an annotation stroke, if possible.
+   */
+  undo() {
+    if (!this.canUndoAnnotation_) {
+      return;
+    }
+
     assert(this.currentStroke > 0);
+    assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 
     this.pluginController_.undo();
     this.currentStroke--;
 
-    this.canUndoAnnotation_ = this.currentStroke > 0;
+    this.updateCanUndoRedo_();
     if (!this.canUndoAnnotation_) {
+      // Dispatch the event only on undo or redo.
       this.dispatchEvent(new CustomEvent(
           'can-undo-changed', {detail: false, bubbles: true, composed: true}));
     }
-    this.canRedoAnnotation_ = true;
   }
 
-  private onRedoClick_() {
-    assert(this.pdfInk2Enabled);
+  /**
+   * Redo an annotation stroke, if possible.
+   */
+  redo() {
+    if (!this.canRedoAnnotation_) {
+      return;
+    }
+
     assert(this.currentStroke < this.mostRecentStroke);
+    assert(this.formFieldFocus !== FormFieldFocusType.TEXT);
 
     this.pluginController_.redo();
     this.currentStroke++;
 
     if (!this.canUndoAnnotation_) {
-      this.canUndoAnnotation_ = true;
+      // Dispatch the event only on undo or redo.
       this.dispatchEvent(new CustomEvent(
           'can-undo-changed', {detail: true, bubbles: true, composed: true}));
     }
-    this.canRedoAnnotation_ = this.currentStroke < this.mostRecentStroke;
+    this.updateCanUndoRedo_();
+  }
+
+  private formFieldFocusChanged_() {
+    this.updateCanUndoRedo_();
+  }
+
+  /**
+   * Update whether the undo and redo buttons should be enabled or disabled.
+   * Both buttons should be disabled when a text form field has focus. Undo and
+   * redo should be disabled when there are no possible undo and redo actions
+   * respectively.
+   */
+  private updateCanUndoRedo_() {
+    const isTextFormFieldFocused =
+        this.formFieldFocus === FormFieldFocusType.TEXT;
+    this.canUndoAnnotation_ = !isTextFormFieldFocused && this.currentStroke > 0;
+    this.canRedoAnnotation_ =
+        !isTextFormFieldFocused && this.currentStroke < this.mostRecentStroke;
   }
   // </if>
+
+  private computeIsFormFieldFocused_() {
+    return this.formFieldFocus !== FormFieldFocusType.NONE;
+  }
 
   /**
    * Updates the toolbar's presentation mode available flag depending on current

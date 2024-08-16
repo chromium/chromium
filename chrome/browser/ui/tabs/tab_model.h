@@ -33,8 +33,10 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // (1) Tabbed PWAs is a ChromeOS_only feature that exposes Tabs to PWAs.
   // (2) Non-browser windows currently have a tab-strip and may use tabs. See
   // TODO(https://crbug.com/331031753) which tracks their eventual removal.
+  // TODO(https://crbug.com/346692548): Tabs should never be constructed in
+  // isolation of a model.
   TabModel(std::unique_ptr<content::WebContents> contents,
-           bool is_in_normal_window);
+           TabStripModel* soon_to_be_owning_model);
   ~TabModel() override;
 
   TabModel(const TabModel&) = delete;
@@ -76,6 +78,11 @@ class TabModel final : public SupportsHandles<const TabModel>,
   static std::unique_ptr<content::WebContents> DestroyAndTakeWebContents(
       std::unique_ptr<TabModel> tab_model);
 
+  // When a tab is going to be removed from the tabstrip in preparation for
+  // destruction, `TabFeatures` should be destroyed first to ensure individual
+  // features do not need to handle the situation of existing outside the
+  // context of a tab strip.
+  void DestroyTabFeatures();
   TabFeatures* tab_features() { return tab_features_.get(); }
 
   // Returns a pointer to the parent TabCollection. This method is specifically
@@ -129,6 +136,11 @@ class TabModel final : public SupportsHandles<const TabModel>,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // TODO(https://crbug.com/346692548): This will not be necessary once
+  // soon_to_be_owning_model_ is removed. TabInterface logic can only be invoked
+  // in contexts where a model exists.
+  TabStripModel* GetModelForTabInterface() const;
+
   // Tracks whether a tab-modal UI is showing.
   class ScopedTabModalUIImpl : public ScopedTabModalUI {
    public:
@@ -152,6 +164,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // owning tabstrip model, and has yet to be transferred to a new tabstrip
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
+  raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
   raw_ptr<tabs::TabModel> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
@@ -178,11 +191,6 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
-
-  // Tabs may be temporarily detached but they never move between normal and
-  // non-normal windows. Thus this value is recorded at construction and never
-  // changed.
-  const bool is_in_normal_window_;
 
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;

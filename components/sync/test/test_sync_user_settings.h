@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -49,7 +49,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedType(UserSelectableType type, bool is_type_on) override;
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) override;
-  ModelTypeSet GetPreferredDataTypes() const;
+  DataTypeSet GetPreferredDataTypes() const;
   UserSelectableTypeSet GetRegisteredSelectableTypes() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -69,7 +69,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
-  syncer::ModelTypeSet GetAllEncryptedDataTypes() const override;
+  syncer::DataTypeSet GetAllEncryptedDataTypes() const override;
   bool IsPassphraseRequired() const override;
   bool IsPassphraseRequiredForPreferredDataTypes() const override;
   bool IsPassphrasePromptMutedForCurrentProductVersion() const override;

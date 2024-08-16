@@ -26,8 +26,8 @@ bool IgnoreTpcdDtGracePeriodMetadataGrant(
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Invalid enum value: "
-                        << info->metadata.tpcd_metadata_cohort();
+  NOTREACHED() << "Invalid enum value: "
+               << info->metadata.tpcd_metadata_cohort();
 }
 
 ContentSetting ManagerBase::GetContentSetting(

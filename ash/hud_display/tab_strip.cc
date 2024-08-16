@@ -140,7 +140,7 @@ HUDTabButton* HUDTabStrip::AddTabButton(const HUDDisplayMode display_mode,
             return;
           }
         }
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       },
       base::Unretained(tab_button), base::Unretained(this)));
   tabs_.push_back(tab_button);

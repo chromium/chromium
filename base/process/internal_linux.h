@@ -50,7 +50,7 @@ bool ReadProcFile(const FilePath& file, std::string* buffer);
 // a process, convert it to a pid_t.
 // Returns 0 on failure.
 // e.g. /proc/self/ will return 0, whereas /proc/1234 will return 1234.
-pid_t ProcDirSlotToPid(const char* d_name);
+pid_t ProcDirSlotToPid(std::string_view d_name);
 
 // Read |filename| in /proc/<pid>/, split the entries into key/value pairs, and
 // trim the key and value. On success, return true and write the trimmed

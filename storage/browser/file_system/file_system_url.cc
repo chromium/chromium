@@ -277,7 +277,12 @@ bool FileSystemURL::IsInSameFileSystem(const FileSystemURL& other) const {
   // Invalid FileSystemURLs should never be considered of the same file system.
   return AreSameStorageKey(*this, other) && is_valid() && other.is_valid() &&
          type() == other.type() && filesystem_id() == other.filesystem_id() &&
-         bucket() == other.bucket();
+         bucket() == other.bucket()
+#if BUILDFLAG(IS_ANDROID)
+         // Android content-URIs do not support same-FS ops such as rename().
+         && !path().IsContentUri() && !other.path().IsContentUri()
+#endif
+      ;
 }
 
 bool FileSystemURL::operator==(const FileSystemURL& that) const {

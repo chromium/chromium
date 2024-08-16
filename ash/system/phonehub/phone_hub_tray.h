@@ -76,7 +76,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
   TrayBubbleView* GetBubbleView() override;

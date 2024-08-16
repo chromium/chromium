@@ -15,14 +15,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/connection_status.h"
+#include "components/sync/engine/data_type_connector.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/events/protocol_event.h"
-#include "components/sync/engine/model_type_connector.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
@@ -58,7 +58,7 @@ class SyncManager {
     virtual void OnActionableProtocolError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
-    virtual void OnMigrationRequested(ModelTypeSet types) = 0;
+    virtual void OnMigrationRequested(DataTypeSet types) = 0;
 
     virtual void OnProtocolEvent(const ProtocolEvent& event) = 0;
 
@@ -123,9 +123,9 @@ class SyncManager {
   // unique_ptr.
   virtual void Init(InitArgs* args) = 0;
 
-  virtual ModelTypeSet InitialSyncEndedTypes() = 0;
+  virtual DataTypeSet InitialSyncEndedTypes() = 0;
 
-  virtual ModelTypeSet GetConnectedTypes() = 0;
+  virtual DataTypeSet GetConnectedTypes() = 0;
 
   // Update tokens that we're using in Sync. Email must stay the same.
   virtual void UpdateCredentials(const SyncCredentials& credentials) = 0;
@@ -146,7 +146,7 @@ class SyncManager {
   // called.
   // |ready_task| is invoked when the configuration completes.
   virtual void ConfigureSyncer(ConfigureReason reason,
-                               ModelTypeSet to_download,
+                               DataTypeSet to_download,
                                SyncFeatureState sync_feature_state,
                                base::OnceClosure ready_task) = 0;
 
@@ -155,7 +155,7 @@ class SyncManager {
 
   // Inform the syncer that its cached information about a type is obsolete.
   virtual void OnIncomingInvalidation(
-      ModelType type,
+      DataType type,
       std::unique_ptr<SyncInvalidation> invalidation) = 0;
 
   // Adds a listener to be notified of sync events.
@@ -170,14 +170,14 @@ class SyncManager {
 
   virtual void ShutdownOnSyncThread() = 0;
 
-  // Returns non-owning pointer to ModelTypeConnector. In contrast with
-  // ModelTypeConnectorProxy all calls are executed synchronously, thus the
+  // Returns non-owning pointer to DataTypeConnector. In contrast with
+  // DataTypeConnectorProxy all calls are executed synchronously, thus the
   // pointer should be used on sync sequence.
-  virtual ModelTypeConnector* GetModelTypeConnector() = 0;
+  virtual DataTypeConnector* GetDataTypeConnector() = 0;
 
   // Returns an instance of the main interface for registering sync types with
   // sync engine.
-  virtual std::unique_ptr<ModelTypeConnector> GetModelTypeConnectorProxy() = 0;
+  virtual std::unique_ptr<DataTypeConnector> GetDataTypeConnectorProxy() = 0;
 
   // Returns the cache_guid of the currently open database.
   // Requires that the SyncManager be initialized.
@@ -192,7 +192,7 @@ class SyncManager {
   virtual std::string bag_of_chips() = 0;
 
   // Returns types that have local changes yet to be synced to the server.
-  virtual ModelTypeSet GetTypesWithUnsyncedData() = 0;
+  virtual DataTypeSet GetTypesWithUnsyncedData() = 0;
 
   // Returns whether there are remaining unsynced items.
   virtual bool HasUnsyncedItemsForTest() = 0;
@@ -201,7 +201,7 @@ class SyncManager {
   virtual SyncEncryptionHandler* GetEncryptionHandler() = 0;
 
   // Ask the SyncManager to fetch updates for the given types.
-  virtual void RefreshTypes(ModelTypeSet types) = 0;
+  virtual void RefreshTypes(DataTypeSet types) = 0;
 
   // Returns any buffered protocol events.  Does not clear the buffer.
   virtual std::vector<std::unique_ptr<ProtocolEvent>>

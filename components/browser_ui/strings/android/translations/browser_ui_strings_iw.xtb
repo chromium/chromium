@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
+<translation id="1500473259453106018">הסתרת הכרטיס 'הנחות בכרטיסיות'</translation>
 <translation id="1510341833810331442">לאתרים אין הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="1547123415014299762">‏מותר להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="1568470248891039841">לאתרים שמבקרים בהם יש אפשרות להטמיע תוכן מאתרים אחרים, למשל תמונות, מודעות וטקסט. האתרים האחרים האלה יכולים לבקש הרשאה להשתמש במידע שהם שמרו עליך בזמן הגלישה באתר. <ph name="BEGIN_LINK" />מידע נוסף על תוכן מוטמע<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3232293466644486101">מחיקת נתוני הגלישה מתבצעת…</translation>
 <translation id="3242646949159196181">כשהאפשרות מופעלת, אתרים יכולים להשמיע צלילים. כשהאפשרות מושבתת, אתרים לא יכולים להשמיע צלילים.</translation>
+<translation id="3273479183583863618">הנחות בכרטיסיות</translation>
 <translation id="3277252321222022663">התרת גישה של אתרים אל החיישנים (מומלץ)</translation>
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="3295019059349372795">פרק 11: עיר הברקת המופלאה של ארץ עוץ</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">סגירה והצגת הפעולה הזמינה הבאה</translation>
 <translation id="3744111561329211289">סנכרון ברקע</translation>
 <translation id="3763247130972274048">בלחיצה פעמיים על הסרטון בצד ימין או שמאל אפשר לדלג על 10 שניות</translation>
+<translation id="3779154269823594982">החלפת סיסמאות</translation>
 <translation id="3797520601150691162">אין להחיל עיצוב כהה על אתר ספציפי</translation>
 <translation id="3803367742635802571">יכול להיות שאתרים שביקרת בהם יפסיקו לפעול כמו שצריך</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -360,6 +363,7 @@
 <translation id="6818926723028410516">בחירת פריטים</translation>
 <translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6864395892908308021">‏NFC לא נתמך במכשיר הזה</translation>
+<translation id="6870169401250095575">הסתרת הכרטיס 'טיימר לדיווח על מצב מסוכן'</translation>
 <translation id="6912998170423641340">חסימת היכולת של אתרים לקרוא טקסט ותמונות מלוח העריכה</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6950072572526089586">אתר שמבקרים בו יכול לשמור מידע על הפעולות שמבצעים בו כדי לפעול כצפוי. למשל, כדי להשאיר את החשבון מחובר לאתר או לשמור פריטים בעגלת הקניות. לרוב, אתרים שומרים את המידע הזה במכשיר באופן זמני.</translation>
@@ -423,10 +427,10 @@
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
 <translation id="789180354981963912">‏חסימת קובצי cookie של צד שלישי במצב פרטי:</translation>
 <translation id="7940722705963108451">קבלת תזכורת</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{אתר אחד (<ph name="FPS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{<ph name="FPS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="FPS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
 <translation id="7990211076305263060">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במיקרופון. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במיקרופון.</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{הסתרת הכרטיס 'המשך הגלישה בכרטיסייה הזו‘}one{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}two{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}other{הסתרת הכרטיס 'המשך הגלישה בכרטיסיות האלה‘}}</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8042586301629853791">מיון לפי:</translation>
 <translation id="8067883171444229417">הפעלת הסרטון</translation>
@@ -469,7 +473,6 @@
 <translation id="851751545965956758">חסימת התחברות של אתרים אל התקנים</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8541410041357371550">‏האתר הזה מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{‏קובצי cookie מותרים לאתר אחד (<ph name="FPS_MEMBERS_COUNT" />) של <ph name="FPS_OWNER" />}one{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}two{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}other{‏קובצי cookie מותרים ל-<ph name="FPS_MEMBERS_COUNT" /> אתרים של <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8617611086246832542">כשהאפשרות מופעלת, אפשר לראות אתרים בתצוגה למחשב. כשהאפשרות מושבתת, אפשר לראות אתרים בתצוגה לנייד.</translation>
@@ -507,7 +510,6 @@
 <translation id="9019902583201351841">מנוהל על-ידי ההורים שלך</translation>
 <translation id="9039697262778250930">יכול להיות שתבוצע יציאה מהחשבון באתרים האלה</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">האתר הזה שייך לקבוצה שיש לה הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">‏למחוק קובצי cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד הרשאה אחת (<ph name="NUM_MORE" />)}one{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}two{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">‏יש להעניק הרשאות עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>

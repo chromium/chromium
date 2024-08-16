@@ -6,19 +6,15 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
-#import "base/test/ios/wait_util.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/test/web_test.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-using base::test::ios::WaitUntilConditionOrTimeout;
-using base::test::ios::kWaitForCookiesTimeout;
 
 // TODO(crbug.com/352534785): Remove the dependency of OCMock.
 class CRWWKHTTPCookieStoreTest : public PlatformTest {
@@ -60,42 +56,37 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
 
   // Adds `cookie` to the CRWWKHTTPCookieStore.
   [[nodiscard]] bool SetCookie(NSHTTPCookie* cookie) {
-    __block bool cookie_set = false;
+    base::RunLoop run_loop;
     [crw_cookie_store_ setCookie:cookie
-               completionHandler:^{
-                 cookie_set = true;
-               }];
-    return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      return cookie_set;
-    });
+               completionHandler:base::CallbackToBlock(run_loop.QuitClosure())];
+    run_loop.Run();
+    return true;
   }
 
   // Deletes `cookie` from the CRWWKHTTPCookieStore.
   [[nodiscard]] bool DeleteCookie(NSHTTPCookie* cookie) {
-    __block bool cookie_deleted = false;
-    [crw_cookie_store_ deleteCookie:cookie
-                  completionHandler:^{
-                    cookie_deleted = true;
-                  }];
-    return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      return cookie_deleted;
-    });
+    base::RunLoop run_loop;
+    [crw_cookie_store_
+             deleteCookie:cookie
+        completionHandler:base::CallbackToBlock(run_loop.QuitClosure())];
+    run_loop.Run();
+    return true;
   }
 
   // Gets all cookies from CRWWKHTTPCookieStore and ensures that getAllCookies
   // callback was called.
   [[nodiscard]] NSArray<NSHTTPCookie*>* GetCookies() {
-    __block NSArray<NSHTTPCookie*>* result_cookies = nil;
-    __block bool callback_called = false;
-    [crw_cookie_store_ getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-      callback_called = true;
-      result_cookies = cookies;
-    }];
-    bool success = WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
-      return callback_called;
-    });
-    EXPECT_TRUE(success);
-    return result_cookies;
+    base::RunLoop run_loop;
+    __block NSArray<NSHTTPCookie*>* cookies = nil;
+    [crw_cookie_store_ getAllCookies:base::CallbackToBlock(base::BindOnce(
+                                         ^(base::OnceClosure quit_closure,
+                                           NSArray<NSHTTPCookie*>* result) {
+                                           cookies = result;
+                                           std::move(quit_closure).Run();
+                                         },
+                                         run_loop.QuitClosure()))];
+    run_loop.Run();
+    return cookies;
   }
 
  protected:

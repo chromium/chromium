@@ -6,6 +6,14 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "build/buildflag.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_policy_handler.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 
@@ -15,6 +23,7 @@ static KioskController* g_instance = nullptr;
 
 }  // namespace
 
+// static
 KioskController& KioskController::Get() {
   return CHECK_DEREF(g_instance);
 }
@@ -26,6 +35,23 @@ KioskController::KioskController() {
 
 KioskController::~KioskController() {
   g_instance = nullptr;
+}
+
+// static
+void KioskController::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  KioskChromeAppManager::RegisterLocalStatePrefs(registry);
+  WebKioskAppManager::RegisterPrefs(registry);
+  KioskCryptohomeRemover::RegisterPrefs(registry);
+
+  kiosk_vision::RegisterLocalStatePrefs(registry);
+  policy::DeviceWeeklyScheduledSuspendPolicyHandler::RegisterLocalStatePrefs(
+      registry);
+}
+
+// static
+void KioskController::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  KioskChromeAppManager::RegisterProfilePrefs(registry);
 }
 
 }  // namespace ash

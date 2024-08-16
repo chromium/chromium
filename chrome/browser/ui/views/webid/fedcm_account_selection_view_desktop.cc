@@ -69,7 +69,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
   // We use this boolean to record metrics in Close(), reset it after Close().
   is_mismatch_continue_clicked_ = false;
-  TabStripModelObserver::StopObservingAll(this);
 }
 
 void FedCmAccountSelectionView::ShowDialogWidget() {
@@ -214,32 +213,34 @@ bool FedCmAccountSelectionView::Show(
         new_accounts_idp_display_data_[0];
 
     if (GetDialogType() == DialogType::MODAL) {
-      // TODO(crbug.com/342194490): Consider case when there's more than one
-      // newly signed in account.
-
       // The browser trusted login state controls whether we'd skip the next
       // dialog. One caveat: if a user was logged out of the IdP and they just
       // logged in with a returning account from the LOADING state, we do not
       // skip the next UI when mediation mode is `required` because there was
       // not user mediation acquired yet in this case.
-      bool should_skip_dialog =
+      bool should_show_verifying_sheet =
           new_idp_data.accounts[0].browser_trusted_login_state ==
               Account::LoginState::kSignIn &&
           state_ != State::LOADING;
       // The IDP claimed login state controls whether we show disclosure text,
       // if we do not skip the next dialog. Also skip when request_permission
       // is false (controlled by the fields API).
-      bool should_hide_disclosure_text = new_idp_data.accounts[0].login_state ==
-                                             Account::LoginState::kSignIn ||
-                                         !new_accounts_idp->request_permission;
+      bool should_show_request_permission_dialog =
+          new_idp_data.accounts[0].login_state !=
+              Account::LoginState::kSignIn &&
+          new_accounts_idp->request_permission;
 
-      if (should_skip_dialog) {
+      if (should_show_verifying_sheet) {
         state_ = State::VERIFYING;
         // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
         if (!ShowVerifyingSheet(new_idp_data.accounts[0], new_idp_data)) {
           return false;
         }
-      } else if (should_hide_disclosure_text) {
+      } else if (should_show_request_permission_dialog) {
+        state_ = State::REQUEST_PERMISSION;
+        account_selection_view_->ShowRequestPermissionDialog(
+            new_idp_data.accounts[0], new_idp_data);
+      } else {
         // Normally we'd show the request permission dialog but without the
         // disclosure text, there is no material difference between the account
         // picker and the request permission dialog. We show the account picker
@@ -249,10 +250,6 @@ bool FedCmAccountSelectionView::Show(
         ShowMultiAccountPicker(idp_display_data_list_,
                                /*show_back_button=*/false,
                                /*is_choose_an_account=*/false);
-      } else {
-        state_ = State::REQUEST_PERMISSION;
-        account_selection_view_->ShowRequestPermissionDialog(
-            new_idp_data.accounts[0], new_idp_data);
       }
     } else {
       if (new_idp_data.accounts.size() == 1u) {
@@ -563,16 +560,19 @@ std::optional<std::string> FedCmAccountSelectionView::GetSubtitle() const {
   return std::nullopt;
 }
 
-void FedCmAccountSelectionView::OnVisibilityChanged(
-    content::Visibility visibility) {
-  is_web_contents_visible_ = visibility == content::Visibility::VISIBLE;
+void FedCmAccountSelectionView::OnTabForegrounded() {
+  is_web_contents_visible_ = true;
   if (!IsDialogWidgetReady()) {
     return;
   }
-
   if (ShouldShowDialogWidget()) {
     UpdateAndShowDialogWidget();
-  } else {
+  }
+}
+
+void FedCmAccountSelectionView::OnTabBackgrounded() {
+  is_web_contents_visible_ = false;
+  if (GetDialogWidget()) {
     HideDialogWidget();
   }
 }
@@ -580,30 +580,6 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
 void FedCmAccountSelectionView::PrimaryPageChanged(content::Page& page) {
   // Close the dialog when the user navigates within the same tab.
   Close();
-}
-
-void FedCmAccountSelectionView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (!GetDialogWidget()) {
-    return;
-  }
-  int index =
-      tab_strip_model->GetIndexOfWebContents(delegate_->GetWebContents());
-  // If the WebContents has been moved out of this `tab_strip_model`, close the
-  // dialog.
-  // TODO(npm): we should change the management logic so that it is
-  // possible to move the dialog with the tab, even to a different browser
-  // window.
-  if (index == TabStripModel::kNoTab) {
-    Close();
-    return;
-  }
-  if (index != tab_strip_model->active_index() &&
-      GetDialogWidget()->IsVisible()) {
-    HideDialogWidget();
-  }
 }
 
 void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
@@ -625,15 +601,12 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   content::WebContents* web_contents = delegate_->GetWebContents();
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
 
-  // Reject the API if the browser is not found or its tab strip model does not
-  // exist, as we require those to show UI.
+  // Reject the API if the browser is not found.
   // TODO(crbug.com/342216390): It is unclear why there are callers attempting
   // FedCM when some of these checks fail.
-  if (!browser || !browser->tab_strip_model()) {
+  if (!browser) {
     return nullptr;
   }
-
-  browser->tab_strip_model()->AddObserver(this);
 
   if (rp_mode == blink::mojom::RpMode::kButton && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
@@ -1042,7 +1015,6 @@ void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
   }
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
-  TabStripModelObserver::StopObservingAll(this);
 }
 
 bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {

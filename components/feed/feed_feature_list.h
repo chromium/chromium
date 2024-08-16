@@ -17,6 +17,10 @@
 
 namespace feed {
 
+namespace switches {
+extern const char kEnableRssLinkReader[];
+}
+
 BASE_DECLARE_FEATURE(kInterestFeedV2);
 BASE_DECLARE_FEATURE(kInterestFeedV2Hearts);
 BASE_DECLARE_FEATURE(kInterestFeedV2Scrolling);

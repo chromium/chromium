@@ -98,6 +98,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -497,6 +498,9 @@ TEST_F(RenderViewContextMenuDeveloperItemsTest,
        DeveloperItemsAreNotPresentByDefaultIfAshBrowserIsDisabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(), {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
@@ -529,6 +533,9 @@ TEST_F(RenderViewContextMenuDeveloperItemsTest,
       ash::standalone_browser::GetFeatureRefs();
   enabled.push_back(ash::features::kAllowDevtoolsInSystemUI);
   features.InitWithFeatures(enabled, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
@@ -1276,6 +1283,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   enabled.push_back(lens::features::kLensStandalone);
   enabled.push_back(lens::features::kEnableImageTranslate);
   features.InitWithFeatures(enabled, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =
@@ -1495,6 +1505,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
       ash::standalone_browser::GetFeatureRefs();
   enabled.push_back(lens::features::kLensStandalone);
   features.InitWithFeatures(enabled, {});
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableLacrosForTesting);
 
   auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
   auto* primary_user =

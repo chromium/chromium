@@ -37,7 +37,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
-  void FpsSettingsButtonClicked(const ui::Event& event);
+  void RwsSettingsButtonClicked(const ui::Event& event);
 
   void OnToggleButtonPressed();
 
@@ -103,14 +103,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
 
-  //  Checks if |fps_button_| should be initiated and if so does it and sets its
+  //  Checks if `rws_button_` should be initiated and if so does it and sets its
   //  info.
-  void SetFpsCookiesInfo(std::optional<CookiesFpsInfo> fps_info,
-                         bool is_fps_allowed);
+  void SetRwsCookiesInfo(std::optional<CookiesRwsInfo> rws_info,
+                         bool is_rws_allowed);
 
-  // Ensures the first-party sets information UI is present, with
+  // Ensures the related website sets information UI is present, with
   // placeholder information if necessary.
-  void InitFpsButton(bool is_managed);
+  void InitRwsButton(bool is_managed);
 
   // Initializes the new third-party cookies section. The section starts out
   // hidden and is only shown when third-party cookies are blocked or there is
@@ -124,7 +124,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   raw_ptr<PageInfo, DanglingUntriaged> presenter_ = nullptr;
 
-  // The view that contains the fps_button and cookies_dialog_button.
+  // The view that contains the `rws_button_` and `cookies_dialog_button_`.
   raw_ptr<views::View> cookies_buttons_container_view_ = nullptr;
 
   // The button that opens Cookie Dialog and displays a number of allowed sites.
@@ -137,14 +137,14 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // the user.
   raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
 
-  // The button that displays First-Party-Set information with a link to
+  // The button that displays Related-Website-Set information with a link to
   // 'All sites' settings page.
-  raw_ptr<RichHoverButton> fps_button_ = nullptr;
+  raw_ptr<RichHoverButton> rws_button_ = nullptr;
 
   // Used to keep track if it's the first time for this instance recording the
-  // FPS info histogram. Needed to not record the histogram each time page info
+  // RWS info histogram. Needed to not record the histogram each time page info
   // status changed.
-  bool fps_histogram_recorded_ = false;
+  bool rws_histogram_recorded_ = false;
 
   // Third-party cookies section which contains a title, a description and a
   // toggle row view.

@@ -78,8 +78,8 @@ def _query_overheads(lookback_start_date, lookback_end_date):
       lookback_end_date=lookback_end_date,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -94,8 +94,8 @@ def _query_suite_durations(lookback_start_date, lookback_end_date, percentile):
       percentile=percentile,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -109,8 +109,8 @@ def _query_avg_num_builds_per_hour(lookback_start_date, lookback_end_date):
       lookback_end_date=lookback_end_date,
   )
   return _run_query([
-      "bq", "query", "--project_id=" + _CLOUD_PROJECT_ID, "--format=json",
-      "--max_rows=100000", "--nouse_legacy_sql", query
+      'bq', 'query', '--project_id=' + _CLOUD_PROJECT_ID, '--format=json',
+      '--max_rows=100000', '--nouse_legacy_sql', query
   ])
 
 
@@ -124,7 +124,7 @@ def _run_query(args):
     output = subprocess.check_output(args)
   except subprocess.CalledProcessError as e:
     print(e.output)
-    raise (e)
+    raise e
   return json.loads(output)
 
 
@@ -229,7 +229,7 @@ def _meets_optimal_shard_count_and_simulated_duration_requirements(
 
   # Don't bother resharding if the simulated runtime is greater than the
   # desired runtime.
-  if (float(row['simulated_max_shard_duration']) > desired_runtime):
+  if float(row['simulated_max_shard_duration']) > desired_runtime:
     return False
 
   # Shard values may have changed over the lookback period, so the query

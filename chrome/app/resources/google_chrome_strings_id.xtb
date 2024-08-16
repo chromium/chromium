@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">Kemudian, situs yang Anda buka dapat meminta Chrome untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat. Chrome dapat membagikan hingga 3 minat.</translation>
 <translation id="2563121210305478421">Luncurkan kembali Chrome?</translation>
 <translation id="2569974318947988067">Chrome akan mencoba mengupgrade navigasi ke HTTPS</translation>
+<translation id="2571392474191184472">Organisasi Anda mengelola Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah login ke profil Chrome ini. Agar penjelajahan Anda tetap terpisah, Chrome dapat membuat profil tersendiri untuk Anda.</translation>
 <translation id="2580411288591421699">Tak dapat memasang Google Chrome dengan versi yang sama dengan yang sedang aktif. Tutup dulu, baru coba lagi.</translation>
 <translation id="2586406160782125153">Tindakan ini akan menghapus data browsing dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
@@ -442,6 +443,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="7177959540995930968">Anda dapat mempelajari fitur ini lebih lanjut di setelan Chrome.</translation>
 <translation id="7193885263065350793">Organisasi Anda menutup Chrome saat tidak digunakan selama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Anda dapat membuat profil baru secara opsional untuk menjaga agar data Chrome Anda tetap terpisah. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> mengelola Chrome</translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk menampilkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Penggunaan penting dan informasi keamanan</translation>
 <translation id="7302361266603927550">Beberapa data Chrome Anda belum disimpan di Akun Google Anda. Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
@@ -575,6 +577,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8989968390305463310">Histori penjelajahan Anda memengaruhi iklan yang Anda lihat dan minat yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome otomatis menghapus minat Anda secara berkala setiap bulan. Minat dapat diperbarui kecuali jika Anda menghapusnya.</translation>
 <translation id="8999117580775242387">Jika HTTPS tidak tersedia, Chrome akan menggunakan koneksi yang tidak aman tanpa memperingatkan Anda</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>
+<translation id="9014771989710951291">Beberapa organisasi mengelola Chrome</translation>
 <translation id="9024318700713112071">Setel Chrome sebagai browser default</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
 <translation id="9090566250983691233">Pelajari alasan Chrome memblokir beberapa file</translation>

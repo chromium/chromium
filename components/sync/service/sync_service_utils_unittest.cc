@@ -4,7 +4,7 @@
 
 #include "components/sync/service/sync_service_utils.h"
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,16 +60,16 @@ TEST(SyncServiceUtilsTest,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 }
 
-TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
+TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForDataType) {
   TestSyncService service;
   service.SetNonEmptyLastCycleSnapshot();
 
-  // Sync is enabled only for a specific model type.
+  // Sync is enabled only for a specific data type.
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks});
 
-  // Sanity check: Upload is ACTIVE for this model type.
+  // Sanity check: Upload is ACTIVE for this data type.
   ASSERT_EQ(UploadState::ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
@@ -81,12 +81,11 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
             GetUploadToGoogleState(&service, syncer::PREFERENCES));
 }
 
-TEST(SyncServiceUtilsTest,
-     UploadToGoogleDisabledForModelTypeThatFailedToStart) {
+TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForDataTypeThatFailedToStart) {
   TestSyncService service;
   service.SetNonEmptyLastCycleSnapshot();
 
-  // Sync is enabled for some model types.
+  // Sync is enabled for some data types.
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks,
@@ -95,7 +94,7 @@ TEST(SyncServiceUtilsTest,
   // But one of them fails to actually start up!
   service.SetFailedDataTypes({syncer::PREFERENCES});
 
-  // Sanity check: Upload is ACTIVE for the model type that did start up.
+  // Sanity check: Upload is ACTIVE for the data type that did start up.
   ASSERT_EQ(UploadState::ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 

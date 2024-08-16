@@ -35,6 +35,7 @@ import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
@@ -62,7 +63,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     mClientIdMetadata,
                     /* isAutoReauthn= */ false,
                     rpContext,
-                    /* requestPermission= */ true);
+                    /* requestPermission= */ true,
+                    /* newAccountsIdp= */ null);
             mMediator.showVerifySheet(mAnaAccount);
 
             // There is no account shown in the verify sheet on button mode.
@@ -87,7 +89,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     mClientIdMetadata,
                     /* isAutoReauthn= */ true,
                     rpContext,
-                    /* requestPermission= */ true);
+                    /* requestPermission= */ true,
+                    /* newAccountsIdp= */ null);
 
             // There is no account shown in the verify sheet on button mode.
             assertEquals(0, mSheetAccountItems.size());
@@ -101,8 +104,7 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     @Test
     public void testShowLoadingDialog() {
         // Button flow can be triggered regardless of the requestShowContent result.
-        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                .thenReturn(anyBoolean());
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
         mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
         assertEquals(0, mSheetAccountItems.size());
         assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -121,7 +123,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
 
         // For accounts dialog, we expect header + two accounts.
@@ -140,7 +143,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
         mMediator.showRequestPermissionSheet(mNewUserAccount);
 
         // For request permission dialog, we expect header + account chip + disclosure text +
@@ -182,7 +186,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
 
         assertNotNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
     }
@@ -210,12 +215,75 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                 mClientIdMetadata,
                 /* isAutoReauthn= */ false,
                 RpContext.SIGN_IN,
-                /* requestPermission= */ true);
+                /* requestPermission= */ true,
+                /* newAccountsIdp= */ null);
 
         PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
         // Unlike widget mode, brand icons should not be available because we do not show any
         // placeholder icon.
         assertNull(headerModel.get(IDP_BRAND_ICON));
         assertNull(mModel.get(ItemProperties.HEADER).get(RP_BRAND_ICON));
+    }
+
+    @Test
+    public void testNewAccountsIdpSingleNewAccountShowsRequestPermissionDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true,
+                mNewAccountsIdpSingleNewAccount);
+
+        // Request permission dialog is NOT skipped for a single newly signed-in new account. Since
+        // this is a new account and request permission is true, we need to show the request
+        // permission dialog to gather permission from the user.
+        assertEquals(HeaderType.REQUEST_PERMISSION, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testNewAccountsIdpRequestPermissionFalseShowsAccountChooserDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        IdentityProviderData newAccountsIdp = mNewAccountsIdpSingleNewAccount;
+        newAccountsIdp.setRequestPermission(/* requestPermission= */ false);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true,
+                mNewAccountsIdpSingleNewAccount);
+
+        // Account chooser dialog is shown for a single newly signed-in new account where request
+        // permission is false. Since this is a new account and request permission is false, we need
+        // to show UI without disclosure text so we show the account chooser.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
+    }
+
+    @Test
+    public void testNewAccountsIdpSingleReturningAccountShowsAccountChooserDialog() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne2, RpContext.SIGN_IN);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                mTestEtldPlusOne2,
+                Arrays.asList(),
+                mIdpMetadata,
+                mClientIdMetadata,
+                /* isAutoReauthn= */ false,
+                RpContext.SIGN_IN,
+                /* requestPermission= */ true,
+                mNewAccountsIdpSingleReturningAccount);
+
+        // Account chooser dialog is shown for a single newly signed-in returning account. Although
+        // this is a returning account, we cannot skip directly to signing in because we have to
+        // show browser UI in the flow so we show the account chooser.
+        assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
     }
 }

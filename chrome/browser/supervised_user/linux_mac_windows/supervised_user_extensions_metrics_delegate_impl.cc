@@ -8,8 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "extensions/common/extension_set.h"
 
 namespace {
@@ -34,14 +33,14 @@ constexpr char kDisabledExtensionsCountHistogramName[] =
 SupervisedUserExtensionsMetricsDelegateImpl::
     SupervisedUserExtensionsMetricsDelegateImpl(
         const extensions::ExtensionRegistry* extension_registry,
-        const PrefService& user_prefs)
-    : extension_registry_(extension_registry), user_prefs_(user_prefs) {}
+        Profile* profile)
+    : extension_registry_(extension_registry), profile_(profile) {}
 
 SupervisedUserExtensionsMetricsDelegateImpl::
     ~SupervisedUserExtensionsMetricsDelegateImpl() = default;
 
 bool SupervisedUserExtensionsMetricsDelegateImpl::RecordExtensionsMetrics() {
-  if (!supervised_user::AreExtensionsPermissionsEnabled(user_prefs_.get())) {
+  if (!supervised_user::AreExtensionsPermissionsEnabled(profile_.get())) {
     return false;
   }
   const extensions::ExtensionSet all_installed_extensions =

@@ -74,7 +74,7 @@ int TcpStreamAttempt::StartInternal() {
 
 base::Value::Dict TcpStreamAttempt::GetNetLogStartParams() {
   base::Value::Dict dict;
-  dict.Set("ip_endpoint", ip_endpoint().ToValue());
+  dict.Set("ip_endpoint", ip_endpoint().ToString());
   return dict;
 }
 

@@ -90,12 +90,10 @@ class IbanManagerTest : public testing::Test {
   Iban SetUpServerIban(int64_t instrument_id,
                        std::string_view prefix,
                        std::string_view suffix,
-                       int length,
                        std::string_view nickname) {
     Iban iban{Iban::InstrumentId(instrument_id)};
     iban.set_prefix(base::UTF8ToUTF16(std::string(prefix)));
     iban.set_suffix(base::UTF8ToUTF16(std::string(suffix)));
-    iban.set_length(length);
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
     personal_data_manager_.test_payments_data_manager().AddServerIban(iban);
     return iban;
@@ -103,7 +101,24 @@ class IbanManagerTest : public testing::Test {
 
   // Get an IBAN suggestion with the given `iban`.
   Suggestion GetSuggestionForIban(const Iban& iban) {
-    Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
+    Suggestion iban_suggestion;
+    const std::u16string iban_identifier =
+        iban.GetIdentifierStringForAutofillDisplay();
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      if (!iban.nickname().empty()) {
+        iban_suggestion.main_text.value = iban.nickname();
+        iban_suggestion.minor_text.value = iban_identifier;
+      } else {
+        iban_suggestion.main_text.value = iban_identifier;
+      }
+    } else {
+      iban_suggestion.main_text =
+          Suggestion::Text(iban_identifier, Suggestion::Text::IsPrimary(true));
+      if (!iban.nickname().empty()) {
+        iban_suggestion.labels = {{Suggestion::Text(iban.nickname())}};
+      }
+    }
+
     iban_suggestion.type = SuggestionType::kIbanEntry;
     if (iban.record_type() == Iban::kServerIban) {
       iban_suggestion.payload =
@@ -148,16 +163,16 @@ MATCHER_P(MatchesTextAndSuggestionType, suggestion, "") {
 TEST_F(IbanManagerTest, ShowsAllIbanSuggestions) {
   personal_data_manager_.test_payments_data_manager()
       .SetAutofillWalletImportEnabled(true);
-  Suggestion local_iban_suggestion_0 =
-      GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
-  Suggestion local_iban_suggestion_1 =
-      GetSuggestionForIban(SetUpLocalIban(test::kIbanValue_1, kNickname_1));
+  Suggestion local_iban_suggestion_0 = GetSuggestionForIban(
+      SetUpLocalIban("FR76 3000 6000 0112 3456 7890 189", kNickname_0));
+  Suggestion local_iban_suggestion_1 = GetSuggestionForIban(
+      SetUpLocalIban("CH56 0483 5012 3456 7800 9", kNickname_1));
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"DE91", /*suffix=*/"6789",
-      /*length=*/22, kNickname_0));
+      kNickname_0));
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
-      /*instrument_id=*/12346, /*prefix=*/"CH56", /*suffix=*/"8009",
-      /*length=*/34, kNickname_1));
+      /*instrument_id=*/12346, /*prefix=*/"BE71", /*suffix=*/"6769",
+      kNickname_1));
   Suggestion separator_suggestion = SetUpSeparator();
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
@@ -320,10 +335,10 @@ TEST_F(IbanManagerTest,
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"CH56", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My IBAN"));
+      /*nickname=*/"My IBAN"));
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12346, /*prefix=*/"CH78", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My doctor's IBAN"));
+      /*nickname=*/"My doctor's IBAN"));
   Suggestion separator_suggestion = SetUpSeparator();
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
@@ -359,10 +374,10 @@ TEST_F(IbanManagerTest,
   // characters, and with same suffixes and lengths.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"CH56", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My IBAN"));
+      /*nickname=*/"My IBAN"));
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12346, /*prefix=*/"CH78", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My doctor's IBAN"));
+      /*nickname=*/"My doctor's IBAN"));
   Suggestion separator_suggestion = SetUpSeparator();
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
@@ -398,13 +413,13 @@ TEST_F(
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My IBAN"));
+      /*nickname=*/"My IBAN"));
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12346, /*prefix=*/"", /*suffix=*/"8009",
-      /*length=*/24, /*nickname=*/"My doctor's IBAN"));
+      /*nickname=*/"My doctor's IBAN"));
   Suggestion server_iban_suggestion_2 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12347, /*prefix=*/"", /*suffix=*/"9123",
-      /*length=*/28, /*nickname=*/"My sister's IBAN"));
+      /*nickname=*/"My sister's IBAN"));
   Suggestion separator_suggestion = SetUpSeparator();
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
@@ -458,13 +473,13 @@ TEST_F(
   // Set up three server IBANs with empty `prefix`.
   Suggestion server_iban_suggestion_0 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"", /*suffix=*/"8009",
-      /*length=*/21, /*nickname=*/"My IBAN"));
+      /*nickname=*/"My IBAN"));
   Suggestion server_iban_suggestion_1 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12346, /*prefix=*/"", /*suffix=*/"8009",
-      /*length=*/24, /*nickname=*/"My doctor's IBAN"));
+      /*nickname=*/"My doctor's IBAN"));
   Suggestion server_iban_suggestion_2 = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12347, /*prefix=*/"", /*suffix=*/"9123",
-      /*length=*/28, /*nickname=*/"My sister's IBAN"));
+      /*nickname=*/"My sister's IBAN"));
   Suggestion separator_suggestion = SetUpSeparator();
   Suggestion footer_suggestion = SetUpFooterManagePaymentMethods();
 
@@ -682,7 +697,7 @@ TEST_F(IbanManagerTest, Metrics_ServerIbanSuggestionSelected) {
       .SetAutofillWalletImportEnabled(true);
   Suggestion suggestion = GetSuggestionForIban(SetUpServerIban(
       /*instrument_id=*/12345, /*prefix=*/"DE", /*suffix=*/"6789",
-      /*length=*/22, kNickname_0));
+      kNickname_0));
 
   autofill_field_->set_renderer_id(test::MakeFieldRendererId());
 

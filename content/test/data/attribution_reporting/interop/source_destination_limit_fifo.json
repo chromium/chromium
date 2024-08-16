@@ -432,7 +432,6 @@
             "attribution_destination": "https://destination1.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3608",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },

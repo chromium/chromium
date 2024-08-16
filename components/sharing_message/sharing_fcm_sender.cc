@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "base/version.h"
@@ -78,6 +79,13 @@ void SharingFCMSender::DoSendMessageToDevice(
       !message.fcm_channel_configuration().sender_id_fcm_token().empty());
   SendMessageToFcmTarget(*fcm_configuration, time_to_live, std::move(message),
                          std::move(callback));
+}
+
+void SharingFCMSender::DoSendUnencryptedMessageToDevice(
+    const SharingTargetDeviceInfo& device,
+    sync_pb::UnencryptedSharingMessage message,
+    SendMessageCallback callback) {
+  NOTREACHED();
 }
 
 void SharingFCMSender::SendMessageToFcmTarget(
@@ -213,6 +221,7 @@ void SharingFCMSender::DoSendMessageToVapidTarget(
   web_push_message.urgency = WebPushMessage::Urgency::kHigh;
   web_push_message.payload = std::move(message);
 
+  CHECK(web_push_sender_);
   web_push_sender_->SendMessage(
       fcm_token, vapid_key, std::move(web_push_message),
       base::BindOnce(&SharingFCMSender::OnMessageSentToVapidTarget,

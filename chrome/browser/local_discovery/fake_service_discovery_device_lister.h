@@ -32,6 +32,7 @@ class DeferringDelegate : public ServiceDiscoveryDeviceLister::Delegate {
   void OnDeviceRemoved(const std::string& service_type,
                        const std::string& service_name) override;
   void OnDeviceCacheFlushed(const std::string& service_type) override;
+  void OnPermissionRejected() override {}
 
   // Sets the delegate that callbacks should be called on.
   void SetActual(ServiceDiscoveryDeviceLister::Delegate* actual);

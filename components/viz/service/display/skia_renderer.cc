@@ -1073,8 +1073,9 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
   // behavior is not required for full delegation since |OverlayProcessorWin|
   // does not modify non-root render pass damage in that case.
   use_render_pass_drawn_rect_ |=
-      base::FeatureList::IsEnabled(features::kDelegatedCompositing) &&
-      base::FeatureList::IsEnabled(features::kDelegatedCompositingLimitToUi);
+      features::IsDelegatedCompositingEnabled() &&
+      features::kDelegatedCompositingModeParam.Get() ==
+          features::DelegatedCompositingMode::kLimitToUi;
 #endif
   DCHECK(skia_output_surface_);
 
@@ -1145,57 +1146,56 @@ void SkiaRenderer::FinishDrawingFrame() {
 
   // TODO(weiliangc): Remove this once OverlayProcessor schedules overlays.
   if (current_frame()->output_surface_plane) {
+    CHECK(output_surface_->capabilities().renderer_allocates_images);
+
     auto& surface_plane = current_frame()->output_surface_plane.value();
 
-    if (!output_surface_->capabilities().renderer_allocates_images) {
-      skia_output_surface_->ScheduleOutputSurfaceAsOverlay(surface_plane);
-    } else {
-      auto root_pass_backing =
-          render_pass_backings_.find(current_frame()->root_render_pass->id);
-      // The root pass backing should always exist.
-      DCHECK(root_pass_backing != render_pass_backings_.end());
+    auto root_pass_backing =
+        render_pass_backings_.find(current_frame()->root_render_pass->id);
+    // The root pass backing should always exist.
+    DCHECK(root_pass_backing != render_pass_backings_.end());
 
-      OverlayCandidate surface_candidate;
-      surface_candidate.mailbox = root_pass_backing->second.mailbox;
-      surface_candidate.is_root_render_pass = true;
+    OverlayCandidate surface_candidate;
+    surface_candidate.mailbox = root_pass_backing->second.mailbox;
+    surface_candidate.is_root_render_pass = true;
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-      surface_candidate.transform = gfx::Transform();
+    surface_candidate.transform = gfx::Transform();
 #else
-      surface_candidate.transform = surface_plane.transform;
+    surface_candidate.transform = surface_plane.transform;
 #endif
-      surface_candidate.display_rect = surface_plane.display_rect;
-      surface_candidate.uv_rect = surface_plane.uv_rect;
-      surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
-      surface_candidate.format = surface_plane.format;
-      surface_candidate.color_space = surface_plane.color_space;
-      if (current_frame()->display_color_spaces.SupportsHDR() &&
-          current_frame()->root_render_pass->content_color_usage ==
-              gfx::ContentColorUsage::kHDR) {
-        surface_candidate.hdr_metadata.extended_range.emplace();
-        // TODO(crbug.com/40263227): Track the actual brightness of the
-        // content. For now, assume that all HDR content is 1,000 nits.
-        surface_candidate.hdr_metadata.extended_range->desired_headroom =
-            gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
-      }
-      surface_candidate.is_opaque = !surface_plane.enable_blending;
-      surface_candidate.opacity = surface_plane.opacity;
-      surface_candidate.priority_hint = surface_plane.priority_hint;
-      surface_candidate.rounded_corners = surface_plane.rounded_corners;
-      surface_candidate.damage_rect =
-          use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
-                            : gfx::RectF(surface_plane.resource_size);
-#if BUILDFLAG(IS_MAC)
-      // Mac doesn't use the plane_z_order field and it needs to have primary
-      // plane last in the list of overlays.
-      auto insert_positon = current_frame()->overlay_list.end();
-#else
-      // Most platforms respect plane_z_order so the list order doesn't matter
-      // but Ozone DRM needs the primary plane as the first overlay when overlay
-      // testing.
-      auto insert_positon = current_frame()->overlay_list.begin();
-#endif
-      current_frame()->overlay_list.insert(insert_positon, surface_candidate);
+    surface_candidate.display_rect = surface_plane.display_rect;
+    surface_candidate.uv_rect = surface_plane.uv_rect;
+    surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
+    surface_candidate.format = surface_plane.format;
+    surface_candidate.color_space = surface_plane.color_space;
+    if (current_frame()->display_color_spaces.SupportsHDR() &&
+        current_frame()->root_render_pass->content_color_usage ==
+            gfx::ContentColorUsage::kHDR) {
+      surface_candidate.hdr_metadata.extended_range.emplace();
+      // TODO(crbug.com/40263227): Track the actual brightness of the
+      // content. For now, assume that all HDR content is 1,000 nits.
+      surface_candidate.hdr_metadata.extended_range->desired_headroom =
+          gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
     }
+    surface_candidate.is_opaque = !surface_plane.enable_blending;
+    surface_candidate.opacity = surface_plane.opacity;
+    surface_candidate.priority_hint = surface_plane.priority_hint;
+    surface_candidate.rounded_corners = surface_plane.rounded_corners;
+    surface_candidate.damage_rect =
+        use_partial_swap_ ? gfx::RectF(swap_buffer_rect_)
+                          : gfx::RectF(surface_plane.resource_size);
+#if BUILDFLAG(IS_MAC)
+    // Mac doesn't use the plane_z_order field and it needs to have primary
+    // plane last in the list of overlays.
+    auto insert_positon = current_frame()->overlay_list.end();
+#else
+    // Most platforms respect plane_z_order so the list order doesn't matter
+    // but Ozone DRM needs the primary plane as the first overlay when overlay
+    // testing.
+    auto insert_positon = current_frame()->overlay_list.begin();
+#endif
+    current_frame()->overlay_list.insert(insert_positon, surface_candidate);
+
   } else {
     if (buffer_queue_) {
       // If there's no primary plane on these platforms it mean's we're
@@ -2942,7 +2942,8 @@ void SkiaRenderer::DrawYUVVideoQuad(const YUVVideoDrawQuad* quad,
   // compositing-overlay switch here. In addition drawing a HDR video using sRGB
   // can cancel the advantages of HDR.
   const bool supports_dc_layers =
-      output_surface_->capabilities().supports_dc_layers;
+      output_surface_->capabilities().dc_support_level !=
+      OutputSurface::DCSupportLevel::kNone;
   if (supports_dc_layers && !src_color_space.IsHDR() &&
       resource_provider()->IsOverlayCandidate(quad->y_plane_resource_id())) {
     DCHECK(
@@ -4411,14 +4412,15 @@ void SkiaRenderer::Reshape(const OutputSurface::ReshapeParams& reshape_params) {
 }
 
 void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
-  if (buffer_queue_) {
-    buffer_queue_->EnsureMinNumberOfBuffers(n);
-  } else if (skia_output_surface_->EnsureMinNumberOfBuffers(n)) {
-    ReallocatedFrameBuffers();
-  }
+  CHECK(buffer_queue_);
+  buffer_queue_->EnsureMinNumberOfBuffers(n);
 }
 
 gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
+#if BUILDFLAG(IS_WIN)
+  // Windows dcomp uses a swap chain for primary plane instead of BufferQueue.
+  return gpu::Mailbox();
+#else
   // For the purpose of testing the overlay configuration, the mailbox for ANY
   // buffer from BufferQueue is good enough because they're all created with
   // identical properties.
@@ -4426,13 +4428,9 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   // presented this frame so we'll just use the last swapped buffer. (We might
   // present a new frame's mailbox, or if we empty-swap we'll present the
   // previous frame's mailbox.)
-  if (buffer_queue_) {
-    return buffer_queue_->GetLastSwappedBuffer();
-  } else {
-    // OutputSurface::GetOverlayMailbox() returns the mailbox for the last
-    // swapped buffer.
-    return skia_output_surface_->GetOverlayMailbox();
-  }
+  CHECK(buffer_queue_);
+  return buffer_queue_->GetLastSwappedBuffer();
+#endif
 }
 
 #if BUILDFLAG(IS_OZONE)

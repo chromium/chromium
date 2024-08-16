@@ -139,6 +139,8 @@ const char* ToString(ClientKeyType key_type) {
       return kHardwareKey;
     case ClientKeyType::kUserVerified:
       return kUserVerificationKey;
+    case ClientKeyType::kSoftwareUserVerified:
+      return kSoftwareUserVerificationKey;
   }
 }
 

@@ -44,8 +44,7 @@ class SeeAllButton : public views::LabelButton {
   METADATA_HEADER(SeeAllButton, views::LabelButton)
 
  public:
-  SeeAllButton(const std::u16string& see_all_accessible_name,
-               base::RepeatingClosure on_see_all_pressed) {
+  explicit SeeAllButton(base::RepeatingClosure on_see_all_pressed) {
     const bool stable_launch =
         features::AreAnyGlanceablesTimeManagementViewsEnabled();
     SetText(stable_launch
@@ -72,8 +71,6 @@ class SeeAllButton : public views::LabelButton {
     SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
-    GetViewAccessibility().SetProperties(ax::mojom::Role::kLink,
-                                         see_all_accessible_name);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   }
 
@@ -88,15 +85,12 @@ END_METADATA
 }  // namespace
 
 GlanceablesListFooterView::GlanceablesListFooterView(
-    std::u16string title_text,
-    std::u16string see_all_accessible_name,
     base::RepeatingClosure on_see_all_pressed) {
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   const auto* const typography_provider = TypographyProvider::Get();
   title_label_ = AddChildView(
       views::Builder<views::Label>()
-          .SetText(title_text)
           .SetID(base::to_underlying(GlanceablesViewId::kListFooterTitleLabel))
           .SetEnabledColorId(cros_tokens::kCrosSysSecondary)
           .SetFontList(typography_provider->ResolveTypographyToken(
@@ -110,8 +104,18 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
-  see_all_button_ = AddChildView(std::make_unique<SeeAllButton>(
-      see_all_accessible_name, on_see_all_pressed));
+  see_all_button_ =
+      AddChildView(std::make_unique<SeeAllButton>(on_see_all_pressed));
+}
+
+void GlanceablesListFooterView::SetTitleText(const std::u16string& title_text) {
+  title_label_->SetText(title_text);
+}
+
+void GlanceablesListFooterView::SetSeeAllAccessibleName(
+    const std::u16string& see_all_accessible_name) {
+  see_all_button_->GetViewAccessibility().SetProperties(
+      ax::mojom::Role::kLink, see_all_accessible_name);
 }
 
 BEGIN_METADATA(GlanceablesListFooterView)

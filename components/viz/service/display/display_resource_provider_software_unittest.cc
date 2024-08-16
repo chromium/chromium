@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -77,7 +78,8 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
         resource_provider_(std::make_unique<DisplayResourceProviderSoftware>(
             shared_bitmap_manager_.get(),
             shared_image_manager_.get(),
-            sync_point_manager_.get())),
+            sync_point_manager_.get(),
+            gpu_scheduler_.get())),
         child_resource_provider_(std::make_unique<ClientResourceProvider>()) {}
 
   ~DisplayResourceProviderSoftwareTest() override {
@@ -88,6 +90,7 @@ class DisplayResourceProviderSoftwareTest : public testing::Test {
   const std::unique_ptr<TestSharedBitmapManager> shared_bitmap_manager_;
   const std::unique_ptr<gpu::SharedImageManager> shared_image_manager_;
   const std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
+  const std::unique_ptr<gpu::Scheduler> gpu_scheduler_;
   const std::unique_ptr<DisplayResourceProviderSoftware> resource_provider_;
   const std::unique_ptr<ClientResourceProvider> child_resource_provider_;
 };

@@ -101,7 +101,7 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
     // Only full phone numbers should be set directly. The browser is
     // intentionally caused to crash to prevent all users from setting raw info
     // to the non-storable fields.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   number_ = value;
@@ -362,7 +362,7 @@ void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
       // to prevent misclassifying such fields as something else.
       return;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

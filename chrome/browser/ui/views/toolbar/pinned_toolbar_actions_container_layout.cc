@@ -14,7 +14,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
 
-  bool size_bounded = size_bounds.is_fully_bounded();
+  const bool size_bounded = size_bounds.is_fully_bounded();
   int remaining_width =
       size_bounded ? (size_bounds.width().value() - interior_margin_.width())
                    : 0;
@@ -30,7 +30,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
       if (!IsChildIncludedInLayout(child)) {
         continue;
       }
-      PinnedToolbarActionFlexPriority priority =
+      const PinnedToolbarActionFlexPriority priority =
           static_cast<PinnedToolbarActionFlexPriority>(
               child->GetProperty(kToolbarButtonFlexPriorityKey));
       gfx::Size preferred_size = child->GetPreferredSize();
@@ -62,7 +62,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
 
   // 2. Check if all medium priority items will fit in the remaining space. If
   // so, allocate space for them in the remaining width.
-  bool fits_all_medium_priority =
+  const bool fits_all_medium_priority =
       !size_bounded || (remaining_width - mid_priority_width > 0);
   divider_space_preallocated =
       divider_space_preallocated ||
@@ -94,22 +94,23 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
     }
     // Get the preferred size and include the divider width if this view is
     // causing the divider to need to be shown.
-    int margin_width = (*i)->GetProperty(views::kMarginsKey)->width();
+    const int margin_width = (*i)->GetProperty(views::kMarginsKey)->width();
     gfx::Size preferred_size = (*i)->GetPreferredSize();
     preferred_size.Enlarge(margin_width, 0);
-    if (divider_index > index) {
-      preferred_size.set_width(preferred_size.width() + divider_width);
+    if (divider_index > index && !divider_space_preallocated) {
+      preferred_size.Enlarge(divider_width, 0);
     }
 
-    PinnedToolbarActionFlexPriority priority =
+    const PinnedToolbarActionFlexPriority priority =
         static_cast<PinnedToolbarActionFlexPriority>(
             (*i)->GetProperty(kToolbarButtonFlexPriorityKey));
-    bool has_preallocated_space_in_layout =
+    const bool has_preallocated_space_in_layout =
         priority == PinnedToolbarActionFlexPriority::kHigh ||
         (fits_all_medium_priority &&
          priority == PinnedToolbarActionFlexPriority::kMedium);
-    bool fits_in_remaining_space = remaining_width >= preferred_size.width();
-    bool should_take_remaining_space =
+    const bool fits_in_remaining_space =
+        remaining_width >= preferred_size.width();
+    const bool should_take_remaining_space =
         fits_all_medium_priority ||
         priority == PinnedToolbarActionFlexPriority::kMedium;
 
@@ -121,9 +122,6 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
       // Include the divider if necessary.
       if (divider_index != 0) {
         visible_child_indices.push_back(divider_index);
-        if (size_bounded && !divider_space_preallocated) {
-          remaining_width -= divider_width;
-        }
         divider_index = 0;
       }
       if (has_preallocated_space_in_layout) {
@@ -131,7 +129,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
       } else {
         visible_child_indices.push_back(index);
         if (size_bounded) {
-          remaining_width -= (*i)->GetPreferredSize().width() + margin_width;
+          remaining_width -= preferred_size.width();
         }
       }
     }
@@ -142,11 +140,11 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   int total_width = interior_margin_.width();
   int left = interior_margin_.left();
   index = 0;
-  int height = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
+  const int height = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   for (auto view : host_view()->children()) {
     if (visible_child_indices.size() && index == visible_child_indices.back()) {
-      gfx::Size preferred_size = view->GetPreferredSize();
-      int y = (height - preferred_size.height()) / 2;
+      const gfx::Size preferred_size = view->GetPreferredSize();
+      const int y = (height - preferred_size.height()) / 2;
       left += view->GetProperty(views::kMarginsKey)->left();
       layout.child_layouts.emplace_back(views::ChildLayout{
           view, true,

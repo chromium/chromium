@@ -181,8 +181,7 @@ gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Point();
+  NOTREACHED();
 }
 
 bool IsCornerFineTunePosition(FineTunePosition position) {

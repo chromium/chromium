@@ -63,8 +63,12 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           bool is_encrypted,
                                           bool is_directory,
                                           bool contents_valid,
+                                          bool is_top_level,
                                           ArchiveAnalyzerResults* results) {
   results->encryption_info.is_encrypted |= is_encrypted;
+  if (is_top_level) {
+    results->encryption_info.is_top_level_encrypted |= is_encrypted;
+  }
 
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor(
       new BinaryFeatureExtractor());
@@ -73,32 +77,24 @@ void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
   uint32_t magic;
   file->Read(0, reinterpret_cast<char*>(&magic), sizeof(uint32_t));
 
-  char dmg_header[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
-  file->Read(0, dmg_header,
-             DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
+  uint8_t dmg_header[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
+  file->Read(0, dmg_header);
 
   bool is_checked =
       FileTypePolicies::GetInstance()->IsCheckedBinaryFile(path) &&
       !is_directory;
   current_entry_is_executable =
       is_checked || MachOImageReader::IsMachOMagicValue(magic) ||
-      DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
-          base::span<const uint8_t>(
-              reinterpret_cast<const uint8_t*>(dmg_header),
-              DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize));
+      DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(dmg_header);
 
   // We can skip checking the trailer if we already know the file is executable.
   if (!current_entry_is_executable) {
-    char trailer[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
+    uint8_t trailer[DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize];
     file->Seek(base::File::Whence::FROM_END,
                DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
-    file->ReadAtCurrentPos(trailer,
-                           DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize);
+    file->ReadAtCurrentPos(trailer);
     current_entry_is_executable =
-        DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(
-            base::span<const uint8_t>(
-                reinterpret_cast<const uint8_t*>(trailer),
-                DiskImageTypeSnifferMac::kAppleDiskImageTrailerSize));
+        DiskImageTypeSnifferMac::IsAppleDiskImageTrailer(trailer);
   }
 
 #else

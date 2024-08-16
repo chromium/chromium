@@ -25,12 +25,12 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
-class PickerActionOnNextFocusRequest;
 class PickerAssetFetcher;
 class PickerCapsLockStateView;
 class PickerClient;
@@ -45,7 +45,8 @@ class PickerSuggestionsController;
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate,
                                     public views::ViewObserver,
-                                    public PickerAssetFetcherImplDelegate {
+                                    public PickerAssetFetcherImplDelegate,
+                                    public input_method::ImeKeyboard::Observer {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
@@ -77,6 +78,9 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // this method on a destructed class instance to avoid a use after free.
   void SetClient(PickerClient* client);
 
+  // This should be run when the Profile from the client is ready.
+  void OnClientProfileSet();
+
   // Toggles the visibility of the Picker widget.
   // This must only be called after `SetClient` is called with a valid client.
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
@@ -105,7 +109,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   void StopSearch() override;
   void StartEmojiSearch(std::u16string_view,
                         EmojiSearchResultsCallback callback) override;
-  void InsertResultOnNextFocus(const PickerSearchResult& result) override;
+  void CloseWidgetThenInsertResultOnNextFocus(
+      const PickerSearchResult& result) override;
   void OpenResult(const PickerSearchResult& result) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category,
                        std::u16string_view query) override;
@@ -118,6 +123,7 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::vector<PickerSearchResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
   PickerModeType GetMode() override;
+  PickerCapsLockPosition GetCapsLockPosition() override;
 
   // views:ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
@@ -127,18 +133,36 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
 
+  // input_method::ImeKeyboard::Observer
+  void OnCapsLockChanged(bool enabled) override;
+  void OnLayoutChanging(const std::string& layout_name) override;
+
   // Disables the feature key checking. Only works in tests.
   static void DisableFeatureKeyCheckForTesting();
+  // Disables the feature tour. Only works in tests.
+  static void DisableFeatureTourForTesting();
 
  private:
-  void ShowWidget(base::TimeTicks trigger_event_timestamp);
+  // Trigger source for showing the Picker widget. This is used to determine
+  // how the widget should be shown on the screen.
+  enum class WidgetTriggerSource {
+    // The user triggered Picker as part of their usual user flow, e.g. toggled
+    // Picker with a key press.
+    kDefault,
+    // The user triggered Picker by completing the feature tour.
+    kFeatureTour,
+  };
+
+  void ShowWidget(base::TimeTicks trigger_event_timestamp,
+                  WidgetTriggerSource trigger_source);
   void CloseWidget();
   void OnFeatureTourLearnMore();
-  void OnFeatureTourCompleted(bool had_focus_before_feature_tour);
   void ShowWidgetPostFeatureTour();
   void CloseCapsLockStateView();
+  void InsertResultOnNextFocus(const PickerSearchResult& result);
   void OnInsertCompleted(const PickerRichMedia& media,
                          PickerInsertMediaRequest::Result result);
+  PrefService* GetPrefs();
 
   std::optional<PickerWebPasteTarget> GetWebPasteTarget();
 
@@ -148,7 +172,6 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   std::unique_ptr<PickerEmojiSuggester> emoji_suggester_;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
-  std::unique_ptr<PickerActionOnNextFocusRequest> action_on_next_focus_request_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
   std::unique_ptr<PickerPasteRequest> paste_request_;
   std::unique_ptr<PickerSuggestionsController> suggestions_controller_;
@@ -168,8 +191,15 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   // Records metrics related to a session.
   std::unique_ptr<PickerSessionMetrics> session_metrics_;
 
+  // Timer used to delay closing the Widget for accessibility.
+  base::OneShotTimer close_widget_delay_timer_;
+
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
+
+  base::ScopedObservation<input_method::ImeKeyboard,
+                          input_method::ImeKeyboard::Observer>
+      ime_keyboard_observation_{this};
 
   // Closes CapsLock state view after some time.
   base::OneShotTimer caps_lock_state_view_close_timer_;

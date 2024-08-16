@@ -926,6 +926,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CRAS_METRICS_DLC_STATUS_AVAILABLE"/>
 </enum>
 
+<enum name="CrasEffectStartStatus">
+  <summary/>
+  <int value="0" label="CRAS_EFFECT_REQUESTED_FAILED"/>
+  <int value="1" label="CRAS_EFFECT_REQUESTED_SUCCEEDED"/>
+</enum>
+
 <enum name="CrasHfpBatteryIndicator">
   <summary>
     List of known battery indicator supports in Bluetooth Hands-free profile.

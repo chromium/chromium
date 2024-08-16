@@ -20,6 +20,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -259,8 +260,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * coordinator.
      */
     public void registerMessages(@NonNull TabListCoordinator tabListCoordinator) {
-        if (tabListCoordinator.getTabListMode() != TabListCoordinator.TabListMode.GRID) return;
-
         tabListCoordinator.registerItemType(
                 TabProperties.UiType.MESSAGE,
                 new LayoutViewBuilder(R.layout.tab_grid_message_card_item),
@@ -281,7 +280,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     public void initWithNative(@NonNull Profile profile, @TabListMode int mode) {
         assert profile != null;
         mProfile = profile;
-        if (mode != TabListCoordinator.TabListMode.GRID) return;
 
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
             mArchivedTabsMessageService =
@@ -295,7 +293,12 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mSnackbarManager,
                             mRegularTabCreator,
                             mBackPressManager,
-                            mModalDialogManager);
+                            mModalDialogManager,
+                            TrackerFactory.getTrackerForProfile(profile),
+                            () ->
+                                    appendNextMessage(
+                                            MessageService.MessageType.ARCHIVED_TABS_MESSAGE),
+                            mTabListCoordinatorSupplier);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

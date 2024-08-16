@@ -258,7 +258,7 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
   // Navigate to an origin with `PermissionStatus::ASK`.
   {
     content::RenderFrameHost* rfh_arg = nullptr;
-    content::RenderProcessHost* rph_arg = nullptr;
+    content::RenderFrameHost* rfh_arg_2 = nullptr;
     EXPECT_CALL(*permission_controller,
                 GetPermissionStatusForCurrentDocument(
                     blink::PermissionType::NOTIFICATIONS, testing::_))
@@ -268,14 +268,14 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
     EXPECT_CALL(*permission_controller,
                 SubscribeToPermissionStatusChange(
                     blink::PermissionType::NOTIFICATIONS, testing::_,
-                    testing::_, testing::_, testing::_))
-        .WillOnce(testing::DoAll(testing::SaveArg<1>(&rph_arg),
+                    testing::_, testing::_, testing::_, testing::_))
+        .WillOnce(testing::DoAll(testing::SaveArg<2>(&rfh_arg_2),
                                  testing::Return(kFirstSubscriptionId)));
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kParentUrl));
     testing::Mock::VerifyAndClear(permission_controller);
     EXPECT_EQ(rfh_arg, web_contents()->GetPrimaryMainFrame());
-    EXPECT_EQ(rph_arg, web_contents()->GetPrimaryMainFrame()->GetProcess());
+    EXPECT_EQ(rfh_arg_2, web_contents()->GetPrimaryMainFrame());
     ExpectNotificationPermissionStatus(blink::mojom::PermissionStatus::ASK);
   }
 
@@ -296,9 +296,9 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
     EXPECT_CALL(*permission_controller,
                 SubscribeToPermissionStatusChange(
                     blink::PermissionType::NOTIFICATIONS, testing::_,
-                    testing::_, testing::_, testing::_))
+                    testing::_, testing::_, testing::_, testing::_))
         .WillOnce(testing::DoAll(testing::SaveArg<1>(&rph_arg),
-                                 testing::SaveArg<4>(&callback_arg),
+                                 testing::SaveArg<5>(&callback_arg),
                                  testing::Return(kSecondSubscriptionId)));
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kCousinFreddyUrl));
@@ -352,7 +352,7 @@ class LenientMockPageNodeObserver : public PageNode::ObserverDefaultImpl {
   LenientMockPageNodeObserver& operator=(const LenientMockPageNodeObserver&) =
       delete;
 
-  MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
+  MOCK_METHOD(void, OnFaviconUpdated, (const PageNode*), (override));
 };
 using MockPageNodeObserver = ::testing::StrictMock<LenientMockPageNodeObserver>;
 

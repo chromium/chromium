@@ -97,8 +97,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaParamRef<jstring>&
           jimage_translate_source_language_param_key,
       const base::android::JavaParamRef<jstring>&
-          jimage_translate_target_language_param_key,
-      jboolean set_as_default);
+          jimage_translate_target_language_param_key);
 
   // Adds a custom search engine, sets |jkeyword| as its short_name and keyword,
   // and sets its date_created as |age_in_days| days before the current time.

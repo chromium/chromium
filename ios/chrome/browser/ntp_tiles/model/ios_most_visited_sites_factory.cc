@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/history/model/top_sites_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #include "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -24,6 +25,7 @@ IOSMostVisitedSitesFactory::NewForBrowserState(
     ChromeBrowserState* browser_state) {
   return std::make_unique<ntp_tiles::MostVisitedSites>(
       browser_state->GetPrefs(),
+      IdentityManagerFactory::GetForBrowserState(browser_state),
       SupervisedUserServiceFactory::GetForBrowserState(browser_state),
       ios::TopSitesFactory::GetForBrowserState(browser_state),
       IOSPopularSitesFactory::NewForBrowserState(browser_state),

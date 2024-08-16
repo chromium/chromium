@@ -1,0 +1,105 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("multidevice") {
+  sources = [
+    "multidevice_handler.cc",
+    "multidevice_handler.h",
+    "multidevice_section.cc",
+    "multidevice_section.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/eche_app_ui",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/ash/components/multidevice",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/services/multidevice_setup/public/cpp",
+    "//chromeos/ash/services/multidevice_setup/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings",
+    "//components/prefs",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//build:branding_buildflags",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/phonehub",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/multidevice_setup",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/osauth/public",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
+    "//chromeos/constants",
+    "//components/content_settings/core/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chrome/browser/nearby_sharing/internal/resources:nearby_share_internal_strings" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "multidevice_handler_unittest.cc",
+    "multidevice_section_unittest.cc",
+  ]
+
+  deps = [
+    ":multidevice",
+    "//ash/constants",
+    "//ash/public/cpp:test_support",
+    "//ash/webui/eche_app_ui:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/crosapi:browser_util",
+    "//chrome/browser/ash/eche_app",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/multidevice:test_support",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/components/phonehub:debug",
+    "//chromeos/ash/components/phonehub:test_support",
+    "//chromeos/ash/components/standalone_browser",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
+    "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
+    "//components/account_id",
+    "//components/content_settings/core/common",
+    "//components/policy:generated",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/sync/base:features",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

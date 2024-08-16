@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.BackupSigninProcessor;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
@@ -121,7 +120,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     private void maybeCreateHistoryTabHelper(Tab tab) {
-        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
+        if (!HistoryManager.isAppSpecificHistoryEnabled() || mIntentDataProvider.isAuthTab()) {
+            return;
+        }
         String appId = mIntentDataProvider.getClientPackageNameIdentitySharing();
         if (appId != null) HistoryTabHelper.from(tab).setAppId(appId, tab.getWebContents());
     }
@@ -374,20 +375,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
     }
 
-    @Override
-    protected BrowserServicesIntentDataProvider buildIntentDataProvider(
-            Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
-        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(intent)) {
-            return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
-        } else if (EphemeralCustomTabIntentDataProvider.isValidEphemeralTabIntent(intent)) {
-            return new EphemeralCustomTabIntentDataProvider(intent, this, colorScheme);
-        }
-        return new CustomTabIntentDataProvider(intent, this, colorScheme);
-    }
-
     /**
-     * Show the web page with CustomTabActivity, without any navigation control.
-     * Used in showing the terms of services page or help pages for Chrome.
+     * Show the web page with CustomTabActivity, without any navigation control. Used in showing the
+     * terms of services page or help pages for Chrome.
+     *
      * @param context The current activity context.
      * @param url The url of the web page.
      */

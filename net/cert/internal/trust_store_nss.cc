@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_nss.h"
 
 #include <cert.h>
@@ -19,6 +14,7 @@
 #include <secmod.h>
 #include <secmodt.h>
 
+#include "base/containers/to_vector.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -88,8 +84,14 @@ GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert,
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    for (int i = 0; i < item->module->slotCount; ++i) {
-      PK11SlotInfo* slot = item->module->slots[i];
+    // SAFETY: item->module->slots is an array with item->module->slotCount
+    // elements. slotCount is a signed int so use checked_cast when creating
+    // the span.
+    base::span<PK11SlotInfo*> module_slots = UNSAFE_BUFFERS(
+        base::span(item->module->slots,
+                   base::checked_cast<size_t>(item->module->slotCount)));
+
+    for (PK11SlotInfo* slot : module_slots) {
       if (PK11_IsPresent(slot)) {
         CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, nss_cert, nullptr);
         if (handle != CK_INVALID_HANDLE) {
@@ -201,8 +203,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
     bssl::CertErrors parse_errors;
     std::shared_ptr<const bssl::ParsedCertificate> cur_cert =
         bssl::ParsedCertificate::Create(
-            x509_util::CreateCryptoBuffer(base::make_span(
-                node->cert->derCert.data, node->cert->derCert.len)),
+            x509_util::CreateCryptoBuffer(
+                x509_util::CERTCertificateAsSpan(node->cert)),
             {}, &parse_errors);
 
     if (!cur_cert) {
@@ -218,6 +220,7 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 
 std::vector<TrustStoreNSS::ListCertsResult>
 TrustStoreNSS::ListCertsIgnoringNSSRoots() {
+  crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
   if (absl::holds_alternative<crypto::ScopedPK11Slot>(
@@ -377,8 +380,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // clear the cache. (There are multiple approaches possible, could cache the
   // hash->trust mappings on a per-slot basis, or just cache the end result for
   // each cert, etc.)
-  base::SHA1Digest cert_sha1 = base::SHA1Hash(
-      base::make_span(nss_cert->derCert.data, nss_cert->derCert.len));
+  base::SHA1Digest cert_sha1 =
+      base::SHA1Hash(x509_util::CERTCertificateAsSpan(nss_cert));
 
   // Check the slots in trustOrder ordering. Lower trustOrder values are higher
   // priority, so we can return as soon as we find a matching trust object.
@@ -404,13 +407,12 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         DVLOG(1) << "trust object has no CKA_CERT_SHA1_HASH attr";
         continue;
       }
-      base::span<const uint8_t> trust_obj_sha1 = base::make_span(
-          sha1_hash_attr->data, sha1_hash_attr->data + sha1_hash_attr->len);
+      base::span<const uint8_t> trust_obj_sha1 =
+          x509_util::SECItemAsSpan(*sha1_hash_attr);
       DVLOG(1) << "found trust object for sha1 "
                << base::HexEncode(trust_obj_sha1);
 
-      if (!std::equal(trust_obj_sha1.begin(), trust_obj_sha1.end(),
-                      cert_sha1.begin(), cert_sha1.end())) {
+      if (trust_obj_sha1 != cert_sha1) {
         DVLOG(1) << "trust object does not match target cert hash, skipping";
         continue;
       }
@@ -427,8 +429,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         continue;
       }
       DVLOG(1) << "trust "
-               << base::HexEncode(base::make_span(
-                      trust_attr->data, trust_attr->data + trust_attr->len))
+               << base::HexEncode(x509_util::SECItemAsSpan(*trust_attr))
                << " for sha1 " << base::HexEncode(trust_obj_sha1);
 
       CK_TRUST trust;
@@ -512,10 +513,24 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   return bssl::CertificateTrust::ForUnspecified();
 }
 
-std::vector<net::PlatformTrustStore::CertWithTrust>
+std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreNSS::GetAllUserAddedCerts() {
-  // TODO(crbug.com/40928765): implement this.
-  return {};
+  std::vector<PlatformTrustStore::CertWithTrust> user_added_certs;
+  for (const auto& cert_result : ListCertsIgnoringNSSRoots()) {
+    // Skip user certs, unless the user added the user cert with specific
+    // server auth trust settings.
+    if (cert_result.trust.HasUnspecifiedTrust() &&
+        CERT_IsUserCert(cert_result.cert.get())) {
+      continue;
+    }
+
+    user_added_certs.emplace_back(
+        base::ToVector(
+            x509_util::CERTCertificateAsSpan(cert_result.cert.get())),
+        cert_result.trust);
+  }
+
+  return user_added_certs;
 }
 
 }  // namespace net

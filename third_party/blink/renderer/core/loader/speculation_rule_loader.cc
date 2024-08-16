@@ -83,6 +83,10 @@ void SpeculationRuleLoader::NotifyFinished() {
     return;
   }
 
+  if (!document_->GetExecutionContext()) {
+    return;
+  }
+
   String source_text = resource_->DecodedText();
   auto* source = SpeculationRuleSet::Source::FromRequest(
       source_text, response.ResponseUrl(), resource_->InspectorId());

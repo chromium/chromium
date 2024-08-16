@@ -13,10 +13,10 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +51,7 @@ class MockPasswordReceiverService : public PasswordReceiverService {
   MOCK_METHOD(void,
               ProcessIncomingSharingInvitation,
               (sync_pb::IncomingPasswordSharingInvitationSpecifics));
-  MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
               GetControllerDelegate,
               ());
   MOCK_METHOD(void, OnSyncServiceInitialized, (syncer::SyncService*));
@@ -112,7 +112,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
  public:
   IncomingPasswordSharingInvitationSyncBridgeTest()
       : sync_metadata_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
     ON_CALL(*mock_processor(), ModelReadyToSync)
         .WillByDefault(
             Invoke(this, &IncomingPasswordSharingInvitationSyncBridgeTest::
@@ -131,7 +131,7 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
 
     bridge_ = std::make_unique<IncomingPasswordSharingInvitationSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
             sync_metadata_store_.get()));
     bridge_->SetPasswordReceiverService(&mock_password_receiver_service_);
 
@@ -144,7 +144,8 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
   mock_password_receiver_service() {
     return &mock_password_receiver_service_;
   }
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor>* mock_processor() {
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor>*
+  mock_processor() {
     return &mock_processor_;
   }
   IncomingPasswordSharingInvitationSyncBridge* bridge() {
@@ -158,13 +159,13 @@ class IncomingPasswordSharingInvitationSyncBridgeTest : public testing::Test {
     }
   }
 
-  // In memory model type store needs to be able to post tasks.
+  // In memory data type store needs to be able to post tasks.
   base::test::TaskEnvironment task_environment_;
 
   testing::NiceMock<MockPasswordReceiverService>
       mock_password_receiver_service_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ModelTypeStore> sync_metadata_store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::DataTypeStore> sync_metadata_store_;
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> bridge_;
 
   // Called if present on ModelReadyToSync() call for |mock_processor_|.
@@ -268,10 +269,10 @@ TEST_F(IncomingPasswordSharingInvitationSyncBridgeTest,
   // Simulate the initial sync merge.
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes =
       bridge()->CreateMetadataChangeList();
-  sync_pb::ModelTypeState model_type_state;
-  model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState::INITIAL_SYNC_DONE);
-  metadata_changes->UpdateModelTypeState(model_type_state);
+  sync_pb::DataTypeState data_type_state;
+  data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState::INITIAL_SYNC_DONE);
+  metadata_changes->UpdateDataTypeState(data_type_state);
   bridge()->MergeFullSyncData(std::move(metadata_changes),
                               syncer::EntityChangeList());
 

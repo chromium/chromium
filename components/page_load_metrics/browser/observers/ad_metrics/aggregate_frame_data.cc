@@ -32,6 +32,12 @@ void AggregateFrameData::UpdateFirstAdFCPSinceNavStart(
   }
 }
 
+void AggregateFrameData::OnAdAuctionComplete() {
+  if (!first_ad_fcp_after_main_nav_start_) {
+    completed_fledge_auction_before_fcp_ = true;
+  }
+}
+
 void AggregateFrameData::ProcessResourceLoadInFrame(
     const mojom::ResourceDataUpdatePtr& resource,
     bool is_outermost_main_frame) {

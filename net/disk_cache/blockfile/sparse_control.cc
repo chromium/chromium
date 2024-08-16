@@ -417,7 +417,7 @@ int SparseControl::CreateSparseEntry() {
 
   // Save the header. The bitmap is saved in the destructor.
   scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::as_chars(base::make_span(&sparse_header_, 1u)));
+      base::as_chars(base::span_from_ref(sparse_header_)));
 
   int rv = entry_->WriteData(kSparseIndex, 0, buf.get(), sizeof(sparse_header_),
                              CompletionOnceCallback(), false);
@@ -447,7 +447,7 @@ int SparseControl::OpenSparseEntry(int data_len) {
     return net::ERR_CACHE_OPERATION_NOT_SUPPORTED;
 
   scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::as_chars(base::span(&sparse_header_, 1u)));
+      base::as_chars(base::span_from_ref(sparse_header_)));
 
   // Read header.
   int rv = entry_->ReadData(kSparseIndex, 0, buf.get(), sizeof(sparse_header_),
@@ -502,7 +502,7 @@ bool SparseControl::OpenChild() {
     return KillChildAndContinue(key, false);
 
   auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::as_chars(base::make_span(&child_data_, 1u)));
+      base::as_chars(base::span_from_ref(child_data_)));
 
   // Read signature.
   int rv = child_->ReadData(kSparseIndex, 0, buf.get(), sizeof(child_data_),
@@ -526,7 +526,7 @@ bool SparseControl::OpenChild() {
 
 void SparseControl::CloseChild() {
   auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::as_chars(base::make_span(&child_data_, 1u)));
+      base::as_chars(base::span_from_ref(child_data_)));
 
   // Save the allocation bitmap before closing the child entry.
   int rv = child_->WriteData(kSparseIndex, 0, buf.get(), sizeof(child_data_),
@@ -691,7 +691,7 @@ void SparseControl::InitChildData() {
   child_data_.header = sparse_header_;
 
   auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      base::as_chars(base::make_span(&child_data_, 1u)));
+      base::as_chars(base::span_from_ref(child_data_)));
 
   int rv = child_->WriteData(kSparseIndex, 0, buf.get(), sizeof(child_data_),
                              CompletionOnceCallback(), false);

@@ -52,6 +52,13 @@ struct OmniboxPopupSelection {
     // is in focus.
     FOCUSED_BUTTON_ACTION,
 
+    // FOCUSED_BUTTON_THUMBS_UP state means the thumbs up button is focused.
+    FOCUSED_BUTTON_THUMBS_UP,
+
+    // FOCUSED_BUTTON_THUMBS_DOWN state means the thumbs down button is focused.
+    // Pressing enter will attempt to submit feedback form for this suggestion.
+    FOCUSED_BUTTON_THUMBS_DOWN,
+
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
     FOCUSED_BUTTON_REMOVE_SUGGESTION,

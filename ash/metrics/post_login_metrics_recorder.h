@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/metrics/deferred_metrics_reporter.h"
 #include "ash/metrics/post_login_event_observer.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -29,16 +30,14 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
   PostLoginMetricsRecorder& operator=(const PostLoginMetricsRecorder&) = delete;
   ~PostLoginMetricsRecorder() override;
 
-  // Add a time marker for login animations events. A timeline will be sent to
-  // tracing after login is done.
-  void AddLoginTimeMarker(const std::string& marker_name);
-
   // PostLoginEventObserver overrides:
   void OnAuthSuccess(base::TimeTicks ts) override;
   void OnUserLoggedIn(base::TimeTicks ts,
                       bool is_ash_restarted,
                       bool is_regular_user_or_owner) override;
   void OnAllExpectedShelfIconLoaded(base::TimeTicks ts) override;
+  void OnSessionRestoreDataLoaded(base::TimeTicks ts,
+                                  bool restore_automatically) override;
   void OnAllBrowserWindowsCreated(base::TimeTicks ts) override;
   void OnAllBrowserWindowsShown(base::TimeTicks ts) override;
   void OnAllBrowserWindowsPresented(base::TimeTicks ts) override;
@@ -53,8 +52,9 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
  private:
   class TimeMarker {
    public:
-    explicit TimeMarker(const std::string& name);
-    TimeMarker(const TimeMarker& other) = default;
+    TimeMarker(const std::string& name, base::TimeTicks time);
+    TimeMarker(TimeMarker&& other) = default;
+    TimeMarker& operator=(TimeMarker&& other) = default;
     ~TimeMarker() = default;
 
     const std::string& name() const { return name_; }
@@ -68,17 +68,25 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
    private:
     friend class std::vector<TimeMarker>;
 
-    const std::string name_;
-    const base::TimeTicks time_ = base::TimeTicks::Now();
+    std::string name_;
+    base::TimeTicks time_;
   };
 
+  // Add a time marker for login events. A timeline will be reported after
+  // login animation is done.
+  void AddLoginTimeMarker(const std::string& name, base::TimeTicks timestamp);
   void EnsureTracingSliceNamed(base::TimeTicks ts);
+  void ReportTraceEvents();
 
   std::vector<TimeMarker> markers_;
 
   // Records the timestamp of `OnAuthSuccess` or `OnUserLoggedIn`, which
   // ever happens first, as the origin time of a user login.
   std::optional<base::TimeTicks> timestamp_origin_;
+
+  // Used for reporting metrics with different names depending on the session
+  // restore flow.
+  DeferredMetricsReporter uma_login_perf_;
 
   base::ScopedObservation<LoginUnlockThroughputRecorder, PostLoginEventObserver>
       post_login_event_observation_{this};

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/clipboard/clipboard_history.h"
 
 #include <iterator>
@@ -687,6 +692,17 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, ReorderOnCopy) {
             clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste));
   EXPECT_NE(clipboard_history_items.front().data().sequence_number_token(),
             clipboard_data_a.sequence_number_token());
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, AccessibleProperties) {
+  SetClipboardText("A");
+  ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+  ui::AXNodeData data;
+
+  GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kMenuItem);
 }
 
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,

@@ -800,6 +800,10 @@ void AdsPageLoadMetricsObserver::OnV8MemoryChanged(
   }
 }
 
+void AdsPageLoadMetricsObserver::OnAdAuctionComplete() {
+  aggregate_frame_data_->OnAdAuctionComplete();
+}
+
 void AdsPageLoadMetricsObserver::OnSubresourceFilterGoingAway() {
   subresource_observation_.Reset();
 }
@@ -980,6 +984,13 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
         "PageLoad.Clients.Ads.AdPaintTiming."
         "TopFrameNavigationToFirstAdFirstContentfulPaint",
         first_ad_fcp_after_main_nav_start.value());
+
+    if (aggregate_frame_data_->completed_fledge_auction_before_fcp()) {
+      PAGE_LOAD_HISTOGRAM(
+          "PageLoad.Clients.Ads.AdPaintTiming."
+          "TopFrameNavigationToFirstAdFirstContentfulPaintAfterAuction",
+          first_ad_fcp_after_main_nav_start.value());
+    }
   }
 
   RecordAggregateHistogramsForAdTagging(FrameVisibility::kNonVisible);

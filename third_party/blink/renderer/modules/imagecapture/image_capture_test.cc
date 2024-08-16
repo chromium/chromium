@@ -363,6 +363,8 @@ void CheckExactValues(
   EXPECT_TRUE(settings->has_face_framing_mode);
   EXPECT_EQ(settings->face_framing_mode,
             media::mojom::blink::MeteringMode::CONTINUOUS);
+  EXPECT_TRUE(settings->background_segmentation_mask_state.has_value());
+  EXPECT_FALSE(settings->background_segmentation_mask_state.value());
 }
 
 void CheckMaxValues(const media::mojom::blink::PhotoSettingsPtr& settings,
@@ -435,6 +437,7 @@ void CheckMaxValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   EXPECT_FALSE(settings->has_background_blur_mode);
   EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
+  EXPECT_FALSE(settings->background_segmentation_mask_state.has_value());
 }
 
 void CheckMinValues(const media::mojom::blink::PhotoSettingsPtr& settings,
@@ -507,6 +510,7 @@ void CheckMinValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   EXPECT_FALSE(settings->has_background_blur_mode);
   EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
+  EXPECT_FALSE(settings->background_segmentation_mask_state.has_value());
 }
 
 void CheckNoValues(const media::mojom::blink::PhotoSettingsPtr& settings,
@@ -532,6 +536,7 @@ void CheckNoValues(const media::mojom::blink::PhotoSettingsPtr& settings,
   EXPECT_FALSE(settings->has_background_blur_mode);
   EXPECT_FALSE(settings->eye_gaze_correction_mode.has_value());
   EXPECT_FALSE(settings->has_face_framing_mode);
+  EXPECT_FALSE(settings->background_segmentation_mask_state.has_value());
 }
 
 template <typename ConstraintCreator>
@@ -621,6 +626,10 @@ void PopulateConstraintSet(
   constraint_set->setFaceFraming(
       MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
           ConstraintCreator::Create(all_capabilities->faceFraming()[0])));
+  constraint_set->setBackgroundSegmentationMask(
+      MakeGarbageCollected<V8UnionBooleanOrConstrainBooleanParameters>(
+          ConstraintCreator::Create(
+              all_capabilities->backgroundSegmentationMask()[0])));
 }
 
 class MockMediaStreamComponent
@@ -743,6 +752,7 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     all_capabilities_->setBackgroundBlur({true});
     all_capabilities_->setEyeGazeCorrection({false});
     all_capabilities_->setFaceFraming({true, false});
+    all_capabilities_->setBackgroundSegmentationMask({false, true});
     all_non_capabilities_->setBackgroundBlur({false});
     all_non_capabilities_->setEyeGazeCorrection({true});
     default_settings_ = MediaTrackSettings::Create();
@@ -772,6 +782,7 @@ class ImageCaptureConstraintTest : public ImageCaptureTest {
     default_settings_->setBackgroundBlur(true);
     default_settings_->setEyeGazeCorrection(false);
     default_settings_->setFaceFraming(false);
+    default_settings_->setBackgroundSegmentationMask(false);
     // Capabilities and default settings must be chosen so that at least
     // the constraint set {exposureCompensation: {max: ...}} with
     // `all_capabilities_->exposureCompensation()->min() +

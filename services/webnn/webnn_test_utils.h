@@ -526,7 +526,7 @@ class GraphInfoBuilder final {
       mojom::Operand::Kind kind = mojom::Operand::Kind::kOutput);
 
   mojom::GraphInfoPtr graph_info_;
-  uint64_t operand_id_ = 0;
+  uint64_t operand_id_ = 1;
 };
 
 // A default set of WebNNContext properties for testing purposes.

@@ -15,6 +15,7 @@ message AdProtos {
     optional string metadata = 3;
     optional string buyer_reporting_id = 4;
     optional string buyer_and_seller_reporting_id = 5;
+    repeated string selectable_buyer_and_seller_reporting_ids = 8;
     optional string ad_render_id = 6;
     repeated string allowed_reporting_origins = 7;
   }

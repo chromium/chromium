@@ -14,7 +14,6 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/test/fakes/fake_wk_configuration_provider_observer.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -159,14 +158,27 @@ TEST_F(WKWebViewConfigurationProviderTest, Observers) {
   auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
-  FakeWKConfigurationProviderObserver observer(provider);
-  EXPECT_FALSE(observer.GetLastCreatedWKConfiguration());
+  // Register a callback to be notified when new configuration object are
+  // created and check that it is not invoked as part of the registration.
+  __block WKWebViewConfiguration* recorded_configuration;
+  base::CallbackListSubscription subscription =
+      provider->RegisterConfigurationCreatedCallback(
+          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
+            recorded_configuration = new_configuration;
+          }));
+  ASSERT_FALSE(recorded_configuration);
+
+  // Check that accessing the WebViewConfiguration for the first time
+  // creates a new configuration object.
   WKWebViewConfiguration* config = provider->GetWebViewConfiguration();
-  EXPECT_NSEQ(config.preferences,
-              observer.GetLastCreatedWKConfiguration().preferences);
-  observer.ResetLastCreatedWKConfig();
+  EXPECT_NSEQ(config.preferences, recorded_configuration.preferences);
+
+  // Check that accessing the WebViewConfiguration again does not create
+  // a new configuration object and thus does not invoked the registered
+  // callback.
+  recorded_configuration = nil;
   config = provider->GetWebViewConfiguration();
-  EXPECT_FALSE(observer.GetLastCreatedWKConfiguration());
+  EXPECT_FALSE(recorded_configuration);
 }
 
 // Tests that if -[ResetWithWebViewConfiguration:] copies and applies Chrome's
@@ -175,33 +187,32 @@ TEST_F(WKWebViewConfigurationProviderTest, ResetConfiguration) {
   auto browser_state = std::make_unique<FakeBrowserState>();
   WKWebViewConfigurationProvider* provider = &GetProvider(browser_state.get());
 
-  FakeWKConfigurationProviderObserver observer(provider);
-  ASSERT_FALSE(observer.GetLastCreatedWKConfiguration());
+  // Register a callback to be notified when new configuration object are
+  // created and check that it is not invoked as part of the registration.
+  __block WKWebViewConfiguration* recorded_configuration;
+  base::CallbackListSubscription subscription =
+      provider->RegisterConfigurationCreatedCallback(
+          base::BindRepeating(^(WKWebViewConfiguration* new_configuration) {
+            recorded_configuration = new_configuration;
+          }));
+  ASSERT_FALSE(recorded_configuration);
 
   WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
   config.allowsInlineMediaPlayback = NO;
   provider->ResetWithWebViewConfiguration(config);
-  WKWebViewConfiguration* actual = observer.GetLastCreatedWKConfiguration();
-  ASSERT_TRUE(actual);
+  ASSERT_TRUE(recorded_configuration);
 
   // To check the configuration inside is reset.
-  EXPECT_EQ(config.preferences, actual.preferences);
+  EXPECT_EQ(config.preferences, recorded_configuration.preferences);
 
   // To check Chrome's initialization logic has been applied to `actual`,
   // where the `actual.allowsInlineMediaPlayback` should be overwriten by YES.
   EXPECT_EQ(NO, config.allowsInlineMediaPlayback);
-  EXPECT_EQ(YES, actual.allowsInlineMediaPlayback);
+  EXPECT_EQ(YES, recorded_configuration.allowsInlineMediaPlayback);
 
   // Compares the POINTERS to make sure the `config` has been shallow cloned
   // inside the `provider`.
-  EXPECT_NE(config, actual);
-}
-
-TEST_F(WKWebViewConfigurationProviderTest, GetContentRuleListProvider) {
-  auto browser_state = std::make_unique<FakeBrowserState>();
-  WKWebViewConfigurationProvider& provider = GetProvider(browser_state.get());
-
-  EXPECT_NE(nil, provider.GetContentRuleListProvider());
+  EXPECT_NE(config, recorded_configuration);
 }
 
 // Tests that WKWebViewConfiguration has a different data store if browser state

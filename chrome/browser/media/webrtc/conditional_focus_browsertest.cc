@@ -53,7 +53,7 @@ const char* ToString(FocusEnumValue focus_enum_value) {
     case FocusEnumValue::kNoFocusChange:
       return "no-focus-change";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 enum class Tab { kUnknownTab, kCapturingTab, kCapturedTab };

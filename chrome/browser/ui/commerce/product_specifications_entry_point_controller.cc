@@ -5,17 +5,24 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace {
 
@@ -25,9 +32,8 @@ constexpr int kEligibleWindowUrlCountForValidation = 2;
 // Number of URLs of the same cluster that a window needs to contain in order
 // for the entry point to trigger for navigation.
 constexpr int kEligibleWindowUrlCountForNavigationTriggering = 3;
-// The maximum enforced interval (in days) between two triggering of the entry
-// point.
-constexpr int kMaxEntryPointTriggeringInterval = 64;
+// The maximum length of the entry point title.
+constexpr int kEntryPointTitleMaxLength = 24;
 
 bool CheckWindowContainsEntryPointURLs(
     TabStripModel* tab_strip_model,
@@ -137,10 +143,6 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   if (!current_entry_point_info_.has_value()) {
     return;
   }
-  // Reset entry point show gap time.
-  browser_->profile()->GetPrefs()->SetInteger(
-      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
-  DCHECK(product_specifications_service_);
   std::set<GURL> urls;
   auto candidate_products =
       current_entry_point_info_->similar_candidate_products;
@@ -150,9 +152,33 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
     }
   }
   std::vector<GURL> urls_in_set(urls.begin(), urls.end());
+  auto* prefs = browser_->profile()->GetPrefs();
+  if (!prefs) {
+    return;
+  }
+  // If user has not accepted the latest disclosure, show the disclosure dialog
+  // first.
+  if (prefs->GetInteger(kProductSpecificationsAcceptedDisclosureVersion) !=
+      static_cast<int>(shopping_service::mojom::
+                           ProductSpecificationsDisclosureVersion::kV1)) {
+    DialogArgs dialog_args(urls_in_set, current_entry_point_info_->title,
+                           /*in_new_tab=*/true);
+    ProductSpecificationsDisclosureDialog::ShowDialog(
+        browser_->profile(),
+        browser_->tab_strip_model()->GetActiveWebContents(),
+        std::move(dialog_args));
+    return;
+  }
+  // Reset entry point show gap time.
+  browser_->profile()->GetPrefs()->SetInteger(
+      commerce::kProductSpecificationsEntryPointShowIntervalInDays, 0);
+  std::vector<commerce::UrlInfo> url_infos;
+  for (const auto& url : urls_in_set) {
+    url_infos.emplace_back(url, std::u16string());
+  }
   const std::optional<ProductSpecificationsSet> set =
       product_specifications_service_->AddProductSpecificationsSet(
-          current_entry_point_info_->title, std::move(urls_in_set));
+          current_entry_point_info_->title, std::move(url_infos));
   if (set.has_value()) {
     chrome::AddTabAt(browser_,
                      commerce::GetProductSpecsTabUrlForID(set->uuid()),
@@ -171,8 +197,8 @@ void ProductSpecificationsEntryPointController::OnEntryPointDismissed() {
   if (current_gap_time == 0) {
     current_gap_time = 1;
   } else {
-    current_gap_time =
-        std::min(2 * current_gap_time, kMaxEntryPointTriggeringInterval);
+    current_gap_time = std::min(2 * current_gap_time,
+                                kProductSpecMaxEntryPointTriggeringInterval);
   }
   prefs->SetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays,
@@ -305,6 +331,14 @@ void ProductSpecificationsEntryPointController::
 
 void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     std::optional<EntryPointInfo> entry_point_info) {
+  // Using the entry point UI will initiate a data fetch for the product
+  // specifications feature. If we're not allowed to fetch this data, don't
+  // offer the entry point.
+  if (!CanFetchProductSpecificationsData(
+          shopping_service_->GetAccountChecker())) {
+    return;
+  }
+
   auto* prefs = browser_->profile()->GetPrefs();
   int current_gap_time = prefs->GetInteger(
       commerce::kProductSpecificationsEntryPointShowIntervalInDays);
@@ -316,8 +350,15 @@ void ProductSpecificationsEntryPointController::ShowEntryPointWithTitle(
     return;
   }
   current_entry_point_info_ = entry_point_info;
+  // Show the default title if the set title is too long.
+  std::u16string title =
+      entry_point_info->title.size() > kEntryPointTitleMaxLength
+          ? l10n_util::GetStringUTF16(IDS_COMPARE_ENTRY_POINT_DEFAULT)
+          : l10n_util::GetStringFUTF16(
+                IDS_COMPARE_ENTRY_POINT,
+                base::UTF8ToUTF16(entry_point_info->title));
   for (auto& observer : observers_) {
-    observer.ShowEntryPointWithTitle(entry_point_info->title);
+    observer.ShowEntryPointWithTitle(std::move(title));
   }
 }
 

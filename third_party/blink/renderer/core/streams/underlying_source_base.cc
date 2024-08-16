@@ -88,7 +88,7 @@ v8::Local<v8::Promise> UnderlyingPullAlgorithm::Run(
     v8::Local<v8::Value> argv[]) {
   DCHECK_EQ(argc, 0);
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   return source_->Pull(script_state, exception_state).V8Promise();
 }
 
@@ -105,7 +105,7 @@ v8::Local<v8::Promise> UnderlyingCancelAlgorithm::Run(
   v8::Local<v8::Value> reason =
       argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
   ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionContextType::kUnknown, "", "");
+                                 v8::ExceptionContext::kUnknown, "", "");
   return source_
       ->CancelWrapper(script_state, ScriptValue(isolate, reason),
                       exception_state)

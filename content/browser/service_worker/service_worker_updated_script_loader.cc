@@ -282,8 +282,7 @@ void ServiceWorkerUpdatedScriptLoader::OnClientWritable(MojoResult) {
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  base::span<const uint8_t> bytes_to_send =
-      base::as_bytes(data_to_send_->span());
+  base::span<const uint8_t> bytes_to_send = data_to_send_->span();
   bytes_to_send = bytes_to_send.first(
       std::min(bytes_to_send.size(), base::checked_cast<size_t>(data_length_)));
   bytes_to_send = bytes_to_send.subspan(bytes_sent_to_client_);
@@ -409,7 +408,7 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.
-  base::span<const uint8_t> bytes = base::as_bytes(buffer->span());
+  base::span<const uint8_t> bytes = buffer->span();
   bytes = bytes.first(std::min(kReadBufferSize, size_t{bytes_available}));
 
   size_t actually_written_bytes = 0;

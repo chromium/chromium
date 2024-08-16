@@ -14,6 +14,7 @@
 <translation id="1282031177488366470">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="1333745675627230582">Chrome Dino-game spelen</translation>
 <translation id="1352919863522755794">Google Wachtwoordmanager kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
+<translation id="1380565463006545725">Ontdek de kracht van Chrome Shopping</translation>
 <translation id="139623527619433858">Chrome standaard gebruiken op de iPad</translation>
 <translation id="1407843355326180937">Log in op deze site en bij Chrome om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
 <translation id="1436059927646026729">Mijn nieuwste tabblad openen in Chrome</translation>
@@ -35,6 +36,7 @@ Aandachtspunten:
 <translation id="1554731936187952550">Je hebt de krachtigste beveiliging van Chrome tegen schadelijke websites</translation>
 <translation id="1615715390546812898">Zoeken met je stem in Chrome.</translation>
 <translation id="1657395063736185342">Visuele elementen zoeken in Chrome</translation>
+<translation id="1670609221633730681">Chrome-tip: kies de positie van de adresbalk</translation>
 <translation id="1675955119303651351">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account.
         Wacht een paar minuten voordat je uitlogt. Als je nu uitlogt, worden deze gegevens verwijderd.</translation>
 <translation id="1682483655351012182">Je Chrome-gegevens synchroniseren</translation>
@@ -43,6 +45,7 @@ Aandachtspunten:
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Dit adres is momenteel opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
 <translation id="1910975740091000991">Chrome voor iOS</translation>
+<translation id="1917288746637765175">Gebruik Chrome standaard om makkelijk prijsinzichten te krijgen</translation>
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
 <translation id="1987779152850321833">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen.</translation>
@@ -112,12 +115,14 @@ Aandachtspunten:
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="4064699917955374540">Bevestig dat jij het bent als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
+<translation id="4066411101507716142">Open Chrome sneller via het dock op het startscherm van je iPad.</translation>
 <translation id="4067858366537947361">Chrome-incognitotabblad openen</translation>
 <translation id="4093042601582616698">Chrome instellen als je standaardbrowser?</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="4251174643044751591">Opent de pagina met instellingen voor betaalmethoden in Chrome.</translation>
 <translation id="4286914711740227883">Browsegegevens in Chrome verwijderen</translation>
+<translation id="430839890088895017">Chrome-tip: verplaats Chrome naar het dock</translation>
 <translation id="4453284704333523777">Chrome-instellingen beheren</translation>
 <translation id="4523886039239821078">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder de volgende add-ons:</translation>
 <translation id="4633328489441962921">Chrome kan niet checken op updates</translation>
@@ -181,6 +186,7 @@ Aandachtspunten:
 <translation id="6272822675004864999">Als je meldingen van Chrome wilt krijgen, zet je meldingen aan via de iOS-instellingen.</translation>
 <translation id="630693926528731525">Je wachtwoord is niet gedeeld. Check je internetverbinding en zorg dat je bent ingelogd bij Chrome. Probeer het daarna opnieuw.</translation>
 <translation id="6348855835728304880">Krijg toegang tot je Chrome-wachtwoorden en meer in andere apps op dit apparaat.</translation>
+<translation id="6373751563207403289">Veiligheidscheck beschermt je onder andere tegen gegevenslekken en onveilige websites. Krijg meldingen over privacy- of beveiligingsproblemen die Chrome voor je opspoort.</translation>
 <translation id="6374691158439235563">Chrome instellen afronden</translation>
 <translation id="6389317667633680932">Ontdek nieuwe functies waarmee je alles uit Chrome kunt halen.</translation>
 <translation id="6412673304250309937">Controleert URL's aan de hand van een lijst met onveilige sites die is opgeslagen in Chrome. Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen.</translation>
@@ -233,8 +239,10 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="746684838091935575">3. Selecteer Chrome</translation>
 <translation id="7492574581995589075">Je organisatie heeft de mogelijkheid uitgezet om Chrome-gegevens te gebruiken en op te slaan in je Google-account. Items zoals nieuwe bookmarks en wachtwoorden worden alleen opgeslagen op dit apparaat.</translation>
 <translation id="7581063337314642333">Het tabbladraster in Chrome bezoeken</translation>
+<translation id="7642373780953416937">Krijg meldingen over privacy- of beveiligingsproblemen die Chrome automatisch voor je opspoort.</translation>
 <translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="7669869107155339016">Ga naar de Chrome-instellingen.</translation>
+<translation id="7683540977001394271">Open Chrome sneller via het dock op het startscherm van je iPhone.</translation>
 <translation id="769104993356536261">Chrome-acties op iOS gebruiken</translation>
 <translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
@@ -248,6 +256,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="8006014511203279255">Gebruik Chrome als je op links in berichten of andere apps tikt.</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="804638182476029347">Chrome-meldingen toestaan om meldingen over prijsdalingen te krijgen</translation>
+<translation id="804756029368067824">Stel Chrome in als je standaardbrowser om makkelijk prijzen te volgen en prijsinzichten te krijgen voor artikelen die je wilt kopen.</translation>
 <translation id="8065292699993359127">URL's in Chrome openen in de incognitomodus</translation>
 <translation id="8069507567842347179">Dit pakket wordt al gevolgd in Chrome.</translation>
 <translation id="8136856065410661948">Hiermee worden afspraken gemaakt in je Apple-agenda vanuit Chrome en Google Lens.</translation>
@@ -275,6 +284,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 2. Tik op Standaard browser-app.
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544583291890527417">Meldingen over privacy- of beveiligingsproblemen die Chrome voor je opspoort.</translation>
 <translation id="8558480467877843976">Je kunt Chrome nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8727043961453758442">Haal het maximale uit Chrome</translation>

@@ -183,22 +183,12 @@ class GpuWatchdogInit {
 
 void PauseGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
   if (watchdog_thread) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-      watchdog_thread->EnableReportOnlyMode();
-    } else {
-      watchdog_thread->PauseWatchdog();
-    }
+    watchdog_thread->PauseWatchdog();
   }
 }
 void ResumeGpuWatchdog(GpuWatchdogThread* watchdog_thread) {
   if (watchdog_thread) {
-    if (base::FeatureList::IsEnabled(
-            features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-      watchdog_thread->DisableReportOnlyMode();
-    } else {
-      watchdog_thread->ResumeWatchdog();
-    }
+    watchdog_thread->ResumeWatchdog();
   }
 }
 
@@ -1246,6 +1236,14 @@ bool GpuInit::InitializeVulkan() {
 
   gpu_info_.vulkan_info =
       vulkan_implementation_->GetVulkanInstance()->vulkan_info();
+  // Limit the use of Vulkan's vendorID and deviceID to Android.
+  // This is because other platforms, for example, Linux, collect such
+  // information somewhere else and we don't want to overwrite it.
+#if BUILDFLAG(IS_ANDROID)
+  gpu_info_.gpu.vendor_id = device_properties.vendor_id;
+  gpu_info_.gpu.device_id = device_properties.device_id;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return true;
 #else   // !BUILDFLAG(ENABLE_VULKAN)
   return false;

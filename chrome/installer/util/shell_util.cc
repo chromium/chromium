@@ -7,6 +7,11 @@
 // work is done by the local functions defined in anonymous namespace in
 // this class.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/installer/util/shell_util.h"
 
 #include <objbase.h>
@@ -971,9 +976,7 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
     const wchar_t* const* protocols,
     size_t num_protocols) {
   Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
-  HRESULT hr =
-      ::CoCreateInstance(CLSID_ApplicationAssociationRegistration, nullptr,
-                         CLSCTX_INPROC, IID_PPV_ARGS(&registration));
+  HRESULT hr = ::SHCreateAssociationRegistration(IID_PPV_ARGS(&registration));
   if (FAILED(hr))
     return ShellUtil::UNKNOWN_DEFAULT;
 
@@ -1001,19 +1004,19 @@ ShellUtil::DefaultState ProbeCurrentDefaultHandlers(
         &install_static::kInstallModes[install_static::NUM_INSTALL_MODES],
         [current_install_mode_index, &current_app,
          current_app_len](const install_static::InstallConstants& mode) {
-          if (mode.index == current_install_mode_index)
+          if (mode.index == current_install_mode_index) {
             return false;
+          }
           const std::wstring mode_prog_id_prefix(mode.browser_prog_id_prefix);
           // Does the current app either match this mode's ProgID or contain
           // this mode's ProgID as a prefix followed by the '.' separator for a
           // per-user install's suffix?
-          return mode_prog_id_prefix.compare(current_app) == 0 ||
-                 (InstallUtil::IsPerUserInstall() &&
-                  current_app_len > mode_prog_id_prefix.length() &&
-                  current_app[mode_prog_id_prefix.length()] == L'.' &&
-                  std::char_traits<wchar_t>::compare(
-                      mode_prog_id_prefix.c_str(), current_app,
-                      mode_prog_id_prefix.length()) == 0);
+          if (!base::StartsWith(current_app.get(), mode_prog_id_prefix,
+                                base::CompareCase::SENSITIVE)) {
+            return false;
+          }
+          return current_app_len == mode_prog_id_prefix.length() ||
+                 current_app[mode_prog_id_prefix.length()] == L'.';
         });
     if (it == &install_static::kInstallModes[install_static::NUM_INSTALL_MODES])
       return ShellUtil::NOT_DEFAULT;

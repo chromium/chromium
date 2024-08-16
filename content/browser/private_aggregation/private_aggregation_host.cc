@@ -11,6 +11,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,14 +19,18 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -45,6 +50,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -90,6 +96,53 @@ void RecordFilteringIdStatusHistogram(bool has_filtering_id,
       "PrivacySandbox.PrivateAggregation.Host.FilteringIdStatus", status);
 }
 
+// `num_merge_keys_sent_or_truncated` is the total number of merge keys (i.e.
+// unique bucket and filtering ID pairs) that passed through the mojo pipe.
+void RecordNumberOfContributionMergeKeysHistogram(
+    size_t num_merge_keys_sent_or_truncated,
+    PrivateAggregationBudgetKey::Api api,
+    bool has_timeout) {
+  CHECK(
+      base::FeatureList::IsEnabled(kPrivateAggregationApiContributionMerging));
+  constexpr std::string_view kMergeKeysHistogramBase =
+      "PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe";
+
+  base::UmaHistogramCounts10000(kMergeKeysHistogramBase,
+                                num_merge_keys_sent_or_truncated);
+  switch (api) {
+    case PrivateAggregationBudgetKey::Api::kProtectedAudience:
+      base::UmaHistogramCounts10000(
+          base::StrCat({kMergeKeysHistogramBase, ".ProtectedAudience"}),
+          num_merge_keys_sent_or_truncated);
+      break;
+    case PrivateAggregationBudgetKey::Api::kSharedStorage:
+      base::UmaHistogramCounts10000(
+          base::StrCat({kMergeKeysHistogramBase, ".SharedStorage"}),
+          num_merge_keys_sent_or_truncated);
+      base::UmaHistogramCounts10000(
+          base::StrCat({kMergeKeysHistogramBase, ".SharedStorage",
+                        has_timeout ? ".ReducedDelay" : ".FullDelay"}),
+          num_merge_keys_sent_or_truncated);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+// Contributions can be merged if they have matching keys.
+struct ContributionMergeKey {
+  explicit ContributionMergeKey(
+      const blink::mojom::AggregatableReportHistogramContributionPtr&
+          contribution)
+      : bucket(contribution->bucket),
+        filtering_id(contribution->filtering_id.value_or(0)) {}
+
+  auto operator<=>(const ContributionMergeKey& a) const = default;
+
+  absl::uint128 bucket;
+  uint64_t filtering_id;
+};
+
 }  // namespace
 
 struct PrivateAggregationHost::ReceiverContext {
@@ -102,11 +155,25 @@ struct PrivateAggregationHost::ReceiverContext {
 
   // If contributions have been truncated, tracks this for triggering the right
   // histogram value.
-  bool too_many_contributions = false;
+  bool did_truncate_contributions = false;
 
-  // Contributions passed to `ContributeToHistogram()` for this receiver.
+  // Contributions passed to `ContributeToHistogram()` for this receiver. Only
+  // populated if `kPrivateAggregationApiContributionMerging` is *disabled*.
   std::vector<blink::mojom::AggregatableReportHistogramContribution>
-      contributions;
+      accepted_contributions_if_merging_disabled;
+
+  // Contributions passed to `ContributeToHistogram()` for this receiver,
+  // associated with their `ContributionMergeKey`s. Only populated if
+  // `kPrivateAggregationApiContributionMerging` is enabled.
+  // TODO(crbug.com/349980058): Shorten name to `accepted_contributions` once
+  // feature is launched and the flag is removed.
+  std::map<ContributionMergeKey,
+           blink::mojom::AggregatableReportHistogramContribution>
+      accepted_contributions_if_merging_enabled;
+
+  // For metrics only. Tracks those dropped due to the contribution limit. Only
+  // populated if `kPrivateAggregationApiContributionMerging` is enabled.
+  std::set<ContributionMergeKey> truncated_merge_keys;
 
   // The debug mode details to use if a non-null report is sent. Cannot be null.
   blink::mojom::DebugModeDetailsPtr report_debug_details =
@@ -265,8 +332,6 @@ void PrivateAggregationHost::ContributeToHistogram(
       blink::mojom::AggregatableReportHistogramContributionPtr;
 
   base::span<ContributionPtr> incoming_ptrs{contribution_ptrs};
-  std::vector<Contribution>& accepted =
-      receiver_set_.current_context().contributions;
 
   // Null pointers should fail mojo validation.
   CHECK(base::ranges::none_of(incoming_ptrs, &ContributionPtr::is_null));
@@ -293,20 +358,80 @@ void PrivateAggregationHost::ContributeToHistogram(
     return;
   }
 
-  // TODO(alexmt): Consider eliding contributions with values of zero as well as
-  // potentially merging contributions with the same bucket (although that
-  // should probably be done after budgeting).
+  bool embed_filtering_ids_in_report =
+      base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFilteringIds) &&
+      base::FeatureList::IsEnabled(
+          kPrivacySandboxAggregationServiceFilteringIds);
 
-  CHECK_LE(accepted.size(), kMaxNumberOfContributions);
-  const size_t num_remaining = kMaxNumberOfContributions - accepted.size();
-
-  if (incoming_ptrs.size() > num_remaining) {
-    receiver_set_.current_context().too_many_contributions = true;
-    incoming_ptrs = incoming_ptrs.first(num_remaining);
+  if (!embed_filtering_ids_in_report) {
+    base::ranges::for_each(
+        incoming_ptrs,
+        [](blink::mojom::AggregatableReportHistogramContributionPtr&
+               contribution) { contribution->filtering_id.reset(); });
   }
 
-  base::ranges::transform(incoming_ptrs, std::back_inserter(accepted),
-                          &ContributionPtr::operator*);
+  if (!base::FeatureList::IsEnabled(
+          kPrivateAggregationApiContributionMerging)) {
+    std::vector<Contribution>& accepted_contributions =
+        receiver_set_.current_context()
+            .accepted_contributions_if_merging_disabled;
+
+    CHECK_LE(accepted_contributions.size(), kMaxNumberOfContributions);
+    const size_t num_remaining =
+        kMaxNumberOfContributions - accepted_contributions.size();
+
+    if (incoming_ptrs.size() > num_remaining) {
+      receiver_set_.current_context().did_truncate_contributions = true;
+      incoming_ptrs = incoming_ptrs.first(num_remaining);
+    }
+
+    base::ranges::transform(incoming_ptrs,
+                            std::back_inserter(accepted_contributions),
+                            &ContributionPtr::operator*);
+    return;
+  }
+
+  std::map<ContributionMergeKey,
+           blink::mojom::AggregatableReportHistogramContribution>&
+      accepted_contributions = receiver_set_.current_context()
+                                   .accepted_contributions_if_merging_enabled;
+
+  for (ContributionPtr& contribution : incoming_ptrs) {
+    if (contribution->value == 0) {
+      // Drop the contribution
+      continue;
+    }
+
+    ContributionMergeKey merge_key(contribution);
+
+    CHECK_LE(accepted_contributions.size(),
+             PrivateAggregationHost::kMaxNumberOfContributions);
+
+    auto accepted_contributions_it = accepted_contributions.find(merge_key);
+
+    if (accepted_contributions_it == accepted_contributions.end()) {
+      if (accepted_contributions.size() ==
+          PrivateAggregationHost::kMaxNumberOfContributions) {
+        receiver_set_.current_context().did_truncate_contributions = true;
+
+        // Bound worst-case memory usage
+        constexpr size_t kMaxTruncatedMergeKeysTracked = 10'000;
+        if (receiver_set_.current_context().truncated_merge_keys.size() <
+            kMaxTruncatedMergeKeysTracked) {
+          receiver_set_.current_context().truncated_merge_keys.insert(
+              std::move(merge_key));
+        }
+        continue;
+      }
+      accepted_contributions.emplace(std::move(merge_key),
+                                     *std::move(contribution));
+    } else {
+      accepted_contributions_it->second.value =
+          base::ClampedNumeric(accepted_contributions_it->second.value) +
+          contribution->value;
+    }
+  }
 }
 
 AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
@@ -345,10 +470,11 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
             kDefaultFilteringIdMaxBytes);
   } else {
     applied_filtering_id_max_bytes.reset();
-    base::ranges::for_each(
-        contributions,
-        [](blink::mojom::AggregatableReportHistogramContribution&
-               contribution) { contribution.filtering_id.reset(); });
+    CHECK(base::ranges::none_of(
+        contributions, [](blink::mojom::AggregatableReportHistogramContribution&
+                              contribution) {
+          return contribution.filtering_id.has_value();
+        }));
   }
 
   AggregationServicePayloadContents payload_contents(
@@ -508,7 +634,33 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
           ? PrivateAggregationBudgeter::BudgetDeniedBehavior::kSendNullReport
           : PrivateAggregationBudgeter::BudgetDeniedBehavior::kDontSendReport;
 
-  if (receiver_context.contributions.empty()) {
+  std::vector<blink::mojom::AggregatableReportHistogramContribution>
+      contributions;
+
+  if (base::FeatureList::IsEnabled(kPrivateAggregationApiContributionMerging)) {
+    std::map<ContributionMergeKey,
+             blink::mojom::AggregatableReportHistogramContribution>&
+        accepted_contributions =
+            receiver_context.accepted_contributions_if_merging_enabled;
+    CHECK(receiver_context.accepted_contributions_if_merging_disabled.empty());
+
+    RecordNumberOfContributionMergeKeysHistogram(
+        accepted_contributions.size() +
+            receiver_context.truncated_merge_keys.size(),
+        receiver_context.api_for_budgeting,
+        /*has_timeout=*/!!receiver_context.timeout_timer);
+
+    contributions.reserve(accepted_contributions.size());
+    for (auto& contribution_it : accepted_contributions) {
+      contributions.push_back(std::move(contribution_it.second));
+    }
+  } else {
+    CHECK(receiver_context.accepted_contributions_if_merging_enabled.empty());
+    contributions =
+        std::move(receiver_context.accepted_contributions_if_merging_disabled);
+  }
+
+  if (contributions.empty()) {
     if (!receiver_context.context_id.has_value()) {
       RecordPipeResultHistogram(PipeResult::kNoReportButNoError);
       return;
@@ -557,7 +709,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
       receiver_context.filtering_id_max_bytes);
 
   RecordPipeResultHistogram(
-      receiver_context.too_many_contributions
+      receiver_context.did_truncate_contributions
           ? PipeResult::kReportSuccessButTruncatedDueToTooManyContributions
           : PipeResult::kReportSuccess);
 
@@ -570,9 +722,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
   CHECK(budget_key.has_value());
 
   on_report_request_details_received_.Run(
-      std::move(report_request_generator),
-      std::move(receiver_context.contributions), std::move(budget_key.value()),
-      budget_denied_behavior);
+      std::move(report_request_generator), std::move(contributions),
+      std::move(budget_key.value()), budget_denied_behavior);
 }
 
 }  // namespace content

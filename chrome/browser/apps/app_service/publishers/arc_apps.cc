@@ -253,9 +253,8 @@ std::optional<arc::UserInteractionType> GetUserInterationType(
       // These LaunchSources do not launch ARC apps. When adding a new
       // LaunchSource, if it is expected to launch ARC apps, add a new
       // UserInteractionType above. Otherwise, add it here.
-      NOTREACHED_NORETURN()
-          << "Must define an ARC UserInteractionType for LaunchSource "
-          << static_cast<uint32_t>(launch_source);
+      NOTREACHED() << "Must define an ARC UserInteractionType for LaunchSource "
+                   << static_cast<uint32_t>(launch_source);
   }
   return user_interaction_type;
 }

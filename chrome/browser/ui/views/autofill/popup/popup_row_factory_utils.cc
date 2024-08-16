@@ -155,6 +155,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPassword:
+    case FillingProduct::kPredictionImprovements:
     case FillingProduct::kNone:
       break;
   }
@@ -618,7 +619,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kSeparator:
     case SuggestionType::kMixedFormMessage:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(

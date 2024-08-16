@@ -200,24 +200,11 @@ void PrefetchOriginProber::Probe(const GURL& url,
                                  OnProbeResultCallback callback) {
   // If canary checks are disabled, or if the TLS canary check is enabled and
   // failed (or did not complete), do TLS probing.
-  if (!PrefetchCanaryCheckEnabled() ||
+  bool also_do_tls_connect = !PrefetchCanaryCheckEnabled() ||
       (tls_canary_checker_ &&
-       !tls_canary_checker_->CanaryCheckSuccessful().value_or(false))) {
-    TLSProbe(url, std::move(callback));
-    return;
-  }
+       !tls_canary_checker_->CanaryCheckSuccessful().value_or(false));
 
-  DNSProbe(url, std::move(callback));
-}
-
-void PrefetchOriginProber::DNSProbe(const GURL& url,
-                                    OnProbeResultCallback callback) {
-  StartDNSResolution(url, std::move(callback), /*also_do_tls_connect=*/false);
-}
-
-void PrefetchOriginProber::TLSProbe(const GURL& url,
-                                    OnProbeResultCallback callback) {
-  StartDNSResolution(url, std::move(callback), /*also_do_tls_connect=*/true);
+  StartDNSResolution(url, std::move(callback), also_do_tls_connect);
 }
 
 void PrefetchOriginProber::StartDNSResolution(const GURL& url,

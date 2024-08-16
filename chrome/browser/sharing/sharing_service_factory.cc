@@ -23,7 +23,9 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/sharing_message/buildflags.h"
+#include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "components/sharing_message/sharing_device_source_sync.h"
@@ -146,10 +148,17 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
-      local_device_info_provider, std::move(task_runner));
+      local_device_info_provider, task_runner);
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kFCM, std::move(fcm_sender));
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    sharing_message_sender->RegisterSendDelegate(
+        SharingMessageSender::DelegateType::kIOSPush,
+        std::make_unique<sharing_message::SharingIOSPushSender>(
+            message_bridge, device_info_tracker, local_device_info_provider));
+  }
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);
@@ -166,7 +175,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::move(sync_prefs), std::move(vapid_key_manager),
       std::move(sharing_device_registration), std::move(sharing_message_sender),
       std::move(device_source), std::move(handler_registry),
-      std::move(fcm_handler), sync_service, std::move(task_runner));
+      std::move(fcm_handler), sync_service, task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {

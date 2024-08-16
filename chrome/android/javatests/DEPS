@@ -79,6 +79,9 @@ specific_include_rules = {
   "AuthenticatorTest\.java": [
     "+content/public/android/java/src/org/chromium/content_public/common/ContentSwitches.java",
   ],
+  "DigitalCredentialProviderTest\.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
+  ],
   "Fido2CredentialRequestTest.java": [
     "+content/public/android/java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
   ],

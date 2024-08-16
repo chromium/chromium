@@ -337,13 +337,6 @@ IN_PROC_BROWSER_TEST_F(MemorySettingsCrosInteractiveTest,
 class MemorySaverAggressivenessSettingsInteractiveTest
     : public MemorySettingsInteractiveTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySaverModeAggressiveness);
-
-    InteractiveBrowserTest::SetUp();
-  }
-
   auto CheckMemorySaverModeAggressivenessPrefState(
       MemorySaverModeAggressiveness aggressiveness) {
     return CheckResult(
@@ -770,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(TabDiscardExceptionsSettingsInteractiveTest,
       WaitForElementToRender(kPerformanceSettingsPage, kExceptionDialogEntry),
 
       // Dialog entry should hide when its corresponding tab is closed
-      Do(base::BindLambdaForTesting([=]() {
+      Do(base::BindLambdaForTesting([=, this]() {
         browser()->tab_strip_model()->CloseWebContentsAt(
             1, TabCloseTypes::CLOSE_NONE);
       })),

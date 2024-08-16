@@ -25,6 +25,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
+#include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_internal.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
 #if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
@@ -70,7 +71,7 @@ class LeakySingleton {
 
   PA_ALWAYS_INLINE T* Get() {
     auto* instance = instance_.load(std::memory_order_acquire);
-    if (PA_LIKELY(instance)) {
+    if (instance) [[likely]] {
       return instance;
     }
 
@@ -198,24 +199,19 @@ void* AllocateAlignedMemory(size_t alignment, size_t size) {
 
 namespace allocator_shim::internal {
 
-void* PartitionMalloc(const AllocatorDispatch*, size_t size, void* context) {
+void* PartitionMalloc(size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()->AllocInline<partition_alloc::AllocFlags::kNoHooks>(size);
 }
 
-void* PartitionMallocUnchecked(const AllocatorDispatch*,
-                               size_t size,
-                               void* context) {
+void* PartitionMallocUnchecked(size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return Allocator()
       ->AllocInline<partition_alloc::AllocFlags::kReturnNull |
                     partition_alloc::AllocFlags::kNoHooks>(size);
 }
 
-void* PartitionCalloc(const AllocatorDispatch*,
-                      size_t n,
-                      size_t size,
-                      void* context) {
+void* PartitionCalloc(size_t n, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   const size_t total =
       partition_alloc::internal::base::CheckMul(n, size).ValueOrDie();
@@ -224,26 +220,19 @@ void* PartitionCalloc(const AllocatorDispatch*,
                     partition_alloc::AllocFlags::kNoHooks>(total);
 }
 
-void* PartitionMemalign(const AllocatorDispatch*,
-                        size_t alignment,
-                        size_t size,
-                        void* context) {
+void* PartitionMemalign(size_t alignment, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
                                                                       size);
 }
 
-void* PartitionAlignedAlloc(const AllocatorDispatch* dispatch,
-                            size_t size,
-                            size_t alignment,
-                            void* context) {
+void* PartitionAlignedAlloc(size_t size, size_t alignment, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   return AllocateAlignedMemory<partition_alloc::AllocFlags::kNoHooks>(alignment,
                                                                       size);
 }
 
-void* PartitionAlignedAllocUnchecked(const AllocatorDispatch* dispatch,
-                                     size_t size,
+void* PartitionAlignedAllocUnchecked(size_t size,
                                      size_t alignment,
                                      void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
@@ -258,8 +247,7 @@ void* PartitionAlignedAllocUnchecked(const AllocatorDispatch* dispatch,
 // This realloc always free the original memory block and allocates a new memory
 // block.
 // TODO(tasak): Implement PartitionRoot::AlignedRealloc and use it.
-void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
-                              void* address,
+void* PartitionAlignedRealloc(void* address,
                               size_t size,
                               size_t alignment,
                               void* context) {
@@ -292,8 +280,7 @@ void* PartitionAlignedRealloc(const AllocatorDispatch* dispatch,
   return new_ptr;
 }
 
-void* PartitionAlignedReallocUnchecked(const AllocatorDispatch* dispatch,
-                                       void* address,
+void* PartitionAlignedReallocUnchecked(void* address,
                                        size_t size,
                                        size_t alignment,
                                        void* context) {
@@ -327,15 +314,12 @@ void* PartitionAlignedReallocUnchecked(const AllocatorDispatch* dispatch,
   return new_ptr;
 }
 
-void* PartitionRealloc(const AllocatorDispatch*,
-                       void* address,
-                       size_t size,
-                       void* context) {
+void* PartitionRealloc(void* address, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(address)) &&
-                  address)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address)) &&
+      address) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -347,15 +331,12 @@ void* PartitionRealloc(const AllocatorDispatch*,
                                                                      size, "");
 }
 
-void* PartitionReallocUnchecked(const AllocatorDispatch*,
-                                void* address,
-                                size_t size,
-                                void* context) {
+void* PartitionReallocUnchecked(void* address, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(address)) &&
-                  address)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address)) &&
+      address) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -374,13 +355,13 @@ void __real_free(void*);
 }       // extern "C"
 #endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
-void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
+void PartitionFree(void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if PA_BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(object)) &&
-                  object)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(object)) &&
+      object) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -393,9 +374,9 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   // the pointer, pass it along. This should not have a runtime cost vs regular
   // Android, since on Android we have a PA_CHECK() rather than the branch here.
 #if PA_BUILDFLAG(IS_CAST_ANDROID)
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                      reinterpret_cast<uintptr_t>(object)) &&
-                  object)) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(object)) &&
+      object) [[unlikely]] {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
@@ -414,10 +395,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
 //
 // So we don't need to re-check that the pointer is owned in Free(), and we
 // can use the size.
-void PartitionFreeDefiniteSize(const AllocatorDispatch*,
-                               void* address,
-                               size_t size,
-                               void* context) {
+void PartitionFreeDefiniteSize(void* address, size_t size, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
   // TODO(lizeb): Optimize PartitionAlloc to use the size information. This is
   // still useful though, as we avoid double-checking that the address is owned.
@@ -426,9 +404,7 @@ void PartitionFreeDefiniteSize(const AllocatorDispatch*,
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
-                                void* address,
-                                void* context) {
+size_t PartitionGetSizeEstimate(void* address, void* context) {
   // This is used to implement malloc_usable_size(3). Per its man page, "if ptr
   // is NULL, 0 is returned".
   if (!address) {
@@ -459,20 +435,17 @@ size_t PartitionGetSizeEstimate(const AllocatorDispatch*,
 }
 
 #if PA_BUILDFLAG(IS_APPLE)
-size_t PartitionGoodSize(const AllocatorDispatch*, size_t size, void* context) {
+size_t PartitionGoodSize(size_t size, void* context) {
   return Allocator()->AllocationCapacityFromRequestedSize(size);
 }
 
-bool PartitionClaimedAddress(const AllocatorDispatch*,
-                             void* address,
-                             void* context) {
+bool PartitionClaimedAddress(void* address, void* context) {
   return partition_alloc::IsManagedByPartitionAlloc(
       reinterpret_cast<uintptr_t>(address));
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-unsigned PartitionBatchMalloc(const AllocatorDispatch*,
-                              size_t size,
+unsigned PartitionBatchMalloc(size_t size,
                               void** results,
                               unsigned num_requested,
                               void* context) {
@@ -480,32 +453,29 @@ unsigned PartitionBatchMalloc(const AllocatorDispatch*,
   // simple for now.
   for (unsigned i = 0; i < num_requested; i++) {
     // No need to check the results, we crash if it fails.
-    results[i] = PartitionMalloc(nullptr, size, nullptr);
+    results[i] = PartitionMalloc(size, nullptr);
   }
 
   // Either all succeeded, or we crashed.
   return num_requested;
 }
 
-void PartitionBatchFree(const AllocatorDispatch*,
-                        void** to_be_freed,
+void PartitionBatchFree(void** to_be_freed,
                         unsigned num_to_be_freed,
                         void* context) {
   // No real batching: we could only acquire the lock once for instance, keep it
   // simple for now.
   for (unsigned i = 0; i < num_to_be_freed; i++) {
-    PartitionFree(nullptr, to_be_freed[i], nullptr);
+    PartitionFree(to_be_freed[i], nullptr);
   }
 }
 
 #if PA_BUILDFLAG(IS_APPLE)
-void PartitionTryFreeDefault(const AllocatorDispatch*,
-                             void* address,
-                             void* context) {
+void PartitionTryFreeDefault(void* address, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 
-  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-          reinterpret_cast<uintptr_t>(address)))) {
+  if (!partition_alloc::IsManagedByPartitionAlloc(
+          reinterpret_cast<uintptr_t>(address))) [[unlikely]] {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc. Call find_zone_and_free.
     return allocator_shim::TryFreeDefaultFallbackToFindZoneAndFree(address);

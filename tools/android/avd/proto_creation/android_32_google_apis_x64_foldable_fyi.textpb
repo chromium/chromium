@@ -1,0 +1,96 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android-12L (S_V2, API 32) AVD on google_apis on x86_64
+# This should be kept in sync with foldable_landscape proto except the screen size.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "N2X90_ADQtGKgoxkXZH3-TM5dbrynU-zGC4mj0B5KMIC"  # 32.1.15
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-32/google_apis/x86_64"
+  version: "KK_VeEUvdJrxL7eEKvVnt_4bjZPRLsGPymVm6Ios5HEC"  # r7, SE1B.220616.007
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+system_image_name: "system-images;android-32;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
+  dest_path: "android_32_google_apis_x64_foldable_fyi"
+}
+avd_name: "android_32_google_apis_x64_foldable_fyi"
+
+# Mirror the configs of '7.6" Fold-in with outer display'
+avd_settings {
+  screen {
+    density: 420
+    height: 2208
+    width: 1768
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge"
+    value: "yes"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge.count"
+    value: "1"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge.type"
+    value: "1"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge.ranges"
+    value: "0-180"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge.defaults"
+    value: "180"
+  }
+  avd_properties {
+    key: "hw.sensor.hinge.areas"
+    value: "884-0-1-2208"
+  }
+  avd_properties {
+    # list of supported postures by index.
+    # 0: unknown, 1: closed, 2: half-open, 3: open, 4: flipped, 5: tent
+    key: "hw.sensor.posture_list"
+    value: "1,2,3"
+  }
+  avd_properties {
+    # start-end angle pairs which define each posture
+    key: "hw.sensor.hinge_angles_posture_definitions"
+    value: "0-30, 30-150, 150-180"
+  }
+  avd_properties {
+    key: "hw.displayRegion.0.1.xOffset"
+    value: "0"
+  }
+  avd_properties {
+    key: "hw.displayRegion.0.1.yOffset"
+    value: "0"
+  }
+  avd_properties {
+    key: "hw.displayRegion.0.1.height"
+    value: "2208"
+  }
+  avd_properties {
+    key: "hw.displayRegion.0.1.width"
+    value: "884"
+  }
+}
+
+min_sdk: 32
+additional_apk {
+  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"
+  version: "RFEsa3y2OHTC3iSBQRyQZpX3xRiik-cLbZmXvMX80UEC"  # 24.08.12
+  dest_path: "android_32_google_apis_x64_foldable_fyi/gmscore_apks"
+}

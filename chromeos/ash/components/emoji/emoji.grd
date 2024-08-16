@@ -11,7 +11,10 @@
             type="resource_map_header" />
   </outputs>
   <release seq="1">
-  <includes>
+    <includes>
+      <if expr="_google_chrome">
+        <include name="IDR_EMOJI_PICKER_EN_INTERNAL" compress="gzip" file="../../resources/internal/emoji-search-en-keywords.json" type="chrome_html" />
+      </if>
       <include name="IDR_EMOJI_PICKER_DE_START" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/emoji_de_start.json" resource_path="emoji_de_start.json" use_base_dir="false" type="chrome_html" />
       <include name="IDR_EMOJI_PICKER_JA_START" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/emoji_ja_start.json" resource_path="emoji_ja_start.json" use_base_dir="false" type="chrome_html" />
       <include name="IDR_EMOJI_PICKER_ES_START" compress="gzip" file="${root_gen_dir}/chromeos/ash/components/emoji/emoji_es_start.json" resource_path="emoji_es_start.json" use_base_dir="false" type="chrome_html" />

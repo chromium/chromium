@@ -47,7 +47,9 @@ gfx::Rect ComputeInitialWidgetBounds(gfx::Rect caret_bounds,
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
 
   gfx::Rect mako_contents_bounds =
-      can_fallback_to_center_position && caret_bounds == gfx::Rect()
+      can_fallback_to_center_position &&
+              (caret_bounds == gfx::Rect() ||
+               !screen_work_area.Contains(caret_bounds))
           ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
                           initial_size.width() / 2,
                       screen_work_area.y() + screen_work_area.height() / 2 -
@@ -131,7 +133,9 @@ void MakoRewriteView::ResizeDueToAutoResize(content::WebContents* source,
   anchor.Outset(gfx::Outsets::VH(kMakoAnchorVerticalPadding, 0));
 
   gfx::Rect mako_contents_bounds =
-      can_fallback_to_center_position_ && caret_bounds_ == gfx::Rect()
+      can_fallback_to_center_position_ &&
+              (caret_bounds_ == gfx::Rect() ||
+               !screen_work_area.Contains(caret_bounds_))
           ? gfx::Rect(screen_work_area.x() + screen_work_area.width() / 2 -
                           new_size.width() / 2,
                       screen_work_area.y() + screen_work_area.height() / 2 -

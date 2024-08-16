@@ -194,6 +194,11 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   // handle.
   int max_swap_files_ = 100;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Directory in app cache dir for writing swap files.
+  base::FilePath swap_dir_;
+#endif
+
 #if BUILDFLAG(IS_MAC)
   // Used to test that swap file creation attempts to use file cloning in some
   // circumstances, and gracefully handles file cloning errors.

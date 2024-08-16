@@ -85,7 +85,9 @@
   DCHECK(self.reauthModule);
 
   if (!self.isAuthenticationRequired) {
-    [self notifyObservers];
+    if (self.featureEnabled) {
+      [self notifyObservers];
+    }
     // If reauthentication is not required, it should be considered a success
     // for the caller, but do not update the authenticatedSinceLastForeground
     // as the authentication did not happen.

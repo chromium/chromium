@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/actions/actions.h"
@@ -80,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowPaymentsBubbleOrPage) {
   ASSERT_EQ(bubble_controller->GetPaymentBubbleView(), nullptr);
   bubble_controller->OfferLocalSave(
       autofill::test::GetCreditCard(),
-      autofill::AutofillClient::SaveCreditCardOptions().with_show_prompt(true),
+      autofill::payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_show_prompt(true),
       base::DoNothing());
   ASSERT_NE(bubble_controller->GetPaymentBubbleView(), nullptr);
   action_manager.FindAction(kActionShowPaymentsBubbleOrPage)->InvokeAction();

@@ -236,12 +236,12 @@ void SupervisedUserInterstitialBlockingPage::HandleCommand(
 }
 
 bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void SupervisedUserInterstitialBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::string_view SupervisedUserInterstitialBlockingPage::GetInterstitialType()

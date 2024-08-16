@@ -11,7 +11,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_entry.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,16 +49,16 @@ class ReadingListModelStorageImplTest : public testing::Test {
  protected:
   ReadingListModelStorageImplTest()
       : in_memory_store_(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
+            syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()),
         shared_store_factory_(
-            syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
+            syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(
                 in_memory_store_.get())) {}
   ~ReadingListModelStorageImplTest() override = default;
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
-  const std::unique_ptr<syncer::ModelTypeStore> in_memory_store_;
-  const syncer::RepeatingModelTypeStoreFactory shared_store_factory_;
+  const std::unique_ptr<syncer::DataTypeStore> in_memory_store_;
+  const syncer::RepeatingDataTypeStoreFactory shared_store_factory_;
 };
 
 TEST_F(ReadingListModelStorageImplTest, LoadEmpty) {

@@ -63,7 +63,7 @@ EffectNode& CreateEffectNode(PropertyTrees*,
 // This creates a scroll node that looks like a scroller that wasn't composited
 // (isn't connected to a Layer). This function will also create a matching
 // transform node that is a child of the parent's transform node.
-ScrollNode& CreateScrollNodeForUncompositedScroller(
+ScrollNode& CreateScrollNodeForNonCompositedScroller(
     PropertyTrees* property_trees,
     int parent_id,
     ElementId element_id,

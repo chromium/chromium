@@ -22,7 +22,9 @@
       </div>
     </div>
     <cr-button id="resetDataUsageButton"
-      aria-label$="$i18n{TrafficCountersDataUsageResetLabel}"
+      aria-labelledby="dataUsageLabel"
+      aria-describedby="dataUsageSubLabel"
+      aria-roledescription="$i18n{TrafficCountersDataUsageResetLabel}"
       on-click="onResetDataUsageClick_">
       [[i18n('TrafficCountersDataUsageResetButtonLabel')]]
     </cr-button>
@@ -37,10 +39,14 @@
       </div>
     </div>
     <cr-tooltip-icon id="resetDayHelpTooltip"
+      icon-aria-label="$i18n{TrafficCountersDataUsageResetDayTooltipA11yLabel}"
       icon-class="cr:help-outline"
       tooltip-text="[[i18n('TrafficCountersDataUsageResetDayTooltipText')]]">
     </cr-tooltip-icon>
-    <select class="md-select" id="resetDayList" on-change="onResetDaySelected_">
+    <select class="md-select" id="resetDayList"
+      aria-labelledby="daySelectionLabel"
+      aria-describedby="daySelectionSubLabel"
+      on-change="onResetDaySelected_">
       <template is="dom-repeat" items="[[getDaysList_()]]" as="day">
         <option value="[[day]]" selected$="[[isSelected_(day, resetDay_)]]">
           [[day]]

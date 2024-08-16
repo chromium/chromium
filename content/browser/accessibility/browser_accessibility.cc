@@ -31,7 +31,14 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
+
+// Fuchsia WebEngine doesn't use these strings, so they are excluded to save
+// space.
+// TODO(https://crbug.com/358567091): Move this logic outside of
+// BrowserAccessibility to avoid platform-specific code in the base class.
+#if !BUILDFLAG(IS_FUCHSIA)
 #include "ui/strings/grit/ax_strings.h"
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
 
@@ -1319,6 +1326,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
   }
 }
 
+// TODO(https://crbug.com/358567091): Move this logic outside of
+// BrowserAccessibility to avoid platform-specific code in the base class.
+#if !BUILDFLAG(IS_FUCHSIA)
 std::u16string BrowserAccessibility::GetLocalizedString(int message_id) const {
   ContentClient* content_client = GetContentClient();
   return content_client->GetLocalizedString(message_id);
@@ -1792,7 +1802,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kPortalDeprecated:
     case ax::mojom::Role::kDescriptionListDetailDeprecated:
     case ax::mojom::Role::kDirectoryDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1808,6 +1818,7 @@ std::u16string BrowserAccessibility::GetStyleNameAttributeAsLocalizedString()
   }
   return {};
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 bool BrowserAccessibility::ShouldIgnoreHoveredStateForTesting() {
   return ignore_hovered_state_for_testing_;

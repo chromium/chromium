@@ -64,7 +64,9 @@ class QuickDeleteMediatorTest : public PlatformTest {
                                    IDS_CLEAR_BROWSING_DATA_CALCULATING)]);
     OCMStub([consumer_ setShouldShowFooter:NO]);
     OCMStub([consumer_ setHistorySelection:NO]);
+    OCMStub([consumer_ setTabsSelection:NO]);
     OCMStub([consumer_ setSiteDataSelection:NO]);
+    OCMStub([consumer_ setCacheSelection:NO]);
     OCMStub([consumer_ setPasswordsSelection:NO]);
     OCMStub([consumer_ setAutofillSelection:NO]);
 
@@ -85,7 +87,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
             fake_browsing_data_counter_wrapper_producer_
                            identityManager:identityManager
                        browsingDataRemover:browsing_data_remover
-                       discoverFeedService:discover_feed_service];
+                       discoverFeedService:discover_feed_service
+            canPerformTabsClosureAnimation:NO];
   }
 
   ~QuickDeleteMediatorTest() override {
@@ -149,6 +152,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
             browser_state_.get()));
     const TabsCounter::TabsResult tabsResult(&tabsCounter, num_tabs,
                                              /*num_windows=*/0, {});
+    OCMExpect([consumer_ updateTabsWithResult:tabsResult]);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:tabsResult];
   }
@@ -254,6 +258,7 @@ TEST_F(QuickDeleteMediatorTest, TestBrowsingHistorySummary) {
 TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
   // Select tabs for deletion.
   prefs()->SetBoolean(browsing_data::prefs::kCloseTabs, true);
+  OCMExpect([consumer_ setTabsSelection:YES]);
 
   // Trigger creating the counters for browsing data types.
   mediator_.consumer = consumer_;
@@ -298,6 +303,7 @@ TEST_F(QuickDeleteMediatorTest, TestTabsSummary) {
     const TabsCounter::TabsResult result(&counter, test_case.num_tabs,
                                          test_case.num_windows, {});
     OCMExpect([consumer_ setBrowsingDataSummary:test_case.expected_output]);
+    OCMExpect([consumer_ updateTabsWithResult:result]);
     [fake_browsing_data_counter_wrapper_producer_
         triggerUpdateUICallbackForResult:result];
     EXPECT_OCMOCK_VERIFY(consumer_);

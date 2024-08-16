@@ -246,6 +246,13 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of an attempt to enable a custom APN.</summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.Apn.Login.AllowApnModification"
+    enum="BooleanSuccess" expires_after="2025-08-01">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Tracks the state of AllowApnModification policy at login.</summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.Managed.MigrationType"
     enum="ManagedApnMigrationType" expires_after="2025-02-20">
   <owner>hsuregan@google.com</owner>
@@ -1924,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Mdns.{ServiceType}" enum="MdnsQueryType"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nmuggli@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -2177,7 +2184,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.SharedDictionary.CreateBrotliSourceStreamWithDictionary"
-    units="microseconds" expires_after="2024-12-06">
+    units="microseconds" expires_after="2025-02-10">
   <owner>horo@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2205,7 +2212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SharedDictionary.EncodingType"
-    enum="SharedDictionaryEncodingType" expires_after="2024-08-09">
+    enum="SharedDictionaryEncodingType" expires_after="2025-02-09">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -2338,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.DevicePresenceStatus"
-    enum="BooleanPresent" expires_after="2024-12-08">
+    enum="BooleanPresent" expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2432,7 +2439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToConfig" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2442,7 +2449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToConnect" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2452,7 +2459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToDisable" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2462,7 +2469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToEnable" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2482,7 +2489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToOnline" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -4805,8 +4812,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.GetAuthTokenResultForGeo"
+    enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2025-02-09">
+  <owner>abhipatel@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    This metric tracks the effectiveness of token caching in IpProtection,
+    especially during network transitions or non-ideal conditions. It records
+    the outcome of `IpProtectionConfigCache::GetAuthToken()` requests, focusing
+    on token availability and its alignment with the current or a previously
+    cached geographical location. The four possible outcomes indicate successful
+    token retrieval (for current or other geo), or unavailability with or
+    without other cached tokens. This metric is only measured when geo caching
+    is enabled.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled as well as the feature parameter,
+    IpPrivacyCacheTokensByGeo. Some kind of platform-dependent signin is also
+    required.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.GetProxyListResult"
-    enum="IpProtectionGetProxyListResult" expires_after="2024-12-08">
+    enum="IpProtectionGetProxyListResult" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -4827,7 +4855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.IsProxyListAvailable"
-    enum="BooleanAvailable" expires_after="2024-12-08">
+    enum="BooleanAvailable" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -4850,7 +4878,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.ProtectionIsAvailableForRequest"
-    enum="BooleanAvailable" expires_after="2024-12-08">
+    enum="BooleanAvailable" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -4929,7 +4957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
-    enum="IpProtectionEligibility" expires_after="2024-12-08">
+    enum="IpProtectionEligibility" expires_after="2025-02-10">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
@@ -4978,7 +5006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
-    expires_after="2024-12-01">
+    expires_after="2025-02-02">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
@@ -5003,7 +5031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenExpirationRate"
-    units="tokens" expires_after="2024-12-05">
+    units="tokens" expires_after="2025-02-10">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5020,7 +5048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenSpendRate"
-    units="tokens" expires_after="2024-12-05">
+    units="tokens" expires_after="2025-02-10">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>

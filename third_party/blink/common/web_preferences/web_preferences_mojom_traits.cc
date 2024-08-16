@@ -215,8 +215,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.require_transient_activation_for_get_display_media();
   out->require_transient_activation_for_show_file_or_directory_picker =
       data.require_transient_activation_for_show_file_or_directory_picker();
-  out->require_transient_activation_for_html_fullscreen =
-      data.require_transient_activation_for_html_fullscreen();
   out->in_forced_colors = data.in_forced_colors();
   out->is_forced_colors_disabled = data.is_forced_colors_disabled();
   out->preferred_root_scrollbar_color_scheme =

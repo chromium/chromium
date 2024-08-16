@@ -180,7 +180,7 @@ message GeneratedIconFix {
 // Full WebApp object data. See detailed comments in
 // chrome/browser/web_applications/web_app.h. Note on database identities:
 // app_id is a hash of launch_url. app_id is the client tag for sync system.
-// app_id is the storage key in ModelTypeStore.
+// app_id is the storage key in DataTypeStore.
 message WebAppProto {
   reserved "handle_links", "is_in_sync_install", "is_placeholder",
       "file_handler_os_integration_state",

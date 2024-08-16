@@ -36,6 +36,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
@@ -260,16 +261,19 @@ bool MahiQuestionAnswerView::GetViewVisibility(VisibilityState state) const {
 
 void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
   switch (update.type()) {
-    case MahiUiUpdateType::kAnswerLoaded:
+    case MahiUiUpdateType::kAnswerLoaded: {
       RemoveLoadingAnimatedImage();
 
       base::UmaHistogramTimes(
           mahi_constants::kAnswerLoadingTimeHistogramName,
           base::TimeTicks::Now() - answer_start_loading_time_);
 
-      AddChildView(
-          CreateQuestionAnswerRow(update.GetAnswer(), /*is_question=*/false));
+      auto& answer = update.GetAnswer();
+
+      AddChildView(CreateQuestionAnswerRow(answer, /*is_question=*/false));
+      GetViewAccessibility().AnnounceText(answer);
       return;
+    }
     case MahiUiUpdateType::kContentsRefreshInitiated:
       question_count_reporter_.ReportDataAndReset();
       RemoveAllChildViews();
@@ -301,6 +305,8 @@ void MahiQuestionAnswerView::OnUpdated(const MahiUiUpdate& update) {
       auto* answer_loading_animated_image = AddChildView(
           views::Builder<views::AnimatedImageView>()
               .SetID(mahi_constants::ViewId::kAnswerLoadingAnimatedImage)
+              .SetAccessibleName(l10n_util::GetStringUTF16(
+                  IDS_ASH_MAHI_LOADING_ACCESSIBLE_NAME))
               .SetAnimatedImage(mahi_animation_utils::GetLottieAnimationData(
                   IDR_MAHI_LOADING_SUMMARY_ANIMATION))
               .AfterBuild(base::BindOnce([](views::AnimatedImageView* self) {

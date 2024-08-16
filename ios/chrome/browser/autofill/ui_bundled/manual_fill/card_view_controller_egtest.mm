@@ -128,8 +128,7 @@ id<GREYMatcher> CreditCardManualFillViewTab() {
 // Matcher for the overflow menu button shown in the payment method cells.
 id<GREYMatcher> OverflowMenuButton() {
   return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL),
+      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
       grey_interactable(), nullptr);
 }
 
@@ -149,8 +148,8 @@ id<GREYMatcher> OverflowMenuShowDetailsAction() {
 
 // Matcher for the "Autofill Form" button shown in the payment method cells.
 id<GREYMatcher> AutofillFormButton() {
-  return grey_allOf(ButtonWithAccessibilityLabelId(
-                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
+  return grey_allOf(grey_accessibilityID(
+                        manual_fill::kExpandedManualFillAutofillFormButtonID),
                     grey_interactable(), nullptr);
 }
 
@@ -464,6 +463,14 @@ void DismissPaymentBottomSheet() {
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
+
+  // Refresh the view by scrolling to the top as the virtual card and regular
+  // card cells are otherwise superimposed. We don't think this issue is likely
+  // to happen in production, but it's worth investigating further.
+  // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Assert presence of virtual card.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -1006,6 +1013,14 @@ void DismissPaymentBottomSheet() {
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
+
+  // Refresh the view by scrolling to the top as the virtual card and regular
+  // card cells are otherwise superimposed. We don't think this issue is likely
+  // to happen in production, but it's worth investigating further.
+  // TODO(crbug.com/359542780): Remove when rendering issue is fixed.
+  [[EarlGrey
+      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Assert presence of virtual card.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

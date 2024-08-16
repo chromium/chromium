@@ -17,6 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/window_util.h"
@@ -203,7 +204,7 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   EXPECT_EQ(w6.get(), window_list[4]);
 
   auto delegate = std::make_unique<views::WidgetDelegateView>();
-  delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+  delegate->SetModalType(ui::mojom::ModalType::kSystem);
   std::unique_ptr<views::Widget> modal =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                        delegate.release(), kShellWindowId_Invalid);

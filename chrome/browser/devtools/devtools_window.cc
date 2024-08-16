@@ -81,6 +81,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "net/cert/x509_certificate.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -1150,6 +1151,11 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
     Observe(inspected_web_contents);
   }
 
+  // TODO(https://crbug.com/356827776): kTabContents is not the right view type
+  // for devtools window. We should have a new view type here.
+  extensions::SetViewType(main_web_contents_,
+                          extensions::mojom::ViewType::kTabContents);
+
   // Initialize docked page to be of the right size.
   if (can_dock_ && inspected_web_contents) {
     content::RenderWidgetHostView* inspected_view =
@@ -1643,7 +1649,7 @@ int DevToolsWindow::GetDockStateForLogging() {
   }
 
   gfx::Rect inspected_page_bounds = contents_resizing_strategy_.bounds();
-  if (inspected_page_bounds.x() >= 0) {
+  if (inspected_page_bounds.x() > 0) {
     return kLeft;
   }
   gfx::Rect devtools_bounds =

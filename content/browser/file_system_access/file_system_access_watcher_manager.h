@@ -129,10 +129,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                                GetObservationCallback get_observation_callback);
 
   // FileSystemAccessChangeSource::RawChangeObserver:
-  void OnRawChange(
-      const storage::FileSystemURL& changed_url,
-      bool error,
-      const FileSystemAccessChangeSource::ChangeInfo& change_info) override;
+  void OnRawChange(const storage::FileSystemURL& changed_url,
+                   bool error,
+                   const FileSystemAccessChangeSource::ChangeInfo& change_info,
+                   const FileSystemAccessWatchScope& scope) override;
   void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
 
   // Subscriber this instance to raw changes from `source`.
@@ -196,10 +196,6 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   std::unique_ptr<FileSystemAccessBucketPathWatcher> bucket_path_watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::flat_set<std::unique_ptr<FileSystemAccessObserverHost>,
-                 base::UniquePtrComparator>
-      observer_hosts_;
-
   // TODO(crbug.com/321980367): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
 
@@ -222,6 +218,13 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Unfortunately, ScopedMultiSourceObservation does not allow for peeking
   // inside the list. This is a workaround.
   std::list<raw_ref<FileSystemAccessChangeSource>> all_sources_;
+
+  // When a `FileSystemAccessObserverHost` is destroyed, it destroys several
+  // elements in members of `this`. So destroy `observer_hosts_` first before
+  // destroying other members.
+  base::flat_set<std::unique_ptr<FileSystemAccessObserverHost>,
+                 base::UniquePtrComparator>
+      observer_hosts_;
 
   base::WeakPtrFactory<FileSystemAccessWatcherManager> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

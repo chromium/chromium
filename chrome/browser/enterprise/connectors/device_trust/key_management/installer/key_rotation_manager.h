@@ -13,6 +13,10 @@
 
 class GURL;
 
+namespace enterprise_attestation {
+class CloudManagementDelegate;
+}
+
 namespace enterprise_connectors {
 
 class KeyPersistenceDelegate;
@@ -27,8 +31,17 @@ class KeyRotationManager {
   static std::unique_ptr<KeyRotationManager> Create(
       std::unique_ptr<KeyNetworkDelegate> network_delegate);
 
+  static std::unique_ptr<KeyRotationManager> Create(
+      std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+          cloud_delegate);
+
   static std::unique_ptr<KeyRotationManager> CreateForTesting(
       std::unique_ptr<KeyNetworkDelegate> network_delegate,
+      std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
+
+  static std::unique_ptr<KeyRotationManager> CreateForTesting(
+      std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
+          cloud_delegate,
       std::unique_ptr<KeyPersistenceDelegate> persistence_delegate);
 
   static void SetForTesting(

@@ -5,10 +5,17 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/files/file.h"
+#include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/icons/vector_icons.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -326,13 +333,14 @@ void FileMetadataLoader::RequestFileInfo(
     OnMetadataLoadedCallback on_loaded_callback) {
   // Return an empty base::File::Info if the loader callback is not set.
   if (loader_callback_.is_null()) {
-    on_loaded_callback.Run(base::File::Info());
+    std::move(on_loaded_callback).Run(base::File::Info());
     return;
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      loader_callback_, on_loaded_callback);
+      base::OnceCallback<base::File::Info()>(loader_callback_),
+      std::move(on_loaded_callback));
 }
 
 void FileMetadataLoader::SetLoaderCallback(MetadataLoaderCallback callback) {
@@ -437,6 +445,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Media.
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
+    case kKeyboardShortcutMediaLaunchApp1Refresh:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return &kOverviewRefreshIcon;
+#else
+      return &kKsvOverviewIcon;
+#endif
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
     case kKeyboardShortcutMediaPause:
@@ -454,6 +468,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrightnessDownIcon;
     case kKeyboardShortcutBrightnessUp:
       return &kKsvBrightnessUpIcon;
+    case kKeyboardShortcutBrightnessUpRefresh:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      return &kBrightnessUpRefreshIcon;
+#else
+      return &kKsvBrightnessUpIcon;
+#endif
     // Volume.
     case kKeyboardShortcutVolumeMute:
       return &kKsvMuteIcon;
@@ -482,6 +502,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Launcher.
     case kKeyboardShortcutLauncher:
       return &kKsLauncherIcon;
+    case kKeyboardShortcutLauncherRefresh:
+      return &kCampbellHeroIcon;
     // Search.
     case kKeyboardShortcutSearch:
       return &kKsSearchIcon;
@@ -506,6 +528,10 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsKeyboardBrightnessUpIcon;
     case kKeyboardShortcutKeyboardBacklightToggle:
       return &kKsKeyboardBrightnessToggleIcon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case kKeyboardShortcutKeyboardRightAlt:
+      return &kRightAltInternalIcon;
+#endif
     default:
       return nullptr;
   }

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "device/fido/features.h"
 #include "ui/gfx/text_constants.h"
@@ -203,7 +204,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               dialog_model));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case Step::kOffTheRecordInterstitial:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
@@ -401,8 +402,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
         sheet_view = std::make_unique<AuthenticatorTouchIdView>(
             std::make_unique<AuthenticatorTouchIdSheetModel>(dialog_model));
       } else {
-        NOTREACHED_NORETURN()
-            << "MacOS version does not support LAAuthenticationView";
+        NOTREACHED() << "MacOS version does not support LAAuthenticationView";
       }
 #else
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(

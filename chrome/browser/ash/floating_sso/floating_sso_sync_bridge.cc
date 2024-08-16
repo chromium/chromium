@@ -11,14 +11,14 @@
 
 #include "base/check_deref.h"
 #include "base/logging.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_change_processor.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/cookie_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -38,9 +38,9 @@ std::unique_ptr<syncer::EntityData> CreateEntityData(
 }  // namespace
 
 FloatingSsoSyncBridge::FloatingSsoSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
-    syncer::OnceModelTypeStoreFactory create_store_callback)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory create_store_callback)
+    : syncer::DataTypeSyncBridge(std::move(change_processor)) {
   StoreWithCache::CreateAndLoad(
       std::move(create_store_callback), syncer::COOKIES,
       base::BindOnce(&FloatingSsoSyncBridge::OnStoreCreated,
@@ -56,7 +56,7 @@ FloatingSsoSyncBridge::~FloatingSsoSyncBridge() {
 
 std::unique_ptr<syncer::MetadataChangeList>
 FloatingSsoSyncBridge::CreateMetadataChangeList() {
-  return syncer::ModelTypeStore::WriteBatch::CreateMetadataChangeList();
+  return syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
 }
 
 std::optional<syncer::ModelError> FloatingSsoSyncBridge::MergeFullSyncData(
@@ -165,7 +165,7 @@ syncer::ConflictResolution FloatingSsoSyncBridge::ResolveConflict(
     const syncer::EntityData& remote_data) const {
   // TODO: b/353222478 - prefer local SAML cookies if they were acquired
   // during the most recent ChromeOS sign-in.
-  return syncer::ModelTypeSyncBridge::ResolveConflict(storage_key, remote_data);
+  return syncer::DataTypeSyncBridge::ResolveConflict(storage_key, remote_data);
 }
 
 const FloatingSsoSyncBridge::CookieSpecificsEntries&

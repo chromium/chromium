@@ -1,0 +1,174 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style-lit cr-hidden-style-lit cr-nav-menu-item-style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  --advanced-section-border-color: var(--google-green-300);
+  --iph-section-border-color: var(--google-blue-300);
+  --main-column-max-width: 680px;
+  --new-badge-section-border-color: var(--google-yellow-300);
+  --whats-new-section-border-color: var(--google-grey-300);
+  --side-bar-width: 200px;
+  --tutorials-section-border-color: var(--google-red-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --advanced-section-border-color: var(--google-green-700);
+    --iph-section-border-color: var(--google-blue-700);
+    --new-badge-section-border-color: var(--google-yellow-700);
+    --whats-new-section-border-color: var(--google-grey-700);
+    --tutorials-section-border-color: var(--google-red-700);
+  }
+}
+
+cr-toolbar {
+  min-height: 56px;
+
+  --cr-toolbar-center-basis: var(--main-column-max-width);
+}
+
+cr-toolbar:not([narrow]) {
+  --cr-toolbar-left-spacer-width: var(--side-bar-width);
+}
+
+user-education-internals-card.highlighted,
+user-education-whats-new-internals-card.highlighted {
+  background-color: var(--cr-iph-anchor-highlight-color);
+}
+
+h2 {
+  padding-inline: var(--cr-section-padding);
+}
+
+.whats-new-section {
+  padding-inline: var(--cr-section-padding);
+}
+
+#cr-container-shadow-top {
+  /* Needs to be higher than #container's z-index to appear above
+    * scrollbars. */
+  z-index: 2;
+}
+
+#container {
+  align-items: flex-start;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+#left,
+#main,
+#right {
+  flex: 1;
+}
+
+#left {
+  height: 100%;
+  position: sticky;
+  top: 0;
+}
+
+#sidebar {
+  width: var(--side-bar-width);
+}
+
+#main {
+  display: flex;
+  flex-basis: var(--main-column-max-width);
+  justify-content: center;
+  position: relative;
+}
+
+#content {
+  width: var(--main-column-max-width);
+}
+
+#advanced {
+  border-inline-start: 1px solid var(--advanced-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+#tutorials {
+  border-inline-start: 1px solid var(--tutorials-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+#iph {
+  border-inline-start: 1px solid var(--iph-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+#newBadges {
+  border-inline-start: 1px solid var(--new-badge-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+#whatsNew {
+  border-inline-start: 1px solid var(--whats-new-section-border-color);
+  padding-inline: var(--cr-section-padding);
+  scroll-margin-top: 16px;
+}
+
+user-education-internals-card,
+user-education-whats-new-internals-card {
+  padding-block: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
+}
+
+#session {
+  padding-block-start: 0;
+  padding-block-end: var(--cr-section-vertical-padding);
+  margin-block-start: 0;
+  margin-block-end: var(--cr-section-vertical-padding);
+  padding-inline: var(--cr-section-padding);
+}
+
+#session li {
+  margin-block: 1em;
+}
+
+#label h3 {
+  margin-block: 0;
+}
+
+#left h2 {
+  border-bottom: 1px solid var(--cr-separator-color);
+  margin: 0 0 12px 0;
+  padding: 16px;
+}
+
+/* Width is left + --cr-section-padding + main. */
+@media (max-width: 920px) {
+  #main {
+    flex: 1;
+    min-width: auto;
+  }
+
+  #content {
+    flex-basis: var(--main-column-max-width);
+    padding-inline: var(--cr-section-indent-padding);
+    width: auto;
+  }
+}
+

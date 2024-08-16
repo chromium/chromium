@@ -82,7 +82,7 @@ class GerritAPI:
         url = urlunsplit(
             (URL_BASE.scheme, URL_BASE.netloc, path, query_str, ''))
         raw_data = self.host.web.get_binary(
-            url, return_none_on_404=return_none_on_404)
+            url, return_none_on_404=return_none_on_404, trace='b346392205')
         if raw:
             return raw_data
 

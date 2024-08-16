@@ -15,10 +15,8 @@ std::unique_ptr<MediaKeysListener> MediaKeysListener::Create(
 
   if (scope == Scope::kGlobal) {
     // We should never have more than one global media keys listener.
-    if (!GlobalMediaKeysListenerWin::has_instance())
-      return std::make_unique<GlobalMediaKeysListenerWin>(delegate);
-
-    NOTREACHED_IN_MIGRATION();
+    CHECK(!GlobalMediaKeysListenerWin::has_instance());
+    return std::make_unique<GlobalMediaKeysListenerWin>(delegate);
   }
   return nullptr;
 }

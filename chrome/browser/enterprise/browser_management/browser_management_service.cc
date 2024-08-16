@@ -24,6 +24,10 @@ GetManagementStatusProviders(Profile* profile) {
       std::make_unique<LocalDomainBrowserManagementStatusProvider>());
   providers.emplace_back(
       std::make_unique<ProfileCloudManagementStatusProvider>(profile));
+  providers.emplace_back(
+      std::make_unique<LocalTestPolicyUserManagementProvider>(profile));
+  providers.emplace_back(
+      std::make_unique<LocalTestPolicyBrowserManagementProvider>(profile));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   providers.emplace_back(std::make_unique<DeviceManagementStatusProvider>());
 #endif

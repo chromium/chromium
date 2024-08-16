@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.toolbar.adaptive;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
@@ -20,7 +18,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.List;
 
@@ -39,45 +36,6 @@ public class AdaptiveToolbarFeaturesTest {
     @After
     public void tearDown() {
         FeatureList.setTestValues(null);
-    }
-
-    @Test
-    public void testEnabledWhenMinVersionLesser() {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        Integer testMinVersion = AdaptiveToolbarFeatures.VERSION - 1;
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                AdaptiveToolbarFeatures.VARIATION_PARAM_MIN_VERSION,
-                testMinVersion.toString());
-
-        assertTrue(AdaptiveToolbarFeatures.isCustomizationEnabled());
-    }
-
-    @Test
-    public void testEnabledWhenMinVersionEqual() {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        Integer testMinVersion = AdaptiveToolbarFeatures.VERSION;
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                AdaptiveToolbarFeatures.VARIATION_PARAM_MIN_VERSION,
-                testMinVersion.toString());
-
-        assertTrue(AdaptiveToolbarFeatures.isCustomizationEnabled());
-    }
-
-    @Test
-    public void testDisabledWhenMinVersionGreater() {
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
-        Integer testMinVersion = AdaptiveToolbarFeatures.VERSION + 1;
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-                AdaptiveToolbarFeatures.VARIATION_PARAM_MIN_VERSION,
-                testMinVersion.toString());
-
-        assertFalse(AdaptiveToolbarFeatures.isCustomizationEnabled());
     }
 
     @Test

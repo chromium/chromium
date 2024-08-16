@@ -100,9 +100,9 @@ targets.legacy_basic_suite(
                 shards = 20,
             ),
         ),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 9,
+                shards = 6,
             ),
         ),
     },
@@ -130,9 +130,9 @@ targets.legacy_basic_suite(
             ),
         ),
         "viz_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
             ),
         ),
     },
@@ -179,9 +179,9 @@ targets.legacy_basic_suite(
         "gl_unittests": targets.legacy_test_config(),
         "mojo_test_apk": targets.legacy_test_config(),
         "ui_android_unittests": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
             ),
         ),
     },
@@ -196,9 +196,14 @@ targets.legacy_basic_suite(
             ),
         ),
         "mojo_test_apk": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 5,
+            ),
+        ),
+        "webview_instrumentation_test_apk_single_process_mode": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
             ),
         ),
     },
@@ -452,6 +457,18 @@ targets.legacy_basic_suite(
     name = "chromeos_annotation_scripts",
     tests = {
         "check_network_annotations": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromeos_arm_gtests",
+    tests = {
+        "video_decode_accelerator_tests_v4l2": targets.legacy_test_config(
+            ci_only = True,
+            # TODO(b/303119905): Remove experimental status once this
+            # suite is added to CQ.
+            experiment_percentage = 100,
+        ),
     },
 )
 
@@ -1026,6 +1043,9 @@ targets.legacy_basic_suite(
         "cast_unittests": targets.legacy_test_config(),
         "components_browsertests": targets.legacy_test_config(),
         "components_unittests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
             android_swarming = targets.swarming(
                 shards = 6,
             ),
@@ -1564,23 +1584,18 @@ targets.legacy_basic_suite(
     name = "chromium_webkit_isolated_scripts",
     tests = {
         "blink_web_tests": targets.legacy_test_config(
-            # TODO(crbug.com/337058844): uploading invocations is not supported
-            # by blink_web_tests yet.
-            remove_mixins = [
-                "upload_inv_extended_properties",
-            ],
             swarming = targets.swarming(
                 shards = 5,
             ),
         ),
         "blink_wpt_tests": targets.legacy_test_config(
-            # TODO(crbug.com/337058844): uploading invocations is not supported
-            # by blink_wpt_tests yet.
-            remove_mixins = [
-                "upload_inv_extended_properties",
-            ],
             swarming = targets.swarming(
                 shards = 7,
+            ),
+        ),
+        "chrome_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
             ),
         ),
     },
@@ -1592,43 +1607,6 @@ targets.legacy_basic_suite(
         "check_network_annotations": targets.legacy_test_config(),
         "metrics_python_tests": targets.legacy_test_config(),
         "webkit_lint": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromium_wpt_tests_isolated_scripts",
-    tests = {
-        "chrome_wpt_tests": targets.legacy_test_config(
-            args = [
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "chromium_wpt_tests_headful_isolated_scripts",
-    tests = {
-        "chrome_wpt_tests_headful": targets.legacy_test_config(
-            args = [
-                "--no-headless",
-                "--test-type",
-                "testharness",
-                "reftest",
-                "crashtest",
-                "print-reftest",
-            ],
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
     },
 )
 
@@ -1832,6 +1810,11 @@ targets.legacy_basic_suite(
         "blink_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
                 shards = 7,
+            ),
+        ),
+        "chrome_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 1,
             ),
         ),
         "content_shell_crash_test": targets.legacy_test_config(),
@@ -2140,31 +2123,10 @@ targets.legacy_basic_suite(
     },
 )
 
-# This is a set of selected tests to test the test facility only. The
-# principle of the selection includes time cost, scenario coverage,
-# stability, etc; and it's subject to change. In theory, it should only be
-# used by the EngProd team to verify a new test facility setup.
-targets.legacy_basic_suite(
-    name = "fuchsia_facility_gtests",
-    tests = {
-        "aura_unittests": targets.legacy_test_config(),
-        "blink_common_unittests": targets.legacy_test_config(),
-        "courgette_unittests": targets.legacy_test_config(),
-        "crypto_unittests": targets.legacy_test_config(),
-        "filesystem_service_unittests": targets.legacy_test_config(),
-        "web_engine_integration_tests": targets.legacy_test_config(),
-        "web_engine_unittests": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "fuchsia_sizes_tests",
     tests = {
-        "fuchsia_sizes": targets.legacy_test_config(
-            remove_mixins = [
-                "upload_inv_extended_properties",
-            ],
-        ),
+        "fuchsia_sizes": targets.legacy_test_config(),
     },
 )
 
@@ -3103,24 +3065,10 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Android uses both
-                # gpu_passthrough_telemetry_tests and
-                # gpu_validating_telemetry_tests, so the upload_inv_extended_properties needs
-                # to be removed from both suites.
-                "upload_inv_extended_properties",
-            ],
         ),
         "hardware_accelerated_feature_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
-            ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Android uses both
-                # gpu_passthrough_telemetry_tests and
-                # gpu_validating_telemetry_tests, so the upload_inv_extended_properties needs
-                # to be removed from both suites.
-                "upload_inv_extended_properties",
             ],
         ),
         "pixel_skia_gold_passthrough_test": targets.legacy_test_config(
@@ -3233,23 +3181,14 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
-            ],
             args = [
                 "--extra-browser-args=--use-cmd-decoder=validating",
             ],
         ),
         "expected_color_pixel_validating_test": targets.legacy_test_config(
             mixins = [
+                "skia_gold_test",
                 "gpu_integration_test_common_args",
-            ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",
@@ -3266,30 +3205,16 @@ targets.legacy_basic_suite(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
-            ],
         ),
         "hardware_accelerated_feature_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
             ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
-            ],
         ),
         "pixel_skia_gold_validating_test": targets.legacy_test_config(
             mixins = [
+                "skia_gold_test",
                 "gpu_integration_test_common_args",
-            ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",
@@ -3305,11 +3230,6 @@ targets.legacy_basic_suite(
         "screenshot_sync_validating_tests": targets.legacy_test_config(
             mixins = [
                 "gpu_integration_test_common_args",
-            ],
-            remove_mixins = [
-                # TODO(crbug.com/337058844): Merging upload_inv_extended_properties with
-                # has_native_resultdb_integration is not supported yet.
-                "upload_inv_extended_properties",
             ],
             args = [
                 "--dont-restore-color-profile-after-test",
@@ -3838,9 +3758,24 @@ targets.legacy_basic_suite(
         "leveldb_unittests": targets.legacy_test_config(),
         "libjingle_xmpp_unittests": targets.legacy_test_config(),
         "liburlpattern_unittests": targets.legacy_test_config(),
-        "media_unittests": targets.legacy_test_config(),
-        "media_unittests_skia_graphite_dawn": targets.legacy_test_config(),
-        "media_unittests_skia_graphite_metal": targets.legacy_test_config(),
+        "media_unittests": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
+        "media_unittests_skia_graphite_dawn": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
+        "media_unittests_skia_graphite_metal": targets.legacy_test_config(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
+            ],
+        ),
         "midi_unittests": targets.legacy_test_config(),
         "mojo_unittests": targets.legacy_test_config(
             args = [
@@ -4000,34 +3935,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "lacros_all_tast_tests_suite",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_device_or_vm_gtests",
-    tests = {
-        "cc_unittests": targets.legacy_test_config(),
-        "ozone_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(
-            mixins = [
-                "vaapi_unittest_args",
-                "vaapi_unittest_libfake_args",
-            ],
-        ),
-    },
-)
-
 # Lacros tests that run on Skylab, and these tests are usually HW sensative,
 # Currently we only run Tast tests.
 targets.legacy_basic_suite(
@@ -4042,48 +3949,6 @@ targets.legacy_basic_suite(
             timeout_sec = 10800,
             shards = 2,
         ),
-    },
-)
-
-# This target should usually be the same as `lacros_skylab_tests`. We use
-# a different target for version skew so we can easily disable all version skew
-# tests during an outage.
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_version_skew",
-    tests = {
-        "lacros_all_tast_tests": targets.legacy_test_config(
-            tast_expr = "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
-            test_level_retries = 2,
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            timeout_sec = 10800,
-            shards = 2,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_with_gtests",
-    tests = {
-        "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
-# This target should usually be the same as `lacros_skylab_tests_with_gtests`. We use
-# a different target for version skew so we can easily disable all version skew
-# tests during an outage.
-targets.legacy_basic_suite(
-    name = "lacros_skylab_tests_with_gtests_version_skew",
-    tests = {
-        "chromeos_integration_tests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "lacros_vm_gtests",
-    tests = {
-        "base_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -4436,30 +4301,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "network_sandbox_browser_tests",
-    tests = {
-        "browser_tests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-        "components_browsertests_network_sandbox": targets.legacy_test_config(),
-        "content_browsertests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 10,
-            ),
-        ),
-        "extensions_browsertests_network_sandbox": targets.legacy_test_config(),
-        "interactive_ui_tests_network_sandbox": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        "sync_integration_tests_network_sandbox": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "network_service_fyi_gtests",
     tests = {
         "network_service_web_request_proxy_browser_tests": targets.legacy_test_config(
@@ -4642,6 +4483,14 @@ targets.legacy_basic_suite(
     tests = {
         "optimization_guide_components_unittests": targets.legacy_test_config(),
         # TODO(mgeorgaklis): Add optimization_guide_unittests when they become Android compatible.
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "optimization_guide_cros_gtests",
+    tests = {
+        "optimization_guide_browser_tests": targets.legacy_test_config(),
+        "optimization_guide_components_unittests": targets.legacy_test_config(),
     },
 )
 
@@ -5340,6 +5189,18 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 shards = 2,
+            ),
+        ),
+    },
+)
+
+# This target is only to run on Android versions <= Android Q (10).
+targets.legacy_basic_suite(
+    name = "webview_instrumentation_test_apk_single_process_mode_gtests",
+    tests = {
+        "webview_instrumentation_test_apk_single_process_mode": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 3,
             ),
         ),
     },

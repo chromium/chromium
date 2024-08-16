@@ -488,7 +488,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
         return true;
       }));
 }
@@ -508,7 +508,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
         return true;
       }));
 
@@ -524,7 +524,7 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
   EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
       [&](const net::SchemefulSite& site,
           const net::FirstPartySetEntry& entry) {
-        NOTREACHED_NORETURN();
+        NOTREACHED();
         return true;
       }));
 

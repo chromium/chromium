@@ -328,8 +328,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   UpdateHeader(idp_display_data_list[0].idp_metadata, title, show_back_button);
 
   RemoveNonHeaderChildViews();
-  AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
+  AddSeparatorAndMultipleAccountChooser(idp_display_data_list);
 
   if (!has_sheet_) {
     has_sheet_ = true;
@@ -743,13 +742,14 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   return row;
 }
 
-std::unique_ptr<views::View>
-AccountSelectionBubbleView::CreateMultipleAccountChooser(
+void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+  // We use a separate scroller for accounts vs for mismatches. This allows us
+  // to show accounts at the top while still always showing mismatches in the UI
+  // before any scrolling occurs.
   auto account_scroll_view = std::make_unique<views::ScrollView>();
   account_scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  account_scroll_view->SetDrawOverflowIndicator(false);
   views::View* const accounts_content =
       account_scroll_view->SetContents(std::make_unique<views::View>());
   accounts_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -760,13 +760,9 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
   AddSignInAccounts(idp_display_data_list, accounts_content, position);
   AddAccounts(idp_display_data_list, accounts_content,
               Account::LoginState::kSignUp, position);
-  size_t num_rows = 0;
-  bool has_mismatches = false;
+  size_t num_account_rows = 0;
   for (const auto& idp_display_data : idp_display_data_list) {
-    num_rows += idp_display_data.accounts.size();
-    if (idp_display_data.has_login_status_mismatch) {
-      has_mismatches = true;
-    }
+    num_account_rows += idp_display_data.accounts.size();
     const content::IdentityProviderMetadata& idp_metadata =
         idp_display_data.idp_metadata;
     if (idp_metadata.supports_add_account) {
@@ -775,73 +771,91 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
     }
   }
 
+  bool starts_with_scroller = false;
   // The maximum height that the multi-account-picker can have. This value was
   // chosen so that if there are more than two accounts, the picker will show up
   // as a scrollbar showing 2 accounts plus half of the third one. Note that
   // this is an estimate if there are multiple IDPs, as IDP rows are not the
   // same height. That said, calling GetPreferredSize() is expensive so we are
   // ok with this estimate. And in this case, we prefer to use 3.5 as there will
-  // be at least one IDP row at the beginning. Note that `num_rows` can be 0 if
-  // everything is an IDP mismatch.
-  if (num_rows > 0) {
+  // be at least one IDP row at the beginning. Note that `num_account_rows` can
+  // be 0 if everything is an IDP mismatch.
+  if (num_account_rows > 0) {
     float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
     const int per_account_size =
-        accounts_content->GetPreferredSize().height() / num_rows;
+        accounts_content->GetPreferredSize().height() / num_account_rows;
     account_scroll_view->ClipHeightTo(
         0, static_cast<int>(per_account_size * num_visible_rows));
-  }
-  if (!has_mismatches) {
-    // We already had some spacing between the scroller and the separator at the
-    // top but we need some additional spacing to match the bottom margin, which
-    // is slightly larger in single IDP case.
-    account_scroll_view->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        is_multi_idp ? kVerticalSpacing - kTopBottomPadding : kVerticalSpacing,
-        0, 0, 0)));
-    return account_scroll_view;
-  }
-
-  // We use a container wrapper to have a separate scroller for accounts vs IDP
-  // mismatches. This allows us to show accounts at the top while still always
-  // showing mismatches in the UI before any scrolling occurs.
-  auto container = std::make_unique<views::View>();
-  // We already had some spacing between the scroller and the separator at the
-  // top but we need some additional spacing to match the bottom margin.
-  container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0),
-      kVerticalSpacing));
-  if (num_rows > 0) {
-    container->AddChildView(std::move(account_scroll_view));
-    container->AddChildView(std::make_unique<views::Separator>());
+    if (num_account_rows > num_visible_rows) {
+      starts_with_scroller = true;
+    } else {
+      // We will have some spacing between the scroller and the separator at the
+      // top but we need some additional spacing to match the bottom margin,
+      // which is slightly larger in single IDP case.
+      account_scroll_view->SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(is_multi_idp ? kVerticalSpacing - kTopBottomPadding
+                                         : kVerticalSpacing,
+                            0, 0, 0)));
+    }
   }
 
   auto mismatch_scroll_view = std::make_unique<views::ScrollView>();
   mismatch_scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  mismatch_scroll_view->SetDrawOverflowIndicator(false);
   views::View* const mismatch_content =
       mismatch_scroll_view->SetContents(std::make_unique<views::View>());
   mismatch_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
   // Add mismatch rows.
-  num_rows = 0;
+  size_t num_mismatch_rows = 0;
   for (const auto& idp_display_data : idp_display_data_list) {
     if (idp_display_data.has_login_status_mismatch) {
       DCHECK(idp_display_data.accounts.empty());
       mismatch_content->AddChildView(CreateIdpLoginRow(
           idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
-      num_rows += 1;
+      num_mismatch_rows += 1;
     }
   }
-  // Similar to accounts scroller, clip the height of the mismatch dialog to
-  // show at most 2.
-  const int per_mismatch_size =
-      mismatch_content->GetPreferredSize().height() / num_rows;
-  mismatch_scroll_view->ClipHeightTo(
-      0, static_cast<int>(per_mismatch_size * 2.5f));
+  if (num_mismatch_rows > 0) {
+    // Similar to accounts scroller, clip the height of the mismatch dialog to
+    // show at most 2.
+    const int per_mismatch_size =
+        mismatch_content->GetPreferredSize().height() / num_mismatch_rows;
+    mismatch_scroll_view->ClipHeightTo(
+        0, static_cast<int>(per_mismatch_size * 2.5f));
+    if (num_account_rows == 0) {
+      if (num_mismatch_rows > 2) {
+        starts_with_scroller = true;
+      } else {
+        // We will have some spacing between the scroller and the separator at
+        // the top but we need some additional spacing to match the bottom
+        // margin. Note that this can only happen when there are multiple IDPs.
+        mismatch_scroll_view->SetBorder(views::CreateEmptyBorder(
+            gfx::Insets::TLBR(kVerticalSpacing - kTopBottomPadding, 0, 0, 0)));
+      }
+    }
+  }
+
+  // We use a container for most of the contents here. If there is a scroller at
+  // the start, we include the separator so that there is no spacing between the
+  // separator and the scroller. And we also always include the accounts
+  // followed by the IDP mismatches.
+  auto container = std::make_unique<views::View>();
+  container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  if (starts_with_scroller) {
+    container->AddChildView(std::make_unique<views::Separator>());
+  } else {
+    AddChildView(std::make_unique<views::Separator>());
+  }
+  container->AddChildView(std::move(account_scroll_view));
+  // If there are both accounts and mismatches, add a separator.
+  if (num_account_rows > 0 && num_mismatch_rows > 0) {
+    container->AddChildView(std::make_unique<views::Separator>());
+  }
   container->AddChildView(std::move(mismatch_scroll_view));
-  return container;
+  AddChildView(std::move(container));
 }
 
 void AccountSelectionBubbleView::AddAccounts(

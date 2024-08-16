@@ -11,10 +11,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.ExternalInteractions;
 import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
@@ -22,35 +24,42 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Safety Hub Magic Stack module. */
 class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStackBridge.Observer {
     private final Context mContext;
+    private final Profile mProfile;
     private final PrefService mPrefService;
     private final PropertyModel mModel;
     private final MagicStackBridge mMagicStackBridge;
     private final TabModelSelector mTabModelSelector;
     private final ModuleDelegate mModuleDelegate;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private boolean mHasBeenDismissed;
 
     SafetyHubMagicStackMediator(
-            Context context,
-            PrefService prefService,
-            PropertyModel model,
-            MagicStackBridge magicStackBridge,
-            TabModelSelector tabModelSelector,
-            ModuleDelegate moduleDelegate,
-            PrefChangeRegistrar prefChangeRegistrar) {
+            @NonNull Context context,
+            @NonNull Profile profile,
+            @NonNull PrefService prefService,
+            @NonNull PropertyModel model,
+            @NonNull MagicStackBridge magicStackBridge,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull ModuleDelegate moduleDelegate,
+            @NonNull PrefChangeRegistrar prefChangeRegistrar,
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
+        mProfile = profile;
         mPrefService = prefService;
         mModel = model;
         mMagicStackBridge = magicStackBridge;
         mTabModelSelector = tabModelSelector;
         mModuleDelegate = moduleDelegate;
         mPrefChangeRegistrar = prefChangeRegistrar;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
     void showModule() {
@@ -72,16 +81,16 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
 
         switch (magicStackEntry.getModuleType()) {
             case MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS:
-                bindSafeStateView(
-                        mContext.getResources()
-                                .getString(R.string.safety_hub_magic_stack_notifications_title),
-                        magicStackEntry.getDescription());
+                bindNotificationReviewView(magicStackEntry.getDescription());
                 break;
             case MagicStackEntry.ModuleType.REVOKED_PERMISSIONS:
                 bindSafeStateView(magicStackEntry.getDescription(), null);
                 break;
             case MagicStackEntry.ModuleType.SAFE_BROWSING:
                 bindSafeBrowsingView(magicStackEntry.getDescription());
+                break;
+            case MagicStackEntry.ModuleType.PASSWORDS:
+                bindCompromisedPasswordsView(magicStackEntry.getDescription());
                 break;
         }
 
@@ -160,6 +169,34 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                 });
     }
 
+    private void bindNotificationReviewView(@NonNull String summary) {
+        mModel.set(
+                SafetyHubMagicStackViewProperties.HEADER,
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.TITLE,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_notifications_title));
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_safe_state_button_text));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
+                SettingsUtils.getTintedIcon(
+                        mContext,
+                        R.drawable.safety_hub_notifications_icon,
+                        R.color.default_icon_color_accent1_baseline));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
+                (view) -> {
+                    SettingsLauncherFactory.createSettingsLauncher()
+                            .launchSettingsActivity(mContext, SafetyHubFragment.class);
+                    recordExternalInteractions(ExternalInteractions.OPEN_FROM_MAGIC_STACK);
+                });
+    }
+
     private void bindSafeBrowsingView(@NonNull String summary) {
         mModel.set(
                 SafetyHubMagicStackViewProperties.HEADER,
@@ -186,6 +223,34 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                             .launchSettingsActivity(mContext, SafeBrowsingSettingsFragment.class);
                     recordExternalInteractions(
                             ExternalInteractions.OPEN_SAFE_BROWSING_FROM_MAGIC_STACK);
+                });
+    }
+
+    private void bindCompromisedPasswordsView(String summary) {
+        mModel.set(
+                SafetyHubMagicStackViewProperties.HEADER,
+                mContext.getResources().getString(R.string.safety_hub_magic_stack_module_name));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.TITLE,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        mModel.set(SafetyHubMagicStackViewProperties.SUMMARY, summary);
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_TEXT,
+                mContext.getResources()
+                        .getString(R.string.safety_hub_magic_stack_compromised_passwords_title));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.ICON_DRAWABLE,
+                SettingsUtils.getTintedIcon(
+                        mContext,
+                        R.drawable.ic_password_manager_key,
+                        R.color.default_icon_color_accent1_baseline));
+        mModel.set(
+                SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER,
+                (view) -> {
+                    SafetyHubUtils.showPasswordCheckUI(
+                            mContext, mProfile, mModalDialogManagerSupplier);
+                    recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
                 });
     }
 }

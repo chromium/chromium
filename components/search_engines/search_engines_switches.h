@@ -30,6 +30,9 @@ inline const char kDefaultListCountryOverride[] = "DEFAULT_EEA";
 inline const char kEeaListCountryOverride[] = "EEA_ALL";
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+extern const char kIgnoreNoFirstRunForSearchEngineChoiceScreen[];
+
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const char kDisableSearchEngineChoiceScreen[];
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
@@ -45,11 +48,6 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceAttribution);
 
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEnginesSortingCleanup);
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kPersistentSearchEngineChoiceImport);
-#endif
 
 // Forces the search engine choice country to Belgium. Used for testing
 // purposes.
@@ -94,6 +92,11 @@ extern const base::FeatureParam<int> kSearchEngineChoiceMaximumSkipCount;
 // TODO(b/316859558): Not used for shipping purposes, remove this feature.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEngineChoice);
+
+// Enables the blocking dialog that directs users to complete their choice of
+// default apps (for Browser & Search) in Android.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kClayBlocking);
 #endif
 
 // Kill switch to revert the fix of using assistedQueryStats for prefetch source
@@ -105,6 +108,10 @@ BASE_DECLARE_FEATURE(kPrefetchParameterFix);
 // prefetch requests. See crbug.com/350939001.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kRemoveSearchboxStatsParamFromPrefetchRequests);
+
+// Switch guarding TemplateURL reconciliation mechanism.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kTemplateUrlReconciliation);
 
 }  // namespace switches
 

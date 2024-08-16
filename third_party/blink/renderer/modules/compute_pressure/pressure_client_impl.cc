@@ -40,7 +40,7 @@ V8PressureState::Enum PressureStateToV8PressureState(PressureState state) {
     case PressureState::kCritical:
       return V8PressureState::Enum::kCritical;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 V8PressureSource::Enum PressureSourceToV8PressureSource(PressureSource source) {
@@ -48,7 +48,7 @@ V8PressureSource::Enum PressureSourceToV8PressureSource(PressureSource source) {
     case PressureSource::kCpu:
       return V8PressureSource::Enum::kCpu;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -110,7 +110,7 @@ DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
   } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context); worker) {
     performance = WorkerGlobalScopePerformance::performance(*worker);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   CHECK(performance);
   return performance->MonotonicTimeToDOMHighResTimeStamp(timeticks);

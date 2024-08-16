@@ -41,6 +41,9 @@ extern const char kSessionStorageFormatPref[];
 // Name of the preference storing the status of the session storage migration.
 extern const char kSessionStorageMigrationStatusPref[];
 
+// Name of the preference storing the date of the last migration attempt.
+extern const char kSessionStorageMigrationStartedTimePref[];
+
 // Possible values for the preference storing the format of the session
 // storage.
 enum class SessionStorageFormat {

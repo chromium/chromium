@@ -65,7 +65,9 @@ void VisitedLinkReader::UpdateVisitedLinks(
   FreeTable();
   DCHECK(hash_table_ == nullptr);
   if (base::FeatureList::IsEnabled(
-          blink::features::kPartitionVisitedLinkDatabase)) {
+          blink::features::kPartitionVisitedLinkDatabase) ||
+      base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks)) {
     return UpdatePartitionedVisitedLinks(std::move(table_region));
   }
   return UpdateUnpartitionedVisitedLinks(std::move(table_region));

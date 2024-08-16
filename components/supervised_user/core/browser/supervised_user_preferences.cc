@@ -50,7 +50,7 @@ struct Family {
           regular_members_.push_back(member);
           break;
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     }
   }
@@ -174,32 +174,13 @@ bool IsChildAccountStatusKnown(const PrefService& pref_service) {
   return pref_service.GetBoolean(prefs::kChildAccountStatusKnown);
 }
 
+bool IsSafeSitesEnabled(const PrefService& pref_service) {
+  return supervised_user::IsSubjectToParentalControls(pref_service) &&
+         pref_service.GetBoolean(prefs::kSupervisedUserSafeSites);
+}
+
 bool IsSubjectToParentalControls(const PrefService& pref_service) {
   return pref_service.GetString(prefs::kSupervisedUserId) == kChildAccountSUID;
 }
 
-bool AreExtensionsPermissionsEnabled(const PrefService& pref_service) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#if BUILDFLAG(IS_CHROMEOS)
-  return supervised_user::IsSubjectToParentalControls(pref_service);
-#else
-  return supervised_user::IsSubjectToParentalControls(pref_service) &&
-         base::FeatureList::IsEnabled(
-             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
-
-bool SupervisedUserCanSkipExtensionParentApprovals(
-    const PrefService& pref_service) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  return IsSubjectToParentalControls(pref_service) &&
-         IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() &&
-         pref_service.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
 }  // namespace supervised_user

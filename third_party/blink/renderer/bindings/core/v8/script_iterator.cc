@@ -18,14 +18,13 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
                                             ExceptionState& exception_state) {
   // 7.4.1 GetIterator ( obj [ , hint [ , method ] ] )
   // https://tc39.es/ecma262/#sec-getiterator
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
 
   // 3.b. Otherwise, set method to ? GetMethod(obj, @@iterator).
   v8::Local<v8::Value> method;
   if (!iterable->Get(current_context, v8::Symbol::GetIterator(isolate))
            .ToLocal(&method)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return ScriptIterator();
   }
   if (method->IsNullOrUndefined()) {
@@ -44,7 +43,6 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
                                     ToExecutionContext(current_context),
                                     iterable, 0, nullptr, isolate)
            .ToLocal(&iterator)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return ScriptIterator();
   }
   // 5. If Type(iterator) is not Object, throw a TypeError exception.
@@ -58,7 +56,6 @@ ScriptIterator ScriptIterator::FromIterable(v8::Isolate* isolate,
   if (!iterator.As<v8::Object>()
            ->Get(current_context, V8AtomicString(isolate, "next"))
            .ToLocal(&next_method)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return ScriptIterator();
   }
 
@@ -93,14 +90,13 @@ bool ScriptIterator::Next(ExecutionContext* execution_context,
     return false;
   }
 
-  v8::TryCatch try_catch(isolate_);
+  TryRethrowScope rethrow_scope(isolate_, exception_state);
   v8::Local<v8::Value> result;
   if (!V8ScriptRunner::CallFunction(next_method.As<v8::Function>(),
                                     execution_context,
                                     iterator_.Get(script_state),
                                     value.IsEmpty() ? 0 : 1, &value, isolate_)
            .ToLocal(&result)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     done_ = true;
     return false;
   }
@@ -118,14 +114,12 @@ bool ScriptIterator::Next(ExecutionContext* execution_context,
   value_ = WorldSafeV8Reference(isolate_,
                                 maybe_value.FromMaybe(v8::Local<v8::Value>()));
   if (maybe_value.IsEmpty()) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     done_ = true;
     return false;
   }
 
   v8::Local<v8::Value> done;
   if (!result_object->Get(context, done_key_).ToLocal(&done)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     done_ = true;
     return false;
   }

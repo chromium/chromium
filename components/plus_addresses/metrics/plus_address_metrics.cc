@@ -5,6 +5,7 @@
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -97,7 +98,10 @@ std::string PlusAddressNetworkRequestTypeToString(
       return "List";
     case PlusAddressNetworkRequestType::kReserve:
       return "Reserve";
+    case PlusAddressNetworkRequestType::kPreallocate:
+      return "Preallocate";
   }
+  NOTREACHED();
 }
 
 std::string PlusAddressModalCompletionStatusToString(
@@ -112,6 +116,7 @@ std::string PlusAddressModalCompletionStatusToString(
     case PlusAddressModalCompletionStatus::kConfirmPlusAddressError:
       return "ConfirmError";
   }
+  NOTREACHED();
 }
 
 }  // namespace plus_addresses::metrics

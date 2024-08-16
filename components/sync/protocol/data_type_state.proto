@@ -1,0 +1,94 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/data_type_progress_marker.proto";
+
+// Sync proto to store data type global metadata in data type storage.
+message DataTypeState {
+  enum InitialSyncState {
+    // Default value, typically used when there is no metadata (e.g. because
+    // Sync is disabled).
+    INITIAL_SYNC_STATE_UNSPECIFIED = 0;
+
+    // Note: Value "1" is reserved, in case we ever want to introduce an
+    // INITIAL_SYNC_STARTED state.
+
+    // Indicates that syncing has started and some, but not all updates from the
+    // initial download/sync have been delivered. This is only used for data
+    // types in ApplyUpdatesImmediatelyTypes().
+    INITIAL_SYNC_PARTIALLY_DONE = 2;
+
+    // Indicates that the initial sync (download + merge) has been completed.
+    INITIAL_SYNC_DONE = 3;
+
+    // Indicates that no initial sync is necessary, used for CommitOnlyTypes().
+    INITIAL_SYNC_UNNECESSARY = 4;
+  }
+
+  // The latest progress markers received from the server.
+  optional DataTypeProgressMarker progress_marker = 1;
+
+  // A data type context.  Sent to the server in every commit or update
+  // request.  May be updated by either responses from the server or requests
+  // made on the model thread.  The interpretation of this value may be
+  // data-type specific.  Many data types ignore it.
+  optional DataTypeContext type_context = 2;
+
+  // This value is set if this type's data should be encrypted on the server.
+  // If this key changes, the client will need to re-commit all of its local
+  // data to the server using the new encryption key.
+  optional string encryption_key_name = 3;
+
+  // Indicates the status of "initial sync", i.e. whether the first download
+  // cycle and initial merge are complete.
+  optional InitialSyncState initial_sync_state = 9;
+
+  // A GUID that identifies the committing sync client. It's persisted within
+  // the sync metadata and should be used to check the integrity of the
+  // metadata. Mismatches with the guid of the running client indicates invalid
+  // persisted sync metadata, because cache_guid is reset when sync is disabled,
+  // and disabling sync is supposed to clear sync metadata.
+  optional string cache_guid = 5;
+
+  // Syncing account ID, representing the user.
+  optional string authenticated_account_id = 6;
+
+  message Invalidation {
+    // Opaque field, which has to be provided as part of resulting GetUpdates
+    // back to the server.
+    optional bytes hint = 1;
+
+    // Version of invalidation, used to order incoming invalidations.
+    optional int64 version = 2;
+  }
+
+  // The latest unprocessed invalidations received from the server.
+  // All incoming invalidations are stored in this message and persist until
+  // they are used in GetUpdate() message.
+  repeated Invalidation invalidations = 7;
+
+  // This is relevant for the passwords datatype. This indicates that the
+  // initial sync flow (downling all passwords from the server) has been run at
+  // least once after the password notes features is enabled. It is used to
+  // enforce redownload of passwords upon upgrading the browser to a version
+  // that supports password notes if necessary. It is false by default and set
+  // to true upon downloading passwords to make sure this download is executed
+  // only once.
+  optional bool notes_enabled_before_initial_sync_for_passwords = 8;
+
+  reserved 4;
+  reserved "initial_sync_done";
+}

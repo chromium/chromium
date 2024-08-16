@@ -27,6 +27,9 @@ const char kHistorySearchEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.history_search_"
     "enterprise_policy_allowed";
 
+const char kTabCompareSettingsEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.tab_compare_settings_enterprise_policy";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kTabOrganizationEnterprisePolicyAllowed,
@@ -42,6 +45,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       kHistorySearchEnterprisePolicyAllowed,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
+      PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(
+      kTabCompareSettingsEnterprisePolicyAllowed,
       static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
       PrefRegistry::LOSSY_PREF);
 }
@@ -153,11 +160,12 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
       return prefs::localstate::kLastTimeTestFeatureWasUsed;
     case ModelBasedCapabilityKey::kHistorySearch:
       return prefs::localstate::kLastTimeHistorySearchWasUsed;
+    case ModelBasedCapabilityKey::kFormsPredictions:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kTextSafety:
       // This should not be called for features that are not on-device.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 // LINT.ThenChange(IsOnDeviceModelEnabled)

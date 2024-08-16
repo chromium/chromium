@@ -403,8 +403,7 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
     const base::android::JavaParamRef<jstring>&
         jimage_translate_source_language_param_key,
     const base::android::JavaParamRef<jstring>&
-        jimage_translate_target_language_param_key,
-    jboolean set_as_default) {
+        jimage_translate_target_language_param_key) {
   // The function is scheduled to run only when the service is loaded, see
   // `TemplateUrlService#runWhenLoaded()`.
   CHECK(template_url_service_->loaded(), base::NotFatalUntil::M128);
@@ -424,14 +423,6 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
           existing_play_api_turl, existing_play_api_turl->short_name(),
           existing_play_api_turl->keyword(), existing_play_api_turl->url());
     }
-
-    // Only one search engine can be marked as coming from Play at a time.
-    // When the feature is off, we don't re-import, so this has to be the same
-    // as the original, that might have had an issue being persisted.
-    if (!base::FeatureList::IsEnabled(
-            switches::kPersistentSearchEngineChoiceImport)) {
-      return false;
-    }
   }
 
   TemplateURLData new_play_api_turl_data = CreatePlayAPITemplateURLData(
@@ -440,36 +431,8 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
       jimage_translate_source_language_param_key,
       jimage_translate_target_language_param_key);
 
-  if (base::FeatureList::IsEnabled(
-          switches::kPersistentSearchEngineChoiceImport)) {
-    // The "re-apply" flow that calls this without setting the engine as default
-    // is not supported when the re-import feature is enabled. So we can always
-    // force the default to be the incoming data without having to figure out
-    // another fallback default using some other logic when removing the old
-    // play api engine.
-    // TODO(b/339012617): Remove when cleaning up the feature.
-    CHECK(set_as_default);
-
-    return template_url_service_->ResetPlayAPISearchEngine(
-        new_play_api_turl_data);
-  }
-
-  CHECK(!existing_play_api_turl);
-
-  // Add the new one and set it as default
-  TemplateURL* t_url = template_url_service_->Add(
-      std::make_unique<TemplateURL>(new_play_api_turl_data));
-
-  // CanMakeDefault() will prevent us from taking over a policy or extension
-  // defined default search engine.
-  if (set_as_default && template_url_service_->CanMakeDefault(t_url)) {
-    template_url_service_->SetUserSelectedDefaultSearchProvider(
-        t_url,
-        // This method gets eventually called when the user interacts with the
-        // OS-level choice screen, so we use it as the location of the choice.
-        search_engines::ChoiceMadeLocation::kChoiceScreen);
-  }
-  return true;
+  return template_url_service_->ResetPlayAPISearchEngine(
+      new_play_api_turl_data);
 }
 
 base::android::ScopedJavaLocalRef<jstring>

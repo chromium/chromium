@@ -355,9 +355,8 @@ gfx::Rect CollisionDetectionUtils::GetAdjustedBoundsByGravity(
       return gfx::Rect(bounds.x(), region.bottom() - bounds.height(),
                        bounds.width(), bounds.height());
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return bounds;
 }
 
 CollisionDetectionUtils::Gravity

@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval" >
-  <solid android:color="@color/tab_grid_dialog_background_color" />
+    android:shape="rectangle" >
+  <solid android:color="@macro/default_bg_color" />
+  <corners android:radius="@dimen/shared_image_tiles_icon_radius" />
 </shape>

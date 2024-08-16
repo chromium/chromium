@@ -60,7 +60,7 @@ void DecodeImageData(SharedBuffer* data, ImageMeta* image) {
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       data, all_data_received, ImageDecoder::kAlphaPremultiplied,
       ImageDecoder::kDefaultBitDepth, ColorBehavior::kIgnore,
-      Platform::GetMaxDecodedImageBytes());
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes());
 
   auto start = std::chrono::steady_clock::now();
 

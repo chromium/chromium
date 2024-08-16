@@ -70,6 +70,7 @@ std::ostream& operator<<(std::ostream& out, const WebAppInstallData& data) {
   out << ", original_manifest_url: " << data.original_manifest_url;
   out << ", proxied_manifest_url: " << data.proxied_manifest_url;
   out << ", document_url: " << data.document_url;
+  out << ", open_as_window: " << data.open_as_window;
   return out << "}";
 }
 
@@ -91,6 +92,21 @@ AppInstallData::AppInstallData(AppInstallData&&) = default;
 AppInstallData& AppInstallData::operator=(AppInstallData&&) = default;
 
 AppInstallData::~AppInstallData() = default;
+
+bool AppInstallData::IsValidForInstallation() const {
+  if (package_id.package_type() == PackageType::kWeb ||
+      package_id.package_type() == PackageType::kWebsite) {
+    if (!absl::holds_alternative<WebAppInstallData>(app_type_data)) {
+      return false;
+    }
+  } else if (!install_url.is_valid()) {
+    // For all package types other than Web/Website, there must be an Install
+    // URL for us to launch.
+    return false;
+  }
+
+  return true;
+}
 
 std::ostream& operator<<(std::ostream& out, const AppInstallData& data) {
   out << "AppInstallData{";

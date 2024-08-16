@@ -87,24 +87,22 @@ PA_ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountlZero(T value) {
   static_assert(bits > 0, "invalid instantiation");
+  if (value) [[likely]] {
 #if PA_BUILDFLAG(PA_COMPILER_MSVC) && !defined(__clang__)
-  // We would prefer to use the _BitScanReverse(64) intrinsics, but they
-  // aren't constexpr and thus unusable here.
-  if (PA_LIKELY(value)) {
+    // We would prefer to use the _BitScanReverse(64) intrinsics, but they
+    // aren't constexpr and thus unusable here.
     int leading_zeros = 0;
     constexpr T kMostSignificantBitMask = 1ull << (bits - 1);
     for (; !(value & kMostSignificantBitMask); value <<= 1, ++leading_zeros) {
     }
     return leading_zeros;
+#else
+    return bits == 64
+               ? __builtin_clzll(static_cast<uint64_t>(value))
+               : __builtin_clz(static_cast<uint32_t>(value)) - (32 - bits);
+#endif
   }
   return bits;
-#else
-  return PA_LIKELY(value)
-             ? bits == 64
-                   ? __builtin_clzll(static_cast<uint64_t>(value))
-                   : __builtin_clz(static_cast<uint32_t>(value)) - (32 - bits)
-             : bits;
-#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC) && !defined(__clang__)
 }
 
 // Backport of C++20 std::countr_zero in <bit>.
@@ -115,24 +113,21 @@ template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountrZero(T value) {
+  if (value) [[likely]] {
 #if PA_BUILDFLAG(PA_COMPILER_MSVC) && !defined(__clang__)
-  // We would prefer to use the _BitScanForward(64) intrinsics, but they
-  // aren't constexpr and thus unusable here.
-  if (PA_LIKELY(value)) {
+    // We would prefer to use the _BitScanForward(64) intrinsics, but they
+    // aren't constexpr and thus unusable here.
     int trailing_zeros = 0;
     constexpr T kLeastSignificantBitMask = 1ull;
     for (; !(value & kLeastSignificantBitMask); value >>= 1, ++trailing_zeros) {
     }
     return trailing_zeros;
+#else
+    return bits == 64 ? __builtin_ctzll(static_cast<uint64_t>(value))
+                      : __builtin_ctz(static_cast<uint32_t>(value));
+#endif
   }
   return bits;
-
-#else
-  return PA_LIKELY(value) ? bits == 64
-                                ? __builtin_ctzll(static_cast<uint64_t>(value))
-                                : __builtin_ctz(static_cast<uint32_t>(value))
-                          : bits;
-#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC) && !defined(__clang__)
 }
 
 // Backport of C++20 std::bit_width in <bit>.

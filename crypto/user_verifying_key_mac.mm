@@ -99,6 +99,8 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
     return key_name_;
   }
 
+  bool IsHardwareBacked() const override  { return true; }
+
  private:
   // The key's wrapped key as a binary string.
   const std::string key_name_;

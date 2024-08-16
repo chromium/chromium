@@ -29,7 +29,12 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentScopeExtensions[] = {
     "https://www.office.com/",
 };
 
-const char kOneDriveBusinessDomain[] = "sharepoint.com";
+constexpr const char* kMicrosoftOfficeWebAppExperimentDomainScopeExtensions[] =
+    {
+        // The OneDrive Business domain (for the extension to match
+        // https://<customer>-my.sharepoint.com).
+        "https://sharepoint.com",
+};
 
 bool g_always_enabled_for_testing = false;
 
@@ -46,17 +51,32 @@ GetScopeExtensionsOverrideForTesting() {
 
 }  // namespace
 
-base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
+ScopeExtensions ChromeOsWebAppExperiments::GetScopeExtensions(
     const webapps::AppId& app_id) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
+  ScopeExtensions extensions;
   if (!IsExperimentEnabled(app_id))
-    return {};
+    return extensions;
 
-  if (GetScopeExtensionsOverrideForTesting())
-    return *GetScopeExtensionsOverrideForTesting();
+  if (GetScopeExtensionsOverrideForTesting()) {
+    for (const auto* origin : *GetScopeExtensionsOverrideForTesting()) {
+      extensions.insert(
+          ScopeExtensionInfo{.origin = url::Origin::Create(GURL(origin))});
+    }
+    return extensions;
+  }
 
-  return kMicrosoftOfficeWebAppExperimentScopeExtensions;
+  for (const auto* url : kMicrosoftOfficeWebAppExperimentScopeExtensions) {
+    extensions.insert(
+        ScopeExtensionInfo{.origin = url::Origin::Create(GURL(url))});
+  }
+  for (const auto* url :
+       kMicrosoftOfficeWebAppExperimentDomainScopeExtensions) {
+    extensions.insert(ScopeExtensionInfo{
+        .origin = url::Origin::Create(GURL(url)), .has_origin_wildcard = true});
+  }
+  return extensions;
 }
 
 int ChromeOsWebAppExperiments::GetExtendedScopeScore(
@@ -64,19 +84,22 @@ int ChromeOsWebAppExperiments::GetExtendedScopeScore(
     std::string_view url_spec) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
+  const GURL url = GURL(url_spec);
+  const auto extensions = GetScopeExtensions(app_id);
   int best_score = 0;
-  for (const char* scope : GetScopeExtensions(app_id)) {
-    int score = base::StartsWith(url_spec, scope, base::CompareCase::SENSITIVE)
-                    ? strlen(scope)
-                    : 0;
+  for (const ScopeExtensionInfo& scope : extensions) {
+    const GURL scope_origin = scope.origin.GetURL();
+    int score;
+    if (scope.has_origin_wildcard) {
+      score =
+          url.DomainIs(scope_origin.host()) ? scope_origin.spec().length() : 0;
+    } else {
+      score = base::StartsWith(url_spec, scope_origin.spec(),
+                               base::CompareCase::SENSITIVE)
+                  ? scope_origin.spec().length()
+                  : 0;
+    }
     best_score = std::max(best_score, score);
-  }
-
-  // Check the OneDrive Business domain separately as this has a different URL
-  // format.
-  GURL url = GURL(url_spec);
-  if (url.DomainIs(kOneDriveBusinessDomain)) {
-    best_score = std::max<int>(best_score, strlen(kOneDriveBusinessDomain));
   }
   return best_score;
 }

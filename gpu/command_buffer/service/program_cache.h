@@ -6,7 +6,9 @@
 #define GPU_COMMAND_BUFFER_SERVICE_PROGRAM_CACHE_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include <array>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -32,6 +34,8 @@ class Shader;
 class GPU_GLES2_EXPORT ProgramCache {
  public:
   static const size_t kHashLength = base::kSHA1Length;
+  using Hash = std::array<uint8_t, kHashLength>;
+  using HashView = base::span<const uint8_t, kHashLength>;
 
   typedef std::map<std::string, GLint> LocationMap;
   using CacheProgramCallback =
@@ -129,26 +133,24 @@ class GPU_GLES2_EXPORT ProgramCache {
   size_t max_size_bytes() const { return max_size_bytes_; }
 
   // called by implementing class after a shader was successfully cached
-  void LinkedProgramCacheSuccess(const std::string& program_hash);
+  void LinkedProgramCacheSuccess(const Hash& program_hash);
 
-  void CompiledShaderCacheSuccess(const std::string& shader_hash);
+  void CompiledShaderCacheSuccess(const Hash& shader_hash);
 
-  void ComputeShaderHash(std::string_view shader,
-                         base::span<uint8_t, kHashLength> result) const;
+  void ComputeShaderHash(std::string_view shader, Hash& result) const;
 
-  // result is not null terminated.  hashed shaders are expected to be
-  // kHashLength in length
   void ComputeProgramHash(
-      base::span<const uint8_t, kHashLength> hashed_shader_0,
-      base::span<const uint8_t, kHashLength> hashed_shader_1,
+      HashView hashed_shader_0,
+      HashView hashed_shader_1,
       const LocationMap* bind_attrib_location_map,
       const std::vector<std::string>& transform_feedback_varyings,
       GLenum transform_feedback_buffer_mode,
-      base::span<uint8_t, kHashLength> result) const;
+      Hash& result) const;
 
-  void Evict(const std::string& program_hash,
-             const std::string& shader_0_hash,
-             const std::string& shader_1_hash);
+  // TODO(dcheng): Maybe this can take a HashView.
+  void Evict(const Hash& program_hash,
+             const Hash& shader_0_hash,
+             const Hash& shader_1_hash);
 
   // Will also be used by derived class to guard some members.
   mutable base::Lock lock_;
@@ -158,8 +160,13 @@ class GPU_GLES2_EXPORT ProgramCache {
   CacheProgramCallback cache_program_callback_ GUARDED_BY(lock_);
 
  private:
-  typedef std::unordered_map<std::string, LinkedProgramStatus> LinkStatusMap;
-  typedef std::unordered_set<std::string> CachedCompiledShaderSet;
+  struct HashHasher {
+    size_t operator()(const Hash& hash) const;
+  };
+
+  using LinkStatusMap =
+      std::unordered_map<Hash, LinkedProgramStatus, HashHasher>;
+  using CachedCompiledShaderSet = std::unordered_set<Hash, HashHasher>;
 
   // called to clear the backend cache
   virtual void ClearBackend() = 0;

@@ -725,7 +725,7 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
     const GURL& document_url,
     const blink::StorageKey& key,
     ServiceWorkerContext::WarmUpServiceWorkerCallback callback) {
-  const size_t kRequestQueueLength =
+  static const size_t kRequestQueueLength =
       blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
 
   // Erase redundant warm-up requests.
@@ -762,8 +762,10 @@ ServiceWorkerContextCore::PopNextWarmUpRequest() {
     return std::nullopt;
   }
 
+  static const int kSpeculativeServiceWorkerWarmUpMaxCount =
+      blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.Get();
   if (GetWarmedUpServiceWorkerCount(live_versions_) >=
-      blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.Get()) {
+      kSpeculativeServiceWorkerWarmUpMaxCount) {
     warm_up_requests_.clear();
     return std::nullopt;
   }

@@ -96,8 +96,7 @@ url::Origin GetPossiblyOverriddenOriginFromUrl(
       url.SchemeIs(url::kDataScheme) || url.IsAboutBlank();
   if (overridden_origin.has_value() && scheme_allows_origin_override) {
     auto precursor = overridden_origin->GetTupleOrPrecursorTupleIfOpaque();
-    if (url.SchemeIs(url::kDataScheme) &&
-        base::FeatureList::IsEnabled(features::kDataUrlsHaveStableNonce)) {
+    if (url.SchemeIs(url::kDataScheme)) {
       // data: URLs have an overridden origin so they can have the same nonce
       // over the course of a navigation.
       // This is checked first, since we don't want to use the precursor for
@@ -875,28 +874,25 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
       DCHECK(!origin.scheme().empty());
       site_url = GURL(origin.scheme() + ":");
     } else if (url.has_scheme()) {
-      if (url.SchemeIs(url::kDataScheme) &&
-          base::FeatureList::IsEnabled(features::kDataUrlsHaveOriginAsUrl)) {
+      if (url.SchemeIs(url::kDataScheme)) {
         // We get here for browser-initiated navigations to data URLs.
         // We use the serialized opaque origin as the body of the data: URL to
         // avoid storing the entire data: URL multiple times, and to use the
         // origin's nonce to distinguish between instances of the same URL. This
-        // means each browser-initiated data: URL will get its own process.
+        // means each browser-initiated data: URL will get its own process. See
+        // https://crbug.com/863069.
         site_url = GetOriginBasedSiteURLForDataURL(origin);
-      } else if (url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme)) {
+      } else if (url.SchemeIsBlob()) {
         // In some cases, it is not safe to use just the scheme as a site URL,
         // as that might allow two URLs created by different sites to share a
-        // process. See https://crbug.com/863623 and https://crbug.com/863069.
+        // process. See https://crbug.com/863623.
         //
         // TODO(alexmos,creis): This should eventually be expanded to certain
         // other schemes, such as file:.
         // We get here for blob URLs of form blob:null/guid.  Use the full URL
-        // with the guid in that case, which isolates all blob URLs with unique
-        // origins from each other.  We also get here for browser-initiated
-        // navigations to data URLs, which have a unique origin and should only
-        // share a process when they are identical.  Remove hash from the URL in
-        // either case, since same-document navigations shouldn't use a
-        // different site URL.
+        // with the GUID in that case, which isolates all blob URLs with unique
+        // origins from each other.  Remove hash from the URL since
+        // same-document navigations shouldn't use a different site URL.
         if (url.has_ref()) {
           GURL::Replacements replacements;
           replacements.ClearRef();

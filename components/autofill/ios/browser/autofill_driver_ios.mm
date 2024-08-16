@@ -67,12 +67,14 @@ AutofillDriverIOS* AutofillDriverIOS::FromWebStateAndLocalFrameToken(
   return frame ? FromWebStateAndWebFrame(web_state, frame) : nullptr;
 }
 
-AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
-                                     web::WebFrame* web_frame,
-                                     AutofillClient* client,
-                                     AutofillDriverRouter* router,
-                                     id<AutofillDriverIOSBridge> bridge,
-                                     const std::string& app_locale)
+AutofillDriverIOS::AutofillDriverIOS(
+    web::WebState* web_state,
+    web::WebFrame* web_frame,
+    AutofillClient* client,
+    AutofillDriverRouter* router,
+    id<AutofillDriverIOSBridge> bridge,
+    const std::string& app_locale,
+    base::PassKey<AutofillDriverIOSFactory> pass_key)
     : web_state_(web_state),
       web_frame_id_(web_frame ? web_frame->GetFrameId() : ""),
       bridge_(bridge),
@@ -88,27 +90,9 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
       local_frame_token_ = LocalFrameToken(*token_temp);
     }
   }
-
-  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
-  auto& factory =
-      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
-  for (auto& observer : factory.observers(/*pass_key=*/{})) {
-    observer.OnAutofillDriverCreated(factory, *this);
-  }
-  // This must be called as last statement of the constructor because
-  // according to the contract it mustn't be called during construction.
-  factory.SetLifecycleStateAndNotifyObservers(*this, LifecycleState::kActive,
-                                              /*pass_key=*/{});
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() {
-  // TODO: crbug.com/355907668 - Move to AutofillDriverIOSFactory.
-  auto& factory =
-      CHECK_DEREF(AutofillDriverIOSFactory::FromWebState(web_state_));
-  // This must be called as first statement of the destructor because
-  // according to the contract it mustn't be called during destruction.
-  factory.SetLifecycleStateAndNotifyObservers(
-      *this, LifecycleState::kPendingDeletion, /*pass_key=*/{});
   Unregister();
 }
 
@@ -153,7 +137,9 @@ bool AutofillDriverIOS::IsInAnyMainFrame() const {
 }
 
 bool AutofillDriverIOS::HasSharedAutofillPermission() const {
-  return false;
+  // Give the shared-autofill permission to the main frame of the webstate by
+  // default.
+  return IsInAnyMainFrame();
 }
 
 bool AutofillDriverIOS::CanShowAutofillUi() const {
@@ -265,7 +251,8 @@ void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field_id,
     const std::u16string& value) {}
 
-void AutofillDriverIOS::TriggerFormExtractionInDriverFrame() {
+void AutofillDriverIOS::TriggerFormExtractionInDriverFrame(
+    AutofillDriverRouterAndFormForestPassKey pass_key) {
   if (!is_processed()) {
     return;
   }
@@ -474,9 +461,6 @@ void AutofillDriverIOS::ClearLastInteractedForm() {
   last_interacted_form_.reset();
 }
 
-// TODO: crbug.com/354043640 - The flow of the event is strange here: it goes
-// factory -> driver -> manager -> driver. We should probably handle it coming
-// from the factory directly.
 void AutofillDriverIOS::OnAutofillManagerStateChanged(
     AutofillManager& manager,
     LifecycleState old_state,

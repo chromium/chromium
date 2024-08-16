@@ -28,9 +28,7 @@
 
 // For official build discard log strings to reduce binary bloat.
 // See base/check.h for implementation details.
-#define PA_CHECK(condition)                        \
-  PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
-                            : PA_EAT_CHECK_STREAM_PARAMS()
+#define PA_CHECK(condition) PA_BASE_CHECK(condition)
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)

@@ -6,6 +6,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <algorithm>
 #include <bitset>
 #include <string>
 #include <utility>
@@ -75,8 +76,19 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
     const bool pick_meaningful_type = bools[0];
     const bool use_placeholder = bools[1];
 
+    // Generate unique `renderer_id` not matching any existing field
+    // renderer_id.
     autofill::FieldRendererId renderer_id(
-        provider.ConsumeIntegralInRange(-32, 31));
+        provider.ConsumeIntegralInRange(-33, 31));
+    while (std::any_of(form_data.fields().begin(), form_data.fields().end(),
+                       [renderer_id](const autofill::FormFieldData& field) {
+                         return renderer_id.value() ==
+                                field.renderer_id().value();
+                       })) {
+      renderer_id =
+          autofill::FieldRendererId(provider.ConsumeIntegralInRange(-33, 31));
+    }
+
     autofill::FieldSignature signature(provider.ConsumeIntegralInRange(0, 500));
     predictions.fields.emplace_back(
         renderer_id, signature,

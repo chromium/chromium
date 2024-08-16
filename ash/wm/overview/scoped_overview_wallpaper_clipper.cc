@@ -182,7 +182,7 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
       rounded_corners = gfx::RoundedCornersF();
       break;
     case AnimationType::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   views::AnimationBuilder animation_builder;

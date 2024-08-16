@@ -35,6 +35,24 @@ void TabGroupSyncCoordinatorImpl::HandleOpenTabGroupRequest(
                                                 std::move(context));
 }
 
+void TabGroupSyncCoordinatorImpl::ConnectLocalTabGroup(
+    const base::Uuid& sync_id,
+    const LocalTabGroupID& local_id) {
+  std::optional<SavedTabGroup> group = service_->GetGroup(sync_id);
+  if (!group) {
+    return;
+  }
+
+  // First, create ID mappings for both the group and its tabs.
+  service_->UpdateLocalTabGroupMapping(sync_id, local_id);
+  startup_helper_.MapTabIdsForGroup(local_id, *group);
+
+  // Retrieve the group again which should have IDs mapped already. Now, update
+  // the local tab URLs and group visuals to exactly match sync.
+  group = service_->GetGroup(sync_id);
+  platform_delegate_->UpdateLocalTabGroup(*group);
+}
+
 std::unique_ptr<ScopedLocalObservationPauser>
 TabGroupSyncCoordinatorImpl::CreateScopedLocalObserverPauser() {
   return platform_delegate_->CreateScopedLocalObserverPauser();

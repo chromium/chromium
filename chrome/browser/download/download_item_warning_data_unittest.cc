@@ -163,9 +163,9 @@ TEST_F(DownloadItemWarningDataTest, GetEvents_ExceedEventMaxLength) {
 }
 
 TEST_F(DownloadItemWarningDataTest, IsEncryptedArchive) {
-  EXPECT_FALSE(DownloadItemWarningData::IsEncryptedArchive(&download_));
-  DownloadItemWarningData::SetIsEncryptedArchive(&download_, true);
-  EXPECT_TRUE(DownloadItemWarningData::IsEncryptedArchive(&download_));
+  EXPECT_FALSE(DownloadItemWarningData::IsTopLevelEncryptedArchive(&download_));
+  DownloadItemWarningData::SetIsTopLevelEncryptedArchive(&download_, true);
+  EXPECT_TRUE(DownloadItemWarningData::IsTopLevelEncryptedArchive(&download_));
 }
 
 TEST_F(DownloadItemWarningDataTest, HasIncorrectPassword) {

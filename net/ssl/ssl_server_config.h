@@ -90,6 +90,10 @@ struct NET_EXPORT SSLServerConfig {
   // If a verifier is not provided then all certificates are accepted.
   raw_ptr<ClientCertVerifier> client_cert_verifier = nullptr;
 
+  // If set, causes the server to support the specified client certificate
+  // signature algorithms.
+  std::vector<uint16_t> client_cert_signature_algorithms;
+
   // The list of application level protocols supported with ALPN (Application
   // Layer Protocol Negotiation), in decreasing order of preference.  Protocols
   // will be advertised in this order during TLS handshake.

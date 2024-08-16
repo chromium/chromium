@@ -275,6 +275,8 @@
     "resourcetimingbufferfull",
     "result",
     "resume",
+    "rtcrtptransportprocessor",
+    "rtctransform",
     "samplebufferfull",
     "screenschange",
     "scroll",

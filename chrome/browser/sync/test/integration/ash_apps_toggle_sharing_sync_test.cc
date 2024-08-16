@@ -6,7 +6,9 @@
 #include <ostream>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -74,6 +76,8 @@ class AshAppsToggleSharingSyncTest : public SyncTest {
         ash::standalone_browser::GetFeatureRefs();
     enabled_features.push_back(syncer::kSyncChromeOSAppsToggleSharing);
     feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
 
   ~AshAppsToggleSharingSyncTest() override = default;
@@ -114,6 +118,7 @@ class AshAppsToggleSharingSyncTest : public SyncTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   mojo::Remote<crosapi::mojom::SyncService> sync_mojo_service_remote_;
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient>

@@ -97,15 +97,8 @@ const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
       }
       break;
     }
-    case Type::kPopover: {
-      if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
-        DEFINE_STATIC_LOCAL(const AtomicString, popover, ("popover"));
-        return popover;
-      }
-      break;
-    }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HTMLButtonElement::IsPresentationAttribute(
@@ -129,9 +122,6 @@ void HTMLButtonElement::ParseAttribute(
     } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
                EqualIgnoringASCIICase(params.new_value, "selectlist")) {
       type_ = kSelectlist;
-    } else if (RuntimeEnabledFeatures::StylableSelectEnabled() &&
-               EqualIgnoringASCIICase(params.new_value, "popover")) {
-      type_ = kPopover;
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
@@ -156,7 +146,7 @@ void HTMLButtonElement::ParseAttribute(
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
     if (!IsDisabledFormControl()) {
-      if (Form() && type_ == kSubmit) {
+      if (Form() && type_ == kSubmit && !OwnerSelect()) {
         Form()->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
         return;
@@ -213,7 +203,7 @@ bool HTMLButtonElement::WillRespondToMouseClickEvents() {
 }
 
 bool HTMLButtonElement::CanBeSuccessfulSubmitButton() const {
-  return type_ == kSubmit;
+  return type_ == kSubmit && !OwnerSelect();
 }
 
 bool HTMLButtonElement::IsActivatedSubmit() const {
@@ -277,7 +267,13 @@ void HTMLButtonElement::DispatchBlurEvent(
     Element* new_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
-  SetActive(false);
+  // The button might be the control element of a label
+  // that is in :active state. In that case the control should
+  // remain :active to avoid crbug.com/40934455.
+  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
+      !HasActiveLabel()) {
+    SetActive(false);
+  }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
 }
@@ -299,13 +295,19 @@ HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
 }
 
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  // TODO(http://crbug.com/1511354): The first <button> can also have
-  // type=popover behavior if there are no other type=popover buttons:
-  // https://github.com/openui/open-ui/issues/939#issuecomment-1910837275
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled() || type_ != kPopover) {
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return nullptr;
   }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
+    for (auto* previous_sibling = previousSibling(); previous_sibling;
+         previous_sibling = previous_sibling->previousSibling()) {
+      if (IsA<HTMLButtonElement>(previous_sibling)) {
+        // Only the first child <button> of a <select>, which is the one that
+        // gets slotted into the button slot, should get the <select> opening
+        // behavior.
+        return nullptr;
+      }
+    }
     return select;
   }
   if (auto* root = ContainingShadowRoot()) {

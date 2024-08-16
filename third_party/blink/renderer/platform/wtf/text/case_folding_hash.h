@@ -27,10 +27,67 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_FOLDING_HASH_H_
 
+// Case-insensitive hash lookups, using the Unicode case folding algorithm.
+
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace WTF {
+
+// Sends the input data through the Unicode case-folding table.
+// Unlike normal PlainHashReader, or the ASCII lower-case lookups,
+// we cannot treat 8-bit and 16-bit data separately, as the lookups
+// may change strings from one status to the other. For instance,
+// µ is in Latin1, but gets case-folded to U+03BC GREEK SMALL LETTER MU,
+// and there are examples going the other way as well.
+//
+// We could perhaps tweak the tables to avoid this, but this is not
+// the most performance-sensitive hashing we have around, so we simply
+// always treat data as UTF-16, expanding Latin1 as we go. This means
+// we also don't bother to try to make tricky SIMD implementations
+// for Latin1; we just use the most straightforward code. (Full lookup
+// into WTF::unicode::FoldCase is slow enough that it probably dwarfs
+// all other performance concerns anyway.)
+template <class T>
+  requires std::is_same_v<T, LChar> || std::is_same_v<T, UChar>
+struct CaseFoldingHashReader {
+  // We never contract 16 to 8 bits, so this must always be 1.
+  static constexpr unsigned kCompressionFactor = 1;
+
+  // We always produce UTF-16 output, even if we take in Latin1.
+  static constexpr unsigned kExpansionFactor = sizeof(UChar) / sizeof(T);
+
+  static inline uint64_t Read64(const uint8_t* ptr) {
+    const T* p = reinterpret_cast<const T*>(ptr);
+    return FoldCase(p[0]) | (FoldCase(p[1]) << 16) | (FoldCase(p[2]) << 32) |
+           (FoldCase(p[3]) << 48);
+  }
+
+  static inline uint64_t Read32(const uint8_t* ptr) {
+    const T* p = reinterpret_cast<const T*>(ptr);
+    return FoldCase(p[0]) | (FoldCase(p[1]) << 16);
+  }
+
+  static inline uint64_t ReadSmall(const uint8_t* ptr, size_t k) {
+    const T* p = reinterpret_cast<const T*>(ptr);
+    DCHECK_EQ(k, 2u);
+    return FoldCase(p[0]);
+  }
+
+ private:
+  // Private so no one uses this in the belief that it will return the
+  // correctly-folded code point in all cases (see comment below).
+  static inline uint64_t FoldCase(T ch) {
+    if (std::is_same<T, LChar>::value) {
+      return StringImpl::kLatin1CaseFoldTable[ch];
+    }
+    // It's possible for WTF::unicode::foldCase() to return a 32-bit value
+    // that's not representable as a UChar.  However, since this is rare and
+    // deterministic, and the result of this is merely used for hashing, go
+    // ahead and clamp the value.
+    return static_cast<UChar>(WTF::unicode::FoldCase(ch));
+  }
+};
 
 // The GetHash() functions on CaseFoldingHashTraits do not support null strings.
 // find(), Contains(), and insert() on
@@ -41,8 +98,9 @@ class CaseFoldingHash {
 
  public:
   static unsigned GetHash(const UChar* data, unsigned length) {
-    return StringHasher::ComputeHashAndMaskTop8Bits<UChar, FoldCase<UChar>>(
-        data, length);
+    return StringHasher::ComputeHashAndMaskTop8Bits<
+        CaseFoldingHashReader<UChar>>(reinterpret_cast<const char*>(data),
+                                      length * 2);
   }
 
   static unsigned GetHash(StringImpl* str) {
@@ -52,8 +110,9 @@ class CaseFoldingHash {
   }
 
   static unsigned GetHash(const LChar* data, unsigned length) {
-    return StringHasher::ComputeHashAndMaskTop8Bits<LChar, FoldCase<LChar>>(
-        data, length);
+    return StringHasher::ComputeHashAndMaskTop8Bits<
+        CaseFoldingHashReader<LChar>>(reinterpret_cast<const char*>(data),
+                                      length * 2);
   }
 
   static inline unsigned GetHash(const char* data, unsigned length) {
@@ -101,20 +160,6 @@ class CaseFoldingHash {
   }
 
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
-
- private:
-  // Private so no one uses this in the belief that it will return the
-  // correctly-folded code point in all cases (see comment below).
-  template <typename T>
-  static inline UChar FoldCase(T ch) {
-    if (std::is_same<T, LChar>::value)
-      return StringImpl::kLatin1CaseFoldTable[ch];
-    // It's possible for WTF::unicode::foldCase() to return a 32-bit value
-    // that's not representable as a UChar.  However, since this is rare and
-    // deterministic, and the result of this is merely used for hashing, go
-    // ahead and clamp the value.
-    return static_cast<UChar>(WTF::unicode::FoldCase(ch));
-  }
 };
 
 // T can be String, StringImpl*, scoped_refptr<StringImpl> and AtomicString.

@@ -4,7 +4,7 @@
 
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {setSimpleAxTreeWithText, suppressInnocuousErrors} from './common.js';
@@ -22,8 +22,7 @@ suite('WordHighlightingDisabled', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
 
-    const app: ReadAnythingElement =
-        document.createElement('read-anything-app');
+    const app: AppElement = document.createElement('read-anything-app');
     document.body.appendChild(app);
     flush();
 

@@ -656,6 +656,10 @@ void AccessibilityManager::EnableLargeCursor(bool enabled) {
   pref_service->CommitPendingWrite();
 }
 
+void AccessibilityManager::OnFaceGazeChanged() {
+  OnAccessibilityCommonChanged(prefs::kAccessibilityFaceGazeEnabled);
+}
+
 void AccessibilityManager::OnLargeCursorChanged() {
   AccessibilityStatusEventDetails details(
       AccessibilityNotificationType::kToggleLargeCursor,
@@ -912,6 +916,28 @@ void AccessibilityManager::EnableFaceGaze(bool enabled) {
 bool AccessibilityManager::IsFaceGazeEnabled() const {
   return ::features::IsAccessibilityFaceGazeEnabled() && profile_ &&
          profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
+}
+
+void AccessibilityManager::ToggleGestureInfoForSettings(bool enabled) const {
+  if (!profile_) {
+    return;
+  }
+
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(profile_);
+
+  auto event_args = extensions::api::accessibility_private::
+      OnToggleGestureInfoForSettings::Create(enabled);
+
+  auto event = std::make_unique<extensions::Event>(
+      extensions::events::
+          ACCESSIBILITY_PRIVATE_ON_TOGGLE_GESTURE_INFO_FOR_SETTINGS,
+      extensions::api::accessibility_private::OnToggleGestureInfoForSettings::
+          kEventName,
+      std::move(event_args));
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kAccessibilityCommonExtensionId, std::move(event));
 }
 
 void AccessibilityManager::OnAccessibilityCommonChanged(
@@ -1656,9 +1682,8 @@ void AccessibilityManager::SetProfile(Profile* profile) {
     if (::features::IsAccessibilityFaceGazeEnabled()) {
       pref_change_registrar_->Add(
           prefs::kAccessibilityFaceGazeEnabled,
-          base::BindRepeating(
-              &AccessibilityManager::OnAccessibilityCommonChanged,
-              base::Unretained(this)));
+          base::BindRepeating(&AccessibilityManager::OnFaceGazeChanged,
+                              base::Unretained(this)));
     }
 
     local_state_pref_change_registrar_ =
@@ -1838,6 +1863,12 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
             "Accessibility.CrosColorCorrection.FilterAmount",
             prefs->GetInteger(
                 prefs::kAccessibilityColorVisionCorrectionAmount));
+    }
+
+    if (::features::IsAccessibilityFlashScreenFeatureEnabled()) {
+      base::UmaHistogramBoolean(
+          "Accessibility.CrosFlashNotifications",
+          prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
     }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
@@ -2343,6 +2374,10 @@ void AccessibilityManager::SetStartupSoundEnabled(bool value) const {
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetBooleanPref(multi_user_util::GetAccountIdFromProfile(profile_),
                             kUserStartupSoundEnabled, value);
+}
+
+void AccessibilityManager::PreviewFlashNotification() const {
+  AccessibilityController::Get()->PreviewFlashNotification();
 }
 
 const std::string AccessibilityManager::GetBluetoothBrailleDisplayAddress()

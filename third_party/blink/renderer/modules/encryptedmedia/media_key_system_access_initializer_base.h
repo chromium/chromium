@@ -24,7 +24,8 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
       ScriptPromiseResolverBase*,
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
-          supported_configurations);
+          supported_configurations,
+      bool is_from_media_capabilities);
 
   MediaKeySystemAccessInitializerBase(
       const MediaKeySystemAccessInitializerBase&) = delete;
@@ -55,6 +56,7 @@ class MediaKeySystemAccessInitializerBase : public EncryptedMediaRequest,
   Member<ScriptPromiseResolverBase> resolver_;
   const String key_system_;
   WebVector<WebMediaKeySystemConfiguration> supported_configurations_;
+  bool is_from_media_capabilities_;
 };
 
 }  // namespace blink

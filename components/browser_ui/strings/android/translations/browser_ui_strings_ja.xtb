@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
+<translation id="3779154269823594982">パスワードを変更</translation>
 <translation id="3797520601150691162">ダークモードを特定のサイトに適用しません</translation>
 <translation id="3803367742635802571">アクセスするサイトが想定どおりに機能しなくなる可能性があります</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">特定のサイトに対して音声の再生を許可します。</translation>
 <translation id="789180354981963912">シークレット モードでサードパーティの Cookie をブロックする:</translation>
 <translation id="7940722705963108451">リマインダーの設定</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{グループでのアクティビティを確認できる <ph name="FPS_OWNER" /> のサイトグループの <ph name="FPS_MEMBERS_COUNT" /> 件のサイト}other{グループでのアクティビティを確認できる <ph name="FPS_OWNER" /> のサイトグループの <ph name="FPS_MEMBERS_COUNT" /> 件のサイト}}</translation>
 <translation id="7986741934819883144">連絡先の選択</translation>
 <translation id="7990211076305263060">オンにすると、サイトはマイクの使用を要求できます。オフにすると、サイトはマイクを使用できません。</translation>
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">サイトからデバイスへの接続をブロックする</translation>
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="8541410041357371550">このサイトでは、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8617611086246832542">オンにすると、ウェブサイトのデスクトップ ビューが表示されます。オフにすると、ウェブサイトのモバイルビューが表示されます。</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="9039697262778250930">これらのサイトからログアウトされる可能性があります</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">このサイトは、アクティビティを確認できるグループに属しています。グループは <ph name="FPS_OWNER" /> によって定義されます</translation>
 <translation id="9106233582039520022">Cookie を削除しますか？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限}}</translation>
 <translation id="913657688200966289"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>

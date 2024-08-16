@@ -67,7 +67,7 @@ FilePathWatcher::ChangeType ToChangeType(DWORD win_change_type) {
     case FILE_ACTION_RENAMED_NEW_NAME:
       return FilePathWatcher::ChangeType::kMoved;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -224,7 +224,7 @@ void FilePathWatcherChangeTracker::HandleSelfChange(ChangeInfo change) {
     case ChangeType::kUnknown:
       // All changes passed into here come from `ToChangeType` which doesn't
       // return `kUnknown`.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -278,7 +278,7 @@ void FilePathWatcherChangeTracker::HandleAncestorChange(ChangeInfo change) {
     case ChangeType::kUnknown:
       // All changes passed into here come from `ToChangeType` which doesn't
       // return `kUnknown`.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

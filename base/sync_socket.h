@@ -54,30 +54,16 @@ class BASE_EXPORT SyncSocket {
   // `data` must be non-empty.
   // Returns the number of bytes sent, or 0 upon failure.
   virtual size_t Send(span<const uint8_t> data);
-  // Same as above, but with the following parameters:
-  // `buffer` is a pointer to the data to send.
-  // `length` is the length of the data to send (must be non-zero).
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t Send(const void* buffer, size_t length);
 
   // Receives a message from an SyncSocket.
   // The data will be received in `buffer`, which must be non-empty.
   // Returns the number of bytes received, or 0 upon failure.
   virtual size_t Receive(span<uint8_t> buffer);
-  // Same as above, but with the following parameters:
-  // `buffer` is a pointer to the buffer to receive data.
-  // `length` is the number of bytes of data to receive (must be non-zero).
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t Receive(void* buffer, size_t length);
 
   // Same as Receive() but only blocks for data until `timeout` has elapsed or
   // `buffer` is exhausted. Currently only timeouts less than one second are
   // allowed. Returns the number of bytes read.
   virtual size_t ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout);
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  virtual size_t ReceiveWithTimeout(void* buffer,
-                                    size_t length,
-                                    TimeDelta timeout);
 
   // Returns the number of bytes available. If non-zero, Receive() will not
   // not block when called.
@@ -128,13 +114,7 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // SyncSocket methods in order to support shutting down the 'socket'.
   void Close() override;
   size_t Receive(span<uint8_t> buffer) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t Receive(void* buffer, size_t length) override;
   size_t ReceiveWithTimeout(span<uint8_t> buffer, TimeDelta timeout) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t ReceiveWithTimeout(void* buffer,
-                            size_t length,
-                            TimeDelta timeout) override;
 #endif
 
   // Send() is overridden to catch cases where the remote end is not responding
@@ -143,8 +123,6 @@ class BASE_EXPORT CancelableSyncSocket : public SyncSocket {
   // SyncSocket::Send will, but instead return 0, as no bytes could be sent.
   // Note that the socket will not be closed in this case.
   size_t Send(span<const uint8_t> data) override;
-  // TODO(crbug.com/40284755): Migrate callers to the span version.
-  size_t Send(const void* buffer, size_t length) override;
 
  private:
 #if BUILDFLAG(IS_WIN)

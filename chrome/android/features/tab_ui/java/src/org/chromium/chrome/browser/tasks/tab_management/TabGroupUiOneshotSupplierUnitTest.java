@@ -34,6 +34,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -61,6 +62,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private ScrimCoordinator mScrimCoordinator;
     @Mock private BottomSheetController mBottomSheetController;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabContentManager mTabContentManager;
     @Mock private ViewGroup mRootView;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -99,6 +101,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mScrimCoordinator,
                         mOmniboxFocusStateSupplier,
                         mBottomSheetController,
+                        mDataSharingTabManager,
                         mTabContentManager,
                         mRootView,
                         mTabCreatorManager,
@@ -107,7 +110,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mModalDialogManager);
         when(mTabManagementDelegate.createTabGroupUi(
                         any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(),
-                        any(), any(), any()))
+                        any(), any(), any(), any()))
                 .thenReturn(mTabGroupUi);
         TabManagementDelegateProvider.setTabManagementDelegateForTesting(mTabManagementDelegate);
 
@@ -144,6 +147,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mScrimCoordinator,
                         mOmniboxFocusStateSupplier,
                         mBottomSheetController,
+                        mDataSharingTabManager,
                         mTabModelSelector,
                         mTabContentManager,
                         mRootView,
@@ -174,6 +178,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
                         mScrimCoordinator,
                         mOmniboxFocusStateSupplier,
                         mBottomSheetController,
+                        mDataSharingTabManager,
                         mTabModelSelector,
                         mTabContentManager,
                         mRootView,

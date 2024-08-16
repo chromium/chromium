@@ -115,6 +115,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2559253115192232574">Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see. Chrome can share up to three interests.</translation>
 <translation id="2563121210305478421">Relaunch Chrome?</translation>
 <translation id="2569974318947988067">Chrome will try to upgrade navigations to HTTPS</translation>
+<translation id="2571392474191184472">Your organisation manages Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. To keep your browsing separate, Chrome can create your own profile for you.</translation>
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
@@ -450,6 +451,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7177959540995930968">You can learn more about these features in Chrome settings.</translation>
 <translation id="7193885263065350793">Your organisation closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> manages Chrome</translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7302361266603927550">Some of your Chrome data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data will be deleted.</translation>
@@ -583,6 +585,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
+<translation id="9014771989710951291">Multiple organisations manage Chrome</translation>
 <translation id="9024318700713112071">Set Chrome as your default</translation>
 <translation id="9053892488859122171">Chrome OS Flex system</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>

@@ -31,16 +31,15 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_token_status.h"
@@ -68,7 +67,7 @@ using wallet_helper::GetDefaultCreditCard;
 using wallet_helper::GetPersonalDataManager;
 using wallet_helper::GetProfileWebDataService;
 using wallet_helper::GetServerCardsMetadata;
-using wallet_helper::GetWalletModelTypeState;
+using wallet_helper::GetWalletDataTypeState;
 using wallet_helper::kDefaultBillingAddressID;
 using wallet_helper::kDefaultCardID;
 using wallet_helper::kDefaultCustomerID;
@@ -85,8 +84,6 @@ MATCHER(AddressHasConverted, "") {
 
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
-const base::Time kArbitraryDefaultTime =
-    base::Time::FromSecondsSinceUnixEpoch(25);
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -167,10 +164,7 @@ class TestForAuthError : public UpdatedProgressMarkerChecker {
 
 class SingleClientWalletSyncTest : public SyncTest {
  public:
-  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {
-    test_clock_.SetNow(kArbitraryDefaultTime);
-  }
-
+  SingleClientWalletSyncTest() : SyncTest(SINGLE_CLIENT) {}
   SingleClientWalletSyncTest(const SingleClientWalletSyncTest&) = delete;
   SingleClientWalletSyncTest& operator=(const SingleClientWalletSyncTest&) =
       delete;
@@ -225,18 +219,15 @@ class SingleClientWalletSyncTest : public SyncTest {
   bool TriggerGetUpdatesAndWait() {
     const base::Time now = base::Time::Now();
     // Trigger a sync and wait for the new data to arrive.
-    TriggerSyncForModelTypes(0, {syncer::AUTOFILL_WALLET_DATA});
+    TriggerSyncForDataTypes(0, {syncer::AUTOFILL_WALLET_DATA});
     return FullUpdateTypeProgressMarkerChecker(now, GetSyncService(0),
                                                syncer::AUTOFILL_WALLET_DATA)
         .Wait();
   }
 
-  void AdvanceAutofillClockByOneDay() { test_clock_.Advance(base::Days(1)); }
-
   testing::NiceMock<autofill::PersonalDataLoadedObserverMock>
       personal_data_observer_;
   base::HistogramTester histogram_tester_;
-  autofill::TestAutofillClock test_clock_;
 };
 
 // ChromeOS does not support late signin after profile creation, so the test
@@ -515,14 +506,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, EmptyUpdatesAreIgnored) {
   EXPECT_EQ("data-1", cloud_token_data[0]->instrument_token);
 
   // Trigger a sync and wait for the new data to arrive.
-  sync_pb::ModelTypeState state_before =
-      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
+  sync_pb::DataTypeState state_before =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
   // regression check for crbug.com/924447.
-  sync_pb::ModelTypeState state_after =
-      GetWalletModelTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
+  sync_pb::DataTypeState state_after =
+      GetWalletDataTypeState(syncer::AUTOFILL_WALLET_DATA, 0);
   EXPECT_NE(state_before.progress_marker().token(),
             state_after.progress_marker().token());
 
@@ -688,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest,
   ASSERT_EQ(1U, GetServerCardsMetadata(0).size());
 
   // Turn off the wallet autofill pref, the data & metadata should be gone as a
-  // side effect of the wallet model type controller noticing.
+  // side effect of the wallet data type controller noticing.
   GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/{});
   WaitForNoPaymentsCustomerData(pdm);

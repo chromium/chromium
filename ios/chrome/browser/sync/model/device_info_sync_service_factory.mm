@@ -18,7 +18,7 @@
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/sync_device_info/device_info_sync_client.h"
@@ -27,9 +27,9 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
+#import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -113,14 +113,14 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  std::optional<syncer::DataTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
     // unknown (std::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
-    return syncer::ModelTypeSet();
+    return syncer::DataTypeSet();
   }
 
   // syncer::DeviceInfoSyncClient:
@@ -172,7 +172,7 @@ DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DeviceInfoSyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
@@ -198,7 +198,7 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       browser_state->GetPrefs(), base::DefaultClock::GetInstance());
 
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
-      ModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client), sync_invalidations_service);

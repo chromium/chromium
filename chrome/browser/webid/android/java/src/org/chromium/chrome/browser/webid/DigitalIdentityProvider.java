@@ -14,8 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.content_public.browser.webid.IdentityCredentialsDelegate;
-import org.chromium.content_public.browser.webid.IdentityCredentialsDelegateFactory;
+import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.content_public.browser.webid.DigitalIdentityRequestStatusForMetrics;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -23,8 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class DigitalIdentityProvider {
     private static final String TAG = "DigitalIdentityProvider";
     private long mDigitalIdentityProvider;
-    private static IdentityCredentialsDelegate sCredentials =
-            IdentityCredentialsDelegateFactory.createDefault();
+    private static IdentityCredentialsDelegate sCredentials = new IdentityCredentialsDelegate();
 
     private DigitalIdentityProvider(long digitalIdentityProvider) {
         mDigitalIdentityProvider = digitalIdentityProvider;

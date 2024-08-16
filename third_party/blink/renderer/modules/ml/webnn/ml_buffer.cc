@@ -40,6 +40,7 @@ void MLBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   visitor->Trace(remote_buffer_);
   visitor->Trace(pending_resolvers_);
+  visitor->Trace(pending_byob_resolvers_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -74,20 +75,79 @@ uint64_t MLBuffer::PackedByteLength() const {
   return descriptor_.PackedByteLength();
 }
 
-void MLBuffer::ReadBufferImpl(ScriptPromiseResolver<DOMArrayBuffer>* resolver) {
-  pending_resolvers_.insert(resolver);
-
+ScriptPromise<DOMArrayBuffer> MLBuffer::ReadBufferImpl(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Invalid buffer state");
-    return;
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
+    return EmptyPromise();
   }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(
+      script_state, exception_state.GetContext());
+  pending_resolvers_.insert(resolver);
 
   remote_buffer_->ReadBuffer(WTF::BindOnce(&MLBuffer::OnDidReadBuffer,
                                            WrapPersistent(this),
                                            WrapPersistent(resolver)));
+
+  return resolver->Promise();
+}
+
+ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
+                                             DOMArrayBufferBase* dst_data,
+                                             ExceptionState& exception_state) {
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_buffer_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid buffer state");
+    return EmptyPromise();
+  }
+
+  if (dst_data->ByteLength() < PackedByteLength()) {
+    exception_state.ThrowTypeError("The destination buffer is too small.");
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<void>>(
+      script_state, exception_state.GetContext());
+  pending_byob_resolvers_.insert(resolver);
+
+  remote_buffer_->ReadBuffer(
+      WTF::BindOnce(&MLBuffer::OnDidReadBufferByob, WrapPersistent(this),
+                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+  return resolver->Promise();
+}
+
+ScriptPromise<void> MLBuffer::ReadBufferImpl(ScriptState* script_state,
+                                             DOMArrayBufferView* dst_data,
+                                             ExceptionState& exception_state) {
+  // Remote context gets automatically unbound when the execution context
+  // destructs.
+  if (!remote_buffer_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid buffer state");
+    return EmptyPromise();
+  }
+
+  if (dst_data->byteLength() < PackedByteLength()) {
+    exception_state.ThrowTypeError("The destination buffer is too small.");
+    return EmptyPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<void>>(
+      script_state, exception_state.GetContext());
+  pending_byob_resolvers_.insert(resolver);
+
+  remote_buffer_->ReadBuffer(
+      WTF::BindOnce(&MLBuffer::OnDidReadBufferByobView, WrapPersistent(this),
+                    WrapPersistent(resolver), WrapPersistent(dst_data)));
+  return resolver->Promise();
 }
 
 void MLBuffer::OnDidReadBuffer(
@@ -102,8 +162,61 @@ void MLBuffer::OnDidReadBuffer(
         read_buffer_error.message);
     return;
   }
-  resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer().data(),
-                                           result->get_buffer().size()));
+  resolver->Resolve(DOMArrayBuffer::Create(result->get_buffer()));
+}
+
+void MLBuffer::OnDidReadBufferByob(
+    ScriptPromiseResolver<void>* resolver,
+    DOMArrayBufferBase* dst_data,
+    webnn::mojom::blink::ReadBufferResultPtr result) {
+  pending_byob_resolvers_.erase(resolver);
+
+  if (result->is_error()) {
+    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    resolver->RejectWithDOMException(
+        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
+        read_buffer_error.message);
+    return;
+  }
+
+  if (dst_data->IsDetached()) {
+    resolver->RejectWithTypeError("Buffer was detached.");
+    return;
+  }
+
+  // It is safe to write into `dst_data` even though it was not transferred
+  // because this method is called in a task which runs on same thread where
+  // script executes, so script can't observe a partially written state (unless
+  // `dst_data` is a SharedArrayBuffer).
+  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  resolver->Resolve();
+}
+
+void MLBuffer::OnDidReadBufferByobView(
+    ScriptPromiseResolver<void>* resolver,
+    DOMArrayBufferView* dst_data,
+    webnn::mojom::blink::ReadBufferResultPtr result) {
+  pending_byob_resolvers_.erase(resolver);
+
+  if (result->is_error()) {
+    const webnn::mojom::blink::Error& read_buffer_error = *result->get_error();
+    resolver->RejectWithDOMException(
+        WebNNErrorCodeToDOMExceptionCode(read_buffer_error.code),
+        read_buffer_error.message);
+    return;
+  }
+
+  if (dst_data->IsDetached()) {
+    resolver->RejectWithTypeError("Buffer was detached.");
+    return;
+  }
+
+  // It is safe to write into `dst_data` even though it was not transferred
+  // because this method is called in a task which runs on same thread where
+  // script executes, so script can't observe a partially written state (unless
+  // `dst_data` is a SharedArrayBuffer).
+  dst_data->ByteSpan().copy_prefix_from(result->get_buffer());
+  resolver->Resolve();
 }
 
 void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
@@ -111,8 +224,15 @@ void MLBuffer::WriteBufferImpl(base::span<const uint8_t> src_data,
   // Remote context gets automatically unbound when the execution context
   // destructs.
   if (!remote_buffer_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid buffer state");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
+    return;
+  }
+
+  // Return early since empty written data can be ignored with no observable
+  // effect.
+  if (src_data.size() == 0) {
     return;
   }
 
@@ -124,10 +244,18 @@ void MLBuffer::OnConnectionError() {
   remote_buffer_.reset();
 
   for (const auto& resolver : pending_resolvers_) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     "Invalid buffer state");
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
   }
   pending_resolvers_.clear();
+
+  for (const auto& resolver : pending_byob_resolvers_) {
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Buffer has been destroyed or context is lost.");
+  }
+  pending_byob_resolvers_.clear();
 }
 
 }  // namespace blink

@@ -96,7 +96,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/arc/tracing/test:test_support",
     "//chrome/browser/ash/arc/window_predictor",

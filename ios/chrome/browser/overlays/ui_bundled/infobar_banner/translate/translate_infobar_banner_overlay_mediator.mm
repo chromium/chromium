@@ -82,8 +82,7 @@
     case translate::TranslateStep::TRANSLATE_STEP_TRANSLATING:
       break;
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_NORETURN()
-          << "Should not be presenting Banner in this TranslateStep";
+      NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
   [self dismissOverlay];
 }
@@ -124,8 +123,7 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_ON_ERROR_BANNER_TITLE);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_NORETURN()
-          << "Should not be presenting Banner in this TranslateStep";
+      NOTREACHED() << "Should not be presenting Banner in this TranslateStep";
   }
 }
 

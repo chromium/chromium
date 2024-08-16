@@ -122,6 +122,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2915996080311180594">Repornește mai târziu</translation>
 <translation id="2928420929544864228">Instalare finalizată.</translation>
 <translation id="2945997411976714835">Eroare la instalare: procesul programului de instalare nu a început.</translation>
+<translation id="2970426615109535079">Organizația ta gestionează Chromium</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="2977506796191543575">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
 <translation id="2987208172821108655">Chromium poate dezactiva aceste file pentru a-ți îmbunătăți experiența de navigare și pentru a elibera resurse.</translation>
@@ -222,6 +223,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4423735387467980091">Personalizați și controlați Chromium</translation>
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> gestionează Chromium</translation>
 <translation id="4447409407328223819">Despre Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalarea nu a reușit deoarece accesul este restricționat în această țară.</translation>
 <translation id="4510853178268397146">Extensia nu a publicat practici de confidențialitate, cum ar fi modul în care colectează și folosește date. Chromium recomandă să o elimini.</translation>
@@ -490,6 +492,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8550334526674375523">Acest profil de serviciu este complet separat de profilul tău personal.</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
+<translation id="8576826849825683917">Mai multe organizații gestionează Chromium</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> site-urile pot stoca informații în Chromium despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>

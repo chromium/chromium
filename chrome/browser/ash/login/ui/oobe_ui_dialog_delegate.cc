@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
 
 #include <memory>
@@ -14,12 +19,12 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/utility/wm_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -32,6 +37,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -202,7 +208,9 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   bool GetHasShelf() const { return has_shelf_; }
 
   // views::WidgetDelegateView:
-  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
+  ui::mojom::ModalType GetModalType() const override {
+    return ui::mojom::ModalType::kWindow;
+  }
 
   void Layout(PassKey) override {
     if (fullscreen_) {
@@ -247,7 +255,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   set_can_close(true);
   set_can_resize(false);
   set_dialog_content_url(GURL(kGaiaURL));
-  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   set_show_dialog_title(false);
   keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 

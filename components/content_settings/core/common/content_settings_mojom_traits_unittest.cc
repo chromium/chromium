@@ -78,6 +78,7 @@ TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
       content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
   original.set_tpcd_metadata_cohort(
       content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_OFF);
+  original.set_decided_by_related_website_sets(true);
 
   content_settings::RuleMetaData round_tripped;
 

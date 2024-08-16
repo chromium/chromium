@@ -21,7 +21,7 @@
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -137,7 +137,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -150,7 +150,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   AddressAutofillTable table_;
   AutofillSyncMetadataTable sync_metadata_table_;
   WebDatabase db_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<ContactInfoSyncBridge> bridge_;
 };
 

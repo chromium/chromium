@@ -12,7 +12,7 @@
 
 using std::string;
 
-using syncer::ModelType;
+using syncer::DataType;
 
 namespace syncer {
 
@@ -38,25 +38,25 @@ PersistentTombstoneEntity::CreateNewInternal(
     const std::string& id,
     int64_t version,
     const std::string& client_tag_hash) {
-  const ModelType model_type = LoopbackServerEntity::GetModelTypeFromId(id);
-  if (model_type == syncer::UNSPECIFIED) {
+  const DataType data_type = LoopbackServerEntity::GetDataTypeFromId(id);
+  if (data_type == syncer::UNSPECIFIED) {
     DLOG(WARNING) << "Invalid ID was given: " << id;
     return nullptr;
   }
 
   return base::WrapUnique(
-      new PersistentTombstoneEntity(id, version, model_type, client_tag_hash));
+      new PersistentTombstoneEntity(id, version, data_type, client_tag_hash));
 }
 
 PersistentTombstoneEntity::PersistentTombstoneEntity(
     const string& id,
     int64_t version,
-    const ModelType& model_type,
+    const DataType& data_type,
     const std::string& client_tag_hash)
-    : LoopbackServerEntity(id, model_type, version, string()),
+    : LoopbackServerEntity(id, data_type, version, string()),
       client_tag_hash_(client_tag_hash) {
   sync_pb::EntitySpecifics specifics;
-  AddDefaultFieldValue(model_type, &specifics);
+  AddDefaultFieldValue(data_type, &specifics);
   SetSpecifics(specifics);
 }
 

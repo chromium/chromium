@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -79,7 +80,7 @@ std::string_view GetSkipFieldFillLogMessage(
     case FieldFillingSkipReason::kNotSkipped:
       return "Fillable";
     case FieldFillingSkipReason::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -133,6 +134,39 @@ bool IsNotAPlaceholder(const autofill::AutofillField& autofill_field) {
           !base::FeatureList::IsEnabled(
               features::kAutofillOverwritePlaceholdersOnly)) &&
          base::FeatureList::IsEnabled(features::kAutofillSkipPreFilledFields);
+}
+
+bool AllowPaymentSwapping(const AutofillField& trigger_field,
+                          const AutofillField& field,
+                          bool is_refill) {
+  return GroupTypeOfFieldType(trigger_field.Type().GetStorableType()) ==
+             FieldTypeGroup::kCreditCard &&
+         GroupTypeOfFieldType(field.Type().GetStorableType()) ==
+             FieldTypeGroup::kCreditCard &&
+         !is_refill &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnablePaymentsFieldSwapping);
+}
+
+// Returns whether a filling action for `filling_product` should be included in
+// the form autofill history.
+bool ShouldRecordFillingHistory(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kCreditCard:
+      return true;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPassword:
+    case FillingProduct::kCompose:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kPredictionImprovements:
+      return false;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -190,17 +224,11 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
     return FieldFillingSkipReason::kUserFilledFields;
   }
 
-  bool allow_payment_swapping =
-      (GroupTypeOfFieldType(trigger_field.Type().GetStorableType()) ==
-       FieldTypeGroup::kCreditCard) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsFieldSwapping);
-
   // Don't fill previously autofilled fields except the initiating field or
   // when it's a refill or for credit card fields, when
   // `kAutofillEnablePaymentsFieldSwapping` is enabled.
   if (field.is_autofilled() && !is_trigger_field && !is_refill &&
-      !allow_payment_swapping) {
+      !AllowPaymentSwapping(trigger_field, autofill_field, is_refill)) {
     return FieldFillingSkipReason::kAlreadyAutofilled;
   }
 
@@ -444,13 +472,12 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     FormStructure* form_structure,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
-                                    SuggestionType type,
+                                    FillingProduct filling_product,
                                     std::optional<FieldType> field_type_used) {
   if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->set_is_autofilled(true);
     autofill_field->set_autofilled_type(field_type_used);
-    autofill_field->set_filling_product(
-        GetFillingProductFromSuggestionType(type));
+    autofill_field->set_filling_product(filling_product);
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
@@ -459,13 +486,12 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = FillingMethod::kFieldByFieldFilling});
 
-    if (type == SuggestionType::kCreditCardFieldByFieldFilling ||
-        type == SuggestionType::kAddressFieldByFieldFilling) {
+    if (ShouldRecordFillingHistory(filling_product)) {
       // TODO(crbug.com/40232021): Only use AutofillField.
       form_autofill_history_.AddFormFillEntry(
           std::to_array<const FormFieldData*>({&field}),
           std::to_array<const AutofillField*>({autofill_field}),
-          GetFillingProductFromSuggestionType(type),
+          filling_product,
           /*is_refill=*/false);
     }
   }
@@ -592,12 +618,6 @@ void FormFiller::FillOrPreviewForm(
               absl::get<const CreditCard*>(profile_or_credit_card)
                   ->IsExpired(AutofillClock::Now()));
 
-  const bool allow_payment_swapping =
-      (GroupTypeOfFieldType(autofill_trigger_field->Type().GetStorableType()) ==
-       FieldTypeGroup::kCreditCard) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnablePaymentsFieldSwapping);
-
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
   // `form_structure->fields()` remains in the browser process.
@@ -688,10 +708,11 @@ void FormFiller::FillOrPreviewForm(
         form.fields()[i].value() == result_fields[i].value();
     if (is_newly_autofilled && !autofilled_value_did_not_change) {
       newly_filled_field_ids.insert(result_fields[i].global_id());
-      // For credit card fields, when
-      // `kAutofillEnablePaymentsFieldSwapping` is enabled,
-      // override the autofilled field value if the field is autofilled.
-      if (allow_payment_swapping && form.fields()[i].is_autofilled() &&
+      // For credit card fields, override the autofilled field value if the
+      // field is autofilled.
+      if (AllowPaymentSwapping(*autofill_trigger_field, *autofill_field,
+                               is_refill) &&
+          form.fields()[i].is_autofilled() &&
           result_fields[i].is_autofilled() &&
           form.fields()[i].value() != result_fields[i].value()) {
         // Override the autofilled value.

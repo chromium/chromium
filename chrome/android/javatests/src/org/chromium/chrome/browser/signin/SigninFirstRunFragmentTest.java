@@ -531,6 +531,9 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testSigninWithDefaultAccount() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
@@ -645,6 +648,9 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testSigninWithNonDefaultAccount() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /* avatar= */ null);
         mSigninTestRule.addAccount(
@@ -742,6 +748,9 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testDismissButtonWhenUserIsSignedIn() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         final CoreAccountInfo primaryAccount = mSigninTestRule.addTestAccountThenSignin();
@@ -805,6 +814,9 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testContinueButtonWithChildAccount_replaceSyncWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         ThreadUtils.runOnUiThreadBlocking(
@@ -868,6 +880,9 @@ public class SigninFirstRunFragmentTest {
         SigninFeatures.SEED_ACCOUNTS_REVAMP,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmail_replaceSyncWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
@@ -917,6 +932,9 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName_replaceSyncPromosWithSigninPromosEnabled() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
@@ -1088,6 +1106,9 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testContinueButtonWhenAllowCrashUploadTurnedOff() {
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
@@ -1141,6 +1162,9 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.S_V2,
+            message = "Flaky, crbug.com/358148764")
     public void testFragmentSigninWhenAddedAccountIsNotYetAvailable() {
         final String continueAsText =
                 mActivityTestRule

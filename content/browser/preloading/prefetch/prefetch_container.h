@@ -356,7 +356,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Called when |PrefetchService::GetPrefetchToServe| and
   // |PrefetchService::ReturnPrefetchToServe| with |this|.
   void OnGetPrefetchToServe(bool blocked_until_head);
-  void OnReturnPrefetchToServe(bool served);
+  void OnReturnPrefetchToServe(bool served, const GURL& navigated_url);
 
   // Returns whether or not this prefetch has been considered to serve for a
   // navigation in the past. If it has, then it shouldn't be used for any future
@@ -577,6 +577,9 @@ class CONTENT_EXPORT PrefetchContainer {
   };
 
   Reader CreateReader();
+
+  bool IsExactMatch(const GURL& url) const;
+  bool IsNoVarySearchHeaderMatch(const GURL& url) const;
 
   bool is_in_dtor() const { return is_in_dtor_; }
 

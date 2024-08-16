@@ -23,6 +23,7 @@
 <translation id="1415402041810619267">Naputol ang URL</translation>
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
+<translation id="1500473259453106018">I-hide ang card tungkol sa mga pagbaba ng presyo sa mga tab</translation>
 <translation id="1510341833810331442">Hindi pinapayagan ang mga site na mag-save ng data sa iyong device</translation>
 <translation id="1547123415014299762">Pinapayagan ang third-party na cookies</translation>
 <translation id="1568470248891039841">Puwedeng mag-embed ng content mula sa iba pang site ang mga site na binibisita mo, halimbawa, mga larawan, ad, at text. Puwedeng humingi ang iba pang site na ito ng pahintulot na gamitin ang impormasyong na-save ng mga ito tungkol sa iyo habang nagba-browse ka sa site. <ph name="BEGIN_LINK" />Matuto pa tungkol sa naka-embed na content<ph name="END_LINK" /></translation>
@@ -132,6 +133,7 @@
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3232293466644486101">I-delete ang data mula sa pag-browse…</translation>
 <translation id="3242646949159196181">Kapag naka-on, makakapag-play ng tunog ang mga site. Kapag naka-off, hindi makakapag-play ng tunog ang mga site.</translation>
+<translation id="3273479183583863618">Mga pagbaba ng presyo sa mga tab</translation>
 <translation id="3277252321222022663">Payagan ang mga site na i-access ang mga sensor (inirerekomenda)</translation>
 <translation id="3285500645985761267">Payagan ang mga kaugnay na site na makita ang iyong aktibidad sa grupo</translation>
 <translation id="3295019059349372795">Kabanata 11: The Wonderful Emerald City of Oz</translation>
@@ -160,6 +162,7 @@
 <translation id="3721953990244350188">I-dismiss at ipakita ang susunod na available na pagkilos</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
+<translation id="3779154269823594982">Palitan ang mga password</translation>
 <translation id="3797520601150691162">Huwag ilapat ang madilim na tema para sa isang partikular na site</translation>
 <translation id="3803367742635802571">Posibleng hindi na gumana ayon sa disenyo ang mga site na binibisita mo</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -359,6 +362,7 @@
 <translation id="6818926723028410516">Pumili ng mga item</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6864395892908308021">Hindi nababasa ng device na ito ang NFC</translation>
+<translation id="6870169401250095575">I-hide ang card na Pag-check sa Kaligtasan</translation>
 <translation id="6912998170423641340">I-block ang mga site sa pag-read ng text at mga larawan mula sa clipboard</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6950072572526089586">Puwedeng mag-save ang site na binibisita mo ng impormasyon tungkol sa kung ano ang ginagawa mo para gumana ito na gaya ng inaasahan — halimbawa, para panatilihin kang naka-sign in sa isang site o para mag-save ng mga item sa iyong shopping cart. Kadalasang pansamantalang sine-save ng mga site ang impormasyong ito sa iyong device.</translation>
@@ -422,10 +426,10 @@
 <translation id="7882806643839505685">Payagan ang tunog para sa isang partikular na site.</translation>
 <translation id="789180354981963912">I-block ang third-party na cookies sa Incognito:</translation>
 <translation id="7940722705963108451">Ipaalala sa akin</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="FPS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="FPS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="FPS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="7986741934819883144">Pumili ng contact</translation>
 <translation id="7990211076305263060">Kapag naka-on, puwedeng hilingin ng mga site na gamitin ang iyong mikropono. Kapag naka-off, hindi magagamit ng mga site ang iyong mikropono.</translation>
 <translation id="8007176423574883786">Naka-off para sa device na ito</translation>
+<translation id="8010630645305864042">{TILE_COUNT,plural, =1{I-hide ang card na magpatuloy sa tab na ito}one{I-hide ang card na magpatuloy sa mga tab na ito}other{I-hide ang card na magpatuloy sa mga tab na ito}}</translation>
 <translation id="802154636333426148">Hindi na-download</translation>
 <translation id="8042586301629853791">Pagbukud-bukurin ayon sa:</translation>
 <translation id="8067883171444229417">I-play ang video</translation>
@@ -468,7 +472,6 @@
 <translation id="851751545965956758">I-block ang mga site sa pagkonekta sa mga device</translation>
 <translation id="8525306231823319788">Buong screen</translation>
 <translation id="8541410041357371550">Kinukuha ng site na ito ang iyong mga paksa ng ad mula sa Chrome para magpakita pa sa iyo ng mga may kaugnayang ad</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng<ph name="FPS_OWNER" />}one{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> site ng <ph name="FPS_OWNER" />}other{Pinapahintulutan ang cookies para sa <ph name="FPS_MEMBERS_COUNT" /> na site ng <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Pinapayagan (inirerekomenda)</translation>
 <translation id="8609465669617005112">Ilipat sa itaas</translation>
 <translation id="8617611086246832542">Kapag naka-on, ipinapakita ang desktop view ng mga website. Kapag naka-off, ipinapakita ang mobile view ng mga website.</translation>
@@ -506,7 +509,6 @@
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
 <translation id="9039697262778250930">Posibleng ma-sign out ka sa mga site na ito</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ang site na ito ay nasa isang grupong makakakita ng iyong aktibidad. Tinukoy ni <ph name="FPS_OWNER" /> ang grupo</translation>
 <translation id="9106233582039520022">I-delete ang cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, at <ph name="NUM_MORE" /> pa}}</translation>
 <translation id="913657688200966289">I-on ang mga pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>

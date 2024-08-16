@@ -33,79 +33,63 @@ using allocator_shim::AllocatorDispatch;
 // most platforms), and tests expect that.
 constexpr size_t kMaxAllowedSize = std::numeric_limits<int>::max() - (1 << 12);
 
-void* GlibcMalloc(const AllocatorDispatch*, size_t size, void* context) {
+void* GlibcMalloc(size_t size, void* context) {
   // Cannot force glibc's malloc() to crash when a large size is requested, do
   // it in the shim instead.
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 
   return __libc_malloc(size);
 }
 
-void* GlibcUncheckedMalloc(const AllocatorDispatch*,
-                           size_t size,
-                           void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+void* GlibcUncheckedMalloc(size_t size, void* context) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
 
   return __libc_malloc(size);
 }
 
-void* GlibcCalloc(const AllocatorDispatch*,
-                  size_t n,
-                  size_t size,
-                  void* context) {
+void* GlibcCalloc(size_t n, size_t size, void* context) {
   const auto total = partition_alloc::internal::base::CheckMul(n, size);
-  if (PA_UNLIKELY(!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize)) {
+  if (!total.IsValid() || total.ValueOrDie() >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size * n);
   }
 
   return __libc_calloc(n, size);
 }
 
-void* GlibcRealloc(const AllocatorDispatch*,
-                   void* address,
-                   size_t size,
-                   void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+void* GlibcRealloc(void* address, size_t size, void* context) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 
   return __libc_realloc(address, size);
 }
 
-void* GlibcUncheckedRealloc(const AllocatorDispatch*,
-                            void* address,
-                            size_t size,
-                            void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+void* GlibcUncheckedRealloc(void* address, size_t size, void* context) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     return nullptr;
   }
 
   return __libc_realloc(address, size);
 }
 
-void* GlibcMemalign(const AllocatorDispatch*,
-                    size_t alignment,
-                    size_t size,
-                    void* context) {
-  if (PA_UNLIKELY(size >= kMaxAllowedSize)) {
+void* GlibcMemalign(size_t alignment, size_t size, void* context) {
+  if (size >= kMaxAllowedSize) [[unlikely]] {
     partition_alloc::TerminateBecauseOutOfMemory(size);
   }
 
   return __libc_memalign(alignment, size);
 }
 
-void GlibcFree(const AllocatorDispatch*, void* address, void* context) {
+void GlibcFree(void* address, void* context) {
   __libc_free(address);
 }
 
 PA_NO_SANITIZE("cfi-icall")
-size_t GlibcGetSizeEstimate(const AllocatorDispatch*,
-                            void* address,
-                            void* context) {
+size_t GlibcGetSizeEstimate(void* address, void* context) {
   // glibc does not expose an alias to resolve malloc_usable_size. Dynamically
   // resolve it instead. This should be safe because glibc (and hence dlfcn)
   // does not use malloc_size internally and so there should not be a risk of

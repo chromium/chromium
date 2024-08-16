@@ -6,17 +6,19 @@
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
 #include "base/functional/callback.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_request_id_generator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/ref_counted_lens_overlay_client_logs.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/lens_server_proto/lens_overlay_client_context.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_client_logs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_image_data.pb.h"
@@ -106,6 +108,10 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
+  // Sends a task completion Gen204 ping for certain user actions.
+  virtual void SendTaskCompletionGen204IfEnabled(
+      lens::mojom::UserAction user_action);
+
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.
@@ -146,6 +152,12 @@ class LensOverlayQueryController {
   // Processes the screenshot and fetches a full image request.
   void PrepareAndFetchFullImageRequest();
 
+  // Continues with fetching the full image request after the screenshot has
+  // been encoded.
+  void OnImageDataReady(
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      lens::ImageData image_data);
+
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
 
@@ -165,6 +177,17 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);
 
+  // Continues with SendInteraction after the full image cropping is finished.
+  void OnImageCropReady(
+      int request_index,
+      lens::mojom::CenterRotatedBoxPtr region,
+      std::optional<std::string> query_text,
+      std::optional<std::string> object_id,
+      lens::LensOverlaySelectionType selection_type,
+      std::map<std::string, std::string> additional_search_query_params,
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      std::optional<lens::ImageCrop> image_crop);
+
   // Fetches the endpoint using the initial image data.
   void FetchFullImageRequest(
       std::unique_ptr<lens::LensOverlayRequestId> request_id,
@@ -176,8 +199,13 @@ class LensOverlayQueryController {
       int64_t query_start_time_ms,
       std::unique_ptr<EndpointResponse> response);
 
-  // Handles the response from a gen204 request.
-  void OnGen204LoaderComplete(std::unique_ptr<std::string> response_body);
+  // Handles the response from a latency gen204 request.
+  void OnLatencyGen204LoaderComplete(
+      std::unique_ptr<std::string> response_body);
+
+  // Handles the response from a task completion gen204 request.
+  void OnTaskCompletionGen204LoaderComplete(
+      std::unique_ptr<std::string> response_body);
 
   // Runs the full image callback with empty response data, for errors.
   void RunFullImageCallbackForError();
@@ -293,8 +321,20 @@ class LensOverlayQueryController {
   // earlier unfinished requests.
   std::unique_ptr<EndpointFetcher> interaction_endpoint_fetcher_;
 
-  // Loader used for gen204 requests.
-  std::unique_ptr<network::SimpleURLLoader> gen204_loader_;
+  // Loader used for latency gen204 requests.
+  std::unique_ptr<network::SimpleURLLoader> latency_gen204_loader_;
+
+  // Loader used for task completion gen204 requests.
+  std::unique_ptr<network::SimpleURLLoader> task_completion_gen204_loader_;
+
+  // Task runner used to encode/downscale the JPEG images on a separate thread.
+  scoped_refptr<base::TaskRunner> encoding_task_runner_;
+
+  // Tracks the encoding/downscaling tasks currently running for follow up
+  // interactions. Does not track the encoding for the full image request
+  // because it is assumed this request will finish, never need to be
+  // cancelled, and all other tasks will wait on it if needed.
+  std::unique_ptr<base::CancelableTaskTracker> encoding_task_tracker_;
 
   // Owned by Profile, and thus guaranteed to outlive this instance.
   raw_ptr<variations::VariationsClient> variations_client_;

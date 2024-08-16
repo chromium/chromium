@@ -528,6 +528,19 @@ message WebKioskAppInfoProto {
   optional string icon_url = 3;
 }
 
+// Parameters for Isolated Web App kiosk device local accounts.
+message IsolatedWebAppKioskInfoProto {
+  // Signed Web Bundle ID (required).
+  // A base32 [a-z2-7] string of 56 or 58 characters.
+  // The public key of the Signed Web Bundle is used to create the Web Bundle ID
+  // that identifies the IWA.
+  optional string web_bundle_id = 1;
+
+  // Update URL of the isolated app (required).
+  // Specifies the app version and where to download the web bundle from.
+  optional string update_manifest_url = 2;
+}
+
 // Describes a single device-local account.
 message DeviceLocalAccountInfoProto {
   // Deprecated: Account identifier for a public session device-local account.
@@ -554,10 +567,13 @@ message DeviceLocalAccountInfoProto {
     // An account that serves as a container for a single full-screen
     // Android app. Deprecated.
     ACCOUNT_TYPE_KIOSK_ANDROID_APP = 2 [deprecated = true];
-    // SAML public session account
+    // SAML public session account.
     ACCOUNT_TYPE_SAML_PUBLIC_SESSION = 3;
-    // Web App.
+    // An account that serves as a container for a single full-screen Web App.
     ACCOUNT_TYPE_WEB_KIOSK_APP = 4;
+    // An account that serves as a container for a single full-screen
+    // Isolated Web App (IWA).
+    ACCOUNT_TYPE_KIOSK_IWA = 5;
   }
   // Should keep ChromeServletUtil.toDimensionAccountType logic in sync with
   // AccountType enum.
@@ -604,6 +620,9 @@ message DeviceLocalAccountInfoProto {
   // Relevant if `type` is ACCOUNT_TYPE_KIOSK_APP,
   // ACCOUNT_TYPE_KIOSK_ANDROID_APP or ACCOUNT_TYPE_WEB_KIOSK_APP.
   optional EphemeralMode ephemeral_mode = 7;
+
+  // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_IWA.
+  optional IsolatedWebAppKioskInfoProto isolated_kiosk_app = 8;
 }
 
 message DeviceLocalAccountsProto {

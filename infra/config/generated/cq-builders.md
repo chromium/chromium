@@ -51,10 +51,6 @@ These builders must pass before a CL may land that affects files outside of
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator""))
 
-* [lacros-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-gtest""))
-
-    * Replaced with builder: [lacros-amd64-generic-rel-gtest-and-tast](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-gtest-and-tast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
-
 * [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
 
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-dbg""))
@@ -210,6 +206,7 @@ builder.
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//components/viz/.+`](https://cs.chromium.org/chromium/src/components/viz/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
@@ -391,6 +388,7 @@ builder.
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//components/viz/.+`](https://cs.chromium.org/chromium/src/components/viz/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
@@ -519,6 +517,7 @@ builder.
   Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
@@ -556,6 +555,7 @@ builder.
   Location filters:
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
   * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
@@ -591,6 +591,12 @@ builder.
   Location filters:
   * [`//infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/[^/]+/[^/]+/targets/.+\.json)
 
+* [win-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/win-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-rel""))
+
+  Location filters:
+  * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
+  * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
+
 * [win-updater-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-updater-try-builder-dbg""))
 
   Location filters:
@@ -620,6 +626,7 @@ builder.
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//components/cdm/renderer/.+`](https://cs.chromium.org/chromium/src/components/cdm/renderer/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
+  * [`//content/test/data/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/data/gpu/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//device/vr/.+`](https://cs.chromium.org/chromium/src/device/vr/)
   * [`//gpu/.+`](https://cs.chromium.org/chromium/src/gpu/)
@@ -691,13 +698,6 @@ as required builders.
 
 * [mac14-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac14-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac14-arm64-rel""))
   * Experiment percentage: 100.0
-
-* [win-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/win-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-arm64-rel""))
-  * Experiment percentage: 100.0
-
-  Location filters:
-  * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
-  * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
 
 
 ## Mega CQ builders

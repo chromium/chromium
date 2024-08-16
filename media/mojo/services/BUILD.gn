@@ -147,6 +147,8 @@ component("services") {
       "android_mojo_media_client.h",
       "android_mojo_util.cc",
       "android_mojo_util.h",
+      "mediadrm_support_service.cc",
+      "mediadrm_support_service.h",
     ]
   }
 
@@ -311,6 +313,11 @@ source_set("unit_tests") {
       "//media/cdm:cdm_api",
       "//media/cdm:cdm_paths",
     ]
+  }
+
+  if (is_android) {
+    sources += [ "mediadrm_support_service_unittest.cc" ]
+    deps += [ "//third_party/widevine/cdm:headers" ]
   }
 
   if (is_chromeos_ash) {

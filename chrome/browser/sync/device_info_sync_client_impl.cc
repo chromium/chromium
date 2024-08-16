@@ -87,7 +87,7 @@ std::optional<std::string> DeviceInfoSyncClientImpl::GetFCMRegistrationToken()
 }
 
 // syncer::DeviceInfoSyncClient:
-std::optional<syncer::ModelTypeSet>
+std::optional<syncer::DataTypeSet>
 DeviceInfoSyncClientImpl::GetInterestedDataTypes() const {
   return SyncInvalidationsServiceFactory::GetForProfile(profile_)
       ->GetInterestedDataTypes();

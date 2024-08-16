@@ -240,7 +240,7 @@ function getSeaPenPromptingTile(): SeaPenPromptingTile {
     type: TileType.SEA_PEN_PROMPTING,
     preview: [{
       url:
-          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_tile.jpg',
+          'chrome://resources/ash/common/sea_pen/sea_pen_images/sea_pen_freeform.jpg',
     }],
   };
 }
@@ -810,24 +810,6 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
   private getAriaIndex_(index: number): number {
     return index + 1;
-  }
-
-  private getSeaPenTileTagClass_(item: Tile|null): string {
-    const defaultTag = 'tile-tag';
-    return this.isSelectableTile_(item) ? defaultTag :
-                                          `${defaultTag} unavailable-tag`;
-  }
-
-  private getSeaPenTileTagLabel_(item: Tile|null): string {
-    return this.isSelectableTile_(item) ? this.i18n('seaPenExperimentLabel') :
-                                          this.i18n('seaPenUnavailableLabel');
-  }
-
-  private getSeaPenTileAriaDescription_(item: Tile|null): string|null {
-    // Do not set the aria-description for Sea Pen tile if the tile is
-    // unavailable.
-    return this.isSelectableTile_(item) ? this.getSeaPenTileTagLabel_(item) :
-                                          null;
   }
 
   private getSeaPenTemplatesTileLabel_(): string {

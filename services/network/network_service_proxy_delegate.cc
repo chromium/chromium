@@ -93,9 +93,9 @@ bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
 void MergeRequestHeaders(net::HttpRequestHeaders* out,
                          const net::HttpRequestHeaders& in) {
   for (net::HttpRequestHeaders::Iterator it(in); it.GetNext();) {
-    std::string old_value;
-    if (out->GetHeader(it.name(), &old_value)) {
-      out->SetHeader(it.name(), old_value + ", " + it.value());
+    std::optional<std::string> old_value = out->GetHeader(it.name());
+    if (old_value) {
+      out->SetHeader(it.name(), *old_value + ", " + it.value());
     } else {
       out->SetHeader(it.name(), it.value());
     }

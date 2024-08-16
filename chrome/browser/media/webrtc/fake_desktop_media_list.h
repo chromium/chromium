@@ -50,6 +50,7 @@ class FakeDesktopMediaList : public DesktopMediaList {
   void ClearDelegatedSourceListSelection() override;
   void FocusList() override;
   void HideList() override;
+  void ShowDelegatedList() override;
 
  private:
   std::vector<Source> sources_;

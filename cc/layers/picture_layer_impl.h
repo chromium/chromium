@@ -100,7 +100,7 @@ class CC_EXPORT PictureLayerImpl
   void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
                           Region* new_invalidation);
   void RegenerateDiscardableImageMapIfNeeded();
-  bool UpdateTiles();
+  bool UpdateTiles(TileMemoryLimitPolicy memory_limit_policy);
 
   // Mask-related functions.
   void GetContentsResourceId(viz::ResourceId* resource_id,

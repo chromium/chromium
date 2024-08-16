@@ -39,8 +39,9 @@ base::Value::Dict CharacteristicToValue(Characteristic& from) {
 }
 
 base::Value::Dict DescriptorToValue(Descriptor& from) {
-  if (!from.characteristic)
+  if (!from.characteristic) {
     return from.ToValue();
+  }
 
   // Copy the characteristic properties and set them later manually.
   std::vector<CharacteristicProperty> properties =

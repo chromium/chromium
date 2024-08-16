@@ -35,6 +35,7 @@
 #import "components/remote_cocoa/app_shim/mouse_capture.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_frameless_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_overlay_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -49,6 +50,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -312,6 +314,13 @@ NativeWidgetMacNSWindow* NativeWidgetNSWindowBridge::CreateNSWindow(
                       backing:NSBackingStoreBuffered
                         defer:NO];
       break;
+    case mojom::WindowClass::kOverlay:
+      ns_window = [[NativeWidgetMacOverlayNSWindow alloc]
+          initWithContentRect:ui::kWindowSizeDeterminedLater
+                    styleMask:params->style_mask
+                      backing:NSBackingStoreBuffered
+                        defer:NO];
+      break;
   }
   ns_window.releasedWhenClosed = NO;
 
@@ -509,8 +518,9 @@ void NativeWidgetNSWindowBridge::InitWindow(
   [window_ setHasShadow:params->has_window_server_shadow];
 
   // Don't allow dragging sheets.
-  if (params->modal_type == ui::MODAL_TYPE_WINDOW)
+  if (params->modal_type == ui::mojom::ModalType::kWindow) {
     [window_ setMovable:NO];
+  }
   [window_ setIsTooltip:params->is_tooltip];
 }
 
@@ -1521,6 +1531,9 @@ void NativeWidgetNSWindowBridge::ExitFullscreen() {
   fullscreen_controller_.ExitFullscreen();
 }
 
+// TODO(https://crbug.com/357082344): Do not set
+// `NSWindowCollectionBehaviorPrimary` if the window does not already have this
+// flag set by `SetCanAppearInExistingFullscreenSpaces(true)`
 void NativeWidgetNSWindowBridge::SetCanAppearInExistingFullscreenSpaces(
     bool can_appear_in_existing_fullscreen_spaces) {
   NSWindowCollectionBehavior collectionBehavior = window_.collectionBehavior;
@@ -1790,7 +1803,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
 }
 
 bool NativeWidgetNSWindowBridge::IsWindowModalSheet() const {
-  return parent_ && modal_type_ == ui::MODAL_TYPE_WINDOW;
+  return parent_ && modal_type_ == ui::mojom::ModalType::kWindow;
 }
 
 void NativeWidgetNSWindowBridge::ShowAsModalSheet() {

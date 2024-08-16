@@ -75,9 +75,6 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
   IPC_STRUCT_TRAITS_MEMBER(using_vulkan_context)
   IPC_STRUCT_TRAITS_MEMBER(mesa_framebuffer_flip_y)
 
-  IPC_STRUCT_TRAITS_MEMBER(major_version)
-  IPC_STRUCT_TRAITS_MEMBER(minor_version)
-
   IPC_STRUCT_TRAITS_MEMBER(gpu_memory_buffer_formats)
   IPC_STRUCT_TRAITS_MEMBER(drm_formats_and_modifiers)
   IPC_STRUCT_TRAITS_MEMBER(drm_device_id)
@@ -86,6 +83,9 @@ IPC_STRUCT_TRAITS_END()
 IPC_STRUCT_TRAITS_BEGIN(gpu::GLCapabilities)
   IPC_STRUCT_TRAITS_MEMBER(vertex_shader_precisions)
   IPC_STRUCT_TRAITS_MEMBER(fragment_shader_precisions)
+
+  IPC_STRUCT_TRAITS_MEMBER(major_version)
+  IPC_STRUCT_TRAITS_MEMBER(minor_version)
 
   IPC_STRUCT_TRAITS_MEMBER(max_combined_texture_image_units)
   IPC_STRUCT_TRAITS_MEMBER(max_cube_map_texture_size)
@@ -135,6 +135,9 @@ IPC_STRUCT_TRAITS_BEGIN(gpu::GLCapabilities)
 
   IPC_STRUCT_TRAITS_MEMBER(occlusion_query_boolean)
   IPC_STRUCT_TRAITS_MEMBER(timer_queries)
+
+  IPC_STRUCT_TRAITS_MEMBER(max_texture_size)
+  IPC_STRUCT_TRAITS_MEMBER(sync_query)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::CommandBuffer::State)

@@ -131,10 +131,9 @@ void PerformanceInterventionButton::UpdateIconColor() {
       is_active_ ? kColorPerformanceInterventionButtonIconActive
                  : kColorPerformanceInterventionButtonIconInactive;
 
-  // TODO(crbug.com/349825499): Use a different icon or change the naming
   SetImageModel(
       ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kMemorySaverChromeRefreshIcon,
+      ui::ImageModel::FromVectorIcon(kPerformanceSpeedometerIcon,
                                      GetColorProvider()->GetColor(icon_color)));
 }
 

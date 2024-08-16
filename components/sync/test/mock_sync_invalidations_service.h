@@ -33,8 +33,8 @@ class MockSyncInvalidationsService : public SyncInvalidationsService {
   MOCK_METHOD(void,
               SetInterestedDataTypesHandler,
               (InterestedDataTypesHandler * handler));
-  MOCK_METHOD(std::optional<ModelTypeSet>, GetInterestedDataTypes, (), (const));
-  MOCK_METHOD(void, SetInterestedDataTypes, (const ModelTypeSet& data_types));
+  MOCK_METHOD(std::optional<DataTypeSet>, GetInterestedDataTypes, (), (const));
+  MOCK_METHOD(void, SetInterestedDataTypes, (const DataTypeSet& data_types));
   MOCK_METHOD(void,
               SetCommittedAdditionalInterestedDataTypesCallback,
               (InterestedDataTypesAppliedCallback callback));

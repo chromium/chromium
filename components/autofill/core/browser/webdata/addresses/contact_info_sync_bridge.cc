@@ -9,10 +9,10 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
@@ -26,13 +26,13 @@ static int kContactInfoSyncBridgeUserDataKey = 0;
 }  // namespace
 
 ContactInfoSyncBridge::ContactInfoSyncBridge(
-    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     AutofillWebDataBackend* backend)
-    : ModelTypeSyncBridge(std::move(change_processor)),
+    : DataTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(backend) {
   if (!web_data_backend_ || !web_data_backend_->GetDatabase() ||
       !GetAutofillTable()) {
-    ModelTypeSyncBridge::change_processor()->ReportError(
+    DataTypeSyncBridge::change_processor()->ReportError(
         {FROM_HERE, "Failed to load AutofillWebDatabase."});
     return;
   }
@@ -49,14 +49,14 @@ void ContactInfoSyncBridge::CreateForWebDataServiceAndBackend(
   web_data_service->GetDBUserData()->SetUserData(
       &kContactInfoSyncBridgeUserDataKey,
       std::make_unique<ContactInfoSyncBridge>(
-          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+          std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::CONTACT_INFO,
               /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
 
 // static
-syncer::ModelTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
+syncer::DataTypeSyncBridge* ContactInfoSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<ContactInfoSyncBridge*>(
       web_data_service->GetDBUserData()->GetUserData(
@@ -68,7 +68,7 @@ ContactInfoSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<syncer::SyncMetadataStoreChangeList>(
       GetSyncMetadataStore(), syncer::CONTACT_INFO,
-      base::BindRepeating(&syncer::ModelTypeChangeProcessor::ReportError,
+      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
                           change_processor()->GetWeakPtr()));
 }
 
@@ -321,7 +321,7 @@ void ContactInfoSyncBridge::LoadMetadata() {
     // we should force the initial sync flow to propagate the cached data into
     // the local model.
     GetSyncMetadataStore()->DeleteAllSyncMetadata(
-        syncer::ModelType::CONTACT_INFO);
+        syncer::DataType::CONTACT_INFO);
 
     batch = std::make_unique<syncer::MetadataBatch>();
   }

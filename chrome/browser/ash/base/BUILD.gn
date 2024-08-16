@@ -12,7 +12,10 @@ static_library("base") {
     "locale_util.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//chrome/browser:browser_process",

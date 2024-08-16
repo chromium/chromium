@@ -316,7 +316,7 @@ const char* StatsEventSubscriber::CastStatToString(CastStat stat) {
     STAT_ENUM_TO_STRING(UNKNOWN_OPEN_SCREEN_STAT);
     STAT_ENUM_TO_STRING(UNKNOWN_OPEN_SCREEN_HISTO);
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 const int kDefaultMaxLatencyBucketMs = 800;

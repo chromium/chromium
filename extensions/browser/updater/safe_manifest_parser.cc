@@ -264,8 +264,9 @@ std::map<std::string, std::vector<const UpdateManifestResult*>>
 UpdateManifestResults::GroupSuccessfulByID() const {
   std::map<std::string, std::vector<const UpdateManifestResult*>> groups;
   for (const UpdateManifestResult& update_result : update_list) {
-    if (!update_result.parse_error)
+    if (!update_result.parse_error) {
       groups[update_result.extension_id].push_back(&update_result);
+    }
   }
   return groups;
 }

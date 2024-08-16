@@ -21,6 +21,7 @@
 #include "extensions/common/mojom/service_worker_host.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 
 class GURL;
@@ -62,6 +63,7 @@ class ServiceWorkerHost :
       const ExtensionId& extension_id,
       int64_t service_worker_version_id,
       int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token,
       mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher)
       override;
   void DidStartServiceWorkerContext(

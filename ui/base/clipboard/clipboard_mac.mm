@@ -594,10 +594,7 @@ void ClipboardMac::WriteBitmapInternal(const SkBitmap& bitmap,
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
   NSBitmapImageRep* image_rep = skia::SkBitmapToNSBitmapImageRep(bitmap);
-  if (!image_rep) {
-    NOTREACHED_IN_MIGRATION() << "SkBitmapToNSBitmapImageRep failed";
-    return;
-  }
+  CHECK(image_rep) << "SkBitmapToNSBitmapImageRep failed";
   // Attempt to format the image representation as a PNG, and write it directly
   // to the clipboard if this succeeds. This will write both a PNG and a TIFF.
   NSData* data = [image_rep representationUsingType:NSBitmapImageFileTypePNG

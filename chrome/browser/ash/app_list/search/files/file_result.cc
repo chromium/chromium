@@ -24,7 +24,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/ash/thumbnail_loader.h"
+#include "chrome/browser/ui/ash/thumbnail_loader/thumbnail_loader.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"

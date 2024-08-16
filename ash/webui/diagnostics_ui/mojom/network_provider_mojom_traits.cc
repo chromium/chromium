@@ -33,8 +33,7 @@ diagnostics_mojom::SecurityType EnumTraits<diagnostics_mojom::SecurityType,
       return diagnostics_mojom::SecurityType::kWpaPsk;
   }
   VLOG(1) << "Unknown security type: " << input;
-  NOTREACHED_IN_MIGRATION();
-  return diagnostics_mojom::SecurityType::kMinValue;
+  NOTREACHED();
 }
 
 // static
@@ -61,8 +60,7 @@ bool EnumTraits<diagnostics_mojom::SecurityType,
   }
   VLOG(1) << "Unknown security type: "
           << static_cast<network_config_mojom::SecurityType>(input);
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -77,8 +75,7 @@ EnumTraits<diagnostics_mojom::AuthenticationType,
       return diagnostics_mojom::AuthenticationType::k8021x;
   }
   VLOG(1) << "Unknown authentication type: " << input;
-  NOTREACHED_IN_MIGRATION();
-  return diagnostics_mojom::AuthenticationType::kMinValue;
+  NOTREACHED();
 }
 
 // static
@@ -96,8 +93,7 @@ bool EnumTraits<diagnostics_mojom::AuthenticationType,
   }
   VLOG(1) << "Unknown authentication type: "
           << static_cast<network_config_mojom::AuthenticationType>(input);
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

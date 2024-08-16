@@ -738,6 +738,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::unique_ptr<TrustTokenRequestHelper> trust_token_helper_;
   std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory_;
 
+  // The current Trust Token operation being processed by the request.
+  std::optional<mojom::TrustTokenOperationType> trust_token_operation_;
+
   // The cached result of the request's Trust Tokens protocol operation, if any.
   // This can describe the result of either an outbound (request-annotating)
   // protocol step or an inbound (response header reading) step; some error

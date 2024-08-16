@@ -59,7 +59,6 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1597,8 +1596,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   }
 
   if (params->update_properties.muted &&
-      !chrome::SetTabAudioMuted(contents, *params->update_properties.muted,
-                                TabMutedReason::EXTENSION, extension()->id())) {
+      !SetTabAudioMuted(contents, *params->update_properties.muted,
+                        TabMutedReason::EXTENSION, extension()->id())) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         tabs_constants::kCannotUpdateMuteCaptured,
         base::NumberToString(tab_id))));

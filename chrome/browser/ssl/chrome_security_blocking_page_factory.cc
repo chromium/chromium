@@ -20,6 +20,7 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
@@ -317,7 +318,8 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
       base::FeatureList::IsEnabled(features::kHttpsFirstModeV2ForEngagedSites);
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
-          web_contents, request_url, std::move(client), interstitial_state);
+          web_contents, request_url, std::move(client), interstitial_state,
+          /*use_new_interstitial=*/IsNewHttpsFirstModeInterstitialEnabled());
   return page;
 }
 

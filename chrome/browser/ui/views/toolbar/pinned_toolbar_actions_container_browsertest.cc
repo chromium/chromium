@@ -33,6 +33,13 @@ class PinnedToolbarActionsContainerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(browser()->profile());
+    actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
+    views::test::WaitForAnimatingLayoutManager(container());
+  }
+
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }

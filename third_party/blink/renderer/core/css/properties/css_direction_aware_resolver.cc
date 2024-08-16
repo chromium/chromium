@@ -59,7 +59,7 @@ STATIC_ASSERT_ENUM(PhysicalDirection::kLeft, 3);
 template <size_t size>
 CSSDirectionAwareResolver::Group<size>::Group(
     const StylePropertyShorthand& shorthand)
-    : properties_(shorthand.properties()) {
+    : properties_(shorthand.properties().data()) {
   DCHECK_EQ(size, shorthand.length());
 }
 

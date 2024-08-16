@@ -126,6 +126,8 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetPaddingBottom(StyleRef().PaddingBottom());
   child_style_builder.SetPaddingLeft(StyleRef().PaddingLeft());
 
+  child_style_builder.SetBoxDecorationBreak(StyleRef().BoxDecorationBreak());
+
   if (StyleRef().SpecifiesColumns() && AllowsColumns()) {
     child_style_builder.SetColumnCount(StyleRef().ColumnCount());
     child_style_builder.SetColumnWidth(StyleRef().ColumnWidth());

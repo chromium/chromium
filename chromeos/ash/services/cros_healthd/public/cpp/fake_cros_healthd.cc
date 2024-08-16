@@ -660,7 +660,7 @@ void FakeCrosHealthd::DEPRECATED_RunLedLitUpRoutine(
   actual_passed_parameters_.Set("name", static_cast<int32_t>(name));
   actual_passed_parameters_.Set("color", static_cast<int32_t>(color));
 
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kLedLitUp;
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::DEPRECATED_kLedLitUp;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 

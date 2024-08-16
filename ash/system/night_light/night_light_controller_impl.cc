@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/system/night_light/night_light_controller_impl.h"
 
 #include <algorithm>
@@ -411,8 +416,7 @@ float NightLightControllerImpl::RemapAmbientColorTemperature(
                   kTable[i].output_temperature);
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // static
@@ -640,8 +644,7 @@ void NightLightControllerImpl::ReapplyColorTemperatures() {
     if (temperature_animation_->target_temperature() == target_temperature)
       return;
 
-    NOTREACHED_IN_MIGRATION();
-    temperature_animation_->Stop();
+    NOTREACHED();
   }
 
   ApplyTemperatureToAllDisplays(target_temperature);

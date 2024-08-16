@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/chrome_browser_main_win.h"
 
 // windows.h must be included before shellapi.h
@@ -13,6 +18,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -497,11 +503,10 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 }
 
 int ChromeBrowserMainPartsWin::PreCreateThreads() {
-  // Record whether the machine is enterprise managed in a crash key. This will
-  // be used to better identify whether crashes are from enterprise users.
-  static crash_reporter::CrashKeyString<4> is_enterprise_managed(
-      "is-enterprise-managed");
-  is_enterprise_managed.Set(
+  static constexpr std::string_view kIsEnterpriseManaged =
+      "is-enterprise-managed";
+  crash_keys::AllocateCrashKeyInBrowserAndChildren(
+      kIsEnterpriseManaged,
       policy::ManagementServiceFactory::GetForPlatform()
                   ->GetManagementAuthorityTrustworthiness() >=
               policy::ManagementAuthorityTrustworthiness::TRUSTED
@@ -575,7 +580,8 @@ void ChromeBrowserMainPartsWin::PreProfileInit() {
     platform_auth_policy_observer_ =
         std::make_unique<PlatformAuthPolicyObserver>(local_state);
 
-  if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission)) {
+  if (base::FeatureList::IsEnabled(features::kWinSystemLocationPermission) &&
+      !device::GeolocationSystemPermissionManager::GetInstance()) {
     device::GeolocationSystemPermissionManager::SetInstance(
         device::SystemGeolocationSourceWin::
             CreateGeolocationSystemPermissionManager());

@@ -976,8 +976,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
   RunAccNameTest(FILE_PATH_LITERAL("name-text-dynamic-labelledby.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameTextInputLabelledbyDiv) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-input-labelledby-div.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextInputInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-text-input-in-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameTextInputInOwnLabel) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-text-input-in-own-label.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,

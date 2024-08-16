@@ -22,6 +22,9 @@ enum class ComputeAnswerStatus {
   // Answer generated successfully.
   SUCCESS,
 
+  // Question is not answerable.
+  UNANSWERABLE,
+
   // The model files required for generation are not available.
   MODEL_UNAVAILABLE,
 

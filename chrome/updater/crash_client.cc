@@ -49,10 +49,14 @@ namespace updater {
 CrashClient::CrashClient() = default;
 CrashClient::~CrashClient() = default;
 
-// static
 CrashClient* CrashClient::GetInstance() {
   static base::NoDestructor<CrashClient> crash_client;
   return crash_client.get();
+}
+
+bool CrashClient::SetUploadsEnabled(bool enabled) {
+  return database_ ? database_->GetSettings()->SetUploadsEnabled(enabled)
+                   : false;
 }
 
 bool CrashClient::InitializeDatabaseOnly(UpdaterScope updater_scope) {

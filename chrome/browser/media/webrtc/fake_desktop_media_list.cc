@@ -115,6 +115,8 @@ void FakeDesktopMediaList::HideList() {
   is_focused_ = false;
 }
 
+void FakeDesktopMediaList::ShowDelegatedList() {}
+
 void FakeDesktopMediaList::OnDelegatedSourceListSelection() {
   observer_->OnDelegatedSourceListSelection();
 }

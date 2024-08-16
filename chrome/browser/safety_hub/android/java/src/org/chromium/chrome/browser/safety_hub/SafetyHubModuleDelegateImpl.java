@@ -17,21 +17,14 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
-import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -64,13 +57,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
     @Override
     public void showPasswordCheckUI(Context context) {
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        String account = getAccountEmail();
-        assert account != null
-                : "The password check UI should only be launched for signed in users.";
-
-        passwordManagerHelper.showPasswordCheckup(
-                context, PasswordCheckReferrer.SAFETY_CHECK, mModalDialogManagerSupplier, account);
+        SafetyHubUtils.showPasswordCheckUI(context, mProfile, mModalDialogManagerSupplier);
     }
 
     @Override
@@ -94,16 +81,6 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     }
 
     @Override
-    public int getSafeBrowsingState() {
-        return new SafeBrowsingBridge(mProfile).getSafeBrowsingState();
-    }
-
-    @Override
-    public boolean isSafeBrowsingManaged() {
-        return new SafeBrowsingBridge(mProfile).isSafeBrowsingManaged();
-    }
-
-    @Override
     public int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge) {
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
@@ -120,7 +97,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
 
     @Override
     public void launchSyncOrSigninPromo(Context context) {
-        assert !isSignedIn();
+        assert !SafetyHubUtils.isSignedIn(mProfile);
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             AccountPickerBottomSheetStrings strings =
@@ -142,19 +119,5 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             // Open the sync page.
             mSyncLauncher.launchActivityIfAllowed(context, SigninAccessPoint.SAFETY_CHECK);
         }
-    }
-
-    @Override
-    public boolean isSignedIn() {
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(mProfile);
-        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
-    }
-
-    @Override
-    public @Nullable String getAccountEmail() {
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        return CoreAccountInfo.getEmailFrom(
-                signinManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SIGNIN));
     }
 }

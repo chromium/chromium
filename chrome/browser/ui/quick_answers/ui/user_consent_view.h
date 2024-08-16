@@ -47,7 +47,6 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateBoundsForQuickAnswers() override;
 
   views::LabelButton* allow_button_for_test() { return allow_button_; }

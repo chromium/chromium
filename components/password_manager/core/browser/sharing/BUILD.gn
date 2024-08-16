@@ -7,12 +7,12 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("sharing") {
   sources = [
-    "incoming_password_sharing_invitation_model_type_controller.cc",
-    "incoming_password_sharing_invitation_model_type_controller.h",
+    "incoming_password_sharing_invitation_data_type_controller.cc",
+    "incoming_password_sharing_invitation_data_type_controller.h",
     "incoming_password_sharing_invitation_sync_bridge.cc",
     "incoming_password_sharing_invitation_sync_bridge.h",
-    "outgoing_password_sharing_invitation_model_type_controller.cc",
-    "outgoing_password_sharing_invitation_model_type_controller.h",
+    "outgoing_password_sharing_invitation_data_type_controller.cc",
+    "outgoing_password_sharing_invitation_data_type_controller.h",
     "outgoing_password_sharing_invitation_sync_bridge.cc",
     "outgoing_password_sharing_invitation_sync_bridge.h",
     "password_receiver_service.h",

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/views/tabs/tab.h"
 
 #include <stddef.h>
@@ -75,6 +80,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -251,6 +257,11 @@ Tab::Tab(TabSlotController* controller)
                           base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  showing_close_button_ = !controller_->IsLockedForOnTask();
+  close_button_->SetVisible(showing_close_button_);
+#endif
+
   tab_close_button_observer_ = std::make_unique<TabCloseButtonObserver>(
       this, close_button_, controller_);
 
@@ -264,6 +275,8 @@ Tab::Tab(TabSlotController* controller)
       std::make_unique<TabStyleHighlightPathGenerator>(tab_style_views()));
 
   SetProperty(views::kElementIdentifierKey, kTabElementId);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
 }
 
 Tab::~Tab() {
@@ -694,7 +707,6 @@ std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
 }
 
 void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTab;
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                               IsSelected());
 
@@ -966,7 +978,7 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
   if (!result.empty()) {
     result.append(1, '\n');
   }
-  result.append(chrome::GetTabAlertStateText(alert_state.value()));
+  result.append(GetTabAlertStateText(alert_state.value()));
   return result;
 }
 
@@ -1058,8 +1070,14 @@ void Tab::UpdateIconVisibility() {
                                    : kMinimumContentsWidthForCloseButtons);
 
   if (IsActive()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Hide tab close button for OnTask if locked. Only applicable for non-web
+    // browser scenarios.
+    showing_close_button_ = !controller_->IsLockedForOnTask();
+#else
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     available_width -= close_button_width;
 
     showing_alert_indicator_ =
@@ -1084,7 +1102,11 @@ void Tab::UpdateIconVisibility() {
       available_width -= favicon_width;
     }
 
-    showing_close_button_ = large_enough_for_close_button;
+    showing_close_button_ =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        !controller_->IsLockedForOnTask() &&
+#endif
+        large_enough_for_close_button;
     if (showing_close_button_) {
       available_width -= close_button_width;
     }

@@ -6,6 +6,11 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
+
+// The following are not supported in the experimental desktop-android build.
+// TODO(https://crbug.com/356905053): Enable these APIs on desktop-android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/audio/audio_api.h"
@@ -38,14 +43,15 @@
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
-#include "extensions/browser/api/storage/session_storage_manager.h"
-#include "extensions/browser/api/storage/storage_frontend.h"
+#include "extensions/browser/api/storage/session_storage_manager.h"  // nogncheck
+#include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
 #include "extensions/browser/api/system_info/system_info_api.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/api/usb/usb_device_resource.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/browser/api/web_request/web_request_proxying_websocket.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
@@ -56,12 +62,15 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/feedback_private/log_source_resource.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_manager.h"
-#include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
+#include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"  // nogncheck
 #endif
 
 namespace extensions {
 
 void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
+// The following are not supported in the experimental desktop-android build.
+// TODO(https://crbug.com/356905053): Enable these APIs on desktop-android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   AlarmManager::GetFactoryInstance();
   ApiResourceManager<BluetoothApiAdvertisement>::GetFactoryInstance();
   ApiResourceManager<BluetoothApiSocket>::GetFactoryInstance();
@@ -123,6 +132,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   WebRequestAPI::GetFactoryInstance();
   WebRequestProxyingURLLoaderFactory::EnsureAssociatedFactoryBuilt();
   WebRequestProxyingWebSocket::EnsureAssociatedFactoryBuilt();
+#endif
 }
 
 }  // namespace extensions

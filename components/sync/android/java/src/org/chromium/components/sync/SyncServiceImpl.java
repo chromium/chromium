@@ -153,7 +153,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         assert mSyncServiceAndroidBridge != 0;
         int[] activeDataTypes =
                 SyncServiceImplJni.get().getActiveDataTypes(mSyncServiceAndroidBridge);
-        return modelTypeArrayToSet(activeDataTypes);
+        return dataTypeArrayToSet(activeDataTypes);
     }
 
     @Override
@@ -428,7 +428,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
         return isEngineInitialized()
-                && getActiveDataTypes().contains(ModelType.HISTORY)
+                && getActiveDataTypes().contains(DataType.HISTORY)
                 && (getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE
                         || getPassphraseType() == PassphraseType.TRUSTED_VAULT_PASSPHRASE);
     }
@@ -467,18 +467,18 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @CalledByNative
     private static void onGetTypesWithUnsyncedDataResult(
             Callback<Set<Integer>> callback, int[] types) {
-        callback.onResult(modelTypeArrayToSet(types));
+        callback.onResult(dataTypeArrayToSet(types));
     }
 
     @CalledByNative
     private static void onGetLocalDataDescriptionsResult(
             Callback<HashMap<Integer, LocalDataDescription>> callback,
-            int[] modelTypes,
+            int[] dataTypes,
             LocalDataDescription[] localDataDescriptions) {
         HashMap<Integer, LocalDataDescription> localDataDescription =
                 new HashMap<Integer, LocalDataDescription>();
-        for (int i = 0; i < modelTypes.length; i++) {
-            localDataDescription.put(modelTypes[i], localDataDescriptions[i]);
+        for (int i = 0; i < dataTypes.length; i++) {
+            localDataDescription.put(dataTypes[i], localDataDescriptions[i]);
         }
         callback.onResult(localDataDescription);
     }
@@ -501,12 +501,12 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         SyncServiceImplJni.get().getAllNodes(mSyncServiceAndroidBridge, callback);
     }
 
-    private static Set<Integer> modelTypeArrayToSet(int[] modelTypeArray) {
-        Set<Integer> modelTypeSet = new HashSet<Integer>();
-        for (int i = 0; i < modelTypeArray.length; i++) {
-            modelTypeSet.add(modelTypeArray[i]);
+    private static Set<Integer> dataTypeArrayToSet(int[] dataTypeArray) {
+        Set<Integer> dataTypeSet = new HashSet<Integer>();
+        for (int i = 0; i < dataTypeArray.length; i++) {
+            dataTypeSet.add(dataTypeArray[i]);
         }
-        return modelTypeSet;
+        return dataTypeSet;
     }
 
     private static Set<Integer> userSelectableTypeArrayToSet(int[] userSelectableTypeArray) {

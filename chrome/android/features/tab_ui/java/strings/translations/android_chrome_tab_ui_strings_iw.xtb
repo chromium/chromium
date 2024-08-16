@@ -9,6 +9,7 @@
 <translation id="1197088940767939838">כתום</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
 <translation id="1273910660700874265">‫<ph name="TITLE_OF_GROUP" /> אפשרויות לקבוצת כרטיסיות</translation>
+<translation id="1340839264183302272">יציאה מהקבוצה</translation>
 <translation id="1419023007528516122">הקבוצה תימחק לתמיד מהמכשיר שלך</translation>
 <translation id="1486715732399361704">כל קבוצות הכרטיסיות שלך מופיעות כאן</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{נוצרה לפני דקה (<ph name="NUM_MINS_ONE" />)}one{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}two{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}other{נוצרה לפני <ph name="NUM_MINS_MANY" /> דקות}}</translation>
@@ -37,20 +38,26 @@
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">כניסה לאתר</translation>
 <translation id="2677748264148917807">יציאה</translation>
+<translation id="2753098591787393794">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{נוצרה לפני שעה (<ph name="NUM_HOURS_ONE" />)}one{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}two{נוצרה לפני שעתיים (<ph name="NUM_HOURS_MANY" />)}other{נוצרה לפני <ph name="NUM_HOURS_MANY" /> שעות}}</translation>
 <translation id="2801787514987684416">להציג את פרטי החנות?</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{כרטיסייה אחת (<ph name="ONE_CLOSED" />) נסגרה}one{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}two{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}other{‫<ph name="MANY_CLOSED" /> כרטיסיות נסגרו}}</translation>
+<translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
 <translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
+<translation id="29919168204617356">הכרטיסיות הלא פעילות ייסגרו אוטומטית. תמיד אפשר למצוא אותן בהיסטוריה.</translation>
 <translation id="3008554597174452548">הפסקת המעקב אחר המוצר הזה</translation>
 <translation id="3026391124054406831">אפשר ליצור קבוצות כדי לארגן את הכרטיסיות.</translation>
 <translation id="3051031624272448591">תמיד אפשר לשחזר את הכרטיסיות האלה בהיסטוריה</translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">סמל בצבע <ph name="COLOR_NAME" /> של קבוצת הכרטיסיות</translation>
 <translation id="3194464645767632461">דירוג</translation>
+<translation id="3275186015127230296">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה, <ph name="ANY_CHANGED" /> התעדכנו}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CHANGED" /> התעדכנו}}</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3322827343001922122">פתיחה של תפריט הפעולות בקבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3547352561153509682">הפעולה הזו תמחק את הקבוצה מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>
+<translation id="3613492231657284463">תיבת דו-שיח להסתרה של הכרטיסיות הלא פעילות</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
 <translation id="374923079891132274">תצוגה מקדימה ממוזערת לשיתוף גיליון.</translation>
 <translation id="381219490185664296">לבטל את קבוצת הכרטיסיות?</translation>
@@ -67,6 +74,7 @@
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{הרחבה של קבוצת הכרטיסיות ’<ph name="TITLE_OF_GROUP" />‘ שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="427987768447457592">קבוצת כרטיסיות חדשה</translation>
+<translation id="4320174784941799771">{NUMBER_OF_TABS_CHANGED,plural, =1{כרטיסייה אחת (<ph name="ONE_CHANGED" />) התעדכנה, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
 <translation id="4371591986692297148">לא פעיל</translation>
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="4590027107044272416">כאן אפשר עכשיו לפתוח כרטיסייה חדשה</translation>
@@ -88,6 +96,7 @@
 <translation id="5076161749301278626">להציג ביקורות נוספות על החנות?</translation>
 <translation id="5082793167783849073">כדי להשוות במהירות בין דפים, אפשר ליצור קבוצה. כדי להתחיל, צריך ללחוץ לחיצה ארוכה על קישור.</translation>
 <translation id="5094423602314093681">להסיר את הכרטיסיות ולמחוק את הקבוצה?</translation>
+<translation id="5127339499358128587">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו}}</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5338401825260744482">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="5339733443032484186">הכרטיסייה האחרונה שלך</translation>
@@ -96,6 +105,7 @@
 <translation id="5494920125229734069">בחירת הכול</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{סגירה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />), בצבע <ph name="COLOR_NAME" />.}one{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}two{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}other{סגירה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות, בצבע <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">ניתן להציג את פרטי החנות. האפשרות זמינה בחלק העליון של המסך</translation>
+<translation id="5627941783489838464">אף כרטיסייה לא התעדכנה</translation>
 <translation id="5635915157654811450">{TAB_COUNT,plural, =1{שחזור הכרטיסייה}one{שחזור הכרטיסיות}two{שחזור הכרטיסיות}other{שחזור הכרטיסיות}}</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏קישור אחד (<ph name="TABS_COUNT_ONE" />) מ-Chrome}one{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}two{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}other{‏<ph name="TABS_COUNT_MANY" /> קישורים מ-Chrome}}</translation>
 <translation id="575494663145460764">רוצה לקבל התראות על הנחות?</translation>
@@ -106,6 +116,7 @@
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6051432659151380973">קבוצות הכרטיסיות נשמרות אוטומטית</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
+<translation id="6082313992897617440">הגישה שלך לקבוצת הכרטיסיות <ph name="GROUP_NAME" /> תאבד באופן מיידי</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6228793724645064692">(דירוג החנות)</translation>
 <translation id="6271513594716432922">סגירה של כל הכרטיסיות הלא פעילות</translation>
@@ -119,6 +130,8 @@
 <translation id="6557858706263317126">‫+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
+<translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{כרטיסייה אחת (<ph name="ONE_CHANGED" />) התעדכנה}one{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}two{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}other{‫<ph name="MANY_CHANGED" /> כרטיסיות התעדכנו}}</translation>
+<translation id="6694634756612002311">ניהול אפשרויות השיתוף</translation>
 <translation id="6744956528665271406">שינוי הצבע של הקבוצה</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה}one{שיתוף הכרטיסיות}two{שיתוף הכרטיסיות}other{שיתוף הכרטיסיות}}</translation>
@@ -129,17 +142,20 @@
 <translation id="731648547091221002">הפריט שנבחר: <ph name="COLOR_NAME" /></translation>
 <translation id="7326879924029668159">מדיניות החזרת המוצרים ומידע נוסף</translation>
 <translation id="7352298686197644113">הצגת הפריטים שמופיעים עם מחיר נמוך יותר בכרטיסיות הפתוחות שלך</translation>
+<translation id="7421293530411019405">לצאת מקבוצת הכרטיסיות?</translation>
 <translation id="7452985128687107478">קבוצות של כרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים</translation>
 <translation id="747459581954555080">שחזור הכול</translation>
 <translation id="753732157349120914">מחליף הכרטיסיות</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />) מ-Google}one{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}two{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> ביקורות מ-Google}}</translation>
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7688386659311034820">תיבת דו-שיח של הכרטיסיות הלא פעילות</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{שיתוף הכרטיסייה (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}two{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}other{שיתוף <ph name="TABS_COUNT_MANY" /> הכרטיסיות שנבחרו}}</translation>
 <translation id="7773714564112603605">הסרת הכרטיסייה ומחיקת הקבוצה</translation>
 <translation id="7792771145871471484">עיון בהצעות.</translation>
 <translation id="7825973332242257878">קבוצות של כרטיסיות</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{קיבוץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{קיבוץ <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
+<translation id="7853202427316060426">פעילות</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />)}one{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}two{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}other{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" />, לא נבחר</translation>
@@ -156,6 +172,9 @@
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}one{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8398929769197326728">תיקייה חדשה – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">הגדרות</translation>
+<translation id="8516612320289425423">{NUMBER_OF_TABS_ADDED,plural, =1{כרטיסייה אחת (<ph name="ONE_ADDED" />) נוספה, <ph name="ANY_CLOSED" /> נסגרו}one{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}two{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}other{‫<ph name="MANY_ADDED" /> כרטיסיות נוספו, <ph name="ANY_CLOSED" /> נסגרו}}</translation>
+<translation id="8631711675211020168">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות <ph name="GROUP_NAME" />, והיא תימחק מכל המכשירים</translation>
+<translation id="8633025649649592204">פעילות אחרונה</translation>
 <translation id="870736955561925754">לסגור את הכרטיסייה ולמחוק את הקבוצה?</translation>
 <translation id="8714939927607906138">מחיר נמוך יותר</translation>
 <translation id="8730621377337864115">בוצע</translation>
@@ -167,6 +186,7 @@
 <translation id="8926389886865778422">אין לשאול שוב</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{הרחבה של קבוצת הכרטיסיות שמכילה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{הרחבה של קבוצת הכרטיסיות שמכילה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
+<translation id="9111228330448174435">הצגת תיבת דו-שיח בזמן יצירה של קבוצת כרטיסיות חדשה</translation>
 <translation id="9150694013019234766">מעבר בין כרטיסיות בקבוצת הכרטיסיות שבחלק התחתון של המסך</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
 <translation id="9216898458513705996">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" /></translation>

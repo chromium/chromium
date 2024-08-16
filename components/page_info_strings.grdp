@@ -211,8 +211,8 @@
       <message name="IDS_PAGE_INFO_CERTIFICATE_IS_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with a valid certificate.">
         Certificate is valid
       </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_IS_NOT_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
-        Certificate is not valid
+      <message name="IDS_PAGE_INFO_CERTIFICATE_DETAILS" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with an invalid certificate.">
+        Certificate details
       </message>
       <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_LINK_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_CERTIFICATE_VALID_LINK.">
         Show certificate (issued by <ph name="ISSUER">$1<ex>Let's Encrypt X3</ex></ph>)
@@ -491,6 +491,9 @@
     </message>
     <message name="IDS_PAGE_INFO_MICROPHONE_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the microphone permission with a link to system settings.">
         To use your microphone, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
+    </message>
+    <message name="IDS_PAGE_INFO_LOCATION_SYSTEM_SETTINGS_DESCRIPTION" desc="The description for the location permission with a link to system settings.">
+        To use your location, give Chrome access in <ph name="LINK">$1<ex>system settings</ex></ph>.
     </message>
     <message name="IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK" desc="This is the text of the link pointing to settings of a system. This appears under a permission in the Page Info bubble if the permission is blocked on the system level.">
         system settings
@@ -784,13 +787,13 @@
   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage on-device site data' button. The following screen shows on-device site data used by the site the user is viewing.">
     Review a list of on-device site data in a new window
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TOOLTIP" desc="The tooltip of related website sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
     See related sites in a new tab
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_TITLE" desc="The title of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     See related sites
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+  <message name="IDS_PAGE_INFO_RWS_BUTTON_SUBTITLE" desc="The subtitle of related website sets button in cookies subpage with placeholder for name of the owner of this set.">
     This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>, that can see your activity
   </message>
 

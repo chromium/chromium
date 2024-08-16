@@ -45,7 +45,7 @@ TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {
 
   ASSERT_TRUE(entity);
   EXPECT_EQ(kNonUniqueName, entity->GetName());
-  EXPECT_EQ(syncer::PREFERENCES, entity->GetModelType());
+  EXPECT_EQ(syncer::PREFERENCES, entity->GetDataType());
   EXPECT_EQ(
       LoopbackServerEntity::CreateId(
           syncer::PREFERENCES,

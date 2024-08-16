@@ -15,6 +15,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/overloaded.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "components/cbor/values.h"
@@ -22,6 +23,7 @@
 #include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -207,24 +209,11 @@ std::vector<uint8_t> SignMessage(
   return signature;
 }
 
-}  // namespace
-
-WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
-    IntegrityBlockErrorsForTesting bundle_errors,
-    const std::vector<IntegritySignatureErrorsForTesting>& signatures_errors)
-    : integrity_block_errors(std::move(bundle_errors)),
-      signatures_errors(signatures_errors) {}
-
-WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
-    const ErrorsForTesting& other) = default;
-WebBundleSigner::ErrorsForTesting& WebBundleSigner::ErrorsForTesting::operator=(
-    const ErrorsForTesting& other) = default;
-WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
-
-cbor::Value WebBundleSigner::CreateIntegrityBlock(
+cbor::Value CreateIntegrityBlock(
     const cbor::Value::ArrayValue& signature_stack,
-    const std::optional<IntegrityBlockAttributes>& ib_attributes,
-    IntegrityBlockErrorsForTesting errors_for_testing) {
+    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
+        ib_attributes,
+    WebBundleSigner::IntegrityBlockErrorsForTesting errors_for_testing) {
   cbor::Value::ArrayValue integrity_block;
   // magic bytes
   integrity_block.emplace_back(kIntegrityBlockMagicBytes);
@@ -232,6 +221,7 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
   if (errors_for_testing.Has(IntegrityBlockErrorForTesting::kInvalidVersion)) {
     integrity_block.emplace_back(
         cbor::Value::BinaryValue({'1', 'p', '\0', '\0'}));  // Invalid.
+    integrity_block.emplace_back(cbor::Value::MapValue{});
   } else if (ib_attributes) {
     // Presence of `ib_attributes` indicates integrity block v2.
     integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
@@ -239,9 +229,17 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
     attributes.emplace(web_package::kWebBundleIdAttributeName,
                        ib_attributes->web_bundle_id);
     integrity_block.emplace_back(std::move(attributes));
+  } else if (errors_for_testing.Has(
+                 IntegrityBlockErrorForTesting::kNoSignedWebBundleId)) {
+    integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
+    integrity_block.emplace_back(cbor::Value::MapValue{});
+  } else if (errors_for_testing.Has(
+                 IntegrityBlockErrorForTesting::kNoAttributes)) {
+    integrity_block.emplace_back(kIntegrityBlockV2VersionBytes);
   } else {
-    // Absence of `ib_attributes` indicates integrity block v1.
-    integrity_block.emplace_back(kIntegrityBlockV1VersionBytes);
+    NOTREACHED()
+        << "Absence of `ib_attributes` indicates integrity block v1, which "
+           "shouldn't be used in tests.";
   }
   // signature stack
   integrity_block.emplace_back(signature_stack);
@@ -254,11 +252,12 @@ cbor::Value WebBundleSigner::CreateIntegrityBlock(
   return cbor::Value(integrity_block);
 }
 
-cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
+cbor::Value CreateIntegrityBlockForBundle(
     base::span<const uint8_t> unsigned_bundle,
-    const std::vector<KeyPair>& key_pairs,
-    const std::optional<IntegrityBlockAttributes>& ib_attributes,
-    ErrorsForTesting errors_for_testing) {
+    const std::vector<WebBundleSigner::KeyPair>& key_pairs,
+    const std::optional<WebBundleSigner::IntegrityBlockAttributes>&
+        ib_attributes,
+    WebBundleSigner::ErrorsForTesting errors_for_testing) {
   CHECK(errors_for_testing.signatures_errors.empty() ||
         errors_for_testing.signatures_errors.size() == key_pairs.size());
   auto use_signatures_errors = !errors_for_testing.signatures_errors.empty();
@@ -306,11 +305,61 @@ cbor::Value WebBundleSigner::CreateIntegrityBlockForBundle(
                               errors_for_testing.integrity_block_errors);
 }
 
+// If `web_bundle_id` is not provided explicitly, infer it from the first
+// public key.
+void FillIdAttributesIfPossibleAndNecessary(
+    const std::vector<WebBundleSigner::KeyPair>& key_pairs,
+    std::optional<WebBundleSigner::IntegrityBlockAttributes>& ib_attributes,
+    const WebBundleSigner::IntegrityBlockErrorsForTesting& errors_for_testing) {
+  if (ib_attributes || key_pairs.empty() ||
+      errors_for_testing.Has(
+          IntegrityBlockErrorForTesting::kNoSignedWebBundleId) ||
+      errors_for_testing.Has(IntegrityBlockErrorForTesting::kNoAttributes)) {
+    return;
+  }
+  ib_attributes = {.web_bundle_id = absl::visit(
+                       [](const auto& key_pair) {
+                         return SignedWebBundleId::CreateForPublicKey(
+                                    key_pair.public_key)
+                             .id();
+                       },
+                       key_pairs[0])};
+}
+}  // namespace
+
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    IntegrityBlockErrorsForTesting bundle_errors,
+    const std::vector<IntegritySignatureErrorsForTesting>& signatures_errors)
+    : integrity_block_errors(std::move(bundle_errors)),
+      signatures_errors(signatures_errors) {}
+
+WebBundleSigner::ErrorsForTesting::ErrorsForTesting(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting& WebBundleSigner::ErrorsForTesting::operator=(
+    const ErrorsForTesting& other) = default;
+WebBundleSigner::ErrorsForTesting::~ErrorsForTesting() = default;
+
+std::vector<uint8_t> WebBundleSigner::SignBundle(
+    base::span<const uint8_t> unsigned_bundle,
+    const KeyPair& key_pair,
+    ErrorsForTesting errors_for_testing) {
+  return SignBundle(std::move(unsigned_bundle), {key_pair}, std::nullopt,
+                    std::move(errors_for_testing));
+}
+
 std::vector<uint8_t> WebBundleSigner::SignBundle(
     base::span<const uint8_t> unsigned_bundle,
     const std::vector<KeyPair>& key_pairs,
-    const std::optional<IntegrityBlockAttributes>& ib_attributes,
+    std::optional<IntegrityBlockAttributes> ib_attributes,
     ErrorsForTesting errors_for_testing) {
+  CHECK(!key_pairs.empty() !=
+        errors_for_testing.integrity_block_errors.Has(
+            IntegrityBlockErrorForTesting::kEmptySignatureList))
+      << "At least one signing key must be specified unless overriden by "
+         "IntegrityBlockErrorForTesting::kEmptySignatureList.";
+
+  FillIdAttributesIfPossibleAndNecessary(
+      key_pairs, ib_attributes, errors_for_testing.integrity_block_errors);
   std::optional<std::vector<uint8_t>> integrity_block =
       cbor::Writer::Write(CreateIntegrityBlockForBundle(
           unsigned_bundle, key_pairs, ib_attributes, errors_for_testing));

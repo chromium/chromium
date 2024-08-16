@@ -20,6 +20,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cbor/reader.h"
@@ -783,6 +784,9 @@ class LateLinkingDevice : public authenticator::Transaction {
             websocket_client_->Write(response);
             break;
           }
+
+          case MessageType::kJSON:
+            NOTREACHED();
 
           case MessageType::kShutdown:
             state_ = State::kShutdownReceived;

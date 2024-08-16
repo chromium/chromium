@@ -20,3 +20,64 @@ mojom("mojom") {
     "//ui/events/ash/mojom",
   ]
 }
+
+static_library("input_device_settings") {
+  sources = [
+    "input_device_settings_provider.cc",
+    "input_device_settings_provider.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/public/mojom:input_device_settings",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chromeos/dbus/power",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp:accelerator_actions",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//ui/base",
+    "//ui/events/ash",
+    "//ui/events/ash/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "input_device_settings_provider_unittest.cc" ]
+
+  deps = [
+    ":input_device_settings",
+    ":mojom",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp:test_support",
+    "//ash/public/mojom:input_device_settings",
+    "//ash/public/mojom:input_device_settings_shared_cpp_sources",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//mojo/public/cpp/bindings:bindings_base",
+    "//testing/gtest",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

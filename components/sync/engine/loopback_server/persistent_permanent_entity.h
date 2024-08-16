@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 
 namespace sync_pb {
@@ -24,7 +24,7 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
  public:
   PersistentPermanentEntity(const std::string& id,
                             int64_t version,
-                            const syncer::ModelType& model_type,
+                            const syncer::DataType& data_type,
                             const std::string& name,
                             const std::string& parent_id,
                             const std::string& server_defined_unique_tag,
@@ -35,7 +35,7 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
   // Factory function for PersistentPermanentEntity. |server_tag| should be a
   // globally unique identifier.
   static std::unique_ptr<LoopbackServerEntity> CreateNew(
-      const syncer::ModelType& model_type,
+      const syncer::DataType& data_type,
       const std::string& server_tag,
       const std::string& name,
       const std::string& parent_server_tag);
@@ -44,7 +44,7 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
   // that the entity's parent is the root entity (no PersistentPermanentEntity
   // exists for root).
   static std::unique_ptr<LoopbackServerEntity> CreateTopLevel(
-      const syncer::ModelType& model_type);
+      const syncer::DataType& data_type);
 
   // Factory function for creating an updated version of a
   // PersistentPermanentEntity. This function should only be called for the

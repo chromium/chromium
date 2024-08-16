@@ -33,7 +33,7 @@ const base::Feature* kFeatureFlags[] = {
 constinit base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
-  if (UNLIKELY(!g_feature_flags_test_override.empty())) {
+  if (!g_feature_flags_test_override.empty()) [[unlikely]] {
     auto iter = base::ranges::find(g_feature_flags_test_override, feature_flag,
                                    &base::Feature::name);
     return iter == g_feature_flags_test_override.end() ? nullptr : *iter;

@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/time.mojom";
 enum ContentFrameIntervalType {
   kVideo,
   kAnimatingImage,
+  kScrollBarFadeOutAnimation,
 };
 
 struct ContentFrameIntervalInfo {

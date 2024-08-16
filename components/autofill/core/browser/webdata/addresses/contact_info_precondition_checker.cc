@@ -13,7 +13,7 @@ namespace autofill {
 
 namespace {
 
-using PreconditionState = syncer::ModelTypeController::PreconditionState;
+using PreconditionState = syncer::DataTypeController::PreconditionState;
 
 // Determines if the `finder`'s account is eligible to use the CONTACT_INFO
 // type based on its managed state. Dasher users are not supported.

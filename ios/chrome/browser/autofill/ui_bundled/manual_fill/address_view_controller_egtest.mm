@@ -104,8 +104,7 @@ id<GREYMatcher> ChipButton(std::u16string title) {
 // Matcher for the overflow menu button shown in the address cells.
 id<GREYMatcher> OverflowMenuButton() {
   return grey_allOf(
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL),
+      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
       grey_interactable(), nullptr);
 }
 
@@ -118,8 +117,8 @@ id<GREYMatcher> OverflowMenuEditAction() {
 
 // Matcher for the "Autofill Form" button shown in the address cells.
 id<GREYMatcher> AutofillFormButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
-                        IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
+  return grey_allOf(grey_accessibilityID(
+                        manual_fill::kExpandedManualFillAutofillFormButtonID),
                     grey_interactable(), nullptr);
 }
 

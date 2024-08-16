@@ -9,8 +9,10 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url_id.h"
 #include "url/gurl.h"
 
@@ -23,6 +25,8 @@ struct TemplateURLData {
     kDefaultSearchProvider = 1,
     kSiteSearch = 2,
   };
+
+  using RegulatoryExtension = TemplateURLPrepopulateData::RegulatoryExtension;
 
   TemplateURLData();
   TemplateURLData(const TemplateURLData& other);
@@ -58,7 +62,8 @@ struct TemplateURLData {
                   const base::Value::List& alternate_urls_list,
                   bool preconnect_to_search_url,
                   bool prefetch_likely_navigations,
-                  int prepopulate_id);
+                  int prepopulate_id,
+                  const base::span<const RegulatoryExtension>& extensions);
 
   ~TemplateURLData();
 
@@ -203,6 +208,10 @@ struct TemplateURLData {
   // A list of URL patterns that can be used, in addition to |url_|, to extract
   // search terms from a URL.
   std::vector<std::string> alternate_urls;
+
+  // A list of regulatory extensions, keyed by extension variant.
+  base::flat_map<std::string_view, const RegulatoryExtension*>
+      regulatory_extensions;
 
   // Whether a connection to |url_| should regularly be established when this is
   // set as the "default search engine".

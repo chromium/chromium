@@ -9,10 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "chrome/browser/chromeos/kcer/kcer_factory.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -232,7 +232,7 @@ void CertDatabaseAsh::NotifyCertsChangedInAsh(
 
 void CertDatabaseAsh::OnPkcs12CertDualWritten() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  kcer::KcerFactory::RecordPkcs12CertDualWritten();
+  kcer::KcerFactoryAsh::RecordPkcs12CertDualWritten();
 }
 
 }  // namespace crosapi

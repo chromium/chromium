@@ -10,12 +10,12 @@
 
 namespace syncer {
 
-void RecordModelTypeEntityConflictResolution(
-    ModelType model_type,
+void RecordDataTypeEntityConflictResolution(
+    DataType data_type,
     ConflictResolution resolution_type) {
   base::UmaHistogramEnumeration(
-      std::string("Sync.ModelTypeEntityConflictResolution.") +
-          ModelTypeToHistogramSuffix(model_type),
+      std::string("Sync.DataTypeEntityConflictResolution.") +
+          DataTypeToHistogramSuffix(data_type),
       resolution_type);
 }
 

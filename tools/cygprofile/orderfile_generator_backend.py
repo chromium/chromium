@@ -3,15 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" A utility to generate an up-to-date orderfile.
+""" A utility to generate an orderfile.
 
-The orderfile is used by the linker to order text sections such that the
-sections are placed consecutively in the order specified. This allows us
-to page in less code during start-up.
+The orderfile is used by the linker to order symbols such that they
+are placed consecutively. See //docs/orderfile.md.
 
 Example usage:
   tools/cygprofile/orderfile_generator_backend.py --use-remoteexec \
-    --target-arch=arm
+    --target-arch=arm64
 """
 
 
@@ -33,8 +32,6 @@ import time
 from typing import Dict, List
 
 import cluster
-import cyglog_to_orderfile
-import patch_orderfile
 import process_profiles
 import profile_android_startup
 
@@ -60,6 +57,16 @@ _ARCH_GN_ARGS = {
 }
 
 _RESULTS_KEY_SPEEDOMETER = 'Speedometer2.0'
+
+
+def _ReadNonEmptyStrippedFromFile(file_name):
+  stripped_lines = []
+  with open(file_name, 'r') as file:
+    for line in file:
+      stripped_line = line.strip()
+      if stripped_line:
+        stripped_lines.append(stripped_line)
+  return stripped_lines
 
 
 class CommandError(Exception):
@@ -108,24 +115,20 @@ def _GetFileExtension(file_name):
 class StepRecorder:
   """Records steps and timings."""
 
-  def __init__(self, buildbot):
+  def __init__(self):
     self.timings = []
     self._previous_step = ('', 0.0)
-    self._buildbot = buildbot
     self._error_recorded = False
 
   def BeginStep(self, name):
-    """Marks a beginning of the next step in the script.
-
-    On buildbot, this prints a specially formatted name that will show up
-    in the waterfall. Otherwise, just prints the step name.
+    """Marks a beginning of the next step in the generator.
 
     Args:
       name: The name of the step.
     """
     self.EndStep()
     self._previous_step = (name, time.time())
-    print('Running step: ', name)
+    logging.info('Running step: %s', name)
 
   def EndStep(self):
     """Records successful completion of the current step.
@@ -134,7 +137,7 @@ class StepRecorder:
     """
     if self._previous_step[0]:
       elapsed = time.time() - self._previous_step[1]
-      print('Step %s took %f seconds' % (self._previous_step[0], elapsed))
+      logging.info('Step %s took %f seconds', self._previous_step[0], elapsed)
       self.timings.append((self._previous_step[0], elapsed))
 
     self._previous_step = ('', 0.0)
@@ -142,15 +145,14 @@ class StepRecorder:
   def FailStep(self, message=None):
     """Marks that a particular step has failed.
 
-    On buildbot, this will mark the current step as failed on the waterfall.
-    Otherwise we will just print an optional failure message.
+    Also prints an optional failure message.
 
     Args:
       message: An optional explanation as to why the step failed.
     """
-    print('STEP FAILED!!')
+    logging.error('STEP FAILED!!')
     if message:
-      print(message)
+      logging.error(message)
     self._error_recorded = True
     self.EndStep()
 
@@ -178,7 +180,7 @@ class StepRecorder:
     Raises:
       CommandError: An error executing the specified command.
     """
-    print('Executing %s in %s' % (' '.join(cmd), cwd))
+    logging.info('Executing %s in %s', ' '.join(cmd), cwd)
     process = subprocess.run(
         cmd,
         capture_output=capture_output,
@@ -193,7 +195,7 @@ class StepRecorder:
         self.FailStep()
       raise CommandError('Exception executing command %s' % ' '.join(cmd))
     if capture_output:
-      print(f'Output:\n{process.stdout}')
+      logging.error('Output:\n%s', process.stdout)
     return process
 
 
@@ -462,8 +464,8 @@ class OrderfileUpdater:
           'gclient', 'setdep', '-r', f'orderfile_binaries@{"?".join(values)}'
       ]
       self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
-    print('Download: https://sandbox.google.com/storage/%s/%s' %
-          (bucket, _GenerateHash(filename)))
+    logging.info('Download: https://sandbox.google.com/storage/%s/%s', bucket,
+                 _GenerateHash(filename))
 
   def _GitStash(self):
     """Git stash the current clank tree.
@@ -597,11 +599,8 @@ class OrderfileGenerator:
       assert not options.profile_save_dir, (
           '--profile-save-dir cannot be used with --skip-profile')
 
-    # Outlined function handling enabled by default for all architectures.
-    self._order_outlined_functions = not options.noorder_outlined_functions
-
     self._output_data = {}
-    self._step_recorder = StepRecorder(options.buildbot)
+    self._step_recorder = StepRecorder()
     self._compiler = None
     if orderfile_updater_class is None:
       orderfile_updater_class = OrderfileUpdater
@@ -653,7 +652,7 @@ class OrderfileGenerator:
           self._compiler.webview_installer_path)
       files = self._profiler.CollectWebViewStartupProfile(
           self._compiler.webview_apk_path)
-    elif self._options.profile_speedometer:
+    elif self._options.arch == 'arm64':
       files = self._profiler.CollectSpeedometerProfile(
           self._compiler.chrome_apk_path)
     else:
@@ -703,13 +702,21 @@ class OrderfileGenerator:
       shutil.copytree(self._host_profile_root, self._options.profile_save_dir)
       logging.info('Saved profiles')
 
-  def _PatchOrderfile(self):
-    """Patches the orderfile using clean version of libchrome.so."""
-    self._step_recorder.BeginStep('Patch Orderfile')
+  def _AddDummyFunctions(self):
+    # TODO(crbug.com/340534475): Stop writing the `unpatched_orderfile` and
+    # uploading it to the cloud storage.
+    self._step_recorder.BeginStep('Add dummy functions')
     assert self._compiler is not None
-    patch_orderfile.GeneratePatchedOrderfile(
-        self._GetUnpatchedOrderfileFilename(), self._compiler.lib_chrome_so,
-        self._GetPathToOrderfile(), self._order_outlined_functions)
+    symbols = _ReadNonEmptyStrippedFromFile(
+        self._GetUnpatchedOrderfileFilename())
+    with open(self._GetPathToOrderfile(), 'w') as f:
+      # Make sure the anchor functions are located in the right place, here and
+      # after everything else.
+      # See the comment in //base/android/library_loader/anchor_functions.cc.
+      f.write('dummy_function_start_of_ordered_text\n')
+      for sym in symbols:
+        f.write(sym + '\n')
+      f.write('dummy_function_end_of_ordered_text\n')
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
@@ -734,8 +741,8 @@ class OrderfileGenerator:
     if not os.path.exists(self._DIRECTORY_FOR_DEBUG_FILES):
       os.makedirs(self._DIRECTORY_FOR_DEBUG_FILES)
     shutil.copy(file_name, self._DIRECTORY_FOR_DEBUG_FILES)
-    print('File: %s, saved in: %s, sha1sum: %s' %
-          (file_name, self._DIRECTORY_FOR_DEBUG_FILES, file_sha1))
+    logging.info('File: %s, saved in: %s, sha1sum: %s', file_name,
+                 self._DIRECTORY_FOR_DEBUG_FILES, file_sha1)
 
   def _SaveForDebugging(self, filename: str):
     """Uploads the file to cloud storage or saves to a temporary location."""
@@ -743,9 +750,9 @@ class OrderfileGenerator:
       file_sha1 = _GenerateHash(filename)
       self._SaveFileLocally(filename, file_sha1)
     else:
-      print('Uploading file for debugging: ' + filename)
-      self._orderfile_updater.UploadToCloudStorage(
-          filename, use_debug_location=True)
+      logging.info('Uploading file for debugging: %s', filename)
+      self._orderfile_updater.UploadToCloudStorage(filename,
+                                                   use_debug_location=True)
 
   def _SaveForDebuggingWithOverwrite(self, file_name):
     """Uploads and overwrites the file in cloud storage or copies locally.
@@ -759,14 +766,14 @@ class OrderfileGenerator:
     if not self._options.buildbot:
       self._SaveFileLocally(file_name, file_sha1)
     else:
-      print('Uploading file for debugging: %s, sha1sum: %s' % (file_name,
-                                                               file_sha1))
-      upload_location = '%s/%s' % (
-          self._CLOUD_STORAGE_BUCKET_FOR_DEBUG, os.path.basename(file_name))
-      self._step_recorder.RunCommand([
-          'gsutil.py', 'cp', file_name, 'gs://' + upload_location])
-      print('Uploaded to: https://sandbox.google.com/storage/' +
-            upload_location)
+      logging.info('Uploading file for debugging: %s, sha1sum: %s', file_name,
+                   file_sha1)
+      upload_location = '%s/%s' % (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG,
+                                   os.path.basename(file_name))
+      self._step_recorder.RunCommand(
+          ['gsutil.py', 'cp', file_name, 'gs://' + upload_location])
+      logging.info('Uploaded to: https://sandbox.google.com/storage/%s',
+                   upload_location)
 
   def _MaybeArchiveOrderfile(self, filename, use_new_cloud: bool = False):
     """In buildbot configuration, uploads the generated orderfile to
@@ -999,9 +1006,6 @@ class OrderfileGenerator:
 
   def Generate(self):
     """Generates and maybe upload an order."""
-    assert (bool(self._options.profile) ^
-            bool(self._options.manual_symbol_offsets))
-
     if self._options.clobber:
       assert self._options.buildbot, '--clobber is intended for the buildbot.'
       # This is useful on the bot when we need to start from scratch to rebuild.
@@ -1028,46 +1032,21 @@ class OrderfileGenerator:
           self._compiler.CompileChromeApk(instrumented=True)
       self._GenerateAndProcessProfile()
       self._MaybeArchiveOrderfile(self._GetUnpatchedOrderfileFilename())
-    elif self._options.manual_symbol_offsets:
-      assert self._options.manual_libname
-      assert self._options.manual_objdir
-      with open(self._options.manual_symbol_offsets) as f:
-        symbol_offsets = [int(x) for x in f]
-      processor = process_profiles.SymbolOffsetProcessor(
-          self._options.manual_libname)
-      generator = cyglog_to_orderfile.OffsetOrderfileGenerator(
-          processor, cyglog_to_orderfile.ObjectFileProcessor(
-              self._options.manual_objdir))
-      ordered_sections = generator.GetOrderedSections(symbol_offsets)
-      if not ordered_sections:  # Either None or empty is a problem.
-        raise Exception('Failed to get ordered sections')
-      with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
-        orderfile.write('\n'.join(ordered_sections))
 
-    if self._options.patch:
-      if self._options.profile:
-        self._RemoveBlanks(self._GetUnpatchedOrderfileFilename(),
-                           self._GetPathToOrderfile())
-      self._compiler = ClankCompiler(self._uninstrumented_out_dir,
-                                     self._step_recorder, self._options,
-                                     self._GetPathToOrderfile(),
-                                     self._native_library_build_variant)
-
-      self._compiler.CompileLibchrome(instrumented=False)
-      self._PatchOrderfile()
-      # Because identical code folding is a bit different with and without
-      # the orderfile build, we need to re-patch the orderfile with code
-      # folding as close to the final version as possible.
-      self._compiler.CompileLibchrome(instrumented=False,
-                                      force_relink=True)
-      self._PatchOrderfile()
-      self._compiler.CompileLibchrome(instrumented=False,
-                                      force_relink=True)
-      if self._VerifySymbolOrder():
-        self._MaybeArchiveOrderfile(self._GetPathToOrderfile(),
-                                    use_new_cloud=True)
-      else:
-        self._SaveForDebugging(self._GetPathToOrderfile())
+    if self._options.profile:
+      self._RemoveBlanks(self._GetUnpatchedOrderfileFilename(),
+                         self._GetPathToOrderfile())
+    self._compiler = ClankCompiler(self._uninstrumented_out_dir,
+                                   self._step_recorder, self._options,
+                                   self._GetPathToOrderfile(),
+                                   self._native_library_build_variant)
+    self._AddDummyFunctions()
+    self._compiler.CompileLibchrome(instrumented=False, force_relink=False)
+    if self._VerifySymbolOrder():
+      self._MaybeArchiveOrderfile(self._GetPathToOrderfile(),
+                                  use_new_cloud=True)
+    else:
+      self._SaveForDebugging(self._GetPathToOrderfile())
 
     if self._options.benchmark:
       self._SaveBenchmarkResultsToOutput(
@@ -1128,12 +1107,12 @@ def CreateArgumentParser():
   parser.add_argument('--output-json', action='store', dest='json_file',
                       help='Location to save stats in json format')
   parser.add_argument(
-      '--skip-profile', action='store_false', dest='profile', default=True,
+      '--skip-profile',
+      action='store_false',
+      dest='profile',
+      default=True,
       help='Don\'t generate a profile on the device. Only patch from the '
       'existing profile.')
-  parser.add_argument(
-      '--skip-patch', action='store_false', dest='patch', default=True,
-      help='Only generate the raw (unpatched) orderfile, don\'t patch it.')
   parser.add_argument('--use-remoteexec',
                       action='store_true',
                       help='Enable remoteexec. see //build/toolchain/rbe.gni.',
@@ -1165,24 +1144,6 @@ def CreateArgumentParser():
                       default=False,
                       help='Use the webview startup benchmark profiles to '
                       'generate the orderfile.')
-  parser.add_argument('--profile-speedometer',
-                      action='store_true',
-                      default=False,
-                      help='Use speedometer 3 to generate the orderfile.')
-  parser.add_argument('--manual-symbol-offsets',
-                      default=None,
-                      type=str,
-                      help=('File of list of ordered symbol offsets generated '
-                            'by manual profiling. Must set other --manual* '
-                            'flags if this is used, and must --skip-profile.'))
-  parser.add_argument('--manual-libname', default=None, type=str,
-                      help=('Library filename corresponding to '
-                            '--manual-symbol-offsets.'))
-  parser.add_argument('--manual-objdir', default=None, type=str,
-                      help=('Root of object file directory corresponding to '
-                            '--manual-symbol-offsets.'))
-  parser.add_argument('--noorder-outlined-functions', action='store_true',
-                      help='Disable outlined functions in the orderfile.')
   parser.add_argument('--pregenerated-profiles', default=None, type=str,
                       help=('Pregenerated profiles to use instead of running '
                             'profile step. Cannot be used with '
@@ -1191,12 +1152,14 @@ def CreateArgumentParser():
                       help=('Directory to save any profiles created. These can '
                             'be used with --pregenerated-profiles.  Cannot be '
                             'used with --skip-profiles.'))
-  parser.add_argument('--upload-ready-orderfiles', action='store_true',
+  parser.add_argument('--upload-ready-orderfiles',
+                      action='store_true',
                       help=('Skip orderfile generation and manually upload '
-                            'orderfiles (both patched and unpatched) from '
-                            'their normal location in the tree to the cloud '
-                            'storage. DANGEROUS! USE WITH CARE!'))
-  parser.add_argument('--streamline-for-debugging', action='store_true',
+                            'the orderfile from its normal location in '
+                            'the tree to the cloud storage. '
+                            'DANGEROUS! USE WITH CARE!'))
+  parser.add_argument('--streamline-for-debugging',
+                      action='store_true',
                       help=('Streamline where possible the run for faster '
                             'iteration while debugging. The orderfile '
                             'generated will be valid and nontrivial, but '
@@ -1265,7 +1228,7 @@ def CreateOrderfile(options, orderfile_updater_class=None):
     if options.json_file:
       with open(options.json_file, 'w') as f:
         f.write(json_output)
-    print(json_output)
+    logging.info('\n%s\n', json_output)
   return False
 
 

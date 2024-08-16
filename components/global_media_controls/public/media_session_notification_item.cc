@@ -15,7 +15,7 @@
 #include "components/media_message_center/media_notification_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
-#include "media/remoting/remoting_constants.h"
+#include "media/base/remoting_constants.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"

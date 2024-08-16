@@ -169,7 +169,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
       permissions::ElementAnchoredBubbleAction action,
       permissions::ElementAnchoredBubbleVariant variant,
       int screen_counter) {
-    return Steps(Do([=] {
+    return Steps(Do([=, this] {
       auto entries = ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
       CHECK_EQ(entries.size(), 1U);
 
@@ -285,7 +285,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         Do([this]() {
           browser()->tab_strip_model()->GetActiveWebContents()->Close();
         }),
-        CheckContentSettingsValue(content_settings_types, CONTENT_SETTING_ASK));
+        // This has to be immediate, because otherwise closing the browser will
+        // detach the profile.
+        WithoutDelay(CheckContentSettingsValue(content_settings_types,
+                                               CONTENT_SETTING_ASK)));
   }
 
   void TestPromptElementText(

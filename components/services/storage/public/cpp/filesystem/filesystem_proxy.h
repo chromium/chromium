@@ -134,9 +134,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
       const base::FilePath& path,
       bool* same_process_failure = nullptr);
 
-  // Sets the length of the given file to |length| bytes.
-  bool SetOpenedFileLength(base::File* file, uint64_t length);
-
  private:
   // For restricted FilesystemProxy instances, this returns a FilePath
   // equivalent to |path| which is strictly relative to |root_|. It is an error

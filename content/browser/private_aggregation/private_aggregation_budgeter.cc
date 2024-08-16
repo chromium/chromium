@@ -180,6 +180,26 @@ int64_t CalculateEarliestWindowStartInScope(
          budget_scope_duration.InMicroseconds();
 }
 
+PrivateAggregationBudgeter::RequestResult TestBudgetUsageAgainstLimits(
+    base::CheckedNumeric<int> total_budget_used_smaller_scope,
+    base::CheckedNumeric<int> total_budget_used_larger_scope) {
+  if (!total_budget_used_smaller_scope.IsValid() ||
+      !total_budget_used_larger_scope.IsValid()) {
+    return PrivateAggregationBudgeter::RequestResult::kBadValuesOnDisk;
+  }
+  if (total_budget_used_smaller_scope.ValueOrDie() >
+      PrivateAggregationBudgeter::kSmallerScopeValues.max_budget_per_scope) {
+    return PrivateAggregationBudgeter::RequestResult::
+        kInsufficientSmallerScopeBudget;
+  }
+  if (total_budget_used_larger_scope.ValueOrDie() >
+      PrivateAggregationBudgeter::kLargerScopeValues.max_budget_per_scope) {
+    return PrivateAggregationBudgeter::RequestResult::
+        kInsufficientLargerScopeBudget;
+  }
+  return PrivateAggregationBudgeter::RequestResult::kApproved;
+}
+
 }  // namespace
 
 PrivateAggregationBudgeter::PrivateAggregationBudgeter(
@@ -231,6 +251,15 @@ void PrivateAggregationBudgeter::ConsumeBudget(
     int budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
+  ConsumeBudget(budget, budget_key, /*minimum_value_for_metrics=*/0,
+                std::move(on_done));
+}
+
+void PrivateAggregationBudgeter::ConsumeBudget(
+    int budget,
+    const PrivateAggregationBudgetKey& budget_key,
+    int minimum_value_for_metrics,
+    base::OnceCallback<void(RequestResult)> on_done) {
   EnsureStorageInitializationBegun();
 
   if (storage_status_ == StorageStatus::kInitializing) {
@@ -242,9 +271,10 @@ void PrivateAggregationBudgeter::ConsumeBudget(
     // `base::Unretained` is safe as `pending_calls_` is owned by `this`.
     pending_calls_.push_back(base::BindOnce(
         &PrivateAggregationBudgeter::ConsumeBudgetImpl, base::Unretained(this),
-        budget, budget_key, std::move(on_done)));
+        budget, budget_key, minimum_value_for_metrics, std::move(on_done)));
   } else {
-    ConsumeBudgetImpl(budget, budget_key, std::move(on_done));
+    ConsumeBudgetImpl(budget, budget_key, minimum_value_for_metrics,
+                      std::move(on_done));
   }
 }
 
@@ -380,6 +410,7 @@ void PrivateAggregationBudgeter::DeleteByDataKey(
 void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,
     const PrivateAggregationBudgetKey& budget_key,
+    int minimum_value_for_metrics,
     base::OnceCallback<void(RequestResult)> on_done) {
   CHECK_GT(additional_budget, 0);
 
@@ -450,27 +481,9 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     total_budget_used_larger_scope += elem.budget_used();
   }
 
-  total_budget_used_smaller_scope += additional_budget;
-  total_budget_used_larger_scope += additional_budget;
-
-  RequestResult budget_increase_request_result;
-  if (!total_budget_used_smaller_scope.IsValid() ||
-      !total_budget_used_larger_scope.IsValid()) {
-    budget_increase_request_result = RequestResult::kBadValuesOnDisk;
-
-  } else if (total_budget_used_smaller_scope.ValueOrDie() >
-             kSmallerScopeValues.max_budget_per_scope) {
-    budget_increase_request_result =
-        RequestResult::kInsufficientSmallerScopeBudget;
-
-  } else if (total_budget_used_larger_scope.ValueOrDie() >
-             kLargerScopeValues.max_budget_per_scope) {
-    budget_increase_request_result =
-        RequestResult::kInsufficientLargerScopeBudget;
-
-  } else {
-    budget_increase_request_result = RequestResult::kApproved;
-  }
+  RequestResult budget_increase_request_result = TestBudgetUsageAgainstLimits(
+      total_budget_used_smaller_scope + additional_budget,
+      total_budget_used_larger_scope + additional_budget);
 
   if (budget_increase_request_result == RequestResult::kApproved) {
     if (!window_for_key) {
@@ -507,6 +520,18 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
           std::move(reporting_origin_serialized));
     }
     reporting_origin_entry->set_last_used_timestamp(current_window_start);
+  }
+
+  if (budget_increase_request_result != RequestResult::kApproved) {
+    bool would_minimum_value_be_approved =
+        TestBudgetUsageAgainstLimits(
+            total_budget_used_smaller_scope + minimum_value_for_metrics,
+            total_budget_used_larger_scope + minimum_value_for_metrics) ==
+        PrivateAggregationBudgeter::RequestResult::kApproved;
+    base::UmaHistogramBoolean(
+        "PrivacySandbox.PrivateAggregation.Budgeter."
+        "EnoughBudgetForAnyValueIfNotEnoughOverall",
+        would_minimum_value_be_approved);
   }
 
   base::UmaHistogramCounts100(
@@ -726,7 +751,7 @@ bool PrivateAggregationBudgeter::DidStorageInitializationSucceed() {
   switch (storage_status_) {
     case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case StorageStatus::kInitializationFailed:
       return false;
     case StorageStatus::kOpen:

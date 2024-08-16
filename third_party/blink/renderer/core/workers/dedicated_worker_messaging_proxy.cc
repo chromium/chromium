@@ -155,7 +155,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
   if (AskedToTerminate())
     return;
   if (!was_script_evaluated_) {
-    queued_early_tasks_.push_back(std::move(message));
+    queued_early_tasks_.push_back(TaskInfo{.message = std::move(message)});
     return;
   }
   PostCrossThreadTask(
@@ -164,6 +164,37 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
           &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
           CrossThreadUnretained(&WorkerObjectProxy()), std::move(message),
           CrossThreadUnretained(GetWorkerThread())));
+}
+
+void DedicatedWorkerMessagingProxy::PostCustomEventToWorkerGlobalScope(
+    TaskType task_type,
+    CrossThreadFunction<Event*(ScriptState*, CustomEventMessage)>
+        event_factory_callback,
+    CrossThreadFunction<Event*(ScriptState* script_state)>
+        event_factory_error_callback,
+    CustomEventMessage message) {
+  CHECK(IsParentContextThread());
+  if (AskedToTerminate()) {
+    return;
+  }
+  if (!was_script_evaluated_) {
+    queued_early_tasks_.push_back(TaskInfo{
+        .custom_event_info = CustomEventInfo{
+            .task_type = task_type,
+            .message = std::move(message),
+            .event_factory_callback = std::move(event_factory_callback),
+            .event_factory_error_callback =
+                std::move(event_factory_error_callback)}});
+    return;
+  }
+  PostCrossThreadTask(
+      *GetWorkerThread()->GetTaskRunner(task_type), FROM_HERE,
+      CrossThreadBindOnce(
+          &DedicatedWorkerObjectProxy::ProcessCustomEventFromWorkerObject,
+          CrossThreadUnretained(&WorkerObjectProxy()), std::move(message),
+          CrossThreadUnretained(GetWorkerThread()),
+          std::move(event_factory_callback),
+          std::move(event_factory_error_callback)));
 }
 
 bool DedicatedWorkerMessagingProxy::HasPendingActivity() const {
@@ -201,7 +232,7 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
 
   virtual_time_pauser_.UnpauseVirtualTime();
 
-  Vector<BlinkTransferableMessage> tasks;
+  Vector<TaskInfo> tasks;
   queued_early_tasks_.swap(tasks);
 
   // The worker thread can already be terminated.
@@ -214,12 +245,28 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
   // TODO(nhiroki): Consider whether to post the queued tasks to the worker when
   // |success| is false.
   for (auto& task : tasks) {
-    PostCrossThreadTask(
-        *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
-        CrossThreadBindOnce(
-            &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
-            CrossThreadUnretained(&WorkerObjectProxy()), std::move(task),
-            CrossThreadUnretained(GetWorkerThread())));
+    if (task.message) {
+      PostCrossThreadTask(
+          *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage),
+          FROM_HERE,
+          CrossThreadBindOnce(
+              &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
+              CrossThreadUnretained(&WorkerObjectProxy()),
+              std::move(*task.message),
+              CrossThreadUnretained(GetWorkerThread())));
+    } else {
+      CHECK(task.custom_event_info);
+      PostCrossThreadTask(
+          *GetWorkerThread()->GetTaskRunner(task.custom_event_info->task_type),
+          FROM_HERE,
+          CrossThreadBindOnce(
+              &DedicatedWorkerObjectProxy::ProcessCustomEventFromWorkerObject,
+              CrossThreadUnretained(&WorkerObjectProxy()),
+              std::move(task.custom_event_info->message),
+              CrossThreadUnretained(GetWorkerThread()),
+              std::move(task.custom_event_info->event_factory_callback),
+              std::move(task.custom_event_info->event_factory_error_callback)));
+    }
   }
 }
 

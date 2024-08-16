@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
@@ -64,9 +65,13 @@ BirchModel::BirchModel()
       lost_media_data_(prefs::kBirchUseLostMedia, "LostMedia"),
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
+      coral_data_(prefs::kBirchUseCoral, "Coral"),
       icon_cache_(std::make_unique<BirchIconCache>()) {
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
+  }
+  if (features::IsBirchCoralEnabled()) {
+    coral_provider_ = std::make_unique<BirchCoralProvider>(this);
   }
   Shell::Get()->session_controller()->AddObserver(this);
   SimpleGeolocationProvider::GetInstance()->AddObserver(this);
@@ -93,6 +98,8 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseCoral,
+                                false); /*this is an opt-in feature*/
   // NOTE: If you add a pref here, also update birch_browsertest.cc and
   // birch_model_unittest.cc which have code that disables all prefs.
 }
@@ -180,6 +187,10 @@ void BirchModel::SetReleaseNotesItems(
     const std::vector<BirchReleaseNotesItem>& release_notes_items) {
   SetItems(release_notes_data_, release_notes_items,
            /*record_latency=*/true);
+}
+
+void BirchModel::SetCoralItems(const std::vector<BirchCoralItem>& coral_items) {
+  SetItems(coral_data_, coral_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetClientAndInit(BirchClient* client) {
@@ -295,6 +306,8 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
     StartDataFetchIfNeeded(release_notes_data_,
                            birch_client_->GetReleaseNotesProvider());
   }
+
+  StartDataFetchIfNeeded(coral_data_, coral_provider_.get());
   StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
   MaybeRespondToDataFetchRequest();
 }
@@ -325,12 +338,13 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankWeatherItems(&weather_data_.items);
   ranker.RankReleaseNotesItems(&release_notes_data_.items);
   ranker.RankLostMediaItems(&lost_media_data_.items);
+  ranker.RankCoralItems(&coral_data_.items);
 
   // Avoid showing a duplicate last-active tab with a recent tab by removing
   // the item with the higher ranking.
   std::unordered_map<std::string, BirchLastActiveItem> url_to_last_active_item;
   for (auto& item : last_active_data_.items) {
-    url_to_last_active_item.emplace(item.url().spec(), item);
+    url_to_last_active_item.emplace(item.page_url().spec(), item);
   }
   std::erase_if(recent_tab_data_.items, [&url_to_last_active_item](
                                             const auto& recent_tab_item) {
@@ -349,7 +363,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   std::unordered_map<std::string, BirchMostVisitedItem>
       url_to_most_visited_item;
   for (auto& item : most_visited_data_.items) {
-    url_to_most_visited_item.emplace(item.url().spec(), item);
+    url_to_most_visited_item.emplace(item.page_url().spec(), item);
   }
   std::erase_if(recent_tab_data_.items, [&url_to_most_visited_item](
                                             const auto& recent_tab_item) {
@@ -465,6 +479,12 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
           std::make_unique<BirchReleaseNotesItem>(release_notes_item));
     }
   }
+  if (prefs->GetBoolean(prefs::kBirchUseCoral)) {
+    for (auto& coral_item : coral_data_.items) {
+      all_items.push_back(std::make_unique<BirchCoralItem>(coral_item));
+    }
+  }
+
   // Sort items by ranking.
   std::sort(all_items.begin(), all_items.end(),
             [](const auto& item_a, const auto& item_b) {
@@ -632,6 +652,7 @@ void BirchModel::ClearAllItems() {
   self_share_data_.items.clear();
   lost_media_data_.items.clear();
   release_notes_data_.items.clear();
+  coral_data_.items.clear();
 }
 
 void BirchModel::MarkDataNotFresh() {
@@ -645,6 +666,7 @@ void BirchModel::MarkDataNotFresh() {
   self_share_data_.is_fresh = false;
   lost_media_data_.is_fresh = false;
   release_notes_data_.is_fresh = false;
+  coral_data_.is_fresh = false;
 }
 
 void BirchModel::InitPrefChangeRegistrars() {
@@ -683,6 +705,10 @@ void BirchModel::InitPrefChangeRegistrars() {
       prefs::kBirchUseReleaseNotes,
       base::BindRepeating(&BirchModel::OnReleaseNotesPrefChanged,
                           base::Unretained(this)));
+  coral_pref_registrar_.Init(prefs);
+  coral_pref_registrar_.Add(prefs::kBirchUseCoral,
+                            base::BindRepeating(&BirchModel::OnCoralPrefChanged,
+                                                base::Unretained(this)));
 }
 
 void BirchModel::OnCalendarPrefChanged() {
@@ -722,6 +748,10 @@ void BirchModel::OnLostMediaPrefChanged() {
   }
 }
 
+void BirchModel::OnCoralPrefChanged() {
+  StartDataFetchIfNeeded(coral_data_, coral_provider_.get());
+}
+
 void BirchModel::OnWeatherPrefChanged() {
   StartDataFetchIfNeeded(weather_data_, weather_provider_.get());
 }
@@ -751,6 +781,8 @@ void BirchModel::RecordProviderHiddenHistograms() {
                             !prefs->GetBoolean(prefs::kBirchUseWeather));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ReleaseNotes",
                             !prefs->GetBoolean(prefs::kBirchUseReleaseNotes));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Coral",
+                            !prefs->GetBoolean(prefs::kBirchUseCoral));
 }
 
 bool BirchModel::IsItemRemoverInitialized() {

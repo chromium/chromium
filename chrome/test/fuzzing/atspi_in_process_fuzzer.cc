@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
@@ -86,7 +91,8 @@ class AtspiInProcessFuzzer
   static ScopedAtspiAccessible GetRootNode();
   static std::vector<ScopedAtspiAccessible> GetChildren(
       ScopedAtspiAccessible& node);
-  static std::string GetNodeName(const ScopedAtspiAccessible& node);
+  static std::string GetNodeName(const ScopedAtspiAccessible& node,
+                                 bool is_first_level_node);
   static std::string GetNodeRole(const ScopedAtspiAccessible& node);
   static bool InvokeAction(ScopedAtspiAccessible& node, size_t action_id);
   static bool ReplaceText(ScopedAtspiAccessible& node,
@@ -100,8 +106,10 @@ class AtspiInProcessFuzzer
   static std::string CheckString(char* result, GError** error);
   static std::optional<size_t> FindMatchingControl(
       const std::vector<ScopedAtspiAccessible>& controls,
-      const test::fuzzing::atspi_fuzzing::PathElement& selector);
+      const test::fuzzing::atspi_fuzzing::PathElement& selector,
+      bool is_first_level_node);
   static void RecordChildrenForUseByMutator(
+      const test::fuzzing::atspi_fuzzing::ControlPath& path_to_control,
       const std::vector<ScopedAtspiAccessible>& children);
 
   static size_t MutateUsingLPM(uint8_t* data,
@@ -109,10 +117,10 @@ class AtspiInProcessFuzzer
                                size_t max_size,
                                unsigned int seed);
 
-  static std::optional<size_t> MutateUsingNameAndRole(uint8_t* data,
-                                                      size_t size,
-                                                      size_t max_size,
-                                                      std::minstd_rand& random);
+  static std::optional<size_t> MutateControlPath(uint8_t* data,
+                                                 size_t size,
+                                                 size_t max_size,
+                                                 std::minstd_rand& random);
   static bool AttemptMutateMessage(AtspiInProcessFuzzer::FuzzCase& message,
                                    std::minstd_rand& random);
 };
@@ -130,7 +138,7 @@ using FuzzerProtoType =
 DEFINE_CUSTOM_PROTO_CROSSOVER_IMPL(false, FuzzerProtoType)
 DEFINE_POST_PROCESS_PROTO_MUTATION_IMPL(FuzzerProtoType)
 
-// An on-disk database of all known control names and roles we have
+// An on-disk database of all known control paths which we have
 // encountered. These are filled in by the fuzzer then consumed by the
 // mutator. We store these on disk because in centipede, the fuzzer
 // and mutator run in different invocations of this process.
@@ -140,23 +148,13 @@ class Database {
  public:
   static Database* GetInstance();
 
-  std::optional<std::string> GetRandomRole(std::minstd_rand& random);
-  std::optional<std::string> GetRandomName(std::minstd_rand& random);
+  std::optional<std::string> GetRandomControlPath(std::minstd_rand& random);
 
-  void InsertName(const std::string& name);
-  void InsertRole(const std::string& role);
+  void InsertControlPath(const std::string& name);
 
  private:
   Database();
   friend struct base::DefaultSingletonTraits<Database>;
-
-  std::optional<std::string> GetRandomValue(const std::string& table_name,
-                                            const std::string& column_name,
-                                            std::minstd_rand& random,
-                                            sql::StatementID statement_id);
-  void DoInsert(const std::string& table_name,
-                const std::string& value,
-                sql::StatementID statement_id);
 
   std::unique_ptr<sql::Database> db_;
 };
@@ -202,7 +200,7 @@ int AtspiInProcessFuzzer::Fuzz(
   for (const test::fuzzing::atspi_fuzzing::Action& action :
        fuzz_case.action()) {
     for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
-         action.path_to_control()) {
+         action.path_to_control().path_to_control()) {
       switch (path_element.element_type_case()) {
         case test::fuzzing::atspi_fuzzing::PathElement::kNamed: {
           const std::string& name = path_element.named().name();
@@ -250,27 +248,19 @@ int AtspiInProcessFuzzer::Fuzz(
     // Enumerate available controls after each action we take - obviously,
     // clicking on one button may make more buttons available
     ScopedAtspiAccessible current_control = root_node;
-    // Drill immediately down to the first level which has a choice of controls.
-    // The topmost layers each have one child and are the outermost
-    // application, which remains the same. (Worse, the outermost control
-    // has a name which varies based on RAM usage, so our fuzzer would struggle
-    // to make stable test cases.)
     std::vector<ScopedAtspiAccessible> children = GetChildren(current_control);
-    while (children.size() == 1) {
-      current_control = children[0];
-      children = GetChildren(current_control);
-    }
+    bool is_first_level_node = true;
 
     // Keep a record of the control path so we can inform centipede
     std::vector<size_t> current_control_path;
     for (const test::fuzzing::atspi_fuzzing::PathElement& path_element :
-         action.path_to_control()) {
-      RecordChildrenForUseByMutator(children);
+         action.path_to_control().path_to_control()) {
       std::optional<size_t> selected_control =
-          FindMatchingControl(children, path_element);
+          FindMatchingControl(children, path_element, is_first_level_node);
       if (!selected_control.has_value()) {
         return -1;
       }
+      is_first_level_node = false;
       current_control = children[*selected_control];
       current_control_path.push_back(*selected_control);
 
@@ -291,11 +281,12 @@ int AtspiInProcessFuzzer::Fuzz(
 
       children = GetChildren(current_control);
     }
-    RecordChildrenForUseByMutator(children);
+    RecordChildrenForUseByMutator(action.path_to_control(), children);
 
     // We have now chosen a control with which we'll interact during
     // this action
-    std::string control_name = GetNodeName(current_control);
+    std::string control_name = GetNodeName(
+        current_control, action.path_to_control().path_to_control_size() == 1);
     if (kBlockedControls.contains(control_name)) {
       return -1;  // don't explore this case further
     }
@@ -333,14 +324,25 @@ int AtspiInProcessFuzzer::Fuzz(
 }
 
 void AtspiInProcessFuzzer::RecordChildrenForUseByMutator(
+    const test::fuzzing::atspi_fuzzing::ControlPath& path_to_control,
     const std::vector<ScopedAtspiAccessible>& children) {
+  uint32_t anonymous_elements = 0;
   for (auto& child : children) {
-    std::string name = GetNodeName(child);
-    if (!name.empty() && !kBlockedControls.contains(name)) {
-      Database::GetInstance()->InsertName(name);
+    test::fuzzing::atspi_fuzzing::ControlPath child_control_path =
+        path_to_control;
+    test::fuzzing::atspi_fuzzing::PathElement* new_child =
+        child_control_path.add_path_to_control();
+    std::string name =
+        GetNodeName(child, path_to_control.path_to_control_size() == 0);
+    if (!name.empty()) {
+      *new_child->mutable_named()->mutable_name() = name;
+    } else {
+      std::string role = GetNodeRole(child);
+      *new_child->mutable_anonymous()->mutable_role() = role;
+      new_child->mutable_anonymous()->set_ordinal(anonymous_elements++);
     }
-    std::string role = GetNodeRole(child);
-    Database::GetInstance()->InsertRole(role);
+    std::string stringified_control_path = child_control_path.DebugString();
+    Database::GetInstance()->InsertControlPath(stringified_control_path);
   }
 }
 
@@ -419,8 +421,13 @@ std::string AtspiInProcessFuzzer::CheckString(char* result, GError** error) {
   return retval;
 }
 
-std::string AtspiInProcessFuzzer::GetNodeName(
-    const ScopedAtspiAccessible& node) {
+std::string AtspiInProcessFuzzer::GetNodeName(const ScopedAtspiAccessible& node,
+                                              bool is_first_level_node) {
+  if (is_first_level_node) {
+    // The root node name varies according to RAM usage. Pretend it has no name
+    // so we identify it by role instead.
+    return "";
+  }
   GError* error = nullptr;
   return CheckString(atspi_accessible_get_name(
                          const_cast<ScopedAtspiAccessible&>(node), &error),
@@ -500,7 +507,8 @@ bool AtspiInProcessFuzzer::SetSelection(
 
 std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
     const std::vector<ScopedAtspiAccessible>& controls,
-    const test::fuzzing::atspi_fuzzing::PathElement& selector) {
+    const test::fuzzing::atspi_fuzzing::PathElement& selector,
+    bool is_first_level_node) {
   // Select the child which matches the selector.
   // Avoid using hash maps or anything fancy, because we want fuzzing engines
   // to be able to instrument the string comparisons here.
@@ -508,7 +516,7 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
     case test::fuzzing::atspi_fuzzing::PathElement::kNamed: {
       for (size_t i = 0; i < controls.size(); i++) {
         auto& control = controls[i];
-        std::string name = GetNodeName(control);
+        std::string name = GetNodeName(control, is_first_level_node);
         // Use of .data() below is a workaround for
         // https://issues.chromium.org/issues/343801371
         if (name == selector.named().name().data()) {
@@ -521,7 +529,7 @@ std::optional<size_t> AtspiInProcessFuzzer::FindMatchingControl(
       size_t to_skip = selector.anonymous().ordinal();
       for (size_t i = 0; i < controls.size(); i++) {
         auto& control = controls[i];
-        std::string name = GetNodeName(control);
+        std::string name = GetNodeName(control, is_first_level_node);
         // Controls with a name MUST be selected by that name,
         // so the fuzzer creates test cases which are maximally stable
         // across Chromium versions. So disregard named controls here.
@@ -597,7 +605,7 @@ size_t AtspiInProcessFuzzer::MutateUsingLPM(uint8_t* data,
 }
 
 // Returns nullopt if we don't successfully mutate this
-std::optional<size_t> AtspiInProcessFuzzer::MutateUsingNameAndRole(
+std::optional<size_t> AtspiInProcessFuzzer::MutateControlPath(
     uint8_t* data,
     size_t size,
     size_t max_size,
@@ -626,44 +634,21 @@ bool AtspiInProcessFuzzer::AttemptMutateMessage(
       std::uniform_int_distribution<size_t>(0, input.action_size() * 2)(random);
   test::fuzzing::atspi_fuzzing::Action* action = input.mutable_action(
       std::min(chosen_action, static_cast<size_t>(input.action_size()) - 1));
-  if (action->path_to_control_size() == 0) {
+
+  std::optional<std::string> control_path =
+      Database::GetInstance()->GetRandomControlPath(random);
+  if (!control_path.has_value()) {
     return false;
   }
-  // Some of the time, add another path element (so we reach into
-  // deeper controls)
-  if (std::uniform_int_distribution<size_t>(0, 2)(random) > 1) {
-    action->add_path_to_control();
-  }
 
-  // About 50% of the time, choose the last path element to mutate
-  size_t chosen_path_element = std::uniform_int_distribution<int64_t>(
-      0, action->path_to_control_size() * 2)(random);
-  test::fuzzing::atspi_fuzzing::PathElement* path_element =
-      action->mutable_path_to_control(
-          std::min(chosen_path_element,
-                   static_cast<size_t>(action->path_to_control_size()) - 1));
-  // Sometimes, switch anonymous elements to named
-  if (path_element->has_named() ||
-      std::uniform_int_distribution<size_t>(0, 2)(random) > 1) {
-    std::optional<std::string> name =
-        Database::GetInstance()->GetRandomName(random);
-    if (!name.has_value()) {
-      return false;
-    }
-    if (*name == path_element->named().name()) {
-      return false;
-    }
-    *path_element->mutable_named()->mutable_name() = *name;
-  } else {
-    std::optional<std::string> role =
-        Database::GetInstance()->GetRandomRole(random);
-    if (!role.has_value()) {
-      return false;
-    }
-    if (*role == path_element->anonymous().role()) {
-      return false;
-    }
-    *path_element->mutable_anonymous()->mutable_role() = *role;
+  action->mutable_path_to_control()->Clear();
+  google::protobuf::TextFormat::Parser parser;
+  parser.SetRecursionLimit(100);
+  parser.AllowPartialMessage(true);
+  parser.AllowUnknownField(true);
+  if (!parser.ParseFromString(*control_path,
+                              action->mutable_path_to_control())) {
+    return false;
   }
   return true;
 }
@@ -687,12 +672,12 @@ size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
     case 1: {
       size = MutateUsingLPM(data, size, max_size, random());
       std::optional<size_t> new_size =
-          MutateUsingNameAndRole(data, size, max_size, random);
+          MutateControlPath(data, size, max_size, random);
       return new_size.value_or(size);
     }
     default: {
       std::optional<size_t> new_size =
-          MutateUsingNameAndRole(data, size, max_size, random);
+          MutateControlPath(data, size, max_size, random);
       if (!new_size.has_value()) {
         return MutateUsingLPM(data, size, max_size, random());
       }
@@ -721,7 +706,7 @@ size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
 // despite the FindMatchingControl function being structured to allow this.
 // (https://issues.chromium.org/issues/346918512 probably doesn't help).
 //
-// We therefore sometimes use this custom mutator to specify control names
+// We therefore sometimes use this custom mutator to specify controls
 // which are known to actually exist. This is pushing our luck a little -
 // the list of known control names will vary depending on what test cases
 // have already been run, and therefore this mutator isn't guaranteed to
@@ -732,13 +717,8 @@ size_t AtspiInProcessFuzzer::CustomMutator(uint8_t* data,
 // fairly rapid fashion, while still using control names within the test
 // cases wherever possible.
 //
-// CENTIPEDE: Unfortunately, in centipede, the mutator runs in a different
-// invocation of the process than the actual fuzzer. The custom mutator
-// therefore has no access to the real control names and roles which have
-// been discovered, and always falls back to using the regular LPM mutator.
-// This makes the fuzzer significantly less effective. In the future
-// we could work around this by persisting the control names to disk, or
-// similar.
+// CENTIPEDE: In centipede, the mutator and fuzzer run in different
+// OS process invocations, so we have to persist the known controls onto disk.
 extern "C" size_t LLVMFuzzerCustomMutator(uint8_t* data,
                                           size_t size,
                                           size_t max_size,
@@ -761,55 +741,47 @@ Database::Database() {
   CHECK(base::PathService::Get(base::DIR_TEMP, &db_path));
   db_path = db_path.AppendASCII("atspi_in_process_fuzzer_controls.db");
   CHECK(db_->Open(db_path));
-  if (!db_->DoesTableExist("roles")) {
-    CHECK(db_->Execute("create table roles (role TEXT NOT NULL UNIQUE)"));
+  // Delete some tables from older versions of this fuzzer
+  if (db_->DoesTableExist("roles")) {
+    CHECK(db_->Execute("drop table roles"));
   }
-  if (!db_->DoesTableExist("names")) {
-    CHECK(db_->Execute("create table names (name TEXT NOT NULL UNIQUE)"));
+  if (db_->DoesTableExist("names")) {
+    CHECK(db_->Execute("drop table names"));
+  }
+  // Create the one we care about nowadays
+  if (!db_->DoesTableExist("controls")) {
+    CHECK(db_->Execute("create table controls (path TEXT NOT NULL UNIQUE)"));
   }
 }
 
-void Database::InsertName(const std::string& name) {
-  DoInsert("names", name, SQL_FROM_HERE);
-}
-
-void Database::InsertRole(const std::string& role) {
-  DoInsert("roles", role, SQL_FROM_HERE);
-}
-
-void Database::DoInsert(const std::string& table_name,
-                        const std::string& value,
-                        sql::StatementID statement_id) {
+void Database::InsertControlPath(const std::string& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string insert_sql = base::StringPrintf(
-      "INSERT OR IGNORE INTO %s VALUES (?)", table_name.c_str());
-  sql::Statement stmt(db_->GetCachedStatement(statement_id, insert_sql));
-  stmt.BindString(0, value);
+
+  const int64_t kMaxRowsAllowed = 150;
+  // Delete random rows to keep to that maximum size
+  sql::Statement delete_stmt(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE from controls where path in (select path from controls order by "
+      "random() limit max(0, ((select count(*) from controls) - ?)))"));
+  delete_stmt.BindInt64(0, kMaxRowsAllowed);
+  base::IgnoreResult(delete_stmt.Run());
+
+  sql::Statement stmt(db_->GetCachedStatement(
+      SQL_FROM_HERE, "INSERT OR IGNORE INTO controls VALUES (?)"));
+  stmt.BindString(0, path);
   base::IgnoreResult(stmt.Run());  // ignore result in case other instances
                                    // of the fuzzer have the database locked
 }
 
-std::optional<std::string> Database::GetRandomRole(std::minstd_rand& random) {
-  return GetRandomValue("roles", "role", random, SQL_FROM_HERE);
-}
-
-std::optional<std::string> Database::GetRandomName(std::minstd_rand& random) {
-  return GetRandomValue("names", "name", random, SQL_FROM_HERE);
-}
-
-std::optional<std::string> Database::GetRandomValue(
-    const std::string& table_name,
-    const std::string& column_name,
-    std::minstd_rand& random,
-    sql::StatementID statement_id) {
+std::optional<std::string> Database::GetRandomControlPath(
+    std::minstd_rand& random) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   size_t random_selector =
       std::uniform_int_distribution<int64_t>(INT64_MIN, INT64_MAX)(random);
-  std::string get_query = base::StringPrintf(
-      "select %s from %s limit 1 offset (? %% (SELECT COUNT(*) FROM %s))",
-      column_name.c_str(), table_name.c_str(), table_name.c_str());
   sql::Statement get_statement(
-      db_->GetCachedStatement(statement_id, get_query));
+      db_->GetCachedStatement(SQL_FROM_HERE,
+                              "select path from controls limit 1 offset (? % "
+                              "(SELECT COUNT(*) FROM controls))"));
   get_statement.BindInt64(0, random_selector);
   if (!get_statement.Step()) {
     return std::nullopt;

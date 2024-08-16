@@ -280,6 +280,9 @@ void ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting() {
 
 base::flat_set<std::string>
 ChromeBrowserPolicyConnector::device_affiliation_ids() const {
+  if (!device_affiliation_ids_for_testing_.empty()) {
+    return device_affiliation_ids_for_testing_;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return PolicyLoaderLacros::device_affiliation_ids();
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -298,6 +301,11 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
 #else
   return {};
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+}
+
+void ChromeBrowserPolicyConnector::SetDeviceAffiliatedIdsForTesting(
+    const base::flat_set<std::string>& device_affiliation_ids) {
+  device_affiliation_ids_for_testing_ = device_affiliation_ids;
 }
 
 std::vector<std::unique_ptr<policy::ConfigurationPolicyProvider>>

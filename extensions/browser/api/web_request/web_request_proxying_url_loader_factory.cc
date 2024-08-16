@@ -887,10 +887,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
         removed_headers.begin(), removed_headers.end());
 
     for (auto& set_header : set_headers) {
-      std::string header_value;
-      if (request_.headers.GetHeader(set_header, &header_value)) {
+      std::optional<std::string> header_value =
+          request_.headers.GetHeader(set_header);
+      if (header_value) {
         pending_follow_redirect_params_->modified_headers.SetHeader(
-            set_header, header_value);
+            set_header, *header_value);
       } else {
         NOTREACHED_IN_MIGRATION();
       }

@@ -221,6 +221,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.selected = NO;
   self.priceCardView.hidden = YES;
   self.opacity = 1.0;
+  self.hidden = NO;
   [self hideActivityIndicator];
 }
 
@@ -359,6 +360,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setAlpha:(CGFloat)alpha {
   // Make sure alpha is synchronized with opacity.
+  _opacity = alpha;
   super.alpha = _opacity;
 }
 

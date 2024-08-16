@@ -14,7 +14,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/storage_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -195,11 +195,11 @@ class DualReadingListModelTest : public testing::Test {
   bool TriggerAccountStorageLoadCompletionSignedInSyncDisabled(
       std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_account_entries;
     for (auto entry_builder : initial_account_entries_builders) {
@@ -214,11 +214,11 @@ class DualReadingListModelTest : public testing::Test {
       std::vector<TestEntryBuilder> initial_local_entries_builders = {},
       std::vector<TestEntryBuilder> initial_account_entries_builders = {}) {
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_local_entries;
     for (auto entry_builder : initial_local_entries_builders) {
@@ -249,11 +249,11 @@ class DualReadingListModelTest : public testing::Test {
     ResetStorage();
 
     auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
     state.set_authenticated_account_id(kTestAccountId);
-    metadata_batch->SetModelTypeState(state);
+    metadata_batch->SetDataTypeState(state);
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_syncable_entries;
     for (auto entry_builder : initial_syncable_entries_builders) {
@@ -305,7 +305,7 @@ TEST_F(DualReadingListModelTest, ModelLoadFailure) {
 
 TEST_F(DualReadingListModelTest, MetaDataClearedBeforeModelLoaded) {
   ResetStorage();
-  static_cast<syncer::ClientTagBasedModelTypeProcessor*>(
+  static_cast<syncer::ClientTagBasedDataTypeProcessor*>(
       account_model_ptr_->GetSyncBridgeForTest()->change_processor())
       ->ClearMetadataIfStopped();
 

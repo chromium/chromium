@@ -70,7 +70,8 @@ TEST_F(AttributionSqlQueryPlanTest, kMinPrioritySql) {
 
 TEST_F(AttributionSqlQueryPlanTest, kGetMatchingSourcesSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kGetMatchingSourcesSql),
-              ValueIs(UsesIndex("sources_by_expiry_time")));
+              ValueIs(AllOf(UsesCoveringIndex("sources_by_destination_site"),
+                            UsesPrimaryKey())));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectExpiredSourcesSql) {
@@ -99,7 +100,7 @@ TEST_F(AttributionSqlQueryPlanTest, kScanReportsData) {
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteVestigialConversionSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kDeleteVestigialConversionSql),
-              ValueIs(UsesIndex("reports_by_source_id_report_type")));
+              ValueIs(UsesCoveringIndex("reports_by_source_id_report_type")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountSourcesSql) {
@@ -122,7 +123,7 @@ TEST_F(AttributionSqlQueryPlanTest, kGetSourcesDataKeysSql) {
 TEST_F(AttributionSqlQueryPlanTest, kGetNullReportsDataKeysSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kGetNullReportsDataKeysSql,
                       SqlFullScanReason::kNotOptimized),
-              ValueIs(UsesIndex("reports_by_reporting_origin")));
+              ValueIs(UsesCoveringIndex("reports_by_reporting_origin")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
@@ -132,9 +133,10 @@ TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountReportsForDestinationSql) {
-  EXPECT_THAT(GetPlan(attribution_queries::kCountReportsForDestinationSql),
-              ValueIs(AllOf(UsesCoveringIndex("sources_by_destination_site"),
-                            UsesIndex("reports_by_source_id_report_type"))));
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kCountReportsForDestinationSql),
+      ValueIs(AllOf(UsesCoveringIndex("sources_by_destination_site"),
+                    UsesCoveringIndex("reports_by_source_id_report_type"))));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kNextReportTimeSql) {
@@ -184,7 +186,7 @@ TEST_F(AttributionSqlQueryPlanTest,
        kDeleteAggregatableReportsForDestinationLimitSql) {
   EXPECT_THAT(GetPlan(attribution_queries::
                           kDeleteAggregatableReportsForDestinationLimitSql),
-              ValueIs(UsesIndex("reports_by_source_id_report_type")));
+              ValueIs(UsesCoveringIndex("reports_by_source_id_report_type")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {

@@ -133,13 +133,6 @@ void SupervisedUserNavigationObserver::OnRequestBlocked(
                                                 frame_id, callback);
 }
 
-void SupervisedUserNavigationObserver::UpdateMainFrameFilteringStatus(
-    supervised_user::FilteringBehavior behavior,
-    supervised_user::FilteringBehaviorReason reason) {
-  main_frame_filtering_behavior_ = behavior;
-  main_frame_filtering_behavior_reason_ = reason;
-}
-
 void SupervisedUserNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted())
@@ -198,11 +191,6 @@ void SupervisedUserNavigationObserver::DidFinishLoad(
     RecordPageLoadUKM(render_frame_host);
   }
 
-  if (base::Contains(supervised_user_interstitials_,
-                     render_frame_host->GetFrameTreeNodeId())) {
-    UMA_HISTOGRAM_COUNTS_1000("ManagedUsers.BlockedFrameDepth",
-                              render_frame_host->GetFrameDepth());
-  }
 }
 
 void SupervisedUserNavigationObserver::RecordPageLoadUKM(

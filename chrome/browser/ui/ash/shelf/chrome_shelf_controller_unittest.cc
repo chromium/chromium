@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
 #include <stddef.h>
@@ -59,6 +64,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -166,7 +172,7 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -1471,6 +1477,8 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
         /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kEnableLacrosForTesting);
   }
   ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
       delete;
@@ -1527,6 +1535,7 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
   raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
       chrome_app_shelf_item_ = nullptr;
@@ -3230,7 +3239,7 @@ TEST_F(ChromeShelfControllerWithArcTest, DISABLED_ArcCustomAppIcon) {
   ASSERT_TRUE(item_delegate);
   base::RunLoop().RunUntilIdle();
 
-  auto get_icon = [=]() {
+  auto get_icon = [=, this]() {
     return *shelf_controller_->GetItem(arc_shelf_id)->image.bitmap();
   };
   const SkBitmap default_icon = get_icon();
@@ -5515,13 +5524,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   std::unique_ptr<ash::DemoModeTestHelper> demo_mode_test_helper_;
 };
 
-// TODO(crbug.com/40865068): PinnedAppsOnline is flaky on linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PinnedAppsOnline DISABLED_PinnedAppsOnline
-#else
-#define MAYBE_PinnedAppsOnline PinnedAppsOnline
-#endif
-TEST_F(ChromeShelfControllerDemoModeTest, MAYBE_PinnedAppsOnline) {
+TEST_F(ChromeShelfControllerDemoModeTest, PinnedAppsOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
 

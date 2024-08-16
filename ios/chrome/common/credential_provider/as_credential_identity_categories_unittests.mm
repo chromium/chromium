@@ -23,6 +23,7 @@ NSData* StringToData(std::string str) {
 TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
                                            password:@"qwerty!"
                                                rank:5
                                    recordIdentifier:@"recordIdentifier"
@@ -46,6 +47,7 @@ TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
   if (@available(iOS 17, *)) {
     ArchivableCredential* credential = [[ArchivableCredential alloc]
          initWithFavicon:@"favicon"
+                    gaia:nil
         recordIdentifier:@"recordIdentifier"
                   syncId:StringToData("syncId")
                 username:@"username"

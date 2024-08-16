@@ -38,6 +38,12 @@ class TabGroup;
 // the given `block` upon execution.
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance configured to show the full `URLString` that
+// appears in the web context menu and which will invoke the given `block` upon
+// execution.
+- (UIAction*)actionToShowFullURL:(NSString*)URLString
+                           block:(ProceduralBlock)block;
+
 // Creates a UIAction instance configured for pinning a tab which will invoke
 // the given `block` upon execution.
 - (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block;

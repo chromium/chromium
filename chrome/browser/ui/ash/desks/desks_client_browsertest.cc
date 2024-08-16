@@ -35,6 +35,7 @@
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
+#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/float/float_controller.h"
@@ -356,8 +357,7 @@ void ClickView(const views::View* view) {
 // If `wait_for_ui` is true, wait for the callback from the model to update the
 // UI.
 void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
-  // TODO(http://b/350771229): Remove `if` when Forest is enabled.
-  if (ash::features::IsForestFeatureEnabled()) {
+  if (ash::features::IsSavedDeskUiRevampEnabled()) {
     // Get the menu option to save the desk as a template and click it.
     views::MenuItemView* menu_item =
         ash::DesksTestApi::OpenDeskContextMenuAndGetMenuItem(
@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBasic) {
   // Note that this button needs at least one window to show up. Browser tests
   // have an existing browser window, so no new window needs to be created.
   // TODO(http://b/350771229): Remove `if` when Forest is enabled.
-  if (ash::features::IsForestFeatureEnabled()) {
+  if (ash::features::IsSavedDeskUiRevampEnabled()) {
     ClickSaveDeskAsTemplateButton();
   } else {
     const views::Button* save_desk_as_template_button =
@@ -3305,11 +3305,10 @@ using SaveAndRecallBrowserTest = DesksClientTest;
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogAccepted) {
   // TODO(http://b/350771229): This test tests clicking the "Save desk for
-  // later" button that will not be shown if the Forest feature is enabled. This
-  // test will be fixed before the button change is no longer hidden behind
-  // Forest.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  // later" button that will not be shown if the feature is enabled. This test
+  // will be fixed before the button change is no longer hidden behind the flag.
+  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }
 
   SetupBrowserToConfirmClose(browser());
@@ -3345,11 +3344,10 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
                        SystemUIBlockingDialogRejected) {
   // TODO(http://b/350771229): This test tests clicking the "Save desk for
-  // later" button that will not be shown if the Forest feature is enabled. This
-  // test will be fixed before the button change is no longer hidden behind
-  // Forest.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for Forest Feature.";
+  // later" button that will not be shown if the feature is enabled. This test
+  // will be fixed before the button change is no longer hidden behind the flag.
+  if (ash::features::IsSavedDeskUiRevampEnabled()) {
+    GTEST_SKIP() << "Skipping test body for saved desk revamp feature.";
   }
 
   SetupBrowserToConfirmClose(browser());

@@ -58,6 +58,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
@@ -152,6 +153,8 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
   // TODO: b/330360595 - Confirm if this is needed in Lacros.
   aura::Window* frame_window = frame->GetNativeWindow();
   frame_window->SetProperty(kBrowserNonClientFrameViewChromeOSKey, this);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTitleBar);
 }
 
 BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
@@ -486,11 +489,6 @@ void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
     DCHECK_EQ(caption_button_container_->y(), 0);
     DCHECK_EQ(caption_button_container_->bounds().right(), width());
   }
-}
-
-void BrowserNonClientFrameViewChromeOS::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTitleBar;
 }
 
 gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {

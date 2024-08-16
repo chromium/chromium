@@ -26,9 +26,9 @@
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/saved_tab_groups/utils.h"
-#include "components/sync/base/model_type.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 
 namespace tab_groups {
 namespace {
@@ -90,12 +90,12 @@ void TabGroupSyncServiceImpl::Shutdown() {
   metrics_logger_.reset();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSavedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSavedTabGroupControllerDelegate();
 }
 
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
+base::WeakPtr<syncer::DataTypeControllerDelegate>
 TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return sync_bridge_mediator_.GetSharedTabGroupControllerDelegate();
 }
@@ -369,6 +369,14 @@ void TabGroupSyncServiceImpl::UpdateLocalTabId(
   CHECK(tab);
 
   model_->UpdateLocalTabId(group->saved_guid(), *tab, local_tab_id);
+}
+
+void TabGroupSyncServiceImpl::ConnectLocalTabGroup(
+    const base::Uuid& sync_id,
+    const LocalTabGroupID& local_id) {
+  VLOG(2) << __func__;
+  CHECK(is_initialized_);
+  coordinator_->ConnectLocalTabGroup(sync_id, local_id);
 }
 
 bool TabGroupSyncServiceImpl::IsRemoteDevice(

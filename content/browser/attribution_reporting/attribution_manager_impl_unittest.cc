@@ -3005,40 +3005,18 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
       kFrameId);
   task_environment_.RunUntilIdle();
 
-  {
-    // Trigger registered outside a fenced frame tree failed with debug
-    // reporting and debug cookie is set, but feature off.
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        kAttributionVerboseDebugReporting);
-
-    attribution_manager_->HandleTrigger(
-        TriggerBuilder()
-            .SetReportingOrigin(reporting_origin)
-            .SetDebugReporting(true)
-            .Build(),
-        kFrameId);
-    task_environment_.RunUntilIdle();
-  }
-
   checkpoint.Call(1);
 
   histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
 
-  {
-    // Trigger registered outside a fenced frame tree failed with debug
-    // reporting and debug cookie is set, and feature on.
-    base::test::ScopedFeatureList scoped_feature_list{
-        kAttributionVerboseDebugReporting};
-
-    attribution_manager_->HandleTrigger(
-        TriggerBuilder()
-            .SetReportingOrigin(reporting_origin)
-            .SetDebugReporting(true)
-            .Build(),
-        kFrameId);
-    task_environment_.RunUntilIdle();
-  }
+  // Trigger registered outside a fenced frame tree failed with debug
+  // reporting and debug cookie is set.
+  attribution_manager_->HandleTrigger(TriggerBuilder()
+                                          .SetReportingOrigin(reporting_origin)
+                                          .SetDebugReporting(true)
+                                          .Build(),
+                                      kFrameId);
+  task_environment_.RunUntilIdle();
 
   // kTriggerNoMatchingSource = 6
   histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric, 6, 1);

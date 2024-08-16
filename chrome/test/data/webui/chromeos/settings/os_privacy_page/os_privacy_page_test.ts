@@ -381,8 +381,12 @@ suite('<os-settings-privacy-page>', () => {
   test('Lock screen row is focused when returning from subpage', async () => {
     Router.getInstance().navigateTo(routes.OS_PRIVACY);
 
+    const tokenLabel = loadTimeData.getBoolean('isAuthPanelEnabled') ?
+        'authTokenReply_' :
+        'authTokenInfo_';
+
     const quickUnlockPrivateApi = new FakeQuickUnlockPrivate();
-    privacyPage.set('authTokenInfo_', quickUnlockPrivateApi.getFakeToken());
+    privacyPage.set(tokenLabel, quickUnlockPrivateApi.getFakeToken());
 
     const triggerSelector = '#lockScreenRow';
     const subpageTrigger =

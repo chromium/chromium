@@ -176,43 +176,7 @@ class CONTENT_EXPORT InterestGroupAuction
   using RealTimeReportingContributions =
       std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 
-  // Helps determine which level of worklet a particular PA request came from.
-  enum class PrivateAggregationPhase {
-    kBidder,
-    kNonTopLevelSeller,  // Seller for a component auction.
-    kTopLevelSeller,     // Top-level seller, either with components or
-                         // as the sole seller in a single-seller auction.
-    kNumPhases
-  };
-
   struct CONTENT_EXPORT BidState {
-    // Used as a key to group Private Aggregation API requests from worklets in
-    // a map. The `reporting_origin` and `aggregation_coordinator_origin` are
-    // passed into the Private Aggregation API.
-    struct PrivateAggregationPhaseKey {
-      PrivateAggregationPhaseKey(
-          url::Origin reporting_origin,
-          PrivateAggregationPhase phase,
-          std::optional<url::Origin> aggregation_coordinator_origin);
-      PrivateAggregationPhaseKey(const PrivateAggregationPhaseKey& other);
-      PrivateAggregationPhaseKey& operator=(
-          const PrivateAggregationPhaseKey& other);
-      PrivateAggregationPhaseKey(PrivateAggregationPhaseKey&& other);
-      PrivateAggregationPhaseKey& operator=(PrivateAggregationPhaseKey&& other);
-      ~PrivateAggregationPhaseKey();
-
-      bool operator<(const PrivateAggregationPhaseKey& other) const {
-        return std::tie(reporting_origin, phase,
-                        aggregation_coordinator_origin) <
-               std::tie(other.reporting_origin, other.phase,
-                        other.aggregation_coordinator_origin);
-      }
-
-      url::Origin reporting_origin;
-      PrivateAggregationPhase phase;
-      std::optional<url::Origin> aggregation_coordinator_origin;
-    };
-
     explicit BidState(const SingleStorageInterestGroup&& bidder);
     ~BidState();
 
@@ -335,6 +299,12 @@ class CONTENT_EXPORT InterestGroupAuction
     // Requests made to Private aggregation API in generateBid() for the
     // non-k-anonymous enforced bid when k-anonymity enforcement is active.
     PrivateAggregationRequests non_kanon_private_aggregation_requests;
+
+    std::map<PrivateAggregationKey, PrivateAggregationRequests>
+        server_filtered_pagg_requests_reserved;
+
+    std::map<std::string, PrivateAggregationRequests>
+        server_filtered_pagg_requests_non_reserved;
 
     std::array<PrivateAggregationTimings,
                base::checked_cast<size_t>(PrivateAggregationPhase::kNumPhases)>
@@ -675,8 +645,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // failed (on success, used internally to pass them to the
   // InterestGroupAuctionReporter). May only be called once, since it takes
   // ownership of stored reporting URLs.
-  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
-           PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
   TakeReservedPrivateAggregationRequests();
 
   // Retrieves all requests with non-reserved event type to the Private
@@ -1437,8 +1406,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // InterestGroupAuctionReporter when it's created. Keyed by the origin of the
   // script that issued the request (i.e. the reporting origin) and the
   // aggregation coordinator origin.
-  std::map<InterestGroupAuctionReporter::PrivateAggregationKey,
-           PrivateAggregationRequests>
+  std::map<PrivateAggregationKey, PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
 
   // Stores all pending Private Aggregation API report requests of non-reserved

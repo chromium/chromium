@@ -210,7 +210,7 @@ class NodeReader {
   inline const uint8_t* bdict_end() const {
     // TODO(crbug.com/40284755): Replace callers with span-based APIs and remove
     // this.
-    return UNSAFE_BUFFERS(bdict_data_.data() + bdict_data_.size());
+    return UNSAFE_TODO(bdict_data_.data() + bdict_data_.size());
   }
 
   // Checks the given leaf node to see if it's a match for the given word.

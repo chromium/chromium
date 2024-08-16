@@ -106,6 +106,8 @@ class AppMenu final : public views::MenuDelegate,
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
 
+  views::View* GetZoomAppMenuViewForTest();
+
  private:
   class CutCopyPasteView;
   class RecentTabsMenuModelDelegate;

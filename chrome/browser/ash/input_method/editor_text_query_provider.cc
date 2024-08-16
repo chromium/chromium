@@ -27,7 +27,8 @@ namespace ash::input_method {
 namespace {
 
 bool IsInternationalizeEnabled() {
-  return base::FeatureList::IsEnabled(features::kOrcaDanish) ||
+  return base::FeatureList::IsEnabled(features::kOrcaAfrikaans) ||
+         base::FeatureList::IsEnabled(features::kOrcaDanish) ||
          base::FeatureList::IsEnabled(features::kOrcaDutch) ||
          base::FeatureList::IsEnabled(features::kOrcaFinnish) ||
          base::FeatureList::IsEnabled(features::kOrcaFrench) ||
@@ -35,6 +36,7 @@ bool IsInternationalizeEnabled() {
          base::FeatureList::IsEnabled(features::kOrcaItalian) ||
          base::FeatureList::IsEnabled(features::kOrcaJapanese) ||
          base::FeatureList::IsEnabled(features::kOrcaNorwegian) ||
+         base::FeatureList::IsEnabled(features::kOrcaPolish) ||
          base::FeatureList::IsEnabled(features::kOrcaPortugese) ||
          base::FeatureList::IsEnabled(features::kOrcaSpanish) ||
          base::FeatureList::IsEnabled(features::kOrcaSwedish);
@@ -100,17 +102,8 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
     case manta::MantaStatusCode::kRestrictedCountry:
       return orca::mojom::TextQueryErrorCode::kRestrictedRegion;
     case manta::MantaStatusCode::kOk:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
-}
-
-orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
-  // In case the system locale mismatches the locale returned in the response,
-  // returns a generic error.
-
-  return orca::mojom::TextQueryError::New(
-      ConvertErrorCode(status.status_code),
-      /*message=*/GetSystemLocale() == status.locale ? status.message : "");
 }
 
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
@@ -199,7 +192,8 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
               return;
             }
 
-            auto error_response = ConvertErrorResponse(status);
+            auto error_response = orca::mojom::TextQueryError::New(
+                ConvertErrorCode(status.status_code), status.message);
             orca::mojom::TextQueryErrorCode error_code = error_response->code;
             std::move(process_callback)
                 .Run(orca::mojom::TextQueryResponse::NewError(

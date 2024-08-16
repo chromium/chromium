@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="HangWatcher.IsThreadHung.{BrowserProcessAndThreadType}"
-    enum="BooleanHung" expires_after="2024-12-08">
+    enum="BooleanHung" expires_after="2025-02-09">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

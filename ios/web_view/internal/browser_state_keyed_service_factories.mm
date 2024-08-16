@@ -21,10 +21,10 @@
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/signin/web_view_signin_client_factory.h"
+#import "ios/web_view/internal/sync/web_view_data_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_instance_id_profile_service_factory.h"
-#import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
@@ -41,12 +41,12 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   WebViewAffiliationServiceFactory::GetInstance();
   WebViewAutocompleteHistoryManagerFactory::GetInstance();
   WebViewBulkLeakCheckServiceFactory::GetInstance();
+  WebViewDataTypeStoreServiceFactory::GetInstance();
   WebViewDeviceInfoSyncServiceFactory::GetInstance();
   WebViewGCMProfileServiceFactory::GetInstance();
   WebViewIdentityManagerFactory::GetInstance();
   WebViewInstanceIDProfileServiceFactory::GetInstance();
   WebViewLanguageModelManagerFactory::GetInstance();
-  WebViewModelTypeStoreServiceFactory::GetInstance();
   WebViewPasswordManagerLogRouterFactory::GetInstance();
   WebViewPasswordRequirementsServiceFactory::GetInstance();
   WebViewPasswordReuseManagerFactory::GetInstance();

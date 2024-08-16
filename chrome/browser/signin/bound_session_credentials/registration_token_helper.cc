@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 
@@ -38,114 +39,122 @@ RegistrationTokenHelper::Result::Result(
       wrapped_binding_key(std::move(in_wrapped_binding_key)),
       registration_token(std::move(in_registration_token)) {}
 
-RegistrationTokenHelper::Result::~Result() = default;
 RegistrationTokenHelper::Result::Result(Result&& other) = default;
 RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
     Result&& other) = default;
 
-// static
-std::unique_ptr<RegistrationTokenHelper>
-RegistrationTokenHelper::CreateForSessionBinding(
+RegistrationTokenHelper::Result::~Result() = default;
+
+RegistrationTokenHelper::RegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const std::vector<uint8_t>& wrapped_binding_key_to_reuse)
+    : unexportable_key_service_(unexportable_key_service),
+      wrapped_binding_key_to_reuse_(wrapped_binding_key_to_reuse) {}
+
+RegistrationTokenHelper::~RegistrationTokenHelper() = default;
+
+void RegistrationTokenHelper::GenerateForSessionBinding(
     std::string_view challenge,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
+  CreateKeyLoaderIfNeeded();
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForSessionBinding,
       std::string(challenge), registration_url);
-  return base::WrapUnique(new RegistrationTokenHelper(
-      unexportable_key_service, std::move(header_and_payload_generator),
+  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
+      &RegistrationTokenHelper::SignHeaderAndPayload,
+      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
       std::move(callback)));
 }
-
-// static
-std::unique_ptr<RegistrationTokenHelper>
-RegistrationTokenHelper::CreateForTokenBinding(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+void RegistrationTokenHelper::GenerateForTokenBinding(
     std::string_view client_id,
     std::string_view auth_code,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
+  CreateKeyLoaderIfNeeded();
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
       &signin::CreateKeyRegistrationHeaderAndPayloadForTokenBinding,
       std::string(client_id), std::string(auth_code), registration_url);
-  return base::WrapUnique(new RegistrationTokenHelper(
-      unexportable_key_service, std::move(header_and_payload_generator),
+  key_loader_->InvokeCallbackAfterKeyLoaded(base::BindOnce(
+      &RegistrationTokenHelper::SignHeaderAndPayload,
+      weak_ptr_factory_.GetWeakPtr(), std::move(header_and_payload_generator),
       std::move(callback)));
 }
 
-RegistrationTokenHelper::~RegistrationTokenHelper() = default;
-
-void RegistrationTokenHelper::Start() {
-  CHECK(!started_);
-  started_ = true;
-  unexportable_key_service_->GenerateSigningKeySlowlyAsync(
-      kAcceptableAlgorithms, kTaskPriority,
-      base::BindOnce(&RegistrationTokenHelper::OnKeyGenerated,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-RegistrationTokenHelper::RegistrationTokenHelper(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    HeaderAndPayloadGenerator header_and_payload_generator,
-    base::OnceCallback<void(std::optional<Result>)> callback)
-    : unexportable_key_service_(unexportable_key_service),
-      header_and_payload_generator_(std::move(header_and_payload_generator)),
-      callback_(std::move(callback)) {}
-
-void RegistrationTokenHelper::OnKeyGenerated(
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        result) {
-  if (!result.has_value()) {
-    // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(std::nullopt);
+void RegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
+  if (key_loader_) {
     return;
   }
-  key_id_ = *result;
+
+  if (!wrapped_binding_key_to_reuse_.empty()) {
+    key_loader_ =
+        unexportable_keys::UnexportableKeyLoader::CreateFromWrappedKey(
+            unexportable_key_service_.get(), wrapped_binding_key_to_reuse_,
+            kTaskPriority);
+  } else {
+    key_loader_ = unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
+        unexportable_key_service_.get(), kAcceptableAlgorithms, kTaskPriority);
+  }
+}
+
+void RegistrationTokenHelper::SignHeaderAndPayload(
+    HeaderAndPayloadGenerator header_and_payload_generator,
+    base::OnceCallback<void(std::optional<Result>)> callback,
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        binding_key) {
+  if (!binding_key.has_value()) {
+    // TODO(alexilin): Record a histogram.
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
-      *unexportable_key_service_->GetAlgorithm(key_id_);
+      *unexportable_key_service_->GetAlgorithm(*binding_key);
   std::optional<std::string> header_and_payload =
-      header_and_payload_generator_.Run(
+      header_and_payload_generator.Run(
           algorithm,
-          *unexportable_key_service_->GetSubjectPublicKeyInfo(key_id_),
+          *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
           base::Time::Now());
 
   if (!header_and_payload.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  header_and_payload_ = std::move(*header_and_payload);
 
   unexportable_key_service_->SignSlowlyAsync(
-      key_id_, base::as_bytes(base::make_span(header_and_payload_)),
+      *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
       kTaskPriority,
-      base::BindOnce(&RegistrationTokenHelper::OnDataSigned,
-                     weak_ptr_factory_.GetWeakPtr(), algorithm));
+      base::BindOnce(&RegistrationTokenHelper::CreateRegistrationToken,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::string(*header_and_payload), *binding_key,
+                     std::move(callback)));
 }
 
-void RegistrationTokenHelper::OnDataSigned(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
-  if (!result.has_value()) {
+void RegistrationTokenHelper::CreateRegistrationToken(
+    std::string_view header_and_payload,
+    unexportable_keys::UnexportableKeyId binding_key,
+    base::OnceCallback<void(std::optional<Result>)> callback,
+    unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
+  if (!signature.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  const std::vector<uint8_t>& signature = *result;
+
+  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+      *unexportable_key_service_->GetAlgorithm(binding_key);
   std::optional<std::string> registration_token =
-      signin::AppendSignatureToHeaderAndPayload(header_and_payload_, algorithm,
-                                                signature);
+      signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
+                                                *signature);
   if (!registration_token.has_value()) {
     // TODO(alexilin): Record a histogram.
-    std::move(callback_).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   std::vector<uint8_t> wrapped_key =
-      *unexportable_key_service_->GetWrappedKey(key_id_);
-
-  std::move(callback_).Run(Result(key_id_, std::move(wrapped_key),
-                                  std::move(registration_token).value()));
+      *unexportable_key_service_->GetWrappedKey(binding_key);
+  std::move(callback).Run(Result(binding_key, std::move(wrapped_key),
+                                 std::move(registration_token).value()));
 }

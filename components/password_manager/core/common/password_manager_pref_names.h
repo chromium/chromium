@@ -138,30 +138,11 @@ enum class UseUpmLocalAndSeparateStoresState {
 inline constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
     "passwords_use_upm_local_and_separate_stores";
 
-// Boolean value that indicated the need of data migration between the two
-// backends due to sync settings change.
-inline constexpr char kRequiresMigrationAfterSyncStatusChange[] =
-    "requires_migration_after_sync_status_change";
-
 // Boolean value indicating if the user should not get UPM experience because
 // of user-unresolvable errors received on communication with Google Mobile
 // Services.
 inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
     "unenrolled_from_google_mobile_services_due_to_errors";
-
-// Integer value indicating the Google Mobile Services API error code that
-// caused the last unenrollment from the UPM experience. Only set if
-// |kUnenrolledFromGoogleMobileServicesDueToErrors| is true.
-inline constexpr char kUnenrolledFromGoogleMobileServicesAfterApiErrorCode[] =
-    "unenrolled_from_google_mobile_services_after_api_error_code";
-
-// Integer value indicating the version of the ignored/retriable error list
-// during the last unenrollment from the UPM experience. User will not be
-// re-enrolled if this value is set and is not less than the in the current
-// error list version.
-inline constexpr char
-    kUnenrolledFromGoogleMobileServicesWithErrorListVersion[] =
-        "unenrolled_from_google_mobile_services_with_error_list_version";
 
 // Timestamp at which the last UPM error message was shown to the user in
 // milliseconds since UNIX epoch (used in Java).
@@ -169,18 +150,6 @@ inline constexpr char
 // time interval (currently 24h).
 inline constexpr char kUPMErrorUIShownTimestamp[] =
     "profile.upm_error_ui_shown_timestamp";
-
-// Integer value indicating the number of times the client was reenrolled into
-// the UPM experiment after experiencing user-unresolvable errors in
-// communication with Google Mobile Services.
-inline constexpr char kTimesReenrolledToGoogleMobileServices[] =
-    "times_reenrolled_to_google_mobile_services";
-
-// Integer value indicating the number of times the client has attempted a
-// migration in an attempt to reenroll into the UPM experiment. Reset to zero
-// after a successful reenrollment.
-inline constexpr char kTimesAttemptedToReenrollToGoogleMobileServices[] =
-    "times_attempted_to_reenroll_to_google_mobile_services";
 
 // Boolean value meant to record in the prefs if the user clicked "Got it" in
 // the UPM local passwords migration warning. When set to true, the warning
@@ -220,12 +189,6 @@ inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
 // Whether the post password migration sheet ahould be shown at startup.
 inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
     "should_show_post_password_migration_sheet_at_startup";
-
-// Becomes true when a user received an error from GMSCore. It's later used to
-// guard activation algorithm of "Remove unenrollment" experiment.
-inline constexpr char kUserReceivedGMSCoreError[] =
-    "user_received_gmscore_error";
-
 #endif
 
 #if BUILDFLAG(IS_WIN)

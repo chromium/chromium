@@ -127,16 +127,15 @@ const gfx::VectorIcon& IntentChipButton::GetIcon() const {
     return kOpenInNewChromeRefreshIcon;
 }
 
-SkColor IntentChipButton::GetBackgroundColor() const {
+ui::ColorId IntentChipButton::GetBackgroundColorId() const {
   DCHECK(GetOmniboxChipTheme() != OmniboxChipTheme::kIconStyle);
-    return GetColorProvider()->GetColor(kColorOmniboxIntentChipBackground);
+  return kColorOmniboxIntentChipBackground;
 }
 
-SkColor IntentChipButton::GetForegroundColor() const {
-  return GetColorProvider()->GetColor(GetOmniboxChipTheme() ==
-                                              OmniboxChipTheme::kIconStyle
-                                          ? kColorOmniboxResultsIcon
-                                          : kColorOmniboxIntentChipIcon);
+ui::ColorId IntentChipButton::GetForegroundColorId() const {
+  return GetOmniboxChipTheme() == OmniboxChipTheme::kIconStyle
+             ? kColorOmniboxResultsIcon
+             : kColorOmniboxIntentChipIcon;
 }
 
 BEGIN_METADATA(IntentChipButton)

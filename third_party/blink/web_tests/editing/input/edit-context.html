@@ -22,6 +22,16 @@ test(function() {
 }, 'Setting .editContext on a stray div should not crash.');
 
 test(function() {
+  const iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  iframe.srcdoc = `<script>
+    const editContext = new EditContext();
+    window.top.document.querySelector("iframe").remove();
+    editContext.updateSelection(0, 0);
+  </scr` + `ipt>`;
+}, 'Calling updateSelection in an EditContext in a detached frame should not crash.');
+
+test(function() {
   const editContext = new EditContext();
   assert_not_equals(editContext, null);
   const test = document.createElement("div");
@@ -671,6 +681,32 @@ test(function() {
 
   test.remove();
 }, 'Testing firstRectForCharacterRange');
+
+test(function() {
+  const editContext = new EditContext();
+  const test = document.createElement("div");
+  document.body.appendChild(test);
+  test.editContext = editContext;
+  test.focus();
+  textInputController.insertText("abc");
+  textInputController.setComposition("def");
+
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 1), [], "No rects are provided if no bounds have been set");
+
+  const rect1 = new DOMRect(0, 2, 0, 0);
+  editContext.updateControlBounds(rect1);
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 1), [0, 2, 0, 0], "If there are no composition bounds and no selection bounds, fall back to control bounds");
+
+  const rect2 = new DOMRect(4, 2, 0, 0);
+  editContext.updateSelectionBounds(rect2);
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 1), [4, 2, 0, 0], "If there are no composition bounds, fall back to selection bounds");
+
+  const rect3 = new DOMRect(8, 2, 0, 0);
+  editContext.updateCharacterBounds(3, [rect3, rect3, rect3]);
+  assert_array_equals(textInputController.firstRectForCharacterRange(3, 1), [8, 2, 0, 0], "Character bounds should be used even if control and selection bounds are set");
+
+  test.remove();
+}, 'firstRectForCharacterRange empty control bounds and empty selection bounds fallbacks');
 </script>
 </body>
 </html>

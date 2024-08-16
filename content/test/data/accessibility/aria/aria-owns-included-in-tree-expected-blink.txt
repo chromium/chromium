@@ -12,7 +12,7 @@ rootWebArea
 ++++++splitter horizontal name='An aria-owned element is always in tree'
 ++++++group
 ++++++++genericContainer ignored
-++++++++++button name='button-in-owned-tree'
+++++++++++button name='button-in-owned-tree' nameFrom=value
 ++++++++++++staticText name='button-in-owned-tree'
 ++++++++++++++inlineTextBox name='button-in-owned-tree'
 ++++++splitter horizontal name='Element with aria-owns is always in tree'

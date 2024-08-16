@@ -276,6 +276,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override {}
   void ScheduleGrContextCleanup() override {}
   void HandleReturnData(base::span<const uint8_t> data) override {}
+  bool ShouldYield() override { return false; }
 
   std::unique_ptr<RasterDecoder> CreateDecoder() {
     command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();

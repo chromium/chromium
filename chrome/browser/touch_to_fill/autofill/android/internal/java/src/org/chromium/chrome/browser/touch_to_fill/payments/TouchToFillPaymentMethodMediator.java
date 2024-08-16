@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -34,6 +33,7 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodComponent.Delegate;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -45,7 +45,6 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -143,32 +142,34 @@ class TouchToFillPaymentMethodMediator {
     }
 
     void showSheet(
-            List<Pair<CreditCard, Boolean>> cardsWithAcceptabilities,
+            List<CreditCard> cards,
+            List<AutofillSuggestion> suggestions,
             boolean shouldShowScanCreditCard,
             Function<TouchToFillPaymentMethodProperties.CardImageMetaData, Drawable>
                     cardImageFunction) {
         mInputProtector.markShowTime();
 
-        assert cardsWithAcceptabilities != null;
-        mCards = new ArrayList<>();
+        assert cards != null;
+        mCards = cards;
         mIbans = null;
+        assert mCards.size() == suggestions.size()
+                : "The number of cards and suggestions should be same.";
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        for (int i = 0; i < cardsWithAcceptabilities.size(); ++i) {
-            CreditCard card = cardsWithAcceptabilities.get(i).first;
-            mCards.add(card);
+        for (int i = 0; i < mCards.size(); ++i) {
+            CreditCard card = mCards.get(i);
             final PropertyModel model =
                     createCardModel(
                             card,
-                            cardsWithAcceptabilities.get(i).second,
-                            new FillableItemCollectionInfo(i + 1, cardsWithAcceptabilities.size()),
+                            /* isAcceptable= */ !suggestions.get(i).applyDeactivatedStyle(),
+                            new FillableItemCollectionInfo(i + 1, mCards.size()),
                             cardImageFunction);
             sheetItems.add(new ListItem(CREDIT_CARD, model));
         }
 
-        if (cardsWithAcceptabilities.size() == 1) {
+        if (mCards.size() == 1) {
             // Use the credit card model as the property model for the fill button too
             assert sheetItems.get(0).type == CREDIT_CARD;
             sheetItems.add(new ListItem(FILL_BUTTON, sheetItems.get(0).model));

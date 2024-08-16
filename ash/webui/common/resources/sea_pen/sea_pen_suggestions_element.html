@@ -4,7 +4,7 @@
     color: var(--cros-text-color-primary);
     display: flex;
     height: 32px;
-    margin-top: 24px;
+    margin-top: 12px;
     overflow: hidden;
   }
 
@@ -19,34 +19,38 @@
   }
 
   #container cr-button {
-    background-color: var(--cros-sys-base_elevated);
+    background-color: transparent;
     border: 1px solid var(--cros-sys-separator);
     border-radius: 8px;
     color: var(--cros-sys-on_surface);
-    font-family: var(--cros-button-1-font-family);
-    font-size: var(--cros-button-1-font-size);
+    font: var(--cros-button-1-font);
     height: 32px;
     padding: 6px 12px;
   }
 
-  #container cr-button.shuffle {
-    background-color: transparent;
-    border: none;
+  #container cr-button:focus-visible {
+    outline-offset: -2px;
   }
 
-  #shuffle iron-icon {
-    margin-inline-start: 4px;
+  #container cr-button.shuffle {
+    border: none;
   }
 </style>
 <div id="container">
+  <iron-a11y-keys id="keys" keys="left right"
+      on-keys-pressed="onSuggestionKeyPressed_">
+  </iron-a11y-keys>
   <iron-selector
       id="suggestionSelector"
       selected="0"
+      selected-item="{{ironSelectedSuggestion_}}"
       role="radiogroup">
     <template is="dom-repeat" items="[[suggestions_]]" as="suggestion">
       <cr-button
           class="suggestion"
-          on-click="onClickSuggestion_">
+          on-click="onClickSuggestion_"
+          role="radio"
+          tabindex$="[[getSuggestionTabIndex_(index)]]">
         [[suggestion]]
       </cr-button>
     </template>

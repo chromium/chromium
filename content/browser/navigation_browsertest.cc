@@ -79,6 +79,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/slow_http_response.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
@@ -3405,6 +3406,51 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_FALSE(navigation_1.was_same_document());
 }
 
+namespace {
+class VisualTransitionAddingObserver : public WebContentsObserver {
+ public:
+  VisualTransitionAddingObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~VisualTransitionAddingObserver() override = default;
+
+  void DidStartNavigation(NavigationHandle* handle) override {
+    NavigationRequest* navigation_request = NavigationRequest::From(handle);
+    navigation_request->set_was_initiated_by_animated_transition();
+  }
+};
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       HasUaVisualTransitionValueForSameDocumentNavigation) {
+  WebContents* wc = shell()->web_contents();
+  GURL url1 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag1");
+  GURL url2 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag2");
+  NavigationHandleCommitObserver navigation_0(wc, url1);
+  NavigationHandleCommitObserver navigation_1(wc, url2);
+
+  ASSERT_TRUE(NavigateToURL(shell(), url1));
+  NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(NavigateToURL(shell(), url2));
+  // The NavigationEntry changes on a same-document navigation.
+  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
+  ASSERT_FALSE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
+
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  VisualTransitionAddingObserver observer(web_contents());
+  TestNavigationManager manager(web_contents(), url1);
+  wc->GetController().GoBack();
+
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  ASSERT_TRUE(EvalJs(wc, "hasUAVisualTransitionValue").ExtractBool());
+}
+
 // This navigation is allowed by the browser, but the network will not be able
 // to connect to the site, so the NavigationRequest fails on the browser side
 // and is redirected to an error page. Performing another navigation should
@@ -3892,6 +3938,25 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
           JsReplace(
               "try { history.pushState('state', '', $1) } catch (e) { e.name }",
               long_url)));
+}
+
+// Ensure that no crash occurs when doing a same-document navigation within a
+// site-less SiteInstance, such as for a browser-initiated about:blank.
+// See https://crbug.com/359807735.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, SameDocumentSitelessNavigation) {
+  WebContents* web_contents = shell()->web_contents();
+  GURL url1 = GURL("about:blank#1");
+  GURL url2 = GURL("about:blank#2");
+  NavigationHandleCommitObserver navigation_1(web_contents, url1);
+  NavigationHandleCommitObserver navigation_2(web_contents, url2);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_TRUE(navigation_2.has_committed());
+  EXPECT_FALSE(navigation_1.was_same_document());
+  EXPECT_TRUE(navigation_2.was_same_document());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
@@ -9478,6 +9543,109 @@ IN_PROC_BROWSER_TEST_F(DeferSpeculativeRFHCreationReuseRFHTest,
             NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   ASSERT_FALSE(GetMainFrameSpeculativeRFH(web_contents));
+}
+
+class VisualPropertiesSynchronization : public NavigationBrowserTest {
+ public:
+  VisualPropertiesSynchronization() {
+    // The deferral of the RFH prevents the potential race condition that this
+    // regression test is attempting to check.
+    feature_list_.InitAndDisableFeature(features::kDeferSpeculativeRFHCreation);
+
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+
+    // This test requires cross-process iframes.
+    command_line->AppendSwitch(switches::kSitePerProcess);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/352093463.
+// Verify that when a cross-origin subframe initiates a top-level navigation to
+// a same-origin (with respect to itself) URL, that the visual properties
+// are invalidated correctly.
+IN_PROC_BROWSER_TEST_F(VisualPropertiesSynchronization,
+                       RemoteToLocalTransition) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b_top_level(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b_iframe(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(ExecJs(shell(),
+                     "let iframe = document.createElement('iframe');"
+                     "iframe.id = 'iframe_id';"
+                     "iframe.src = 'about:blank';"
+                     "iframe.style = 'width: 0px; height: 0px;';"
+                     "document.body.appendChild(iframe);"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Start a navigation of the top-level document to b.com. Before we leave
+  // the original a.com, load an iframe to b.com which will be hosted in the
+  // same b.com process.
+  content::TestNavigationManager top_level_navigation(web_contents,
+                                                      url_b_top_level);
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("window.location.replace($1);", url_b_top_level)));
+
+  // Don't proceed with the top-level navigation (wait while we complete our
+  // iframe nav to the same origin to commit).
+  EXPECT_TRUE(top_level_navigation.WaitForLoaderStart());
+  EXPECT_FALSE(top_level_navigation.was_committed());
+
+  // Navigate the iframe to a 'b.com' URL, making a remote frame within the
+  // a.com page.
+  FrameTreeNode* root =
+      FrameTreeNode::From(web_contents->GetPrimaryMainFrame());
+  CHECK(root->child_count() > 0u);
+  FrameTreeNode* iframe = root->child_at(0);
+  TestFrameNavigationObserver iframe_load_observer_first(
+      iframe->current_frame_host());
+  ASSERT_TRUE(
+      BeginNavigateIframeToURL(web_contents, "iframe_id", url_b_iframe));
+  iframe_load_observer_first.WaitForCommit();
+  EXPECT_EQ(url_b_iframe, iframe_load_observer_first.last_committed_url());
+  EXPECT_TRUE(iframe_load_observer_first.last_navigation_succeeded());
+
+  // Confirm the cross-process iframe process is not (yet) the main frame's
+  // process.
+  RenderFrameHostImpl* subframe_rfh = nullptr;
+  subframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(subframe_rfh);
+  RenderProcessHost* cross_origin_iframe_process = subframe_rfh->GetProcess();
+  ASSERT_NE(cross_origin_iframe_process,
+            web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Allow the top-level navigation to proceed.
+  EXPECT_FALSE(top_level_navigation.was_committed());
+  EXPECT_TRUE(top_level_navigation.WaitForNavigationFinished());
+  EXPECT_TRUE(top_level_navigation.was_committed());
+
+  // The main frame should now be using the same 'b.com' renderer.
+  ASSERT_EQ(cross_origin_iframe_process,
+            web_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Verify that the browser side's VisualProperties' visible viewport size is
+  // non-zero.
+  root = FrameTreeNode::From(web_contents->GetPrimaryMainFrame());
+  auto* root_rwh = root->current_frame_host()->GetRenderWidgetHost();
+  std::optional<blink::VisualProperties> visual_properties =
+      root_rwh->LastComputedVisualProperties();
+  EXPECT_TRUE(visual_properties);
+  EXPECT_NE(gfx::Size(0, 0), visual_properties->visible_viewport_size);
+
+  // Verify the renderer received the correct size for the viewport.
+  EXPECT_GT(EvalJs(web_contents->GetPrimaryMainFrame(), "window.innerWidth;")
+                .ExtractDouble(),
+            0);
+  EXPECT_GT(EvalJs(web_contents->GetPrimaryMainFrame(), "window.innerHeight;")
+                .ExtractDouble(),
+            0);
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -205,11 +205,11 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
   // emulation override is applied on a higher level (renderer or browser),
   // so copy User-Agent from the original request, if present.
   // TODO(caseq, morlovich): do the same for client hints.
-  std::string user_agent;
-  if (request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent,
-                                &user_agent)) {
+  std::optional<std::string> user_agent =
+      request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent);
+  if (user_agent) {
     preflight_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                         user_agent);
+                                         *user_agent);
   }
 
   // Additional headers that the algorithm in the spec does not require, but
@@ -286,7 +286,7 @@ base::expected<void, CorsErrorStatus> CheckPreflightAccess(
       case mojom::CorsError::kInvalidAllowCredentials:
         return mojom::CorsError::kPreflightInvalidAllowCredentials;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   };
   cors_result.error().cors_error =

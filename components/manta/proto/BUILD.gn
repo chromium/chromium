@@ -12,4 +12,8 @@ proto_library("proto") {
     "rpc_status.proto",
     "sparky.proto",
   ]
+
+  if (is_chrome_branded) {
+    sources += [ "//components/accessibility/internal/anchovy/anchovy.proto" ]
+  }
 }

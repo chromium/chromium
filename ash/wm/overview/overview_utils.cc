@@ -281,7 +281,7 @@ gfx::Rect GetGridBoundsInScreen(
       case SplitViewController::State::kBothSnapped:
         // When this function is called, SplitViewController should have
         // already handled the state change.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -317,11 +317,11 @@ gfx::Rect GetGridBoundsInScreen(
     }
   }
 
-  // Clamp the bounds of the overview grid such that it doesn't go below 1/3 of
-  // the work area length.
+  // Clamp the bounds of the overview grid such that it doesn't go below
+  // `kOverviewGridClampThresholdRatio` of the work area length.
   const bool horizontal = IsLayoutHorizontal(target_root);
-  const int min_length =
-      (horizontal ? work_area.width() : work_area.height()) / 3;
+  const int min_length = (horizontal ? work_area.width() : work_area.height()) *
+                         kOverviewGridClampThresholdRatio;
   const int current_length = horizontal ? bounds.width() : bounds.height();
 
   if (current_length > min_length)

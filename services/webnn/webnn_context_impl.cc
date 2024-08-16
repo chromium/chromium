@@ -8,10 +8,11 @@
 #include <utility>
 
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
@@ -83,6 +84,12 @@ void WebNNContextImpl::CreateBuffer(
     mojom::BufferInfoPtr buffer_info,
     mojom::WebNNContext::CreateBufferCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ValidateBuffer(properties_, buffer_info->descriptor).has_value()) {
+    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
+    return;
+  }
+
   mojo::PendingAssociatedRemote<mojom::WebNNBuffer> remote;
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
   CreateBufferImpl(
@@ -112,7 +119,7 @@ void WebNNContextImpl::DidCreateWebNNBufferImpl(
 }
 
 void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
-    const base::UnguessableToken& handle) {
+    const blink::WebNNBufferToken& handle) {
   const auto it = buffer_impls_.find(handle);
   CHECK(it != buffer_impls_.end());
   // Upon calling erase, the handle will no longer refer to a valid
@@ -121,12 +128,12 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNBufferImpl(
 }
 
 void WebNNContextImpl::OnLost(std::string_view message) {
-  receiver_.ResetWithReason(/*custom_reason=*/0, message);
+  receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
   context_provider_->OnConnectionError(this);
 }
 
 base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
-    const base::UnguessableToken& buffer_handle) {
+    const blink::WebNNBufferToken& buffer_handle) {
   const auto it = buffer_impls_.find(buffer_handle);
   if (it == buffer_impls_.end()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
@@ -137,17 +144,41 @@ base::optional_ref<WebNNBufferImpl> WebNNContextImpl::GetWebNNBufferImpl(
 
 ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
     ContextProperties backend_context_properties) {
-  static constexpr SupportedDataTypes kGatherIndicesSupportedDataTypes = {
-      OperandDataType::kInt32, OperandDataType::kUint32,
-      OperandDataType::kInt64};
-
   // Only intersects for ones that have limits defined in the specification.
   // For ones that has no limit, no need to intersect with
   // `SupportedDataTypes::All()`.
+  backend_context_properties.data_type_limits.logical_not_input.RetainAll(
+      DataTypeConstraint::kUint8);
+  backend_context_properties.data_type_limits.logical_output.RetainAll(
+      DataTypeConstraint::kUint8);
+  backend_context_properties.data_type_limits.abs_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.ceil_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.cos_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.erf_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.exp_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.floor_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.log_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.neg_input.RetainAll(
+      DataTypeConstraint::kFloat16To32Int8To32);
+  backend_context_properties.data_type_limits.reciprocal_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sin_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.sqrt_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.tan_input.RetainAll(
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.elu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.gather_indices.RetainAll(
-      kGatherIndicesSupportedDataTypes);
+      DataTypeConstraint::kGatherIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.gelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.leaky_relu_input.RetainAll(

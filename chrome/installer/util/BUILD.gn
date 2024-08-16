@@ -148,6 +148,8 @@ static_library("with_no_strings") {
       "l10n_string_util.h",
       "logging_installer.cc",
       "logging_installer.h",
+      "per_install_values.cc",
+      "per_install_values.h",
       "registry_entry.cc",
       "registry_entry.h",
       "scoped_token_privilege.cc",
@@ -285,7 +287,10 @@ if (is_win) {
   # setup_unittests, which does so.
   source_set("serial_unittests") {
     testonly = true
-    sources = [ "install_service_work_item_unittest.cc" ]
+    sources = [
+      "install_service_work_item_unittest.cc",
+      "per_install_values_unittest.cc",
+    ]
     deps = [
       ":with_no_strings",
       "//base",

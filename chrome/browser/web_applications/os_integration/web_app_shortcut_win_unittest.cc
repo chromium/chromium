@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -64,6 +65,19 @@ void CreateAndVerifyTestAppShortcut(
   const std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
       shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
   EXPECT_EQ(1u, result.size());
+}
+
+// Synchronous wrapper for UpdatePlatformShortcuts for ease of testing.
+Result UpdatePlatformShortcuts(
+    const base::FilePath& web_app_path,
+    const std::u16string& old_app_title,
+    std::optional<ShortcutLocations> user_specified_locations,
+    const ShortcutInfo& shortcut_info) {
+  base::test::TestFuture<Result> result;
+  web_app::internals::UpdatePlatformShortcuts(
+      web_app_path, old_app_title, std::move(user_specified_locations),
+      result.GetCallback(), shortcut_info);
+  return result.Get();
 }
 
 }  // namespace

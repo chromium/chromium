@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -68,25 +69,37 @@ LanguageDetectionModel::LanguageDetectionModel()
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
 std::vector<Prediction> LanguageDetectionModel::Predict(
-    const std::u16string& sampled_str) const {
+    const std::u16string& contents,
+    bool truncate) const {
   TRACE_EVENT("browser", "LanguageDetectionModel::DetectTopLanguage");
   base::ElapsedTimer timer;
 
   CHECK(IsAvailable());
-  std::string utf8_sample = base::UTF16ToUTF8(sampled_str);
+
+  std::string utf8_contents;
+  size_t convert_length =
+      truncate ? std::min(kModelTruncationLength, contents.length())
+               : contents.length();
+
+  base::UTF16ToUTF8(contents.data(), convert_length, &utf8_contents);
 
   // TFLite expects all strings to be aligned to 4 bytes.
   constexpr size_t kAlignTo = sizeof(int32_t);
-  if (utf8_sample.size() % kAlignTo != 0) {
+  if (utf8_contents.size() % kAlignTo != 0) {
     // Pad the input string to be aligned for TFLite
-    utf8_sample += std::string(kAlignTo - utf8_sample.size() % kAlignTo, ' ');
+    utf8_contents +=
+        std::string(kAlignTo - utf8_contents.size() % kAlignTo, ' ');
   }
 
-  auto status_or_categories = lang_detection_model_->ClassifyText(utf8_sample);
+  auto status_or_categories =
+      lang_detection_model_->ClassifyText(utf8_contents);
   base::UmaHistogramTimes("LanguageDetection.TFLiteModel.ClassifyText.Duration",
                           timer.Elapsed());
   base::UmaHistogramCounts1M("LanguageDetection.TFLiteModel.ClassifyText.Size",
-                             utf8_sample.size());
+                             utf8_contents.size());
+  base::UmaHistogramCounts1M(
+      "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
+      contents.size());
   bool detected =
       status_or_categories.ok() && !status_or_categories.value().empty();
   base::UmaHistogramBoolean(
@@ -135,9 +148,8 @@ void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
 #endif
   {
     std::string file_content(model_file.GetLength(), '\0');
-    int bytes_read =
-        model_file.Read(0, std::data(file_content), model_file.GetLength());
-    if (bytes_read != model_file.GetLength()) {
+    if (!model_file.ReadAndCheck(0,
+                                 base::as_writable_byte_span(file_content))) {
       return;
     }
     *options.mutable_base_options()

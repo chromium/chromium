@@ -13,11 +13,9 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/sync/service/sync_service.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
@@ -36,21 +34,8 @@
 class FilterDelegateImpl
     : public supervised_user::SupervisedUserURLFilter::Delegate {
  public:
-  std::string GetCountryCode() const override {
-    std::string country;
-    variations::VariationsService* variations_service =
-        g_browser_process->variations_service();
-    if (variations_service) {
-      country = variations_service->GetStoredPermanentCountry();
-      if (country.empty()) {
-        country = variations_service->GetLatestCountry();
-      }
-    }
-    return country;
-  }
-
-  version_info::Channel GetChannel() const override {
-    return chrome::GetChannel();
+  bool SupportsWebstoreURL(const GURL& url) const override {
+    return supervised_user::IsSupportedChromeExtensionURL(url);
   }
 };
 
@@ -90,7 +75,6 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
-      base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL),
       std::make_unique<FilterDelegateImpl>(),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       /*can_show_first_time_interstitial_banner=*/!profile->IsNewProfile());

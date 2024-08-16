@@ -34,6 +34,7 @@
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/web_extractor.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/unified_consent/consent_throttle.h"
@@ -192,7 +193,9 @@ using UrlProductIdentifierTupleCallback =
 //         browser()->profile()));
 // clang-format on
 
-class ShoppingService : public KeyedService, public base::SupportsUserData {
+class ShoppingService : public KeyedService,
+                        public base::SupportsUserData,
+                        public history::HistoryServiceObserver {
  public:
   ShoppingService(
       const std::string& country_on_startup,
@@ -426,6 +429,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   virtual ClusterManager* GetClusterManager();
 
+  // history::HistoryServiceObserver:
+  void OnHistoryDeletions(history::HistoryService* history_service,
+                          const history::DeletionInfo& deletion_info) override;
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -470,6 +477,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // A notification that the active web wrapper was switched. This signal is
   // analogous to switching tabs.
   void OnWebWrapperSwitched(WebWrapper* web);
+
+  // Called to signal that a WebWrapper is viewed. This happens when a new
+  // navigation is committed in a focused tab.
+  void OnWebWrapperViewed(WebWrapper* web);
 
   // Schedule (or reschedule) the on-page local extraction execution. Calling
   // this sequentially for the same web wrapper with the same URL will cancel
@@ -612,6 +623,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
 
+  void UpdateRecentlyViewedURL(WebWrapper* web);
+
   // Return all ProductSpecificationsSets from ProductSpecificationsService.
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecificationSets();
@@ -696,6 +709,10 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // This is used to avoid repeated calls to get product info for the same URL.
   std::map<GURL, std::vector<ProductInfoCallback>>
       on_demand_product_info_callbacks_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Ensure certain functions are being executed on the same thread.
   SEQUENCE_CHECKER(sequence_checker_);

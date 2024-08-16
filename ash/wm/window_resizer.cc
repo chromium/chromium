@@ -69,8 +69,7 @@ gfx::ResizeEdge GetWindowResizeEdge(int window_component) {
     case HTBOTTOMRIGHT:
       return gfx::ResizeEdge::kBottomRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::ResizeEdge::kBottomRight;
+      NOTREACHED();
   }
 }
 

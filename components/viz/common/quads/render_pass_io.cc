@@ -707,6 +707,7 @@ const char* ColorSpacePrimaryIdToString(gfx::ColorSpace::PrimaryID id) {
     MATCH_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
     MATCH_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
     MATCH_ENUM_CASE(PrimaryID, CUSTOM)
+    MATCH_ENUM_CASE(PrimaryID, EBU_3213_E)
   }
 }
 
@@ -788,6 +789,7 @@ uint8_t StringToColorSpacePrimaryId(const std::string& token) {
   MATCH_ENUM_CASE(PrimaryID, APPLE_GENERIC_RGB)
   MATCH_ENUM_CASE(PrimaryID, WIDE_GAMUT_COLOR_SPIN)
   MATCH_ENUM_CASE(PrimaryID, CUSTOM)
+  MATCH_ENUM_CASE(PrimaryID, EBU_3213_E)
   return -1;
 }
 

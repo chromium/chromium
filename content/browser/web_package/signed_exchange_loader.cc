@@ -5,6 +5,7 @@
 #include "content/browser/web_package/signed_exchange_loader.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -35,6 +36,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/web_package/web_package_request_matcher.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -48,8 +50,9 @@ SignedExchangeHandlerFactory* g_signed_exchange_factory_for_testing_ = nullptr;
 net::IsolationInfo CreateIsolationInfoForCertFetch(
     const network::ResourceRequest& outer_request) {
   if (!outer_request.trusted_params ||
-      outer_request.trusted_params->isolation_info.IsEmpty())
+      outer_request.trusted_params->isolation_info.IsEmpty()) {
     return net::IsolationInfo();
+  }
   return net::IsolationInfo::Create(
       net::IsolationInfo::RequestType::kOther,
       *outer_request.trusted_params->isolation_info.top_frame_origin(),
@@ -71,7 +74,6 @@ SignedExchangeLoader::SignedExchangeLoader(
     std::unique_ptr<SignedExchangeReporter> reporter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     URLLoaderThrottlesGetter url_loader_throttles_getter,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
     int frame_tree_node_id,
     const std::string& accept_langs,
     bool keep_entry_for_prefetch_cache)
@@ -88,6 +90,10 @@ SignedExchangeLoader::SignedExchangeLoader(
     cache_entry_ = std::make_unique<PrefetchedSignedExchangeCacheEntry>();
     cache_entry_->SetOuterUrl(outer_request_.url);
     cache_entry_->SetOuterResponse(outer_response_head_->Clone());
+  } else {
+    // `outer_request` corresponds to a navigation, so we expect the
+    // TrustedParams and IsolationInfo to be set.
+    CHECK(outer_request.trusted_params.has_value());
   }
 
   url_loader_.Bind(std::move(endpoints->url_loader));
@@ -95,7 +101,8 @@ SignedExchangeLoader::SignedExchangeLoader(
   auto cert_fetcher_factory = SignedExchangeCertFetcherFactory::Create(
       std::move(url_loader_factory), std::move(url_loader_throttles_getter),
       outer_request_.throttling_profile_id,
-      CreateIsolationInfoForCertFetch(outer_request_));
+      CreateIsolationInfoForCertFetch(outer_request_),
+      outer_request_.request_initiator);
 
   if (g_signed_exchange_factory_for_testing_) {
     signed_exchange_handler_ = g_signed_exchange_factory_for_testing_->Create(
@@ -120,9 +127,9 @@ SignedExchangeLoader::SignedExchangeLoader(
         base::BindOnce(&SignedExchangeLoader::OnHTTPExchangeFound,
                        weak_factory_.GetWeakPtr()),
         std::move(cert_fetcher_factory),
-        outer_request_.trusted_params
-            ? std::make_optional(outer_request_.trusted_params->isolation_info)
-            : std::nullopt,
+        keep_entry_for_prefetch_cache
+            ? std::nullopt
+            : std::make_optional(outer_request_.trusted_params->isolation_info),
         outer_request_.load_flags, outer_response_head_->remote_endpoint,
         std::make_unique<blink::WebPackageRequestMatcher>(
             outer_request_.headers, accept_langs),

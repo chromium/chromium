@@ -159,8 +159,7 @@ MojomColorMode EnumTraits<MojomColorMode, ProtoColorMode>::ToMojom(
     case ProtoColorMode::MODE_UNSPECIFIED:
     case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return MojomColorMode::kColor;
+      NOTREACHED();
   }
 }
 
@@ -179,8 +178,7 @@ bool EnumTraits<MojomColorMode, ProtoColorMode>::FromMojom(
       *out = ProtoColorMode::MODE_COLOR;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -199,8 +197,7 @@ MojomSourceType EnumTraits<MojomSourceType, ProtoSourceType>::ToMojom(
       return MojomSourceType::kUnknown;
     case ProtoSourceType::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoSourceType::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return MojomSourceType::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -225,8 +222,7 @@ bool EnumTraits<MojomSourceType, ProtoSourceType>::FromMojom(
       *out = ProtoSourceType::SOURCE_UNSPECIFIED;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -239,8 +235,7 @@ MojomFileType EnumTraits<MojomFileType, ProtoImageFormat>::ToMojom(
       return MojomFileType::kJpg;
     case ProtoImageFormat::ImageFormat_INT_MIN_SENTINEL_DO_NOT_USE_:
     case ProtoImageFormat::ImageFormat_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return MojomFileType::kJpg;
+      NOTREACHED();
   }
 }
 
@@ -259,8 +254,7 @@ bool EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
       *out = ProtoImageFormat::IMAGE_FORMAT_JPEG;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -285,8 +279,7 @@ MojomScanResult EnumTraits<MojomScanResult, ProtoScanFailureMode>::ToMojom(
     case ProtoScanFailureMode::ScanFailureMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MojomScanResult::kUnknownError;
+  NOTREACHED();
 }
 
 // static
@@ -316,8 +309,7 @@ bool EnumTraits<MojomScanResult, ProtoScanFailureMode>::FromMojom(
       *output = ProtoScanFailureMode::SCAN_FAILURE_MODE_IO_ERROR;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

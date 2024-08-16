@@ -1945,7 +1945,7 @@ class MediaStreamManagerCapturedSurfaceControlActionTest
         return;
       }
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   const CapturedSurfaceControlAPI tested_api_;

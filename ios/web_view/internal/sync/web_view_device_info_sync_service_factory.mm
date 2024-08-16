@@ -12,14 +12,14 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
-#import "components/sync/model/model_type_store_service.h"
+#import "components/sync/model/data_type_store_service.h"
 #import "components/sync/protocol/sync_enums.pb.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/sync_device_info/device_info_sync_client.h"
 #import "components/sync_device_info/device_info_sync_service_impl.h"
 #import "components/sync_device_info/local_device_info_provider_impl.h"
 #import "components/version_info/version_info.h"
-#import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_data_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
@@ -67,14 +67,14 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
+  std::optional<syncer::DataTypeSet> GetInterestedDataTypes() const override {
     if (sync_invalidations_service_) {
       return sync_invalidations_service_->GetInterestedDataTypes();
     }
     // If the service is not enabled, then the list of types must be empty, not
     // unknown (std::nullopt). This is needed to reset previous types if the
     // invalidations have been turned off.
-    return syncer::ModelTypeSet();
+    return syncer::DataTypeSet();
   }
 
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
@@ -113,7 +113,7 @@ WebViewDeviceInfoSyncServiceFactory::WebViewDeviceInfoSyncServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "DeviceInfoSyncService",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
+  DependsOn(WebViewDataTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
 }
 
@@ -138,7 +138,7 @@ WebViewDeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
       browser_state->GetPrefs(), base::DefaultClock::GetInstance());
 
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
-      WebViewModelTypeStoreServiceFactory::GetForBrowserState(browser_state)
+      WebViewDataTypeStoreServiceFactory::GetForBrowserState(browser_state)
           ->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
       std::move(device_info_sync_client), sync_invalidations_service);

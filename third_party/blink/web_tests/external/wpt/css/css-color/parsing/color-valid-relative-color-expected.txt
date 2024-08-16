@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1046 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "rgb(from rebeccapurple r g b)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.4 0.2 0.6)\nExpected: rgb(from rebeccapurple r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "rgb(from rebeccapurple r g b / alpha)" should set the property value
@@ -136,8 +136,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.2 0 0.6)\nExpected: rgb(from rgb(51, 0, 153) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 51 +/- 0.01, expected 51 but got 0.2
 [FAIL] e.style['color'] = "rgb(from rgb(20% 40% 60% / none) r g b / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.2 0.4 0.6 / 0)\nExpected: rgb(from rgba(51, 102, 153, 0) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 51 +/- 0.01, expected 51 but got 0.2
-[FAIL] e.style['color'] = "rgb(from currentColor r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "rgb(from color-mix(in srgb, red, red) r g b / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: rgb(from color-mix(in srgb, red, red) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "rgba(from rebeccapurple r g b)" should set the property value
@@ -276,8 +274,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.2 0 0.6)\nExpected: rgb(from rgb(51, 0, 153) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 51 +/- 0.01, expected 51 but got 0.2
 [FAIL] e.style['color'] = "rgba(from rgb(20% 40% 60% / none) r g b / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.2 0.4 0.6 / 0)\nExpected: rgb(from rgba(51, 102, 153, 0) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 51 +/- 0.01, expected 51 but got 0.2
-[FAIL] e.style['color'] = "rgba(from currentColor r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "rgba(from color-mix(in srgb, red, red) r g b / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: rgb(from color-mix(in srgb, red, red) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "hsl(from rebeccapurple h s l)" should set the property value
@@ -386,8 +382,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.4 0.6 0.4 / 0)\nExpected: hsl(from rgba(102, 153, 102, 0) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 102 +/- 0.01, expected 102 but got 0.4
 [FAIL] e.style['color'] = "hsl(from hsl(none 20% 50% / .5) h s l / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: hsl(from rgba(153, 102, 102, 0.5) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.01, expected 153 but got 0.6
-[FAIL] e.style['color'] = "hsl(from currentColor h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsl(from color-mix(in srgb, red, red) h s l / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hsl(from color-mix(in srgb, red, red) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "hsla(from rebeccapurple h s l)" should set the property value
@@ -496,8 +490,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.4 0.6 0.4 / 0)\nExpected: hsl(from rgba(102, 153, 102, 0) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 102 +/- 0.01, expected 102 but got 0.4
 [FAIL] e.style['color'] = "hsla(from hsl(none 20% 50% / .5) h s l / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.6 0.4 0.4 / 0.5)\nExpected: hsl(from rgba(153, 102, 102, 0.5) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 153 +/- 0.01, expected 153 but got 0.6
-[FAIL] e.style['color'] = "hsla(from currentColor h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsla(from color-mix(in srgb, red, red) h s l / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 1 0 0)\nExpected: hsl(from color-mix(in srgb, red, red) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "hwb(from rebeccapurple h w b)" should set the property value
@@ -606,8 +598,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(srgb 0.2 0.5 0.2 / 0)\nExpected: hwb(from rgba(51, 128, 51, 0) h w b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 51 +/- 0.01, expected 51 but got 0.2
 [FAIL] e.style['color'] = "hwb(from hwb(none 20% 50% / .5) h w b / alpha)" should set the property value
   Colors do not match.\nActual:   color(srgb 0.5 0.2 0.2 / 0.5)\nExpected: hwb(from rgba(128, 51, 51, 0.5) h w b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 128 +/- 0.01, expected 128 but got 0.5
-[FAIL] e.style['color'] = "hwb(from currentColor h w b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hwb(from color-mix(in srgb, red, red) h w b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "hwb(from color-mix(in srgb, red, red) h w b / alpha)" but got "color(srgb 1 0 0)"
 [FAIL] e.style['color'] = "lab(from lab(25 20 50) l a b)" should set the property value
@@ -702,8 +692,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "lab(from lab(25 none 50) l a b)" but got "lab(25 0 50)"
 [FAIL] e.style['color'] = "lab(from lab(25 20 50 / none) l a b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "lab(from lab(25 20 50 / none) l a b / alpha)" but got "lab(25 20 50 / 0)"
-[FAIL] e.style['color'] = "lab(from currentColor l a b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "lab(from color-mix(in lab, lab(25 20 50), lab(25 20 50)) l a b / alpha)" but got "lab(25 20 50)"
 [FAIL] e.style['color'] = "oklab(from oklab(0.25 0.2 0.5) l a b)" should set the property value
@@ -798,8 +786,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "oklab(from oklab(0.25 none 0.5) l a b)" but got "oklab(0.25 0 0.5)"
 [FAIL] e.style['color'] = "oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)" but got "oklab(0.25 0.2 0.5 / 0)"
-[FAIL] e.style['color'] = "oklab(from currentColor l a b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)" but got "oklab(0.25 0.2 0.5)"
 [FAIL] e.style['color'] = "lch(from lch(0.7 45 30) l c h)" should set the property value
@@ -910,8 +896,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "lch(from lch(0.7 none 30) l c h)" but got "lch(0.7 0 30)"
 [FAIL] e.style['color'] = "lch(from lch(0.7 45 30 / none) l c h / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "lch(from lch(0.7 45 30 / none) l c h / alpha)" but got "lch(0.7 45 30 / 0)"
-[FAIL] e.style['color'] = "lch(from currentColor l c h)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "lch(from color-mix(in lch, lch(70 45 30), lch(70 45 30)) l c h / alpha)" but got "lch(70 45 30)"
 [FAIL] e.style['color'] = "oklch(from oklch(0.7 0.45 30) l c h)" should set the property value
@@ -1022,8 +1006,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "oklch(from oklch(0.7 none 30) l c h)" but got "oklch(0.7 0 30)"
 [FAIL] e.style['color'] = "oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)" but got "oklch(0.7 0.45 30 / 0)"
-[FAIL] e.style['color'] = "oklch(from currentColor l c h)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)" but got "oklch(0.7 0.45 30)"
 [FAIL] e.style['color'] = "color(from color(srgb 0.7 0.5 0.3) srgb r g b)" should set the property value
@@ -1162,8 +1144,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(srgb 0.7 none 0.3) srgb r g b)" but got "color(srgb 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(srgb 0.7 0.5 0.3 / none) srgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(srgb 0.7 0.5 0.3 / none) srgb r g b / alpha)" but got "color(srgb 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor srgb r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in srgb, color(srgb 0.7 0.5 0.3), color(srgb 0.7 0.5 0.3)) srgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in srgb, color(srgb 0.7 0.5 0.3), color(srgb 0.7 0.5 0.3)) srgb r g b / alpha)" but got "color(srgb 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(srgb-linear 0.7 0.5 0.3) srgb-linear r g b)" should set the property value
@@ -1302,8 +1282,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(srgb-linear 0.7 none 0.3) srgb-linear r g b)" but got "color(srgb-linear 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(srgb-linear 0.7 0.5 0.3 / none) srgb-linear r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(srgb-linear 0.7 0.5 0.3 / none) srgb-linear r g b / alpha)" but got "color(srgb-linear 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor srgb-linear r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in srgb-linear, color(srgb-linear 0.7 0.5 0.3), color(srgb-linear 0.7 0.5 0.3)) srgb-linear r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in srgb-linear, color(srgb-linear 0.7 0.5 0.3), color(srgb-linear 0.7 0.5 0.3)) srgb-linear r g b / alpha)" but got "color(srgb-linear 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(a98-rgb 0.7 0.5 0.3) a98-rgb r g b)" should set the property value
@@ -1442,8 +1420,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(a98-rgb 0.7 none 0.3) a98-rgb r g b)" but got "color(a98-rgb 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(a98-rgb 0.7 0.5 0.3 / none) a98-rgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(a98-rgb 0.7 0.5 0.3 / none) a98-rgb r g b / alpha)" but got "color(a98-rgb 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor a98-rgb r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in a98-rgb, color(a98-rgb 0.7 0.5 0.3), color(a98-rgb 0.7 0.5 0.3)) a98-rgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in a98-rgb, color(a98-rgb 0.7 0.5 0.3), color(a98-rgb 0.7 0.5 0.3)) a98-rgb r g b / alpha)" but got "color(a98-rgb 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(rec2020 0.7 0.5 0.3) rec2020 r g b)" should set the property value
@@ -1582,8 +1558,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(rec2020 0.7 none 0.3) rec2020 r g b)" but got "color(rec2020 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(rec2020 0.7 0.5 0.3 / none) rec2020 r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(rec2020 0.7 0.5 0.3 / none) rec2020 r g b / alpha)" but got "color(rec2020 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor rec2020 r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in rec2020, color(rec2020 0.7 0.5 0.3), color(rec2020 0.7 0.5 0.3)) rec2020 r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in rec2020, color(rec2020 0.7 0.5 0.3), color(rec2020 0.7 0.5 0.3)) rec2020 r g b / alpha)" but got "color(rec2020 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(prophoto-rgb 0.7 0.5 0.3) prophoto-rgb r g b)" should set the property value
@@ -1722,8 +1696,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(prophoto-rgb 0.7 none 0.3) prophoto-rgb r g b)" but got "color(prophoto-rgb 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(prophoto-rgb 0.7 0.5 0.3 / none) prophoto-rgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(prophoto-rgb 0.7 0.5 0.3 / none) prophoto-rgb r g b / alpha)" but got "color(prophoto-rgb 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor prophoto-rgb r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in prophoto-rgb, color(prophoto-rgb 0.7 0.5 0.3), color(prophoto-rgb 0.7 0.5 0.3)) prophoto-rgb r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in prophoto-rgb, color(prophoto-rgb 0.7 0.5 0.3), color(prophoto-rgb 0.7 0.5 0.3)) prophoto-rgb r g b / alpha)" but got "color(prophoto-rgb 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(display-p3 0.7 0.5 0.3) display-p3 r g b)" should set the property value
@@ -1862,8 +1834,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(from color(display-p3 0.7 none 0.3) display-p3 r g b)" but got "color(display-p3 0.7 0 0.3)"
 [FAIL] e.style['color'] = "color(from color(display-p3 0.7 0.5 0.3 / none) display-p3 r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color(display-p3 0.7 0.5 0.3 / none) display-p3 r g b / alpha)" but got "color(display-p3 0.7 0.5 0.3 / 0)"
-[FAIL] e.style['color'] = "color(from currentColor display-p3 r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in display-p3, color(display-p3 0.7 0.5 0.3), color(display-p3 0.7 0.5 0.3)) display-p3 r g b / alpha)" should set the property value
   assert_equals: serialization should be canonical expected "color(from color-mix(in display-p3, color(display-p3 0.7 0.5 0.3), color(display-p3 0.7 0.5 0.3)) display-p3 r g b / alpha)" but got "color(display-p3 0.7 0.5 0.3)"
 [FAIL] e.style['color'] = "color(from color(xyz 7 -20.5 100) xyz x y z)" should set the property value
@@ -1948,8 +1918,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(xyz-d65 7 0 100)\nExpected: color(from color(xyz-d65 7 none 100) xyz-d65 x y z).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] e.style['color'] = "color(from color(xyz 7 -20.5 100 / none) xyz x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d65 7 -20.5 100 / 0)\nExpected: color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] e.style['color'] = "color(from currentColor xyz x y z)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in xyz, color(xyz 0.7 0.5 0.3), color(xyz 0.7 0.5 0.3)) xyz x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d65 0.7 0.5 0.3)\nExpected: color(from color-mix(in xyz-d65, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 6 got 3
 [FAIL] e.style['color'] = "color(from color(xyz-d50 7 -20.5 100) xyz-d50 x y z)" should set the property value
@@ -2034,8 +2002,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(xyz-d50 7 0 100)\nExpected: color(from color(xyz-d50 7 none 100) xyz-d50 x y z).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] e.style['color'] = "color(from color(xyz-d50 7 -20.5 100 / none) xyz-d50 x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d50 7 -20.5 100 / 0)\nExpected: color(from color(xyz-d50 7 -20.5 100 / none) xyz-d50 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] e.style['color'] = "color(from currentColor xyz-d50 x y z)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in xyz-d50, color(xyz-d50 0.7 0.5 0.3), color(xyz-d50 0.7 0.5 0.3)) xyz-d50 x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d50 0.7 0.5 0.3)\nExpected: color(from color-mix(in xyz-d50, color(xyz-d50 0.7 0.5 0.3), color(xyz-d50 0.7 0.5 0.3)) xyz-d50 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 6 got 3
 [FAIL] e.style['color'] = "color(from color(xyz-d65 7 -20.5 100) xyz-d65 x y z)" should set the property value
@@ -2120,8 +2086,6 @@ Found 1064 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   color(xyz-d65 7 0 100)\nExpected: color(from color(xyz-d65 7 none 100) xyz-d65 x y z).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] e.style['color'] = "color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d65 7 -20.5 100 / 0)\nExpected: color(from color(xyz-d65 7 -20.5 100 / none) xyz-d65 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
-[FAIL] e.style['color'] = "color(from currentColor xyz-d65 x y z)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "color(from color-mix(in xyz-d65, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 x y z / alpha)" should set the property value
   Colors do not match.\nActual:   color(xyz-d65 0.7 0.5 0.3)\nExpected: color(from color-mix(in xyz-d65, color(xyz-d65 0.7 0.5 0.3), color(xyz-d65 0.7 0.5 0.3)) xyz-d65 x y z / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 6 got 3
 [FAIL] e.style['color'] = "rgb(from indianred 255 g b)" should set the property value

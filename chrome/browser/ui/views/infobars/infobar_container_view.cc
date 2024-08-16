@@ -79,6 +79,10 @@ InfoBarContainerView::InfoBarContainerView(Delegate* delegate)
                                         kColorToolbar);
   SetBackground(
       views::CreateThemedSolidBackground(kColorInfoBarContentAreaSeparator));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 InfoBarContainerView::~InfoBarContainerView() {
@@ -110,12 +114,6 @@ void InfoBarContainerView::Layout(PassKey) {
   // shadow is drawn outside the container bounds).
   content_shadow_->SetBounds(0, top, width(),
                              content_shadow_->GetPreferredSize().height());
-}
-
-void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetNameChecked(
-      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize(

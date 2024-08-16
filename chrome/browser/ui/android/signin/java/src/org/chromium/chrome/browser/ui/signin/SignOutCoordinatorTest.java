@@ -55,11 +55,10 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
-import org.chromium.ui.accessibility.UiAccessibilityFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.HashSet;
@@ -68,10 +67,7 @@ import java.util.Set;
 /** Instrumentation tests for {@link SignOutDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
-})
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SignOutCoordinatorTest {
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -177,7 +173,7 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testUnsavedDataDialog() {
         setUpMocks();
-        mUnsyncedDataTypes.add(ModelType.BOOKMARKS);
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
 
@@ -197,7 +193,7 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testUnsavedDataDialogPrimaryButtonClick() {
         setUpMocks();
-        mUnsyncedDataTypes.add(ModelType.BOOKMARKS);
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
         doAnswer(
@@ -231,7 +227,7 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testUnsavedDataDialogSecondaryButtonClick() {
         setUpMocks();
-        mUnsyncedDataTypes.add(ModelType.BOOKMARKS);
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
         @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
         startSignOutFlow(signOutReason, mOnSignOut, false);
         onView(withText(R.string.sign_out_unsaved_data_title))
@@ -315,7 +311,7 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testSignOutConfirmDialogNowShownIfHasUnsavedData() {
         setUpMocks();
-        mUnsyncedDataTypes.add(ModelType.BOOKMARKS);
+        mUnsyncedDataTypes.add(DataType.BOOKMARKS);
 
         startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, true);
 

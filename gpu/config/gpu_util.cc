@@ -236,37 +236,15 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
 
 GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
-    const base::CommandLine& command_line,
-    const GpuPreferences& gpu_preferences,
-    bool use_swift_shader,
-    bool blocklist_needs_more_info) {
-  if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line,
-                                       use_swift_shader) !=
-      kGpuFeatureStatusEnabled) {
-    // Originally OOP-C required GPU tile raster to be enabled. There are
-    // different GPU blocklist entries for gpu_tile_rasterization vs
-    // accelerated_2d_canvas. Devices with gpu_tile_rasterization blocked but
-    // not accelerated_2d_canvas would end up using the deprecated GL
-    // accelerated path.
-    // NOTE: Don't check `kCanvasOopWithoutGpuTileRaster` if the blocklist still
-    // needs more GPU info. The value returned by
-    // GetGpuRasterizationFeatureStatus() might be wrong until GL is initialized
-    // and we'll enroll clients in the CanvasOopWithoutGpuTileRaster finch study
-    // that don't have GPU tile raster blocklisted.
-    if (blocklist_needs_more_info ||
-        !base::FeatureList::IsEnabled(
-            features::kCanvasOopWithoutGpuTileRaster)) {
-      return kGpuFeatureStatusDisabled;
-    }
-  }
-
+    const GpuPreferences& gpu_preferences) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable OOP-C if explicitly turned off from the command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
                           features::kCanvasOopRasterization.name,
-                          base::FeatureList::OVERRIDE_DISABLE_FEATURE))
+                          base::FeatureList::OVERRIDE_DISABLE_FEATURE)) {
     return kGpuFeatureStatusDisabled;
+  }
 
   // On certain ChromeOS devices, using Vulkan without OOP-C results in video
   // encode artifacts (b/318721705).
@@ -557,10 +535,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
   bool use_swift_shader = false;
   bool blocklist_needs_more_info = false;
 
-  bool fallback_to_software_gl = false;
   std::optional<gl::GLImplementationParts> requested_impl =
-      gl::GetRequestedGLImplementationFromCommandLine(command_line,
-                                                      &fallback_to_software_gl);
+      gl::GetRequestedGLImplementationFromCommandLine(command_line);
   if (requested_impl) {
     if (*requested_impl == gl::kGLImplementationNone)
       return ComputeGpuFeatureInfoWithNoGpu();
@@ -624,19 +600,9 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       GetWebGPUFeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
-#if !BUILDFLAG(IS_CHROMEOS)
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(
-          blocklisted_features, *command_line, gpu_preferences,
-          use_swift_shader, blocklist_needs_more_info);
-#else
-  // TODO(penghuang): call GetCanvasOopRasterizationFeatureStatus with
-  // |use_swift_shader|.
-  gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
-      GetCanvasOopRasterizationFeatureStatus(
-          blocklisted_features, *command_line, gpu_preferences,
-          /*use_swift_shader=*/false, blocklist_needs_more_info);
-#endif
+      GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
+                                             gpu_preferences);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);

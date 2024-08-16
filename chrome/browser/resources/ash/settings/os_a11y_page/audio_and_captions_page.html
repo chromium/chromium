@@ -7,14 +7,23 @@
     padding-inline-start: var(--cr-section-padding);
   }
 
+  .button-container {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+
   settings-toggle-button,
   cr-link-row {
     padding-inline-end: var(--cr-section-padding);
     padding-inline-start: var(--cr-section-padding);
   }
+
+  .settings-box.indented {
+    margin-inline-start: var(--cr-section-indent-width);
+  }
 </style>
 
-<settings-toggle-button
+<settings-toggle-button id="monoAudioEnabled"
     pref="{{prefs.settings.a11y.mono_audio}}"
     label="$i18n{monoAudioLabel}"
     sub-label="$i18n{monoAudioDescription}"
@@ -30,7 +39,37 @@
       on-change="toggleStartupSoundEnabled_">
   </cr-toggle>
 </div>
-
+<template is="dom-if"
+    if="[[isAccessibilityFlashNotificationFeatureEnabled]]">
+  <settings-toggle-button id="flashNotificationsToggle"
+    class="hr"
+    pref="{{prefs.settings.a11y.flash_notifications_enabled}}"
+    label="$i18n{flashNotificationsLabel}"
+    sub-label="$i18n{flashNotificationsDescription}"
+    deep-link-focus-id$="[[Setting.kFlashNotifications]]">
+  </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.a11y.flash_notifications_enabled.value]]">
+    <div class="settings-box indented"
+        id="flashNotificationsColorOptionsRow">
+      <div class="start settings-box-text"
+          id="flashNotificationsColorOptionsLabel">
+        $i18n{flashNotificationsColorOptionsLabel}
+      </div>
+      <div class="button-container">
+        <cr-button id="notificationPreviewBtn"
+            on-click="previewFlashNotification_">
+          $i18n{flashNotificationsPreviewButton}
+        </cr-button>
+      </div>
+      <settings-dropdown-menu id="notificationColorDropdown"
+          pref="{{prefs.settings.a11y.flash_notifications_color}}"
+          aria-labeledby="notificationColorOptionsLabel"
+          menu-options="[[notificationColorOptions_]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
+</template>
 <template is="dom-if" if="[[!isKioskModeActive_]]">
   <settings-captions prefs="{{prefs}}"
       languages="[[languages]]"

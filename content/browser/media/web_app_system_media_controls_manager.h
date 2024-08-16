@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_MANAGER_H_
 #define CONTENT_BROWSER_MEDIA_WEB_APP_SYSTEM_MEDIA_CONTROLS_MANAGER_H_
 
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -85,12 +86,12 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
   // Helpers
   void OnMojoError();
 
-  // Retrieve the WebAppSystemMediaControls for |request_id|, returns nullptr if
+  // Retrieve the WebAppSystemMediaControls for `request_id`, returns nullptr if
   // not found.
   WebAppSystemMediaControls* GetControlsForRequestId(
       base::UnguessableToken request_id);
   // Retrieve the WebAppSystemMediaControls that contains
-  // |system_media_controls|, returns nullptr if not found.
+  // `system_media_controls`, returns nullptr if not found.
   WebAppSystemMediaControls* GetWebAppSystemMediaControlsForSystemMediaControls(
       system_media_controls::SystemMediaControls* system_media_controls);
 
@@ -99,6 +100,10 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
   // Retrieves a vector of all the WebAppSystemMediaControls associated with
   // this manager.
   std::vector<WebAppSystemMediaControls*> GetAllControls();
+
+  // This lets chrome/browser tests get notified when SMCBridge is created.
+  void SetOnSystemMediaControlsBridgeCreatedCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
 
   // Dumps the stored metadata via DVLOG(1) for debugging.
   void LogDataForDebugging();
@@ -132,6 +137,9 @@ class CONTENT_EXPORT WebAppSystemMediaControlsManager
   bool always_assume_web_app_for_testing_ = false;
 
   raw_ptr<WebAppSystemMediaControlsManagerObserver> test_observer_;
+
+  base::RepeatingCallback<void()>
+      on_system_media_controls_bridge_created_callback_for_testing_;
 
   friend class WebAppSystemMediaControlsManagerTest;
   friend class WebAppSystemMediaControlsBrowserTest;

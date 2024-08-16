@@ -22,8 +22,8 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
-import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.site_settings.RWSCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
@@ -35,13 +35,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
-    private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
+    private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
     private static final String TPC_TITLE = "tpc_title";
     private static final String TPC_SUMMARY = "tpc_summary";
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
-    private ChromeImageViewPreference mFPSInUse;
+    private ChromeImageViewPreference mRWSInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private TextMessagePreference mThirdPartyCookiesSummary;
     private Runnable mOnClearCallback;
@@ -51,7 +51,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
-    private FPSCookieInfo mFPSInfo;
+    private RWSCookieInfo mRWSInfo;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
     private PageInfoControllerDelegate mPageInfoControllerDelegate;
@@ -81,8 +81,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
-        mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
-        mFPSInUse.setVisible(false);
+        mRWSInUse = findPreference(RWS_IN_USE_PREFERENCE);
+        mRWSInUse.setVisible(false);
         mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
         mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
     }
@@ -278,42 +278,40 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     /**
-     * Returns a boolean indicating if the FPS info has been shown or not.\
+     * Returns a boolean indicating if the RWS info has been shown or not.
      *
-     * <p>TODO(b/331453627): change to RWS
-     *
-     * @param fpsInfo First Party Sets info to show.
+     * @param rwsInfo Related Website Sets info to show.
      * @param currentOrigin PageInfo current origin.
-     * @return a boolean indicating if the FPS info has been shown or not.
+     * @return a boolean indicating if the RWS info has been shown or not.
      */
-    public boolean maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
-        mFPSInfo = fpsInfo;
-        if (fpsInfo == null || mFPSInUse == null) {
+    public boolean maybeShowRWSInfo(RWSCookieInfo rwsInfo, String currentOrigin) {
+        mRWSInfo = rwsInfo;
+        if (rwsInfo == null || mRWSInUse == null) {
             return false;
         }
 
         assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
-                : "First Party Sets UI and access should be enabled to show FPS info.";
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                : "Related Website Sets UI and access should be enabled to show RWS info.";
 
-        mFPSInUse.setVisible(true);
-        mFPSInUse.setTitle(R.string.cookie_info_fps_title);
-        mFPSInUse.setSummary(
-                String.format(getString(R.string.cookie_info_fps_summary), fpsInfo.getOwner()));
-        mFPSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mFPSInUse.setManagedPreferenceDelegate(
+        mRWSInUse.setVisible(true);
+        mRWSInUse.setTitle(R.string.cookie_info_rws_title);
+        mRWSInUse.setSummary(
+                String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
+        mRWSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
+        mRWSInUse.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
                         return getSiteSettingsDelegate()
-                                .isPartOfManagedFirstPartySet(currentOrigin);
+                                .isPartOfManagedRelatedWebsiteSet(currentOrigin);
                     }
                 });
         if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
-            mFPSInUse.setOnPreferenceClickListener(
+            mRWSInUse.setOnPreferenceClickListener(
                     preference -> {
-                        mPageInfoControllerDelegate.showAllSettingsForRws(mFPSInfo.getOwner());
+                        mPageInfoControllerDelegate.showAllSettingsForRws(mRWSInfo.getOwner());
                         return false;
                     });
         }

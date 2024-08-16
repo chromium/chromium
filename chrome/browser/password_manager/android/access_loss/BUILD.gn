@@ -1,26 +1,33 @@
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningBridge.java" ]
+}
 
 android_library("java") {
+  srcjar_deps = [
+    ":jni_headers",
+    "//chrome/browser/password_manager/android:java_enum_srcjar",
+  ]
   resources_package = "org.chromium.chrome.browser.access_loss"
 
-  sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinator.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinator.java",
+    "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossWarningBridge.java",
+  ]
 
   deps = [
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/password_manager/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
-
-  srcjar_deps = [ "//chrome/browser/password_manager/android:java_enum_srcjar" ]
 }
 
 robolectric_library("junit") {
-  testonly = true
-  resources_package =
-      "org.chromium.chrome.browser.touch_to_fill.password_generation"
-
   sources = [ "java/src/org/chromium/chrome/browser/access_loss/PasswordAccessLossDialogSettingsCoordinatorTest.java" ]
 
   deps = [
@@ -28,9 +35,55 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/password_manager/android:utils",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "password_access_loss_warning_bridge.h",
+    "password_access_loss_warning_bridge_impl.cc",
+    "password_access_loss_warning_bridge_impl.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/password_manager/android:utils",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/prefs:prefs",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  deps = [
+    ":public",
+    "//components/prefs:prefs",
+    "//testing/gmock",
+  ]
+
+  sources = [
+    "mock_password_access_loss_warning_bridge.cc",
+    "mock_password_access_loss_warning_bridge.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "password_access_loss_warning_bridge_impl_unittest.cc" ]
+  deps = [
+    ":public",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_impl",
+    "//components/password_manager/core/common:common",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
   ]
 }

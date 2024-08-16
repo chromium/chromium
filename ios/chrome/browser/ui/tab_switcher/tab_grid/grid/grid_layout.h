@@ -42,16 +42,13 @@ enum class TabsSectionHeaderType {
 // The insets to add to the different sections. Defaults to UIEdgeInsetsZero.
 @property(nonatomic, assign) NSDirectionalEdgeInsets sectionInsets;
 
-// The current mode of the grid.
-@property(nonatomic, assign) TabGridMode mode;
-
 // The diffable data source used to configure the layout. It is used
 // to resolve section indices.
 @property(nonatomic, weak)
     UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>*
         diffableDataSource;
 
-- (instancetype)initWithTabGridMode:(TabGridMode)mode NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Unavailable initializers
 

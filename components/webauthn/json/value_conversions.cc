@@ -306,6 +306,15 @@ base::Value ToValue(
   return base::Value(std::move(value));
 }
 
+base::Value ToValue(const std::vector<std::string>& strings) {
+  base::Value::List ret;
+  ret.reserve(strings.size());
+  for (const auto& string : strings) {
+    ret.Append(string);
+  }
+  return base::Value(std::move(ret));
+}
+
 std::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
     const base::Value& value) {
   if (!value.is_string()) {
@@ -398,6 +407,10 @@ base::Value ToValue(
     value.Set("hints", ToValue(options->hints));
   }
   value.Set("attestation", ToValue(options->attestation));
+
+  if (!options->attestation_formats.empty()) {
+    value.Set("attestationFormats", ToValue(options->attestation_formats));
+  }
 
   base::Value::Dict extensions;
 

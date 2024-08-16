@@ -124,6 +124,7 @@ TREE_CLOSING_STEPS_REGEXP = "\\b({})\\b".format("|".join([
     "bot_update",
     "compile",
     "gclient runhooks",
+    "generate_build_files",
     "runhooks",
     "update",
     "\\w*nocompile_test",
@@ -323,4 +324,13 @@ luci.notifier(
         "thakis@google.com",
     ],
     on_new_status = ["INFRA_FAILURE"],
+)
+
+luci.notifier(
+    name = "chrome-fake-vaapi-test",
+    on_occurrence = ["SUCCESS", "FAILURE", "INFRA_FAILURE"],
+    failed_step_regexp = "video_decode_accelerator_tests_fake_vaapi.*",
+    notify_emails = [
+        "bchoobineh@google.com",
+    ],
 )

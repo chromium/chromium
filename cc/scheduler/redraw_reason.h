@@ -7,17 +7,24 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
+
 namespace cc {
 
 // This is used to
 // * track specific reasons a draw was triggered, and
 // * compute whether any other untracked reasons besides the specific reasons
 //   above also caused the draw.
-// TODO(crbug.com/346732738): This is currently unused and only plumbed
-// everywhere. Actually use it.
 enum class RedrawReason {
   kUntracked,
+  kAnimatedImage,
+  kScrollbarFadeOutAnimation,
+  kVideoLayer,
+  kMaxValue = kVideoLayer,
 };
+
+using RedrawReasonSet = base::
+    EnumSet<RedrawReason, RedrawReason::kUntracked, RedrawReason::kMaxValue>;
 
 std::string RedrawReasonToString(RedrawReason reason);
 

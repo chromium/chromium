@@ -112,6 +112,10 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
     // A view fading in will slide out from under the view on its trailing edge;
     // if no view is present a suitable substitute fade is chosen.
     kSlideFromTrailingEdge,
+    // A view fading in will slide out from the trailing edge and fade in. If
+    // the view does not paint to a layer (which is necessary to perform an
+    // opacity animation) we fall back to |kSlideFromTrailingEdge|.
+    kFadeAndSlideFromTrailingEdge,
   };
 
   AnimatingLayoutManager();
@@ -133,6 +137,19 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   gfx::Tween::Type tween_type() const { return tween_type_; }
   AnimatingLayoutManager& SetTweenType(gfx::Tween::Type tween_type);
+
+  base::TimeDelta opacity_animation_duration() const {
+    return opacity_animation_duration_;
+  }
+  // Note this is only needed if using kFadeAndSlideFromTrailingEdge. The
+  // duration will not run longer than |animation_duration_| and if shorter than
+  // |animation_duration_| the opacity animation will run during the latter part
+  // of the fade in the the start of the fade out.
+  AnimatingLayoutManager& SetOpacityAnimationDuration(
+      base::TimeDelta animation_duration);
+
+  gfx::Tween::Type opacity_tween_type() const { return opacity_tween_type_; }
+  AnimatingLayoutManager& SetOpacityTweenType(gfx::Tween::Type tween_type);
 
   LayoutOrientation orientation() const { return orientation_; }
   AnimatingLayoutManager& SetOrientation(LayoutOrientation orientation);
@@ -244,7 +261,7 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   bool RecalculateTarget();
 
   // Called by the animation logic every time a new frame happens.
-  void AnimateTo(double value);
+  void AnimateTo(double value, double fade_in_opacity, double fade_out_opacity);
 
   // Notifies all observers that the animation state has changed.
   void NotifyIsAnimatingChanged();
@@ -258,7 +275,9 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // Updates the current layout to |percent| interpolated between the starting
   // and target layouts.
-  void UpdateCurrentLayout(double percent);
+  void UpdateCurrentLayout(double percent,
+                           double fade_in_opacity,
+                           double fade_out_opacity);
 
   // Updates information about which views are fading in or out during the
   // current animation.
@@ -279,6 +298,11 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
   ChildLayout CalculateSlideFade(const LayoutFadeInfo& fade_info,
                                  double scale_percent,
                                  bool slide_from_leading) const;
+
+  ChildLayout CalculateFadeAndSlideFade(const LayoutFadeInfo& fade_info,
+                                        double scale_percent,
+                                        double opacity_value,
+                                        bool slide_from_leading) const;
 
   // Returns the space in which to calculate the target layout.
   gfx::Size GetAvailableTargetLayoutSize();
@@ -301,6 +325,14 @@ class VIEWS_EXPORT AnimatingLayoutManager : public LayoutManagerBase {
 
   // The motion curve of the animation to perform.
   gfx::Tween::Type tween_type_ = gfx::Tween::EASE_IN_OUT;
+
+  // How long each opacity animation takes. Note this is only used if using the
+  // kFadeAndSlideFromTrailingEdge FadeInOutMode. And is capped at the
+  // |animation_duraction_|.
+  base::TimeDelta opacity_animation_duration_ = base::Milliseconds(0);
+
+  // The motion curve of the opacity animation to perform.
+  gfx::Tween::Type opacity_tween_type_ = gfx::Tween::LINEAR;
 
   // The layout orientation, used for side and scale fades.
   LayoutOrientation orientation_ = LayoutOrientation::kHorizontal;

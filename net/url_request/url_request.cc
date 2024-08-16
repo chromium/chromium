@@ -1327,7 +1327,7 @@ bool URLRequest::ShouldSetLoadWithStorageAccess() const {
       case cookie_util::StorageAccessStatus::kActive:
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
   return base::FeatureList::IsEnabled(features::kStorageAccessHeaders) &&
          storage_access_can_be_activated() && response_headers() &&

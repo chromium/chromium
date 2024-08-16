@@ -6,7 +6,7 @@
 #define COMPONENTS_PLUS_ADDRESSES_SETTINGS_MOCK_PLUS_ADDRESS_SETTING_SERVICE_H_
 
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace plus_addresses {
@@ -20,7 +20,7 @@ class MockPlusAddressSettingService : public PlusAddressSettingService {
   MOCK_METHOD(bool, GetHasAcceptedNotice, (), (const override));
   MOCK_METHOD(void, SetHasAcceptedNotice, (), (override));
 
-  MOCK_METHOD(std::unique_ptr<syncer::ModelTypeControllerDelegate>,
+  MOCK_METHOD(std::unique_ptr<syncer::DataTypeControllerDelegate>,
               GetSyncControllerDelegate,
               (),
               (override));

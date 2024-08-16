@@ -18,6 +18,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -99,7 +101,9 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
         if (state) {
           update_service_state.state = *state;
         }
+        VLOG_IF(2, !state) << "Fail to cast to state: " << val_state;
       }
+      VLOG_IF(2, FAILED(hr)) << "Failed to query state: " << hr;
     }
     {
       base::win::ScopedBstr app_id;
@@ -179,6 +183,14 @@ class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
         update_service_state.installer_cmd_line =
             base::WideToUTF8(installer_cmd_line.Get());
       }
+    }
+
+    // TODO(crbug.com/345250525) - understand why the check fails.
+    base::debug::Alias(&update_service_state);
+    if (update_service_state.state ==
+        UpdateService::UpdateState::State::kUnknown) {
+      VLOG(2) << update_service_state;
+      base::debug::DumpWithoutCrashing();
     }
 
     VLOG(4) << update_service_state;

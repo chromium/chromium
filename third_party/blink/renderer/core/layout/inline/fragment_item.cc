@@ -163,7 +163,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   DCHECK(line_item.CanCreateFragmentItem());
 
   if (line_item.inline_item) {
-    if (UNLIKELY(line_item.text_content)) {
+    if (line_item.text_content) [[unlikely]] {
       new (this) FragmentItem(
           *line_item.inline_item, std::move(line_item.shape_result),
           line_item.text_content,
@@ -225,7 +225,7 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
     case kInvalid:
-      NOTREACHED_NORETURN() << "Cannot construct invalid value";
+      NOTREACHED() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(source.text_);
       break;
@@ -266,7 +266,7 @@ FragmentItem::FragmentItem(FragmentItem&& source)
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
     case kInvalid:
-      NOTREACHED_NORETURN() << "Cannot construct invalid value";
+      NOTREACHED() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
@@ -818,8 +818,9 @@ PhysicalRect FragmentItem::LocalVisualRectFor(
        cursor.MoveToNextForSameLayoutObject()) {
     DCHECK(cursor.Current().Item());
     const FragmentItem& item = *cursor.Current().Item();
-    if (UNLIKELY(item.IsHiddenForPaint()))
+    if (item.IsHiddenForPaint()) [[unlikely]] {
       continue;
+    }
     PhysicalRect child_visual_rect = item.SelfInkOverflowRect();
     child_visual_rect.offset += item.OffsetInContainerFragment();
     visual_rect.Unite(child_visual_rect);
@@ -841,13 +842,14 @@ PhysicalRect FragmentItem::RecalcInkOverflowForCursor(
   for (; *cursor; cursor->MoveToNextSkippingChildren()) {
     const FragmentItem* item = cursor->CurrentItem();
     DCHECK(item);
-    if (UNLIKELY(item->IsLayoutObjectDestroyedOrMoved())) {
+    if (item->IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       // TODO(crbug.com/1099613): This should not happen, as long as it is
       // layout-clean. It looks like there are cases where the layout is dirty.
       continue;
     }
-    if (UNLIKELY(item->HasSelfPaintingLayer()))
+    if (item->HasSelfPaintingLayer()) [[unlikely]] {
       continue;
+    }
 
     PhysicalRect child_rect;
     item->GetMutableForPainting().RecalcInkOverflow(*cursor, inline_context,
@@ -865,7 +867,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
                                      PhysicalRect* self_and_contents_rect_out) {
   DCHECK_EQ(this, cursor.CurrentItem());
 
-  if (UNLIKELY(IsLayoutObjectDestroyedOrMoved())) {
+  if (IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
     // TODO(crbug.com/1099613): This should not happen, as long as it is really
     // layout-clean. It looks like there are cases where the layout is dirty.
     NOTREACHED_IN_MIGRATION();
@@ -913,8 +915,9 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
 
   if (Type() == kBox) {
     const PhysicalBoxFragment* box_fragment = PostLayoutBoxFragment();
-    if (UNLIKELY(!box_fragment))
+    if (!box_fragment) [[unlikely]] {
       return;
+    }
     if (!box_fragment->IsInlineBox()) {
       DCHECK(!HasChildren());
       if (box_fragment->CanUseFragmentsForInkOverflow()) {
@@ -953,8 +956,9 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
     const auto* const text_combine =
         DynamicTo<LayoutTextCombine>(GetLayoutObject());
-    if (UNLIKELY(text_combine))
+    if (text_combine) [[unlikely]] {
       contents_rect = text_combine->AdjustRectForBoundingBox(contents_rect);
+    }
     // Line boxes don't have self overflow. Compute content overflow only.
     *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
     ink_overflow_type_ = static_cast<unsigned>(
@@ -1003,8 +1007,12 @@ LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
   // This fragment is a flow control because otherwise ShapeResult exists.
   DCHECK(IsFlowControl());
   DCHECK_EQ(1u, text.length());
-  if (!offset || UNLIKELY(IsRtl(Style().Direction())))
+  if (!offset) {
     return LayoutUnit();
+  }
+  if (IsRtl(Style().Direction())) [[unlikely]] {
+    return LayoutUnit();
+  }
   if (const SvgFragmentData* svg_data = GetSvgFragmentData()) {
     return LayoutUnit(IsHorizontal() ? svg_data->rect.width()
                                      : svg_data->rect.height());
@@ -1036,7 +1044,7 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
         start_offset, text, AdjustMidCluster::kToStart);
     float unrounded_end_position = shape_result->CaretPositionForOffset(
         end_offset, text, AdjustMidCluster::kToEnd);
-    if (UNLIKELY(unrounded_start_position > unrounded_end_position)) {
+    if (unrounded_start_position > unrounded_end_position) [[unlikely]] {
       start_position = LayoutUnit::FromFloatCeil(unrounded_start_position);
       end_position = LayoutUnit::FromFloatFloor(unrounded_end_position);
     } else {
@@ -1047,7 +1055,9 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
     // This fragment is a flow control because otherwise ShapeResult exists.
     DCHECK(IsFlowControl());
     DCHECK_EQ(1u, text.length());
-    if (!start_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+    if (!start_offset) {
+      start_position = LayoutUnit();
+    } else if (IsRtl(Style().Direction())) [[unlikely]] {
       start_position = LayoutUnit();
     } else if (IsSvgText()) {
       start_position =
@@ -1057,7 +1067,9 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
       start_position = IsHorizontal() ? Size().width : Size().height;
     }
 
-    if (!end_offset || UNLIKELY(IsRtl(Style().Direction()))) {
+    if (!end_offset) {
+      end_position = LayoutUnit();
+    } else if (IsRtl(Style().Direction())) [[unlikely]] {
       end_position = LayoutUnit();
     } else if (IsSvgText()) {
       end_position =
@@ -1069,9 +1081,10 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
   }
 
   // Swap positions if RTL.
-  return (UNLIKELY(start_position > end_position))
-             ? std::make_pair(end_position, start_position)
-             : std::make_pair(start_position, end_position);
+  if (start_position > end_position) [[unlikely]] {
+    return std::make_pair(end_position, start_position);
+  }
+  return std::make_pair(start_position, end_position);
 }
 
 PhysicalRect FragmentItem::LocalRect(StringView text,
@@ -1118,7 +1131,7 @@ PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(
   const PhysicalOffset offset =
       inline_root_offset + OffsetInContainerFragment();
   const PhysicalRect border_rect(offset, Size());
-  if (UNLIKELY(is_occlusion_test)) {
+  if (is_occlusion_test) [[unlikely]] {
     PhysicalRect ink_overflow = SelfInkOverflowRect();
     ink_overflow.Move(border_rect.offset);
     return ink_overflow;
@@ -1219,7 +1232,7 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
   ostream << "{";
   switch (item.Type()) {
     case FragmentItem::kInvalid:
-      NOTREACHED_NORETURN() << "Invalid FragmentItem";
+      NOTREACHED() << "Invalid FragmentItem";
     case FragmentItem::kText:
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");

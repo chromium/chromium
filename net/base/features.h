@@ -99,7 +99,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
 
 // Enables the Happy Eyeballs v3, where we use intermediate DNS resolution
 // results to make connection attempts as soon as possible.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableHappyEyeballsV3);
+NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV3);
 
 // If the `kUseAlternativePortForGloballyReachableCheck` flag is enabled, the
 // globally reachable check will use the port number specified by
@@ -565,6 +565,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiEnableEnterpriseCookieIssues);
 
 // Optimize parsing data: URLs.
 NET_EXPORT BASE_DECLARE_FEATURE(kOptimizeParsingDataUrls);
+
+// Enables support for codepoints defined in draft-ietf-tls-tls13-pkcs1, which
+// enable RSA keys to be used with client certificates even if they do not
+// support RSA-PSS.
+NET_EXPORT BASE_DECLARE_FEATURE(kLegacyPKCS1ForTLS13);
 
 }  // namespace net::features
 

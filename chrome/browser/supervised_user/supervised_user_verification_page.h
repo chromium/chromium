@@ -19,6 +19,14 @@ class GURL;
 class SupervisedUserVerificationPage
     : public security_interstitials::SecurityInterstitialPage {
  public:
+  // The purpose of the interstitial determines its layout and displayed texts.
+  enum class VerificationPurpose {
+    REAUTH_REQUIRED_SITE,  // Show the interstitial for sites requiring
+                           // re-authentication with generic descriptions
+    BLOCKED_SITE  // The interstitial is displayed for a blocked site, for which
+                  // parent's approvals require re-authentication.
+  };
+
   // Interstitial type, used in tests.
   static const security_interstitials::SecurityInterstitialPage::TypeID
       kTypeForTesting;
@@ -29,6 +37,7 @@ class SupervisedUserVerificationPage
       content::WebContents* web_contents,
       const std::string& email_to_reauth,
       const GURL& request_url,
+      VerificationPurpose verification_purpose,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
@@ -55,6 +64,7 @@ class SupervisedUserVerificationPage
 
   const std::string email_to_reauth_;
   const GURL request_url_;
+  const VerificationPurpose verification_purpose_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_VERIFICATION_PAGE_H_

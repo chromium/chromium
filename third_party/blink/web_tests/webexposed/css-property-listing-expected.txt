@@ -258,6 +258,9 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
+    masonry-template-tracks
+    masonry-track-end
+    masonry-track-start
     math-depth
     math-shift
     math-style
@@ -315,6 +318,7 @@ All changes to this list should go through Blink's feature review process: http:
     popover-show-delay
     position
     position-anchor
+    position-area
     position-try-fallbacks
     position-try-order
     position-visibility
@@ -429,6 +433,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline-inset
     view-timeline-name
     view-transition-class
+    view-transition-group
     view-transition-name
     visibility
     white-space-collapse
@@ -793,6 +798,9 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-timeline
         scroll-timeline-axis
         scroll-timeline-name
+    text-box
+        text-box-edge
+        text-box-trim
     text-decoration
         text-decoration-color
         text-decoration-line

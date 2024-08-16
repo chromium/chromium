@@ -122,8 +122,8 @@
 
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // Enable remoting receiver
+#include "media/base/remoting_constants.h"             // nogncheck
 #include "media/remoting/receiver_controller.h"        // nogncheck
-#include "media/remoting/remoting_constants.h"         // nogncheck
 #include "media/remoting/remoting_renderer_factory.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 

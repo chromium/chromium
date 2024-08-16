@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
+<translation id="3779154269823594982">變更密碼</translation>
 <translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
 <translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">允許特定網站播放音效。</translation>
 <translation id="789180354981963912">在無痕模式中封鎖第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_OWNER" /> 網站群組中的 <ph name="FPS_MEMBERS_COUNT" /> 個網站可查看您在群組中的活動}other{<ph name="FPS_OWNER" /> 網站群組中的 <ph name="FPS_MEMBERS_COUNT" /> 個網站可查看您在群組中的活動}}</translation>
 <translation id="7986741934819883144">選取聯絡人</translation>
 <translation id="7990211076305263060">開咗之後，網站可以要求使用麥克風。閂咗之後，網站唔可以使用麥克風。</translation>
 <translation id="8007176423574883786">已為這部裝置關閉</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}other{已允許 <ph name="FPS_MEMBERS_COUNT" /> 個 <ph name="FPS_OWNER" /> 網站使用 Cookie}}</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8617611086246832542">開咗之後，系統會用桌面電腦檢視模式顯示網站。閂咗之後，系統會用流動裝置檢視模式顯示網站。</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">由您的家長管理</translation>
 <translation id="9039697262778250930">您可能會登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>
-<translation id="9090268041676521955">此網站所屬的群組可查看您的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>
 <translation id="9106233582039520022">要刪除 Cookie 嗎？</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="913657688200966289">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用這些權限。</translation>

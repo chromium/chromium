@@ -863,6 +863,44 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
       chromeos::MultitaskMenuActionType::kPartialSplitButton, 2);
 }
 
+// Verify that selecting the 2/3 partial split option from the window layout
+// menu correctly updates the snap ratio to 2/3 and snaps the target window to
+// occupy two-thirds of the available space. Regression test for
+// http://b/356537586.
+TEST_F(MultitaskMenuTest, PartialSplitInNonPrimaryDisplay) {
+  // Update display to be in non-primary landscape mode.
+  UpdateDisplay("800x600/u");
+
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(1U, displays.size());
+  ASSERT_EQ(chromeos::OrientationType::kLandscapeSecondary,
+            chromeos::GetDisplayCurrentOrientation(displays[0]));
+
+  ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
+
+  const gfx::Point two_thirds_partial_button_center =
+      GetMultitaskMenu()
+          ->multitask_menu_view()
+          ->partial_button()
+          ->GetLeftTopButton()
+          ->GetBoundsInScreen()
+          .CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToInHost(two_thirds_partial_button_center);
+
+  // Verify that the target window snaps at expected snap position with the
+  // correct snap ratio applied.
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
+  EXPECT_THAT(window_state()->snap_ratio(),
+              testing::Optional(chromeos::kTwoThirdSnapRatio));
+  const gfx::Rect work_area_bounds_in_screen =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  EXPECT_NEAR(work_area_bounds_in_screen.width() * chromeos::kTwoThirdSnapRatio,
+              window_state()->window()->bounds().width(), 1);
+}
+
 // Test Full Button Functionality.
 TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
   base::HistogramTester histogram_tester;

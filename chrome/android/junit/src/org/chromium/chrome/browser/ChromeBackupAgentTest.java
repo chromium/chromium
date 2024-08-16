@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -107,7 +106,6 @@ import java.util.stream.Collectors;
             ChromeBackupAgentTest.BackupManagerShadow.class,
             ChromeBackupAgentTest.UmaSessionStatsShadow.class
         })
-@DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 @EnableFeatures(SigninFeatures.UPDATE_METRICS_SERVICES_STATE_IN_RESTORE)
 @LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
 public class ChromeBackupAgentTest {
@@ -862,8 +860,7 @@ public class ChromeBackupAgentTest {
         SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
     })
-    @DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testOnRestore_withSignInUser_policyOnSigninDisabled() throws IOException {
+    public void testOnRestore_withSignInUser() throws IOException {
         mIsAccountManaged = true;
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ false,
@@ -886,34 +883,8 @@ public class ChromeBackupAgentTest {
     @EnableFeatures({
         SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN
     })
-    public void testOnRestore_withSignInUser_policyOnSigninEnabled() throws IOException {
-        mIsAccountManaged = true;
-        executeNormalRestoreAndCheckPrefs(
-                /* withSyncingUser= */ false,
-                /* withSignedInUser= */ true,
-                /* withAccountSettings= */ true);
-
-        verifyRestoreFinishWithSignin();
-        verifySyncTypeBoolPrefsRestored(true);
-        verifyAccountSettingsBackupRestored(true);
-        // Verify that bool prefs are not migrated to account settings, since the backed-up user
-        // is not previously syncing, and there's an existing account settings backup.
-        verifyBoolPrefsMigratedToAccountSettings(false);
-    }
-
-    /**
-     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
-     * signed-in user only.
-     */
-    @Test
-    @EnableFeatures({
-        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
-        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
-        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN
-    })
-    public void testOnRestore_withSignInUser_notManaged_policyOnSigninEnabled() throws IOException {
+    public void testOnRestore_withSignInUser_notManaged() throws IOException {
         mIsAccountManaged = false;
         executeNormalRestoreAndCheckPrefs(
                 /* withSyncingUser= */ false,
@@ -1373,8 +1344,7 @@ public class ChromeBackupAgentTest {
         verify(mSigninManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .signin(eq(mAccountInfo), anyInt(), any());
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-                && mIsAccountManaged) {
+        if (mIsAccountManaged) {
             verify(mSigninManager).setUserAcceptedAccountManagement(true);
         } else {
             verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());

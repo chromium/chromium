@@ -11,7 +11,6 @@ import os
 import re
 import subprocess
 
-import cygprofile_utils
 
 START_OF_TEXT_SYMBOL = 'linker_script_start_of_text'
 
@@ -248,53 +247,3 @@ def GroupSymbolInfosByOffset(symbol_infos):
   for symbol_info in symbol_infos:
     offset_to_symbol_infos[symbol_info.offset].append(symbol_info)
   return dict(offset_to_symbol_infos)
-
-
-def GroupSymbolInfosByName(symbol_infos):
-  """Create a dict {name: [symbol_info1, ...], ...}.
-
-  A symbol can have several offsets, this is a 1-to-many relationship.
-
-  Args:
-    symbol_infos: iterable of SymbolInfo instances
-
-  Returns:
-    a dict {name: [symbol_info1, ...], ...}
-  """
-  name_to_symbol_infos = collections.defaultdict(list)
-  for symbol_info in symbol_infos:
-    name_to_symbol_infos[symbol_info.name].append(symbol_info)
-  return dict(name_to_symbol_infos)
-
-
-def CreateNameToSymbolInfo(symbol_infos):
-  """Create a dict {name: symbol_info, ...}.
-
-  Args:
-    symbol_infos: iterable of SymbolInfo instances
-
-  Returns:
-    a dict {name: symbol_info, ...}
-    If a symbol name corresponds to more than one symbol_info, the symbol_info
-    with the lowest offset is chosen.
-  """
-  # TODO(lizeb,pasko): move the functionality in this method into
-  # check_orderfile.
-  symbol_infos_by_name = {}
-  warnings = cygprofile_utils.WarningCollector(_MAX_WARNINGS_TO_PRINT)
-  for infos in GroupSymbolInfosByName(symbol_infos).values():
-    first_symbol_info = min(infos, key=lambda x: x.offset)
-    symbol_infos_by_name[first_symbol_info.name] = first_symbol_info
-    if len(infos) > 1:
-      warnings.Write('Symbol %s appears at %d offsets: %s' %
-                     (first_symbol_info.name,
-                      len(infos),
-                      ','.join([hex(x.offset) for x in infos])))
-  warnings.WriteEnd('symbols at multiple offsets.')
-  return symbol_infos_by_name
-
-
-def DemangleSymbol(mangled_symbol):
-  """Return the demangled form of mangled_symbol."""
-  cmd = [_TOOL_PREFIX + 'cxxfilt', mangled_symbol]
-  return subprocess.check_output(cmd, universal_newlines=True).rstrip()

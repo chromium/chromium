@@ -155,15 +155,13 @@ PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
     format(project_view='angle'))
 
 # The same as PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY, but for internal trybots.
-# Chrome try attempts aren't in their own partitioned table, so look for Chrome
-# attempts in the raw table. Additionally, there are no internal ANGLE tryjobs,
-# so no need to look for attempts there.
+# There are no internal ANGLE tryjobs, so no need to look for attempts there.
 INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
   submitted_builds AS (
 {chrome_builds_subquery}
-  )""".format(
-    chrome_builds_subquery=queries_module.RAW_SUBMITTED_BUILDS_TEMPLATE.format(
-        project_view='chrome'))
+  )""".format(chrome_builds_subquery=queries_module.
+              PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(
+                  project_view='chrome'))
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):

@@ -339,7 +339,7 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
 
   template <typename T>  // CSSPropertyID or AtomicString
   bool RemoveProperty(const T& property, String* return_text = nullptr);
-  bool RemovePropertiesInSet(const CSSProperty* const set[], unsigned length);
+  bool RemovePropertiesInSet(base::span<const CSSProperty* const> set);
   void RemoveEquivalentProperties(const CSSPropertyValueSet*);
   void RemoveEquivalentProperties(const CSSStyleDeclaration*);
 

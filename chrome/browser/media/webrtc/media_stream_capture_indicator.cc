@@ -45,7 +45,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry.h"  // nogncheck
 #include "extensions/common/extension.h"
 #endif
 
@@ -127,7 +127,7 @@ ObserverMethod GetObserverMethodToCall(const blink::MediaStreamDevice& device) {
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -441,7 +441,7 @@ int& MediaStreamCaptureIndicator::WebContentsDeviceUsage::GetStreamCount(
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

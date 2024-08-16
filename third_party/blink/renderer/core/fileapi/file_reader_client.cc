@@ -32,8 +32,8 @@ FileErrorCode FileReaderAccumulator::DidReceiveData(
     return FileErrorCode::kNotReadableErr;
   }
   raw_data_.ByteSpan()
-      .subspan(base::checked_cast<size_t>(bytes_loaded_), data.size())
-      .copy_from(data);
+      .subspan(base::checked_cast<size_t>(bytes_loaded_))
+      .copy_prefix_from(data);
   bytes_loaded_ += data.size();
   return DidReceiveData();
 }

@@ -67,10 +67,10 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
-      syncer::ModelType type,
+      syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
-  void StopSyncing(syncer::ModelType type) override;
+  void StopSyncing(syncer::DataType type) override;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
@@ -130,14 +130,14 @@ class ArcPackageSyncableService : public syncer::SyncableService,
 
   // Items new from sync service, waiting for confirmation of installation.
   // These items may never be approved for installation and this structure is
-  // used to ensure syncer::SyncDataList GetAllSyncData(syncer::ModelType type)
+  // used to ensure syncer::SyncDataList GetAllSyncData(syncer::DataType type)
   // returns consistent results from different devices.
   // API to re-install pending_install_items_ can be created when needed.
   SyncItemMap pending_install_items_;
 
   // Items to delete from sync service, waiting for confirmation of
   // uninstallation. These items will no longer be counted in
-  // syncer::SyncDataList GetAllSyncData(syncer::ModelType type).
+  // syncer::SyncDataList GetAllSyncData(syncer::DataType type).
   // API to re-uninstall pending_uninstall_items_ can be created when needed.
   SyncItemMap pending_uninstall_items_;
 

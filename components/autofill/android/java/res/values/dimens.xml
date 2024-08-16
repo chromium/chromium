@@ -50,13 +50,16 @@ found in the LICENSE file.
     <!-- Credit card icon -->
     <dimen name="large_card_icon_width">40dp</dimen>
     <dimen name="large_card_icon_height">24dp</dimen>
+    <dimen name="square_card_icon_side_length">18dp</dimen>
     <!-- The smaller card icons are shown on the keyboard accessory and their dimensions should
       be equal to that of the keyboard accessory icons. -->
     <dimen name="small_card_icon_width">@dimen/keyboard_accessory_bar_item_icon_width</dimen>
     <dimen name="small_card_icon_height">@dimen/chip_icon_size</dimen>
+    <dimen name="card_icon_border_width_zero">0dp</dimen>
     <dimen name="card_icon_border_width">1dp</dimen>
     <dimen name="large_card_icon_corner_radius">3dp</dimen>
     <dimen name="small_card_icon_corner_radius">2dp</dimen>
+    <dimen name="square_card_icon_corner_radius">4dp</dimen>
 
     <!-- Local credit card editor -->
     <dimen name="local_card_expiration_date_editor_width">100dp</dimen>

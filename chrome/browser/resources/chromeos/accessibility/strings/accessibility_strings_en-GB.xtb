@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rosy Brown</translation>
 <translation id="249330843868392562">Open text-to-speech settings</translation>
 <translation id="2497706219848005458">Green Yellow</translation>
+<translation id="2512979179176933762">show windows</translation>
 <translation id="2523609930580546572">ChromeVox Tutorial</translation>
 <translation id="2525706221823668172">Chromebook keyboard shortcuts</translation>
 <translation id="2553108862507765288">grammatical mistake</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Steel Blue</translation>
 <translation id="4253168017788158739">Note</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4259220820964911921">Enable face control?</translation>
 <translation id="4271220233568730077">Next math</translation>
 <translation id="4275397969489577657">Enable event stream logging</translation>
 <translation id="4278486392851938658">No previous visited link</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Appendix</translation>
 <translation id="5761219715606611783">Well done! You’ve learned the basics of ChromeVox touch. You can go through the tutorial again or exit this tutorial using the buttons below.</translation>
 <translation id="5776001898637896684">Google enhanced network text-to-speech extension</translation>
+<translation id="5783252477644995371">Face control gives you cursor control with face pointing and the ability to perform actions, such as left clicking with facial gestures like smile</translation>
 <translation id="5805940204952508776">Tap with two fingers</translation>
 <translation id="5819072574982403430">Tree item</translation>
 <translation id="5822819874379903994">Dark Turquoise</translation>
@@ -1073,7 +1076,6 @@
 <translation id="847040613207937740">No next tick box</translation>
 <translation id="8473540203671727883">Speak text under the mouse</translation>
 <translation id="8476408756881832830">Pause playback when ChromeVox is speaking</translation>
-<translation id="8476508772960940536">window overview</translation>
 <translation id="8480873377842220259">Now you’ll learn some basic navigation. You can hold Search and press the arrow keys to move around the screen. To continue, press Search + right arrow.</translation>
 <translation id="8503360654911991865">Decrease navigation granularity</translation>
 <translation id="8520472399088452386">Spin button</translation>

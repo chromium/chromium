@@ -1272,32 +1272,37 @@ int FilePath::HFSFastUnicodeCompare(StringPieceType string1,
 }
 
 StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
-  StringType result;
   apple::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
-      NULL, reinterpret_cast<const UInt8*>(string.data()),
+      nullptr, reinterpret_cast<const UInt8*>(string.data()),
       checked_cast<CFIndex>(string.length()), kCFStringEncodingUTF8, false,
       kCFAllocatorNull));
-  if (cfstring) {
-    // Query the maximum length needed to store the result. In most cases this
-    // will overestimate the required space. The return value also already
-    // includes the space needed for a terminating 0.
-    CFIndex length =
-        CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring.get());
-    DCHECK_GT(length, 0);  // should be at least 1 for the 0-terminator.
-    // Reserve enough space for CFStringGetFileSystemRepresentation to write
-    // into. Also set the length to the maximum so that we can shrink it later.
-    // (Increasing rather than decreasing it would clobber the string contents!)
-    result.reserve(static_cast<size_t>(length));
-    result.resize(static_cast<size_t>(length) - 1);
-    Boolean success =
-        CFStringGetFileSystemRepresentation(cfstring.get(), &result[0], length);
-    if (success) {
-      // Reduce result.length() to actual string length.
-      result.resize(strlen(result.c_str()));
-    } else {
-      // An error occurred -> clear result.
-      result.clear();
-    }
+  return GetHFSDecomposedForm(cfstring.get());
+}
+
+StringType FilePath::GetHFSDecomposedForm(CFStringRef cfstring) {
+  if (!cfstring) {
+    return StringType();
+  }
+
+  StringType result;
+  // Query the maximum length needed to store the result. In most cases this
+  // will overestimate the required space. The return value also already
+  // includes the space needed for a terminating 0.
+  CFIndex length = CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring);
+  DCHECK_GT(length, 0);  // should be at least 1 for the 0-terminator.
+  // Reserve enough space for CFStringGetFileSystemRepresentation to write
+  // into. Also set the length to the maximum so that we can shrink it later.
+  // (Increasing rather than decreasing it would clobber the string contents!)
+  result.reserve(static_cast<size_t>(length));
+  result.resize(static_cast<size_t>(length) - 1);
+  Boolean success =
+      CFStringGetFileSystemRepresentation(cfstring, &result[0], length);
+  if (success) {
+    // Reduce result.length() to actual string length.
+    result.resize(strlen(result.c_str()));
+  } else {
+    // An error occurred -> clear result.
+    result.clear();
   }
   return result;
 }

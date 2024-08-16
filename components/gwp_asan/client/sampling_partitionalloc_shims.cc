@@ -31,7 +31,7 @@ bool AllocationHook(void** out,
                     partition_alloc::AllocFlags flags,
                     size_t size,
                     const char* type_name) {
-  if (UNLIKELY(sampling_state.Sample())) {
+  if (sampling_state.Sample()) [[unlikely]] {
     // Ignore allocation requests with unknown flags.
     // TODO(crbug.com/40277643): Add support for memory tagging in GWP-Asan.
     constexpr auto kKnownFlags = partition_alloc::AllocFlags::kReturnNull |
@@ -51,7 +51,7 @@ bool AllocationHook(void** out,
 }
 
 bool FreeHook(void* address) {
-  if (UNLIKELY(gpa->PointerIsMine(address))) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
     gpa->Deallocate(address);
     return true;
   }
@@ -59,7 +59,7 @@ bool FreeHook(void* address) {
 }
 
 bool ReallocHook(size_t* out, void* address) {
-  if (UNLIKELY(gpa->PointerIsMine(address))) {
+  if (gpa->PointerIsMine(address)) [[unlikely]] {
     *out = gpa->GetRequestedSize(address);
     return true;
   }

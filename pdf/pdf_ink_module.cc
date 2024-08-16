@@ -36,14 +36,18 @@
 #include "pdf/input_utils.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_cursor.h"
 #include "pdf/pdf_ink_transform.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -104,9 +108,11 @@ gfx::Rect InkRectToEnclosingGfxRect(const InkRect& rect) {
   return gfx::ToEnclosingRect(gfx::RectF(x, y, width, height));
 }
 
-void CheckToolSizeIsInRange(float size) {
-  CHECK_GE(size, 1);
-  CHECK_LE(size, 16);
+SkRect GetDrawPageClipRect(const gfx::Rect& content_rect,
+                           const gfx::Vector2dF& origin_offset) {
+  gfx::RectF clip_rect(content_rect);
+  clip_rect.Offset(origin_offset);
+  return gfx::RectFToSkRect(clip_rect);
 }
 
 }  // namespace
@@ -122,6 +128,10 @@ PdfInkModule::~PdfInkModule() = default;
 void PdfInkModule::Draw(SkCanvas& canvas) {
   auto skia_renderer = InkSkiaRenderer::Create();
 
+  const gfx::Vector2dF origin_offset = client_->GetViewportOriginOffset();
+  const PageOrientation rotation = client_->GetOrientation();
+  const float zoom = client_->GetZoom();
+
   for (const auto& [page_index, page_strokes] : strokes_) {
     if (!client_->IsPageVisible(page_index)) {
       continue;
@@ -129,13 +139,15 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
 
     // Use an updated transform based on the page and its position in the
     // viewport.
-    InkAffineTransform transform = GetInkRenderTransform(
-        client_->GetViewportOriginOffset(), client_->GetOrientation(),
-        client_->GetPageContentsRect(page_index), client_->GetZoom());
+    const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
+    const InkAffineTransform transform =
+        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
 
+    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
     for (const auto& finished_stroke : page_strokes) {
       if (!finished_stroke.should_draw) {
         continue;
@@ -150,13 +162,17 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke.empty()) {
     DrawingStrokeState& state = drawing_stroke_state();
-    InkAffineTransform transform = GetInkRenderTransform(
-        client_->GetViewportOriginOffset(), client_->GetOrientation(),
-        client_->GetPageContentsRect(state.page_index), client_->GetZoom());
+
+    const gfx::Rect content_rect =
+        client_->GetPageContentsRect(state.page_index);
+    const InkAffineTransform transform =
+        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
     if (draw_render_transform_callback_for_testing_) {
       draw_render_transform_callback_for_testing_.Run(transform);
     }
 
+    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
     for (const auto& segment : in_progress_stroke) {
       bool success = skia_renderer->Draw(*segment, transform, canvas);
       CHECK(success);
@@ -201,6 +217,10 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
   MessageHandler handler = it->second;
   (this->*handler)(message);
   return true;
+}
+
+void PdfInkModule::OnGeometryChanged() {
+  MaybeSetCursor();
 }
 
 const PdfInkBrush* PdfInkModule::GetPdfInkBrushForTesting() const {
@@ -555,11 +575,14 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   const base::Value::Dict* data = message.FindDict("data");
   CHECK(data);
 
+  float size = base::checked_cast<float>(data->FindDouble("size").value());
+  PdfInkBrush::CheckToolSizeIsInRange(size);
+
   const std::string& brush_type_string = *data->FindString("type");
   if (brush_type_string == "eraser") {
     auto& eraser_state = current_tool_state_.emplace<EraserState>();
-    eraser_state.eraser_size = data->FindDouble("size").value();
-    CheckToolSizeIsInRange(eraser_state.eraser_size);
+    eraser_state.eraser_size = size;
+    MaybeSetCursor();
     return;
   }
 
@@ -570,19 +593,15 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   int color_r = color->FindInt("r").value();
   int color_g = color->FindInt("g").value();
   int color_b = color->FindInt("b").value();
-  double size = data->FindDouble("size").value();
 
   CheckColorIsWithinRange(color_r);
   CheckColorIsWithinRange(color_g);
   CheckColorIsWithinRange(color_b);
 
-  PdfInkBrush::Params params;
-  params.color = SkColorSetRGB(color_r, color_g, color_b);
-
-  // TODO(crbug.com/341282609): Check that the size value is in range, once
-  // support for the Ink annotation bar is deprecated. The original Ink uses
-  // values from range [0, 1], while Ink2 uses values from [1, 16].
-  params.size = size;
+  PdfInkBrush::Params params = {
+      .color = SkColorSetRGB(color_r, color_g, color_b),
+      .size = size,
+  };
 
   std::optional<PdfInkBrush::Type> brush_type =
       PdfInkBrush::StringToType(brush_type_string);
@@ -590,11 +609,13 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
   current_tool_state_.emplace<DrawingStrokeState>();
   drawing_stroke_state().brush =
       std::make_unique<PdfInkBrush>(brush_type.value(), params);
+  MaybeSetCursor();
 }
 
 void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   enabled_ = message.FindBool("enable").value();
+  MaybeSetCursor();
 }
 
 std::vector<std::unique_ptr<InkInProgressStroke>>
@@ -768,6 +789,31 @@ void PdfInkModule::ApplyUndoRedoDiscards(
   } else {
     stroke_id_generator_.ResetIdTo(0);
   }
+}
+
+void PdfInkModule::MaybeSetCursor() {
+  if (!enabled()) {
+    // Do nothing when disabled. The code outside of PdfInkModule will select a
+    // normal mouse cursor and switch to that.
+    return;
+  }
+
+  SkColor color;
+  float brush_size;
+  if (is_drawing_stroke()) {
+    const auto& ink_brush = drawing_stroke_state().brush->GetInkBrush();
+    color = ink_brush.GetColor();
+    brush_size = ink_brush.GetSize();
+  } else {
+    CHECK(is_erasing_stroke());
+    constexpr SkColor kEraserColor = SK_ColorWHITE;
+    color = kEraserColor;
+    brush_size = erasing_stroke_state().eraser_size;
+  }
+
+  client_->UpdateInkCursorImage(GenerateToolCursor(
+      color,
+      CursorDiameterFromBrushSizeAndZoom(brush_size, client_->GetZoom())));
 }
 
 PdfInkModule::DrawingStrokeState::DrawingStrokeState() = default;

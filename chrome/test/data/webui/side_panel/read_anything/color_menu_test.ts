@@ -18,7 +18,6 @@ import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.j
 suite('ColorMenu', () => {
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let toolbar: ReadAnythingToolbarElement;
-  let colorEmitted: string;
 
   setup(() => {
     suppressInnocuousErrors();
@@ -27,10 +26,6 @@ suite('ColorMenu', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    colorEmitted = '';
-    document.addEventListener(ToolbarEvent.THEME, event => {
-      colorEmitted = (event as CustomEvent).detail.data;
-    });
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
     flush();
@@ -47,26 +42,17 @@ suite('ColorMenu', () => {
     assertTrue(toolbar.$.colorMenu.get().open);
   });
 
-  suite('menu', () => {
-    let colorMenuOptions: HTMLButtonElement[];
+  test('option click propagates change', () => {
+    const colorMenuOptions = getItemsInMenu(toolbar.$.colorMenu);
+    let colorsEmitted = 0;
+    document.addEventListener(ToolbarEvent.THEME, () => colorsEmitted++);
 
-    setup(() => {
-      colorMenuOptions = getItemsInMenu(toolbar.$.colorMenu);
+    let previousPropagatedColor = -1;
+    colorMenuOptions.forEach(option => {
+      option.click();
+      assertGT(chrome.readingMode.colorTheme, previousPropagatedColor);
+      previousPropagatedColor = chrome.readingMode.colorTheme;
     });
-
-    test('option click propagates change', () => {
-      const emittedColors: string[] = [];
-      let previousPropagatedColor = -1;
-      colorMenuOptions.forEach(option => {
-        option.click();
-
-        // the selected option is unique and is emitted down the pipeline
-        assertEquals(-1, emittedColors.indexOf(colorEmitted));
-        assertGT(chrome.readingMode.colorTheme, previousPropagatedColor);
-
-        emittedColors.push(colorEmitted);
-        previousPropagatedColor = chrome.readingMode.colorTheme;
-      });
-    });
+    assertEquals(colorMenuOptions.length, colorsEmitted);
   });
 });

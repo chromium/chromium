@@ -1535,6 +1535,12 @@ void PageLoadTracker::OnSharedStorageSelectURLCalled() {
   }
 }
 
+void PageLoadTracker::OnAdAuctionComplete() {
+  for (const auto& observer : observers_) {
+    observer->OnAdAuctionComplete();
+  }
+}
+
 void PageLoadTracker::UpdateMetrics(
     content::RenderFrameHost* render_frame_host,
     mojom::PageLoadTimingPtr timing,

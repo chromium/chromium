@@ -449,10 +449,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     merged.addSharedDictionaryInfo(sharedDictionaryInfo);
                 }
             }
-            if (merged.getFPSCookieInfo() == null
-                    && other.getFPSCookieInfo() != null
+            if (merged.getRWSCookieInfo() == null
+                    && other.getRWSCookieInfo() != null
                     && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
-                merged.setFPSCookieInfo(other.getFPSCookieInfo());
+                merged.setRWSCookieInfo(other.getRWSCookieInfo());
             }
             for (ChosenObjectInfo objectInfo : other.getChosenObjectInfo()) {
                 if (origin.equals(objectInfo.getOrigin())) {
@@ -946,28 +946,29 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         boolean shouldRelatedSitesPrefBeVisible =
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                        && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
-                        && mSite.getFPSCookieInfo() != null;
+                        && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
+                        && mSite.getRWSCookieInfo() != null;
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
-            var fpsInfo = mSite.getFPSCookieInfo();
+            var rwsInfo = mSite.getRWSCookieInfo();
             relatedSitesText.setTitle(
                     getContext()
                             .getResources()
                             .getQuantityString(
-                                    R.plurals.allsites_fps_summary,
-                                    fpsInfo.getMembersCount(),
-                                    Integer.toString(fpsInfo.getMembersCount()),
-                                    fpsInfo.getOwner()));
+                                    R.plurals.allsites_rws_summary,
+                                    rwsInfo.getMembersCount(),
+                                    Integer.toString(rwsInfo.getMembersCount()),
+                                    rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
                             getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                         @Override
                         public boolean isPreferenceControlledByPolicy(Preference preference) {
                             return getSiteSettingsDelegate()
-                                    .isPartOfManagedFirstPartySet(mSite.getAddress().getOrigin());
+                                    .isPartOfManagedRelatedWebsiteSet(
+                                            mSite.getAddress().getOrigin());
                         }
                     });
             relatedSitesHeader.addPreference(relatedSitesText);
@@ -975,7 +976,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
                 relatedSitesHeader.removeAll();
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : mSite.getFPSCookieInfo().getMembers()) {
+                for (Website site : mSite.getRWSCookieInfo().getMembers()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),

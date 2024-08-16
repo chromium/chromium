@@ -10,12 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "url/gurl.h"
 
 class Profile;
 

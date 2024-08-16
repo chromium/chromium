@@ -101,6 +101,8 @@ class CaptureModeMenuHeader
     capture_mode_util::ConfigLabelView(label_view_);
     auto* box_layout = capture_mode_util::CreateAndInitBoxLayoutForView(this);
     box_layout->SetFlexForView(label_view_, 1);
+
+    GetViewAccessibility().SetRole(ax::mojom::Role::kHeader);
   }
 
   CaptureModeMenuHeader(const CaptureModeMenuHeader&) = delete;
@@ -116,7 +118,6 @@ class CaptureModeMenuHeader
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     View::GetAccessibleNodeData(node_data);
-    node_data->role = ax::mojom::Role::kHeader;
     node_data->SetName(GetHeaderLabel());
   }
 
@@ -269,6 +270,9 @@ class CaptureModeOption
 
   void SetOptionChecked(bool checked) {
     checked_icon_view_->SetVisible(checked);
+    GetViewAccessibility().SetCheckedState(
+        checked ? ax::mojom::CheckedState::kTrue
+                : ax::mojom::CheckedState::kFalse);
   }
 
   bool IsOptionChecked() { return checked_icon_view_->GetVisible(); }
@@ -286,13 +290,6 @@ class CaptureModeOption
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
     UpdateState();
-  }
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    Button::GetAccessibleNodeData(node_data);
-    node_data->SetCheckedState(IsOptionChecked()
-                                   ? ax::mojom::CheckedState::kTrue
-                                   : ax::mojom::CheckedState::kFalse);
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
@@ -435,6 +432,14 @@ bool CaptureModeMenuGroup::IsOptionChecked(int option_id) const {
   return option && option->IsOptionChecked();
 }
 
+views::View* CaptureModeMenuGroup::SetOptionCheckedForTesting(
+    int option_id,
+    bool checked) const {
+  auto* option = GetOptionById(option_id);
+  option->SetOptionChecked(checked);
+  return option;
+}
+
 bool CaptureModeMenuGroup::IsOptionEnabled(int option_id) const {
   auto* option = GetOptionById(option_id);
   return option && option->GetEnabled();
@@ -504,6 +509,10 @@ void CaptureModeMenuGroup::HandleOptionClick(int option_id) {
   // need to query the delegate.
   delegate_->OnOptionSelected(option_id);
   RefreshOptionsSelections();
+}
+
+views::View* CaptureModeMenuGroup::menu_header() const {
+  return menu_header_;
 }
 
 BEGIN_METADATA(CaptureModeMenuGroup)

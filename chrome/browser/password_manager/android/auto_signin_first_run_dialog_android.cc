@@ -92,7 +92,7 @@ void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env,
   // This dialog is not and should never be shown in incognito as it offers the
   // possibility to change user settings.
   DCHECK(!profile->IsOffTheRecord());
-  PasswordManagerSettingsService* service =
+  password_manager::PasswordManagerSettingsService* service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile);
   service->TurnOffAutoSignIn();
   MarkAutoSignInFirstRunExperienceShown(web_contents_);

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.optimization_guide.OptimizationGuidePushNotif
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.signin.SigninFeatureMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +86,9 @@ public class ChromeCachedFlags {
         FirstRunUtils.cacheFirstRunPrefs();
 
         CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser, OmniboxFeatures.getFieldTrialsToCache());
+                ChromeFeatureList.sFlagsCachedFullBrowser,
+                OmniboxFeatures.getFieldTrialsToCache(),
+                SigninFeatureMap.sCachedFlags);
         cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter> fieldTrialsToCache =
@@ -122,6 +126,10 @@ public class ChromeCachedFlags {
                         ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS,
                         LogoUtils.LOGO_POLISH_LARGE_SIZE,
                         LogoUtils.LOGO_POLISH_MEDIUM_SIZE,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_PATH,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_QUERY,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_REF,
+                        SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
@@ -131,6 +139,7 @@ public class ChromeCachedFlags {
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,
+                        TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_DEFAULT_REASON,
                         TabResumptionModuleUtils.TAB_RESUMPTION_SHOW_SEE_MORE,
                         TabResumptionModuleUtils.TAB_RESUMPTION_USE_DEFAULT_APP_FILTER,
                         TabResumptionModuleUtils.TAB_RESUMPTION_USE_SALIENT_IMAGE,

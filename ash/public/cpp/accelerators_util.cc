@@ -128,9 +128,9 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_MULTIPLY, u"numpad *"},
           {ui::KeyboardCode::VKEY_SUBTRACT, u"numpad -"},
           {ui::KeyboardCode::VKEY_CAPITAL, u"caps lock"},
+          {ui::KeyboardCode::VKEY_ACCESSIBILITY, u"Accessibility"},
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          {ui::KeyboardCode::VKEY_RIGHT_ALT,
-           l10n_util::GetStringUTF16(IDS_KEYBOARD_RIGHT_ALT_LABEL)},
+          {ui::KeyboardCode::VKEY_RIGHT_ALT, u"RightAlt"},
 #else
           {ui::KeyboardCode::VKEY_RIGHT_ALT, u"right alt"},
 #endif

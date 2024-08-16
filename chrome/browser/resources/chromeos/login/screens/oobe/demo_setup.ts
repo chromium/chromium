@@ -154,6 +154,7 @@ class DemoSetupScreen extends DemoSetupScreenBase {
    */
   private onRetryClicked_(): void {
     this.reset();
+    chrome.metricsPrivate.recordUserAction('DemoMode.Setup.RetryButtonClicked');
   }
 
   /**

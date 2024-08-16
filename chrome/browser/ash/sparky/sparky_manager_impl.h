@@ -40,6 +40,10 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   void GetSummary(MahiSummaryCallback callback) override;
   void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override;
+  void AnswerQuestionRepeating(
+      const std::u16string& question,
+      bool current_panel_content,
+      MahiAnswerQuestionCallbackRepeating callback) override;
   void AnswerQuestion(const std::u16string& question,
                       bool current_panel_content,
                       MahiAnswerQuestionCallback callback) override;
@@ -52,6 +56,7 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
                      const gfx::Rect& mahi_menu_bounds) override {}
   bool IsEnabled() override;
   void SetMediaAppPDFFocused() override;
+  bool AllowRepeatingAnswers() override;
 
   // Notifies the panel that refresh is available or not for the corresponding
   // surface.
@@ -70,12 +75,19 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
 
   void OnGetPageContentForQA(
       const std::u16string& question,
-      MahiAnswerQuestionCallback callback,
+      MahiAnswerQuestionCallbackRepeating callback,
       crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
-  void OnSparkyProviderQAResponse(MahiAnswerQuestionCallback callback,
+  void OnSparkyProviderQAResponse(MahiAnswerQuestionCallbackRepeating callback,
                                   manta::MantaStatus status,
                                   manta::DialogTurn* latest_turn);
+
+  // There is a maximum limit of consecutive calls which can be made from the
+  // client with no additional request from the user. If the response from the
+  // server is trying to exceed this limit, there is a manual override and the
+  // last action for the latest turn will be set to done, so that no additional
+  // calls to the server are made.
+  void CheckTurnLimit();
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();

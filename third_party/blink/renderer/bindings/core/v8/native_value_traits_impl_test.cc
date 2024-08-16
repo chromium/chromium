@@ -121,7 +121,7 @@ TEST(NativeValueTraitsImplTest, IDLRecord) {
             .As<v8::Proxy>();
 
     ExceptionState exception_state_from_proxy(
-        scope.GetIsolate(), ExceptionContextType::kOperationInvoke,
+        scope.GetIsolate(), v8::ExceptionContext::kOperation,
         "NativeValueTraitsImplTest", "IDLRecordTest");
     const auto& record_from_proxy =
         NativeValueTraits<IDLRecord<IDLString, IDLLong>>::NativeValue(

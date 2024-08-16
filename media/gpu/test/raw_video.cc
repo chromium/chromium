@@ -55,9 +55,15 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedFile(size_t size) {
   }
   auto mmapped_file = std::make_unique<base::MemoryMappedFile>();
   bool success = mmapped_file->Initialize(
-      base::File(tmp_file_path,
-                 base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                     base::File::FLAG_WRITE | base::File::FLAG_APPEND),
+      base::File(
+          tmp_file_path, base::File::FLAG_CREATE_ALWAYS |
+                             base::File::FLAG_READ | base::File::FLAG_WRITE
+// On Windows FLAG_CREATE_ALWAYS will require FLAG_WRITE, and FLAG_APPEND
+// must not be specified.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+                             | base::File::FLAG_APPEND
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+          ),
       base::MemoryMappedFile::Region{0, size},
       base::MemoryMappedFile::READ_WRITE_EXTEND);
   base::DeleteFile(tmp_file_path);

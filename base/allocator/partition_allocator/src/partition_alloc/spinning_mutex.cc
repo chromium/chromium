@@ -54,7 +54,7 @@ void SpinningMutex::AcquireSpinThenBlock() {
   int tries = 0;
   int backoff = 1;
   do {
-    if (PA_LIKELY(Try())) {
+    if (Try()) [[likely]] {
       return;
     }
     // Note: Per the intel optimization manual

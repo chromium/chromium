@@ -37,6 +37,40 @@ struct EmojiSearchResult {
   std::vector<EmojiSearchEntry> emoticons;
 };
 
+using EmojiEntryMap =
+    std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>;
+
+enum class EmojiLanguageCode {
+  kDa,  // Danish
+  kDe,  // German
+  kEn,  // English
+  kEs,  // Spanish
+  kFi,  // Finnish
+  kFr,  // French
+  kJa,  // Japanese
+  kNo,  // Norweigian
+  kSv,  // Swedish
+};
+
+struct EmojiLanguageResourceIds {
+  int emoji_start_resource_id;
+  int emoji_remaining_resource_id;
+  int symbols_resource_id;
+};
+
+struct EmojiLanguageData {
+  EmojiLanguageData();
+  ~EmojiLanguageData();
+  EmojiLanguageData(EmojiLanguageData& language_data);
+  EmojiLanguageData(EmojiLanguageData&& language_data);
+
+  EmojiEntryMap emojis;
+  EmojiEntryMap symbols;
+  EmojiEntryMap emoticons;
+  // A mapping of emojis, emoticons, and symbols to their names.
+  std::map<std::string, std::string, std::less<>> names;
+};
+
 class EmojiSearch {
  public:
   EmojiSearch();
@@ -44,6 +78,10 @@ class EmojiSearch {
   EmojiSearch(const EmojiSearch&) = delete;
   EmojiSearch& operator=(const EmojiSearch&) = delete;
 
+  // If multiple `language_codes` are provided, this aggregates the search
+  // results from multiple languages by prioritising languages earlier in the
+  // `language_codes` span first, then prioritising emoji `weighting`. Because
+  // of this, `weighting` is NOT guaranteed to be in non-increasing order.
   [[nodiscard]] EmojiSearchResult SearchEmoji(
       std::string_view query,
       base::span<const std::string> language_codes);
@@ -55,47 +93,9 @@ class EmojiSearch {
                            std::string_view language_code) const;
 
  private:
-  using EntryMap =
-      std::map<std::string, std::vector<EmojiSearchEntry>, std::less<>>;
-
-  enum class LanguageCode {
-    kDa,  // Danish
-    kDe,  // German
-    kEn,  // English
-    kEs,  // Spanish
-    kFi,  // Finnish
-    kFr,  // French
-    kJa,  // Japanese
-    kNo,  // Norweigian
-    kSv,  // Swedish
-  };
-
-  struct LanguageResourceIds {
-    int emoji_start_resource_id;
-    int emoji_remaining_resource_id;
-    int symbols_resource_id;
-  };
-
-  struct LanguageData {
-    LanguageData();
-    ~LanguageData();
-    LanguageData(LanguageData& language_data);
-    LanguageData(LanguageData&& language_data);
-
-    EntryMap emojis;
-    EntryMap symbols;
-    EntryMap emoticons;
-    // A mapping of emojis, emoticons, and symbols to their names.
-    std::map<std::string, std::string, std::less<>> names;
-  };
-
-  std::map<LanguageCode, LanguageData> language_data_;
-
-  std::optional<LanguageResourceIds> GetLanguageResourceIds(LanguageCode code);
-
-  std::optional<LanguageCode> GetLanguageCode(std::string_view code) const;
-
   void LoadLanguage(std::string_view language_code);
+
+  std::map<EmojiLanguageCode, EmojiLanguageData> language_data_;
 };
 }  // namespace emoji
 

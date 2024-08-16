@@ -267,10 +267,15 @@ testing::AssertionResult TestAutofillManagerWaiter::Wait(
     return testing::AssertionFailure()
            << "Waiter has not been Reset() since last Wait().";
   }
-  // Some events may already have happened.
-  num_awaiting_calls = num_awaiting_calls > state_->num_total_calls()
-                           ? num_awaiting_calls - state_->num_total_calls()
-                           : 0u;
+  // Some events may already have happened. Recalcultate `num_awaiting_calls`
+  // by removing the calls that are already done, which excludes the pending
+  // calls.
+  num_awaiting_calls =
+      num_awaiting_calls >
+              (state_->num_total_calls() - state_->num_pending_calls())
+          ? num_awaiting_calls -
+                (state_->num_total_calls() - state_->num_pending_calls())
+          : 0u;
   if (state_->num_pending_calls() > 0 || num_awaiting_calls > 0) {
     base::test::ScopedRunLoopTimeout run_loop_timeout(
         location, timeout_,

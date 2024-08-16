@@ -54,13 +54,14 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
@@ -106,7 +107,11 @@ public class QuickDeleteDialogDelegateTest {
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Close all tabs
-        runOnUiThreadBlocking(() -> mActivity.getCurrentTabModel().closeAllTabs(false));
+        runOnUiThreadBlocking(
+                () ->
+                        mActivity
+                                .getCurrentTabModel()
+                                .closeTabs(TabClosureParams.closeAllTabs().build()));
 
         // Clear history.
         runOnUiThreadBlocking(
@@ -146,7 +151,7 @@ public class QuickDeleteDialogDelegateTest {
                             .thenReturn(
                                     syncable
                                             ? CollectionUtil.newHashSet(
-                                                    ModelType.HISTORY_DELETE_DIRECTIVES)
+                                                    DataType.HISTORY_DELETE_DIRECTIVES)
                                             : new HashSet<>());
                 });
     }
@@ -259,7 +264,11 @@ public class QuickDeleteDialogDelegateTest {
     public void testQuickDeleteDialogView_WithoutTabsOrHistory() throws IOException {
         String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
 
-        runOnUiThreadBlocking(() -> mActivity.getCurrentTabModel().closeAllTabs(false));
+        runOnUiThreadBlocking(
+                () ->
+                        mActivity
+                                .getCurrentTabModel()
+                                .closeTabs(TabClosureParams.closeAllTabs().build()));
         assertEquals(0, getTabsInCurrentTabModel().size());
         LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
 

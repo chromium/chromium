@@ -393,7 +393,7 @@ ScriptPromise<IDLUndefined> PreferenceObject::requestOverride(
 
 const FrozenArray<IDLString>& PreferenceObject::validValues() {
   CHECK(RuntimeEnabledFeatures::WebPreferencesEnabled());
-  if (LIKELY(valid_values_)) {
+  if (valid_values_) [[likely]] {
     return *valid_values_.Get();
   }
 

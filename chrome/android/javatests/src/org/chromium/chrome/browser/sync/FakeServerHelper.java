@@ -72,20 +72,20 @@ public class FakeServerHelper {
 
     /**
      * Returns whether {@code count} entities exist on the fake Sync server with the given {@code
-     * modelType} and {@code name}.
+     * dataType} and {@code name}.
      *
      * @param count the number of fake server entities to verify
-     * @param modelType the model type of entities to verify
+     * @param dataType the data type of entities to verify
      * @param name the name of entities to verify
      * @return whether the number of specified entities exist
      */
     public boolean verifyEntityCountByTypeAndName(
-            final int count, final int modelType, final String name) {
+            final int count, final int dataType, final String name) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         FakeServerHelperJni.get()
                                 .verifyEntityCountByTypeAndName(
-                                        mNativeFakeServer, count, modelType, name));
+                                        mNativeFakeServer, count, dataType, name));
     }
 
     /**
@@ -100,18 +100,18 @@ public class FakeServerHelper {
     }
 
     /**
-     * Returns all the SyncEntities on the fake server with the given modelType.
+     * Returns all the SyncEntities on the fake server with the given dataType.
      *
-     * @param modelType the type of entities to return.
+     * @param dataType the type of entities to return.
      * @return a list of all the SyncEntity protos for that type.
      */
-    public List<SyncEntity> getSyncEntitiesByModelType(final int modelType)
+    public List<SyncEntity> getSyncEntitiesByDataType(final int dataType)
             throws InvalidProtocolBufferException {
         byte[][] serializedEntities =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
                                 FakeServerHelperJni.get()
-                                        .getSyncEntitiesByModelType(mNativeFakeServer, modelType));
+                                        .getSyncEntitiesByDataType(mNativeFakeServer, dataType));
         List<SyncEntity> entities = new ArrayList<SyncEntity>(serializedEntities.length);
         for (byte[] serializedEntity : serializedEntities) {
             entities.add(SyncEntity.parseFrom(serializedEntity));
@@ -357,11 +357,11 @@ public class FakeServerHelper {
         void deleteFakeServer(long fakeServer);
 
         boolean verifyEntityCountByTypeAndName(
-                long fakeServer, int count, int modelType, String name);
+                long fakeServer, int count, int dataType, String name);
 
         boolean verifySessions(long fakeServer, String[] urlArray);
 
-        byte[][] getSyncEntitiesByModelType(long fakeServer, int modelType);
+        byte[][] getSyncEntitiesByDataType(long fakeServer, int dataType);
 
         void injectUniqueClientEntity(
                 long fakeServer,

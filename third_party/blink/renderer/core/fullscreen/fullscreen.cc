@@ -767,16 +767,6 @@ void Fullscreen::EnforceRequestFullscreenConditions(
     return;
   }
 
-  // The algorithm is triggered by another event with transient affordances,
-  // e.g. permission-gated events for user-generated screens changes.
-  if (RuntimeEnabledFeatures::WindowPlacementFullscreenOnScreensChangeEnabled(
-          document.GetExecutionContext()) &&
-      document.GetFrame()->IsTransientAllowFullscreenActive()) {
-    UseCounter::Count(document, WebFeature::kFullscreenAllowedByScreensChange);
-    std::move(callback).Run(RequestFullscreenError::kNone);
-    return;
-  }
-
   // The context has permission to use fullscreen without transient activation,
   // and no blocking cooldown period is in effect from a recent fullscreen exit.
   //
@@ -790,47 +780,31 @@ void Fullscreen::EnforceRequestFullscreenConditions(
     return;
   }
 
-  if (RuntimeEnabledFeatures::AutomaticFullscreenPermissionsQueryEnabled()) {
-    // Check permission and wait for the async result.
-    auto* permission_service =
-        document.GetPermissionService(document.GetExecutionContext());
-    CHECK(permission_service);
-    auto descriptor = mojom::blink::PermissionDescriptor::New();
-    descriptor->name = mojom::blink::PermissionName::FULLSCREEN;
-    descriptor->extension =
-        mojom::blink::PermissionDescriptorExtension::NewFullscreen(
-            mojom::blink::FullscreenPermissionDescriptor::New(
-                /*allow_without_user_gesture=*/true));
-    permission_service->HasPermission(
-        std::move(descriptor),
-        WTF::BindOnce(
-            [](base::OnceCallback<void(RequestFullscreenError)> callback,
-               Document* document, mojom::blink::PermissionStatus status) {
-              if (status == mojom::blink::PermissionStatus::GRANTED) {
-                UseCounter::Count(
-                    document, WebFeature::kFullscreenAllowedByContentSetting);
-                std::move(callback).Run(RequestFullscreenError::kNone);
-              } else {
-                std::move(callback).Run(
-                    RequestFullscreenError::kPermissionCheckFailed);
-              }
-            },
-            std::move(callback), WrapPersistent(&document)));
-    return;
-  }
-
-  // The document is configured to allow "Automatic Fullscreen" requests,
-  // waiving the user gesture requirement. A race condition exists between
-  // document load event handling and settings propagation from the browser.
-  // TODO(crbug.com/40941384): Remove this code, just check permission above.
-  if (!document.GetSettings()
-           ->GetRequireTransientActivationForHtmlFullscreen()) {
-    UseCounter::Count(document, WebFeature::kFullscreenAllowedByContentSetting);
-    std::move(callback).Run(RequestFullscreenError::kNone);
-    return;
-  }
-  std::move(callback).Run(RequestFullscreenError::kPermissionCheckFailed);
-  return;
+  // Check permission and wait for the async result.
+  auto* permission_service =
+      document.GetPermissionService(document.GetExecutionContext());
+  CHECK(permission_service);
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::FULLSCREEN;
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewFullscreen(
+          mojom::blink::FullscreenPermissionDescriptor::New(
+              /*allow_without_user_gesture=*/true));
+  permission_service->HasPermission(
+      std::move(descriptor),
+      WTF::BindOnce(
+          [](base::OnceCallback<void(RequestFullscreenError)> callback,
+             Document* document, mojom::blink::PermissionStatus status) {
+            if (status == mojom::blink::PermissionStatus::GRANTED) {
+              UseCounter::Count(document,
+                                WebFeature::kFullscreenAllowedByContentSetting);
+              std::move(callback).Run(RequestFullscreenError::kNone);
+            } else {
+              std::move(callback).Run(
+                  RequestFullscreenError::kPermissionCheckFailed);
+            }
+          },
+          std::move(callback), WrapPersistent(&document)));
 }
 
 void Fullscreen::ContinueRequestFullscreenAfterConditionsEnforcement(

@@ -5,6 +5,7 @@
 #include <ostream>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
@@ -12,30 +13,49 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/current_thread.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "url/gurl.h"
 
 namespace {
@@ -49,42 +69,23 @@ constexpr char kDestinationPageScopeB[] =
 constexpr char kLinkCaptureTestInputPath[] =
     "chrome/test/data/web_apps/link_capture_test_input.json";
 
-constexpr char kValueApp[] = "APP";
-constexpr char kValueTab[] = "TAB";
 constexpr char kValueScopeA2A[] = "A_TO_A";
 constexpr char kValueScopeA2B[] = "A_TO_B";
-constexpr char kValueScopeA2ARedirectB[] = "A_TO_A->B";
-constexpr char kValueScopeA2BRedirectA[] = "A_TO_B->A";
 constexpr char kValueLink[] = "LINK";
 constexpr char kValueButton[] = "BTN";
-constexpr char kValueLeftClick[] = "LEFT";
-constexpr char kValueMiddleClick[] = "MIDDLE";
-constexpr char kValueShiftClick[] = "SHIFT";
+constexpr char kValueServiceWorkerButton[] = "BTN_SW";
 constexpr char kValueOpener[] = "OPENER";
 constexpr char kValueNoOpener[] = "NO_OPENER";
 constexpr char kValueTargetSelf[] = "SELF";
 constexpr char kValueTargetFrame[] = "FRAME";
 constexpr char kValueTargetBlank[] = "BLANK";
 constexpr char kValueTargetNoFrame[] = "NO_FRAME";
-constexpr char kValueSameBrowser[] = "SAME_BROWSER";
-constexpr char kValueOtherBrowser[] = "OTHER_BROWSER";
-constexpr char kValueInIFrame[] = "IN_IFRAME";
-constexpr char kValueInMain[] = "IN_MAIN";
 
 // The starting point for the test:
 enum class StartingPoint {
   kAppWindow,
   kTab,
 };
-
-std::string ToJsonString(StartingPoint start) {
-  switch (start) {
-    case StartingPoint::kAppWindow:
-      return kValueApp;
-    case StartingPoint::kTab:
-      return kValueTab;
-  }
-}
 
 std::string_view ToParamString(StartingPoint start) {
   switch (start) {
@@ -99,20 +100,14 @@ std::string_view ToParamString(StartingPoint start) {
 enum class Destination {
   kScopeA2A,
   kScopeA2B,
-  kScopeA2ARedirectB,
-  kScopeA2BRedirectA,
 };
 
-std::string ToJsonString(Destination scope) {
+std::string ToIdString(Destination scope) {
   switch (scope) {
     case Destination::kScopeA2A:
       return kValueScopeA2A;
     case Destination::kScopeA2B:
       return kValueScopeA2B;
-    case Destination::kScopeA2ARedirectB:
-      return kValueScopeA2ARedirectB;
-    case Destination::kScopeA2BRedirectA:
-      return kValueScopeA2BRedirectA;
   }
 }
 
@@ -122,10 +117,34 @@ std::string_view ToParamString(Destination scope) {
       return "ScopeA2A";
     case Destination::kScopeA2B:
       return "ScopeA2B";
-    case Destination::kScopeA2ARedirectB:
-      return "ScopeA2ARedirectB";
-    case Destination::kScopeA2BRedirectA:
-      return "ScopeA2BRedirectA";
+  }
+}
+
+enum class RedirectType {
+  kNone,
+  kServerSideViaA,
+  kServerSideViaB,
+};
+
+std::string ToIdString(RedirectType redirect, Destination final_destination) {
+  switch (redirect) {
+    case RedirectType::kNone:
+      return ToIdString(final_destination);
+    case RedirectType::kServerSideViaA:
+      return kValueScopeA2A;
+    case RedirectType::kServerSideViaB:
+      return kValueScopeA2B;
+  }
+}
+
+std::string_view ToParamString(RedirectType redirect) {
+  switch (redirect) {
+    case RedirectType::kNone:
+      return "Direct";
+    case RedirectType::kServerSideViaA:
+      return "ServerSideViaA";
+    case RedirectType::kServerSideViaB:
+      return "ServerSideViaB";
   }
 }
 
@@ -133,14 +152,17 @@ std::string_view ToParamString(Destination scope) {
 enum class NavigationElement {
   kElementLink,
   kElementButton,
+  kElementServiceWorkerButton,
 };
 
-std::string ToJsonString(NavigationElement element) {
+std::string ToIdString(NavigationElement element) {
   switch (element) {
     case NavigationElement::kElementLink:
       return kValueLink;
     case NavigationElement::kElementButton:
       return kValueButton;
+    case NavigationElement::kElementServiceWorkerButton:
+      return kValueServiceWorkerButton;
   }
 }
 
@@ -150,22 +172,13 @@ std::string_view ToParamString(NavigationElement element) {
       return "ViaLink";
     case NavigationElement::kElementButton:
       return "ViaButton";
+    case NavigationElement::kElementServiceWorkerButton:
+      return "ViaServiceWorkerButton";
   }
 }
 
 // The method of interacting with the element:
 enum class ClickMethod { kLeftClick, kMiddleClick, kShiftClick };
-
-std::string ToJsonString(ClickMethod click) {
-  switch (click) {
-    case ClickMethod::kLeftClick:
-      return kValueLeftClick;
-    case ClickMethod::kMiddleClick:
-      return kValueMiddleClick;
-    case ClickMethod::kShiftClick:
-      return kValueShiftClick;
-  }
-}
 
 std::string_view ToParamString(ClickMethod click) {
   switch (click) {
@@ -184,13 +197,21 @@ enum class OpenerMode {
   kNoOpener,
 };
 
-std::string ToJsonString(OpenerMode opener) {
+std::string ToIdString(OpenerMode opener) {
   switch (opener) {
     case OpenerMode::kOpener:
       return kValueOpener;
     case OpenerMode::kNoOpener:
       return kValueNoOpener;
   }
+}
+
+std::string ToParamString(
+    blink::mojom::ManifestLaunchHandler_ClientMode client_mode) {
+  if (client_mode == blink::mojom::ManifestLaunchHandler_ClientMode::kAuto) {
+    return "";
+  }
+  return base::ToString(client_mode);
 }
 
 std::string_view ToParamString(OpenerMode opener) {
@@ -218,7 +239,7 @@ enum class NavigationTarget {
   kNoFrame,
 };
 
-std::string ToJsonString(NavigationTarget target) {
+std::string ToIdString(NavigationTarget target) {
   switch (target) {
     case NavigationTarget::kSelf:
       return kValueTargetSelf;
@@ -246,20 +267,158 @@ std::string_view ToParamString(NavigationTarget target) {
 
 // Use a std::tuple for the overall test configuration so testing::Combine can
 // be used to construct the values.
-using LinkCaptureTestParam = std::tuple<StartingPoint,
-                                        Destination,
-                                        NavigationElement,
-                                        ClickMethod,
-                                        OpenerMode,
-                                        NavigationTarget>;
+using LinkCaptureTestParam =
+    std::tuple<blink::mojom::ManifestLaunchHandler_ClientMode,
+               StartingPoint,
+               Destination,
+               RedirectType,
+               NavigationElement,
+               ClickMethod,
+               OpenerMode,
+               NavigationTarget>;
 
 std::string LinkCaptureTestParamToString(
     testing::TestParamInfo<LinkCaptureTestParam> param_info) {
   // Concatenates the result of calling `ToParamString()` on each member of the
   // tuple with '_' in between fields.
-  return std::apply(
+  std::string name = std::apply(
       [](auto&... p) { return base::JoinString({ToParamString(p)...}, "_"); },
       param_info.param);
+  base::TrimString(name, "_", &name);
+  return name;
+}
+
+std::string BrowserTypeToString(Browser::Type type) {
+  switch (type) {
+    case Browser::Type::TYPE_NORMAL:
+      return "TYPE_NORMAL";
+    case Browser::Type::TYPE_POPUP:
+      return "TYPE_POPUP";
+    case Browser::Type::TYPE_APP:
+      return "TYPE_APP";
+    case Browser::Type::TYPE_DEVTOOLS:
+      return "TYPE_DEVTOOLS";
+    case Browser::Type::TYPE_APP_POPUP:
+      return "TYPE_APP_POPUP";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Browser::Type::TYPE_CUSTOM_TAB:
+      return "TYPE_CUSTOM_TAB";
+#endif
+    case Browser::Type::TYPE_PICTURE_IN_PICTURE:
+      return "TYPE_PICTURE_IN_PICTURE";
+  }
+  NOTREACHED() << "Unknown browser type: " + base::NumberToString(type);
+}
+
+// Serializes the state of a RenderFrameHost relevant for this test into a
+// dictionary that can be stored as JSON. This includes the frame name and
+// current URL.
+// TODO(crbug.com/359418631): Add opener information to frames if possible.
+base::Value::Dict RenderFrameHostToJson(content::RenderFrameHost& rfh) {
+  base::Value::Dict dict;
+  if (!rfh.GetFrameName().empty()) {
+    dict.Set("frame_name", rfh.GetFrameName());
+  }
+  dict.Set("current_url", rfh.GetLastCommittedURL().path());
+  return dict;
+}
+
+// Serializes the state of a WebContents, including the state of all its iframes
+// as well as navigation history for the tab.
+base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
+  base::Value::Dict dict =
+      RenderFrameHostToJson(*web_contents.GetPrimaryMainFrame());
+  if (web_contents.HasOpener()) {
+    dict.Set("has_opener", true);
+  }
+
+  base::Value::List frames;
+  web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&](content::RenderFrameHost* frame) {
+        if (frame->IsInPrimaryMainFrame()) {
+          return;
+        }
+        frames.Append(RenderFrameHostToJson(*frame));
+      });
+  if (!frames.empty()) {
+    dict.Set("frames", std::move(frames));
+  }
+
+  base::Value::List history;
+  content::NavigationController& navigation_controller =
+      web_contents.GetController();
+  for (int i = 0; i < navigation_controller.GetEntryCount(); ++i) {
+    content::NavigationEntry& entry = *navigation_controller.GetEntryAtIndex(i);
+    base::Value::Dict json_entry;
+    json_entry.Set("url", entry.GetURL().path());
+    if (!entry.GetReferrer().url.is_empty()) {
+      json_entry.Set("referrer", entry.GetReferrer().url.path());
+    }
+    json_entry.Set("transition", PageTransitionGetCoreTransitionString(
+                                     entry.GetTransitionType()));
+    history.Append(std::move(json_entry));
+  }
+  dict.Set("history", std::move(history));
+
+  content::EvalJsResult launchParamsResults = content::EvalJs(
+      web_contents.GetPrimaryMainFrame(),
+      "'launchParamsTargetUrls' in window ? launchParamsTargetUrls : []");
+  EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
+  base::Value::List launchParamsTargetUrls =
+      launchParamsResults.ExtractList().TakeList();
+  if (!launchParamsTargetUrls.empty()) {
+    for (const base::Value& url : launchParamsTargetUrls) {
+      dict.EnsureList("launchParams")->Append(GURL(url.GetString()).path());
+    }
+  }
+
+  return dict;
+}
+
+// Serializes the state of all tabs in a particular Browser to a json
+// dictionary, including which tab is the currently active tab.
+//
+// For app browsers, the scope path is added to simplify manual debugging to
+// identify cases where a source app window can have an out of scope destination
+// url loaded in it.
+base::Value::Dict BrowserToJson(const Browser& browser) {
+  base::Value::Dict dict = base::Value::Dict().Set(
+      "browser_type", BrowserTypeToString(browser.type()));
+  if (browser.type() == Browser::Type::TYPE_APP ||
+      browser.type() == Browser::Type::TYPE_APP_POPUP) {
+    CHECK(browser.app_controller());
+    const webapps::AppId& app_id = browser.app_controller()->app_id();
+    CHECK(!app_id.empty());
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForTest(browser.profile());
+    const GURL& app_scope = provider->registrar_unsafe().GetAppScope(app_id);
+    if (app_scope.is_valid()) {
+      dict.Set("app_scope", app_scope.path());
+    }
+  }
+  base::Value::List tabs;
+  const TabStripModel* tab_model = browser.tab_strip_model();
+  for (int i = 0; i < tab_model->count(); ++i) {
+    base::Value::Dict tab = WebContentsToJson(*tab_model->GetWebContentsAt(i));
+    if (i == tab_model->active_index()) {
+      tab.Set("active", true);
+    }
+    tabs.Append(std::move(tab));
+  }
+  dict.Set("tabs", std::move(tabs));
+  return dict;
+}
+
+// Serializes the entire state of chrome that we're interested in in this test
+// to a dictionary. This state consists of the state of all Browser windows, in
+// creation order of the Browser.
+base::Value::Dict CaptureCurrentState() {
+  base::Value::List browsers;
+  for (Browser* b : *BrowserList::GetInstance()) {
+    base::Value::Dict json_browser = BrowserToJson(*b);
+    browsers.Append(std::move(json_browser));
+  }
+  return base::Value::Dict().Set("browsers", std::move(browsers));
 }
 
 // This helper class monitors WebContents creation in all tabs (of all browsers)
@@ -294,17 +453,26 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
 // The test expectations are read from a json file that is stored here:
 // chrome/test/data/web_apps/link_capture_test_input.json
 //
+// The expectations file maps test names (as serialized from the test
+// parameters) to a json object containing a `disabled` flag as well as
+// `expected_state`, the expected state of all Browser objects and their
+// WebContents at the end of a test.
+//
 // If link capturing behavior changes, the test expectations would need to be
 // updated. This can be done manually (by editing the json file directly), or it
 // can be done automatically by using the flag --rebaseline-link-capturing-test.
 //
+// By default only tests that aren't listed as disabled in the json file are
+// executed. To also run tests marked as disabled, include the --run-all-tests
+// flag. This is also needed if you want to rebaseline tests that are still
+// disabled.
+//
 // Example usage:
 // out/Default/browser_tests \
 // --gtest_filter=*WebAppLinkCapturingParameterizedBrowserTest.* \
-// --rebaseline-link-capturing-test
-//
+// --rebaseline-link-capturing-test --run-all-tests --test-launcher-jobs=40
 class WebAppLinkCapturingParameterizedBrowserTest
-    : public InProcessBrowserTest,
+    : public web_app::WebAppBrowserTestBase,
       public testing::WithParamInterface<LinkCaptureTestParam> {
  public:
   WebAppLinkCapturingParameterizedBrowserTest() {
@@ -317,7 +485,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   std::unique_ptr<net::test_server::HttpResponse> SimulateRedirectHandler(
       const net::test_server::HttpRequest& request) {
-    if (!WillNavigateA2AWithRedir() && !WillNavigateA2BWithRedir()) {
+    if (GetRedirectType() == RedirectType::kNone) {
       return nullptr;  // This test is not using redirects.
     }
     if (request.GetURL().spec().find("/destination.html") ==
@@ -325,12 +493,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
       return nullptr;  // Only redirect for destination pages.
     }
 
-    GURL redirect_from = embedded_test_server()->GetURL(
-        WillNavigateA2AWithRedir() ? kDestinationPageScopeA
-                                   : kDestinationPageScopeB);
-    GURL redirect_to = embedded_test_server()->GetURL(
-        WillNavigateA2AWithRedir() ? kDestinationPageScopeB
-                                   : kDestinationPageScopeA);
+    GURL redirect_from = GetRedirectIntermediateUrl();
+    GURL redirect_to = GetDestinationUrl();
 
     // We don't redirect requests for start.html, manifest files, etc. Only the
     // destination page the test wants to run.
@@ -349,147 +513,125 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
  protected:
-  struct TestExpectation {
-    Browser::Type browser_type;
-    bool same_browser;
-    bool in_iframe;
-  };
-
-  // Obtains expected results for the current test run. Returned as a pair of
-  // (expected) BrowserType and a bool signifying whether the test should expect
-  // the old browser object to be used for the navigation to the destination.
-
-  base::Value::Dict& GetExpectationValueFromParam() {
-    base::Value& value = test_expectations_.value();
-    base::Value::Dict& dict = value.GetDict();
-    base::Value::List* list = dict.EnsureList("expectations");
-
-    for (base::Value& entry : *list) {
-      base::Value::Dict& log_entry = entry.GetDict();
-
-      const std::string* start = log_entry.FindString("start");
-      const std::string* scope = log_entry.FindString("scope");
-      const std::string* element = log_entry.FindString("element");
-      const std::string* click = log_entry.FindString("click");
-      const std::string* opener = log_entry.FindString("opener");
-      const std::string* target = log_entry.FindString("target");
-
-      if (!start || *start != ToJsonString(GetStartingPoint())) {
-        continue;
-      }
-
-      if (!scope || *scope != ToJsonString(GetDestination())) {
-        continue;
-      }
-
-      if (!element || *element != ToJsonString(GetNavigationElement())) {
-        continue;
-      }
-
-      if (!click || *click != ToJsonString(GetClickMethod())) {
-        continue;
-      }
-
-      if (!opener || *opener != ToJsonString(GetOpenerMode())) {
-        continue;
-      }
-
-      if (!target || *target != ToJsonString(GetNavigationTarget())) {
-        continue;
-      }
-
-      return log_entry;
-    }
-
-    base::Value::Dict new_expectation =
-        base::Value::Dict()
-            .Set("start", ToJsonString(GetStartingPoint()))
-            .Set("scope", ToJsonString(GetDestination()))
-            .Set("element", ToJsonString(GetNavigationElement()))
-            .Set("click", ToJsonString(GetClickMethod()))
-            .Set("opener", ToJsonString(GetOpenerMode()))
-            .Set("target", ToJsonString(GetNavigationTarget()));
-    list->Append(std::move(new_expectation));
-    return list->back().GetDict();
-  }
-
-  TestExpectation GetTestExpectationFromParam() {
-    const base::Value::Dict& log_entry = GetExpectationValueFromParam();
-    const std::string* expectation = log_entry.FindString("expect");
-    CHECK(expectation) << "Missing expectation in test file";
-    std::vector<std::string> tokens = base::SplitString(
-        *expectation, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    TestExpectation test_expectation = {Browser::Type::TYPE_PICTURE_IN_PICTURE,
-                                        false, false};
-    for (size_t i = 0; i < tokens.size(); ++i) {
-      if (i == 0) {
-        test_expectation.browser_type = StringToBrowserType(tokens[0]);
-      } else if (tokens[i].compare(kValueSameBrowser) == 0) {
-        test_expectation.same_browser = true;
-      } else if (tokens[i].compare(kValueInIFrame) == 0) {
-        test_expectation.in_iframe = true;
-      }
-    }
-    return test_expectation;
-  }
-
-  // This function runs a javascript on the `contents`, which will result in a
-  // click to `element_id` being simulated. Set `middle_click` to `true` to
-  // change from the default behavior (which is to left-click). Returns `true`
-  // if successful, but false when an error occurs (see dev console or execution
-  // log).
-  bool SimulateClickOnElement(content::WebContents* contents,
+  // This function simulates a click on the middle of an element matching
+  // `element_id` based on the type of click passed to it.
+  void SimulateClickOnElement(content::WebContents* contents,
                               std::string element_id,
                               ClickMethod click) {
-    auto GetClickProperties = [](ClickMethod click) -> std::string {
-      switch (click) {
-        case ClickMethod::kLeftClick:
-          return "{}";
-        case ClickMethod::kMiddleClick:
-          return "{ctrlKey: true}";
-        case ClickMethod::kShiftClick:
-          return "{shiftKey: true}";
-      }
-    };
-    std::string properties = GetClickProperties(click);
-    std::string js =
-        "simulateClick(\"" + element_id + "\", " + properties + ")";
-    return ExecJs(contents, js);
+    gfx::Point element_center = gfx::ToFlooredPoint(
+        content::GetCenterCoordinatesOfElementWithId(contents, element_id));
+    int modifiers = 0;
+    blink::WebMouseEvent::Button button = blink::WebMouseEvent::Button::kLeft;
+    switch (click) {
+      case ClickMethod::kLeftClick:
+        modifiers = blink::WebInputEvent::Modifiers::kNoModifiers;
+        break;
+      case ClickMethod::kMiddleClick:
+#if BUILDFLAG(IS_MAC)
+        modifiers = blink::WebInputEvent::Modifiers::kMetaKey;
+#else
+        modifiers = blink::WebInputEvent::Modifiers::kControlKey;
+#endif  // BUILDFLAG(IS_MAC)
+        break;
+      case ClickMethod::kShiftClick:
+        modifiers = blink::WebInputEvent::Modifiers::kShiftKey;
+        break;
+    }
+    content::SimulateMouseClickAt(contents, modifiers, button, element_center);
+  }
+
+  // The json file is of the following format:
+  // { 'tests': {
+  //   'TestName': { ... }
+  // }}
+  // This method returns the dictionary associated with the test name derived
+  // from the test parameters. If no entry exists for the test, a new one is
+  // created.
+  base::Value::Dict& GetTestCaseDataFromParam() {
+    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
+    base::Value::Dict* result =
+        test_expectations().EnsureDict("tests")->EnsureDict(
+            LinkCaptureTestParamToString(param));
+
+    // Temporarily check expectations for the test name before redirect mode was
+    // a separate parameter as well to make it easier to migrate expectations.
+    // TODO(mek): Remove this migration code.
+    if (!result->contains("expected_state") &&
+        GetRedirectType() == RedirectType::kNone) {
+      std::string key = LinkCaptureTestParamToString(param);
+      base::ReplaceFirstSubstringAfterOffset(&key, 0, "_Direct", "");
+      *result =
+          test_expectations().EnsureDict("tests")->EnsureDict(key)->Clone();
+      test_expectations().EnsureDict("tests")->Remove(key);
+    }
+    return *result;
+  }
+
+  base::ScopedClosureRunner LockExpectationsFile() {
+    CHECK(ShouldRebaseline());
+    // Lock the results file to support using `--test-launcher-jobs=X` when
+    // doing a rebaseline.
+    base::File exclusive_file = base::File(
+        lock_file_path_, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE);
+
+// Fuchsia doesn't support file locking.
+#if !BUILDFLAG(IS_FUCHSIA)
+    {
+      SCOPED_TRACE("Attempting to gain exclusive lock of " +
+                   lock_file_path_.MaybeAsASCII());
+      base::test::RunUntil([&]() {
+        return exclusive_file.Lock(base::File::LockMode::kExclusive) ==
+               base::File::FILE_OK;
+      });
+    }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+    // Re-read expectations to catch changes from other parallel runs of
+    // rebaselining.
+    InitializeTestExpectations();
+
+    return base::ScopedClosureRunner(base::BindOnce(
+        [](base::File lock_file) {
+#if !BUILDFLAG(IS_FUCHSIA)
+          EXPECT_EQ(lock_file.Unlock(), base::File::FILE_OK);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+          lock_file.Close();
+        },
+        std::move(exclusive_file)));
   }
 
   // This function is used during rebaselining to record (to a file) the results
-  // from an actual run of a single test case. Constructs a json dictionary and
-  // saves it to the test results json file. Returns true if writing was
-  // successful.
-  void RecordActualResults(Browser::Type type,
-                           bool same_browser_instance,
-                           bool in_iframe) {
-    std::string expect =
-        BrowserTypeToString(type) + " " +
-        (same_browser_instance ? kValueSameBrowser : kValueOtherBrowser) + " " +
-        (in_iframe ? kValueInIFrame : kValueInMain);
+  // from an actual run of a single test case, used by developers to update the
+  // expectations. Constructs a json dictionary and saves it to the test results
+  // json file. Returns true if writing was successful.
+  void RecordActualResults() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Lock the results file to support using `--test-launcher-jobs=X` when
+    // doing a rebaseline.
+    base::ScopedClosureRunner lock = LockExpectationsFile();
 
-    base::Value::Dict& expectation = GetExpectationValueFromParam();
-    expectation.Set("expect", expect);
+    base::Value::Dict& test_case = GetTestCaseDataFromParam();
+    // If this is a new test case, start it out as disabled until we've manually
+    // verified the expectations are correct.
+    if (!test_case.contains("expected_state")) {
+      test_case.Set("disabled", true);
+    }
+    test_case.Set("expected_state", CaptureCurrentState());
+
     SaveExpectations();
   }
 
   void SaveExpectations() {
-    // Sort the list of test cases, ignoring the actual expectation.
-    base::ranges::sort(*test_expectations_->GetDict().FindList("expectations"),
-                       /*comp=*/{}, /*proj=*/[](const base::Value& v) {
-                         base::Value::Dict dict = v.GetDict().Clone();
-                         dict.Remove("expect");
-                         return base::Value(std::move(dict));
-                       });
-    // And write formatted JSON back to disk.
-    {
-      base::ScopedAllowBlockingForTesting allow_blocking;
-      std::optional<std::string> json_string = base::WriteJsonWithOptions(
-          *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
-      ASSERT_TRUE(json_string.has_value());
-      ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
-    }
+    CHECK(ShouldRebaseline());
+    // Write formatted JSON back to disk.
+    std::optional<std::string> json_string = base::WriteJsonWithOptions(
+        *test_expectations_, base::JsonOptions::OPTIONS_PRETTY_PRINT);
+    ASSERT_TRUE(json_string.has_value());
+    ASSERT_TRUE(base::WriteFile(json_file_path_, *json_string));
+  }
+
+  blink::mojom::ManifestLaunchHandler_ClientMode GetClientMode() const {
+    return std::get<blink::mojom::ManifestLaunchHandler_ClientMode>(GetParam());
   }
 
   StartingPoint GetStartingPoint() const {
@@ -506,26 +648,28 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return std::get<Destination>(GetParam());
   }
 
-  // Returns `true` if the test should navigate to a page within the same scope.
-  bool WillNavigateA2A() const {
-    return GetDestination() == Destination::kScopeA2A;
+  GURL GetDestinationUrl() {
+    switch (GetDestination()) {
+      case Destination::kScopeA2A:
+        return embedded_test_server()->GetURL(kDestinationPageScopeA);
+      case Destination::kScopeA2B:
+        return embedded_test_server()->GetURL(kDestinationPageScopeB);
+    }
   }
 
-  // Returns `true` if the test should navigate to a page in a different scope.
-  bool WillNavigateA2B() const {
-    return GetDestination() == Destination::kScopeA2B;
+  RedirectType GetRedirectType() const {
+    return std::get<RedirectType>(GetParam());
   }
 
-  // Returns `true` if the test should navigate to a page in a different scope,
-  // but end up on the same scope due to an HTTP redirect.
-  bool WillNavigateA2AWithRedir() const {
-    return GetDestination() == Destination::kScopeA2ARedirectB;
-  }
-
-  // Returns `true` if the test should navigate to a page in the same scope, but
-  // end up on back scope A due to an HTTP redirect.
-  bool WillNavigateA2BWithRedir() const {
-    return GetDestination() == Destination::kScopeA2BRedirectA;
+  GURL GetRedirectIntermediateUrl() {
+    switch (GetRedirectType()) {
+      case RedirectType::kNone:
+        return GURL();
+      case RedirectType::kServerSideViaA:
+        return embedded_test_server()->GetURL(kDestinationPageScopeA);
+      case RedirectType::kServerSideViaB:
+        return embedded_test_server()->GetURL(kDestinationPageScopeB);
+    }
   }
 
   NavigationElement GetNavigationElement() const {
@@ -549,45 +693,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
   // for each combination. This function obtains the right element id to use
   // in the navigation click.
   std::string GetElementId() {
-    std::string id = "id-";
-
-    id += ToJsonString(GetNavigationElement());
-    id += "-";
-    if (WillNavigateA2A() || WillNavigateA2AWithRedir()) {
-      id += kValueScopeA2A;
-    } else if (WillNavigateA2B() || WillNavigateA2BWithRedir()) {
-      id += kValueScopeA2B;
-    }
-
-    id += "-";
-    id += ToJsonString(GetNavigationTarget());
-
-    id += "-";
-    id += ToJsonString(GetOpenerMode());
-
-    return id;
-  }
-
-  std::string BrowserTypeToString(Browser::Type type) {
-    switch (type) {
-      case Browser::Type::TYPE_NORMAL:
-        return "TYPE_NORMAL";
-      case Browser::Type::TYPE_POPUP:
-        return "TYPE_POPUP";
-      case Browser::Type::TYPE_APP:
-        return "TYPE_APP";
-      case Browser::Type::TYPE_DEVTOOLS:
-        return "TYPE_DEVTOOLS";
-      case Browser::Type::TYPE_APP_POPUP:
-        return "TYPE_APP_POPUP";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      case Browser::Type::TYPE_CUSTOM_TAB:
-        return "TYPE_CUSTOM_TAB";
-#endif
-      case Browser::Type::TYPE_PICTURE_IN_PICTURE:
-        return "TYPE_PICTURE_IN_PICTURE";
-    }
-    NOTREACHED() << "Unknown browser type: " + base::NumberToString(type);
+    return base::JoinString(
+        {"id", ToIdString(GetNavigationElement()),
+         ToIdString(GetRedirectType(), GetDestination()),
+         ToIdString(GetNavigationTarget()), ToIdString(GetOpenerMode())},
+        "-");
   }
 
   webapps::AppId InstallTestWebApp(const GURL& start_url) {
@@ -595,6 +705,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->launch_handler =
+        blink::Manifest::LaunchHandler(GetClientMode());
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     apps::AppReadinessWaiter(profile(), app_id).Await();
@@ -608,12 +722,44 @@ class WebAppLinkCapturingParameterizedBrowserTest
     return command_line.HasSwitch("rebaseline-link-capturing-test");
   }
 
-  Browser* ToBrowser(content::WebContents* web_contents) {
-    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
-    return chrome::FindBrowserWithWindow(native_window);
+  bool ShouldRunDisabledTests() {
+    const base::CommandLine& command_line =
+        *base::CommandLine::ForCurrentProcess();
+    return command_line.HasSwitch("run-all-tests");
   }
 
   Profile* profile() { return browser()->profile(); }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
+        base::Unretained(this)));
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    NotificationPermissionContext::UpdatePermission(
+        browser()->profile(), embedded_test_server()->GetOrigin().GetURL(),
+        CONTENT_SETTING_ALLOW);
+    notification_tester_ =
+        std::make_unique<NotificationDisplayServiceTester>(profile());
+    notification_tester_->SetNotificationAddedClosure(
+        base::BindLambdaForTesting([this] {
+          std::vector<message_center::Notification> notifications =
+              notification_tester_->GetDisplayedNotificationsForType(
+                  NotificationHandler::Type::WEB_PERSISTENT);
+          EXPECT_EQ(1ul, notifications.size());
+          for (const message_center::Notification& notification :
+               notifications) {
+            notification_tester_->SimulateClick(
+                NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
+                /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+          }
+        }));
+  }
+
+  base::Value::Dict& test_expectations() {
+    CHECK(test_expectations_.has_value() && test_expectations_->is_dict());
+    return test_expectations_->GetDict();
+  }
 
  private:
   // Returns the path to the test expectation file (or an error).
@@ -654,9 +800,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     NOTREACHED() << "Unknown browser type: " + type;
   }
 
-  // Parses the json test expectation file. Note that during rebaselining, a
-  // dummy json file is used, because the json test expectation file is still
-  // being constructed and likely contains invalid values.
+  // Parses the json test expectation file. Note that if the expectations file
+  // doesn't exist during rebaselining, a dummy json file is used.
   void InitializeTestExpectations() {
     std::string json_data;
     bool success = ReadFileToString(json_file_path_, &json_data);
@@ -665,7 +810,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     }
     if (!success) {
       json_data = R"(
-          {"expectations": []}
+          {"tests": {}}
         )";
     }
     test_expectations_ = base::JSONReader::Read(json_data);
@@ -675,53 +820,40 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+
   // The path to the json file containing the test expectations.
   base::FilePath json_file_path_ =
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
           .AppendASCII(kLinkCaptureTestInputPath);
 
+  base::FilePath lock_file_path_ =
+      base::PathService::CheckedGet(base::DIR_OUT_TEST_DATA_ROOT)
+          .AppendASCII("link_capturing_rebaseline_lock_file.lock");
+
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
-
-  // static int test_case_counter_;
-  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
-// Intentionally disabled -- this can be enabled manually on Linux to verify
-// link capturing use-cases. Expectations for other platforms might be different
-// and need to be generated separately.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
-                       DISABLED_CheckLinkCaptureCombinations) {
+                       CheckLinkCaptureCombinations) {
   testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
 
-  // Use PiP browser type as default because it would always be an unexpected
-  // result for this test.
-  TestExpectation expectation = {Browser::Type::TYPE_PICTURE_IN_PICTURE, false,
-                                 false};
-  if (!ShouldRebaseline()) {
-    expectation = GetTestExpectationFromParam();
+  const base::Value::Dict& test_case = GetTestCaseDataFromParam();
+  if (!ShouldRunDisabledTests() &&
+      test_case.FindBool("disabled").value_or(false)) {
+    GTEST_SKIP()
+        << "Skipped as test is marked as disabled in the expectations file. "
+           "Add the switch '--run-all-tests' to run disabled tests too.";
   }
 
+  // Install all apps.
+  const webapps::AppId app_a =
+      InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
+  const webapps::AppId app_b =
+      InstallTestWebApp(embedded_test_server()->GetURL(kDestinationPageScopeB));
+
   std::string element_id = GetElementId();
-
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &WebAppLinkCapturingParameterizedBrowserTest::SimulateRedirectHandler,
-      base::Unretained(this)));
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  std::string trace =
-      std::string("\n---------------------------\nParameterized test: ") +
-      "Test name: " + LinkCaptureTestParamToString(param) +
-      "\n"
-      "clicking : " +
-      element_id + " " +
-      (ShouldRebaseline()
-           ? "Rebaseline in progress "
-           : "Expect: " + BrowserTypeToString(expectation.browser_type) + " " +
-                 (expectation.same_browser ? "SAME_BROWSER" : "OTHER_BROWSER") +
-                 " " + (expectation.in_iframe ? "IN_IFRAME" : "IN_MAIN"));
-
-  SCOPED_TRACE(trace);
 
   // Setup the initial page.
   Browser* browser_a;
@@ -730,10 +862,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     content::DOMMessageQueue message_queue;
 
     if (StartInAppWindow()) {
-      // Setup the starting app.
-      const webapps::AppId app_a =
-          InstallTestWebApp(embedded_test_server()->GetURL(kStartPageScopeA));
-
       auto* const proxy =
           apps::AppServiceProxyFactory::GetForProfile(profile());
       ui_test_utils::AllBrowserTabAddedWaiter waiter;
@@ -750,61 +878,44 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
     EXPECT_EQ("\"ReadyForLinkCaptureTesting\"", message);
 
-    browser_a = ToBrowser(contents_a);
+    browser_a = chrome::FindBrowserWithTab(contents_a);
     ASSERT_TRUE(browser_a != nullptr);
     ASSERT_EQ(StartInAppWindow() ? Browser::Type::TYPE_APP
                                  : Browser::Type::TYPE_NORMAL,
               browser_a->type());
   }
 
-  // Setup links for scope B (unless we're staying in scope A the whole time).
-  if (!WillNavigateA2A()) {
-    GURL url = embedded_test_server()->GetURL(kDestinationPageScopeB);
-    const webapps::AppId app_b = InstallTestWebApp(url);
-
-    std::string js = std::string("setLinksForScopeB('") + url.spec().c_str() +
-                     "', 'target', 'noopener')";
-    ASSERT_TRUE(ExecJs(contents_a, js));
-  }
-
-  content::WebContents* contents_b;
-  bool in_iframe = false;
   {
     content::DOMMessageQueue message_queue;
-
     // Perform action (launch destination page).
     WebContentsCreationMonitor monitor;
-    ASSERT_TRUE(
-        SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod()));
+    SimulateClickOnElement(contents_a, GetElementId(), GetClickMethod());
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
+    DLOG(INFO) << message;
     std::string unquoted_message;
-    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message));
-    std::vector parts =
-        base::SplitString(unquoted_message, ":", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    EXPECT_EQ("FinishedNavigating in frame", parts[0]);
-    in_iframe = parts[1].compare("iframe") == 0;
+    ASSERT_TRUE(base::RemoveChars(message, "\"", &unquoted_message)) << message;
+    EXPECT_TRUE(base::StartsWith(unquoted_message, "FinishedNavigating"))
+        << unquoted_message;
 
-    contents_b = monitor.GetLastSeenWebContentsAndStopMonitoring();
+    content::WebContents* handled_contents =
+        monitor.GetLastSeenWebContentsAndStopMonitoring();
+    ASSERT_NE(nullptr, handled_contents);
+    ASSERT_TRUE(handled_contents->GetURL().is_valid());
 
-    ASSERT_NE(nullptr, contents_b);
-    ASSERT_TRUE(contents_b->GetURL().is_valid());
+    provider().command_manager().AwaitAllCommandsCompleteForTesting();
+    // Attempt to ensure that all launchParams have propagated.
+    content::RunAllTasksUntilIdle();
   }
 
-  Browser* browser_b = ToBrowser(contents_b);
-  ASSERT_NE(browser_b, nullptr);
-  Browser::Type browser_type_b = browser_b->type();
-
   if (ShouldRebaseline()) {
-    RecordActualResults(browser_type_b, browser_a == browser_b, in_iframe);
+    RecordActualResults();
   } else {
-    // Make sure browser type and browser creation match expectations.
-    ASSERT_EQ(BrowserTypeToString(expectation.browser_type),
-              BrowserTypeToString(browser_type_b));
-    ASSERT_EQ(expectation.same_browser, browser_a == browser_b);
-    ASSERT_EQ(expectation.in_iframe, in_iframe);
+    const base::Value::Dict* expected_state =
+        test_case.FindDict("expected_state");
+    ASSERT_TRUE(expected_state);
+    ASSERT_EQ(*expected_state, CaptureCurrentState());
   }
 }
 
@@ -816,15 +927,14 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebAppLinkCapturingParameterizedBrowserTest,
     testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
         testing::Values(
             StartingPoint::kAppWindow,  // Starting point is app window.
             StartingPoint::kTab         // Starting point is a tab.
             ),
-        testing::Values(Destination::kScopeA2A,  // Navigate in-scope A.
-                        Destination::kScopeA2B,  // Navigate A -> B.
-                        Destination::kScopeA2ARedirectB,  // Redirect A -> B.
-                        Destination::kScopeA2BRedirectA   // Redirect back to A.
-                        ),
+        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
+                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(RedirectType::kNone),
         testing::Values(
             NavigationElement::kElementLink,   // Navigate via element.
             NavigationElement::kElementButton  // Navigate via button.
@@ -844,3 +954,97 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
     LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(
+            StartingPoint::kAppWindow,  // Starting point is app window.
+            StartingPoint::kTab         // Starting point is a tab.
+            ),
+        testing::Values(Destination::kScopeA2A,   // Navigate in-scope A.
+                        Destination::kScopeA2B),  // Navigate A -> B.
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementServiceWorkerButton),
+        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+INSTANTIATE_TEST_SUITE_P(
+    Capturable,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        // TODO: Add kNavigateExisting.
+        testing::Values(
+            blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A,  // Navigate A -> A.
+                        Destination::kScopeA2B   // Navigate A -> B.
+                        ),
+        // TODO: Add redirection cases.
+        testing::Values(RedirectType::kNone),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
+        // TODO: Add shift and middle click cases.
+        testing::Values(ClickMethod::kLeftClick),
+        testing::Values(OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
+
+// This test verifies that there are no left-over expectations for tests that
+// no longer exist in code but still exist in the expectations json file.
+// Additionally if this test is run with the --rebaseline-link-capturing-test
+// flag any left-over expectations will be cleaned up.
+using WebAppLinkCapturingParameterizedExpectationTest =
+    WebAppLinkCapturingParameterizedBrowserTest;
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
+                       CleanupExpectations) {
+  std::set<std::string> test_cases;
+  const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
+  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+    const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
+    // We only care about link capturing parameterized tests.
+    if (std::string_view(test_suite->name())
+            .find("WebAppLinkCapturingParameterizedBrowserTest") ==
+        std::string::npos) {
+      continue;
+    }
+    for (int j = 0; j < test_suite->total_test_count(); ++j) {
+      const char* name = test_suite->GetTestInfo(j)->name();
+      auto parts = base::SplitStringOnce(name, '/');
+      if (!parts.has_value()) {
+        // Not a parameterized test.
+        continue;
+      }
+      test_cases.insert(std::string(parts->second));
+    }
+  }
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedClosureRunner lock;
+  if (ShouldRebaseline()) {
+    lock = LockExpectationsFile();
+  }
+
+  base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
+  std::vector<std::string> tests_to_remove;
+  for (const auto [name, value] : expectations) {
+    if (!test_cases.contains(name)) {
+      tests_to_remove.push_back(name);
+    }
+  }
+  if (ShouldRebaseline()) {
+    for (const auto& name : tests_to_remove) {
+      LOG(INFO) << "Removing " << name;
+      expectations.Remove(name);
+    }
+    SaveExpectations();
+  } else {
+    EXPECT_THAT(tests_to_remove, testing::ElementsAre())
+        << "Run this test with --rebaseline-link-capturing-test to clean this "
+           "up.";
+  }
+}

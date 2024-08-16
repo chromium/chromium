@@ -327,7 +327,7 @@ class RenderViewContextMenu
       bool notify_if_restricted) const;
 
   // Helper function for checking policies.
-  bool IsSaveAsItemAllowedByPolicy() const;
+  bool IsSaveAsItemAllowedByPolicy(const GURL& item_url) const;
 
   // Helper function for checking fenced frame tree untrusted network access
   // status.

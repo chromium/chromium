@@ -30,6 +30,7 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/update_client",
+    "//ios/chrome/browser/profile/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/net",

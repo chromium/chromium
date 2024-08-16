@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
 #include <string_view>
@@ -871,7 +876,7 @@ void CommerceHintAgent::ExtractCartWithUpdatedScript(
       GetProductExtractionScript(product_id_json, cart_extraction_script));
 
   main_frame->RequestExecuteScript(
-      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1u),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::span_from_ref(source),
       blink::mojom::UserActivationOption::kDoNotActivate,
       blink::mojom::EvaluationTiming::kAsynchronous,
       blink::mojom::LoadEventBlockingOption::kDoNotBlock,

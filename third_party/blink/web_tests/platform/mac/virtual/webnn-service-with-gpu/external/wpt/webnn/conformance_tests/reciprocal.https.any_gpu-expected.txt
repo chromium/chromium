@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] reciprocal float32 0D scalar
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.1068115234375 should be close enough to expected -0.10679777711629868 by the acceptable 2 ULP distance, but they have 1845 ULP distance expected true got false
+[FAIL] reciprocal float32 1D constant tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+[FAIL] reciprocal float32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+[FAIL] reciprocal float32 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+[FAIL] reciprocal float32 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+[FAIL] reciprocal float32 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+[FAIL] reciprocal float32 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test reciprocal float32 actual -0.9892578125 should be close enough to expected -0.9890353083610535 by the acceptable 2 ULP distance, but they have 3733 ULP distance expected true got false
+Harness: the test ran to completion.
+

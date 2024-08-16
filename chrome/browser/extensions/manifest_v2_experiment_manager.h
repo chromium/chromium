@@ -60,6 +60,14 @@ class ManifestV2ExperimentManager : public KeyedService,
     kMaxValue = kOther,
   };
 
+  // Possible actions taken by the user on an MV2 extension.
+  // Do not re-order entries, as these are used in UKM.
+  // Exposed for testing purposes.
+  enum class ExtensionMV2DeprecationAction {
+    kRemoved,
+    kReEnabled,
+  };
+
   // Retrieves the ManifestV2ExperimentManager associated with the given
   // `browser_context`. Note this instance is shared between on- and off-the-
   // record contexts.
@@ -161,12 +169,20 @@ class ManifestV2ExperimentManager : public KeyedService,
   // MV2 deprecation.
   void EmitMetricsForProfileReady();
 
+  // Emits a UKM record for the extension associated with `extension_url` and
+  // the corresponding `action`.
+  void RecordUkmForExtension(const GURL& extension_url,
+                             ExtensionMV2DeprecationAction action);
+
   // ExtensionRegistry:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
   void OnExtensionInstalled(content::BrowserContext* browser_context,
                             const Extension* extension,
                             bool is_update) override;
+  void OnExtensionUninstalled(content::BrowserContext* browser_context,
+                              const Extension* extension,
+                              UninstallReason reason) override;
 
   // Called when the management policy for MV2 is changed.
   void OnManagementPolicyChanged();

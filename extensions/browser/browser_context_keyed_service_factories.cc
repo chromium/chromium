@@ -4,8 +4,8 @@
 
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 
-#include "extensions/browser/api/api_browser_context_keyed_service_factories.h"
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
+#include "extensions/browser/api/api_browser_context_keyed_service_factories.h"
 
 namespace extensions {
 

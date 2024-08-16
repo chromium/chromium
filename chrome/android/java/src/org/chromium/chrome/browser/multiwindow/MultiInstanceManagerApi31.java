@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
@@ -832,10 +833,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             // TODO(crbug.com/40826734): This only works for windows with live activities. It is
             // non-trivial to add recent tab entries without an active {@link Tab} instance.
             var filterProvider = selector.getTabModelFilterProvider();
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
-                    .closeAllTabs(/* uponExit= */ true, /* hideTabGroups= */ true);
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
-                    .closeAllTabs(/* uponExit= */ true, /* hideTabGroups= */ true);
+            TabClosureParams params =
+                    TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
+            ((TabGroupModelFilter) filterProvider.getTabModelFilter(true)).closeTabs(params);
+            ((TabGroupModelFilter) filterProvider.getTabModelFilter(false)).closeTabs(params);
         }
         mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);

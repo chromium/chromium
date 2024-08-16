@@ -468,6 +468,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunCSSTest(FILE_PATH_LITERAL("reading-flow-shadow-dom-slot.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSReadingFlowOutOfFlowPosition) {
+  RunCSSTest(FILE_PATH_LITERAL("reading-flow-out-of-flow-position.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityA) {
   RunHtmlTest(FILE_PATH_LITERAL("a.html"));
 }
@@ -568,6 +573,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityComboboxOptgroup) {
   RunHtmlTest(FILE_PATH_LITERAL("combobox-optgroup.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityComboboxWithRedundantAriaRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("combobox-with-redundant-aria-role.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2941,6 +2951,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMinRole) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMinRoleTabbableGroup) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "KeyboardFocusableScrollers");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "AccessibilityMinRoleTabbable");
+  RunHtmlTest(FILE_PATH_LITERAL("min-role-tabbable-group.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityMissingRelationTargetsAddedLater) {
   RunAriaTest(FILE_PATH_LITERAL("missing-relation-targets-added-later.html"));
 }
@@ -3086,6 +3105,28 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityParam) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPermission) {
   RunHtmlTest(FILE_PATH_LITERAL("permission.html"));
+}
+
+class DumpAccessibilityTreeWithProhibitedNamesTest
+    : public YieldingParserDumpAccessibilityTreeTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DumpAccessibilityTreeTest::SetUpCommandLine(command_line);
+    // Explicitly enable feature that repairs accessible names on roles where it
+    // prohibited, moving to description.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AccessibilityProhibitedNames");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityTreeWithProhibitedNamesTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
+    DumpAccessibilityTreeTestPassToString());
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithProhibitedNamesTest,
+                       AccessibilityProhibitedName) {
+  RunHtmlTest(FILE_PATH_LITERAL("prohibited-name.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
@@ -3862,26 +3903,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, IgnoredCrash) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
   RunRegressionTest(FILE_PATH_LITERAL("missing-parent.html"));
-}
-
-// TODO(crbug.com/331567752):  Reenable once Linux failures are fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NullObjectOnHypertextOffsetComputation \
-  DISABLED_NullObjectOnHypertextOffsetComputation
-#else
-#define MAYBE_NullObjectOnHypertextOffsetComputation \
-  NullObjectOnHypertextOffsetComputation
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_NullObjectOnHypertextOffsetComputation) {
-  if (!base::FeatureList::IsEnabled(blink::features::kMutationEvents)) {
-    // TODO(crbug.com/40268638) Remove this test (and the .html file) when
-    // MutationEvents are disabled for good. This is just a crash test related
-    // to `DOMNodeInserted`.
-    return;
-  }
-  RunRegressionTest(
-      FILE_PATH_LITERAL("null-object-on-hypertext-offset-computation.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

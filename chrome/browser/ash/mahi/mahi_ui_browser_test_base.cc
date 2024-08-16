@@ -135,6 +135,12 @@ MahiUiBrowserTestBase::MahiUiBrowserTestBase() {
 
 MahiUiBrowserTestBase::~MahiUiBrowserTestBase() = default;
 
+void MahiUiBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
+  command_line->AppendSwitch(switches::kMahiRestrictionsOverride);
+
+  InProcessBrowserTest::SetUpCommandLine(command_line);
+}
+
 void MahiUiBrowserTestBase::SetUpOnMainThread() {
   SystemWebAppBrowserTestBase::SetUpOnMainThread();
 

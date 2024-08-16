@@ -131,6 +131,9 @@ class IsolatedWebAppResponseReaderFactoryTest : public WebAppTest {
     integrity_block_->size = 42;
     integrity_block_->signature_stack = std::move(signature_stack);
 
+    integrity_block_->attributes =
+        web_package::test::GetAttributesForSignedWebBundleId(kWebBundleId.id());
+
     factory_ = std::make_unique<IsolatedWebAppResponseReaderFactory>(
         *profile(), std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
         base::BindRepeating(

@@ -88,7 +88,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/crosapi/mojom",

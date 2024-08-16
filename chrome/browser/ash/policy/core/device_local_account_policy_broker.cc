@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
@@ -124,6 +125,19 @@ void SendExtensionsToLacros(const std::string& user_id,
   }
 }
 
+bool IsExtensionTracked(DeviceLocalAccountType account_type) {
+  switch (account_type) {
+    case DeviceLocalAccountType::kKioskApp:
+    case DeviceLocalAccountType::kPublicSession:
+    case DeviceLocalAccountType::kSamlPublicSession:
+      return true;
+    case DeviceLocalAccountType::kWebKioskApp:
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      return false;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
@@ -154,7 +168,7 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
             base::BindRepeating(&content::GetNetworkConnectionTracker)),
       policy_update_callback_(policy_update_callback),
       resource_cache_task_runner_(resource_cache_task_runner) {
-  if (account.type != DeviceLocalAccountType::kWebKioskApp) {
+  if (IsExtensionTracked(account.type)) {
     extension_tracker_ = std::make_unique<DeviceLocalAccountExtensionTracker>(
         account, store_.get(), &schema_registry_);
   }

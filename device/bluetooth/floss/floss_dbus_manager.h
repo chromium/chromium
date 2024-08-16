@@ -154,6 +154,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   // Timeout to wait for clients to become ready.
   static const int kClientReadyTimeoutMs;
+  // Timeout to wait for bluetooth service to become ready.
+  static const int kWaitServiceTimeoutMs;
 
   FlossDBusManager(const FlossDBusManager&) = delete;
   FlossDBusManager& operator=(const FlossDBusManager&) = delete;
@@ -241,6 +243,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
   void OnManagerClientInitComplete();
+  void OnManagerServiceAvailable(bool is_available);
+  void OnWaitServiceAvailableTimeout();
 
   // Initializes the manager client
   void InitializeManagerClient();

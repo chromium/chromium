@@ -103,6 +103,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.stylus_handwriting.StylusWritingController;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.components.zoom.ZoomConstants;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.ContentViewStatics;
@@ -432,6 +433,7 @@ public class AwContents implements SmartClipProvider {
     private boolean mIsViewVisible;
     private boolean mIsWindowVisible;
     private boolean mIsAttachedToWindow;
+    private long mPreferredFrameIntervalNanos;
 
     // Visibility state of |mWebContents|.
     private boolean mIsContentVisible;
@@ -4157,6 +4159,11 @@ public class AwContents implements SmartClipProvider {
         mContentsClient.getCallbackHelper().postOnNewPicture(mPictureListenerContentProvider);
     }
 
+    @CalledByNative
+    public void onPreferredFrameIntervalChanged(long preferredFrameIntervalNanos) {
+        mPreferredFrameIntervalNanos = preferredFrameIntervalNanos;
+    }
+
     /**
      * Invokes the given {@link VisualStateCallback}.
      *
@@ -4576,7 +4583,12 @@ public class AwContents implements SmartClipProvider {
             }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                    && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_FRAME_RATE_HINTS)) {
+                    && AwFeatureMap.isEnabled(VizFeatures.WEBVIEW_FRAME_RATE_HINTS)) {
+                float frame_rate = View.REQUESTED_FRAME_RATE_CATEGORY_NO_PREFERENCE;
+                if (mPreferredFrameIntervalNanos > 0) {
+                    frame_rate = (float) 1e9 / mPreferredFrameIntervalNanos;
+                }
+                mContainerView.setRequestedFrameRate(frame_rate);
                 float velocity =
                         AwContentsJni.get().getVelocityInPixelsPerSecond(mNativeAwContents);
                 mContainerView.setFrameContentVelocity(velocity);

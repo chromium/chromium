@@ -59,6 +59,8 @@ component("impl") {
     "engines/cryptohome_smart_card_engine.h",
     "engines/prefs_pin_engine.cc",
     "engines/prefs_pin_engine.h",
+    "legacy_auth_surface_registry.cc",
+    "legacy_auth_surface_registry.h",
     "login_screen_auth_policy_connector.cc",
     "login_screen_auth_policy_connector.h",
     "prefs.cc",

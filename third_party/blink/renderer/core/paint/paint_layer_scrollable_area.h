@@ -430,6 +430,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   bool HitTestOverflowControls(HitTestResult&, const gfx::Point& local_point);
 
+  PhysicalOffset LocalToScrollOriginOffset() const final;
+
   // Returns the new offset, after scrolling, of the given rect in absolute
   // coordinates, clipped by the parent's client rect.
   PhysicalRect ScrollIntoView(

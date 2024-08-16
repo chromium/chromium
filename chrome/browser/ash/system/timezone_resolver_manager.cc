@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chrome/browser/ash/preferences.h"
+#include "chrome/browser/ash/preferences/preferences.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_util.h"

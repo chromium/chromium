@@ -445,12 +445,6 @@ BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
              enabled_by_default_desktop_only);
 
-// If enabled, skips ML scoring for those autocomplete matches which were
-// constructed by deduping an ML-eligible and ML-ineligible match.
-BASE_FEATURE(kEnableForceSkipMlScoring,
-             "EnableForceSkipMlScoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Actions in Suggest is a data-driven feature; it's considered enabled when the
 // data is available.
 // The feature flag below helps us tune feature behaviors.

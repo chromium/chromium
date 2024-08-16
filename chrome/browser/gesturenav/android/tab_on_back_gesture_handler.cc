@@ -33,19 +33,24 @@ TabOnBackGestureHandler::TabOnBackGestureHandler(TabAndroid* tab_android)
     : tab_android_(tab_android) {}
 
 void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
-                                            float x,
-                                            float y,
                                             float progress,
                                             int edge,
                                             bool forward) {
-  CHECK(!is_in_progress_, base::NotFatalUntil::M123);
-  is_in_progress_ = true;
+  // Ideally the OS shouldn't start a new gesture without finishing the previous
+  // gesture but we see this pattern on multiple devices.
+  // See crbug.com/41484247.
+  if (is_in_progress_) {
+    base::debug::DumpWithoutCrashing();
+    OnBackCancelled(env);
+    CHECK(!is_in_progress_);
+  }
 
+  is_in_progress_ = true;
   content::WebContents* web_contents = tab_android_->web_contents();
   CHECK(web_contents, base::NotFatalUntil::M123);
   AssertHasWindowAndCompositor(web_contents);
 
-  ui::BackGestureEvent back_gesture(gfx::PointF(x, y), progress);
+  ui::BackGestureEvent back_gesture(progress);
   started_edge_ = static_cast<ui::BackGestureEventSwipeEdge>(edge);
 
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureStarted(
@@ -54,11 +59,9 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 }
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
-                                               float x,
-                                               float y,
                                                float progress,
                                                int edge) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
 
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
@@ -71,13 +74,13 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
     LOG(ERROR) << "TabOnBackGestureHandler::OnBackProgressed " << progress;
     progress = 1.f;
   }
-  ui::BackGestureEvent back_gesture(gfx::PointF(x, y), progress);
+  ui::BackGestureEvent back_gesture(progress);
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureProgressed(
       back_gesture);
 }
 
 void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -88,7 +91,7 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
 }
 
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  CHECK(is_in_progress_, base::NotFatalUntil::M123);
+  CHECK(is_in_progress_);
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -100,7 +103,6 @@ void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
 void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
   if (is_in_progress_) {
     OnBackCancelled(env);
-    is_in_progress_ = false;
   }
   delete this;
 }

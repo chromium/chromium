@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/android/webapk/webapk_registrar.h"
-#include "components/sync/model/model_type_store.h"
+#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 class ModelError;
@@ -24,7 +24,7 @@ namespace webapk {
 class AbstractWebApkDatabaseFactory;
 struct RegistryUpdateData;
 
-// Provides Read/Write access to a ModelTypeStore DB.
+// Provides Read/Write access to a DataTypeStore DB.
 class WebApkDatabase {
  public:
   using ReportErrorCallback =
@@ -50,18 +50,18 @@ class WebApkDatabase {
              CompletionCallback callback);
 
   void DeleteAllDataAndMetadata(
-      syncer::ModelTypeStore::CallbackWithResult callback);
+      syncer::DataTypeStore::CallbackWithResult callback);
 
   bool is_opened() const { return opened_; }
 
  private:
   void OnDatabaseOpened(RegistryOpenedCallback callback,
                         const std::optional<syncer::ModelError>& error,
-                        std::unique_ptr<syncer::ModelTypeStore> store);
+                        std::unique_ptr<syncer::DataTypeStore> store);
   void OnAllDataAndMetadataRead(
       RegistryOpenedCallback callback,
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
+      std::unique_ptr<syncer::DataTypeStore::RecordList> data_records,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,
@@ -69,7 +69,7 @@ class WebApkDatabase {
 
   void RecordSyncedWebApkCountHistogram(int num_web_apks) const;
 
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   const raw_ptr<AbstractWebApkDatabaseFactory, DanglingUntriaged>
       database_factory_;
   ReportErrorCallback error_callback_;

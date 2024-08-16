@@ -1,0 +1,68 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("main") {
+  sources = [
+    "main_section.cc",
+    "main_section.h",
+    "os_settings_hats_handler.cc",
+    "os_settings_hats_handler.h",
+    "send_search_feedback_handler.cc",
+    "send_search_feedback_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//ash/webui/personalization_app",
+    "//base:i18n",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:resources",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/ash/policy/handlers",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/ash/settings:resources",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/services/hats",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//components/strings:components_strings",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "os_settings_hats_handler_unittest.cc",
+    "send_search_feedback_handler_unittest.cc",
+  ]
+
+  deps = [
+    ":main",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/settings/services/hats",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

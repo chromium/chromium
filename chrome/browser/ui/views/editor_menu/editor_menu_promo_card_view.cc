@@ -71,6 +71,8 @@ EditorMenuPromoCardView::EditorMenuPromoCardView(
       delegate_(delegate) {
   CHECK(delegate_);
   InitLayout();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
 }
 
 EditorMenuPromoCardView::~EditorMenuPromoCardView() = default;
@@ -109,7 +111,6 @@ void EditorMenuPromoCardView::RequestFocus() {
 }
 
 void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(GetEditorMenuPromoCardTitle());
 }
 

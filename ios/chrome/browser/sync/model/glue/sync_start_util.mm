@@ -17,7 +17,7 @@ namespace ios {
 namespace {
 
 void StartSyncOnUIThread(base::WeakPtr<ChromeBrowserState> weak_browser_state,
-                         syncer::ModelType type) {
+                         syncer::DataType type) {
   ChromeBrowserState* browser_state = weak_browser_state.get();
   if (!browser_state) {
     DVLOG(2) << "ChromeBrowserState destroyed, can't start sync.";

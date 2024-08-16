@@ -31,27 +31,27 @@ using l10n_util::GetNSString;
 @implementation BaseDefaultBrowserPromoViewProvider
 
 - (UIImage*)promoImage {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (NSString*)promoTitle {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (NSString*)promoSubtitle {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (promos_manager::Promo)promoIdentifier {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (const base::Feature*)featureEngagmentIdentifier {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (DefaultPromoType)defaultBrowserPromoType {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - PromoProtocol

@@ -20,6 +20,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,6 +66,7 @@ public class TabGroupUiCoordinator
     private final ScrimCoordinator mScrimCoordinator;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final BottomSheetController mBottomSheetController;
+    private final DataSharingTabManager mDataSharingTabManager;
     private final ViewGroup mRootView;
     private final TabModelSelector mTabModelSelector;
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
@@ -88,6 +90,7 @@ public class TabGroupUiCoordinator
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
             @NonNull ViewGroup rootView,
@@ -109,6 +112,7 @@ public class TabGroupUiCoordinator
                                     .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
             mTabListContainerView = mToolbarView.getViewContainer();
             mBottomSheetController = bottomSheetController;
+            mDataSharingTabManager = dataSharingTabManager;
             mTabModelSelector = tabModelSelector;
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
             mRootView = rootView;
@@ -136,6 +140,7 @@ public class TabGroupUiCoordinator
                         mActivity,
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
+                        mDataSharingTabManager,
                         currentTabModelFilterSupplier,
                         mTabContentManager,
                         mTabCreatorManager,
@@ -210,6 +215,7 @@ public class TabGroupUiCoordinator
                             this,
                             mModel,
                             mTabModelSelector,
+                            mTabContentManager,
                             mTabCreatorManager,
                             mLayoutStateProviderSupplier,
                             mIncognitoStateProvider,

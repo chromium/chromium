@@ -4,9 +4,9 @@
 
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 
-#include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 
 namespace webapk {
 WebApkDatabaseFactory::WebApkDatabaseFactory(Profile* profile)
@@ -14,8 +14,8 @@ WebApkDatabaseFactory::WebApkDatabaseFactory(Profile* profile)
 
 WebApkDatabaseFactory::~WebApkDatabaseFactory() = default;
 
-syncer::OnceModelTypeStoreFactory WebApkDatabaseFactory::GetStoreFactory() {
-  return ModelTypeStoreServiceFactory::GetForProfile(profile_)
+syncer::OnceDataTypeStoreFactory WebApkDatabaseFactory::GetStoreFactory() {
+  return DataTypeStoreServiceFactory::GetForProfile(profile_)
       ->GetStoreFactory();
 }
 

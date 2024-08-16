@@ -137,12 +137,10 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return gfx::kNoneIcon;
+  NOTREACHED();
 }
 
 // MediaActionButton is an image button with a custom ink drop mask.
@@ -235,6 +233,8 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
   DCHECK(callbacks.hide_media_controls);
   DCHECK(callbacks.show_media_controls);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+
   // Media controls should observe power events and handle the case of being
   // created in suspended state.
   if (base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
@@ -257,10 +257,7 @@ LockScreenMediaControlsView::LockScreenMediaControlsView(
 
   contents_view_->SetPaintToLayer();  // Needed for opacity animation.
   contents_view_->layer()->SetFillsBoundsOpaquely(false);
-  ui::ColorId background_color_id =
-      chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
-          : kColorAshShieldAndBase80;
+  ui::ColorId background_color_id = cros_tokens::kCrosSysScrim2;
   contents_view_->SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id, kMediaControlsCornerRadius));
 
@@ -463,7 +460,6 @@ void LockScreenMediaControlsView::Layout(PassKey) {
 
 void LockScreenMediaControlsView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListItem;
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kRoleDescription,
       l10n_util::GetStringUTF8(
@@ -653,8 +649,8 @@ void LockScreenMediaControlsView::MediaControllerImageChanged(
       break;
     }
     case media_session::mojom::MediaSessionImageType::kChapter: {
-      NOTREACHED_IN_MIGRATION() << " The chpater images should be updated in "
-                                   "`MediaControllerChapterImageChanged` ";
+      NOTREACHED() << " The chpater images should be updated in "
+                      "`MediaControllerChapterImageChanged` ";
     }
   }
 }

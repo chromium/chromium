@@ -32,6 +32,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: false,
+        serialNumber: '',
       },
       {
         guid: '0002',
@@ -43,6 +44,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: true,
+        serialNumber: '',
       },
       {
         guid: '0003',
@@ -54,6 +56,7 @@ suite('<settings-guest-os-shared-usb-devices>', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: true,
+        serialNumber: '',
       },
     ];
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);
@@ -175,6 +178,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: false,
+        serialNumber: '',
       },
       {
         guid: '0002',
@@ -186,6 +190,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: true,
+        serialNumber: '',
       },
       {
         guid: '0003',
@@ -197,6 +202,7 @@ suite('<settings-guest-os-shared-usb-devices> multi-container', () => {
         vendorId: '0000',
         productId: '0000',
         promptBeforeSharing: true,
+        serialNumber: '',
       },
     ];
     GuestOsBrowserProxyImpl.setInstanceForTesting(guestOsBrowserProxy);

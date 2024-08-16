@@ -57,6 +57,21 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       hdr_enabled |= output_desc->hdr_enabled;
     }
 
+    if (!multithread_protected_ &&
+        IsDedicatedMediaServiceThreadEnabled(
+            gpu_info_.gl_implementation_parts.angle)) {
+      // Since the D3D11Device used for decoding is shared with
+      // SkiaRenderer(ANGLE or Dawn), we need multithread protection turned on
+      // to use it from another thread.
+      Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+      auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+      CHECK(SUCCEEDED(hr));
+      if (!multi_threaded->GetMultithreadProtected()) {
+        multi_threaded->SetMultithreadProtected(TRUE);
+      }
+      multithread_protected_ = true;
+    }
+
     return D3D11VideoDecoder::Create(
         gpu_task_runner_, traits.media_log->Clone(), gpu_preferences_,
         gpu_workarounds_, traits.get_command_buffer_stub_cb,
@@ -151,20 +166,6 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       CHECK_EQ(dxgi_device->GetAdapter(&adapter), S_OK);
       d3d12_device_ = CreateD3D12Device(adapter.Get());
     }
-
-    if (!IsDedicatedMediaServiceThreadEnabled(
-            gpu_info_.gl_implementation_parts.angle)) {
-      return;
-    }
-
-    // Since the D3D11Device used for decoding is shared with
-    // SkiaRenderer(ANGLE or Dawn), we need multithread protection turned on
-    // to use it from another thread.
-    DCHECK(gpu_task_runner_->BelongsToCurrentThread());
-    Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
-    auto hr = d3d11_device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
-    CHECK(SUCCEEDED(hr));
-    multi_threaded->SetMultithreadProtected(TRUE);
   }
 
   D3D11VideoDecoder::GetD3DDeviceCB GetD3DDeviceCallback() {
@@ -178,11 +179,12 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
           } else if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D12) {
             return d3d12_device;
           }
-          NOTREACHED_NORETURN();
+          NOTREACHED();
         },
         d3d11_device_, d3d12_device_);
   }
 
+  bool multithread_protected_ = false;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
 };

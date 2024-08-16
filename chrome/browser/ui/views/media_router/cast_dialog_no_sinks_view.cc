@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/browser/media_router_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +41,10 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace {
 
@@ -69,8 +74,9 @@ namespace media_router {
 
 constexpr base::TimeDelta CastDialogNoSinksView::kSearchWaitTime;
 
-CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile)
-    : profile_(profile) {
+CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile,
+                                             bool permission_rejected)
+    : profile_(profile), permission_rejected_(permission_rejected) {
   // Use horizontal button padding to ensure consistent spacing with the
   // CastDialogView and its sink views that are implemented as Buttons.
   const int horizontal_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -86,20 +92,54 @@ CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile)
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  icon_ = AddChildView(CreateThrobber());
-  label_ = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES)));
+  if (permission_rejected_) {
+    MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
+        MediaRouterUiPermissionRejectedViewEvents::kCastDialogErrorShown);
 
-  timer_.Start(FROM_HERE, kSearchWaitTime,
-               base::BindOnce(&CastDialogNoSinksView::SetHelpIconView,
-                              base::Unretained(this)));
+    SetHelpIcon();
+    size_t offset;
+    std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
+        IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LINK);
+    permission_rejected_label_ =
+        AddChildView(std::make_unique<views::StyledLabel>());
+    permission_rejected_label_->SetText(l10n_util::GetStringFUTF16(
+        IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_LABEL,
+        settings_text_for_link, &offset));
+    permission_rejected_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+#if BUILDFLAG(IS_MAC)
+    base::RepeatingClosure open_settings_cb = base::BindRepeating([]() {
+      // TODO(crbug.com/358725038): Open the Local Network sub-pane in system
+      // settings directly once the feature request to Apple (FB14789617) is
+      // solved.
+      base::mac::OpenSystemSettingsPane(
+          base::mac::SystemSettingsPane::kPrivacySecurity);
+      MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
+          MediaRouterUiPermissionRejectedViewEvents::kCastDialogLinkClicked);
+    });
+    permission_rejected_label_->AddStyleRange(
+        gfx::Range(offset, offset + settings_text_for_link.length()),
+        views::StyledLabel::RangeStyleInfo::CreateForLink(open_settings_cb));
+#endif
+  } else {
+    icon_ = AddChildView(CreateThrobber());
+    label_ =
+        AddChildView(std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+            IDS_MEDIA_ROUTER_STATUS_LOOKING_FOR_DEVICES)));
+
+    timer_.Start(FROM_HERE, kSearchWaitTime,
+                 base::BindOnce(&CastDialogNoSinksView::ShowNoDeviceFoundView,
+                                base::Unretained(this)));
+  }
 }
 
 CastDialogNoSinksView::~CastDialogNoSinksView() = default;
 
-void CastDialogNoSinksView::SetHelpIconView() {
+void CastDialogNoSinksView::SetHelpIcon() {
   // Replace the throbber with the help icon.
-  RemoveChildViewT(icon_.get());
+  if (icon_) {
+    RemoveChildViewT(icon_.get());
+  }
   const auto navigate = [](Profile* profile) {
     NavigateParams params(profile, GURL(chrome::kCastNoDestinationFoundURL),
                           ui::PAGE_TRANSITION_LINK);
@@ -113,14 +153,19 @@ void CastDialogNoSinksView::SetHelpIconView() {
                              kColorCastDialogHelpIcon, kPrimaryIconSize)),
                      0);
   icon->SetInstallFocusRingOnFocus(true);
-  icon->SetBorder(views::CreateEmptyBorder(media_router::kPrimaryIconBorder));
-  icon->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
-  icon->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
+  icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
+  auto a11y_text = l10n_util::GetStringUTF16(
+      permission_rejected_
+          ? IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON
+          : IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON);
+  icon->GetViewAccessibility().SetName(a11y_text);
+  icon->SetTooltipText(a11y_text);
   views::InkDrop::Get(icon)->SetMode(views::InkDropHost::InkDropMode::OFF);
   icon_ = icon;
+}
 
+void CastDialogNoSinksView::ShowNoDeviceFoundView() {
+  SetHelpIcon();
   label_->SetText(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STATUS_NO_DEVICES_FOUND));
 }

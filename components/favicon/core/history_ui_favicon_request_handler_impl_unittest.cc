@@ -145,7 +145,8 @@ class MockLargeIconServiceWithFake : public LargeIconService {
             GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(_, _,
                                                                           _, _))
         .WillByDefault(
-            [=](auto, auto, auto,
+            [=, this](
+                auto, auto, auto,
                 favicon_base::GoogleFaviconServerCallback server_callback) {
               mock_favicon_service_with_fake_->StoreMockLocalFavicon(page_url,
                                                                      icon_url);

@@ -71,20 +71,20 @@ class PageInfoUI {
     SecurityDescriptionType type;
   };
 
-  // |CookiesFpsInfo| contains information about a specific First-Party Set.
-  struct CookiesFpsInfo {
-    explicit CookiesFpsInfo(const std::u16string& owner_name);
-    ~CookiesFpsInfo();
+  // `CookiesRwsInfo` contains information about a specific Related website set.
+  struct CookiesRwsInfo {
+    explicit CookiesRwsInfo(const std::u16string& owner_name);
+    ~CookiesRwsInfo();
 
-    // The name of the owner of the FPS.
+    // The name of the owner of the RWS.
     std::u16string owner_name;
 
-    // Whether the Fps are managed by the company.
+    // Whether the Rws are managed by the company.
     bool is_managed = false;
   };
 
-  // |CookiesNewInfo| contains information about the sites that are allowed
-  // to access cookies and fps cookies info for new UI.
+  // `CookiesNewInfo` contains information about the sites that are allowed
+  // to access cookies and rws cookies info for new UI.
   // TODO(crbug.com/40854087):  Change the name to "CookieInfo" after finishing
   // cookies subpage implementation
   struct CookiesNewInfo {
@@ -117,7 +117,7 @@ class PageInfoUI {
     // List of ACT features.
     std::vector<content_settings::TrackingProtectionFeature> features;
 
-    std::optional<CookiesFpsInfo> fps_info;
+    std::optional<CookiesRwsInfo> rws_info;
 
     // The expiration of the active third-party cookie exception.
     base::Time expiration;

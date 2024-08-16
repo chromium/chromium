@@ -529,7 +529,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   void SetFavicon(bool enabled) { is_favicon_ = enabled; }
 
-  bool PrefetchMaybeForTopLeveNavigation() const {
+  bool PrefetchMaybeForTopLevelNavigation() const {
     return prefetch_maybe_for_top_level_navigation_;
   }
   void SetPrefetchMaybeForTopLevelNavigation(

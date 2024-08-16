@@ -22,7 +22,8 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "shared_build_dir"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -148,10 +149,6 @@
       ]
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
-  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
@@ -175,6 +172,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "cq": "required",
   "recipe": "chromium/orchestrator"
 }

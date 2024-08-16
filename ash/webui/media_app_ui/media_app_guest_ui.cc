@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 
 #include "ash/constants/ash_features.h"
@@ -270,11 +275,6 @@ void MediaAppGuestUI::BindInterface(
 void MediaAppGuestUI::BindInterface(
     mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
         receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
-      !base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
-    return;
-  }
-
   if (untrusted_page_handler_factory_.is_bound()) {
     untrusted_page_handler_factory_.reset();
   }
@@ -285,9 +285,6 @@ void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
     mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
         receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
-    return;
-  }
   delegate_->CreateAndBindOcrHandler(
       *web_ui()->GetWebContents()->GetBrowserContext(),
       web_ui()->GetWebContents()->GetTopLevelNativeWindow(),

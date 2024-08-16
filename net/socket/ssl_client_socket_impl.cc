@@ -1522,6 +1522,13 @@ int SSLClientSocketImpl::ClientCertRequestCallback(SSL* ssl) {
 
     std::vector<uint16_t> preferences =
         client_private_key_->GetAlgorithmPreferences();
+    // If the key supports rsa_pkcs1_sha256, automatically add support for
+    // rsa_pkcs1_sha256_legacy, for use with TLS 1.3. We convert here so that
+    // not every `SSLPrivateKey` needs to implement it explicitly.
+    if (base::FeatureList::IsEnabled(features::kLegacyPKCS1ForTLS13) &&
+        base::Contains(preferences, SSL_SIGN_RSA_PKCS1_SHA256)) {
+      preferences.push_back(SSL_SIGN_RSA_PKCS1_SHA256_LEGACY);
+    }
     SSL_set_signing_algorithm_prefs(ssl_.get(), preferences.data(),
                                     preferences.size());
 
@@ -1608,8 +1615,15 @@ ssl_private_key_result_t SSLClientSocketImpl::PrivateKeySignCallback(
         // provider name in the common case with logging disabled.
         client_private_key_.get());
   });
-
   base::UmaHistogramSparse("Net.SSLClientCertSignatureAlgorithm", algorithm);
+
+  // Map rsa_pkcs1_sha256_legacy back to rsa_pkcs1_sha256. We convert it here,
+  // so that not every `SSLPrivateKey` needs to implement it explicitly.
+  if (base::FeatureList::IsEnabled(features::kLegacyPKCS1ForTLS13) &&
+      algorithm == SSL_SIGN_RSA_PKCS1_SHA256_LEGACY) {
+    algorithm = SSL_SIGN_RSA_PKCS1_SHA256;
+  }
+
   signature_result_ = ERR_IO_PENDING;
   client_private_key_->Sign(
       algorithm, base::make_span(in, in_len),

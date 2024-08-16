@@ -218,9 +218,8 @@ WritableStream* WritableStream::CreateWithCountQueueingStrategy(
     size_t high_water_mark,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer) {
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke,
-      "WritableStream");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                 "WritableStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -941,11 +940,10 @@ void WritableStream::InitInternal(ScriptState* script_state,
   }
 
   // 4. Let type be ? GetV(underlyingSink, "type").
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   v8::Local<v8::Value> type;
   if (!underlying_sink->Get(context, V8AtomicString(isolate, "type"))
            .ToLocal(&type)) {
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return;
   }
 

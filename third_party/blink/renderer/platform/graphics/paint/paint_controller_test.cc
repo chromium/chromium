@@ -797,12 +797,12 @@ TEST_P(PaintControllerTest, CachedSubsequenceSwapOrder) {
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_id(container1.Id(), kBackgroundType);
-  auto container1_effect = CreateOpacityEffect(e0(), 0.5);
+  auto* container1_effect = CreateOpacityEffect(e0(), 0.5);
   auto container1_properties = DefaultPaintChunkProperties();
   container1_properties.SetEffect(*container1_effect);
 
   PaintChunk::Id container2_id(container2.Id(), kBackgroundType);
-  auto container2_effect = CreateOpacityEffect(e0(), 0.5);
+  auto* container2_effect = CreateOpacityEffect(e0(), 0.5);
   auto container2_properties = DefaultPaintChunkProperties();
   container2_properties.SetEffect(*container2_effect);
 
@@ -1227,12 +1227,12 @@ TEST_P(PaintControllerTest, UpdateSwapOrderCrossingChunks) {
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_id(container1.Id(), kBackgroundType);
-  auto container1_effect = CreateOpacityEffect(e0(), 0.5);
+  auto* container1_effect = CreateOpacityEffect(e0(), 0.5);
   auto container1_properties = DefaultPaintChunkProperties();
   container1_properties.SetEffect(*container1_effect);
 
   PaintChunk::Id container2_id(container2.Id(), kBackgroundType);
-  auto container2_effect = CreateOpacityEffect(e0(), 0.5);
+  auto* container2_effect = CreateOpacityEffect(e0(), 0.5);
   auto container2_properties = DefaultPaintChunkProperties();
   container2_properties.SetEffect(*container2_effect);
 
@@ -1346,7 +1346,7 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
   GraphicsContext context(GetPaintController());
 
   PaintChunk::Id container1_background_id(container1.Id(), kBackgroundType);
-  auto container1_effect = CreateOpacityEffect(e0(), 0.5);
+  auto* container1_effect = CreateOpacityEffect(e0(), 0.5);
   auto container1_background_properties = DefaultPaintChunkProperties();
   container1_background_properties.SetEffect(*container1_effect);
   PaintChunk::Id container1_foreground_id(container1.Id(), kForegroundType);
@@ -1354,17 +1354,17 @@ TEST_P(PaintControllerTest, CachedNestedSubsequenceUpdate) {
   container1_foreground_properties.SetEffect(*container1_effect);
 
   PaintChunk::Id content1_id(content1.Id(), kBackgroundType);
-  auto content1_effect = CreateOpacityEffect(e0(), 0.6);
+  auto* content1_effect = CreateOpacityEffect(e0(), 0.6);
   auto content1_properties = DefaultPaintChunkProperties();
   content1_properties.SetEffect(*content1_effect);
 
   PaintChunk::Id container2_background_id(container2.Id(), kBackgroundType);
-  auto container2_effect = CreateOpacityEffect(e0(), 0.7);
+  auto* container2_effect = CreateOpacityEffect(e0(), 0.7);
   auto container2_background_properties = DefaultPaintChunkProperties();
   container2_background_properties.SetEffect(*container2_effect);
 
   PaintChunk::Id content2_id(content2.Id(), kBackgroundType);
-  auto content2_effect = CreateOpacityEffect(e0(), 0.8);
+  auto* content2_effect = CreateOpacityEffect(e0(), 0.8);
   auto content2_properties = DefaultPaintChunkProperties();
   content2_properties.SetEffect(*content2_effect);
 
@@ -2129,7 +2129,7 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataValidData) {
   EXPECT_DEFAULT_ROOT_CHUNK(1);
   const PaintChunks& chunks = GetPaintController().GetPaintChunks();
   EXPECT_EQ(1u, chunks.size());
-  EXPECT_EQ(kBounds, chunks[0].region_capture_data->find(kCropId)->second);
+  EXPECT_EQ(kBounds, chunks[0].region_capture_data->map.find(kCropId)->second);
 }
 
 // Death tests don't work properly on Android.
@@ -2162,7 +2162,7 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   EXPECT_DEFAULT_ROOT_CHUNK(1);
   const PaintChunks& chunks = GetPaintController().GetPaintChunks();
   EXPECT_EQ(1u, chunks.size());
-  EXPECT_EQ(kBounds, chunks[0].region_capture_data->find(kCropId)->second);
+  EXPECT_EQ(kBounds, chunks[0].region_capture_data->map.at(kCropId));
 #endif
 }
 

@@ -155,7 +155,7 @@ void TabListModel::OnSourcePreviewChanged(size_t index) {
 }
 
 void TabListModel::OnDelegatedSourceListSelection() {
-  NOTREACHED_NORETURN()
+  NOTREACHED()
       << "Tab Lists are not delegated, so should not get a selection event.";
 }
 

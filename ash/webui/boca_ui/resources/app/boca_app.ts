@@ -9,9 +9,59 @@
  */
 
 /**
+ * Declare tab information
+ */
+export declare interface TabInfo {
+  title: string;
+  url: string;
+  favicon: string;
+}
+/**
+ * Declare a browser window information
+ */
+export declare interface DeviceWindow {
+  windowName?: string|undefined;
+  tabList: TabInfo[];
+}
+
+/**
+ * Declare a student/teacher information
+ */
+export declare interface Identity {
+  id: string;
+  name: string;
+  email: string;
+}
+
+/**
+ * Declare a classroom course information
+ */
+export declare interface Course {
+  id: string;
+  name: string;
+  // Classroom metadata, to be shown as metadata
+  section: string;
+}
+
+/**
  * The delegate which exposes privileged function to App
  */
-export declare interface ClientApiDelegate {}
+export declare interface ClientApiDelegate {
+  /**
+   * Get a list of Window tabs opened on device.
+   */
+  getWindowsTabsList(): Promise<DeviceWindow[]>;
+
+  /**
+   * Get course list from Classroom.
+   */
+  getCourseList(): Promise<Course[]>;
+
+  /**
+   * Get list of students in a course.
+   */
+  getStudentList(courseId: string): Promise<Identity[]>;
+}
 
 /**
  * The client Api for interfacting with boca app instance.

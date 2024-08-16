@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -51,6 +52,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/display/screen_base.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -94,6 +96,16 @@ void ShowSettings(Browser* browser) {
 }
 
 }  // namespace
+
+void BrowserNavigatorTest::SetUp() {
+  scoped_feature_list_.InitWithFeatures(
+      {
+          features::kFileSystemAccessPersistentPermissions,
+          blink::features::kPartitionedPopins,
+      },
+      {});
+  InProcessBrowserTest::SetUp();
+}
 
 NavigateParams BrowserNavigatorTest::MakeNavigateParams() const {
   return MakeNavigateParams(browser());
@@ -2084,6 +2096,35 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Should be PiP, with an app name.
   EXPECT_TRUE(params.browser->is_type_picture_in_picture());
   EXPECT_NE(params.browser->app_name(), std::string());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Popin) {
+  // Setup browser.
+  content::WebContents* tab_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+
+  // Open popin and verify it's visible.
+  content::WebContentsAddedObserver new_tab_observer;
+  EXPECT_TRUE(content::ExecJs(tab_web_contents,
+                              "window.open('about:blank', '_blank', 'popin')"));
+  content::WebContents* popin_web_contents = new_tab_observer.GetWebContents();
+  BrowserWindow* popin_browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(popin_web_contents);
+  EXPECT_TRUE(popin_browser_window->IsVisible());
+
+  // Focus new tab and verify popin is hidden.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/340606651): This should work on ChromeOS too.
+  EXPECT_TRUE(popin_browser_window->IsVisible());
+#else
+  EXPECT_FALSE(popin_browser_window->IsVisible());
+#endif
+
+  // Switch back to original tab and verify popin is visible.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(popin_browser_window->IsVisible());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

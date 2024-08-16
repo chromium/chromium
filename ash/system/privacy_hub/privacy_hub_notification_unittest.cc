@@ -169,7 +169,7 @@ class PrivacyHubNotificationTextTest
                   SensorDisabledNotificationDelegate::Sensor::kMicrophone};
         }
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
   }
 
@@ -226,7 +226,7 @@ class PrivacyHubNotificationTextTest
             IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
             IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES};
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
 
     const int max_size = 150;

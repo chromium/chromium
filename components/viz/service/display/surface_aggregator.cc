@@ -721,23 +721,9 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
   }
 
   ResolvedFrameData& resolved_frame = iter->second;
-  Surface* surface = resolved_frame.surface();
 
   if (is_inside_aggregate_ && !resolved_frame.WasUsedInAggregation()) {
-    // Mark the frame as used this aggregation so it persists.
-    resolved_frame.MarkAsUsedInAggregation();
-
-    if (resolved_frame.previous_frame_index() !=
-        surface->GetActiveFrameIndex()) {
-      // If there is a new CompositorFrame for `surface` compute resolved frame
-      // data.
-      resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
-    } else if (resolved_frame.is_valid()) {
-      // The same `CompositorFrame` since last aggregation. Set the
-      // `CompositorRenderPass` pointer back to `ResolvedPassData`. Only
-      // applicable to valid `ResolvedFrameData`.
-      resolved_frame.SetRenderPassPointers();
-    }
+    resolved_frame.UpdateForAggregation(render_pass_id_generator_);
 
     // Lookup function allows ResolvedFrameData to find OffsetTagValues.
     auto lookup_fn = [this](const OffsetTagDefinition& tag_def) {

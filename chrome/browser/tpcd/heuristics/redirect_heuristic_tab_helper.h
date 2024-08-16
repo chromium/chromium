@@ -31,7 +31,7 @@ namespace content_settings {
 class CookieSettings;
 }
 
-class DIPSService;
+class DIPSServiceImpl;
 class GURL;
 
 class RedirectHeuristicTabHelper
@@ -83,7 +83,7 @@ class RedirectHeuristicTabHelper
   void OnNavigationCommitted() override;
 
   raw_ptr<RedirectChainDetector> detector_;
-  raw_ptr<DIPSService> dips_service_;
+  raw_ptr<DIPSServiceImpl> dips_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ref<base::Clock> clock_{*base::DefaultClock::GetInstance()};
   std::optional<base::Time> last_commit_timestamp_;

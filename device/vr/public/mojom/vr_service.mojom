@@ -785,10 +785,15 @@ struct XRFrameData {
 
 struct RequestSessionSuccess {
   XRSession session;
-
+  // The ID provided by VRServiceImpl and used by WebXRLoggerManager to
+  // identify the session that XRFrameDataProvider is sending.
+  uint64 trace_id;
   // Used to report metrics during the session to the browser process.
   // See the note on |XRSessionMetricsRecorder| for context.
   pending_remote<XRSessionMetricsRecorder> metrics_recorder;
+  // Used to report statistics about the session to the browser process.
+  // Null if not an immersive session
+  pending_remote<WebXrInternalsRendererListener>? xr_internals_listener;
 };
 
 union RequestSessionResult {
@@ -1078,4 +1083,16 @@ interface XRSessionClient {
   OnExitPresent();
   // Indicates a change in the visibility of the WebXR content.
   OnVisibilityStateChanged(XRVisibilityState visibility_state);
+};
+
+// Functions for pushing frame data to the sessions.
+// This interface is hosted in the Browser process, and called by the
+// renderer for use by debug WebUI.
+interface WebXrInternalsRendererListener {
+    // Called when the renderer has new frame data to send to the session.
+    OnFrameData(device.mojom.XrFrameStatistics xrframe_statistics);
+
+    // Called when the renderer has new console log data to send to the
+    // session.
+    OnConsoleLog(device.mojom.XrLogMessage xrlogging_statistics);
 };

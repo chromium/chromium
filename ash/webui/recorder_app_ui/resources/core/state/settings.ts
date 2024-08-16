@@ -80,7 +80,7 @@ export enum SummaryEnableState {
 }
 
 /**
- * The state of whether user have enabled speaker ID.
+ * The state of whether user have enabled speaker label.
  *
  * We need to ask for consent when user first transitions from UNKNOWN to
  * ENABLED.
@@ -91,28 +91,28 @@ export enum SummaryEnableState {
  * * DISABLED_FIRST -> ENABLED
  * * UNKNOWN -> DISABLED_FIRST, ENABLED.
  */
-export enum SpeakerIdEnableState {
+export enum SpeakerLabelEnableState {
   /**
-   * Speaker ID is enabled by user.
+   * Speaker label is enabled by user.
    */
   ENABLED = 'ENABLED',
 
   /**
-   * The speaker ID is disabled by user and user have never enabled
-   * speaker ID.
+   * The speaker label is disabled by user and user have never enabled
+   * speaker label.
    *
    * This is a separate state since an additional confirmation dialog will be
-   * shown only when user never enabled speaker ID before.
+   * shown only when user never enabled speaker label before.
    */
   DISABLED_FIRST = 'DISABLED_FIRST',
 
   /**
-   * Speaker ID is disabled by user.
+   * Speaker label is disabled by user.
    */
   DISABLED = 'DISABLED',
 
   /**
-   * Speaker ID enable/disable preference is still unknown.
+   * Speaker label enable/disable preference is still unknown.
    */
   UNKNOWN = 'UNKNOWN',
 }
@@ -147,13 +147,14 @@ export type ExportSettings = Infer<typeof exportSettingsSchema>;
 export const settingsSchema = z.object({
   exportSettings: exportSettingsSchema,
   includeSystemAudio: z.boolean(),
+  keepScreenOn: z.withDefault(z.boolean(), false),
   onboardingDone: z.boolean(),
   recordingSortType: z.nativeEnum(RecordingSortType),
   transcriptionEnabled: z.nativeEnum(TranscriptionEnableState),
   summaryEnabled: z.nativeEnum(SummaryEnableState),
-  speakerIdEnabled: z.withDefault(
-    z.nativeEnum(SpeakerIdEnableState),
-    SpeakerIdEnableState.UNKNOWN,
+  speakerLabelEnabled: z.withDefault(
+    z.nativeEnum(SpeakerLabelEnableState),
+    SpeakerLabelEnableState.UNKNOWN,
   ),
 });
 
@@ -167,11 +168,12 @@ const defaultSettings: Settings = {
     transcriptionFormat: ExportTranscriptionFormat.TXT,
   },
   includeSystemAudio: false,
+  keepScreenOn: false,
   onboardingDone: false,
   recordingSortType: RecordingSortType.DATE,
   transcriptionEnabled: TranscriptionEnableState.UNKNOWN,
   summaryEnabled: SummaryEnableState.UNKNOWN,
-  speakerIdEnabled: SpeakerIdEnableState.UNKNOWN,
+  speakerLabelEnabled: SpeakerLabelEnableState.UNKNOWN,
 };
 
 export const settings = signal(defaultSettings);

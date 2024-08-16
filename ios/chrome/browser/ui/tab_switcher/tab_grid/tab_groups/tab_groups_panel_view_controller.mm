@@ -8,6 +8,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
@@ -66,6 +68,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   _collectionView =
       [[UICollectionView alloc] initWithFrame:self.view.bounds
                          collectionViewLayout:[self createLayout]];
+  _collectionView.allowsSelection = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
@@ -186,7 +189,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
 #pragma mark UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView*)collectionView
-    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+    performPrimaryActionForItemAtIndexPath:(NSIndexPath*)indexPath {
+  base::RecordAction(base::UserMetricsAction("MobileGroupPanelOpenGroup"));
   TabGroupsPanelItem* item = [_dataSource itemIdentifierForIndexPath:indexPath];
   [self.mutator selectTabGroupsPanelItem:item];
 }
@@ -345,6 +349,10 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   cell.subtitleLabel.text = itemData.creationText;
   NSUInteger numberOfTabs = itemData.numberOfTabs;
   cell.faviconsGrid.numberOfTabs = numberOfTabs;
+  cell.faviconsGrid.favicon1 = nil;
+  cell.faviconsGrid.favicon2 = nil;
+  cell.faviconsGrid.favicon3 = nil;
+  cell.faviconsGrid.favicon4 = nil;
   UIImage* fallbackImage = DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 16);
   if (numberOfTabs >= 1) {
     cell.faviconsGrid.favicon1 = fallbackImage;
@@ -399,10 +407,11 @@ typedef NSDiffableDataSourceSnapshot<NSString*, TabGroupsPanelItem*>
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
 
+  __weak TabGroupsPanelViewController* weakSelf = self;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  [menuElements
-      addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    // TODO(crbug.com/329629692): Implement delete action.
+  [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+                  [weakSelf.mutator deleteTabGroupsPanelItem:cell.item
+                                                  sourceView:cell];
                 }]];
 
   UIContextMenuActionProvider actionProvider =

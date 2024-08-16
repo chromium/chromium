@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 
 #include <cstddef>
@@ -160,7 +165,7 @@ void SetOneTimeAutoLaunchKioskAppId(PrefService& local_state,
       local_state.CommitPendingWrite();
       return;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace ash

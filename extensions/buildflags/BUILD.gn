@@ -14,5 +14,10 @@ import("//extensions/buildflags/buildflags.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_EXTENSIONS=$enable_extensions" ]
+  flags = [
+    "ENABLE_EXTENSIONS=$enable_extensions",
+    "ENABLE_DESKTOP_ANDROID_EXTENSIONS=$enable_desktop_android_extensions",
+    "ENABLE_GUEST_VIEW=$enable_guest_view",
+    "ENABLE_PLATFORM_APPS=$enable_platform_apps",
+  ]
 }

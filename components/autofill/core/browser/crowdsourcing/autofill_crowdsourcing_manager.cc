@@ -51,6 +51,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_ids_provider.h"
+#include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
@@ -107,8 +108,6 @@ constexpr net::BackoffEntry::Policy kAutofillBackoffPolicy = {
 constexpr char kDefaultAutofillServerURL[] =
     "https://content-autofill.googleapis.com/";
 
-// Header for API key.
-constexpr char kGoogApiKey[] = "X-Goog-Api-Key";
 // Header to get base64 encoded serialized proto from API for safety.
 constexpr char kGoogEncodeResponseIfExecutable[] =
     "X-Goog-Encode-Response-If-Executable";
@@ -197,7 +196,7 @@ std::string GetMetricName(RequestType request_type, std::string_view suffix) {
       case RequestType::kRequestUpload:
         return "Upload";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
   return base::StrCat({"Autofill.", TypeToName(request_type), ".", suffix});
 }
@@ -304,7 +303,7 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         }
       })");
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 size_t CountActiveFieldsInForms(
@@ -520,7 +519,7 @@ std::string GetAPIMethodUrl(RequestType type,
       case RequestType::kRequestUpload:
         return "/v1/forms:vote";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }();
   if (resource_id.empty()) {
     return std::string(api_method_url);
@@ -876,11 +875,11 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   resource_request->headers.SetHeader(kGoogEncodeResponseIfExecutable,
                                       "base64");
 
-  // Put API key in request's header if a key exists, and the endpoint is
-  // trusted by Google.
+  // Add API key to the request if a key exists, and the endpoint is trusted by
+  // Google.
   if (!api_key_.empty() && request_url.SchemeIs(url::kHttpsScheme) &&
       google_util::IsGoogleAssociatedDomainUrl(request_url)) {
-    resource_request->headers.SetHeader(kGoogApiKey, api_key_);
+    google_apis::AddAPIKeyToRequest(*resource_request, api_key_);
   }
 
   auto simple_loader = network::SimpleURLLoader::Create(

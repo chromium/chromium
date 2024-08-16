@@ -955,7 +955,7 @@ void KeepAliveURLLoader::LogFetchKeepAliveRequestMetric(
     case blink::mojom::ResourceType::kNavigationPreloadMainFrame:
     case blink::mojom::ResourceType::kNavigationPreloadSubFrame:
     case blink::mojom::ResourceType::kJson:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   CHECK(request_state_name == "Total" || request_state_name == "Started" ||

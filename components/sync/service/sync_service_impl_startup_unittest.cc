@@ -10,7 +10,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service_impl.h"
-#include "components/sync/test/fake_model_type_controller.h"
+#include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_engine.h"
 #include "components/sync/test/fake_sync_engine_factory.h"
 #include "components/sync/test/sync_client_mock.h"
@@ -59,11 +59,11 @@ class SyncServiceImplStartupTest : public testing::Test {
   }
 
   void CreateSyncServiceWithControllers(
-      ModelTypeController::TypeVector controllers) {
+      DataTypeController::TypeVector controllers) {
     // Hold raw pointers to directly interact with the controllers.
     for (const auto& controller : controllers) {
       controller_map_[controller->type()] =
-          static_cast<FakeModelTypeController*>(controller.get());
+          static_cast<FakeDataTypeController*>(controller.get());
     }
 
     std::unique_ptr<SyncClientMock> sync_client =
@@ -77,10 +77,10 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_->Initialize(std::move(controllers));
   }
 
-  void CreateSyncService(ModelTypeSet registered_types = {BOOKMARKS}) {
-    ModelTypeController::TypeVector controllers;
-    for (ModelType type : registered_types) {
-      controllers.push_back(std::make_unique<FakeModelTypeController>(type));
+  void CreateSyncService(DataTypeSet registered_types = {BOOKMARKS}) {
+    DataTypeController::TypeVector controllers;
+    for (DataType type : registered_types) {
+      controllers.push_back(std::make_unique<FakeDataTypeController>(type));
     }
     CreateSyncServiceWithControllers(std::move(controllers));
   }
@@ -168,7 +168,7 @@ class SyncServiceImplStartupTest : public testing::Test {
 
   FakeSyncEngine* engine() { return engine_factory()->last_created_engine(); }
 
-  FakeModelTypeController* get_controller(ModelType type) {
+  FakeDataTypeController* get_controller(DataType type) {
     return controller_map_[type];
   }
 
@@ -182,7 +182,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
   // The controllers are owned by |sync_service_|.
-  std::map<ModelType, FakeModelTypeController*> controller_map_;
+  std::map<DataType, FakeDataTypeController*> controller_map_;
 };
 
 // ChromeOS does not support sign-in after startup
@@ -660,8 +660,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
   // Prevent immediate configuration of one datatype, to verify the state
   // during CONFIGURING.
-  ASSERT_EQ(ModelTypeController::NOT_RUNNING,
-            get_controller(SESSIONS)->state());
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, get_controller(SESSIONS)->state());
   get_controller(SESSIONS)->model()->EnableManualModelStart();
 
   // Releasing the setup in progress handle lets the service actually configure
@@ -694,9 +693,9 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Deferred startup is only possible if first sync completed earlier.
   engine_factory()->set_first_time_sync_configure_done(true);
   engine_factory()->AllowFakeEngineInitCompletion(false);
-  auto controller = std::make_unique<FakeModelTypeController>(SESSIONS);
+  auto controller = std::make_unique<FakeDataTypeController>(SESSIONS);
   controller->model()->EnableManualModelStart();
-  ModelTypeController::TypeVector controllers;
+  DataTypeController::TypeVector controllers;
   controllers.push_back(std::move(controller));
   CreateSyncServiceWithControllers(std::move(controllers));
 

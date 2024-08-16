@@ -146,7 +146,7 @@ void LineRelativeRect::AdjustLineEndToInkOverflow(
       ink_right = fragment.Size().height - fragment.InkOverflowRect().Y();
       break;
   }
-  if (UNLIKELY(fragment.IsSvgText())) {
+  if (fragment.IsSvgText()) [[unlikely]] {
     // SVG InkOverflow is before scaling.
     ink_right *= fragment.SvgScalingFactor();
   }

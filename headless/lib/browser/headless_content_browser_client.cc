@@ -311,12 +311,27 @@ bool HeadlessContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   return false;
 }
 
+bool HeadlessContentBrowserClient::
+    ShouldAllowProcessPerSiteForMultipleMainFrames(
+        content::BrowserContext* context) {
+  return false;
+}
+
 bool HeadlessContentBrowserClient::IsInterestGroupAPIAllowed(
     content::RenderFrameHost* render_frame_host,
     content::InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,
     const url::Origin& api_origin) {
   return true;
+}
+
+bool HeadlessContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
+    content::BrowserContext* browser_context,
+    const url::Origin& destination_origin,
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(switches::kForceReportingDestinationAttested);
 }
 
 bool HeadlessContentBrowserClient::IsSharedStorageAllowed(

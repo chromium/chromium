@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">sleði</translation>
 <translation id="1211441953136645838">aftanmálsgrein</translation>
 <translation id="1281252709823657822">gluggi</translation>
+<translation id="1306460908038601864">Slökkt</translation>
 <translation id="1335095011850992622">samstarfsaðilar</translation>
 <translation id="1342835525016946179">grein</translation>
 <translation id="1359897965706325498">borði</translation>
+<translation id="1480676835519562650">hægt að velja mörg atriði, <ph name="SELECTED" /> af <ph name="COUNT" /> valin.</translation>
 <translation id="1589122976691792535">svæði</translation>
 <translation id="1650423536718072820">útdregin tilvitnun</translation>
+<translation id="1681022320378710418">núverandi tími</translation>
+<translation id="1727839386348365796">Dropateljari</translation>
 <translation id="1821985195704844674">trjátafla</translation>
 <translation id="1823704031293214298">síðufótur</translation>
 <translation id="1838681052457320736">viðvörunargluggi</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">eyðing</translation>
 <translation id="1907737156431278478">dæmi</translation>
 <translation id="1930711995431081526">staða</translation>
+<translation id="2031987842108996681">Rauð rás</translation>
 <translation id="2158401438286456825">síðulisti</translation>
 <translation id="2291999235780842123">gátreitur</translation>
 <translation id="2311842470354187719">síðuskil</translation>
 <translation id="2335594187091864976">val á dagsetningu og tíma</translation>
 <translation id="2508569020611168319">flipalisti</translation>
+<translation id="2530182415807757784">hægt að velja mörg atriði, ekkert valið.</translation>
+<translation id="2634240155926812724">Græn rás</translation>
 <translation id="2657045182931379222">myndrænn hlutur</translation>
 <translation id="2674318244760992338">fótur</translation>
 <translation id="2723001399770238859">hljóð</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">glósa</translation>
 <translation id="3175736971608411871">teljari</translation>
 <translation id="3199563858620722075">fellivalmynd</translation>
+<translation id="3220661731597678625">núverandi skref</translation>
+<translation id="3329013043687509092">Mettun</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3557673793733683882">fyrirsögn <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">vikuval</translation>
 <translation id="3706100364254443312">rofi</translation>
 <translation id="3808586225841795776">hugtak</translation>
+<translation id="3914173277599553213">Áskilið</translation>
 <translation id="3920932319529768807">samantekt</translation>
 <translation id="3924558731517983934">forrit</translation>
 <translation id="3944740393230681990">formáli</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">forsíða</translation>
 <translation id="4757246831282535685">flipasvæði</translation>
 <translation id="479989351350248267">leita</translation>
+<translation id="4912200001568447310">núverandi atriði</translation>
 <translation id="4912536737030637138">færsla í heimildaskrá</translation>
 <translation id="492244087561876220">athugasemd</translation>
+<translation id="4924138096460353083">óákveðið</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> valið</translation>
 <translation id="5022314756875057021">línuhópur</translation>
 <translation id="5034860022980953847">framvinduvísir</translation>
 <translation id="5093189678851173835">upphafstilvitnun</translation>
+<translation id="509897012892853729">Blá rás</translation>
 <translation id="512758898067543763">línuhaus</translation>
 <translation id="5143125788380636750">lokaorð</translation>
 <translation id="5406322316791861025">mynd</translation>
+<translation id="5425179576310518467">núverandi dagsetning</translation>
 <translation id="5453733299334684579">trjáatriði</translation>
 <translation id="546643433018805598">hnéletur</translation>
 <translation id="5476505524087279545">ekki velja</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">hnappur</translation>
 <translation id="5693537480074347398">brjóstletur</translation>
 <translation id="576709008726043716">inngangur</translation>
+<translation id="5860033963881614850">Slökkt</translation>
 <translation id="591047860372322273">leitarreitur</translation>
+<translation id="5916664084637901428">Kveikt</translation>
 <translation id="5987525920412732405">snúningshnappur</translation>
 <translation id="6023896073578205740">listareitur</translation>
 <translation id="6119846243427417423">virkja</translation>
 <translation id="6150588977291308318">heimildaskrá</translation>
 <translation id="6164829606128959761">mælir</translation>
 <translation id="6166809985690652833">eftirmáli</translation>
+<translation id="6212595056017402527">núverandi síða</translation>
 <translation id="6213469881011901533">orðalisti</translation>
+<translation id="6281588256137006900">Ljósleiki</translation>
 <translation id="6281763101136022427">vefslóð</translation>
 <translation id="6453774872122745852">þakkir</translation>
 <translation id="648732519525291180">tímaval</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">tilvitnun</translation>
 <translation id="693476918119313863">haus</translation>
 <translation id="6981594929165378967">innsetning</translation>
+<translation id="698788488269350478">stækkað.</translation>
 <translation id="7034405885550056553">tillaga</translation>
+<translation id="7102274145889307184">núverandi staðsetning</translation>
 <translation id="7139483182332611405">formáli</translation>
 <translation id="7198226213493847604">sprettigluggahnappur valmyndar</translation>
 <translation id="7214187073215825913">upplýsingar um efni</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">atriðisorðaskrá</translation>
 <translation id="7740050170769002709">HTML-efni</translation>
 <translation id="7802800022689234070">upplýsingaþríhyrningur</translation>
+<translation id="7852167693871241274">Sleði fyrir litblæ</translation>
 <translation id="7891486169920085145">skiptir</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> ekki valið</translation>
 <translation id="8034303206267677282">mikill</translation>
 <translation id="8053789581856978548">textareitur fyrir leit</translation>
 <translation id="8057695513531652401">tilkynning</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">kafli</translation>
 <translation id="8851136666856101339">aðal</translation>
 <translation id="8861621546968757188">sprettigluggahnappur</translation>
+<translation id="8889402386540077796">Litblær</translation>
+<translation id="894736920926684893">Val um snið</translation>
 <translation id="9002566407876343676">opna</translation>
 <translation id="901834265349196618">tölvupóstur</translation>
 <translation id="9048119486235211610">yfirlit</translation>

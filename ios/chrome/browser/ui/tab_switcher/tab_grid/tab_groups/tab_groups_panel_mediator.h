@@ -11,9 +11,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_item_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mutator.h"
 
+namespace base {
+class Uuid;
+}
+class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
-@protocol TabGridToolbarsMainTabGridDelegate;
+@protocol TabGridCommands;
 @protocol TabGroupsPanelConsumer;
 @protocol TabGroupsPanelMediatorDelegate;
 class WebStateList;
@@ -27,18 +31,6 @@ class TabGroupSyncService;
                                               TabGroupsPanelItemDataSource,
                                               TabGroupsPanelMutator>
 
-// - `tabGroupSyncService`: the data source for the Tab Groups panel.
-// - `regularWebStateList`: used to configure the Done button. Must not be null.
-// - `disabled`: tells the mediator whether the Tab Groups panel is disabled, to
-//     configure the toolbars.
-- (instancetype)initWithTabGroupSyncService:
-                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                        regularWebStateList:(WebStateList*)regularWebStateList
-                              faviconLoader:(FaviconLoader*)faviconLoader
-                           disabledByPolicy:(BOOL)disabled
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
-
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabGroupsPanelConsumer> consumer;
 
@@ -48,9 +40,24 @@ class TabGroupSyncService;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
 
-// Delegate handling the Tab Grid modifications.
-@property(nonatomic, weak) id<TabGridToolbarsMainTabGridDelegate>
-    toolbarTabGridDelegate;
+// Tab Grid handler.
+@property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
+
+// - `tabGroupSyncService`: the data source for the Tab Groups panel.
+// - `regularWebStateList`: used to configure the Done button. Must not be null.
+// - `disabled`: tells the mediator whether the Tab Groups panel is disabled, to
+//     configure the toolbars.
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                        regularWebStateList:(WebStateList*)regularWebStateList
+                              faviconLoader:(FaviconLoader*)faviconLoader
+                           disabledByPolicy:(BOOL)disabled
+                                browserList:(BrowserList*)browserList
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Deletes a synced group for `syncID`.
+- (void)deleteSyncedTabGroup:(const base::Uuid&)syncID;
 
 // Disconnects the mediator.
 - (void)disconnect;

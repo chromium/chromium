@@ -144,7 +144,7 @@ dictionary CheckVisibilityOptions {
     [RuntimeEnabled=StandardizedBrowserZoom] readonly attribute double currentCSSZoom;
 
     // Used by both Anchor Positioning and Popover
-    [CEReactions,RuntimeEnabled=HTMLAnchorAttribute] attribute Element? anchorElement;
+    [CEReactions,RuntimeEnabled=HTMLAnchorAttribute,ImplementedAs=anchorElementForBinding] attribute Element? anchorElement;
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);

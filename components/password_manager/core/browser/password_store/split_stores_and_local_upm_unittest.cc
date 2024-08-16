@@ -64,7 +64,6 @@ struct IsGmsCoreUpdateRequiredTestCase {
   bool is_pwd_sync_enabled;
   bool is_evicted;
   bool was_initial_migration_done;
-  bool sync_only_in_gms_enabled;
   bool is_login_db_empty;
   bool expected_is_update_required_automotive;
   bool expected_is_update_required;
@@ -90,14 +89,6 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
        IsGmsCoreUpdateRequired) {
   IsGmsCoreUpdateRequiredTestCase p = GetParam();
   base::test::ScopedFeatureList features;
-  if (p.sync_only_in_gms_enabled) {
-    features.InitAndEnableFeature(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  } else {
-    features.InitAndDisableFeature(
-        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
-  }
-
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       p.is_evicted);
@@ -124,9 +115,10 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
           : p.expected_is_update_required
 #endif
       ;
-  EXPECT_EQ(
-      expected_is_update_required,
-      IsGmsCoreUpdateRequired(pref_service(), &sync_service, p.gms_version));
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      p.gms_version);
+  EXPECT_EQ(expected_is_update_required,
+            IsGmsCoreUpdateRequired(pref_service(), &sync_service));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -134,22 +126,11 @@ INSTANTIATE_TEST_SUITE_P(
     SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
     testing::Values(
         IsGmsCoreUpdateRequiredTestCase{
-            .test_case_desc = "FalseWhenFeatureDisabled",
-            .gms_version = "1",
-            .is_pwd_sync_enabled = true,
-            .is_evicted = false,
-            .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = false,
-            .is_login_db_empty = false,
-            .expected_is_update_required_automotive = false,
-            .expected_is_update_required = false},
-        IsGmsCoreUpdateRequiredTestCase{
             .test_case_desc = "TrueForVeryOldGms",
             .gms_version = "1",
             .is_pwd_sync_enabled = true,
             .is_evicted = false,
             .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -159,7 +140,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = false,
             .is_evicted = false,
             .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -169,7 +149,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = true,
             .is_evicted = true,
             .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -179,7 +158,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = true,
             .is_evicted = false,
             .was_initial_migration_done = false,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = true},
@@ -189,7 +167,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = false,
             .is_evicted = false,
             .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = true,
             .expected_is_update_required = false},
@@ -199,7 +176,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = true,
             .is_evicted = false,
             .was_initial_migration_done = true,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = false,
             .expected_is_update_required_automotive = false,
             .expected_is_update_required = false},
@@ -210,7 +186,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = true,
             .is_evicted = true,
             .was_initial_migration_done = false,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = true,
             .expected_is_update_required_automotive = false,
             .expected_is_update_required = false},
@@ -221,7 +196,6 @@ INSTANTIATE_TEST_SUITE_P(
             .is_pwd_sync_enabled = true,
             .is_evicted = false,
             .was_initial_migration_done = false,
-            .sync_only_in_gms_enabled = true,
             .is_login_db_empty = true,
             .expected_is_update_required_automotive = false,
             .expected_is_update_required = false}),

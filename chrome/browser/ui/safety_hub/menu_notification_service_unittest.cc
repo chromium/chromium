@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -52,8 +53,13 @@ class SafetyHubMenuNotificationServiceTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     feature_list_.InitWithFeatures(
-        {features::kSafetyHub,
-         safe_browsing::kSafetyHubAbusiveNotificationRevocation},
+        {
+            features::kSafetyHub,
+            safe_browsing::kSafetyHubAbusiveNotificationRevocation,
+#if BUILDFLAG(IS_ANDROID)
+            features::kSafetyHubFollowup,
+#endif
+        },
         {});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
@@ -343,6 +349,99 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingTriggerLogic) {
   EXPECT_TRUE(notification.has_value());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SafetyHubMenuNotificationServiceTest, PasswordOverride) {
+  std::optional<MenuNotificationEntry> notification;
+  // Show Safe Browsing notification.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  notification = menu_notification_service()->GetNotificationToShow();
+  AdvanceClockBy(base::Days(1));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::SAFE_BROWSING);
+
+  // A leaked password warning should override the Safe Browsing notification.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 1);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION, 1,
+      notification.value().label);
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
+
+  // Fixing the leaked password will clear notification. Because the safe
+  // browsing notification was dismissed, it will not be shown either.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 0);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  // The last shown menu notification remains the same even when it has been
+  // dismissed.
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+  EXPECT_EQ(
+      menu_notification_service()->GetLastShownNotificationModule().value(),
+      safety_hub::SafetyHubModuleType::PASSWORDS);
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, PasswordTrigger) {
+  // If the leaked password count is not yet fetched or the user is signed out,
+  // no notification should be displayed.
+  std::optional<MenuNotificationEntry> notification;
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, -1);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  // A leaked password warning should create a password notification.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 2);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION, 2,
+      notification.value().label);
+
+  // The notification should no longer appear after it has been dismissed.
+  menu_notification_service()->DismissActiveNotificationOfModule(
+      safety_hub::SafetyHubModuleType::PASSWORDS);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+
+  // A leaked password count of lower value should NOT create a new password
+  // notification.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 1);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+  EXPECT_TRUE(menu_notification_service()
+                  ->GetLastShownNotificationModule()
+                  .has_value());
+
+  // A leaked password count of higher value should create a new password
+  // notification.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 3);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION, 3,
+      notification.value().label);
+
+  // Fixing the leaked passwords should clear notification.
+  prefs()->SetInteger(prefs::kBreachedCredentialsCount, 0);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+}
+#endif
+
 TEST_F(SafetyHubMenuNotificationServiceTest, DismissNotifications) {
   // Generate a mock notification for unused site permissions.
   CreateMockUnusedSitePermissionsEntry("https://example1.com:443");
@@ -506,20 +605,12 @@ TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest,
 TEST_F(SafetyHubMenuNotificationServiceDesktopOnlyTest, PasswordOverride) {
   const std::string origin = "https://www.example.com";
   std::optional<MenuNotificationEntry> notification;
-  // Disabling Safe Browsing should only trigger a menu notification after one
-  // day.
+  // Show Safe Browsing notification.
   prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   notification = menu_notification_service()->GetNotificationToShow();
-  EXPECT_FALSE(notification.has_value());
-  EXPECT_FALSE(menu_notification_service()
-                   ->GetLastShownNotificationModule()
-                   .has_value());
   AdvanceClockBy(base::Days(1));
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
-  EXPECT_TRUE(menu_notification_service()
-                  ->GetLastShownNotificationModule()
-                  .has_value());
   EXPECT_EQ(
       menu_notification_service()->GetLastShownNotificationModule().value(),
       safety_hub::SafetyHubModuleType::SAFE_BROWSING);

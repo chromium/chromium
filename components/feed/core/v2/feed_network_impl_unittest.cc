@@ -66,10 +66,11 @@ using QueryRequestResult = FeedNetwork::QueryRequestResult;
 feedwire::ClientInfo ExpectHasClientInfoHeader(
     network::ResourceRequest request) {
   EXPECT_TRUE(request.headers.HasHeader(feed::kClientInfoHeader));
-  std::string clientinfo;
-  EXPECT_TRUE(request.headers.GetHeader(feed::kClientInfoHeader, &clientinfo));
+  std::optional<std::string> clientinfo =
+      request.headers.GetHeader(feed::kClientInfoHeader);
+  CHECK(clientinfo.has_value());
   std::string decoded_clientinfo;
-  EXPECT_TRUE(base::Base64Decode(clientinfo, &decoded_clientinfo));
+  EXPECT_TRUE(base::Base64Decode(clientinfo.value(), &decoded_clientinfo));
   feedwire::ClientInfo clientinfo_proto;
   EXPECT_TRUE(clientinfo_proto.ParseFromString(decoded_clientinfo));
   return clientinfo_proto;
@@ -304,10 +305,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestSendsValidRequest) {
       resource_request.url);
   EXPECT_EQ("GET", resource_request.method);
   EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
-  std::string authorization;
-  EXPECT_TRUE(
-      resource_request.headers.GetHeader("Authorization", &authorization));
-  EXPECT_EQ(authorization, "Bearer access_token");
+  EXPECT_EQ(resource_request.headers.GetHeader("Authorization"),
+            "Bearer access_token");
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
   histogram().ExpectBucketCount(
@@ -340,10 +339,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSignin) {
   EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
 
   // Verify that it's a signed-in request.
-  std::string authorization;
-  EXPECT_TRUE(
-      resource_request.headers.GetHeader("Authorization", &authorization));
-  EXPECT_EQ(authorization, "Bearer access_token");
+  EXPECT_EQ(resource_request.headers.GetHeader("Authorization"),
+            "Bearer access_token");
 
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
@@ -369,10 +366,8 @@ TEST_F(FeedNetworkTest, SendQueryRequestPersonalized_AccountSync) {
   EXPECT_FALSE(resource_request.headers.HasHeader("content-encoding"));
 
   // Verify that it's a signed-in request.
-  std::string authorization;
-  EXPECT_TRUE(
-      resource_request.headers.GetHeader("Authorization", &authorization));
-  EXPECT_EQ(authorization, "Bearer access_token");
+  EXPECT_EQ(resource_request.headers.GetHeader("Authorization"),
+            "Bearer access_token");
 
   histogram().ExpectBucketCount(
       "ContentSuggestions.Feed.Network.ResponseStatus.FeedQuery", 200, 1);
@@ -817,14 +812,9 @@ TEST_F(FeedNetworkTest, SendApiRequestSendsValidRequest_UploadActions) {
             resource_request.url);
 
   EXPECT_EQ("POST", resource_request.method);
-  std::string content_encoding;
-  EXPECT_TRUE(resource_request.headers.GetHeader("content-encoding",
-                                                 &content_encoding));
-  EXPECT_EQ("gzip", content_encoding);
-  std::string authorization;
-  EXPECT_TRUE(
-      resource_request.headers.GetHeader("Authorization", &authorization));
-  EXPECT_EQ(authorization, "Bearer access_token");
+  EXPECT_EQ("gzip", resource_request.headers.GetHeader("content-encoding"));
+  EXPECT_EQ(resource_request.headers.GetHeader("Authorization"),
+            "Bearer access_token");
 
   // Check that the body content is correct. This requires some work to extract
   // the bytes and unzip them.
@@ -861,11 +851,8 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
 TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
   feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>(
       {}, account_info(), request_metadata(), base::DoNothing());
-  std::string requested_content_type;
-  RespondToDiscoverRequest("", net::HTTP_OK)
-      .headers.GetHeader("content-type", &requested_content_type);
-
-  EXPECT_EQ("application/x-protobuf", requested_content_type);
+  EXPECT_EQ("application/x-protobuf", RespondToDiscoverRequest("", net::HTTP_OK)
+                                          .headers.GetHeader("content-type"));
 }
 
 TEST_F(FeedNetworkTest,
@@ -873,11 +860,8 @@ TEST_F(FeedNetworkTest,
   feed_network()->SendApiRequest<QueryBackgroundFeedDiscoverApi>(
       {}, account_info(), request_metadata(), base::DoNothing());
 
-  std::string requested_response_encoding;
-  RespondToDiscoverRequest("", net::HTTP_OK)
-      .headers.GetHeader("x-response-encoding", &requested_response_encoding);
-
-  EXPECT_EQ("gzip", requested_response_encoding);
+  EXPECT_EQ("gzip", RespondToDiscoverRequest("", net::HTTP_OK)
+                        .headers.GetHeader("x-response-encoding"));
 }
 
 TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {

@@ -23,11 +23,13 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="SessionType">
+  <variant name="Rewriter" summary="AI rewriter session"/>
   <variant name="Text" summary="AI text session"/>
+  <variant name="Writer" summary="AI writer session"/>
 </variants>
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
-    expires_after="2024-12-11">
+    expires_after="2025-02-10">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -38,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
-    units="times" expires_after="2024-12-11">
+    units="times" expires_after="2025-02-10">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -60,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseStatus"
-    enum="AIModelStreamingResponseStatus" expires_after="2024-12-11">
+    enum="AIModelStreamingResponseStatus" expires_after="2025-02-10">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -82,8 +84,8 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="SessionType"/>
 </histogram>
 
-<histogram name="AI.{SessionType}.Availability" enum="AIModelAvailability"
-    expires_after="2024-12-11">
+<histogram name="AI.{SessionType}.Availability" enum="AICapabilityAvailability"
+    expires_after="2025-02-10">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>

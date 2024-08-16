@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -15,8 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 
-import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
-import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
+import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
 import android.content.Context;
 import android.view.View;
@@ -29,6 +26,7 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -40,24 +38,21 @@ import java.util.List;
 /** Dialog that appears when a new tab group is created to name the group and pick a color. */
 public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
-    public static final ViewElement DIALOG =
-            scopedViewElement(withId(R.id.visual_data_dialog_layout));
-    public static final ViewElement DIALOG_TITLE =
-            scopedViewElement(
-                    allOf(withId(R.id.visual_data_dialog_title), withText("New tab group")));
+    public static final ViewSpec DIALOG = viewSpec(withId(R.id.visual_data_dialog_layout));
+    public static final ViewSpec DIALOG_TITLE =
+            viewSpec(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group")));
+
     public static final Matcher<View> TITLE_INPUT_MATCHER =
             allOf(withId(R.id.title_input_text), isAssignableFrom(EditText.class));
-    // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
-    public static final ViewElement COLOR_PICKER_CONTAINER =
-            scopedViewElement(
-                    withId(R.id.color_picker_container),
-                    ViewElement.newOptions().displayingAtLeast(50).build());
-    public static final ViewElement DONE_BUTTON = scopedViewElement(withId(R.id.positive_button));
+    public static final ViewSpec COLOR_PICKER_CONTAINER =
+            viewSpec(withId(R.id.color_picker_container));
+
+    public static final ViewSpec DONE_BUTTON = viewSpec(withId(R.id.positive_button));
 
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
     private final @Nullable @TabGroupColorId Integer mSelectedColor;
-    private ViewElement mTitleInputElement;
+    private ViewSpec mTitleInputSpec;
 
     /** Constructor. Expects no particular title or selected color. */
     public NewTabGroupDialogFacility(List<Integer> tabIdsToGroup) {
@@ -83,31 +78,30 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         elements.declareView(DIALOG_TITLE);
 
         String inputElementId = "Tab group title input showing " + mTitle;
-        mTitleInputElement =
-                scopedViewElement(
-                        allOf(TITLE_INPUT_MATCHER, withText(mTitle)),
-                        ViewElement.newOptions().elementId(inputElementId).build());
-        elements.declareView(mTitleInputElement);
+        mTitleInputSpec = viewSpec(allOf(TITLE_INPUT_MATCHER, withText(mTitle)));
+        elements.declareView(mTitleInputSpec, ViewElement.elementIdOption(inputElementId));
 
-        elements.declareView(COLOR_PICKER_CONTAINER);
+        // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
+        elements.declareView(COLOR_PICKER_CONTAINER, ViewElement.displayingAtLeastOption(50));
         @TabGroupColorId List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
         for (@TabGroupColorId Integer color : colors) {
             if (mSelectedColor != null) {
                 elements.declareView(
-                        unscopedViewElement(
-                                colorPickerIconMatcher(color, color.equals(mSelectedColor))));
+                        colorPickerIconSpec(color, color.equals(mSelectedColor)),
+                        ViewElement.unscopedOption());
             } else {
                 elements.declareView(
-                        unscopedViewElement(colorPickerIconMatcher(color, /* selected= */ null)));
+                        colorPickerIconSpec(color, /* selected= */ null),
+                        ViewElement.unscopedOption());
             }
         }
 
         elements.declareView(DONE_BUTTON);
 
-        elements.declareElementInState(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
+        elements.declareElement(new SoftKeyboardElement(mHostStation.getActivitySupplier()));
     }
 
-    private Matcher<View> colorPickerIconMatcher(
+    private ViewSpec colorPickerIconSpec(
             @TabGroupColorId Integer color, @Nullable Boolean selected) {
         Context context = mHostStation.getActivity();
         String colorName =
@@ -121,7 +115,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         } else {
             contentDescriptionMatcher = withContentDescription(startsWith(colorName));
         }
-        return allOf(withId(R.id.color_picker_icon), contentDescriptionMatcher);
+        return viewSpec(allOf(withId(R.id.color_picker_icon), contentDescriptionMatcher));
     }
 
     /** Input a new tab group name. */
@@ -129,7 +123,7 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         return mHostStation.swapFacilitySync(
                 this,
                 new NewTabGroupDialogFacility(mTabIdsToGroup, newTabGroupName, mSelectedColor),
-                () -> mTitleInputElement.perform(replaceText(newTabGroupName)));
+                () -> mTitleInputSpec.perform(replaceText(newTabGroupName)));
     }
 
     /** Select a color. */
@@ -137,16 +131,12 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
         return mHostStation.swapFacilitySync(
                 this,
                 new NewTabGroupDialogFacility(mTabIdsToGroup, mTitle, newColor),
-                () ->
-                        onView(colorPickerIconMatcher(newColor, /* selected= */ false))
-                                .perform(click()));
+                colorPickerIconSpec(newColor, /* selected= */ false)::click);
     }
 
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
         return mHostStation.swapFacilitySync(
-                this,
-                new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle),
-                () -> DONE_BUTTON.perform(click()));
+                this, new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle), DONE_BUTTON::click);
     }
 }

@@ -851,8 +851,7 @@ void EditingStyle::RemoveBlockProperties(
     return;
 
   mutable_style_->RemovePropertiesInSet(
-      BlockPropertiesVector(execution_context).data(),
-      BlockPropertiesVector(execution_context).size());
+      BlockPropertiesVector(execution_context));
 }
 
 void EditingStyle::RemoveStyleAddedByElement(Element* element) {
@@ -951,8 +950,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
       &GetCSSPropertyColor(),
   };
   if (should_ignore_text_only_properties == kIgnoreTextOnlyProperties) {
-    difference->RemovePropertiesInSet(kTextOnlyProperties,
-                                      std::size(kTextOnlyProperties));
+    difference->RemovePropertiesInSet(kTextOnlyProperties);
   }
 
   if (difference->IsEmpty())
@@ -1627,8 +1625,7 @@ static void RemovePropertiesInStyle(
     properties_to_remove[i] = &CSSProperty::Get(style->PropertyAt(i).Id());
   }
 
-  style_to_remove_properties_from->RemovePropertiesInSet(
-      properties_to_remove.data(), properties_to_remove.size());
+  style_to_remove_properties_from->RemovePropertiesInSet(properties_to_remove);
 }
 
 void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
@@ -2082,11 +2079,14 @@ EditingTriState EditingStyle::SelectionHasStyle(const LocalFrame& frame,
   const SecureContextMode secure_context_mode =
       frame.DomWindow()->GetSecureContextMode();
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  See http://crbug.com/590369 for more details.
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
+
   return MakeGarbageCollected<EditingStyle>(property_id, value,
                                             secure_context_mode)
-      ->TriStateOfStyle(
-          frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
-          secure_context_mode);
+      ->TriStateOfStyle(frame.Selection().ComputeVisibleSelectionInDOMTree(),
+                        secure_context_mode);
 }
 
 }  // namespace blink

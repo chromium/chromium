@@ -110,7 +110,8 @@ class CastMediaSinkServiceTest : public ::testing::Test {
 TEST_F(CastMediaSinkServiceTest, DiscoverSinksNow) {
   MockDnsSdRegistry test_dns_sd_registry(media_sink_service_.get());
   SetUpTestDnsdRegistry(&test_dns_sd_registry);
-  media_sink_service_->Initialize(base::DoNothing(), nullptr);
+  media_sink_service_->Initialize(base::DoNothing(), base::DoNothing(),
+                                  nullptr);
   task_runner_->RunUntilIdle();
 
   EXPECT_CALL(test_dns_sd_registry, ResetAndDiscover());
@@ -123,7 +124,8 @@ TEST_F(CastMediaSinkServiceTest, DiscoverSinksNow) {
 }
 
 TEST_F(CastMediaSinkServiceTest, TestOnDnsSdEvent) {
-  media_sink_service_->Initialize(base::DoNothing(), nullptr);
+  media_sink_service_->Initialize(base::DoNothing(), base::DoNothing(),
+                                  nullptr);
   auto* mock_impl = media_sink_service_->mock_impl();
   ASSERT_TRUE(mock_impl);
   EXPECT_CALL(*mock_impl, DoStart()).WillOnce(InvokeWithoutArgs([this]() {
@@ -163,7 +165,8 @@ TEST_F(CastMediaSinkServiceTest, DiscoveryDelayed) {
       media_router::kDelayMediaSinkDiscovery);
 
   EXPECT_CALL(*media_sink_service_, StartMdnsDiscovery).Times(0);
-  media_sink_service_->Initialize(base::DoNothing(), nullptr);
+  media_sink_service_->Initialize(base::DoNothing(), base::DoNothing(),
+                                  nullptr);
 }
 
 #if !BUILDFLAG(IS_WIN)
@@ -177,8 +180,25 @@ TEST_F(CastMediaSinkServiceTest, DiscoveryOnStartup) {
       media_router::kDelayMediaSinkDiscovery);
 
   EXPECT_CALL(*media_sink_service_, StartMdnsDiscovery);
-  media_sink_service_->Initialize(base::DoNothing(), nullptr);
+  media_sink_service_->Initialize(base::DoNothing(), base::DoNothing(),
+                                  nullptr);
 }
 #endif
+
+TEST_F(CastMediaSinkServiceTest, DiscoveryPermissionRejected) {
+  base::MockCallback<base::RepeatingClosure> cb;
+  MockDnsSdRegistry test_dns_sd_registry(media_sink_service_.get());
+  SetUpTestDnsdRegistry(&test_dns_sd_registry);
+  media_sink_service_->Initialize(base::DoNothing(), cb.Get(), nullptr);
+  task_runner_->RunUntilIdle();
+
+  EXPECT_CALL(cb, Run());
+  test_dns_sd_registry.SimulatePermissionRejected();
+
+  EXPECT_CALL(test_dns_sd_registry, RemoveObserver(media_sink_service_.get()));
+  EXPECT_CALL(test_dns_sd_registry, UnregisterDnsSdListener(_));
+  media_sink_service_.reset();
+  task_runner_->RunUntilIdle();
+}
 
 }  // namespace media_router

@@ -39,35 +39,29 @@
   --ntp-search-box-width: 746px;
 }
 
-/* TODO(crbug.com/40943411): The CSS minifier tool messes up @container
-   queries so turn it off. */
-/* clean-css ignore:start */
-@container (min-width: 560px) {
+@media (min-width: 560px) {
   :host {
     --ntp-search-box-width: 449px;
   }
 }
 
-@container (min-width: 672px) {
+@media (min-width: 672px) {
   :host {
     --ntp-search-box-width: 561px;
   }
 }
-/* clean-css ignore:end */
 
 :host([realbox-is-tall_]) {
   --cr-realbox-height: 48px;
 }
 
-/* A module width of 768px with 18px gaps on each side. */
- /* clean-css ignore:start */
-@container (min-width: 804px) {
-  :host {
+/*A module width of 768px with 18px gaps on each side. */
+@media (min-width: 804px) {
+  :host([wide-modules-enabled_]) {
     --ntp-module-layout-width: 768px;
     --ntp-module-width: 768px;
   }
 }
-/* clean-css ignore:end */
 
 cr-most-visited {
   --add-shortcut-background-color:
@@ -265,8 +259,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
   --cr-icon-image: url(icons/icon_pencil.svg);
 }
 
-/* clean-css ignore:start */
-@container (max-width: 550px) {
+@media (max-width: 550px) {
   .customize-button {
     padding-inline-end: 0;
     padding-inline-start: 8px;
@@ -277,7 +270,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
   }
 }
 
-@container (max-width: 1110px) {
+@media (max-width: 1110px) {
   :host([modules-redesigned-enabled_][modules-shown-to-user])
       .customize-text {
     display: none;
@@ -290,7 +283,7 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
   }
 }
 
-@container (max-width: 970px) {
+@media (max-width: 970px) {
   :host([modules-shown-to-user]) .customize-button {
     padding-inline-end: 0;
     padding-inline-start: 8px;
@@ -300,7 +293,6 @@ ntp-middle-slot-promo:not([hidden]) ~ #modules {
     display: none;
   }
 }
-/* clean-css ignore:end */
 
 :host([wallpaper-search-button-animation-enabled_])
     #wallpaperSearchButton {

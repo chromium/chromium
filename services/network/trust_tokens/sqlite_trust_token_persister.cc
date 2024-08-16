@@ -324,4 +324,41 @@ SQLiteTrustTokenPersister::GetStoredTrustTokenCounts() {
   return result;
 }
 
+IssuerRedemptionRecordMap SQLiteTrustTokenPersister::GetRedemptionRecords() {
+  IssuerRedemptionRecordMap result;
+
+  sqlite_proto::KeyValueData<TrustTokenIssuerToplevelPairConfig>* pair_data =
+      database_owner_->IssuerToplevelPairData();
+
+  for (const auto& kv : pair_data->GetAllCached()) {
+    std::optional<SuitableTrustTokenOrigin> maybe_issuer;
+    std::optional<SuitableTrustTokenOrigin> maybe_toplevel;
+    if (!FromKey(kv.first, &maybe_issuer, &maybe_toplevel)) {
+      continue;
+    }
+    CHECK(maybe_issuer);
+    CHECK(maybe_toplevel);
+
+    const TrustTokenIssuerToplevelPairConfig& pair_config = kv.second;
+    if (!pair_config.has_redemption_record()) {
+      continue;
+    }
+
+    const base::Time last_redemption =
+        internal::TimestampToTime(pair_config.last_redemption());
+
+    auto entry = mojom::ToplevelRedemptionRecord::New(
+        std::move(maybe_toplevel.value()), std::move(last_redemption));
+
+    if (auto it = result.find(maybe_issuer->origin()); it != result.end()) {
+      it->second.push_back(std::move(entry));
+      continue;
+    }
+    std::vector<mojom::ToplevelRedemptionRecordPtr> v = {};
+    v.push_back(std::move(entry));
+    result.emplace(std::move(maybe_issuer->origin()), std::move(v));
+  }
+  return result;
+}
+
 }  // namespace network

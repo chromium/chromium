@@ -38,9 +38,6 @@ class WebsitePreference extends ChromeImageViewPreference {
     protected final SiteSettingsCategory mCategory;
     private Runnable mRefreshZoomsListFunction;
 
-    // TODO(crbug.com/40688291): Move these constants to dimens.xml
-    private static final int TEXT_SIZE_SP = 13;
-
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
 
@@ -141,16 +138,16 @@ class WebsitePreference extends ChromeImageViewPreference {
 
     protected String buildSummary() {
         if (mSiteSettingsDelegate.isPrivacySandboxFirstPartySetsUIFeatureEnabled()
-                && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
-                && mSite.getFPSCookieInfo() != null) {
-            var fpsInfo = mSite.getFPSCookieInfo();
+                && mSiteSettingsDelegate.isRelatedWebsiteSetsDataAccessEnabled()
+                && mSite.getRWSCookieInfo() != null) {
+            var rwsInfo = mSite.getRWSCookieInfo();
             return getContext()
                     .getResources()
                     .getQuantityString(
-                            R.plurals.allsites_fps_list_summary,
-                            fpsInfo.getMembersCount(),
-                            Integer.toString(fpsInfo.getMembersCount()),
-                            fpsInfo.getOwner());
+                            R.plurals.allsites_rws_list_summary,
+                            rwsInfo.getMembersCount(),
+                            Integer.toString(rwsInfo.getMembersCount()),
+                            rwsInfo.getOwner());
         }
 
         if (hasSubPage()) {
@@ -263,11 +260,12 @@ class WebsitePreference extends ChromeImageViewPreference {
         super.onBindViewHolder(holder);
         TextView usageText = (TextView) holder.findViewById(R.id.usage_text);
         usageText.setVisibility(View.GONE);
+        var resources = getContext().getResources();
         if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             long totalUsage = mSite.getTotalUsage();
             if (totalUsage > 0) {
                 usageText.setText(Formatter.formatShortFileSize(getContext(), totalUsage));
-                usageText.setTextSize(TEXT_SIZE_SP);
+                usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
                 usageText.setVisibility(View.VISIBLE);
             }
         }
@@ -278,7 +276,7 @@ class WebsitePreference extends ChromeImageViewPreference {
                                     * PageZoomUtils.convertZoomFactorToZoomLevel(
                                             mSite.getZoomFactor()));
             usageText.setText(getContext().getString(R.string.page_zoom_level, readableZoomLevel));
-            usageText.setTextSize(TEXT_SIZE_SP);
+            usageText.setTextSize(resources.getDimensionPixelSize(R.dimen.usage_text_size));
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);
         }

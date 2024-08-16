@@ -111,6 +111,7 @@
 <translation id="2559253115192232574">その後、アクセスしたサイトは、表示する広告をパーソナライズするために、Chrome にユーザーの興味 / 関心を提示するよう依頼できます。Chrome では、興味 / 関心を 3 つまで共有できます。</translation>
 <translation id="2563121210305478421">Chrome を再起動しますか？</translation>
 <translation id="2569974318947988067">Chrome で移動先の HTTPS へのアップグレードを試行します</translation>
+<translation id="2571392474191184472">Chrome は組織によって管理されています</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。ブラウジング環境を分ける場合は、Chrome で自分用のプロファイルを作成できます。</translation>
 <translation id="2580411288591421699">実行中の Google Chrome と同じバージョンをインストールすることはできません。Google Chrome を閉じてからもう一度お試しください。</translation>
 <translation id="2586406160782125153">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
@@ -441,6 +442,7 @@
 <translation id="7177959540995930968">これらの機能について詳しくは、Chrome の設定をご覧ください。</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075">Chrome は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7302361266603927550">Chrome データの一部が Google アカウントにまだ保存されていません。数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
@@ -574,6 +576,7 @@
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するため、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
+<translation id="9014771989710951291">Chrome は複数の組織によって管理されています</translation>
 <translation id="9024318700713112071">Chrome を既定として設定</translation>
 <translation id="9053892488859122171">ChromeOS Flex システム</translation>
 <translation id="9090566250983691233">Chrome で一部のファイルがブロックされる理由</translation>

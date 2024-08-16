@@ -1557,6 +1557,12 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_OVERSCROLL_ENABLED_ALT1" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off overscroll navigation.">
     Overscroll to navigate between pages
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off a feature that flashes the screen when a notification appears.">
+    Flash notifications
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FLASH_NOTIFICATIONS_ALT1" desc="Text for search result item which, when clicked, navigates the user to an accessibility setting to turn on or off a feature that flashes the screen when a notification appears.">
+    Screen flash
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_LABELS_FROM_GOOGLE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable getting image descriptions from Google.">
     Get image descriptions from Google
   </message>
@@ -1648,7 +1654,7 @@
 
   <!-- On Startup section. -->
   <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
-    On Startup
+    Startup
   </message>
   <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
     Restore apps and pages

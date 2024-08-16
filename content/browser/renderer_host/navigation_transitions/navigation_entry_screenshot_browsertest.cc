@@ -11,7 +11,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_context_impl.h"
@@ -43,9 +45,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
+#include "ui/gfx/switches.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -211,6 +215,11 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
 
   virtual bool EnableCompression() const { return false; }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+  }
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -281,7 +290,8 @@ class NavigationEntryScreenshotBrowserTestBase : public ContentBrowserTest {
       std::optional<gfx::Rect> compare_region = std::nullopt) {
     ASSERT_FALSE(EnableCompression());
     EXPECT_NE(screenshot, nullptr);
-    EXPECT_EQ(screenshot->GetDimensions(), GetScaledViewportSize());
+    EXPECT_EQ(screenshot->dimensions_without_compression(),
+              GetScaledViewportSize());
 
     auto bitmap = screenshot->GetBitmapForTesting();
     ExpectBitmapRowsAreColor(bitmap, color, compare_region);
@@ -353,8 +363,12 @@ class NavigationEntryScreenshotBrowserTest
   ~NavigationEntryScreenshotBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    base::FieldTrialParams bf_transition_params;
+    if (Use1MinuteEvictionDelay()) {
+      bf_transition_params = {{"invisible-cache-cleanup-delay", "1m"}};
+    }
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}}};
+        {blink::features::kBackForwardTransitions, bf_transition_params}};
 
     if (GetParam().enable_bfcache) {
       scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -401,6 +415,8 @@ class NavigationEntryScreenshotBrowserTest
 
     ASSERT_TRUE(web_contents()->GetRenderWidgetHostView());
   }
+
+  virtual bool Use1MinuteEvictionDelay() const { return false; }
 
   std::string GetNextHost() { return host_getter_->Get(); }
 
@@ -1048,7 +1064,7 @@ void AssertScreenshotForPageWithIFrameIs(NavigationEntry* entry,
                                          SkColor iframe) {
   auto* screenshot = PreviewScreenshotForEntry(entry);
   ASSERT_NE(screenshot, nullptr);
-  const auto size = screenshot->GetDimensions();
+  const auto size = screenshot->dimensions_without_compression();
   auto bitmap = screenshot->GetBitmapForTesting();
 
   int half_height = size.height() / 2;
@@ -1139,6 +1155,307 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NavigationEntryScreenshotBrowserTest,
                          ::testing::ValuesIn(kNavTypes),
                          &DescribeNavType);
+
+class NavigationEntryScreenshotBrowserTestWithEviction
+    : public NavigationEntryScreenshotBrowserTest {
+ public:
+  void SetUp() override {
+    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+      GTEST_SKIP() << "This test is flaky on automotive. crbug.com/358342700";
+    }
+    NavigationEntryScreenshotBrowserTest::SetUp();
+  }
+  bool Use1MinuteEvictionDelay() const override { return true; }
+  ~NavigationEntryScreenshotBrowserTestWithEviction() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
+                       InvisibleTabEviction) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  manager->SetUITaskRunnerForTesting(task_runner);
+
+  {
+    SCOPED_TRACE("tab1: [red&, green&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/green.html"));
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  }
+
+  // Creates a second tab within the same profile such that two tabs share the
+  // same manager. `NavigationEntryScreenshotManager` is per Profile
+  // (`BrowserContext`) - it budgets the memories for all the screenshots across
+  // different tabs.
+  auto* shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GetNextUrl("/red.html"),
+      /*site_instance=*/nullptr, gfx::Size());
+  auto* tab2 = static_cast<WebContentsImpl*>(shell2->web_contents());
+  EXPECT_EQ(manager, GetManagerForTab(tab2));
+  EXPECT_TRUE(tab2->GetController().GetLastCommittedEntry()->IsInitialEntry());
+  WaitForCopyableViewInWebContents(tab2);
+  // We don't capture for the initial entry.
+  EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  auto& controller2 = tab2->GetController();
+  EXPECT_EQ(controller2.GetEntryCount(), 1);
+
+  {
+    SCOPED_TRACE(
+        "tab1: [red&, green&, blue*] -> [red&, green&, blue*] (no change); "
+        "tab2: [red*] -> [red&, green*]");
+    NavigateTabAndWaitForScreenshotCached(tab2, controller2,
+                                          GetNextUrl("/green.html"));
+    AssertOrderedScreenshotsAre(controller2, {SK_ColorRED, std::nullopt});
+    // No change in tab1, because we have one cache slot for a new screenshot in
+    // tab2.
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    ASSERT_EQ(manager->GetCurrentCacheSize(), memory_budget);
+  }
+
+  base::SimpleTestTickClock fake_clock;
+  manager->set_tick_clock_for_testing(&fake_clock);
+  const base::TimeDelta eviction_delay = base::Minutes(1);
+  fake_clock.SetNowTicks(base::TimeTicks() + eviction_delay);
+
+  // Mark the tabs hidden at different times.
+  web_contents()->WasHidden();
+  fake_clock.Advance(eviction_delay);
+  tab2->WasHidden();
+
+  // A task should be posted to clear the first tab.
+  ASSERT_TRUE(task_runner->HasPendingTask());
+  task_runner->RunPendingTasks();
+  EXPECT_TRUE(controller.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_FALSE(controller2.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), page_size);
+  EXPECT_EQ(
+      controller.GetEntryAtIndex(0)
+          ->navigation_transition_data()
+          .cache_hit_or_miss_reason(),
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissInvisible);
+  EXPECT_EQ(
+      controller.GetEntryAtIndex(1)
+          ->navigation_transition_data()
+          .cache_hit_or_miss_reason(),
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissInvisible);
+
+  // Another task to clear the second tab.
+  ASSERT_TRUE(task_runner->HasPendingTask());
+  fake_clock.Advance(eviction_delay);
+  task_runner->RunPendingTasks();
+  EXPECT_TRUE(controller2.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
+  EXPECT_EQ(
+      controller2.GetEntryAtIndex(0)
+          ->navigation_transition_data()
+          .cache_hit_or_miss_reason(),
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissInvisible);
+
+  // No more pending tasks since all invisible tabs have been purged.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  manager->set_tick_clock_for_testing(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
+                       VisibleHiddenVisibleNotEvicted) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  manager->SetUITaskRunnerForTesting(task_runner);
+
+  {
+    SCOPED_TRACE("tab1: [red&, green&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/green.html"));
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller,
+                                {SK_ColorRED, SK_ColorGREEN, std::nullopt});
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  }
+
+  base::SimpleTestTickClock fake_clock;
+  manager->set_tick_clock_for_testing(&fake_clock);
+  const base::TimeDelta eviction_delay = base::Minutes(1);
+  fake_clock.SetNowTicks(base::TimeTicks() + eviction_delay);
+
+  // A task should be posted to clear the tab.
+  web_contents()->WasHidden();
+  ASSERT_TRUE(task_runner->HasPendingTask());
+
+  // Make the tab visible and advance the time to trigger the queued up task to
+  // clear.
+  web_contents()->WasShown();
+  fake_clock.Advance(eviction_delay);
+  task_runner->RunPendingTasks();
+  EXPECT_FALSE(controller.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+
+  // No more pending tasks since there's no invisible tabs.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  manager->set_tick_clock_for_testing(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
+                       MultipleInvisibleTabs) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  manager->SetUITaskRunnerForTesting(task_runner);
+
+  auto& controller = web_contents()->GetController();
+  {
+    SCOPED_TRACE("tab1: [red&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(web_contents(), controller,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller, {SK_ColorRED, std::nullopt});
+    EXPECT_EQ(manager->GetCurrentCacheSize(), page_size);
+  }
+
+  // Creates more tabs within the same profile such that two tabs share the
+  // same manager. `NavigationEntryScreenshotManager` is per Profile
+  // (`BrowserContext`) - it budgets the memories for all the screenshots across
+  // different tabs.
+  auto* shell2 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GetNextUrl("/red.html"),
+      /*site_instance=*/nullptr, gfx::Size());
+  auto* tab2 = static_cast<WebContentsImpl*>(shell2->web_contents());
+  WaitForCopyableViewInWebContents(tab2);
+  auto& controller2 = tab2->GetController();
+  {
+    SCOPED_TRACE("tab2: [red&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(tab2, controller2,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller2, {SK_ColorRED, std::nullopt});
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+  }
+
+  auto* shell3 = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GetNextUrl("/red.html"),
+      /*site_instance=*/nullptr, gfx::Size());
+  auto* tab3 = static_cast<WebContentsImpl*>(shell3->web_contents());
+  WaitForCopyableViewInWebContents(tab3);
+  auto& controller3 = tab3->GetController();
+  {
+    SCOPED_TRACE("tab3: [red&, blue*]");
+    NavigateTabAndWaitForScreenshotCached(tab3, controller3,
+                                          GetNextUrl("/blue.html"));
+    AssertOrderedScreenshotsAre(controller3, {SK_ColorRED, std::nullopt});
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 3 * page_size);
+  }
+
+  base::SimpleTestTickClock fake_clock;
+  manager->set_tick_clock_for_testing(&fake_clock);
+  const base::TimeDelta eviction_delay = base::Minutes(1);
+  fake_clock.SetNowTicks(base::TimeTicks() + eviction_delay);
+
+  // Mark the tabs hidden at different times.
+  const auto delay = base::Seconds(10);
+  web_contents()->WasHidden();
+  fake_clock.Advance(delay);
+  tab2->WasHidden();
+  fake_clock.Advance(delay);
+  tab3->WasHidden();
+
+  // A task should be posted to clear the first tab.
+  ASSERT_TRUE(task_runner->HasPendingTask());
+  fake_clock.Advance(eviction_delay - 2 * delay);
+  task_runner->RunPendingTasks();
+  EXPECT_TRUE(controller.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_FALSE(controller2.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_FALSE(controller3.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), 2 * page_size);
+
+  // Another task to clear the second tab.
+  ASSERT_TRUE(task_runner->HasPendingTask());
+  fake_clock.Advance(delay);
+  task_runner->RunPendingTasks();
+  EXPECT_TRUE(controller.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_TRUE(controller2.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_FALSE(controller3.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), page_size);
+
+  // Another task to clear the third tab.
+  ASSERT_TRUE(task_runner->HasPendingTask());
+  fake_clock.Advance(delay);
+  task_runner->RunPendingTasks();
+  EXPECT_TRUE(controller.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_TRUE(controller2.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_TRUE(controller3.GetNavigationEntryScreenshotCache()->IsEmpty());
+  EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
+
+  // No more pending tasks since all invisible tabs have been purged.
+  EXPECT_FALSE(task_runner->HasPendingTask());
+
+  manager->set_tick_clock_for_testing(nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationEntryScreenshotBrowserTestWithEviction,
+                         ::testing::ValuesIn(kNavTypes),
+                         &DescribeNavType);
+
+class NavigationEntryScreenshotBrowserTestPrefersReducedMotion
+    : public NavigationEntryScreenshotBrowserTest {
+ public:
+  ~NavigationEntryScreenshotBrowserTestPrefersReducedMotion() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationEntryScreenshotBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+                       NoCapture) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("tab1: [red, green*]");
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/green.html")));
+    auto* entry = controller.GetEntryAtIndex(0);
+    EXPECT_EQ(entry->navigation_transition_data().cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kCacheMissPrefersReducedMotion);
+    EXPECT_EQ(
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
+        0);
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+    ::testing::ValuesIn(kNavTypes),
+    &DescribeNavType);
 
 class NavigationEntryScreenshotBrowserTestWithWebUI
     : public NavigationEntryScreenshotBrowserTest {
@@ -1361,6 +1678,7 @@ class SameDocNavigationEntryScreenshotBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {viz::mojom::EnableVizTestApis, {}},
         {blink::features::kBackForwardTransitions, {}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}}};
@@ -1381,8 +1699,9 @@ class SameDocNavigationEntryScreenshotBrowserTest
     WaitForCopyableViewInWebContents(web_contents());
 
     mojo::ScopedAllowSyncCallForTesting allowed_for_testing;
-    GetHostFrameSinkManager()->SetSameDocNavigationScreenshotSizeForTesting(
-        GetScaledViewportSize());
+    GetHostFrameSinkManager()
+        ->GetFrameSinkManagerTestApi()
+        .SetSameDocNavigationScreenshotSize(GetScaledViewportSize());
   }
 
   gfx::Rect GetCompareRegion() { return gfx::Rect(GetScaledViewportSize()); }
@@ -1462,6 +1781,43 @@ IN_PROC_BROWSER_TEST_F(SameDocNavigationEntryScreenshotBrowserTest, Basic) {
         controller, {std::nullopt, SK_ColorGREEN, SK_ColorBLUE, SK_ColorRED},
         GetCompareRegion());
     ASSERT_EQ(manager->GetCurrentCacheSize(), 3 * page_size);
+  }
+}
+
+class SameDocNavigationEntryScreenshotBrowserTestPrefersReducedMotion
+    : public SameDocNavigationEntryScreenshotBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SameDocNavigationEntryScreenshotBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForcePrefersReducedMotion);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SameDocNavigationEntryScreenshotBrowserTestPrefersReducedMotion,
+    NoCapture) {
+  // Max of three screenshots per Profile (BrowserContext).
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 3 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("tab1: [red, green*]");
+    NavigationTransitionUtils::ResetNumCopyOutputRequestIssuedForTesting();
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetURL("#green")));
+    auto* entry = controller.GetEntryAtIndex(0);
+    EXPECT_EQ(
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting(),
+        0);
+    EXPECT_FALSE(entry->navigation_transition_data()
+                     .same_document_navigation_entry_screenshot_token()
+                     .has_value());
+    EXPECT_EQ(entry->navigation_transition_data().cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kCacheMissPrefersReducedMotion);
+    EXPECT_EQ(manager->GetCurrentCacheSize(), 0u);
   }
 }
 
@@ -1595,7 +1951,8 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest,
         "[red, green&, blue&, green&, green_CCNS&, red*] -> "
         "[red, green, blue, green, green_CCNS, red]");
 
-    controller.GetNavigationEntryScreenshotCache()->PurgeForMemoryPressure();
+    controller.GetNavigationEntryScreenshotCache()->Purge(
+        NavigationEntryScreenshotCacheEvictor::PurgeReason::kMemoryPressure);
     AssertCacheHitOrMissReasonsAre(
         controller, {CacheHitOrMissReason::kCacheMissEvicted,
                      CacheHitOrMissReason::kCacheMissPurgedMemoryPressure,

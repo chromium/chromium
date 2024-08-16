@@ -1034,6 +1034,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
       prefs::kLiveCaptionBubblePinned));
 
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kDialog);
   test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
 
@@ -1053,8 +1055,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
 
   // The label is a readonly document.
   ui::AXNodeData node_data;
-  GetLabel()->GetAccessibleNodeData(&node_data);
+  GetLabel()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
+  EXPECT_EQ(GetLabel()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kDocument);
+  EXPECT_EQ(GetLabel()->GetViewAccessibility().GetCachedName(),
+            u"Capybaras are the world's largest rodents.");
   EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
 
   // There is 1 staticText node in the label.

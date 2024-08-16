@@ -11,28 +11,52 @@
 namespace segmentation_platform {
 
 // Maximum time to wait to retrieve a result from the
-// deviceSwitcherResultDispatcher before returning PredictionStatus kNotReady.
+// `DeviceSwitcherResultDispatcher` before returning PredictionStatus kNotReady.
 extern const base::TimeDelta kDeviceSwitcherWaitTimeout;
 
 // User classifications from the Segmentation
-// Platform used by the Segmented Default Browser promo.
+// Platform used by the Segmented Default Browser promo. Entries should not be
+// renumbered, and numeric values should never be reused.
 enum class DefaultBrowserUserSegment {
-  // Classification for users of Chrome on Desktop.
-  kDesktopUser,
-  // Classification for users switching from Chrome on Android to Chrome on iOS.
-  kAndroidSwitcher,
-  // Classification for users who use Chrome shopping features.
-  kShopper,
   // Classification for users not identified as part of kDesktopUser,
   // kAndroidSwitcher, or kShopper
-  kDefault
+  kDefault = 0,
+  // Classification for users of Chrome on Desktop.
+  kDesktopUser = 1,
+  // Classification for users switching from Chrome on Android to Chrome on iOS.
+  kAndroidSwitcher = 2,
+  // Classification for users who use Chrome shopping features.
+  kShopper = 3,
+  kMaxValue = kShopper
 };
 
-// Utility function to determine the DefaultBrowserUserSegment based on user's
-// device switcher and shopping user segment ClassificationResults.
+// Utility function to determine the `DefaultBrowserUserSegment` based on user's
+// device switcher and shopping user segment `ClassificationResult`. The segment
+// returned can be forced through the experimental settings. To force the
+// Shopper label, the forced Device Switcher label must be unset.
 DefaultBrowserUserSegment GetDefaultBrowserUserSegment(
     const ClassificationResult* device_switcher_result,
     const ClassificationResult* shopper_result);
+
+// Utility function that returns the First Run Experience Default Browser promo
+// title's string ID for a specified user segment.
+int GetFirstRunDefaultBrowserScreenTitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns the First Run Experience Default Browser promo
+// subtitle's string ID for a specified user segment.
+int GetFirstRunDefaultBrowserScreenSubtitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns the Default Browser Recurring Video promo
+// title's string ID for a specified user segment.
+int GetDefaultBrowserGenericPromoTitleStringID(
+    DefaultBrowserUserSegment segment);
+
+// Utility function that returns Set Up List Default Browser item description's
+// string ID for a specified user segment.
+int GetSetUpListDefaultBrowserDescriptionStringID(
+    DefaultBrowserUserSegment segment);
 
 }  // namespace segmentation_platform
 

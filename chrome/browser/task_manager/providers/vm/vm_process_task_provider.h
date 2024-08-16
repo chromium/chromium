@@ -12,10 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/process_snapshot_server.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 #include "chrome/browser/task_manager/providers/vm/vm_process_task.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/process_snapshot/process_snapshot_server.h"
 
 namespace task_manager {
 

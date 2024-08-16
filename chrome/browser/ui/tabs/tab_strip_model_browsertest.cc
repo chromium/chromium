@@ -42,10 +42,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 using testing::_;
 
 namespace {
@@ -146,13 +142,6 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 IN_PROC_BROWSER_TEST_F(
     TabStripModelPreventCloseTest,
     MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsCrosShortstandEnabled()) {
-    GTEST_SKIP()
-        << "Cannot launch web apps in a tab when Shortstand is enabled.";
-  }
-#endif
-
   InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
   SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,

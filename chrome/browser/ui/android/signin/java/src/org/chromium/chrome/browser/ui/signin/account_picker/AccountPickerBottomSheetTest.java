@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,7 +86,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -154,7 +154,7 @@ public class AccountPickerBottomSheetTest {
 
     @Before
     public void setUp() {
-        mAutoTestRule.setIsAutomotive(true);
+        mAutoTestRule.setIsAutomotive(false);
         mSigninAccessPoint = SigninAccessPoint.WEB_SIGNIN;
         mCoreAccountInfo1 =
                 mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
@@ -1315,7 +1315,6 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
     public void testSignInDefaultAccountOnCollapsedSheet_SpinnerWhileCheckingAccountManagement() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1339,8 +1338,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testSignInDefaultAccountOnCollapsedSheet_PoliciesOnSignin() {
+    public void testSignInDefaultAccountOnCollapsedSheet() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1377,8 +1375,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
-    public void testSignInDefaultAccountOnCollapsedSheet_PoliciesOnSignin_GeneralError() {
+    public void testSignInDefaultAccountOnCollapsedSheet_GeneralError() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1438,6 +1435,53 @@ public class AccountPickerBottomSheetTest {
         inOrder.verify(mAccountPickerDelegateMock).signIn(eq(mCoreAccountInfo1), any());
 
         accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testSigninWithAddedAccount_removeAccountBeforeSignIn_replaceSyncBySigninEnabled() {
+        // Use automotive since the sign-in waits for device lock before proceeding, so we can
+        // ensure that the account disappears before sign-in by removing the account before
+        // resolving the device lock.
+        mAutoTestRule.setIsAutomotive(true);
+        mAccountManagerTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
+        buildAndShowCollapsedThenExpandedBottomSheet();
+
+        // Start sign-in and remove the account before completing the device lock.
+        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        mAccountManagerTestRule.removeAccount(
+                mAccountManagerTestRule.toCoreAccountInfo(NEW_ACCOUNT_EMAIL).getId());
+        completeDeviceLockIfOnAutomotive();
+
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_general_error_title), isDisplayed()));
+        verify(mAccountPickerDelegateMock, never()).signIn(any(), any());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void
+            testSigninWithAddedAccount_removeAccountAfterManagementNotice_replaceSyncBySigninEnabled() {
+        mIsAccountManaged = true;
+        mAccountManagerTestRule.setResultForNextAddAccountFlow(
+                Activity.RESULT_OK, NEW_ACCOUNT_EMAIL);
+        buildAndShowCollapsedThenExpandedBottomSheet();
+
+        // Start sign-in and remove the account before validating the management notice.
+        onVisibleView(withText(R.string.signin_add_account_to_device)).perform(click());
+        waitForView(
+                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+                withId(R.id.account_picker_confirm_management_description));
+        mAccountManagerTestRule.removeAccount(
+                mAccountManagerTestRule.toCoreAccountInfo(NEW_ACCOUNT_EMAIL).getId());
+
+        clickContinueButtonAndWaitForErrorSheet();
+        verify(mAccountPickerDelegateMock, never()).signIn(any(), any());
     }
 
     private void clickContinueButton(View bottomSheetView) {

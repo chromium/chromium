@@ -145,7 +145,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
         mEdgeToEdgePadAdjuster =
                 edgeToEdgeSupplier != null
-                        ? EdgeToEdgeControllerFactory.createForView(mSnackbarView, true)
+                        ? EdgeToEdgeControllerFactory.createForView(mSnackbarView)
                         : null;
 
         updateInternal(snackbar, false);

@@ -49,9 +49,9 @@ class DualReadingListModel : public ReadingListModel,
 
   // ReadingListModel implementation.
   bool loaded() const override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate> GetSyncControllerDelegate()
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
       override;
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSyncControllerDelegateForTransportMode() override;
   bool IsPerformingBatchUpdates() const override;
   std::unique_ptr<ScopedReadingListBatchUpdate> BeginBatchUpdates() override;

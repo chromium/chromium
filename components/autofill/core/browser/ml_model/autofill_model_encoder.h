@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_MODEL_ENCODER_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <string_view>
 
@@ -16,7 +17,6 @@
 namespace autofill {
 
 class AutofillField;
-class AutofillModelExecutor;
 class FormStructure;
 
 // The Encoder performs vectorization for on-device Autofill field type
@@ -37,7 +37,10 @@ class AutofillModelEncoder {
     kMaxValue = kAutocomplete,
   };
 
-  using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
+  // Maximum number of form fields for which the model can predict types.
+  // When calling the executor with a larger form, predictions are only returned
+  // for the first `kModelMaxNumberOfFields` many fields.
+  static constexpr size_t kModelMaxNumberOfFields = 30;
 
   // The number of entries in the output array which will be used in padding
   // for the specific one attribute of the field.
@@ -54,6 +57,24 @@ class AutofillModelEncoder {
   // Whitespace and separator characters.
   static constexpr char16_t kWhitespaceChars[] =
       u" \xa0\u200b\u3164\u2062\u2063";
+
+  using TokenId = base::StrongAlias<class TokenIdTag, uint32_t>;
+
+  // An encoded representation of the form's labels.
+  // Each element of the vector corresponds to an encoded label. See
+  // `AutofillModelEncoder`,
+  using ModelInput = std::vector<std::array<TokenId, kOutputSequenceLength>>;
+
+  // The model always returns predictions for `kModelMaxNumberOfFields`.
+  // If the queried form was smaller, the last
+  // (kModelMaxNumberOfFields - fields) elements of the output have
+  // unspecified values.
+  // The other indices contain a vector with one entry per supported FieldType,
+  // representing the confidence in that type. The confidences don't have any
+  // meaning, but higher means more confidence. Since the model might not
+  // support all FieldTypes, the indices don't map to field types directly. See
+  // `AutofillMlPredictionModelHandler`.
+  using ModelOutput = std::array<std::vector<float>, kModelMaxNumberOfFields>;
 
   explicit AutofillModelEncoder(
       const google::protobuf::RepeatedPtrField<std::string>& tokens);
@@ -74,8 +95,7 @@ class AutofillModelEncoder {
   // kOutputSequenceLength>>) representation understood by the
   // `AutofillModelExecutor`. This is done by encoding the attributes of the
   // form's fields.
-  std::vector<std::array<TokenId, kOutputSequenceLength>> EncodeForm(
-      const FormStructure& form) const;
+  ModelInput EncodeForm(const FormStructure& form) const;
 
   // Constructs from `field` the input for Autofill ML model using field
   // attributes. More specifically, handles the attributes encoding and prepares

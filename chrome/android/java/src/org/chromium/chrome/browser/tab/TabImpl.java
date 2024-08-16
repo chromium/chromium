@@ -476,7 +476,7 @@ class TabImpl implements Tab {
     @CalledByNative
     @Override
     public String getTitle() {
-        if (mTitle == null) updateTitle();
+        if (TextUtils.isEmpty(mTitle)) updateTitle();
         return mTitle;
     }
 
@@ -646,7 +646,9 @@ class TabImpl implements Tab {
             // TODO(tedchoc): When showing the android NTP, delay the call to
             // TabImplJni.get().loadUrl until the android view has entirely rendered.
             if (!mIsNativePageCommitPending) {
-                boolean isPdf = PdfUtils.isPdfNavigation(params.getUrl(), params);
+                boolean isPdf =
+                        PdfUtils.shouldOpenPdfInline(isIncognito())
+                                && PdfUtils.isPdfNavigation(params.getUrl(), params);
                 mIsNativePageCommitPending =
                         maybeShowNativePage(params.getUrl(), false, isPdf ? new PdfInfo() : null);
                 if (isPdf) {
@@ -1381,7 +1383,9 @@ class TabImpl implements Tab {
         // not set in some cases (e.g. Chrome restart or navigate backward to pdf page). When the
         // pdf file is downloaded to media store, we should set isPdf param and open pdf page
         // immediately, because no re-download is expected.
-        isPdf |= PdfUtils.isDownloadedPdf(url.getSpec());
+        isPdf |=
+                PdfUtils.shouldOpenPdfInline(isIncognito())
+                        && PdfUtils.isDownloadedPdf(url.getSpec());
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf ? new PdfInfo() : null)) {
             String downloadUrl = PdfUtils.decodePdfPageUrl(url.getSpec());
             if (downloadUrl != null) {

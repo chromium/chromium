@@ -8,11 +8,15 @@
 <translation id="1206693055195146388">מחוון</translation>
 <translation id="1211441953136645838">הערת סיום</translation>
 <translation id="1281252709823657822">דו-שיח</translation>
+<translation id="1306460908038601864">כבוי</translation>
 <translation id="1335095011850992622">קרדיטים</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1359897965706325498">מודעת באנר</translation>
+<translation id="1480676835519562650">ניתן לבחור יותר מאפשרות אחת, נבחרו <ph name="SELECTED" /> מתוך <ph name="COUNT" />.</translation>
 <translation id="1589122976691792535">אזור</translation>
 <translation id="1650423536718072820">ציטוט</translation>
+<translation id="1681022320378710418">השעה הנוכחית</translation>
+<translation id="1727839386348365796">טפטפת</translation>
 <translation id="1821985195704844674">רשת של עץ</translation>
 <translation id="1823704031293214298">הכותרת התחתונה של הדף</translation>
 <translation id="1838681052457320736">תיבת דו-שיח של התראה</translation>
@@ -20,11 +24,14 @@
 <translation id="190587075670221089">מחיקה</translation>
 <translation id="1907737156431278478">דוגמה</translation>
 <translation id="1930711995431081526">מצב</translation>
+<translation id="2031987842108996681">הערוץ האדום</translation>
 <translation id="2158401438286456825">רשימת דפים</translation>
 <translation id="2291999235780842123">תיבת סימון</translation>
 <translation id="2311842470354187719">מעבר דף</translation>
 <translation id="2335594187091864976">בוחר תאריך ושעה</translation>
 <translation id="2508569020611168319">רשימת כרטיסיות</translation>
+<translation id="2530182415807757784">ניתן לבחור יותר מאפשרות אחת, לא נבחרה אף אפשרות.</translation>
+<translation id="2634240155926812724">הערוץ הירוק</translation>
 <translation id="2657045182931379222">אובייקט גרפי</translation>
 <translation id="2674318244760992338">כותרת תחתונה</translation>
 <translation id="2723001399770238859">אודיו</translation>
@@ -38,11 +45,14 @@
 <translation id="3086746722712840547">note</translation>
 <translation id="3175736971608411871">טיימר</translation>
 <translation id="3199563858620722075">תיבה משולבת</translation>
+<translation id="3220661731597678625">השלב הנוכחי</translation>
+<translation id="3329013043687509092">רווייה</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3557673793733683882">כותרת <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">בורר השבועות</translation>
 <translation id="3706100364254443312">מעבר</translation>
 <translation id="3808586225841795776">מונח</translation>
+<translation id="3914173277599553213">נדרש</translation>
 <translation id="3920932319529768807">סיכום</translation>
 <translation id="3924558731517983934">אפליקציה</translation>
 <translation id="3944740393230681990">פרולוג</translation>
@@ -63,14 +73,19 @@
 <translation id="4742539557769756338">שער</translation>
 <translation id="4757246831282535685">חלונית כרטיסיות</translation>
 <translation id="479989351350248267">Search</translation>
+<translation id="4912200001568447310">הפריט הנוכחי</translation>
 <translation id="4912536737030637138">ערך ביבליוגרפי</translation>
 <translation id="492244087561876220">תגובה</translation>
+<translation id="4924138096460353083">לא קבוע</translation>
+<translation id="4971739861736909480">הפריט <ph name="ACCNAME" /> נבחר</translation>
 <translation id="5022314756875057021">קבוצת שורות</translation>
 <translation id="5034860022980953847">מדד התקדמות</translation>
 <translation id="5093189678851173835">ציטוט בראש ספר</translation>
+<translation id="509897012892853729">הערוץ הכחול</translation>
 <translation id="512758898067543763">כותרת שורה</translation>
 <translation id="5143125788380636750">אפילוג</translation>
 <translation id="5406322316791861025">ספרה</translation>
+<translation id="5425179576310518467">התאריך הנוכחי</translation>
 <translation id="5453733299334684579">פריט בעץ</translation>
 <translation id="546643433018805598">כתב תחתי</translation>
 <translation id="5476505524087279545">ביטול הסימון</translation>
@@ -81,14 +96,18 @@
 <translation id="5643186887447432888">לחצן</translation>
 <translation id="5693537480074347398">כתב עילי</translation>
 <translation id="576709008726043716">מבוא</translation>
+<translation id="5860033963881614850">כבוי</translation>
 <translation id="591047860372322273">תיבת חיפוש</translation>
+<translation id="5916664084637901428">פועל</translation>
 <translation id="5987525920412732405">לחצן קביעת ערך</translation>
 <translation id="6023896073578205740">תיבת רשימה</translation>
 <translation id="6119846243427417423">הפעלה</translation>
 <translation id="6150588977291308318">ביבליוגרפיה</translation>
 <translation id="6164829606128959761">מד</translation>
 <translation id="6166809985690652833">אחרית דבר</translation>
+<translation id="6212595056017402527">הדף הנוכחי</translation>
 <translation id="6213469881011901533">מילון מונחים</translation>
+<translation id="6281588256137006900">בהירות</translation>
 <translation id="6281763101136022427">‏כתובת URL</translation>
 <translation id="6453774872122745852">תודות</translation>
 <translation id="648732519525291180">בוחר שעות</translation>
@@ -105,7 +124,9 @@
 <translation id="6934078000481955284">‏רכיב blockquote</translation>
 <translation id="693476918119313863">כותרת</translation>
 <translation id="6981594929165378967">הוספה</translation>
+<translation id="698788488269350478">מורחב.</translation>
 <translation id="7034405885550056553">הצעה</translation>
+<translation id="7102274145889307184">המיקום הנוכחי</translation>
 <translation id="7139483182332611405">הקדמה</translation>
 <translation id="7198226213493847604">לחצן קופץ של תפריט</translation>
 <translation id="7214187073215825913">פרטי תוכן</translation>
@@ -120,7 +141,9 @@
 <translation id="7681220483256441252">אינדקס</translation>
 <translation id="7740050170769002709">‏תוכן HTML</translation>
 <translation id="7802800022689234070">משולש הצגה/הסתרה</translation>
+<translation id="7852167693871241274">מחוון לבחירת גוון</translation>
 <translation id="7891486169920085145">מפצל</translation>
+<translation id="7962328325860248200">הפריט <ph name="ACCNAME" /> לא נבחר</translation>
 <translation id="8034303206267677282">חשוב</translation>
 <translation id="8053789581856978548">שדה טקסט לחיפוש</translation>
 <translation id="8057695513531652401">הודעה</translation>
@@ -142,6 +165,8 @@
 <translation id="8808573423886751634">פרק</translation>
 <translation id="8851136666856101339">main</translation>
 <translation id="8861621546968757188">לחצן קופץ של תיבת דו-שיח</translation>
+<translation id="8889402386540077796">גוון</translation>
+<translation id="894736920926684893">לחצן החלפת פורמט</translation>
 <translation id="9002566407876343676">פתיחה</translation>
 <translation id="901834265349196618">אימייל</translation>
 <translation id="9048119486235211610">ניווט</translation>

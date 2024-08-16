@@ -129,7 +129,7 @@
     </div>
     <cr-radio-group
       class="list-frame"
-      selected="[[selectedVisibilityLabel_]]"
+      selected="{{selectedVisibilityLabel_}}"
       disabled="[[!isDeviceVisible_]]"
       on-selected-changed="onSelectedVisibilityChange_">
       <cr-radio-button
@@ -159,11 +159,12 @@
         <div class="secondary">$i18n{quickShareV2VisibilityEveryoneSublabel}</div>
       </cr-radio-button>
       <!--'style' attribute aligns start of checkbox with start of above radio button label by padding radio butto size (16px) + button-label spacing.-->
+      <!-- Temporarily disabled until usable. TODO(brandosocarras, b/360199957):  link 10 minute high visibility pref to checkbox. -->
       <cr-checkbox
         class="list-item"
-        style="padding-inline-start: calc(16px + var(--cr-radio-button-label-spacing, 20px));" 
+        style="padding-inline-start: calc(16px + var(--cr-radio-button-label-spacing, 20px));"
         checked="{{isEveryoneVisibilityOnlyForTenMinutes_}}"
-        disabled="[[!isEveryoneVisibilitySelected_(selectedVisibilityLabel_)]]">
+        disabled="true">
         $i18n{quickShareV2VisibilityOnlyForTenMinutesLabel}
       </cr-checkbox>
     </cr-radio-group>

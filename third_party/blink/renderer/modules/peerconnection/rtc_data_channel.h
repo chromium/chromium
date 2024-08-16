@@ -60,6 +60,12 @@ class MODULES_EXPORT RTCDataChannel final
   USING_PRE_FINALIZER(RTCDataChannel, Dispose);
 
  public:
+  // Wraps the current thread with a webrtc::ThreadWrapper, if it isn't already
+  // wrapped. This is necessary when calling some of channel()'s methods.
+  // This only has an effect the first time it is called from a new
+  // DedicatedWorker thread, after deserializing an RTCDataChannel.
+  static void EnsureThreadWrappersForWorkerThread();
+
   RTCDataChannel(ExecutionContext*,
                  rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;
@@ -84,6 +90,8 @@ class MODULES_EXPORT RTCDataChannel final
   String binaryType() const;
   void setBinaryType(const String&, ExceptionState&);
 
+  String priority() const;
+
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing
   // a remote channel.
@@ -96,6 +104,9 @@ class MODULES_EXPORT RTCDataChannel final
   void send(Blob*, ExceptionState&);
 
   void close();
+
+  bool IsTransferable();
+  rtc::scoped_refptr<webrtc::DataChannelInterface> TransferUnderlyingChannel();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
@@ -165,6 +176,8 @@ class MODULES_EXPORT RTCDataChannel final
     WeakPersistent<RTCDataChannel> blink_channel_;
     const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
+
+  void RegisterObserver();
 
   void OnStateChange(webrtc::DataChannelInterface::DataState state);
   void OnBufferedAmountChange(unsigned previous_amount);
@@ -261,6 +274,9 @@ class MODULES_EXPORT RTCDataChannel final
     Member<BlobReader> blob_reader_;
   };
   HeapDeque<Member<PendingMessage>> pending_messages_;
+
+  bool was_transferred_ = false;
+  bool is_transferable_ = true;
   // Keep the `observer_` reference const to make it clear that we don't want
   // to free the underlying channel (or callback observer) until the
   // `RTCDataChannel` instance goes away. This allows properties to be queried

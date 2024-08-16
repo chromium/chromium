@@ -18,14 +18,14 @@ void SetCustomTheme(Profile* profile, int theme_index) {
 }
 
 ServerCountMatchStatusChecker::ServerCountMatchStatusChecker(
-    syncer::ModelType type,
+    syncer::DataType type,
     size_t count)
     : type_(type), count_(count) {}
 
 bool ServerCountMatchStatusChecker::IsExitConditionSatisfied(std::ostream* os) {
-  size_t actual_count = fake_server()->GetSyncEntitiesByModelType(type_).size();
+  size_t actual_count = fake_server()->GetSyncEntitiesByDataType(type_).size();
   *os << "Waiting for fake server entity count " << actual_count
       << " to match expected count " << count_ << " for type "
-      << ModelTypeToDebugString(type_);
+      << DataTypeToDebugString(type_);
   return count_ == actual_count;
 }

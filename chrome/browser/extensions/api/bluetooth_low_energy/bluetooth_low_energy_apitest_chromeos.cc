@@ -4,10 +4,12 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
@@ -31,7 +33,7 @@ namespace {
 // This class contains chrome.bluetoothLowEnergy API tests.
 class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
  public:
-  ~BluetoothLowEnergyApiTestChromeOs() override {}
+  ~BluetoothLowEnergyApiTestChromeOs() override = default;
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
@@ -54,8 +56,11 @@ class BluetoothLowEnergyApiTestChromeOs : public PlatformAppBrowserTest {
   }
 
   void SetAutoLaunchApp() {
-    manager()->AddApp(kTestingAppId, owner_settings_service_.get());
-    manager()->SetAutoLaunchApp(kTestingAppId, owner_settings_service_.get());
+    AddConsumerKioskChromeAppForTesting(
+        CHECK_DEREF(owner_settings_service_.get()), kTestingAppId);
+    SetConsumerKioskAutoLaunchChromeAppForTesting(
+        CHECK_DEREF(manager()), CHECK_DEREF(owner_settings_service_.get()),
+        kTestingAppId);
     manager()->SetAppWasAutoLaunchedWithZeroDelay(kTestingAppId);
   }
 

@@ -13,6 +13,8 @@ source_set("sync") {
     "account_bookmark_sync_service_factory.h",
     "chrome_sync_client.cc",
     "chrome_sync_client.h",
+    "data_type_store_service_factory.cc",
+    "data_type_store_service_factory.h",
     "device_info_sync_client_impl.cc",
     "device_info_sync_client_impl.h",
     "device_info_sync_service_factory.cc",
@@ -23,8 +25,6 @@ source_set("sync") {
     "glue/sync_start_util.h",
     "local_or_syncable_bookmark_sync_service_factory.cc",
     "local_or_syncable_bookmark_sync_service_factory.h",
-    "model_type_store_service_factory.cc",
-    "model_type_store_service_factory.h",
     "prefs/chrome_syncable_prefs_database.cc",
     "prefs/chrome_syncable_prefs_database.h",
     "send_tab_to_self_sync_service_factory.cc",
@@ -144,10 +144,10 @@ source_set("sync") {
     ]
   } else {
     sources += [
-      "glue/extension_model_type_controller.cc",
-      "glue/extension_model_type_controller.h",
-      "glue/extension_setting_model_type_controller.cc",
-      "glue/extension_setting_model_type_controller.h",
+      "glue/extension_data_type_controller.cc",
+      "glue/extension_data_type_controller.h",
+      "glue/extension_setting_data_type_controller.cc",
+      "glue/extension_setting_data_type_controller.h",
       "sessions/browser_list_router_helper.cc",
       "sessions/browser_list_router_helper.h",
       "sync_ui_util.cc",
@@ -212,7 +212,7 @@ source_set("sync") {
 # because KeyedServiceFactories mix the interface and implementation.
 source_set("factories") {
   sources = [
-    "model_type_store_service_factory.h",
+    "data_type_store_service_factory.h",
     "sync_service_factory.h",
   ]
   public_deps = [

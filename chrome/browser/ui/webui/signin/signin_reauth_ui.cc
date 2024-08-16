@@ -107,9 +107,11 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       {"signin_reauth_app.js", IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_JS},
       {"signin_reauth_app.html.js",
        IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_HTML_JS},
+      {"signin_reauth_app.css.js",
+       IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_APP_CSS_JS},
       {"signin_reauth_browser_proxy.js",
        IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_BROWSER_PROXY_JS},
-      {"signin_shared.css.js", IDR_SIGNIN_SIGNIN_SHARED_CSS_JS},
+      {"signin_shared_lit.css.js", IDR_SIGNIN_SIGNIN_SHARED_LIT_CSS_JS},
       {"signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS},
       // Resources for the account passwords reauth.
       {"images/signin_reauth_illustration.svg",

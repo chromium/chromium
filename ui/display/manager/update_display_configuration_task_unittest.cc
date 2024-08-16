@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/display/manager/update_display_configuration_task.h"
 
 #include <stddef.h>
@@ -158,14 +163,15 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
       : delegate_(&log_),
         small_mode_({1366, 768}, false, 60.0f),
         big_mode_({2560, 1600}, false, 60.0f, 40.0f) {
-    displays_[0] = FakeDisplaySnapshot::Builder()
-                       .SetId(123)
-                       .SetNativeMode(small_mode_.Clone())
-                       .SetCurrentMode(small_mode_.Clone())
-                       .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
-                       .SetBaseConnectorId(kEdpConnectorId)
-                       .SetVariableRefreshRateState(kVrrDisabled)
-                       .Build();
+    displays_[0] =
+        FakeDisplaySnapshot::Builder()
+            .SetId(123)
+            .SetNativeMode(small_mode_.Clone())
+            .SetCurrentMode(small_mode_.Clone())
+            .SetType(DISPLAY_CONNECTION_TYPE_INTERNAL)
+            .SetBaseConnectorId(kEdpConnectorId)
+            .SetVariableRefreshRateState(VariableRefreshRateState::kVrrDisabled)
+            .Build();
 
     displays_[1] = FakeDisplaySnapshot::Builder()
                        .SetId(456)
@@ -174,7 +180,8 @@ class UpdateDisplayConfigurationTaskTest : public testing::Test {
                        .SetType(DISPLAY_CONNECTION_TYPE_DISPLAYPORT)
                        .AddMode(small_mode_.Clone())
                        .SetBaseConnectorId(kSecondConnectorId)
-                       .SetVariableRefreshRateState(kVrrNotCapable)
+                       .SetVariableRefreshRateState(
+                           VariableRefreshRateState::kVrrNotCapable)
                        .Build();
   }
 

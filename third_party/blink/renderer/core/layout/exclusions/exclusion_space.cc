@@ -276,7 +276,7 @@ void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
 
   // Update the members used for clearance calculations.
   LayoutUnit clear_offset = exclusion->rect.BlockEndOffset();
-  if (UNLIKELY(exclusion->IsForInitialLetterBox())) {
+  if (exclusion->IsForInitialLetterBox()) [[unlikely]] {
     if (exclusion->type == EFloat::kLeft) {
       initial_letter_left_clear_offset_ =
           std::max(initial_letter_left_clear_offset_, clear_offset);

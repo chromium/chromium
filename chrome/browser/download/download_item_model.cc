@@ -1026,7 +1026,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
   if (state == DownloadItem::CANCELLED || state == DownloadItem::INTERRUPTED) {
     return DangerUiPattern::kOther;
   } else if (state == DownloadItem::MAX_DOWNLOAD_STATE) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   switch (GetInsecureDownloadStatus()) {
@@ -1269,6 +1269,6 @@ void DownloadItemModel::DetermineAndSetShouldPreferOpeningInBrowser(
   SetShouldPreferOpeningInBrowser(false);
 }
 
-bool DownloadItemModel::IsEncryptedArchive() const {
-  return DownloadItemWarningData::IsEncryptedArchive(download_);
+bool DownloadItemModel::IsTopLevelEncryptedArchive() const {
+  return DownloadItemWarningData::IsTopLevelEncryptedArchive(download_);
 }

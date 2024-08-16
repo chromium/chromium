@@ -42,6 +42,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -429,7 +430,7 @@ void ShowWebAppDetailedInstallDialog(
                 std::make_unique<views::BubbleDialogModelHost::CustomView>(
                     std::make_unique<ImageCarouselView>(screenshots),
                     views::BubbleDialogModelHost::FieldType::kControl))
-            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+            .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
             .Build();
   } else {
     // TODO(crbug.com/341254289): Completely remove after Universal Install has
@@ -460,7 +461,7 @@ void ShowWebAppDetailedInstallDialog(
             .Build();
   }
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_CHILD);
+      std::move(dialog_model), ui::mojom::ModalType::kChild);
 
   views::Widget* detailed_dialog_widget =
       constrained_window::ShowWebModalDialogViews(dialog.release(),

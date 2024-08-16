@@ -196,7 +196,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
                               WrapWeakPersistent(this)));
     } else {
       Vector<uint8_t> datagram;
-      datagram.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+      datagram.AppendSpan(data);
       pending_datagrams_.push_back(std::move(datagram));
     }
     int high_water_mark = datagrams_->outgoingHighWaterMark();
@@ -384,7 +384,7 @@ class WebTransport::DatagramUnderlyingSource final
                               "supplied view is not large enough.")));
           return;
         }
-        view.ByteSpan().first(data.size()).copy_from(data);
+        view.ByteSpan().copy_prefix_from(data);
         request->respond(script_state_, data.size(), exception_state);
         return;
       }
@@ -654,9 +654,8 @@ class WebTransport::ReceiveStreamVendor final
     auto* receive_stream = MakeGarbageCollected<ReceiveStream>(
         script_state_, web_transport_, stream_id, std::move(readable));
     auto* isolate = script_state_->GetIsolate();
-    ExceptionState exception_state(
-        isolate, ExceptionContextType::kConstructorOperationInvoke,
-        "ReceiveStream");
+    ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                   "ReceiveStream");
     v8::MicrotasksScope microtasks_scope(
         isolate, ToMicrotaskQueue(script_state_),
         v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -723,9 +722,8 @@ class WebTransport::BidirectionalStreamVendor final
         std::move(incoming_consumer));
 
     auto* isolate = script_state_->GetIsolate();
-    ExceptionState exception_state(
-        isolate, ExceptionContextType::kConstructorOperationInvoke,
-        "BidirectionalStream");
+    ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                   "BidirectionalStream");
     v8::MicrotasksScope microtasks_scope(
         isolate, ToMicrotaskQueue(script_state_),
         v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -742,6 +740,19 @@ class WebTransport::BidirectionalStreamVendor final
         stream_id, bidirectional_stream->GetIncomingStream());
     web_transport_->outgoing_stream_map_.insert(
         stream_id, bidirectional_stream->GetOutgoingStream());
+
+    auto it =
+        web_transport_->closed_potentially_pending_streams_.find(stream_id);
+    if (it != web_transport_->closed_potentially_pending_streams_.end()) {
+      // The stream has already been closed in the network service.
+      const bool fin_received = it->value;
+      web_transport_->closed_potentially_pending_streams_.erase(it);
+
+      // This can run JavaScript. This is safe because `receive_stream` hasn't
+      // been exposed yet.
+      bidirectional_stream->GetIncomingStream()->OnIncomingStreamClosed(
+          fin_received);
+    }
 
     std::move(enqueue).Run(bidirectional_stream);
   }
@@ -1529,8 +1540,8 @@ void WebTransport::OnCreateSendStreamResponse(
       script_state_, this, stream_id, std::move(producer));
 
   auto* isolate = script_state_->GetIsolate();
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke, "SendStream");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                 "SendStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -1578,9 +1589,8 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
       script_state_, this, stream_id, std::move(outgoing_producer),
       std::move(incoming_consumer));
 
-  ExceptionState exception_state(
-      isolate, ExceptionContextType::kConstructorOperationInvoke,
-      "BidirectionalStream");
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
+                                 "BidirectionalStream");
   v8::MicrotasksScope microtasks_scope(
       isolate, ToMicrotaskQueue(script_state_),
       v8::MicrotasksScope::kDoNotRunMicrotasks);

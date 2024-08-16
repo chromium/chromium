@@ -33,17 +33,17 @@
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service_impl.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
-#include "components/sync/model/model_type_store.h"
-#include "components/sync/model/model_type_store_service_impl.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
-#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/data_type_store_test_util.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -213,7 +213,7 @@ syncer::EntityChangeList CreateEntityChangeListFromGroup(
 class SavedTabGroupSyncBridgeTest : public ::testing::Test {
  public:
   SavedTabGroupSyncBridgeTest()
-      : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
+      : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
   ~SavedTabGroupSyncBridgeTest() override = default;
 
   void SetUp() override {
@@ -223,7 +223,7 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
         .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
         &saved_tab_group_model_,
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_,
         base::DoNothing());
     observer_forwarder_ = std::make_unique<ModelObserverForwarder>(
@@ -232,10 +232,10 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
   }
 
   void VerifyEntriesCount(size_t expected_count) {
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+    std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
     store_->ReadAllData(base::BindLambdaForTesting(
         [&](const std::optional<syncer::ModelError>& error,
-            std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+            std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
           entries = std::move(data);
         }));
     task_environment_.RunUntilIdle();
@@ -246,8 +246,8 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   SavedTabGroupModel saved_tab_group_model_;
-  testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
-  std::unique_ptr<syncer::ModelTypeStore> store_;
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
+  std::unique_ptr<syncer::DataTypeStore> store_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SavedTabGroupSyncBridge> bridge_;
   std::unique_ptr<ModelObserverForwarder> observer_forwarder_;
@@ -1205,7 +1205,7 @@ class SavedTabGroupSyncBridgeMigrationTest
                              has_specifics_migrated);
     bridge_ = std::make_unique<SavedTabGroupSyncBridge>(
         &saved_tab_group_model_,
-        syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         processor_.CreateForwardingProcessor(), &pref_service_,
         base::BindOnce(&SavedTabGroupModel::LoadStoredEntries,
                        base::Unretained(&saved_tab_group_model_)));
@@ -1222,7 +1222,7 @@ TEST_F(
   sync_pb::SavedTabGroupSpecifics old_specifics =
       SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(group);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(old_specifics.guid(), old_specifics.SerializeAsString());
   store_->CommitWriteBatch(std::move(batch), base::DoNothing());
@@ -1232,10 +1232,10 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
   store_->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
         entries = std::move(data);
       }));
   task_environment_.RunUntilIdle();
@@ -1243,7 +1243,7 @@ TEST_F(
   // Verify the migrated data
   ASSERT_TRUE(entries);
   EXPECT_EQ(entries->size(), 1u);
-  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  const syncer::DataTypeStore::Record& record = entries->at(0);
   proto::SavedTabGroupData migrated_data;
   ASSERT_TRUE(migrated_data.ParseFromString(record.value));
 
@@ -1269,7 +1269,7 @@ TEST_F(
   sync_pb::SavedTabGroupSpecifics old_tab_specifics =
       SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(tab_1);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(old_specifics.guid(), old_specifics.SerializeAsString());
   batch->WriteData(old_tab_specifics.guid(),
@@ -1281,10 +1281,10 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
   store_->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
         entries = std::move(data);
       }));
   task_environment_.RunUntilIdle();
@@ -1324,8 +1324,8 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   // 1. Create invalid data.
   std::string invalid_data = "this is not a valid protobuf";
 
-  // 2. Write the invalid data to the ModelTypeStore.
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  // 2. Write the invalid data to the DataTypeStore.
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(base::Uuid::GenerateRandomV4().AsLowercaseString(),
                    invalid_data);
@@ -1347,7 +1347,7 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
 
   proto::SavedTabGroupData group_data =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(group_data.specifics().guid(),
                    group_data.SerializeAsString());
@@ -1358,10 +1358,10 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
   store_->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
         entries = std::move(data);
       }));
   task_environment_.RunUntilIdle();
@@ -1369,7 +1369,7 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   // Verify the migrated data. It should match the original.
   ASSERT_TRUE(entries);
   EXPECT_EQ(entries->size(), 1u);
-  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  const syncer::DataTypeStore::Record& record = entries->at(0);
   proto::SavedTabGroupData migrated_data;
   EXPECT_EQ(group_data.SerializeAsString(), record.value);
   ASSERT_TRUE(migrated_data.ParseFromString(record.value));
@@ -1388,7 +1388,7 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
 
   proto::SavedTabGroupData group_data =
       SavedTabGroupSyncBridge::SavedTabGroupToDataForTest(group);
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(group_data.specifics().guid(),
                    group_data.SerializeAsString());
@@ -1399,10 +1399,10 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
   store_->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
         entries = std::move(data);
       }));
   task_environment_.RunUntilIdle();
@@ -1410,7 +1410,7 @@ TEST_F(SavedTabGroupSyncBridgeMigrationTest,
   // Verify the migrated data. It should match the original.
   ASSERT_TRUE(entries);
   EXPECT_EQ(entries->size(), 1u);
-  const syncer::ModelTypeStore::Record& record = entries->at(0);
+  const syncer::DataTypeStore::Record& record = entries->at(0);
   proto::SavedTabGroupData migrated_data;
   EXPECT_EQ(group_data.SerializeAsString(), record.value);
   ASSERT_TRUE(migrated_data.ParseFromString(record.value));
@@ -1436,7 +1436,7 @@ TEST_F(
   proto::SavedTabGroupData tab_data =
       SavedTabGroupSyncBridge::SavedTabGroupTabToDataForTest(tab_1);
 
-  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch =
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
   batch->WriteData(group_data.specifics().guid(),
                    group_data.SerializeAsString());
@@ -1448,10 +1448,10 @@ TEST_F(
   task_environment_.RunUntilIdle();
 
   // Read the migrated data from the store.
-  std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+  std::unique_ptr<syncer::DataTypeStore::RecordList> entries;
   store_->ReadAllData(base::BindLambdaForTesting(
       [&](const std::optional<syncer::ModelError>& error,
-          std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          std::unique_ptr<syncer::DataTypeStore::RecordList> data) {
         entries = std::move(data);
       }));
   task_environment_.RunUntilIdle();

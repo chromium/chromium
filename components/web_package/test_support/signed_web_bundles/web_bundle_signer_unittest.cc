@@ -20,13 +20,12 @@ namespace web_package {
 
 namespace {
 
-constexpr uint8_t kEd25519PublicKey[] = {
+constexpr std::array<uint8_t, 32> kEd25519PublicKey = {
     0xE4, 0xD5, 0x16, 0xC9, 0x85, 0x9A, 0xF8, 0x63, 0x56, 0xA3, 0x51,
     0x66, 0x7D, 0xBD, 0x00, 0x43, 0x61, 0x10, 0x1A, 0x92, 0xD4, 0x02,
-    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D,
-};
+    0x72, 0xFE, 0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
 
-constexpr uint8_t kEd25519PrivateKey[] = {
+constexpr std::array<uint8_t, 64> kEd25519PrivateKey = {
     0x1F, 0x27, 0x3F, 0x93, 0xE9, 0x59, 0x4E, 0xC7, 0x88, 0x82, 0xC7, 0x49,
     0xF8, 0x79, 0x3D, 0x8C, 0xDB, 0xE4, 0x60, 0x1C, 0x21, 0xF1, 0xD9, 0xF9,
     0xBC, 0x3A, 0xB5, 0xC7, 0x7F, 0x2D, 0x95, 0xE1,
@@ -36,14 +35,14 @@ constexpr uint8_t kEd25519PrivateKey[] = {
     0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
 
 constexpr std::array<uint8_t, 33> kEcdsaP256PublicKey = {
-    0x02, 0x72, 0xcd, 0x38, 0x5f, 0x32, 0xb5, 0x2e, 0x52, 0x6a, 0xe7,
-    0xff, 0x36, 0x02, 0x18, 0x04, 0x41, 0x26, 0x87, 0x8e, 0x70, 0x51,
-    0x33, 0x58, 0xfa, 0xcb, 0x20, 0x5c, 0x8e, 0xa3, 0x22, 0x0b, 0x53};
+    0x03, 0x0A, 0x22, 0xFC, 0x5C, 0x0B, 0x1E, 0x14, 0x85, 0x90, 0xE1,
+    0xF9, 0x87, 0xCC, 0x4E, 0x0D, 0x49, 0x2E, 0xF8, 0xE5, 0x1E, 0x23,
+    0xF9, 0xB3, 0x63, 0x75, 0xE1, 0x52, 0xB2, 0x4A, 0xEC, 0xA5, 0xE6};
 
 constexpr std::array<uint8_t, 32> kEcdsaP256PrivateKey = {
-    0xdb, 0xdc, 0xc9, 0x3f, 0x4e, 0x2c, 0xe8, 0x18, 0x91, 0xd3, 0x68,
-    0xc8, 0x74, 0x22, 0x36, 0x7d, 0xee, 0x97, 0x0c, 0x6e, 0x92, 0xc8,
-    0x7c, 0xd4, 0x2e, 0x01, 0x01, 0x80, 0x62, 0x83, 0xad, 0xf5};
+    0x24, 0xAB, 0xA9, 0x6A, 0x44, 0x4B, 0xEB, 0xE9, 0x3C, 0xD2, 0x88,
+    0x47, 0x22, 0x63, 0x02, 0xB8, 0xE4, 0xA0, 0x16, 0x1A, 0x0E, 0x95,
+    0xAA, 0x36, 0x95, 0x26, 0x83, 0x49, 0xEE, 0xCD, 0x27, 0x1A};
 
 std::string GetTestFileContents(const base::FilePath& path) {
   base::FilePath test_data_dir;
@@ -78,40 +77,39 @@ std::vector<uint8_t> CreateUnsignedBundle() {
   return unsigned_bundle;
 }
 
-TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonEd25519) {
+TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEd25519) {
   std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
   std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
       unsigned_bundle,
-      {WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)});
-
-  std::vector<uint8_t> expected_bundle = GetStringAsBytes(GetTestFileContents(
-      base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn"))));
-  EXPECT_EQ(signed_bundle, expected_bundle);
-}
-
-TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonEcdsaP256SHA256) {
-  std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
-  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
-      unsigned_bundle, {WebBundleSigner::EcdsaP256KeyPair(
-                           kEcdsaP256PublicKey, kEcdsaP256PrivateKey)});
+      WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey));
 
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(base::FilePath(
-          FILE_PATH_LITERAL("simple_b2_signed_ecdsa_p256_sha256.swbn"))));
+          FILE_PATH_LITERAL("simple_b2_signed_v2_ed25519.swbn"))));
   EXPECT_EQ(signed_bundle.size(), expected_signed_bundle.size());
   EXPECT_EQ(signed_bundle, expected_signed_bundle);
 }
 
-TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2Block) {
+TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockEcdsaP256) {
+  std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
+  std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
+      unsigned_bundle, WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
+                                                         kEcdsaP256PrivateKey));
+
+  std::vector<uint8_t> expected_signed_bundle =
+      GetStringAsBytes(GetTestFileContents(base::FilePath(
+          FILE_PATH_LITERAL("simple_b2_signed_v2_ecdsa_p256.swbn"))));
+  EXPECT_EQ(signed_bundle.size(), expected_signed_bundle.size());
+  EXPECT_EQ(signed_bundle, expected_signed_bundle);
+}
+
+TEST(WebBundleSignerTest, SignedWebBundleByteByByteComparisonV2BlockBothKeys) {
   std::vector<uint8_t> unsigned_bundle = CreateUnsignedBundle();
   std::vector<uint8_t> signed_bundle = WebBundleSigner::SignBundle(
       unsigned_bundle,
       {WebBundleSigner::EcdsaP256KeyPair(kEcdsaP256PublicKey,
                                          kEcdsaP256PrivateKey),
-       WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)},
-      // ID corresponding to kEcdsaP256PublicKey
-      {{.web_bundle_id =
-            "ajzm2oc7gk2s4utk477tmaqyarasnb4oobitgwh2zmqfzdvdeifvgaacai"}});
+       WebBundleSigner::Ed25519KeyPair(kEd25519PublicKey, kEd25519PrivateKey)});
 
   std::vector<uint8_t> expected_signed_bundle =
       GetStringAsBytes(GetTestFileContents(

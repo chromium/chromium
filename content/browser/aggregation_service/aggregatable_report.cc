@@ -13,6 +13,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -62,8 +62,8 @@ namespace {
 constexpr size_t kBitsPerByte = 8;
 
 // Payload contents:
-constexpr char kHistogramValue[] = "histogram";
-constexpr char kOperationKey[] = "operation";
+constexpr std::string_view kHistogramValue = "histogram";
+constexpr std::string_view kOperationKey = "operation";
 
 std::vector<GURL> GetDefaultProcessingUrls(
     blink::mojom::AggregationServiceMode aggregation_mode,
@@ -221,10 +221,7 @@ void AppendEncodedContributionToCborArray(
 // more detail on the expected format. Returns `std::nullopt` if serialization
 // fails.
 std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
-    const AggregatableReportRequest& request) {
-  const AggregationServicePayloadContents& payload_contents =
-      request.payload_contents();
-
+    const AggregationServicePayloadContents& payload_contents) {
   cbor::Value::MapValue value;
   value.emplace(kOperationKey, kHistogramValue);
 
@@ -252,6 +249,68 @@ std::optional<std::vector<uint8_t>> ConstructUnencryptedTeeBasedPayload(
   value.emplace("data", std::move(data));
 
   return cbor::Writer::Write(cbor::Value(std::move(value)));
+}
+
+constexpr std::optional<size_t> ComputeCborArrayOverheadLen(
+    size_t num_elements) {
+  if (num_elements <= 0x17) {
+    return 1;  // The length fits in the array's "initial byte".
+  } else if (num_elements <= std::numeric_limits<uint8_t>::max()) {
+    return 1 + sizeof(uint8_t);
+  } else if (num_elements <= std::numeric_limits<uint16_t>::max()) {
+    return 1 + sizeof(uint16_t);
+  } else if (num_elements <= std::numeric_limits<uint32_t>::max()) {
+    return 1 + sizeof(uint32_t);
+  }
+  // We will never generate reports with 2**32 or more contributions, so
+  // there's no reason to model CBOR's behavior on such large arrays.
+  return std::nullopt;
+}
+
+// Computes the length in bytes of a TEE-based payload's plaintext CBOR
+// serialization. Safely returns an invalid `base::CheckedNumeric` if the
+// computation would overflow, or if `num_contributions` exceeds the maximum
+// value of uint32_t . See `AggregationServicePayload` for the format's
+// definition.
+constexpr std::optional<size_t> ComputeTeeBasedPayloadLengthInBytes(
+    size_t num_contributions,
+    std::optional<size_t> filtering_id_max_bytes) {
+  constexpr base::CheckedNumeric<size_t> kPayloadLenBeforeArray{
+      1                                           // map(2)
+      + 1 + std::string_view("operation").size()  // text(9)
+      + 1 + std::string_view("histogram").size()  // text(9)
+      + 1 + std::string_view("data").size()       // text(4)
+  };
+  static_assert(kPayloadLenBeforeArray.ValueOrDie() == 26);
+
+  const std::optional<size_t> array_overhead_len =
+      ComputeCborArrayOverheadLen(num_contributions);
+  if (!array_overhead_len.has_value()) {
+    return std::nullopt;
+  }
+
+  constexpr base::CheckedNumeric<size_t> kContributionLenWithoutId{
+      1                                        // map(_)
+      + 1 + std::string_view("bucket").size()  // text(6)
+      + 1 + 16                                 // bytes(16)
+      + 1 + std::string_view("value").size()   // text(5)
+      + 1 + 4                                  // bytes(4)
+  };
+  static_assert(kContributionLenWithoutId.ValueOrDie() == 36);
+
+  const base::CheckedNumeric<size_t> filtering_id_len =
+      !filtering_id_max_bytes.has_value()
+          ? 0
+          : 1 + std::string_view("id").size()           // text(2)
+                + 1 + size_t{*filtering_id_max_bytes};  // bytes(_)
+
+  const base::CheckedNumeric<size_t> payload_len =
+      kPayloadLenBeforeArray + *array_overhead_len +
+      (num_contributions * (kContributionLenWithoutId + filtering_id_len));
+  if (!payload_len.IsValid()) {
+    return std::nullopt;
+  }
+  return payload_len.ValueOrDie();
 }
 
 std::optional<AggregationServicePayloadContents>
@@ -495,25 +554,6 @@ proto::AggregatableReportRequest ConvertReportRequestToProto(
   return request_proto;
 }
 
-void MaybeVerifyPayloadLength(size_t max_contributions_allowed,
-                              size_t payload_length,
-                              std::optional<size_t> filtering_id_max_bytes) {
-  // TODO(alexmt): Replace with a more general method to ensure that the payload
-  // length is deterministic.
-  // Note that the 747 byte expectation derives from the following:
-  // 27 (baseline size with no contributions) + 20 * 36 (size per contribution)
-  // Adding filtering IDs adds 20 * (4 + filtering_id_max_bytes.value()).
-  if (max_contributions_allowed == 20) {
-    size_t expected_payload_length = 747;
-    if (filtering_id_max_bytes.has_value()) {
-      expected_payload_length += 80 + 20 * filtering_id_max_bytes.value();
-    }
-    if (payload_length != expected_payload_length) {
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-}
-
 // Note that null filtering IDs are considered to 'fit in' to all max bytes and
 // only null filtering IDs are considered to 'fit in' to a null max bytes.
 bool FilteringIdsFitInMaxBytes(
@@ -543,7 +583,7 @@ bool FilteringIdsFitInMaxBytes(
 
 GURL GetAggregationServiceProcessingUrl(const url::Origin& origin) {
   GURL::Replacements replacements;
-  static constexpr char kEndpointPath[] =
+  static constexpr std::string_view kEndpointPath =
       ".well-known/aggregation-service/v1/public-keys";
   replacements.SetPathStr(kEndpointPath);
   return origin.GetURL().ReplaceComponents(replacements);
@@ -896,15 +936,20 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   switch (report_request.payload_contents().aggregation_mode) {
     case blink::mojom::AggregationServiceMode::kTeeBased: {
       std::optional<std::vector<uint8_t>> payload =
-          ConstructUnencryptedTeeBasedPayload(report_request);
+          ConstructUnencryptedTeeBasedPayload(
+              report_request.payload_contents());
       if (!payload.has_value()) {
         return std::nullopt;
       }
 
-      MaybeVerifyPayloadLength(
-          report_request.payload_contents().max_contributions_allowed,
-          /*payload_length=*/payload->size(),
-          report_request.payload_contents().filtering_id_max_bytes);
+      // Validate that the payload length is a deterministic function of
+      // `max_contributions_allowed` and `filtering_id_max_bytes`.
+      const size_t expected_payload_length =
+          ComputeTeeBasedPayloadLengthInBytes(
+              report_request.payload_contents().max_contributions_allowed,
+              report_request.payload_contents().filtering_id_max_bytes)
+              .value();
+      CHECK_EQ(payload->size(), expected_payload_length);
 
       unencrypted_payloads.emplace_back(*std::move(payload));
       break;
@@ -1036,6 +1081,22 @@ bool AggregatableReport::IsNumberOfHistogramContributionsValid(
     case blink::mojom::AggregationServiceMode::kExperimentalPoplar:
       return number == 1u;
   }
+}
+
+// static
+std::optional<std::vector<uint8_t>>
+AggregatableReport::SerializeTeeBasedPayloadForTesting(
+    const AggregationServicePayloadContents& payload_contents) {
+  return ConstructUnencryptedTeeBasedPayload(payload_contents);
+}
+
+// static
+std::optional<size_t>
+AggregatableReport::ComputeTeeBasedPayloadLengthInBytesForTesting(
+    size_t num_contributions,
+    std::optional<size_t> filtering_id_max_bytes) {
+  return ComputeTeeBasedPayloadLengthInBytes(num_contributions,
+                                             filtering_id_max_bytes);
 }
 
 std::vector<uint8_t> EncryptAggregatableReportPayloadWithHpke(

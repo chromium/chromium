@@ -10,6 +10,7 @@ import './site_favicon.js';
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {CrLitElement, html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './related_website_set_list_item.css.js';
 import {getHtml} from './related_website_set_list_item.html.js';
@@ -52,11 +53,33 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
   managedByEnterprise: boolean = false;
   query: string = '';
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('expanded')) {
+      this.dispatchEvent(new CustomEvent(
+          'expanded-toggled',
+          {detail: {id: this.primarySite, expanded: this.expanded}}));
+    }
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('query')) {
+      if (this.query) {
+        const memberSitesWithMatch = this.memberSites.filter(
+            member =>
+                member.site.toLowerCase().includes(this.query.toLowerCase()));
+        this.expanded = memberSitesWithMatch.length > 0;
+      } else {
+        this.expanded = false;
+      }
+    }
+  }
+
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;
-    this.dispatchEvent(new CustomEvent(
-        'expanded-toggled',
-        {detail: {id: this.primarySite, expanded: this.expanded}}));
   }
 
   protected getSiteType_(type: SiteType): string {
@@ -76,23 +99,21 @@ export class RelatedWebsiteSetListItemElement extends CrLitElement {
     return !this.managedByEnterprise;
   }
 
-  protected boldQuery_(site: string) {
-    if (site.includes('://')) {
-      site = site.split('://')[1]!;
-    }
-
+  protected boldQuery_(url: string) {
+    const domain = url.includes('://') ? url.split('://')[1]! : url;
     if (!this.query) {
-      return site;
+      return domain;
     }
 
     const queryLower = this.query.toLowerCase();
-    const parts = site.split(new RegExp(`(${this.query})`, 'gi'));
+    const parts = domain.split(new RegExp(`(${this.query})`, 'gi'));
+
     return parts.map(part =>
             part.toLowerCase() === queryLower ? html`<b>${part}</b>` : part);
   }
 
-  protected getIconImageUrl_(): string {
-    return `${this.primarySite}/favicon.ico`;
+  protected getIconImageUrl_(site: string): string {
+    return `${site}/favicon.ico`;
   }
 }
 

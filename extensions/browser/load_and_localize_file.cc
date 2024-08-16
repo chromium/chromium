@@ -34,8 +34,9 @@ void MaybeLocalizeInBackground(
     std::string* data) {
   bool needs_message_substituion =
       data->find(extensions::MessageBundle::kMessageBegin) != std::string::npos;
-  if (!needs_message_substituion)
+  if (!needs_message_substituion) {
     return;
+  }
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);

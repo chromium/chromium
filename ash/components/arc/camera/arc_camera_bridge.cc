@@ -148,9 +148,8 @@ void ArcCameraBridge::StartCameraService(StartCameraServiceCallback callback) {
 
 void ArcCameraBridge::RegisterCameraHalClientLegacy(
     mojo::PendingRemote<cros::mojom::CameraHalClient> client) {
-  NOTREACHED_IN_MIGRATION()
-      << "ArcCameraBridge::RegisterCameraHalClientLegacy is "
-         "deprecated. CameraHalClient will not be registered.";
+  NOTREACHED() << "ArcCameraBridge::RegisterCameraHalClientLegacy is "
+                  "deprecated. CameraHalClient will not be registered.";
 }
 
 void ArcCameraBridge::RegisterCameraHalClient(

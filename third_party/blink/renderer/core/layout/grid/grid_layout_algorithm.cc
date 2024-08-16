@@ -39,12 +39,11 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
 
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
         constraint_space, node, container_builder_.BorderPadding(),
-        [&border_scrollbar_padding](SizeType) -> MinMaxSizesResult {
+        /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
           // If we've reached here we are inside the |ComputeMinMaxSizes| pass,
           // and also have something like "min-width: min-content". This is
-          // cyclic. Just return the border/scrollbar/padding as our
-          // "intrinsic" size.
-          return {{border_scrollbar_padding, border_scrollbar_padding},
+          // cyclic. Just return indefinite.
+          return {{kIndefiniteSize, kIndefiniteSize},
                   /* depends_on_block_constraints */ false};
         });
 
@@ -247,7 +246,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
 
   const auto& layout_data = grid_sizing_tree.TreeRootData().layout_data;
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
     if (IsBreakInside(GetBreakToken())) {
@@ -313,7 +312,7 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   }
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     auto status =
         FinishFragmentation(border_padding.block_end, &container_builder_);
     if (status == BreakStatus::kDisableFragmentation) {
@@ -1260,8 +1259,6 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       // We could be clever is and make this an if-stmt, but each type has
       // subtle consequences. This forces us in the future when we add a new
       // length type to consider what the best thing is for grid.
-      // TODO(https://crbug.com/40339056): The separation here is not
-      // correct for calc-size().
       switch (main_length.GetType()) {
         case Length::kAuto:
         case Length::kFitContent:
@@ -4152,7 +4149,7 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
   std::swap(oofs, oof_children);
 
   bool should_process_block_end = true;
-  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+  if (InvolvedInBlockFragmentation(container_builder_)) [[unlikely]] {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
                                !container_builder_.ShouldBreakInside();
   }

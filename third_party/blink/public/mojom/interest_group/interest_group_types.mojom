@@ -24,9 +24,15 @@ struct InterestGroupAd {
   string? size_group;
   // Optional identifiers that may be passed to reporting functions, if
   // sufficiently k-anonymous. Only meaningful in `InterestGroup.ads`, but
-  // ignored in `InterestGroup.ad_components`.
+  // ignored in `InterestGroup.ad_components`. Where `buyer_reporting_id`
+  // and `buyer_and_seller_reporting_id` are used as is, only one of the
+  // elements in `selectable_buyer_and_seller_reporting_idss`, as indicated
+  // by the response from `generateBid`, will be passed to the relevant
+  // reporting functions.
   string? buyer_reporting_id;
   string? buyer_and_seller_reporting_id;
+  array<string>? selectable_buyer_and_seller_reporting_ids;
+
   // Opaque JSON data, persisted, then passed as object to auction worklet.
   string? metadata;
   // Optional alias to use with B&A auctions.

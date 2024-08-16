@@ -100,6 +100,10 @@ function setupEvents() {
     body.classList.add('insecure-form');
   } else if (httpsOnly) {
     body.classList.add('https-only');
+    if (loadTimeData.valueExists('august2024Refresh') &&
+        loadTimeData.getBoolean('august2024Refresh')) {
+      body.classList.add('https-only-august2024-refresh');
+    }
   } else if (enterpriseBlock) {
     body.classList.add('enterprise-block');
   } else if (enterpriseWarn) {

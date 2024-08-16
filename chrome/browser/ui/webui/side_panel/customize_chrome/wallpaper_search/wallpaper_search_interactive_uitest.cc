@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
 
   RunTestSequence(
       // 1. Open the NTP.
-      Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=]() {
+      Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=, this]() {
               browser()->profile()->GetPrefs()->SetInteger(
                   optimization_guide::prefs::GetSettingEnabledPrefName(
                       optimization_guide::UserVisibleFeatureKey::
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       // 2. Ensure the wallpaper search button is visible.
       WaitForElementVisible(kNewTabPageElementId, kWallpaperSearchButton),
       // 3. Turn wallpaper search setting off.
-      Do([=]() {
+      Do([=, this]() {
         browser()->profile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
                 optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       // 4. Ensure the wallpaper search button is not in the DOM.
       WaitForElementExists(kNewTabPageElementId, kWallpaperSearchButton, false),
       // 5. Turn wallpaper search setting on.
-      Do([=]() {
+      Do([=, this]() {
         browser()->profile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
                 optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),

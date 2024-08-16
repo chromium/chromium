@@ -50,16 +50,17 @@ class CodeNodeCxxTest(unittest.TestCase):
 
         root.extend([
             TextNode("${var1};"),
-            CxxUnlikelyIfNode(
-                cond=TextNode("${var2}"),
-                body=[
-                    TextNode("${var3};"),
-                    TextNode("return ${var4};"),
-                ]),
-            CxxLikelyIfNode(
-                cond=TextNode("${var5}"), body=[
-                    TextNode("return ${var6};"),
-                ]),
+            CxxUnlikelyIfNode(cond=TextNode("${var2}"),
+                              attribute=None,
+                              body=[
+                                  TextNode("${var3};"),
+                                  TextNode("return ${var4};"),
+                              ]),
+            CxxLikelyIfNode(cond=TextNode("${var5}"),
+                            attribute=None,
+                            body=[
+                                TextNode("return ${var6};"),
+                            ]),
             TextNode("${var3};"),
         ])
 
@@ -95,26 +96,28 @@ var3;\
         ])
 
         root.extend([
-            CxxUnlikelyIfNode(
-                cond=TextNode("false"),
-                body=[
-                    CxxUnlikelyIfNode(
-                        cond=TextNode("false"),
-                        body=[
-                            TextNode("return ${var1};"),
-                        ]),
-                    TextNode("return;"),
-                ]),
-            CxxLikelyIfNode(
-                cond=TextNode("true"),
-                body=[
-                    CxxLikelyIfNode(
-                        cond=TextNode("true"),
-                        body=[
-                            TextNode("return ${var2};"),
-                        ]),
-                    TextNode("return;"),
-                ]),
+            CxxUnlikelyIfNode(cond=TextNode("false"),
+                              attribute=None,
+                              body=[
+                                  CxxUnlikelyIfNode(
+                                      cond=TextNode("false"),
+                                      attribute=None,
+                                      body=[
+                                          TextNode("return ${var1};"),
+                                      ]),
+                                  TextNode("return;"),
+                              ]),
+            CxxLikelyIfNode(cond=TextNode("true"),
+                            attribute=None,
+                            body=[
+                                CxxLikelyIfNode(
+                                    cond=TextNode("true"),
+                                    attribute=None,
+                                    body=[
+                                        TextNode("return ${var2};"),
+                                    ]),
+                                TextNode("return;"),
+                            ]),
         ])
 
         self.assertRenderResult(
@@ -163,8 +166,9 @@ void blink::bindings::func() {
         ])
 
         root.body.extend([
-            CxxUnlikelyIfNode(
-                cond=TextNode("${var1}"), body=[TextNode("return ${var1};")]),
+            CxxUnlikelyIfNode(cond=TextNode("${var1}"),
+                              attribute=None,
+                              body=[TextNode("return ${var1};")]),
             TextNode("return ${var2};"),
         ])
 

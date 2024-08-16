@@ -2066,6 +2066,7 @@ chromium-metrics-reviews@google.com.
       label="Module ID for History Clusters module"/>
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <suffix name="tab_resumption" label="Module ID for Tab Resumption"/>
+  <suffix name="google_calendar" label="Module ID for Google Calendar"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.EnabledOnNTPLoad"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
@@ -2931,6 +2932,8 @@ chromium-metrics-reviews@google.com.
       label="Fragmentation of Blink GC's main thread heap."/>
   <suffix name="CommandBuffer"
       label="Only counting memory used by GL command buffers."/>
+  <suffix name="DawnSharedContext"
+      label="Only counting memory used by the Graphite Dawn shared context."/>
   <suffix name="Discardable"
       label="Only counting memory used by Discardable manager."/>
   <suffix name="ExtensionFunctions"
@@ -3202,6 +3205,9 @@ chromium-metrics-reviews@google.com.
   <suffix name="SiteStorage.BlobStorage"
       label="Only counting memory used by in-memory blob files."/>
   <suffix name="Skia" label="Only counting memory used by Skia caches."/>
+  <suffix name="Skia.PurgeableSize"
+      label="Only counting memory used by Skia caches which Skia considers
+             purgeable."/>
   <suffix name="Skia.SkGlyphCache"
       label="Only counting memory used by Skia glyph cache."/>
   <suffix name="Skia.SkResourceCache"

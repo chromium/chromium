@@ -116,6 +116,30 @@ const std::string kAESContentReplacement =
     "mediax_5.ts\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kDiscontinuous =
+    "#EXTM3U\n"
+    "#EXT-X-VERSION:3\n"
+    "#EXT-X-TARGETDURATION:2\n"
+    "#EXT-X-MEDIA-SEQUENCE:0\n"
+    "#EXT-X-PLAYLIST-TYPE:VOD\n"
+    "#EXT-X-INDEPENDENT-SEGMENTS\n"
+    "#EXTINF:2.000000,\n"
+    "bip00.ts\n"
+    "#EXTINF:2.000000,\n"
+    "bip01.ts\n"
+    "#EXTINF:2.000000,\n"
+    "bip02.ts\n"
+    "#EXT-X-DISCONTINUITY\n"
+    "#EXTINF:1.600000,\n"
+    "data00.ts\n"
+    "#EXTINF:1.600000,\n"
+    "data01.ts\n"
+    "#EXTINF:1.600000,\n"
+    "data02.ts\n"
+    "#EXTINF:1.600000,\n"
+    "data03.ts\n"
+    "#EXT-X-ENDLIST\n";
+
 }  // namespace
 
 using testing::_;
@@ -170,6 +194,12 @@ class HlsRenditionImplUnittest : public testing::Test {
                           base::Unretained(this));
   }
 
+  ManifestDemuxer::DelayCallback BindCheck0Sec() {
+    EXPECT_CALL(*this, CheckStateComplete(base::Seconds(0)));
+    return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
+                          base::Unretained(this));
+  }
+
   ManifestDemuxer::DelayCallback BindCheckStateNoExpect() {
     return base::BindOnce(&HlsRenditionImplUnittest::CheckStateComplete,
                           base::Unretained(this));
@@ -177,7 +207,7 @@ class HlsRenditionImplUnittest : public testing::Test {
 
   void RequireAppend(base::span<const uint8_t> data, bool return_value = true) {
     EXPECT_CALL(*mock_mdeh_,
-                AppendAndParseData(_, _, _, _, base::as_byte_span(data)))
+                AppendAndParseData(_, _, _, base::as_byte_span(data)))
         .WillOnce(Return(return_value));
   }
 
@@ -220,7 +250,7 @@ class HlsRenditionImplUnittest : public testing::Test {
         });
     EXPECT_CALL(
         *mock_mdeh_,
-        AppendAndParseData("test", _, _, _,
+        AppendAndParseData("test", _, _,
                            ElementsAreArray(base::as_byte_span(junk_content))))
         .WillOnce(Return(true));
     Ranges<base::TimeDelta> initial_range;
@@ -369,7 +399,7 @@ TEST_F(HlsRenditionImplUnittest, TestCreateRenditionPaused) {
   RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
   // Then appended.
   EXPECT_CALL(*mock_mdeh_,
-              AppendAndParseData(_, _, _, _, base::as_byte_span(tscontent)))
+              AppendAndParseData(_, _, _, base::as_byte_span(tscontent)))
       .WillOnce(Return(true));
   // CheckState should in this case respond with a delay of zero seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -394,7 +424,7 @@ TEST_F(HlsRenditionImplUnittest, TestPausedRenditionHasSomeData) {
   RespondToUrl("http://example.com/playlist_4500Kb_14551245.ts", tscontent);
   // Then appended.
   EXPECT_CALL(*mock_mdeh_,
-              AppendAndParseData(_, _, _, _, base::as_byte_span(tscontent)))
+              AppendAndParseData(_, _, _, base::as_byte_span(tscontent)))
       .WillOnce(Return(true));
   // CheckState should in this case respond with a delay of zero seconds.
   rendition->CheckState(base::Seconds(0), 0.0,
@@ -601,6 +631,57 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(198)));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(17)));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsRenditionImplUnittest, TestDiscontinuity) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  const std::string content = "ehh, whatever";
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+  task_environment_.RunUntilIdle();
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/bip01.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+  task_environment_.RunUntilIdle();
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/bip02.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+  task_environment_.RunUntilIdle();
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/data00.ts", content);
+
+  EXPECT_CALL(*mock_mdeh_, ResetParserState("test", base::Seconds(8.6), _));
+
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+  task_environment_.RunUntilIdle();
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/data01.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+  task_environment_.RunUntilIdle();
+
+  RespondWithRangeTwice(base::Seconds(0), base::Seconds(0), base::Seconds(0),
+                        base::Seconds(2));
+  RespondToUrl("https://example.com/data02.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
   task_environment_.RunUntilIdle();
 }
 

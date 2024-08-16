@@ -528,14 +528,14 @@ IN_PROC_BROWSER_TEST_F(SettingsAboutPageTest, OfficialBuild) {
 
 using SettingsAllSitesTest = SettingsBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableFirstPartySets) {
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, EnableRelatedWebsiteSets) {
   RunTest("settings/all_sites_test.js",
-          "runMochaSuite('EnableFirstPartySets')");
+          "runMochaSuite('EnableRelatedWebsiteSets')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableFirstPartySets) {
+IN_PROC_BROWSER_TEST_F(SettingsAllSitesTest, DisableRelatedWebsiteSets) {
   RunTest("settings/all_sites_test.js",
-          "runMochaSuite('DisableFirstPartySets')");
+          "runMochaSuite('DisableRelatedWebsiteSets')");
 }
 
 class SettingsBasicPageTest : public SettingsBrowserTest {
@@ -638,6 +638,10 @@ IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, TrackingProtectionSettings) {
           "runMochaSuite('TrackingProtectionSettings')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsCookiesPageTest, ActSettings) {
+  RunTest("settings/cookies_page_test.js", "runMochaSuite('ActSettings')");
+}
+
 // Test with --enable-pixel-output-in-tests enabled, required by fingerprint
 // element test using HTML canvas.
 class SettingsWithPixelOutputTest : public SettingsBrowserTest {
@@ -708,19 +712,7 @@ IN_PROC_BROWSER_TEST_F(SettingsMemoryPageTest, MemorySaver) {
   RunTest("settings/memory_page_test.js", "runMochaSuite('MemorySaver')");
 }
 
-class SettingsMemoryPageAggressivenessTest : public SettingsBrowserTest {
- protected:
-  SettingsMemoryPageAggressivenessTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        performance_manager::features::kMemorySaverModeAggressiveness);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(SettingsMemoryPageAggressivenessTest,
-                       MemorySaverAggressiveness) {
+IN_PROC_BROWSER_TEST_F(SettingsBrowserTest, MemorySaverAggressiveness) {
   RunTest("settings/memory_page_test.js",
           "runMochaSuite('MemorySaverAggressiveness')");
 }
@@ -1254,8 +1246,6 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
   SettingsSecurityPageTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection,
-            safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection,
             features::kEnableCertManagementUIV2,
         },
         {});

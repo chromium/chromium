@@ -135,9 +135,10 @@ class ModelExecutionFeaturesController
   model_execution::prefs::ModelExecutionEnterprisePolicyValue
   GetEnterprisePolicyValue(UserVisibleFeatureKey feature) const;
 
-  // Returns true if the given performance class meets the minimum requirement
-  // for history search.
-  bool IsDeviceCapableForHistorySearch() const;
+  // Performs settings visibility checks specific to History Search. If passed,
+  // `kUnknown` is returned. Otherwise, the corresponding enum for the failed
+  // check is returned (i.e. kNotVisibleXXXX).
+  SettingsVisibilityResult ShouldHideHistorySearch() const;
 
   // Initializes the state of the different features at startup.
   void InitializeFeatureSettings();

@@ -38,6 +38,11 @@ struct ContextualPanelItemConfiguration;
 // it returns to its default style.
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened;
 
+// Notify the consumer to update the colored state of the entrypoint. When
+// `colored` is YES, the entrypoint animates to blue, otherwise it animates back
+// to its default color.
+- (void)setEntrypointColored:(BOOL)colored;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_CONSUMER_H_

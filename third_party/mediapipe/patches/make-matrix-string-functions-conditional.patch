@@ -1,0 +1,31 @@
+Puts a couple of functions in Matrix behind an ifdef. These functions use
+TextFormat, which is only in protobuf full.
+
+diff --git a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.cc b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.cc
+index 3254e7fc2a491..5cefbfc9d31cb 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.cc
++++ b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.cc
+@@ -49,7 +49,8 @@ void MatrixFromMatrixDataProto(const MatrixData& matrix_data, Matrix* matrix) {
+   }
+ }
+ 
+-#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE)
++#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE) && \
++    !defined(MEDIAPIPE_PROTO_LITE)
+ std::string MatrixAsTextProto(const Matrix& matrix) {
+   MatrixData matrix_data;
+   MatrixDataProtoFromMatrix(matrix, &matrix_data);
+diff --git a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
+index 99729aedcb6c6..13a6576157186 100644
+--- a/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
++++ b/third_party/mediapipe/src/mediapipe/framework/formats/matrix.h
+@@ -38,7 +38,8 @@ void MatrixDataProtoFromMatrix(const Matrix& matrix, MatrixData* matrix_data);
+ // audio into a Matrix proto.
+ void MatrixFromMatrixDataProto(const MatrixData& matrix_data, Matrix* matrix);
+ 
+-#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE)
++#if !defined(MEDIAPIPE_MOBILE) && !defined(MEDIAPIPE_LITE) && \
++    !defined(MEDIAPIPE_PROTO_LITE)
+ // Produce a Text format MatrixData string.  Mainly useful for test code.
+ std::string MatrixAsTextProto(const Matrix& matrix);
+ // Produce a Matrix from a text format MatrixData proto representation.

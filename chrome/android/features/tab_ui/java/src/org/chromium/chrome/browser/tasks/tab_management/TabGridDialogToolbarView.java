@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -11,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.EditText;
@@ -64,6 +66,14 @@ public class TabGridDialogToolbarView extends FrameLayout {
         mShareButtonContainer = findViewById(R.id.share_button_container);
         mShareButton = findViewById(R.id.share_button);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        super.onTouchEvent(motionEvent);
+        // Prevent touch events from "falling through" to views below.
+        return true;
     }
 
     void setLeftButtonOnClickListener(OnClickListener listener) {

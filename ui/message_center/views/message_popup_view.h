@@ -56,7 +56,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
 
   // Shows popup. After this call, MessagePopupView should be owned by the
   // widget.
-  void Show();
+  std::unique_ptr<views::Widget> Show();
 
   // Closes popup. It should be callable even if Show() is not called, and
   // in such case MessagePopupView should be deleted. Virtual for unit testing.

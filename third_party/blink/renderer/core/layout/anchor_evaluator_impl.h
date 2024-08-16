@@ -167,8 +167,6 @@ struct CORE_EXPORT PhysicalAnchorReference
 
 class CORE_EXPORT PhysicalAnchorQuery
     : public AnchorQueryBase<PhysicalAnchorReference> {
-  DISALLOW_NEW();
-
  public:
   using Base = AnchorQueryBase<PhysicalAnchorReference>;
 
@@ -324,11 +322,11 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   std::optional<LayoutUnit> Evaluate(
       const class AnchorQuery&,
       const ScopedCSSName* position_anchor,
-      const std::optional<InsetAreaOffsets>&) override;
+      const std::optional<PositionAreaOffsets>&) override;
 
-  std::optional<InsetAreaOffsets> ComputeInsetAreaOffsetsForLayout(
+  std::optional<PositionAreaOffsets> ComputePositionAreaOffsetsForLayout(
       const ScopedCSSName* position_anchor,
-      InsetArea inset_area) override;
+      PositionArea position_area) override;
 
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
@@ -351,7 +349,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       CSSAnchorValue anchor_value,
       float percentage,
       const ScopedCSSName* position_anchor,
-      const std::optional<InsetAreaOffsets>&) const;
+      const std::optional<PositionAreaOffsets>&) const;
   std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
@@ -367,15 +365,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   bool IsRightOrBottom() const;
 
   LayoutUnit AvailableSizeAlongAxis(
-      const PhysicalRect& inset_area_modified_containing_block_rect) const {
-    return IsYAxis() ? inset_area_modified_containing_block_rect.Height()
-                     : inset_area_modified_containing_block_rect.Width();
+      const PhysicalRect& position_area_modified_containing_block_rect) const {
+    return IsYAxis() ? position_area_modified_containing_block_rect.Height()
+                     : position_area_modified_containing_block_rect.Width();
   }
 
-  // Returns the containing block, further constrained by the inset-area.
+  // Returns the containing block, further constrained by the position-area.
   // Not to be confused with the inset-modified containing block.
-  PhysicalRect InsetAreaModifiedContainingBlock(
-      const std::optional<InsetAreaOffsets>&) const;
+  PhysicalRect PositionAreaModifiedContainingBlock(
+      const std::optional<PositionAreaOffsets>&) const;
 
   const LayoutObject* query_object_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
@@ -424,9 +422,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     std::optional<ValueType> value_;
   };
 
-  // Caches most recent result of InsetAreaModifiedContainingBlock.
-  mutable CachedValue<std::optional<InsetAreaOffsets>, PhysicalRect>
-      cached_inset_area_modified_containing_block_;
+  // Caches most recent result of PositionAreaModifiedContainingBlock.
+  mutable CachedValue<std::optional<PositionAreaOffsets>, PhysicalRect>
+      cached_position_area_modified_containing_block_;
 
   // Caches most recent result of DefaultAnchor.
   mutable CachedValue<const ScopedCSSName*, const LayoutObject*>

@@ -147,6 +147,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   float Scale() const { return scale_; }
   bool IsPinchGestureActive() const { return is_pinch_gesture_active_; }
 
+  PhysicalOffset LocalToScrollOriginOffset() const final;
+
   // Convert the given rect in the main LocalFrameView's coordinates into a rect
   // in the viewport. The given and returned rects are in CSS pixels, meaning
   // scale isn't applied.
@@ -361,14 +363,13 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
 
   PropertyTreeStateOrAlias parent_property_tree_state_;
-  scoped_refptr<TransformPaintPropertyNode> device_emulation_transform_node_;
-  scoped_refptr<TransformPaintPropertyNode>
-      overscroll_elasticity_transform_node_;
-  scoped_refptr<TransformPaintPropertyNode> page_scale_node_;
-  scoped_refptr<TransformPaintPropertyNode> scroll_translation_node_;
-  scoped_refptr<ScrollPaintPropertyNode> scroll_node_;
-  scoped_refptr<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
-  scoped_refptr<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
+  Member<TransformPaintPropertyNode> device_emulation_transform_node_;
+  Member<TransformPaintPropertyNode> overscroll_elasticity_transform_node_;
+  Member<TransformPaintPropertyNode> page_scale_node_;
+  Member<TransformPaintPropertyNode> scroll_translation_node_;
+  Member<ScrollPaintPropertyNode> scroll_node_;
+  Member<EffectPaintPropertyNode> horizontal_scrollbar_effect_node_;
+  Member<EffectPaintPropertyNode> vertical_scrollbar_effect_node_;
 
   // Offset of the visual viewport from the main frame's origin, in CSS pixels.
   ScrollOffset offset_;

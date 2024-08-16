@@ -24,6 +24,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -120,14 +121,19 @@ class ErrorContentsView : public views::FlexLayoutView,
 
         retry_link_->SetVisible(
             mahi_utils::CalculateRetryLinkVisible(error.status));
-        retry_link_->SetCallback(retry_link_->GetVisible()
-                                     ? base::BindRepeating(
-                                           [](MahiUiController* controller,
-                                              VisibilityState origin_state) {
-                                             controller->Retry(origin_state);
-                                           },
-                                           ui_controller_, error.origin_state)
-                                     : base::RepeatingClosure());
+        retry_link_->SetCallback(
+            retry_link_->GetVisible()
+                ? base::BindRepeating(
+                      [](MahiUiController* controller,
+                         VisibilityState origin_state,
+                         views::View* retry_link) {
+                        controller->Retry(origin_state);
+                        retry_link->GetViewAccessibility().AnnounceText(
+                            l10n_util::GetStringUTF16(
+                                IDS_ASH_MAHI_RETRY_LINK_CLICK_ACTIVATION_ACCESSIBLE_NAME));
+                      },
+                      ui_controller_, error.origin_state, retry_link_)
+                : base::RepeatingClosure());
         return;
       }
       case MahiUiUpdateType::kAnswerLoaded:

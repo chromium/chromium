@@ -32,8 +32,8 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/connectors_prefs.h"
-#include "components/enterprise/connectors/service_provider_config.h"
+#include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -515,12 +515,14 @@ std::optional<std::string> ConnectorsService::GetProfileDmToken() const {
   Profile* profile = Profile::FromBrowserContext(context_);
 
   policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
-
-  if (!policy_manager || !policy_manager->IsClientRegistered()) {
-    return std::nullopt;
+  if (policy_manager && policy_manager->core() &&
+      policy_manager->core()->store() &&
+      policy_manager->core()->store()->has_policy() &&
+      policy_manager->core()->store()->policy()->has_request_token()) {
+    return policy_manager->core()->store()->policy()->request_token();
   }
 
-  return policy_manager->core()->client()->dm_token();
+  return std::nullopt;
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

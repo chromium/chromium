@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
@@ -61,6 +62,7 @@ void AttachBrowserAgents(Browser* browser) {
   DeviceSharingBrowserAgent::CreateForBrowser(browser);
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser);
   AppLauncherBrowserAgent::CreateForBrowser(browser);
+  OmniboxPositionBrowserAgent::CreateForBrowser(browser);
 
   // LensBrowserAgent must be created before WebNavigationBrowserAgent.
   LensBrowserAgent::CreateForBrowser(browser);

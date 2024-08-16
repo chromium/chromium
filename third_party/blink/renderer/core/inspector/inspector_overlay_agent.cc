@@ -308,6 +308,8 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
       return;
     }
 
+    CHECK_EQ(layer_->client(), this);
+
     overlay_->PaintOverlayPage();
 
     // The emulation scale factor is baked in the contents of the overlay layer,
@@ -318,10 +320,10 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
     // The overlay layer needs to be in the root property tree state (instead of
     // the default FrameOverlay state which is under the emulation scale
     // transform node) because the emulation scale is baked in the layer.
-    const auto* property_tree_state = &PropertyTreeState::Root();
+    auto property_tree_state = PropertyTreeState::Root();
     RecordForeignLayer(graphics_context, *client,
                        DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                       gfx::Point(), property_tree_state);
+                       gfx::Point(), &property_tree_state);
   }
 
   void Invalidate() override {
@@ -627,8 +629,9 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
     cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_touch_event_handler_rects = show;
     debug_state.show_wheel_event_handler_rects = show;
-    debug_state.show_non_fast_scrollable_rects = show;
-    debug_state.show_main_thread_scrolling_reason_rects = show;
+    debug_state.show_main_thread_scroll_hit_test_rects = show;
+    debug_state.show_main_thread_scroll_repaint_rects = show;
+    debug_state.show_raster_inducing_scroll_rects = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
   return protocol::Response::Success();
@@ -1047,11 +1050,11 @@ protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
   } else {
     config->color_format = ColorFormat::kHex;
   }
-  NodeHighlightTool tool(this, GetFrontend(), node, "" /* selector_list */,
-                         std::move(config));
+  NodeHighlightTool* tool = MakeGarbageCollected<NodeHighlightTool>(
+      this, GetFrontend(), node, "" /* selector_list */, std::move(config));
   node->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kInspector);
-  *result = tool.GetNodeInspectorHighlightAsJson(
+  *result = tool->GetNodeInspectorHighlightAsJson(
       true /* append_element_info */, include_distance.value_or(false));
   return protocol::Response::Success();
 }
@@ -1059,7 +1062,8 @@ protocol::Response InspectorOverlayAgent::getHighlightObjectForTest(
 protocol::Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     std::unique_ptr<protocol::Array<int>> node_ids,
     std::unique_ptr<protocol::DictionaryValue>* highlights) {
-  PersistentTool persistent_tool(this, GetFrontend());
+  PersistentTool* persistent_tool =
+      MakeGarbageCollected<PersistentTool>(this, GetFrontend());
 
   HeapHashMap<WeakMember<Node>, std::unique_ptr<InspectorGridHighlightConfig>>
       configs;
@@ -1072,8 +1076,8 @@ protocol::Response InspectorOverlayAgent::getGridHighlightObjectsForTest(
     configs.insert(node, std::make_unique<InspectorGridHighlightConfig>(
                              InspectorHighlight::DefaultGridConfig()));
   }
-  persistent_tool.SetGridConfigs(std::move(configs));
-  *highlights = persistent_tool.GetGridInspectorHighlightsAsJson();
+  persistent_tool->SetGridConfigs(std::move(configs));
+  *highlights = persistent_tool->GetGridInspectorHighlightsAsJson();
   return protocol::Response::Success();
 }
 
@@ -1089,8 +1093,9 @@ protocol::Response InspectorOverlayAgent::getSourceOrderHighlightObjectForTest(
   auto config = std::make_unique<InspectorSourceOrderConfig>(
       InspectorSourceOrderHighlight::DefaultConfig());
 
-  SourceOrderTool tool(this, GetFrontend(), node, std::move(config));
-  *result = tool.GetNodeInspectorSourceOrderHighlightAsJson();
+  SourceOrderTool* tool = MakeGarbageCollected<SourceOrderTool>(
+      this, GetFrontend(), node, std::move(config));
+  *result = tool->GetNodeInspectorSourceOrderHighlightAsJson();
   return protocol::Response::Success();
 }
 

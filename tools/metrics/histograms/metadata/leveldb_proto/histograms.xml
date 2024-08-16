@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.LoadEntriesSuccess.{LevelDBClient}"
-    enum="BooleanSuccess" expires_after="2024-12-08">
+    enum="BooleanSuccess" expires_after="2025-02-10">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB LoadEntries call was successful or not.</summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>ssid@chromium.org</owner>
   <owner>salg@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.UpdateSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-12-08">
+    expires_after="2025-02-10">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB UpdateEntries call was successful or not.</summary>

@@ -30,8 +30,8 @@ void EmitChromeTrackEventDescriptor() {
         perfetto::protos::pbzero::TracePacket::kExtensionDescriptorFieldNumber);
     extension_descriptor->AppendBytes(
         perfetto::protos::pbzero::ExtensionDescriptor::kExtensionSetFieldNumber,
-        perfetto::kChromeTrackEventDescriptor.data(),
-        perfetto::kChromeTrackEventDescriptor.size());
+        base::testing::kChromeTrackEventDescriptor.data(),
+        base::testing::kChromeTrackEventDescriptor.size());
     handle->Finalize();
   });
 }

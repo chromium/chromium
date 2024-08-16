@@ -7,8 +7,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
+
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -78,8 +80,8 @@ class PnaclHostTest : public testing::Test {
     char str[kBufferSize];
     memset(str, 0x0, kBufferSize);
     snprintf(str, kBufferSize, "testdata%d", ++write_callback_count_);
-    EXPECT_EQ(kBufferSize,
-              static_cast<size_t>(mutable_file->Write(0, str, kBufferSize)));
+    EXPECT_EQ(kBufferSize, static_cast<size_t>(UNSAFE_TODO(
+                               mutable_file->Write(0, str, kBufferSize))));
     temp_callback_count_++;
   }
   void CallbackExpectHit(const base::File& file, bool is_hit) {
@@ -95,8 +97,8 @@ class PnaclHostTest : public testing::Test {
     char str[kBufferSize];
     memset(str, 0x0, kBufferSize);
     snprintf(str, kBufferSize, "testdata%d", write_callback_count_);
-    EXPECT_EQ(kBufferSize,
-              static_cast<size_t>(mutable_file->Read(0, data, kBufferSize)));
+    EXPECT_EQ(kBufferSize, static_cast<size_t>(UNSAFE_TODO(
+                               mutable_file->Read(0, data, kBufferSize))));
     EXPECT_STREQ(str, data);
     temp_callback_count_++;
   }

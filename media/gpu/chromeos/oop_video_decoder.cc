@@ -910,7 +910,7 @@ void OOPVideoDecoder::ReleaseVideoFrame(
 }
 
 void OOPVideoDecoder::ApplyResolutionChange() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool OOPVideoDecoder::NeedsBitstreamConversion() const {
@@ -954,7 +954,7 @@ VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
 }
 
 bool OOPVideoDecoder::IsPlatformDecoder() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool OOPVideoDecoder::NeedsTranscryption() {

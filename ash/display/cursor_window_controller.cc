@@ -42,6 +42,8 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
+#include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_util.h"
 
 namespace ash {
@@ -406,14 +408,29 @@ void CursorWindowController::OnDockedMagnifierResizingStateChanged(
 }
 
 void CursorWindowController::UpdateLocation() {
-  if (!cursor_window_)
+  if (cursor_view_widget_) {
+    gfx::Point cursor_location =
+        aura::Env::GetInstance()->last_mouse_location();
+    aura::Window* root_window = views::GetRootWindow(cursor_view_widget_.get());
+    // Convert cursor location point in screen coordinate to root window
+    // coordinate.
+    wm::ConvertPointFromScreen(root_window, &cursor_location);
+    static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
+        ->SetLocation(cursor_location);
     return;
-  gfx::Point point = aura::Env::GetInstance()->last_mouse_location();
-  point.Offset(-bounds_in_screen_.x(), -bounds_in_screen_.y());
-  point.Offset(-hot_point_.x(), -hot_point_.y());
-  gfx::Rect bounds = cursor_window_->bounds();
-  bounds.set_origin(point);
-  cursor_window_->SetBounds(bounds);
+  }
+  if (cursor_window_) {
+    gfx::Point point = aura::Env::GetInstance()->last_mouse_location();
+    // Calculate the new origin.
+    // new_origin.x() + bounds_in_screen_.x() + hot_point_.x() = x value of
+    // the mouse location in the screen coordinates.
+    point.Offset(-bounds_in_screen_.x(), -bounds_in_screen_.y());
+    point.Offset(-hot_point_.x(), -hot_point_.y());
+    gfx::Rect bounds = cursor_window_->bounds();
+    bounds.set_origin(point);
+    cursor_window_->SetBounds(bounds);
+    return;
+  }
 }
 
 void CursorWindowController::SetCursor(gfx::NativeCursor cursor) {
@@ -460,8 +477,24 @@ SkColor CursorWindowController::GetCursorColorForTest() const {
   return cursor_color_;
 }
 
-gfx::Rect CursorWindowController::GetBoundsForTest() const {
-  return cursor_window_->GetBoundsInScreen();
+gfx::Rect CursorWindowController::GetCursorBoundsInScreenForTest() const {
+  if (cursor_view_widget_) {
+    gfx::Rect cursor_rect =
+        static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
+            ->get_cursor_rect_for_test();  // IN-TEST
+    // Convert cursor rect in root window to screen coordinate.
+    wm::ConvertRectToScreen(views::GetRootWindow(cursor_view_widget_.get()),
+                            &cursor_rect);
+    return cursor_rect;
+  }
+  return cursor_window_ ? cursor_window_->GetBoundsInScreen() : gfx::Rect();
+}
+
+const aura::Window* CursorWindowController::GetCursorHostWindowForTest() const {
+  if (cursor_view_widget_) {
+    return cursor_view_widget_->GetNativeWindow();
+  }
+  return cursor_window_ ? cursor_window_.get() : nullptr;
 }
 
 void CursorWindowController::SetContainer(aura::Window* container) {

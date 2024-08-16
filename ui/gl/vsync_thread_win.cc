@@ -184,7 +184,7 @@ VSyncThreadWin::VSyncThreadWin(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device)
 }
 
 VSyncThreadWin::~VSyncThreadWin() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void VSyncThreadWin::PostTaskIfNeeded() {

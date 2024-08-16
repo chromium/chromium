@@ -131,9 +131,9 @@ void SyncInternalsMessageHandler::HandleRequestListOfTypes(
   DCHECK(args.empty());
   base::Value::Dict event_details;
   base::Value::List type_list;
-  syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
-  for (syncer::ModelType type : protocol_types) {
-    type_list.Append(ModelTypeToDebugString(type));
+  syncer::DataTypeSet protocol_types = syncer::ProtocolTypes();
+  for (syncer::DataType type : protocol_types) {
+    type_list.Append(DataTypeToDebugString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
   DispatchEvent(syncer::sync_ui_util::kOnReceivedListOfTypes, event_details);
@@ -207,7 +207,7 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
     return;
   }
 
-  service->TriggerRefresh(syncer::ModelTypeSet::All());
+  service->TriggerRefresh(syncer::DataTypeSet::All());
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
@@ -241,10 +241,10 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
   for (const auto& data_type_invalidation :
        payload_message.data_type_invalidations()) {
     const int field_number = data_type_invalidation.data_type_id();
-    syncer::ModelType type =
-        syncer::GetModelTypeFromSpecificsFieldNumber(field_number);
+    syncer::DataType type =
+        syncer::GetDataTypeFromSpecificsFieldNumber(field_number);
     if (IsRealDataType(type)) {
-      data_types_list.Append(syncer::ModelTypeToDebugString(type));
+      data_types_list.Append(syncer::DataTypeToDebugString(type));
     }
   }
 
@@ -269,8 +269,8 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
 void SyncInternalsMessageHandler::OnGotEntityCounts(
     const syncer::TypeEntitiesCount& entity_counts) {
   base::Value::Dict count_dictionary;
-  count_dictionary.Set(syncer::sync_ui_util::kModelType,
-                       ModelTypeToDebugString(entity_counts.type));
+  count_dictionary.Set(syncer::sync_ui_util::kDataType,
+                       DataTypeToDebugString(entity_counts.type));
   count_dictionary.Set(syncer::sync_ui_util::kEntities, entity_counts.entities);
   count_dictionary.Set(syncer::sync_ui_util::kNonTombstoneEntities,
                        entity_counts.non_tombstone_entities);

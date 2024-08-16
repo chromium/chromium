@@ -17,6 +17,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -254,7 +255,7 @@ std::unique_ptr<views::Widget> ShowWebModalDialogViewsOwned(
 // should be updated to follow `web_contents` as it is moved across windows.
 views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
                                          content::WebContents* web_contents) {
-  DCHECK_EQ(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
+  DCHECK_EQ(ui::mojom::ModalType::kChild, dialog->GetModalType());
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
 
@@ -291,8 +292,8 @@ views::Widget* CreateBrowserModalDialogViews(
 
 views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
                                              gfx::NativeWindow parent) {
-  DCHECK_NE(ui::MODAL_TYPE_CHILD, dialog->GetModalType());
-  DCHECK_NE(ui::MODAL_TYPE_NONE, dialog->GetModalType());
+  DCHECK_NE(ui::mojom::ModalType::kChild, dialog->GetModalType());
+  DCHECK_NE(ui::mojom::ModalType::kNone, dialog->GetModalType());
   DCHECK(!parent || CurrentBrowserModalClient());
 
   gfx::NativeView parent_view =
@@ -339,7 +340,8 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
       parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
              : nullptr);
   auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::MODAL_TYPE_WINDOW, will_use_custom_frame);
+      std::move(dialog_model), ui::mojom::ModalType::kWindow,
+      will_use_custom_frame);
   dialog->SetOwnedByWidget(true);
   auto* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog), parent);
@@ -353,7 +355,7 @@ views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
                             content::WebContents* web_contents) {
   return constrained_window::ShowWebModalDialogViews(
       views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::MODAL_TYPE_CHILD)
+                                                ui::mojom::ModalType::kChild)
           .release(),
       web_contents);
 }

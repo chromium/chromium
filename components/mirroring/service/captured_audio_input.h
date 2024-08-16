@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_CAPTURED_AUDIO_INPUT_H_
 #define COMPONENTS_MIRRORING_SERVICE_CAPTURED_AUDIO_INPUT_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
+#include "components/mirroring/mojom/session_observer.mojom-forward.h"
+#include "components/mirroring/service/mirroring_logger.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,7 +34,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
       mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
       const media::AudioParameters& params,
       uint32_t total_segments)>;
-  explicit CapturedAudioInput(StreamCreatorCallback callback);
+  CapturedAudioInput(StreamCreatorCallback callback,
+                     mojo::Remote<mojom::SessionObserver>& observer);
 
   CapturedAudioInput(const CapturedAudioInput&) = delete;
   CapturedAudioInput& operator=(const CapturedAudioInput&) = delete;
@@ -67,6 +72,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
       stream_creator_client_receiver_{this};
   raw_ptr<media::AudioInputIPCDelegate> delegate_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStream> stream_;
+  MirroringLogger logger_;
 };
 
 }  // namespace mirroring

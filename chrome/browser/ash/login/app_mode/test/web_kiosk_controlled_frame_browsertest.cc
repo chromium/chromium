@@ -6,6 +6,7 @@
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -69,7 +70,7 @@ class WebKioskControlledFrameBaseTest : public WebKioskBaseTest {
                             ? net::test_server::EmbeddedTestServer::TYPE_HTTPS
                             : net::test_server::EmbeddedTestServer::TYPE_HTTP) {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kIsolatedWebApps};
+        features::kIsolatedWebApps, features::kWebKioskEnableIwaApis};
     std::vector<base::test::FeatureRef> disabled_features;
     if (feature_enabled_) {
       enabled_features.push_back(blink::features::kControlledFrame);

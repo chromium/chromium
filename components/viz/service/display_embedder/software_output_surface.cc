@@ -90,10 +90,6 @@ void SoftwareOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
   }
 }
 
-bool SoftwareOutputSurface::IsDisplayedAsOverlayPlane() const {
-  return false;
-}
-
 void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
                                                 int64_t swap_trace_id,
                                                 const gfx::Size& pixel_size) {

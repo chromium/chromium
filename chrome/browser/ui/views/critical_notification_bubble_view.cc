@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -56,6 +57,8 @@ CriticalNotificationBubbleView::CriticalNotificationBubbleView(
       base::BindOnce(&CriticalNotificationBubbleView::OnDialogCancelled,
                      base::Unretained(this)));
   set_close_on_deactivate(false);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlertDialog);
 }
 
 CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {
@@ -143,11 +146,6 @@ void CriticalNotificationBubbleView::Init() {
                        &CriticalNotificationBubbleView::OnCountdown);
 
   base::RecordAction(UserMetricsAction("CriticalNotificationShown"));
-}
-
-void CriticalNotificationBubbleView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
 void CriticalNotificationBubbleView::ViewHierarchyChanged(

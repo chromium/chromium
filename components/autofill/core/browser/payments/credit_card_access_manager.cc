@@ -354,7 +354,7 @@ void CreditCardAccessManager::FetchCreditCard(
       // Full server cards are only possible after a previous unmasking on the
       // same page. When that happens, subsequent repeat fills of the unmasked
       // card should flow through the cache and not reach here.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1710,7 +1710,7 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
           &CreditCardAccessManager::OnDeviceAuthenticationResponseForFilling,
           GetWeakPtr(), authentication_method, card));
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

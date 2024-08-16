@@ -8,6 +8,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -40,6 +41,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   bool AreAuthTokensAvailable() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
   void InvalidateTryAgainAfterTime() override;
+  bool IsProxyListAvailable() override;
+  void QuicProxiesFailed() override;
+  std::vector<net::ProxyChain> GetProxyChainList() override;
+  void RequestRefreshProxyList() override;
+  void GeoObserved(const std::string& geo_id) override;
   void SetIpProtectionTokenCacheManagerForTesting(
       IpProtectionProxyLayer proxy_layer,
       std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager)
@@ -51,11 +57,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
       override;
   IpProtectionProxyListManager* GetIpProtectionProxyListManagerForTesting()
       override;
-  bool IsProxyListAvailable() override;
-  void QuicProxiesFailed() override;
-  std::vector<net::ProxyChain> GetProxyChainList() override;
-  void RequestRefreshProxyList() override;
-  void GeoChangeObserved(const std::string& geo_id) override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
@@ -73,13 +74,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
            std::unique_ptr<IpProtectionTokenCacheManager>>
       ipp_token_cache_managers_;
 
-  // Most current geo.
-  std::string current_geo_id_;
-
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
   bool ipp_over_quic_;
+
+  // Feature flag to safely introduce token caching by geo.
+  const bool enable_token_caching_by_geo_;
 
   base::WeakPtrFactory<IpProtectionConfigCacheImpl> weak_ptr_factory_{this};
 };

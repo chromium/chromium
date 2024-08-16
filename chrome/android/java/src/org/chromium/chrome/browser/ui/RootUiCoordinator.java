@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.Cont
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
@@ -72,7 +74,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gsa.ContextReporter;
-import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -94,6 +95,7 @@ import org.chromium.chrome.browser.messages.ChromeMessageQueueMediator;
 import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.messages.MessageContainerObserver;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -104,7 +106,6 @@ import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
@@ -164,7 +165,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.wallet.BoardingPassController;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinatorDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -331,7 +331,7 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final boolean mInitializeUiWithIncognitoColors;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    protected final OneshotSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
@@ -342,6 +342,8 @@ public class RootUiCoordinator
     private AppMenuObserver mAppMenuObserver;
     private boolean mKeyboardVisibleDuringFoldTransition;
     private Long mKeyboardVisibilityTimestamp;
+    private DataSharingTabManager mDataSharingTabManager;
+    private DataSharingTabSwitcherDelegate mDataSharingTabSwitcherDelegate;
 
     private OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -434,7 +436,7 @@ public class RootUiCoordinator
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
-            @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @NonNull OneshotSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             boolean initializeUiWithIncognitoColors,
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
@@ -522,6 +524,24 @@ public class RootUiCoordinator
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
+
+        mDataSharingTabSwitcherDelegate =
+                new DataSharingTabSwitcherDelegate() {
+                    @Override
+                    public void openTabGroupWithTabId(Integer tabId) {
+                        TabSwitcher tabSwitcher = mTabSwitcherSupplier.get();
+                        assert tabSwitcher != null;
+                        tabSwitcher.requestOpenTabGroupDialog(tabId);
+                    }
+                };
+
+        mDataSharingTabManager =
+                new DataSharingTabManager(
+                        mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
+                        this::getBottomSheetController,
+                        mShareDelegateSupplier,
+                        mWindowAndroid);
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
@@ -930,8 +950,7 @@ public class RootUiCoordinator
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
                         @Override
-                        public void onShowContextualSearch(
-                                @Nullable GSAContextDisplaySelection selectionContext) {
+                        public void onShowContextualSearch() {
                             controller.maybeHidePlayer();
                         }
 
@@ -1010,19 +1029,7 @@ public class RootUiCoordinator
     }
 
     public ContextReporter.SelectionReporter getContextReporter() {
-        return getContextualSearchManagerSupplier().hasValue()
-                ? new ContextReporter.SelectionReporter() {
-                    @Override
-                    public void enable(Callback<GSAContextDisplaySelection> callback) {
-                        getContextualSearchManagerSupplier().get().enableContextReporting(callback);
-                    }
-
-                    @Override
-                    public void disable() {
-                        getContextualSearchManagerSupplier().get().disableContextReporting();
-                    }
-                }
-                : null;
+        return null;
     }
 
     /**
@@ -1392,17 +1399,7 @@ public class RootUiCoordinator
             mCurrentTabPriceTrackingStateSupplier =
                     new CurrentTabPriceTrackingStateSupplier(
                             mActivityTabProvider, mProfileSupplier);
-            PriceInsightsDelegate priceInsightsDelegate =
-                    new PriceInsightsDelegate() {
-                        @Override
-                        public BookmarkId getBookmarkIdForTab(Tab tab) {
-                            BookmarkModel bookmarkModel =
-                                    BookmarkModel.getForProfile(tab.getProfile());
-                            return bookmarkModel != null
-                                    ? bookmarkModel.getUserBookmarkIdForTab(tab)
-                                    : null;
-                        }
-                    };
+
             PriceInsightsButtonController priceInsightsButtonController =
                     new PriceInsightsButtonController(
                             mActivity,
@@ -1412,7 +1409,8 @@ public class RootUiCoordinator
                             mModalDialogManagerSupplier.get(),
                             getBottomSheetController(),
                             mSnackbarManagerSupplier.get(),
-                            priceInsightsDelegate,
+                            new PriceInsightsDelegateImpl(
+                                    mActivity, mCurrentTabPriceTrackingStateSupplier),
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.ic_trending_down_24dp));
             PriceTrackingButtonController priceTrackingButtonController =
@@ -1619,6 +1617,7 @@ public class RootUiCoordinator
                             mAppMenuDelegate,
                             mActivityLifecycleDispatcher,
                             mBottomSheetController,
+                            mDataSharingTabManager,
                             mTabContentManagerSupplier.get(),
                             mTabCreatorManagerSupplier.get(),
                             mSnackbarManagerSupplier.get(),
@@ -1943,7 +1942,11 @@ public class RootUiCoordinator
             ObservableSupplierImpl<EdgeToEdgeController> supplier,
             BrowserControlsManager browserControlsManager,
             LayoutManager layoutManager) {
-        EdgeToEdgeUtils.recordEligibility(activity);
+        boolean eligible = EdgeToEdgeUtils.recordEligibility(activity);
+
+        UmaSessionStats.registerSyntheticFieldTrial(
+                "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
+
         if (supportsEdgeToEdge()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
@@ -2183,5 +2186,13 @@ public class RootUiCoordinator
         // Actually destroying or finishing the activity hinders the shutdown process after
         // a test is done. Just null it out to give an effect of |onDestroy| being invoked.
         mActivity = null;
+    }
+
+    public BottomControlsStacker getBottomControlsStackerForTesting() {
+        return mBottomControlsStacker;
+    }
+
+    public DataSharingTabManager getDataSharingTabManager() {
+        return mDataSharingTabManager;
     }
 }

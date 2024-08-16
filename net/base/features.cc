@@ -81,8 +81,8 @@ BASE_FEATURE(kUseHostResolverCache,
              "UseHostResolverCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableHappyEyeballsV3,
-             "EnableHappyEyeballsV3",
+BASE_FEATURE(kHappyEyeballsV3,
+             "HappyEyeballsV3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{
@@ -571,5 +571,11 @@ BASE_FEATURE(kReportingApiEnableEnterpriseCookieIssues,
 BASE_FEATURE(kOptimizeParsingDataUrls,
              "OptimizeParsingDataUrls",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/347047841): Remove this flag when we branch for M131 or later,
+// if we haven't had to turn this off.
+BASE_FEATURE(kLegacyPKCS1ForTLS13,
+             "LegacyPKCS1ForTLS13",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace net::features

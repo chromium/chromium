@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/lens/lens_untrusted_ui.h"
 
 #include "base/strings/strcat.h"
@@ -73,6 +78,8 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "networkErrorPageBottomLine",
       IDS_SIDE_PANEL_COMPANION_ERROR_PAGE_SECOND_LINE);
+  html_source->AddLocalizedString("autoDetect",
+                                  IDS_LENS_OVERLAY_AUTO_DETECT_LANGUAGE_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -137,6 +144,10 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "segmentationMaskCornerRadius",
       lens::features::GetLensOverlaySegmentationMaskCornerRadius());
+  html_source->AddBoolean(
+      "enableOverlayTranslateButton",
+      lens::features::IsLensOverlayTranslateButtonEnabled());
+
   // Two instances of LensUntrustedUI are constructed: one for the main overlay
   // and one for the side panel. We cannot distinguish them at this time. As a
   // hack, we try to look up the LensOverlayController, which will only be
@@ -165,7 +176,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src 'self' chrome-untrusted://resources "
-      "https://www.gstatic.com data:;");
+      "https://www.gstatic.com data: blob:;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");

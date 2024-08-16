@@ -68,7 +68,7 @@
       const plus_addresses::PlusProfileOrError& maybePlusProfile) {
     if (maybePlusProfile.has_value()) {
       [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
-                                          maybePlusProfile->plus_address)];
+                                          *maybePlusProfile->plus_address)];
     } else {
       [weakSelf.consumer notifyError:plus_addresses::metrics::
                                          PlusAddressModalCompletionStatus::
@@ -87,7 +87,7 @@
       ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
         if (maybePlusProfile.has_value()) {
           [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
-                                            maybePlusProfile->plus_address)];
+                                            *maybePlusProfile->plus_address)];
         } else {
           [weakSelf.consumer notifyError:plus_addresses::metrics::
                                              PlusAddressModalCompletionStatus::
@@ -95,7 +95,9 @@
         }
       });
   _plusAddressService->ConfirmPlusAddress(
-      _mainFrameOrigin, base::SysNSStringToUTF8(_reservedPlusAddress),
+      _mainFrameOrigin,
+      plus_addresses::PlusAddress(
+          base::SysNSStringToUTF8(_reservedPlusAddress)),
       std::move(callback));
 }
 
@@ -130,7 +132,7 @@
       ^(const plus_addresses::PlusProfileOrError& maybePlusProfile) {
         if (maybePlusProfile.has_value()) {
           [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
-                                              maybePlusProfile->plus_address)];
+                                              *maybePlusProfile->plus_address)];
         } else {
           [weakSelf.consumer notifyError:plus_addresses::metrics::
                                              PlusAddressModalCompletionStatus::

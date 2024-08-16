@@ -52,7 +52,7 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
     local_device_info_->set_fcm_registration_token(*fcm_token);
   }
 
-  const std::optional<ModelTypeSet> interested_data_types =
+  const std::optional<DataTypeSet> interested_data_types =
       sync_client_->GetInterestedDataTypes();
   if (interested_data_types) {
     local_device_info_->set_interested_data_types(*interested_data_types);
@@ -71,7 +71,7 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
                      &paask_status)) {
     local_device_info_->set_paask_info(std::move(*info));
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // This check is required to ensure user's who toggle UMA have their
@@ -116,7 +116,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
   // initialise the object. |GetLocalDeviceInfo| will update them if they have
   // become ready by then.
   std::string last_fcm_registration_token;
-  ModelTypeSet last_interested_data_types;
+  DataTypeSet last_interested_data_types;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info;
   std::optional<base::Time> floating_workspace_last_signin_timestamp;
   if (device_info_restored_from_store) {

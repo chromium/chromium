@@ -215,7 +215,7 @@ if (enable_message_center) {
     ]
 
     data_deps = [
-      "//third_party/mesa_headers",
+      "//third_party/angle:includes",
       "//ui/resources:ui_test_pak_data",
     ]
 
@@ -227,6 +227,7 @@ if (enable_message_center) {
       sources += [
         "views/large_image_view_unittest.cc",
         "views/message_popup_collection_unittest.cc",
+        "views/message_popup_view_unittest.cc",
         "views/message_view_unittest.cc",
         "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",

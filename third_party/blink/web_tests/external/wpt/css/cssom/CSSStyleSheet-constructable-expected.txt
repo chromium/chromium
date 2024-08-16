@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] new CSSStyleSheet produces empty CSSStyleSheet
-  assert_equals: The title attribute must return the title or null if title is the empty string expected (object) null but got (string) ""
-[FAIL] title can be set in the CSSStyleSheet constructor
-  assert_equals: title and alternate are not supported by the constructor. https://github.com/WICG/construct-stylesheets/issues/105 expected (object) null but got (string) "something"
-[FAIL] CSSStyleSheet.replace produces Promise<CSSStyleSheet>
-  assert_equals: The title attribute must return the title or null if title is the empty string expected (object) null but got (string) ""
-Harness: the test ran to completion.
-

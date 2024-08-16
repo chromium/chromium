@@ -59,11 +59,11 @@ FakeServerVerifier::~FakeServerVerifier() = default;
 
 AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     size_t expected_count,
-    syncer::ModelType model_type) const {
+    syncer::DataType data_type) const {
   base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
 
-  string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list = entities.FindList(model_type_string);
+  string data_type_string = DataTypeToDebugString(data_type);
+  const base::Value::List* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
   if (expected_count != entity_list->size()) {
     return VerificationCountAssertionFailure(entity_list->size(),
@@ -77,12 +77,12 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
 
 AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     size_t expected_count,
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const string& name) const {
   base::Value::Dict entities = fake_server_->GetEntitiesAsDictForTesting();
 
-  string model_type_string = ModelTypeToDebugString(model_type);
-  const base::Value::List* entity_list = entities.FindList(model_type_string);
+  string data_type_string = DataTypeToDebugString(data_type);
+  const base::Value::List* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
 
   size_t actual_count = 0;
@@ -105,7 +105,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
 AssertionResult FakeServerVerifier::VerifySessions(
     const SessionsHierarchy& expected_sessions) {
   std::vector<sync_pb::SyncEntity> sessions =
-      fake_server_->GetSyncEntitiesByModelType(syncer::SESSIONS);
+      fake_server_->GetSyncEntitiesByDataType(syncer::SESSIONS);
   // Look for the sessions entity containing a SessionHeader and cache all tab
   // IDs/URLs. These will be used later to construct a SessionsHierarchy.
   sync_pb::SessionHeader session_header;
@@ -164,7 +164,7 @@ AssertionResult FakeServerVerifier::VerifySessions(
 AssertionResult FakeServerVerifier::VerifyHistory(
     const std::multiset<GURL>& expected_urls) {
   std::vector<sync_pb::SyncEntity> history =
-      fake_server_->GetSyncEntitiesByModelType(syncer::HISTORY);
+      fake_server_->GetSyncEntitiesByDataType(syncer::HISTORY);
   std::multiset<GURL> actual_urls;
   for (const sync_pb::SyncEntity& entity : history) {
     sync_pb::HistorySpecifics history_specifics = entity.specifics().history();

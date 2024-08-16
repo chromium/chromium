@@ -161,6 +161,16 @@
       chrome_status_feature: 5140610730426368,
     },
     {
+      name: "CSSInsetAreaProperty",
+      message: "The `inset-area` property is deprecated. Please use the `position-area` property instead.",
+      translation_note: "Warning displayed to developers when their website uses `inset-area` in CSS. They can simply switch their CSS to `position-area` and it will function in the same way.",
+      web_features: [
+        "kCSSInsetAreaProperty",
+      ],
+      milestone: 129,
+      chrome_status_feature: 5142143019253760,
+    },
+    {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
       message: "The `disableRemotePlayback` attribute should be used in order to disable the default Cast integration instead of using `-internal-media-controls-overlay-cast-button` selector.",
       translation_note: "Warning displayed to developers when they hide the Cast button on a video element using the deprecated CSS selector instead of using the disableRemotePlayback attribute on the element.",
@@ -177,6 +187,8 @@
         "kCSSValueAppearanceNonStandard",
       ],
       chrome_status_feature: 5066630972833792,
+      milestone: 118,
+      obsolete_to_be_removed_after_milestone: 142,
     },
     {
       name: "CSSValueAppearanceSliderVertical",

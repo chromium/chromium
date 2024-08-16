@@ -15,7 +15,6 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -30,6 +29,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_thread.h"
@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 
 class LocationBarViewBrowserTest : public InProcessBrowserTest {
@@ -238,6 +239,14 @@ IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest,
   // |omnibox_view_views|.
   EXPECT_EQ(omnibox_view_views->bounds().right(),
             ime_inline_autocomplete_view->x());
+}
+
+IN_PROC_BROWSER_TEST_F(TouchLocationBarViewBrowserTest, AccessibleProperties) {
+  auto* view = GetLocationBarView();
+  ui::AXNodeData data;
+
+  view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
 }
 
 class SecurityIndicatorTest : public InProcessBrowserTest {

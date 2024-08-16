@@ -18,8 +18,6 @@
 
 namespace gl {
 
-const char kGLImplementationDesktopName[] = "desktop";
-const char kGLImplementationAppleName[] = "apple";
 const char kGLImplementationEGLName[] = "egl";
 const char kGLImplementationANGLEName[] = "angle";
 const char kGLImplementationMockName[] = "mock";

@@ -22,6 +22,7 @@
 <translation id="1561849081734670621">Da biste onemogućili način zaključavanja u Chromiumu, isključite ga na iPhoneu.</translation>
 <translation id="159029779861043703">Chromium štiti sigurnost vaših osjetljivih podataka uz Face ID.</translation>
 <translation id="1591119736686995611">Otvara rešetku kartica u Chromiumu.</translation>
+<translation id="16001233025397167">Sigurnosna provjera štiti vas od neovlaštenog pristupa podacima, nesigurnih web-lokacija i još mnogo toga. Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
 <translation id="1611584326765829247">Neka vam Chromium pomogne pratiti pakete</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
 <translation id="1647558790457890304">Postavke Chromiuma</translation>
@@ -56,6 +57,7 @@
 <translation id="2426113998523353159">Vaša organizacija zahtijeva da se prijavite da biste koristili Chromium.</translation>
 <translation id="2450140762465183767">Sad možete koristiti Chromium svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="2478931088402984578">Odaberite <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
+<translation id="2497941343438581585">Iskoristite prednosti kupnje na Chromiumu</translation>
 <translation id="252374538254180121">Postavi Chromium kao zadani preglednik</translation>
 <translation id="2574528844022712255">Pogledajte Chromiumove oznake</translation>
 <translation id="2590893390871230428">Sinkroniziraj podatke iz Chromiuma</translation>
@@ -103,6 +105,7 @@ Više postavki koje upotrebljavaju podatke za poboljšanje vašeg doživljaja u 
 <translation id="3855938650519180865">Novosti u Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na ovu web-lokaciju i Chromium kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>
 <translation id="3904484643286601695">Svoje odabire uvijek možete ažurirati u postavkama Chromiuma.</translation>
+<translation id="3983291422281996849">Postavite Chromium kao zadani preglednik da biste jednostavno pratili cijene i dobivali uvide u cijene artikala koje želite kupiti.</translation>
 <translation id="4005283307739974863">Otvara i pokreće sigurnosnu provjeru u Chromiumu.</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
@@ -117,6 +120,7 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="4432744876818348753">Prijavite se da biste iskoristili sve prednosti Chromiuma.</translation>
 <translation id="4445228361214254027">Vaša organizacija isključila je mogućnost upotrebe i spremanja Chromiumovih podataka na vaš Google račun. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
 <translation id="4498832288620833153">Dodaje unesene URL-ove na vaš popis za čitanje u Chromiumu.</translation>
+<translation id="451793238785269934">Prilagođeni feed izrađen za vas. Uključuje vijesti, sport i vremensku prognozu.</translation>
 <translation id="452436063477828504">Provjerite možete li uvijek upotrebljavati podatke iz Chromiuma na svom Google računu</translation>
 <translation id="4555020257205549924">Kada je ta značajka uključena, Chromium će ponuditi prijevod stranica napisanih na drugim jezicima pomoću Google prevoditelja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4572441104543926904">Šifriranje šifre ne uključuje načine plaćanja i adrese.
@@ -133,6 +137,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="4736424910885271643">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromiuma izbrisati s ovog uređaja</translation>
 <translation id="4790638144988730920">Nastavite upotrebljavati podatke iz Chromiuma na svom Google računu.</translation>
 <translation id="4828317641996116749">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo kasnije.</translation>
+<translation id="4904452304169763785">Upozorenja o problemima s privatnošću ili sigurnošću koje Chromium otkrije za vas.</translation>
 <translation id="4962295957157529683">Dovršite ono što ste radili u drugom otvorenom Chromiumovom prozoru.</translation>
 <translation id="4985291216379576555">Chromium ne može provjeriti ima li ažuriranja jer ste offline</translation>
 <translation id="4996471330284142407">Veća učinkovitost uz Chromium, jednostavniji, sigurniji i brži nego ikad.</translation>
@@ -144,6 +149,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
 <translation id="5146749061471423558">Dodavanje oznaka u Chromium</translation>
 <translation id="5171868502429358653">Prijava na Chromium</translation>
+<translation id="5203483872492817335">Brže pristupite Chromiumu putem donje trake početnog zaslona na iPadu.</translation>
 <translation id="5213683223491576284">Otvara Upravitelj zaporki u Chromiumu.</translation>
 <translation id="5224391634244552924">Nema nijedne spremljene zaporke. Chromium može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="5242782538551259282">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
@@ -175,6 +181,7 @@ Važne napomene:
   • Ako se Chromium sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
 
   • Ako povijest sinkronizirate s Google računom, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjećujete.<ph name="END_INDENT" /></translation>
+<translation id="593808800391107017">Primajte upozorenja o problemima s privatnošću ili sigurnošću koje Chromium automatski otkrije za vas.</translation>
 <translation id="5945387852661427312">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromiumu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite s Chromiuma, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="5951593919357934226">Iskoristite sve prednosti Chromiuma.</translation>
 <translation id="5983312940147103417">Poboljšavanje Chromiuma</translation>
@@ -225,6 +232,7 @@ Važne napomene:
 Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromiumove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Obavijesti Chromiuma trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="7222001353246886083">Pretraži ${searchPhrase} u Chromiumu</translation>
+<translation id="7228180817326917122">Savjet za Chromium: odaberite položaj adresne trake</translation>
 <translation id="725427773388857052">Chromium vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
 <translation id="7269362888766543920">Neki programski dodaci uzrokuju rušenje Chromiuma. Pokušajte ih deinstalirati.</translation>
 <translation id="7285031092584344905">Pristupajte svojim zaporkama u Chromiumu i ostalome u drugim aplikacijama.</translation>
@@ -247,6 +255,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="7928628054454574139">Otvorite Chromium svaki put kada dodirnite veze u drugim aplikacijama</translation>
 <translation id="7931842119211730154">Zaključavanje anonimnih kartica pri zatvaranju Chromea</translation>
 <translation id="7934404985878918282">Pogledajte Chromiumov popis za čitanje</translation>
+<translation id="7947765692209663835">Brže pristupite Chromiumu putem donje trake početnog zaslona na iPhoneu.</translation>
 <translation id="7971753607796745700">Dodavanje stavke popisa za čitanje u Chromium</translation>
 <translation id="7980860476903281594">Chromium dijeli vašu lokaciju s web-lokacijama za koje dopustite dijeljenje.</translation>
 <translation id="7994322153108931467">Da biste primali korisne savjete o Chromiumu, uključite obavijesti u postavkama iOS-a.</translation>
@@ -260,11 +269,13 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="8235427517854598594">Želite li postaviti Chromium kao zadani preglednik?</translation>
 <translation id="8240981428553046115">Chromium nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="8254729934443216898">Istražite nove značajke koje će vam pomoći da iskoristite sve prednosti Chromiuma.</translation>
+<translation id="829047622686389424">Prilagođeni feed izrađen za vas.</translation>
 <translation id="8303579360494576778">Upravljaj načinima plaćanja u Chromiumu</translation>
 <translation id="830951810931292870">Unesene URL-ove otvara u Chromiumu u anonimnom načinu.</translation>
 <translation id="8386869251364507178">Radnje Chromiuma</translation>
 <translation id="8409374867500149834">Imate najsnažniju Chromiumovu zaštitu od štetnih web-lokacija</translation>
 <translation id="8458950033462118672">Veze u Chromiumu možete otvoriti automatski tako da ga postavite kao zadanu aplikaciju preglednika.</translation>
+<translation id="8473874987831035139">Savjet za Chromium: premjestite Chromium na donju traku</translation>
 <translation id="8502918057530111907">Upotrebljavajte Chromium prema zadanim postavkama za jednostavno dobivanje uvida u cijene</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{To se događa kada se Chromium ne koristi {THRESHOLD} minutu. Izbrisat će se podaci koji su spremljeni samo na ovaj uređaj dok ste bili prijavljeni. To može uključivati povijest i zaporke.}one{To se događa kada se Chromium ne koristi {THRESHOLD} minutu. Izbrisat će se podaci koji su spremljeni samo na ovaj uređaj dok ste bili prijavljeni. To može uključivati povijest i zaporke.}few{To se događa kada se Chromium ne koristi {THRESHOLD} minute. Izbrisat će se podaci koji su spremljeni samo na ovaj uređaj dok ste bili prijavljeni. To može uključivati povijest i zaporke.}other{To se događa kada se Chromium ne koristi {THRESHOLD} minuta. Izbrisat će se podaci koji su spremljeni samo na ovaj uređaj dok ste bili prijavljeni. To može uključivati povijest i zaporke.}}</translation>
 <translation id="858114650497379505">Zaporke koje ste spremili u Upravitelj zaporki možete koristiti u drugim aplikacijama na iPhoneu.</translation>

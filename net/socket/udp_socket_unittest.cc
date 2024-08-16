@@ -895,18 +895,30 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV4) {
   UDPClientSocket client(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
   client.Connect(server_address);
   EXPECT_EQ(client.SetRecvTos(), 0);
-  IPEndPoint client_address;
-  client.GetLocalAddress(&client_address);
+  EXPECT_EQ(server.SetRecvTos(), 0);
 
+#if BUILDFLAG(IS_WIN)
+  // Do not exercise the DSCP code because it requires a mock Qwave API.
+  EXPECT_EQ(client.SetTos(DSCP_NO_CHANGE, ECN_ECT1), 0);
+#else
+  EXPECT_EQ(client.SetTos(DSCP_AF41, ECN_ECT1), 0);
+#endif
+  std::string client_message = "hello";
+  EXPECT_EQ(WriteSocket(&client, client_message),
+            static_cast<int>(client_message.length()));
+  EXPECT_EQ(RecvFromSocket(&server, DSCP_AF41, ECN_ECT1),
+            client_message.data());
+
+  // Server messages
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_ECT1), 0);
   std::string first_message = "foobar";
-  EXPECT_EQ(SendToSocket(&server, first_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, first_message),
             static_cast<int>(first_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, ECN_ECT1), first_message.data());
 
   std::string second_message = "foo";
   EXPECT_EQ(server.SetTos(DSCP_CS2, ECN_ECT0), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, ECN_ECT0), second_message.data());
 
@@ -918,17 +930,17 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV4) {
 #endif
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, final_ecn), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 
@@ -938,8 +950,7 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV4) {
 
 // Send DSCP + ECN marked packets from server to client and verify the TOS
 // bytes that arrive.
-// TODO(crbug.com/356363142): Test fails on multiple iOS builders.
-TEST_F(UDPSocketTest, DISABLED_VerifyDscpAndEcnExchangeV6) {
+TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeV6) {
   IPEndPoint server_address(IPAddress::IPv6Localhost(), 0);
   UDPServerSocket server(nullptr, NetLogSource());
   server.AllowAddressReuse();
@@ -949,18 +960,30 @@ TEST_F(UDPSocketTest, DISABLED_VerifyDscpAndEcnExchangeV6) {
   UDPClientSocket client(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
   EXPECT_THAT(client.Connect(server_address), IsOk());
   EXPECT_EQ(client.SetRecvTos(), 0);
-  IPEndPoint client_address;
-  EXPECT_THAT(client.GetLocalAddress(&client_address), IsOk());
+  EXPECT_EQ(server.SetRecvTos(), 0);
 
+#if BUILDFLAG(IS_WIN)
+  // Do not exercise the DSCP code because it requires a mock Qwave API.
+  EXPECT_EQ(client.SetTos(DSCP_NO_CHANGE, ECN_ECT1), 0);
+#else
+  EXPECT_EQ(client.SetTos(DSCP_AF41, ECN_ECT1), 0);
+#endif
+  std::string client_message = "hello";
+  EXPECT_EQ(WriteSocket(&client, client_message),
+            static_cast<int>(client_message.length()));
+  EXPECT_EQ(RecvFromSocket(&server, DSCP_AF41, ECN_ECT1),
+            client_message.data());
+
+  // Server messages
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_ECT1), 0);
   std::string first_message = "foobar";
-  EXPECT_EQ(SendToSocket(&server, first_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, first_message),
             static_cast<int>(first_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, ECN_ECT1), first_message.data());
 
   std::string second_message = "foo";
   EXPECT_EQ(server.SetTos(DSCP_CS2, ECN_ECT0), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, ECN_ECT0), second_message.data());
 
@@ -972,17 +995,17 @@ TEST_F(UDPSocketTest, DISABLED_VerifyDscpAndEcnExchangeV6) {
 #endif
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, final_ecn), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 
@@ -1075,18 +1098,30 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeNonBlocking) {
   client.UseNonBlockingIO();
   client.Connect(server_address);
   EXPECT_EQ(client.SetRecvTos(), 0);
-  IPEndPoint client_address;
-  client.GetLocalAddress(&client_address);
+  EXPECT_EQ(server.SetRecvTos(), 0);
 
+#if BUILDFLAG(IS_WIN)
+  // Do not exercise the DSCP code because it requires a mock Qwave API.
+  EXPECT_EQ(client.SetTos(DSCP_NO_CHANGE, ECN_ECT1), 0);
+#else
+  EXPECT_EQ(client.SetTos(DSCP_AF41, ECN_ECT1), 0);
+#endif
+  std::string client_message = "hello";
+  EXPECT_EQ(WriteSocket(&client, client_message),
+            static_cast<int>(client_message.length()));
+  EXPECT_EQ(RecvFromSocket(&server, DSCP_AF41, ECN_ECT1),
+            client_message.data());
+
+  // Server messages
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_ECT1), 0);
   std::string first_message = "foobar";
-  EXPECT_EQ(SendToSocket(&server, first_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, first_message),
             static_cast<int>(first_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, ECN_ECT1), first_message.data());
 
   std::string second_message = "foo";
   EXPECT_EQ(server.SetTos(DSCP_CS2, ECN_ECT0), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, ECN_ECT0), second_message.data());
 
@@ -1094,17 +1129,17 @@ TEST_F(UDPSocketTest, VerifyDscpAndEcnExchangeNonBlocking) {
   EcnCodePoint final_ecn = ECN_ECT1;
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, final_ecn), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_CS2, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_AF41, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 
   EXPECT_EQ(server.SetTos(DSCP_NO_CHANGE, ECN_NO_CHANGE), 0);
-  EXPECT_EQ(SendToSocket(&server, second_message, client_address),
+  EXPECT_EQ(SendToSocket(&server, second_message),
             static_cast<int>(second_message.length()));
   EXPECT_EQ(ReadSocket(&client, DSCP_AF41, final_ecn), second_message.data());
 

@@ -332,7 +332,7 @@ INSTANTIATE_TEST_SUITE_P(
         case net::SpawnedTestServer::TYPE_WSS:
           return "Wss";
         default:
-          NOTREACHED_NORETURN();
+          NOTREACHED();
       }
     });
 

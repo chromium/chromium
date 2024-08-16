@@ -150,14 +150,12 @@ PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
                   project_view='chromium'))
 
 # The same as PUBLIC_TRY_SUBMITTED_BUILDS_SUBQUERY, but for internal trybots.
-# Chrome try attempts aren't in their own partitioned tabled, so look for Chrome
-# attempts in the raw table.
 INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = """\
   submitted_builds AS (
 {chrome_builds_subquery}
-  )""".format(
-    chrome_builds_subquery=queries_module.RAW_SUBMITTED_BUILDS_TEMPLATE.format(
-        project_view='chrome'))
+  )""".format(chrome_builds_subquery=queries_module.
+              PARTITIONED_SUBMITTED_BUILDS_TEMPLATE.format(
+                  project_view='chrome'))
 
 KNOWN_TEST_ID_PREFIXES = [
     'ninja://:blink_web_tests/',

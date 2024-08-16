@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
@@ -56,7 +57,7 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   void OnPerformAction();
 
   // Interrogates the configuration Views for DialogDelegate.
-  ui::ModalType GetModalType() const;
+  ui::mojom::ModalType GetModalType() const;
   int GetDialogButtons() const;
 
   void OnCloseCallback();

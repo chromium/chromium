@@ -79,7 +79,9 @@ const blink::InterestGroup::Ad& ChosenAd(
 
 bool IsKAnonForReporting(
     const SingleStorageInterestGroup& storage_interest_group,
-    const blink::InterestGroup::Ad& chosen_ad) {
+    const blink::InterestGroup::Ad& chosen_ad,
+    base::optional_ref<const std::string>
+        selected_buyer_and_seller_reporting_id) {
   // K-anonymity enforcement is always disabled for the testing population.
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting)) {
@@ -93,8 +95,64 @@ bool IsKAnonForReporting(
   }
 
   std::string reporting_key = HashedKAnonKeyForAdNameReporting(
-      storage_interest_group->interest_group, chosen_ad);
+      storage_interest_group->interest_group, chosen_ad,
+      selected_buyer_and_seller_reporting_id);
   return storage_interest_group->hashed_kanon_keys.contains(reporting_key);
+}
+
+// Sets the reporting IDs to pass to the worklet's `reportWin()` method,
+// based on the reporting ID fields present in the winning ad.
+//
+// `reporting_id_field` will be set to the field that's populated, and the
+// corresponding output parameter will be populated with the reporting ID
+// from the winning ad.
+//
+// The order of precedence for which reporting ID is sent is:
+//   1. `selected_buyer_and_seller_reporting_id` (more context below)
+//   2. `buyer_and_seller_reporting_id`
+//   3. `buyer_reporting_id`
+//   4. `interest_group_name` (Only if none of the above are present)
+//
+// When `selected_buyer_and_seller_reporting_id` is set in the winning ad,
+// the `buyer_reporting_id` and `buyer_and_seller_reporting_id` fields may
+// also be populated.
+//
+// If `selected_buyer_and_seller_reporting_id` is not set, then only one
+// reporting ID field will be populated.
+void SetReportWinReportingIds(
+    const std::string& interest_group_name,
+    const std::optional<std::string>&
+        maybe_selected_buyer_and_seller_reporting_id,
+    const blink::InterestGroup::Ad& chosen_ad,
+    auction_worklet::mojom::ReportingIdField& reporting_id_field,
+    std::optional<std::string>& interest_group_name_reporting_id,
+    std::optional<std::string>& buyer_reporting_id,
+    std::optional<std::string>& buyer_and_seller_reporting_id,
+    std::optional<std::string>& selected_buyer_and_seller_reporting_id) {
+  if (maybe_selected_buyer_and_seller_reporting_id.has_value()) {
+    reporting_id_field = auction_worklet::mojom::ReportingIdField::
+        kSelectedBuyerAndSellerReportingId;
+    selected_buyer_and_seller_reporting_id =
+        maybe_selected_buyer_and_seller_reporting_id;
+    buyer_and_seller_reporting_id = chosen_ad.buyer_and_seller_reporting_id;
+    buyer_reporting_id = chosen_ad.buyer_reporting_id;
+    return;
+  }
+  if (chosen_ad.buyer_and_seller_reporting_id.has_value()) {
+    reporting_id_field =
+        auction_worklet::mojom::ReportingIdField::kBuyerAndSellerReportingId;
+    buyer_and_seller_reporting_id = *chosen_ad.buyer_and_seller_reporting_id;
+    return;
+  }
+  if (chosen_ad.buyer_reporting_id.has_value()) {
+    reporting_id_field =
+        auction_worklet::mojom::ReportingIdField::kBuyerReportingId;
+    buyer_reporting_id = *chosen_ad.buyer_reporting_id;
+    return;
+  }
+  reporting_id_field =
+      auction_worklet::mojom::ReportingIdField::kInterestGroupName;
+  interest_group_name_reporting_id = interest_group_name;
 }
 
 }  // namespace
@@ -109,30 +167,6 @@ const base::FeatureParam<int> kFledgeScoreReportingBits{
     &kFledgeRounding, "fledge_score_reporting_bits", 8};
 const base::FeatureParam<int> kFledgeAdCostReportingBits{
     &kFledgeRounding, "fledge_ad_cost_reporting_bits", 8};
-
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    url::Origin reporting_origin,
-    std::optional<url::Origin> aggregation_coordinator_origin)
-    : reporting_origin(std::move(reporting_origin)),
-      aggregation_coordinator_origin(
-          std::move(aggregation_coordinator_origin)) {}
-
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    const PrivateAggregationKey& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey&
-InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
-    const PrivateAggregationKey& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey::PrivateAggregationKey(
-    PrivateAggregationKey&& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey&
-InterestGroupAuctionReporter::PrivateAggregationKey::operator=(
-    PrivateAggregationKey&& other) = default;
-
-InterestGroupAuctionReporter::PrivateAggregationKey::~PrivateAggregationKey() =
-    default;
 
 InterestGroupAuctionReporter::SellerWinningBidInfo::SellerWinningBidInfo() =
     default;
@@ -522,16 +556,22 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
     highest_scoring_other_bid_currency = std::nullopt;
   }
 
-  // Send in buyer_and_seller_reporting_id if it's configured on the winning
+  // Send in buyer_and_seller_reporting_id and
+  // selected_buyer_and_seller_reporting_id if it's configured on the winning
   // ad and sufficiently k-anonymous.
   std::optional<std::string> browser_signal_buyer_and_seller_reporting_id;
+  std::optional<std::string>
+      browser_signal_selected_buyer_and_seller_reporting_id;
+
   auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
                             winning_bid_info_.render_url);
-  if (chosen_ad.buyer_and_seller_reporting_id.has_value() &&
-      IsKAnonForReporting(winning_bid_info_.storage_interest_group,
-                          chosen_ad)) {
+  if (IsKAnonForReporting(
+          winning_bid_info_.storage_interest_group, chosen_ad,
+          winning_bid_info_.selected_buyer_and_seller_reporting_id)) {
     browser_signal_buyer_and_seller_reporting_id =
-        *chosen_ad.buyer_and_seller_reporting_id;
+        chosen_ad.buyer_and_seller_reporting_id;
+    browser_signal_selected_buyer_and_seller_reporting_id =
+        winning_bid_info_.selected_buyer_and_seller_reporting_id;
   }
 
   seller_worklet_handle_->AuthorizeSubresourceUrls(
@@ -550,6 +590,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
       winning_bid_info_.storage_interest_group->interest_group.owner,
       /*browser_signal_buyer_and_seller_reporting_id=*/
       browser_signal_buyer_and_seller_reporting_id,
+      /*browser_signal_selected_buyer_and_seller_reporting_id=*/
+      browser_signal_selected_buyer_and_seller_reporting_id,
       winning_bid_info_.render_url, seller_info->rounded_bid, bid_currency,
       RoundStochasticallyToKBits(seller_info->score,
                                  kFledgeScoreReportingBits.Get()),
@@ -750,34 +792,31 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           *auction_config,
           winning_bid_info_.storage_interest_group->interest_group.owner);
 
-  // Figure out what field to use for reporting id.
-  std::string reporting_id =
-      winning_bid_info_.storage_interest_group->interest_group.name;
   auction_worklet::mojom::ReportingIdField reporting_id_field =
-      auction_worklet::mojom::ReportingIdField::kInterestGroupName;
+      auction_worklet::mojom::ReportingIdField::kNone;
+  std::optional<std::string> interest_group_name_reporting_id;
+  std::optional<std::string> buyer_reporting_id;
+  std::optional<std::string> buyer_and_seller_reporting_id;
+  std::optional<std::string> selected_buyer_and_seller_reporting_id;
 
-  auto chosen_ad = ChosenAd(winning_bid_info_.storage_interest_group,
-                            winning_bid_info_.render_url);
-  if (chosen_ad.buyer_and_seller_reporting_id.has_value()) {
-    reporting_id_field =
-        auction_worklet::mojom::ReportingIdField::kBuyerAndSellerReportingId;
-    reporting_id = *chosen_ad.buyer_and_seller_reporting_id;
-  } else if (chosen_ad.buyer_reporting_id.has_value()) {
-    reporting_id_field =
-        auction_worklet::mojom::ReportingIdField::kBuyerReportingId;
-    reporting_id = *chosen_ad.buyer_reporting_id;
-  }
+  const blink::InterestGroup::Ad& chosen_ad = ChosenAd(
+      winning_bid_info_.storage_interest_group, winning_bid_info_.render_url);
+
   // If k-anonymity enforcement is on we can only reveal the winning reporting
   // id in reportWin if the winning ad's reporting_ads_kanon entry is
   // k-anonymous.
   //
   // An exception to this is contextual bids, which have access to page
   // information anyway.
-  if (!winning_bid_info_.provided_as_additional_bid &&
-      !IsKAnonForReporting(winning_bid_info_.storage_interest_group,
-                           chosen_ad)) {
-    reporting_id = "";
-    reporting_id_field = auction_worklet::mojom::ReportingIdField::kNone;
+  if (winning_bid_info_.provided_as_additional_bid ||
+      IsKAnonForReporting(winning_bid_info_.storage_interest_group, chosen_ad,
+                          selected_buyer_and_seller_reporting_id)) {
+    SetReportWinReportingIds(
+        winning_bid_info_.storage_interest_group->interest_group.name,
+        winning_bid_info_.selected_buyer_and_seller_reporting_id, chosen_ad,
+        reporting_id_field, interest_group_name_reporting_id,
+        buyer_reporting_id, buyer_and_seller_reporting_id,
+        selected_buyer_and_seller_reporting_id);
   }
   base::UmaHistogramEnumeration(
       top_level_seller_winning_bid_info_.saved_response.has_value()
@@ -821,8 +860,10 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
           : winning_bid_info_.bid;
 
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
-      winning_bid_info_.provided_as_additional_bid, reporting_id_field,
-      reporting_id, auction_config->non_shared_params.auction_signals.value(),
+      winning_bid_info_.provided_as_additional_bid,
+      interest_group_name_reporting_id, buyer_reporting_id,
+      buyer_and_seller_reporting_id, selected_buyer_and_seller_reporting_id,
+      auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
       InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
           seller_info.subresource_url_builder.get(),

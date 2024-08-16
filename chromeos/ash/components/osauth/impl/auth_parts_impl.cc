@@ -83,6 +83,7 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
 
   login_screen_policy_connector_ =
       std::make_unique<LoginScreenAuthPolicyConnector>(local_state);
+  legacy_auth_surface_registry_ = std::make_unique<LegacyAuthSurfaceRegistry>();
   auth_surface_registry_ = std::make_unique<AuthSurfaceRegistry>();
 }
 
@@ -165,6 +166,10 @@ void AuthPartsImpl::Shutdown() {
   if (profile_prefs_policy_connector_) {
     profile_prefs_policy_connector_->OnShutdown();
   }
+}
+
+LegacyAuthSurfaceRegistry* AuthPartsImpl::GetLegacyAuthSurfaceRegistry() {
+  return legacy_auth_surface_registry_.get();
 }
 
 AuthSurfaceRegistry* AuthPartsImpl::GetAuthSurfaceRegistry() {

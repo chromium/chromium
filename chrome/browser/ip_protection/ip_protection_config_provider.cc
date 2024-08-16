@@ -9,16 +9,22 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
-#include "components/ip_protection/common/ip_protection_config_http.h"
-#include "components/ip_protection/ip_protection_config_provider_helper.h"
-#include "components/ip_protection/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_config_provider_helper.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
+#include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
@@ -37,6 +43,7 @@
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
@@ -46,7 +53,10 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
     : identity_manager_(identity_manager),
       tracking_protection_settings_(tracking_protection_settings),
       pref_service_(pref_service),
-      profile_(profile) {
+      profile_(profile),
+      token_fetcher_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
   CHECK(tracking_protection_settings);
@@ -55,15 +65,16 @@ IpProtectionConfigProvider::IpProtectionConfigProvider(
 }
 
 void IpProtectionConfigProvider::SetUp() {
-  if (!ip_protection_config_http_) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!ip_protection_token_fetcher_) {
     if (!url_loader_factory_) {
       CHECK(profile_);
       url_loader_factory_ = profile_->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
     }
-    ip_protection_config_http_ =
-        std::make_unique<ip_protection::IpProtectionConfigHttp>(
-            url_loader_factory_.get());
+    ip_protection_token_fetcher_ =
+        base::SequenceBound<ip_protection::IpProtectionTokenFetcher>(
+            token_fetcher_task_runner_, url_loader_factory_->Clone());
   }
   if (!ip_protection_proxy_config_fetcher_) {
     ip_protection_proxy_config_fetcher_ =
@@ -72,36 +83,26 @@ void IpProtectionConfigProvider::SetUp() {
             ip_protection::IpProtectionConfigProviderHelper::kChromeIpBlinding,
             google_apis::GetAPIKey(chrome::GetChannel()));
   }
-  if (!bsa_) {
-    if (!blind_sign_auth_) {
-      privacy::ppn::BlindSignAuthOptions bsa_options{};
-      bsa_options.set_enable_privacy_pass(true);
-
-      blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
-          ip_protection_config_http_.get(), std::move(bsa_options));
-    }
-    bsa_ = blind_sign_auth_.get();
-  }
 }
 
 void IpProtectionConfigProvider::SetUpForTesting(
     std::unique_ptr<ip_protection::IpProtectionProxyConfigRetriever>
         ip_protection_proxy_config_retriever,
-    std::unique_ptr<ip_protection::IpProtectionConfigHttp>
-        ip_protection_config_http,
-    quiche::BlindSignAuthInterface* bsa) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<quiche::BlindSignAuthInterface> bsa) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Carefully destroy any existing values in the correct order.
   ip_protection_proxy_config_fetcher_ = nullptr;
-  ip_protection_config_http_ = nullptr;
+  ip_protection_token_fetcher_.Reset();
   url_loader_factory_ = nullptr;
+
+  ip_protection_token_fetcher_ =
+      base::SequenceBound<ip_protection::IpProtectionTokenFetcher>(
+          token_fetcher_task_runner_, url_loader_factory->Clone(),
+          std::move(bsa));
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigFetcher>(
           std::move(ip_protection_proxy_config_retriever));
-  ip_protection_config_http_ = std::move(ip_protection_config_http);
-
-  bsa_ = nullptr;
-  blind_sign_auth_ = nullptr;
-  bsa_ = bsa;
 }
 
 IpProtectionConfigProvider::~IpProtectionConfigProvider() = default;
@@ -148,11 +149,15 @@ void IpProtectionConfigProvider::TryGetAuthTokens(
   }
 
   auto oauth_token_fetch_start_time = base::TimeTicks::Now();
-  auto request_token_callback =
-      base::BindOnce(&IpProtectionConfigProvider::
-                         OnRequestOAuthTokenCompletedForTryGetAuthTokens,
-                     weak_ptr_factory_.GetWeakPtr(), batch_size, proxy_layer,
-                     std::move(callback), oauth_token_fetch_start_time);
+  auto quiche_proxy_layer =
+      proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA
+          ? quiche::ProxyLayer::kProxyA
+          : quiche::ProxyLayer::kProxyB;
+  auto request_token_callback = base::BindOnce(
+      &IpProtectionConfigProvider::
+          OnRequestOAuthTokenCompletedForTryGetAuthTokens,
+      weak_ptr_factory_.GetWeakPtr(), batch_size, quiche_proxy_layer,
+      std::move(callback), oauth_token_fetch_start_time);
 
   RequestOAuthToken(std::move(request_token_callback));
 }
@@ -250,7 +255,7 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompleted(
 void IpProtectionConfigProvider::
     OnRequestOAuthTokenCompletedForTryGetAuthTokens(
         uint32_t batch_size,
-        network::mojom::IpProtectionProxyLayer proxy_layer,
+        quiche::ProxyLayer quiche_proxy_layer,
         TryGetAuthTokensCallback callback,
         base::TimeTicks oauth_token_fetch_start_time,
         GoogleServiceAuthError error,
@@ -272,7 +277,7 @@ void IpProtectionConfigProvider::
   const base::TimeTicks current_time = base::TimeTicks::Now();
   base::UmaHistogramTimes("NetworkService.IpProtection.OAuthTokenFetchTime",
                           current_time - oauth_token_fetch_start_time);
-  FetchBlindSignedToken(access_token_info, batch_size, proxy_layer,
+  FetchBlindSignedToken(access_token_info, batch_size, quiche_proxy_layer,
                         std::move(callback));
 }
 
@@ -293,30 +298,25 @@ void IpProtectionConfigProvider::OnRequestOAuthTokenCompletedForGetProxyConfig(
 void IpProtectionConfigProvider::FetchBlindSignedToken(
     std::optional<signin::AccessTokenInfo> access_token_info,
     uint32_t batch_size,
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    quiche::ProxyLayer quiche_proxy_layer,
     TryGetAuthTokensCallback callback) {
+  std::optional<std::string> access_token = access_token_info.value().token;
   auto bsa_get_tokens_start_time = base::TimeTicks::Now();
-  auto quiche_proxy_layer =
-      proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA
-          ? quiche::ProxyLayer::kProxyA
-          : quiche::ProxyLayer::kProxyB;
-  bsa_->GetTokens(
-      access_token_info.value().token, batch_size, quiche_proxy_layer,
-      quiche::BlindSignAuthServiceType::kChromeIpBlinding,
-      [weak_ptr = weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
-       callback = std::move(callback)](
-          absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) mutable {
-        if (weak_ptr) {
-          weak_ptr->OnFetchBlindSignedTokenCompleted(
-              bsa_get_tokens_start_time, std::move(callback), tokens);
-        }
-      });
+  ip_protection_token_fetcher_
+      .AsyncCall(
+          &ip_protection::IpProtectionTokenFetcher::FetchBlindSignedToken)
+      .WithArgs(
+          std::move(access_token), batch_size, quiche_proxy_layer,
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted,
+              weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
+              std::move(callback))));
 }
 
 void IpProtectionConfigProvider::OnFetchBlindSignedTokenCompleted(
     base::TimeTicks bsa_get_tokens_start_time,
     TryGetAuthTokensCallback callback,
-    absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) {
+    absl::StatusOr<std::vector<quiche::BlindSignToken>> tokens) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
@@ -448,7 +448,7 @@ std::optional<base::TimeDelta> IpProtectionConfigProvider::CalculateBackoff(
       exponential = true;
       break;
     case IpProtectionTryGetAuthTokensResult::kFailedOAuthTokenDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Note that we calculate the backoff assuming that we've waited for
@@ -502,11 +502,11 @@ void IpProtectionConfigProvider::Shutdown() {
   tracking_protection_settings_ = nullptr;
   pref_service_ = nullptr;
   profile_ = nullptr;
+  ip_protection_token_fetcher_.Reset();
   // If we are shutting down, we can't process messages anymore because we
   // rely on having `identity_manager_` to get the OAuth token. Thus, just
   // reset the receiver set.
   receivers_.Clear();
-  bsa_ = nullptr;
 }
 
 /*static*/

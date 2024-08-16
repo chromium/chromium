@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Rózsásbarna</translation>
 <translation id="249330843868392562">A szövegfelolvasóhoz tartozó beállítások megnyitása</translation>
 <translation id="2497706219848005458">Zöldessárga</translation>
+<translation id="2512979179176933762">ablakok megjelenítése</translation>
 <translation id="2523609930580546572">ChromeVox-útmutató</translation>
 <translation id="2525706221823668172">Chromebook-billentyűparancsok</translation>
 <translation id="2553108862507765288">nyelvtani hiba</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Acélkék</translation>
 <translation id="4253168017788158739">Jegyzet</translation>
 <translation id="4254798249533888099">Fa</translation>
+<translation id="4259220820964911921">Engedélyezi az arcvezérlést?</translation>
 <translation id="4271220233568730077">Következő művelet</translation>
 <translation id="4275397969489577657">Esemény streamnaplózásának engedélyezése</translation>
 <translation id="4278486392851938658">Nincs előző felkeresett link</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Függelék</translation>
 <translation id="5761219715606611783">Ügyes! Megtanulta a ChromeVox érintéses használatának alapjait. Az alábbi gombokkal bezárhatja az útmutatót, illetve újra végig is csinálhatja.</translation>
 <translation id="5776001898637896684">A Google Enhanced Network szövegfelolvasó bővítménye</translation>
+<translation id="5783252477644995371">Az Arcvezérlés funkcióval a kurzor arccal vezérelhető, továbbá arckifejezések használatával különféle műveletek (például kattintás a bal egérgombbal mosoly segítségével) végezhetők el</translation>
 <translation id="5805940204952508776">Koppintson két ujjal</translation>
 <translation id="5819072574982403430">Faelem</translation>
 <translation id="5822819874379903994">Sötéttürkiz</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">Nincs következő jelölőnégyzet</translation>
 <translation id="8473540203671727883">Kurzor alatti szöveg felolvasása</translation>
 <translation id="8476408756881832830">Lejátszás szüneteltetése, amikor a ChromeVox beszél</translation>
-<translation id="8476508772960940536">ablakáttekintési mód</translation>
 <translation id="8480873377842220259">Most bemutatjuk a navigáció alapjait. A képernyőn való mozgáshoz tartsa nyomva a Keresés gombot, és nyomja le a nyílbillentyűket. A folytatáshoz nyomja le a Keresés + Jobbra nyíl billentyűparancsot.</translation>
 <translation id="8503360654911991865">Navigáció részletezettségének csökkentése</translation>
 <translation id="8520472399088452386">Léptetőnyíl</translation>

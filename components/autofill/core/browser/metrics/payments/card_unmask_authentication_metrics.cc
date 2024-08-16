@@ -112,7 +112,7 @@ std::string GetOtpAuthType(CardUnmaskChallengeOptionType type) {
   } else if (type == CardUnmaskChallengeOptionType::kEmailOtp) {
     return "EmailOtp";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void LogRiskBasedAuthAttempt(CreditCard::RecordType card_type) {

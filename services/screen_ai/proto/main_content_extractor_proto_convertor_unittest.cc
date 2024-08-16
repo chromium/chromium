@@ -224,9 +224,11 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   ui::AXTreeUpdate tree_update =
       CreateAXTreeUpdateFromTemplate(1, input_tree, nodes_count);
   ui::AXTree tree(tree_update);
-  std::string serialized_proto = SnapshotToViewHierarchy(&tree);
+  std::optional<ViewHierarchyAndTreeSize> result =
+      SnapshotToViewHierarchy(tree);
+  ASSERT_TRUE(result);
   screenai::ViewHierarchy view_hierarchy;
-  ASSERT_TRUE(view_hierarchy.ParseFromString(serialized_proto));
+  ASSERT_TRUE(view_hierarchy.ParseFromString(result->serialized_proto));
 
   // Verify.
   EXPECT_EQ(view_hierarchy.ui_elements().size(), nodes_count);
@@ -244,8 +246,10 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
 TEST_F(MainContentExtractorProtoConvertorTest, ProtoTest) {
   ui::AXTree tree = CreateSampleTree();
 
-  std::string generated_proto =
-      ConvertProtoToText(SnapshotToViewHierarchy(&tree));
+  std::optional<ViewHierarchyAndTreeSize> result =
+      SnapshotToViewHierarchy(tree);
+  ASSERT_TRUE(result);
+  std::string generated_proto = ConvertProtoToText(result->serialized_proto);
   WriteDebugProto(generated_proto, "expected_proto.pbtxt");
   std::string expected_proto;
   ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_proto.pbtxt"),

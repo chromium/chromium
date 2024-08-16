@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -24,6 +25,9 @@
 namespace blink {
 
 namespace {
+
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
 
 const char kOrigin1[] = "https://origin1.test/";
 const char kOrigin2[] = "https://origin2.test/";
@@ -47,17 +51,21 @@ InterestGroup CreateInterestGroup() {
 // deserialization to succeed. Expects the deserialization to succeed, and to be
 // the same as the original group. Also makes sure the input InterestGroup is
 // not equal to the output of CreateInterestGroup(), to verify that
-// IsEqualForTesting() is checking whatever was modified in the input group.
+// IgExpect[Not]EqualsForTesting() is checking whatever was modified in the
+// input group.
 //
 // Arguments is not const because SerializeAndDeserialize() doesn't take a
 // const input value, as serializing some object types is destructive.
 void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
       interest_group, interest_group_clone));
-  EXPECT_TRUE(interest_group.IsEqualForTesting(interest_group_clone));
+  IgExpectEqualsForTesting(/*actual=*/interest_group_clone,
+                           /*expected=*/interest_group);
 }
 
 // A variant of SerializeAndDeserializeAndCompare() that expects serialization
@@ -71,7 +79,9 @@ void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
 // renderer-side logic, but InterestGroup::IsValid() still needs to be checked.
 void SerializeAndDeserializeExpectFailure(InterestGroup& interest_group,
                                           std::string_view tag = "") {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
@@ -311,31 +321,59 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithReportingIds) {
                                    /*size_group=*/std::nullopt);
   (*interest_group.ads)[0].buyer_reporting_id = "buyer_id_1";
   (*interest_group.ads)[0].buyer_and_seller_reporting_id = "both_id_1";
+  (*interest_group.ads)[0].selectable_buyer_and_seller_reporting_ids = {
+      "selectable_id1", "selectable_id2"};
   interest_group.ads->emplace_back(GURL(kUrl2),
                                    /*metadata=*/"[]",
                                    /*size_group=*/std::nullopt);
   (*interest_group.ads)[1].buyer_reporting_id = "buyer_id_2";
   (*interest_group.ads)[1].buyer_and_seller_reporting_id = "both_id_2";
+  (*interest_group.ads)[1].selectable_buyer_and_seller_reporting_ids = {
+      "selectable_id3", "selectable_id4"};
 
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
-TEST(InterestGroupMojomTraitsTest, AdComponentsWithReportingIdsInvalid) {
+TEST(InterestGroupMojomTraitsTest, AdComponentsWithBuyerReportingIdInvalid) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();
   interest_group.ad_components->emplace_back(GURL(kUrl1),
                                              /*metadata=*/std::nullopt,
                                              /*size_group=*/std::nullopt);
   (*interest_group.ad_components)[0].buyer_reporting_id = "buyer_id_1";
+  EXPECT_FALSE(interest_group.IsValid());
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     AdComponentsWithBuyerAndSellerReportingIdInvalid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
   (*interest_group.ad_components)[0].buyer_and_seller_reporting_id =
       "both_id_1";
   EXPECT_FALSE(interest_group.IsValid());
+}
 
-  (*interest_group.ad_components)[0].buyer_reporting_id = std::nullopt;
+TEST(InterestGroupMojomTraitsTest,
+     AdComponentsWithSelectableReportingIdInvalid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
+  (*interest_group.ad_components)[0].selectable_buyer_and_seller_reporting_ids =
+      {"selectable_id1", "selectable_id2"};
   EXPECT_FALSE(interest_group.IsValid());
+}
 
-  (*interest_group.ad_components)[0].buyer_and_seller_reporting_id =
-      std::nullopt;
+TEST(InterestGroupMojomTraitsTest, AdComponentsWithNoReportingIdsIsValid) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ad_components.emplace();
+  interest_group.ad_components->emplace_back(GURL(kUrl1),
+                                             /*metadata=*/std::nullopt,
+                                             /*size_group=*/std::nullopt);
   EXPECT_TRUE(interest_group.IsValid());
 }
 
@@ -376,6 +414,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"foo");
   interest_group.ads->emplace_back(
       GURL(kUrl2),
@@ -383,6 +422,7 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithAdRenderId) {
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"bar");
   SerializeAndDeserializeAndCompare(interest_group);
 }
@@ -401,6 +441,7 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt, allowed_reporting_origins_1);
   interest_group.ads->emplace_back(
       GURL(kUrl2),
@@ -408,6 +449,7 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/std::nullopt, allowed_reporting_origins_2);
   SerializeAndDeserializeAndCompare(interest_group);
 }
@@ -461,12 +503,14 @@ TEST(InterestGroupMojomTraitsTest,
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"foo");
   interest_group.ad_components->emplace_back(
       GURL(kUrl2), /*metadata=*/"[]",
       /*size_group=*/std::nullopt,
       /*buyer_reporting_id=*/std::nullopt,
       /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
       /*ad_render_id=*/"bar");
   SerializeAndDeserializeAndCompare(interest_group);
 }

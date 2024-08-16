@@ -26,6 +26,30 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace ui {
+namespace {
+
+constexpr char kGetContent[] = "android.intent.action.GET_CONTENT";
+constexpr char kOpenDocument[] = "android.intent.action.OPEN_DOCUMENT";
+constexpr char kOpenDocumentTree[] = "android.intent.action.OPEN_DOCUMENT_TREE";
+
+std::string IntentActionFromType(SelectFileDialog::Type type,
+                                 bool open_writable) {
+  switch (type) {
+    case SelectFileDialog::SELECT_NONE:
+      return kGetContent;
+    case SelectFileDialog::SELECT_OPEN_FILE:
+    case SelectFileDialog::SELECT_OPEN_MULTI_FILE:
+      return open_writable ? kOpenDocument : kGetContent;
+    case SelectFileDialog::SELECT_SAVEAS_FILE:
+      return kOpenDocument;
+    case SelectFileDialog::SELECT_FOLDER:
+    case SelectFileDialog::SELECT_UPLOAD_FOLDER:
+    case SelectFileDialog::SELECT_EXISTING_FOLDER:
+      return kOpenDocumentTree;
+  }
+}
+
+}  // namespace
 
 // static
 SelectFileDialogImpl* SelectFileDialogImpl::Create(
@@ -108,6 +132,10 @@ void SelectFileDialogImpl::SetUseMediaCapture(bool use_media_capture) {
   use_media_capture_ = use_media_capture;
 }
 
+void SelectFileDialogImpl::SetOpenWritable(bool open_writable) {
+  open_writable_ = open_writable;
+}
+
 void SelectFileDialogImpl::SelectFileImpl(
     SelectFileDialog::Type type,
     const std::u16string& title,
@@ -119,14 +147,17 @@ void SelectFileDialogImpl::SelectFileImpl(
     const GURL* caller) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
+  ScopedJavaLocalRef<jstring> intent_action =
+      base::android::ConvertUTF8ToJavaString(
+          env, IntentActionFromType(type, open_writable_));
   ScopedJavaLocalRef<jobjectArray> accept_types_java =
       base::android::ToJavaArrayOfStrings(env, accept_types_);
 
   bool accept_multiple_files = SelectFileDialog::SELECT_OPEN_MULTI_FILE == type;
 
-  Java_SelectFileDialog_selectFile(env, java_object_, accept_types_java,
-                                   use_media_capture_, accept_multiple_files,
-                                   owning_window->GetJavaObject());
+  Java_SelectFileDialog_selectFile(
+      env, java_object_, intent_action, accept_types_java, use_media_capture_,
+      accept_multiple_files, owning_window->GetJavaObject());
 }
 
 SelectFileDialogImpl::~SelectFileDialogImpl() {

@@ -731,9 +731,8 @@ TEST_F(DeviceManagementServiceTest, BrowserRegistrationRequest) {
                          kClientID, "");
 
   // Make sure request is properly authorized.
-  std::string header;
-  ASSERT_TRUE(request->request.headers.GetHeader("Authorization", &header));
-  EXPECT_EQ("GoogleEnrollmentToken token=enrollment_token", header);
+  EXPECT_EQ("GoogleEnrollmentToken token=enrollment_token",
+            request->request.headers.GetHeader("Authorization"));
 
   EXPECT_EQ(expected_data, network::GetUploadData(request->request));
 
@@ -760,10 +759,8 @@ TEST_F(DeviceManagementServiceTest, OidcEnrollmentRequest) {
                          kClientID, "");
 
   // Make sure request is properly authorized.
-  std::string header;
-  ASSERT_TRUE(request->request.headers.GetHeader("Authorization", &header));
   EXPECT_EQ("GoogleDM3PAuth oauth_token=oauth-token, id_token=id-token",
-            header);
+            request->request.headers.GetHeader("Authorization"));
 
   EXPECT_EQ(expected_data, network::GetUploadData(request->request));
 
@@ -1197,10 +1194,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
   // Returns the value of 'Authorization' header if found.
   std::optional<std::string> GetAuthHeader(
       const network::TestURLLoaderFactory::PendingRequest& request) {
-    std::string header;
-    bool result =
-        request.request.headers.GetHeader(dm_protocol::kAuthHeader, &header);
-    return result ? std::optional<std::string>(header) : std::nullopt;
+    return request.request.headers.GetHeader(dm_protocol::kAuthHeader);
   }
 };
 

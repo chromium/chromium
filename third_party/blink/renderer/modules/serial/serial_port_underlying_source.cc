@@ -163,7 +163,7 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
         buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
-        view.ByteSpan().first(buffer.size()).copy_from(buffer);
+        view.ByteSpan().copy_prefix_from(buffer);
         request->respond(script_state_, buffer.size(), exception_state);
       } else {
         auto chunk = NotShared(DOMUint8Array::Create(buffer));

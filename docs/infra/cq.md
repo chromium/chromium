@@ -131,6 +131,11 @@ The Chromium CQ supports a variety of options that can change what it checks.
   This should only be used for reverts to green the tree, since it skips try
   bots and might therefore break the tree. You shouldn't use this otherwise.
 
+* `Validate-Test-Flakiness: skip`
+
+  This will disable the `test new tests for flakiness.*` steps in CQ builds that
+  check new tests for flakiness.
+
 ## FAQ
 
 ### What exactly does the CQ run?

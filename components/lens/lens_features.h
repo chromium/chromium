@@ -17,10 +17,6 @@ namespace lens::features {
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensStandalone);
 
-// Feature that controls the compression of images before they are sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensImageCompression);
-
 // Enables a variety of changes aimed to improve user's engagement with current
 // Lens features.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -54,6 +50,10 @@ BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
 // Enables the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);
+
+// Enables the Lens overlay translate button.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -105,14 +105,6 @@ extern bool GetEnableLatencyLogging();
 // default search engines
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
-
-// Returns the max area for the image to be sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxAreaForImageSearch();
-
-// Returns the max pixel width/height for the image to be sent to Lens.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetMaxPixelsForImageSearch();
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -238,6 +230,10 @@ extern bool LensOverlayUseTieredDownscaling();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendLatencyGen204();
 
+// Returns whether or not to send task completion pings.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendTaskCompletionGen204();
+
 // Returns the finch configured max image height for the Lens overlay feature
 // when tiered downscaling approach is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -331,6 +327,11 @@ extern int GetLensOverlayClusterInfoLifetimeSeconds();
 // requests.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseSearchContextForTextOnlyLensOverlayRequests();
+
+// Returns whether to include the search context with text-only Lens Overlay
+// requests.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseSearchContextForMultimodalLensOverlayRequests();
 
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
@@ -476,6 +477,15 @@ extern bool GetLensOverlayEnableInFullscreen();
 // The corner radius in pixels for the vertex corners of the segmentation mask.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlaySegmentationMaskCornerRadius();
+
+// Number identifying variant sets of strings to use in the find bar.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayFindBarStringsVariant();
+
+// Whether to show the translate button in the Lens Overlay to allow translation
+// of the screenshot of the page.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTranslateButtonEnabled();
 
 }  // namespace lens::features
 

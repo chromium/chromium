@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APPS_CHROME_APP_WINDOW_CLIENT_H_
 #define CHROME_BROWSER_UI_APPS_CHROME_APP_WINDOW_CLIENT_H_
 
-#include "build/build_config.h"
 #include "extensions/browser/app_window/app_window_client.h"
 
 namespace base {

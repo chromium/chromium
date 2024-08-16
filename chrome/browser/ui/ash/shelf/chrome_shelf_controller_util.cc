@@ -7,13 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/public/cpp/window_properties.h"
-#include "ash/root_window_controller.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_app_button.h"
-#include "ash/shelf/shelf_view.h"
-#include "ash/shelf/shelf_widget.h"
-#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -36,7 +29,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/ash/shelf/standalone_window_migration_nudge_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -82,8 +74,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 
   if (ash::DemoSession::Get() &&
       base::ranges::none_of(*policy_ids, [](const auto& policy_id) {
-        return ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
-            policy_id);
+        return ash::DemoSession::Get()->ShouldShowAppInShelf(policy_id);
       })) {
     return AppListControllerDelegate::PIN_EDITABLE;
   }
@@ -293,51 +284,4 @@ void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
   }
 
   scalable_iph->MaybeRecordShelfItemActivationById(app_id);
-}
-
-void MaybeShowStandaloneMigrationNudge(const std::string& app_id,
-                                       Profile* profile) {
-  CHECK(ash::Shell::GetPrimaryRootWindowController());
-  ash::ShelfView* shelf_view = ash::Shell::GetPrimaryRootWindowController()
-                                   ->shelf()
-                                   ->hotseat_widget()
-                                   ->GetShelfView();
-
-  CHECK(profile);
-  CHECK(shelf_view);
-
-  ash::ShelfAppButton* anchor_view =
-      shelf_view->GetShelfAppButton(ash::ShelfID(app_id));
-
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
-  CHECK(app_service_proxy);
-
-  std::string app_name;
-  apps::WindowMode window_mode;
-
-  // Retrieving an app's window mode, set prior to the default window mode
-  // change, allows us to verify whether the nudge should be shown on opening
-  // this app. The nudge is to only be shown for apps previously displayed
-  // within the browser by default.
-  app_service_proxy->AppRegistryCache().ForOneApp(
-      app_id, [&app_name, &window_mode](const apps::AppUpdate& update) {
-        app_name = update.Name();
-        window_mode = update.WindowMode();
-      });
-
-  if (window_mode != apps::WindowMode::kBrowser) {
-    return;
-  }
-
-  PrefService* prefs = profile->GetPrefs();
-
-  if (prefs->GetBoolean(prefs::kStandaloneWindowMigrationNudgeShown)) {
-    return;
-  }
-
-  prefs->SetBoolean(prefs::kStandaloneWindowMigrationNudgeShown, true);
-
-  ash::CreateAndShowNudge(anchor_view, base::UTF8ToUTF16(app_name));
 }

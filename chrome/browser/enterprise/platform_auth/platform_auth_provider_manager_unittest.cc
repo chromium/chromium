@@ -198,8 +198,8 @@ TEST(PlatformAuthProviderManagerMetricsTest, Success) {
   ::testing::Mock::VerifyAndClearExpectations(&mock);
 
   ASSERT_TRUE(headers.HasHeader(net::HttpRequestHeaders::kCookie));
-  std::string new_cookie;
-  headers.GetHeader(net::HttpRequestHeaders::kCookie, &new_cookie);
+  std::string new_cookie = headers.GetHeader(net::HttpRequestHeaders::kCookie)
+                               .value_or(std::string());
 
   if (histogram_tester
           .GetAllSamples("Enterprise.PlatformAuth.GetAuthData.FailureHresult")

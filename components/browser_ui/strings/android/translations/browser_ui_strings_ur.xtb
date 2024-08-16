@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">برخاست کریں اور اگلا دستیاب ایکشن دکھائیں</translation>
 <translation id="3744111561329211289">پس منظر کی مطابقت پذیری</translation>
 <translation id="3763247130972274048">10 سیکنڈ کو نظر انداز کرنے کے لیے، دائیں یا بائیں ویڈیو پر دوبار تھپتھپائیں</translation>
+<translation id="3779154269823594982">پاس ورڈز تبدیل کریں</translation>
 <translation id="3797520601150691162">کسی مخصوص سائٹ کیلئے گہری تھیم لاگو نہ کریں</translation>
 <translation id="3803367742635802571">جو سائٹس آپ دیکھتے ہیں وہ ڈیزائن کے مطابق کام کرنا بند کر سکتی ہیں</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />۔ <ph name="TYPE_2" />۔</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">کسی مخصوص سائٹ کیلئے آواز کی اجازت دیں۔</translation>
 <translation id="789180354981963912">پوشیدگی وضع میں فریق ثالث کوکیز کو مسدود کریں:</translation>
 <translation id="7940722705963108451">مجھے یاد دلائیں</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> سائٹ <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}other{<ph name="FPS_MEMBERS_COUNT" /> سائٹس <ph name="FPS_OWNER" /> کی سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے}}</translation>
 <translation id="7986741934819883144">رابطہ منتخب کریں</translation>
 <translation id="7990211076305263060">آن ہونے پر، سائٹس آپ کا مائیکروفون استعمال کرنے کیلئے پوچھ سکتی ہیں۔ آف ہونے پر، سائٹس آپ کا مائیکروفون استعمال نہیں کر سکتیں۔</translation>
 <translation id="8007176423574883786">اس آلے کیلئے آف کر دیا گیا</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">سائٹس کو آلات سے منسلک ہونے سے مسدود کریں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="8541410041357371550">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کے اشتہار کے موضوعات موصول کرتی ہے</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹ کے لیے کوکیز کی اجازت ہے}other{<ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> سائٹس کے لیے کوکیز کی اجازت ہے}}</translation>
 <translation id="857943718398505171">اجازت یافتہ (تجویز کردہ)</translation>
 <translation id="8609465669617005112">اوپر منتقل کریں</translation>
 <translation id="8617611086246832542">آن ہونے پر، ویب سائٹس کا ڈیسک ٹاپ منظر دکھایا جاتا ہے۔ آف ہونے پر، ویب سائٹس کا موبائل منظر دکھایا جاتا ہے۔</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9039697262778250930">ہو سکتا ہے کہ آپ ان سائٹس سے سائن آؤٹ ہو جائیں</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
-<translation id="9090268041676521955">یہ سائٹ ایک گروپ میں موجود ہے، جو آپ کی سرگرمی دیکھ سکتا ہے۔ گروپ کی وضاحت <ph name="FPS_OWNER" /> نے کی ہے</translation>
 <translation id="9106233582039520022">کوکیز حذف کریں؟</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" /> اور <ph name="NUM_MORE" /> مزید}}</translation>
 <translation id="913657688200966289">‏<ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں <ph name="APP_NAME" /> کے لیے اجازتیں آن کریں۔</translation>

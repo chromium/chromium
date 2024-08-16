@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -550,7 +551,7 @@ std::unique_ptr<WidgetDelegate> ColorChooser::MakeWidgetDelegate() {
   delegate->SetCanMinimize(false);
   delegate->SetContentsView(BuildView());
   delegate->SetInitiallyFocusedView(textfield_);
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->RegisterWindowClosingCallback(base::BindOnce(
       &ColorChooser::OnViewClosing, weak_ptr_factory_.GetWeakPtr()));
 
@@ -565,7 +566,7 @@ ColorChooser::~ColorChooser() {
 }
 
 void ColorChooser::SetColor(SkColor color) {
-  UNSAFE_BUFFERS(SkColorToHSV(color, hsv_.data()));
+  UNSAFE_TODO(SkColorToHSV(color, hsv_.data()));
   listener_->OnColorChosen(GetColor());
 }
 
@@ -581,7 +582,7 @@ void ColorChooser::SetSaturationValue(SkScalar saturation, SkScalar value) {
 }
 
 SkColor ColorChooser::GetColor() const {
-  UNSAFE_BUFFERS(return SkHSVToColor(255, hsv_.data()));
+  UNSAFE_TODO(return SkHSVToColor(255, hsv_.data()));
 }
 
 void ColorChooser::OnViewClosing() {

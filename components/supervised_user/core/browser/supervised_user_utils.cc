@@ -103,7 +103,7 @@ std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {
       return "family_manager";
     default:
       // Keep the previous semantics - other values were not allowed.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

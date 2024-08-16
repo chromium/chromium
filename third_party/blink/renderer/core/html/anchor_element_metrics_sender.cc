@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/not_fatal_until.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
@@ -200,6 +203,33 @@ void AnchorElementMetricsSender::RemoveAnchorElement(
     // browser about it. So we'll inform the browser of its removal so it can
     // prune its memory usage for old elements.
     removed_anchors_to_report_.push_back(AnchorElementId(element));
+
+    if (DOMNodeId node_id = DOMNodeIds::ExistingIdForNode(&element);
+        node_id && max_number_of_observations_) {
+      // Note: We use base::ranges::find instead of std::set::find here
+      // (and below) as we don't have a way to map HTMLAnchorElement ->
+      // AnchorObservation. We could add one if doing an O(N) find here is too
+      // expensive.
+      if (auto observed_anchors_it = base::ranges::find(
+              observed_anchors_, node_id, &AnchorObservation::dom_node_id);
+          observed_anchors_it != observed_anchors_.end()) {
+        intersection_observer_->unobserve(&element);
+        observed_anchors_.erase(observed_anchors_it);
+        if (!not_observed_anchors_.empty()) {
+          auto largest_non_observed_anchor_it =
+              std::prev(not_observed_anchors_.end());
+          intersection_observer_->observe(To<Element>(DOMNodeIds::NodeForId(
+              largest_non_observed_anchor_it->dom_node_id)));
+          observed_anchors_.insert(
+              not_observed_anchors_.extract(largest_non_observed_anchor_it));
+        }
+      } else if (auto not_observed_anchors_it =
+                     base::ranges::find(not_observed_anchors_, node_id,
+                                        &AnchorObservation::dom_node_id);
+                 not_observed_anchors_it != not_observed_anchors_.end()) {
+        not_observed_anchors_.erase(not_observed_anchors_it);
+      }
+    }
   }
   RegisterForLifecycleNotifications();
 }
@@ -634,28 +664,38 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       continue;
     }
 
-    if (!intersection_observer_limit_exceeded_) {
-      int random = base::RandInt(1, random_anchor_sampling_period_);
-      if (random == 1) {
-        // This anchor element is sampled in.
-        const auto anchor_id = AnchorElementId(anchor_element);
-        anchor_elements_timing_stats_.insert(anchor_id,
-                                             AnchorElementTimingStats{});
+    int random = base::RandInt(1, random_anchor_sampling_period_);
+    if (max_number_of_observations_ && random == 1) {
+      // This anchor element is sampled in.
+      const auto anchor_id = AnchorElementId(anchor_element);
+      anchor_elements_timing_stats_.insert(anchor_id,
+                                           AnchorElementTimingStats{});
+      int percent_area =
+          std::clamp(base::saturated_cast<int>(
+                         anchor_element_metrics->ratio_area * 100.0f),
+                     0, 100);
+      bool should_observe = false;
+      if (observed_anchors_.size() < max_number_of_observations_) {
+        should_observe = true;
+      } else if (auto smallest_observed_anchor_it = observed_anchors_.begin();
+                 smallest_observed_anchor_it->percent_area < percent_area) {
+        should_observe = true;
+        intersection_observer_->unobserve(To<Element>(
+            DOMNodeIds::NodeForId(smallest_observed_anchor_it->dom_node_id)));
+        not_observed_anchors_.insert(
+            observed_anchors_.extract(smallest_observed_anchor_it));
+      }
+
+      if (should_observe) {
         // Observe the element to collect time_in_viewport stats.
         intersection_observer_->observe(&anchor_element);
-        // If we've exceeded the limit of anchors observed by the intersection
-        // observer, disconnect the observer (stop observing all anchors).
-        // We disconnect instead of keeping previous observations alive as a
-        // viewport based heuristic is unlikely to be useful in pages with
-        // a large number of anchors (too many false positives, or no
-        // predictions made at all), and we might be better off saving CPU time
-        // by avoiding intersection computations altogether in such pages. This
-        // could be revisited in the future.
-        if (intersection_observer_->Observations().size() >
-            max_number_of_observations_) {
-          intersection_observer_limit_exceeded_ = true;
-          intersection_observer_->disconnect();
-        }
+        observed_anchors_.insert(
+            {.percent_area = percent_area,
+             .dom_node_id = DOMNodeIds::IdForNode(&anchor_element)});
+      } else {
+        not_observed_anchors_.insert(
+            {.percent_area = percent_area,
+             .dom_node_id = DOMNodeIds::IdForNode(&anchor_element)});
       }
     }
 

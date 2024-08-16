@@ -763,7 +763,7 @@ void PermissionRequestManager::OpenHelpCenterLink(const ui::Event& event) {
           /*navigation_handle_callback=*/{});
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

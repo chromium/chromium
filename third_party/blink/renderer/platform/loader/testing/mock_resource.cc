@@ -16,12 +16,23 @@ namespace {
 
 class MockResourceFactory final : public NonTextResourceFactory {
  public:
-  MockResourceFactory() : NonTextResourceFactory(ResourceType::kMock) {}
+  explicit MockResourceFactory(bool transparent_image_optimization_enabled)
+      : NonTextResourceFactory(ResourceType::kMock),
+        transparent_image_optimization_enabled_(
+            transparent_image_optimization_enabled) {}
 
   Resource* Create(const ResourceRequest& request,
                    const ResourceLoaderOptions& options) const override {
-    return MakeGarbageCollected<MockResource>(request, options);
+    Resource* resource = MakeGarbageCollected<MockResource>(request, options);
+    if (transparent_image_optimization_enabled_ &&
+        (request.GetKnownTransparentPlaceholderImageIndex() != kNotFound)) {
+      resource->SetStatus(ResourceStatus::kCached);
+    }
+    return resource;
   }
+
+ private:
+  const bool transparent_image_optimization_enabled_;
 };
 
 }  // namespace
@@ -31,8 +42,11 @@ MockResource* MockResource::Fetch(FetchParameters& params,
                                   ResourceFetcher* fetcher,
                                   ResourceClient* client) {
   params.SetRequestContext(mojom::blink::RequestContextType::SUBRESOURCE);
-  return static_cast<MockResource*>(
-      fetcher->RequestResource(params, MockResourceFactory(), client));
+  return static_cast<MockResource*>(fetcher->RequestResource(
+      params,
+      MockResourceFactory(
+          fetcher->IsSimplifyLoadingTransparentPlaceholderImageEnabled()),
+      client));
 }
 
 MockResource::MockResource(const KURL& url)

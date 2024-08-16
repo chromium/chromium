@@ -356,6 +356,13 @@ void ResourceLoadObserverForFrame::DidChangeRenderBlockingBehavior(
       });
 }
 
+bool ResourceLoadObserverForFrame::InterestedInAllRequests() {
+  if (GetProbe()) {
+    return GetProbe()->HasInspectorNetworkAgents();
+  }
+  return false;
+}
+
 void ResourceLoadObserverForFrame::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
   visitor->Trace(document_);

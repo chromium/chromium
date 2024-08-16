@@ -34,6 +34,7 @@
 //net/third_party/quiche
 //net/traffic_annotation
 //third_party/abseil-cpp
+//third_party/android_build_tools
 //third_party/android_deps
 //third_party/android_sdk
 //third_party/androidx

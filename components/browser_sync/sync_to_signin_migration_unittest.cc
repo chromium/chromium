@@ -16,8 +16,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
@@ -402,9 +402,15 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#if BUILDFLAG(IS_ANDROID)
+  // PASSWORDS is migrated by other layers on Android.
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#endif
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
@@ -456,11 +462,17 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kMigrate*/ 0, 1);
+#if BUILDFLAG(IS_ANDROID)
+  // PASSWORDS is migrated by other layers on Android.
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
   // Passwords was not active, even though it was enabled.
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
+#endif  // BUILDFLAG(IS_ANDROID)
   // ReadingList was disabled by the user.
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
@@ -613,10 +625,16 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
       "Sync.SyncToSigninMigrationDecision." + infix + ".BOOKMARK",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
+#if BUILDFLAG(IS_ANDROID)
+  // PASSWORDS is migrated by other layers on Android.
+  histograms.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD", 0);
+#else
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".PASSWORD",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
       1);
+#endif  // BUILDFLAG(IS_ANDROID)
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision." + infix + ".READING_LIST",
       /*SyncToSigninMigrationDataTypeDecision::kDontMigrateTypeNotActive*/ 2,
@@ -836,6 +854,28 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MoveBookmarks_FolderNotWritable) {
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_NoMoveOnAndroid) {
+  base::WriteFile(GetPasswordsLocalStorePath(), "local passwords");
+  base::WriteFile(GetPasswordsAccountStorePath(), "account passwords");
+  base::HistogramTester histogram_tester;
+
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  // The files should be unchanged.
+  std::string local_contents;
+  std::string account_contents;
+  ASSERT_TRUE(
+      base::ReadFileToString(GetPasswordsLocalStorePath(), &local_contents));
+  ASSERT_TRUE(base::ReadFileToString(GetPasswordsAccountStorePath(),
+                                     &account_contents));
+  EXPECT_EQ(local_contents, "local passwords");
+  EXPECT_EQ(account_contents, "account passwords");
+  histogram_tester.ExpectTotalCount(
+      "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", 0);
+}
+#else
 TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_BothExist) {
   // Both password stores exist on disk. The account store is empty, since it
   // was unused pre-migration. This is the typical pre-migration state.
@@ -971,6 +1011,7 @@ TEST_F(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
       -base::File::FILE_ERROR_ACCESS_DENIED, 1);
 }
 #endif  // BUILDFLAG(IS_POSIX)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // A test fixture that performs the SyncToSignin migration, then enables the
 // "undo migration" feature.

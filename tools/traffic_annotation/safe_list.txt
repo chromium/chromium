@@ -25,6 +25,7 @@ all,chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ui/ash/projector/screencast_manager.cc
 all,chrome/services/cups_proxy/socket_manager.cc
 missing,ash/birch/birch_item.cc
+missing,chrome/browser/ash/lobster/image_fetcher.cc
 missing,chrome/browser/ui/webui/ash/emoji/seal.cc
 missing,components/manta/mahi_provider.cc
 missing,components/manta/sparky/sparky_provider.cc
@@ -76,6 +77,7 @@ missing_new_fields,ash/quick_pair/repository/fast_pair/device_metadata_fetcher.c
 missing_new_fields,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc
 missing_new_fields,ash/webui/projector_app/projector_xhr_sender.cc
 missing_new_fields,chrome/browser/apps/app_preload_service/app_preload_server_connector.cc
+missing_new_fields,chrome/browser/ash/ambient/ambient_client_impl.cc
 missing_new_fields,chrome/browser/ash/app_list/search/files/item_suggest_cache.cc
 missing_new_fields,chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc
 missing_new_fields,chrome/browser/ash/bruschetta/bruschetta_installer.cc
@@ -152,7 +154,6 @@ missing_new_fields,chrome/browser/supervised_user/child_accounts/permission_requ
 missing_new_fields,chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.cc
 missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
 missing_new_fields,chrome/browser/sync_file_system/drive_backend/sync_engine.cc
-missing_new_fields,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
 missing_new_fields,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
 missing_new_fields,chrome/browser/ui/global_media_controls/cast_media_notification_item.cc
 missing_new_fields,chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc
@@ -184,7 +185,6 @@ missing_new_fields,components/captive_portal/content/captive_portal_service.cc
 missing_new_fields,components/commerce/core/account_checker.cc
 missing_new_fields,components/commerce/core/subscriptions/subscriptions_server_proxy.cc
 missing_new_fields,components/content_relationship_verification/digital_asset_links_handler.cc
-missing_new_fields,components/contextual_search/core/browser/contextual_search_delegate_impl.cc
 missing_new_fields,components/dom_distiller/core/distiller_url_fetcher.cc
 missing_new_fields,components/domain_reliability/uploader.cc
 missing_new_fields,components/download/internal/common/download_item_impl.cc

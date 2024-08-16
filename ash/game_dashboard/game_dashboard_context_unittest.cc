@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/accelerators/accelerator_commands.h"
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -39,6 +40,8 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/time_view.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
@@ -49,9 +52,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_util.h"
 #include "base/check.h"
+#include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -518,7 +523,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         return gfx::Point(window_center_point.x() - x_offset,
                           window_center_point.y() + y_offset);
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 
@@ -1472,6 +1477,67 @@ TEST_F(GameDashboardContextTest, TwoGameWindowsRecordingState) {
       /*other_window_test_api=*/test_api_.get());
 }
 
+TEST_F(GameDashboardContextTest, MainMenuClockView) {
+  // Enable Game Dashboard utilities flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature({features::kGameDashboardUtilities});
+  // Create an ARC game window.
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Set current time to 08:00.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::Hours(32) - base::Time::Now());
+
+  test_api_->OpenTheMainMenu();
+  auto* clock_view = test_api_->GetMainMenuClockView();
+  // Ensure that the time and "AM/PM" text is visible and that a 12 hour clock
+  // is used by default.
+  ASSERT_TRUE(clock_view);
+  ASSERT_TRUE(clock_view->GetVisible());
+  ASSERT_EQ(clock_view->GetAmPmClockTypeForTesting(),
+            base::AmPmClockType::kKeepAmPm);
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k12HourClock);
+
+  const auto* horizontal_time_label =
+      clock_view->GetHorizontalTimeLabelForTesting();
+  const auto current_time = horizontal_time_label->GetText();
+  // Verify that the "AM/PM" text is visible.
+  ASSERT_NE(current_time.ends_with(u"AM"), current_time.ends_with(u"PM"));
+  // Ensure that the clock increments as the time changes.
+  AdvanceClock(base::Hours(12));
+  const auto next_time = horizontal_time_label->GetText();
+  const std::u16string next_am_pm =
+      current_time.ends_with(u"AM") ? u"PM" : u"AM";
+  ASSERT_NE(current_time, next_time);
+  // Verify that the "AM/PM" text changes after advancing 12 hours.
+  ASSERT_TRUE(next_time.ends_with(next_am_pm));
+
+  // Change the clock to a 24 hour view.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
+  // Verify that the clock is still visible.
+  ASSERT_TRUE(clock_view->GetVisible());
+  // Verify that the clock view is 24 hours.
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k24HourClock);
+  const auto hour_24_current_time = horizontal_time_label->GetText();
+  // Verify that the "AM/PM" text is not visible.
+  ASSERT_FALSE(hour_24_current_time.ends_with(u"AM") ||
+               hour_24_current_time.ends_with(u"PM"));
+
+  // Revert to the default 12 hour view.
+  Shell::Get()->system_tray_model()->SetUse24HourClock(false);
+  // Verify that the clock is still visible.
+  ASSERT_TRUE(clock_view->GetVisible());
+  // Verify that the clock view is 12 hours.
+  ASSERT_EQ(clock_view->GetHourTypeForTesting(),
+            base::HourClockType::k12HourClock);
+  const auto reverted_current_time = horizontal_time_label->GetText();
+  // Verify that the "AM/PM" text is visible.
+  ASSERT_NE(reverted_current_time.ends_with(u"AM"),
+            reverted_current_time.ends_with(u"PM"));
+}
+
 TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -1813,6 +1879,38 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   event_generator->PressTouch(app_bounds.right_center());
   event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
+}
+
+TEST_F(GameDashboardContextTest,
+       GameDashboardOverviewModeStaticWidgetPosition_ZoomEvent) {
+  CreateGameWindow(/*is_arc_window=*/true);
+  // Open the Game Dashboard Main Menu and Toolbar widgets, and then enter
+  // overview mode.
+  test_api_->OpenTheMainMenu();
+  test_api_->OpenTheToolbar();
+  EnterOverview();
+
+  // Slightly zoom in.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kScaleUiDown, {});
+
+  ExitOverview();
+
+  // Verify that the default snap position is `kTopRight` and toolbar is placed
+  // in the top right quadrant.
+  EXPECT_EQ(test_api_->GetToolbarSnapLocation(),
+            GameDashboardToolbarSnapLocation::kTopRight);
+
+  // Verify that the position of the Game Dashboard Main Menu widget is still
+  // centered at the top of the game window.
+  const gfx::Point expected_button_center_point(
+      game_window_->GetBoundsInScreen().top_center().x(),
+      app_bounds().y() + frame_header_height_ / 2);
+  EXPECT_EQ(expected_button_center_point,
+            test_api_->GetGameDashboardButtonWidget()
+                ->GetNativeWindow()
+                ->GetBoundsInScreen()
+                .CenterPoint());
 }
 
 // Verifies that during a snap animation, the Game Dashboard and toolbar widgets

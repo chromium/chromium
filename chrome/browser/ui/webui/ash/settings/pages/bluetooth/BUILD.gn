@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("bluetooth") {
+  sources = [
+    "bluetooth_handler.cc",
+    "bluetooth_handler.h",
+    "bluetooth_section.cc",
+    "bluetooth_section.h",
+    "fast_pair_saved_devices_handler.cc",
+    "fast_pair_saved_devices_handler.h",
+    "fast_pair_software_scanning_handler.cc",
+    "fast_pair_software_scanning_handler.h",
+  ]
+
+  public_deps = [
+    "//ash/quick_pair/feature_status_tracker",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//base",
+    "//device/bluetooth",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/repository",
+    "//ash/webui/settings/public/constants:mojom",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui/ash",
+    "//chrome/browser/ui/webui/ash/settings/search",
+    "//chrome/browser/ui/webui/ash/settings/search/mojom",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//chromeos/ash/components/network",
+    "//chromeos/strings",
+    "//components/cross_device/logging",
+    "//components/prefs",
+    "//content/public/browser",
+    "//device/bluetooth/strings",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "bluetooth_handler_unittest.cc",
+    "fast_pair_saved_devices_handler_unittest.cc",
+  ]
+
+  deps = [
+    ":bluetooth",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/repository:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

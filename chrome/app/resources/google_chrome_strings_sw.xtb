@@ -115,6 +115,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2559253115192232574">Baadaye, tovuti unayoitembelea inaweza kuiomba Chrome ili ione mambo yanayokuvutia na iweze kukuonyesha matangazo kulingana na mapendeleo yako. Chrome inaweza kushiriki hadi mambo matatu yanayokuvutia.</translation>
 <translation id="2563121210305478421">Ungependa kufungua Chrome tena?</translation>
 <translation id="2569974318947988067">Chrome itajaribu kuboresha usogezaji ili utumie HTTPS</translation>
+<translation id="2571392474191184472">Shirika lako linadhibiti Chrome</translation>
 <translation id="2574930892358684005">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Ili utenganishe shughuli zako za kuvinjari, Chrome inaweza kukutengenezea wasifu wako mwenyewe.</translation>
 <translation id="2580411288591421699">Huwezi kusakinisha toleo la Google Chrome ambalo tayari linatumika. Tafadhali funga Google Chrome na ujaribu tena.</translation>
 <translation id="2586406160782125153">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
@@ -215,6 +216,8 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3795971588916395511">Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="3809772425479558446">Google Chrome inahitaji Windows 10 au toleo jipya zaidi.</translation>
 <translation id="3835168907083856002">Hatua hii itafungua wasifu mpya wa <ph name="USER_EMAIL_ADDRESS" /> kwenye Chrome</translation>
+<translation id="383928141529488001">Google Chrome inahitaji ruhusa ya kufikia Bluetooth ili kugundua 
+ vifaa vyenye Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="386202838227397562">Tafadhali funga madirisha yote ya Google Chrome na ujaribu tena.</translation>
 <translation id="3865754807470779944">Umesakinisha toleo la Chrome la <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Fungua kiungo katika dirisha fiche la Chrome</translation>
@@ -425,6 +428,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6938166777909186039">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo Windows 8.1.</translation>
 <translation id="6943584222992551122">Data ya kuvinjari ya mtu huyu itafutwa kwenye kifaa hiki. Ili urejeshe data, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Sheria ya kuingia ya Google Chrome Beta ili kuruhusu trafiki ya mDNS.</translation>
+<translation id="6979589607440534284">Fahamu kwa nini Chrome huzuia baadhi ya faili, huzifungua kwenye kichupo kipya</translation>
 <translation id="7011190694940573312">Imeshindwa kusakinisha kwa sababu toleo hili la mfumo wa uendeshaji halitumiki.</translation>
 <translation id="7024536598735240744">Hitilafu ya kutekeleza kiendelezi cha ndani: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Usakinishaji Umesimamishwa.</translation>
@@ -447,6 +451,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7177959540995930968">Unaweza kupata maelezo zaidi kuhusu vipengele hivi kwenye mipangilio ya Chrome.</translation>
 <translation id="7193885263065350793">Shirika lako hufunga Chrome isipotumika kwa <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Unaingia katika akaunti ykitumia akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Google Chrome. Data yako ya Chrome, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio mingine itahishwa na <ph name="USER_NAME" /> daima. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza kuhusisha data hii na akaunti nyingine. Unaweza kuunda kwa hiari wasifu mpya ili kuweka data yako ya Chrome iliyo kando. <ph name="LEARN_MORE" /></translation>
+<translation id="7285616922384953075"><ph name="MANAGER" /> inadhibiti Chrome</translation>
 <translation id="7295052994004373688">Lugha hii inatumika kuonyesha Kiolesura cha Google Chrome</translation>
 <translation id="7296210096911315575">Maelezo muhimu kuhusu usalama na matumizi</translation>
 <translation id="7302361266603927550">Baadhi ya data yako ya Chrome bado haijahifadhiwa kwenye Akaunti yako ya Google. Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
@@ -580,6 +585,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8989968390305463310">Historia yako ya kuvinjari huathiri matangazo unayoyaona na mambo yanayokuvutia kama inavyokadiriwa hapa chini. Ili kulinda faragha yako, Chrome hufuta kiotomatiki mambo yanayokuvutia kadiri unavyoendelea kutumia kila mwezi. Mambo yanayokuvutia yanaweza kuonyeshwa upya isipokuwa ukiyaondoa.</translation>
 <translation id="8999117580775242387">Wakati kiendelezi cha HTTPS hakipatikani, Chrome itatumia muunganisho usio salama bila kukutahadharisha</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
+<translation id="9014771989710951291">Mashirika mengi yanadhibiti Chrome</translation>
 <translation id="9024318700713112071">Ifanye Chrome iwe kivinjari chako chaguomsingi</translation>
 <translation id="9053892488859122171">Mfumo wa ChromeOS Flex</translation>
 <translation id="9090566250983691233">Fahamu kwa nini Chrome huzuia baadhi ya faili</translation>

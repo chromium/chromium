@@ -773,7 +773,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
       const base::HistogramTester& histogram_tester,
       int expected_net_error_code,
       blink::mojom::SpeculationEagerness eagerness =
-          blink::mojom::SpeculationEagerness::kEager) {
+          blink::mojom::SpeculationEagerness::kEager,
+      bool is_accurate_triggering = false) {
     histogram_tester.ExpectUniqueSample(
         "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
 
@@ -798,6 +799,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                           .failure = ToPreloadingFailureReason(
                               PrefetchStatus::kPrefetchFailedNetError),
+                          .is_accurate = is_accurate_triggering,
                           .eagerness = eagerness});
   }
 
@@ -2066,6 +2068,7 @@ TEST_F(PrefetchServiceTest,
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                         .failure = ToPreloadingFailureReason(
                             PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .is_accurate = true,
                         .expect_ready_time = true});
 }
 
@@ -2514,7 +2517,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -2524,7 +2527,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -2877,7 +2880,9 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
 
   // Check the metrics now that the prefetch is complete.
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody),
+                        blink::mojom::SpeculationEagerness::kEager,
+                        /*is_accurate=*/true);
   ExpectServingReaderSuccess(serveable_reader);
   ExpectServingMetricsSuccess();
 }
@@ -3502,7 +3507,9 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
   PrefetchContainer::Reader serveable_reader = future.Take();
   ASSERT_TRUE(serveable_reader);
 
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody),
+                        blink::mojom::SpeculationEagerness::kEager,
+                        /*is_accurate=*/true);
   ExpectServingReaderSuccess(serveable_reader);
   ExpectServingMetricsSuccess(/*required_private_prefetch_proxy=*/false);
 
@@ -3621,7 +3628,8 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest,
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
 
-  ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kRunning});
+  ExpectCorrectUkmLogs(
+      {.outcome = PreloadingTriggeringOutcome::kRunning, .is_accurate = true});
 
   ExpectServingMetrics(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
@@ -3695,7 +3703,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   CompleteResponseAndWait(net::OK, std::size(kHTMLBody));
 
   // Check the metrics now that the prefetch is complete.
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam());
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam(),
+                        /*is_accurate=*/true);
   ExpectServingReaderSuccess(serveable_reader);
   ExpectServingMetricsSuccess();
 
@@ -3991,6 +4000,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
                         .failure = ToPreloadingFailureReason(
                             PrefetchStatus::kPrefetchNotUsedCookiesChanged),
+                        .is_accurate = true,
                         .eagerness = GetParam()});
 
   std::string histogram_suffix =
@@ -4040,8 +4050,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   PrefetchContainer::Reader serveable_reader = future.Take();
   EXPECT_FALSE(serveable_reader);
 
-  ExpectPrefetchFailedNetError(histogram_tester, net::ERR_TIMED_OUT,
-                               GetParam());
+  ExpectPrefetchFailedNetError(histogram_tester, net::ERR_TIMED_OUT, GetParam(),
+                               /*is_accurate_triggering=*/true);
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError);
 
   std::string histogram_suffix =
@@ -4104,8 +4114,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   PrefetchContainer::Reader serveable_reader = second_future.Take();
   EXPECT_FALSE(first_future.IsReady());
   EXPECT_FALSE(serveable_reader);
-  ExpectPrefetchFailedNetError(histogram_tester, net::ERR_TIMED_OUT,
-                               GetParam());
+  ExpectPrefetchFailedNetError(histogram_tester, net::ERR_TIMED_OUT, GetParam(),
+                               /*is_accurate_triggering=*/true);
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError,
                        /*prefetch_header_latency=*/false,
                        /*required_private_prefetch_proxy=*/false);
@@ -4188,7 +4198,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   EXPECT_FALSE(serveable_reader);
 
   ExpectPrefetchFailedNetError(histogram_tester, net::ERR_ACCESS_DENIED,
-                               GetParam());
+                               GetParam(), /*is_accurate_triggering=*/true);
   ExpectServingMetrics(PrefetchStatus::kPrefetchFailedNetError,
                        /*prefetch_header_latency=*/false,
                        /*required_private_prefetch_proxy=*/false);
@@ -4273,7 +4283,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
   // Check the metrics now that the prefetch is complete.
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam());
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam(),
+                        /*is_accurate=*/true);
   ExpectServingMetricsSuccess();
   EXPECT_FALSE(serveable_reader);
 
@@ -4329,7 +4340,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
   // Check the metrics now that the prefetch is complete.
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam());
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam(),
+                        /*is_accurate=*/true);
   ExpectServingMetricsSuccess();
   EXPECT_FALSE(serveable_reader);
 
@@ -4393,7 +4405,8 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
   // Check the metrics now that the prefetch is complete.
-  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam());
+  ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody), GetParam(),
+                        /*is_accurate=*/true);
   ExpectServingMetricsSuccess();
 
   std::string histogram_suffix =
@@ -4566,7 +4579,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
                  content::PrefetchStatus::kPrefetchEvictedForNewerPrefetch),
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kModerate),
@@ -4577,7 +4590,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(
                  content::PrefetchStatus::kPrefetchEvictedForNewerPrefetch),
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kModerate),
@@ -4587,7 +4600,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kModerate),
@@ -4597,7 +4610,7 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kModerate)};
@@ -4853,7 +4866,7 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kFailure,
              ToPreloadingFailureReason(PrefetchStatus::kPrefetchIsStale),
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -5091,7 +5104,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              ToPreloadingFailureReason(
                  content::PrefetchStatus::
                      kPrefetchEvictedAfterCandidateRemoved),
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -5104,7 +5117,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              ToPreloadingFailureReason(
                  content::PrefetchStatus::
                      kPrefetchEvictedAfterCandidateRemoved),
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -5115,7 +5128,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager),
@@ -5126,7 +5139,7 @@ TEST_F(PrefetchServiceNewLimitsTest, EagerPrefetchLimitIsDynamic) {
              PreloadingHoldbackStatus::kAllowed,
              PreloadingTriggeringOutcome::kReady,
              PreloadingFailureReason::kUnspecified,
-             /*accurate=*/false,
+             /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
              blink::mojom::SpeculationEagerness::kEager)};

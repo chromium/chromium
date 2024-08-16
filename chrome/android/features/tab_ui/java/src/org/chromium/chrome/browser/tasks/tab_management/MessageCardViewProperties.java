@@ -46,8 +46,6 @@ class MessageCardViewProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<CharSequence> DESCRIPTION_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION_TEXT_TEMPLATE =
-            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<MessageCardView.IconProvider>
             ICON_PROVIDER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<
@@ -100,7 +98,6 @@ class MessageCardViewProperties {
                 ACTION_TEXT,
                 SECONDARY_ACTION_TEXT,
                 DESCRIPTION_TEXT,
-                DESCRIPTION_TEXT_TEMPLATE,
                 MESSAGE_TYPE,
                 MESSAGE_IDENTIFIER,
                 ICON_PROVIDER,

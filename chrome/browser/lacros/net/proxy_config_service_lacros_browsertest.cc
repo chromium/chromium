@@ -69,16 +69,14 @@ class FakeNetworkSettingsService
   // suite LacrosExtensionProxyTrackerTest whose fixture supports installing
   // extension.
   void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
-  void ClearExtensionProxy() override { NOTREACHED_NORETURN(); }
+  void ClearExtensionProxy() override { NOTREACHED(); }
   void SetExtensionControllingProxyMetadata(
       crosapi::mojom::ExtensionControllingProxyPtr extension) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
-  void ClearExtensionControllingProxyMetadata() override {
-    NOTREACHED_NORETURN();
-  }
+  void ClearExtensionControllingProxyMetadata() override { NOTREACHED(); }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);

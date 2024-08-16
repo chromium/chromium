@@ -73,7 +73,7 @@ TEST_F(TypesMojomTraitsTest, RejectInvalid) {
 
   ash::ScreenBacklightState output;
 
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       mojo::test::SerializeAndDeserialize<mojom::ScreenBacklightState>(
           invalid_value, output));
 }

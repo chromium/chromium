@@ -29,7 +29,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view_observer.h"
 
-class Browser;
 class BrowserView;
 
 namespace actions {
@@ -67,7 +66,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   void TearDownPreBrowserViewDestruction();
 
-  static SidePanelRegistry* GetGlobalSidePanelRegistry(Browser* browser);
+  SidePanelRegistry* GetWindowRegistry();
 
   // SidePanelUI:
   void Show(SidePanelEntry::Id entry_id,
@@ -176,11 +175,11 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                                views::View* starting_from) override;
 
   // PinnedToolbarActionsModel::Observer:
-  void OnActionAdded(const actions::ActionId& id) override {}
-  void OnActionRemoved(const actions::ActionId& id) override {}
-  void OnActionMoved(const actions::ActionId& id,
-                     int from_index,
-                     int to_index) override {}
+  void OnActionAddedLocally(const actions::ActionId& id) override {}
+  void OnActionRemovedLocally(const actions::ActionId& id) override {}
+  void OnActionMovedLocally(const actions::ActionId& id,
+                            int from_index,
+                            int to_index) override {}
   void OnActionsChanged() override;
 
   SidePanelRegistry* GetActiveContextualRegistry() const;
@@ -240,7 +239,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   base::TimeTicks opened_timestamp_;
 
   const raw_ptr<BrowserView, AcrossTasksDanglingUntriaged> browser_view_;
-  raw_ptr<SidePanelRegistry> global_registry_;
+
+  // This registry is scoped to the browser window and is owned by this class.
+  std::unique_ptr<SidePanelRegistry> window_registry_;
 
   // current_entry_ tracks the entry that currently has its view hosted by the
   // side panel. It is necessary as current_entry_ may belong to a contextual

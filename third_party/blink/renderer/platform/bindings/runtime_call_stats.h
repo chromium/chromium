@@ -129,24 +129,24 @@ class PLATFORM_EXPORT RuntimeCallTimer {
 // RuntimeCallStatsTest.
 #define RUNTIME_CALL_STATS_ENTER_WITH_RCS(runtime_call_stats, timer, \
                                           counterId)                 \
-  if (UNLIKELY(RuntimeCallStats::IsEnabled())) {                     \
+  if (RuntimeCallStats::IsEnabled()) [[unlikely]] {                  \
     (runtime_call_stats)->Enter(timer, counterId);                   \
   }
 
 #define RUNTIME_CALL_STATS_LEAVE_WITH_RCS(runtime_call_stats, timer) \
-  if (UNLIKELY(RuntimeCallStats::IsEnabled())) {                     \
+  if (RuntimeCallStats::IsEnabled()) [[unlikely]] {                  \
     (runtime_call_stats)->Leave(timer);                              \
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_RCS(runtime_call_stats, counterId) \
   std::optional<RuntimeCallTimerScope> rcs_scope;                        \
-  if (UNLIKELY(RuntimeCallStats::IsEnabled())) {                         \
+  if (RuntimeCallStats::IsEnabled()) [[unlikely]] {                      \
     rcs_scope.emplace(runtime_call_stats, counterId);                    \
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(             \
     optional_scope_name, runtime_call_stats, counterId)         \
-  if (UNLIKELY(RuntimeCallStats::IsEnabled())) {                \
+  if (RuntimeCallStats::IsEnabled()) [[unlikely]] {             \
     optional_scope_name.emplace(runtime_call_stats, counterId); \
   }
 
@@ -398,7 +398,7 @@ class PLATFORM_EXPORT RuntimeCallStatsScopedTracer {
 
  public:
   explicit RuntimeCallStatsScopedTracer(v8::Isolate* isolate) {
-    if (UNLIKELY(RuntimeCallStats::IsEnabled())) {
+    if (RuntimeCallStats::IsEnabled()) [[unlikely]] {
       AddBeginTraceEventIfEnabled(isolate);
     }
   }

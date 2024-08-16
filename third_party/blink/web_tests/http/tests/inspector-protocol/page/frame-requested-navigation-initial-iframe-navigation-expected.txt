@@ -1,0 +1,3 @@
+Verify that the `Page.frameRequestedNavigation` event is emitted for the initial frame navigation.
+Frame innerFrame requested navigation to http://devtools.test:8000/inspector-protocol/resources/empty.html: initialFrameNavigation
+

@@ -6,13 +6,27 @@
 #define CHROME_BROWSER_UI_TABS_PUBLIC_TAB_FEATURES_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 
+class ChromeAutofillPredictionImprovementsClient;
 class DipsNavigationFlowDetectorWrapper;
 class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class Profile;
+class ReadAnythingSidePanelController;
+class SidePanelRegistry;
+
+namespace commerce {
+class CommerceUiTabHelper;
+}
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace customize_chrome {
 class SidePanelController;
@@ -25,6 +39,10 @@ class PermissionIndicatorsTabData;
 namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }
+
+namespace user_annotations {
+class UserAnnotationsWebContentsObserver;
+}  // namespace user_annotations
 
 namespace tabs {
 
@@ -68,8 +86,27 @@ class TabFeatures {
     return customize_chrome_side_panel_controller_.get();
   }
 
+  // This side-panel registry is tab-scoped. It is different from the browser
+  // window scoped SidePanelRegistry.
+  SidePanelRegistry* side_panel_registry() {
+    return side_panel_registry_.get();
+  }
+
   DipsNavigationFlowDetectorWrapper* dips_navigation_flow_detector_wrapper() {
     return dips_navigation_flow_detector_wrapper_.get();
+  }
+
+  ChromeAutofillPredictionImprovementsClient*
+  chrome_autofill_prediction_improvements_client() {
+    return chrome_autofill_prediction_improvements_client_.get();
+  }
+
+  ReadAnythingSidePanelController* read_anything_side_panel_controller() {
+    return read_anything_side_panel_controller_.get();
+  }
+
+  commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
+    return commerce_ui_tab_helper_.get();
   }
 
   // Called exactly once to initialize features.
@@ -84,8 +121,19 @@ class TabFeatures {
       TabInterface* tab,
       Profile* profile);
 
+  virtual std::unique_ptr<commerce::CommerceUiTabHelper>
+  CreateCommerceUiTabHelper(content::WebContents* web_contents,
+                            Profile* profile);
+
  private:
   bool initialized_ = false;
+
+  // TODO(https://crbug.com/347770670): Delete this code when tab-discarding no
+  // longer swizzles WebContents.
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
 
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
@@ -97,12 +145,32 @@ class TabFeatures {
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
 
+  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
+
   // Responsible for the customize chrome tab-scoped side panel.
   std::unique_ptr<customize_chrome::SidePanelController>
       customize_chrome_side_panel_controller_;
 
   std::unique_ptr<DipsNavigationFlowDetectorWrapper>
       dips_navigation_flow_detector_wrapper_;
+
+  std::unique_ptr<user_annotations::UserAnnotationsWebContentsObserver>
+      user_annotations_web_contents_observer_;
+
+  std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
+      chrome_autofill_prediction_improvements_client_;
+
+  std::unique_ptr<ReadAnythingSidePanelController>
+      read_anything_side_panel_controller_;
+
+  // Responsible for commerce related features.
+  std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Must be the last member.
+  base::WeakPtrFactory<TabFeatures> weak_factory_{this};
 };
 
 }  // namespace tabs

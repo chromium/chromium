@@ -354,7 +354,7 @@ V8PerIsolateData::FindOrCreateEternalNameCache(
     base::span<const std::string_view> names) {
   auto it = eternal_name_cache_.find(lookup_key);
   const Vector<v8::Eternal<v8::Name>>* vector = nullptr;
-  if (UNLIKELY(it == eternal_name_cache_.end())) {
+  if (it == eternal_name_cache_.end()) [[unlikely]] {
     v8::Isolate* isolate = GetIsolate();
     Vector<v8::Eternal<v8::Name>> new_vector(
         base::checked_cast<wtf_size_t>(names.size()));

@@ -91,11 +91,13 @@ class WTF_EXPORT AtomicStringTable final {
 
   WeakResult WeakFindForTesting(const StringView& string) {
     // Mirror the empty logic in Add().
-    if (UNLIKELY(!string.length()))
+    if (!string.length()) [[unlikely]] {
       return WeakResult(StringImpl::empty_);
+    }
 
-    if (LIKELY(string.IsAtomic()))
+    if (string.IsAtomic()) [[likely]] {
       return WeakResult(string.SharedImpl());
+    }
 
     return WeakFindSlowForTesting(string);
   }

@@ -36,9 +36,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webid.DigitalIdentityProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.browser.test.util.DigitalCredentialProviderUtils.MockIdentityCredentialsDelegate;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -101,9 +101,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         }
     }
 
-    /** {@link MockIdentityCredentialsDelegate} implementation which returns "token". */
+    /** {@link IdentityCredentialsDelegate} implementation which returns "token". */
     private static class ReturnTokenIdentityCredentialsDelegate
-            extends MockIdentityCredentialsDelegate {
+            extends IdentityCredentialsDelegate {
         @Override
         public Promise<byte[]> get(Activity activity, String origin, String request) {
             return Promise.fulfilled("token".getBytes());

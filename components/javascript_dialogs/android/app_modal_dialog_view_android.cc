@@ -33,7 +33,7 @@ AppModalDialogViewAndroid::AppModalDialogViewAndroid(
     AppModalDialogController* controller,
     gfx::NativeWindow parent)
     : controller_(controller),
-      parent_jobject_weak_ref_(env, parent->GetJavaObject()) {
+      parent_jobject_weak_ref_(env, parent->GetJavaObject().obj()) {
   controller->web_contents()->GetDelegate()->ActivateContents(
       controller->web_contents());
 }

@@ -184,8 +184,7 @@ std::string RemoteCommandsInvalidator::GetType() const {
     case PolicyInvalidationScope::kCBCM:
       return kDeiceRemoteCommandsInvalidatorTypeName;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_NORETURN()
-          << "Device local account commands are not supported.";
+      NOTREACHED() << "Device local account commands are not supported.";
   }
 }
 

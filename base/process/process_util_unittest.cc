@@ -12,6 +12,7 @@
 #include <tuple>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/file_enumerator.h"
@@ -1059,7 +1060,7 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsLeakFDChildProcess) {
 int ProcessUtilTest::CountOpenFDsInChild() {
   int fds[2];
   if (pipe(fds) < 0)
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   LaunchOptions options;
   options.fds_to_remap.emplace_back(fds[1], kChildPipe);
@@ -1348,7 +1349,7 @@ std::string TestLaunchProcess(const CommandLine& cmdline,
   write_pipe.Close();
 
   char buf[512];
-  int n = read_pipe.ReadAtCurrentPos(buf, sizeof(buf));
+  int n = UNSAFE_TODO(read_pipe.ReadAtCurrentPos(buf, sizeof(buf)));
 #if BUILDFLAG(IS_WIN)
   // Closed pipes fail with ERROR_BROKEN_PIPE on Windows, rather than
   // successfully reporting EOF.

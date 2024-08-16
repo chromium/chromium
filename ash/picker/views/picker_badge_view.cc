@@ -52,9 +52,7 @@ PickerBadgeView::PickerBadgeView() {
                            gfx::Insets::TLBR(0, 0, 0, kLabelRightPadding))
               .SetFontList(
                   ash::TypographyProvider::Get()->ResolveTypographyToken(
-                      ash::TypographyToken::kCrosLabel1))
-              .SetLineHeight(ash::TypographyProvider::Get()->ResolveLineHeight(
-                  ash::TypographyToken::kCrosLabel1)),
+                      ash::TypographyToken::kCrosLabel1)),
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromVectorIcon(
                   kPickerReturnIcon, cros_tokens::kCrosSysOnSurface))

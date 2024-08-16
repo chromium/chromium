@@ -66,6 +66,10 @@ inline constexpr char kGuestOsTerminalSettings[] = "crostini.terminal_settings";
 
 inline constexpr char kGuestOsUSBNotificationEnabled[] =
     "guest_os.usb_notification_enabled";
+inline constexpr char kGuestOsUSBPersistentPassthroughEnabled[] =
+    "guest_os.usb_persistent_passthrough_enabled";
+inline constexpr char kGuestOsUSBPersistentPassthroughDevices[] =
+    "guest_os.usb_persistent_passthrough_devices";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

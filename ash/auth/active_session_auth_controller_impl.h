@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/auth/active_session_auth_metrics_recorder.h"
 #include "ash/auth/views/active_session_auth_view.h"
 #include "ash/auth/views/auth_common.h"
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
@@ -92,19 +93,47 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void MoveToTheCenter();
   void Close();
 
+  // Tracks the authentication flow for the active session.
+  enum class ActiveSessionAuthState {
+    kWaitForInit,            // Initial state, awaiting session start.
+    kInitialized,            // Session started, ready for user input.
+    kPasswordAuthStarted,    // User submitted password, awaiting verification.
+    kPasswordAuthSucceeded,  // Successful password authentication.
+    kPinAuthStarted,         // User submitted PIN, awaiting verification.
+    kPinAuthSucceeded,       // Successful PIN authentication.
+    // Note: On authentication failure, the state reverts to kInitialized.
+  };
+
  private:
+  // Set the state of the class, if it necessary disable/enable the input area
+  // of the UI. Validates the transitions.
+  void SetState(ActiveSessionAuthState state);
+
   // Internal methods for authentication.
   void OnAuthSessionStarted(
       bool user_exists,
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
   void OnAuthFactorsListed(
+      base::OnceClosure callback,
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
   void OnAuthComplete(AuthInputType input_type,
                       std::unique_ptr<UserContext> user_context,
                       std::optional<AuthenticationError> authentication_error);
   void NotifySuccess(const AuthProofToken& token, base::TimeDelta timeout);
+
+  // Initialize the UI after we retrieve the available auth factors from
+  // cryptohome.
+  void InitUi();
+
+  // After a failed pin attempt we have to retrieve the updated auth factors
+  // configuration to can check the pin is still available or not.
+  void OnFailedPinAttempt();
+
+  // Checks the pin factor is still available using user_context_. It shpuld be
+  // called after auth factors configuration is updated.
+  bool IsPinLocked() const;
 
   std::unique_ptr<views::Widget> widget_;
 
@@ -125,6 +154,10 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   std::unique_ptr<UserContext> user_context_;
 
   AuthFactorSet available_factors_;
+  ActiveSessionAuthState state_ = ActiveSessionAuthState::kWaitForInit;
+
+  Reason reason_;
+  ActiveSessionAuthMetricsRecorder uma_recorder_;
 
   base::WeakPtrFactory<ActiveSessionAuthControllerImpl> weak_ptr_factory_{this};
 };

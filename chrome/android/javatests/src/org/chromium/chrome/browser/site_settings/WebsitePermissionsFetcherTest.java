@@ -300,7 +300,7 @@ public class WebsitePermissionsFetcherTest {
         "http://www.archive.org/",
     };
 
-    private static final Map<String, String> FPS_MEMBER_TO_OWNER_MAP =
+    private static final Map<String, String> RWS_MEMBER_TO_OWNER_MAP =
             Map.ofEntries(
                     entry("https://google.de", "google.com"),
                     entry("https://youtube.com", "google.com"),
@@ -1431,14 +1431,14 @@ public class WebsitePermissionsFetcherTest {
 
     @Test
     @SmallTest
-    public void testGetFirstPartySetsOwnersAndMergeInfoIntoWebsites() {
-        for (var entry : FPS_MEMBER_TO_OWNER_MAP.entrySet()) {
+    public void testGetRelatedWebsiteSetsOwnersAndMergeInfoIntoWebsites() {
+        for (var entry : RWS_MEMBER_TO_OWNER_MAP.entrySet()) {
             Mockito.doReturn(entry.getValue())
                     .when(mSiteSettingsDelegate)
-                    .getFirstPartySetOwner(entry.getKey());
+                    .getRelatedWebsiteSetOwner(entry.getKey());
         }
 
-        Mockito.doReturn(true).when(mSiteSettingsDelegate).isFirstPartySetsDataAccessEnabled();
+        Mockito.doReturn(true).when(mSiteSettingsDelegate).isRelatedWebsiteSetsDataAccessEnabled();
         Mockito.doReturn(true)
                 .when(mSiteSettingsDelegate)
                 .isPrivacySandboxFirstPartySetsUIFeatureEnabled();
@@ -1456,15 +1456,15 @@ public class WebsitePermissionsFetcherTest {
         String verizonConnectOrigin = "https://verizonconnect.com";
 
         String aolOrigin = "https://aol.com";
-        String noInFPSOrigin = "https://unknow.ch";
+        String noInRWSOrigin = "https://unknow.ch";
 
         Website expectedYoutubeWebsite =
                 new Website(WebsiteAddress.create(youtubeOrigin), WebsiteAddress.create(null));
         Website expectedVerizonConnectWebsite =
                 new Website(
                         WebsiteAddress.create(verizonConnectOrigin), WebsiteAddress.create(null));
-        Website expectedNoInFPSWebsite =
-                new Website(WebsiteAddress.create(noInFPSOrigin), WebsiteAddress.create(null));
+        Website expectedNoInRWSWebsite =
+                new Website(WebsiteAddress.create(noInRWSOrigin), WebsiteAddress.create(null));
 
         // Use a list of origins and create content settings exceptions.
         List<String> origins =
@@ -1475,7 +1475,7 @@ public class WebsitePermissionsFetcherTest {
                         youtubeOrigin,
                         verizonConnectOrigin,
                         aolOrigin,
-                        noInFPSOrigin);
+                        noInRWSOrigin);
         // Adding content exceptions will generate websites data.
         for (String origin : origins) {
             websitePreferenceBridge.addContentSettingException(
@@ -1489,7 +1489,7 @@ public class WebsitePermissionsFetcherTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    fetcher.fetchPreferencesForCategoryAndPopulateFpsInfo(
+                    fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(
                             SiteSettingsCategory.createFromType(
                                     UNUSED_BROWSER_CONTEXT_HANDLE,
                                     SiteSettingsCategory.Type.ALL_SITES),
@@ -1500,28 +1500,28 @@ public class WebsitePermissionsFetcherTest {
 
                                 ArrayList<Website> siteArray = new ArrayList<>(sites);
                                 for (Website site : siteArray) {
-                                    // Verify youtube.com has google.com as FPS owner which has 4
+                                    // Verify youtube.com has google.com as RWS owner which has 4
                                     // members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedYoutubeWebsite) == 0) {
-                                        Assert.assertNotNull(site.getFPSCookieInfo());
+                                        Assert.assertNotNull(site.getRWSCookieInfo());
                                         assertEquals(
-                                                "google.com", site.getFPSCookieInfo().getOwner());
-                                        assertEquals(4, site.getFPSCookieInfo().getMembersCount());
+                                                "google.com", site.getRWSCookieInfo().getOwner());
+                                        assertEquals(4, site.getRWSCookieInfo().getMembersCount());
                                     }
-                                    // Verify verizonconnect.com has verizon.com as FPS owner which
+                                    // Verify verizonconnect.com has verizon.com as RWS owner which
                                     // has 2 members within the group of sites with data.
                                     if (site.compareByAddressTo(expectedVerizonConnectWebsite)
                                             == 0) {
-                                        Assert.assertNotNull(site.getFPSCookieInfo());
+                                        Assert.assertNotNull(site.getRWSCookieInfo());
                                         assertEquals(
-                                                "verizon.com", site.getFPSCookieInfo().getOwner());
-                                        assertEquals(2, site.getFPSCookieInfo().getMembersCount());
+                                                "verizon.com", site.getRWSCookieInfo().getOwner());
+                                        assertEquals(2, site.getRWSCookieInfo().getMembersCount());
                                     }
 
-                                    // Verify a website with data which is not in a FPS has no FPS
+                                    // Verify a website with data which is not in a RWS has no RWS
                                     // data set.
-                                    if (site.compareByAddressTo(expectedNoInFPSWebsite) == 0) {
-                                        assertEquals(null, site.getFPSCookieInfo());
+                                    if (site.compareByAddressTo(expectedNoInRWSWebsite) == 0) {
+                                        assertEquals(null, site.getRWSCookieInfo());
                                     }
                                 }
                             });

@@ -23,7 +23,7 @@ VALID_EXPERIMENT_KEYS = [
 
 FIELDTRIAL_CONFIG_FILE_NAME = 'fieldtrial_testing_config.json'
 
-BASE_FEATURE_PATTERN = r"BASE_FEATURE\((.*?),(.*?),(.*?)\);"
+BASE_FEATURE_PATTERN = r'BASE_FEATURE\((.*?),(.*?),(.*?)\);'
 BASE_FEATURE_RE = re.compile(BASE_FEATURE_PATTERN,
                              flags=re.MULTILINE + re.DOTALL)
 
@@ -252,9 +252,9 @@ def CheckPretty(contents, file_path, message_type):
 def _GetStudyConfigFeatures(study_config):
   """Gets the set of features overridden in a study config."""
   features = set()
-  for experiment in study_config.get("experiments", []):
-    features.update(experiment.get("enable_features", []))
-    features.update(experiment.get("disable_features", []))
+  for experiment in study_config.get('experiments', []):
+    features.update(experiment.get('enable_features', []))
+    features.update(experiment.get('disable_features', []))
   return features
 
 
@@ -263,11 +263,11 @@ def _GetDuplicatedFeatures(study1, study2):
   duplicated_features = set()
   for study_config1 in study1:
     features = _GetStudyConfigFeatures(study_config1)
-    platforms = set(study_config1.get("platforms", []))
+    platforms = set(study_config1.get('platforms', []))
     for study_config2 in study2:
       # If the study configs do not specify any common platform, they do not
       # overlap, so we can skip them.
-      if platforms.isdisjoint(set(study_config2.get("platforms", []))):
+      if platforms.isdisjoint(set(study_config2.get('platforms', []))):
         continue
 
       common_features = features & _GetStudyConfigFeatures(study_config2)
@@ -329,7 +329,7 @@ def CheckDuplicatedFeatures(new_json_data, old_json_data, message_type):
     return []
 
   duplicated_features_strings = [
-      "%s (in studies %s)" % (feature, ', '.join(studies))
+      '%s (in studies %s)' % (feature, ', '.join(studies))
       for feature, studies in duplicated_features_to_studies_map.items()
   ]
 
@@ -377,14 +377,15 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
 
   if not declared_features:
     return [
-        message_type("Presubmit unable to find any declared flags "
-                     "in source. Please check PRESUBMIT.py for errors.")
+        output_api.PresubmitError(
+            'Presubmit unable to find any declared flags in source. Please '
+            'check PRESUBMIT.py for errors.')
     ]
 
   messages = []
   # Join all changed lines into a single string. This will be used to check
   # if feature names are present in the changed lines by substring search.
-  changed_contents = " ".join([x[1].strip() for x in changed_lines])
+  changed_contents = ' '.join([x[1].strip() for x in changed_lines])
   for study_name in json_data:
     study = json_data[study_name]
     for config in study:
@@ -405,23 +406,23 @@ def CheckUndeclaredFeatures(input_api, output_api, json_data, changed_lines):
         # Warn, but don't break, if they are present in the CL
         cros_late_boot_features = {
             s
-            for s in missing_features if s.startswith("CrOSLateBoot")
+            for s in missing_features if s.startswith('CrOSLateBoot')
         }
         missing_features = missing_features - cros_late_boot_features
         if cros_late_boot_features:
-          msg = ("CrOSLateBoot features added to "
-                 "study %s are not checked by presubmit."
-                 "\nPlease manually check that they exist in the code base."
+          msg = ('CrOSLateBoot features added to '
+                 'study %s are not checked by presubmit.'
+                 '\nPlease manually check that they exist in the code base.'
                  ) % study_name
           messages.append(
               output_api.PresubmitResult(msg, cros_late_boot_features))
 
         if missing_features:
-          msg = ("Presubmit was unable to verify existence of features in "
-                 "study %s.\nThis happens most commonly if the feature is "
-                 "defined by code generation.\n"
-                 "Please verify that the feature names have been spelled "
-                 "correctly before submitting. The affected features are:"
+          msg = ('Presubmit was unable to verify existence of features in '
+                 'study %s.\nThis happens most commonly if the feature is '
+                 'defined by code generation.\n'
+                 'Please verify that the feature names have been spelled '
+                 'correctly before submitting. The affected features are:'
                  ) % study_name
           messages.append(output_api.PresubmitResult(msg, missing_features))
 

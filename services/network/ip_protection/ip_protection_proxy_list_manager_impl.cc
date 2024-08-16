@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/ip_protection/ip_protection_config_cache.h"
 #include "services/network/ip_protection/ip_protection_data_types.h"
 #include "services/network/ip_protection/ip_protection_geo_utils.h"
 
@@ -19,6 +20,14 @@ namespace network {
 
 namespace {
 
+// Default Geo used until caching by geo is enabled.
+constexpr char kDefaultGeo[] = "EARTH";
+
+// Based on the logic in the `IpProtectionProxyConfigFetcher`, if there is a
+// non-empty proxy list with an empty `GeoHint`, it would be considered a failed
+// call which means a `proxy_list` with a value of `std::nullopt` would be
+// returned. Thus, the following function captures all states of failure
+// accurately even though we only check the `proxy_chain`.
 IpProtectionProxyListManagerImpl::ProxyListResult GetProxyListResult(
     const std::optional<std::vector<net::ProxyChain>>& proxy_list) {
   if (!proxy_list.has_value()) {
@@ -33,11 +42,24 @@ IpProtectionProxyListManagerImpl::ProxyListResult GetProxyListResult(
 }  // namespace
 
 IpProtectionProxyListManagerImpl::IpProtectionProxyListManagerImpl(
-    IpProtectionConfigGetter* config_getter,
+    IpProtectionConfigCache* config_cache,
+    IpProtectionConfigGetter& config_getter,
     bool disable_proxy_refreshing_for_testing)
-    : config_getter_(config_getter),
+    : ip_protection_config_cache_(config_cache),
+      config_getter_(config_getter),
+      proxy_list_min_age_(
+          net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
+      proxy_list_refresh_interval_(
+          net::features::kIpPrivacyProxyListFetchInterval.Get()),
+      enable_token_caching_by_geo_(
+          net::features::kIpPrivacyCacheTokensByGeo.Get()),
       disable_proxy_refreshing_for_testing_(
           disable_proxy_refreshing_for_testing) {
+  // If caching by geo is disabled, the current geo will be resolved to
+  // `kDefaultGeo` and should not be modified.
+  if (!enable_token_caching_by_geo_) {
+    current_geo_id_ = kDefaultGeo;
+  }
   if (!disable_proxy_refreshing_for_testing_) {
     // Refresh the proxy list immediately.
     RefreshProxyList();
@@ -55,12 +77,40 @@ IpProtectionProxyListManagerImpl::ProxyList() {
   return proxy_list_;
 }
 
-const std::string& IpProtectionProxyListManagerImpl::GeoId() {
-  return geo_id_;
+const std::string& IpProtectionProxyListManagerImpl::CurrentGeo() {
+  return current_geo_id_;
+}
+
+void IpProtectionProxyListManagerImpl::RefreshProxyListForGeoChange() {
+  if (!enable_token_caching_by_geo_) {
+    return;
+  }
+
+  if (IsProxyListOlderThanMinAge()) {
+    RefreshProxyList();
+    return;
+  }
+
+  // If list is not older than min interval, schedule refresh as soon as
+  // possible.
+  base::TimeDelta time_since_last_refresh =
+      base::Time::Now() - last_proxy_list_refresh_;
+
+  base::TimeDelta delay = proxy_list_min_age_ - time_since_last_refresh;
+  ScheduleRefreshProxyList(delay.is_negative() ? base::TimeDelta() : delay);
+}
+
+void IpProtectionProxyListManagerImpl::RequestRefreshProxyList() {
+  // Do not refresh the list too frequently.
+  if (!IsProxyListOlderThanMinAge()) {
+    return;
+  }
+
+  RefreshProxyList();
 }
 
 void IpProtectionProxyListManagerImpl::RefreshProxyList() {
-  if (fetching_proxy_list_ || !config_getter_) {
+  if (fetching_proxy_list_) {
     return;
   }
 
@@ -79,49 +129,67 @@ void IpProtectionProxyListManagerImpl::OnGotProxyList(
     const std::optional<GeoHint> geo_hint) {
   fetching_proxy_list_ = false;
 
-  // If the request for fetching the proxy list is successful, utilize the new
-  // proxy list, otherwise, continue using the existing list, if any. Geo hint
-  // is only updated if a proxy list is returned.
-  if (proxy_list.has_value()) {
-    proxy_list_ = *proxy_list;
-    have_fetched_proxy_list_ = true;
-    base::UmaHistogramMediumTimes(
-        "NetworkService.IpProtection.ProxyListRefreshTime",
-        base::TimeTicks::Now() - refresh_start_time_for_metrics);
-
-    geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
-  }
-
   base::UmaHistogramEnumeration(
       "NetworkService.IpProtection.GetProxyListResult",
       GetProxyListResult(proxy_list));
 
-  // Schedule the next refresh. If this timer was already running, this will
-  // reschedule it for the given time.
-  if (!disable_proxy_refreshing_for_testing_) {
-    base::TimeDelta delay =
-        net::features::kIpPrivacyProxyListFetchInterval.Get();
-    next_refresh_proxy_list_.Start(
-        FROM_HERE, delay,
-        base::BindOnce(&IpProtectionProxyListManagerImpl::RefreshProxyList,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  // If the request for fetching the proxy list is successful, utilize the new
+  // proxy list, otherwise, continue using the existing list, if any.
+  if (proxy_list.has_value()) {
+    base::UmaHistogramMediumTimes(
+        "NetworkService.IpProtection.ProxyListRefreshTime",
+        base::TimeTicks::Now() - refresh_start_time_for_metrics);
 
-  if (on_proxy_list_refreshed_for_testing_) {
-    std::move(on_proxy_list_refreshed_for_testing_).Run();
+    proxy_list_ = *proxy_list;
+    have_fetched_proxy_list_ = true;
+
+    // Only trigger a callback to the config cache if the following requirements
+    // are met:
+    // 1. Token caching by geo is enabled.
+    // 2. The proxy_list is non-empty. An empty list implies there is no
+    //    geo_hint present.
+    // 3. The new geo is different than the existing geo.
+    if (enable_token_caching_by_geo_ && !proxy_list->empty()) {
+      CHECK(geo_hint.has_value());
+      current_geo_id_ = network::GetGeoIdFromGeoHint(std::move(geo_hint));
+      ip_protection_config_cache_->GeoObserved(current_geo_id_);
+    }
+
+    ScheduleRefreshProxyList(proxy_list_refresh_interval_);
+
+    if (on_proxy_list_refreshed_for_testing_) {
+      std::move(on_proxy_list_refreshed_for_testing_).Run();
+    }
   }
 }
 
-void IpProtectionProxyListManagerImpl::RequestRefreshProxyList() {
-  // Do not refresh the list too frequently.
-  base::TimeDelta minimum_age =
-      net::features::kIpPrivacyProxyListMinFetchInterval.Get();
+bool IpProtectionProxyListManagerImpl::IsProxyListOlderThanMinAge() const {
+  return base::Time::Now() - last_proxy_list_refresh_ >= proxy_list_min_age_;
+}
 
-  if (base::Time::Now() - last_proxy_list_refresh_ < minimum_age) {
+void IpProtectionProxyListManagerImpl::ScheduleRefreshProxyList(
+    base::TimeDelta delay) {
+  CHECK(!delay.is_negative());
+
+  // Nothing to schedule if refreshing is disabled for testing.
+  if (disable_proxy_refreshing_for_testing_) {
     return;
   }
 
-  RefreshProxyList();
-}
+  if (fetching_proxy_list_) {
+    next_refresh_proxy_list_.Stop();
+    return;
+  }
 
+  if (delay.is_negative()) {
+    delay = base::TimeDelta();
+  }
+
+  // Schedule the next refresh. If this timer was already running, this will
+  // reschedule it for the given time.
+  next_refresh_proxy_list_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(&IpProtectionProxyListManagerImpl::RefreshProxyList,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 }  // namespace network

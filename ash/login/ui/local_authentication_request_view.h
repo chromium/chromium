@@ -78,7 +78,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
       LocalAuthenticationCallback local_authentication_callback,
       const std::u16string& title,
       const std::u16string& description,
-      Delegate* delegate,
+      base::WeakPtr<Delegate> delegate,
       std::unique_ptr<UserContext> user_context);
 
   LocalAuthenticationRequestView(const LocalAuthenticationRequestView&) =
@@ -131,8 +131,7 @@ class ASH_EXPORT LocalAuthenticationRequestView
   // Returns the view dimensions.
   gfx::Size GetLocalAuthenticationRequestViewSize() const;
 
-  // Unowned pointer to the delegate. The delegate should outlive this instance.
-  raw_ptr<Delegate> delegate_;
+  const base::WeakPtr<Delegate> delegate_;
 
   // Strings as on view construction to enable restoring the original state.
   std::u16string default_title_;

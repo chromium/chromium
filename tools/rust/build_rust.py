@@ -371,6 +371,8 @@ class XPy:
             # pkg-config will by default look for system-wide libs. This tells
             # it to look exclusively in the sysroot instead.
             self._env['PKG_CONFIG_SYSROOT_DIR'] = debian_sysroot
+            self._env[
+                'PKG_CONFIG_LIBDIR'] = debian_sysroot + '/usr/lib/pkgconfig'
 
             # Due to an interaction with the above flags, we must tell lzma-sys
             # explicitly to build it from source.
@@ -619,6 +621,24 @@ def GitApplyCherryPicks():
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
                   '14947b410ad23a09251180af50486e247f70b465')
 
+    # TODO(crbug.com/350341587): Remove once
+    # https://github.com/rust-lang/rust/pull/127025 or a similar fix has been
+    # merged.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  '56d589b5bea75d08d21d7d6efb34e8527aec7635')
+
+    # TODO(https://crbug.com/357125724): Remove once compiler_builtins is fixed
+    RunCommand([
+        'git',
+        '-C',
+        RUST_SRC_DIR,
+        'revert',
+        '--no-edit',
+        '-m',
+        '1',
+        '80d8270d8488957f62fbf0df7a19dfe596be92ac',
+    ])
+
     print('Finished applying cherry-picks.')
 
 
@@ -755,6 +775,16 @@ def main():
         # This happens after initializing submodules, so that we can include
         # changes that move submodules.
         GitApplyCherryPicks()
+
+        # TODO(crbug.com/356618943): Workaround for https://github.com/rust-lang/cargo/issues/14253
+        bootstrap_cargo = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
+                                       'Cargo.toml')
+        with open(bootstrap_cargo, 'r') as f:
+            lines = f.readlines()
+        with open(bootstrap_cargo, 'w') as f:
+            for l in lines:
+                if l.strip('\n') != 'debug = 0':
+                    f.write(l)
 
         CargoVendor(cargo_bin)
 

@@ -317,7 +317,7 @@ void WebSocket::OnReadDuringOpen(const char* data, int len) {
           // TODO(crbug.com/354307328): It's not possible to construct this span
           // soundedly here. OnReadDuringOpen() should receive a span instead of
           // a pointer and length.
-          UNSAFE_BUFFERS(base::span(data, base::checked_cast<size_t>(len)))),
+          UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(len)))),
       &frame_chunks));
   for (size_t i = 0; i < frame_chunks.size(); ++i) {
     const auto& header = frame_chunks[i]->header;

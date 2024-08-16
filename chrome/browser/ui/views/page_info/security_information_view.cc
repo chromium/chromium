@@ -68,7 +68,7 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       icon_label_spacing;
   security_summary_label_->SizeToFit(min_label_width_);
 
-  auto start_secondary_row = [=]() {
+  auto start_secondary_row = [=, this]() {
     layout->AddRows(1, views::TableLayout::kFixedSize);
     AddChildView(std::make_unique<views::View>());  // Skipping the icon column.
   };
@@ -201,7 +201,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
       change_password_template = IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   std::unique_ptr<views::MdTextButton> change_password_button;

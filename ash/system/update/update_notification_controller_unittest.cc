@@ -150,7 +150,7 @@ class UpdateNotificationControllerTest : public AshTestBase {
     const auto color_id = GetNotification()->accent_color_id();
     const auto color = GetNotification()->accent_color();
 
-    if (chromeos::features::IsJellyEnabled() && color_id.has_value()) {
+    if (color_id.has_value()) {
       // We use `ui::ColorId` for Jelly.
       EXPECT_EQ(expected_color_id_for_jelly, color_id);
     } else if (color.has_value()) {

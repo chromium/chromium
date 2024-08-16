@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Chitha futhi ubonise isenzo esilandelayo esitholakalayo</translation>
 <translation id="3744111561329211289">Ukuvumelanisa ngemuva</translation>
 <translation id="3763247130972274048">Thepha kabili ividiyo ngakwesokunxele noma ngakwesokudla ukuze weqe nge-10s</translation>
+<translation id="3779154269823594982">Shintsha amaphasiwedi</translation>
 <translation id="3797520601150691162">Ungasebenzisi itimu emnyama yesayithi elithile</translation>
 <translation id="3803367742635802571">Amasayithi owavakashelayo angase ayeke ukusebenza ngendlela eklanywe ngayo</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Vumela umsindo wesayithi elithile.</translation>
 <translation id="789180354981963912">Vimba amakhukhi angahlangene ngqo ku-Incognito:</translation>
 <translation id="7940722705963108451">Ngikhumbuze</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{Isayithi elingu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> lingabona umsebenzi wakho eqenjini}one{Amasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> angabona umsebenzi wakho eqenjini}other{Amasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="FPS_OWNER" /> angabona umsebenzi wakho eqenjini}}</translation>
 <translation id="7986741934819883144">Khetha oxhumana naye</translation>
 <translation id="7990211076305263060">Lapho ivuliwe, amasayithi angacela ukusebenzisa imakrofoni yakho. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa imakrofoni yakho.</translation>
 <translation id="8007176423574883786">Kuvaliwe kule divayisi</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Vimbela amasayithi kusukela ekuxhumekeni kumadivayisi</translation>
 <translation id="8525306231823319788">Isikrini esigcwele</translation>
 <translation id="8541410041357371550">Leli sayithi lithola izihloko zesikhangiso sakho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Amakhukhi avunyelwe kusayithi eli-<ph name="FPS_MEMBERS_COUNT" /> lika-<ph name="FPS_OWNER" />}one{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}other{Amakhukhi avunyelwe kumasayithi angu-<ph name="FPS_MEMBERS_COUNT" /> ka-<ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Kuvunyelwe (kunconyiwe)</translation>
 <translation id="8609465669617005112">Hambisa phezulu</translation>
 <translation id="8617611086246832542">Lapho ivuliwe, kuboniswa ukubuka kwedeskithophu yamawebhusayithi. Lapho ivaliwe, kuboniswa ukubuka kweselula yamawebhusayithi.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Kuphethwa abazali bakho</translation>
 <translation id="9039697262778250930">Ungase ukhishwe kulawa masayithi</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
-<translation id="9090268041676521955">Leli sayithi liseqenjini elingakwazi ukubona umsebenzi wakho. Iqembu lichazwa ngu-<ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Sula amakhukhi?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, nokungu-<ph name="NUM_MORE" /> ngaphezulu}}</translation>
 <translation id="913657688200966289">Vula izimvume ze-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>

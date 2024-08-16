@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
@@ -146,6 +146,7 @@ class DemoSessionTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+  base::UserActionTester user_action_tester_;
 
  private:
   BrowserProcessPlatformPartTestApi browser_process_platform_part_test_api_;
@@ -174,6 +175,20 @@ TEST_F(DemoSessionTest, ShutdownResetsInstance) {
   EXPECT_TRUE(DemoSession::Get());
   DemoSession::ShutDownIfInitialized();
   EXPECT_FALSE(DemoSession::Get());
+}
+
+TEST_F(DemoSessionTest, LoginDemoSession) {
+  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
+  ASSERT_TRUE(demo_session);
+  // There should be no user action DemoMode.DemoSessionStarts reported
+  // before the user login
+  EXPECT_EQ(0,
+            user_action_tester_.GetActionCount("DemoMode.DemoSessionStarts"));
+
+  LoginDemoUser();
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("DemoMode.DemoSessionStarts"));
 }
 
 TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {

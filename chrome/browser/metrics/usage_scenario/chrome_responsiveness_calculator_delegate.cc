@@ -38,7 +38,7 @@ bool IsChromeUsedInScenario(Scenario scenario) {
     case Scenario::kAllTabsHiddenNoVideoCaptureOrAudioRecent:
     case Scenario::kZeroWindowRecent:
       // Short scenario only.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

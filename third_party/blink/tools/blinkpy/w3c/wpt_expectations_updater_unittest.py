@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import contextlib
 import json
 import textwrap
 import unittest
@@ -236,126 +235,50 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 [ Mac10.10 ] external/wpt/test/path.html [ Timeout ]
                 """))
 
-    def test_run_chrome_only_failure(self):
+    def test_run_webdriver_only_failure(self):
         host = self.mock_host()
         host.builders = BuilderList({
-            'MOCK Try Chrome': {
-                'port_name': 'chrome',
-                'specifiers': ['Chrome', 'Release'],
+            'MOCK Try Linux': {
+                'port_name': 'test-linux-trusty',
+                'specifiers': ['Linux', 'Release'],
                 'is_try_builder': True,
                 'steps': {
-                    'chrome_wpt_tests': {},
                     'webdriver_wpt_tests': {},
                 },
             },
         })
         updater = WPTExpectationsUpdater(host)
         expectations_path = updater.finder.path_from_web_tests(
-            'ChromeTestExpectations')
+            'TestExpectations')
         host.filesystem.write_text_file(
             expectations_path,
-            textwrap.dedent(f"""\
+            textwrap.dedent("""\
                 # results: [ Timeout ]
-                {WPTExpectationsUpdater.MARKER_COMMENT}
+                external/wpt/not-a-wdspec-test.html [ Timeout ]
+                # ====== New tests from wpt-importer added here ======
                 """))
 
         updater.git_cl = MockGitCL(
             updater.host, {
-                Build('MOCK Try Chrome', 333, 'Build-4'): BuildStatus.FAILURE,
+                Build('MOCK Try Linux', 333, 'Build-4'): BuildStatus.FAILURE,
             })
         host.results_fetcher.set_results(
-            Build('MOCK Try Chrome', 333, 'Build-4'),
-            WebTestResults.from_rdb_responses(
-                {'external/wpt/test/path.html': [{
-                    'status': 'ABORT'
-                }] * 3},
-                step_name='chrome_wpt_tests'))
-        host.results_fetcher.set_results(
-            Build('MOCK Try Chrome', 333, 'Build-4'),
+            Build('MOCK Try Linux', 333, 'Build-4'),
             WebTestResults.from_rdb_responses(
                 {'external/wpt/webdriver/test.py': [{
                     'status': 'ABORT'
                 }] * 3},
                 step_name='webdriver_wpt_tests'))
 
-        with self._mock_chrome_port(updater):
-            self.assertEqual(0, updater.run())
+        self.assertEqual(0, updater.run())
         self.assertEqual(
             host.filesystem.read_text_file(expectations_path),
             textwrap.dedent("""\
                 # results: [ Timeout ]
+                external/wpt/not-a-wdspec-test.html [ Timeout ]
                 # ====== New tests from wpt-importer added here ======
-                external/wpt/test/path.html [ Timeout ]
                 external/wpt/webdriver/test.py [ Timeout ]
                 """))
-
-    def test_no_chrome_expectation_redundant_with_generic(self):
-        host = self.mock_host()
-        host.builders = BuilderList({
-            'MOCK Try Chrome': {
-                'port_name': 'chrome',
-                'specifiers': ['Chrome', 'Release'],
-                'is_try_builder': True,
-                'steps': {
-                    'chrome_wpt_tests': {},
-                },
-            },
-        })
-        updater = WPTExpectationsUpdater(host)
-        expectations_path = updater.finder.path_from_web_tests(
-            'ChromeTestExpectations')
-        host.filesystem.write_text_file(
-            updater.port.path_to_generic_test_expectations_file(),
-            textwrap.dedent("""\
-                # results: [ Timeout ]
-                external/wpt/test/path.html [ Timeout ]
-                """))
-        host.filesystem.write_text_file(
-            expectations_path,
-            textwrap.dedent(f"""\
-                # results: [ Timeout ]
-                # ====== New tests from wpt-importer added here ======
-                """))
-
-        updater.git_cl = MockGitCL(
-            updater.host, {
-                Build('MOCK Try Chrome', 333, 'Build-4'): BuildStatus.FAILURE,
-            })
-        host.results_fetcher.set_results(
-            Build('MOCK Try Chrome', 333, 'Build-4'),
-            WebTestResults.from_rdb_responses(
-                {'external/wpt/test/path.html': [{
-                    'status': 'ABORT'
-                }] * 3},
-                step_name='chrome_wpt_tests'))
-
-        with self._mock_chrome_port(updater):
-            self.assertEqual(0, updater.run())
-        self.assertEqual(
-            host.filesystem.read_text_file(expectations_path),
-            textwrap.dedent(f"""\
-                # results: [ Timeout ]
-                # ====== New tests from wpt-importer added here ======
-                """))
-
-    @contextlib.contextmanager
-    def _mock_chrome_port(self, updater):
-        chrome_port = updater.host.port_factory.get('test-linux-trusty')
-        chrome_port.set_option_default('additional_expectations', [
-            updater.finder.path_from_web_tests('ChromeTestExpectations'),
-        ])
-        with contextlib.ExitStack() as mocks:
-            mocks.enter_context(
-                mock.patch.object(chrome_port, 'name', return_value='chrome'))
-            mocks.enter_context(
-                mock.patch.object(chrome_port,
-                                  'configuration_specifier_macros',
-                                  return_value={'chrome': ['chrome']}))
-            mocks.enter_context(
-                mock.patch.object(updater.host.port_factory,
-                                  'get',
-                                  return_value=chrome_port))
-            yield
 
     def test_run_inherited_results(self):
         host = self.mock_host()

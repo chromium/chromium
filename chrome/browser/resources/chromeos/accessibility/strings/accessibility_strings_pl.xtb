@@ -220,6 +220,7 @@
 <translation id="2490721194269245365">Różanobrązowy</translation>
 <translation id="249330843868392562">Otwórz ustawienia zamiany tekstu na mowę</translation>
 <translation id="2497706219848005458">Zielonożółty</translation>
+<translation id="2512979179176933762">pokaż okna</translation>
 <translation id="2523609930580546572">Samouczek ChromeVox</translation>
 <translation id="2525706221823668172">Skróty klawiszowe na Chromebooku</translation>
 <translation id="2553108862507765288">błąd gramatyczny</translation>
@@ -497,6 +498,7 @@
 <translation id="4246217262268234757">Stalowy błękit</translation>
 <translation id="4253168017788158739">Notatka</translation>
 <translation id="4254798249533888099">Tree</translation>
+<translation id="4259220820964911921">Włączyć sterowanie twarzą?</translation>
 <translation id="4271220233568730077">Następne wyrażenie matematyczne</translation>
 <translation id="4275397969489577657">Włącz rejestrowanie strumienia wydarzenia</translation>
 <translation id="4278486392851938658">Nie ma poprzedniego klikniętego linku</translation>
@@ -710,6 +712,7 @@
 <translation id="5760594853119905566">Dodatek</translation>
 <translation id="5761219715606611783">Brawo! Znasz już podstawy korzystania z czytnika ChromeVox. Możesz przejść samouczek ponownie lub wyłączyć go, klikając odpowiedni przycisk poniżej.</translation>
 <translation id="5776001898637896684">Rozszerzenie do zamiany tekstu na mowę przy użyciu zaawansowanej usługi sieciowej Google</translation>
+<translation id="5783252477644995371">Sterowanie twarzą pozwala sterować kursorem za pomocą wskazywania twarzą i wykonywać czynności takie jak klikanie lewym przyciskiem myszy za pomocą gestów z wykorzystaniem twarzy, np. uśmiechu</translation>
 <translation id="5805940204952508776">Kliknij dwoma palcami</translation>
 <translation id="5819072574982403430">Element drzewa</translation>
 <translation id="5822819874379903994">Ciemny turkusowy</translation>
@@ -1072,7 +1075,6 @@
 <translation id="847040613207937740">Nie ma następnego pola wyboru</translation>
 <translation id="8473540203671727883">Przeczytaj na głos tekst wskazany myszą</translation>
 <translation id="8476408756881832830">Wstrzymaj odtwarzanie, gdy ChromeVox mówi</translation>
-<translation id="8476508772960940536">przegląd okien</translation>
 <translation id="8480873377842220259">Teraz zajmiemy się podstawami nawigacji. Możesz przytrzymać klawisz wyszukiwania i naciskać klawisze strzałek, by poruszać się po ekranie. Aby przejść dalej, naciśnij klawisz wyszukiwania + strzałka w prawo.</translation>
 <translation id="8503360654911991865">Zmniejsz dokładność nawigacji</translation>
 <translation id="8520472399088452386">Przycisk przewijany</translation>

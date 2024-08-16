@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -34,6 +35,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -67,6 +70,7 @@ public class TabGroupsPaneUnitTest {
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock SyncService mSyncService;
     @Mock ModalDialogManager mModalDialogManager;
+    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
             new OneshotSupplierImpl<>();
@@ -89,6 +93,8 @@ public class TabGroupsPaneUnitTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
+        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         mTabGroupsPane =
                 new TabGroupsPane(
@@ -136,6 +142,7 @@ public class TabGroupsPaneUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
     public void testWithoutSyncFeature() {
+        doReturn(false).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
         assertNotEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }

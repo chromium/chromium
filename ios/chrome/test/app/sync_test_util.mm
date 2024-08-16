@@ -22,6 +22,7 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
+#import "components/sync/base/data_type.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/base/time.h"
 #import "components/sync/engine/loopback_server/loopback_server_entity.h"
@@ -119,7 +120,7 @@ void FlushFakeSyncServerToDisk() {
   gSyncFakeServer->FlushToDisk();
 }
 
-void TriggerSyncCycle(syncer::ModelType type) {
+void TriggerSyncCycle(syncer::DataType type) {
   ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   syncer::SyncService* sync_service =
@@ -127,16 +128,16 @@ void TriggerSyncCycle(syncer::ModelType type) {
   sync_service->TriggerRefresh({type});
 }
 
-int GetNumberOfSyncEntities(syncer::ModelType type) {
+int GetNumberOfSyncEntities(syncer::DataType type) {
   base::Value::Dict entities = gSyncFakeServer->GetEntitiesAsDictForTesting();
 
   base::Value::List* entity_list =
-      entities.FindList(ModelTypeToDebugString(type));
+      entities.FindList(DataTypeToDebugString(type));
   DCHECK(entity_list);
   return static_cast<int>(entity_list->size());
 }
 
-BOOL VerifyNumberOfSyncEntitiesWithName(syncer::ModelType type,
+BOOL VerifyNumberOfSyncEntitiesWithName(syncer::DataType type,
                                         std::string name,
                                         size_t count,
                                         NSError** error) {
@@ -242,7 +243,7 @@ bool VerifySyncInvalidationFieldsPopulated() {
   DCHECK(IsFakeSyncServerSetUp());
   const std::string cache_guid = GetSyncCacheGuid();
   std::vector<sync_pb::SyncEntity> entities =
-      gSyncFakeServer->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+      gSyncFakeServer->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
   for (const sync_pb::SyncEntity& entity : entities) {
     if (entity.specifics().device_info().cache_guid() == cache_guid) {
       const sync_pb::InvalidationSpecificFields& invalidation_fields =
@@ -284,7 +285,7 @@ void DeleteAutofillProfileFromFakeSyncServer(std::string guid) {
   DCHECK(IsFakeSyncServerSetUp());
 
   std::vector<sync_pb::SyncEntity> autofill_profiles =
-      gSyncFakeServer->GetSyncEntitiesByModelType(syncer::AUTOFILL_PROFILE);
+      gSyncFakeServer->GetSyncEntitiesByDataType(syncer::AUTOFILL_PROFILE);
   std::string entity_id;
   std::string client_tag_hash;
   for (const sync_pb::SyncEntity& autofill_profile : autofill_profiles) {

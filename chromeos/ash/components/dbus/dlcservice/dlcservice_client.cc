@@ -135,7 +135,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(progress_callback)));
   }
 
-  void Uninstall(std::string_view dlc_id,
+  void Uninstall(const std::string& dlc_id,
                  UninstallCallback uninstall_callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kUninstallMethod);
@@ -150,7 +150,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(uninstall_callback)));
   }
 
-  void Purge(std::string_view dlc_id, PurgeCallback purge_callback) override {
+  void Purge(const std::string& dlc_id, PurgeCallback purge_callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kPurgeMethod);
     dbus::MessageWriter writer(&method_call);
@@ -164,7 +164,7 @@ class DlcserviceClientImpl : public DlcserviceClient {
                        std::move(purge_callback)));
   }
 
-  void GetDlcState(std::string_view dlc_id,
+  void GetDlcState(const std::string& dlc_id,
                    GetDlcStateCallback callback) override {
     dbus::MethodCall method_call(dlcservice::kDlcServiceInterface,
                                  dlcservice::kGetDlcStateMethod);

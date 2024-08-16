@@ -17,10 +17,11 @@
                 "destination": "https://destination.test",
                 "source_event_id": "123",
                 "expiry": "1296000",
+                // ensure validity of trailing zero
                 "event_report_windows": {
-                  "start_time": 3600,
+                  "start_time": 3600.0,
                   // 2592000 s clamped down to expiry.
-                  "end_times": [86400, 2592000]
+                  "end_times": [86400, 2592000.0]
                 }
               }
             }

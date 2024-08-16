@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 
 #include <algorithm>
 
@@ -19,9 +19,9 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
-#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
@@ -59,6 +59,13 @@ class TestPerformance : public Performance {
 
   bool HasPerformanceObserverFor(PerformanceEntry::EntryType entry_type) {
     return HasObserverFor(entry_type);
+  }
+
+  base::TimeTicks MsAfterTimeOrigin(uint32_t ms) {
+    LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
+    DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
+    return loader->GetTiming().ReferenceMonotonicTime() +
+           base::Milliseconds(ms);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -240,8 +247,13 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
 
   PerformanceEntryVector test_buffer_;
 
+  PerformanceEventTiming::EventTimingReportingInfo info{
+      .creation_time = base_->MsAfterTimeOrigin(0),
+      .processing_start_time = base_->MsAfterTimeOrigin(0),
+      .processing_end_time = base_->MsAfterTimeOrigin(0)};
+
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), 0.0, 0.0, 0.0, false, nullptr,
+      AtomicString("event"), info, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
@@ -263,14 +275,22 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
   // Insert 3 entries into the vector.
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
+    PerformanceEventTiming::EventTimingReportingInfo info{
+        .creation_time = base_->MsAfterTimeOrigin(tmp * i),
+        .processing_start_time = base_->MsAfterTimeOrigin(0),
+        .processing_end_time = base_->MsAfterTimeOrigin(0)};
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), tmp * i, 0.0, 0.0, false, nullptr,
+        AtomicString("event"), info, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     test_buffer_.push_back(*entry);
   }
 
+  PerformanceEventTiming::EventTimingReportingInfo info{
+      .creation_time = base_->MsAfterTimeOrigin(1),
+      .processing_start_time = base_->MsAfterTimeOrigin(0),
+      .processing_end_time = base_->MsAfterTimeOrigin(0)};
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), 1.0, 0.0, 0.0, false, nullptr,
+      AtomicString("event"), info, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   // Create copy of the test_buffer_.
@@ -296,14 +316,25 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
   // Insert 3 entries into the vector.
   for (int i = 0; i < 3; i++) {
     double tmp = 1.0;
+
+    PerformanceEventTiming::EventTimingReportingInfo info{
+        .creation_time = base_->MsAfterTimeOrigin(tmp * i),
+        .processing_start_time = base_->MsAfterTimeOrigin(0),
+        .processing_end_time = base_->MsAfterTimeOrigin(0)};
+
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), tmp * i, 0.0, 0.0, false, nullptr,
+        AtomicString("event"), info, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     test_buffer_.push_back(*entry);
   }
 
+  PerformanceEventTiming::EventTimingReportingInfo info{
+      .creation_time = base_->MsAfterTimeOrigin(0),
+      .processing_start_time = base_->MsAfterTimeOrigin(0),
+      .processing_end_time = base_->MsAfterTimeOrigin(0)};
+
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
-      AtomicString("event"), 0.0, 0.0, 0.0, false, nullptr,
+      AtomicString("event"), info, false, nullptr,
       LocalDOMWindow::From(scope.GetScriptState()));
 
   // Create copy of the test_buffer_.
@@ -330,8 +361,14 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
 
   for (int i = 0; i < 6; i += 2) {
     double tmp = 1.0;
+
+    PerformanceEventTiming::EventTimingReportingInfo info{
+        .creation_time = base_->MsAfterTimeOrigin(tmp * i),
+        .processing_start_time = base_->MsAfterTimeOrigin(0),
+        .processing_end_time = base_->MsAfterTimeOrigin(0)};
+
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), tmp * i, 0.0, 0.0, false, nullptr,
+        AtomicString("event"), info, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     first_vector.push_back(*entry);
     test_vector.push_back(*entry);
@@ -339,8 +376,14 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
 
   for (int i = 1; i < 6; i += 2) {
     double tmp = 1.0;
+
+    PerformanceEventTiming::EventTimingReportingInfo info{
+        .creation_time = base_->MsAfterTimeOrigin(tmp * i),
+        .processing_start_time = base_->MsAfterTimeOrigin(0),
+        .processing_end_time = base_->MsAfterTimeOrigin(0)};
+
     PerformanceEventTiming* entry = PerformanceEventTiming::Create(
-        AtomicString("event"), tmp * i, 0.0, 0.0, false, nullptr,
+        AtomicString("event"), info, false, nullptr,
         LocalDOMWindow::From(scope.GetScriptState()));
     second_vector.push_back(*entry);
     test_vector.push_back(*entry);

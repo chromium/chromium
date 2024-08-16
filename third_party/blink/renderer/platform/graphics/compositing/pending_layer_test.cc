@@ -78,7 +78,7 @@ TEST(PendingLayerTest, Merge) {
 }
 
 TEST(PendingLayerTest, MergeWithGuestTransform) {
-  auto transform = Create2DTranslation(t0(), 20, 25);
+  auto* transform = Create2DTranslation(t0(), 20, 25);
   auto& artifact = TestPaintArtifact()
                        .Chunk()
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -94,7 +94,7 @@ TEST(PendingLayerTest, MergeWithGuestTransform) {
 }
 
 TEST(PendingLayerTest, MergeWithHomeTransform) {
-  auto transform = Create2DTranslation(t0(), 20, 25);
+  auto* transform = Create2DTranslation(t0(), 20, 25);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*transform, c0(), e0())
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -110,8 +110,8 @@ TEST(PendingLayerTest, MergeWithHomeTransform) {
 }
 
 TEST(PendingLayerTest, MergeWithBothTransforms) {
-  auto t1 = Create2DTranslation(t0(), 20, 25);
-  auto t2 = Create2DTranslation(t0(), -20, -25);
+  auto* t1 = Create2DTranslation(t0(), 20, 25);
+  auto* t2 = Create2DTranslation(t0(), -20, -25);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), e0())
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -163,8 +163,8 @@ TEST(PendingLayerTest, DontMergeSparse) {
 }
 
 TEST(PendingLayerTest, PendingLayerDontMergeSparseWithTransforms) {
-  auto t1 = Create2DTranslation(t0(), 20, 25);
-  auto t2 = Create2DTranslation(t0(), 1000, 1000);
+  auto* t1 = Create2DTranslation(t0(), 20, 25);
+  auto* t2 = Create2DTranslation(t0(), 1000, 1000);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), e0())
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -182,10 +182,10 @@ TEST(PendingLayerTest, PendingLayerDontMergeSparseWithTransforms) {
 }
 
 TEST(PendingLayerTest, DontMergeSparseInCompositedEffect) {
-  auto t1 = Create2DTranslation(t0(), 20, 25);
-  auto e1 =
+  auto* t1 = Create2DTranslation(t0(), 20, 25);
+  auto* e1 =
       CreateOpacityEffect(e0(), 1.0f, CompositingReason::kWillChangeOpacity);
-  auto t2 = Create2DTranslation(t0(), 1000, 1000);
+  auto* t2 = Create2DTranslation(t0(), 1000, 1000);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), *e1)
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -203,9 +203,9 @@ TEST(PendingLayerTest, DontMergeSparseInCompositedEffect) {
 }
 
 TEST(PendingLayerTest, MergeSparseInNonCompositedEffect) {
-  auto t1 = Create2DTranslation(t0(), 20, 25);
-  auto t2 = Create2DTranslation(t0(), 1000, 1000);
-  auto e1 = CreateOpacityEffect(e0(), 1.0f, CompositingReason::kNone);
+  auto* t1 = Create2DTranslation(t0(), 20, 25);
+  auto* t2 = Create2DTranslation(t0(), 1000, 1000);
+  auto* e1 = CreateOpacityEffect(e0(), 1.0f, CompositingReason::kNone);
   auto& artifact = TestPaintArtifact()
                        .Chunk(*t1, c0(), *e1)
                        .Bounds(gfx::Rect(0, 0, 30, 40))
@@ -504,7 +504,7 @@ TEST_P(PendingLayerTextOpaquenessTest, UnitedClippedToOpaque) {
   // Though the second chunk has text not on opaque background, and it's not
   // fully covered by the opaque rect of the first chunk, the non-opaque area
   // is not visible in the final layer, so we still allow the merge.
-  auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(175, 175, 100, 100));
+  auto* clip1 = CreateClip(c0(), t0(), FloatRoundedRect(175, 175, 100, 100));
   auto& artifact =
       TestPaintArtifact()
           .Chunk(t0(), *clip1, e0())

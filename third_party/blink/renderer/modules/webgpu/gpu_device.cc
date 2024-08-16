@@ -243,7 +243,7 @@ void GPUDevice::AddConsoleWarning(const String& message) {
 
 void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
   size_t index = static_cast<size_t>(type);
-  if (UNLIKELY(!singleton_warning_fired_[index])) {
+  if (!singleton_warning_fired_[index]) [[unlikely]] {
     singleton_warning_fired_[index] = true;
 
     std::string message;
@@ -591,8 +591,7 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
   auto promise = resolver->Promise();
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  ExceptionState exception_state(isolate,
-                                 ExceptionContextType::kOperationInvoke,
+  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
                                  "GPUDevice", "createRenderPipelineAsync");
   OwnedRenderPipelineDescriptor dawn_desc_info;
   ConvertToDawnType(isolate, this, descriptor, &dawn_desc_info,

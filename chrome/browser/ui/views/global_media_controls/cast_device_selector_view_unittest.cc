@@ -8,13 +8,10 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
-#include "components/media_message_center/mock_media_notification_view.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
 
 using ::global_media_controls::test::MockDeviceListHost;
-using ::media_message_center::test::MockMediaNotificationView;
-using ::testing::NiceMock;
 
 namespace {
 
@@ -115,6 +112,7 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
 TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(CreateDevices());
+  EXPECT_FALSE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -135,6 +133,7 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
 
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(std::move(devices));
+  EXPECT_TRUE(view()->GetHasDeviceIssueForTesting());
   EXPECT_NE(view()->GetDeviceContainerViewForTesting(), nullptr);
   for (views::View* child :
        view()->GetDeviceContainerViewForTesting()->children()) {
@@ -144,4 +143,12 @@ TEST_F(CastDeviceSelectorViewTest, DeviceEntryWithIssueCheck) {
     EXPECT_EQ(base::UTF16ToUTF8(device_button->status_text_label()->GetText()),
               kTestDeviceStatusText);
   }
+}
+
+TEST_F(CastDeviceSelectorViewTest, ShowPermissionRejectedError) {
+  CreateCastDeviceSelectorView(/*show_devices=*/false);
+  view()->OnPermissionRejected();
+  EXPECT_TRUE(view()->GetCloseButtonForTesting()->GetVisible());
+  EXPECT_TRUE(view()->GetPermissionRejectedViewForTesting()->GetVisible());
+  EXPECT_FALSE(view()->GetDeviceContainerViewForTesting()->GetVisible());
 }

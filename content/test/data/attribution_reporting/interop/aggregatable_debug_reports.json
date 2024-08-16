@@ -70,7 +70,7 @@
                   "a": "0x5"
                 },
                 "aggregatable_debug_reporting": {
-                  "budget": 1024,
+                  "budget": 1024.0, // ensure validity of trailing zero
                   "key_piece": "0x1"
                 }
               }
@@ -100,7 +100,7 @@
                     {
                       "types": ["trigger-aggregate-insufficient-budget"],
                       "key_piece": "0x8",
-                      "value": 123
+                      "value": 123.0 // ensure validity of trailing zero
                     }
                   ]
                 }
@@ -581,7 +581,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3611",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },
@@ -601,7 +600,6 @@
             "attribution_destination": "https://destination.test",
             "reporting_origin": "https://reporter.test",
             "scheduled_report_time": "3613",
-            "source_registration_time": "0",
             "version": "1.0"
           }
         },

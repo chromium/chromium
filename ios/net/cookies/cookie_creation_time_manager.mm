@@ -61,7 +61,7 @@ CookieCreationTimeManager::~CookieCreationTimeManager() {
 void CookieCreationTimeManager::SetCreationTime(
     NSHTTPCookie* cookie,
     const base::Time& creation_time) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!base::Contains(unique_times_, creation_time));
 
   // If the cookie overrides an existing cookie, remove its creation time.
@@ -77,7 +77,7 @@ void CookieCreationTimeManager::SetCreationTime(
 
 base::Time CookieCreationTimeManager::MakeUniqueCreationTime(
     const base::Time& creation_time) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = unique_times_.find(creation_time);
 
   if (it == unique_times_.end())
@@ -97,7 +97,7 @@ base::Time CookieCreationTimeManager::MakeUniqueCreationTime(
 }
 
 base::Time CookieCreationTimeManager::GetCreationTime(NSHTTPCookie* cookie) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   std::unordered_map<std::string, base::Time>::iterator it =
       creation_times_.find(GetCookieUniqueID(cookie));
   if (it != creation_times_.end())
@@ -110,7 +110,7 @@ base::Time CookieCreationTimeManager::GetCreationTime(NSHTTPCookie* cookie) {
 }
 
 void CookieCreationTimeManager::DeleteCreationTime(NSHTTPCookie* cookie) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto it = creation_times_.find(GetCookieUniqueID(cookie));
   if (it != creation_times_.end()) {
     size_t erased = unique_times_.erase(it->second);
@@ -120,7 +120,7 @@ void CookieCreationTimeManager::DeleteCreationTime(NSHTTPCookie* cookie) {
 }
 
 void CookieCreationTimeManager::Clear() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   creation_times_.clear();
   unique_times_.clear();
 }

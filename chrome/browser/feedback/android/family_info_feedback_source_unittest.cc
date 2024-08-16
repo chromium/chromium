@@ -163,7 +163,7 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
       break;
     default:
       // Remaining combinations are not tested.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -301,7 +301,7 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
       EXPECT_EQ("child", GetFeedbackValue());
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

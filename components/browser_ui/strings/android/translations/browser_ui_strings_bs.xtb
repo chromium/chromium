@@ -162,6 +162,7 @@
 <translation id="3721953990244350188">Odbacivanje i prikazivanje sljedeće dostupne radnje</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da preskočite 10 s</translation>
+<translation id="3779154269823594982">Promijenite lozinke</translation>
 <translation id="3797520601150691162">Tamna tema se neće primjenjivati za određenu web lokaciju</translation>
 <translation id="3803367742635802571">Web lokacije koje posjećujete mogu prestati funkcionirati kao što je predviđeno</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -425,7 +426,6 @@
 <translation id="7882806643839505685">Omogućavanje zvuka za određenu web lokaciju.</translation>
 <translation id="789180354981963912">Blokirajte kolačiće treće strane u anonimnom načinu rada:</translation>
 <translation id="7940722705963108451">Podsjeti me</translation>
-<translation id="7974024493641668069">{COUNT,plural, =1{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="FPS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="FPS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="FPS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="7986741934819883144">Odaberite kontakt</translation>
 <translation id="7990211076305263060">Kada je postavka uključena, web lokacije mogu zatražiti da koriste vaš mikrofon. Kada je postavka isključena, web lokacije ne mogu koristiti vaš mikrofon.</translation>
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
@@ -472,7 +472,6 @@
 <translation id="851751545965956758">Blokirajte web lokacije da se ne povezuju s uređajima</translation>
 <translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="8541410041357371550">Ova web lokacija prikuplja vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokaciju čiji je vlasnik <ph name="FPS_OWNER" />}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacije čiji je vlasnik <ph name="FPS_OWNER" />}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> web lokacija čiji je vlasnik <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
 <translation id="8609465669617005112">Pomjeri nagore</translation>
 <translation id="8617611086246832542">Kada je postavka uključena, web lokacije se prikazuju u obliku prikaza na računaru. Kada je postavka isključena, web lokacije se prikazuju u obliku prikaza na mobilnom uređaju.</translation>
@@ -510,7 +509,6 @@
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>
 <translation id="9039697262778250930">Možda ćete se odjaviti s tih web lokacija</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
-<translation id="9090268041676521955">Ova web lokacija je u grupi koja može vidjeti vašu aktivnost. Grupu definira <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Izbrisati kolačiće?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Uključite odobrenja za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>

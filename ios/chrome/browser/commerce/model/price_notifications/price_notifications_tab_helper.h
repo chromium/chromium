@@ -11,7 +11,7 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@protocol PriceNotificationsIPHPresenter;
+@protocol HelpCommands;
 
 namespace commerce {
 class ShoppingService;
@@ -30,11 +30,10 @@ class PriceNotificationsTabHelper
 
   ~PriceNotificationsTabHelper() override;
 
-  // Sets the presenter for follow in-product help (IPH). `presenter` is not
-  // retained by this tab helper.
-  void SetPriceNotificationsIPHPresenter(
-      id<PriceNotificationsIPHPresenter> presenter) {
-    price_notifications_iph_presenter_ = presenter;
+  // Sets the handler for price notifications in-product help (IPH).
+  // `helpHandler` is not retained by this tab helper.
+  void SetHelpHandler(id<HelpCommands> help_handler) {
+    help_handler_ = help_handler;
   }
 
  private:
@@ -55,9 +54,8 @@ class PriceNotificationsTabHelper
   // price tracked.
   raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
 
-  // The presenter that displays the price tracking bubble IPH.
-  __weak id<PriceNotificationsIPHPresenter> price_notifications_iph_presenter_ =
-      nil;
+  // The handler that displays the price tracking bubble IPH.
+  __weak id<HelpCommands> help_handler_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

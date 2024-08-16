@@ -17,18 +17,18 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,9 +38,8 @@ namespace {
 
 using base::ScopedTempDir;
 using sync_pb::AutofillWalletUsageSpecifics;
-using sync_pb::ModelTypeState;
 using syncer::EntityData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
@@ -73,16 +72,9 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
   }
 
   std::vector<VirtualCardUsageData> GetVirtualCardUsageDataFromTable() {
-    std::vector<std::unique_ptr<VirtualCardUsageData>> table_data;
-    table()->GetAllVirtualCardUsageData(&table_data);
-
-    // In tests, it's more convenient to work without `std::unique_ptr`.
-    std::vector<VirtualCardUsageData> usage_data;
-    for (const std::unique_ptr<VirtualCardUsageData>& data : table_data) {
-      usage_data.push_back(std::move(*data));
-    }
-
-    return usage_data;
+    std::vector<VirtualCardUsageData> table_data;
+    table()->GetAllVirtualCardUsageData(table_data);
+    return table_data;
   }
 
   EntityData SpecificsToEntity(const AutofillWalletUsageSpecifics& specifics) {
@@ -107,7 +99,7 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
 
   MockAutofillWebDataBackend& backend() { return backend_; }
 
-  syncer::MockModelTypeChangeProcessor& mock_processor() {
+  syncer::MockDataTypeLocalChangeProcessor& mock_processor() {
     return mock_processor_;
   }
 
@@ -118,7 +110,7 @@ class AutofillWalletUsageDataSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<AutofillWalletUsageDataSyncBridge> bridge_;
 };
 

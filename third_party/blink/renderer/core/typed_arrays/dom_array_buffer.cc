@@ -124,12 +124,10 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
     to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
   }
 
-  v8::TryCatch try_catch(isolate);
+  TryRethrowScope rethrow_scope(isolate, exception_state);
   bool detach_result = false;
   if (!to_transfer->TransferDetachable(isolate, detach_key, result)
            .To(&detach_result)) {
-    // There was an exception. Rethrow it.
-    exception_state.RethrowV8Exception(try_catch.Exception());
     return false;
   }
   if (!detach_result) {
@@ -206,7 +204,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   ArrayBufferContents contents(shared_buffer->size(), 1,
                                ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  if (UNLIKELY(!contents.IsValid())) {
+  if (!contents.IsValid()) [[unlikely]] {
     OOM_CRASH(shared_buffer->size());
   }
 
@@ -226,7 +224,7 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
   }
   ArrayBufferContents contents(size, 1, ArrayBufferContents::kNotShared,
                                ArrayBufferContents::kDontInitialize);
-  if (UNLIKELY(!contents.IsValid())) {
+  if (!contents.IsValid()) [[unlikely]] {
     OOM_CRASH(size);
   }
 

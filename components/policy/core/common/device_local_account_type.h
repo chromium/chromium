@@ -31,6 +31,10 @@ enum class DeviceLocalAccountType {
 
   // An account that serves as a container for a single full-screen web app.
   kWebKioskApp = 4,
+
+  // An account that serves as a container for a single full-screen
+  // Isolated Web App (IWA).
+  kKioskIsolatedWebApp = 5,
 };
 
 // Returns whether the given value is valid DeviceLocalAccountType.

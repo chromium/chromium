@@ -418,8 +418,6 @@ void AutocompleteResult::SortAndCull(
         // the limit of the normal NTP ZPS Section to make room for the IPH.
         bool has_iph_match = base::ranges::any_of(
             matches_, [](auto match) { return match.IsIPHSuggestion(); });
-        CHECK(!has_iph_match ||
-              OmniboxFieldTrial::IsFeaturedSearchIPHEnabled());
         bool add_iph_section =
             page_classification != OmniboxEventProto::NTP_REALBOX &&
             has_iph_match;
@@ -908,9 +906,9 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
   // fakebox/realbox, which is intended to work more like a search-only box.
   // Unless the user's input is a URL in which case we still want to ensure they
   // can get a URL as the default match.
-  if ((input.current_page_classification() !=
-           OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS &&
-       input.current_page_classification() != OmniboxEventProto::NTP_REALBOX) ||
+  omnibox::CheckObsoletePageClass(input.current_page_classification());
+
+  if (input.current_page_classification() != OmniboxEventProto::NTP_REALBOX ||
       input.type() == metrics::OmniboxInputType::URL) {
     auto best = matches->end();
     for (auto it = matches->begin(); it != matches->end(); ++it) {

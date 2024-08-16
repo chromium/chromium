@@ -27,6 +27,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/constants.h"
+#include "net/http/http_response_headers.h"
 #include "pdf/pdf_features.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -142,6 +143,12 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.full_frame = !stream->embedded();
     info.allow_javascript = stream->pdf_plugin_attributes()->allow_javascript;
     info.use_skia = ShouldEnableSkiaRenderer(contents);
+    if (chrome_pdf::features::IsOopifPdfEnabled()) {
+      net::HttpResponseHeaders* response_headers = stream->response_headers();
+      info.require_corp = response_headers &&
+                          response_headers->HasHeaderValue(
+                              "Cross-Origin-Embedder-Policy", "require-corp");
+    }
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
              chrome::kChromeUIUntrustedPrintURL) {

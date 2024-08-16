@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -137,7 +138,9 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
   // Add a separator before the manage option unless there are no suggestions
   // yet.
   if (!suggestions->empty()) {
-    suggestions->emplace_back(SuggestionType::kSeparator);
+    Suggestion separator(SuggestionType::kSeparator);
+    separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    suggestions->push_back(std::move(separator));
   }
 
   Suggestion suggestion(
@@ -149,6 +152,7 @@ void MaybeAppendManagePasswordsEntry(std::vector<Suggestion>* suggestions) {
       SuggestionType::kAllSavedPasswordsEntry);
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestions->emplace_back(std::move(suggestion));
 }
 
@@ -217,70 +221,74 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
             });
 }
 
-void AddPasswordUsernameChildSuggestion(const std::u16string& username,
-                                        Suggestion& suggestion) {
-  suggestion.children.emplace_back(
-      username, SuggestionType::kPasswordFieldByFieldFilling);
-}
-
-void AddFillPasswordChildSuggestion(Suggestion& suggestion,
-                                    const CredentialUIEntry& credential,
-                                    IsCrossDomain is_cross_origin) {
+Suggestion CreateFillPasswordChildSuggestion(
+    const CredentialUIEntry& credential,
+    IsCrossDomain is_cross_origin) {
   Suggestion fill_password(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
       SuggestionType::kFillPassword);
   fill_password.payload = Suggestion::PasswordSuggestionDetails(
-      credential.password,
+      credential.username, credential.password,
+      credential.GetFirstSignonRealm(),
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
       is_cross_origin.value());
-  suggestion.children.emplace_back(std::move(fill_password));
+  return fill_password;
 }
 
-void AddViewPasswordDetailsChildSuggestion(Suggestion& suggestion) {
+Suggestion CreateViewPasswordDetailsChildSuggestion(
+    const Suggestion::PasswordSuggestionDetails& payload) {
   Suggestion view_password_details(
       l10n_util::GetStringUTF16(
           IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
       SuggestionType::kViewPasswordDetails);
   view_password_details.icon = Suggestion::Icon::kKey;
-  suggestion.children.emplace_back(std::move(view_password_details));
+  view_password_details.payload = payload;
+  return view_password_details;
 }
 
-void AppendManualFallbackSuggestions(const CredentialUIEntry& credential,
-                                     IsTriggeredOnPasswordForm on_password_form,
-                                     IsCrossDomain is_cross_origin,
-                                     bool favicon_can_be_requested_from_google,
-                                     std::vector<Suggestion>* suggestions) {
+void AppendManualFallbackSuggestions(
+    const CredentialUIEntry& credential,
+    IsTriggeredOnPasswordForm on_password_form,
+    IsCrossDomain is_cross_origin,
+    bool favicon_can_be_requested_from_google,
+    std::vector<Suggestion>* suggestions,
+    Suggestion::FiltrationPolicy filtration_policy) {
   // A separate suggestion with the same (username, password) pair is displayed
   // for every affiliated domain. For example, if the credential was saved on
   // apple.com and icloud.com, there will be 2 suggestions for both of these
   // websites.
   for (const CredentialUIEntry::DomainInfo& domain_info :
        credential.GetAffiliatedDomains()) {
-    const std::string kDisplaySingonRealm = domain_info.name;
-    Suggestion suggestion(kDisplaySingonRealm, /*label=*/"",
+    Suggestion suggestion(domain_info.name, /*label=*/"",
                           Suggestion::Icon::kGlobe,
                           SuggestionType::kPasswordEntry);
     bool replaced;
     const std::u16string maybe_username =
         ReplaceEmptyUsername(credential.username, &replaced);
     suggestion.labels = {{autofill::Suggestion::Text(maybe_username)}};
-    suggestion.payload = Suggestion::PasswordSuggestionDetails(
-        credential.password, base::UTF8ToUTF16(kDisplaySingonRealm),
+    Suggestion::PasswordSuggestionDetails payload(
+        credential.username, credential.password, domain_info.signon_realm,
+        /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
+    suggestion.payload = payload;
     suggestion.is_acceptable = on_password_form.value();
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
             .IsValidWebFacetURI()) {
       suggestion.custom_icon = Suggestion::FaviconDetails(
           domain_info.url, favicon_can_be_requested_from_google);
     }
+    suggestion.filtration_policy = filtration_policy;
 
     if (!replaced) {
-      AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+      suggestion.children.emplace_back(
+          maybe_username, SuggestionType::kPasswordFieldByFieldFilling);
     }
-    AddFillPasswordChildSuggestion(suggestion, credential, is_cross_origin);
+    suggestion.children.push_back(
+        CreateFillPasswordChildSuggestion(credential, is_cross_origin));
     suggestion.children.emplace_back(SuggestionType::kSeparator);
-    AddViewPasswordDetailsChildSuggestion(suggestion);
+    suggestion.children.push_back(
+        CreateViewPasswordDetailsChildSuggestion(payload));
 
     suggestions->emplace_back(std::move(suggestion));
   }
@@ -393,10 +401,13 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   const bool generate_sections =
       !suggested_credentials.empty() && !credentials.empty();
   if (generate_sections) {
-    suggestions.emplace_back(
+    Suggestion title(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE),
         SuggestionType::kTitle);
+    title.filtration_policy =
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
+    suggestions.push_back(std::move(title));
   }
 
   auto* sync_service = password_client_->GetSyncService();
@@ -417,7 +428,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
     AppendManualFallbackSuggestions(
         ui_entry, on_password_form, IsCrossDomain(false),
-        favicon_can_be_requested_from_google, &suggestions);
+        favicon_can_be_requested_from_google, &suggestions,
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter);
   }
 
   if (generate_sections) {
@@ -425,6 +437,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         l10n_util::GetStringUTF16(
             IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE),
         SuggestionType::kTitle);
+    suggestions.back().filtration_policy =
+        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
   }
 
   // Only the "All passwords" section should be sorted alphabetically.
@@ -445,7 +459,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
     AppendManualFallbackSuggestions(
         credential, on_password_form, IsCrossDomain(!has_suggested_realm),
-        favicon_can_be_requested_from_google, &suggestions);
+        favicon_can_be_requested_from_google, &suggestions,
+        Suggestion::FiltrationPolicy::kFilterable);
   }
 
   base::ranges::sort(

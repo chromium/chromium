@@ -132,14 +132,16 @@ class GEOMETRY_EXPORT Rect {
   void SetHorizontalBounds(int left, int right) {
     set_x(left);
     set_width(base::ClampSub(right, left));
-    if (UNLIKELY(this->right() != right))
+    if (this->right() != right) [[unlikely]] {
       AdjustForSaturatedRight(right);
+    }
   }
   void SetVerticalBounds(int top, int bottom) {
     set_y(top);
     set_height(base::ClampSub(bottom, top));
-    if (UNLIKELY(this->bottom() != bottom))
+    if (this->bottom() != bottom) [[unlikely]] {
       AdjustForSaturatedBottom(bottom);
+    }
   }
 
   // Shrink the rectangle by |inset| on all sides.

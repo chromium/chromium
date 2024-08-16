@@ -83,9 +83,8 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
   // may have timer-based dispatch under certain conditions. These are excluded
   // since EventCounts cannot be used to properly computed percentiles on those.
   // See spec: https://wicg.github.io/event-timing/#sec-events-exposed.
-  // Need to be kept in sync with IsWebInteractionEvent
-  // (widget_event_handler.cc) except non-raw web input event types, for example
-  // kCompositionend.
+  // Needs to be kept in sync with WebInputEvent::IsWebInteractionEvent(),
+  // except non-raw web input event types, for example kCompositionend.
   return (event.isTrusted() ||
           event.type() == event_type_names::kCompositionend) &&
          (IsA<MouseEvent>(event) || IsA<PointerEvent>(event) ||

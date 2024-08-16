@@ -158,6 +158,8 @@ chromium-metrics-reviews@google.com.
     A country code is required for zh, use the model version if the page
     language does not include one.
   </int>
+  <int value="7" label="No page content">Added in M129.</int>
+  <int value="8" label="Model not available">Added in M129.</int>
 </enum>
 
 <enum name="TranslateRankerDecision">

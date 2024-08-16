@@ -42,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -259,7 +260,7 @@ class OverlayWindowWidgetDelegate : public views::WidgetDelegate {
  public:
   OverlayWindowWidgetDelegate() {
     SetCanResize(true);
-    SetModalType(ui::MODAL_TYPE_NONE);
+    SetModalType(ui::mojom::ModalType::kNone);
     // While not shown, the title is still used to identify the window in the
     // window switcher.
     SetShowTitle(false);
@@ -1255,7 +1256,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // This will actually update the visibility of a control that was just added

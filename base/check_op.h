@@ -179,7 +179,7 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
     requires(!std::is_fundamental_v<T> || !std::is_fundamental_v<U>)    \
   constexpr char* Check##name##Impl(const T& v1, const U& v2,           \
                                     const char* expr_str) {             \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
       return nullptr;                                                   \
     return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
                                          CheckOpValueStr(v2));          \
@@ -187,7 +187,7 @@ BASE_EXPORT char* CreateCheckOpLogMessageString(const char* expr_str,
   template <typename T, typename U>                                     \
     requires(std::is_fundamental_v<T> && std::is_fundamental_v<U>)      \
   constexpr char* Check##name##Impl(T v1, U v2, const char* expr_str) { \
-    if (LIKELY(ANALYZER_ASSUME_TRUE(v1 op v2)))                         \
+    if (ANALYZER_ASSUME_TRUE(v1 op v2)) [[likely]]                      \
       return nullptr;                                                   \
     return CreateCheckOpLogMessageString(expr_str, CheckOpValueStr(v1), \
                                          CheckOpValueStr(v2));          \

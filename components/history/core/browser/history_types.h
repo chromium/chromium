@@ -893,6 +893,7 @@ struct VisitContextAnnotations {
     kTabbed = 1,
     kPopup = 2,
     kCustomTab = 3,
+    kAuthTab = 4,
   };
 
   // Fields known immediately on page load, when the visit is created:

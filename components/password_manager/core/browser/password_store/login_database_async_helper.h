@@ -20,7 +20,7 @@ class Location;
 }  // namespace base
 
 namespace syncer {
-class ModelTypeControllerDelegate;
+class DataTypeControllerDelegate;
 }  // namespace syncer
 
 namespace os_crypt_async {
@@ -47,11 +47,15 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
 
   ~LoginDatabaseAsyncHelper() override;
 
-  // Opens |login_db_| and creates sync bridges.
+  // Called soon after constructor but on the background sequence.
+  void CreateSyncBackend();
+
+  // Opens |login_db_|. CreateSyncBackend() must have been called before.
   bool Initialize(
       base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>,
                                    bool)> remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb,
+      base::RepeatingClosure on_undecryptable_passwords_removed,
       std::unique_ptr<os_crypt_async::Encryptor> encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
@@ -88,8 +92,7 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       base::Time delete_end);
 
   // Instantiates a proxy controller delegate to react to sync events.
-  base::WeakPtr<syncer::ModelTypeControllerDelegate>
-  GetSyncControllerDelegate();
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   // `clearing_undecryptable_passwords`is called to signal whether user
   // interacted with the kClearUndecryptablePasswords experiment. It is needed
@@ -97,7 +100,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   // after a successful rollout.
   void SetClearingUndecryptablePasswordsCb(
       base::RepeatingCallback<void(bool)> clearing_undecryptable_passwords);
-  void SetIsDeletingUndecryptableLoginsDisabledByPolicy(bool is_disabled);
 
  private:
   // Implements PasswordStoreSync interface.

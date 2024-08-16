@@ -16,6 +16,7 @@
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -168,7 +169,8 @@ class ObserverTester : public SiteEngagementObserver {
   void OnEngagementEvent(content::WebContents* web_contents,
                          const GURL& url,
                          double score,
-                         EngagementType type) override {
+                         EngagementType type,
+                         const std::optional<webapps::AppId>& app_id) override {
     last_updated_type_ = type;
     last_updated_url_ = url;
     if (type == type_waiting_) {

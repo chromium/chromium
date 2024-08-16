@@ -22,6 +22,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -56,6 +57,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             TabModelSelector tabModelSelector,
             @NonNull TabContentManager tabContentManager,
             ViewGroup rootView,
@@ -71,6 +73,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                 scrimCoordinator,
                 omniboxFocusStateSupplier,
                 bottomSheetController,
+                dataSharingTabManager,
                 tabModelSelector,
                 tabContentManager,
                 rootView,
@@ -94,6 +97,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull BottomSheetController bottomSheetController,
+            @NonNull DataSharingTabManager dataSharingTabManager,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
@@ -115,6 +119,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         snackbarManager,
                         modalDialogManager,
                         bottomSheetController,
+                        dataSharingTabManager,
                         backPressManager);
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
         Handler handler = new Handler();

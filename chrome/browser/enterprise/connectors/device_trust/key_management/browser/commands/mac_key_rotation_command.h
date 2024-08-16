@@ -20,12 +20,22 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace policy {
+class BrowserDMTokenStorage;
+class DeviceManagementService;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 class MacKeyRotationCommand : public KeyRotationCommand {
  public:
   explicit MacKeyRotationCommand(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  MacKeyRotationCommand(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      policy::BrowserDMTokenStorage* dm_token_storage,
+      policy::DeviceManagementService* device_management_service);
 
   ~MacKeyRotationCommand() override;
 
@@ -41,9 +51,10 @@ class MacKeyRotationCommand : public KeyRotationCommand {
 
   // Notifies the pending callback of a timeout.
   void OnKeyRotationTimeout();
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<KeyRotationManager> key_rotation_manager_;
+  raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
+  raw_ptr<policy::DeviceManagementService> device_management_service_;
+
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   base::OneShotTimer timeout_timer_;

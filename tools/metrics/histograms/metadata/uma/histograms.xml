@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.AndroidPreNative.ChromeActivityCounter2"
-    enum="ChromeActivityCounter" expires_after="2024-12-08">
+    enum="ChromeActivityCounter" expires_after="2025-02-10">
   <owner>gabrielgs@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency3"
-    enum="UmaCleanExitConsistency3" expires_after="2024-12-04">
+    enum="UmaCleanExitConsistency3" expires_after="2025-02-02">
   <owner>caitlinfischer@google.com</owner>
   <owner>justincohen@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
     expires_after="2025-02-28">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Tracks if the machine ID is generated successfully and if it changes from
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.MetricsIDsReset" enum="BooleanHit"
     expires_after="2025-02-28">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Records when the metrics IDs (client id and low entry source) are reset due
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="UMA.PersistentAllocator.EarlyHistograms.{PersistentAllocatorType}"
-    units="histograms" expires_after="2024-12-01">
+    units="histograms" expires_after="2025-02-02">
   <owner>rogerm@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.PersistentAllocator.{PersistentAllocatorType}.UsedPct"
-    units="%" expires_after="2024-12-08">
+    units="%" expires_after="2025-02-09">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.SamplingRatePerMille" units="samples per mille"
     expires_after="2024-09-01">
-  <owner>jwd@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Sample rate applied to this client, expressed as number of clients per 1000
@@ -959,7 +959,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2025-01-26">
+    expires_after="2025-02-02">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

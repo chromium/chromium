@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -18,7 +19,7 @@ class PropertyTreeState;
 // A complete set of paint properties including those that are inherited from
 // other objects.
 class PLATFORM_EXPORT PropertyTreeStateOrAlias {
-  USING_FAST_MALLOC(PropertyTreeStateOrAlias);
+  DISALLOW_NEW();
 
  public:
   PropertyTreeStateOrAlias(const TransformPaintPropertyNodeOrAlias& transform,
@@ -36,7 +37,13 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
     return PropertyTreeStateOrAlias();
   }
 
-  static const PropertyTreeState& Root();
+  static PropertyTreeState Root();
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(transform_);
+    visitor->Trace(clip_);
+    visitor->Trace(effect_);
+  }
 
   // Returns true if all fields are initialized.
   bool IsInitialized() const { return transform_ && clip_ && effect_; }
@@ -81,9 +88,7 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
   // |relative_to|. Note that this is O(|nodes|).
   bool Changed(PaintPropertyChangeType change,
                const PropertyTreeState& relative_to) const;
-  bool ChangedToRoot(PaintPropertyChangeType change) const {
-    return Changed(change, Root());
-  }
+  bool ChangedToRoot(PaintPropertyChangeType change) const;
 
   String ToString() const;
 #if DCHECK_IS_ON()
@@ -105,9 +110,9 @@ class PLATFORM_EXPORT PropertyTreeStateOrAlias {
   PropertyTreeStateOrAlias() = default;
 
  private:
-  const TransformPaintPropertyNodeOrAlias* transform_ = nullptr;
-  const ClipPaintPropertyNodeOrAlias* clip_ = nullptr;
-  const EffectPaintPropertyNodeOrAlias* effect_ = nullptr;
+  Member<const TransformPaintPropertyNodeOrAlias> transform_;
+  Member<const ClipPaintPropertyNodeOrAlias> clip_;
+  Member<const EffectPaintPropertyNodeOrAlias> effect_;
 };
 
 class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
@@ -162,8 +167,18 @@ class PLATFORM_EXPORT PropertyTreeState : public PropertyTreeStateOrAlias {
   PropertyTreeState() = default;
 };
 
-PLATFORM_EXPORT inline PropertyTreeState PropertyTreeStateOrAlias::Unalias()
-    const {
+inline PropertyTreeState PropertyTreeStateOrAlias::Root() {
+  return PropertyTreeState(TransformPaintPropertyNode::Root(),
+                           ClipPaintPropertyNode::Root(),
+                           EffectPaintPropertyNode::Root());
+}
+
+inline bool PropertyTreeStateOrAlias::ChangedToRoot(
+    PaintPropertyChangeType change) const {
+  return Changed(change, Root());
+}
+
+inline PropertyTreeState PropertyTreeStateOrAlias::Unalias() const {
   return PropertyTreeState(Transform().Unalias(), Clip().Unalias(),
                            Effect().Unalias());
 }

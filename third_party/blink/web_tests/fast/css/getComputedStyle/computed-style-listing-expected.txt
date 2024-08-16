@@ -244,6 +244,9 @@ mask-position: 0% 0%
 mask-repeat: repeat
 mask-size: auto
 mask-type: luminance
+masonry-template-tracks: auto
+masonry-track-end: auto
+masonry-track-start: auto
 math-depth: 0
 math-shift: normal
 math-style: normal
@@ -298,6 +301,7 @@ popover-hide-delay: infinity * 1s
 popover-show-delay: 0.5s
 position: static
 position-anchor: auto
+position-area: none
 position-try-fallbacks: none
 position-try-order: normal
 position-visibility: always
@@ -356,7 +360,7 @@ text-align: start
 text-align-last: auto
 text-anchor: start
 text-autospace: normal
-text-box-edge: leading
+text-box-edge: auto
 text-box-trim: none
 text-decoration: none solid rgb(0, 0, 0)
 text-decoration-color: rgb(0, 0, 0)
@@ -395,6 +399,7 @@ view-timeline-axis: block
 view-timeline-inset: auto
 view-timeline-name: none
 view-transition-class: none
+view-transition-group: normal
 view-transition-name: none
 visibility: visible
 white-space-collapse: collapse

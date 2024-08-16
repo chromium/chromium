@@ -23,6 +23,8 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="126567311906253476">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chromium med samma konto</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
+<translation id="1324107359134968521">Chromium behöver åtkomst till Bluetooth för att utforska 
+ Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1414495520565016063">Du är inloggad i Chromium.</translation>
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
@@ -61,6 +63,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1951406923938785464">Den här nedladdningen blockerades av Chromium eftersom filtypen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="1953553007165777902">Laddar ned … <ph name="MINUTE" /> minut/minuter återstår</translation>
 <translation id="1966382378801805537">Chromium kan inte fastställa eller ange standardwebbläsaren</translation>
+<translation id="1990262977744080398">Läs mer om varför vissa filer blockeras i Chromium (öppnas på en ny flik)</translation>
 <translation id="2008474315282236005">Ett objekt tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2018879682492276940">Installationen misslyckades. Försök igen.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina andra lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
@@ -121,6 +124,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2915996080311180594">Starta om senare</translation>
 <translation id="2928420929544864228">Installationen har slutförts.</translation>
 <translation id="2945997411976714835">Installationsfel: Det gick inte att starta installationsprocessen.</translation>
+<translation id="2970426615109535079">Organisationen hanterar Chromium</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="2977506796191543575">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chromium till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="2987208172821108655">Chromium kan inaktivera dessa flikar för att frigöra resurser så din surfupplevelse blir bättre.</translation>
@@ -221,6 +225,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig kod</translation>
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438870983368648614"><ph name="MANAGER" /> hanterar Chromium</translation>
 <translation id="4447409407328223819">Om Chrome for Testing</translation>
 <translation id="4501471624619070934">Installationen misslyckades eftersom åtkomsten är begränsad i det här landet.</translation>
 <translation id="4510853178268397146">Tillägget har ingen publicerad integritetspraxis, till exempel hur det samlar in och använder data. Vi rekommenderar att du tar bort det.</translation>
@@ -489,6 +494,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8550334526674375523">Jobbprofilen hålls helt åtskild från din privata profil.</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
+<translation id="8576826849825683917">Flera organisationer hanterar Chromium</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Webbplatser kan lagra information om dina intressen i Chromium. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
 <translation id="8619360774459241877">Chromium startas …</translation>

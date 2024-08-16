@@ -8,16 +8,25 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
+
+@protocol LensOmniboxMutator;
+@protocol TextFieldViewContaining;
 
 /// View controller of the lens result page.
 @interface LensResultPageViewController
-    : UIViewController <LensResultPageConsumer>
+    : UIViewController <LensResultPageConsumer,
+                        LensToolbarConsumer,
+                        OmniboxPopupPresenterDelegate>
 
 /// Container for the web view.
 @property(nonatomic, strong, readonly) UIView* webViewContainer;
+/// Mutator of the lens omnibox.
+@property(nonatomic, weak) id<LensOmniboxMutator> omniboxMutator;
 
-/// Container for the omnibox popup.
-@property(nonatomic, strong, readonly) UIView* omniboxPopupContainer;
+/// Sets the omnibox edit view.
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView;
 
 @end
 

@@ -47,35 +47,91 @@ namespace web_package {
 
 namespace {
 
-// The following values have been extracted by hand from the Signed Web Bundle
-// generated with the Go tool from github.com/WICG/webpackage located at
-// components/test/data/web_package/simple_b2_signed.swbn.
+// The following values are representations of the keys used to generate
+// components/test/data/web_package/simple_b2_signed_v2.swbn
+// It has been generated using
+// components/web_package/test_support/signed_web_bundles/web_bundle_signer.h.
 constexpr uint8_t kEd25519PublicKey[] = {
     0xe4, 0xd5, 0x16, 0xc9, 0x85, 0x9a, 0xf8, 0x63, 0x56, 0xa3, 0x51,
     0x66, 0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02,
     0x72, 0xfe, 0x2b, 0xce, 0x81, 0xbb, 0x3b, 0x71, 0x3f, 0x2d};
 
 constexpr uint8_t kEd25519Signature[] = {
-    0x64, 0xc1, 0xb6, 0xee, 0x74, 0xbf, 0x8d, 0x01, 0x92, 0xc8, 0xcd,
-    0xe7, 0x47, 0x13, 0xda, 0x2c, 0xed, 0x4f, 0x7f, 0x9e, 0xe3, 0x8f,
-    0x70, 0x27, 0xbf, 0x79, 0x4a, 0x64, 0x0e, 0xf9, 0xbd, 0xcc, 0xeb,
-    0x66, 0x39, 0x50, 0xf8, 0x92, 0x67, 0x1a, 0x71, 0xe9, 0xce, 0x15,
-    0xf5, 0xa4, 0xf6, 0x22, 0xc5, 0xcf, 0x04, 0x15, 0xdb, 0x63, 0x59,
-    0xb2, 0xff, 0xee, 0x13, 0x93, 0x2c, 0x99, 0x68, 0x0d};
+    0xEA, 0xFD, 0x2A, 0xF5, 0xF4, 0x3D, 0x8D, 0x25, 0x40, 0xDF, 0xE5,
+    0x15, 0x60, 0x05, 0x21, 0x08, 0x07, 0x28, 0x7C, 0x60, 0x20, 0xEF,
+    0x92, 0xD0, 0x84, 0x17, 0x69, 0x56, 0x98, 0x68, 0xD8, 0x51, 0xDC,
+    0x58, 0x97, 0x87, 0x6A, 0x69, 0xE4, 0x0D, 0x30, 0x78, 0xE1, 0xE2,
+    0xE5, 0x16, 0x17, 0x35, 0xED, 0xB6, 0x77, 0xE2, 0x78, 0x7E, 0xB1,
+    0x90, 0x57, 0xDC, 0xC4, 0x29, 0x21, 0x83, 0x1A, 0x04};
 
-constexpr uint8_t kAttributesCbor[] = {
+constexpr uint8_t kEd25519PubkeyCbor[] = {
+    // 0xa0 + 1 -> map of length 1
     0xa1,
 
+    // 0x60 + 16 -> UTF-8 string of length 16
     0x70,
     // attribute key
     'e', 'd', '2', '5', '5', '1', '9', 'P', 'u', 'b', 'l', 'i', 'c', 'K', 'e',
     'y',
 
+    // 0x58 -> byte array, 0x20 = 32 -> length
     0x58, 0x20,
     // attribute value (public key)
     0xe4, 0xd5, 0x16, 0xc9, 0x85, 0x9a, 0xf8, 0x63, 0x56, 0xa3, 0x51, 0x66,
     0x7d, 0xbd, 0x00, 0x43, 0x61, 0x10, 0x1a, 0x92, 0xd4, 0x02, 0x72, 0xfe,
     0x2b, 0xce, 0x81, 0xbb, 0x3b, 0x71, 0x3f, 0x2d};
+
+constexpr uint8_t kEcdsaP256PublicKey[] = {
+    0x03, 0x0A, 0x22, 0xFC, 0x5C, 0x0B, 0x1E, 0x14, 0x85, 0x90, 0xE1,
+    0xF9, 0x87, 0xCC, 0x4E, 0x0D, 0x49, 0x2E, 0xF8, 0xE5, 0x1E, 0x23,
+    0xF9, 0xB3, 0x63, 0x75, 0xE1, 0x52, 0xB2, 0x4A, 0xEC, 0xA5, 0xE6};
+
+constexpr uint8_t kEcdsaP256Signature[] = {
+    0x30, 0x44, 0x02, 0x20, 0x38, 0xB2, 0x95, 0x58, 0x51, 0x10, 0x61, 0xCF,
+    0xAB, 0xDC, 0x8E, 0x5B, 0xB6, 0x5A, 0xC2, 0x97, 0x6D, 0x1A, 0xA2, 0xBA,
+    0x9A, 0x5D, 0xEA, 0xB8, 0x07, 0x40, 0x97, 0xB2, 0x17, 0x2B, 0xB9, 0xAD,
+    0x02, 0x20, 0x5A, 0x25, 0x31, 0x7F, 0xDE, 0x37, 0xB5, 0x2D, 0xF6, 0xB7,
+    0x90, 0x08, 0x56, 0x4B, 0x73, 0x2D, 0x70, 0x61, 0xE4, 0x55, 0xD9, 0x6D,
+    0x6A, 0xA0, 0x41, 0xF9, 0x3F, 0xE7, 0x4E, 0x11, 0x36, 0xBA};
+
+constexpr uint8_t kEcdsaP256PubkeyCbor[] = {
+    // 0xa0 + 1 -> map of length 1
+    0xa1,
+
+    // 0x78 -> UTF-8 string, 0x18 = 24 -> length
+    0x78, 0x18,
+    // attribute key
+    'e', 'c', 'd', 's', 'a', 'P', '2', '5', '6', 'S', 'H', 'A', '2', '5', '6',
+    'P', 'u', 'b', 'l', 'i', 'c', 'K', 'e', 'y',
+
+    // 0x58 -> byte array, 0x21 = 33 -> length
+    0x58, 0x21,
+    // attribute value (public key)
+    0x03, 0x0A, 0x22, 0xFC, 0x5C, 0x0B, 0x1E, 0x14, 0x85, 0x90, 0xE1, 0xF9,
+    0x87, 0xCC, 0x4E, 0x0D, 0x49, 0x2E, 0xF8, 0xE5, 0x1E, 0x23, 0xF9, 0xB3,
+    0x63, 0x75, 0xE1, 0x52, 0xB2, 0x4A, 0xEC, 0xA5, 0xE6};
+
+constexpr char kEcdsaP256BundleId[] =
+    "amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqvfmsk5ss6maacai";
+
+constexpr uint8_t kEcdsaP256BundleIdCbor[] = {
+    // 0xa0 + 1 -> map of length 1
+    0xa1,
+
+    // 0x60 + 11 -> UTF-8 string of length 11
+    0x6b,
+    // attribute key
+    'w', 'e', 'b', 'B', 'u', 'n', 'd', 'l', 'e', 'I', 'd',
+
+    // 0x78 -> UTF-8 string, 0x3a = 58 -> length
+    0x78, 0x3a,
+    // value - bundle ID
+    'a', 'm', 'f', 'c', 'f', '7', 'c', '4', 'b', 'm', 'p', 'b', 'j', 'b', 'm',
+    'q', '4', 'h', '4', 'y', 'p', 't', 'c', 'o', 'b', 'v', 'e', 's', '5', '6',
+    'h', 'f', 'd', 'y', 'r', '7', 't', 'm', '3', 'd', 'o', 'x', 'q', 'v', 'f',
+    'm', 's', 'k', '5', 's', 's', '6', 'm', 'a', 'a', 'c', 'a', 'i'
+
+};
 
 SignedWebBundleId CreateForKeyPair(const WebBundleSigner::KeyPair& key_pair) {
   return absl::visit(
@@ -119,12 +175,16 @@ TEST_P(SignedWebBundleSignatureVerifierGoToolTest, VerifySimpleWebBundle) {
       raw_signature_stack;
   raw_signature_stack.push_back(test::MakeSignatureStackEntry(
       Ed25519PublicKey::Create(base::span(kEd25519PublicKey)),
-      kEd25519Signature, kAttributesCbor));
+      kEd25519Signature, kEd25519PubkeyCbor));
+  raw_signature_stack.push_back(test::MakeSignatureStackEntry(
+      EcdsaP256PublicKey::Create(base::span(kEcdsaP256PublicKey)).value(),
+      kEcdsaP256Signature, kEcdsaP256PubkeyCbor));
 
   auto raw_integrity_block = mojom::BundleIntegrityBlock::New();
-  raw_integrity_block->size = 135;
+  raw_integrity_block->size = 343;
   raw_integrity_block->signature_stack = std::move(raw_signature_stack);
-
+  raw_integrity_block->attributes = {kEcdsaP256BundleId,
+                                     base::ToVector(kEcdsaP256BundleIdCbor)};
   ASSERT_OK_AND_ASSIGN(
       auto integrity_block,
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block)));
@@ -155,11 +215,11 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(
             std::make_pair(
-                base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")),
+                base::FilePath(FILE_PATH_LITERAL("simple_b2_signed_v2.swbn")),
                 std::nullopt),
             std::make_pair(
                 base::FilePath(
-                    FILE_PATH_LITERAL("simple_b2_signed_tampered.swbn")),
+                    FILE_PATH_LITERAL("simple_b2_signed_v2_tampered.swbn")),
                 SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                     "The signature is invalid."))),
         // Test with multiple web bundle chunk sizes.
@@ -193,21 +253,16 @@ class SignedWebBundleSignatureVerifierTestBase : public ::testing::Test {
     IdentityValidator::CreateInstanceForTesting();
   }
 
-  std::tuple<std::vector<uint8_t>, cbor::Value, size_t> CreateSignedWebBundle(
+  std::vector<uint8_t> CreateSignedWebBundle(
       const std::vector<WebBundleSigner::KeyPair>& key_pairs) {
     WebBundleBuilder builder;
     auto web_bundle = builder.CreateBundle();
-    auto integrity_block = WebBundleSigner::CreateIntegrityBlockForBundle(
+
+    return WebBundleSigner::SignBundle(
         web_bundle, key_pairs,
         /*ib_attributes=*/
         WebBundleSigner::IntegrityBlockAttributes(
             {.web_bundle_id = CreateForKeyPair(key_pairs[0]).id()}));
-    auto integrity_block_cbor = *cbor::Writer::Write(integrity_block);
-    std::vector<uint8_t> signed_web_bundle;
-    base::Extend(signed_web_bundle, integrity_block_cbor);
-    base::Extend(signed_web_bundle, web_bundle);
-    return std::make_tuple(signed_web_bundle, std::move(integrity_block),
-                           integrity_block_cbor.size());
   }
 
   base::FilePath WriteSignedWebBundleToDisk(
@@ -240,13 +295,12 @@ class SignedWebBundleSignatureVerifierTest
 
 TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
   const auto& key_pairs = std::get<0>(GetParam());
-  auto [signed_web_bundle, integrity_block, integrity_block_size] =
-      CreateSignedWebBundle(key_pairs);
+  auto signed_web_bundle = CreateSignedWebBundle(key_pairs);
   base::FilePath signed_web_bundle_path =
       WriteSignedWebBundleToDisk(signed_web_bundle);
   auto file = MakeWebBundleFile(signed_web_bundle_path);
-  auto parsed_integrity_block =
-      test::ParseIntegrityBlockFromValue(integrity_block);
+
+  auto parsed_integrity_block = test::ParseIntegrityBlock(signed_web_bundle);
 
   const auto& signatures = parsed_integrity_block.signature_stack().entries();
   ASSERT_EQ(signatures.size(), key_pairs.size());
@@ -258,7 +312,7 @@ TEST_P(SignedWebBundleSignatureVerifierTest, VerifySignatures) {
                                return signature_info.public_key();
                              },
                              [](const SignedWebBundleSignatureInfoUnknown&)
-                                 -> PublicKey { NOTREACHED_NORETURN(); }},
+                                 -> PublicKey { NOTREACHED(); }},
             signature.signature_info());
       });
   std::vector<PublicKey> expected_public_keys =

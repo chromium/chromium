@@ -191,6 +191,8 @@ class CONTENT_EXPORT SignedExchangeHandler {
   // `cert_fetcher_` borrows reference from `devtools_proxy_`, so it needs to be
   // declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
+  // `outer_request_isolation_info_` will be set unless this corresponds to a
+  // prefetch request.
   std::optional<net::IsolationInfo> outer_request_isolation_info_;
   const int load_flags_ = 0;
   const net::IPEndPoint remote_endpoint_;

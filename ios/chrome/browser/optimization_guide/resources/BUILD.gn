@@ -2,20 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/chrome/browser/optimization_guide/resources/on_device_llm.gni")
+import("//build/buildflag_header.gni")
+import("//components/optimization_guide/features.gni")
 
 buildflag_header("on_device_llm_buildflags") {
-  _model_enabled = (ios_on_device_llm_path != "")
   _model_name = ""
   _model_extension = ""
-  if (_model_enabled) {
+  if (ios_on_device_llm_path != "") {
     _model_name = get_path_info(ios_on_device_llm_path, "name")
     _model_extension = get_path_info(ios_on_device_llm_path, "extension")
   }
 
   header = "on_device_llm_buildflags.h"
   flags = [
-    "IOS_ON_DEVICE_LLM_ENABLED=\"$_model_enabled\"",
     "IOS_ON_DEVICE_LLM_NAME=\"$_model_name\"",
     "IOS_ON_DEVICE_LLM_EXTENSION=\"$_model_extension\"",
   ]

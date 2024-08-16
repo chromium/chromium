@@ -228,23 +228,13 @@ group(_toolchain_marker_name) {
   # Can be used as an assert_no_deps target (assert_no_deps ignores toolchains).
 }
 
-group("common_deps") {
-  visibility = [
-    ":executable_deps",
-    ":loadable_module_deps",
-    ":shared_library_deps",
-  ]
-
+group("common_deps_without_libcxx") {
   # WARNING: This group is a dependency of **every executable and shared
   # library**.  Please be careful adding new dependencies here.
   public_deps = [ ":$_toolchain_marker_name" ]
 
   if (using_sanitizer) {
     public_deps += [ "//build/config/sanitizers:deps" ]
-  }
-
-  if (use_custom_libcxx) {
-    public_deps += [ "//buildtools/third_party/libc++" ]
   }
 
   if (use_libfuzzer) {
@@ -268,10 +258,33 @@ group("common_deps") {
   }
 
   if (is_win) {
+    if (build_with_chromium && is_component_build) {
+      # To enable allocator_shim for the windows component built chrome,
+      # need to make all shared libraries and also executable(i.e.chrome.exe)
+      # depend on PartitionAlloc.
+      public_deps += [ "//base/allocator/partition_allocator/src/partition_alloc:win_component_build_adapter" ]
+    }
+
     # The CRT runtime is dynamically linked in component builds and needs to
     # be present on bots that run exes or load DLLs. This also includes
     # debugging DLLs in all builds.
     data_deps = [ "//build/win:runtime_libs" ]
+  }
+}
+
+group("common_deps") {
+  visibility = [
+    ":executable_deps",
+    ":loadable_module_deps",
+    ":shared_library_deps",
+  ]
+
+  # WARNING: This group is a dependency of **every executable and shared
+  # library**.  Please be careful adding new dependencies here.
+  public_deps = [ ":common_deps_without_libcxx" ]
+
+  if (use_custom_libcxx) {
+    public_deps += [ "//buildtools/third_party/libc++" ]
   }
 }
 

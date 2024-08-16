@@ -120,7 +120,7 @@ suite('ManualRegionSelection', function() {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kRegionSelection));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kRegionSelection, action);
   }
 
@@ -155,7 +155,7 @@ suite('ManualRegionSelection', function() {
             'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
             UserAction.kTapRegionSelection));
     const action = await testBrowserProxy.handler.whenCalled(
-        'recordUkmLensOverlayInteraction');
+        'recordUkmAndTaskCompletionForLensOverlayInteraction');
     assertEquals(UserAction.kTapRegionSelection, action);
   }
 

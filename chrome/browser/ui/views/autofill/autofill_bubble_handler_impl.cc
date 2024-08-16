@@ -172,8 +172,9 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
                                    : LocationBarBubbleDelegateView::AUTOMATIC);
       return bubble;
     }
+    case IbanBubbleType::kUploadCompleted:
     case IbanBubbleType::kInactive:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -363,7 +364,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowMandatoryReauthBubble(
       return bubble;
     }
     case MandatoryReauthBubbleType::kInactive:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -382,6 +383,22 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCardConfirmationBubble(
 
   return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
       anchor_view, web_contents, std::move(callback), icon_view, ui_params);
+}
+
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveIbanConfirmationBubble(
+    content::WebContents* web_contents,
+    IbanBubbleController* controller) {
+  views::View* anchor_view =
+      toolbar_button_provider_->GetAnchorView(PageActionIconType::kSaveIban);
+  base::OnceCallback<void(PaymentsBubbleClosedReason)> callback =
+      controller->GetOnBubbleClosedCallback();
+  PageActionIconView* icon_view =
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kSaveIban);
+
+  return ShowSaveCardAndVirtualCardEnrollConfirmationBubble(
+      anchor_view, web_contents, std::move(callback), icon_view,
+      controller->GetConfirmationUiParams());
 }
 
 AutofillBubbleBase*

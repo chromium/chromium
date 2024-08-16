@@ -8,14 +8,14 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/sync/service/model_type_local_data_batch_uploader.h"
+#include "components/sync/service/data_type_local_data_batch_uploader.h"
 
 namespace password_manager {
 
 class PasswordStoreInterface;
 
 class PasswordLocalDataBatchUploader
-    : public syncer::ModelTypeLocalDataBatchUploader {
+    : public syncer::DataTypeLocalDataBatchUploader {
  public:
   PasswordLocalDataBatchUploader(
       scoped_refptr<PasswordStoreInterface> profile_store,
@@ -28,7 +28,7 @@ class PasswordLocalDataBatchUploader
 
   ~PasswordLocalDataBatchUploader() override;
 
-  // syncer::ModelTypeLocalDataBatchUploader implementation.
+  // syncer::DataTypeLocalDataBatchUploader implementation.
   void GetLocalDataDescription(
       base::OnceCallback<void(syncer::LocalDataDescription)> callback) override;
   void TriggerLocalDataMigration() override;

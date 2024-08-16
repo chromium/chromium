@@ -521,6 +521,11 @@ class PasswordManagerClient {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
+
+  // Shows the bubble with the details of the `form`.
+  virtual void OpenPasswordDetailsBubble(
+      const password_manager::PasswordForm& form) = 0;
+
   // Creates and show the cross domain confirmation popup.
   virtual std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
   ShowCrossDomainConfirmationPopup(const gfx::RectF& element_bounds,

@@ -117,10 +117,11 @@ TEST_F(ChooserDialogViewTest, ButtonState) {
 }
 
 TEST_F(ChooserDialogViewTest, CancelButtonFocusedWhenReScanIsPressed) {
-  EXPECT_CALL(*controller_, RefreshOptions()).WillOnce(testing::Invoke([=]() {
-    controller_->SetBluetoothStatus(
-        FakeBluetoothChooserController::BluetoothStatus::SCANNING);
-  }));
+  EXPECT_CALL(*controller_, RefreshOptions())
+      .WillOnce(testing::Invoke([=, this]() {
+        controller_->SetBluetoothStatus(
+            FakeBluetoothChooserController::BluetoothStatus::SCANNING);
+      }));
   AddDevice();
   table_view()->RequestFocus();
   controller_->RemoveDevice(0);

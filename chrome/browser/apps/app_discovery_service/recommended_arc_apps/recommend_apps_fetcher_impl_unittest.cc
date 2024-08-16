@@ -147,11 +147,13 @@ class TestCrosDisplayConfig
 class AppListRequestHeaderReader {
  public:
   explicit AppListRequestHeaderReader(network::ResourceRequest* request) {
-    request->headers.GetHeader("X-DFE-Sdk-Version", &sdk_version_);
-    request->headers.GetHeader("X-DFE-Device-Fingerprint",
-                               &device_fingerprint_);
-    request->headers.GetHeader("X-DFE-Chromesky-Client-Version",
-                               &play_store_version_);
+    sdk_version_ =
+        request->headers.GetHeader("X-DFE-Sdk-Version").value_or(std::string());
+    device_fingerprint_ = request->headers.GetHeader("X-DFE-Device-Fingerprint")
+                              .value_or(std::string());
+    play_store_version_ =
+        request->headers.GetHeader("X-DFE-Chromesky-Client-Version")
+            .value_or(std::string());
     DecodeDeviceConfigHeader(request);
   }
   ~AppListRequestHeaderReader() = default;
@@ -208,12 +210,12 @@ class AppListRequestHeaderReader {
 
  private:
   void DecodeDeviceConfigHeader(network::ResourceRequest* request) {
-    std::string device_config_header;
-    ASSERT_TRUE(request->headers.GetHeader("X-DFE-Device-Config",
-                                           &device_config_header));
+    std::optional<std::string> device_config_header =
+        request->headers.GetHeader("X-DFE-Device-Config");
+    ASSERT_TRUE(device_config_header);
 
     std::string decoded;
-    ASSERT_TRUE(Base64UrlDecode(device_config_header,
+    ASSERT_TRUE(Base64UrlDecode(*device_config_header,
                                 base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                                 &decoded));
     std::string decompressed;

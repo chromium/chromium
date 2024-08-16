@@ -47,10 +47,10 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -344,8 +344,8 @@ constexpr char kPasswordsSyncModelMetadataTableName[] = "sync_model_metadata";
 constexpr char kPasswordsSyncEntitiesMetadataTableName[] =
     "sync_entities_metadata";
 
-bool ClearAllSyncMetadata(sql::Database* db, syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+bool ClearAllSyncMetadata(sql::Database* db, syncer::DataType data_type) {
+  CHECK_EQ(data_type, syncer::PASSWORDS);
   sql::Statement s1(db->GetCachedStatement(
       SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s",
                                         kPasswordsSyncModelMetadataTableName)));
@@ -985,14 +985,14 @@ std::unique_ptr<sync_pb::EntityMetadata> DecryptAndParseSyncEntityMetadata(
   std::string decrypted_serialized_metadata;
   if (!OSCrypt::DecryptString(encrypted_serialized_metadata,
                               &decrypted_serialized_metadata)) {
-    DLOG(WARNING) << "Failed to decrypt PASSWORD model type "
+    DLOG(WARNING) << "Failed to decrypt PASSWORD data type "
                      "sync_pb::EntityMetadata.";
     return nullptr;
   }
 
   auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
   if (!entity_metadata->ParseFromString(decrypted_serialized_metadata)) {
-    DLOG(WARNING) << "Failed to deserialize PASSWORD model type "
+    DLOG(WARNING) << "Failed to deserialize PASSWORD data type "
                      "sync_pb::EntityMetadata.";
     return nullptr;
   }
@@ -1024,10 +1024,9 @@ void RecordShouldDeleteUndecryptablePasswordsMetric(
 }
 
 bool ShouldDeleteUndecryptablePasswords(
-    LoginDatabase::ClearingUndecryptablePasswordsCallback
-        clearing_undecryptable_passwords,
+    base::RepeatingClosure clearing_undecryptable_passwords,
     bool is_user_data_dir_policy_set,
-    bool is_disabled_by_policy) {
+    bool is_enabled_by_policy) {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
@@ -1076,7 +1075,7 @@ bool ShouldDeleteUndecryptablePasswords(
     return false;
   }
 
-  if (is_disabled_by_policy) {
+  if (!is_enabled_by_policy) {
     RecordShouldDeleteUndecryptablePasswordsMetric(
         ShouldDeleteUndecryptablePasswordsResult::kDisabledByPolicy);
     return false;
@@ -1088,7 +1087,7 @@ bool ShouldDeleteUndecryptablePasswords(
   // Needed in order to maintain kClearUndecryptablePasswords experiment groups
   // population.
   if (clearing_undecryptable_passwords) {
-    clearing_undecryptable_passwords.Run(true);
+    clearing_undecryptable_passwords.Run();
   }
   return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
@@ -1102,16 +1101,22 @@ struct LoginDatabase::PrimaryKeyAndPassword {
 };
 
 LoginDatabase::LoginDatabase(const base::FilePath& db_path,
-                             IsAccountStore is_account_store)
+                             IsAccountStore is_account_store,
+                             DeletingUndecryptablePasswordsEnabled can_delete)
     : db_path_(db_path),
       is_account_store_(is_account_store),
       // Set options for a small, private database (based on WebDatabase).
-      db_({.page_size = 2048, .cache_size = 32}) {}
+      db_({.page_size = 2048, .cache_size = 32}),
+      is_deleting_undecryptable_logins_enabled_by_policy_(can_delete) {}
 
 LoginDatabase::~LoginDatabase() = default;
 
-bool LoginDatabase::Init(std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
+bool LoginDatabase::Init(
+    base::RepeatingClosure on_undecryptable_passwords_removed,
+    std::unique_ptr<os_crypt_async::Encryptor> encryptor) {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
+  on_undecryptable_passwords_removed_ =
+      std::move(on_undecryptable_passwords_removed);
   encryptor_ = std::move(encryptor);
 
   db_.set_histogram_tag("Passwords");
@@ -1942,7 +1947,8 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
   meta_table_.Reset();
   db_.Close();
   sql::Database::Delete(db_path_);
-  return Init(std::move(encryptor_));
+  return Init(std::move(on_undecryptable_passwords_removed_),
+              std::move(encryptor_));
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
@@ -2014,12 +2020,6 @@ void LoginDatabase::SetIsEmptyCb(IsEmptyCallback is_empty_cb) {
   is_empty_cb_ = std::move(is_empty_cb);
 }
 
-void LoginDatabase::SetClearingUndecryptablePasswordsCb(
-    ClearingUndecryptablePasswordsCallback clearing_undecryptable_passwords) {
-  clearing_undecryptable_passwords_ =
-      std::move(clearing_undecryptable_passwords);
-}
-
 LoginDatabase::SyncMetadataStore::SyncMetadataStore(sql::Database* db)
     : db_(db) {
   CHECK(db);
@@ -2029,15 +2029,15 @@ LoginDatabase::SyncMetadataStore::~SyncMetadataStore() = default;
 
 std::unique_ptr<sync_pb::EntityMetadata>
 LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKeyForTest(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
-  return GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+  return GetSyncEntityMetadataForStorageKey(data_type, storage_key);
 }
 
 std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
-    syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+    syncer::DataType data_type) {
+  CHECK_EQ(data_type, syncer::PASSWORDS);
   auto metadata_batch = std::make_unique<syncer::MetadataBatch>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
@@ -2062,9 +2062,9 @@ LoginDatabase::SyncMetadataStore::GetAllSyncEntityMetadata(
 
 std::unique_ptr<sync_pb::EntityMetadata>
 LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   int storage_key_int = 0;
   if (!base::StringToInt(storage_key, &storage_key_int)) {
@@ -2087,11 +2087,10 @@ LoginDatabase::SyncMetadataStore::GetSyncEntityMetadataForStorageKey(
   return DecryptAndParseSyncEntityMetadata(s.ColumnString(0));
 }
 
-std::unique_ptr<sync_pb::ModelTypeState>
-LoginDatabase::SyncMetadataStore::GetModelTypeState(
-    syncer::ModelType model_type) {
-  CHECK_EQ(model_type, syncer::PASSWORDS);
-  auto state = std::make_unique<sync_pb::ModelTypeState>();
+std::unique_ptr<sync_pb::DataTypeState>
+LoginDatabase::SyncMetadataStore::GetDataTypeState(syncer::DataType data_type) {
+  CHECK_EQ(data_type, syncer::PASSWORDS);
+  auto state = std::make_unique<sync_pb::DataTypeState>();
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
       base::StringPrintf("SELECT model_metadata FROM %s WHERE id=1",
@@ -2114,32 +2113,32 @@ LoginDatabase::SyncMetadataStore::GetModelTypeState(
 
 std::unique_ptr<syncer::MetadataBatch>
 LoginDatabase::SyncMetadataStore::GetAllSyncMetadata(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::GetAllSyncMetadata");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
   std::unique_ptr<syncer::MetadataBatch> metadata_batch =
-      GetAllSyncEntityMetadata(model_type);
+      GetAllSyncEntityMetadata(data_type);
   if (metadata_batch == nullptr) {
     return nullptr;
   }
 
-  std::unique_ptr<sync_pb::ModelTypeState> model_type_state =
-      GetModelTypeState(model_type);
-  if (model_type_state == nullptr) {
+  std::unique_ptr<sync_pb::DataTypeState> data_type_state =
+      GetDataTypeState(data_type);
+  if (data_type_state == nullptr) {
     return nullptr;
   }
 
-  metadata_batch->SetModelTypeState(*model_type_state);
+  metadata_batch->SetDataTypeState(*data_type_state);
   return metadata_batch;
 }
 
 void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
-    syncer::ModelType model_type) {
+    syncer::DataType data_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
   bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
-  ClearAllSyncMetadata(db_, model_type);
+  ClearAllSyncMetadata(db_, data_type);
   if (had_unsynced_password_deletions &&
       password_deletions_have_synced_callback_) {
     // Note: At this point we can't be fully sure whether the deletions actually
@@ -2151,11 +2150,11 @@ void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
 }
 
 bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key,
     const sync_pb::EntityMetadata& metadata) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateSyncMetadata");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   int storage_key_int = 0;
   if (!base::StringToInt(storage_key, &storage_key_int)) {
@@ -2179,10 +2178,10 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
 
   s.BindInt(0, storage_key_int);
   s.BindString(1, encrypted_metadata);
-  if (model_type != syncer::PASSWORDS) {
+  if (data_type != syncer::PASSWORDS) {
     return s.Run();
   }
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   // This ongoing operation may influence the value returned by
   // HasUnsyncedPasswordDeletions() only if the storage key being updated
@@ -2193,7 +2192,7 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
   // Note: No need for an explicit "is unsynced" check: Once the deletion is
   // committed, the metadata entry is removed.
   std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
-      GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+      GetSyncEntityMetadataForStorageKey(data_type, storage_key);
   bool was_unsynced_deletion =
       previous_metadata && previous_metadata->is_deleted();
 
@@ -2207,10 +2206,10 @@ bool LoginDatabase::SyncMetadataStore::UpdateEntityMetadata(
 }
 
 bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
-    syncer::ModelType model_type,
+    syncer::DataType data_type,
     const std::string& storage_key) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::ClearSyncMetadata");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   int storage_key_int = 0;
   if (!base::StringToInt(storage_key, &storage_key_int)) {
@@ -2224,10 +2223,10 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
       base::StringPrintf("DELETE FROM %s WHERE storage_key=?",
                          kPasswordsSyncEntitiesMetadataTableName)));
   s.BindInt(0, storage_key_int);
-  if (model_type != syncer::PASSWORDS) {
+  if (data_type != syncer::PASSWORDS) {
     return s.Run();
   }
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   // This ongoing operation may influence the value returned by
   // HasUnsyncedPasswordDeletions() only if the storage key being cleared
@@ -2238,7 +2237,7 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
   // Note: No need for an explicit "is unsynced" check: Once the deletion is
   // committed, the metadata entry is removed.
   std::unique_ptr<sync_pb::EntityMetadata> previous_metadata =
-      GetSyncEntityMetadataForStorageKey(model_type, storage_key);
+      GetSyncEntityMetadataForStorageKey(data_type, storage_key);
   bool was_unsynced_deletion =
       previous_metadata && previous_metadata->is_deleted();
 
@@ -2250,11 +2249,11 @@ bool LoginDatabase::SyncMetadataStore::ClearEntityMetadata(
   return result;
 }
 
-bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
-    syncer::ModelType model_type,
-    const sync_pb::ModelTypeState& model_type_state) {
-  TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateModelTypeState");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+bool LoginDatabase::SyncMetadataStore::UpdateDataTypeState(
+    syncer::DataType data_type,
+    const sync_pb::DataTypeState& data_type_state) {
+  TRACE_EVENT0("passwords", "SyncMetadataStore::UpdateDataTypeState");
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   // Make sure only one row is left by storing it in the entry with id=1
   // every time.
@@ -2263,15 +2262,15 @@ bool LoginDatabase::SyncMetadataStore::UpdateModelTypeState(
       base::StringPrintf("INSERT OR REPLACE INTO %s (id, model_metadata) "
                          "VALUES(1, ?)",
                          kPasswordsSyncModelMetadataTableName)));
-  s.BindString(0, model_type_state.SerializeAsString());
+  s.BindString(0, data_type_state.SerializeAsString());
 
   return s.Run();
 }
 
-bool LoginDatabase::SyncMetadataStore::ClearModelTypeState(
-    syncer::ModelType model_type) {
-  TRACE_EVENT0("passwords", "SyncMetadataStore::ClearModelTypeState");
-  CHECK_EQ(model_type, syncer::PASSWORDS);
+bool LoginDatabase::SyncMetadataStore::ClearDataTypeState(
+    syncer::DataType data_type) {
+  TRACE_EVENT0("passwords", "SyncMetadataStore::ClearDataTypeState");
+  CHECK_EQ(data_type, syncer::PASSWORDS);
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE, base::StringPrintf("DELETE FROM %s WHERE id=1",
@@ -2382,8 +2381,8 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   }
   if (failed) {
     if (ShouldDeleteUndecryptablePasswords(
-            clearing_undecryptable_passwords_, is_user_data_dir_policy_set_,
-            is_deleting_undecryptable_logins_disabled_by_policy_)) {
+            on_undecryptable_passwords_removed_, is_user_data_dir_policy_set_,
+            is_deleting_undecryptable_logins_enabled_by_policy_.value())) {
       DatabaseCleanupResult result = DeleteUndecryptableLogins();
       if (result == DatabaseCleanupResult::kSuccess) {
         were_undecryptable_logins_deleted_ = true;

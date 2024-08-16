@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 
 #include "base/feature_list.h"
@@ -121,6 +126,15 @@ void WhatsNewUI::CreateBrowserCommandHandler(
     auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
     CHECK(registry);
     supported_commands = registry->GetActiveCommands();
+  } else {
+    // TODO(crbug.com/342172972): Remove legacy browser command format.
+    // Modules launching during the V2 experiment need to also be
+    // enabled in this list for V1.
+    supported_commands.insert(
+        supported_commands.end(),
+        {
+            browser_command::mojom::Command::kOpenPaymentsSettings,
+        });
   }
 
   // Legacy list. Do not add browser commands here. Browser commands

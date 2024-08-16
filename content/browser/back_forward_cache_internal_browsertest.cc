@@ -3390,9 +3390,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheDisabledBrowserTest,
 
   ExpectHistoryNavigationOutcomeCount("", /*all_sites_count=*/1,
                                       /*feature_enabled_count=*/0);
-  ExpectHistoryNavigationOutcomeCount(".NotRestoredReason",
-                                      /*all_sites_count=*/1,
-                                      /*feature_enabled_count=*/0);
+  ExpectHistoryNavigationOutcomeCount(
+      ".NotRestoredReason",
+      /*all_sites_count=*/ShouldCreateNewHostForAllFrames() ? 2 : 1,
+      /*feature_enabled_count=*/0);
   ExpectHistoryNavigationOutcomeCount(".BlocklistedFeature",
                                       /*all_sites_count=*/0,
                                       /*feature_enabled_count=*/0);

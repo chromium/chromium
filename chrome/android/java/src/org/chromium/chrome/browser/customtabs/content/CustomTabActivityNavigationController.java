@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.OTHER;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.REPARENTING;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
@@ -13,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -22,6 +22,8 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import dagger.Lazy;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -362,9 +365,8 @@ public class CustomTabActivityNavigationController
             }
         }
 
-        boolean willChromeHandleIntent =
-                mIntentDataProvider.isOpenedByChrome()
-                        || mIntentDataProvider.getCustomTabMode() == INCOGNITO;
+        boolean isOffTheRecord = mIntentDataProvider.isOffTheRecord();
+        boolean willChromeHandleIntent = mIntentDataProvider.isOpenedByChrome();
 
         // If the tab is opened by TWA or Webapp, do not reparent and finish the Custom Tab
         // activity because we still want to keep the app alive.
@@ -380,7 +382,22 @@ public class CustomTabActivityNavigationController
                                 mActivity, R.anim.abc_fade_in, R.anim.abc_fade_out)
                         .toBundle();
 
-        if (canFinishActivity && willChromeHandleIntent) {
+        if (isOffTheRecord) {
+            // If "Open in browser" was triggered in an OTR CCT, always open in a new Chrome
+            // Incognito tab instead of re-parenting the tab to prevent profile-mismatch with the
+            // TabModel as both eCCT & iCCT have a different OTRProfileID from the primary OTR
+            // profile.
+            intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
+            intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
+                    ContextUtils.getApplicationContext().getPackageName());
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+            IntentUtils.addTrustedIntentExtras(intent);
+
+            mActivity.startActivity(intent, startActivityOptions);
+            finish(FinishReason.OPEN_IN_BROWSER);
+        } else if (canFinishActivity && willChromeHandleIntent) {
             // Remove observer to not trigger finishing in onAllTabsClosed() callback - we'll use
             // reparenting finish callback instead.
             mTabProvider.removeObserver(mTabObserver);

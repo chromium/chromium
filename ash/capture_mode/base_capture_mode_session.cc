@@ -137,7 +137,8 @@ void BaseCaptureModeSession::OnRootWindowWillShutdown(
   if (root_window == current_root_) {
     // There should always be a primary root window.
     DCHECK_NE(Shell::GetPrimaryRootWindow(), current_root_);
-    MaybeChangeRoot(Shell::GetPrimaryRootWindow());
+    MaybeChangeRoot(Shell::GetPrimaryRootWindow(),
+                    /*root_window_will_shutdown=*/true);
   }
 }
 

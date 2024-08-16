@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_install_prompt_test_helper.h"
@@ -40,6 +39,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -126,8 +126,8 @@ ExtensionInstallDialogViewTestBase::CreatePrompt(
       new ExtensionInstallPrompt::Prompt(prompt_type));
   prompt->set_extension(extension);
 
-  std::unique_ptr<ExtensionIconManager> icon_manager(
-      new ExtensionIconManager());
+  std::unique_ptr<extensions::ExtensionIconManager> icon_manager(
+      new extensions::ExtensionIconManager());
   prompt->set_icon(icon_manager->GetIcon(extension->id()));
 
   return prompt;
@@ -378,7 +378,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
         // simplicity's sake as this test doesn't serve webstore url and
         // the url doesn't commit.
         const GURL& url = contents.contents->GetVisibleURL();
-        if (url.host() == extension_urls::GetWebstoreLaunchURL().host()) {
+        if (url.host() == extension_urls::GetNewWebstoreLaunchURL().host()) {
           run_loop_.Quit();
           return;
         }

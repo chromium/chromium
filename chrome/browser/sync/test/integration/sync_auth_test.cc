@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, SyncPausedState) {
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
   ASSERT_EQ(GetSyncService(0)->GetTransportState(),
             syncer::SyncService::TransportState::ACTIVE);
-  const syncer::ModelTypeSet active_types =
+  const syncer::DataTypeSet active_types =
       GetSyncService(0)->GetActiveDataTypes();
   ASSERT_FALSE(active_types.empty());
 

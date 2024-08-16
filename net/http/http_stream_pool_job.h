@@ -28,8 +28,10 @@
 #include "net/http/http_stream_request.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_attempt.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/socket/tls_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -56,14 +58,35 @@ class HttpStreamPool::Job
 
   ~Job() override;
 
+  Group* group() { return group_; }
+
+  HostResolver::ServiceEndpointRequest* service_endpoint_request() {
+    return service_endpoint_request_.get();
+  }
+
+  bool is_service_endpoint_request_finished() const {
+    return service_endpoint_request_finished_;
+  }
+
+  base::TimeTicks dns_resolution_start_time() const {
+    return dns_resolution_start_time_;
+  }
+
+  base::TimeTicks dns_resolution_end_time() const {
+    return dns_resolution_end_time_;
+  }
+
+  const NetLogWithSource& net_log();
+
   // Creates an HttpStreamRequest. Will call delegate's methods. See the
   // comments of HttpStreamRequest::Delegate methods for details.
-  // TODO(crbug.com/346835898): Support TLS, HTTP/2 and QUIC.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
+      bool enable_alternative_services,
+      quic::ParsedQuicVersion quic_version,
       const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
@@ -71,7 +94,9 @@ class HttpStreamPool::Job
   // `this` has enough streams/sessions for `num_streams` be opened. This means
   // that when there are two preconnect requests with `num_streams = 1`, all
   // callbacks are invoked when one stream/session is established (not two).
-  int Preconnect(size_t num_streams, CompletionOnceCallback callback);
+  int Preconnect(size_t num_streams,
+                 quic::ParsedQuicVersion quic_version,
+                 CompletionOnceCallback callback);
 
   // HostResolver::ServiceEndpointRequest::Delegate implementation:
   void OnServiceEndpointsUpdated() override;
@@ -108,6 +133,15 @@ class HttpStreamPool::Job
   // Returns true when `this` is blocked by the pool's stream limit.
   bool IsStalledByPoolLimit();
 
+  // Called when the server required HTTP/1.1. Clears the current SPDY session
+  // if exists. Subsequent requests will fail while `this` is alive.
+  void OnRequiredHttp11();
+
+  // Called when the QuicTask owned by `this` is completed.
+  void OnQuicTaskComplete(int rv);
+
+  std::optional<int> GetQuicTaskResultForTesting() { return quic_task_result_; }
+
  private:
   // Represents failure of connection attempts. Used to call request's delegate
   // methods.
@@ -121,6 +155,7 @@ class HttpStreamPool::Job
   enum class CanAttemptResult {
     kAttempt,
     kNoPendingRequest,
+    kBlockedStreamAttempt,
     kThrottledForSpdy,
     kReachedGroupLimit,
     kReachedPoolLimit,
@@ -166,13 +201,14 @@ class HttpStreamPool::Job
 
   const SpdySessionKey& spdy_session_key() const;
 
+  const QuicSessionKey& quic_session_key() const;
+
   HttpNetworkSession* http_network_session();
   SpdySessionPool* spdy_session_pool();
+  QuicSessionPool* quic_session_pool();
 
   HttpStreamPool* pool();
   const HttpStreamPool* pool() const;
-
-  const NetLogWithSource& net_log();
 
   bool UsingTls() const;
 
@@ -195,9 +231,17 @@ class HttpStreamPool::Job
   // requests of stream ready.
   bool CanUseExistingSessionAfterEndpointChanges();
 
+  // Runs the stream attempt delay timer if stream attempts are blocked and the
+  // timer is not running.
+  void MaybeRunStreamAttemptDelayTimer();
+
   // Calculate SSLConfig if it's not calculated yet and `this` has received
   // enough information to calculate it.
   void MaybeCalculateSSLConfig();
+
+  // Attempts QUIC sessions if QUIC can be used and `this` is ready to start
+  // cryptographic connection handshakes.
+  void MaybeAttemptQuic();
 
   // Attempts connections if there are pending requests and IPEndPoints that
   // haven't failed. If `max_attempts` is given, attempts connections up to
@@ -247,9 +291,12 @@ class HttpStreamPool::Job
   // Creates a text based stream and notifies the highest priority request.
   void CreateTextBasedStreamAndNotify(
       std::unique_ptr<StreamSocket> stream_socket,
+      StreamSocketHandle::SocketReuseType reuse_type,
       LoadTimingInfo::ConnectTiming connect_timing);
 
   void CreateSpdyStreamAndNotify();
+
+  void CreateQuicStreamAndNotify();
 
   void NotifyStreamReady(std::unique_ptr<HttpStream> stream,
                          NextProto negotiated_protocol);
@@ -266,6 +313,8 @@ class HttpStreamPool::Job
   void OnRequestComplete(RequestEntry* entry);
 
   void OnInFlightAttemptComplete(InFlightAttempt* raw_attempt, int rv);
+  void OnInFlightAttemptTcpHandshakeComplete(InFlightAttempt* raw_attempt,
+                                             int rv);
   void OnInFlightAttemptSlow(InFlightAttempt* raw_attempt);
 
   void HandleAttemptFailure(std::unique_ptr<InFlightAttempt> in_flight_attempt,
@@ -273,13 +322,31 @@ class HttpStreamPool::Job
 
   void OnSpdyThrottleDelayPassed();
 
+  // Returns the delay for TCP-based stream attempts in favor of QUIC.
+  base::TimeDelta GetStreamAttemptDelay();
+
+  // Updates whether stream attempts should be blocked or not. May cancel
+  // `stream_attempt_delay_timer_`.
+  void UpdateStreamAttemptState();
+
+  // Called when `stream_attempt_delay_timer_` is fired.
+  void OnStreamAttemptDelayPassed();
+
+  bool CanUseQuic();
+
+  bool CanUseExistingQuicSession();
+
   void MaybeComplete();
 
   const raw_ptr<Group> group_;
 
+  const NetLogWithSource net_log_;
+
   ProxyInfo proxy_info_;
 
   bool enable_ip_based_pooling_ = true;
+
+  bool enable_alternative_services_ = true;
 
   // Holds requests that are waiting for notifications (a delegate method call
   // to indicate success or failure).
@@ -350,6 +417,21 @@ class HttpStreamPool::Job
 
   // Initialized when one of an attempt is negotiated to use HTTP/2.
   base::WeakPtr<SpdySession> spdy_session_;
+
+  // QUIC version that is known to be used for the destination, usually coming
+  // from Alt-Svc.
+  quic::ParsedQuicVersion quic_version_ =
+      quic::ParsedQuicVersion::Unsupported();
+  // Created when attempting QUIC sessions.
+  std::unique_ptr<QuicTask> quic_task_;
+  // Set when `quic_task_` is completed.
+  std::optional<int> quic_task_result_;
+
+  // The delay for TCP-based stream attempts in favor of QUIC.
+  base::TimeDelta stream_attempt_delay_;
+  // Set to true when stream attempts should be blocked.
+  bool should_block_stream_attempt_ = false;
+  base::OneShotTimer stream_attempt_delay_timer_;
 
   base::WeakPtrFactory<Job> weak_ptr_factory_{this};
 };

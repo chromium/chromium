@@ -26,11 +26,13 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
+#include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -233,7 +235,7 @@ std::u16string GetRightClickRewriteNotificationMessage(
           IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK,
           launcher_key_name);
     case SimulateRightClickModifier::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -259,7 +261,7 @@ std::string GetRightClickNotificationId(
     case SimulateRightClickModifier::kSearch:
       return kSearchRightClickRewriteNotificationId;
     case SimulateRightClickModifier::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -290,6 +292,11 @@ bool IsActiveUserSession() {
   return session_controller->GetSessionState() ==
              session_manager::SessionState::ACTIVE &&
          !session_controller->IsUserSessionBlocked();
+}
+
+bool IsGuestSession() {
+  const auto* session_controller = Shell::Get()->session_controller();
+  return session_controller->IsUserGuest();
 }
 
 // If the user has reached the settings page through the notification, do
@@ -329,7 +336,7 @@ std::u16string GetSixPackKeyName(ui::KeyboardCode key_code) {
       return l10n_util::GetStringUTF16(
           IDS_ASH_DEVICE_SETTINGS_SIX_PACK_KEY_PAGE_DOWN);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -350,11 +357,8 @@ std::u16string GetSixPackShortcutUpdatedString(ui::KeyboardCode key_code) {
     case ui::VKEY_DELETE:
       return l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION);
-    case ui::VKEY_INSERT:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_INSERT_NUDGE_DESCRIPTION);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -446,7 +450,7 @@ std::string GetSixPackNotificationId(ui::KeyboardCode key_code, int device_id) {
       notification_id = kSixPackKeyPageDownRewriteNotificationId;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return notification_id + kDelimiter + base::NumberToString(device_id);
 }
@@ -624,7 +628,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse,
     const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !mouse.is_external) {
+  if (!IsActiveUserSession() || !mouse.is_external || IsGuestSession()) {
     return;
   }
 
@@ -665,7 +669,7 @@ void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
         const mojom::GraphicsTablet& graphics_tablet,
         const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession()) {
+  if (!IsActiveUserSession() || IsGuestSession()) {
     return;
   }
 
@@ -757,6 +761,10 @@ void HandleMouseCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowMouseSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -765,6 +773,10 @@ void HandleKeyboardCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowKeyboardSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -773,6 +785,10 @@ void HandleTouchpadCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowTouchpadSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -789,6 +805,10 @@ void HandleGraphicsTabletCustomizationNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   ShowGraphicsTabletSettings();
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kClicked);
   RemoveNotification(notification_id);
   return;
 }
@@ -848,7 +868,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !keyboard.is_external) {
+  if (!IsActiveUserSession() || !keyboard.is_external || IsGuestSession()) {
     return;
   }
 
@@ -875,7 +895,7 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !touchpad.is_external) {
+  if (!IsActiveUserSession() || !touchpad.is_external || IsGuestSession()) {
     return;
   }
 
@@ -931,7 +951,8 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyPointingStickFirstTimeConnected(
         const mojom::PointingStick& pointing_stick) {
-  if (!IsActiveUserSession() || !pointing_stick.is_external) {
+  if (!IsActiveUserSession() || !pointing_stick.is_external ||
+      IsGuestSession()) {
     return;
   }
 
@@ -986,6 +1007,11 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
           base::BindRepeating(&HandleMouseCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = mouse.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1020,6 +1046,11 @@ void InputDeviceSettingsNotificationController::
           base::BindRepeating(&HandleKeyboardCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = keyboard.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1054,6 +1085,11 @@ void InputDeviceSettingsNotificationController::
           base::BindRepeating(&HandleTouchpadCustomizationNotificationClicked,
                               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] = touchpad.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1090,6 +1126,12 @@ void InputDeviceSettingsNotificationController::
               &HandleGraphicsTabletCustomizationNotificationClicked,
               notification_id)),
       kSettingsIcon, message_center::SystemNotificationWarningLevel::NORMAL);
+  notification_id_to_device_key_map_[notification_id] =
+      graphics_tablet.device_key;
+  base::UmaHistogramEnumeration(
+      "ChromeOS.WelcomeExperienceNotificationEvent",
+      InputDeviceSettingsMetricsManager::
+          WelcomeExperienceNotificationEventType::kShown);
   message_center_->AddNotification(std::move(notification));
 }
 
@@ -1121,8 +1163,6 @@ void InputDeviceSettingsNotificationController::ShowTopRowRewritingNudge() {
       kTopRowKeyNoMatchNudgeId, NudgeCatalogName::kSearchTopRowKeyPressed,
       l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
@@ -1135,6 +1175,12 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
     SixPackShortcutModifier old_matched_modifier) {
   if (!IsActiveUserSession() ||
       !ui::KeyboardCapability::IsSixPackKey(key_code)) {
+    return;
+  }
+
+  // Insert does not have a notification to show even though it is a six-pack
+  // key.
+  if (key_code == ui::VKEY_INSERT) {
     return;
   }
 
@@ -1192,8 +1238,6 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
   AnchoredNudgeData nudge_data(kSixPackKeyNoMatchNudgeId,
                                NudgeCatalogName::kSixPackRemappingPressed,
                                GetSixPackShortcutUpdatedString(key_code));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   std::vector<ui::KeyboardCode> keyboard_codes = {ui::VKEY_FUNCTION};
   InsertSixPackShortcutKeyboardCodes(key_code, keyboard_codes);
   nudge_data.keyboard_codes = std::move(keyboard_codes);
@@ -1231,14 +1275,22 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
       kCapsLockNoMatchNudgeId, NudgeCatalogName::kCapsLockShortcutPressed,
       l10n_util::GetStringUTF16(
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION));
-  nudge_data.title_text = l10n_util::GetStringUTF16(
-      IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
   nudge_data.image_model =
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
           IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
+}
+
+std::optional<std::string>
+InputDeviceSettingsNotificationController::GetDeviceKeyForNotificationId(
+    const std::string& notification_id) {
+  auto it = notification_id_to_device_key_map_.find(notification_id);
+  if (it == notification_id_to_device_key_map_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace ash

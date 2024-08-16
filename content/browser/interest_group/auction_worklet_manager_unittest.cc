@@ -60,6 +60,33 @@
 using testing::UnorderedElementsAre;
 
 namespace content {
+class ProcessHandleTestPeer {
+ public:
+  explicit ProcessHandleTestPeer(
+      const AuctionProcessManager::ProcessHandle* handle)
+      : handle_(handle) {}
+
+  void CallOnLaunchedWithPid() {
+    handle_->OnBaseProcessLaunched(base::Process::Current());
+  }
+
+  std::unique_ptr<AuctionProcessManager::ProcessHandle> CloneHandle(
+      AuctionProcessManager& auction_process_manager) {
+    auto new_handle = std::make_unique<AuctionProcessManager::ProcessHandle>();
+    base::test::TestFuture<void> process_available;
+    if (!auction_process_manager.RequestWorkletService(
+            handle_->worklet_type_, handle_->origin_,
+            /*frame_site_instance=*/nullptr, new_handle.get(),
+            process_available.GetCallback())) {
+      CHECK(process_available.Wait());
+    }
+    return new_handle;
+  }
+
+ private:
+  raw_ptr<const AuctionProcessManager::ProcessHandle> handle_;
+};
+
 namespace {
 
 const char kAuction1[] = "a";
@@ -218,8 +245,10 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
 
   void ReportWin(
       bool is_for_additional_bid,
-      auction_worklet::mojom::ReportingIdField reporting_id_field,
-      const std::string& reporting_id,
+      const std::optional<std::string>& interest_group_name_reporting_id,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
+      const std::optional<std::string>& selected_buyer_and_seller_reporting_id,
       const std::optional<std::string>& auction_signals_json,
       const std::optional<std::string>& per_buyer_signals_json,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -401,6 +430,8 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       const url::Origin& browser_signal_interest_group_owner,
       const std::optional<std::string>&
           browser_signal_buyer_and_seller_reporting_id,
+      const std::optional<std::string>&
+          browser_signal_selected_buyer_and_seller_reporting_id,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -520,6 +551,24 @@ class MockAuctionProcessManager
 
     receiver_display_name_map_[receiver_id] = display_name;
     return nullptr;
+  }
+
+  void OnNewProcessAssigned(const ProcessHandle* handle) override {
+    if (defer_on_launched_for_handles_) {
+      deferred_on_launch_call_handles_.push_back(
+          ProcessHandleTestPeer(handle).CloneHandle(*this));
+    } else {
+      ProcessHandleTestPeer(handle).CallOnLaunchedWithPid();
+    }
+  }
+
+  void DeferOnLaunchedForHandles() { defer_on_launched_for_handles_ = true; }
+
+  void CallOnLaunchedWithPidForAllHandles() {
+    for (auto& handle : deferred_on_launch_call_handles_) {
+      ProcessHandleTestPeer(handle.get()).CallOnLaunchedWithPid();
+    }
+    deferred_on_launch_call_handles_.clear();
   }
 
   scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
@@ -661,6 +710,10 @@ class MockAuctionProcessManager
   // callback over the pipe will not DCHECK.
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService>
       receiver_set_;
+
+  bool defer_on_launched_for_handles_ = false;
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
+      deferred_on_launch_call_handles_;
 };
 
 class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
@@ -2580,6 +2633,31 @@ TEST(WorkletKeyTest, HashIsDifferentWhenGivenNullOptCoordinator) {
 
   EXPECT_TRUE(key1 < key2 || key2 < key1);
   EXPECT_NE(key1.GetHash(), key2.GetHash());
+}
+
+TEST_F(AuctionWorkletManagerTest,
+       DoesNotCrashWhenProcessReadyAfterWorkletDestroyed) {
+  auction_process_manager_.DeferOnLaunchedForHandles();
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  base::test::TestFuture<void> worklet_available;
+  auction_worklet_manager_->RequestBidderWorklet(
+      kAuction1, kDecisionLogicUrl, kWasmUrl, kTrustedSignalsUrl,
+      /*needs_cors_for_additional_bid=*/false,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_bidding_signals_slot_size_param=*/"",
+      /*trusted_bidding_signals_coordinator=*/std::nullopt,
+      worklet_available.GetCallback(), NeverInvokedFatalErrorCallback(), handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  ASSERT_TRUE(worklet_available.Wait());
+  EXPECT_TRUE(handle->GetBidderWorklet());
+  std::unique_ptr<MockBidderWorklet> bidder_worklet =
+      auction_process_manager_.WaitForBidderWorklet();
+
+  bidder_worklet.reset();
+
+  handle.reset();
+  auction_process_manager_.CallOnLaunchedWithPidForAllHandles();
 }
 
 }  // namespace

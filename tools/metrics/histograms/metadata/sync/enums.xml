@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed to parse decrypted invitation"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.cc:CrossUserSharingDecryptionResult) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.cc:CrossUserSharingDecryptionResult) -->
 
 <!-- LINT.IfChange(CrossUserSharingKeyPairState) -->
 
@@ -190,10 +190,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Same version (Deprecated)"/>
   <int value="4" label="Same known version"/>
   <int value="5" label="Same unknown version"/>
-  <int value="6" label="ModelType is not connected"/>
+  <int value="6" label="DataType is not connected"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.h:PendingInvalidationStatus) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
 
 <!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
@@ -597,7 +597,7 @@ chromium-metrics-reviews@google.com.
       label="kProfileContentSettingsPartitionedExceptionsPopups"/>
   <int value="100260"
       label="kProfileContentSettingsPartitionedExceptionsWindowPlacement"/>
-  <int value="100261" label="kStandaloneWindowMigrationNudgeShown"/>
+  <int value="100261" label="(obsolete) kStandaloneWindowMigrationNudgeShown"/>
   <int value="100262" label="TabDiscardingExceptionsWithTime"/>
   <int value="100263" label="AccessibilityFaceGazeCursorSpeedUp"/>
   <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
@@ -637,6 +637,9 @@ chromium-metrics-reviews@google.com.
   <int value="100295" label="AccessibilityMagnifierFollowsChromeVox"/>
   <int value="100296" label="KeyboardHasSplitModifierKeyboard"/>
   <int value="100297" label="HttpsFirstBalancedMode"/>
+  <int value="100298" label="kAccessibilityFlashNotificationsEnabled"/>
+  <int value="100299" label="kAccessibilityFlashNotificationsColor"/>
+  <int value="100300" label="PinnedChromeLabsMigrationComplete"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
@@ -725,6 +728,99 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/nigori/nigori_sync_bridge_impl.cc:SyncCustomPassphraseKeyDerivationMethodState) -->
 
+<!-- LINT.IfChange(SyncDataTypeErrorSite) -->
+
+<enum name="SyncDataTypeErrorSite">
+  <int value="0" label="ReportError() called by the bridge"/>
+  <int value="1" label="Error returned when applying full updates"/>
+  <int value="2" label="Error returned when applying incremental updates"/>
+  <int value="3"
+      label="Error returned when applying updates on commit response"/>
+  <int value="4"
+      label="Error triggered by update not matching
+             SupportsIncrementalUpdates()"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.h:SyncDataTypeErrorSite) -->
+
+<!-- LINT.IfChange(SyncDataTypes) -->
+
+<enum name="SyncDataTypes">
+  <int value="0" label="Unspecified"/>
+  <int value="1"
+      label="(Obsolete) Top Level Folder. Removed on 03/2021 (M91)."/>
+  <int value="2" label="Bookmarks"/>
+  <int value="3" label="Preferences"/>
+  <int value="4" label="Passwords"/>
+  <int value="5" label="Autofill Profile"/>
+  <int value="6" label="Autocomplete"/>
+  <int value="7" label="Themes"/>
+  <int value="8" label="(Obsolete) Typed URLs"/>
+  <int value="9" label="Extensions"/>
+  <int value="10" label="Search Engines"/>
+  <int value="11" label="Sessions"/>
+  <int value="12" label="Apps"/>
+  <int value="13" label="App Settings"/>
+  <int value="14" label="Extension Settings"/>
+  <int value="15" label="(Obsolete) App Notifications"/>
+  <int value="16" label="History Delete Directives"/>
+  <int value="17" label="Nigori"/>
+  <int value="18" label="Device Information"/>
+  <int value="19" label="(Obsolete) Experiments"/>
+  <int value="20" label="(Obsolete) Synced Notifications"/>
+  <int value="21" label="Priority Preferences"/>
+  <int value="22" label="Dictionary"/>
+  <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
+  <int value="24"
+      label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
+  <int value="25" label="Proxy Tabs"/>
+  <int value="26" label="Managed User Settings"/>
+  <int value="27" label="(Obsolete) Managed Users"/>
+  <int value="28" label="(Obsolete) Articles"/>
+  <int value="29" label="App List"/>
+  <int value="30" label="(Obsolete) Managed User Shared Settings"/>
+  <int value="31" label="(Obsolete) Synced Notification App Info"/>
+  <int value="32" label="(Obsolete) Wifi Credentials"/>
+  <int value="33" label="(Obsolete) Managed User Allowlists"/>
+  <int value="34" label="Autofill Wallet"/>
+  <int value="35" label="Autofill Wallet Metadata"/>
+  <int value="36" label="Arc Package"/>
+  <int value="37" label="Printers"/>
+  <int value="38" label="Reading List"/>
+  <int value="39" label="User Events"/>
+  <int value="40" label="(Obsolete) Mountain Shares"/>
+  <int value="41" label="User Consents"/>
+  <int value="42" label="Send Tab"/>
+  <int value="43" label="Security Events"/>
+  <int value="44" label="Wi-Fi Configurations"/>
+  <int value="45" label="Web Apps"/>
+  <int value="46" label="OS Preferences"/>
+  <int value="47" label="OS Priority Preferences"/>
+  <int value="48" label="Sharing Message"/>
+  <int value="49" label="Autofill Wallet Offer"/>
+  <int value="50" label="Workspace Desk"/>
+  <int value="51" label="History"/>
+  <int value="52" label="Printers Authorization Servers"/>
+  <int value="53" label="Contact info"/>
+  <int value="54" label="Autofill Wallet Usage"/>
+  <int value="55" label="(Obsolete) Segmentation"/>
+  <int value="56" label="Saved Tab Groups"/>
+  <int value="57" label="Power Bookmark"/>
+  <int value="58" label="WebAuthn Credentials"/>
+  <int value="59" label="Incoming Password Sharing Invitations"/>
+  <int value="60" label="Outgoing Password Sharing Invitations"/>
+  <int value="61" label="Autofill Wallet Credential"/>
+  <int value="62" label="WebAPKs"/>
+  <int value="63" label="Shared Tab Group Data"/>
+  <int value="64" label="Collaboration Groups"/>
+  <int value="65" label="Plus Address"/>
+  <int value="66" label="Product Comparison"/>
+  <int value="67" label="Cookies"/>
+  <int value="68" label="Plus Address Settings"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
+
 <!-- LINT.IfChange(SyncEntityChange) -->
 
 <enum name="SyncEntityChange">
@@ -794,8 +890,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="(Obsolete) DEPRECATED_ACCESS_DENIED"/>
   <int value="2" label="NOT_MY_BIRTHDAY"/>
   <int value="3" label="THROTTLED">
-    You might want to look at Sync.ThrottledSomeModelTypes to correlate this
-    with throttling of a specific data type, or Sync.ThrottledAllModelTypes for
+    You might want to look at Sync.ThrottledSomeDataTypes to correlate this with
+    throttling of a specific data type, or Sync.ThrottledAllDataTypes for
     throttling of the whole client.
   </int>
   <int value="4" label="(Obsolete) DEPRECATED_AUTH_EXPIRED"/>
@@ -807,7 +903,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="DISABLED_BY_ADMIN"/>
   <int value="11" label="(Obsolete) DEPRECATED_USER_ROLLBACK"/>
   <int value="12" label="PARTIAL_FAILURE">
-    You might want to look at Sync.BackedOffModelType to see the per-type effect
+    You might want to look at Sync.BackedOffDataType to see the per-type effect
     of this.
   </int>
   <int value="13" label="CLIENT_DATA_OBSOLETE"/>
@@ -942,99 +1038,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown reason"/>
 </enum>
 
-<!-- LINT.IfChange(SyncModelTypeErrorSite) -->
-
-<enum name="SyncModelTypeErrorSite">
-  <int value="0" label="ReportError() called by the bridge"/>
-  <int value="1" label="Error returned when applying full updates"/>
-  <int value="2" label="Error returned when applying incremental updates"/>
-  <int value="3"
-      label="Error returned when applying updates on commit response"/>
-  <int value="4"
-      label="Error triggered by update not matching
-             SupportsIncrementalUpdates()"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/model/client_tag_based_model_type_processor.h:SyncModelTypeErrorSite) -->
-
-<!-- LINT.IfChange(SyncModelTypes) -->
-
-<enum name="SyncModelTypes">
-  <int value="0" label="Unspecified"/>
-  <int value="1"
-      label="(Obsolete) Top Level Folder. Removed on 03/2021 (M91)."/>
-  <int value="2" label="Bookmarks"/>
-  <int value="3" label="Preferences"/>
-  <int value="4" label="Passwords"/>
-  <int value="5" label="Autofill Profile"/>
-  <int value="6" label="Autocomplete"/>
-  <int value="7" label="Themes"/>
-  <int value="8" label="(Obsolete) Typed URLs"/>
-  <int value="9" label="Extensions"/>
-  <int value="10" label="Search Engines"/>
-  <int value="11" label="Sessions"/>
-  <int value="12" label="Apps"/>
-  <int value="13" label="App Settings"/>
-  <int value="14" label="Extension Settings"/>
-  <int value="15" label="(Obsolete) App Notifications"/>
-  <int value="16" label="History Delete Directives"/>
-  <int value="17" label="Nigori"/>
-  <int value="18" label="Device Information"/>
-  <int value="19" label="(Obsolete) Experiments"/>
-  <int value="20" label="(Obsolete) Synced Notifications"/>
-  <int value="21" label="Priority Preferences"/>
-  <int value="22" label="Dictionary"/>
-  <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
-  <int value="24"
-      label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
-  <int value="25" label="Proxy Tabs"/>
-  <int value="26" label="Managed User Settings"/>
-  <int value="27" label="(Obsolete) Managed Users"/>
-  <int value="28" label="(Obsolete) Articles"/>
-  <int value="29" label="App List"/>
-  <int value="30" label="(Obsolete) Managed User Shared Settings"/>
-  <int value="31" label="(Obsolete) Synced Notification App Info"/>
-  <int value="32" label="(Obsolete) Wifi Credentials"/>
-  <int value="33" label="(Obsolete) Managed User Allowlists"/>
-  <int value="34" label="Autofill Wallet"/>
-  <int value="35" label="Autofill Wallet Metadata"/>
-  <int value="36" label="Arc Package"/>
-  <int value="37" label="Printers"/>
-  <int value="38" label="Reading List"/>
-  <int value="39" label="User Events"/>
-  <int value="40" label="(Obsolete) Mountain Shares"/>
-  <int value="41" label="User Consents"/>
-  <int value="42" label="Send Tab"/>
-  <int value="43" label="Security Events"/>
-  <int value="44" label="Wi-Fi Configurations"/>
-  <int value="45" label="Web Apps"/>
-  <int value="46" label="OS Preferences"/>
-  <int value="47" label="OS Priority Preferences"/>
-  <int value="48" label="Sharing Message"/>
-  <int value="49" label="Autofill Wallet Offer"/>
-  <int value="50" label="Workspace Desk"/>
-  <int value="51" label="History"/>
-  <int value="52" label="Printers Authorization Servers"/>
-  <int value="53" label="Contact info"/>
-  <int value="54" label="Autofill Wallet Usage"/>
-  <int value="55" label="(Obsolete) Segmentation"/>
-  <int value="56" label="Saved Tab Groups"/>
-  <int value="57" label="Power Bookmark"/>
-  <int value="58" label="WebAuthn Credentials"/>
-  <int value="59" label="Incoming Password Sharing Invitations"/>
-  <int value="60" label="Outgoing Password Sharing Invitations"/>
-  <int value="61" label="Autofill Wallet Credential"/>
-  <int value="62" label="WebAPKs"/>
-  <int value="63" label="Shared Tab Group Data"/>
-  <int value="64" label="Collaboration Groups"/>
-  <int value="65" label="Plus Address"/>
-  <int value="66" label="Product Comparison"/>
-  <int value="67" label="Cookies"/>
-  <int value="68" label="Plus Address Settings"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/base/model_type.h:SyncModelTypes) -->
-
 <!-- LINT.IfChange(SyncPassphraseType) -->
 
 <enum name="SyncPassphraseType">
@@ -1059,7 +1062,7 @@ chromium-metrics-reviews@google.com.
       label="Notes field is set only in the backup but not decryptable"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/engine/model_type_worker.h:SyncPasswordNotesStateInUpdate) -->
+<!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:SyncPasswordNotesStateInUpdate) -->
 
 <!-- LINT.IfChange(SyncPlaceholderTabResyncResult) -->
 

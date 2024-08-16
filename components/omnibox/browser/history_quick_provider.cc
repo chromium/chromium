@@ -366,7 +366,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
   }
 
   if (OmniboxFieldTrial::IsPopulatingUrlScoringSignalsEnabled() &&
-      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+      match.IsMlSignalLoggingEligible()) {
     // Propagate scoring signals to AC Match for ML Model training data.
     // `allowed_to_be_default_match` is set in this function, after the ACMatch
     // is constructed, rather than in ScoredHistoryMatch. We have to propagate

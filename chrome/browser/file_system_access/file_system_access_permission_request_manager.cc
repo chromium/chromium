@@ -5,7 +5,8 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/file_system_access_dialogs.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_dialogs.h"
+#include "chrome/browser/ui/file_system_access/file_system_access_permission_dialog.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/switches.h"
 #include "content/public/browser/browser_task_traits.h"

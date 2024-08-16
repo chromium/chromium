@@ -309,6 +309,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         ash::features::kSecondaryAccountAllowedInArcPolicy);
     if (IsArcAccountRestrictionsEnabled()) {
       feature_list_.InitWithFeatures(lacros, {});
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+          ash::switches::kEnableLacrosForTesting);
     } else {
       feature_list_.InitWithFeatures({}, lacros);
     }
@@ -603,6 +605,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   std::unique_ptr<AccountAppsAvailabilitySetter> arc_availability_setter_;
   std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
 
   // Not owned.
   raw_ptr<ArcAuthService, DanglingUntriaged> auth_service_ = nullptr;

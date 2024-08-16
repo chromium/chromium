@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -131,7 +132,7 @@ public class CustomTabActivityEphemeralTest {
 
     private Intent createEphemeralCustomTabIntent() {
         return createMinimalCustomTabIntent(ApplicationProvider.getApplicationContext(), mTestPage)
-                .putExtra(IntentHandler.EXTRA_OPEN_NEW_EPHEMERAL_TAB, true);
+                .putExtra(IntentHandler.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
     }
 
     private static int getThemeColor(CustomTabActivity activity) {
@@ -175,6 +176,15 @@ public class CustomTabActivityEphemeralTest {
             CustomTabActivity activity, int itemId, String failureMessage) {
         launchMenuItem(activity);
         assertNull(
+                failureMessage,
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
+    }
+
+    private void launchAndTestMenuItemIsVisible(
+            CustomTabActivity activity, int itemId, String failureMessage) {
+        launchMenuItem(activity);
+        assertNotNull(
                 failureMessage,
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
@@ -296,11 +306,21 @@ public class CustomTabActivityEphemeralTest {
 
     @Test
     @MediumTest
-    public void testDownloadTopIconIsNotVisible() {
+    public void testDownloadTopIconIsHidden() {
         CustomTabActivity activity = launchEphemeralCustomTabActivity();
 
         launchAndTestMenuItemIsNotVisible(
                 activity, R.id.offline_page_id, "Download icon is visible");
+    }
+
+    @Test
+    @MediumTest
+    public void testOpenInChromeIncognitoMenuItemIsVisible() {
+        CustomTabActivity activity = launchEphemeralCustomTabActivity();
+
+        launchAndTestMenuItemIsVisible(
+                activity, R.id.open_in_browser_id, "Open in browser not visible");
+        onView(withText(R.string.menu_open_in_incognito_chrome)).check(matches(isDisplayed()));
     }
 
     @Test

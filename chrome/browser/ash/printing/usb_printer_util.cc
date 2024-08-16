@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <array>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -134,15 +133,12 @@ void OnDeviceOpen(mojo::Remote<device::mojom::UsbDevice> device,
 // big-endian order.  |val| must be a simple integer type
 void MD5UpdateU8BigEndian(base::MD5Context* ctx,
                           base::StrictNumeric<uint8_t> val) {
-  std::array<uint8_t, 1u> buf;
-  base::span(buf).copy_from(base::numerics::U8ToBigEndian(val));
-  base::MD5Update(ctx, buf);
+  uint8_t tmp = val;
+  base::MD5Update(ctx, base::span_from_ref(tmp));
 }
 void MD5UpdateU16BigEndian(base::MD5Context* ctx,
                            base::StrictNumeric<uint16_t> val) {
-  std::array<uint8_t, 2u> buf;
-  base::span(buf).copy_from(base::numerics::U16ToBigEndian(val));
-  base::MD5Update(ctx, buf);
+  base::MD5Update(ctx, base::U16ToBigEndian(val));
 }
 
 // Update the hash with the contents of |str|.
@@ -154,8 +150,7 @@ void MD5UpdateU16BigEndian(base::MD5Context* ctx,
 // This is a long way to say "UTF-16 is hard to hash, let's just convert
 // to UTF-8 and hash that", which avoids all of these issues.
 void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
-  std::string tmp = base::UTF16ToUTF8(str);
-  base::MD5Update(ctx, std::string_view(tmp.data(), tmp.size()));
+  base::MD5Update(ctx, base::UTF16ToUTF8(str));
 }
 
 // Get the usb printer id for |device|.  This is used both as the identifier for

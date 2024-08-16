@@ -4,46 +4,7 @@
 
 module data_sharing_internals.mojom;
 
-import "url/mojom/url.mojom";
-
-// Type of group membership role.
-enum RoleType {
-  UNKNOWN,
-  OWNER,
-  MEMBER,
-  INVITEE,
-};
-
-// Data representing a member in a group.
-struct GroupMember {
-  // Display name.
-  string display_name;
-
-  // Email address.
-  string email;
-
-  // Role of this member.
-  RoleType role;
-
-  // URL of the avatar of this member.
-  url.mojom.Url avatar_url;
-};
-
-// Data representing a group of users.
-struct GroupData {
-  // ID of the group.
-  string group_id;
-
-  // Name of the group
-  string name;
-
-   // A list of members in this group.
-  array<GroupMember> members;
-
-  // Access token of the group. Fetched by browser services via an RPC to the
-  // server.
-  string access_token;
-};
+import "components/data_sharing/public/protocol/group_data.mojom";
 
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
@@ -58,7 +19,8 @@ interface PageHandler {
   IsEmptyService() => (bool is_empty);
 
   // Gets information about all groups.
-  GetAllGroups() => (bool is_success,  array<GroupData> data);
+  GetAllGroups() => (bool is_success,
+                     array<data_sharing.mojom.GroupData> data);
 };
 
 // Renderer-side handler for internal page to process the updates from

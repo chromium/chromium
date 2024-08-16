@@ -92,6 +92,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -524,7 +525,7 @@ struct AttributionManagerImpl::PendingReportTimings {
 };
 
 struct AttributionManagerImpl::SourceOrTriggerRFH {
-  SourceOrTrigger source_or_trigger;
+  absl::variant<StorableSource, AttributionTrigger> source_or_trigger;
   GlobalRenderFrameHostId rfh_id;
 };
 
@@ -1404,9 +1405,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
 
   absl::visit(
       base::Overloaded{
-          [](const AttributionReport::EventLevelData&) {
-            NOTREACHED_NORETURN();
-          },
+          [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
           [&](AttributionReport::AggregatableAttributionData& data) {
             data.common_data.assembled_report = std::move(assembled_report);
           },
@@ -1571,10 +1570,6 @@ void AttributionManagerImpl::NotifyAggregatableDebugReportSent(
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     const StoreSourceResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&]() {
     return IsOperationAllowed(
         *storage_partition_,
@@ -1597,10 +1592,6 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&]() {
     return IsOperationAllowed(
         *storage_partition_,
@@ -1859,10 +1850,6 @@ void AttributionManagerImpl::SetDebugMode(std::optional<bool> enabled,
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReports(
     const OsRegistration& registration) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   ContentBrowserClient::AttributionReportingOperation operation;
   const url::Origin* source_origin;
   const url::Origin* destination_origin;
@@ -1928,10 +1915,6 @@ void AttributionManagerImpl::ReportRegistrationHeaderError(
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     GlobalRenderFrameHostId render_frame_id) {
-  if (!base::FeatureList::IsEnabled(kAttributionVerboseDebugReporting)) {
-    return;
-  }
-
   const auto is_operation_allowed = [&](const url::Origin& reporting_origin) {
     return GetContentClient()
         ->browser()

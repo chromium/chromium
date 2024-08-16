@@ -144,8 +144,8 @@ MATCHER_P2(IsFakeNigoriMetadataBatchWithTokenAndSequenceNumber,
   const NigoriMetadataBatch& given = arg;
   NigoriMetadataBatch expected =
       CreateFakeNigoriMetadataBatch(expected_token, expected_sequence_number);
-  if (given.model_type_state.SerializeAsString() !=
-      expected.model_type_state.SerializeAsString()) {
+  if (given.data_type_state.SerializeAsString() !=
+      expected.data_type_state.SerializeAsString()) {
     return false;
   }
   if (!given.entity_metadata.has_value()) {
@@ -168,10 +168,10 @@ NigoriMetadataBatch CreateFakeNigoriMetadataBatch(
     const std::string& progress_marker_token,
     int64_t entity_metadata_sequence_number) {
   NigoriMetadataBatch metadata_batch;
-  metadata_batch.model_type_state.mutable_progress_marker()->set_token(
+  metadata_batch.data_type_state.mutable_progress_marker()->set_token(
       progress_marker_token);
-  metadata_batch.model_type_state.set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  metadata_batch.data_type_state.set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   metadata_batch.entity_metadata = sync_pb::EntityMetadata::default_instance();
   metadata_batch.entity_metadata->set_sequence_number(
       entity_metadata_sequence_number);
@@ -199,7 +199,7 @@ class MockNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
   MOCK_METHOD(bool, IsEntityUnsynced, (), (override));
   MOCK_METHOD(NigoriMetadataBatch, GetMetadata, (), (override));
   MOCK_METHOD(void, ReportError, (const ModelError&), (override));
-  MOCK_METHOD(base::WeakPtr<ModelTypeControllerDelegate>,
+  MOCK_METHOD(base::WeakPtr<DataTypeControllerDelegate>,
               GetControllerDelegate,
               (),
               (override));
@@ -234,7 +234,7 @@ class ForwardingNigoriLocalChangeProcessor : public NigoriLocalChangeProcessor {
     processor_->ReportError(error);
   }
 
-  base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override {
+  base::WeakPtr<DataTypeControllerDelegate> GetControllerDelegate() override {
     return processor_->GetControllerDelegate();
   }
 
@@ -257,7 +257,7 @@ class MockObserver : public SyncEncryptionHandler::Observer {
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
+  MOCK_METHOD(void, OnEncryptedTypesChanged, (DataTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
               (Cryptographer*, bool has_pending_keys),
@@ -314,7 +314,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     std::optional<syncer::ModelError> error =
         bridge_->MergeFullSyncData(std::move(entity_data));
     if (error) {
-      LOG(ERROR) << "Model type error during the initial sync: "
+      LOG(ERROR) << "Data type error during the initial sync: "
                  << error->ToString();
       return false;
     }
@@ -1321,8 +1321,8 @@ TEST_F(NigoriSyncBridgeImplTest,
           {kKeystoreKeyParams.password});
 
   sync_pb::NigoriLocalData nigori_local_data;
-  nigori_local_data.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  nigori_local_data.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   *nigori_local_data.mutable_nigori_model() =
       unitialized_state_with_keystore_keys.ToLocalProto();
 
@@ -2109,7 +2109,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldIgnoreLocalDataWithoutInitialSyncDone) {
 
   sync_pb::NigoriLocalData local_data = nigori_local_data();
   // Mimic corrupted (empty) |initial_sync_state| field.
-  local_data.mutable_model_type_state()->clear_initial_sync_state();
+  local_data.mutable_data_type_state()->clear_initial_sync_state();
 
   // Ensure that bridge ignores local state.
   EXPECT_CALL(*processor(),
@@ -2126,8 +2126,8 @@ TEST_F(NigoriSyncBridgeImplTest,
        ShouldIgnoreLocalDataWithUnknownPassphraseWithoutKeystoreKeys) {
   sync_pb::NigoriLocalData local_data;
   // Set INITIAL_SYNC_DONE, because otherwise the data will be dropped anyway.
-  local_data.mutable_model_type_state()->set_initial_sync_state(
-      sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+  local_data.mutable_data_type_state()->set_initial_sync_state(
+      sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   // Don't set passphrase type (e.g. UNKNOWN will be used) and keystore keys
   // (this makes state invalid).
 

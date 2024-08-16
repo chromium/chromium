@@ -20,25 +20,25 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
-#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/mock_commit_queue.h"
-#include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,9 +48,9 @@ namespace {
 
 using base::ScopedTempDir;
 using sync_pb::AutofillOfferSpecifics;
-using sync_pb::ModelTypeState;
+using sync_pb::DataTypeState;
 using syncer::EntityData;
-using syncer::MockModelTypeChangeProcessor;
+using syncer::MockDataTypeLocalChangeProcessor;
 using testing::NiceMock;
 using testing::Return;
 
@@ -146,24 +146,23 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
   }
 
   void ResetProcessor() {
-    real_processor_ =
-        std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL_WALLET_OFFER, /*dump_stack=*/base::DoNothing());
+    real_processor_ = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+        syncer::AUTOFILL_WALLET_OFFER, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
   void ResetBridge(bool initial_sync_done) {
-    ModelTypeState model_type_state;
-    model_type_state.set_initial_sync_state(
+    DataTypeState data_type_state;
+    data_type_state.set_initial_sync_state(
         initial_sync_done
-            ? sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE
+            ? sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE
             : sync_pb::
-                  ModelTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
-    model_type_state.mutable_progress_marker()->set_data_type_id(
-        GetSpecificsFieldNumberFromModelType(syncer::AUTOFILL_WALLET_OFFER));
-    model_type_state.set_cache_guid(kDefaultCacheGuid);
-    EXPECT_TRUE(sync_metadata_table_.UpdateModelTypeState(
-        syncer::AUTOFILL_WALLET_OFFER, model_type_state));
+                  DataTypeState_InitialSyncState_INITIAL_SYNC_STATE_UNSPECIFIED);
+    data_type_state.mutable_progress_marker()->set_data_type_id(
+        GetSpecificsFieldNumberFromDataType(syncer::AUTOFILL_WALLET_OFFER));
+    data_type_state.set_cache_guid(kDefaultCacheGuid);
+    EXPECT_TRUE(sync_metadata_table_.UpdateDataTypeState(
+        syncer::AUTOFILL_WALLET_OFFER, data_type_state));
     bridge_ = std::make_unique<AutofillWalletOfferSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
   }
@@ -182,15 +181,15 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
             }));
     loop.Run();
 
-    // ClientTagBasedModelTypeProcessor requires connecting before other
+    // ClientTagBasedDataTypeProcessor requires connecting before other
     // interactions with the worker happen.
     real_processor_->ConnectSync(
         std::make_unique<testing::NiceMock<syncer::MockCommitQueue>>());
 
     // Initialize the processor with the initial sync already done.
-    sync_pb::ModelTypeState state;
+    sync_pb::DataTypeState state;
     state.set_initial_sync_state(
-        sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
+        sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
     sync_pb::GarbageCollectionDirective gc_directive;
     gc_directive.set_version_watermark(1);
@@ -238,8 +237,8 @@ class AutofillWalletOfferSyncBridgeTest : public testing::Test {
   AutofillSyncMetadataTable sync_metadata_table_;
   PaymentsAutofillTable table_;
   WebDatabase db_;
-  NiceMock<MockModelTypeChangeProcessor> mock_processor_;
-  std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
+  NiceMock<MockDataTypeLocalChangeProcessor> mock_processor_;
+  std::unique_ptr<syncer::ClientTagBasedDataTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletOfferSyncBridge> bridge_;
 };
 

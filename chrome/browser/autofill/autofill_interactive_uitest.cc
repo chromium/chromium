@@ -2701,15 +2701,15 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 // filled.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AfterDelay) {
-  // Lower the refill limit, so the test doesn't have to wait forever.
-  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
-      .set_limit_before_refill(kLimitBeforeRefillForTest);
-
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/dynamic_form_after_delay.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Lower the refill limit, so the test doesn't have to wait forever.
+  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
+  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
+      .set_limit_before_refill(kLimitBeforeRefillForTest);
 
   ValueWaiter refill = ListenForRefill("firstname_form1");
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));

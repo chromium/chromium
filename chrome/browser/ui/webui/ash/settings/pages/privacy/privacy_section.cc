@@ -721,7 +721,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
         l10n_util::GetStringFUTF8(
             IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC,
             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
-    // TODO(dkuzmin): add learn more link here once available b/190964241
   }
 
   // `sync_subsection_` is initialized only if the feature revamp wayfinding is

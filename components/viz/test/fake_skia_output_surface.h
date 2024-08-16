@@ -53,10 +53,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void DiscardBackbuffer() override;
   void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
-  void ScheduleOutputSurfaceAsOverlay(
-      OverlayProcessorInterface::OutputSurfaceOverlayPlane output_surface_plane)
-      override;
-  bool IsDisplayedAsOverlayPlane() const override;
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
   void SetUpdateVSyncParametersCallback(
@@ -108,7 +104,6 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   void AddContextLostObserver(ContextLostObserver* observer) override;
   void RemoveContextLostObserver(ContextLostObserver* observer) override;
   gpu::SyncToken Flush() override;
-  bool EnsureMinNumberOfBuffers(int n) override;
   void PreserveChildSurfaceControls() override {}
   gpu::Mailbox CreateSharedImage(SharedImageFormat format,
                                  const gfx::Size& size,

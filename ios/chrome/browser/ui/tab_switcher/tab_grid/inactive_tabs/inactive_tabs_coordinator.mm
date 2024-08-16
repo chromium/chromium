@@ -303,7 +303,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
             didSelectGroup:(const TabGroup*)group {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController

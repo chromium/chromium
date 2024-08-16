@@ -1,0 +1,7 @@
+# TODO(crbug.com/358896957): The below tests have been failing from #32383 to
+# #29474[1] build.
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureI420
+-PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureNV12
+-PaintCanvasVideoRendererWithGLTest.PaintI420
+-PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset
+-PaintCanvasVideoRendererWithGLTest.PaintNV12

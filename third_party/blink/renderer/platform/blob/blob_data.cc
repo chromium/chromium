@@ -80,12 +80,13 @@ bool IsValidBlobType(const String& type) {
 mojom::blink::BlobRegistry* g_blob_registry_for_testing = nullptr;
 
 mojom::blink::BlobRegistry* GetThreadSpecificRegistry() {
-  if (UNLIKELY(g_blob_registry_for_testing))
+  if (g_blob_registry_for_testing) [[unlikely]] {
     return g_blob_registry_for_testing;
+  }
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       ThreadSpecific<mojo::Remote<mojom::blink::BlobRegistry>>, registry, ());
-  if (UNLIKELY(!registry.IsSet())) {
+  if (!registry.IsSet()) [[unlikely]] {
     // TODO(mek): Going through BrowserInterfaceBroker to get a
     // mojom::blink::BlobRegistry ends up going through the main thread. Ideally
     // workers wouldn't need to do that.

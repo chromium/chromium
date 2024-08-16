@@ -61,8 +61,8 @@
 </ul>
 <br><h2>Others: Providing appearance none and bar paddings</h2><br>
 <ul>
-  <li>Check that the meter disappears but the meters content is still present:</li>
-  <li>Check that the meter still disappears when meter is initially rendered with "meter" appearance:</li>
+  <li>Check that the meter renders with fallback style:</li>
+  <li>Check that the meter renders with fallback style when meter is initially rendered with "meter" appearance:</li>
   <li>Check that meter bar gets padding:</li>
 </ul>
 <ul>
@@ -71,10 +71,7 @@
   <meter id="bar-paddings" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter>
 </ul>
 <script>
-var noneLater = document.getElementById('appearanceNoneLater');
-noneLater.offsetLeft; // Force layout.
-noneLater.setAttribute('style', '-webkit-appearance:none');
-noneLater.offsetLeft; // Force layout.
+appearanceNoneLater.style.appearance = 'none';
 </script>
 </body>
 </html>

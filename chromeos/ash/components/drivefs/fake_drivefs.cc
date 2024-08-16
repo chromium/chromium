@@ -185,7 +185,7 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
       }
 
       // Filter out non-matching results.
-      std::erase_if(results_, [=](const auto& item_ptr) {
+      std::erase_if(results_, [=, this](const auto& item_ptr) {
         if (!item_ptr->metadata) {
           return true;
         }

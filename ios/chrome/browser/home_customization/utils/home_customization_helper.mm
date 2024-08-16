@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -13,28 +14,64 @@
 
 + (NSString*)titleForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
-      return @"Test title 1 (Most visited)";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_TITLE);
     case CustomizationToggleType::kMagicStack:
-      return @"Test title 2 (Magic Stack)";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE);
     case CustomizationToggleType::kDiscover:
-      return @"Test title 3 (Discover)";
+      return l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE);
+
+      // Magic Stack page toggles.
+    case CustomizationToggleType::kSetUpList:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SET_UP_LIST);
+    case CustomizationToggleType::kSafetyCheck:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_SAFETY_CHECK);
+    case CustomizationToggleType::kTapResumption:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_TAB_RESUMPTION);
+    case CustomizationToggleType::kParcelTracking:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_PARCEL_TRACKING);
   }
 }
 
 + (NSString*)subtitleForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
-      return @"Test subtitle 1";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MOST_VISITED_SUBTITLE);
     case CustomizationToggleType::kMagicStack:
-      return @"Test subtitle 2";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE);
     case CustomizationToggleType::kDiscover:
-      return @"Test subtitle 3";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_SUBTITLE);
+
+      // Magic Stack page toggles.
+    case CustomizationToggleType::kSetUpList:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SET_UP_LIST);
+    case CustomizationToggleType::kSafetyCheck:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_SAFETY_CHECK);
+    case CustomizationToggleType::kTapResumption:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TAB_RESUMPTION);
+    case CustomizationToggleType::kParcelTracking:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_PARCEL_TRACKING);
   }
 }
 
 + (UIImage*)iconForToggleType:(CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return DefaultSymbolWithPointSize(kHistorySymbol, kToggleIconPointSize);
     case CustomizationToggleType::kMagicStack:
@@ -43,30 +80,69 @@
     case CustomizationToggleType::kDiscover:
       return DefaultSymbolWithPointSize(kDiscoverFeedSymbol,
                                         kToggleIconPointSize);
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kSafetyCheck:
+      return DefaultSymbolWithPointSize(kCheckmarkShieldSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kTapResumption:
+      return DefaultSymbolWithPointSize(kMacbookAndIPhoneSymbol,
+                                        kToggleIconPointSize);
+    case CustomizationToggleType::kParcelTracking:
+      return DefaultSymbolWithPointSize(kShippingBoxSymbol,
+                                        kToggleIconPointSize);
   }
 }
 
 + (NSString*)accessibilityIdentifierForToggleType:
     (CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return kCustomizationToggleMostVisitedIdentifier;
     case CustomizationToggleType::kMagicStack:
       return kCustomizationToggleMagicStackIdentifier;
     case CustomizationToggleType::kDiscover:
       return kCustomizationToggleDiscoverIdentifier;
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return nil;
+    case CustomizationToggleType::kSafetyCheck:
+      return nil;
+    case CustomizationToggleType::kTapResumption:
+      return nil;
+    case CustomizationToggleType::kParcelTracking:
+      return nil;
   }
 }
 
 + (NSString*)navigableAccessibilityIdentifierForToggleType:
     (CustomizationToggleType)type {
   switch (type) {
+      // Main page toggles.
     case CustomizationToggleType::kMostVisited:
       return kCustomizationToggleMostVisitedNavigableIdentifier;
     case CustomizationToggleType::kMagicStack:
       return kCustomizationToggleMagicStackNavigableIdentifier;
     case CustomizationToggleType::kDiscover:
       return kCustomizationToggleDiscoverNavigableIdentifier;
+
+      // Magic Stack page toggles.
+      // TODO
+    case CustomizationToggleType::kSetUpList:
+      return nil;
+    case CustomizationToggleType::kSafetyCheck:
+      return nil;
+    case CustomizationToggleType::kTapResumption:
+      return nil;
+    case CustomizationToggleType::kParcelTracking:
+      return nil;
   }
 }
 
@@ -123,14 +199,15 @@
 + (NSString*)headerTextForPage:(CustomizationMenuPage)page {
   switch (page) {
     case CustomizationMenuPage::kMain:
-      return @"Main page text";
+      return nil;
     case CustomizationMenuPage::kDiscover:
-      return @"(PLACEHOLDER) A custom feed made for you by Google. Inlcuding "
-             @"News, Sports and Weather.";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_PAGE_HEADER);
     case CustomizationMenuPage::kMagicStack:
-      return @"Magic stack page text";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_PAGE_HEADER);
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -139,12 +216,13 @@
     case CustomizationMenuPage::kMain:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE);
-    case CustomizationMenuPage::kDiscover:
-      return @"(TODO) Discover Feed";
     case CustomizationMenuPage::kMagicStack:
-      return @"(TODO) Cards";
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE);
+    case CustomizationMenuPage::kDiscover:
+      return l10n_util::GetNSString(IDS_IOS_HOME_CUSTOMIZATION_DISCOVER_TITLE);
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

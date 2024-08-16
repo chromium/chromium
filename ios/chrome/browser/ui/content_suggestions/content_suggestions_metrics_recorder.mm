@@ -79,6 +79,11 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kPriceTrackingPromo:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:

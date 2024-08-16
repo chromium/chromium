@@ -645,8 +645,6 @@ input[type="file" i] {
     text-align: start !important;
     text-overflow: ellipsis;
     white-space: pre;
-    /* NOTE: This can be removed once InputClipRulesCss is removed */
-    overflow: hidden !important;
 }
 
 input[type="image" i] {
@@ -786,11 +784,9 @@ option:-internal-spatial-navigation-focus {
     outline-offset: -1px;
 }
 
-@supports blink-feature(InputClipRulesCss) {
-  input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
-    overflow: clip !important;
-    overflow-clip-margin: 0px !important;
-  }
+input:not([type="image" i], [type="range" i], [type="checkbox" i], [type="radio" i]) {
+  overflow: clip !important;
+  overflow-clip-margin: 0px !important;
 }
 
 /* https://html.spec.whatwg.org/multipage/rendering.html#hidden-elements */
@@ -1059,7 +1055,8 @@ output {
 
 /* meter */
 
-meter {
+@supports not blink-feature(MeterAppearanceNoneFallbackStyle) {
+  meter {
     appearance: auto;
     box-sizing: border-box;
     display: inline-block;
@@ -1067,28 +1064,28 @@ meter {
     inline-size: 5em;
     vertical-align: -0.2em;
     -webkit-user-modify: read-only !important;
-}
+  }
 
-meter::-webkit-meter-inner-element {
+  meter::-webkit-meter-inner-element {
     appearance: inherit;
     box-sizing: inherit;
     display: none;
     -webkit-user-modify: read-only !important;
     block-size: 100%;
     inline-size: 100%;
-}
+  }
 
-meter::-webkit-meter-inner-element:-internal-shadow-host-has-appearance {
+  meter::-webkit-meter-inner-element:-internal-shadow-host-has-non-auto-appearance {
     display: grid;
     grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
     position: relative;
-}
+  }
 
-meter::-internal-fallback:-internal-shadow-host-has-appearance {
+  meter::-internal-fallback:-internal-shadow-host-has-non-auto-appearance {
     display: none;
-}
+  }
 
-meter::-webkit-meter-bar {
+  meter::-webkit-meter-bar {
     block-size: 100%;
     inline-size: 100%;
     -webkit-user-modify: read-only !important;
@@ -1101,27 +1098,103 @@ meter::-webkit-meter-bar {
     align-self: unsafe center;
     position: absolute;
     overflow: hidden;
-}
+  }
 
-meter::-webkit-meter-optimum-value {
+  meter::-webkit-meter-optimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#107c10, #74b374)
-}
+    background: light-dark(#107c10, #74b374);
+  }
 
-meter::-webkit-meter-suboptimum-value {
+  meter::-webkit-meter-suboptimum-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#ffb900, #f2c812)
-}
+    background: light-dark(#ffb900, #f2c812);
+  }
 
-meter::-webkit-meter-even-less-good-value {
+  meter::-webkit-meter-even-less-good-value {
     block-size: 100%;
     -webkit-user-modify: read-only !important;
     box-sizing: border-box;
-    background: light-dark(#d83b01, #e98f6d)
+    background: light-dark(#d83b01, #e98f6d);
+  }
+}
+
+@supports blink-feature(MeterAppearanceNoneFallbackStyle) {
+  meter {
+    -webkit-user-modify: read-only !important;
+    appearance: auto;
+    block-size: 1em;
+    box-sizing: border-box;
+    display: inline-block;
+    inline-size: 5em;
+    vertical-align: -0.2em;
+  }
+
+  meter::-webkit-meter-inner-element {
+    -webkit-user-modify: read-only !important;
+    appearance: inherit;
+    block-size: 100%;
+    box-sizing: inherit;
+    display: grid;
+    grid-template-rows: 1fr [line1] 2fr [line2] 1fr;
+    inline-size: 100%;
+    position: relative;
+  }
+
+  meter::-webkit-meter-bar {
+    -webkit-user-modify: read-only !important;
+    align-self: unsafe center;
+    background: linear-gradient(to bottom, #ddd, #eee 20%, #ccc 45%, #ccc 55%, #ddd);
+    block-size: 100%;
+    box-sizing: border-box;
+    grid-row-end: line2;
+    grid-row-start: line1;
+    inline-size: 100%;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  meter::-webkit-meter-bar:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#efefef, #3B3B3B);
+    border-radius: 20px;
+    border: thin solid light-dark(rgba(118, 118, 118, 0.3), #858585);
+  }
+
+  meter::-webkit-meter-optimum-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #ad7, #cea 20%, #7a3 45%, #7a3 55%, #ad7);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-optimum-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#107c10, #74b374);
+  }
+
+  meter::-webkit-meter-suboptimum-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #fe7, #ffc 20%, #db3 45%, #db3 55%, #fe7);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-suboptimum-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#ffb900, #f2c812);
+  }
+
+  meter::-webkit-meter-even-less-good-value {
+    -webkit-user-modify: read-only !important;
+    background: linear-gradient(to bottom, #f77, #fcc 20%, #d44 45%, #d44 55%, #f77);
+    block-size: 100%;
+    box-sizing: border-box;
+  }
+
+  meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-appearance {
+    background: light-dark(#d83b01, #e98f6d);
+  }
 }
 
 /* progress */

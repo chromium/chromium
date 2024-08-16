@@ -203,7 +203,7 @@ bool SiteDataRecorderHeuristics::DefaultIsLoadedIdle(
     case PageNode::LoadingState::kLoadedIdle:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

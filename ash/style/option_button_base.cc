@@ -10,6 +10,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -38,6 +39,11 @@ OptionButtonBase::OptionButtonBase(int button_width,
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(ui::kColorAshFocusRing);
+
+  SetAndUpdateAccessibleDefaultActionVerb();
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
 }
 
 OptionButtonBase::~OptionButtonBase() = default;
@@ -48,14 +54,16 @@ void OptionButtonBase::SetSelected(bool selected) {
   }
 
   selected_ = selected;
+  GetViewAccessibility().SetCheckedState(selected_
+                                             ? ax::mojom::CheckedState::kTrue
+                                             : ax::mojom::CheckedState::kFalse);
   UpdateImage();
 
   if (delegate_) {
     delegate_->OnButtonSelected(this);
   }
-
-  NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                           /*send_native_event=*/true);
+  SetAndUpdateAccessibleDefaultActionVerb();
+  OnSelectedChanged();
 }
 
 void OptionButtonBase::SetLabelStyle(TypographyToken token) {
@@ -128,19 +136,6 @@ void OptionButtonBase::NotifyClick(const ui::Event& event) {
   views::LabelButton::NotifyClick(event);
 }
 
-void OptionButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  LabelButton::GetAccessibleNodeData(node_data);
-  const ax::mojom::CheckedState checked_state =
-      selected_ ? ax::mojom::CheckedState::kTrue
-                : ax::mojom::CheckedState::kFalse;
-  node_data->SetCheckedState(checked_state);
-  if (GetEnabled()) {
-    node_data->SetDefaultActionVerb(selected_
-                                        ? ax::mojom::DefaultActionVerb::kUncheck
-                                        : ax::mojom::DefaultActionVerb::kCheck);
-  }
-}
-
 SkColor OptionButtonBase::GetIconImageColor() const {
   SkColor active_color =
       GetColorProvider()->GetColor(selected_ ? cros_tokens::kCrosSysPrimary
@@ -154,6 +149,12 @@ SkColor OptionButtonBase::GetIconImageColor() const {
 void OptionButtonBase::UpdateTextColor() {
   SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
   SetTextColorId(ButtonState::STATE_DISABLED, KColorAshTextDisabledColor);
+}
+
+void OptionButtonBase::SetAndUpdateAccessibleDefaultActionVerb() {
+  SetDefaultActionVerb(selected_ ? ax::mojom::DefaultActionVerb::kUncheck
+                                 : ax::mojom::DefaultActionVerb::kCheck);
+  UpdateAccessibleDefaultActionVerb();
 }
 
 void OptionButtonBase::SetLabelFontList(const gfx::FontList& font_list) {

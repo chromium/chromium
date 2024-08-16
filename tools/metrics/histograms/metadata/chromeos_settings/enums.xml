@@ -257,6 +257,7 @@ chromium-metrics-reviews@google.com.
   <int value="807" label="Crostini: Container Upgrade"/>
   <int value="808" label="Bruschetta: Mic Access"/>
   <int value="809" label="Guest OS: Show USB device notifications"/>
+  <int value="810" label="Guest OS: Allow persistent USB passthrough"/>
   <int value="1000" label="24Hour Clock"/>
   <int value="1001" label="Change Time Zone"/>
   <int value="1101" label="Verified Access"/>
@@ -367,6 +368,7 @@ chromium-metrics-reviews@google.com.
   <int value="1548" label="Caret browsing"/>
   <int value="1549" label="Magnifier follows ChromeVox focus"/>
   <int value="1550" label="Main node annotations enabled"/>
+  <int value="1551" label="Flash screen for notifications"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

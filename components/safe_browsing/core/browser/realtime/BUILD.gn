@@ -11,7 +11,7 @@ static_library("policy_engine") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base:base",
-    "//components/enterprise/connectors",
+    "//components/enterprise/connectors/core",
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
@@ -110,7 +110,7 @@ source_set("unit_tests") {
     ":url_lookup_service",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
-    "//components/enterprise/connectors",
+    "//components/enterprise/connectors/core",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",

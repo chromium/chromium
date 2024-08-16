@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 
 #include <memory>
@@ -132,12 +137,14 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"toastDeletedFromHistoryStillOnDevice",
        IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE},
       {"toastDeletedFromHistory", IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY},
+      {"toastCopiedDownloadLink", IDS_DOWNLOADS_TOAST_COPIED_DOWNLOAD_LINK},
       {"undo", IDS_DOWNLOAD_UNDO},
       {"controlKeepDangerous", IDS_DOWNLOAD_KEEP_DANGEROUS_FILE},
       {"controlKeepSuspicious", IDS_DOWNLOAD_KEEP_SUSPICIOUS_FILE},
       {"controlKeepUnverified", IDS_DOWNLOAD_KEEP_UNVERIFIED_FILE},
       {"controlKeepInsecure", IDS_DOWNLOAD_KEEP_INSECURE_FILE},
       {"controlDeleteFromHistory", IDS_DOWNLOAD_DELETE_FROM_HISTORY},
+      {"controlCopyDownloadLink", IDS_DOWNLOAD_COPY_DOWNLOAD_LINK},
 
       // Accessible labels for file icons.
       {"accessibleLabelDangerous",
@@ -291,15 +298,10 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
 ///////////////////////////////////////////////////////////////////////////////
 
 DownloadsUIConfig::DownloadsUIConfig()
-    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIDownloadsHost) {}
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIDownloadsHost) {}
 
 DownloadsUIConfig::~DownloadsUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DownloadsUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                         const GURL& url) {
-  return std::make_unique<DownloadsUI>(web_ui);
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 //
